@@ -16,7 +16,6 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSThread.h>
-#import <SignalServiceKit/UIImage+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

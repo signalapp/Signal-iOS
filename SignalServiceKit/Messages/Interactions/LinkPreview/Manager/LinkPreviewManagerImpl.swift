@@ -434,7 +434,7 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
                 let imageSize = stillImage.pixelSize
                 let shouldResize = imageSize.width > maxImageSize || imageSize.height > maxImageSize
                 if shouldResize {
-                    guard let resizedImage = stillImage.resized(withMaxDimensionPixels: maxImageSize) else {
+                    guard let resizedImage = stillImage.resized(maxDimensionPixels: maxImageSize) else {
                         owsFailDebug("Couldn't resize image.")
                         return nil
                     }
@@ -466,7 +466,7 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
                     return nil
                 }
 
-                guard let dstImage = srcImage.resized(withMaxDimensionPixels: maxImageSize) else {
+                guard let dstImage = srcImage.resized(maxDimensionPixels: maxImageSize) else {
                     owsFailDebug("Could not resize image.")
                     return nil
                 }

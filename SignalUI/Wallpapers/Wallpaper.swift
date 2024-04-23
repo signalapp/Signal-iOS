@@ -349,7 +349,7 @@ public class WallpaperBlurProviderImpl: NSObject, WallpaperBlurProvider {
                                         ? UIColor.ows_black.withAlphaComponent(0.9)
                                         : UIColor.white.withAlphaComponent(0.6))
             let resizeDimension = contentImage.size.largerAxis / Self.contentDownscalingFactor
-            guard let scaledImage = contentImage.resized(withMaxDimensionPoints: resizeDimension) else {
+            guard let scaledImage = contentImage.resized(maxDimensionPoints: resizeDimension) else {
                 owsFailDebug("Could not resize contentImage.")
                 return nil
             }

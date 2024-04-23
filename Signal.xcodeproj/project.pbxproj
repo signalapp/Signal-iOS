@@ -2553,7 +2553,6 @@
 		F9C5CDD2289453B400548EEE /* AppContext.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB00289453B200548EEE /* AppContext.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CDD3289453B400548EEE /* OWSOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB01289453B200548EEE /* OWSOperation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CDD5289453B400548EEE /* ViewOnceMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB03289453B200548EEE /* ViewOnceMessages.swift */; };
-		F9C5CDD6289453B400548EEE /* UIImage+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB04289453B200548EEE /* UIImage+OWS.m */; };
 		F9C5CDD7289453B400548EEE /* OWSFileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB05289453B200548EEE /* OWSFileSystem.swift */; };
 		F9C5CDD8289453B400548EEE /* DebouncedEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB06289453B200548EEE /* DebouncedEvent.swift */; };
 		F9C5CDD9289453B400548EEE /* DataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB07289453B200548EEE /* DataSource.m */; };
@@ -2597,7 +2596,6 @@
 		F9C5CE0D289453B400548EEE /* OWS2FAManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB3B289453B200548EEE /* OWS2FAManager.swift */; };
 		F9C5CE0E289453B400548EEE /* LegacyChangePhoneNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB3C289453B200548EEE /* LegacyChangePhoneNumber.swift */; };
 		F9C5CE0F289453B400548EEE /* Int+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB3D289453B200548EEE /* Int+SSK.swift */; };
-		F9C5CE10289453B400548EEE /* UIImage+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB3E289453B200548EEE /* UIImage+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE11289453B400548EEE /* OWSOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB3F289453B200548EEE /* OWSOperation.m */; };
 		F9C5CE12289453B400548EEE /* Bench.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB40289453B200548EEE /* Bench.swift */; };
 		F9C5CE13289453B400548EEE /* AppContext.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB41289453B200548EEE /* AppContext.m */; };
@@ -5546,7 +5544,6 @@
 		F9C5CB00289453B200548EEE /* AppContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppContext.h; sourceTree = "<group>"; };
 		F9C5CB01289453B200548EEE /* OWSOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSOperation.h; sourceTree = "<group>"; };
 		F9C5CB03289453B200548EEE /* ViewOnceMessages.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewOnceMessages.swift; sourceTree = "<group>"; };
-		F9C5CB04289453B200548EEE /* UIImage+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+OWS.m"; sourceTree = "<group>"; };
 		F9C5CB05289453B200548EEE /* OWSFileSystem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSFileSystem.swift; sourceTree = "<group>"; };
 		F9C5CB06289453B200548EEE /* DebouncedEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebouncedEvent.swift; sourceTree = "<group>"; };
 		F9C5CB07289453B200548EEE /* DataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataSource.m; sourceTree = "<group>"; };
@@ -5590,7 +5587,6 @@
 		F9C5CB3B289453B200548EEE /* OWS2FAManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWS2FAManager.swift; sourceTree = "<group>"; };
 		F9C5CB3C289453B200548EEE /* LegacyChangePhoneNumber.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LegacyChangePhoneNumber.swift; sourceTree = "<group>"; };
 		F9C5CB3D289453B200548EEE /* Int+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Int+SSK.swift"; sourceTree = "<group>"; };
-		F9C5CB3E289453B200548EEE /* UIImage+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+OWS.h"; sourceTree = "<group>"; };
 		F9C5CB3F289453B200548EEE /* OWSOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSOperation.m; sourceTree = "<group>"; };
 		F9C5CB40289453B200548EEE /* Bench.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bench.swift; sourceTree = "<group>"; };
 		F9C5CB41289453B200548EEE /* AppContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppContext.m; sourceTree = "<group>"; };
@@ -11301,8 +11297,6 @@
 				34A955B5271B54BC00B05242 /* UIColor+OWS.swift */,
 				F9C5CB13289453B200548EEE /* UIColor+SSK.swift */,
 				45BB93371E688E14001E3939 /* UIDevice+FeatureSupport.swift */,
-				F9C5CB3E289453B200548EEE /* UIImage+OWS.h */,
-				F9C5CB04289453B200548EEE /* UIImage+OWS.m */,
 				F9C5CB4D289453B200548EEE /* UIImage+OWS.swift */,
 				3402A9E0271D96570084CBAE /* UIView+OWS.swift */,
 				6600F34B298C81CD00B1EDB7 /* UnknownEnumCodable.swift */,
@@ -11550,7 +11544,6 @@
 				F9C5CCBA289453B300548EEE /* TSThread.h in Headers */,
 				F9C5CBF1289453B300548EEE /* TSUnreadIndicatorInteraction.h in Headers */,
 				F9C5CD61289453B300548EEE /* TSYapDatabaseObject.h in Headers */,
-				F9C5CE10289453B400548EEE /* UIImage+OWS.h in Headers */,
 				F9C5CD55289453B300548EEE /* YDBStorage.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -14659,7 +14652,6 @@
 				7255A4CC2B98E05200E95368 /* UIColor+OWS.swift in Sources */,
 				F9C5CDE5289453B400548EEE /* UIColor+SSK.swift in Sources */,
 				7255A4CD2B98E0DF00E95368 /* UIDevice+FeatureSupport.swift in Sources */,
-				F9C5CDD6289453B400548EEE /* UIImage+OWS.m in Sources */,
 				F9C5CE1F289453B400548EEE /* UIImage+OWS.swift in Sources */,
 				7255A4CB2B98E04900E95368 /* UIView+OWS.swift in Sources */,
 				50D6A93F2AA9167400B7F093 /* UniqueObjectRecipientMerger.swift in Sources */,

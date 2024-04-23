@@ -8,7 +8,6 @@
 #import "OWSError.h"
 #import "OWSFileSystem.h"
 #import "TSAttachmentPointer.h"
-#import "UIImage+OWS.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SignalCoreKit/Threading.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>

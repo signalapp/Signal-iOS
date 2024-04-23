@@ -111,7 +111,7 @@ extension UIImage {
 
     public func cgImageWithGaussianBlur(radius: CGFloat,
                                         resizeToMaxPixelDimension: CGFloat) throws -> CGImage {
-        guard let resizedImage = self.resized(withMaxDimensionPixels: resizeToMaxPixelDimension) else {
+        guard let resizedImage = self.resized(maxDimensionPixels: resizeToMaxPixelDimension) else {
             throw OWSAssertionError("Failed to downsize image for blur")
         }
         return try resizedImage.cgImageWithGaussianBlur(radius: radius)
@@ -295,7 +295,7 @@ extension UIImage {
         }
 
         if avatarImage.pixelWidth > maxAvatarDimensionPixels || avatarImage.pixelHeight > maxAvatarDimensionPixels {
-            if let newAvatarImage = avatarImage.resized(withMaxDimensionPixels: CGFloat(maxAvatarDimensionPixels)) {
+            if let newAvatarImage = avatarImage.resized(maxDimensionPixels: CGFloat(maxAvatarDimensionPixels)) {
                 avatarImage = newAvatarImage
             } else {
                 owsFailDebug("Could not resize avatar.")
@@ -414,4 +414,74 @@ extension UIImage {
         }
     }
 
+    public func resized(maxDimensionPoints: CGFloat) -> UIImage? {
+        resized(originalSize: size, maxDimension: maxDimensionPoints, isPixels: false)
+    }
+
+    public func resized(maxDimensionPixels: CGFloat) -> UIImage? {
+        resized(originalSize: pixelSize, maxDimension: maxDimensionPixels, isPixels: true)
+    }
+
+    /// Original size and maxDimension should both be in the same units, either points or pixels.
+    private func resized(originalSize: CGSize, maxDimension: CGFloat, isPixels: Bool) -> UIImage? {
+        if originalSize.width < 1 || originalSize.height < 1 {
+            Logger.error("Invalid original size: \(originalSize)")
+            return nil
+        }
+
+        let maxOriginalDimension = max(originalSize.width, originalSize.height)
+        if maxOriginalDimension < maxDimension {
+            // Don't bother scaling an image that is already smaller than the max dimension.
+            return self
+        }
+
+        var unroundedThumbnailSize: CGSize
+        if originalSize.width > originalSize.height {
+            unroundedThumbnailSize = CGSize(width: maxDimension, height: maxDimension * originalSize.height / originalSize.width)
+        } else {
+            unroundedThumbnailSize = CGSize(width: maxDimension * originalSize.width / originalSize.height, height: maxDimension)
+        }
+
+        var renderRect = CGRect(origin: .zero,
+                                size: CGSize.init(width: round(unroundedThumbnailSize.width),
+                                                  height: round(unroundedThumbnailSize.height)))
+        if unroundedThumbnailSize.width < 1 {
+            // crop instead of resizing.
+            let newWidth = min(maxDimension, originalSize.width)
+            let newHeight = originalSize.height * (newWidth / originalSize.width)
+            renderRect.origin.y = round((maxDimension - newHeight) / 2)
+            renderRect.size.width = round(newWidth)
+            renderRect.size.height = round(newHeight)
+            unroundedThumbnailSize.height = maxDimension
+            unroundedThumbnailSize.width = newWidth
+        }
+        if unroundedThumbnailSize.height < 1 {
+            // crop instead of resizing.
+            let newHeight = min(maxDimension, originalSize.height)
+            let newWidth = originalSize.width * (newHeight / originalSize.height)
+            renderRect.origin.x = round((maxDimension - newWidth) / 2)
+            renderRect.size.width = round(newWidth)
+            renderRect.size.height = round(newHeight)
+            unroundedThumbnailSize.height = newHeight
+            unroundedThumbnailSize.width = maxDimension
+        }
+
+        let thumbnailSize = CGSize(width: round(unroundedThumbnailSize.width),
+                                   height: round(unroundedThumbnailSize.height))
+
+        // TODO: Figure out the intention of this bit of the old code which appears to be the same image context either way.
+        //        if (isPixels) {
+        //            UIGraphicsBeginImageContextWithOptions(CGSizeMake(thumbnailSize.width, thumbnailSize.height), NO, 1.0);
+        //        } else {
+        //            UIGraphicsBeginImageContext(CGSizeMake(thumbnailSize.width, thumbnailSize.height));
+        //        }
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        format.opaque = false
+        let renderer = UIGraphicsImageRenderer(size: thumbnailSize)
+        return renderer.image { context in
+            context.cgContext.interpolationQuality = .high
+            draw(in: renderRect)
+        }
+    }
 }

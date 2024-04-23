@@ -341,7 +341,7 @@ public class SignalAttachment: NSObject {
             let pixelSize = image.pixelSize
             let maxDimensionPixels = ((60 * UIScreen.main.scale) / pixelSize.smallerAxis).clamp01() * pixelSize.largerAxis
 
-            let thumbnail = image.resized(withMaxDimensionPixels: maxDimensionPixels)
+            let thumbnail = image.resized(maxDimensionPixels: maxDimensionPixels)
             cachedThumbnail = thumbnail
             return thumbnail
         }

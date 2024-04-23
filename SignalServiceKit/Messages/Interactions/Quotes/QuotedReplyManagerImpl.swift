@@ -450,7 +450,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                     }
                 }
             }()
-            guard let resizedThumbnailImage = thumbnailImage?.resized(withMaxDimensionPixels: maxThumbnailSizePixels) else {
+            guard let resizedThumbnailImage = thumbnailImage?.resized(maxDimensionPixels: maxThumbnailSizePixels) else {
                 owsFailDebug("Couldn't generate thumbnail for sticker.")
                 return nil
             }
@@ -473,7 +473,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
 
                 guard
                     let resizedThumbnailImage = thumbnailImage.resized(
-                        withMaxDimensionPoints: AttachmentStream.thumbnailDimensionPointsForQuotedReply
+                        maxDimensionPoints: AttachmentStream.thumbnailDimensionPointsForQuotedReply
                     )
                 else {
                     owsFailDebug("Couldn't generate thumbnail.")

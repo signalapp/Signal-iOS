@@ -23,7 +23,7 @@ public class OWSMediaUtils: NSObject {
             let result = image.withNativeScale
             return result
         }
-        guard let thumbnailImage = image.resized(withMaxDimensionPixels: maxDimensionPixels) else {
+        guard let thumbnailImage = image.resized(maxDimensionPixels: maxDimensionPixels) else {
             throw OWSMediaError.failure(description: "Could not thumbnail image.")
         }
         guard nil != thumbnailImage.cgImage else {
