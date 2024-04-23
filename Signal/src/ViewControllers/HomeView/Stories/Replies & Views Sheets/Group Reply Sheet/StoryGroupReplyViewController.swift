@@ -67,11 +67,6 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
 
         super.init()
 
-        // Fetch profiles for everyone in the group to make sure we have the latest capability state
-        if let thread = thread {
-            bulkProfileFetch.fetchProfiles(addresses: thread.recipientAddressesWithSneakyTransaction)
-        }
-
         databaseStorage.appendDatabaseChangeDelegate(self)
     }
 

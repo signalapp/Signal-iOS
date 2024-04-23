@@ -153,9 +153,7 @@ public final class RequestMaker: Dependencies {
             databaseStorage.write { tx in
                 self.udManager.setUnidentifiedAccessMode(newUdAccessMode, for: self.serviceId, tx: tx)
             }
-            if !self.options.contains(.isProfileFetch) {
-                ProfileFetcherJob.fetchProfile(address: self.address, authedAccount: self.authedAccount)
-            }
+            fetchProfileIfNeeded()
 
             if self.options.contains(.allowIdentifiedFallback) {
                 Logger.info("UD request '\(self.label)' auth failed; failing over to non-UD request")
@@ -190,12 +188,22 @@ public final class RequestMaker: Dependencies {
         databaseStorage.write { tx in
             self.udManager.setUnidentifiedAccessMode(newUdAccessMode, for: self.serviceId, tx: tx)
         }
-        if !self.options.contains(.isProfileFetch) {
-            // If this request isn't a profile fetch, kick off a profile fetch. If it
-            // is a profile fetch, don't bother fetching it *again*.
-            DispatchQueue.main.async {
-                ProfileFetcherJob.fetchProfile(address: self.address, authedAccount: self.authedAccount)
-            }
+        fetchProfileIfNeeded()
+    }
+
+    private func fetchProfileIfNeeded() {
+        // If this request isn't a profile fetch, kick off a profile fetch. If it
+        // is a profile fetch, don't bother fetching it *again*.
+        if self.options.contains(.isProfileFetch) {
+            return
+        }
+        Task { [serviceId, authedAccount] in
+            let profileFetcher = SSKEnvironment.shared.profileFetcherRef
+            _ = try? await profileFetcher.fetchProfile(
+                for: serviceId,
+                options: [.mainAppOnly],
+                authedAccount: authedAccount
+            )
         }
     }
 }

@@ -6,7 +6,38 @@
 import Foundation
 import LibSignalClient
 
-public actor BulkProfileFetch {
+public struct ProfileFetchOptions: OptionSet {
+    public var rawValue: Int
+    public init(rawValue: Int) { self.rawValue = rawValue }
+
+    public static let opportunistic: Self = .init(rawValue: 1 << 0)
+    public static let mainAppOnly: Self = .init(rawValue: 1 << 1)
+}
+
+public protocol ProfileFetcher {
+    func fetchProfileImpl(for serviceId: ServiceId, options: ProfileFetchOptions, authedAccount: AuthedAccount) async throws -> FetchedProfile
+    func fetchProfileSyncImpl(for serviceId: ServiceId, options: ProfileFetchOptions, authedAccount: AuthedAccount) -> Task<FetchedProfile, Error>
+}
+
+extension ProfileFetcher {
+    public func fetchProfile(
+        for serviceId: ServiceId,
+        options: ProfileFetchOptions = [],
+        authedAccount: AuthedAccount = .implicit()
+    ) async throws -> FetchedProfile {
+        return try await fetchProfileImpl(for: serviceId, options: options, authedAccount: authedAccount)
+    }
+
+    func fetchProfileSync(
+        for serviceId: ServiceId,
+        options: ProfileFetchOptions = [],
+        authedAccount: AuthedAccount = .implicit()
+    ) -> Task<FetchedProfile, Error> {
+        return fetchProfileSyncImpl(for: serviceId, options: options, authedAccount: authedAccount)
+    }
+}
+
+public actor ProfileFetcherImpl: ProfileFetcher {
 
     private var serviceIdQueue = OrderedSet<ServiceId>()
 
@@ -34,15 +65,41 @@ public actor BulkProfileFetch {
 
     private var observers = [NSObjectProtocol]()
 
-    private let reachabilityManager: SSKReachabilityManager
-    private let tsAccountManager: TSAccountManager
+    private let jobCreator: (ServiceId, AuthedAccount) -> ProfileFetcherJob
+    private let reachabilityManager: any SSKReachabilityManager
+    private let tsAccountManager: any TSAccountManager
 
     public init(
-        reachabilityManager: SSKReachabilityManager,
-        tsAccountManager: TSAccountManager
+        db: any DB,
+        identityManager: any OWSIdentityManager,
+        paymentsHelper: any PaymentsHelper,
+        profileManager: any ProfileManager,
+        reachabilityManager: any SSKReachabilityManager,
+        recipientDatabaseTable: any RecipientDatabaseTable,
+        recipientManager: any SignalRecipientManager,
+        recipientMerger: any RecipientMerger,
+        tsAccountManager: any TSAccountManager,
+        udManager: any OWSUDManager,
+        versionedProfiles: any VersionedProfilesSwift
     ) {
         self.reachabilityManager = reachabilityManager
         self.tsAccountManager = tsAccountManager
+        self.jobCreator = { serviceId, authedAccount in
+            return ProfileFetcherJob(
+                serviceId: serviceId,
+                authedAccount: authedAccount,
+                db: db,
+                identityManager: identityManager,
+                paymentsHelper: paymentsHelper,
+                profileManager: profileManager,
+                recipientDatabaseTable: recipientDatabaseTable,
+                recipientManager: recipientManager,
+                recipientMerger: recipientMerger,
+                tsAccountManager: tsAccountManager,
+                udManager: udManager,
+                versionedProfiles: versionedProfiles
+            )
+        }
 
         SwiftSingletons.register(self)
 
@@ -74,36 +131,37 @@ public actor BulkProfileFetch {
         observers.forEach { NotificationCenter.default.removeObserver($0) }
     }
 
-    // This should be used for non-urgent profile updates.
-    public nonisolated func fetchProfiles(thread: TSThread) {
-        var addresses = Set(thread.recipientAddressesWithSneakyTransaction)
-        if let groupThread = thread as? TSGroupThread, let groupModel = groupThread.groupModel as? TSGroupModelV2 {
-            addresses.formUnion(groupModel.droppedMembers)
+    public nonisolated func fetchProfileSyncImpl(
+        for serviceId: ServiceId,
+        options: ProfileFetchOptions,
+        authedAccount: AuthedAccount
+    ) -> Task<FetchedProfile, Error> {
+        return Task {
+            return try await self.fetchProfileImpl(
+                for: serviceId,
+                options: options,
+                authedAccount: authedAccount
+            )
         }
-        fetchProfiles(addresses: Array(addresses))
     }
 
-    // This should be used for non-urgent profile updates.
-    public nonisolated func fetchProfile(address: SignalServiceAddress) {
-        fetchProfiles(addresses: [address])
-    }
-
-    // This should be used for non-urgent profile updates.
-    public nonisolated func fetchProfiles(addresses: [SignalServiceAddress]) {
-        let serviceIds = addresses.compactMap { $0.serviceId }
-        fetchProfiles(serviceIds: serviceIds)
-    }
-
-    // This should be used for non-urgent profile updates.
-    public nonisolated func fetchProfile(serviceId: ServiceId) {
-        fetchProfiles(serviceIds: [serviceId])
-    }
-
-    // This should be used for non-urgent profile updates.
-    public nonisolated func fetchProfiles(serviceIds: [ServiceId]) {
-        Task {
-            await self._fetchProfiles(serviceIds: serviceIds)
+    public func fetchProfileImpl(
+        for serviceId: ServiceId,
+        options: ProfileFetchOptions,
+        authedAccount: AuthedAccount
+    ) async throws -> FetchedProfile {
+        if options.contains(.opportunistic) {
+            await self._fetchProfiles(serviceIds: [serviceId])
+            // TODO: Clean up this type so that we can pass back real results.
+            throw OWSGenericError("Detaching profile fetch because it's opportunistic.")
         }
+        // We usually only refresh profiles in the MainApp to decrease the
+        // chance of missed SN notifications in the AppExtension for our users
+        // who choose not to verify contacts.
+        if options.contains(.mainAppOnly), !CurrentAppContext().isMainApp {
+            throw OWSGenericError("Skipping profile fetch because we're not the main app.")
+        }
+        return try await jobCreator(serviceId, authedAccount).run()
     }
 
     private func _fetchProfiles(serviceIds: [ServiceId]) async {
@@ -191,7 +249,7 @@ public actor BulkProfileFetch {
         }
 
         do {
-            try await ProfileFetcherJob.fetchProfilePromise(serviceId: serviceId).asVoid().awaitable()
+            _ = try await fetchProfile(for: serviceId)
             lastOutcomeMap[serviceId] = UpdateOutcome(.success)
         } catch ProfileRequestError.rateLimit {
             lastRateLimitErrorDate = Date()

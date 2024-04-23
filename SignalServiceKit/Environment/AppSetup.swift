@@ -881,9 +881,18 @@ public class AppSetup {
         let sskPreferences = SSKPreferences()
         let groupV2Updates = testDependencies?.groupV2Updates ?? GroupV2UpdatesImpl()
         let messageFetcherJob = MessageFetcherJob()
-        let bulkProfileFetch = BulkProfileFetch(
+        let profileFetcher = ProfileFetcherImpl(
+            db: db,
+            identityManager: identityManager,
+            paymentsHelper: paymentsHelper,
+            profileManager: profileManager,
             reachabilityManager: reachabilityManager,
-            tsAccountManager: tsAccountManager
+            recipientDatabaseTable: recipientDatabaseTable,
+            recipientManager: recipientManager,
+            recipientMerger: recipientMerger,
+            tsAccountManager: tsAccountManager,
+            udManager: udManager,
+            versionedProfiles: versionedProfiles
         )
         let messagePipelineSupervisor = MessagePipelineSupervisor()
         let paymentsCurrencies = testDependencies?.paymentsCurrencies ?? PaymentsCurrenciesImpl()
@@ -947,7 +956,6 @@ public class AppSetup {
             groupsV2: groupsV2,
             groupV2Updates: groupV2Updates,
             messageFetcherJob: messageFetcherJob,
-            bulkProfileFetch: bulkProfileFetch,
             versionedProfiles: versionedProfiles,
             modelReadCaches: modelReadCaches,
             earlyMessageManager: earlyMessageManager,
@@ -975,7 +983,8 @@ public class AppSetup {
             proximityMonitoringManager: proximityMonitoringManager,
             avatarBuilder: avatarBuilder,
             smJobQueues: smJobQueues,
-            groupCallManager: groupCallManager
+            groupCallManager: groupCallManager,
+            profileFetcher: profileFetcher
         )
         SSKEnvironment.setShared(sskEnvironment, isRunningTests: appContext.isRunningTests)
 

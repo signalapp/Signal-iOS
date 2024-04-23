@@ -2630,7 +2630,7 @@
 		F9C5CE36289453B400548EEE /* Batching.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB64289453B200548EEE /* Batching.swift */; };
 		F9C5CE37289453B400548EEE /* BadgeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB66289453B200548EEE /* BadgeStore.swift */; };
 		F9C5CE38289453B400548EEE /* ProfileFetcherJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB67289453B200548EEE /* ProfileFetcherJob.swift */; };
-		F9C5CE39289453B400548EEE /* BulkProfileFetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB68289453B200548EEE /* BulkProfileFetch.swift */; };
+		F9C5CE39289453B400548EEE /* ProfileFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB68289453B200548EEE /* ProfileFetcher.swift */; };
 		F9C5CE3A289453B400548EEE /* BadgeAssets.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB69289453B200548EEE /* BadgeAssets.swift */; };
 		F9C5CE3B289453B400548EEE /* VersionedProfiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB6A289453B200548EEE /* VersionedProfiles.swift */; };
 		F9C5CE3D289453B400548EEE /* NSString+SSK.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB6C289453B200548EEE /* NSString+SSK.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -5622,7 +5622,7 @@
 		F9C5CB64289453B200548EEE /* Batching.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Batching.swift; sourceTree = "<group>"; };
 		F9C5CB66289453B200548EEE /* BadgeStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BadgeStore.swift; sourceTree = "<group>"; };
 		F9C5CB67289453B200548EEE /* ProfileFetcherJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileFetcherJob.swift; sourceTree = "<group>"; };
-		F9C5CB68289453B200548EEE /* BulkProfileFetch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BulkProfileFetch.swift; sourceTree = "<group>"; };
+		F9C5CB68289453B200548EEE /* ProfileFetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileFetcher.swift; sourceTree = "<group>"; };
 		F9C5CB69289453B200548EEE /* BadgeAssets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BadgeAssets.swift; sourceTree = "<group>"; };
 		F9C5CB6A289453B200548EEE /* VersionedProfiles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VersionedProfiles.swift; sourceTree = "<group>"; };
 		F9C5CB6C289453B200548EEE /* NSString+SSK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+SSK.h"; sourceTree = "<group>"; };
@@ -8283,11 +8283,11 @@
 			children = (
 				F9C5CB69289453B200548EEE /* BadgeAssets.swift */,
 				F9C5CB66289453B200548EEE /* BadgeStore.swift */,
-				F9C5CB68289453B200548EEE /* BulkProfileFetch.swift */,
 				50159CDC2B4EF75600D344D4 /* LocalProfileChecker.swift */,
 				346129B11FD1F7E800532771 /* OWSProfileManager.h */,
 				346129B21FD1F7E800532771 /* OWSProfileManager.m */,
 				3470249D2385B6360078D72C /* OWSProfileManager.swift */,
+				F9C5CB68289453B200548EEE /* ProfileFetcher.swift */,
 				F9C5CB67289453B200548EEE /* ProfileFetcherJob.swift */,
 				F9C5CB6A289453B200548EEE /* VersionedProfiles.swift */,
 				3470249F238C85850078D72C /* VersionedProfilesImpl.swift */,
@@ -13697,7 +13697,6 @@
 				F9C5CC31289453B300548EEE /* BlockingManager.swift in Sources */,
 				F9C5CC74289453B300548EEE /* BlurHash.swift in Sources */,
 				668FE09B28B923A4008B9071 /* Bool+SSK.swift in Sources */,
-				F9C5CE39289453B400548EEE /* BulkProfileFetch.swift in Sources */,
 				E7D7C93F28B580AC003F043B /* Bundle+OWS.swift in Sources */,
 				7254653F2BA01FCC00EABFD2 /* CachedBadge.swift in Sources */,
 				F9C5CD32289453B300548EEE /* CallKitIdStore.m in Sources */,
@@ -14292,6 +14291,7 @@
 				664BA8452BB5CE12005638E0 /* PreparedOutgoingMessage.swift in Sources */,
 				725465452BA01FCC00EABFD2 /* ProfileBadgesSnapshot+Constructors.swift in Sources */,
 				D995546F2AF5668E0001E15C /* ProfileBadgesSnapshot.swift in Sources */,
+				F9C5CE39289453B400548EEE /* ProfileFetcher.swift in Sources */,
 				F9C5CE38289453B400548EEE /* ProfileFetcherJob.swift in Sources */,
 				503BD2892B44D666009624FC /* ProfileManager.swift in Sources */,
 				B93296692BBB3FF200B8BD39 /* ProfileName.swift in Sources */,

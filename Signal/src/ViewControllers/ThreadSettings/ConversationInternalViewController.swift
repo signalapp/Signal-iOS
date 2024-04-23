@@ -112,7 +112,10 @@ public class ConversationInternalViewController: OWSTableViewController2 {
             let section = actionSection
 
             section.add(.actionItem(withText: "Fetch Profile") {
-                ProfileFetcherJob.fetchProfile(address: address)
+                Task {
+                    let profileFetcher = SSKEnvironment.shared.profileFetcherRef
+                    _ = try? await profileFetcher.fetchProfile(for: address.serviceId!)
+                }
             })
 
             contents.add(actionSection)

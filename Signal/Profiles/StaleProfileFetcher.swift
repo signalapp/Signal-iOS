@@ -5,41 +5,48 @@
 
 import Foundation
 import GRDB
+import LibSignalClient
 import SignalServiceKit
 
 class StaleProfileFetcher {
-    private let bulkProfileFetcher: BulkProfileFetch
     private let db: any DB
+    private let profileFetcher: any ProfileFetcher
     private let tsAccountManager: any TSAccountManager
 
     init(
-        bulkProfileFetcher: BulkProfileFetch,
         db: any DB,
+        profileFetcher: any ProfileFetcher,
         tsAccountManager: any TSAccountManager
     ) {
-        self.bulkProfileFetcher = bulkProfileFetcher
         self.db = db
+        self.profileFetcher = profileFetcher
         self.tsAccountManager = tsAccountManager
     }
 
     func scheduleProfileFetches() {
-        let addresses = db.read { tx -> [SignalServiceAddress] in
+        let staleServiceIds = db.read { tx -> [ServiceId] in
             guard tsAccountManager.registrationState(tx: tx).isRegistered else {
                 return []
             }
-            var addresses = [SignalServiceAddress]()
+            var staleServiceIds = [ServiceId]()
             Self.enumerateMissingAndStaleUserProfiles(now: Date(), tx: SDSDB.shimOnlyBridge(tx)) { userProfile in
                 switch userProfile.internalAddress {
                 case .localUser:
                     // Ignore the local user.
                     return
                 case .otherUser(let address):
-                    addresses.append(address)
+                    if let serviceId = address.serviceId {
+                        staleServiceIds.append(serviceId)
+                    }
                 }
             }
-            return addresses
+            return staleServiceIds
         }
-        bulkProfileFetcher.fetchProfiles(addresses: addresses.lazy.shuffled())
+        Task { [profileFetcher] in
+            for serviceId in staleServiceIds.shuffled() {
+                _ = try? await profileFetcher.fetchProfile(for: serviceId, options: [.opportunistic])
+            }
+        }
     }
 
     static func enumerateMissingAndStaleUserProfiles(now: Date, tx: SDSAnyReadTransaction, block: (OWSUserProfile) -> Void) {

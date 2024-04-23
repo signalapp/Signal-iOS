@@ -32,7 +32,11 @@ class UserProfileMerger: RecipientMergeObserver {
                         case .localUser:
                             break
                         case .otherUser(let address):
-                            ProfileFetcherJob.fetchProfile(address: address, authedAccount: .implicit())
+                            guard let serviceId = userProfile.serviceId else {
+                                return
+                            }
+                            let profileFetcher = SSKEnvironment.shared.profileFetcherRef
+                            _ = profileFetcher.fetchProfileSync(for: serviceId, options: [.mainAppOnly])
                         }
                     }
                 )

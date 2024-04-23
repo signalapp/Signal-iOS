@@ -43,8 +43,8 @@ class PniIdentityKeyCheckerImpl: PniIdentityKeyChecker {
             return .value(false)
         }
 
-        return firstly(on: self.schedulers.sync) { () -> Promise<IdentityKey?> in
-            return self.profileFetcher.fetchPniIdentityPublicKey(localPni: localPni)
+        return Promise.wrapAsync {
+            return try await self.profileFetcher.fetchPniIdentityPublicKey(localPni: localPni)
         }.map(on: self.schedulers.global()) { remotePniIdentityKey -> Bool in
             guard let localPniIdentityKey = self.db.read(block: { tx -> IdentityKey? in
                 return self.identityManager.pniIdentityKey(tx: tx)
@@ -102,7 +102,7 @@ class _PniIdentityKeyCheckerImpl_IdentityManager_Wrapper: _PniIdentityKeyChecker
 // MARK: ProfileFetcher
 
 protocol _PniIdentityKeyCheckerImpl_ProfileFetcher_Shim {
-    func fetchPniIdentityPublicKey(localPni: Pni) -> Promise<IdentityKey?>
+    func fetchPniIdentityPublicKey(localPni: Pni) async throws -> IdentityKey?
 }
 
 class _PniIdentityKeyCheckerImpl_ProfileFetcher_Wrapper: _PniIdentityKeyCheckerImpl_ProfileFetcher_Shim {
@@ -112,26 +112,33 @@ class _PniIdentityKeyCheckerImpl_ProfileFetcher_Wrapper: _PniIdentityKeyCheckerI
         self.schedulers = schedulers
     }
 
-    func fetchPniIdentityPublicKey(localPni: Pni) -> Promise<IdentityKey?> {
+    func fetchPniIdentityPublicKey(localPni: Pni) async throws -> IdentityKey? {
         let logger = PniIdentityKeyCheckerImpl.logger
 
-        return ProfileFetcherJob.fetchProfilePromise(
-            serviceId: localPni,
-            mainAppOnly: true,
-            shouldUpdateStore: false
-        ).map(on: schedulers.sync) { fetchedProfile -> IdentityKey in
-            return fetchedProfile.profile.identityKey
-        }.recover(on: schedulers.sync) { error throws -> Promise<IdentityKey?> in
-            switch error {
-            case ProfileRequestError.notFound:
-                logger.warn("Server does not have a profile for the given PNI.")
-                return .value(nil)
-            case ParamParser.ParseError.missingField("identityKey"):
-                logger.warn("Server does not have a PNI identity key.")
-                return .value(nil)
-            default:
-                throw error
+        do {
+            let request = OWSRequestFactory.getUnversionedProfileRequest(
+                serviceId: PniObjC(localPni),
+                udAccessKey: nil,
+                auth: .implicit()
+            )
+            let response = try await NSObject.networkManager.makePromise(
+                request: request,
+                canUseWebSocket: true
+            ).awaitable()
+
+            guard let bodyData = response.responseBodyData else {
+                throw OWSGenericError("Couldn't handle success response without data.")
             }
+
+            struct Response: Decodable {
+                var identityKey: Data?
+            }
+
+            let decodedResponse = try JSONDecoder().decode(Response.self, from: bodyData)
+            return try decodedResponse.identityKey.map { try IdentityKey(bytes: $0) }
+        } catch where error.httpStatusCode == 404 {
+            logger.warn("Server does not have a profile for the given PNI.")
+            return nil
         }
     }
 }

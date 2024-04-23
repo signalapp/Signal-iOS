@@ -248,32 +248,29 @@ public class SendPaymentViewController: OWSViewController {
         } else {
             // Check whether recipient can receive payments.
             ModalActivityIndicatorViewController.presentAsInvisible(fromViewController: fromViewController) { modalActivityIndicator in
-                firstly(on: DispatchQueue.global()) {
-                    guard let serviceId = recipientAddress.serviceId else {
-                        throw ProfileRequestError.notFound
-                    }
-                    return ProfileFetcherJob.fetchProfilePromise(serviceId: serviceId)
-                }.done { (_) in
-                    AssertIsOnMainThread()
+                Task { @MainActor in
+                    do {
+                        guard let serviceId = recipientAddress.serviceId else {
+                            throw ProfileRequestError.notFound
+                        }
+                        let profileFetcher = SSKEnvironment.shared.profileFetcherRef
+                        _ = try await profileFetcher.fetchProfile(for: serviceId)
 
-                    modalActivityIndicator.dismiss {
-                        Self.presentAfterRecipientCheck(
-                            presentationMode: presentationMode,
-                            delegate: delegate,
-                            recipientAddress: recipientAddress,
-                            initialPaymentAmount: initialPaymentAmount,
-                            isOutgoingTransfer: isOutgoingTransfer,
-                            mode: mode
-                        )
-                    }
-                }.catch { error in
-                    AssertIsOnMainThread()
-                    owsFailDebug("Error: \(error)")
-
-                    modalActivityIndicator.dismiss {
-                        AssertIsOnMainThread()
-
-                        Self.showRecipientNotEnabledAlert(recipientAddress: recipientAddress)
+                        modalActivityIndicator.dismiss {
+                            Self.presentAfterRecipientCheck(
+                                presentationMode: presentationMode,
+                                delegate: delegate,
+                                recipientAddress: recipientAddress,
+                                initialPaymentAmount: initialPaymentAmount,
+                                isOutgoingTransfer: isOutgoingTransfer,
+                                mode: mode
+                            )
+                        }
+                    } catch {
+                        owsFailDebug("Error: \(error)")
+                        modalActivityIndicator.dismiss {
+                            Self.showRecipientNotEnabledAlert(recipientAddress: recipientAddress)
+                        }
                     }
                 }
             }

@@ -30,8 +30,12 @@ class AppSettingsViewController: OWSTableViewController2 {
         updateHasExpiredGiftBadge()
         updateTableContents()
 
-        if let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress {
-            bulkProfileFetch.fetchProfile(address: localAddress)
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        if let localAci = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci {
+            Task {
+                let profileFetcher = SSKEnvironment.shared.profileFetcherRef
+                _ = try? await profileFetcher.fetchProfile(for: localAci, options: [.opportunistic])
+            }
         }
 
         NotificationCenter.default.addObserver(

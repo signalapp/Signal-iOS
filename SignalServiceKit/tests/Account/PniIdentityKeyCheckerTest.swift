@@ -12,23 +12,17 @@ final class PniIdentityKeyCheckerTest: XCTestCase {
     private var db: MockDB!
     private var identityManagerMock: IdentityManagerMock!
     private var profileFetcherMock: ProfileFetcherMock!
-    private var testScheduler: TestScheduler!
-
     private var pniIdentityKeyChecker: PniIdentityKeyCheckerImpl!
 
     override func setUp() {
         db = MockDB()
         identityManagerMock = IdentityManagerMock()
         profileFetcherMock = ProfileFetcherMock()
-
-        testScheduler = TestScheduler()
-        let schedulers = TestSchedulers(scheduler: testScheduler)
-
         pniIdentityKeyChecker = PniIdentityKeyCheckerImpl(
             db: db,
             identityManager: identityManagerMock,
             profileFetcher: profileFetcherMock,
-            schedulers: schedulers
+            schedulers: DispatchQueueSchedulers()
         )
     }
 
@@ -40,54 +34,51 @@ final class PniIdentityKeyCheckerTest: XCTestCase {
     /// - Returns
     /// Whether or not the checker found a match. Throws if there was an error
     /// while running the checker.
-    private func checkForMatch() throws -> Bool {
+    private func checkForMatch() async throws -> Bool {
         let promise = db.read { tx -> Promise<Bool> in
             return pniIdentityKeyChecker.serverHasSameKeyAsLocal(
                 localPni: Pni.randomForTesting(),
                 tx: tx
             )
         }
-
-        testScheduler.runUntilIdle()
-
-        switch promise.result! {
-        case let .success(matched):
-            return matched
-        case let .failure(error):
-            throw error
-        }
+        return try await promise.awaitable()
     }
 
-    func testDoesNotMatchIfLocalPniIdentityKeyMissing() throws {
-        XCTAssertFalse(try checkForMatch())
+    func testDoesNotMatchIfLocalPniIdentityKeyMissing() async throws {
+        let result = try await checkForMatch()
+        XCTAssertFalse(result)
     }
 
-    func testErrorMatchingIfProfileFetchFails() {
+    func testErrorMatchingIfProfileFetchFails() async {
         identityManagerMock.pniIdentityKey = try! IdentityKey(bytes: [0x05] + Data(repeating: 0, count: 32))
         profileFetcherMock.profileFetchResult = .error()
 
-        XCTAssertThrowsError(try checkForMatch())
+        let result = await Result { try await checkForMatch() }
+        XCTAssertThrowsError(try result.get())
     }
 
-    func testDoesNotMatchIfRemotePniIdentityKeyMissing() throws {
+    func testDoesNotMatchIfRemotePniIdentityKeyMissing() async throws {
         identityManagerMock.pniIdentityKey = try! IdentityKey(bytes: [0x05] + Data(repeating: 0, count: 32))
         profileFetcherMock.profileFetchResult = .value(nil)
 
-        XCTAssertFalse(try checkForMatch())
+        let result = try await checkForMatch()
+        XCTAssertFalse(result)
     }
 
-    func testDoesNotMatchIfRemotePniIdentityKeyDiffers() throws {
+    func testDoesNotMatchIfRemotePniIdentityKeyDiffers() async throws {
         identityManagerMock.pniIdentityKey = try! IdentityKey(bytes: [0x05] + Data(repeating: 0, count: 32))
         profileFetcherMock.profileFetchResult = .value(try! IdentityKey(bytes: [0x05] + Data(repeating: 1, count: 32)))
 
-        XCTAssertFalse(try checkForMatch())
+        let result = try await checkForMatch()
+        XCTAssertFalse(result)
     }
 
-    func testMatchesIfRemotePniIdentityKeyMatches() throws {
+    func testMatchesIfRemotePniIdentityKeyMatches() async throws {
         identityManagerMock.pniIdentityKey = try! IdentityKey(bytes: [0x05] + Data(repeating: 0, count: 32))
         profileFetcherMock.profileFetchResult = .value(try! IdentityKey(bytes: [0x05] + Data(repeating: 0, count: 32)))
 
-        XCTAssertTrue(try checkForMatch())
+        let result = try await checkForMatch()
+        XCTAssertTrue(result)
     }
 }
 
@@ -108,7 +99,7 @@ private class IdentityManagerMock: PniIdentityKeyCheckerImpl.Shims.IdentityManag
 private class ProfileFetcherMock: PniIdentityKeyCheckerImpl.Shims.ProfileFetcher {
     var profileFetchResult: ConsumableMockPromise<IdentityKey?> = .unset
 
-    func fetchPniIdentityPublicKey(localPni: Pni) -> Promise<IdentityKey?> {
-        return profileFetchResult.consumeIntoPromise()
+    func fetchPniIdentityPublicKey(localPni: Pni) async throws -> IdentityKey? {
+        return try await profileFetchResult.consumeIntoPromise().awaitable()
     }
 }

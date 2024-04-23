@@ -16,15 +16,14 @@ public class OWSProfileManagerSwiftValues {
 
 extension OWSProfileManager: ProfileManager, Dependencies {
     public func fetchLocalUsersProfile(mainAppOnly: Bool, authedAccount: AuthedAccount) -> Promise<FetchedProfile> {
-        do {
+        return Promise.wrapAsync {
+            let profileFetcher = SSKEnvironment.shared.profileFetcherRef
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            return ProfileFetcherJob.fetchProfilePromise(
-                serviceId: try tsAccountManager.localIdentifiersWithMaybeSneakyTransaction(authedAccount: authedAccount).aci,
-                mainAppOnly: mainAppOnly,
+            return try await profileFetcher.fetchProfile(
+                for: tsAccountManager.localIdentifiersWithMaybeSneakyTransaction(authedAccount: authedAccount).aci,
+                options: mainAppOnly ? [.mainAppOnly] : [],
                 authedAccount: authedAccount
             )
-        } catch {
-            return Promise(error: error)
         }
     }
 
@@ -634,8 +633,9 @@ extension OWSProfileManager: ProfileManager, Dependencies {
         // so skip the update profile for address call.
         if case .otherUser(let serviceId) = address {
             udManager.setUnidentifiedAccessMode(.unknown, for: serviceId, tx: SDSDB.shimOnlyBridge(tx))
-            tx.addAsyncCompletion(on: DispatchQueue.global()) {
-                ProfileFetcherJob.fetchProfile(address: SignalServiceAddress(serviceId), authedAccount: authedAccount)
+            SDSDB.shimOnlyBridge(tx).addSyncCompletion {
+                let profileFetcher = SSKEnvironment.shared.profileFetcherRef
+                _ = profileFetcher.fetchProfileSync(for: serviceId, options: [.mainAppOnly], authedAccount: authedAccount)
             }
         }
 

@@ -40,16 +40,6 @@ public extension NSObject {
         .shared
     }
 
-    @nonobjc
-    final var bulkProfileFetch: BulkProfileFetch {
-        SSKEnvironment.shared.bulkProfileFetchRef
-    }
-
-    @nonobjc
-    static var bulkProfileFetch: BulkProfileFetch {
-        SSKEnvironment.shared.bulkProfileFetchRef
-    }
-
     final var databaseStorage: SDSDatabaseStorage {
         SDSDatabaseStorage.shared
     }
@@ -426,14 +416,6 @@ public extension Dependencies {
 
     static var blockingManager: BlockingManager {
         .shared
-    }
-
-    var bulkProfileFetch: BulkProfileFetch {
-        SSKEnvironment.shared.bulkProfileFetchRef
-    }
-
-    static var bulkProfileFetch: BulkProfileFetch {
-        SSKEnvironment.shared.bulkProfileFetchRef
     }
 
     var databaseStorage: SDSDatabaseStorage {

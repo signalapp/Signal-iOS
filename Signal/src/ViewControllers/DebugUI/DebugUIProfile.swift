@@ -59,9 +59,11 @@ class DebugUIProfile: DebugUIPage, Dependencies {
                 Self.profileManagerImpl.reuploadLocalProfile(authedAccount: .implicit())
             },
             OWSTableItem(title: "Fetch Local Profile") {
-                ProfileFetcherJob.fetchProfile(
-                    address: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.aciAddress
-                )
+                Task {
+                    let profileFetcher = SSKEnvironment.shared.profileFetcherRef
+                    let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.aci
+                    _ = try? await profileFetcher.fetchProfile(for: localAci)
+                }
             }
         ].compactMap { $0 }
 

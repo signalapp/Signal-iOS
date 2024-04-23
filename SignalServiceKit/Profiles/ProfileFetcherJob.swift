@@ -15,118 +15,85 @@ public enum ProfileRequestError: Error {
 
 // MARK: -
 
-private struct ProfileFetchOptions {
-    let mainAppOnly: Bool
-    let shouldUpdateStore: Bool
-    let authedAccount: AuthedAccount
+public class ProfileFetcherJob {
+    private let serviceId: ServiceId
+    private let authedAccount: AuthedAccount
+
+    private let db: any DB
+    private let identityManager: any OWSIdentityManager
+    private let paymentsHelper: any PaymentsHelper
+    private let profileManager: any ProfileManager
+    private let recipientDatabaseTable: any RecipientDatabaseTable
+    private let recipientManager: any SignalRecipientManager
+    private let recipientMerger: any RecipientMerger
+    private let tsAccountManager: any TSAccountManager
+    private let udManager: any OWSUDManager
+    private let versionedProfiles: any VersionedProfilesSwift
 
     init(
-        mainAppOnly: Bool = true,
-        shouldUpdateStore: Bool = true,
-        authedAccount: AuthedAccount
-    ) {
-        self.mainAppOnly = mainAppOnly
-        self.shouldUpdateStore = shouldUpdateStore
-        self.authedAccount = authedAccount
-    }
-}
-
-// MARK: -
-
-@objc
-public class ProfileFetcherJob: NSObject {
-    private let serviceId: ServiceId
-    private let options: ProfileFetchOptions
-
-    public class func fetchProfilePromise(
         serviceId: ServiceId,
-        mainAppOnly: Bool = true,
-        shouldUpdateStore: Bool = true,
-        authedAccount: AuthedAccount = .implicit()
-    ) -> Promise<FetchedProfile> {
-        let options = ProfileFetchOptions(
-            mainAppOnly: mainAppOnly,
-            shouldUpdateStore: shouldUpdateStore,
-            authedAccount: authedAccount
-        )
-        return Promise.wrapAsync { try await ProfileFetcherJob(serviceId: serviceId, options: options).run() }
-    }
-
-    @objc
-    public class func fetchProfile(address: SignalServiceAddress, authedAccount: AuthedAccount = .implicit()) {
-        Task { await _fetchProfile(serviceId: address.serviceId, authedAccount: authedAccount) }
-    }
-
-    private class func _fetchProfile(serviceId: ServiceId?, authedAccount: AuthedAccount) async {
-        do {
-            guard let serviceId else {
-                throw ProfileRequestError.notFound
-            }
-            try await ProfileFetcherJob(
-                serviceId: serviceId,
-                options: ProfileFetchOptions(authedAccount: authedAccount)
-            ).run()
-        } catch where error.isNetworkFailureOrTimeout {
-            Logger.warn("Error: \(error)")
-        } catch let error as ProfileRequestError {
-            Logger.warn("Error: \(error)")
-        } catch {
-            owsFailDebug("Error: \(error)")
-        }
-    }
-
-    private init(serviceId: ServiceId, options: ProfileFetchOptions) {
+        authedAccount: AuthedAccount,
+        db: any DB,
+        identityManager: any OWSIdentityManager,
+        paymentsHelper: any PaymentsHelper,
+        profileManager: any ProfileManager,
+        recipientDatabaseTable: any RecipientDatabaseTable,
+        recipientManager: any SignalRecipientManager,
+        recipientMerger: any RecipientMerger,
+        tsAccountManager: any TSAccountManager,
+        udManager: any OWSUDManager,
+        versionedProfiles: any VersionedProfilesSwift
+    ) {
         self.serviceId = serviceId
-        self.options = options
+        self.authedAccount = authedAccount
+        self.db = db
+        self.identityManager = identityManager
+        self.paymentsHelper = paymentsHelper
+        self.profileManager = profileManager
+        self.recipientDatabaseTable = recipientDatabaseTable
+        self.recipientManager = recipientManager
+        self.recipientMerger = recipientMerger
+        self.tsAccountManager = tsAccountManager
+        self.udManager = udManager
+        self.versionedProfiles = versionedProfiles
     }
 
     // MARK: -
 
-    @discardableResult
-    private func run() async throws -> FetchedProfile {
+    public func run() async throws -> FetchedProfile {
         let backgroundTask = addBackgroundTask()
         defer {
             backgroundTask.end()
         }
 
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        let localIdentifiers = try tsAccountManager.localIdentifiersWithMaybeSneakyTransaction(authedAccount: options.authedAccount)
-        let fetchedProfile: FetchedProfile
+        let localIdentifiers = try tsAccountManager.localIdentifiersWithMaybeSneakyTransaction(authedAccount: authedAccount)
         do {
-            fetchedProfile = try await requestProfile(localIdentifiers: localIdentifiers)
-        } catch let error as ProfileRequestError where error == .notFound && options.shouldUpdateStore {
-            await databaseStorage.awaitableWrite { [serviceId] tx in
-                let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
-                let recipient = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx.asV2Write)
+            let fetchedProfile = try await requestProfile(localIdentifiers: localIdentifiers)
+            try await updateProfile(fetchedProfile: fetchedProfile, localIdentifiers: localIdentifiers)
+            return fetchedProfile
+        } catch ProfileRequestError.notFound {
+            await db.awaitableWrite { [serviceId] tx in
+                let recipient = self.recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx)
                 guard let recipient else {
                     return
                 }
-                let recipientManager = DependenciesBridge.shared.recipientManager
-                recipientManager.markAsUnregisteredAndSave(recipient, unregisteredAt: .now, shouldUpdateStorageService: true, tx: tx.asV2Write)
-                let recipientMerger = DependenciesBridge.shared.recipientMerger
-                recipientMerger.splitUnregisteredRecipientIfNeeded(
+                self.recipientManager.markAsUnregisteredAndSave(
+                    recipient,
+                    unregisteredAt: .now,
+                    shouldUpdateStorageService: true,
+                    tx: tx
+                )
+                self.recipientMerger.splitUnregisteredRecipientIfNeeded(
                     localIdentifiers: localIdentifiers,
                     unregisteredRecipient: recipient,
-                    tx: tx.asV2Write
+                    tx: tx
                 )
             }
-            throw error
+            throw ProfileRequestError.notFound
         }
-        if options.shouldUpdateStore {
-            try await updateProfile(fetchedProfile: fetchedProfile, localIdentifiers: localIdentifiers)
-        }
-        return fetchedProfile
     }
 
     private func requestProfile(localIdentifiers: LocalIdentifiers) async throws -> FetchedProfile {
-
-        guard !options.mainAppOnly || CurrentAppContext().isMainApp else {
-            // We usually only refresh profiles in the MainApp to decrease the
-            // chance of missed SN notifications in the AppExtension for our users
-            // who choose not to verify contacts.
-            throw OWSGenericError("Not allowed in App Extensions.")
-        }
-
         return try await requestProfileWithRetries(localIdentifiers: localIdentifiers)
     }
 
@@ -152,7 +119,7 @@ public class ProfileFetcherJob: NSObject {
             // Don't use UD for "self" profile fetches.
             udAccess = nil
         } else {
-            udAccess = databaseStorage.read { tx in udManager.udAccess(for: serviceId, tx: tx) }
+            udAccess = db.read { tx in udManager.udAccess(for: serviceId, tx: SDSDB.shimOnlyBridge(tx)) }
         }
 
         var currentVersionedProfileRequest: VersionedProfileRequest?
@@ -165,10 +132,10 @@ public class ProfileFetcherJob: NSObject {
                 switch serviceId {
                 case let aci as Aci:
                     do {
-                        let request = try self.versionedProfilesSwift.versionedProfileRequest(
+                        let request = try self.versionedProfiles.versionedProfileRequest(
                             for: aci,
                             udAccessKey: udAccessKeyForRequest,
-                            auth: self.options.authedAccount.chatServiceAuth
+                            auth: self.authedAccount.chatServiceAuth
                         )
                         currentVersionedProfileRequest = request
                         return request.request
@@ -181,13 +148,13 @@ public class ProfileFetcherJob: NSObject {
                     return OWSRequestFactory.getUnversionedProfileRequest(
                         serviceId: ServiceIdObjC.wrapValue(serviceId),
                         udAccessKey: udAccessKeyForRequest,
-                        auth: self.options.authedAccount.chatServiceAuth
+                        auth: self.authedAccount.chatServiceAuth
                     )
                 }
             },
             serviceId: serviceId,
             udAccess: udAccess,
-            authedAccount: self.options.authedAccount,
+            authedAccount: self.authedAccount,
             options: [.allowIdentifiedFallback, .isProfileFetch]
         )
 
@@ -198,7 +165,7 @@ public class ProfileFetcherJob: NSObject {
         // If we sent a versioned request, store the credential that was returned.
         if let versionedProfileRequest = currentVersionedProfileRequest {
             // This calls databaseStorage.write { }
-            await versionedProfilesSwift.didFetchProfile(profile: profile, profileRequest: versionedProfileRequest)
+            await versionedProfiles.didFetchProfile(profile: profile, profileRequest: versionedProfileRequest)
         }
 
         return fetchedProfile(
@@ -223,7 +190,7 @@ public class ProfileFetcherJob: NSObject {
             // key available locally. If we wanted a versioned request but ended up
             // with an unversioned request, we may have received a key while the
             // profile fetch was in flight.
-            profileKey = databaseStorage.read { profileManager.profileKey(for: SignalServiceAddress(profile.serviceId), transaction: $0) }
+            profileKey = db.read { profileManager.profileKey(for: SignalServiceAddress(profile.serviceId), transaction: SDSDB.shimOnlyBridge($0)) }
         }
         return FetchedProfile(profile: profile, profileKey: profileKey)
     }
@@ -266,14 +233,14 @@ public class ProfileFetcherJob: NSObject {
             return AvatarDownloadResult(remoteRelativePath: .setTo(nil), localFileUrl: .setTo(nil))
         }
         let profileAddress = SignalServiceAddress(fetchedProfile.profile.serviceId)
-        let didAlreadyDownloadAvatar = databaseStorage.read { transaction -> Bool in
+        let didAlreadyDownloadAvatar = db.read { tx -> Bool in
             let oldAvatarUrlPath = profileManager.profileAvatarURLPath(
                 for: profileAddress,
-                transaction: transaction
+                transaction: SDSDB.shimOnlyBridge(tx)
             )
             return (
                 oldAvatarUrlPath == newAvatarUrlPath
-                && profileManager.hasProfileAvatarData(profileAddress, transaction: transaction)
+                && profileManager.hasProfileAvatarData(profileAddress, transaction: SDSDB.shimOnlyBridge(tx))
             )
         }
         if didAlreadyDownloadAvatar {
@@ -319,8 +286,8 @@ public class ProfileFetcherJob: NSObject {
         let profile = fetchedProfile.profile
         let serviceId = profile.serviceId
 
-        await databaseStorage.awaitableWrite { transaction in
-            Self.updateUnidentifiedAccess(
+        await db.awaitableWrite { transaction in
+            self.updateUnidentifiedAccess(
                 serviceId: serviceId,
                 verifier: profile.unidentifiedAccessVerifier,
                 hasUnrestrictedAccess: profile.hasUnrestrictedUnidentifiedAccess,
@@ -331,7 +298,7 @@ public class ProfileFetcherJob: NSObject {
             let badgeModels = fetchedProfile.profile.badges.map { $0.1 }
             let persistedBadgeIds: [String] = badgeModels.compactMap {
                 do {
-                    try self.profileManager.badgeStore.createOrUpdateBadge($0, transaction: transaction)
+                    try self.profileManager.badgeStore.createOrUpdateBadge($0, transaction: SDSDB.shimOnlyBridge(transaction))
                     return $0.id
                 } catch {
                     owsFailDebug("Failed to save badgeId: \($0.id). \(error)")
@@ -349,7 +316,7 @@ public class ProfileFetcherJob: NSObject {
             do {
                 avatarFilename = try OWSUserProfile.consumeTemporaryAvatarFileUrl(
                     avatarDownloadResult.localFileUrl,
-                    tx: transaction
+                    tx: SDSDB.shimOnlyBridge(transaction)
                 )
             } catch {
                 Logger.warn("Couldn't move downloaded avatar: \(error)")
@@ -364,7 +331,7 @@ public class ProfileFetcherJob: NSObject {
                 profileBadges: profileBadgeMetadata,
                 lastFetchDate: Date(),
                 userProfileWriter: .profileFetch,
-                tx: transaction
+                tx: SDSDB.shimOnlyBridge(transaction)
             )
 
             if localIdentifiers.contains(serviceId: serviceId) {
@@ -372,22 +339,22 @@ public class ProfileFetcherJob: NSObject {
             }
 
             let identityManager = DependenciesBridge.shared.identityManager
-            identityManager.saveIdentityKey(profile.identityKey, for: serviceId, tx: transaction.asV2Write)
+            identityManager.saveIdentityKey(profile.identityKey, for: serviceId, tx: transaction)
 
             let paymentAddress = fetchedProfile.decryptedProfile?.paymentAddress(identityKey: fetchedProfile.identityKey)
             self.paymentsHelper.setArePaymentsEnabled(
                 for: ServiceIdObjC.wrapValue(serviceId),
                 hasPaymentsEnabled: paymentAddress != nil,
-                transaction: transaction
+                transaction: SDSDB.shimOnlyBridge(transaction)
             )
         }
     }
 
-    private static func updateUnidentifiedAccess(
+    private func updateUnidentifiedAccess(
         serviceId: ServiceId,
         verifier: Data?,
         hasUnrestrictedAccess: Bool,
-        tx: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     ) {
         let unidentifiedAccessMode: UnidentifiedAccessMode = {
             guard let verifier else {
@@ -400,7 +367,7 @@ public class ProfileFetcherJob: NSObject {
                 return .unrestricted
             }
 
-            guard let udAccessKey = udManager.udAccessKey(for: serviceId, tx: tx) else {
+            guard let udAccessKey = udManager.udAccessKey(for: serviceId, tx: SDSDB.shimOnlyBridge(tx)) else {
                 return .disabled
             }
 
@@ -416,14 +383,13 @@ public class ProfileFetcherJob: NSObject {
 
             return .enabled
         }()
-        udManager.setUnidentifiedAccessMode(unidentifiedAccessMode, for: serviceId, tx: tx)
+        udManager.setUnidentifiedAccessMode(unidentifiedAccessMode, for: serviceId, tx: SDSDB.shimOnlyBridge(tx))
     }
 
     private func reconcileLocalProfileIfNeeded(fetchedProfile: FetchedProfile) {
         guard CurrentAppContext().isMainApp else {
             return
         }
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice else {
             return
         }

@@ -1287,23 +1287,20 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
             acisToFetch = acis.subtracting(loadPresentProfileKeyCredentials(for: acis).keys)
         }
 
-        var promises = [Promise<Void>]()
-        for aciToFetch in acisToFetch {
-            let promise = ProfileFetcherJob.fetchProfilePromise(
-                serviceId: aciToFetch,
-                mainAppOnly: false
-            ).asVoid().recover(on: DispatchQueue.global()) { error throws -> Promise<Void> in
-                if case ProfileRequestError.notFound = error, ignoreMissingProfiles {
-                    return Promise.value(())
+        let profileFetcher = SSKEnvironment.shared.profileFetcherRef
+
+        try await withThrowingTaskGroup(of: Void.self) { taskGroup in
+            for aciToFetch in acisToFetch {
+                taskGroup.addTask {
+                    do {
+                        _ = try await profileFetcher.fetchProfile(for: aciToFetch)
+                    } catch ProfileRequestError.notFound where ignoreMissingProfiles {
+                        // this is fine
+                    }
                 }
-
-                throw error
             }
-
-            promises.append(promise)
+            try await taskGroup.waitForAll()
         }
-
-        return try await Promise.when(fulfilled: promises).awaitable()
     }
 
     private func loadPresentProfileKeyCredentials(for acis: Set<Aci>) -> ProfileKeyCredentialMap {

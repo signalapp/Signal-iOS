@@ -520,8 +520,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             StaleProfileFetcher(
-                bulkProfileFetcher: NSObject.bulkProfileFetch,
                 db: DependenciesBridge.shared.db,
+                profileFetcher: SSKEnvironment.shared.profileFetcherRef,
                 tsAccountManager: DependenciesBridge.shared.tsAccountManager
             ).scheduleProfileFetches()
         }

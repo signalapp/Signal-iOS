@@ -179,10 +179,10 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
     private let isPrimaryDevice: Bool
     private let authedAccount: AuthedAccount
     private let blockingManager: BlockingManager
-    private let bulkProfileFetch: BulkProfileFetch
     private let contactsManager: OWSContactsManager
     private let identityManager: OWSIdentityManager
     private let nicknameManager: NicknameManager
+    private let profileFetcher: any ProfileFetcher
     private let profileManager: OWSProfileManager
     private let tsAccountManager: TSAccountManager
     private let usernameLookupManager: UsernameLookupManager
@@ -196,10 +196,10 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         isPrimaryDevice: Bool,
         authedAccount: AuthedAccount,
         blockingManager: BlockingManager,
-        bulkProfileFetch: BulkProfileFetch,
         contactsManager: OWSContactsManager,
         identityManager: OWSIdentityManager,
         nicknameManager: NicknameManager,
+        profileFetcher: ProfileFetcher,
         profileManager: OWSProfileManager,
         tsAccountManager: TSAccountManager,
         usernameLookupManager: UsernameLookupManager,
@@ -212,10 +212,10 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         self.isPrimaryDevice = isPrimaryDevice
         self.authedAccount = authedAccount
         self.blockingManager = blockingManager
-        self.bulkProfileFetch = bulkProfileFetch
         self.contactsManager = contactsManager
         self.identityManager = identityManager
         self.nicknameManager = nicknameManager
+        self.profileFetcher = profileFetcher
         self.profileManager = profileManager
         self.tsAccountManager = tsAccountManager
         self.usernameLookupManager = usernameLookupManager
@@ -511,10 +511,12 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         // there's no given name.
         if record.hasGivenName && (localUserProfile?.givenName != record.givenName || localUserProfile?.familyName != record.familyName) {
             // If we already have a profile for this user, ignore any content received
-            // via storage service. Instead, we'll just kick off a fetch of that user's
+            // via Storage Service. Instead, we'll just kick off a fetch of that user's
             // profile to make sure everything is up-to-date.
             if localUserProfile?.givenName != nil {
-                bulkProfileFetch.fetchProfile(address: anyAddress)
+                Task { [profileFetcher] in
+                    _ = try? await profileFetcher.fetchProfile(for: serviceIds.aciOrElsePni, options: [.opportunistic])
+                }
             } else {
                 let profileAddress = OWSUserProfile.insertableAddress(
                     for: serviceIds.aciOrElsePni,

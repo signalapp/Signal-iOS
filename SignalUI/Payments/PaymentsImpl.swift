@@ -321,14 +321,15 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
 public extension PaymentsImpl {
 
     private func fetchPublicAddress(for recipientAci: Aci) -> Promise<MobileCoin.PublicAddress> {
-        return firstly {
-            ProfileFetcherJob.fetchProfilePromise(serviceId: recipientAci, mainAppOnly: false)
-        }.map(on: DispatchQueue.global()) { (fetchedProfile: FetchedProfile) -> MobileCoin.PublicAddress in
+        return Promise.wrapAsync {
+            let profileFetcher = SSKEnvironment.shared.profileFetcherRef
+            let fetchedProfile = try await profileFetcher.fetchProfile(for: recipientAci)
+
             guard let decryptedProfile = fetchedProfile.decryptedProfile else {
                 throw PaymentsError.userHasNoPublicAddress
             }
 
-            // We don't need to persist this value in the cache; the ProfileFetcherJob
+            // We don't need to persist this value in the cache; the ProfileFetcher
             // will take care of that.
             guard
                 let paymentAddress = decryptedProfile.paymentAddress(identityKey: fetchedProfile.identityKey),

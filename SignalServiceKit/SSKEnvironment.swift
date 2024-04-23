@@ -58,7 +58,6 @@ public class SSKEnvironment: NSObject {
     public let sskPreferencesRef: SSKPreferences
     public let groupV2UpdatesRef: GroupV2Updates
     public let messageFetcherJobRef: MessageFetcherJob
-    public let bulkProfileFetchRef: BulkProfileFetch
     public let versionedProfilesRef: VersionedProfilesSwift
     public let modelReadCachesRef: ModelReadCaches
     public let earlyMessageManagerRef: EarlyMessageManager
@@ -85,6 +84,7 @@ public class SSKEnvironment: NSObject {
     public let avatarBuilderRef: AvatarBuilder
     public let smJobQueuesRef: SignalMessagingJobQueues
     public let groupCallManagerRef: GroupCallManager
+    public let profileFetcherRef: any ProfileFetcher
 
     private let appExpiryRef: AppExpiry
     private let aciSignalProtocolStoreRef: SignalProtocolStore
@@ -121,7 +121,6 @@ public class SSKEnvironment: NSObject {
         groupsV2: GroupsV2,
         groupV2Updates: GroupV2Updates,
         messageFetcherJob: MessageFetcherJob,
-        bulkProfileFetch: BulkProfileFetch,
         versionedProfiles: VersionedProfilesSwift,
         modelReadCaches: ModelReadCaches,
         earlyMessageManager: EarlyMessageManager,
@@ -149,7 +148,8 @@ public class SSKEnvironment: NSObject {
         proximityMonitoringManager: OWSProximityMonitoringManager,
         avatarBuilder: AvatarBuilder,
         smJobQueues: SignalMessagingJobQueues,
-        groupCallManager: GroupCallManager
+        groupCallManager: GroupCallManager,
+        profileFetcher: any ProfileFetcher
     ) {
         self.contactManagerRef = contactManager
         self.messageSenderRef = messageSender
@@ -181,7 +181,6 @@ public class SSKEnvironment: NSObject {
         self.groupsV2Ref = groupsV2
         self.groupV2UpdatesRef = groupV2Updates
         self.messageFetcherJobRef = messageFetcherJob
-        self.bulkProfileFetchRef = bulkProfileFetch
         self.versionedProfilesRef = versionedProfiles
         self.modelReadCachesRef = modelReadCaches
         self.earlyMessageManagerRef = earlyMessageManager
@@ -210,6 +209,7 @@ public class SSKEnvironment: NSObject {
         self.avatarBuilderRef = avatarBuilder
         self.smJobQueuesRef = smJobQueues
         self.groupCallManagerRef = groupCallManager
+        self.profileFetcherRef = profileFetcher
     }
 
     public func signalProtocolStoreRef(for identity: OWSIdentity) -> SignalProtocolStore {
