@@ -1,4 +1,4 @@
-Signal is een berichten-app waar privacy centraal staat. Het is gratis en gemakkelijk te gebruiken, met sterke end-to-endversleuteling die je communicatie volledig privé houdt.
+Signal is een berichtenapp waar privacy centraal staat. Het is gratis en gemakkelijk te gebruiken, met sterke end-to-endversleuteling die je communicatie volledig privé houdt.
 
 • Stuur tekst- en spraakberichten, foto's, video's, GIF's en bestanden, allemaal gratis. Signal maakt gebruik van de mobiele data van je telefoon, zodat je sms- en mms-kosten kunt vermijden.
 

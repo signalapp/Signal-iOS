@@ -782,7 +782,7 @@
 "CALL_VIEW_LEAVE_CALL_LABEL" = "Quitter l’appel";
 
 /* Accessibility label for the More button in the Call Controls row. */
-"CALL_VIEW_MORE_LABEL" = "More";
+"CALL_VIEW_MORE_LABEL" = "Plus";
 
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Couper le microphone";
@@ -4565,31 +4565,31 @@
 "OK" = "Valider";
 
 /* Label for the 'create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_CREATE_NEW_PIN" = "Créer un nouveau NIP";
+"ONBOARDING_2FA_CREATE_NEW_PIN" = "Créer un nouveau PIN";
 
 /* Button asking if the user would like to enter an alphanumeric PIN */
-"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Saisir un NIP alphanumérique";
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Saisir un PIN alphanumérique";
 
 /* Button asking if the user would like to enter an numeric PIN */
-"ONBOARDING_2FA_ENTER_NUMERIC" = "Saisir un NIP numérique";
+"ONBOARDING_2FA_ENTER_NUMERIC" = "Saisir un code PIN numérique";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_FORGOT_PIN_LINK" = "Besoin d’aide ?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN" = "Le NIP est erroné";
+"ONBOARDING_2FA_INVALID_PIN" = "Code PIN incorrect.";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view, and you only have one more attempt */
 "ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "Le PIN est erroné. Il vous reste 1 essai.";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Ignorer et créer un nouveau NIP";
+"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Ignorer et créer un nouveau PIN";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Si vous ne vous souvenez pas de votre NIP, vous pouvez en créer un nouveau. Vous pouvez vous inscrire et utiliser votre compte, mais vous perdrez certains paramètres enregistrés tels que les informations de votre profil.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Si vous ne vous souvenez pas de votre code PIN, vous pouvez en créer un nouveau. Vous pourrez vous inscrire et utiliser votre compte, mais vous perdrez certains paramètres enregistrés, tels que les informations de profil.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Ignorer la saisie du NIP ?";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Ne pas saisir de code PIN ?";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Inscrire l’iPad";
@@ -4640,13 +4640,13 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Le numéro de téléphone est invalide. Pour vous inscrire, veuillez saisir un numéro de téléphone valide.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Vous avez épuisé tous vos essais de NIP, mais vous pouvez encore accéder à votre compte Signal en créant un nouveau NIP. Afin de protéger vos données personnelles et votre sécurité, votre compte sera restauré sans informations de profil enregistrées ni préférences.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Vous avez dépassé le nombre de tentatives autorisées. Pour accéder à votre compte Signal, vous devez créer un nouveau code PIN. Afin de protéger vos données personnelles et votre sécurité, votre compte sera restauré sans informations de profil, ni paramètres enregistrés.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "En savoir plus sur les codes PIN";
 
 /* Title of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "Le NIP est erroné";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "Code PIN incorrect.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "Vous avez atteint le nombre maximal de tentatives autorisées, mais vous pouvez toujours tenter d’accéder à votre compte Signal en procédant à une vérification de votre numéro de téléphone. Afin de protéger vos données personnelles et votre sécurité, votre compte sera restauré sans informations de profil enregistrées ni préférences.";
@@ -5201,40 +5201,40 @@
 "PIN_ACTION" = "Épingler";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "Impossible de créer votre nouveau NIP. Votre NIP existant a été désactivé. Veuillez vérifier votre connexion et réessayer.";
+"PIN_CHANGE_ERROR_MESSAGE" = "Impossible de créer votre nouveau code PIN. Votre code PIN existant a été désactivé. Veuillez vérifier votre connexion et réessayer.";
 
 /* Error title indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_TITLE" = "Échec de changement du NIP";
+"PIN_CHANGE_ERROR_TITLE" = "Impossible de modifier le code PIN.";
 
 /* Label indicating the user must use at least 4 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "Le NIP doit comporter au moins quatre caractères";
+"PIN_CREATION_ALPHANUMERIC_HINT" = "Le PIN doit comporter au moins quatre caractères";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Changer de code PIN";
 
 /* Title of the 'pin creation' confirmation view. */
-"PIN_CREATION_CONFIRM_TITLE" = "Confirmer votre NIP";
+"PIN_CREATION_CONFIRM_TITLE" = "Confirmer le code PIN";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Saisissez le NIP que vous venez de créer";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Saisissez le code PIN nouvellement créé.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
-"PIN_CREATION_CREATE_ALPHANUMERIC" = "Créer un NIP alphanumérique";
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "Créer un code PIN alphanumérique";
 
 /* Button asking if the user would like to create an numeric PIN */
-"PIN_CREATION_CREATE_NUMERIC" = "Créer un NIP numérique";
+"PIN_CREATION_CREATE_NUMERIC" = "Créer un code PIN numérique";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Désactiver le NIP";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Désactiver le code PIN";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Si vous désactivez le NIP, vous perdrez toutes vos données lors de votre réinscription sur Signal, à moins que vous ne les transfériez depuis un autre appareil iOS. Vous ne pouvez pas activer le blocage de l’inscription si le NIP est désactivé.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "La désactivation du code PIN entraînera la perte de toutes vos données lors de votre réinscription sur Signal, à moins de les transférer depuis un autre appareil iOS. Vous ne pouvez pas activer le blocage d’inscription si le code PIN est désactivé.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Avertissement";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Les NIP renforcent par le chiffrement les informations enregistrées dans Signal afin que vous seul puissiez y accéder. Votre profil, vos paramètres et vos contacts seront restaurés quand vous réinstallerez Signal. Vous n’aurez pas besoin de votre NIP pour ouvrir l’appli.";
+"PIN_CREATION_EXPLANATION" = "Avec un code PIN, les informations stockées dans Signal sont chiffrées, et vous seul y avez accès. Votre profil, vos contacts et vos paramètres sont restaurés si vous réinstallez Signal. Vous n’avez pas besoin du code PIN pour ouvrir l’appli.";
 
 /* Learn more action on the pin creation view */
 "PIN_CREATION_LEARN_MORE" = "Plus d’info à propos du PIN";
@@ -5246,7 +5246,7 @@
 "PIN_CREATION_LEARN_MORE_TITLE" = "À propos du PIN";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
-"PIN_CREATION_MISMATCH_ERROR" = "Les NIP ne correspondent pas. Veuillez réessayer.";
+"PIN_CREATION_MISMATCH_ERROR" = "Les codes PIN ne correspondent pas. Veuillez réessayer.";
 
 /* Error body indicating that the attempt to create a PIN failed due to network issues. */
 "PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Vérifiez votre connexion et réessayez.";
@@ -5255,13 +5255,13 @@
 "PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "Pas de connexion réseau";
 
 /* Label indicating the user must use at least 4 digits */
-"PIN_CREATION_NUMERIC_HINT" = "Le NIP doit comporter au moins quatre chiffres";
+"PIN_CREATION_NUMERIC_HINT" = "Le code PIN doit comporter au moins quatre chiffres";
 
 /* Label indication the user must confirm their PIN. */
-"PIN_CREATION_PIN_CONFIRMATION_HINT" = "Saisissez le NIP de nouveau.";
+"PIN_CREATION_PIN_CONFIRMATION_HINT" = "Resaisissez le code PIN";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "Création du NIP…";
+"PIN_CREATION_PIN_PROGRESS" = "Création du code PIN…";
 
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "Vous pouvez changer de code PIN tant que cet appareil est enregistré.";
@@ -5270,61 +5270,61 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Désactiver";
 
 /* Message of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "Pour désactiver votre NIP, vous devez d’abord désactiver le blocage de l’inscription.";
+"PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "Pour désactiver le code PIN, désactivez d’abord le blocage d’inscription.";
 
 /* Title of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Désactiver le blocage de l’inscription ?";
+"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Désactiver le blocage d’inscription ?";
 
 /* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "Votre NIP a été créé avec succès, mais il a été impossible d’activer le blocage de l’inscription. Vérifiez votre connexion et réessayez.";
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "Votre code PIN a bien été créé, mais impossible d’activer le blocage d’inscription. Vérifiez votre connexion et réessayez.";
 
 /* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Échec d’activation du blocage de l’inscription";
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Impossible d’activer le blocage d’inscription.";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "Désactiver le NIP";
+"PIN_CREATION_SKIP" = "Désactiver le code PIN";
 
 /* Title of the 'pin creation' view. */
-"PIN_CREATION_TITLE" = "Créer votre NIP";
+"PIN_CREATION_TITLE" = "Créer un code PIN";
 
 /* Label indicating that the attempted PIN is too weak */
-"PIN_CREATION_WEAK_ERROR" = "Choisissez une NIP plus robuste";
+"PIN_CREATION_WEAK_ERROR" = "Choisissez un code PIN plus complexe";
 
 /* If your attempted PIN is too weak, you'll see an error message. This is the text on the error dialog. */
 "PIN_CREATION_WEAK_ERROR_MESSAGE" = "Les PIN permettent de garantir que les informations stockées dans Signal sont chiffrées afin que vous soyez la seule personne à pouvoir y accéder. Choisissez un PIN plus fort pour protéger votre compte.";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Impossible de désactiver votre NIP. Nous vous le proposerons plus tard.";
+"PIN_DISABLE_ERROR_MESSAGE" = "Impossible de désactiver le code PIN. Nous vous inviterons à le désactiver plus tard.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_TITLE" = "Échec de désactivation du NIP";
+"PIN_DISABLE_ERROR_TITLE" = "Impossible de désactiver le code PIN";
 
 /* If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this. */
 "PIN_ENTER_EXISTING_SKIP" = "Ignorer la saisie du PIN";
 
 /* Error title indicating that the attempt to recreate a PIN failed. */
-"PIN_RECREATION_ERROR_TITLE" = "Échec de création du NIP";
+"PIN_RECREATION_ERROR_TITLE" = "Impossible de créer le code PIN.";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "Impossible de créer votre NIP. Vérifiez votre connexion et réessayez.";
+"PIN_RECRETION_ERROR_MESSAGE" = "Impossible de créer le code PIN. Vérifiez votre connexion et réessayez.";
 
 /* The explanation for the 'pin reminder' dialog. */
-"PIN_REMINDER_EXPLANATION" = "Pour vous aider à mémoriser votre NIP, nous vous demanderons de le saisir régulièrement. Nous vous le demanderons de moins en moins souvent.";
+"PIN_REMINDER_EXPLANATION" = "Pour vous aider à mémoriser votre code PIN, nous vous demanderons de le saisir régulièrement. Nous vous le demanderons moins souvent au fil du temps.";
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
-"PIN_REMINDER_FORGOT_PIN" = "Avez-vous oublié votre NIP ?";
+"PIN_REMINDER_FORGOT_PIN" = "Code PIN oublié ?";
 
 /* Action text for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_ACTION" = "Confirmer le NIP";
+"PIN_REMINDER_MEGAPHONE_ACTION" = "Confirmer le PIN";
 
 /* Body for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_BODY" = "Nous vous demanderons de temps en temps de confirmer votre NIP afin que vous vous en souveniez.";
+"PIN_REMINDER_MEGAPHONE_BODY" = "Nous vous demanderons occasionnellement de confirmer votre code PIN pour vous aider à le mémoriser.";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
 "PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Nous vous le rappellerons dans quelques jours.";
 
 /* Title for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_TITLE" = "Confirmer votre NIP Signal";
+"PIN_REMINDER_MEGAPHONE_TITLE" = "Confirmez votre code PIN Signal";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Nous vous le rappellerons demain.";
@@ -5336,13 +5336,13 @@
 "PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Nous vous le rappellerons dans une semaine.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
-"PIN_REMINDER_MISMATCH_ERROR" = "Le NIP est invalide, veuillez réessayer.";
+"PIN_REMINDER_MISMATCH_ERROR" = "Code PIN incorrect. Veuillez réessayer.";
 
 /* The title for the 'pin reminder' dialog. */
-"PIN_REMINDER_TITLE" = "Saisir votre NIP Signal";
+"PIN_REMINDER_TITLE" = "Saisir le code PIN Signal";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "Le NIP doit comporter au moins quatre chiffres.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "Le code PIN doit comporter au moins quatre chiffres.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
 "PINNED_CONVERSATION_LIMIT" = "Vous ne pouvez épingler plus de quatre conversations.";
@@ -5351,16 +5351,16 @@
 "PINNED_SECTION_TITLE" = "Épinglées";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_ACTION" = "Créer un NIP";
+"PINS_MEGAPHONE_ACTION" = "Créer un code PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_BODY" = "Finalisez la création de votre code PIN Signal";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_TITLE" = "Créer un NIP";
+"PINS_MEGAPHONE_TITLE" = "Créer un code PIN";
 
 /* Toast indicating that a PIN has been created. */
-"PINS_MEGAPHONE_TOAST" = "Le NIP a été créé. Vous pouvez le changer dans les paramètres.";
+"PINS_MEGAPHONE_TOAST" = "Code PIN créé. Vous pouvez le modifier dans les paramètres.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Jouez le contenu multimédia";
@@ -5657,7 +5657,7 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Besoin d’aide ?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Votre NIP est un code à quatre chiffres ou plus que vous avez créé et qui peut être numérique ou alphanumérique. Si vous avez oublié votre NIP, vous devrez attendre sept jours pour réinscrire votre compte.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Votre code PIN est un code numérique ou alphanumérique que vous avez créé et qui comporte quatre caractères ou plus. En cas d’oubli, vous ne pouvez pas réinscrire votre compte pendant sept jours.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Votre PIN est un code numérique ou alphanumérique d’au moins 4 caractères que vous avez créé. Si vous avez oublié votre PIN, vous pouvez vous inscrire et utiliser votre compte, mais vous perdrez certains paramètres enregistrés tels que les informations de votre profil.";
@@ -5666,7 +5666,7 @@
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE" = "Votre PIN est un code d’au moins quatre caractères que vous avez créé et qui peut être numérique ou alphanumérique. Si vous avez oublié votre PIN, vous pouvez en créer un nouveau. Vous pouvez vous inscrire et utiliser votre compte, mais vous perdrez certains paramètres enregistrés tels que les informations de votre profil.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Le NIP est erroné";
+"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Code PIN incorrect.";
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "Bienvenue !";
@@ -6209,10 +6209,10 @@
 "SETTINGS_ADVANCED_PIN_TITLE" = "Paramètres de PIN avancés";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Désactiver le NIP";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Désactiver le code PIN";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Activer le NIP";
+"SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Activer le code PIN";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Envoyer le journal de débogage";
@@ -6575,13 +6575,13 @@
 "SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_TITLE" = "Enregistrer votre phrase";
 
 /* Label for button in the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "Mettre le NIP à jour";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "Mettre à jour le code PIN";
 
 /* Description for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "Si votre solde est élevé, vous pouvez opter pour un NIP alphanumérique afin de renforcer la protection de votre compte.";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "Si votre solde est élevé, vous pouvez opter pour un code PIN alphanumérique afin de renforcer la protection de votre compte.";
 
 /* Title for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Mettez votre NIP à jour";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Mettez à jour votre code PIN";
 
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Adresse de portefeuille non valide";
@@ -6629,7 +6629,7 @@
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE" = "Continuer sans sauvegarder ?";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Après avoir réinstallé Signal, votre solde sera restauré automatiquement si vous confirmez votre NIP Signal. Vous pouvez aussi restaurer votre solde grâce à une phrase de récupération, une phrase de 24 mots qui vous est propre. Prenez-la par écrit et gardez-la en lieu sûr.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Votre solde est automatiquement restauré lorsque vous réinstallez Signal et confirmez votre code PIN Signal. Vous pouvez aussi le restaurer grâce à une phrase de récupération unique comportant 24 mots. Notez-la et conservez-la en lieu sûr.";
 
 /* Explanation of the 'payments passphrase' when there is a balance. */
 "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "Le solde de votre compte est disponible ! Il est temps d'enregistrer votre phrase de récupération, une clé de 24 mots que vous pouvez utiliser pour rétablir votre solde.";
@@ -6962,25 +6962,25 @@
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Désactiver les rappels";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Assurez-vous de mémoriser votre NIP ou de le conserver à l’abri, car il ne peut pas être récupéré. Si vous oubliez votre NIP, vous risquez de perdre des données lors de la réinscription de votre compte Signal.";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Mémorisez bien votre code PIN ou gardez-le en lieu sûr, car il est impossible de le récupérer. En cas d’oubli, vous risquez de perdre des données lorsque vous réinscrirez votre compte Signal.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Confirmer votre NIP Signal";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Confirmer votre code PIN Signal";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Rappels de code PIN";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Les NIP conservent les informations stockées dans Signal sous forme chiffrée afin que vous seul puissiez y accéder. Votre NIP ne peut pas être récupéré. Votre profil, votre configuration et vos contacts seront restaurés quand vous réinstallez Signal.";
+"SETTINGS_PINS_FOOTER" = "Avec un code PIN, les informations stockées dans Signal sont chiffrées, et vous seul y avez accès. Votre profil, vos contacts et vos paramètres sont restaurés si vous réinstallez Signal. Vous n’avez pas besoin du code PIN pour ouvrir l’appli.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Changer de code PIN";
 
 /* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
-"SETTINGS_PINS_ITEM_CREATE" = "Créer un NIP";
+"SETTINGS_PINS_ITEM_CREATE" = "Créer un code PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "NIP Signal";
+"SETTINGS_PINS_TITLE" = "Code PIN Signal";
 
 /* Footer for table section */
 "SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Paramètres de contournement de la censure, du proxy, des appels relayés et d’expéditeur scellé.";
@@ -7001,16 +7001,16 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Désactiver";
 
 /* Title for the alert confirming that the user wants to turn off registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Désactiver le blocage de l’inscription ?";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Désactiver le blocage d’inscription ?";
 
 /* Action to turn on registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Activer";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Si vous oubliez votre NIP Signal lors d’une nouvelle inscription à Signal, vous ne pourrez pas accéder à votre compte pendant sept jours.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Si vous ne vous souvenez plus de votre code PIN au moment de vous réinscrire à Signal, vous ne pourrez pas accéder à votre compte pendant sept jours.";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Activer le blocage de l’inscription ?";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Activer le blocage d’inscription ?";
 
 /* Label for re-link button. */
 "SETTINGS_RELINK_BUTTON" = "Relier de nouveau";
@@ -7067,7 +7067,7 @@
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Autorisez iOS à accéder aux contacts et aux conversations pour utiliser des fonctions comme les suggestions de partage et les notifications.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Blocage de l’inscription";
+"SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Blocage d’inscription";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
 "SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Exige votre code PIN Signal pour réenregistrer votre numéro de téléphone sur Signal.";
@@ -7988,7 +7988,7 @@
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Nom d’utilisateur non valide. Veuillez saisir au moins 2 chiffres.";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Ces chiffres servent à préserver la confidentialité de votre nom d’utilisateur et ainsi d’éviter les messages indésirables. Ne partagez votre nom d’utilisateur qu’avec les personnes et les groupes avec lesquels vous souhaitez échanger. Si vous changez votre nom d’utilisateur, un nouvel ensemble de chiffres vous sera attribué.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Ces chiffres servent à protéger la confidentialité de votre nom d'utilisateur, vous évitant ainsi de recevoir des messages indésirables. Ne partagez votre nom d’utilisateur qu’avec les personnes et les groupes avec lesquels vous voulez discuter. Si vous changez de nom d’utilisateur, une nouvelle série de chiffres vous sera attribuée.";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
 "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "Qu’est-ce que ce numéro ?";

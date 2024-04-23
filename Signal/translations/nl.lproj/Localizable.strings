@@ -200,7 +200,7 @@
 "APP_LAUNCH_FAILURE_CONTINUE" = "Signal nogmaals openen";
 
 /* Message for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
-"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "Stuur een foutopsporingslogboek naar support@signal.org zodat we dit probleem kunnen oplossen.";
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "Stuur een foutopsporingslog naar support@signal.org zodat we dit probleem kunnen oplossen.";
 
 /* Title for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
 "APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "Kon Signal niet openen";
@@ -782,7 +782,7 @@
 "CALL_VIEW_LEAVE_CALL_LABEL" = "Oproep verlaten";
 
 /* Accessibility label for the More button in the Call Controls row. */
-"CALL_VIEW_MORE_LABEL" = "More";
+"CALL_VIEW_MORE_LABEL" = "Meer";
 
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Microfoon dempen";
@@ -2420,7 +2420,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hoi, \n\n tegenwoordig gebruik ik Signal om de chats op mijn iPhone privé te houden. Ik zou het fijn vinden als jij het ook installeert, zodat we erop kunnen vertrouwen dat alleen jij en ik onze berichten kunnen lezen of onze oproepen kunnen horen. \n\n Signal is beschikbaar voor iPhones en Android. Download het hier: %1$@\n\nSignal werkt net als je bestaande berichten-app. We kunnen foto's en video's versturen, bellen en groepschats starten. Het beste is dat niemand anders er iets van kan zien, zelfs niet de mensen die Signal maken! \n\n Je kunt hier meer lezen over Open Whisper Systems, de mensen die Signal ontwikkelen: %2$@";
+"EMAIL_INVITE_BODY" = "Hoi, \n\n tegenwoordig gebruik ik Signal om de chats op mijn iPhone privé te houden. Ik zou het fijn vinden als jij het ook installeert, zodat we erop kunnen vertrouwen dat alleen jij en ik onze berichten kunnen lezen of onze oproepen kunnen horen. \n\n Signal is beschikbaar voor iPhones en Android. Download het hier: %1$@\n\nSignal werkt net als je bestaande berichtenapp. We kunnen foto's en video's versturen, bellen en groepschats starten. Het beste is dat niemand anders er iets van kan zien, zelfs niet de mensen die Signal maken! \n\n Je kunt hier meer lezen over Open Whisper Systems, de mensen die Signal ontwikkelen: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Laten we Signal gebruiken";

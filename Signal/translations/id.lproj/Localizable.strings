@@ -782,7 +782,7 @@
 "CALL_VIEW_LEAVE_CALL_LABEL" = "Tinggalkan panggilan";
 
 /* Accessibility label for the More button in the Call Controls row. */
-"CALL_VIEW_MORE_LABEL" = "More";
+"CALL_VIEW_MORE_LABEL" = "Selanjutnya";
 
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Bisukan";
@@ -1802,7 +1802,7 @@
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ dihapus dari daftar Kontak Anda.";
 
 /* Label indicating a user who deleted their account. */
-"DELETED_USER" = "Akun terhapus";
+"DELETED_USER" = "Akun Dihapus";
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "Anda telah keluar dari Signal di perangkat ini.";
@@ -3794,7 +3794,7 @@
 "LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Pengelolaan kontak ponsel sudah tidak tersedia di iPad. Untuk menambahkan koneksi Signal ke kontak ponsel, buka Signal di ponsel Anda.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Pengelolaan kontak ponsel sudah tidak didukung di iPad. Perangkat ini akan terus menyinkronkan setiap perubahan pada daftar kontak dari Signal di ponsel Anda.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Pengelolaan kontak ponsel sudah tidak didukung di iPad. Perangkat ini akan terus menyinkronkan setiap perubahan daftar kontak dari Signal di ponsel Anda.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Selengkapnya";
@@ -4469,7 +4469,7 @@
 "NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "Ini akan menghapus nama panggilan dan catatan secara permanen.";
 
 /* The title for a prompt confirming that the user wants to delete the nickname and note. */
-"NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "Hapus nama panggilan?";
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "Hapus Nama Panggilan?";
 
 /* The description below the title on the profile nickname editor view. */
 "NICKNAME_EDITOR_DESCRIPTION" = "Nama panggilan & catatan disimpan di Signal dan terenkripsi ujung-ke-ujung. Hanya Anda yang bisa melihatnya.";
