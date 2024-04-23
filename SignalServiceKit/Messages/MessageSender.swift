@@ -913,6 +913,7 @@ public class MessageSender: Dependencies {
                 status: senderKeyStatus,
                 udAccessMap: sendingAccessMap,
                 senderCertificates: senderCertificates,
+                localIdentifiers: localIdentifiers,
                 sendErrorBlock: sendErrorBlock
             )
         } else {
@@ -1580,9 +1581,9 @@ public class MessageSender: Dependencies {
             }
 
             Self.profileManager.didSendOrReceiveMessage(
-                from: SignalServiceAddress(messageSend.serviceId),
+                serviceId: messageSend.serviceId,
                 localIdentifiers: messageSend.localIdentifiers,
-                transaction: transaction
+                tx: transaction.asV2Write
             )
         }
     }

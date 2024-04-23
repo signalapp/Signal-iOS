@@ -9,45 +9,31 @@ import SignalCoreKit
 
 @objc
 public class UserProfileFinder: NSObject {
-    @objc(userProfileForAddress:transaction:)
-    public func userProfile(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
+    public func userProfile(for address: OWSUserProfile.Address, transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
         return userProfiles(for: [address], tx: transaction)[0]
     }
 
-    /// Fetches user profiles for the provided `address`.
-    ///
-    /// If a profile on disk matches either the `serviceId` or `phoneNumber` of
-    /// `address`, it'll be returned. It's the caller's responsibility to pick
-    /// the correct candidate from the provided values.
-    ///
-    /// Unlike `userProfiles(for:tx:)`, this method will return duplicate
-    /// profiles if they exist.
-    func fetchUserProfiles(matchingAnyComponentOf address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> [OWSUserProfile] {
-        var userProfiles = [OWSUserProfile]()
-        if let serviceId = address.serviceId {
-            userProfiles.append(contentsOf: userProfilesWhere(
-                column: "\(userProfileColumn: .serviceIdString)",
-                anyValueIn: [serviceId.serviceIdUppercaseString],
-                tx: tx
-            ))
-        }
-        if let phoneNumber = address.phoneNumber {
-            userProfiles.append(contentsOf: userProfilesWhere(
-                column: "\(userProfileColumn: .phoneNumber)",
-                anyValueIn: [phoneNumber],
-                tx: tx
-            ))
-        }
-        let result = userProfiles.removingDuplicates(uniquingElementsBy: \.uniqueId)
-        result.forEach { $0.loadBadgeContent(tx: tx) }
-        return result
-    }
-
-    func userProfiles(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [OWSUserProfile?] {
-        let userProfiles = Refinery<SignalServiceAddress, OWSUserProfile>(addresses).refine { addresses in
-            return userProfilesFor(serviceIds: addresses.map { $0.serviceId }, tx: tx)
+    func userProfiles(for addresses: [OWSUserProfile.Address], tx: SDSAnyReadTransaction) -> [OWSUserProfile?] {
+        let userProfiles = Refinery<OWSUserProfile.Address, OWSUserProfile>(addresses).refine { addresses in
+            let serviceIds = addresses.map { address -> ServiceId? in
+                switch address {
+                case .localUser:
+                    return nil
+                case .otherUser(let address):
+                    return address.serviceId
+                }
+            }
+            return userProfilesFor(serviceIds: serviceIds, tx: tx)
         }.refine { addresses in
-            return userProfilesFor(phoneNumbers: addresses.map { $0.phoneNumber }, tx: tx)
+            let phoneNumbers = addresses.map { address -> String? in
+                switch address {
+                case .localUser:
+                    return OWSUserProfile.Constants.localProfilePhoneNumber
+                case .otherUser(let address):
+                    return address.phoneNumber
+                }
+            }
+            return userProfilesFor(phoneNumbers: phoneNumbers, tx: tx)
         }.values
 
         userProfiles.forEach { $0?.loadBadgeContent(tx: tx) }

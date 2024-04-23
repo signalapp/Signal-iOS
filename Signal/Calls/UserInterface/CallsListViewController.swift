@@ -46,6 +46,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         let interactionStore: InteractionStore
         let searchableNameFinder: SearchableNameFinder
         let threadStore: ThreadStore
+        let tsAccountManager: any TSAccountManager
     }
 
     private lazy var deps: Dependencies = Dependencies(
@@ -66,7 +67,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             phoneNumberVisibilityFetcher: DependenciesBridge.shared.phoneNumberVisibilityFetcher,
             recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable
         ),
-        threadStore: DependenciesBridge.shared.threadStore
+        threadStore: DependenciesBridge.shared.threadStore,
+        tsAccountManager: DependenciesBridge.shared.tsAccountManager
     )
 
     // MARK: - Lifecycle
@@ -630,10 +632,14 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         deps.db.asyncRead(
             block: { tx -> CallRecordLoaderImpl.Configuration in
                 if let searchTerm {
+                    guard let localIdentifiers = self.deps.tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+                        owsFail("Can't search if you've never been registered.")
+                    }
                     var threadRowIdsMatchingSearchTerm = Set<Int64>()
                     let addresses = self.deps.searchableNameFinder.searchNames(
                         for: searchTerm,
                         maxResults: Constants.maxSearchResults,
+                        localIdentifiers: localIdentifiers,
                         tx: tx.asV2Read,
                         checkCancellation: {},
                         addGroupThread: { groupThread in

@@ -23,21 +23,23 @@ class StaleProfileFetcher {
     }
 
     func scheduleProfileFetches() {
-        let userProfiles = db.read { tx -> [OWSUserProfile] in
+        let addresses = db.read { tx -> [SignalServiceAddress] in
             guard tsAccountManager.registrationState(tx: tx).isRegistered else {
                 return []
             }
-            var userProfiles = [OWSUserProfile]()
+            var addresses = [SignalServiceAddress]()
             Self.enumerateMissingAndStaleUserProfiles(now: Date(), tx: SDSDB.shimOnlyBridge(tx)) { userProfile in
-                guard !userProfile.publicAddress.isLocalAddress else {
+                switch userProfile.internalAddress {
+                case .localUser:
                     // Ignore the local user.
                     return
+                case .otherUser(let address):
+                    addresses.append(address)
                 }
-                userProfiles.append(userProfile)
             }
-            return userProfiles
+            return addresses
         }
-        bulkProfileFetcher.fetchProfiles(addresses: userProfiles.lazy.map({ $0.publicAddress }).shuffled())
+        bulkProfileFetcher.fetchProfiles(addresses: addresses.lazy.shuffled())
     }
 
     static func enumerateMissingAndStaleUserProfiles(now: Date, tx: SDSAnyReadTransaction, block: (OWSUserProfile) -> Void) {

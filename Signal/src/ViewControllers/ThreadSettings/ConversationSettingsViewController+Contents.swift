@@ -273,10 +273,20 @@ extension ConversationSettingsViewController {
         guard !thread.isNoteToSelf, isContactThread else { return }
         guard let contactAddress = (thread as? TSContactThread)?.contactAddress else { return }
 
-        let (visibleBadges, shortName) = databaseStorage.read { readTx -> ([OWSUserProfileBadgeInfo], String) in
-            let profile = OWSUserProfile.getUserProfile(for: contactAddress, transaction: readTx)
-            let shortName = contactsManager.displayName(for: contactAddress, tx: readTx).resolvedValue(useShortNameIfAvailable: true)
-            return (profile?.visibleBadges ?? [], shortName)
+        let (visibleBadges, shortName) = databaseStorage.read { tx -> ([OWSUserProfileBadgeInfo], String) in
+            let visibleBadges: [OWSUserProfileBadgeInfo] = {
+                let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+                guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+                    return []
+                }
+                let address = OWSUserProfile.internalAddress(for: contactAddress, localIdentifiers: localIdentifiers)
+                guard let userProfile = OWSUserProfile.getUserProfile(for: address, tx: tx) else {
+                    return []
+                }
+                return userProfile.visibleBadges
+            }()
+            let shortName = contactsManager.displayName(for: contactAddress, tx: tx).resolvedValue(useShortNameIfAvailable: true)
+            return (visibleBadges, shortName)
         }
         guard !visibleBadges.isEmpty else { return }
 

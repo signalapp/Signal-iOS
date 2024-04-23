@@ -182,13 +182,10 @@ class GRDBFinderTest: SignalBaseTest {
             return Date(timeInterval: offset, since: now)
         }
 
-        var expectedAddresses = Set<SignalServiceAddress>()
-        self.write { transaction in
+        var expectedAddresses = Set<OWSUserProfile.Address>()
+        self.write { tx in
             let buildUserProfile = { () -> OWSUserProfile in
-                return OWSUserProfile.getOrBuildUserProfile(
-                    for: SignalServiceAddress.randomForTesting(),
-                    transaction: transaction
-                )
+                return OWSUserProfile.getOrBuildUserProfile(for: .otherUser(Aci.randomForTesting()), tx: tx)
             }
 
             func updateUserProfile(
@@ -200,7 +197,7 @@ class GRDBFinderTest: SignalBaseTest {
                     lastFetchDate: lastFetchDate,
                     lastMessagingDate: lastMessagingDate,
                     userProfileWriter: .metadataUpdate,
-                    transaction: transaction,
+                    transaction: tx,
                     completion: nil
                 )
             }
@@ -277,11 +274,10 @@ class GRDBFinderTest: SignalBaseTest {
             }
         }
 
-        var missingAndStaleAddresses = Set<SignalServiceAddress>()
+        var missingAndStaleAddresses = Set<OWSUserProfile.Address>()
         self.read { transaction in
             StaleProfileFetcher.enumerateMissingAndStaleUserProfiles(now: now, tx: transaction) { userProfile in
-                XCTAssertFalse(missingAndStaleAddresses.contains(userProfile.internalAddress))
-                missingAndStaleAddresses.insert(userProfile.internalAddress)
+                XCTAssertTrue(missingAndStaleAddresses.insert(userProfile.internalAddress).inserted)
             }
         }
 

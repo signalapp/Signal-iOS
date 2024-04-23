@@ -7,15 +7,28 @@ import Foundation
 import SignalCoreKit
 
 public extension TSInfoMessage {
-    @objc
     class func insertProfileChangeMessagesIfNecessary(
         oldProfile: OWSUserProfile,
         newProfile: OWSUserProfile,
         transaction: SDSAnyWriteTransaction
     ) {
-        let profileChanges = ProfileChanges(oldProfile: oldProfile, newProfile: newProfile)
+        let address: SignalServiceAddress
+        switch oldProfile.internalAddress {
+        case .localUser:
+            return
+        case .otherUser(let otherUserAddress):
+            address = otherUserAddress
+        }
 
-        guard profileChanges.hasRenderableChanges, let address = profileChanges.address else { return }
+        let profileChanges = ProfileChanges(
+            address: address,
+            oldProfile: oldProfile,
+            newProfile: newProfile
+        )
+
+        guard profileChanges.hasRenderableChanges else {
+            return
+        }
 
         func saveProfileUpdateMessage(thread: TSThread) {
             let profileUpdateMessage = TSInfoMessage(
@@ -33,7 +46,9 @@ public extension TSInfoMessage {
         }
 
         for groupThread in TSGroupThread.groupThreads(with: address, transaction: transaction) {
-            guard groupThread.groupModel.groupMembership.isLocalUserFullMember && groupThread.shouldThreadBeVisible else { continue }
+            guard groupThread.groupModel.groupMembership.isLocalUserFullMember && groupThread.shouldThreadBeVisible else {
+                continue
+            }
             saveProfileUpdateMessage(thread: groupThread)
         }
     }
@@ -60,11 +75,10 @@ public class ProfileChanges: MTLModel {
         return oldFullName != nil && newFullName != nil && oldFullName != newFullName
     }
 
-    init(oldProfile: OWSUserProfile, newProfile: OWSUserProfile) {
-        address = newProfile.internalAddress
-
-        oldNameComponents = oldProfile.filteredNameComponents
-        newNameComponents = newProfile.filteredNameComponents
+    init(address: SignalServiceAddress, oldProfile: OWSUserProfile, newProfile: OWSUserProfile) {
+        self.address = address
+        self.oldNameComponents = oldProfile.filteredNameComponents
+        self.newNameComponents = newProfile.filteredNameComponents
 
         // TODO: Eventually, we'll want to track profile
         // photo and username changes here too.

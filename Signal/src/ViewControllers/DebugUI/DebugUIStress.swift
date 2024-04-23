@@ -268,11 +268,13 @@ class DebugUIStress: DebugUIPage, Dependencies {
         databaseStorage.write { transaction in
             let profiles = OWSUserProfile.anyFetchAll(transaction: transaction)
             for profile in profiles {
-                guard !OWSUserProfile.isLocalProfileAddress(profile.internalAddress) else {
+                switch profile.internalAddress {
+                case .localUser:
                     continue
+                case .otherUser(let address):
+                    Logger.verbose("Deleting: \(address)")
+                    profile.anyRemove(transaction: transaction)
                 }
-                Logger.verbose("Deleting: \(profile.internalAddress)")
-                profile.anyRemove(transaction: transaction)
             }
         }
     }

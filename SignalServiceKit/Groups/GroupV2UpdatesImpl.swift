@@ -195,7 +195,9 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         }
         GroupManager.storeProfileKeysFromGroupProtos(
             allProfileKeysByAci: changedGroupModel.profileKeys,
-            authoritativeProfileKeysByAci: authoritativeProfileKeys
+            authoritativeProfileKeysByAci: authoritativeProfileKeys,
+            localIdentifiers: localIdentifiers,
+            tx: transaction
         )
 
         guard let updatedGroupModel = updatedGroupThread.groupModel as? TSGroupModelV2 else {
@@ -725,7 +727,9 @@ private extension GroupV2UpdatesImpl {
 
             GroupManager.storeProfileKeysFromGroupProtos(
                 allProfileKeysByAci: profileKeysByAci,
-                authoritativeProfileKeysByAci: authoritativeProfileKeysByAci
+                authoritativeProfileKeysByAci: authoritativeProfileKeysByAci,
+                localIdentifiers: localIdentifiers,
+                tx: transaction
             )
 
             let localUserWasAddedByBlockedUser: Bool
@@ -1089,7 +1093,8 @@ private extension GroupV2UpdatesImpl {
 
             GroupManager.storeProfileKeysFromGroupProtos(
                 allProfileKeysByAci: groupV2Snapshot.profileKeys,
-                authoritativeProfileKeysByAci: nil
+                localIdentifiers: localIdentifiers,
+                tx: transaction
             )
 
             // If the group state includes a stale profile key for the

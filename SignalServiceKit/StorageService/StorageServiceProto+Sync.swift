@@ -485,49 +485,54 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         let anyAddress = SignalServiceAddress(serviceIds.aciOrElsePni)
 
         // Gather some local contact state to do comparisons against.
-        let localProfileKey = profileManager.profileKey(for: anyAddress, transaction: SDSDB.shimOnlyBridge(tx))
-        let localGivenName = profileManager.unfilteredGivenName(for: anyAddress, transaction: SDSDB.shimOnlyBridge(tx))
-        let localFamilyName = profileManager.unfilteredFamilyName(for: anyAddress, transaction: SDSDB.shimOnlyBridge(tx))
         let localIsBlocked = blockingManager.isAddressBlocked(anyAddress, transaction: SDSDB.shimOnlyBridge(tx))
         let localIsHidden = recipientHidingManager.isHiddenAddress(anyAddress, tx: tx)
         let localIsWhitelisted = profileManager.isUser(inProfileWhitelist: anyAddress, transaction: SDSDB.shimOnlyBridge(tx))
+        let localUserProfile = profileManager.getUserProfile(for: anyAddress, transaction: SDSDB.shimOnlyBridge(tx))
 
         // If our local profile key record differs from what's on the service, use the service's value.
-        if let profileKey = record.profileKey, localProfileKey?.keyData != profileKey {
+        if let profileKey = record.profileKey, localUserProfile?.profileKey?.keyData != profileKey {
             profileManager.setProfileKeyDataAndFetchProfile(
                 profileKey,
-                forAddress: anyAddress,
+                for: serviceIds.aciOrElsePni,
                 onlyFillInIfMissing: false,
                 userProfileWriter: .storageService,
+                localIdentifiers: localIdentifiers,
                 authedAccount: authedAccount,
-                transaction: SDSDB.shimOnlyBridge(tx)
+                tx: tx
             )
 
         // If we have a local profile key for this user but the service doesn't mark it as needing update.
-        } else if localProfileKey != nil && !record.hasProfileKey {
+        } else if localUserProfile?.profileKey != nil && !record.hasProfileKey {
             needsUpdate = true
         }
 
         // Given name can never be cleared, so ignore all info about the profile if
         // there's no given name.
-        if record.hasGivenName && (localGivenName != record.givenName || localFamilyName != record.familyName) {
+        if record.hasGivenName && (localUserProfile?.givenName != record.givenName || localUserProfile?.familyName != record.familyName) {
             // If we already have a profile for this user, ignore any content received
             // via storage service. Instead, we'll just kick off a fetch of that user's
             // profile to make sure everything is up-to-date.
-            if localGivenName != nil {
+            if localUserProfile?.givenName != nil {
                 bulkProfileFetch.fetchProfile(address: anyAddress)
             } else {
-                profileManager.setProfile(
-                    for: anyAddress,
+                let profileAddress = OWSUserProfile.insertableAddress(
+                    for: serviceIds.aciOrElsePni,
+                    localIdentifiers: localIdentifiers
+                )
+                let localUserProfile = OWSUserProfile.getOrBuildUserProfile(
+                    for: profileAddress,
+                    tx: SDSDB.shimOnlyBridge(tx)
+                )
+                localUserProfile.update(
                     givenName: .setTo(record.givenName),
                     familyName: .setTo(record.familyName),
-                    avatarUrlPath: .noChange,
                     userProfileWriter: .storageService,
-                    localIdentifiers: localIdentifiers,
-                    transaction: SDSDB.shimOnlyBridge(tx)
+                    transaction: SDSDB.shimOnlyBridge(tx),
+                    completion: nil
                 )
             }
-        } else if localGivenName != nil && !record.hasGivenName || localFamilyName != nil && !record.hasFamilyName {
+        } else if localUserProfile?.givenName != nil && !record.hasGivenName || localUserProfile?.familyName != nil && !record.hasFamilyName {
             needsUpdate = true
         }
 
@@ -1286,9 +1291,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         let localAddress = localIdentifiers.aciAddress
 
         // Gather some local contact state to do comparisons against.
-        let localProfileKey = profileManager.profileKey(for: localAddress, transaction: transaction)
-        let localGivenName = profileManager.unfilteredGivenName(for: localAddress, transaction: transaction)
-        let localFamilyName = profileManager.unfilteredFamilyName(for: localAddress, transaction: transaction)
+        let localUserProfile = profileManager.getUserProfile(for: localAddress, transaction: transaction)
         let localAvatarUrl = profileManager.profileAvatarURLPath(
             for: localAddress,
             transaction: transaction
@@ -1299,16 +1302,17 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         // to restore your profile during onboarding but ensures no other device
         // can ever change the profile key other than the primary device.
         let allowsRemoteProfileKeyChanges = !profileManager.hasLocalProfile() || !isPrimaryDevice
-        if allowsRemoteProfileKeyChanges, let profileKey = record.profileKey, localProfileKey?.keyData != profileKey {
+        if allowsRemoteProfileKeyChanges, let profileKey = record.profileKey, localUserProfile?.profileKey?.keyData != profileKey {
             profileManager.setProfileKeyDataAndFetchProfile(
                 profileKey,
-                forAddress: localAddress,
+                for: localIdentifiers.aci,
                 onlyFillInIfMissing: false,
                 userProfileWriter: .storageService,
+                localIdentifiers: localIdentifiers,
                 authedAccount: authedAccount,
-                transaction: transaction
+                tx: transaction.asV2Write
             )
-        } else if localProfileKey != nil && !record.hasProfileKey {
+        } else if localUserProfile?.profileKey != nil && !record.hasProfileKey {
             // If we have a local profile key for this user but the service doesn't, mark it as needing update.
             needsUpdate = true
         }
@@ -1339,18 +1343,18 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         // Given name can never be cleared, so ignore all info about the profile if
         // there's no given name.
         if let normalizedRemoteGivenName, (
-            localGivenName != normalizedRemoteGivenName
-            || localFamilyName != normalizedRemoteFamilyName
+            localUserProfile?.givenName != normalizedRemoteGivenName
+            || localUserProfile?.familyName != normalizedRemoteFamilyName
             || localAvatarUrl != record.avatarURL
         ) {
-            profileManager.setProfile(
-                for: localAddress,
+            let localUserProfile = OWSUserProfile.getOrBuildUserProfileForLocalUser(tx: transaction)
+            localUserProfile.update(
                 givenName: .setTo(normalizedRemoteGivenName),
                 familyName: .setTo(normalizedRemoteFamilyName),
                 avatarUrlPath: .setTo(record.avatarURL),
                 userProfileWriter: .storageService,
-                localIdentifiers: localIdentifiers,
-                transaction: transaction
+                transaction: transaction,
+                completion: nil
             )
             transaction.addSyncCompletion { [authedAccount, profileManager] in
                 Task {
@@ -1361,7 +1365,11 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
                     }
                 }
             }
-        } else if localGivenName != nil && !record.hasGivenName || localFamilyName != nil && !record.hasFamilyName || localAvatarUrl != nil && !record.hasAvatarURL {
+        } else if (
+            localUserProfile?.givenName != nil && !record.hasGivenName
+            || localUserProfile?.familyName != nil && !record.hasFamilyName
+            || localAvatarUrl != nil && !record.hasAvatarURL
+        ) {
             needsUpdate = true
         }
 

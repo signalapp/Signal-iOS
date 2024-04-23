@@ -138,6 +138,8 @@ extension MessageBackup {
         case contactWithoutIdentifiers
         /// A BackupProtoRecipient with an unrecognized sub-type.
         case unrecognizedRecipientType
+        /// A BackupProtoContact for the local user. This shouldn't exist.
+        case otherContactWithLocalIdentifiers
 
         /// A message must come from either an Aci or an E164.
         /// One in the backup did not.
@@ -170,9 +172,9 @@ extension MessageBackup {
         /// An unrecognized BackupProtoGroupChangeChatUpdate.
         case unrecognizedGroupUpdate
 
-        /// An  profile key for the local user that could not be parsed into a valid aes256 key
+        /// A profile key for the local user that could not be parsed into a valid aes256 key
         case invalidLocalProfileKey
-        /// An  profile key for the local user that could not be parsed into a valid aes256 key
+        /// A profile key for the local user that could not be parsed into a valid aes256 key
         case invalidUsernameLink
 
         /// A frame was entirely missing its enclosed item.
@@ -266,6 +268,8 @@ extension MessageBackup.RestoreFrameErrorType {
                 return "Contact proto missing aci, pni and e164"
             case .unrecognizedRecipientType:
                 return "Unrecognized recipient type"
+            case .otherContactWithLocalIdentifiers:
+                return "Contact proto for the local account"
             case .incomingMessageNotFromAciOrE164:
                 return "Incoming message from pni (not aci or e164)"
             case .outgoingNonContactMessageRecipient:
@@ -688,6 +692,7 @@ extension MessageBackup {
                         .invalidE164,
                         .contactWithoutIdentifiers,
                         .unrecognizedRecipientType,
+                        .otherContactWithLocalIdentifiers,
                         .incomingMessageNotFromAciOrE164,
                         .outgoingNonContactMessageRecipient,
                         .unrecognizedMessageSendStatus,

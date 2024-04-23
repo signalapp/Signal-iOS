@@ -842,13 +842,7 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies, CustomStringC
         }
 
         let primaryBadge: ProfileBadge? = performWithTransaction(transaction) {
-            let userProfile: OWSUserProfile?
-            if targetAddress.isLocalAddress {
-                // TODO: Badges — Expose badge info about local user profile on OWSUserProfile
-                userProfile = OWSProfileManager.shared.localUserProfile()
-            } else {
-                userProfile = UserProfileFinder().userProfile(for: targetAddress, transaction: $0)
-            }
+            let userProfile = profileManager.getUserProfile(for: targetAddress, transaction: $0)
             return userProfile?.primaryBadge?.fetchBadgeContent(transaction: $0)
         }
         guard let badgeAssets = primaryBadge?.assets else { return nil }

@@ -72,12 +72,6 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 - (nullable NSString *)profileAvatarURLPathForAddress:(SignalServiceAddress *)address
                                           transaction:(SDSAnyReadTransaction *)transaction;
 
-- (void)fillInProfileKeysForAllProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)allProfileKeys
-                  authoritativeProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)authoritativeProfileKeys
-                         userProfileWriter:(UserProfileWriter)userProfileWriter
-                             authedAccount:(AuthedAccount *)authedAccount
-    NS_SWIFT_NAME(fillInProfileKeys(allProfileKeys:authoritativeProfileKeys:userProfileWriter:authedAccount:));
-
 - (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)normalizeRecipientInProfileWhitelist:(SignalRecipient *)recipient

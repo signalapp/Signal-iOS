@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalCoreKit
 
 public enum OptionalChange<Wrapped: Equatable>: Equatable {
@@ -56,14 +57,13 @@ public protocol ProfileManager: ProfileManagerProtocol {
     ) async throws -> URL
 
     func updateProfile(
-        address: SignalServiceAddress,
+        address: OWSUserProfile.InsertableAddress,
         decryptedProfile: DecryptedProfile?,
         avatarUrlPath: OptionalChange<String?>,
         avatarFileName: OptionalChange<String?>,
         profileBadges: [OWSUserProfileBadgeInfo],
         lastFetchDate: Date,
         userProfileWriter: UserProfileWriter,
-        localIdentifiers: LocalIdentifiers,
         tx: SDSAnyWriteTransaction
     )
 
@@ -87,36 +87,26 @@ public protocol ProfileManager: ProfileManagerProtocol {
     ) -> Promise<Void>
 
     func didSendOrReceiveMessage(
-        from address: SignalServiceAddress,
+        serviceId: ServiceId,
         localIdentifiers: LocalIdentifiers,
-        transaction: SDSAnyWriteTransaction
-    )
-
-    func setProfile(
-        for address: SignalServiceAddress,
-        givenName: OptionalChange<String?>,
-        familyName: OptionalChange<String?>,
-        avatarUrlPath: OptionalChange<String?>,
-        userProfileWriter: UserProfileWriter,
-        localIdentifiers: LocalIdentifiers,
-        transaction: SDSAnyWriteTransaction
+        tx: DBWriteTransaction
     )
 
     func setProfileKeyDataAndFetchProfile(
         _ profileKeyData: Data,
-        forAddress address: SignalServiceAddress,
-        onlyFillInIfMissing: Bool,
-        userProfileWriter: UserProfileWriter,
-        authedAccount: AuthedAccount,
-        transaction tx: SDSAnyWriteTransaction
-    )
-
-    func setProfileKeyData(
-        _ profileKeyData: Data,
-        for address: SignalServiceAddress,
+        for serviceId: ServiceId,
         onlyFillInIfMissing: Bool,
         userProfileWriter: UserProfileWriter,
         localIdentifiers: LocalIdentifiers,
-        transaction tx: SDSAnyWriteTransaction
-    ) -> Bool
+        authedAccount: AuthedAccount,
+        tx: DBWriteTransaction
+    )
+
+    func fillInProfileKeys(
+        allProfileKeys: [Aci: Data],
+        authoritativeProfileKeys: [Aci: Data],
+        userProfileWriter: UserProfileWriter,
+        localIdentifiers: LocalIdentifiers,
+        tx: DBWriteTransaction
+    )
 }

@@ -65,43 +65,6 @@ NS_ASSUME_NONNULL_BEGIN
     return nil;
 }
 
-- (void)fillInProfileKeysForAllProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)allProfileKeys
-                  authoritativeProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)authoritativeProfileKeys
-                         userProfileWriter:(UserProfileWriter)userProfileWriter
-                             authedAccount:(AuthedAccount *)authedAccount
-{
-    for (SignalServiceAddress *address in allProfileKeys) {
-        if (self.profileKeys[address] != nil) {
-            continue;
-        }
-        NSData *_Nullable profileKeyData = allProfileKeys[address];
-        OWSAssertDebug(profileKeyData);
-        OWSAES256Key *_Nullable key = [OWSAES256Key keyWithData:profileKeyData];
-        self.profileKeys[address] = key;
-    }
-}
-
-- (void)setProfileGivenName:(nullable NSString *)givenName
-                 familyName:(nullable NSString *)familyName
-                 forAddress:(SignalServiceAddress *)address
-          userProfileWriter:(UserProfileWriter)userProfileWriter
-              authedAccount:(nonnull AuthedAccount *)authedAccount
-                transaction:(SDSAnyWriteTransaction *)transaction
-{
-    // Do nothing.
-}
-
-- (void)setProfileGivenName:(nullable NSString *)firstName
-                 familyName:(nullable NSString *)lastName
-              avatarUrlPath:(nullable NSString *)avatarUrlPath
-                 forAddress:(nonnull SignalServiceAddress *)address
-          userProfileWriter:(UserProfileWriter)userProfileWriter
-              authedAccount:(nonnull AuthedAccount *)authedAccount
-                transaction:(nonnull SDSAnyWriteTransaction *)transaction
-{
-    // Do nothing.
-}
-
 - (nullable NSString *)fullNameForAddress:(SignalServiceAddress *)address
                               transaction:(SDSAnyReadTransaction *)transaction
 {

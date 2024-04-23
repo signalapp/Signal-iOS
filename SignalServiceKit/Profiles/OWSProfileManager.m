@@ -95,12 +95,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
     OWSSingletonAssert();
 
-    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
-        if (CurrentAppContext().isMainApp && [TSAccountManagerObjcBridge isRegisteredWithMaybeTransaction]) {
-            [self logLocalAvatarStatus];
-        }
-    });
-
     AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{
         if ([TSAccountManagerObjcBridge isRegisteredPrimaryDeviceWithMaybeTransaction]) {
             [self rotateLocalProfileKeyIfNecessary];
@@ -129,61 +123,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
                                              selector:@selector(blockListDidChange:)
                                                  name:BlockingManager.blockListDidChange
                                                object:nil];
-}
-
-#pragma mark -
-
-- (void)logLocalAvatarStatus
-{
-    OWSAssertDebug(CurrentAppContext().isMainApp);
-    OWSAssertDebug(!CurrentAppContext().isRunningTests);
-    OWSAssertDebug([TSAccountManagerObjcBridge isRegisteredWithMaybeTransaction]);
-
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self logLocalAvatarStatus:self.localUserProfile label:@"cached copy"];
-
-        __block OWSUserProfile *_Nullable localUserProfile;
-        [self.databaseStorage
-            readWithBlock:^(SDSAnyReadTransaction *transaction) {
-                localUserProfile = [OWSUserProfile getUserProfileFor:OWSUserProfile.localProfileAddress
-                                                         transaction:transaction];
-            }
-                     file:__FILE__
-                 function:__FUNCTION__
-                     line:__LINE__];
-        [self logLocalAvatarStatus:localUserProfile label:@"database copy"];
-    });
-}
-
-- (void)logLocalAvatarStatus:(OWSUserProfile *_Nullable)localUserProfile label:(NSString *)label
-{
-    if (localUserProfile == nil) {
-        OWSFailDebug(@"Missing local user profile: %@.", label);
-        return;
-    }
-    BOOL hasAvatarFileOnDisk = NO;
-    if (localUserProfile.avatarFileName.length > 0) {
-        NSString *filePath = [OWSUserProfile profileAvatarFilePathFor:localUserProfile.avatarFileName];
-        hasAvatarFileOnDisk = [OWSFileSystem fileOrFolderExistsAtPath:filePath];
-    }
-
-    if (SSKDebugFlags.internalLogging) {
-        OWSLogInfo(
-            @"Local user profile (%@). address: %@, avatarUrlPath: %@, avatarFileName: %@, hasAvatarFileOnDisk: %d",
-            label,
-            localUserProfile.internalAddress,
-            localUserProfile.avatarUrlPath,
-            localUserProfile.avatarFileName,
-            hasAvatarFileOnDisk);
-    } else {
-        OWSLogInfo(
-            @"Local user profile (%@). address: %@, avatarUrlPath: %d, avatarFileName: %d, hasAvatarFileOnDisk: %d",
-            label,
-            localUserProfile.internalAddress,
-            localUserProfile.avatarUrlPath.length > 0,
-            localUserProfile.avatarFileName.length > 0,
-            hasAvatarFileOnDisk);
-    }
 }
 
 #pragma mark - User Profile Accessor
@@ -220,11 +159,11 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
         }
     }
 
-    // We create the profile outside the @synchronized block
-    // to avoid any risk of deadlock.  Thanks to ensureLocalProfileCached,
-    // there should be no risk of races.  And races should be harmless
-    // since: a) getOrBuildUserProfileForAddress is idempotent and b) we use
-    // the "update with..." pattern.
+    // We create the profile outside the @synchronized block to avoid any risk
+    // of deadlock. Thanks to ensureLocalProfileCached, there should be no risk
+    // of races. And races should be harmless since: a)
+    // getOrBuildUserProfileForInternalAddress is idempotent and b) we use the
+    // "update with..." pattern.
     //
     // We first try using a read block to avoid opening a write block.
     __block OWSUserProfile *_Nullable localUserProfile;
@@ -240,37 +179,38 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     }
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        localUserProfile = [OWSUserProfile getOrBuildUserProfileForAddress:OWSUserProfile.localProfileAddress
-                                                               transaction:transaction];
+        localUserProfile = [OWSUserProfile getOrBuildUserProfileForLocalUserWithTx:transaction];
+        OWSAssertDebug(localUserProfile.profileKey);
     });
 
     @synchronized(self) {
         _localUserProfile = localUserProfile;
+        return [localUserProfile shallowCopy];
     }
-
-    OWSAssertDebug(_localUserProfile.profileKey);
-
-    return [localUserProfile shallowCopy];
 }
 
-- (nullable OWSUserProfile *)getLocalUserProfileWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable OWSUserProfile *)getLocalUserProfileWithTransaction:(SDSAnyReadTransaction *)tx
 {
     BOOL migrationsAreComplete = GRDBSchemaMigrator.areMigrationsComplete;
-    @synchronized(self) {
-        if (_localUserProfile && migrationsAreComplete) {
-            OWSAssertDebug(_localUserProfile.profileKey);
-            return [_localUserProfile shallowCopy];
+
+    if (migrationsAreComplete) {
+        @synchronized(self) {
+            if (_localUserProfile) {
+                OWSAssertDebug(_localUserProfile.profileKey);
+                return [_localUserProfile shallowCopy];
+            }
         }
     }
 
-    OWSUserProfile *_Nullable localUserProfile = [OWSUserProfile getUserProfileFor:OWSUserProfile.localProfileAddress
-                                                                       transaction:transaction];
+    OWSUserProfile *localUserProfile = [OWSUserProfile getUserProfileForLocalUserWithTx:tx];
 
     if (migrationsAreComplete) {
         @synchronized(self) {
             _localUserProfile = localUserProfile;
+            return [localUserProfile shallowCopy];
         }
     }
+
     return [localUserProfile shallowCopy];
 }
 
@@ -498,8 +438,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
             // logic and should re-evaluate this method.
             OWSFailDebug(@"Missing local profile when setting key.");
 
-            localUserProfile = [OWSUserProfile getOrBuildUserProfileForAddress:OWSUserProfile.localProfileAddress
-                                                                   transaction:transaction];
+            localUserProfile = [OWSUserProfile getOrBuildUserProfileForLocalUserWithTx:transaction];
 
             _localUserProfile = localUserProfile;
         } else {
@@ -918,58 +857,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
 #pragma mark - Other User's Profiles
 
-- (void)fillInProfileKeysForAllProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)allProfileKeys
-                  authoritativeProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)authoritativeProfileKeys
-                         userProfileWriter:(UserProfileWriter)userProfileWriter
-                             authedAccount:(AuthedAccount *)authedAccount
-{
-    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        for (SignalServiceAddress *address in authoritativeProfileKeys) {
-            NSData *_Nullable profileKeyData = allProfileKeys[address];
-            if (profileKeyData == nil) {
-                OWSFailDebug(@"Missing profileKeyData.");
-                continue;
-            }
-            [self setProfileKeyDataAndFetchProfile:profileKeyData
-                                        forAddress:address
-                               onlyFillInIfMissing:NO
-                                 userProfileWriter:userProfileWriter
-                                     authedAccount:authedAccount
-                                       transaction:transaction];
-        }
-
-        for (SignalServiceAddress *address in allProfileKeys) {
-            if (authoritativeProfileKeys[address] != nil) {
-                // We already stored this profile key as an
-                // authoritative one.
-                continue;
-            }
-            NSData *_Nullable profileKeyData = allProfileKeys[address];
-            if (profileKeyData == nil) {
-                OWSFailDebug(@"Missing profileKeyData.");
-                continue;
-            }
-            OWSAES256Key *_Nullable key = [OWSAES256Key keyWithData:profileKeyData];
-            if (key == nil) {
-                OWSFailDebug(@"Invalid profileKeyData.");
-                continue;
-            }
-            NSData *_Nullable existingProfileKeyData = [self profileKeyDataForAddress:address transaction:transaction];
-            if ([NSObject isNullableObject:existingProfileKeyData equalTo:profileKeyData]) {
-                // Redundant profileKeyData; no need to update.
-                continue;
-            }
-            OWSLogInfo(@"Filling in missing profile key for: %@", address);
-            [self setProfileKeyDataAndFetchProfile:profileKeyData
-                                        forAddress:address
-                               onlyFillInIfMissing:YES
-                                 userProfileWriter:userProfileWriter
-                                     authedAccount:authedAccount
-                                       transaction:transaction];
-        }
-    });
-}
-
 - (nullable NSData *)profileKeyDataForAddress:(SignalServiceAddress *)address
                                   transaction:(SDSAnyReadTransaction *)transaction
 {
@@ -1104,15 +991,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 - (nullable OWSUserProfile *)getUserProfileForAddress:(SignalServiceAddress *)addressParam
                                           transaction:(SDSAnyReadTransaction *)transaction
 {
-    SignalServiceAddress *address = [OWSUserProfile internalAddressFor:addressParam];
-    OWSAssertDebug(address.isValid);
-
-    // For "local reads", use the local user profile.
-    if ([OWSUserProfile isLocalProfileAddress:address]) {
-        return [self getLocalUserProfileWithTransaction:transaction];
-    }
-
-    return [self.modelReadCaches.userProfileReadCache getUserProfileWithAddress:address transaction:transaction];
+    return [self _getUserProfileFor:addressParam tx:transaction];
 }
 
 #pragma mark - Avatar Disk Cache
@@ -1161,8 +1040,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 {
     return [self.modelReadCaches.userProfileReadCache leaseCacheSize:size];
 }
-
-#pragma mark - Messaging History
 
 - (void)rotateProfileKeyUponRecipientHideWithTx:(nonnull SDSAnyWriteTransaction *)tx
 {

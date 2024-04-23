@@ -41,6 +41,7 @@ class StoryManagerTest: SSKBaseTestSwift {
                 storyMessage,
                 timestamp: timestamp,
                 author: author,
+                localIdentifiers: .forUnitTests,
                 transaction: $0
             )
 
@@ -65,6 +66,7 @@ class StoryManagerTest: SSKBaseTestSwift {
                 storyMessage,
                 timestamp: timestamp,
                 author: author,
+                localIdentifiers: .forUnitTests,
                 transaction: $0
             )
 
@@ -102,6 +104,7 @@ class StoryManagerTest: SSKBaseTestSwift {
                 privateStoryMessage,
                 timestamp: timestamp,
                 author: author,
+                localIdentifiers: .forUnitTests,
                 transaction: $0
             )
 
@@ -109,6 +112,7 @@ class StoryManagerTest: SSKBaseTestSwift {
                 groupStoryMessage,
                 timestamp: timestamp,
                 author: author,
+                localIdentifiers: .forUnitTests,
                 transaction: $0
             )
 
@@ -147,6 +151,7 @@ class StoryManagerTest: SSKBaseTestSwift {
                 storyMessage,
                 timestamp: timestamp,
                 author: author,
+                localIdentifiers: .forUnitTests,
                 transaction: $0
             )
 
@@ -181,6 +186,7 @@ class StoryManagerTest: SSKBaseTestSwift {
                 storyMessage,
                 timestamp: timestamp,
                 author: author,
+                localIdentifiers: .forUnitTests,
                 transaction: $0
             )
 
@@ -215,6 +221,7 @@ class StoryManagerTest: SSKBaseTestSwift {
                 storyMessage,
                 timestamp: timestamp,
                 author: author,
+                localIdentifiers: .forUnitTests,
                 transaction: $0
             )
 
@@ -249,6 +256,7 @@ class StoryManagerTest: SSKBaseTestSwift {
                 storyMessage,
                 timestamp: timestamp,
                 author: author,
+                localIdentifiers: .forUnitTests,
                 transaction: $0
             )
 
@@ -283,6 +291,7 @@ class StoryManagerTest: SSKBaseTestSwift {
                 storyMessage,
                 timestamp: timestamp,
                 author: author,
+                localIdentifiers: .forUnitTests,
                 transaction: $0
             )
 
@@ -313,6 +322,7 @@ class StoryManagerTest: SSKBaseTestSwift {
                 storyMessage,
                 timestamp: timestamp,
                 author: author,
+                localIdentifiers: .forUnitTests,
                 transaction: $0
             )
 
@@ -349,6 +359,7 @@ class StoryManagerTest: SSKBaseTestSwift {
                 storyMessage,
                 timestamp: timestamp,
                 author: author,
+                localIdentifiers: .forUnitTests,
                 transaction: $0
             )
 

@@ -351,7 +351,11 @@ public class MessageProcessor: NSObject {
                         localDeviceId: localDeviceId,
                         tx: tx
                     )
-                    handle(combinedRequest: combinedRequest, transaction: tx)
+                    handle(
+                        combinedRequest: combinedRequest,
+                        localIdentifiers: localIdentifiers,
+                        transaction: tx
+                    )
                 }
             }
             processedEnvelopesCount += batchEnvelopes.count - remainingEnvelopes.count
@@ -390,12 +394,12 @@ public class MessageProcessor: NSObject {
         return result
     }
 
-    private func handle(combinedRequest: RelatedProcessingRequests, transaction: SDSAnyWriteTransaction) {
+    private func handle(combinedRequest: RelatedProcessingRequests, localIdentifiers: LocalIdentifiers, transaction: SDSAnyWriteTransaction) {
         // Efficiently handle delivery receipts for the same message by fetching the sent message only
         // once and only using one updateWith... to update the message with new recipient state.
         BatchingDeliveryReceiptContext.withDeferredUpdates(transaction: transaction) { context in
             for request in combinedRequest.processingRequests {
-                handleProcessingRequest(request, context: context, tx: transaction)
+                handleProcessingRequest(request, context: context, localIdentifiers: localIdentifiers, tx: transaction)
             }
         }
     }
@@ -403,6 +407,7 @@ public class MessageProcessor: NSObject {
     private func reallyHandleProcessingRequest(
         _ request: ProcessingRequest,
         context: DeliveryReceiptContext,
+        localIdentifiers: LocalIdentifiers,
         transaction: SDSAnyWriteTransaction
     ) -> Error? {
         switch request.state {
@@ -420,7 +425,7 @@ public class MessageProcessor: NSObject {
             messageReceiver.finishProcessingEnvelope(decryptedEnvelope, tx: transaction)
             return nil
         case .messageReceiverRequest(let messageReceiverRequest):
-            messageReceiver.handleRequest(messageReceiverRequest, context: context, tx: transaction)
+            messageReceiver.handleRequest(messageReceiverRequest, context: context, localIdentifiers: localIdentifiers, tx: transaction)
             messageReceiver.finishProcessingEnvelope(messageReceiverRequest.decryptedEnvelope, tx: transaction)
             return nil
         case .clearPlaceholdersOnly(let decryptedEnvelope):
@@ -435,9 +440,10 @@ public class MessageProcessor: NSObject {
     private func handleProcessingRequest(
         _ request: ProcessingRequest,
         context: DeliveryReceiptContext,
+        localIdentifiers: LocalIdentifiers,
         tx: SDSAnyWriteTransaction
     ) {
-        let error = reallyHandleProcessingRequest(request, context: context, transaction: tx)
+        let error = reallyHandleProcessingRequest(request, context: context, localIdentifiers: localIdentifiers, transaction: tx)
         tx.addAsyncCompletionOffMain { request.receivedEnvelope.completion(error) }
     }
 

@@ -142,6 +142,11 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     public static let databaseTableName = "model_OWSUserProfile"
     public static var recordType: UInt { SDSRecordType.userProfile.rawValue }
 
+    public enum Address: Hashable {
+        case localUser
+        case otherUser(SignalServiceAddress)
+    }
+
     // MARK: - Constants
 
     public enum Constants {
@@ -176,18 +181,20 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     /// The "internal" address.
     ///
     /// The local user is represented by `localProfilePhoneNumber` and no ACI.
-    /// All other users are represented by their real ACI/PNI/E164 addresses.
-    @objc
-    public var internalAddress: SignalServiceAddress {
-        SignalServiceAddress.legacyAddress(serviceIdString: serviceIdString, phoneNumber: phoneNumber)
+    /// All other users are represented by their real ACI/E164/PNI addresses.
+    public var internalAddress: Address {
+        if phoneNumber == Constants.localProfilePhoneNumber {
+            return .localUser
+        } else {
+            return .otherUser(SignalServiceAddress.legacyAddress(serviceIdString: serviceIdString, phoneNumber: phoneNumber))
+        }
     }
 
     /// The "public" address.
     ///
     /// All users are represented by their real ACI/PNI/E164 addresses.
-    @objc
-    public var publicAddress: SignalServiceAddress {
-        Self.publicAddress(for: internalAddress)
+    public func publicAddress(localIdentifiers: LocalIdentifiers) -> SignalServiceAddress {
+        return Self.publicAddress(for: internalAddress, localIdentifiers: localIdentifiers)
     }
 
     /// The on-disk location of the downloaded avatar.
@@ -246,18 +253,34 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         return PhoneNumberSharingMode.defaultValue == .everybody
     }
 
-    public convenience init(address: NormalizedDatabaseRecordAddress?) {
-        owsAssertDebug(address != nil)
+    public convenience init(
+        address: Address,
+        givenName: String? = nil,
+        familyName: String? = nil,
+        profileKey: OWSAES256Key? = nil,
+        avatarUrlPath: String? = nil
+    ) {
+        let serviceId: ServiceId?
+        let phoneNumber: String?
+        switch address {
+        case .localUser:
+            serviceId = nil
+            phoneNumber = Constants.localProfilePhoneNumber
+        case .otherUser(let address):
+            let normalizedAddress = NormalizedDatabaseRecordAddress(address: address)
+            serviceId = normalizedAddress?.serviceId
+            phoneNumber = normalizedAddress?.phoneNumber
+        }
         self.init(
             id: nil,
             uniqueId: UUID().uuidString,
-            serviceIdString: address?.serviceId?.serviceIdUppercaseString,
-            phoneNumber: address?.phoneNumber,
+            serviceIdString: serviceId?.serviceIdUppercaseString,
+            phoneNumber: phoneNumber,
             avatarFileName: nil,
-            avatarUrlPath: nil,
-            profileKey: nil,
-            givenName: nil,
-            familyName: nil,
+            avatarUrlPath: avatarUrlPath,
+            profileKey: profileKey,
+            givenName: givenName,
+            familyName: familyName,
             bio: nil,
             bioEmoji: nil,
             badges: [],
@@ -432,32 +455,30 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
 
     // MARK: - Profile Addresses
 
-    @objc
-    public static let localProfileAddress = SignalServiceAddress(phoneNumber: Constants.localProfilePhoneNumber)
-
-    @objc
-    public static func isLocalProfileAddress(_ address: SignalServiceAddress) -> Bool {
-        return address.phoneNumber == Constants.localProfilePhoneNumber || address.isLocalAddress
-    }
-
-    /// Converts an "internal" or "public" address to an "internal" one.
-    @objc
-    public static func internalAddress(for publicAddress: SignalServiceAddress) -> SignalServiceAddress {
-        return isLocalProfileAddress(publicAddress) ? localProfileAddress : publicAddress
+    /// Converts a "public" address to an "internal" one.
+    public static func internalAddress(for publicAddress: SignalServiceAddress, localIdentifiers: LocalIdentifiers) -> Address {
+        if localIdentifiers.contains(address: publicAddress) {
+            return .localUser
+        } else {
+            return .otherUser(publicAddress)
+        }
     }
 
     /// Converts an "internal" or "public" address to a "public" one.
-    private static func publicAddress(for internalAddress: SignalServiceAddress) -> SignalServiceAddress {
-        if isLocalProfileAddress(internalAddress) {
-            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            if let localAddress = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress {
-                return localAddress
-            } else {
-                owsFailDebug("Missing localAddress.")
-                // fallthrough
-            }
+    private static func publicAddress(for internalAddress: Address, localIdentifiers: LocalIdentifiers) -> SignalServiceAddress {
+        switch internalAddress {
+        case .localUser:
+            return localIdentifiers.aciAddress
+        case .otherUser(let address):
+            return address
         }
-        return internalAddress
+    }
+
+    static func insertableAddress(
+        for serviceId: ServiceId,
+        localIdentifiers: LocalIdentifiers
+    ) -> InsertableAddress {
+        return localIdentifiers.contains(serviceId: serviceId) ? .localUser : .otherUser(serviceId)
     }
 
     // MARK: - Avatar
@@ -749,35 +770,49 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     // MARK: - Fetching & Creating
 
     @objc
-    public static func getUserProfile(for address: SignalServiceAddress, transaction tx: SDSAnyReadTransaction) -> OWSUserProfile? {
-        let address = internalAddress(for: address)
-        owsAssertDebug(address.isValid)
+    public static func getUserProfileForLocalUser(tx: SDSAnyReadTransaction) -> OWSUserProfile? {
+        return getUserProfile(for: .localUser, tx: tx)
+    }
+
+    public static func getUserProfile(for address: Address, tx: SDSAnyReadTransaction) -> OWSUserProfile? {
         return UserProfileFinder().userProfile(for: address, transaction: tx)
     }
 
     @objc
     public static func doesLocalProfileExist(transaction tx: SDSAnyReadTransaction) -> Bool {
-        return UserProfileFinder().userProfile(for: localProfileAddress, transaction: tx) != nil
+        return UserProfileFinder().userProfile(for: .localUser, transaction: tx) != nil
     }
 
-    @objc(getOrBuildUserProfileForAddress:transaction:)
-    public class func getOrBuildUserProfile(
-        for address: SignalServiceAddress,
-        transaction tx: SDSAnyWriteTransaction
-    ) -> OWSUserProfile {
-        let address = internalAddress(for: address.withNormalizedPhoneNumber())
-        owsAssertDebug(address.isValid)
+    public enum InsertableAddress {
+        case localUser
+        case otherUser(ServiceId)
+    }
 
+    @objc
+    public class func getOrBuildUserProfileForLocalUser(tx: SDSAnyWriteTransaction) -> OWSUserProfile {
+        return getOrBuildUserProfile(for: .localUser, tx: tx)
+    }
+
+    public class func getOrBuildUserProfile(
+        for insertableAddress: InsertableAddress,
+        tx: SDSAnyWriteTransaction
+    ) -> OWSUserProfile {
         // If we already have a profile for this address, return it.
-        if let userProfile = fetchNormalizeAndPruneUserProfiles(normalizedAddress: address, tx: tx) {
+        if let userProfile = fetchAndExpungeUserProfiles(for: insertableAddress, tx: tx) {
             return userProfile
         }
 
+        let address: Address
+        switch insertableAddress {
+        case .localUser:
+            address = .localUser
+        case .otherUser(let serviceId):
+            address = .otherUser(SignalServiceAddress(serviceId))
+        }
+
         // Otherwise, create & return a new profile for this address.
-        let userProfile = OWSUserProfile(
-            address: NormalizedDatabaseRecordAddress(address: address)
-        )
-        if address.phoneNumber == Constants.localProfilePhoneNumber {
+        let userProfile = OWSUserProfile(address: address)
+        if case .localUser = address {
             userProfile.update(
                 profileKey: .setTo(OWSAES256Key.generateRandom()),
                 userProfileWriter: .localUser,
@@ -793,68 +828,23 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     /// We should only have one UserProfile for each SignalRecipient. However,
     /// it's possible that duplicates may exist. This method will find and
     /// remove duplicates.
-    private class func fetchNormalizeAndPruneUserProfiles(
-        normalizedAddress: SignalServiceAddress,
+    private class func fetchAndExpungeUserProfiles(
+        for insertableAddress: InsertableAddress,
         tx: SDSAnyWriteTransaction
     ) -> OWSUserProfile? {
-        let userProfiles = UserProfileFinder().fetchUserProfiles(matchingAnyComponentOf: normalizedAddress, tx: tx)
-
-        var matchingProfiles = [OWSUserProfile]()
-        for userProfile in userProfiles {
-            let matchesAddress: Bool = {
-                if let userProfileServiceIdString = userProfile.serviceIdString {
-                    // If the UserProfile has a ServiceId, then so must normalizedAddress.
-                    return userProfileServiceIdString == normalizedAddress.serviceIdUppercaseString
-                } else if let userProfilePhoneNumber = userProfile.phoneNumber {
-                    // If the UserProfile doesn't have a ServiceId, then it can match just the phone number.
-                    return userProfilePhoneNumber == normalizedAddress.phoneNumber
-                }
-                return false
-            }()
-
-            if matchesAddress {
-                matchingProfiles.append(userProfile)
-            } else {
-                // Non-matching profiles must have some other `ServiceId` and a matching
-                // phone number. This is outdated information that we should update.
-                owsAssertDebug(userProfile.serviceIdString != nil)
-                owsAssertDebug(userProfile.phoneNumber != nil)
-                owsAssertDebug(userProfile.phoneNumber == normalizedAddress.phoneNumber)
-                userProfile.phoneNumber = nil
-                userProfile.anyOverwritingUpdate(transaction: tx)
-            }
+        let userProfiles: [OWSUserProfile]
+        switch insertableAddress {
+        case .localUser:
+            userProfiles = UserProfileFinder().fetchUserProfiles(phoneNumber: Constants.localProfilePhoneNumber, tx: tx)
+        case .otherUser(let serviceId):
+            userProfiles = UserProfileFinder().fetchUserProfiles(serviceId: serviceId, tx: tx)
         }
+
         // Get rid of any duplicates -- these shouldn't exist.
-        for redundantProfile in matchingProfiles.dropFirst() {
+        for redundantProfile in userProfiles.dropFirst() {
             redundantProfile.anyRemove(transaction: tx)
         }
-        if let chosenProfile = matchingProfiles.first {
-            updateAddressIfNeeded(userProfile: chosenProfile, newAddress: normalizedAddress, tx: tx)
-            return chosenProfile
-        }
-        return nil
-    }
-
-    private class func updateAddressIfNeeded(
-        userProfile: OWSUserProfile,
-        newAddress: SignalServiceAddress,
-        tx: SDSAnyWriteTransaction
-    ) {
-        let normalizedAddress = NormalizedDatabaseRecordAddress(address: newAddress)
-        var didUpdate = false
-        let newServiceIdString = normalizedAddress?.serviceId?.serviceIdUppercaseString
-        if userProfile.serviceIdString != newServiceIdString {
-            userProfile.serviceIdString = newServiceIdString
-            didUpdate = true
-        }
-        let newPhoneNumber = normalizedAddress?.phoneNumber
-        if userProfile.phoneNumber != newPhoneNumber {
-            userProfile.phoneNumber = newPhoneNumber
-            didUpdate = true
-        }
-        if didUpdate {
-            userProfile.anyOverwritingUpdate(transaction: tx)
-        }
+        return userProfiles.first
     }
 
     // MARK: - Database Hooks
@@ -1012,37 +1002,42 @@ extension OWSUserProfile {
         _ changes: UserProfileChanges,
         userProfileWriter: UserProfileWriter
     ) -> UserVisibleChange {
-        let isLocalUserProfile = Self.isLocalProfileAddress(internalAddress)
-        let canModifyStorageServiceProperties = !isLocalUserProfile || {
-            // Any properties stored in the storage service can only by modified by the
-            // local user or the storage service. In particular, they should _not_ be
-            // modified by profile fetches.
-            switch userProfileWriter {
-            case .debugging: fallthrough
-            case .localUser: fallthrough
-            case .messageBackupRestore: fallthrough
-            case .registration: fallthrough
-            case .storageService: fallthrough
-            case .tests:
-                return true
+        let canModifyStorageServiceProperties: Bool
+        switch internalAddress {
+        case .localUser:
+            canModifyStorageServiceProperties = {
+                // Any properties stored in the storage service can only by modified by the
+                // local user or the storage service. In particular, they should _not_ be
+                // modified by profile fetches.
+                switch userProfileWriter {
+                case .debugging: fallthrough
+                case .localUser: fallthrough
+                case .messageBackupRestore: fallthrough
+                case .registration: fallthrough
+                case .storageService: fallthrough
+                case .tests:
+                    return true
 
-            case .avatarDownload: fallthrough
-            case .groupState: fallthrough
-            case .linking: fallthrough
-            case .metadataUpdate: fallthrough
-            case .profileFetch: fallthrough
-            case .reupload: fallthrough
-            case .syncMessage:
-                return false
+                case .avatarDownload: fallthrough
+                case .groupState: fallthrough
+                case .linking: fallthrough
+                case .metadataUpdate: fallthrough
+                case .profileFetch: fallthrough
+                case .reupload: fallthrough
+                case .syncMessage:
+                    return false
 
-            case .changePhoneNumber: fallthrough
-            case .systemContactsFetch: fallthrough
-            case .unknown: fallthrough
-            @unknown default:
-                owsFailDebug("Invalid userProfileWriter.")
-                return false
-            }
-        }()
+                case .changePhoneNumber: fallthrough
+                case .systemContactsFetch: fallthrough
+                case .unknown: fallthrough
+                @unknown default:
+                    owsFailDebug("Invalid userProfileWriter.")
+                    return false
+                }
+            }()
+        case .otherUser:
+            canModifyStorageServiceProperties = true
+        }
 
         func setIfChanged<T: Equatable>(_ newValue: OptionalChange<T>, keyPath: ReferenceWritableKeyPath<OWSUserProfile, T>) -> Int {
             switch newValue {
@@ -1105,11 +1100,12 @@ extension OWSUserProfile {
         tx: SDSAnyWriteTransaction,
         completion: (() -> Void)?
     ) {
-        let isLocalUserProfile = Self.isLocalProfileAddress(internalAddress)
-        if isLocalUserProfile {
+        let internalAddress = self.internalAddress
+
+        if case .otherUser(let address) = internalAddress {
             // We should never be writing to or updating the "local address" profile;
             // we should be using the "localProfilePhoneNumber" profile instead.
-            owsAssertDebug(internalAddress.phoneNumber == Constants.localProfilePhoneNumber)
+            owsAssertDebug(!address.isLocalAddress)
         }
 
         let oldInstance = Self.anyFetch(uniqueId: uniqueId, transaction: tx)
@@ -1160,11 +1156,11 @@ extension OWSUserProfile {
             tx.addAsyncCompletionOffMain(completion)
         }
 
-        if isLocalUserProfile {
+        if case .localUser = internalAddress {
             profileManager.localProfileWasUpdated(self)
         }
 
-        if isLocalUserProfile, case .setTo = changes.badges {
+        if case .localUser = internalAddress, case .setTo = changes.badges {
             subscriptionManager.reconcileBadgeStates(transaction: tx)
         }
 
@@ -1197,10 +1193,11 @@ extension OWSUserProfile {
             guard userProfileWriter.shouldUpdateStorageService else {
                 return false
             }
-            if isLocalUserProfile {
+            switch internalAddress {
+            case .localUser:
                 // Never update local profile on storage service to reflect profile fetches.
                 return userProfileWriter != .profileFetch
-            } else {
+            case .otherUser:
                 // Only update storage service if we changed something other than the avatar.
                 return changeResult != .avatarOnly
             }
@@ -1208,10 +1205,11 @@ extension OWSUserProfile {
 
         if shouldUpdateStorageService {
             tx.addAsyncCompletionOffMain {
-                if isLocalUserProfile {
+                switch internalAddress {
+                case .localUser:
                     self.storageServiceManager.recordPendingLocalAccountUpdates()
-                } else {
-                    self.storageServiceManager.recordPendingUpdates(updatedAddresses: [ self.internalAddress ])
+                case .otherUser(let address):
+                    self.storageServiceManager.recordPendingUpdates(updatedAddresses: [address])
                 }
             }
         }
@@ -1219,17 +1217,18 @@ extension OWSUserProfile {
         let oldProfileKey = oldInstance?.profileKey
         let newProfileKey = newInstance.profileKey
 
-        tx.addAsyncCompletionOnMain { [internalAddress] in
-            if isLocalUserProfile {
+        tx.addAsyncCompletionOnMain {
+            switch internalAddress {
+            case .localUser:
                 if oldProfileKey != newProfileKey {
                     NotificationCenter.default.postNotificationNameAsync(UserProfileNotifications.localProfileKeyDidChange, object: nil)
                 }
                 NotificationCenter.default.postNotificationNameAsync(UserProfileNotifications.localProfileDidChange, object: nil)
-            } else {
+            case .otherUser(let address):
                 NotificationCenter.default.postNotificationNameAsync(
                     UserProfileNotifications.otherUsersProfileDidChange,
                     object: nil,
-                    userInfo: [UserProfileNotifications.profileAddressKey: internalAddress]
+                    userInfo: [UserProfileNotifications.profileAddressKey: address]
                 )
             }
         }
@@ -1244,7 +1243,7 @@ extension OWSUserProfile {
         if newUserProfile.isPhoneNumberSharedOrDefault == oldUserProfile.isPhoneNumberSharedOrDefault {
             return
         }
-        guard let aci = internalAddress.aci else {
+        guard case .otherUser(let address) = internalAddress, let aci = address.aci else {
             return
         }
         let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
@@ -1337,12 +1336,8 @@ extension OWSUserProfile {
 }
 
 extension OWSUserProfile {
-    static func getFor(keys: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [OWSUserProfile?] {
-        let internalAddresses = keys.map { address -> SignalServiceAddress in
-            owsAssertDebug(address.isValid)
-            return internalAddress(for: address)
-        }
-        return UserProfileFinder().userProfiles(for: internalAddresses, tx: transaction)
+    static func getUserProfiles(for addresses: [Address], tx: SDSAnyReadTransaction) -> [OWSUserProfile?] {
+        return UserProfileFinder().userProfiles(for: addresses, tx: tx)
     }
 }
 

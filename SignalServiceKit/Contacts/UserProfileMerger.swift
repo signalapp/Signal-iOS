@@ -28,7 +28,12 @@ class UserProfileMerger: RecipientMergeObserver {
                     userProfileWriter: .localUser,
                     transaction: SDSDB.shimOnlyBridge(tx),
                     completion: {
-                        ProfileFetcherJob.fetchProfile(address: userProfile.internalAddress, authedAccount: .implicit())
+                        switch userProfile.internalAddress {
+                        case .localUser:
+                            break
+                        case .otherUser(let address):
+                            ProfileFetcherJob.fetchProfile(address: address, authedAccount: .implicit())
+                        }
                     }
                 )
             }

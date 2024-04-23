@@ -357,14 +357,13 @@ public class ProfileFetcherJob: NSObject {
             }
 
             self.profileManager.updateProfile(
-                address: SignalServiceAddress(serviceId),
+                address: OWSUserProfile.insertableAddress(for: serviceId, localIdentifiers: localIdentifiers),
                 decryptedProfile: fetchedProfile.decryptedProfile,
                 avatarUrlPath: avatarDownloadResult.remoteRelativePath,
                 avatarFileName: avatarFilename,
                 profileBadges: profileBadgeMetadata,
                 lastFetchDate: Date(),
                 userProfileWriter: .profileFetch,
-                localIdentifiers: localIdentifiers,
                 tx: transaction
             )
 

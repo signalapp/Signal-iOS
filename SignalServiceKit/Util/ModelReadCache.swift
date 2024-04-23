@@ -158,10 +158,12 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType>: Dependencies, Ca
         evacuateCache()
     }
 
+    #if TESTABLE_BUILD
     // This method should only be called within performSync().
     private func readValue(for cacheKey: ModelCacheKey<KeyType>, transaction: SDSAnyReadTransaction) -> ValueType? {
         return readValues(for: AnySequence([cacheKey]), transaction: transaction)[0]
     }
+    #endif
 
     // This method should only be called within performSync().
     func readValues(for cacheKeys: AnySequence<ModelCacheKey<KeyType>>,
@@ -517,21 +519,20 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType>: Dependencies, Ca
 
 @objc
 public class UserProfileReadCache: NSObject {
-    typealias KeyType = SignalServiceAddress
+    typealias KeyType = OWSUserProfile.Address
     typealias ValueType = OWSUserProfile
 
     private class Adapter: ModelCacheAdapter<KeyType, ValueType> {
         override func read(key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
-            OWSUserProfile.getUserProfile(for: key, transaction: transaction)
+            return OWSUserProfile.getUserProfile(for: key, tx: transaction)
         }
 
         override func key(forValue value: ValueType) -> KeyType {
-            OWSUserProfile.internalAddress(for: value.internalAddress)
+            return value.internalAddress
         }
 
         override func cacheKey(forKey key: KeyType) -> ModelCacheKey<KeyType> {
-            // Resolve key for local user to the invariant key.
-            ModelCacheKey(key: OWSUserProfile.internalAddress(for: key))
+            return ModelCacheKey(key: key)
         }
 
         override func copy(value: ValueType) throws -> ValueType {
@@ -542,9 +543,8 @@ public class UserProfileReadCache: NSObject {
             return modelCopy
         }
 
-        override func read(keys: [UserProfileReadCache.KeyType],
-                           transaction: SDSAnyReadTransaction) -> [UserProfileReadCache.ValueType?] {
-            return OWSUserProfile.getFor(keys: keys, transaction: transaction)
+        override func read(keys: [KeyType], transaction tx: SDSAnyReadTransaction) -> [ValueType?] {
+            return OWSUserProfile.getUserProfiles(for: keys, tx: tx)
         }
     }
 
@@ -555,13 +555,6 @@ public class UserProfileReadCache: NSObject {
     @objc
     public init(_ factory: ModelReadCacheFactory) {
         cache = factory.create(mode: .read, adapter: adapter)
-    }
-
-    @objc
-    public func getUserProfile(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
-        let address = OWSUserProfile.internalAddress(for: address)
-        let cacheKey = adapter.cacheKey(forKey: address)
-        return cache.getValue(for: cacheKey, transaction: transaction)
     }
 
     @objc(didRemoveUserProfile:transaction:)
@@ -584,9 +577,11 @@ public class UserProfileReadCache: NSObject {
         return ModelReadCacheSizeLease(size, model: cache)
     }
 
-    public func getUserProfiles(for addresses: AnySequence<SignalServiceAddress>,
-                                transaction: SDSAnyReadTransaction) -> [OWSUserProfile?] {
-        let cacheKeys = addresses.map { self.adapter.cacheKey(forKey: OWSUserProfile.internalAddress(for: $0)) }
+    public func getUserProfiles(
+        for addresses: some Sequence<OWSUserProfile.Address>,
+        transaction: SDSAnyReadTransaction
+    ) -> [OWSUserProfile?] {
+        let cacheKeys = addresses.map { self.adapter.cacheKey(forKey: $0) }
         return cache.getValues(for: cacheKeys, transaction: transaction)
     }
 }

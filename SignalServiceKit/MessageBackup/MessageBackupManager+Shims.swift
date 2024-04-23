@@ -63,14 +63,13 @@ public protocol _MessageBackup_ProfileManagerShim {
 
     func addToWhitelist(_ thread: TSGroupThread, tx: DBWriteTransaction)
 
-    func setProfileGivenName(
+    func insertOtherUserProfile(
         givenName: String?,
         familyName: String?,
         profileKey: Data?,
-        address: SignalServiceAddress,
-        localIdentifiers: LocalIdentifiers,
+        address: OWSUserProfile.Address,
         tx: DBWriteTransaction
-    ) -> Bool
+    )
 }
 
 public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManagerShim {
@@ -86,7 +85,7 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
     }
 
     public func getLocalUsersProfile(tx: DBReadTransaction) -> OWSUserProfile? {
-        profileManager.getUserProfile(for: OWSUserProfile.localProfileAddress, transaction: SDSDB.shimOnlyBridge(tx))
+        return OWSUserProfile.getUserProfileForLocalUser(tx: SDSDB.shimOnlyBridge(tx))
     }
 
     public func allWhitelistedRegisteredAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] {
@@ -109,34 +108,22 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
         profileManager.addThread(toProfileWhitelist: thread, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    public func setProfileGivenName(
+    public func insertOtherUserProfile(
         givenName: String?,
         familyName: String?,
         profileKey: Data?,
-        address: SignalServiceAddress,
-        localIdentifiers: LocalIdentifiers,
+        address: OWSUserProfile.Address,
         tx: DBWriteTransaction
-    ) -> Bool {
-        profileManager.setProfile(
-            for: address,
-            givenName: .setTo(givenName),
-            familyName: .setTo(familyName),
-            avatarUrlPath: .noChange,
-            userProfileWriter: .messageBackupRestore,
-            localIdentifiers: localIdentifiers,
-            transaction: SDSDB.shimOnlyBridge(tx)
-        )
-        if let profileKey {
-            return profileManager.setProfileKeyData(
-                profileKey,
-                for: address,
-                onlyFillInIfMissing: false,
-                userProfileWriter: .messageBackupRestore,
-                localIdentifiers: localIdentifiers,
-                transaction: SDSDB.shimOnlyBridge(tx)
-            )
+    ) {
+        guard case .otherUser = address else {
+            owsFail("Must pass .otherUser to this method.")
         }
-        return false
+        OWSUserProfile(
+            address: address,
+            givenName: givenName,
+            familyName: familyName,
+            profileKey: profileKey.flatMap(OWSAES256Key.init(data:))
+        ).anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
 
@@ -420,38 +407,32 @@ public class _MessageBackup_AccountData_UDManagerWrapper: _MessageBackup_Account
 
 public protocol _MessageBackup_AccountData_UserProfileShim {
     func getLocalProfile(tx: DBReadTransaction) -> OWSUserProfile?
-    func updateLocalProfile(
+    func insertLocalProfile(
         givenName: String,
         familyName: String?,
         avatarUrlPath: String?,
-        isPhoneNumberShared: Bool,
         profileKey: OWSAES256Key,
         tx: DBWriteTransaction
     )
 }
 public class _MessageBackup_AccountData_UserProfileWrapper: _MessageBackup_AccountData_UserProfileShim {
     public func getLocalProfile(tx: DBReadTransaction) -> OWSUserProfile? {
-        return UserProfileFinder().userProfile(for: OWSUserProfile.localProfileAddress, transaction: SDSDB.shimOnlyBridge(tx))
+        return OWSUserProfile.getUserProfileForLocalUser(tx: SDSDB.shimOnlyBridge(tx))
     }
 
-    public func updateLocalProfile(
+    public func insertLocalProfile(
         givenName: String,
         familyName: String?,
         avatarUrlPath: String?,
-        isPhoneNumberShared: Bool,
         profileKey: OWSAES256Key,
         tx: DBWriteTransaction
     ) {
-        let userProfile = OWSUserProfile(address: NormalizedDatabaseRecordAddress(address: OWSUserProfile.localProfileAddress))
-        userProfile.update(
-            givenName: .setTo(givenName),
-            familyName: .setTo(familyName),
-            avatarUrlPath: .setTo(avatarUrlPath),
-            profileKey: .setTo(profileKey),
-            isPhoneNumberShared: .setTo(isPhoneNumberShared),
-            userProfileWriter: .localUser,
-            transaction: SDSDB.shimOnlyBridge(tx),
-            completion: nil
-        )
+        OWSUserProfile(
+            address: .localUser,
+            givenName: givenName,
+            familyName: familyName,
+            profileKey: profileKey,
+            avatarUrlPath: avatarUrlPath
+        ).anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
     }
 }

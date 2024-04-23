@@ -51,16 +51,8 @@ public class CVAvatarBuilder: Dependencies {
 
         let badgeImage: UIImage?
         if includingBadge {
-            let userProfile: OWSUserProfile? = {
-                if address.isLocalAddress {
-                    // TODO: Badges — Expose badge info about local user profile on OWSUserProfile
-                    // TODO: Badges — Unify with ConversationAvatarDataSource
-                    return OWSProfileManager.shared.localUserProfile()
-                } else {
-                    return UserProfileFinder().userProfile(for: address, transaction: transaction)
-                }
-            }()
-
+            // TODO: Badges — Unify with ConversationAvatarDataSource
+            let userProfile = profileManager.getUserProfile(for: address, transaction: transaction)
             let sizeClass = ConversationAvatarView.Configuration.SizeClass(avatarDiameter: diameterPoints)
             let badge = userProfile?.primaryBadge?.fetchBadgeContent(transaction: transaction)
             if let badgeAssets = badge?.assets {

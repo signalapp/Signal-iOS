@@ -299,6 +299,11 @@ public class FullTextSearcher: NSObject {
         var groupResults = [GroupSearchResult]()
         var storyResults = [StorySearchResult]()
 
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
+            owsFail("Can't search if you've never been registered.")
+        }
+
         var addresses = SearchableNameFinder(
             contactManager: contactsManager,
             searchableNameIndexer: DependenciesBridge.shared.searchableNameIndexer,
@@ -307,6 +312,7 @@ public class FullTextSearcher: NSObject {
         ).searchNames(
             for: searchText,
             maxResults: maxResults,
+            localIdentifiers: localIdentifiers,
             tx: tx.asV2Read,
             checkCancellation: {},
             addGroupThread: { groupThread in
@@ -345,12 +351,9 @@ public class FullTextSearcher: NSObject {
 
         var contactResults: [ContactSearchResult] = []
 
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        if let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) {
-            addresses.removeAll(where: { $0 == localIdentifiers.aciAddress })
-            if includeLocalUser, noteToSelfMatch(searchText: searchText, localIdentifiers: localIdentifiers, tx: tx) != .none {
-                contactResults.append(ContactSearchResult(recipientAddress: localIdentifiers.aciAddress, transaction: tx))
-            }
+        addresses.removeAll(where: { $0 == localIdentifiers.aciAddress })
+        if includeLocalUser, noteToSelfMatch(searchText: searchText, localIdentifiers: localIdentifiers, tx: tx) != .none {
+            contactResults.append(ContactSearchResult(recipientAddress: localIdentifiers.aciAddress, transaction: tx))
         }
 
         for address in addresses {
@@ -566,6 +569,11 @@ public class FullTextSearcher: NSObject {
             return nil
         }
 
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
+            owsFail("Can't search if you've never been registered.")
+        }
+
         var addresses = try SearchableNameFinder(
             contactManager: contactsManager,
             searchableNameIndexer: DependenciesBridge.shared.searchableNameIndexer,
@@ -574,6 +582,7 @@ public class FullTextSearcher: NSObject {
         ).searchNames(
             for: searchText,
             maxResults: remainingResultCount(),
+            localIdentifiers: localIdentifiers,
             tx: transaction.asV2Read,
             checkCancellation: { if isCanceled() { throw CancellationError() } },
             addGroupThread: { groupThread in
@@ -587,17 +596,14 @@ public class FullTextSearcher: NSObject {
             return nil
         }
 
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        if let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction.asV2Read) {
-            addresses.removeAll(where: { $0 == localIdentifiers.aciAddress })
-            switch noteToSelfMatch(searchText: searchText, localIdentifiers: localIdentifiers, tx: transaction) {
-            case .nameOrNumber:
-                appendAddress(localIdentifiers.aciAddress, isInWhitelist: true, fetchGroups: true, fetchMentions: false)
-            case .noteToSelf:
-                appendAddress(localIdentifiers.aciAddress, isInWhitelist: true, fetchGroups: false, fetchMentions: false)
-            case .none:
-                break
-            }
+        addresses.removeAll(where: { $0 == localIdentifiers.aciAddress })
+        switch noteToSelfMatch(searchText: searchText, localIdentifiers: localIdentifiers, tx: transaction) {
+        case .nameOrNumber:
+            appendAddress(localIdentifiers.aciAddress, isInWhitelist: true, fetchGroups: true, fetchMentions: false)
+        case .noteToSelf:
+            appendAddress(localIdentifiers.aciAddress, isInWhitelist: true, fetchGroups: false, fetchMentions: false)
+        case .none:
+            break
         }
 
         guard !isCanceled() else {
@@ -707,6 +713,10 @@ public class FullTextSearcher: NSObject {
 
         let canSearchForMentions: Bool = thread is TSGroupThread
         if canSearchForMentions {
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
+                owsFail("Can't search if you've never been registered.")
+            }
             let addresses = SearchableNameFinder(
                 contactManager: contactsManager,
                 searchableNameIndexer: DependenciesBridge.shared.searchableNameIndexer,
@@ -715,6 +725,7 @@ public class FullTextSearcher: NSObject {
             ).searchNames(
                 for: searchText,
                 maxResults: maxResults - messages.count,
+                localIdentifiers: localIdentifiers,
                 tx: transaction.asV2Read,
                 checkCancellation: {},
                 addGroupThread: { _ in },

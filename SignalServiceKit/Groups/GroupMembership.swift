@@ -763,17 +763,16 @@ public extension GroupMembership {
             owsAssertDebug(Set(bannedMembers.keys.lazy.map { SignalServiceAddress($0) })
                 .isDisjoint(with: Set(memberStates.keys)))
 
-            var memberStates = self.memberStates
-
-            let localProfileInvariantAddress = OWSUserProfile.localProfileAddress
-            if memberStates[localProfileInvariantAddress] != nil {
-                owsFailDebug("Removing localProfileInvariantAddress.")
-                memberStates.removeValue(forKey: localProfileInvariantAddress)
+            // TODO: Why is this here? Uggh.
+            let memberStates = self.memberStates.filter {
+                $0.key.phoneNumber != OWSUserProfile.Constants.localProfilePhoneNumber
             }
 
-            return GroupMembership(memberStates: memberStates,
-                                   bannedMembers: bannedMembers,
-                                   invalidInviteMap: invalidInviteMap)
+            return GroupMembership(
+                memberStates: memberStates,
+                bannedMembers: bannedMembers,
+                invalidInviteMap: invalidInviteMap
+            )
         }
     }
 }

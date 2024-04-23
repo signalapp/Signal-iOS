@@ -174,6 +174,7 @@ extension MessageSender {
         status: SenderKeyStatus,
         udAccessMap: [ServiceId: OWSUDSendingAccess],
         senderCertificates: SenderCertificates,
+        localIdentifiers: LocalIdentifiers,
         sendErrorBlock: @escaping (ServiceId, NSError) -> Void
     ) -> Promise<Void> {
 
@@ -264,9 +265,9 @@ extension MessageSender {
                         }
 
                         self.profileManager.didSendOrReceiveMessage(
-                            from: SignalServiceAddress(recipient.serviceId),
+                            serviceId: recipient.serviceId,
                             localIdentifiers: localIdentifiers,
-                            transaction: tx
+                            tx: tx.asV2Write
                         )
 
                         guard let payloadId = payloadId, let recipientAci = recipient.serviceId as? Aci else { return }

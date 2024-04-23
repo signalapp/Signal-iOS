@@ -91,8 +91,8 @@ class SignalRecipientTest: SSKBaseTestSwift {
 
         write { transaction in
             let aciProfile = OWSUserProfile.getOrBuildUserProfile(
-                for: SignalServiceAddress(aci),
-                transaction: transaction
+                for: .otherUser(aci),
+                tx: transaction
             )
             aciProfile.anyInsert(transaction: transaction)
             aciProfile.update(
@@ -137,6 +137,9 @@ class SignalRecipientTest: SSKBaseTestSwift {
         let newPhoneNumber = E164("+16505550102")!
         let oldAddress = SignalServiceAddress(serviceId: aci, phoneNumber: oldPhoneNumber.stringValue)
 
+        // Do this because of SignalServiceAddressTest.test_hashStability2().
+        _ = SignalServiceAddress(serviceId: aci, phoneNumber: newPhoneNumber.stringValue)
+
         write { transaction in
             let oldThread = TSContactThread.getOrCreateThread(
                 withContactAddress: oldAddress,
@@ -151,10 +154,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
             let oldMessage = messageBuilder.build()
             oldMessage.anyInsert(transaction: transaction)
 
-            let oldPhoneNumberProfile = OWSUserProfile.getOrBuildUserProfile(
-                for: oldAddress,
-                transaction: transaction
-            )
+            let oldPhoneNumberProfile = OWSUserProfile.getOrBuildUserProfile(for: .otherUser(aci), tx: transaction)
             oldPhoneNumberProfile.anyInsert(transaction: transaction)
             oldPhoneNumberProfile.update(
                 isPhoneNumberShared: .setTo(true),
@@ -162,9 +162,8 @@ class SignalRecipientTest: SSKBaseTestSwift {
                 transaction: transaction,
                 completion: nil
             )
-            let newPhoneNumberProfile = OWSUserProfile.getOrBuildUserProfile(
-                for: SignalServiceAddress(phoneNumber: newPhoneNumber.stringValue),
-                transaction: transaction
+            let newPhoneNumberProfile = OWSUserProfile(
+                address: .otherUser(SignalServiceAddress(phoneNumber: newPhoneNumber.stringValue))
             )
             newPhoneNumberProfile.anyInsert(transaction: transaction)
 
@@ -184,10 +183,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
                 uniqueId: oldMessage.uniqueId,
                 transaction: transaction
             )!
-            let newProfile = OWSUserProfile.getOrBuildUserProfile(
-                for: newAddress,
-                transaction: transaction
-            )
+            let newProfile = OWSUserProfile.getOrBuildUserProfile(for: .otherUser(aci), tx: transaction)
             let newAccount = SignalAccount.anyFetch(
                 uniqueId: oldAccount.uniqueId,
                 transaction: transaction
@@ -238,10 +234,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
             let oldMessage = messageBuilder.build()
             oldMessage.anyInsert(transaction: transaction)
 
-            var oldProfile = OWSUserProfile.getOrBuildUserProfile(
-                for: oldAddress,
-                transaction: transaction
-            )
+            var oldProfile = OWSUserProfile(address: .otherUser(oldAddress))
             oldProfile.anyInsert(transaction: transaction)
             oldProfile.update(
                 isPhoneNumberShared: .setTo(true),
@@ -266,10 +259,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
                 uniqueId: oldMessage.uniqueId,
                 transaction: transaction
             )!
-            let newProfile = OWSUserProfile.getOrBuildUserProfile(
-                for: newAddress,
-                transaction: transaction
-            )
+            let newProfile = OWSUserProfile.getOrBuildUserProfile(for: .otherUser(newAci), tx: transaction)
             let newAccount = SignalAccount.anyFetch(
                 uniqueId: oldAccount.uniqueId,
                 transaction: transaction
@@ -295,8 +285,8 @@ class SignalRecipientTest: SSKBaseTestSwift {
             oldProfile = try XCTUnwrap(OWSUserProfile.anyFetch(uniqueId: oldProfile.uniqueId, transaction: transaction))
             XCTAssertNotEqual(oldProfile.uniqueId, newProfile.uniqueId)
             XCTAssertNil(oldProfile.phoneNumber)
-            XCTAssertEqual(newAddress, newProfile.internalAddress)
-            XCTAssertNotEqual(newAddress, oldProfile.internalAddress)
+            XCTAssertEqual(.otherUser(newAddress), newProfile.internalAddress)
+            XCTAssertNotEqual(.otherUser(newAddress), oldProfile.internalAddress)
 
             XCTAssertEqual(newAccount.uniqueId, oldAccount.uniqueId)
             XCTAssertEqual(newAccount.recipientPhoneNumber, phoneNumber.stringValue)

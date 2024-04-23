@@ -161,7 +161,12 @@ public final class MessageReceiver: Dependencies {
                 case .discard:
                     break
                 case .request(let messageReceiverRequest):
-                    handleRequest(messageReceiverRequest, context: PassthroughDeliveryReceiptContext(), tx: tx)
+                    handleRequest(
+                        messageReceiverRequest,
+                        context: PassthroughDeliveryReceiptContext(),
+                        localIdentifiers: localIdentifiers,
+                        tx: tx
+                    )
                     fallthrough
                 case .noContent:
                     finishProcessingEnvelope(decryptedEnvelope, tx: tx)
@@ -176,16 +181,21 @@ public final class MessageReceiver: Dependencies {
         }
     }
 
-    func handleRequest(_ request: MessageReceiverRequest, context: DeliveryReceiptContext, tx: SDSAnyWriteTransaction) {
+    func handleRequest(
+        _ request: MessageReceiverRequest,
+        context: DeliveryReceiptContext,
+        localIdentifiers: LocalIdentifiers,
+        tx: SDSAnyWriteTransaction
+    ) {
         let protoContent = request.protoContent
         Logger.info("Received \(request.decryptedEnvelope.timestamp) w/\(protoContent.contentDescription) from \(request.decryptedEnvelope.sourceAci)")
 
         switch request.messageType {
         case .syncMessage(let syncMessage):
-            handleIncomingEnvelope(request: request, syncMessage: syncMessage, tx: tx)
+            handleIncomingEnvelope(request: request, syncMessage: syncMessage, localIdentifiers: localIdentifiers, tx: tx)
             DependenciesBridge.shared.deviceManager.setHasReceivedSyncMessage(transaction: tx.asV2Write)
         case .dataMessage(let dataMessage):
-            handleIncomingEnvelope(request: request, dataMessage: dataMessage, tx: tx)
+            handleIncomingEnvelope(request: request, dataMessage: dataMessage, localIdentifiers: localIdentifiers, tx: tx)
         case .callMessage(let callMessage):
             owsAssertDebug(!request.shouldDiscardVisibleMessages)
             let action = callMessageHandler.action(
@@ -195,7 +205,7 @@ public final class MessageReceiver: Dependencies {
             )
             switch action {
             case .process:
-                handleIncomingEnvelope(request: request, callMessage: callMessage, tx: tx)
+                handleIncomingEnvelope(request: request, callMessage: callMessage, localIdentifiers: localIdentifiers, tx: tx)
             case .handOff:
                 callMessageHandler.externallyHandleCallMessage(
                     envelope: request.decryptedEnvelope.envelope,
@@ -216,7 +226,7 @@ public final class MessageReceiver: Dependencies {
         case .decryptionErrorMessage(let decryptionErrorMessage):
             handleIncomingEnvelope(request: request, decryptionErrorMessage: decryptionErrorMessage, tx: tx)
         case .storyMessage(let storyMessage):
-            handleIncomingEnvelope(request: request, storyMessage: storyMessage, tx: tx)
+            handleIncomingEnvelope(request: request, storyMessage: storyMessage, localIdentifiers: localIdentifiers, tx: tx)
         case .editMessage(let editMessage):
             let result = handleIncomingEnvelope(request: request, editMessage: editMessage, tx: tx)
             switch result {
@@ -362,11 +372,12 @@ public final class MessageReceiver: Dependencies {
     private func handleIncomingEnvelope(
         request: MessageReceiverRequest,
         syncMessage: SSKProtoSyncMessage,
+        localIdentifiers: LocalIdentifiers,
         tx: SDSAnyWriteTransaction
     ) {
         let decryptedEnvelope = request.decryptedEnvelope
 
-        guard decryptedEnvelope.sourceAci == DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci else {
+        guard decryptedEnvelope.sourceAci == localIdentifiers.aci else {
             // Sync messages should only come from linked devices.
             owsFailDebug("Received sync message from another user.")
             return
@@ -696,6 +707,7 @@ public final class MessageReceiver: Dependencies {
     private func handleIncomingEnvelope(
         request: MessageReceiverRequest,
         dataMessage: SSKProtoDataMessage,
+        localIdentifiers: LocalIdentifiers,
         tx: SDSAnyWriteTransaction
     ) {
         let envelope = request.decryptedEnvelope
@@ -714,7 +726,7 @@ public final class MessageReceiver: Dependencies {
         }
 
         if let profileKey = dataMessage.profileKey {
-            setProfileKeyIfValid(profileKey, for: envelope.sourceAci, tx: tx)
+            setProfileKeyIfValid(profileKey, for: envelope.sourceAci, localIdentifiers: localIdentifiers, tx: tx)
         }
 
         // Pre-process the data message. For v1 and v2 group messages this involves
@@ -746,23 +758,24 @@ public final class MessageReceiver: Dependencies {
         }
     }
 
-    private func setProfileKeyIfValid(_ profileKey: Data, for aci: Aci, tx: SDSAnyWriteTransaction) {
-        guard profileKey.count == kAES256_KeyByteLength else {
-            owsFailDebug("Invalid profile key length \(profileKey.count) from \(aci)")
-            return
-        }
+    private func setProfileKeyIfValid(
+        _ profileKey: Data,
+        for aci: Aci,
+        localIdentifiers: LocalIdentifiers,
+        tx: SDSAnyWriteTransaction
+    ) {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        let localAci = tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci
-        if aci == localAci, tsAccountManager.registrationState(tx: tx.asV2Read).isPrimaryDevice != false {
+        if aci == localIdentifiers.aci, tsAccountManager.registrationState(tx: tx.asV2Read).isPrimaryDevice != false {
             return
         }
         profileManager.setProfileKeyDataAndFetchProfile(
             profileKey,
-            forAddress: SignalServiceAddress(aci),
+            for: aci,
             onlyFillInIfMissing: false,
             userProfileWriter: .localUser,
+            localIdentifiers: localIdentifiers,
             authedAccount: .implicit(),
-            transaction: tx
+            tx: tx.asV2Write
         )
     }
 
@@ -1181,6 +1194,7 @@ public final class MessageReceiver: Dependencies {
     private func handleIncomingEnvelope(
         request: MessageReceiverRequest,
         callMessage: SSKProtoCallMessage,
+        localIdentifiers: LocalIdentifiers,
         tx: SDSAnyWriteTransaction
     ) {
         let envelope = request.decryptedEnvelope
@@ -1194,7 +1208,7 @@ public final class MessageReceiver: Dependencies {
         }
 
         if let profileKey = callMessage.profileKey {
-            setProfileKeyIfValid(profileKey, for: envelope.sourceAci, tx: tx)
+            setProfileKeyIfValid(profileKey, for: envelope.sourceAci, localIdentifiers: localIdentifiers, tx: tx)
         }
 
         // Any call message which will result in the posting a new incoming call to CallKit
@@ -1550,6 +1564,7 @@ public final class MessageReceiver: Dependencies {
     private func handleIncomingEnvelope(
         request: MessageReceiverRequest,
         storyMessage: SSKProtoStoryMessage,
+        localIdentifiers: LocalIdentifiers,
         tx: SDSAnyWriteTransaction
     ) {
         do {
@@ -1557,6 +1572,7 @@ public final class MessageReceiver: Dependencies {
                 storyMessage,
                 timestamp: request.decryptedEnvelope.timestamp,
                 author: request.decryptedEnvelope.sourceAci,
+                localIdentifiers: localIdentifiers,
                 transaction: tx
             )
         } catch {

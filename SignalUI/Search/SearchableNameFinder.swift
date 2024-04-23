@@ -28,6 +28,7 @@ public class SearchableNameFinder {
     public func searchNames(
         for searchText: String,
         maxResults: Int,
+        localIdentifiers: LocalIdentifiers,
         tx: DBReadTransaction,
         checkCancellation: () throws -> Void,
         addGroupThread: (TSGroupThread) -> Void,
@@ -46,7 +47,7 @@ public class SearchableNameFinder {
                 contactMatches.addResult(for: signalAccount)
 
             case let userProfile as OWSUserProfile:
-                contactMatches.addResult(for: userProfile)
+                contactMatches.addResult(for: userProfile, localIdentifiers: localIdentifiers)
 
             case let signalRecipient as SignalRecipient:
                 contactMatches.addResult(
@@ -114,8 +115,8 @@ private struct ContactMatches {
         }
     }
 
-    mutating func addResult(for userProfile: OWSUserProfile) {
-        let address = userProfile.publicAddress
+    mutating func addResult(for userProfile: OWSUserProfile, localIdentifiers: LocalIdentifiers) {
+        let address = userProfile.publicAddress(localIdentifiers: localIdentifiers)
         withUnsafeMutablePointer(to: &rawValue[address, default: ContactMatch()]) {
             $0.pointee.userProfile = userProfile
         }

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalCoreKit
 
 #if TESTABLE_BUILD
@@ -22,15 +23,18 @@ extension OWSFakeProfileManager: ProfileManager {
         throw OWSGenericError("Not supported.")
     }
 
+    public func downloadAndDecryptAvatar(avatarUrlPath: String, profileKey: OWSAES256Key) async throws -> URL {
+        throw OWSGenericError("Not supported.")
+    }
+
     public func updateProfile(
-        address: SignalServiceAddress,
+        address: OWSUserProfile.InsertableAddress,
         decryptedProfile: DecryptedProfile?,
         avatarUrlPath: OptionalChange<String?>,
         avatarFileName: OptionalChange<String?>,
         profileBadges: [OWSUserProfileBadgeInfo],
         lastFetchDate: Date,
         userProfileWriter: UserProfileWriter,
-        localIdentifiers: LocalIdentifiers,
         tx: SDSAnyWriteTransaction
     ) {
     }
@@ -54,27 +58,32 @@ extension OWSFakeProfileManager: ProfileManager {
         return Promise(error: OWSGenericError("Not supported."))
     }
 
-    public func downloadAndDecryptAvatar(avatarUrlPath: String, profileKey: OWSAES256Key) async throws -> URL {
-        throw OWSGenericError("Not supported.")
+    public func didSendOrReceiveMessage(
+        serviceId: ServiceId,
+        localIdentifiers: LocalIdentifiers,
+        tx: DBWriteTransaction
+    ) {
     }
 
-    public func didSendOrReceiveMessage(from address: SignalServiceAddress, localIdentifiers: LocalIdentifiers, transaction: SDSAnyWriteTransaction) {
+    public func setProfileKeyDataAndFetchProfile(
+        _ profileKeyData: Data,
+        for serviceId: ServiceId,
+        onlyFillInIfMissing: Bool,
+        userProfileWriter: UserProfileWriter,
+        localIdentifiers: LocalIdentifiers,
+        authedAccount: AuthedAccount,
+        tx: DBWriteTransaction
+    ) {
+        self.profileKeys[SignalServiceAddress(serviceId)] = OWSAES256Key(data: profileKeyData)!
     }
 
-    public func setProfile(for address: SignalServiceAddress, givenName: OptionalChange<String?>, familyName: OptionalChange<String?>, avatarUrlPath: OptionalChange<String?>, userProfileWriter: UserProfileWriter, localIdentifiers: LocalIdentifiers, transaction: SDSAnyWriteTransaction) {
-    }
-
-    public func setProfileKeyDataAndFetchProfile(_ profileKeyData: Data, forAddress address: SignalServiceAddress, onlyFillInIfMissing: Bool, userProfileWriter: UserProfileWriter, authedAccount: AuthedAccount, transaction tx: SDSAnyWriteTransaction) {
-        let key = OWSAES256Key(data: profileKeyData)
-        owsAssert(key != nil)
-        self.profileKeys[address] = key
-    }
-
-    public func setProfileKeyData(_ profileKeyData: Data, for address: SignalServiceAddress, onlyFillInIfMissing: Bool, userProfileWriter: UserProfileWriter, localIdentifiers: LocalIdentifiers, transaction tx: SDSAnyWriteTransaction) -> Bool {
-        let key = OWSAES256Key(data: profileKeyData)
-        owsAssert(key != nil)
-        self.profileKeys[address] = key
-        return false
+    public func fillInProfileKeys(
+        allProfileKeys: [Aci: Data],
+        authoritativeProfileKeys: [Aci: Data],
+        userProfileWriter: UserProfileWriter,
+        localIdentifiers: LocalIdentifiers,
+        tx: DBWriteTransaction
+    ) {
     }
 }
 

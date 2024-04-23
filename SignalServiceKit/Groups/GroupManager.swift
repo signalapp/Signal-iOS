@@ -1377,33 +1377,24 @@ public class GroupManager: NSObject {
     ///   non-authoritative profile keys.
     ///
     /// - Parameter authoritativeProfileKeysByAci: contains just authoritative
-    ///   profile keys. If authoritative profile keys cannot be determined, pass
-    ///   nil.
+    ///   profile keys. If authoritative profile keys can't be determined, pass
+    ///   an empty Dictionary.
     public static func storeProfileKeysFromGroupProtos(
         allProfileKeysByAci: [Aci: Data],
-        authoritativeProfileKeysByAci: [Aci: Data]?
+        authoritativeProfileKeysByAci: [Aci: Data] = [:],
+        localIdentifiers: LocalIdentifiers,
+        tx: SDSAnyWriteTransaction
     ) {
-        var allProfileKeysByAddress = [SignalServiceAddress: Data]()
-        for (aci, profileKeyData) in allProfileKeysByAci {
-            allProfileKeysByAddress[SignalServiceAddress(aci)] = profileKeyData
-        }
-        var authoritativeProfileKeysByAddress = [SignalServiceAddress: Data]()
-        if let authoritativeProfileKeysByAci {
-            for (aci, profileKeyData) in authoritativeProfileKeysByAci {
-                let address = SignalServiceAddress(aci)
-                if !address.isLocalAddress {
-                    // We trust what is locally-stored as the local user's profile
-                    // key to be more authoritative than what is stored in the group
-                    // state on the server.
-                    authoritativeProfileKeysByAddress[address] = profileKeyData
-                }
-            }
-        }
+        // We trust what is locally-stored as the local user's profile key to be
+        // more authoritative than what is stored in the group state on the server.
+        var authoritativeProfileKeysByAci = authoritativeProfileKeysByAci
+        authoritativeProfileKeysByAci.removeValue(forKey: localIdentifiers.aci)
         profileManager.fillInProfileKeys(
-            allProfileKeys: allProfileKeysByAddress,
-            authoritativeProfileKeys: authoritativeProfileKeysByAddress,
+            allProfileKeys: allProfileKeysByAci,
+            authoritativeProfileKeys: authoritativeProfileKeysByAci,
             userProfileWriter: .groupState,
-            authedAccount: .implicit()
+            localIdentifiers: localIdentifiers,
+            tx: tx.asV2Write
         )
     }
 

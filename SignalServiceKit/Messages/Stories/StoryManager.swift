@@ -32,6 +32,7 @@ public class StoryManager: NSObject {
         _ storyMessage: SSKProtoStoryMessage,
         timestamp: UInt64,
         author: Aci,
+        localIdentifiers: LocalIdentifiers,
         transaction: SDSAnyWriteTransaction
     ) throws {
         guard StoryFinder.story(
@@ -88,11 +89,12 @@ public class StoryManager: NSObject {
         if let profileKey = storyMessage.profileKey {
             profileManager.setProfileKeyDataAndFetchProfile(
                 profileKey,
-                forAddress: SignalServiceAddress(author),
+                for: author,
                 onlyFillInIfMissing: false,
                 userProfileWriter: .localUser,
+                localIdentifiers: localIdentifiers,
                 authedAccount: .implicit(),
-                transaction: transaction
+                tx: transaction.asV2Write
             )
         }
 

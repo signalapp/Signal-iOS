@@ -29,29 +29,18 @@ extension OWSProfileManager: ProfileManager, Dependencies {
     }
 
     public func updateProfile(
-        address: SignalServiceAddress,
+        address: OWSUserProfile.InsertableAddress,
         decryptedProfile: DecryptedProfile?,
         avatarUrlPath: OptionalChange<String?>,
         avatarFileName: OptionalChange<String?>,
         profileBadges: [OWSUserProfileBadgeInfo],
         lastFetchDate: Date,
         userProfileWriter: UserProfileWriter,
-        localIdentifiers: LocalIdentifiers,
         tx: SDSAnyWriteTransaction
     ) {
         AssertNotOnMainThread()
 
-        let internalAddress: SignalServiceAddress
-        if localIdentifiers.contains(address: address) {
-            internalAddress = OWSUserProfile.localProfileAddress
-        } else {
-            internalAddress = address
-        }
-
-        let userProfile = OWSUserProfile.getOrBuildUserProfile(
-            for: internalAddress,
-            transaction: tx
-        )
+        let userProfile = OWSUserProfile.getOrBuildUserProfile(for: address, tx: tx)
 
         var givenNameChange: OptionalChange<String> = .noChange
         var familyNameChange: OptionalChange<String?> = .noChange
@@ -608,110 +597,113 @@ extension OWSProfileManager: ProfileManager, Dependencies {
 
     // MARK: - Other User's Profiles
 
-    /// Set profile key data similar to ``setProfileKeyData()``, but also schedule
-    /// a profile fetch for the address
-    @objc
+    /// Updates the profile key & fetches the latest profile.
     public func setProfileKeyDataAndFetchProfile(
         _ profileKeyData: Data,
-        forAddress address: SignalServiceAddress,
-        onlyFillInIfMissing: Bool,
-        userProfileWriter: UserProfileWriter,
-        authedAccount: AuthedAccount,
-        transaction tx: SDSAnyWriteTransaction
-    ) {
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        let localIdentifiers = try? tsAccountManager.localIdentifiers(authedAccount: authedAccount, tx: tx.asV2Read)
-        guard let localIdentifiers else {
-            owsFailDebug("Failed to find LocalIdentifiers")
-            return
-        }
-
-        let shouldFetchProfile = setProfileKeyData(
-            profileKeyData,
-            for: address,
-            onlyFillInIfMissing: onlyFillInIfMissing,
-            userProfileWriter: userProfileWriter,
-            localIdentifiers: localIdentifiers,
-            transaction: tx
-        )
-
-        if shouldFetchProfile {
-            tx.addAsyncCompletionOffMain {
-                ProfileFetcherJob.fetchProfile(address: address, authedAccount: authedAccount)
-            }
-        }
-    }
-
-    public func setProfileKeyData(
-        _ profileKeyData: Data,
-        for address: SignalServiceAddress,
+        for serviceId: ServiceId,
         onlyFillInIfMissing: Bool,
         userProfileWriter: UserProfileWriter,
         localIdentifiers: LocalIdentifiers,
-        transaction tx: SDSAnyWriteTransaction
-    ) -> Bool {
-
-        var internalAddress = address
-        var isLocalAddress = false
-        if localIdentifiers.contains(address: address) {
-            isLocalAddress = true
-            internalAddress = OWSUserProfile.localProfileAddress
-        }
+        authedAccount: AuthedAccount,
+        tx: DBWriteTransaction
+    ) {
+        let address = OWSUserProfile.insertableAddress(for: serviceId, localIdentifiers: localIdentifiers)
 
         guard let profileKey = OWSAES256Key(data: profileKeyData) else {
-            owsFailDebug("Invalid profile key data.")
-            return false
+            owsFailDebug("Invalid profile key data for \(serviceId).")
+            return
         }
 
-        let userProfile = OWSUserProfile.getOrBuildUserProfile(for: internalAddress, transaction: tx)
+        let userProfile = OWSUserProfile.getOrBuildUserProfile(for: address, tx: SDSDB.shimOnlyBridge(tx))
 
         if onlyFillInIfMissing, userProfile.profileKey != nil {
-            return false
+            return
         }
 
         if profileKey.keyData == userProfile.profileKey?.keyData {
-            return false
+            return
         }
 
-        if let addressAci = internalAddress.serviceId as? Aci {
+        if let aci = serviceId as? Aci {
             // Whenever a user's profile key changes, we need to fetch a new
             // profile key credential for them.
-            versionedProfiles.clearProfileKeyCredential(for: AciObjC(addressAci), transaction: tx)
+            versionedProfiles.clearProfileKeyCredential(for: AciObjC(aci), transaction: SDSDB.shimOnlyBridge(tx))
         }
 
         // If this is the profile for the local user, we always want to defer to local state
         // so skip the update profile for address call.
-        if !isLocalAddress, let serviceId = internalAddress.serviceId {
-            udManager.setUnidentifiedAccessMode(.unknown, for: serviceId, tx: tx)
+        if case .otherUser(let serviceId) = address {
+            udManager.setUnidentifiedAccessMode(.unknown, for: serviceId, tx: SDSDB.shimOnlyBridge(tx))
+            tx.addAsyncCompletion(on: DispatchQueue.global()) {
+                ProfileFetcherJob.fetchProfile(address: SignalServiceAddress(serviceId), authedAccount: authedAccount)
+            }
         }
 
         userProfile.update(
             profileKey: .setTo(profileKey),
             userProfileWriter: userProfileWriter,
-            transaction: tx,
+            transaction: SDSDB.shimOnlyBridge(tx),
             completion: nil
         )
+    }
 
-        return !isLocalAddress
+    public func fillInProfileKeys(
+        allProfileKeys: [Aci: Data],
+        authoritativeProfileKeys: [Aci: Data],
+        userProfileWriter: UserProfileWriter,
+        localIdentifiers: LocalIdentifiers,
+        tx: DBWriteTransaction
+    ) {
+        for (aci, profileKey) in authoritativeProfileKeys {
+            setProfileKeyDataAndFetchProfile(
+                profileKey,
+                for: aci,
+                onlyFillInIfMissing: false,
+                userProfileWriter: userProfileWriter,
+                localIdentifiers: localIdentifiers,
+                authedAccount: .implicit(),
+                tx: tx
+            )
+        }
+        for (aci, profileKey) in allProfileKeys {
+            if authoritativeProfileKeys[aci] != nil {
+                continue
+            }
+            setProfileKeyDataAndFetchProfile(
+                profileKey,
+                for: aci,
+                onlyFillInIfMissing: true,
+                userProfileWriter: userProfileWriter,
+                localIdentifiers: localIdentifiers,
+                authedAccount: .implicit(),
+                tx: tx
+            )
+        }
     }
 
     // MARK: - Bulk Fetching
 
-    public func fetchUserProfiles(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [OWSUserProfile?] {
-        return userProfilesRefinery(for: addresses, tx: tx).values
+    @objc
+    func _getUserProfile(for address: SignalServiceAddress, tx: SDSAnyReadTransaction) -> OWSUserProfile? {
+        // TODO: Don't reach out to global state.
+        if address.isLocalAddress {
+            // For "local reads", use the local user profile.
+            return getLocalUserProfile(with: tx)
+        } else {
+            return modelReadCaches.userProfileReadCache.getUserProfiles(for: [.otherUser(address)], transaction: tx).first!
+        }
     }
 
-    private func userProfilesRefinery(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> Refinery<SignalServiceAddress, OWSUserProfile> {
-        let resolvedAddresses = addresses.map { OWSUserProfile.internalAddress(for: $0) }
-
-        return .init(resolvedAddresses).refine(condition: { address in
-            OWSUserProfile.isLocalProfileAddress(address)
+    public func fetchUserProfiles(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [OWSUserProfile?] {
+        return Refinery<SignalServiceAddress, OWSUserProfile>(addresses).refine(condition: { address in
+            // TODO: Don't reach out to global state.
+            return address.isLocalAddress
         }, then: { localAddresses in
             lazy var profile = { self.getLocalUserProfile(with: tx) }()
             return localAddresses.lazy.map { _ in profile }
-        }, otherwise: { remoteAddresses in
-            return self.modelReadCaches.userProfileReadCache.getUserProfiles(for: remoteAddresses, transaction: tx)
-        })
+        }, otherwise: { otherAddresses in
+            return self.modelReadCaches.userProfileReadCache.getUserProfiles(for: otherAddresses.map { .otherUser($0) }, transaction: tx)
+        }).values
     }
 
     // MARK: -
@@ -977,10 +969,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             await databaseStorage.awaitableWrite { tx in
                 self.tryToDequeueProfileChanges(profileChanges, tx: tx)
                 // Apply the changes to our local profile.
-                let userProfile = OWSUserProfile.getOrBuildUserProfile(
-                    for: OWSUserProfile.localProfileAddress,
-                    transaction: tx
-                )
+                let userProfile = OWSUserProfile.getOrBuildUserProfile(for: .localUser, tx: tx)
                 userProfile.update(
                     givenName: .setTo(newGivenName?.stringValue.rawValue),
                     familyName: .setTo(newFamilyName?.stringValue.rawValue),
@@ -1198,6 +1187,37 @@ extension OWSProfileManager: ProfileManager, Dependencies {
         }
         return self.metadataStore.setDate(date, key: Self.leaveGroupTriggerTimestampKey, transaction: tx)
     }
+
+    // MARK: - Last Messaging Date
+
+    public func didSendOrReceiveMessage(
+        serviceId: ServiceId,
+        localIdentifiers: LocalIdentifiers,
+        tx: DBWriteTransaction
+    ) {
+        let address = OWSUserProfile.insertableAddress(for: serviceId, localIdentifiers: localIdentifiers)
+        switch address {
+        case .localUser:
+            return
+        case .otherUser:
+            break
+        }
+        let userProfile = OWSUserProfile.getOrBuildUserProfile(for: address, tx: SDSDB.shimOnlyBridge(tx))
+
+        // lastMessagingDate is coarse; we don't need to track every single message
+        // sent or received. It is sufficient to update it only when the value
+        // changes by more than an hour.
+        if let lastMessagingDate = userProfile.lastMessagingDate, abs(lastMessagingDate.timeIntervalSinceNow) < kHourInterval {
+            return
+        }
+
+        userProfile.update(
+            lastMessagingDate: .setTo(Date()),
+            userProfileWriter: .metadataUpdate,
+            transaction: SDSDB.shimOnlyBridge(tx),
+            completion: nil
+        )
+    }
 }
 
 // MARK: -
@@ -1372,8 +1392,7 @@ extension OWSProfileManager {
     }
 
     public func downloadAndDecryptLocalUserAvatarIfNeeded(authedAccount: AuthedAccount) async throws {
-        let internalAddress = OWSUserProfile.localProfileAddress
-        let oldProfile = databaseStorage.read { tx in OWSUserProfile.getUserProfile(for: internalAddress, transaction: tx) }
+        let oldProfile = databaseStorage.read { tx in OWSUserProfile.getUserProfile(for: .localUser, tx: tx) }
         guard
             let oldProfile,
             let profileKey = oldProfile.profileKey,
@@ -1391,8 +1410,8 @@ extension OWSProfileManager {
                 if !didConsumeFilePath { try? FileManager.default.removeItem(at: temporaryFileUrl) }
             }
             (shouldRetry, didConsumeFilePath) = try await databaseStorage.awaitableWrite { tx in
-                let newProfile = OWSUserProfile.getOrBuildUserProfile(for: internalAddress, transaction: tx)
-                guard newProfile.avatarFileName == nil else {
+                let newProfile = OWSUserProfile.getUserProfile(for: .localUser, tx: tx)
+                guard let newProfile, newProfile.avatarFileName == nil else {
                     return (false, false)
                 }
                 // If the URL/profileKey change, we have a new avatar to download.
@@ -1502,59 +1521,6 @@ extension OWSProfileManager {
         guard try decryptor.verifyTag(authenticationTag) else {
             throw OWSGenericError("failed to decrypt")
         }
-    }
-
-    public func didSendOrReceiveMessage(
-        from address: SignalServiceAddress,
-        localIdentifiers: LocalIdentifiers,
-        transaction: SDSAnyWriteTransaction
-    ) {
-        if localIdentifiers.contains(address: address) {
-            return
-        }
-        let internalAddress = OWSUserProfile.internalAddress(for: address)
-
-        let userProfile = OWSUserProfile.getOrBuildUserProfile(for: internalAddress, transaction: transaction)
-
-        if userProfile.lastMessagingDate != nil {
-            let lasMessagingInterval = fabs(userProfile.lastMessagingDate?.timeIntervalSinceNow ?? Date.distantPast.timeIntervalSinceNow)
-            if lasMessagingInterval < kHourInterval {
-                return
-            }
-        }
-        userProfile.update(
-            lastMessagingDate: .setTo(Date()),
-            userProfileWriter: .metadataUpdate,
-            transaction: transaction,
-            completion: nil
-        )
-    }
-
-    public func setProfile(
-        for address: SignalServiceAddress,
-        givenName: OptionalChange<String?>,
-        familyName: OptionalChange<String?>,
-        avatarUrlPath: OptionalChange<String?>,
-        userProfileWriter: UserProfileWriter,
-        localIdentifiers: LocalIdentifiers,
-        transaction: SDSAnyWriteTransaction
-    ) {
-        let internalAddress: SignalServiceAddress
-        if localIdentifiers.contains(address: address) {
-            internalAddress = OWSUserProfile.localProfileAddress
-        } else {
-            internalAddress = address
-        }
-
-        let userProfile = OWSUserProfile.getOrBuildUserProfile(for: internalAddress, transaction: transaction)
-        userProfile.update(
-            givenName: givenName,
-            familyName: familyName,
-            avatarUrlPath: avatarUrlPath,
-            userProfileWriter: userProfileWriter,
-            transaction: transaction,
-            completion: nil
-        )
     }
 }
 

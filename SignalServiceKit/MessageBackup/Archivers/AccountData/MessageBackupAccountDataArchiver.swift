@@ -236,7 +236,6 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         }
         subscriptionManager.setUserManuallyCancelledSubscription(value: accountData.subscriptionManuallyCancelled, tx: tx)
 
-        var isPhoneNumberShared = false
         // Restore local settings
         if let settings = accountData.accountSettings {
             receiptManager.setAreReadReceiptsEnabled(value: settings.readReceipts, tx: tx)
@@ -278,8 +277,6 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
                 case .UNKNOWN, .none:
                     return .defaultValue
                 case .EVERYBODY:
-                    // Remember this setting to store on the profile later
-                    isPhoneNumberShared = true
                     return .everybody
                 case .NOBODY:
                     return .nobody
@@ -290,11 +287,10 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
 
         // Restore Local Profile
         // For familyName & avatarUrlPath, pass in `nil` if the value is empty.
-        userProfile.updateLocalProfile(
+        userProfile.insertLocalProfile(
             givenName: accountData.givenName,
-            familyName: accountData.familyName.count > 0 ? accountData.familyName : nil,
-            avatarUrlPath: accountData.avatarUrlPath.count > 0 ? accountData.avatarUrlPath : nil,
-            isPhoneNumberShared: isPhoneNumberShared,
+            familyName: accountData.familyName.nilIfEmpty,
+            avatarUrlPath: accountData.avatarUrlPath.nilIfEmpty,
             profileKey: profileKey,
             tx: tx
         )

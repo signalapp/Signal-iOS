@@ -230,6 +230,18 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
             unregisteredAtTimestamp: unregisteredTimestamp
         )
 
+        // Stop early if this is the local user. That shouldn't happen.
+        let profileAddress = OWSUserProfile.internalAddress(
+            for: recipient.address,
+            localIdentifiers: context.localIdentifiers
+        )
+        switch profileAddress {
+        case .localUser:
+            return .failure([.invalidProtoData(recipientProto.recipientId, .otherContactWithLocalIdentifiers)])
+        case .otherUser:
+            break
+        }
+
         recipientDatabaseTable.insertRecipient(recipient, transaction: tx)
         /// No Backup code should be relying on the SSA cache, but once we've
         /// finished restoring and launched we want the cache to have accurate
@@ -266,15 +278,16 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
             storyStore.updateStoryContext(storyContext, isHidden: true, tx: tx)
         }
 
-        // TODO: Check the return value of this call and add to a list of profiles to update after registration finishes
-        _ = profileManager.setProfileGivenName(
+        profileManager.insertOtherUserProfile(
             givenName: contactProto.profileGivenName,
             familyName: contactProto.profileFamilyName,
             profileKey: contactProto.profileKey,
-            address: recipient.address,
-            localIdentifiers: context.localIdentifiers,
+            address: profileAddress,
             tx: tx
         )
+
+        // TODO: Refetch every profile (including our own) after registration.
+        // Certain fields (eg badges & Sealed Sender state) can be fetched without the profile key.
 
         return .success
     }

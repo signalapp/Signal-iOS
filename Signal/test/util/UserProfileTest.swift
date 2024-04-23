@@ -20,89 +20,49 @@ class UserProfileTest: SignalBaseTest {
         }
     }
 
-    func testUserProfileForAci() {
-        let aci = Aci.randomForTesting()
-        let address = NormalizedDatabaseRecordAddress(aci: aci, phoneNumber: nil, pni: nil)!
-        write { transaction in
-            OWSUserProfile(address: address).anyInsert(transaction: transaction)
-        }
-        read { transaction in
-            let actual = OWSUserProfile.getUserProfile(for: SignalServiceAddress(aci), transaction: transaction)
-            XCTAssertEqual(actual?.serviceIdString, aci.serviceIdUppercaseString)
-        }
-        read { transaction in
-            let actual = OWSUserProfile.getUserProfile(for: SignalServiceAddress.randomForTesting(), transaction: transaction)
-            XCTAssertNil(actual)
-        }
-    }
-
-    func testUserProfileForPni() throws {
-        let pni = Pni.randomForTesting()
-        let address = NormalizedDatabaseRecordAddress(aci: nil, phoneNumber: nil, pni: pni)!
-        write { transaction in
-            OWSUserProfile(address: address).anyInsert(transaction: transaction)
-        }
-        read { transaction in
-            let actual = OWSUserProfile.getUserProfile(for: SignalServiceAddress(pni), transaction: transaction)
-            XCTAssertEqual(actual?.serviceIdString, pni.serviceIdUppercaseString)
-        }
-        read { transaction in
-            let actual = OWSUserProfile.getUserProfile(for: SignalServiceAddress.randomForTesting(), transaction: transaction)
-            XCTAssertNil(actual)
-        }
-    }
-
-    func testUserProfilesForServiceIds() {
-        let addresses = [
-            SignalServiceAddress.randomForTesting(),
-            SignalServiceAddress.randomForTesting()
+    func testGetUserProfile() {
+        let addresses: [SignalServiceAddress] = [
+            SignalServiceAddress(Aci.randomForTesting()),
+            SignalServiceAddress(Pni.randomForTesting()),
+            SignalServiceAddress(phoneNumber: "+16505550101"),
         ]
-        let profiles = addresses.map { OWSUserProfile(address: NormalizedDatabaseRecordAddress(address: $0)!) }
-        write { transaction in
-            for profile in profiles {
-                profile.anyInsert(transaction: transaction)
+        write { tx in
+            for address in addresses {
+                OWSUserProfile(address: .otherUser(address)).anyInsert(transaction: tx)
             }
         }
-        read { transaction in
-            let bogusAddresses = [SignalServiceAddress.randomForTesting()]
-            let actual = SignalServiceKit.OWSUserProfile.getFor(keys: addresses + bogusAddresses, transaction: transaction)
-            let expected = profiles + [nil]
-            XCTAssertEqual(actual.map { $0?.serviceIdString }, expected.map { $0?.serviceIdString })
+        read { tx in
+            for address in addresses {
+                let actual = OWSUserProfile.getUserProfile(for: .otherUser(address), tx: tx)
+                XCTAssertEqual(actual?.serviceIdString, address.serviceIdUppercaseString)
+                XCTAssertEqual(actual?.phoneNumber, address.phoneNumber)
+            }
         }
-    }
-
-    func testUserProfileForPhoneNumber() {
-        let address = SignalServiceAddress(phoneNumber: "+17035550000")
-        write { transaction in
-            OWSUserProfile(address: NormalizedDatabaseRecordAddress(address: address)!)
-                .anyInsert(transaction: transaction)
-        }
-        read { transaction in
-            let actual = OWSUserProfile.getUserProfile(for: address, transaction: transaction)
-            XCTAssertEqual(actual?.phoneNumber, "+17035550000")
-        }
-        read { transaction in
-            let actual = OWSUserProfile.getUserProfile(for: SignalServiceAddress(phoneNumber: "+17035550001"), transaction: transaction)
+        read { tx in
+            let actual = OWSUserProfile.getUserProfile(for: .otherUser(SignalServiceAddress.randomForTesting()), tx: tx)
             XCTAssertNil(actual)
         }
     }
 
-    func testUserProfilesForPhoneNumbers() {
-        let addresses = [
-            SignalServiceAddress(phoneNumber: "+17035550000"),
-            SignalServiceAddress(phoneNumber: "+17035550001")
+    func testGetFor() {
+        let addresses: [SignalServiceAddress] = [
+            SignalServiceAddress(Aci.randomForTesting()),
+            SignalServiceAddress(Pni.randomForTesting()),
+            SignalServiceAddress(phoneNumber: "+16505550101"),
         ]
-        let profiles = addresses.map { OWSUserProfile(address: NormalizedDatabaseRecordAddress(address: $0)!) }
-        write { transaction in
-            for profile in profiles {
-                profile.anyInsert(transaction: transaction)
+        write { tx in
+            for address in addresses {
+                OWSUserProfile(address: .otherUser(address)).anyInsert(transaction: tx)
             }
         }
-        read { transaction in
-            let bogusAddresses = [SignalServiceAddress(phoneNumber: "+17035550002")]
-            let actual = SignalServiceKit.OWSUserProfile.getFor(keys: addresses + bogusAddresses, transaction: transaction)
-            let expected = profiles + [nil]
-            XCTAssertEqual(actual.map { $0?.phoneNumber }, expected.map { $0?.phoneNumber })
+        read { tx in
+            let addressesToFetch: [SignalServiceAddress] = addresses + [SignalServiceAddress.randomForTesting()]
+            let userProfiles = OWSUserProfile.getUserProfiles(for: addressesToFetch.map { .otherUser($0) }, tx: tx)
+            XCTAssertEqual(userProfiles.count, 4)
+            XCTAssertEqual(userProfiles[0]?.serviceId, addresses[0].serviceId)
+            XCTAssertEqual(userProfiles[1]?.serviceId, addresses[1].serviceId)
+            XCTAssertEqual(userProfiles[2]?.phoneNumber, addresses[2].phoneNumber)
+            XCTAssertNil(userProfiles[3])
         }
     }
 }
