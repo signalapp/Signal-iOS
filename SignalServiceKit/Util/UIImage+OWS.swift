@@ -306,6 +306,83 @@ extension UIImage {
         return avatarImage.jpegData(compressionQuality: 0.9)
     }
 
+    // Source: https://github.com/AliSoftware/UIImage-Resize
+    @objc(resizedImageToSize:)
+    public func resizedImage(to dstSize: CGSize) -> UIImage? {
+        var dstSize = dstSize
+        guard let imgRef = cgImage else {
+            return nil
+        }
+        // the below values are regardless of orientation : for UIImages from Camera, width>height (landscape)
+        let srcSize = CGSize(width: imgRef.width, height: imgRef.height)
+        // not equivalent to self.size (which is dependent on the imageOrientation)!
+
+        // Don't resize if we already meet the required destination size.
+        if srcSize == dstSize {
+            return self
+        }
+
+        let scaleRatio = dstSize.width / srcSize.width
+        let orient = imageOrientation
+        var transform: CGAffineTransform = .identity
+        switch orient {
+        case .up:
+            transform = .identity
+        case .upMirrored:
+            transform = .init(translationX: srcSize.width, y: 0)
+            transform = transform.scaledBy(x: -1, y: 1)
+        case .down:
+            transform = .init(translationX: srcSize.width, y: srcSize.height)
+            transform = transform.rotated(by: CGFloat.pi)
+        case .downMirrored:
+            transform = .init(translationX: 0, y: srcSize.height)
+            transform = transform.scaledBy(x: 1, y: -1)
+        case .leftMirrored:
+            dstSize = CGSize(width: dstSize.height, height: dstSize.width)
+            transform = .init(translationX: srcSize.height, y: srcSize.width)
+            transform = transform.scaledBy(x: -1, y: 1)
+            transform = transform.rotated(by: 3 * CGFloat.halfPi)
+        case .left:
+            dstSize = CGSize(width: dstSize.height, height: dstSize.width)
+            transform = .init(translationX: 0, y: srcSize.width)
+            transform = transform.rotated(by: 3 * CGFloat.halfPi)
+        case .rightMirrored:
+            dstSize = CGSize(width: dstSize.height, height: dstSize.width)
+            transform = .init(scaleX: -1, y: 1)
+            transform = transform.rotated(by: .halfPi)
+        case .right:
+            dstSize = CGSize(width: dstSize.height, height: dstSize.width)
+            transform = .init(translationX: srcSize.height, y: 0)
+            transform = transform.rotated(by: .halfPi)
+        @unknown default:
+            owsFailDebug("Invalid image orientation")
+            return nil
+        }
+
+        // The actual resize: draw the image on a new context, applying a transform matrix
+        let format = UIGraphicsImageRendererFormat()
+        format.opaque = false
+        format.scale = scale
+        let renderer = UIGraphicsImageRenderer(size: dstSize)
+        return renderer.image { context in
+            context.cgContext.interpolationQuality = .high
+
+            if orient == .right || orient == .left {
+                context.cgContext.scaleBy(x: -scaleRatio, y: scaleRatio)
+                context.cgContext.translateBy(x: -srcSize.height, y: 0)
+            } else {
+                context.cgContext.scaleBy(x: scaleRatio, y: -scaleRatio)
+                context.cgContext.translateBy(x: 0, y: -srcSize.height)
+            }
+
+            context.cgContext.concatenate(transform)
+
+            // we use srcSize (and not dstSize) as the size to specify is in user space (and we use the CTM to apply a scaleRatio)
+            context.cgContext.draw(imgRef, in: CGRect(origin: .zero, size: srcSize))
+        }
+    }
+
+
     @objc
     public func resizedImage(toFillPixelSize dstSize: CGSize) -> UIImage {
         owsAssertDebug(dstSize.width > 0)
