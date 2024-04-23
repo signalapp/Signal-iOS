@@ -19,7 +19,6 @@ extension UIImage {
         }
     }
 
-    @objc(normalizedImage)
     public func normalized() -> UIImage {
         guard imageOrientation != .up else {
             return self
@@ -307,7 +306,6 @@ extension UIImage {
     }
 
     // Source: https://github.com/AliSoftware/UIImage-Resize
-    @objc(resizedImageToSize:)
     public func resizedImage(to dstSize: CGSize) -> UIImage? {
         var dstSize = dstSize
         guard let imgRef = cgImage else {
