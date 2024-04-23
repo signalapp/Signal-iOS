@@ -469,14 +469,10 @@ extension UIImage {
         let thumbnailSize = CGSize(width: round(unroundedThumbnailSize.width),
                                    height: round(unroundedThumbnailSize.height))
 
-        // TODO: Figure out the intention of this bit of the old code which appears to be the same image context either way.
-        //        if (isPixels) {
-        //            UIGraphicsBeginImageContextWithOptions(CGSizeMake(thumbnailSize.width, thumbnailSize.height), NO, 1.0);
-        //        } else {
-        //            UIGraphicsBeginImageContext(CGSizeMake(thumbnailSize.width, thumbnailSize.height));
-        //        }
         let format = UIGraphicsImageRendererFormat()
-        format.scale = 1
+        if isPixels {
+            format.scale = 1
+        }
         format.opaque = false
         let renderer = UIGraphicsImageRenderer(size: thumbnailSize, format: format)
         return renderer.image { context in
