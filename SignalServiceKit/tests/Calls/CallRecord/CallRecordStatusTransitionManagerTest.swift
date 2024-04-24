@@ -68,15 +68,25 @@ final class GroupCallRecordStatusTransitionManagerTest: XCTestCase {
         ]
 
         for transition in GroupStatusTransition.all {
-            let actual = statusTransitionManager.isStatusTransitionAllowed(
+            switch statusTransitionManager.isStatusTransitionAllowed(
                 fromGroupCallStatus: transition.from,
                 toGroupCallStatus: transition.to
-            )
-
-            let expected = allowedTransitions.contains(transition)
-
-            XCTAssertEqual(actual, expected, "Transition \(transition) had unexpected result."
-            )
+            ) {
+            case .allowed:
+                XCTAssertTrue(allowedTransitions.contains(transition), "\(transition) should not have been allowed.")
+            case .notAllowed:
+                XCTAssertFalse(allowedTransitions.contains(transition), "\(transition) should have been allowed.")
+            case .preferAlternateStatus(let alternateGroupCallStatus):
+                switch statusTransitionManager.isStatusTransitionAllowed(
+                    fromGroupCallStatus: transition.from,
+                    toGroupCallStatus: alternateGroupCallStatus
+                ) {
+                case .allowed:
+                    break
+                case .notAllowed, .preferAlternateStatus:
+                    XCTFail("Alternate status should always be allowed!")
+                }
+            }
         }
     }
 }

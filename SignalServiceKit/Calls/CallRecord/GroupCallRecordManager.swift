@@ -228,6 +228,8 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
             return
         }
 
+        var newGroupCallStatus = newGroupCallStatus
+
         /// Any time we're updating a group call record, we should check for a
         /// call-began timestamp earlier than the one we're aware of.
         updateCallBeganTimestampIfEarlier(
@@ -244,12 +246,17 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
             )
         }
 
-        guard statusTransitionManager.isStatusTransitionAllowed(
+        switch statusTransitionManager.isStatusTransitionAllowed(
             fromGroupCallStatus: groupCallStatus,
             toGroupCallStatus: newGroupCallStatus
-        ) else {
+        ) {
+        case .allowed:
+            break
+        case .notAllowed:
             logger.warn("Status transition \(groupCallStatus) -> \(newGroupCallStatus) not allowed. Skipping record update.")
             return
+        case .preferAlternateStatus(let alternateGroupCallStatus):
+            newGroupCallStatus = alternateGroupCallStatus
         }
 
         callRecordStore.updateCallAndUnreadStatus(
@@ -299,84 +306,111 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
 // MARK: -
 
 class GroupCallRecordStatusTransitionManager {
+    typealias GroupCallStatus = CallRecord.CallStatus.GroupCallStatus
+
+    enum TransitionQueryResult {
+        case allowed
+        case notAllowed
+        case preferAlternateStatus(GroupCallStatus)
+    }
+
     init() {}
 
+    /// Whether a ``CallRecord`` is allowed to transition from/to the given
+    /// group call statuses. If the transition is not allowed, an alternative
+    /// allowed `toGroupCallStatus` may be returned and should be used by the
+    /// caller going forward.
     func isStatusTransitionAllowed(
-        fromGroupCallStatus: CallRecord.CallStatus.GroupCallStatus,
-        toGroupCallStatus: CallRecord.CallStatus.GroupCallStatus
-    ) -> Bool {
+        fromGroupCallStatus: GroupCallStatus,
+        toGroupCallStatus: GroupCallStatus
+    ) -> TransitionQueryResult {
         switch fromGroupCallStatus {
         case .generic:
             switch toGroupCallStatus {
-            case .generic: return false
+            case .generic: return .notAllowed
             case .joined:
                 // User joined a call started without ringing.
-                return true
+                return .allowed
             case .ringing, .ringingAccepted, .ringingDeclined, .ringingMissed:
                 // This probably indicates a race between us opportunistically
                 // learning about a call (e.g., by peeking), and receiving a
                 // ring for that call. That's fine, but we prefer the
                 // ring-related status.
-                return true
+                return .allowed
             }
         case .joined:
             switch toGroupCallStatus {
-            case .joined: return false
-            case .generic, .ringing, .ringingDeclined, .ringingMissed:
+            case .joined: return .notAllowed
+            case .generic:
                 // Prefer the fact that we joined somewhere.
-                return false
+                return .notAllowed
+            case .ringing, .ringingDeclined, .ringingMissed:
+                // We know it's a ringing call, and we joined it, so we'll treat
+                // it as ringing accepted. This may indicate a race between a
+                // ring-related event (e.g., a canceled ring, or declining on
+                // another device) and us joining on this device.
+                return .preferAlternateStatus(.ringingAccepted)
             case .ringingAccepted:
                 // This probably indicates a race between us opportunistically
                 // joining about a call, and receiving a ring for that call.
                 // That's fine, but we prefer the ring-related status.
-                return true
+                return .allowed
             }
         case .ringing:
             switch toGroupCallStatus {
-            case .ringing: return false
+            case .ringing: return .notAllowed
             case .generic:
                 // We know something more specific about the call now.
-                return false
+                return .notAllowed
             case .joined:
                 // This is weird because we should be moving to "ringing
                 // accepted" rather than joined, but if something weird is
                 // happening we should prefer the joined status.
                 fallthrough
             case .ringingAccepted, .ringingDeclined, .ringingMissed:
-                return true
+                return .allowed
             }
         case .ringingAccepted:
             switch toGroupCallStatus {
-            case .ringingAccepted: return false
+            case .ringingAccepted: return .notAllowed
             case .generic, .joined, .ringing, .ringingDeclined, .ringingMissed:
                 // Prefer the fact that we accepted the ring somewhere.
-                return false
+                return .notAllowed
             }
         case .ringingDeclined:
             switch toGroupCallStatus {
-            case .ringingDeclined: return false
-            case .generic, .joined:
-                // Prefer the explicit ring-related status.
-                return false
+            case .ringingDeclined: return .notAllowed
+            case .generic:
+                return .notAllowed
+            case .joined:
+                // We never want to drop the fact that a ring occurred from our
+                // status, but if we joined a call for which we declined a ring
+                // we can treat it as an accepted ring instead.
+                return .preferAlternateStatus(.ringingAccepted)
             case .ringing, .ringingMissed:
                 // Prefer the more specific status.
-                return false
+                return .notAllowed
             case .ringingAccepted:
                 // Prefer the fact that we accepted the ring somewhere.
-                return true
+                return .allowed
             }
         case .ringingMissed:
             switch toGroupCallStatus {
-            case .ringingMissed: return false
-            case .generic, .joined:
+            case .ringingMissed: return .notAllowed
+            case .generic:
                 // Prefer the ring-related status.
-                return false
+                return .notAllowed
+            case .joined:
+                // We never want to drop the fact that a ring occurred from our
+                // status, but if we joined a call for which we missed a ring
+                // we can treat it as an accepted ring instead.
+                return .preferAlternateStatus(.ringingAccepted)
             case .ringing:
                 // Prefer the more specific status.
-                return false
+                return .notAllowed
             case .ringingAccepted, .ringingDeclined:
                 // Prefer the explicit ring-related status.
-                return true
+                return .allowed
             }
         }
     }
