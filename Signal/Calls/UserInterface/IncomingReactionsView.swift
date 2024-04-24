@@ -289,6 +289,7 @@ class IncomingReactionsView: UIView, ReactionReceiver {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+        self.isUserInteractionEnabled = false
         self.reactionViewReusePool = ReactionViewReusePool(superview: self)
     }
 
