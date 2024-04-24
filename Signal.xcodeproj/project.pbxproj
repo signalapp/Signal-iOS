@@ -2576,7 +2576,6 @@
 		F9C5CDEE289453B400548EEE /* SDS+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1C289453B200548EEE /* SDS+SSK.swift */; };
 		F9C5CDEF289453B400548EEE /* PinnedThreadManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1D289453B200548EEE /* PinnedThreadManagerImpl.swift */; };
 		F9C5CDF1289453B400548EEE /* NSRegularExpression+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1F289453B200548EEE /* NSRegularExpression+SSK.swift */; };
-		F9C5CDF2289453B400548EEE /* NSString+SSK.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB20289453B200548EEE /* NSString+SSK.m */; };
 		F9C5CDF4289453B400548EEE /* Currency.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB22289453B200548EEE /* Currency.swift */; };
 		F9C5CDF6289453B400548EEE /* LRUCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB24289453B200548EEE /* LRUCache.swift */; };
 		F9C5CDF7289453B400548EEE /* Atomics.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB25289453B200548EEE /* Atomics.swift */; };
@@ -2633,7 +2632,6 @@
 		F9C5CE39289453B400548EEE /* ProfileFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB68289453B200548EEE /* ProfileFetcher.swift */; };
 		F9C5CE3A289453B400548EEE /* BadgeAssets.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB69289453B200548EEE /* BadgeAssets.swift */; };
 		F9C5CE3B289453B400548EEE /* VersionedProfiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB6A289453B200548EEE /* VersionedProfiles.swift */; };
-		F9C5CE3D289453B400548EEE /* NSString+SSK.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB6C289453B200548EEE /* NSString+SSK.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE3F289453B400548EEE /* FunctionalUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB6E289453B200548EEE /* FunctionalUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE40289453B400548EEE /* AppExpiry.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB6F289453B200548EEE /* AppExpiry.swift */; };
 		F9C5CE42289453B400548EEE /* SSKAsserts.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB71289453B200548EEE /* SSKAsserts.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -5568,7 +5566,6 @@
 		F9C5CB1C289453B200548EEE /* SDS+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDS+SSK.swift"; sourceTree = "<group>"; };
 		F9C5CB1D289453B200548EEE /* PinnedThreadManagerImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PinnedThreadManagerImpl.swift; sourceTree = "<group>"; };
 		F9C5CB1F289453B200548EEE /* NSRegularExpression+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSRegularExpression+SSK.swift"; sourceTree = "<group>"; };
-		F9C5CB20289453B200548EEE /* NSString+SSK.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+SSK.m"; sourceTree = "<group>"; };
 		F9C5CB22289453B200548EEE /* Currency.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Currency.swift; sourceTree = "<group>"; };
 		F9C5CB24289453B200548EEE /* LRUCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LRUCache.swift; sourceTree = "<group>"; };
 		F9C5CB25289453B200548EEE /* Atomics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Atomics.swift; sourceTree = "<group>"; };
@@ -5625,7 +5622,6 @@
 		F9C5CB68289453B200548EEE /* ProfileFetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileFetcher.swift; sourceTree = "<group>"; };
 		F9C5CB69289453B200548EEE /* BadgeAssets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BadgeAssets.swift; sourceTree = "<group>"; };
 		F9C5CB6A289453B200548EEE /* VersionedProfiles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VersionedProfiles.swift; sourceTree = "<group>"; };
-		F9C5CB6C289453B200548EEE /* NSString+SSK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+SSK.h"; sourceTree = "<group>"; };
 		F9C5CB6E289453B200548EEE /* FunctionalUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FunctionalUtil.h; sourceTree = "<group>"; };
 		F9C5CB6F289453B200548EEE /* AppExpiry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppExpiry.swift; sourceTree = "<group>"; };
 		F9C5CB71289453B200548EEE /* SSKAsserts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKAsserts.h; sourceTree = "<group>"; };
@@ -11236,8 +11232,6 @@
 				507E1BDE2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift */,
 				F9C5CB39289453B200548EEE /* NSNotificationCenter+OWS.swift */,
 				F9C5CB1F289453B200548EEE /* NSRegularExpression+SSK.swift */,
-				F9C5CB6C289453B200548EEE /* NSString+SSK.h */,
-				F9C5CB20289453B200548EEE /* NSString+SSK.m */,
 				F9C5CB43289453B200548EEE /* NSTimer+OWS.h */,
 				F9C5CAFF289453B200548EEE /* NSTimer+OWS.m */,
 				F9C5CB44289453B200548EEE /* OffMainThreadTimer.swift */,
@@ -11439,7 +11433,6 @@
 				F9C5CD41289453B300548EEE /* LegacySessionRecord.h in Headers */,
 				F9C5CD45289453B300548EEE /* LegacySessionState.h in Headers */,
 				F9C5CE00289453B400548EEE /* NSData+Image.h in Headers */,
-				F9C5CE3D289453B400548EEE /* NSString+SSK.h in Headers */,
 				F9C5CE15289453B400548EEE /* NSTimer+OWS.h in Headers */,
 				F9C5CBC6289453B300548EEE /* OutgoingPaymentSyncMessage.h in Headers */,
 				F9C5CE2C289453B400548EEE /* OWS2FAManager.h in Headers */,
@@ -14086,7 +14079,6 @@
 				F9C5CE0B289453B400548EEE /* NSNotificationCenter+OWS.swift in Sources */,
 				66F2CE212A3CBE4A00519342 /* NSRangedValue.swift in Sources */,
 				F9C5CDF1289453B400548EEE /* NSRegularExpression+SSK.swift in Sources */,
-				F9C5CDF2289453B400548EEE /* NSString+SSK.m in Sources */,
 				F9C5CDD1289453B400548EEE /* NSTimer+OWS.m in Sources */,
 				F9C5CD1C289453B300548EEE /* ObservedDatabaseChanges.swift in Sources */,
 				F9C5CE16289453B400548EEE /* OffMainThreadTimer.swift in Sources */,

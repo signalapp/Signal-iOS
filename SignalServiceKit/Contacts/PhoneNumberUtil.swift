@@ -254,7 +254,7 @@ extension PhoneNumberUtil {
         if userSpecifiedText.isEmpty {
             return nil
         }
-        let sanitizedText = (userSpecifiedText as NSString).filterAsE164()
+        let sanitizedText = userSpecifiedText.filteredAsE164
         return parsePhoneNumber(sanitizedText, regionCode: Self.defaultCountryCode())
     }
 
@@ -267,7 +267,7 @@ extension PhoneNumberUtil {
         if regionCode == NB_UNKNOWN_REGION {
             return parsePhoneNumber(userSpecifiedText: callingCode.appending(userSpecifiedText))
         }
-        var sanitizedText = (userSpecifiedText as NSString).filterAsE164()
+        var sanitizedText = userSpecifiedText.filteredAsE164
         if sanitizedText.hasPrefix("+") {
             sanitizedText = String(sanitizedText.dropFirst())
         }
@@ -332,7 +332,7 @@ extension PhoneNumberUtil {
     ///
     /// Order matters; better results will appear first.
     func parsePhoneNumbers(normalizedText: String, localPhoneNumber: String?) -> [PhoneNumber] {
-        guard let text = (normalizedText as NSString).filterAsE164().nilIfEmpty else {
+        guard let text = normalizedText.filteredAsE164.nilIfEmpty else {
             return []
         }
 

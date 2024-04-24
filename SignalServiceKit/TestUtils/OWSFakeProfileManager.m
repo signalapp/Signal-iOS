@@ -5,7 +5,6 @@
 
 #import "OWSFakeProfileManager.h"
 #import "FunctionalUtil.h"
-#import "NSString+SSK.h"
 #import "TSThread.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>

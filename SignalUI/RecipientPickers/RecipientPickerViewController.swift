@@ -1200,7 +1200,7 @@ struct PhoneNumberFinder {
     }
 
     private func parseFakeSearchPhoneNumber(for searchText: String) -> String? {
-        let filteredValue = (searchText as NSString).filterAsE164()
+        let filteredValue = searchText.filteredAsE164
 
         let potentialE164: String
         if filteredValue.hasPrefix("+") {

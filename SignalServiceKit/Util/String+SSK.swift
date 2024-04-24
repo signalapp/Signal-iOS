@@ -243,6 +243,20 @@ public extension NSMutableAttributedString {
         addAttributes(attributes, range: entireRange)
     }
 
+    func setAttributes(_ attributes: [NSAttributedString.Key: Any], forSubstring substring: String) {
+        guard !substring.isEmpty else {
+            owsFailDebug("Invalid substring.")
+            return
+        }
+        let str = string
+        guard let range = str.range(of: substring) else {
+            owsFailDebug("Substring not found.")
+            return
+        }
+        setAttributes(attributes, range: NSRange(range, in: str))
+
+    }
+
     @objc
     func append(_ string: String, attributes: [NSAttributedString.Key: Any] = [:]) {
         append(NSAttributedString(string: string, attributes: attributes))
@@ -842,6 +856,23 @@ public extension String {
 
     /// Checks if the value starts with a "+" and has [1, 19] digits.
     var isStructurallyValidE164: Bool { Self.validE164StructureRegex.hasMatch(input: self) }
+
+    var filteredAsE164: String {
+        let maxLength = 256
+        let length = min(maxLength, count)
+
+        var result: [unichar] = []
+        result.reserveCapacity(length)
+        for uch in utf16 {
+            if (0x30...0x39).contains(uch) || (result.isEmpty && uch == 0x2B) {
+                result.append(uch)
+                if result.count >= length {
+                    break
+                }
+            }
+        }
+        return String(utf16CodeUnits: result, count: result.count)
+    }
 }
 
 public extension NSString {
