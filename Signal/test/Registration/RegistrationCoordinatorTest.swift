@@ -88,7 +88,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         registrationStateChangeManagerMock = MockRegistrationStateChangeManager()
         sessionManager = RegistrationSessionManagerMock()
         storageServiceManagerMock = FakeStorageServiceManager()
-        tsAccountManagerMock = MockTSAccountManager(dateProvider: dateProvider)
+        tsAccountManagerMock = MockTSAccountManager()
         usernameApiClientMock = MockUsernameApiClient()
         usernameLinkManagerMock = MockUsernameLinkManager()
 

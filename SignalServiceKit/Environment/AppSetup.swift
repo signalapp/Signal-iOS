@@ -261,11 +261,6 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
-        let deviceManager = OWSDeviceManagerImpl(
-            databaseStorage: db,
-            keyValueStoreFactory: keyValueStoreFactory
-        )
-
         let linkPreviewManager = LinkPreviewManagerImpl(
             attachmentManager: tsResourceManager,
             attachmentStore: tsResourceStore,
@@ -765,6 +760,22 @@ public class AppSetup {
         let attachmentCloner = SignalAttachmentClonerImpl()
         let tsResourceCloner = SignalTSResourceClonerImpl(attachmentCloner: attachmentCloner)
 
+        let deviceManager = OWSDeviceManagerImpl(
+            databaseStorage: db,
+            keyValueStoreFactory: keyValueStoreFactory
+        )
+        let deviceStore = OWSDeviceStoreImpl()
+        let inactiveLinkedDeviceFinder = InactiveLinkedDeviceFinderImpl(
+            dateProvider: dateProvider,
+            db: db,
+            deviceNameDecrypter: InactiveLinkedDeviceFinderImpl.Wrappers.OWSDeviceNameDecrypter(identityManager: identityManager),
+            deviceStore: deviceStore,
+            devicesService: InactiveLinkedDeviceFinderImpl.Wrappers.OWSDevicesService(),
+            kvStoreFactory: keyValueStoreFactory,
+            remoteConfig: InactiveLinkedDeviceFinderImpl.Wrappers.RemoteConfig(),
+            tsAccountManager: tsAccountManager
+        )
+
         let dependenciesBridge = DependenciesBridge(
             accountAttributesUpdater: accountAttributesUpdater,
             appExpiry: appExpiry,
@@ -787,6 +798,7 @@ public class AppSetup {
             deletedCallRecordCleanupManager: deletedCallRecordCleanupManager,
             deletedCallRecordStore: deletedCallRecordStore,
             deviceManager: deviceManager,
+            deviceStore: deviceStore,
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
             editManager: editManager,
             editMessageStore: editMessageStore,
@@ -796,6 +808,7 @@ public class AppSetup {
             groupMemberUpdater: groupMemberUpdater,
             groupUpdateInfoMessageInserter: groupUpdateInfoMessageInserter,
             identityManager: identityManager,
+            inactiveLinkedDeviceFinder: inactiveLinkedDeviceFinder,
             incomingCallEventSyncMessageManager: incomingCallEventSyncMessageManager,
             incomingCallLogEventSyncMessageManager: incomingCallLogEventSyncMessageManager,
             incomingPniChangeNumberProcessor: incomingPniChangeNumberProcessor,

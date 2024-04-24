@@ -85,10 +85,10 @@ public final class OWSDevice: SDSCodableModel, Decodable {
 public extension OWSDevice {
     func displayName(
         identityManager: OWSIdentityManager,
-        transaction: SDSAnyReadTransaction
+        tx: DBReadTransaction
     ) -> String {
         if let encryptedName = self.encryptedName {
-            if let identityKeyPair = identityManager.identityKeyPair(for: .aci, tx: transaction.asV2Read) {
+            if let identityKeyPair = identityManager.identityKeyPair(for: .aci, tx: tx) {
                 do {
                     return try DeviceNames.decryptDeviceName(
                         base64String: encryptedName,

@@ -131,6 +131,7 @@ class ExperienceUpgradeManager: Dependencies {
                 .pinReminder,
                 .notificationPermissionReminder,
                 .createUsernameReminder,
+                .inactiveLinkedDeviceReminder,
                 .contactPermissionReminder:
             return true
         case .remoteMegaphone:
@@ -176,6 +177,22 @@ class ExperienceUpgradeManager: Dependencies {
                 ),
                 experienceUpgrade: experienceUpgrade,
                 fromViewController: fromViewController
+            )
+        case .inactiveLinkedDeviceReminder:
+            let inactiveLinkedDevice: InactiveLinkedDevice? = databaseStorage.read { tx in
+                return DependenciesBridge.shared.inactiveLinkedDeviceFinder
+                    .findLeastActiveLinkedDevice(tx: tx.asV2Read)
+            }
+
+            guard let inactiveLinkedDevice else {
+                owsFailDebug("Trying to show inactive linked device megaphone, but have no device!")
+                return nil
+            }
+
+            return InactiveLinkedDeviceReminderMegaphone(
+                inactiveLinkedDevice: inactiveLinkedDevice,
+                fromViewController: fromViewController,
+                experienceUpgrade: experienceUpgrade
             )
         case .contactPermissionReminder:
             return ContactPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)

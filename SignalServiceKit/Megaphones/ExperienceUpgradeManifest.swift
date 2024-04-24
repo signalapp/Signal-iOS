@@ -27,6 +27,10 @@ public enum ExperienceUpgradeManifest: Dependencies {
     /// over time.
     case remoteMegaphone(megaphone: RemoteMegaphoneModel)
 
+    /// Prompts the user about any "inactive" linked devices that will expire
+    /// soon.
+    case inactiveLinkedDeviceReminder
+
     /// Prompts the user to enter their PIN, to help ensure they remember it.
     ///
     /// Note that this upgrade stores state in external components, rather than
@@ -98,6 +102,8 @@ extension ExperienceUpgradeManifest {
                 return .notificationPermissionReminder
             case Self.createUsernameReminder.uniqueId:
                 return .createUsernameReminder
+            case Self.inactiveLinkedDeviceReminder.uniqueId:
+                return .inactiveLinkedDeviceReminder
             case Self.pinReminder.uniqueId:
                 return .pinReminder
             case Self.contactPermissionReminder.uniqueId:
@@ -126,6 +132,7 @@ extension ExperienceUpgradeManifest {
         .introducingPins,
         .notificationPermissionReminder,
         .createUsernameReminder,
+        .inactiveLinkedDeviceReminder,
         .pinReminder,
         .contactPermissionReminder
     ]
@@ -147,6 +154,8 @@ extension ExperienceUpgradeManifest {
             return "createUsernameReminder"
         case .remoteMegaphone(let megaphone):
             return megaphone.id
+        case .inactiveLinkedDeviceReminder:
+            return "inactiveLinkedDeviceReminder"
         case .pinReminder:
             return "pinReminder"
         case .contactPermissionReminder:
@@ -211,10 +220,12 @@ extension ExperienceUpgradeManifest: ExperienceUpgradeSortable {
             // Remote megaphone manifests use higher numbers to indicate higher
             // priority, so we should invert their priority here.
             return (3, -1 * megaphone.manifest.priority)
-        case .pinReminder:
+        case .inactiveLinkedDeviceReminder:
             return (4, 0)
-        case .contactPermissionReminder:
+        case .pinReminder:
             return (5, 0)
+        case .contactPermissionReminder:
+            return (6, 0)
         case .unrecognized:
             return (Int.max, Int.max)
         }
@@ -236,7 +247,8 @@ extension ExperienceUpgradeManifest {
         case
                 .introducingPins,
                 .createUsernameReminder,
-                .remoteMegaphone:
+                .remoteMegaphone,
+                .inactiveLinkedDeviceReminder:
             return false
         case
                 .notificationPermissionReminder,
@@ -260,6 +272,7 @@ extension ExperienceUpgradeManifest {
         case
                 .notificationPermissionReminder,
                 .createUsernameReminder,
+                .inactiveLinkedDeviceReminder,
                 .remoteMegaphone,
                 .contactPermissionReminder:
             return true
@@ -276,6 +289,7 @@ extension ExperienceUpgradeManifest {
                 .introducingPins,
                 .notificationPermissionReminder,
                 .createUsernameReminder,
+                .inactiveLinkedDeviceReminder,
                 .pinReminder,
                 .contactPermissionReminder,
                 .unrecognized:
@@ -297,7 +311,9 @@ extension ExperienceUpgradeManifest {
                 .introducingPins,
                 .pinReminder:
             return 2 * kDayInterval
-        case .notificationPermissionReminder:
+        case
+                .notificationPermissionReminder,
+                .inactiveLinkedDeviceReminder:
             return 3 * kDayInterval
         case .createUsernameReminder:
             // On snooze, never show again.
@@ -352,6 +368,7 @@ extension ExperienceUpgradeManifest {
                 .introducingPins,
                 .notificationPermissionReminder,
                 .createUsernameReminder,
+                .inactiveLinkedDeviceReminder,
                 .pinReminder,
                 .contactPermissionReminder:
             return Int.max
@@ -369,6 +386,7 @@ extension ExperienceUpgradeManifest {
         case
                 .notificationPermissionReminder,
                 .createUsernameReminder,
+                .inactiveLinkedDeviceReminder,
                 .contactPermissionReminder:
             return kDayInterval
         case .introducingPins:
@@ -400,6 +418,7 @@ extension ExperienceUpgradeManifest {
                 .introducingPins,
                 .notificationPermissionReminder,
                 .createUsernameReminder,
+                .inactiveLinkedDeviceReminder,
                 .pinReminder,
                 .contactPermissionReminder:
             return Date.distantFuture
@@ -416,15 +435,14 @@ extension ExperienceUpgradeManifest {
         case
                 .introducingPins,
                 .pinReminder,
+                .inactiveLinkedDeviceReminder,
+                .contactPermissionReminder,
                 .unrecognized:
             return false
         case
                 .notificationPermissionReminder,
                 .createUsernameReminder:
             return true
-        case
-                .contactPermissionReminder:
-            return false
         case
                 .remoteMegaphone:
             // Controlled by conditional check
@@ -469,6 +487,8 @@ extension ExperienceUpgradeManifest {
             return checkPreconditionsForCreateUsernameReminder(transaction: transaction)
         case .remoteMegaphone(let megaphone):
             return checkPreconditionsForRemoteMegaphone(megaphone, tx: transaction)
+        case .inactiveLinkedDeviceReminder:
+            return checkPreconditionsForInactiveLinkedDeviceReminder(tx: transaction)
         case .pinReminder:
             return checkPreconditionsForPinReminder(transaction: transaction)
         case .contactPermissionReminder:
@@ -541,6 +561,10 @@ extension ExperienceUpgradeManifest {
         let requiredDelayAfterDisablingDiscovery: TimeInterval = 3 * kDayInterval
 
         return timeIntervalSinceDisabledDiscovery > requiredDelayAfterDisablingDiscovery
+    }
+
+    private static func checkPreconditionsForInactiveLinkedDeviceReminder(tx: SDSAnyReadTransaction) -> Bool {
+        return DependenciesBridge.shared.inactiveLinkedDeviceFinder.hasInactiveLinkedDevice(tx: tx.asV2Read)
     }
 
     private static func checkPreconditionsForPinReminder(transaction: SDSAnyReadTransaction) -> Bool {

@@ -268,6 +268,15 @@ public class RemoteConfig: NSObject {
         return false
     }
 
+    /// The time a linked device may be offline before it expires and is
+    /// unlinked.
+    public static var linkedDeviceLifespan: TimeInterval {
+        return interval(
+            .linkedDeviceLifespanInterval,
+            defaultInterval: kMonthInterval
+        )
+    }
+
     // MARK: UInt values
 
     private static func getUIntValue(
@@ -553,6 +562,7 @@ private enum ValueFlag: String, FlagType {
     case maxNicknameLength = "global.nicknames.max"
     case maxAttachmentDownloadSizeBytes = "global.attachments.maxBytes"
     case backgroundRefreshInterval = "ios.backgroundRefreshInterval"
+    case linkedDeviceLifespanInterval = "ios.linkedDeviceLifespanInterval"
 
     var isSticky: Bool {
         switch self {
@@ -576,7 +586,8 @@ private enum ValueFlag: String, FlagType {
         case .minNicknameLength: fallthrough
         case .maxNicknameLength: fallthrough
         case .maxAttachmentDownloadSizeBytes: fallthrough
-        case .backgroundRefreshInterval:
+        case .backgroundRefreshInterval: fallthrough
+        case .linkedDeviceLifespanInterval:
             return false
         }
     }
@@ -594,7 +605,8 @@ private enum ValueFlag: String, FlagType {
         case .sepaEnabledRegions: fallthrough
         case .idealEnabledRegions: fallthrough
         case .maxGroupCallRingSize: fallthrough
-        case .backgroundRefreshInterval:
+        case .backgroundRefreshInterval: fallthrough
+        case .linkedDeviceLifespanInterval:
             return true
         case .clientExpiration: fallthrough
         case .cdsSyncInterval: fallthrough

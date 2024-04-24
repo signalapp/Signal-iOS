@@ -74,7 +74,7 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
                     device: device,
                     displayName: device.displayName(
                         identityManager: identityManager,
-                        transaction: transaction
+                        tx: transaction.asV2Read
                     )
                 )
             }
@@ -113,7 +113,7 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
     private func refreshDevices() {
         AssertIsOnMainThread()
 
-        OWSDevicesService.refreshDevices()
+        _ = OWSDevicesService.refreshDevices()
     }
 
     @objc

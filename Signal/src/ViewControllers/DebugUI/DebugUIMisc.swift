@@ -32,6 +32,13 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
                 }
             }),
 
+            OWSTableItem(title: "Reenable disabled inactive linked device reminder megaphones", actionBlock: {
+                SDSDatabaseStorage.shared.write { tx in
+                    DependenciesBridge.shared.inactiveLinkedDeviceFinder
+                        .reenablePermanentlyDisabledFinders(tx: tx.asV2Write)
+                }
+            }),
+
             OWSTableItem(title: "Re-register", actionBlock: {
                 OWSActionSheets.showConfirmationAlert(
                     title: "Re-register?",

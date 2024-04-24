@@ -59,6 +59,7 @@ public class DependenciesBridge {
     public let deletedCallRecordCleanupManager: DeletedCallRecordCleanupManager
     let deletedCallRecordStore: DeletedCallRecordStore
     public let deviceManager: OWSDeviceManager
+    public let deviceStore: OWSDeviceStore
     public let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
     public let editManager: EditManager
     public let editMessageStore: EditMessageStore
@@ -68,6 +69,7 @@ public class DependenciesBridge {
     public let groupMemberUpdater: GroupMemberUpdater
     public let groupUpdateInfoMessageInserter: GroupUpdateInfoMessageInserter
     public let identityManager: OWSIdentityManager
+    public let inactiveLinkedDeviceFinder: InactiveLinkedDeviceFinder
     let incomingCallEventSyncMessageManager: IncomingCallEventSyncMessageManager
     let incomingCallLogEventSyncMessageManager: IncomingCallLogEventSyncMessageManager
     public let incomingPniChangeNumberProcessor: IncomingPniChangeNumberProcessor
@@ -147,6 +149,7 @@ public class DependenciesBridge {
         deletedCallRecordCleanupManager: DeletedCallRecordCleanupManager,
         deletedCallRecordStore: DeletedCallRecordStore,
         deviceManager: OWSDeviceManager,
+        deviceStore: OWSDeviceStore,
         disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
         editManager: EditManager,
         editMessageStore: EditMessageStore,
@@ -156,6 +159,7 @@ public class DependenciesBridge {
         groupMemberUpdater: GroupMemberUpdater,
         groupUpdateInfoMessageInserter: GroupUpdateInfoMessageInserter,
         identityManager: OWSIdentityManager,
+        inactiveLinkedDeviceFinder: InactiveLinkedDeviceFinder,
         incomingCallEventSyncMessageManager: IncomingCallEventSyncMessageManager,
         incomingCallLogEventSyncMessageManager: IncomingCallLogEventSyncMessageManager,
         incomingPniChangeNumberProcessor: IncomingPniChangeNumberProcessor,
@@ -232,6 +236,7 @@ public class DependenciesBridge {
         self.deletedCallRecordCleanupManager = deletedCallRecordCleanupManager
         self.deletedCallRecordStore = deletedCallRecordStore
         self.deviceManager = deviceManager
+        self.deviceStore = deviceStore
         self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
         self.editManager = editManager
         self.editMessageStore = editMessageStore
@@ -241,6 +246,7 @@ public class DependenciesBridge {
         self.groupMemberUpdater = groupMemberUpdater
         self.groupUpdateInfoMessageInserter = groupUpdateInfoMessageInserter
         self.identityManager = identityManager
+        self.inactiveLinkedDeviceFinder = inactiveLinkedDeviceFinder
         self.incomingCallEventSyncMessageManager = incomingCallEventSyncMessageManager
         self.incomingCallLogEventSyncMessageManager = incomingCallLogEventSyncMessageManager
         self.incomingPniChangeNumberProcessor = incomingPniChangeNumberProcessor

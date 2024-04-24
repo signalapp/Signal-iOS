@@ -1841,6 +1841,10 @@
 		D9B95A9829E8906200D7CB95 /* OWSDeviceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9729E8906200D7CB95 /* OWSDeviceTest.swift */; };
 		D9B95A9B29E8923B00D7CB95 /* InMemoryDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9929E8918200D7CB95 /* InMemoryDB.swift */; };
 		D9B95A9D29E894A600D7CB95 /* ValidatableModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9B95A9C29E894A600D7CB95 /* ValidatableModel.swift */; };
+		D9C0AE652BD7103100FCB05E /* OWSDeviceStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C0AE632BD7103100FCB05E /* OWSDeviceStore.swift */; };
+		D9C0AE662BD7103100FCB05E /* InactiveLinkedDeviceFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C0AE642BD7103100FCB05E /* InactiveLinkedDeviceFinder.swift */; };
+		D9C0AE672BD7162300FCB05E /* InactiveLinkedDeviceFinderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C0AE612BD7102500FCB05E /* InactiveLinkedDeviceFinderTest.swift */; };
+		D9C0AE692BD82DBC00FCB05E /* InactiveLinkedDeviceReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C0AE682BD82DBC00FCB05E /* InactiveLinkedDeviceReminderMegaphone.swift */; };
 		D9C2D77E299D750200D79715 /* UsernameEducationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D77D299D750200D79715 /* UsernameEducationManager.swift */; };
 		D9C2D780299EC11400D79715 /* CreateUsernameMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D77F299EC11400D79715 /* CreateUsernameMegaphone.swift */; };
 		D9C2D782299EEDDA00D79715 /* UsernameSelectionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D781299EEDDA00D79715 /* UsernameSelectionCoordinator.swift */; };
@@ -4803,6 +4807,10 @@
 		D9B95A9729E8906200D7CB95 /* OWSDeviceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceTest.swift; sourceTree = "<group>"; };
 		D9B95A9929E8918200D7CB95 /* InMemoryDB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryDB.swift; sourceTree = "<group>"; };
 		D9B95A9C29E894A600D7CB95 /* ValidatableModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatableModel.swift; sourceTree = "<group>"; };
+		D9C0AE612BD7102500FCB05E /* InactiveLinkedDeviceFinderTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InactiveLinkedDeviceFinderTest.swift; sourceTree = "<group>"; };
+		D9C0AE632BD7103100FCB05E /* OWSDeviceStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSDeviceStore.swift; sourceTree = "<group>"; };
+		D9C0AE642BD7103100FCB05E /* InactiveLinkedDeviceFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InactiveLinkedDeviceFinder.swift; sourceTree = "<group>"; };
+		D9C0AE682BD82DBC00FCB05E /* InactiveLinkedDeviceReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InactiveLinkedDeviceReminderMegaphone.swift; sourceTree = "<group>"; };
 		D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+BetterIdentifierChecker.swift"; sourceTree = "<group>"; };
 		D9C2D77D299D750200D79715 /* UsernameEducationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameEducationManager.swift; sourceTree = "<group>"; };
 		D9C2D77F299EC11400D79715 /* CreateUsernameMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUsernameMegaphone.swift; sourceTree = "<group>"; };
@@ -8720,6 +8728,7 @@
 			children = (
 				8806EF1A248DBFC100E764C7 /* ContactPermissionReminderMegaphone.swift */,
 				D9C2D77F299EC11400D79715 /* CreateUsernameMegaphone.swift */,
+				D9C0AE682BD82DBC00FCB05E /* InactiveLinkedDeviceReminderMegaphone.swift */,
 				88A505F923DBA1360005C012 /* IntroducingPINs.swift */,
 				8837F74023DA0B0F00772A32 /* MegaphoneView.swift */,
 				8806EF18248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift */,
@@ -9883,6 +9892,7 @@
 		F94261C7289B1B5300460798 /* Devices */ = {
 			isa = PBXGroup;
 			children = (
+				D9C0AE612BD7102500FCB05E /* InactiveLinkedDeviceFinderTest.swift */,
 				D9708B5B29E4CCCB004306FA /* OWSDeviceManagerTest.swift */,
 				F94261C8289B1B5300460798 /* OWSDeviceProvisionerTest.swift */,
 				D9B95A9729E8906200D7CB95 /* OWSDeviceTest.swift */,
@@ -10836,11 +10846,13 @@
 			children = (
 				F9C5CA0E289453B100548EEE /* ConversationSync */,
 				6619A1BB2B2A8132004B38FE /* SentMessageTranscriptReceiver */,
+				D9C0AE642BD7103100FCB05E /* InactiveLinkedDeviceFinder.swift */,
 				F9C5CA21289453B100548EEE /* OWSBlockedPhoneNumbersMessage.h */,
 				F9C5CA29289453B100548EEE /* OWSBlockedPhoneNumbersMessage.m */,
 				F9C5CA1A289453B100548EEE /* OWSDevice.swift */,
 				D92AB7D729E3BEE30081CA7D /* OWSDeviceManager.swift */,
 				F9C5CA0B289453B100548EEE /* OWSDeviceProvisioner.swift */,
+				D9C0AE632BD7103100FCB05E /* OWSDeviceStore.swift */,
 				F9C5CA1F289453B100548EEE /* OWSLinkedDeviceReadReceipt.h */,
 				F9C5CA2A289453B100548EEE /* OWSLinkedDeviceReadReceipt.m */,
 				F9C5CA0D289453B100548EEE /* OWSProvisioningCipher.swift */,
@@ -13165,6 +13177,7 @@
 				B9A0807A2B07D76A000FDB5B /* HomeTabViewController.swift in Sources */,
 				D9E7C8792B9B9072005BD3B9 /* IdentifierIndexedArray.swift in Sources */,
 				3496955C219B605E00DCFE74 /* ImagePickerController.swift in Sources */,
+				D9C0AE692BD82DBC00FCB05E /* InactiveLinkedDeviceReminderMegaphone.swift in Sources */,
 				1700E33F28B856FC0073D949 /* IncomingCallControls.swift in Sources */,
 				E1DDFC202BAB5A97007C67FB /* IncomingReactionsView.swift in Sources */,
 				4CD4E7D523E8CCFE00834B1B /* IndividualCall.swift in Sources */,
@@ -13893,6 +13906,7 @@
 				F9C5CDB4289453B400548EEE /* HTTPUtils.swift in Sources */,
 				66FC637C29DF8FF200F00DAC /* HydratedMessageBody.swift in Sources */,
 				F9C5CDDF289453B400548EEE /* ImageQuality.swift in Sources */,
+				D9C0AE662BD7103100FCB05E /* InactiveLinkedDeviceFinder.swift in Sources */,
 				505166D72BB37DAE00FF6B4A /* IncomingCallEventSyncMessageManager.swift in Sources */,
 				505166D62BB37DA700FF6B4A /* IncomingCallEventSyncMessageParams.swift in Sources */,
 				D958C6792B9FBD66002F6888 /* IncomingCallLogEventSyncMessageManager.swift in Sources */,
@@ -14122,6 +14136,7 @@
 				D92AB7D829E3BEE30081CA7D /* OWSDeviceManager.swift in Sources */,
 				F9C5CCEF289453B300548EEE /* OWSDeviceProvisioner.swift in Sources */,
 				F9C5CDBA289453B400548EEE /* OWSDevicesService.swift in Sources */,
+				D9C0AE652BD7103100FCB05E /* OWSDeviceStore.swift in Sources */,
 				F9C5CBFC289453B300548EEE /* OWSDisappearingConfigurationUpdateInfoMessage+SDS.swift in Sources */,
 				F9C5CC02289453B300548EEE /* OWSDisappearingConfigurationUpdateInfoMessage.m in Sources */,
 				F9C5CCC4289453B300548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift in Sources */,
@@ -14753,6 +14768,7 @@
 				5075C21729CA1EE700A260D2 /* GroupMemberUpdaterTest.swift in Sources */,
 				F9426251289B1B5500460798 /* GroupModelsTest.swift in Sources */,
 				F9426245289B1B5500460798 /* HTMLMetadataTests.swift in Sources */,
+				D9C0AE672BD7162300FCB05E /* InactiveLinkedDeviceFinderTest.swift in Sources */,
 				D958C67D2BA0F3B2002F6888 /* IncomingCallLogEventSyncMessageManagerTest.swift in Sources */,
 				D979CC4C2AD4DECB006AAC49 /* IndividualCallRecordManagerTest.swift in Sources */,
 				F942624D289B1B5500460798 /* InteractionFinderTest.swift in Sources */,

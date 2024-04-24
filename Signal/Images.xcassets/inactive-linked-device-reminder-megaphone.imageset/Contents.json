@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "inactive_linked_device.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

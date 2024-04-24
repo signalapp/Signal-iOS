@@ -10,11 +10,7 @@ import LibSignalClient
 
 public class MockTSAccountManager: TSAccountManager {
 
-    public var dateProvider: DateProvider
-
-    public init(dateProvider: @escaping DateProvider = { Date() }) {
-        self.dateProvider = dateProvider
-    }
+    public init() {}
 
     public func tmp_loadAccountState(tx: DBReadTransaction) {}
 

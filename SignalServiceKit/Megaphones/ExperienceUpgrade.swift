@@ -108,6 +108,7 @@ extension ExperienceUpgrade {
                 .introducingPins,
                 .notificationPermissionReminder,
                 .createUsernameReminder,
+                .inactiveLinkedDeviceReminder,
                 .pinReminder,
                 .contactPermissionReminder,
                 .unrecognized:

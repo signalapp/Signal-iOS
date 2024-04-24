@@ -19,9 +19,8 @@ open class OWSDevicesService: NSObject {
     @objc
     public static let deviceListUpdateModifiedDeviceList = Notification.Name("deviceListUpdateModifiedDeviceList")
 
-    @objc
-    public static func refreshDevices() {
-        firstly {
+    public static func refreshDevices() -> Promise<Void> {
+        return firstly {
             Self.getDevices()
         }.done(on: DispatchQueue.global()) { (devices: [OWSDevice]) in
             let didAddOrRemove = databaseStorage.write { transaction in

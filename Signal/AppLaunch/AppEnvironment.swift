@@ -75,8 +75,12 @@ public class AppEnvironment: NSObject {
             }
 
             let db = DependenciesBridge.shared.db
+            let deletedCallRecordCleanupManager = DependenciesBridge.shared.deletedCallRecordCleanupManager
+            let groupCallRecordRingingCleanupManager = GroupCallRecordRingingCleanupManager.fromGlobals()
+            let inactiveLinkedDeviceFinder = DependenciesBridge.shared.inactiveLinkedDeviceFinder
             let learnMyOwnPniManager = DependenciesBridge.shared.learnMyOwnPniManager
             let linkedDevicePniKeyManager = DependenciesBridge.shared.linkedDevicePniKeyManager
+            let masterKeySyncManager = DependenciesBridge.shared.masterKeySyncManager
             let pniHelloWorldManager = DependenciesBridge.shared.pniHelloWorldManager
             let schedulers = DependenciesBridge.shared.schedulers
 
@@ -97,16 +101,18 @@ public class AppEnvironment: NSObject {
             }
 
             db.asyncWrite { tx in
-                DependenciesBridge.shared.masterKeySyncManager.runStartupJobs(tx: tx)
+                masterKeySyncManager.runStartupJobs(tx: tx)
             }
 
             db.asyncWrite { tx in
-                GroupCallRecordRingingCleanupManager.fromGlobals()
-                    .cleanupRingingCalls(tx: tx)
+                groupCallRecordRingingCleanupManager.cleanupRingingCalls(tx: tx)
             }
 
-            DependenciesBridge.shared.deletedCallRecordCleanupManager
-                .startCleanupIfNecessary()
+            Task {
+                await inactiveLinkedDeviceFinder.refreshLinkedDeviceStateIfNecessary()
+            }
+
+            deletedCallRecordCleanupManager.startCleanupIfNecessary()
         }
     }
 }
