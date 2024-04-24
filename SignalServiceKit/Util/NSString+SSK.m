@@ -30,21 +30,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [NSString stringWithCharacters:outputChars length:outputLength];
 }
 
-- (NSString *)substringBeforeRange:(NSRange)range
-{
-    return [self substringToIndex:range.location];
-}
-
-- (NSString *)substringAfterRange:(NSRange)range
-{
-    return [self substringFromIndex:range.location + range.length];
-}
-
-- (NSString *_Nullable)stringOrNil
-{
-    return self;
-}
-
 @end
 
 #pragma mark -
@@ -63,17 +48,6 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     [self setAttributes:attributes range:range];
-}
-
-@end
-
-#pragma mark -
-
-@implementation NSNull (NSStringSSK)
-
-- (NSString *_Nullable)stringOrNil
-{
-    return nil;
 }
 
 @end

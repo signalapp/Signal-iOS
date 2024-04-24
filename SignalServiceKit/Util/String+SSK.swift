@@ -89,11 +89,11 @@ public extension String {
     }
 
     func substring(beforeRange range: NSRange) -> String {
-        (self as NSString).substring(before: range)
+        substring(to: range.location)
     }
 
     func substring(afterRange range: NSRange) -> String {
-        (self as NSString).substring(after: range)
+        substring(from: range.location + range.length)
     }
 
     enum StringError: Error {

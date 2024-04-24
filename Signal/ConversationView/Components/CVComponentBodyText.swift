@@ -150,7 +150,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                             // We don't expect this to happen, but if it does it's certainly not intended!
                             return nil
                         }
-                        if (plaintext as NSString).substring(after: $0.range) == DisplayableText.truncatedTextSuffix {
+                        if plaintext.substring(afterRange: $0.range) == DisplayableText.truncatedTextSuffix {
                             // More likely the item right before the "…" was detected.
                             // Conservatively assume that the item was truncated.
                             return nil
