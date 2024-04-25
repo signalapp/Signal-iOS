@@ -344,29 +344,29 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         threadIds = [NSSet setWithArray:[TSThread anyAllUniqueIdsWithTransaction:transaction]];
 
         NSMutableSet<NSString *> *allInteractionIds = [NSMutableSet new];
-        [TSInteraction anyEnumerateWithTransaction:transaction
-                                           batched:YES
-                                             block:^(TSInteraction *interaction, BOOL *stop) {
-                                                 if (!self.isMainAppAndActive) {
-                                                     shouldAbort = YES;
-                                                     *stop = YES;
-                                                     return;
-                                                 }
-                                                 if (interaction.uniqueThreadId.length < 1
-                                                     || ![threadIds containsObject:interaction.uniqueThreadId]) {
-                                                     [orphanInteractionIds addObject:interaction.uniqueId];
-                                                 }
+        [TSInteraction
+            anyEnumerateWithTransaction:transaction
+                                batched:YES
+                                  block:^(TSInteraction *interaction, BOOL *stop) {
+                                      if (!self.isMainAppAndActive) {
+                                          shouldAbort = YES;
+                                          *stop = YES;
+                                          return;
+                                      }
+                                      if (interaction.uniqueThreadId.length < 1
+                                          || ![threadIds containsObject:interaction.uniqueThreadId]) {
+                                          [orphanInteractionIds addObject:interaction.uniqueId];
+                                      }
 
-                                                 [allInteractionIds addObject:interaction.uniqueId];
-                                                 if (![interaction isKindOfClass:[TSMessage class]]) {
-                                                     return;
-                                                 }
+                                      [allInteractionIds addObject:interaction.uniqueId];
+                                      if (![interaction isKindOfClass:[TSMessage class]]) {
+                                          return;
+                                      }
 
-                                                 TSMessage *message = (TSMessage *)interaction;
-                                                 [allMessageAttachmentIds
-                                                     addObjectsFromArray:
-                                                         [message allAttachmentIdsWithTransaction:transaction]];
-                                             }];
+                                      TSMessage *message = (TSMessage *)interaction;
+                                      [allMessageAttachmentIds
+                                          addObjectsFromArray:[message allAttachmentIdsWithTransaction:transaction]];
+                                  }];
 
         if (shouldAbort) {
             return;
@@ -414,24 +414,23 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             return;
         }
 
-        [StoryMessage
-            anyEnumerateObjcWithTransaction:transaction
-                                    batched:YES
-                                      block:^(StoryMessage *message, BOOL *stop) {
-                                          if (!self.isMainAppAndActive) {
-                                              shouldAbort = YES;
-                                              *stop = YES;
-                                              return;
-                                          }
-                                          if (![message isKindOfClass:[StoryMessage class]]) {
-                                              return;
-                                          }
-                                          NSString *attachmentUniqueId =
-                                              [message legacyAttachmentUniqueIdWithTx:transaction];
-                                          if (attachmentUniqueId != nil) {
-                                              [allStoryAttachmentIds addObject:attachmentUniqueId];
-                                          }
-                                      }];
+        [StoryMessage anyEnumerateObjcWithTransaction:transaction
+                                              batched:YES
+                                                block:^(StoryMessage *message, BOOL *stop) {
+                                                    if (!self.isMainAppAndActive) {
+                                                        shouldAbort = YES;
+                                                        *stop = YES;
+                                                        return;
+                                                    }
+                                                    if (![message isKindOfClass:[StoryMessage class]]) {
+                                                        return;
+                                                    }
+                                                    NSString *attachmentUniqueId =
+                                                        [OWSOrphanDataCleaner legacyAttachmentUniqueId:message];
+                                                    if (attachmentUniqueId != nil) {
+                                                        [allStoryAttachmentIds addObject:attachmentUniqueId];
+                                                    }
+                                                }];
 
         if (shouldAbort) {
             return;

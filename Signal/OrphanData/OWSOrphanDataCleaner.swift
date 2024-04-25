@@ -292,4 +292,18 @@ extension OWSOrphanDataCleaner {
         }
         throw OWSGenericError("Operation failed.")
     }
+
+    // MARK: - Helpers
+
+    @objc
+    static func legacyAttachmentUniqueId(_ storyMessage: StoryMessage) -> String? {
+        switch storyMessage.attachment {
+        case .file(let file):
+            return file.attachmentId
+        case .text(let textAttachment):
+            return textAttachment.preview?.legacyImageAttachmentId
+        case .foreignReferenceAttachment:
+            return nil
+        }
+    }
 }

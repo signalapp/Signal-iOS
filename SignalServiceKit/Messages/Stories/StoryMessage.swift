@@ -121,21 +121,6 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         }
     }
 
-    @objc
-    public func legacyAttachmentUniqueId(tx: SDSAnyReadTransaction) -> String? {
-        switch attachment {
-        case .file(let file):
-            return file.attachmentId
-        case .text:
-            return DependenciesBridge.shared.tsResourceStore.linkPreviewAttachment(
-                for: self,
-                tx: tx.asV2Read
-            )?.resourceId.bridgeUniqueId
-        case .foreignReferenceAttachment:
-            return nil
-        }
-    }
-
     public func fileAttachment(tx: SDSAnyReadTransaction) -> ReferencedTSResource? {
         guard
             let reference = DependenciesBridge.shared.tsResourceStore.mediaAttachment(for: self, tx: tx.asV2Read),

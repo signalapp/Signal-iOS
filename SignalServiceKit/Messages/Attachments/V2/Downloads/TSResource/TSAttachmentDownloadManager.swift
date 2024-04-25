@@ -836,8 +836,18 @@ public extension TSAttachmentDownloadManager {
         downloadBehavior: TSAttachmentDownloadBehavior,
         transaction: SDSAnyWriteTransaction
     ) -> Promise<Void> {
-        // No attachment, nothing to do.
-        guard message.legacyAttachmentUniqueId(tx: transaction) != nil else { return .value(()) }
+        switch message.attachment {
+        case .file:
+            break
+        case .text(let textAttachemnt):
+            // No attachment, nothing to do.
+            guard textAttachemnt.preview?.legacyImageAttachmentId != nil else {
+                return .value(())
+            }
+        case .foreignReferenceAttachment:
+            owsFailDebug("Downloading v2 attachment with legacy download manager!")
+            return .value(())
+        }
 
         return enqueueDownloadOfAttachmentsForStoryMessageId(
             message.uniqueId,
