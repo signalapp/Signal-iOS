@@ -1020,15 +1020,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>To keep &quot;%2$@&quot; linked, open Signal on this device within one day.</string>
+			<string>Chun &quot;%2$@&quot; a choinneáil nasctha, oscail Signal ar an ngléas sin laistigh de %1$d lá.</string>
 			<key>two</key>
-			<string>To keep &quot;%2$@&quot; linked, open Signal on this device within %1$d days.</string>
+			<string>Chun &quot;%2$@&quot; a choinneáil nasctha, oscail Signal ar an ngléas sin laistigh de %1$d lá.</string>
 			<key>few</key>
-			<string>To keep &quot;%2$@&quot; linked, open Signal on this device within %1$d days.</string>
+			<string>Chun &quot;%2$@&quot; a choinneáil nasctha, oscail Signal ar an ngléas sin laistigh de %1$d lá.</string>
 			<key>many</key>
-			<string>To keep &quot;%2$@&quot; linked, open Signal on this device within %1$d days.</string>
+			<string>Chun &quot;%2$@&quot; a choinneáil nasctha, oscail Signal ar an ngléas sin laistigh de %1$d lá.</string>
 			<key>other</key>
-			<string>To keep &quot;%2$@&quot; linked, open Signal on this device within %1$d days.</string>
+			<string>Chun &quot;%2$@&quot; a choinneáil nasctha, oscail Signal ar an ngléas sin laistigh de %1$d lá.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>

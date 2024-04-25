@@ -836,11 +836,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>To keep &quot;%2$@&quot; linked, open Signal on this device within one day.</string>
+			<string>Pentru a menține &quot;%2$@&quot; conectat, deschide Signal pe dispozitivul respectiv în termen de %1$d zi.</string>
 			<key>few</key>
-			<string>To keep &quot;%2$@&quot; linked, open Signal on this device within %1$d days.</string>
+			<string>Pentru a menține &quot;%2$@&quot; conectat, deschide Signal pe dispozitivul respectiv în termen de %1$d zile.</string>
 			<key>other</key>
-			<string>To keep &quot;%2$@&quot; linked, open Signal on this device within %1$d days.</string>
+			<string>Pentru a menține &quot;%2$@&quot; conectat, deschide Signal pe dispozitivul respectiv în termen de %1$d de zile.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>

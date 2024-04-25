@@ -1118,7 +1118,7 @@
 "CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "অপেক্ষারত মেসেজ অনুরোধ";
 
 /* Message for a tooltip that appears above a parenthesized name for another user, indicating that that name is the name the other user set for themself. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "“%1$@” is the profile name this person set for themselves in Signal.";
+"CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "\"%1$@\" হলো Signal-এ এই ব্যক্তির নিজের জন্য নির্ধারণ করা প্রোফাইলের নাম।";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal কানেকশন";
@@ -3596,13 +3596,13 @@
 "IN_CALL_TERMINATED" = "কল শেষ হয়েছে।";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user doesn't want to be reminded. */
-"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "Don't Remind Me";
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "আমাকে অবহিত করবেন না";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, temporarily dismissing the megaphone. */
-"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_GOT IT_BUTTON" = "Got It";
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_GOT IT_BUTTON" = "বুঝতে পেরেছি";
 
 /* Title for an in-app megaphone about a user's inactive linked device. */
-"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Inactive Linked Device";
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "নিষ্ক্রিয় লিংককৃত ডিভাইস";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "যখন নতুন ম্যাসেজ আসবে তখন আর্কাইভ করা মিউটকৃত চ্যাট আর্কাইভ অবস্থায়ই থাকবে।";

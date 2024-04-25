@@ -928,13 +928,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>To keep &quot;%2$@&quot; linked, open Signal on this device within one day.</string>
+			<string>Ви маєте %1$d день, щоб відкрити Signal на пристрої «%2$@», якщо хочете, щоб він і надалі залишався зв&apos;язаним.</string>
 			<key>few</key>
-			<string>To keep &quot;%2$@&quot; linked, open Signal on this device within %1$d days.</string>
+			<string>Ви маєте %1$d дні, щоб відкрити Signal на пристрої «%2$@», якщо хочете, щоб він і надалі залишався зв&apos;язаним.</string>
 			<key>many</key>
-			<string>To keep &quot;%2$@&quot; linked, open Signal on this device within %1$d days.</string>
+			<string>Ви маєте %1$d днів, щоб відкрити Signal на пристрої «%2$@», якщо хочете, щоб він і надалі залишався зв&apos;язаним.</string>
 			<key>other</key>
-			<string>To keep &quot;%2$@&quot; linked, open Signal on this device within %1$d days.</string>
+			<string>Ви маєте %1$d дня, щоб відкрити Signal на пристрої «%2$@», якщо хочете, щоб він і надалі залишався зв&apos;язаним.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>

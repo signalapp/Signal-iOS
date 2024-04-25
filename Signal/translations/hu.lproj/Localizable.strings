@@ -1118,7 +1118,7 @@
 "CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Függő üzenetkérés";
 
 /* Message for a tooltip that appears above a parenthesized name for another user, indicating that that name is the name the other user set for themself. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "“%1$@” is the profile name this person set for themselves in Signal.";
+"CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "A(z) „ %1$@” az a profilnév, amelyet ez a személy beállított magának a Signalban.";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal Névjegyek";
@@ -3596,13 +3596,13 @@
 "IN_CALL_TERMINATED" = "Hívás vége";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user doesn't want to be reminded. */
-"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "Don't Remind Me";
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "Ne emlékeztessen";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, temporarily dismissing the megaphone. */
-"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_GOT IT_BUTTON" = "Got It";
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_GOT IT_BUTTON" = "Rendben";
 
 /* Title for an in-app megaphone about a user's inactive linked device. */
-"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Inactive Linked Device";
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Inaktív kapcsolt eszköz";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "A némítva archivált csevegések új üzenet érkezésekor továbbra is archiválva maradnak.";
