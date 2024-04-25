@@ -535,10 +535,8 @@
 		4C4AE6A1224AF35700D4AF6F /* SendMediaNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4AE69F224AF21900D4AF6F /* SendMediaNavigationController.swift */; };
 		4C5250D221E7BD7D00CE3D95 /* PhoneNumberValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5250D121E7BD7D00CE3D95 /* PhoneNumberValidator.swift */; };
 		4C5250D421E7C51900CE3D95 /* PhoneNumberValidatorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C5250D321E7C51900CE3D95 /* PhoneNumberValidatorTest.swift */; };
-		4C63CC00210A620B003AE45C /* SignalTSan.supp in Resources */ = {isa = PBXBuildFile; fileRef = 4C63CBFF210A620B003AE45C /* SignalTSan.supp */; };
 		4C68FDAE2385F5A4002576B1 /* DebugUIDataStoreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C68FDAD2385F5A4002576B1 /* DebugUIDataStoreViewController.swift */; };
 		4C6E6C6924241C00009DE948 /* ConversationViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6E6C6824241C00009DE948 /* ConversationViewControllerTest.swift */; };
-		4C6F527C20FFE8400097DEEE /* SignalUBSan.supp in Resources */ = {isa = PBXBuildFile; fileRef = 4C6F527B20FFE8400097DEEE /* SignalUBSan.supp */; };
 		4C751BE523FA0284002A8AF1 /* ContactSupportAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C751BE423FA0284002A8AF1 /* ContactSupportAlert.swift */; };
 		4C83AC4223C55D9C00D4F2E6 /* SignalBaseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C83AC4123C55D9C00D4F2E6 /* SignalBaseTest.swift */; };
 		4C8A6DFC22E5499300469AE7 /* MediaZoomAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8A6DFB22E5499300469AE7 /* MediaZoomAnimationController.swift */; };
@@ -2105,15 +2103,11 @@
 		F9A8ACC7280A175E00AFC6A7 /* DonationSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A8ACC6280A175E00AFC6A7 /* DonationSettingsViewController.swift */; };
 		F9AE695328F046E40012E9C9 /* OWSFingerprintTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9AE695228F046E40012E9C9 /* OWSFingerprintTest.swift */; };
 		F9B0DC4F28948656004E07B7 /* schema.sql in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC3C28948656004E07B7 /* schema.sql */; };
-		F9B0DC5028948656004E07B7 /* signal-mainnet.der in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC3E28948656004E07B7 /* signal-mainnet.der */; };
 		F9B0DC5328948656004E07B7 /* isrgrootx1.der in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4128948656004E07B7 /* isrgrootx1.der */; };
-		F9B0DC5428948656004E07B7 /* DigiCertGlobalRootG2.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4228948656004E07B7 /* DigiCertGlobalRootG2.crt */; };
 		F9B0DC5528948656004E07B7 /* GSR2.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4328948656004E07B7 /* GSR2.crt */; };
-		F9B0DC5628948656004E07B7 /* authority-signal-testnet.pem in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4428948656004E07B7 /* authority-signal-testnet.pem */; };
 		F9B0DC5728948656004E07B7 /* GSR4.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4528948656004E07B7 /* GSR4.crt */; };
 		F9B0DC5928948656004E07B7 /* signal-messenger.cer in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4728948656004E07B7 /* signal-messenger.cer */; };
 		F9B0DC5A28948656004E07B7 /* GIAG2.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4828948656004E07B7 /* GIAG2.crt */; };
-		F9B0DC5B28948656004E07B7 /* authority-mobilecoin-testnet.pem in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4928948656004E07B7 /* authority-mobilecoin-testnet.pem */; };
 		F9B0DC5C28948656004E07B7 /* GTSR3.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4A28948656004E07B7 /* GTSR3.crt */; };
 		F9B0DC5D28948656004E07B7 /* GTSR2.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4B28948656004E07B7 /* GTSR2.crt */; };
 		F9B0DC5E28948656004E07B7 /* GTSR1.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4C28948656004E07B7 /* GTSR1.crt */; };
@@ -5097,15 +5091,11 @@
 		F9A8ACC6280A175E00AFC6A7 /* DonationSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationSettingsViewController.swift; sourceTree = "<group>"; };
 		F9AE695228F046E40012E9C9 /* OWSFingerprintTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSFingerprintTest.swift; sourceTree = "<group>"; };
 		F9B0DC3C28948656004E07B7 /* schema.sql */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = schema.sql; sourceTree = "<group>"; };
-		F9B0DC3E28948656004E07B7 /* signal-mainnet.der */ = {isa = PBXFileReference; lastKnownFileType = file; path = "signal-mainnet.der"; sourceTree = "<group>"; };
 		F9B0DC4128948656004E07B7 /* isrgrootx1.der */ = {isa = PBXFileReference; lastKnownFileType = file; path = isrgrootx1.der; sourceTree = "<group>"; };
-		F9B0DC4228948656004E07B7 /* DigiCertGlobalRootG2.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = DigiCertGlobalRootG2.crt; sourceTree = "<group>"; };
 		F9B0DC4328948656004E07B7 /* GSR2.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GSR2.crt; sourceTree = "<group>"; };
-		F9B0DC4428948656004E07B7 /* authority-signal-testnet.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "authority-signal-testnet.pem"; sourceTree = "<group>"; };
 		F9B0DC4528948656004E07B7 /* GSR4.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GSR4.crt; sourceTree = "<group>"; };
 		F9B0DC4728948656004E07B7 /* signal-messenger.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = "signal-messenger.cer"; sourceTree = "<group>"; };
 		F9B0DC4828948656004E07B7 /* GIAG2.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GIAG2.crt; sourceTree = "<group>"; };
-		F9B0DC4928948656004E07B7 /* authority-mobilecoin-testnet.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "authority-mobilecoin-testnet.pem"; sourceTree = "<group>"; };
 		F9B0DC4A28948656004E07B7 /* GTSR3.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GTSR3.crt; sourceTree = "<group>"; };
 		F9B0DC4B28948656004E07B7 /* GTSR2.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GTSR2.crt; sourceTree = "<group>"; };
 		F9B0DC4C28948656004E07B7 /* GTSR1.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GTSR1.crt; sourceTree = "<group>"; };
@@ -10226,9 +10216,6 @@
 		F9B0DC3D28948656004E07B7 /* Certificates */ = {
 			isa = PBXGroup;
 			children = (
-				F9B0DC4928948656004E07B7 /* authority-mobilecoin-testnet.pem */,
-				F9B0DC4428948656004E07B7 /* authority-signal-testnet.pem */,
-				F9B0DC4228948656004E07B7 /* DigiCertGlobalRootG2.crt */,
 				F9B0DC4828948656004E07B7 /* GIAG2.crt */,
 				F9B0DC4328948656004E07B7 /* GSR2.crt */,
 				F9B0DC4528948656004E07B7 /* GSR4.crt */,
@@ -10237,7 +10224,6 @@
 				F9B0DC4A28948656004E07B7 /* GTSR3.crt */,
 				F9B0DC4D28948656004E07B7 /* GTSR4.crt */,
 				F9B0DC4128948656004E07B7 /* isrgrootx1.der */,
-				F9B0DC3E28948656004E07B7 /* signal-mainnet.der */,
 				F9B0DC4728948656004E07B7 /* signal-messenger.cer */,
 			);
 			path = Certificates;
@@ -12071,8 +12057,6 @@
 				346EFC3B25FFDC6A00F493C7 /* restore.json in Resources */,
 				34CF0788203E6B78005C4D61 /* ringback_tone_ansi.caf in Resources */,
 				882F8DE6251AB23600AA4359 /* Settings.bundle in Resources */,
-				4C63CC00210A620B003AE45C /* SignalTSan.supp in Resources */,
-				4C6F527C20FFE8400097DEEE /* SignalUBSan.supp in Resources */,
 				886CB07824E77E5B00753909 /* silence.aiff in Resources */,
 				34C3C78F2040A4F70000134C /* sonarping.mp3 in Resources */,
 				88928A44263A2781009C9B30 /* state-change_confirm-down.caf in Resources */,
@@ -12112,9 +12096,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F9B0DC5B28948656004E07B7 /* authority-mobilecoin-testnet.pem in Resources */,
-				F9B0DC5628948656004E07B7 /* authority-signal-testnet.pem in Resources */,
-				F9B0DC5428948656004E07B7 /* DigiCertGlobalRootG2.crt in Resources */,
 				F9B0DC5A28948656004E07B7 /* GIAG2.crt in Resources */,
 				F9B0DC5528948656004E07B7 /* GSR2.crt in Resources */,
 				F9B0DC5728948656004E07B7 /* GSR4.crt in Resources */,
@@ -12125,7 +12106,6 @@
 				F9B0DC5328948656004E07B7 /* isrgrootx1.der in Resources */,
 				D90D4D7C2BBB45880097C573 /* README.md in Resources */,
 				F9B0DC4F28948656004E07B7 /* schema.sql in Resources */,
-				F9B0DC5028948656004E07B7 /* signal-mainnet.der in Resources */,
 				F9B0DC5928948656004E07B7 /* signal-messenger.cer in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
