@@ -9,13 +9,16 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
     private let schedulers: Schedulers
     private let signalService: OWSSignalServiceProtocol
+    private let videoDurationHelper: VideoDurationHelper
 
     public init(
         schedulers: Schedulers,
-        signalService: OWSSignalServiceProtocol
+        signalService: OWSSignalServiceProtocol,
+        videoDurationHelper: VideoDurationHelper
     ) {
         self.schedulers = schedulers
         self.signalService = signalService
+        self.videoDurationHelper = videoDurationHelper
     }
 
     public func downloadTransientAttachment(metadata: AttachmentDownloads.DownloadMetadata) -> Promise<URL> {

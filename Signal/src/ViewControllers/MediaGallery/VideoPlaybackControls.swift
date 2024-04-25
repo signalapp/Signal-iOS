@@ -150,7 +150,7 @@ class VideoPlaybackControlView: UIView {
             showRewindAndFastForward = false
             self.mediaItem = mediaItem
 
-            VideoDurationHelper.shared.promisedDuration(
+            TSAttachmentVideoDurationHelper.shared.promisedDuration(
                 attachment: mediaItem.attachmentStream.attachmentStream.bridgeStream
             ).observe { [weak self] result in
                 guard let self, self.mediaItem === mediaItem, case .success(let duration) = result else {

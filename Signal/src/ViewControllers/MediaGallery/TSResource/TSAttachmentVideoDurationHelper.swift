@@ -9,8 +9,8 @@ import SignalServiceKit
 
 /// Manages the work of determining the duration of videos. Takes care of caching, avoiding
 /// duplicate effort, discarding unneeded requests, and reordering requests in LIFO order.
-class VideoDurationHelper {
-    static let shared = VideoDurationHelper()
+class TSAttachmentVideoDurationHelper {
+    static let shared = TSAttachmentVideoDurationHelper()
 
     /// The only exception this class throws.
     class DurationUnavailableError: Error {
@@ -78,10 +78,10 @@ class VideoDurationHelper {
     /// `context` gets deinit'ed, any outstanding promises will be rejected.
     /// Usage:
     ///    class MyViewController: UIViewController {
-    ///        let context = VideoDurationHelper.Context()
+    ///        let context = TSAttachmentVideoDurationHelper.Context()
     ///        func printDuration(attachment: TSAttachmentStream) {
-    ///            VideoDurationHelper.shared.with(context: context) {
-    ///                VideoDurationHelper.shared.promisedDuration(attachment).then {
+    ///            TSAttachmentVideoDurationHelper.shared.with(context: context) {
+    ///                TSAttachmentVideoDurationHelper.shared.promisedDuration(attachment).then {
     ///                    print("Duration is \($0)")
     ///                }
     ///            }
@@ -127,28 +127,23 @@ class VideoDurationHelper {
         return pendingPromise.promise
     }
 
+    private struct Request {
+        let attachmentUniqueId: String
+        let sourceUrl: URL
+    }
+
     /// Creates a new promise.
     private func makePromise(for attachment: TSAttachmentStream) -> Promise<TimeInterval> {
         lock.assertOwner()
 
         guard
-            let sourceUrl = attachment.originalMediaURL,
-            let dataUTI = MimeTypeUtil.utiTypeForMimeType(attachment.contentType)
+            let sourceUrl = attachment.originalMediaURL
         else {
             return Promise<TimeInterval>(error: DurationUnavailableError())
         }
 
         // None of these fields matter; we just want the source media itself.
-        let cloneRequest = CloneAsSignalAttachmentRequest(
-            uniqueId: attachment.uniqueId,
-            sourceUrl: sourceUrl,
-            dataUTI: dataUTI,
-            sourceFilename: attachment.sourceFilename,
-            isVoiceMessage: false,
-            caption: attachment.caption,
-            isBorderless: false,
-            isLoopingVideo: false
-        )
+        let request = Request(attachmentUniqueId: attachment.uniqueId, sourceUrl: sourceUrl)
 
         // `context` is weak in case it gets deinitialized before we call
         // `computeDurationIfResultStillNeeded`.
@@ -161,7 +156,7 @@ class VideoDurationHelper {
                 // the future.
                 self.computeDurationIfResultStillNeeded(future: future,
                                                         context: context,
-                                                        cloneRequest: cloneRequest)
+                                                        request: request)
                 // Block to ensure we only compute one duration at a time.
                 group.wait()
             }
@@ -170,7 +165,7 @@ class VideoDurationHelper {
             // Allow the next block on `queue` to run.
             group.leave()
         }
-        addPendingPromise(promise, context: context, uniqueId: cloneRequest.uniqueId)
+        addPendingPromise(promise, context: context, uniqueId: request.attachmentUniqueId)
         return promise
     }
 
@@ -191,15 +186,15 @@ class VideoDurationHelper {
     private func computeDurationIfResultStillNeeded(
         future: Future<TimeInterval>,
         context: Context?,
-        cloneRequest: CloneAsSignalAttachmentRequest
+        request: Request
     ) {
         rejectIfResultNoLongerNeeded(future: future,
-                                     uniqueId: cloneRequest.uniqueId,
+                                     uniqueId: request.attachmentUniqueId,
                                      context: context)
         if future.isSealed {
             return
         }
-        self.computeDuration(cloneRequest, future: future)
+        self.computeDuration(request, future: future)
     }
 
     /// Reject the future if nobody is left who wants this video's duration.
@@ -241,33 +236,17 @@ class VideoDurationHelper {
     /// Runs on self.queue. This is expensive. This will update the database, resolve or reject the
     /// future, and finally call `completion`.
     private func computeDuration(
-        _ cloneRequest: CloneAsSignalAttachmentRequest,
+        _ request: Request,
         future: Future<TimeInterval>
     ) {
-        var result = Result(attachmentUniqueId: cloneRequest.uniqueId, future: future)
-        do {
-            /// This is potentially slow.
-            let signalAttachment = try DependenciesBridge.shared.attachmentCloner.cloneAsSignalAttachment(
-                request: cloneRequest
-            )
-            guard let url = signalAttachment.dataUrl else {
-                save(result)
-                return
-            }
-            AVURLAsset.loadDuration(url: url) { duration in
-                // Warning! We might be in AVFoundation's private queue.
+        var result = Result(attachmentUniqueId: request.attachmentUniqueId, future: future)
+        AVURLAsset.loadDuration(url: request.sourceUrl) { duration in
+            // Warning! We might be in AVFoundation's private queue.
 
-                DispatchQueue.global().async {
-                    // A dirty trick to make `url` remain vaild until we're all done. Once
-                    // `signalAttachment` gets deinit'ed, it unlinks its file.
-                    withExtendedLifetime(signalAttachment) { }
-
-                    result.duration = duration
-                    self.save(result)
-                }
+            DispatchQueue.global().async {
+                result.duration = duration
+                self.save(result)
             }
-        } catch {
-            save(result)
         }
     }
 

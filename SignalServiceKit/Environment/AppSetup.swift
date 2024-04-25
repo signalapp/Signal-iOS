@@ -181,9 +181,11 @@ public class AppSetup {
             attachmentStore: attachmentStore,
             tsResourceStore: tsResourceStore
         )
+        let videoDurationHelper = VideoDurationHelperImpl()
         let attachmentDownloadManager = AttachmentDownloadManagerImpl(
             schedulers: schedulers,
-            signalService: signalService
+            signalService: signalService,
+            videoDurationHelper: videoDurationHelper
         )
         let tsResourceDownloadManager = TSResourceDownloadManagerImpl(
             attachmentDownloadManager: attachmentDownloadManager,
@@ -863,6 +865,7 @@ public class AppSetup {
             usernameLinkManager: usernameLinkManager,
             usernameLookupManager: usernameLookupManager,
             usernameValidationManager: usernameValidationManager,
+            videoDurationHelper: videoDurationHelper,
             wallpaperStore: wallpaperStore
         )
         DependenciesBridge.setShared(dependenciesBridge)
