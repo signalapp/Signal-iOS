@@ -1761,6 +1761,7 @@ private extension CallsListViewController {
             button.backgroundColor = .ows_accentGreen
             button.contentEdgeInsets = .init(hMargin: 12, vMargin: 4)
             button.setCompressionResistanceHigh()
+            button.isUserInteractionEnabled = false
             return button
         }
 
