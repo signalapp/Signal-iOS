@@ -1,1 +1,1 @@
-• Denne oppdateringen sikrer bedre layout for meldinger med mediefiler og siterte svar, og den fjerner det ekstra tomrommet mellom søkefeltet og samtalelisten inne på Signal.
+• Forbedringer i ytelse og andre feilrettinger.

@@ -1,1 +1,1 @@
-• Esta atualização melhora o layout das mensagens de mídia com respostas citadas e corrige um espaçamento visual que aparecia entre a barra de busca e sua lista de conversas quando a opção de acessibilidade “Reduzir Transparência”, do iOS, estava ativada. 
+• Correções de bugs e melhorias na interface do usuário.

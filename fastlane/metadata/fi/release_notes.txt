@@ -1,1 +1,1 @@
-• Tämä päivitys parantaa lainattuja vastauksia sisältävien mediaviestien asettelua ja korjaa myös visuaalisen aukon, joka saattoi ilmestyä hakupalkin ja keskustelulistan väliin.
+• Virheenkorjauksia ja suorituskyvyn parannuksia.

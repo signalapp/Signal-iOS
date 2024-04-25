@@ -1,1 +1,1 @@
-• Aquesta actualització millora el disseny dels missatges multimèdia amb respostes citades, i també corregeix un espai visual que podia aparèixer entre la barra de cerca i la teva llista de xats.
+• Hem corregit alguns errors i hem millorat la interfície d'usuari.

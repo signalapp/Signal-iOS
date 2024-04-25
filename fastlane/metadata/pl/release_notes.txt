@@ -1,1 +1,1 @@
-• W ramach tej aktualizacji poprawiliśmy układ wiadomości multimedialnych z cytatem w odpowiedzi. Usunęliśmy też przerwę, która pojawiała się między paskiem wyszukiwania a listą czatów przy włączonej opcji „Zmniejsz przezroczystość” w ustawieniach dostępności systemu iOS.
+• Obiecaliśmy sobie, że nigdy tego nie zrobimy – że nie będziemy tacy jak wydawcy innych aplikacji i nie opublikujemy lakonicznych informacji dotyczących aktualizacji, ale tym razem to naprawdę tylko „poprawki błędów i ulepszenia wydajności”.

@@ -1,1 +1,1 @@
-• Bản cập nhật này cải thiện bố cục của tin nhắn có sử dụng đa phương tiện được trích dẫn và đồng thời sửa lỗi khoảng cách trực quan có thể xuất hiện giữa thanh tìm kiếm và danh sách cuộc trò chuyện của bạn.
+• Sửa lỗi và nâng cấp giao diện người dùng.

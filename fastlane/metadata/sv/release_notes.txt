@@ -1,1 +1,1 @@
-• Den här uppdateringen förbättrar layouten för mediemeddelanden med citerade svar och åtgärdar även ett visuellt mellanrum som kunde uppstå mellan sökfältet och din chattlista.
+• Buggfixar och prestandaförbättringar.

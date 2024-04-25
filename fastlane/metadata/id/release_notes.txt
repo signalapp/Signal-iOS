@@ -1,1 +1,1 @@
-• Pembaruan kali ini menyempurnakan tata letak pesan media dengan balasan yang dikutip, serta memperbaiki perbedaan visual yang ditampilkan antara bilah pencarian dan daftar chat Anda saat pengaturan Aksesibilitas iOS "Kurangi Transparansi" diaktifkan.
+• Perbaikan bug dan penyempurnaan pada kinerja aplikasi.

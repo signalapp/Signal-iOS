@@ -1,1 +1,1 @@
-• Bu güncelleme, alıntılanan yanıtlar içeren içerik iletilerinin düzenini iyileştirir ve iOS Erişilebilirlik Ayarları'nda "Şeffaflığı Azalt" etkinken, arama çubuğuyla sohbet listen arasında oluşan görsel boşluğu da giderir.
+• Hata düzeltmeleri ve performans iyileştirmeleri.

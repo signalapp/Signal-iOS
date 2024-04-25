@@ -1,1 +1,1 @@
-• Questo aggiornamento migliora il layout dei messaggi con media contenenti risposte citate. Inoltre, risolve un problema grafico che causava la comparsa di uno spazio tra la barra di ricerca e il tuo elenco chat quando attivavi l'opzione di accessibilità "Riduci trasparenza" di iOS.
+• Quante volte hai letto "Bug risolti e miglioramenti vari" nelle note dell'aggiornamento di un'app? Tante. Beh, aggiungi anche questa: stavolta abbiamo effettivamente risolto bug e migliorato l'interfaccia dell'app.

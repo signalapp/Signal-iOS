@@ -1,1 +1,1 @@
-• Denne opdatering forbedrer layoutet af mediebeskeder med citerede svar og retter også et visuelt mellemrum, der opstod mellem søgefeltet og din chatliste, da iOS-tilgængelighedsindstillingen "Reducer gennemsighed" blev aktiveret.
+• Vi sagde til os selv, at vi aldrig ville gøre dette, at vi ikke ville være som de andre apps med deres dovne udgivelsesnoter, men denne opdatering indeholder faktisk "fejlrettelser og ydeevneforbedringer."

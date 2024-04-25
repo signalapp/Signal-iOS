@@ -1,1 +1,1 @@
-• Táto aktualizácia zlepšuje rozloženie multimediálnych správ s citovanými odpoveďami a opravuje tiež vizuálnu medzeru, ktorá sa zvykla objaviť medzi vyhľadávacím panelom a zoznamom četov.
+• Opravy chýb a vylepšenia výkonu.

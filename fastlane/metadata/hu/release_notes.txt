@@ -1,1 +1,1 @@
-• Ez a frissítés javítja az idézett válaszokat tartalmazó médiaüzenetek elrendezését, és kijavítja a keresősáv és a csevegőlista között előforduló vizuális rést.
+• Hiba- és teljesítményjavítások.

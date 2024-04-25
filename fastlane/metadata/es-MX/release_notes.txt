@@ -1,1 +1,1 @@
-• Esta actualización mejora el diseño de los mensajes multimedia con respuestas citadas y corrige un espacio visual que aparecía entre la barra de búsqueda y tu lista de chats cuando estaba habilitado el ajuste de accesibilidad de iOS "Reducir transparencia".
+• Hemos arreglado algunos errores y mejorado el rendimiento.

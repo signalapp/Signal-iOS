@@ -1,1 +1,1 @@
-• Această actualizare îmbunătățește aspectul mesajelor media cu răspunsuri citate și remediază un gol vizual care apărea între bara de căutare și lista de chat, atunci când era activată setarea de accesibilitate iOS „Reduce transparența”.
+• Ne-am spus că nu vom face niciodată acest lucru, că nu vom fi ca celelalte aplicații cu notele lor clasice de lansare, dar această actualizare chiar include „remedieri de erori și îmbunătățiri de performanță”.

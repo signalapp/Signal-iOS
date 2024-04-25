@@ -1,1 +1,1 @@
-• Esta atualização melhora o layout de mensagens multimédia com respostas citadas e também corrige uma lacuna visual que aparecia entre a barra de pesquisa e a lista de chats.
+• Correções de erros e melhorias de desempenho.

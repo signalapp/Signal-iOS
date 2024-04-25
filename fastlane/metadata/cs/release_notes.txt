@@ -1,1 +1,1 @@
-• Tato aktualizace zlepšuje rozložení multimediálních zpráv s citovanými odpověďmi a také opravuje vizuální mezeru, která se mohla objevit mezi vyhledávacím panelem a seznamem chatů.
+• Opravy chyb a zlepšení výkonu.
