@@ -9,9 +9,9 @@ import SignalServiceKit
 ///
 /// Why does it exist? PaymentsFormat, lives in Signal, not SignalServiceKit.
 ///
-/// It can't be easily moved to SignalServiceKit either; it relies on MobileCoin
-/// which isn't a SSK dependency (SSK only has MobileCoinMinimal) AND it relies
-/// on PaymentsImpl which also lives in Signal.
+/// It can't be easily moved to SignalServiceKit either; it relies on
+/// MobileCoin which isn't a SSK dependency AND it relies on PaymentsImpl
+/// which also lives in Signal.
 ///
 /// But we need PaymentsFormat, and everything it pulls in, to pull the amount string
 /// out of an original message. We need the amount to generate the quoted reply; not

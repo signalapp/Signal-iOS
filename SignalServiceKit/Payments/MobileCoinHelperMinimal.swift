@@ -4,18 +4,28 @@
 //
 
 import Foundation
-import MobileCoinMinimal
+
+public enum MobileCoinHelperMinimalError: Error {
+    case invalidReceipt
+}
 
 public class MobileCoinHelperMinimal: MobileCoinHelper {
-
     public init() { }
 
     public func info(forReceiptData receiptData: Data) throws -> MobileCoinReceiptInfo {
-        let txOutPublicKey = try MobileCoinMinimal.txOutPublicKey(forReceiptData: receiptData)
+        guard let proto = try? External_Receipt(serializedData: receiptData) else {
+            Logger.warn("Couldn't decode MobileCoin receipt")
+            throw MobileCoinHelperMinimalError.invalidReceipt
+        }
+        let txOutPublicKey = proto.publicKey.data
         return MobileCoinReceiptInfo(txOutPublicKey: txOutPublicKey)
     }
 
     public func isValidMobileCoinPublicAddress(_ addressData: Data) -> Bool {
-        MobileCoinMinimal.isValidMobileCoinPublicAddress(addressData)
+        guard let proto = try? External_PublicAddress(serializedData: addressData) else {
+            Logger.warn("Couldn't decode MobileCoin public address")
+            return false
+        }
+        return true
     }
 }

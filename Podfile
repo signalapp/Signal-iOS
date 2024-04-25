@@ -94,8 +94,6 @@ end
 
 target 'SignalServiceKit' do
   pod 'CocoaLumberjack'
-  pod 'MobileCoinMinimal', git: 'https://github.com/signalapp/MobileCoin-Swift.git', branch: 'charlesmchen/mobileCoinMinimal', testspecs: ["Tests"]
-  # pod 'MobileCoinMinimal', path: '../MobileCoinMinimal', testspecs: ["Tests"]
 
   target 'SignalServiceKitTests' do
     inherit! :search_paths

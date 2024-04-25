@@ -1,0 +1,97 @@
+// Copyright (c) 2018-2022 The MobileCoin Foundation
+
+// Copied from MobileCoin-Swift/Vendor/libmobilecoin/Vendor/mobilecoin/api/proto/external.proto
+
+// MUST BE KEPT IN SYNC WITH RUST CODE!
+
+syntax = "proto3";
+
+package external;
+
+///////////////////////////////////////////////////////////////////////////////
+// `keys` crate
+///////////////////////////////////////////////////////////////////////////////
+
+/// A 32-byte compressed Ristretto curve point (public key)
+message CompressedRistretto {
+    bytes data = 1;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// `account-keys` crate
+///////////////////////////////////////////////////////////////////////////////
+
+/// A public address, used to identify recipients.
+message PublicAddress {
+    /// View public key
+    CompressedRistretto view_public_key = 1;
+
+    /// Spend public key
+    CompressedRistretto spend_public_key = 2;
+
+    /// Optional url of fog report server.
+    /// Empty string when not in use, i.e. for accounts that don't have fog service.
+    /// Indicates the place at which the fog report server should be contacted.
+    string fog_report_url = 3;
+
+    /// Optional fog report id.
+    /// The fog report server may serve multiple reports, this id disambiguates
+    /// which one to use when sending to this account.
+    string fog_report_id = 4;
+
+    /// View key signature over the fog authority subjectPublicKeyInfo.
+    ///
+    /// This must be parseable as a RistrettoSignature.
+    bytes fog_authority_sig = 5;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// `trasaction/core` crate
+///////////////////////////////////////////////////////////////////////////////
+
+// A hash of the shared secret of a transaction output.
+//
+// Can be used by the recipient of a transaction output to verify that the
+// bearer of this number knew the shared secret of the transaction output,
+// thereby providing evidence that they are the sender.
+message TxOutConfirmationNumber {
+    bytes hash = 1;
+}
+
+// MaskedAmount.
+message MaskedAmount {
+    // A Pedersen commitment `v*G + s*H`
+    CompressedRistretto commitment = 1;
+
+    // `masked_value = value XOR_8 Blake2B("value_mask" || shared_secret)`
+    fixed64 masked_value = 2;
+
+    // `masked_token_id = token_id XOR_8 Blake2B("token_id_mask" || shared_secret)`
+    bytes masked_token_id = 3;
+}
+
+// Given to the recipient of a transaction output by the sender so that the
+// recipient may verify that the other party is indeed the sender.
+//
+// Often given to the recipient before the transaction is finalized so that
+// the recipient may know to anticipate the arrival of a transaction output,
+// as well as know who it's from, when to consider it as having surpassed
+// the tombstone block, and the expected amount of the output.
+message Receipt {
+    // Public key of the TxOut.
+    CompressedRistretto public_key = 1;
+
+    // Confirmation number of the TxOut.
+    TxOutConfirmationNumber confirmation = 2;
+
+    // Tombstone block of the Tx that produced the TxOut.
+    // Note: This value is self-reported by the sender and is unverifiable.
+    uint64 tombstone_block = 3;
+
+    // Amount of the TxOut.
+    // Note: This value is self-reported by the sender and is unverifiable.
+    oneof masked_amount {
+        MaskedAmount masked_amount_v1 = 4;
+        MaskedAmount masked_amount_v2 = 5;
+    };
+}

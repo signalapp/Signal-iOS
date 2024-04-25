@@ -173,6 +173,8 @@ def should_process_file(file_path: str) -> bool:
             return False
         if component in ("Pods", "ThirdParty"):
             return False
+        if component.startswith("MobileCoinExternal."):
+            return False
 
     return True
 

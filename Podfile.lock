@@ -30,14 +30,6 @@ PODS:
   - MobileCoin/CoreHTTP (6.0.0):
     - LibMobileCoin/CoreHTTP (~> 6.0.0-pre1)
     - Logging (~> 1.4)
-  - MobileCoinMinimal (1.2.0-pre2):
-    - CocoaLumberjack
-    - Logging (~> 1.4)
-    - SwiftProtobuf
-  - MobileCoinMinimal/Tests (1.2.0-pre2):
-    - CocoaLumberjack
-    - Logging (~> 1.4)
-    - SwiftProtobuf
   - PureLayout (3.1.4)
   - Reachability (3.7.6)
   - SignalCoreKit (1.0.0):
@@ -77,8 +69,6 @@ DEPENDENCIES:
   - lottie-ios
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
   - MobileCoin/CoreHTTP (from `https://github.com/mobilecoinofficial/MobileCoin-Swift`, tag `v6.0.0`)
-  - MobileCoinMinimal (from `https://github.com/signalapp/MobileCoin-Swift.git`, branch `charlesmchen/mobileCoinMinimal`)
-  - MobileCoinMinimal/Tests (from `https://github.com/signalapp/MobileCoin-Swift.git`, branch `charlesmchen/mobileCoinMinimal`)
   - PureLayout
   - Reachability
   - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit`)
@@ -124,9 +114,6 @@ EXTERNAL SOURCES:
   MobileCoin:
     :git: https://github.com/mobilecoinofficial/MobileCoin-Swift
     :tag: v6.0.0
-  MobileCoinMinimal:
-    :branch: charlesmchen/mobileCoinMinimal
-    :git: https://github.com/signalapp/MobileCoin-Swift.git
   SignalCoreKit:
     :git: https://github.com/signalapp/SignalCoreKit
   SignalRingRTC:
@@ -160,9 +147,6 @@ CHECKOUT OPTIONS:
   MobileCoin:
     :git: https://github.com/mobilecoinofficial/MobileCoin-Swift
     :tag: v6.0.0
-  MobileCoinMinimal:
-    :commit: dae1e36cb6aeb8fab2c35ce857bd45cd0ce07023
-    :git: https://github.com/signalapp/MobileCoin-Swift.git
   SignalCoreKit:
     :commit: 44d9256b4a553509ca57b8ea4e98dd351e916c16
     :git: https://github.com/signalapp/SignalCoreKit
@@ -189,7 +173,6 @@ SPEC CHECKSUMS:
   lottie-ios: 016449b5d8be0c3dcbcfa0a9988469999cd04c5d
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   MobileCoin: 3df783a5cc278a328635ea1f5c7124c5e924648d
-  MobileCoinMinimal: 627ed590d8a0d5d57c39ec25727bde3d976d2f7a
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   Reachability: fd0ecd23705e2599e4cceeb943222ae02296cbc6
   SignalCoreKit: 7658a72244fa81858df4618e92044b0db0dcf59e
@@ -200,6 +183,6 @@ SPEC CHECKSUMS:
   Wire: f5fe13fcad476bfd248f23a45a2004167c0ebae2
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: 9df3a393fd2e6d0d53e1360949e66ebec2e69fd2
+PODFILE CHECKSUM: 1134e7d7e969bc474d9bc85070aa739739ae70fa
 
 COCOAPODS: 1.15.2
