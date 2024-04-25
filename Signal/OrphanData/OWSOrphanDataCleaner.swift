@@ -95,8 +95,11 @@ extension OWSOrphanDataCleaner {
 
         findAttachmentIds(
             transaction: transaction,
-            jobRecordAttachmentIds: { (jobRecord: MessageSenderJobRecord) in
-                fetchMessage(for: jobRecord, transaction: transaction)?.allAttachmentIds(transaction: transaction) ?? []
+            jobRecordAttachmentIds: { (jobRecord: MessageSenderJobRecord) -> [String] in
+                guard let message = fetchMessage(for: jobRecord, transaction: transaction) else {
+                    return []
+                }
+                return Self.legacyAttachmentUniqueIds(message)
             }
         )
 
@@ -294,6 +297,12 @@ extension OWSOrphanDataCleaner {
     }
 
     // MARK: - Helpers
+
+    @objc
+    static func legacyAttachmentUniqueIds(_ message: TSMessage) -> [String] {
+        let ids = TSAttachmentStore().allAttachmentIds(for: message)
+        return Array(ids)
+    }
 
     @objc
     static func legacyAttachmentUniqueId(_ storyMessage: StoryMessage) -> String? {

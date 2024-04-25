@@ -317,7 +317,11 @@ public class CVComponentState: Equatable, Dependencies {
     let bottomButtons: BottomButtons?
 
     struct FailedOrPendingDownloads: Equatable {
-        let attachmentPointers: [TSAttachmentPointer]
+        let attachmentPointers: [TSResourcePointer]
+
+        static func == (lhs: CVComponentState.FailedOrPendingDownloads, rhs: CVComponentState.FailedOrPendingDownloads) -> Bool {
+            return lhs.attachmentPointers.map(\.resourceId) == rhs.attachmentPointers.map(\.resourceId)
+        }
     }
     let failedOrPendingDownloads: FailedOrPendingDownloads?
 
@@ -1007,7 +1011,11 @@ fileprivate extension CVComponentState.Builder {
             if message.isViewOnceComplete {
                 return buildViewOnce(viewOnceState: .incomingExpired)
             }
-            let hasMoreThanOneAttachment: Bool = message.bodyAttachmentIds(transaction: transaction).count > 1
+            let attachmentRefs = DependenciesBridge.shared.tsResourceStore.bodyAttachments(
+                for: message,
+                tx: transaction.asV2Read
+            )
+            let hasMoreThanOneAttachment: Bool = attachmentRefs.count > 1
             let hasBodyText: Bool = !(message.body?.isEmpty ?? true)
             if hasMoreThanOneAttachment || hasBodyText {
                 // Refuse to render incoming "view once" messages if they

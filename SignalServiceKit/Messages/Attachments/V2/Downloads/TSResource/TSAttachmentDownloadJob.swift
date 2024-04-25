@@ -197,7 +197,11 @@ extension TSAttachmentDownloadManager {
 
             var bodyAttachmentJobs = [Job]()
             var bodyAttachmentPromises = [Promise<TSAttachmentStream>]()
-            for attachment in message.bodyAttachments(transaction: tx) {
+            let bodyAttachments = TSAttachmentStore().attachments(
+                withAttachmentIds: message.attachmentIds,
+                tx: tx
+            )
+            for attachment in bodyAttachments {
                 let category: AttachmentCategory = {
                     if attachment.isImageMimeType {
                         return .bodyMediaImage

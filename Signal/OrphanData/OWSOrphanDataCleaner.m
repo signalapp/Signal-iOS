@@ -365,7 +365,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 
                                       TSMessage *message = (TSMessage *)interaction;
                                       [allMessageAttachmentIds
-                                          addObjectsFromArray:[message allAttachmentIdsWithTransaction:transaction]];
+                                          addObjectsFromArray:[OWSOrphanDataCleaner legacyAttachmentUniqueIds:message]];
                                   }];
 
         if (shouldAbort) {

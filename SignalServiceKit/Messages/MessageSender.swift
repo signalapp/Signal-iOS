@@ -694,9 +694,6 @@ public class MessageSender: Dependencies {
 
     private func areAttachmentsUploadedWithSneakyTransaction(for message: TSOutgoingMessage) -> Bool {
         return databaseStorage.read { tx in
-            guard message.hasBodyAttachments(transaction: tx) else {
-                return true
-            }
             for attachment in message.allAttachments(transaction: tx) {
                 guard attachment.isUploadedToTransitTier else {
                     return false

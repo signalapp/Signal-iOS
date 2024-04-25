@@ -187,14 +187,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
 @property (nullable, nonatomic, readonly) NSNumber *videoDuration;
 
 - (NSString *)description NS_UNAVAILABLE;
-- (NSString *)previewTextForContainingMessage:(TSMessage *)message
-                                  transaction:(SDSAnyReadTransaction *)transaction
-    NS_SWIFT_NAME(previewText(forContainingMessage:transaction:));
-
-- (NSString *)emojiForContainingMessage:(TSMessage *)message
-                            transaction:(SDSAnyReadTransaction *)transaction
-    NS_SWIFT_NAME(emoji(forContainingMessage:transaction:));
-
+- (NSString *)previewText;
+- (NSString *)previewEmoji;
 
 // This should only ever be used before the attachment is saved,
 // after that point the content type will be already set.

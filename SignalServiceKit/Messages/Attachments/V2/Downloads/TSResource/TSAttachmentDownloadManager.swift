@@ -697,7 +697,7 @@ public extension TSAttachmentDownloadManager {
         transaction: SDSAnyWriteTransaction
     ) -> Promise<Void> {
         // No attachments, nothing to do.
-        guard !message.allAttachmentIds(transaction: transaction).isEmpty else { return .value(()) }
+        guard !TSAttachmentStore().allAttachmentIds(for: message).isEmpty else { return .value(()) }
 
         return enqueueDownloadOfAttachmentsForMessageId(
             message.uniqueId,

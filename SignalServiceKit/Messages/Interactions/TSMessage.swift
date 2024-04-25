@@ -17,62 +17,28 @@ public extension TSMessage {
 
     // MARK: - Attachments
 
-    @objc
-    func bodyAttachmentIds(transaction: SDSAnyReadTransaction) -> [String] {
-        return DependenciesBridge.shared.tsResourceStore
-            .bodyAttachments(for: self, tx: transaction.asV2Read)
-            .map(\.resourceId.bridgeUniqueId)
-    }
-
-    @objc
     func hasBodyAttachments(transaction: SDSAnyReadTransaction) -> Bool {
         return DependenciesBridge.shared.tsResourceStore
             .bodyAttachments(for: self, tx: transaction.asV2Read)
             .isEmpty.negated
     }
 
-    @objc
-    func bodyAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachment] {
-        return DependenciesBridge.shared.tsResourceStore
-            .bodyAttachments(for: self, tx: transaction.asV2Read)
-            .fetchAll(tx: transaction).map(\.bridge)
-    }
-
-    @objc
     func hasMediaAttachments(transaction: SDSAnyReadTransaction) -> Bool {
         return DependenciesBridge.shared.tsResourceStore
             .bodyMediaAttachments(for: self, tx: transaction.asV2Read)
             .isEmpty.negated
     }
 
-    @objc
-    func mediaAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachment] {
-        return DependenciesBridge.shared.tsResourceStore
-            .bodyMediaAttachments(for: self, tx: transaction.asV2Read)
-            .fetchAll(tx: transaction).map(\.bridge)
-    }
-
-    @objc
-    func oversizeTextAttachment(transaction: SDSAnyReadTransaction) -> TSAttachment? {
+    func oversizeTextAttachment(transaction: SDSAnyReadTransaction) -> TSResource? {
         return DependenciesBridge.shared.tsResourceStore
             .oversizeTextAttachment(for: self, tx: transaction.asV2Read)?
-            .fetch(tx: transaction)?.bridge
+            .fetch(tx: transaction)
     }
 
-    @objc
-    func allAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachment] {
+    func allAttachments(transaction: SDSAnyReadTransaction) -> [TSResource] {
         return DependenciesBridge.shared.tsResourceStore
             .allAttachments(for: self, tx: transaction.asV2Read)
-            .fetchAll(tx: transaction).map(\.bridge)
-    }
-
-    // Returns ids for all attachments, including message ("body") attachments,
-    // quoted reply thumbnails, contact share avatars, link preview images, etc.
-    @objc
-    func allAttachmentIds(transaction: SDSAnyReadTransaction) -> [String] {
-        return DependenciesBridge.shared.tsResourceStore
-            .allAttachments(for: self, tx: transaction.asV2Read)
-            .map(\.resourceId.bridgeUniqueId)
+            .fetchAll(tx: transaction)
     }
 
     /// The raw body contains placeholders for things like mentions and is not user friendly.
@@ -85,37 +51,34 @@ public extension TSMessage {
         return self.body?.nilIfEmpty
     }
 
-    func failedAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
-        let attachments: [TSAttachment] = allAttachments(transaction: transaction)
+    func failedAttachments(transaction: SDSAnyReadTransaction) -> [TSResourcePointer] {
+        let attachments: [TSResource] = allAttachments(transaction: transaction)
         let states: [TSAttachmentPointerState] = [.failed]
-        return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
+        return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states), tx: transaction)
     }
 
-    func failedOrPendingAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
-        let attachments: [TSAttachment] = allAttachments(transaction: transaction)
+    func failedOrPendingAttachments(transaction: SDSAnyReadTransaction) -> [TSResourcePointer] {
+        let attachments: [TSResource] = allAttachments(transaction: transaction)
         let states: [TSAttachmentPointerState] = [.failed, .pendingMessageRequest, .pendingManualDownload]
-        return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
+        return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states), tx: transaction)
     }
 
-    func failedBodyAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
-        let attachments: [TSAttachment] = bodyAttachments(transaction: transaction)
-        let states: [TSAttachmentPointerState] = [.failed]
-        return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
-    }
-
-    func pendingBodyAttachments(transaction: SDSAnyReadTransaction) -> [TSAttachmentPointer] {
-        let attachments: [TSAttachment] = bodyAttachments(transaction: transaction)
-        let states: [TSAttachmentPointerState] = [.pendingMessageRequest, .pendingManualDownload]
-        return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states))
-    }
-
-    private static func onlyAttachmentPointers(attachments: [TSAttachment],
-                                               withStateIn states: Set<TSAttachmentPointerState>) -> [TSAttachmentPointer] {
-        return attachments.compactMap { attachment -> TSAttachmentPointer? in
-            guard let attachmentPointer = attachment.asTransitTierPointer()?.bridgePointerAndNotStream else {
+    private static func onlyAttachmentPointers(
+        attachments: [TSResource],
+        withStateIn states: Set<TSAttachmentPointerState>,
+        tx: SDSAnyReadTransaction
+    ) -> [TSResourcePointer] {
+        return attachments.compactMap { attachment -> TSResourcePointer? in
+            guard
+                attachment.asResourceStream() == nil,
+                let attachmentPointer = attachment.asTransitTierPointer()
+            else {
                 return nil
             }
-            guard states.contains(attachmentPointer.state) else {
+            guard
+                let downloadState = attachmentPointer.downloadState(tx: tx.asV2Read),
+                states.contains(downloadState)
+            else {
                 return nil
             }
             return attachmentPointer
@@ -598,9 +561,19 @@ public extension TSMessage {
             }
         }
 
-        let mediaAttachment = self.mediaAttachments(transaction: tx).first
-        let attachmentEmoji = mediaAttachment?.emoji(forContainingMessage: self, transaction: tx)
-        let attachmentDescription = mediaAttachment?.previewText(forContainingMessage: self, transaction: tx)
+        let mediaAttachment: ReferencedTSResource?
+        if
+            let reference = DependenciesBridge.shared.tsResourceStore
+            .bodyMediaAttachments(for: self, tx: tx.asV2Read)
+            .first,
+            let attachment = reference.fetch(tx: tx)
+        {
+            mediaAttachment = .init(reference: reference, attachment: attachment)
+        } else {
+            mediaAttachment = nil
+        }
+        let attachmentEmoji = mediaAttachment?.previewEmoji()
+        let attachmentDescription = mediaAttachment?.previewText()
 
         if isViewOnceMessage {
             if self is TSOutgoingMessage || mediaAttachment == nil {
@@ -608,23 +581,16 @@ public extension TSMessage {
                     "PER_MESSAGE_EXPIRATION_NOT_VIEWABLE",
                     comment: "inbox cell and notification text for an already viewed view-once media message."
                 ))
-            } else if mediaAttachment?.isVideoMimeType == true {
+            } else if
+                let mimeType = mediaAttachment?.attachment.mimeType,
+                MimeTypeUtil.isSupportedVideoMimeType(mimeType)
+            {
                 return .viewOnceMessage(OWSLocalizedString(
                     "PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW",
                     comment: "inbox cell and notification text for a view-once video."
                 ))
             } else {
                 // Make sure that if we add new types we cover them here.
-                switch mediaAttachment?.getAnimatedMimeType() {
-                case nil, .notAnimated:
-                    owsAssertDebug(
-                        mediaAttachment?.isImageMimeType == true
-                        || mediaAttachment?.isLoopingVideo(inContainingMessage: self, transaction: tx) == true
-                    )
-                case .maybeAnimated, .animated:
-                    break
-                }
-
                 return .viewOnceMessage(OWSLocalizedString(
                     "PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW",
                     comment: "inbox cell and notification text for a view-once photo."

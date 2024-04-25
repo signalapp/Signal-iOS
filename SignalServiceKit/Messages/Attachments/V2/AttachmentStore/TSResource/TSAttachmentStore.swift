@@ -121,7 +121,7 @@ public class TSAttachmentStore {
         return exists
     }
 
-    public func allAttachments(for message: TSMessage, tx: SDSAnyReadTransaction) -> [TSAttachmentReference] {
+    public func allAttachmentIds(for message: TSMessage) -> Set<String> {
         var uniqueIds = Set<String>()
 
         uniqueIds.formUnion(message.attachmentIds)
@@ -141,6 +141,12 @@ public class TSAttachmentStore {
         if let attachmentId = message.contactShare?.legacyAvatarAttachmentId {
             uniqueIds.insert(attachmentId)
         }
+
+        return uniqueIds
+    }
+
+    public func allAttachments(for message: TSMessage, tx: SDSAnyReadTransaction) -> [TSAttachmentReference] {
+        let uniqueIds = self.allAttachmentIds(for: message)
 
         if uniqueIds.isEmpty { return [] }
 

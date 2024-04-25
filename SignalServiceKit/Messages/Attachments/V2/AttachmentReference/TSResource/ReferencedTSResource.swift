@@ -22,6 +22,30 @@ public class ReferencedTSResource {
         }
         return .init(reference: reference, attachmentStream: resourceStream)
     }
+
+    public func previewText() -> String {
+        switch (reference.concreteType, attachment.concreteType) {
+        case (.v2(let reference), .v2(let attachment)):
+            return ReferencedAttachment(reference: reference, attachment: attachment).previewText()
+        case (.legacy(_), .legacy(let attachment)):
+            return attachment.previewText()
+        case (.v2, .legacy), (.legacy, .v2):
+            owsFailDebug("Invalid combination!")
+            return ""
+        }
+    }
+
+    public func previewEmoji() -> String {
+        switch (reference.concreteType, attachment.concreteType) {
+        case (.v2(let reference), .v2(let attachment)):
+            return ReferencedAttachment(reference: reference, attachment: attachment).previewEmoji()
+        case (.legacy(_), .legacy(let attachment)):
+            return attachment.previewEmoji()
+        case (.v2, .legacy), (.legacy, .v2):
+            owsFailDebug("Invalid combination!")
+            return ""
+        }
+    }
 }
 
 public class ReferencedTSResourceStream: ReferencedTSResource {

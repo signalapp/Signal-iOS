@@ -321,11 +321,11 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     return @"TSAttachements";
 }
 
-- (NSString *)previewTextForContainingMessage:(TSMessage *)message transaction:(SDSAnyReadTransaction *)transaction
+- (NSString *)previewText
 {
     NSString *attachmentString;
 
-    BOOL isLoopingVideo = [self isLoopingVideoInContainingMessage:message transaction:transaction];
+    BOOL isLoopingVideo = [self isLoopingVideo];
     if ([MimeTypeUtil isSupportedMaybeAnimatedMimeType:self.contentType] || isLoopingVideo) {
         BOOL isGIF = ([self.contentType caseInsensitiveCompare:MimeTypeUtil.mimeTypeImageGif] == NSOrderedSame);
         isLoopingVideo = isLoopingVideo && ([MimeTypeUtil isSupportedVideoMimeType:self.contentType]);
@@ -344,7 +344,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
         attachmentString = OWSLocalizedString(@"ATTACHMENT_TYPE_VIDEO",
             @"Short text label for a video attachment, used for thread preview and on the lock screen");
     } else if ([MimeTypeUtil isSupportedAudioMimeType:self.contentType]) {
-        if ([self isVoiceMessageInContainingMessage:message transaction:transaction]) {
+        if ([self isVoiceMessage]) {
             attachmentString = OWSLocalizedString(@"ATTACHMENT_TYPE_VOICE_MESSAGE",
                 @"Short text label for a voice message attachment, used for thread preview and on the lock screen");
         } else {
@@ -356,20 +356,19 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
             @"Short text label for a file attachment, used for thread preview and on the lock screen");
     }
 
-    NSString *emoji = [self emojiForContainingMessage:message transaction:transaction];
+    NSString *emoji = [self previewEmoji];
     return [NSString stringWithFormat:@"%@ %@", emoji, attachmentString];
 }
 
-- (NSString *)emojiForContainingMessage:(TSMessage *)message transaction:(SDSAnyReadTransaction *)transaction
+- (NSString *)previewEmoji
 {
     if ([MimeTypeUtil isSupportedAudioMimeType:self.contentType]) {
-        if ([self isVoiceMessageInContainingMessage:message transaction:transaction]) {
+        if ([self isVoiceMessage]) {
             return @"🎤";
         }
     }
 
-    if ([MimeTypeUtil isSupportedDefinitelyAnimatedMimeType:self.contentType] ||
-        [self isLoopingVideoInContainingMessage:message transaction:transaction]) {
+    if ([MimeTypeUtil isSupportedDefinitelyAnimatedMimeType:self.contentType] || [self isLoopingVideo]) {
         return @"🎡";
     } else if ([MimeTypeUtil isSupportedImageMimeType:self.contentType]) {
         return @"📷";
@@ -432,6 +431,11 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
 
 - (BOOL)isVoiceMessageInContainingMessage:(TSMessage *)message transaction:(SDSAnyReadTransaction *)transaction
 {
+    return [self isVoiceMessage];
+}
+
+- (BOOL)isVoiceMessage
+{
     // a missing filename is the legacy way to determine if an audio attachment is
     // a voice note vs. other arbitrary audio attachments.
     if (self.attachmentType == TSAttachmentTypeVoiceMessage) {
@@ -454,10 +458,14 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
                                                                        mimeType:self.contentType];
 }
 
-
 - (BOOL)isLoopingVideoInContainingMessage:(TSMessage *)message transaction:(SDSAnyReadTransaction *)transaction
 {
-    TSAttachmentType type = [self attachmentTypeForContainingMessage:message transaction:transaction];
+    return [self isLoopingVideo];
+}
+
+- (BOOL)isLoopingVideo
+{
+    TSAttachmentType type = [self attachmentType];
     return [OWSVideoAttachmentDetection.sharedInstance attachmentIsLoopingVideo:type mimeType:self.contentType];
 }
 

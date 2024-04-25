@@ -403,14 +403,20 @@ public class ConversationFactory: NSObject {
             )
             _ = try! unpreparedMessage.prepare(tx: asyncTransaction)
 
-            for attachment in message.allAttachments(transaction: asyncTransaction) as! [TSAttachmentStream] {
-                attachment.updateAsUploaded(withEncryptionKey: Randomness.generateRandomBytes(16),
-                                            digest: Randomness.generateRandomBytes(16),
-                                            serverId: 1,
-                                            cdnKey: "",
-                                            cdnNumber: 0,
-                                            uploadTimestamp: 1,
-                                            transaction: asyncTransaction)
+            for attachment in message.allAttachments(transaction: asyncTransaction) {
+                guard let stream = attachment.asResourceStream() else {
+                    continue
+                }
+                (DependenciesBridge.shared.tsResourceStore as? TSResourceUploadStore)?.updateAsUploaded(
+                    attachmentStream: stream,
+                    encryptionKey: Randomness.generateRandomBytes(16),
+                    encryptedByteLength: 16,
+                    digest: Randomness.generateRandomBytes(16),
+                    cdnKey: "1234",
+                    cdnNumber: 3,
+                    uploadTimestamp: 1,
+                    tx: asyncTransaction.asV2Write
+                )
             }
 
             message.update(withFakeMessageState: .sent, transaction: asyncTransaction)
