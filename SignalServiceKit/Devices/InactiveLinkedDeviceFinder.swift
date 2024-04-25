@@ -113,32 +113,30 @@ class InactiveLinkedDeviceFinderImpl: InactiveLinkedDeviceFinder {
     func refreshLinkedDeviceStateIfNecessary() async {
         struct SkipRefreshError: Error {}
 
-        do {
-            try await Task {
-                try db.read { tx in
-                    if kvStore.hasValue(StoreKeys.isPermanentlyDisabled, transaction: tx) {
-                        // Finder is permanently disabled, no need to refresh.
-                        throw SkipRefreshError()
-                    }
+        let shouldSkip = db.read { tx -> Bool in
+            if kvStore.hasValue(StoreKeys.isPermanentlyDisabled, transaction: tx) {
+                // Finder is permanently disabled, no need to refresh.
+                return true
+            }
 
-                    if !tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice {
-                        // Not a registered primary device? No need to refresh.
-                        throw SkipRefreshError()
-                    }
+            if !tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice {
+                // Only refresh state on primaries.
+                return true
+            }
 
-                    if
-                        let lastRefreshedDate = kvStore.getDate(StoreKeys.lastRefreshedDate, transaction: tx),
-                        lastRefreshedDate.addingTimeInterval(Constants.intervalForDeviceRefresh) > dateProvider()
-                    {
-                        // Checked less than a day ago, skip.
-                        throw SkipRefreshError()
-                    }
-                }
-            }.value
-        } catch is SkipRefreshError {
+            if
+                let lastRefreshedDate = kvStore.getDate(StoreKeys.lastRefreshedDate, transaction: tx),
+                lastRefreshedDate.addingTimeInterval(Constants.intervalForDeviceRefresh) > dateProvider()
+            {
+                // Checked less than a day ago, skip.
+                return true
+            }
+
+            return false
+        }
+
+        if shouldSkip {
             return
-        } catch {
-            owsFail("Impossible!")
         }
 
         do {
@@ -157,6 +155,12 @@ class InactiveLinkedDeviceFinderImpl: InactiveLinkedDeviceFinder {
     }
 
     func findLeastActiveLinkedDevice(tx: DBReadTransaction) -> InactiveLinkedDevice? {
+        if !kvStore.hasValue(StoreKeys.lastRefreshedDate, transaction: tx) {
+            /// Short-circuit if we've never refreshed device state. Otherwise,
+            /// we'll be querying stale data from who knows when.
+            return nil
+        }
+
         if kvStore.hasValue(StoreKeys.isPermanentlyDisabled, transaction: tx) {
             // Short-circuit if we've been disabled.
             return nil
