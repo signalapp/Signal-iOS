@@ -38,13 +38,17 @@ final class LocalProfileChecker {
     private struct State {
         var isReconciling: Bool = false
         var mostRecentRemoteProfile: RemoteProfile?
+        var mostRecentRemoteProfileUpdateCount = 0
         var consecutiveMismatchCount = 0
     }
 
     private let state = AtomicValue(State(), lock: .init())
 
     func didFetchLocalProfile(_ remoteProfile: RemoteProfile) {
-        state.update { $0.mostRecentRemoteProfile = remoteProfile }
+        state.update {
+            $0.mostRecentRemoteProfile = remoteProfile
+            $0.mostRecentRemoteProfileUpdateCount += 1
+        }
         reconcileProfileIfNeeded()
     }
 
@@ -77,20 +81,41 @@ final class LocalProfileChecker {
         }
     }
 
-    private func reconcileProfile() async throws {
-        // Wait until we've reached the current state of the world to ensure we're
-        // comparing the latest remote profile against the latest local copy.
-        await messageProcessor.waitForFetchingAndProcessing().awaitable()
-        try await storageServiceManager.waitForPendingRestores().asVoid().awaitable()
+    private func waitForSteadyState() async throws -> RemoteProfile {
+        while true {
+            let updateCountSnapshot = state.get().mostRecentRemoteProfileUpdateCount
 
-        // After waiting, grab the `mostRecentRemoteProfile`. We do this after
-        // waiting since we might fetch it several more times while waiting, and we
-        // only want to consider the latest profile.
-        let mostRecentRemoteProfile = state.update {
-            let result = $0.mostRecentRemoteProfile!
-            $0.mostRecentRemoteProfile = nil
-            return result
+            // When changing your own profile name/avatar, your profile and Storage
+            // Service can't be updated atomically. As a result, it's possible that we
+            // may temporarily see inconsistencies. Given that this class is about
+            // eventual consistency, wait a few seconds after fetching our own profile
+            // to give linked devices a chance to finish updating Storage Service.
+            try await Task.sleep(nanoseconds: 3*NSEC_PER_SEC)
+
+            // At this point, we believe the linked device will have queued a sync
+            // message (if necessary) and that the latest information is available on
+            // Storage Service. Wait for both of those systems to stabilize.
+            await messageProcessor.waitForFetchingAndProcessing().awaitable()
+            try await storageServiceManager.waitForPendingRestores().asVoid().awaitable()
+
+            // After waiting, ensure we're still considering the same profile. If we're
+            // not, wait again since it's possible that our profile changed again.
+            let stableProfile = state.update { mutableState -> RemoteProfile? in
+                guard mutableState.mostRecentRemoteProfileUpdateCount == updateCountSnapshot else {
+                    return nil
+                }
+                let result = mutableState.mostRecentRemoteProfile!
+                mutableState.mostRecentRemoteProfile = nil
+                return result
+            }
+            if let stableProfile {
+                return stableProfile
+            }
         }
+    }
+
+    private func reconcileProfile() async throws {
+        let mostRecentRemoteProfile = try await waitForSteadyState()
 
         let shouldReuploadProfile = db.read { tx in
             guard let localAddress = tsAccountManager.localIdentifiers(tx: tx)?.aciAddress else {
