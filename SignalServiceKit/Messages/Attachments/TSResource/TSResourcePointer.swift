@@ -32,8 +32,13 @@ public struct TSResourcePointer {
 
     public var resourceId: TSResourceId { resource.resourceId }
 
-    public func downloadState(tx: DBReadTransaction) -> TSAttachmentPointerState? {
-        return resource.transitTierDownloadState(tx: tx)
+    public func downloadState(tx: DBReadTransaction) -> AttachmentDownloadState {
+        switch resource.concreteType {
+        case .legacy(let tsAttachment):
+            return (tsAttachment as? TSAttachmentPointer)?.state.asDownloadState ?? .none
+        case .v2(let attachment):
+            return AttachmentTransitPointer(attachment: attachment)?.downloadState(tx: tx) ?? .none
+        }
     }
 }
 

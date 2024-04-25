@@ -53,7 +53,6 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
             return CVMediaView(
                 mediaCache: mediaCache,
                 attachment: item.attachment,
-                attachmentTransitTierDownloadState: item.attachmentTransitTierDownloadState,
                 interaction: interaction,
                 maxMessageWidth: maxMessageWidth,
                 isBorderless: isBorderless,
@@ -564,14 +563,14 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
 // MARK: -
 
 public struct CVMediaAlbumItem: Equatable {
-    public let attachment: ReferencedTSResource
-    public let attachmentTransitTierDownloadState: TSAttachmentPointerState?
+
+    public let attachment: CVAttachment
 
     // This property will only be set if the attachment is downloaded and valid.
     public let attachmentStream: TSResourceStream?
 
     public var renderingFlag: AttachmentReference.RenderingFlag {
-        attachment.reference.renderingFlag
+        attachment.attachment.reference.renderingFlag
     }
 
     public let hasCaption: Bool
@@ -583,25 +582,22 @@ public struct CVMediaAlbumItem: Equatable {
 
     public let isBroken: Bool
     public var isFailedDownload: Bool {
-        guard attachment.attachment.asTransitTierPointer() != nil else {
+        switch attachment {
+        case .stream:
             return false
+        case .pointer(_, let transitTierDownloadState):
+            return transitTierDownloadState == .failed
         }
-        return attachmentTransitTierDownloadState == .failed
     }
 
-    public var isPendingMessageRequest: Bool {
-        guard attachment.attachment.asTransitTierPointer() != nil else {
-            return false
-        }
-        return attachmentTransitTierDownloadState == .pendingMessageRequest
-    }
+    /// Whether the containing thread has a pending message request
+    public let threadHasPendingMessageRequest: Bool
 
     public static func == (lhs: CVMediaAlbumItem, rhs: CVMediaAlbumItem) -> Bool {
-        return lhs.attachment.attachment.resourceId == rhs.attachment.attachment.resourceId
-            && lhs.attachmentTransitTierDownloadState == rhs.attachmentTransitTierDownloadState
-            && lhs.renderingFlag == rhs.renderingFlag
+        return lhs.attachment == rhs.attachment
             && lhs.hasCaption == rhs.hasCaption
             && lhs.mediaSize == rhs.mediaSize
             && lhs.isBroken == rhs.isBroken
+            && lhs.threadHasPendingMessageRequest == rhs.threadHasPendingMessageRequest
     }
 }

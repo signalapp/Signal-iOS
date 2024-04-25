@@ -152,7 +152,7 @@ public class CVItemViewModelImpl: CVComponentStateWrapper {
         }
         if
             let genericAttachment = componentState.genericAttachment?.attachment.attachment,
-            genericAttachment.asResourceStream() == nil
+            genericAttachment.attachment.asResourceStream() == nil
         {
             return true
         }
@@ -165,7 +165,7 @@ public class CVItemViewModelImpl: CVComponentStateWrapper {
         guard let bodyMedia = componentState.bodyMedia else {
             return false
         }
-        return bodyMedia.items.contains(where: { $0.attachment.attachment.asResourceStream() == nil })
+        return bodyMedia.items.contains(where: { $0.attachment.attachment.attachment.asResourceStream() == nil })
     }
 }
 
@@ -285,7 +285,7 @@ public extension CVComponentState {
 
     var genericAttachmentStream: ReferencedTSResourceStream? {
         guard
-            let reference = genericAttachment?.attachment.reference,
+            let reference = genericAttachment?.attachment.attachment.reference,
             let stream = genericAttachment?.attachmentStream
         else {
             return nil
@@ -297,11 +297,11 @@ public extension CVComponentState {
         guard let bodyMedia = self.bodyMedia else {
             return []
         }
-        return bodyMedia.items.compactMap {
-            guard let stream = $0.attachmentStream else {
+        return bodyMedia.items.compactMap { (item) -> ReferencedTSResourceStream? in
+            guard let stream = item.attachmentStream else {
                 return nil
             }
-            return .init(reference: $0.attachment.reference, attachmentStream: stream)
+            return .init(reference: item.attachment.attachment.reference, attachmentStream: stream)
         }
     }
 
@@ -317,7 +317,7 @@ public extension CVComponentState {
     }
 
     var stickerAttachment: TSResourceStream? {
-        sticker?.attachmentStream
+        sticker?.attachmentStream?.attachmentStream
     }
 
     var stickerInfo: StickerInfo? {

@@ -12,7 +12,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
 
     public enum Direction {
         case upload(attachmentStream: TSResourceStream)
-        case download(attachmentPointer: TSResourcePointer, transitTierDownloadState: TSAttachmentPointerState?)
+        case download(attachmentPointer: TSResourcePointer, transitTierDownloadState: AttachmentDownloadState)
 
         var attachmentId: TSResourceId {
             switch self {
@@ -272,9 +272,9 @@ public class CVAttachmentProgressView: ManualLayoutView {
 
         case .download(_, let transitTierDownloadState):
             switch transitTierDownloadState {
-            case .none, .failed:
+            case .failed:
                 stateView.state = .downloadFailed
-            case .pendingMessageRequest, .pendingManualDownload:
+            case .none:
                 stateView.state = .tapToDownload
             case .enqueued, .downloading:
                 updateDownloadProgress(nil)
@@ -395,38 +395,36 @@ public class CVAttachmentProgressView: ManualLayoutView {
     }
 
     public static func progressType(
-        forAttachment attachment: TSResource,
-        transitTierDownloadState: TSAttachmentPointerState?,
+        forAttachment attachment: CVAttachment,
         interaction: TSInteraction
     ) -> ProgressType {
 
-        if let attachmentStream = attachment.asResourceStream() {
+        switch attachment {
+        case .stream(let attachmentStream):
             if let outgoingMessage = interaction as? TSOutgoingMessage {
                 let hasSendFailed = outgoingMessage.messageState == .failed
                 let wasNotCreatedLocally = outgoingMessage.wasNotCreatedLocally
-                guard !attachmentStream.isUploadedToTransitTier,
-                        !wasNotCreatedLocally,
-                        !hasSendFailed else {
+                guard
+                    !attachmentStream.attachmentStream.isUploadedToTransitTier,
+                    !wasNotCreatedLocally,
+                    !hasSendFailed
+                else {
                     return .none
                 }
-                return .uploading(attachmentStream: attachmentStream)
+                return .uploading(attachmentStream: attachmentStream.attachmentStream)
             } else if interaction is TSIncomingMessage {
                 return .none
             } else {
                 owsFailDebug("Unexpected interaction: \(type(of: interaction))")
                 return .unknown
             }
-        } else if let attachmentPointer = attachment.asTransitTierPointer() {
+        case .pointer(let attachmentPointer, let transitTierDownloadState):
             switch transitTierDownloadState {
-            case .pendingMessageRequest, .pendingManualDownload:
-                return .pendingDownload(attachmentPointer: attachmentPointer)
-            case .failed, .enqueued, .downloading, .none:
-                return .downloading(attachmentPointer: attachmentPointer)
+            case .none:
+                return .pendingDownload(attachmentPointer: attachmentPointer.attachmentPointer)
+            case .failed, .enqueued, .downloading:
+                return .downloading(attachmentPointer: attachmentPointer.attachmentPointer)
             }
-
-        } else {
-            owsFailDebug("Unexpected attachment: \(type(of: attachment))")
-            return .unknown
         }
     }
 }

@@ -53,19 +53,19 @@ public extension TSMessage {
 
     func failedAttachments(transaction: SDSAnyReadTransaction) -> [TSResourcePointer] {
         let attachments: [TSResource] = allAttachments(transaction: transaction)
-        let states: [TSAttachmentPointerState] = [.failed]
+        let states: [AttachmentDownloadState] = [.failed]
         return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states), tx: transaction)
     }
 
     func failedOrPendingAttachments(transaction: SDSAnyReadTransaction) -> [TSResourcePointer] {
         let attachments: [TSResource] = allAttachments(transaction: transaction)
-        let states: [TSAttachmentPointerState] = [.failed, .pendingMessageRequest, .pendingManualDownload]
+        let states: [AttachmentDownloadState] = [.failed, .none]
         return Self.onlyAttachmentPointers(attachments: attachments, withStateIn: Set(states), tx: transaction)
     }
 
     private static func onlyAttachmentPointers(
         attachments: [TSResource],
-        withStateIn states: Set<TSAttachmentPointerState>,
+        withStateIn states: Set<AttachmentDownloadState>,
         tx: SDSAnyReadTransaction
     ) -> [TSResourcePointer] {
         return attachments.compactMap { attachment -> TSResourcePointer? in
@@ -75,10 +75,8 @@ public extension TSMessage {
             else {
                 return nil
             }
-            guard
-                let downloadState = attachmentPointer.downloadState(tx: tx.asV2Read),
-                states.contains(downloadState)
-            else {
+            let downloadState = attachmentPointer.downloadState(tx: tx.asV2Read)
+            guard states.contains(downloadState) else {
                 return nil
             }
             return attachmentPointer

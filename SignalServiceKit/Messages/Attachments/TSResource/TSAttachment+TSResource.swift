@@ -69,10 +69,6 @@ extension TSAttachment: TSResource {
         return attachmentType
     }
 
-    public func transitTierDownloadState(tx: DBReadTransaction) -> TSAttachmentPointerState? {
-        return (self as? TSAttachmentPointer)?.state
-    }
-
     public func caption(forContainingMessage: TSMessage, tx: DBReadTransaction) -> String? {
         return caption
     }

@@ -13,7 +13,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
     public var componentKey: CVComponentKey { .genericAttachment }
 
     private let genericAttachment: CVComponentState.GenericAttachment
-    private var attachment: ReferencedTSResource { genericAttachment.attachment }
+    private var attachment: ReferencedTSResource { genericAttachment.attachment.attachment }
     private var attachmentStream: TSResourceStream? { genericAttachment.attachmentStream }
     private var attachmentPointer: TSResourcePointer? { genericAttachment.attachmentPointer }
 
@@ -141,10 +141,10 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
                 textComponents.append(OWSFormat.localizedFileSizeString(from: Int64(byteCount)))
             }
 
-            switch genericAttachment.transitTierDownloadState {
-            case .enqueued, .downloading:
+            switch genericAttachment.attachment {
+            case .stream, .pointer(_, .enqueued), .pointer(_, .downloading):
                 break
-            case .failed, .pendingMessageRequest, .pendingManualDownload, .none:
+            case .pointer(_, .failed), .pointer(_, .none):
                 textComponents.append(OWSLocalizedString("ACTION_TAP_TO_DOWNLOAD", comment: "A label for 'tap to download' buttons."))
             }
 
@@ -195,10 +195,8 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
     private func tryToBuildProgressView() -> UIView? {
 
         let direction: CVAttachmentProgressView.Direction
-        let transitTierDownloadState = genericAttachment.transitTierDownloadState
         switch CVAttachmentProgressView.progressType(
-            forAttachment: attachment.attachment,
-            transitTierDownloadState: transitTierDownloadState,
+            forAttachment: genericAttachment.attachment,
             interaction: interaction
         ) {
         case .none:
@@ -209,12 +207,12 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         case .pendingDownload(let attachmentPointer):
             direction = .download(
                 attachmentPointer: attachmentPointer,
-                transitTierDownloadState: transitTierDownloadState
+                transitTierDownloadState: .none
             )
         case .downloading(let attachmentPointer):
             direction = .download(
                 attachmentPointer: attachmentPointer,
-                transitTierDownloadState: transitTierDownloadState
+                transitTierDownloadState: .downloading
             )
         case .unknown:
             owsFailDebug("Unknown progress type.")
@@ -229,8 +227,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
 
     private var hasProgressView: Bool {
         switch CVAttachmentProgressView.progressType(
-            forAttachment: attachment.attachment,
-            transitTierDownloadState: genericAttachment.transitTierDownloadState,
+            forAttachment: genericAttachment.attachment,
             interaction: interaction
         ) {
         case .none,
@@ -295,16 +292,17 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
                                    componentView: CVComponentView,
                                    renderItem: CVRenderItem) -> Bool {
 
-        if attachmentStream != nil {
+        switch genericAttachment.attachment {
+        case .stream:
             switch componentDelegate.didTapGenericAttachment(self) {
             case .handledByDelegate:
                 break
             case .default:
                 showShareUI(from: componentView.rootView)
             }
-        } else if genericAttachment.attachmentPointer != nil {
-            switch genericAttachment.transitTierDownloadState {
-            case .failed, .pendingMessageRequest, .pendingManualDownload:
+        case .pointer(_, let transitTierDownloadState):
+            switch transitTierDownloadState {
+            case .failed, .none:
                 guard let message = renderItem.interaction as? TSMessage else {
                     owsFailDebug("Invalid interaction.")
                     return true
@@ -312,11 +310,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
                 componentDelegate.didTapFailedOrPendingDownloads(message)
             case .enqueued, .downloading:
                 break
-            default:
-                break
             }
-        } else {
-            owsFailDebug("Invalid attachment.")
         }
 
         return true

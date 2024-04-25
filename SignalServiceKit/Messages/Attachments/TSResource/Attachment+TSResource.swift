@@ -37,10 +37,6 @@ extension Attachment: TSResource {
         fatalError("Unimplemented!")
     }
 
-    public func transitTierDownloadState(tx: DBReadTransaction) -> TSAttachmentPointerState? {
-        fatalError("Unimplemented!")
-    }
-
     public func caption(forContainingMessage: TSMessage, tx: DBReadTransaction) -> String? {
         fatalError("Unimplemented!")
     }
@@ -115,10 +111,6 @@ extension AttachmentStream: TSResource {
 
     public func attachmentType(forContainingMessage: TSMessage, tx: DBReadTransaction) -> TSAttachmentType {
         return attachment.attachmentType(forContainingMessage: forContainingMessage, tx: tx)
-    }
-
-    public func transitTierDownloadState(tx: DBReadTransaction) -> TSAttachmentPointerState? {
-        return attachment.transitTierDownloadState(tx: tx)
     }
 
     public func caption(forContainingMessage: TSMessage, tx: DBReadTransaction) -> String? {

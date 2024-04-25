@@ -16,8 +16,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
     // MARK: -
 
     private let mediaCache: CVMediaCache
-    public let attachment: ReferencedTSResource
-    public let attachmentTransitTierDownloadState: TSAttachmentPointerState?
+    public let attachment: CVAttachment
     private let interaction: TSInteraction
     private let conversationStyle: ConversationStyle
     private let maxMessageWidth: CGFloat
@@ -31,8 +30,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
 
     public init(
         mediaCache: CVMediaCache,
-        attachment: ReferencedTSResource,
-        attachmentTransitTierDownloadState: TSAttachmentPointerState?,
+        attachment: CVAttachment,
         interaction: TSInteraction,
         maxMessageWidth: CGFloat,
         isBorderless: Bool,
@@ -43,7 +41,6 @@ public class CVMediaView: ManualLayoutViewWithLayer {
     ) {
         self.mediaCache = mediaCache
         self.attachment = attachment
-        self.attachmentTransitTierDownloadState = attachmentTransitTierDownloadState
         self.interaction = interaction
         self.maxMessageWidth = maxMessageWidth
         self.isBorderless = isBorderless
@@ -65,27 +62,29 @@ public class CVMediaView: ManualLayoutViewWithLayer {
     private func createContents() {
         AssertIsOnMainThread()
 
-        guard let attachmentStream = attachment.attachment.asResourceStream() else {
-            return configureForUndownloadedMedia()
-        }
-
-        switch attachmentStream.computeContentType() {
-        case .image:
-            configureForStillImage(attachmentStream: attachmentStream)
-        case .animatedImage:
-            configureForAnimatedImage(attachmentStream: attachmentStream)
-        case .video where isLoopingVideo:
-            configureForLoopingVideo(attachmentStream: attachmentStream)
-        case .video:
-            configureForVideo(attachmentStream: attachmentStream)
-        case .audio, .file:
-            owsFailDebug("Attachment has unexpected type.")
-            configure(forError: .invalid)
+        switch attachment {
+        case .pointer(let pointer, _):
+            return configureForUndownloadedMedia(pointer.attachmentPointer)
+        case .stream(let attachmentStream):
+            let attachmentStream = attachmentStream.attachmentStream
+            switch attachmentStream.computeContentType() {
+            case .image:
+                configureForStillImage(attachmentStream: attachmentStream)
+            case .animatedImage:
+                configureForAnimatedImage(attachmentStream: attachmentStream)
+            case .video where isLoopingVideo:
+                configureForLoopingVideo(attachmentStream: attachmentStream)
+            case .video:
+                configureForVideo(attachmentStream: attachmentStream)
+            case .audio, .file:
+                owsFailDebug("Attachment has unexpected type.")
+                configure(forError: .invalid)
+            }
         }
     }
 
-    private func configureForUndownloadedMedia() {
-        tryToConfigureForBlurHash(attachment: attachment.attachment)
+    private func configureForUndownloadedMedia(_ pointer: TSResourcePointer) {
+        tryToConfigureForBlurHash(pointer: pointer)
 
         _ = addProgressIfNecessary()
     }
@@ -94,8 +93,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
 
         let direction: CVAttachmentProgressView.Direction
         switch CVAttachmentProgressView.progressType(
-            forAttachment: attachment.attachment,
-            transitTierDownloadState: attachmentTransitTierDownloadState,
+            forAttachment: attachment,
             interaction: interaction
         ) {
         case .none:
@@ -112,7 +110,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
 
             direction = .download(
                 attachmentPointer: attachmentPointer,
-                transitTierDownloadState: attachmentTransitTierDownloadState
+                transitTierDownloadState: .downloading
             )
         case .unknown:
             owsFailDebug("Unknown progress type.")
@@ -164,11 +162,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         applyReusableMediaView(reusableMediaView)
     }
 
-    private func tryToConfigureForBlurHash(attachment: TSResource) {
-        guard let pointer = attachment.asTransitTierPointer() else {
-            owsFailDebug("Invalid attachment.")
-            return
-        }
+    private func tryToConfigureForBlurHash(pointer: TSResourcePointer) {
         guard let blurHash = pointer.resource.resourceBlurHash?.nilIfEmpty else { return }
         // NOTE: in the blurhash case, we use the blurHash itself as the
         // cachekey to avoid conflicts with the actual attachment contents.
@@ -261,7 +255,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
     }
 
     private var hasBlurHash: Bool {
-        return BlurHash.isValidBlurHash(attachment.attachment.resourceBlurHash)
+        return BlurHash.isValidBlurHash(attachment.attachment.attachment.resourceBlurHash)
     }
 
     private func configure(forError error: MediaError) {

@@ -1002,7 +1002,7 @@ class StoryItemMediaView: UIView {
     private static let mediaCache = CVMediaCache()
     private func buildDownloadStateView(
         for pointer: TSResourcePointer,
-        transitTierDownloadState: TSAttachmentPointerState?
+        transitTierDownloadState: AttachmentDownloadState
     ) -> UIView {
         let progressView = CVAttachmentProgressView(
             direction: .download(
@@ -1036,7 +1036,7 @@ class StoryItem: NSObject {
         struct Pointer: Equatable {
             let reference: TSResourceReference
             let attachment: TSResourcePointer
-            let transitTierDownloadState: TSAttachmentPointerState?
+            let transitTierDownloadState: AttachmentDownloadState
             var caption: String? { reference.storyMediaCaption?.text }
             var captionStyles: [NSRangedValue<MessageBodyRanges.CollapsedStyle>] { reference.storyMediaCaption?.collapsedStyles ?? [] }
 

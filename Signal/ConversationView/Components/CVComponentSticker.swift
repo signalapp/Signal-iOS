@@ -14,10 +14,10 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
     private var stickerMetadata: StickerMetadata? {
         sticker.stickerMetadata
     }
-    private var attachmentStream: TSResourceStream? {
+    private var attachmentStream: ReferencedTSResourceStream? {
         sticker.attachmentStream
     }
-    private var attachmentPointer: TSResourcePointer? {
+    private var attachmentPointer: ReferencedTSResourcePointer? {
         sticker.attachmentPointer
     }
     private var stickerInfo: StickerInfo? {
@@ -47,14 +47,15 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
 
         let stackView = componentView.stackView
 
-        if let attachmentStream = self.attachmentStream {
-            let cacheKey = CVMediaCache.CacheKey.attachment(attachmentStream.resourceId)
-            let isAnimated = attachmentStream.computeContentType().isAnimatedImage
+        switch sticker {
+        case .available(_, let attachmentStream):
+            let cacheKey = CVMediaCache.CacheKey.attachment(attachmentStream.attachment.resourceId)
+            let isAnimated = attachmentStream.attachmentStream.computeContentType().isAnimatedImage
             let reusableMediaView: ReusableMediaView
             if let cachedView = mediaCache.getMediaView(cacheKey, isAnimated: isAnimated) {
                 reusableMediaView = cachedView
             } else {
-                let mediaViewAdapter = MediaViewAdapterSticker(attachmentStream: attachmentStream)
+                let mediaViewAdapter = MediaViewAdapterSticker(attachmentStream: attachmentStream.attachmentStream)
                 reusableMediaView = ReusableMediaView(mediaViewAdapter: mediaViewAdapter, mediaCache: mediaCache)
                 mediaCache.setMediaView(reusableMediaView, forKey: cacheKey, isAnimated: isAnimated)
             }
@@ -70,16 +71,17 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
                                 subviews: [ mediaView ])
 
             switch CVAttachmentProgressView.progressType(
-                forAttachment: attachmentStream,
-                transitTierDownloadState: sticker.transitTierDownloadState,
+                forAttachment: .stream(attachmentStream),
                 interaction: interaction
             ) {
             case .none:
                 break
             case .uploading:
-                let progressView = CVAttachmentProgressView(direction: .upload(attachmentStream: attachmentStream),
-                                                            isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
-                                                            mediaCache: mediaCache)
+                let progressView = CVAttachmentProgressView(
+                    direction: .upload(attachmentStream: attachmentStream.attachmentStream),
+                    isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
+                    mediaCache: mediaCache
+                )
                 stackView.addSubview(progressView)
                 stackView.centerSubviewOnSuperview(progressView, size: progressView.layoutSize)
             case .pendingDownload:
@@ -89,31 +91,49 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             case .unknown:
                 owsFailDebug("Unknown progress type.")
             }
-        } else if let attachmentPointer = self.attachmentPointer {
-            let placeholderView = UIView()
-            placeholderView.backgroundColor = Theme.secondaryBackgroundColor
-            placeholderView.layer.cornerRadius = 18
-
-            stackView.reset()
-            stackView.configure(config: stackViewConfig,
-                                cellMeasurement: cellMeasurement,
-                                measurementKey: Self.measurementKey_stackView,
-                                subviews: [ placeholderView ])
-
-            let progressView = CVAttachmentProgressView(
-                direction: .download(
-                    attachmentPointer: attachmentPointer,
-                    transitTierDownloadState: sticker.transitTierDownloadState
-                ),
-                isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
-                mediaCache: mediaCache
+        case .downloading(let attachmentPointer):
+            configureForRendering(
+                attachmentPointer: attachmentPointer,
+                transitTierDownloadState: .downloading,
+                stackView: stackView,
+                cellMeasurement: cellMeasurement
             )
-            stackView.addSubview(progressView)
-            stackView.centerSubviewOnSuperview(progressView, size: progressView.layoutSize)
-        } else {
-            owsFailDebug("Invalid attachment.")
-            return
+        case .failedOrPending(let attachmentPointer, let transitTierDownloadState):
+            configureForRendering(
+                attachmentPointer: attachmentPointer,
+                transitTierDownloadState: transitTierDownloadState,
+                stackView: stackView,
+                cellMeasurement: cellMeasurement
+            )
         }
+    }
+
+    private func configureForRendering(
+        attachmentPointer: ReferencedTSResourcePointer,
+        transitTierDownloadState: AttachmentDownloadState,
+        stackView: ManualStackView,
+        cellMeasurement: CVCellMeasurement
+    ) {
+        let placeholderView = UIView()
+        placeholderView.backgroundColor = Theme.secondaryBackgroundColor
+        placeholderView.layer.cornerRadius = 18
+
+        stackView.reset()
+        stackView.configure(config: stackViewConfig,
+                            cellMeasurement: cellMeasurement,
+                            measurementKey: Self.measurementKey_stackView,
+                            subviews: [ placeholderView ])
+
+        let progressView = CVAttachmentProgressView(
+            direction: .download(
+                attachmentPointer: attachmentPointer.attachmentPointer,
+                transitTierDownloadState: transitTierDownloadState
+            ),
+            isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
+            mediaCache: mediaCache
+        )
+        stackView.addSubview(progressView)
+        stackView.centerSubviewOnSuperview(progressView, size: progressView.layoutSize)
     }
 
     private var stackViewConfig: CVStackViewConfig {

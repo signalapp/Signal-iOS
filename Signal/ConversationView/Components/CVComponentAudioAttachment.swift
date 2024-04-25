@@ -173,7 +173,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
             cvAudioPlayer.togglePlayState(forAudioAttachment: audioAttachment)
             return true
 
-        } else if audioAttachment.isDownloading, let pointerId = audioAttachment.attachmentPointer?.resourceId {
+        } else if audioAttachment.isDownloading, let pointerId = audioAttachment.attachmentPointer?.attachment.resourceId {
             Logger.debug("Cancelling in-progress download because of user action: \(interaction.uniqueId):\(pointerId)")
             self.databaseStorage.write { tx in
                 DependenciesBridge.shared.tsResourceDownloadManager.cancelDownload(

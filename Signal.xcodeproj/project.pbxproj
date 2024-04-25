@@ -852,6 +852,8 @@
 		664E8D882BD6D87700C4968A /* SignalAttachmentCloner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664E8D872BD6D87700C4968A /* SignalAttachmentCloner.swift */; };
 		664E8D8A2BD6DACB00C4968A /* SignalTSResourceCloner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664E8D892BD6DACB00C4968A /* SignalTSResourceCloner.swift */; };
 		664E8D8F2BD7301A00C4968A /* VideoDurationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664E8D8E2BD7301A00C4968A /* VideoDurationHelper.swift */; };
+		664E8D942BD86AFB00C4968A /* AttachmentDownloadState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664E8D932BD86AFB00C4968A /* AttachmentDownloadState.swift */; };
+		664E8D962BD86C3000C4968A /* TSAttachmentPointerState+AttachmentDownloadState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664E8D952BD86C3000C4968A /* TSAttachmentPointerState+AttachmentDownloadState.swift */; };
 		6652DF672A04494200EF90E7 /* StyleOnlyMessageBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF662A04494200EF90E7 /* StyleOnlyMessageBody.swift */; };
 		6652DF6A2A045EF000EF90E7 /* StyleOnlyMessageBodyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF682A045ED600EF90E7 /* StyleOnlyMessageBodyTests.swift */; };
 		6652DF6C2A04828800EF90E7 /* StoryMessageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF6B2A04828800EF90E7 /* StoryMessageAttachment.swift */; };
@@ -3802,6 +3804,8 @@
 		664E8D872BD6D87700C4968A /* SignalAttachmentCloner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalAttachmentCloner.swift; sourceTree = "<group>"; };
 		664E8D892BD6DACB00C4968A /* SignalTSResourceCloner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalTSResourceCloner.swift; sourceTree = "<group>"; };
 		664E8D8E2BD7301A00C4968A /* VideoDurationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDurationHelper.swift; sourceTree = "<group>"; };
+		664E8D932BD86AFB00C4968A /* AttachmentDownloadState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDownloadState.swift; sourceTree = "<group>"; };
+		664E8D952BD86C3000C4968A /* TSAttachmentPointerState+AttachmentDownloadState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentPointerState+AttachmentDownloadState.swift"; sourceTree = "<group>"; };
 		6652DF662A04494200EF90E7 /* StyleOnlyMessageBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleOnlyMessageBody.swift; sourceTree = "<group>"; };
 		6652DF682A045ED600EF90E7 /* StyleOnlyMessageBodyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleOnlyMessageBodyTests.swift; sourceTree = "<group>"; };
 		6652DF6B2A04828800EF90E7 /* StoryMessageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryMessageAttachment.swift; sourceTree = "<group>"; };
@@ -8131,6 +8135,7 @@
 				66D7B9332B9945E60005C98B /* AttachmentDownloadManagerImpl.swift */,
 				66BED7EB2B9B9A8B00236BAD /* AttachmentDownloadManagerMock.swift */,
 				66D7B93F2B9A67B00005C98B /* AttachmentDownloadPriority.swift */,
+				664E8D932BD86AFB00C4968A /* AttachmentDownloadState.swift */,
 			);
 			path = Downloads;
 			sourceTree = "<group>";
@@ -8142,6 +8147,7 @@
 				669FAE142B75968D009EE2FE /* TSAttachmentDownloadJob.swift */,
 				F9C5C985289453B100548EEE /* TSAttachmentDownloadManager.swift */,
 				66EA22852BC70B9500A36B97 /* TSAttachmentDownloadManagerTest.swift */,
+				664E8D952BD86C3000C4968A /* TSAttachmentPointerState+AttachmentDownloadState.swift */,
 				66D7B9362B99463C0005C98B /* TSResourceDownloadManager.swift */,
 				66D7B9382B99466F0005C98B /* TSResourceDownloadManagerImpl.swift */,
 				66BED7E72B9B992800236BAD /* TSResourceDownloadManagerMock.swift */,
@@ -13576,6 +13582,7 @@
 				66BED7EC2B9B9A8B00236BAD /* AttachmentDownloadManagerMock.swift in Sources */,
 				66D7B9432B9A67D30005C98B /* AttachmentDownloadPriority+TSResource.swift in Sources */,
 				66D7B9402B9A67B00005C98B /* AttachmentDownloadPriority.swift in Sources */,
+				664E8D942BD86AFB00C4968A /* AttachmentDownloadState.swift in Sources */,
 				66D7B92D2B98DAAD0005C98B /* AttachmentManager+Proto.swift in Sources */,
 				66D7B8FF2B9287F00005C98B /* AttachmentManager.swift in Sources */,
 				66D7B9012B92889E0005C98B /* AttachmentManagerImpl.swift in Sources */,
@@ -14550,6 +14557,7 @@
 				D9AE0ACB29162C160063488B /* TSAttachmentMultisendJobRecord.swift in Sources */,
 				F9C5CC79289453B300548EEE /* TSAttachmentPointer+SDS.swift in Sources */,
 				F9C5CC78289453B300548EEE /* TSAttachmentPointer.m in Sources */,
+				664E8D962BD86C3000C4968A /* TSAttachmentPointerState+AttachmentDownloadState.swift in Sources */,
 				66E1AD872B8FEE1300C56B7B /* TSAttachmentReference.swift in Sources */,
 				6619A1C32B2B7199004B38FE /* TSAttachmentStore.swift in Sources */,
 				F9C5CC7B289453B300548EEE /* TSAttachmentStream+SDS.swift in Sources */,

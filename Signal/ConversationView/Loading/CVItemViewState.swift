@@ -482,15 +482,24 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             MimeTypeUtil.isSupportedAudioMimeType(attachment.mimeType)
         {
 
-            itemViewState.nextAudioAttachment = AudioAttachment(
-                attachment: .init(reference: attachmentRef, attachment: attachment),
-                owningMessage: nextMessage,
-                metadata: nil,
-                isVoiceMessage: attachmentRef.renderingFlag == .voiceMessage,
-                sourceFilename: attachmentRef.sourceFilename,
-                receivedAtDate: nextMessage.receivedAtDate,
-                transitTierDownloadState: attachment.transitTierDownloadState(tx: transaction.asV2Read)
-            )
+            if let stream = attachment.asResourceStream() {
+                itemViewState.nextAudioAttachment = AudioAttachment(
+                    attachmentStream: .init(reference: attachmentRef, attachmentStream: stream),
+                    owningMessage: nextMessage,
+                    metadata: nil,
+                    receivedAtDate: nextMessage.receivedAtDate
+                )
+            } else if let pointer = attachment.asTransitTierPointer() {
+                itemViewState.nextAudioAttachment = AudioAttachment(
+                    attachmentPointer: .init(reference: attachmentRef, attachmentPointer: pointer),
+                    owningMessage: nextMessage,
+                    metadata: nil,
+                    receivedAtDate: nextMessage.receivedAtDate,
+                    transitTierDownloadState: pointer.downloadState(tx: transaction.asV2Read)
+                )
+            } else {
+                owsFailDebug("Invalid attachment!")
+            }
         }
     }
 

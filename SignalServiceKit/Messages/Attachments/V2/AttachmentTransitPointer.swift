@@ -38,4 +38,8 @@ public class AttachmentTransitPointer {
             info: info
         )
     }
+
+    public func downloadState(tx: DBReadTransaction) -> AttachmentDownloadState {
+        fatalError("Unimplemented!")
+    }
 }

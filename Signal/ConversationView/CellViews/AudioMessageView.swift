@@ -107,7 +107,10 @@ class AudioMessageView: ManualStackView {
         presentation.configureForRendering(conversationStyle: conversationStyle)
 
         let leftView: UIView
-        if presentation.audioAttachment.isDownloaded {
+        switch presentation.audioAttachment.state {
+        case .attachmentStream:
+            fallthrough
+        case .attachmentPointer where presentation.audioAttachment.isDownloaded:
             let playPauseAnimation = self.playPauseAnimation
             let playedDotAnimation = self.playedDotAnimation
 
@@ -140,19 +143,16 @@ class AudioMessageView: ManualStackView {
             presentation.playedDotContainer.addSubviewToCenterOnSuperview(playedDotAnimation, size: CGSize(square: 16))
 
             leftView = playPauseContainer
-        } else if let attachmentPointer = presentation.audioAttachment.attachmentPointer {
+        case .attachmentPointer(let attachmentPointer, let transitTierDownloadState):
             leftView = CVAttachmentProgressView(
                 direction: .download(
-                    attachmentPointer: attachmentPointer,
-                    transitTierDownloadState: presentation.audioAttachment.transitTierDownloadState
+                    attachmentPointer: attachmentPointer.attachmentPointer,
+                    transitTierDownloadState: transitTierDownloadState
                 ),
                 diameter: Constants.animationSize,
                 isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
                 mediaCache: mediaCache
             )
-        } else {
-            owsFailDebug("Unexpected state.")
-            leftView = UIView.transparentContainer()
         }
 
         let topInnerStack = ManualStackView(name: "playerStack")

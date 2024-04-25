@@ -30,7 +30,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             case .image, .animatedImage:
                 continue
             case .none:
-                if !MimeTypeUtil.isSupportedImageMimeType(item.attachment.attachment.mimeType) {
+                if !MimeTypeUtil.isSupportedImageMimeType(item.attachment.attachment.attachment.mimeType) {
                     return false
                 }
             case .video, .audio, .file:
@@ -207,16 +207,21 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 let pendingManualDownloadAttachments = items
                     .lazy
                     .compactMap { (item: CVMediaAlbumItem) -> ReferencedTSResource? in
-                        guard
-                            item.attachment.attachment.asResourceStream() == nil,
-                            item.attachment.attachment.asTransitTierPointer() != nil
-                        else {
+                        switch item.attachment {
+                        case .stream:
                             return nil
+                        case .pointer(let attachment, let transitTierDownloadState):
+                            if item.threadHasPendingMessageRequest {
+                                // Doesn't count.
+                                return nil
+                            }
+                            switch transitTierDownloadState {
+                            case .none:
+                                return attachment
+                            case .enqueued, .downloading, .failed:
+                                return nil
+                            }
                         }
-                        guard item.attachmentTransitTierDownloadState == .pendingManualDownload else {
-                            return nil
-                        }
-                        return item.attachment
                     }
                 let totalSize = pendingManualDownloadAttachments.map { $0.attachment.unenecryptedResourceByteCount ?? 0}.reduce(0, +)
 
@@ -360,43 +365,35 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             return true
         }
 
-        let attachment = mediaView.attachment.attachment
-        if attachment.asResourceStream() == nil, let attachmentPointer = attachment.asTransitTierPointer() {
-            switch mediaView.attachmentTransitTierDownloadState {
-            case .failed, .pendingMessageRequest, .pendingManualDownload, .none:
+        switch mediaView.attachment {
+        case .pointer(let pointer, let transitTierDownloadState):
+            switch transitTierDownloadState {
+            case .failed, .none:
                 componentDelegate.didTapFailedOrPendingDownloads(message)
                 return true
             case .enqueued, .downloading:
                 Logger.warn("Media attachment not yet downloaded.")
                 self.databaseStorage.write { tx in
                     DependenciesBridge.shared.tsResourceDownloadManager.cancelDownload(
-                        for: attachmentPointer.resourceId,
+                        for: pointer.attachment.resourceId,
                         tx: tx.asV2Write
                     )
                 }
                 return true
             }
-        }
-
-        guard let attachmentStream = attachment.asResourceStream() else {
-            owsFailDebug("unexpected attachment.")
-            return false
-        }
-
-        let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-        if let item = items.first(where: { $0.attachment.attachment.resourceId == attachment.resourceId }), item.isBroken {
-            componentDelegate.didTapBrokenVideo()
+        case .stream(let stream):
+            let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
+            if let item = items.first(where: { $0.attachment.attachment.attachment.resourceId == stream.attachment.resourceId }), item.isBroken {
+                componentDelegate.didTapBrokenVideo()
+                return true
+            }
+            componentDelegate.didTapBodyMedia(
+                itemViewModel: itemViewModel,
+                attachmentStream: stream,
+                imageView: mediaView
+            )
             return true
         }
-        componentDelegate.didTapBodyMedia(
-            itemViewModel: itemViewModel,
-            attachmentStream: .init(
-                reference: mediaView.attachment.reference,
-                attachmentStream: attachmentStream
-            ),
-            imageView: mediaView
-        )
-        return true
     }
 
     public func albumItemView(
@@ -409,8 +406,8 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         }
         let albumView = componentView.albumView
         guard let albumItemView = (albumView.itemViews.first {
-            $0.attachment.attachment.resourceId == attachment.attachment.resourceId
-                && $0.attachment.reference.hasSameOwner(as: attachment.reference)
+            $0.attachment.attachment.attachment.resourceId == attachment.attachment.resourceId
+                && $0.attachment.attachment.reference.hasSameOwner(as: attachment.reference)
         }) else {
             assert(albumView.moreItemsView != nil)
             return albumView.moreItemsView

@@ -19,14 +19,10 @@ class AudioCell: MediaTileListModeCell {
                 return
             }
             audioAttachment = AudioAttachment(
-                attachment: audioItem.attachmentStream,
+                attachmentStream: audioItem.attachmentStream,
                 owningMessage: audioItem.message,
                 metadata: audioItem.metadata,
-                isVoiceMessage: audioItem.isVoiceMessage,
-                sourceFilename: audioItem.attachmentStream.reference.sourceFilename,
-                receivedAtDate: audioItem.receivedAtDate,
-                // Its a stream, its already downloaded
-                transitTierDownloadState: nil
+                receivedAtDate: audioItem.receivedAtDate
             )
         }
     }
@@ -64,14 +60,10 @@ class AudioCell: MediaTileListModeCell {
         }
 
         guard let audioAttachment = AudioAttachment(
-            attachment: audioItem.attachmentStream,
+            attachmentStream: audioItem.attachmentStream,
             owningMessage: audioItem.message,
             metadata: audioItem.metadata,
-            isVoiceMessage: audioItem.isVoiceMessage,
-            sourceFilename: audioItem.attachmentStream.reference.sourceFilename,
-            receivedAtDate: audioItem.receivedAtDate,
-            // Its a stream, its already downloaded
-            transitTierDownloadState: nil
+            receivedAtDate: audioItem.receivedAtDate
         ) else {
             return defaultCellHeight
         }

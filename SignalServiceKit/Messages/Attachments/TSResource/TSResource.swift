@@ -45,8 +45,6 @@ public protocol TSResource {
 
     func attachmentType(forContainingMessage: TSMessage, tx: DBReadTransaction) -> TSAttachmentType
 
-    func transitTierDownloadState(tx: DBReadTransaction) -> TSAttachmentPointerState?
-
     func caption(forContainingMessage: TSMessage, tx: DBReadTransaction) -> String?
 }
 
