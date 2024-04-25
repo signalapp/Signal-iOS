@@ -17,16 +17,6 @@ class DebugUIProfile: DebugUIPage, Dependencies {
             OWSTableItem(title: "Clear Profile Whitelist") {
                 Self.profileManagerImpl.clearProfileWhitelist()
             },
-            { () -> OWSTableItem? in
-                guard let thread = aThread else {
-                    owsFailDebug("thread was unexpectedly nil")
-                    return nil
-                }
-                let name = Self.databaseStorage.read { tx in Self.contactsManager.displayName(for: thread, transaction: tx) }
-                return OWSTableItem(title: "Remove “\(name)” from Profile Whitelist") {
-                    Self.profileManagerImpl.removeThread(fromProfileWhitelist: thread)
-                }
-            }(),
             OWSTableItem(title: "Log Profile Whitelist") {
                 Self.profileManagerImpl.logProfileWhitelist()
             },

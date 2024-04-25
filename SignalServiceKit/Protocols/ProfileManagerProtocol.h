@@ -99,7 +99,6 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 - (void)addGroupIdToProfileWhitelist:(NSData *)groupId
                    userProfileWriter:(UserProfileWriter)userProfileWriter
                          transaction:(SDSAnyWriteTransaction *)transaction;
-- (void)removeGroupIdFromProfileWhitelist:(NSData *)groupId;
 - (void)removeGroupIdFromProfileWhitelist:(NSData *)groupId
                         userProfileWriter:(UserProfileWriter)userProfileWriter
                               transaction:(SDSAnyWriteTransaction *)transaction;

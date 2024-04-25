@@ -134,11 +134,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.threadWhitelist addObject:groupId.hexadecimalString];
 }
 
-- (void)removeGroupIdFromProfileWhitelist:(NSData *)groupId
-{
-    [self.threadWhitelist removeObject:groupId.hexadecimalString];
-}
-
 - (void)removeGroupIdFromProfileWhitelist:(nonnull NSData *)groupId
                         userProfileWriter:(UserProfileWriter)userProfileWriter
                               transaction:(nonnull SDSAnyWriteTransaction *)transaction

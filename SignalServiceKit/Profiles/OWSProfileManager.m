@@ -365,25 +365,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     });
 }
 
-// TODO: We could add a userProfileWriter parameter.
-- (void)removeThreadFromProfileWhitelist:(TSThread *)thread
-{
-    OWSLogWarn(@"Removing thread from profile whitelist: %@", thread);
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        if ([thread isKindOfClass:TSContactThread.class]) {
-            TSContactThread *contactThread = (TSContactThread *)thread;
-            [self removeUserFromProfileWhitelist:contactThread.contactAddress
-                               userProfileWriter:UserProfileWriter_LocalUser
-                                     transaction:transaction];
-        } else {
-            TSGroupThread *groupThread = (TSGroupThread *)thread;
-            [self removeGroupIdFromProfileWhitelist:groupThread.groupModel.groupId
-                                  userProfileWriter:UserProfileWriter_LocalUser
-                                        transaction:transaction];
-        }
-    });
-}
-
 - (void)logProfileWhitelist
 {
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
@@ -689,27 +670,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     if (![self.whitelistedGroupsStore hasValueForKey:groupIdKey transaction:transaction]) {
         [self addConfirmedUnwhitelistedGroupId:groupId userProfileWriter:userProfileWriter transaction:transaction];
     }
-}
-
-// TODO: We could add a userProfileWriter parameter.
-- (void)removeGroupIdFromProfileWhitelist:(NSData *)groupId
-{
-    OWSAssertDebug(groupId.length > 0);
-
-    NSString *groupIdKey = [self groupKeyForGroupId:groupId];
-
-    // Try to avoid opening a write transaction.
-    [self.databaseStorage asyncReadWithBlock:^(SDSAnyReadTransaction *readTransaction) {
-        if (![self.whitelistedGroupsStore hasValueForKey:groupIdKey transaction:readTransaction]) {
-            // Do nothing.
-            return;
-        }
-        DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *writeTransaction) {
-            [self removeConfirmedWhitelistedGroupId:groupId
-                                  userProfileWriter:UserProfileWriter_LocalUser
-                                        transaction:writeTransaction];
-        });
-    }];
 }
 
 - (void)removeGroupIdFromProfileWhitelist:(NSData *)groupId
