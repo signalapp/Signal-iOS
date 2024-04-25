@@ -14,3 +14,8 @@ public enum ConcreteTSResourceStream {
     case legacy(TSAttachmentStream)
     case v2(AttachmentStream)
 }
+
+public enum ConcreteTSResourcePointer {
+    case legacy(TSAttachmentPointer)
+    case v2(AttachmentTransitPointer)
+}

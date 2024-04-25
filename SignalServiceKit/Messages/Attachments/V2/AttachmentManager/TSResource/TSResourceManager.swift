@@ -151,6 +151,15 @@ public protocol TSResourceManager {
         tx: DBWriteTransaction
     )
 
+    // MARK: - Edits
+
+    /// Marks a pointer as undownloaded and pending manual download.
+    /// For v2 attachments, this does nothing, as its the default state of affairs.
+    func markPointerAsPendingManualDownload(
+        _ pointer: TSResourcePointer,
+        tx: DBWriteTransaction
+    )
+
     // MARK: - Quoted reply thumbnails
 
     /// If the currently referenced quoted attachment is

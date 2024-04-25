@@ -254,7 +254,10 @@ public class StoryManager: NSObject {
             return
         }
 
-        guard let attachmentPointer = attachmentPointerToDownload?.resource.asTransitTierPointer()?.bridgePointerAndNotStream else {
+        guard
+            let attachmentPointer = attachmentPointerToDownload,
+            attachmentPointer.resource.asResourceStream() == nil
+        else {
             // Already downloaded or couldn't find it, nothing to do.
             return
         }
@@ -287,7 +290,10 @@ public class StoryManager: NSObject {
 
         guard unviewedDownloadedStoriesForContext < perContextAutomaticDownloadLimit else {
             Logger.info("Skipping automatic download of attachments for story with timestamp \(message.timestamp), automatic download limit exceeded for context \(message.context)")
-            attachmentPointer.updateAttachmentPointerState(.pendingManualDownload, transaction: transaction)
+            DependenciesBridge.shared.tsResourceManager.markPointerAsPendingManualDownload(
+                attachmentPointer,
+                tx: transaction.asV2Write
+            )
             return
         }
 
@@ -307,7 +313,10 @@ public class StoryManager: NSObject {
             DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(message, tx: transaction.asV2Write)
         } else {
             Logger.info("Skipping automatic download of attachments for story with timestamp \(message.timestamp), context \(message.context) not recently active")
-            attachmentPointer.updateAttachmentPointerState(.pendingManualDownload, transaction: transaction)
+            DependenciesBridge.shared.tsResourceManager.markPointerAsPendingManualDownload(
+                attachmentPointer,
+                tx: transaction.asV2Write
+            )
         }
     }
 }

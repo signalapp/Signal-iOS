@@ -41,18 +41,3 @@ public struct TSResourcePointer {
         }
     }
 }
-
-extension TSResourcePointer {
-
-    // TODO: this is just to help with bridging while all TSResources are actually TSAttachments,
-    // and we are migrating code to TSResource that hands an instance to unmigrated code.
-    // Remove once all references to TSAttachment are replaced with TSResource.
-    public var bridgePointerAndNotStream: TSAttachmentPointer? {
-        // TSAttachments are either streams or pointers, never both,
-        // unlike Attachments or TSResources.
-        if self.resource is TSAttachmentStream {
-            return nil
-        }
-        return self.resource as? TSAttachmentPointer
-    }
-}

@@ -84,6 +84,13 @@ public class TSResourceManagerMock: TSResourceManager {
         // Do nothing
     }
 
+    public func markPointerAsPendingManualDownload(
+        _ pointer: TSResourcePointer,
+        tx: DBWriteTransaction
+    ) {
+        // Do nothing
+    }
+
     public func createThumbnailAndUpdateMessageIfNecessary(
         quotedMessage: TSQuotedMessage,
         parentMessage: TSMessage,

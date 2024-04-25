@@ -384,6 +384,26 @@ public class TSResourceManagerImpl: TSResourceManager {
         }
     }
 
+    // MARK: - Updates
+
+    public func markPointerAsPendingManualDownload(
+        _ pointer: TSResourcePointer,
+        tx: DBWriteTransaction
+    ) {
+        switch pointer.resource.concreteType {
+        case .legacy(let tsAttachment):
+            if let pointer = tsAttachment as? TSAttachmentPointer {
+                pointer.updateAttachmentPointerState(.pendingManualDownload, transaction: SDSDB.shimOnlyBridge(tx))
+            } else {
+                // This just means its already a stream and the state is irrelevant.
+                return
+            }
+        case .v2:
+            // Nothing to do; "pending manual download" is the default state.
+            return
+        }
+    }
+
     // MARK: - Quoted reply thumbnails
 
     public func createThumbnailAndUpdateMessageIfNecessary(
