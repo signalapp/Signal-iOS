@@ -7,62 +7,34 @@ import Foundation
 
 public class SignalTSAttachmentCloner {
 
-    class func cloneAsSignalAttachmentRequest(
-        attachment: TSAttachmentStream,
-        sourceMessage: TSMessage,
-        transaction: SDSAnyReadTransaction
-    ) throws -> CloneAsSignalAttachmentRequest {
-        // TODO: these should be done in one lookup.
-        let attachmentType = attachment.attachmentType(forContainingMessage: sourceMessage, transaction: transaction)
-        let caption = attachment.caption(forContainingMessage: sourceMessage, transaction: transaction)
-        return try cloneAsSignalAttachmentRequest(
-            attachment: attachment,
-            isVoiceMessage: attachmentType == .voiceMessage,
-            isBorderless: attachmentType == .borderless,
-            isLoopingVideo: attachment.isLoopingVideo(attachmentType),
-            caption: caption
-        )
-    }
-
-    class func cloneAsSignalAttachmentRequest(
-        attachment: TSAttachmentStream,
-        sourceStoryMessage: StoryMessage,
-        transaction: SDSAnyReadTransaction
-    ) throws -> CloneAsSignalAttachmentRequest {
-        // TODO: these should be done in one lookup.
-        let isLoopingVideo = attachment.isLoopingVideo(inContainingStoryMessage: sourceStoryMessage, transaction: transaction)
-        let caption = attachment.caption(forContainingStoryMessage: sourceStoryMessage, transaction: transaction)
-        return try cloneAsSignalAttachmentRequest(
-            attachment: attachment,
-            isVoiceMessage: false,
-            isBorderless: false,
-            isLoopingVideo: isLoopingVideo,
-            caption: caption
-        )
-    }
-
-    private class func cloneAsSignalAttachmentRequest(
-        attachment: TSAttachmentStream,
-        isVoiceMessage: Bool,
-        isBorderless: Bool,
-        isLoopingVideo: Bool,
-        caption: String?
-    ) throws -> CloneAsSignalAttachmentRequest {
+    public class func cloneAsSignalAttachment(
+        attachment: TSAttachmentStream
+    ) throws -> SignalAttachment {
         guard let sourceUrl = attachment.originalMediaURL else {
             throw OWSAssertionError("Missing originalMediaURL.")
         }
         guard let dataUTI = MimeTypeUtil.utiTypeForMimeType(attachment.contentType) else {
             throw OWSAssertionError("Missing dataUTI.")
         }
-        return CloneAsSignalAttachmentRequest(
-            uniqueId: attachment.uniqueId,
-            sourceUrl: sourceUrl,
-            dataUTI: dataUTI,
-            sourceFilename: attachment.sourceFilename,
-            isVoiceMessage: isVoiceMessage,
-            caption: caption,
-            isBorderless: isBorderless,
-            isLoopingVideo: isLoopingVideo
+
+        let newUrl = OWSFileSystem.temporaryFileUrl(fileExtension: sourceUrl.pathExtension)
+        try FileManager.default.copyItem(at: sourceUrl, to: newUrl)
+
+        let clonedDataSource = try DataSourcePath.dataSource(
+            with: newUrl,
+            shouldDeleteOnDeallocation: true
         )
+        clonedDataSource.sourceFilename = attachment.sourceFilename
+
+        var signalAttachment: SignalAttachment
+        if attachment.attachmentType == .voiceMessage {
+            signalAttachment = SignalAttachment.voiceMessageAttachment(dataSource: clonedDataSource, dataUTI: dataUTI)
+        } else {
+            signalAttachment = SignalAttachment.attachment(dataSource: clonedDataSource, dataUTI: dataUTI)
+        }
+        signalAttachment.captionText = attachment.caption
+        signalAttachment.isBorderless = attachment.attachmentType == .borderless
+        signalAttachment.isLoopingVideo = attachment.isLoopingVideo(attachment.attachmentType)
+        return signalAttachment
     }
 }

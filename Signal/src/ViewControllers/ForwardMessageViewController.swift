@@ -89,7 +89,7 @@ class ForwardMessageViewController: InteractiveSheetViewController {
     }
 
     public class func present(
-        forAttachmentStreams attachmentStreams: [TSAttachmentStream],
+        forAttachmentStreams attachmentStreams: [ReferencedTSResourceStream],
         fromMessage message: TSMessage,
         from fromViewController: UIViewController,
         delegate: ForwardMessageDelegate
@@ -97,14 +97,10 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         do {
             let builder = Item.Builder(interaction: message)
 
-            try databaseStorage.read { tx in
-                builder.attachments = try attachmentStreams.map { attachmentStream in
-                    try DependenciesBridge.shared.tsResourceCloner.cloneAsSignalAttachment(
-                        attachment: attachmentStream,
-                        sourceMessage: message,
-                        tx: tx.asV2Read
-                    )
-                }
+            builder.attachments = try attachmentStreams.map { attachmentStream in
+                try DependenciesBridge.shared.tsResourceCloner.cloneAsSignalAttachment(
+                    attachment: attachmentStream
+                )
             }
 
             let item: Item = builder.build()
@@ -130,23 +126,24 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         let builder = Item.Builder()
         switch storyMessage.attachment {
         case .file, .foreignReferenceAttachment:
-            let error: Error? = databaseStorage.read { tx -> Error? in
-                guard let attachmentStream = storyMessage.fileAttachment(tx: tx)?.bridge.asResourceStream()?.bridgeStream else {
-                    return OWSAssertionError("Missing attachment stream for forwarded story message")
-                }
-                do {
-                    let signalAttachment = try DependenciesBridge.shared.tsResourceCloner.cloneAsSignalAttachment(
-                        attachment: attachmentStream,
-                        sourceStoryMessage: storyMessage,
-                        tx: tx.asV2Read
-                    )
-                    builder.attachments = [signalAttachment]
+            let attachment: ReferencedTSResourceStream? = databaseStorage.read { tx in
+                guard
+                    let reference = DependenciesBridge.shared.tsResourceStore.mediaAttachment(for: storyMessage, tx: tx.asV2Read),
+                    let attachmentStream = reference.fetch(tx: tx)?.asResourceStream()
+                else {
                     return nil
-                } catch {
-                    return error
                 }
+                return .init(reference: reference, attachmentStream: attachmentStream)
             }
-            if let error {
+            do {
+                guard let attachment else {
+                    throw OWSAssertionError("Missing attachment stream for forwarded story message")
+                }
+                let signalAttachment = try DependenciesBridge.shared.tsResourceCloner.cloneAsSignalAttachment(
+                    attachment: attachment
+                )
+                builder.attachments = [signalAttachment]
+            } catch let error {
                 ForwardMessageViewController.showAlertForForwardError(
                     error: error,
                     forwardedInteractionCount: 1
@@ -707,7 +704,7 @@ public struct ForwardMessageItem {
                 builder.contactShare = oldContactShare.copyForRendering()
             }
 
-            var attachmentStreams = [TSResourceStream]()
+            var attachmentStreams = [ReferencedTSResourceStream]()
             attachmentStreams.append(contentsOf: componentState.bodyMediaAttachmentStreams)
             if let attachmentStream = componentState.audioAttachmentStream {
                 attachmentStreams.append(attachmentStream)
@@ -716,12 +713,10 @@ public struct ForwardMessageItem {
                 attachmentStreams.append(attachmentStream)
             }
 
-            if !attachmentStreams.isEmpty, let message = interaction as? TSMessage {
+            if !attachmentStreams.isEmpty {
                 builder.attachments = try attachmentStreams.map { attachmentStream in
                     try DependenciesBridge.shared.tsResourceCloner.cloneAsSignalAttachment(
-                        attachment: attachmentStream.bridgeStream,
-                        sourceMessage: message,
-                        tx: transaction.asV2Read
+                        attachment: attachmentStream
                     )
                 }
             }

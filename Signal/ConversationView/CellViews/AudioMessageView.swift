@@ -16,7 +16,7 @@ class AudioMessageView: ManualStackView {
     }
     // MARK: - State
     private var attachment: TSResource { presentation.audioAttachment.attachment }
-    private var attachmentStream: TSResourceStream? { presentation.audioAttachment.attachmentStream }
+    private var attachmentStream: TSResourceStream? { presentation.audioAttachment.attachmentStream?.attachmentStream }
     private var durationSeconds: TimeInterval { presentation.audioAttachment.durationSeconds }
 
     private var isIncoming: Bool {
@@ -504,8 +504,8 @@ extension AudioMessageView: CVAudioPlayerListener {
 extension AudioAttachment {
     var sizeString: String {
         switch state {
-        case .attachmentStream(attachmentStream: let stream, _, audioDurationSeconds: _):
-            return ByteCountFormatter().string(for: stream.unenecryptedResourceByteCount) ?? ""
+        case .attachmentStream(let stream, _):
+            return ByteCountFormatter().string(for: stream.attachmentStream.unenecryptedResourceByteCount) ?? ""
         case .attachmentPointer:
             owsFailDebug("Shouldn't get here - undownloaded media not implemented")
             return ""
@@ -513,7 +513,7 @@ extension AudioAttachment {
     }
     var dateString: String {
         switch state {
-        case .attachmentStream(_, _, _):
+        case .attachmentStream(_, _):
             let dateFormatter = DateFormatter()
             dateFormatter.setLocalizedDateFormatFromTemplate("Mdyy")
             return dateFormatter.string(from: receivedAtDate)

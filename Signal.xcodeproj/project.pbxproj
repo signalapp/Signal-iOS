@@ -850,7 +850,6 @@
 		664BA84D2BB63102005638E0 /* TSResourceDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664BA84C2BB63102005638E0 /* TSResourceDataSource.swift */; };
 		664BA84F2BB632D9005638E0 /* TSAttachmentDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664BA84E2BB632D9005638E0 /* TSAttachmentDataSource.swift */; };
 		664E8D842BD6D71C00C4968A /* SignalTSAttachmentCloner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664E8D832BD6D71C00C4968A /* SignalTSAttachmentCloner.swift */; };
-		664E8D862BD6D74100C4968A /* CloneAsSignalAttachmentRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664E8D852BD6D74100C4968A /* CloneAsSignalAttachmentRequest.swift */; };
 		664E8D882BD6D87700C4968A /* SignalAttachmentCloner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664E8D872BD6D87700C4968A /* SignalAttachmentCloner.swift */; };
 		664E8D8A2BD6DACB00C4968A /* SignalTSResourceCloner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664E8D892BD6DACB00C4968A /* SignalTSResourceCloner.swift */; };
 		664E8D8F2BD7301A00C4968A /* VideoDurationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664E8D8E2BD7301A00C4968A /* VideoDurationHelper.swift */; };
@@ -3804,7 +3803,6 @@
 		664BA84C2BB63102005638E0 /* TSResourceDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceDataSource.swift; sourceTree = "<group>"; };
 		664BA84E2BB632D9005638E0 /* TSAttachmentDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAttachmentDataSource.swift; sourceTree = "<group>"; };
 		664E8D832BD6D71C00C4968A /* SignalTSAttachmentCloner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalTSAttachmentCloner.swift; sourceTree = "<group>"; };
-		664E8D852BD6D74100C4968A /* CloneAsSignalAttachmentRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloneAsSignalAttachmentRequest.swift; sourceTree = "<group>"; };
 		664E8D872BD6D87700C4968A /* SignalAttachmentCloner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalAttachmentCloner.swift; sourceTree = "<group>"; };
 		664E8D892BD6DACB00C4968A /* SignalTSResourceCloner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalTSResourceCloner.swift; sourceTree = "<group>"; };
 		664E8D8E2BD7301A00C4968A /* VideoDurationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDurationHelper.swift; sourceTree = "<group>"; };
@@ -8346,7 +8344,6 @@
 			isa = PBXGroup;
 			children = (
 				664E8D822BD6D70B00C4968A /* TSResource */,
-				664E8D852BD6D74100C4968A /* CloneAsSignalAttachmentRequest.swift */,
 				66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */,
 				34D913491F62D4A500722898 /* SignalAttachment.swift */,
 				664E8D872BD6D87700C4968A /* SignalAttachmentCloner.swift */,
@@ -13759,7 +13756,6 @@
 				F9C5CCF2289453B300548EEE /* ChunkedInputStream.swift in Sources */,
 				C1EB623C2BADEE56006D99CB /* ChunkedInputStreamTransform.swift in Sources */,
 				C1CF83D02B96C85E00CDC9C4 /* ChunkedOutputStreamTransform.swift in Sources */,
-				664E8D862BD6D74100C4968A /* CloneAsSignalAttachmentRequest.swift in Sources */,
 				F9C5CDFC289453B400548EEE /* Collection+OWS.swift in Sources */,
 				72345D1D2B9A1984000237B3 /* CommonStrings.swift in Sources */,
 				66E1AD552B8D033E00C56B7B /* ConcreteTSResource.swift in Sources */,

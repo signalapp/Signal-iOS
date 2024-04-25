@@ -13,7 +13,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
     private let audioAttachment: AudioAttachment
     private let nextAudioAttachment: AudioAttachment?
     private var attachment: TSResource { audioAttachment.attachment }
-    private var attachmentStream: TSResourceStream? { audioAttachment.attachmentStream }
+    private var attachmentStream: TSResourceStream? { audioAttachment.attachmentStream?.attachmentStream }
     private let footerOverlay: CVComponent?
 
     init(itemModel: CVItemModel, audioAttachment: AudioAttachment, nextAudioAttachment: AudioAttachment?, footerOverlay: CVComponent?) {

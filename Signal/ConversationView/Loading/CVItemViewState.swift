@@ -483,7 +483,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
         {
 
             itemViewState.nextAudioAttachment = AudioAttachment(
-                attachment: attachment,
+                attachment: .init(reference: attachmentRef, attachment: attachment),
                 owningMessage: nextMessage,
                 metadata: nil,
                 isVoiceMessage: attachmentRef.renderingFlag == .voiceMessage,

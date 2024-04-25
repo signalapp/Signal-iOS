@@ -1319,7 +1319,7 @@ fileprivate extension CVComponentState.Builder {
         if
             MimeTypeUtil.isSupportedAudioMimeType(attachment.attachment.mimeType),
             let audioAttachment = AudioAttachment(
-                attachment: attachment.attachment,
+                attachment: attachment,
                 owningMessage: interaction as? TSMessage,
                 metadata: nil,
                 isVoiceMessage: isVoiceMessage,

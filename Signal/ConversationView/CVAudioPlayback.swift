@@ -91,7 +91,7 @@ public class CVAudioPlayer: NSObject {
     private func ensurePlayback(for attachment: AudioAttachment, forAutoplay: Bool = false) -> CVAudioPlayback? {
         AssertIsOnMainThread()
 
-        guard let attachmentId = attachment.attachmentStream?.resourceId else {
+        guard let attachmentId = attachment.attachmentStream?.attachmentStream.resourceId else {
             return nil
         }
 
@@ -190,8 +190,8 @@ public class CVAudioPlayer: NSObject {
         // Play a tone indicating the next track is starting.
         playStandardSound(.beginNextTrack) { [weak self] in
             // Make sure the user didn't start another attachment while the tone was playing.
-            guard self?.autoplayAttachmentId == attachmentStream.resourceId else { return }
-            guard self?.audioPlayback?.attachmentId == attachmentStream.resourceId else { return }
+            guard self?.autoplayAttachmentId == attachmentStream.attachmentStream.resourceId else { return }
+            guard self?.audioPlayback?.attachmentId == attachmentStream.attachmentStream.resourceId else { return }
             guard audioPlayback.audioPlaybackState != .playing else { return }
 
             if audioAttachment.markOwningMessageAsViewed() {
@@ -382,9 +382,9 @@ private class CVAudioPlayback: NSObject, AudioPlayerDelegate {
             owsFailDebug("missing audio attachment stream \(attachment)")
             return nil
         }
-        self.attachmentId = attachmentStream.resourceId
+        self.attachmentId = attachmentStream.attachmentStream.resourceId
 
-        guard let mediaURL = attachmentStream.bridgeStream.originalMediaURL else {
+        guard let mediaURL = attachmentStream.attachmentStream.bridgeStream.originalMediaURL else {
             owsFailDebug("mediaURL was unexpectedly nil for attachment: \(attachmentStream)")
             return nil
         }

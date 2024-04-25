@@ -117,6 +117,24 @@ extension TSResourceStore {
 
     // MARK: - Referenced Attachments
 
+    public func referencedBodyAttachments(
+        for message: TSMessage,
+        tx: DBReadTransaction
+    ) -> [ReferencedTSResource] {
+        let references = self.bodyAttachments(for: message, tx: tx)
+        let attachments = Dictionary(
+            grouping: self.fetch(references.map(\.resourceId), tx: tx),
+            by: \.resourceId
+        )
+        return references.compactMap { reference -> ReferencedTSResource? in
+            guard let attachment = attachments[reference.resourceId]?.first else {
+                owsFailDebug("Missing attachment!")
+                return nil
+            }
+            return ReferencedTSResource(reference: reference, attachment: attachment)
+        }
+    }
+
     public func referencedBodyMediaAttachments(
         for message: TSMessage,
         tx: DBReadTransaction

@@ -19,7 +19,7 @@ class AudioCell: MediaTileListModeCell {
                 return
             }
             audioAttachment = AudioAttachment(
-                attachment: audioItem.attachmentStream.attachmentStream,
+                attachment: audioItem.attachmentStream,
                 owningMessage: audioItem.message,
                 metadata: audioItem.metadata,
                 isVoiceMessage: audioItem.isVoiceMessage,
@@ -64,7 +64,7 @@ class AudioCell: MediaTileListModeCell {
         }
 
         guard let audioAttachment = AudioAttachment(
-            attachment: audioItem.attachmentStream.attachmentStream,
+            attachment: audioItem.attachmentStream,
             owningMessage: audioItem.message,
             metadata: audioItem.metadata,
             isVoiceMessage: audioItem.isVoiceMessage,

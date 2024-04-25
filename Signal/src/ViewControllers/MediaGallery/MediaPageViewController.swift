@@ -414,12 +414,13 @@ class MediaPageViewController: UIPageViewController {
     private func forwardCurrentMedia() {
         let messageForCurrentItem = currentItem.message
 
-        let mediaAttachments: [TSAttachment] = databaseStorage.read { transaction in
-            messageForCurrentItem.bodyAttachments(transaction: transaction)
+        let mediaAttachments: [ReferencedTSResource] = databaseStorage.read { transaction in
+            return DependenciesBridge.shared.tsResourceStore
+                .referencedBodyAttachments(for: messageForCurrentItem, tx: transaction.asV2Read)
         }
 
-        let mediaAttachmentStreams: [TSAttachmentStream] = mediaAttachments.compactMap { attachment in
-            guard let attachmentStream = attachment.asResourceStream()?.bridgeStream else {
+        let mediaAttachmentStreams: [ReferencedTSResourceStream] = mediaAttachments.compactMap { attachment in
+            guard let attachmentStream = attachment.asReferencedStream else {
                 // Our current media item should always be an attachment
                 // stream (downloaded). However, we can't guarantee that the
                 // same is true for other media in the message to forward. For

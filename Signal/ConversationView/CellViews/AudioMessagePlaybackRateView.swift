@@ -206,7 +206,7 @@ class AudioMessagePlaybackRateView: ManualLayoutViewWithLayer {
         audioMessageViewDelegate: AudioMessageViewDelegate?
     ) -> Bool {
         guard
-            let attachmentId = audioAttachment.attachmentStream?.resourceId,
+            let attachmentId = audioAttachment.attachmentStream?.attachmentStream.resourceId,
             cvAudioPlayer.audioPlaybackState(forAttachmentId: attachmentId) == .playing
         else {
             return false

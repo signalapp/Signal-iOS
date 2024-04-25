@@ -10,8 +10,7 @@ import SignalServiceKit
 public class AudioAttachment {
     public enum State: Equatable {
         case attachmentStream(
-            attachmentStream: TSResourceStream,
-            isVoiceMessage: Bool,
+            attachmentStream: ReferencedTSResourceStream,
             audioDurationSeconds: TimeInterval
         )
         case attachmentPointer(
@@ -23,11 +22,11 @@ public class AudioAttachment {
         public static func == (lhs: AudioAttachment.State, rhs: AudioAttachment.State) -> Bool {
             switch (lhs, rhs) {
             case let (
-                .attachmentStream(lhsStream, lhsIsVoiceMessage, lhsDuration),
-                .attachmentStream(rhsStream, rhsIsVoiceMessage, rhsDuration)
+                .attachmentStream(lhsStream, lhsDuration),
+                .attachmentStream(rhsStream, rhsDuration)
             ):
-                return lhsStream.resourceId == rhsStream.resourceId
-                    && lhsIsVoiceMessage == rhsIsVoiceMessage
+                return lhsStream.attachmentStream.resourceId == rhsStream.attachmentStream.resourceId
+                    && lhsStream.reference.hasSameOwner(as: rhsStream.reference)
                     && lhsDuration == rhsDuration
             case let (
                 .attachmentPointer(lhsStream, lhsIsVoiceMessage, lhsState),
@@ -51,7 +50,7 @@ public class AudioAttachment {
     public let isDownloading: Bool
 
     public init?(
-        attachment: TSResource,
+        attachment: ReferencedTSResource,
         owningMessage: TSMessage?,
         metadata: MediaMetadata?,
         isVoiceMessage: Bool,
@@ -59,7 +58,7 @@ public class AudioAttachment {
         receivedAtDate: Date,
         transitTierDownloadState: TSAttachmentPointerState?
     ) {
-        if let attachmentStream = attachment.asResourceStream() {
+        if let attachmentStream = attachment.attachment.asResourceStream() {
             let audioDurationSeconds: TimeInterval
             switch attachmentStream.computeContentType() {
             case .audio(let duration):
@@ -72,12 +71,11 @@ public class AudioAttachment {
                 return nil
             }
             state = .attachmentStream(
-                attachmentStream: attachmentStream,
-                isVoiceMessage: isVoiceMessage,
+                attachmentStream: .init(reference: attachment.reference, attachmentStream: attachmentStream),
                 audioDurationSeconds: audioDurationSeconds
             )
             isDownloading = false
-        } else if let attachmentPointer = attachment.asTransitTierPointer() {
+        } else if let attachmentPointer = attachment.attachment.asTransitTierPointer() {
             state = .attachmentPointer(
                 attachmentPointer: attachmentPointer,
                 isVoiceMessage: isVoiceMessage,
@@ -105,16 +103,16 @@ extension AudioAttachment: Dependencies {
 
     public var attachment: TSResource {
         switch state {
-        case .attachmentStream(let attachmentStream, _, _):
-            return attachmentStream
+        case .attachmentStream(let attachmentStream, _):
+            return attachmentStream.attachmentStream
         case .attachmentPointer(let attachmentPointer, _, _):
             return attachmentPointer.resource
         }
     }
 
-    public var attachmentStream: TSResourceStream? {
+    public var attachmentStream: ReferencedTSResourceStream? {
         switch state {
-        case .attachmentStream(let attachmentStream, _, _):
+        case .attachmentStream(let attachmentStream, _):
             return attachmentStream
         case .attachmentPointer:
             return nil
@@ -141,7 +139,7 @@ extension AudioAttachment: Dependencies {
 
     public var durationSeconds: TimeInterval {
         switch state {
-        case .attachmentStream(_, _, let audioDurationSeconds):
+        case .attachmentStream(_, let audioDurationSeconds):
             return audioDurationSeconds
         case .attachmentPointer:
             return 0
@@ -150,8 +148,8 @@ extension AudioAttachment: Dependencies {
 
     public var isVoiceMessage: Bool {
         switch state {
-        case .attachmentStream(_, let isVoiceMessage, _):
-            return isVoiceMessage
+        case .attachmentStream(let attachmentStream, _):
+            return attachmentStream.reference.renderingFlag == .voiceMessage
         case .attachmentPointer(_, let isVoiceMessage, _):
             return isVoiceMessage
         }

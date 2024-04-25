@@ -55,6 +55,23 @@ public class AttachmentStream {
         fatalError("Unimplemented!")
     }
 
+    public func makeDecryptedCopy() throws -> URL {
+        guard let pathExtension = MimeTypeUtil.fileExtensionForMimeType(mimeType) else {
+            throw OWSAssertionError("Invalid mime type!")
+        }
+        let tmpURL = OWSFileSystem.temporaryFileUrl(fileExtension: pathExtension)
+        try Cryptography.decryptAttachment(
+            at: fileURL,
+            metadata: EncryptionMetadata(
+                key: info.encryptionKey,
+                digest: info.encryptedFileSha256Digest,
+                plaintextLength: Int(info.unenecryptedByteCount)
+            ),
+            output: tmpURL
+        )
+        return tmpURL
+    }
+
     public func thumbnailImage(quality: AttachmentThumbnailQuality) async -> UIImage? {
         fatalError("Unimplemented!")
     }

@@ -7,9 +7,9 @@ import Foundation
 
 public protocol SignalAttachmentCloner {
 
-    // TODO: add v2 attachment cloning methods
-
-    func cloneAsSignalAttachment(request: CloneAsSignalAttachmentRequest) throws -> SignalAttachment
+    func cloneAsSignalAttachment(
+        attachment: ReferencedAttachmentStream
+    ) throws -> SignalAttachment
 }
 
 public class SignalAttachmentClonerImpl: SignalAttachmentCloner {
@@ -17,24 +17,34 @@ public class SignalAttachmentClonerImpl: SignalAttachmentCloner {
     public init() {}
 
     public func cloneAsSignalAttachment(
-        request: CloneAsSignalAttachmentRequest
+        attachment: ReferencedAttachmentStream
     ) throws -> SignalAttachment {
-        let newUrl = OWSFileSystem.temporaryFileUrl(fileExtension: request.sourceUrl.pathExtension)
-        try FileManager.default.copyItem(at: request.sourceUrl, to: newUrl)
+        guard let dataUTI = MimeTypeUtil.utiTypeForMimeType(attachment.attachmentStream.mimeType) else {
+            throw OWSAssertionError("Missing dataUTI.")
+        }
 
-        let clonedDataSource = try DataSourcePath.dataSource(with: newUrl,
-                                                             shouldDeleteOnDeallocation: true)
-        clonedDataSource.sourceFilename = request.sourceFilename
+        let decryptedCopyUrl = try attachment.attachmentStream.makeDecryptedCopy()
+
+        let decryptedDataSource = try DataSourcePath.dataSource(
+            with: decryptedCopyUrl,
+            shouldDeleteOnDeallocation: true
+        )
+        decryptedDataSource.sourceFilename = attachment.reference.sourceFilename
 
         var signalAttachment: SignalAttachment
-        if request.isVoiceMessage {
-            signalAttachment = SignalAttachment.voiceMessageAttachment(dataSource: clonedDataSource, dataUTI: request.dataUTI)
-        } else {
-            signalAttachment = SignalAttachment.attachment(dataSource: clonedDataSource, dataUTI: request.dataUTI)
+        switch attachment.reference.renderingFlag {
+        case .default:
+            signalAttachment = SignalAttachment.attachment(dataSource: decryptedDataSource, dataUTI: dataUTI)
+        case .voiceMessage:
+            signalAttachment = SignalAttachment.voiceMessageAttachment(dataSource: decryptedDataSource, dataUTI: dataUTI)
+        case .borderless:
+            signalAttachment = SignalAttachment.attachment(dataSource: decryptedDataSource, dataUTI: dataUTI)
+            signalAttachment.isBorderless = true
+        case .shouldLoop:
+            signalAttachment = SignalAttachment.attachment(dataSource: decryptedDataSource, dataUTI: dataUTI)
+            signalAttachment.isLoopingVideo = true
         }
-        signalAttachment.captionText = request.caption
-        signalAttachment.isBorderless = request.isBorderless
-        signalAttachment.isLoopingVideo = request.isLoopingVideo
+        signalAttachment.captionText = attachment.reference.storyMediaCaption?.text
         return signalAttachment
     }
 }
@@ -44,24 +54,9 @@ public class SignalAttachmentClonerImpl: SignalAttachmentCloner {
 public class SignalAttachmentClonerMock: SignalAttachmentCloner {
 
     public func cloneAsSignalAttachment(
-        request: CloneAsSignalAttachmentRequest
+        attachment: ReferencedAttachmentStream
     ) throws -> SignalAttachment {
-        let dataSource = try DataSourcePath.dataSource(
-            with: request.sourceUrl,
-            shouldDeleteOnDeallocation: false
-        )
-        dataSource.sourceFilename = request.sourceFilename
-
-        var signalAttachment: SignalAttachment
-        if request.isVoiceMessage {
-            signalAttachment = SignalAttachment.voiceMessageAttachment(dataSource: dataSource, dataUTI: request.dataUTI)
-        } else {
-            signalAttachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: request.dataUTI)
-        }
-        signalAttachment.captionText = request.caption
-        signalAttachment.isBorderless = request.isBorderless
-        signalAttachment.isLoopingVideo = request.isLoopingVideo
-        return signalAttachment
+        throw OWSAssertionError("Unimplemented!")
     }
 }
 

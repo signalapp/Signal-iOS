@@ -124,19 +124,19 @@ public class CVItemViewModelImpl: CVComponentStateWrapper {
     public var audioAttachmentStream: TSResourceStream? {
         AssertIsOnMainThread()
 
-        return componentState.audioAttachmentStream
+        return componentState.audioAttachmentStream?.attachmentStream
     }
 
     public var genericAttachmentStream: TSResourceStream? {
         AssertIsOnMainThread()
 
-        return componentState.genericAttachmentStream
+        return componentState.genericAttachmentStream?.attachmentStream
     }
 
     public var bodyMediaAttachmentStreams: [TSResourceStream] {
         AssertIsOnMainThread()
 
-        return componentState.bodyMediaAttachmentStreams
+        return componentState.bodyMediaAttachmentStreams.map(\.attachmentStream)
     }
 
     public var hasUnloadedAttachments: Bool {
@@ -279,19 +279,30 @@ public extension CVComponentState {
         bodyText?.displayableText
     }
 
-    var audioAttachmentStream: TSResourceStream? {
+    var audioAttachmentStream: ReferencedTSResourceStream? {
         audioAttachment?.attachmentStream
     }
 
-    var genericAttachmentStream: TSResourceStream? {
-        genericAttachment?.attachmentStream
+    var genericAttachmentStream: ReferencedTSResourceStream? {
+        guard
+            let reference = genericAttachment?.attachment.reference,
+            let stream = genericAttachment?.attachmentStream
+        else {
+            return nil
+        }
+        return .init(reference: reference, attachmentStream: stream)
     }
 
-    var bodyMediaAttachmentStreams: [TSResourceStream] {
+    var bodyMediaAttachmentStreams: [ReferencedTSResourceStream] {
         guard let bodyMedia = self.bodyMedia else {
             return []
         }
-        return bodyMedia.items.compactMap { $0.attachmentStream }
+        return bodyMedia.items.compactMap {
+            guard let stream = $0.attachmentStream else {
+                return nil
+            }
+            return .init(reference: $0.attachment.reference, attachmentStream: stream)
+        }
     }
 
     var contactShareModel: ContactShareViewModel? {

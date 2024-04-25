@@ -8,15 +8,7 @@ import Foundation
 public protocol SignalTSResourceCloner {
 
     func cloneAsSignalAttachment(
-        attachment: TSAttachmentStream,
-        sourceMessage: TSMessage,
-        tx: DBReadTransaction
-    ) throws -> SignalAttachment
-
-    func cloneAsSignalAttachment(
-        attachment: TSAttachmentStream,
-        sourceStoryMessage: StoryMessage,
-        tx: DBReadTransaction
+        attachment: ReferencedTSResourceStream
     ) throws -> SignalAttachment
 }
 
@@ -31,29 +23,20 @@ public class SignalTSResourceClonerImpl: SignalTSResourceCloner {
     }
 
     public func cloneAsSignalAttachment(
-        attachment: TSAttachmentStream,
-        sourceMessage: TSMessage,
-        tx: DBReadTransaction
+        attachment: ReferencedTSResourceStream
     ) throws -> SignalAttachment {
-        let request = try SignalTSAttachmentCloner.cloneAsSignalAttachmentRequest(
-            attachment: attachment,
-            sourceMessage: sourceMessage,
-            transaction: SDSDB.shimOnlyBridge(tx)
-        )
-        return try attachmentCloner.cloneAsSignalAttachment(request: request)
-    }
-
-    public func cloneAsSignalAttachment(
-        attachment: TSAttachmentStream,
-        sourceStoryMessage: StoryMessage,
-        tx: DBReadTransaction
-    ) throws -> SignalAttachment {
-        let request = try SignalTSAttachmentCloner.cloneAsSignalAttachmentRequest(
-            attachment: attachment,
-            sourceStoryMessage: sourceStoryMessage,
-            transaction: SDSDB.shimOnlyBridge(tx)
-        )
-        return try attachmentCloner.cloneAsSignalAttachment(request: request)
+        switch (attachment.attachmentStream.concreteStreamType, attachment.reference.concreteType) {
+        case (.legacy(let tsAttachmentStream), .legacy(_)):
+            return try SignalTSAttachmentCloner.cloneAsSignalAttachment(
+                attachment: tsAttachmentStream
+            )
+        case (.v2(let attachmentStream), .v2(let reference)):
+            return try attachmentCloner.cloneAsSignalAttachment(
+                attachment: .init(reference: reference, attachmentStream: attachmentStream)
+            )
+        case (.legacy, .v2), (.v2, .legacy):
+            throw OWSAssertionError("Invalid combination!")
+        }
     }
 }
 
@@ -64,17 +47,7 @@ public class SignalTSResourceClonerMock: SignalTSResourceCloner {
     public init() {}
 
     public func cloneAsSignalAttachment(
-        attachment: TSAttachmentStream,
-        sourceMessage: TSMessage,
-        tx: DBReadTransaction
-    ) throws -> SignalAttachment {
-        throw OWSAssertionError("Unimplemented")
-    }
-
-    public func cloneAsSignalAttachment(
-        attachment: TSAttachmentStream,
-        sourceStoryMessage: StoryMessage,
-        tx: DBReadTransaction
+        attachment: ReferencedTSResourceStream
     ) throws -> SignalAttachment {
         throw OWSAssertionError("Unimplemented")
     }
