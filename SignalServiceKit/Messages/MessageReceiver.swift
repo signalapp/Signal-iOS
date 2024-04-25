@@ -1184,7 +1184,7 @@ public final class MessageReceiver: Dependencies {
         }
         GroupManager.remoteUpdateDisappearingMessages(
             withContactThread: contactThread,
-            disappearingMessageToken: DisappearingMessageToken.token(forProtoExpireTimer: dataMessage.expireTimer),
+            disappearingMessageToken: .token(forProtoExpireTimerSeconds: dataMessage.expireTimer),
             changeAuthor: envelope.sourceAciObjC,
             localIdentifiers: LocalIdentifiersObjC(localIdentifiers),
             transaction: tx

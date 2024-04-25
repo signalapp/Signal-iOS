@@ -48,9 +48,13 @@ public class DisappearingMessageToken: MTLModel {
         return DisappearingMessageToken(isEnabled: false, durationSeconds: 0)
     }
 
-    public class func token(forProtoExpireTimer expireTimer: UInt32?) -> DisappearingMessageToken {
-        if let expireTimer, expireTimer > 0 {
-            return DisappearingMessageToken(isEnabled: true, durationSeconds: expireTimer)
+    public class func token(forProtoExpireTimerMillis expireTimerMillis: UInt64?) -> DisappearingMessageToken {
+        return .token(forProtoExpireTimerSeconds: expireTimerMillis.map { UInt32($0 / 1000) })
+    }
+
+    public class func token(forProtoExpireTimerSeconds expireTimerSeconds: UInt32?) -> DisappearingMessageToken {
+        if let expireTimerSeconds, expireTimerSeconds > 0 {
+            return DisappearingMessageToken(isEnabled: true, durationSeconds: expireTimerSeconds)
         } else {
             return .disabledToken
         }

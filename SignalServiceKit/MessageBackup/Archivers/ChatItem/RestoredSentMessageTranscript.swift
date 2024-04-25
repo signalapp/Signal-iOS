@@ -34,12 +34,12 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
         thread: MessageBackup.ChatThread
     ) -> MessageBackup.RestoreInteractionResult<RestoredSentMessageTranscript> {
 
-        let expirationDuration: UInt32? = chatItem.expiresInMs.map { UInt32($0 / 1000) }
+        let expirationToken: DisappearingMessageToken = .token(forProtoExpireTimerMillis: chatItem.expiresInMs)
 
         let target: SentMessageTranscriptTarget
         switch thread {
         case .contact(let contactThread):
-            target = .contact(contactThread, .token(forProtoExpireTimer: expirationDuration))
+            target = .contact(contactThread, expirationToken)
         case .groupV2(let groupThread):
             target = .group(groupThread)
         }
@@ -70,7 +70,7 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
             // TODO: isViewOnceMessage
             isViewOnceMessage: false,
             expirationStartedAt: chatItem.expireStartDate,
-            expirationDuration: expirationDuration,
+            expirationDurationSeconds: expirationToken.durationSeconds,
             // We never restore stories.
             storyTimestamp: nil,
             storyAuthorAci: nil

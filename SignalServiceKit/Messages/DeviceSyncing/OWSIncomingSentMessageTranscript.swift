@@ -282,7 +282,7 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
             messageStickerBuilder: messageStickerBuilder,
             isViewOnceMessage: isViewOnceMessage,
             expirationStartedAt: sentProto.expirationStartTimestamp,
-            expirationDuration: dataMessage.expireTimer,
+            expirationDurationSeconds: dataMessage.expireTimer,
             storyTimestamp: storyTimestamp,
             storyAuthorAci: storyAuthorAci
         )
@@ -327,7 +327,7 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
                 withContactAddress: recipientAddress,
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
-            return .contact(thread, DisappearingMessageToken.token(forProtoExpireTimer: dataMessage.expireTimer))
+            return .contact(thread, .token(forProtoExpireTimerSeconds: dataMessage.expireTimer))
         } else {
             return nil
         }

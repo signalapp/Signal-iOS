@@ -167,7 +167,7 @@ public extension GroupV2Params {
             if let blobContent = blobProto.content {
                 switch blobContent {
                 case .disappearingMessagesDuration(let value):
-                    return DisappearingMessageToken.token(forProtoExpireTimer: value)
+                    return .token(forProtoExpireTimerSeconds: value)
                 default:
                     owsFailDebug("Invalid disappearing messages value.")
                 }

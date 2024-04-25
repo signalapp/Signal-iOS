@@ -155,7 +155,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             timestamp: transcript.timestamp,
             messageBody: messageParams.body,
             bodyRanges: messageParams.bodyRanges,
-            expiresInSeconds: messageParams.expirationDuration,
+            expiresInSeconds: messageParams.expirationDurationSeconds,
             expireStartedAt: messageParams.expirationStartedAt,
             isVoiceMessage: false,
             groupMetaMessage: .unspecified,
