@@ -752,31 +752,31 @@ public class NotificationPresenterImpl: NotificationPresenter {
             notificationBody = String(format: NotificationStrings.incomingReactionStickerMessageFormat, reaction.emoji)
         } else if message.contactShare != nil {
             notificationBody = String(format: NotificationStrings.incomingReactionContactShareMessageFormat, reaction.emoji)
-        } else if message.hasBodyAttachments(transaction: transaction) {
-            let mediaAttachments = message.mediaAttachments(transaction: transaction)
+        } else if
+            let mediaAttachments = DependenciesBridge.shared.tsResourceStore
+                .referencedBodyMediaAttachments(for: message, tx: transaction.asV2Read)
+                .nilIfEmpty,
             let firstAttachment = mediaAttachments.first
-            let firstAttachmentType = firstAttachment?.attachmentType(forContainingMessage: message, transaction: transaction)
+        {
+            let firstRenderingFlag = firstAttachment.reference.renderingFlag
+            let firstMimeType = firstAttachment.attachment.mimeType
 
             if mediaAttachments.count > 1 {
                 notificationBody = String(format: NotificationStrings.incomingReactionAlbumMessageFormat, reaction.emoji)
-            } else if
-                let firstAttachmentStream = firstAttachment?.asResourceStream()?.bridgeStream,
-                firstAttachmentStream.isAnimatedContent
-            {
+            } else if MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(firstMimeType) {
                 notificationBody = String(format: NotificationStrings.incomingReactionGifMessageFormat, reaction.emoji)
-            } else if firstAttachment?.isImageMimeType == true {
+            } else if MimeTypeUtil.isSupportedImageMimeType(firstMimeType) {
                 notificationBody = String(format: NotificationStrings.incomingReactionPhotoMessageFormat, reaction.emoji)
             } else if
-                let firstAttachment,
-                let firstAttachmentType,
-                firstAttachment.getAnimatedMimeType() == .animated || firstAttachment.isLoopingVideo(firstAttachmentType)
+                MimeTypeUtil.isSupportedVideoMimeType(firstMimeType),
+                firstRenderingFlag == .shouldLoop
             {
                 notificationBody = String(format: NotificationStrings.incomingReactionGifMessageFormat, reaction.emoji)
-            } else if firstAttachment?.isVideoMimeType == true {
+            } else if MimeTypeUtil.isSupportedVideoMimeType(firstMimeType) {
                 notificationBody = String(format: NotificationStrings.incomingReactionVideoMessageFormat, reaction.emoji)
-            } else if firstAttachmentType == .voiceMessage {
+            } else if firstRenderingFlag == .voiceMessage {
                 notificationBody = String(format: NotificationStrings.incomingReactionVoiceMessageFormat, reaction.emoji)
-            } else if firstAttachment?.isAudioMimeType == true {
+            } else if MimeTypeUtil.isSupportedAudioMimeType(firstMimeType) {
                 notificationBody = String(format: NotificationStrings.incomingReactionAudioMessageFormat, reaction.emoji)
             } else {
                 notificationBody = String(format: NotificationStrings.incomingReactionFileMessageFormat, reaction.emoji)
