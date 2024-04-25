@@ -1,1 +1,1 @@
-• Small tweaks, bug fixes, and performance enhancements. Thanks for using Signal! 
+• バグの修正とパフォーマンスの改善。

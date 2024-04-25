@@ -1,1 +1,1 @@
-• Small tweaks, bug fixes, and performance enhancements. Thanks for using Signal! 
+• Ispravci programskih pogrešaka i poboljšanje performansa aplikacije.

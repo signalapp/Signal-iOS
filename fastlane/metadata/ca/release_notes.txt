@@ -1,1 +1,1 @@
-• Small tweaks, bug fixes, and performance enhancements. Thanks for using Signal! 
+• Hem corregit alguns errors i hem millorat la interfície d'usuari.

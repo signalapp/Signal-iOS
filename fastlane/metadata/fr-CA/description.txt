@@ -1,19 +1,19 @@
-L’application de messagerie Signal fait de la confidentialité sa priorité. Gratuite et facile à utiliser, l’application assure un cryptage performant de bout en bout pour des communications confidentielles.
+L’application de messagerie Signal est conçue pour protéger votre vie privée. Gratuite et facile à utiliser, l’application assure un véritable chiffrement de bout en bout pour des communications vraiment confidentielles.
 
-• Envoyez des messages textes ou vocaux, partagez des photos, des vidéos, des GIF et des fichiers gratuitement. Signal utilise la connexion de données de votre téléphone pour éviter les coûts générés par l’envoi de SMS et de MMS.
+• Envoyez des messages textes ou vocaux, partagez des photos, des vidéos, des GIF et des fichiers gratuitement. Signal utilise la connexion de données de votre téléphone, vous évitant ainsi les coûts liés à l’envoi de SMS et de MMS.
 
-• Passez des appels vocaux et vidéo entièrement cryptés et extrêmement clairs. Les appels de groupe peuvent compter jusqu’à 40 personnes.
+• Passez des appels vocaux et vidéo de très grande qualité et entièrement chiffrés. Les appels de groupe peuvent compter jusqu’à 40 personnes.
 
-• Gardez le contact avec des groupes de discussion pouvant compter jusqu’à 1 000 personnes. Profitez des fonctions du rôle d’administrateur et contrôlez la publication des messages tout en gérant les membres participants.
+• Gardez le contact avec des groupes de discussion pouvant réunir jusqu’à 1 000 personnes. Les paramètres d’administration vous permettent de gérer les membres du groupe, mais aussi de décider quels utilisateurs sont autorisés à publier des messages.
 
-• Partagez des images, du texte et des Stories éphémères qui disparaissent automatiquement après 24 heures. Les paramètres de confidentialité vous permettent de contrôler précisément qui peut consulter chaque Story.
+• Partagez des stories éphémères : elles peuvent contenir des images, du texte ou des vidéos et disparaissent automatiquement au bout de 24 heures. Côté confidentialité, vous êtes seul maître à bord : chaque fois que vous publiez une story, vous contrôlez précisément qui peut la consulter via les paramètres.
 
-• Signal a été développée pour préserver votre vie privée. Nous ne disposons d’aucune donnée vous concernant vous ou votre interlocuteur. Notre protocole Open Source ne nous permet ni de lire ni d’écouter vos messages et appels. Ni nous, ni personne. Pas de porte dérobée, pas de collecte de données, pas de compromis. 
+• L’application Signal est conçue pour protéger votre vie privée. Nous ne disposons d’aucune information à votre sujet et ignorons qui sont vos contacts. Notre protocole open source ne nous permet ni de lire vos messages, ni d’écouter vos appels. En clair : personne d’autre que vous ne peut y accéder. Aucune porte dérobée, aucune collecte de données, zéro compromis. 
 
-• Signal est une fondation indépendante, sans but lucratif. Nous proposons une solution technologique alternative, pensée par un organisme alternatif. En tant qu’organisme à but non lucratif 501(c)(3), nous fonctionnons grâce à vos dons, et non par le biais d’annonceurs ou d’investisseurs. 
+• Signal est un organisme indépendant à but non lucratif. Nous proposons une solution technologique alternative, pensée par un organisme alternatif. En tant que tels, nous existons grâce à vos dons. Nous ne sommes soutenus ni par des annonceurs, ni par des investisseurs. 
 
-• Si vous avez des questions, besoin d’aide ou recherchez davantage d’informations, veuillez consulter le site https://support.signal.org/.
+• Des questions ? Besoin d’aide ? Envie d’en savoir plus ? Visitez https://support.signal.org/.
 
 Pour consulter notre code source, rendez-vous sur https://github.com/signalapp. 
 
-Suivez-nous sur Twitter @signalapp et Instagram @signal_app
+Suivez-nous sur X @signalapp et Instagram @signal_app.
