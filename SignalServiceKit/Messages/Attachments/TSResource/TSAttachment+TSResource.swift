@@ -251,6 +251,16 @@ extension TSAttachmentStream: TSResourceStream {
     public func thumbnailImageSync(quality: AttachmentThumbnailQuality) -> UIImage? {
         return self.thumbnailImageSync(quality: quality.tsQuality)
     }
+
+    // MARK: - Audio waveform
+
+    public func audioWaveform() -> AudioWaveform? {
+        AudioWaveformManager.audioWaveform(forAttachment: self, highPriority: false)
+    }
+
+    public func highPriorityAudioWaveform() -> AudioWaveform? {
+        AudioWaveformManager.audioWaveform(forAttachment: self, highPriority: true)
+    }
 }
 
 extension TSAttachment {

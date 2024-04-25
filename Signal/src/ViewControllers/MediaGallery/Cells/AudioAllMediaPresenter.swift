@@ -335,7 +335,7 @@ class AudioAllMediaPresenter: AudioPresenter {
     }
 
     func audioWaveform(attachmentStream: TSResourceStream?) -> AudioWaveform? {
-        return attachmentStream?.bridgeStream.highPriorityAudioWaveform()
+        return attachmentStream?.highPriorityAudioWaveform()
     }
 }
 

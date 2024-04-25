@@ -20,31 +20,30 @@ public class AudioWaveformManager: NSObject {
 
     private static let unfairLock = UnfairLock()
 
-    private typealias AttachmentId = String
+    private typealias AttachmentId = TSResourceId
 
     private static var cache = LRUCache<AttachmentId, Weak<AudioWaveform>>(maxSize: 64)
 
-    private static var observerMap = [String: SamplingObserver]()
+    private static var observerMap = [WaveformId: SamplingObserver]()
 
     @available(*, unavailable, message: "Do not instantiate this class.")
     private override init() {}
 
-    @objc
-    public static func audioWaveform(forAttachment attachment: TSAttachmentStream, highPriority: Bool) -> AudioWaveform? {
-        unfairLock.withLock {
-            let attachmentId = attachment.uniqueId
+    public static func audioWaveform(forAttachment attachment: TSResourceStream, highPriority: Bool) -> AudioWaveform? {
+        unfairLock.withLock { () -> AudioWaveform? in
+            let attachmentId = attachment.resourceId
 
-            guard attachment.isAudioMimeType else {
+            guard MimeTypeUtil.isSupportedAudioMimeType(attachment.mimeType) else {
                 owsFailDebug("Not audio.")
                 return nil
             }
 
-            guard let audioWaveformPath = attachment.audioWaveformPath else {
+            guard let audioWaveformPath = attachment.bridgeStream.audioWaveformPath else {
                 owsFailDebug("Missing audioWaveformPath.")
                 return nil
             }
 
-            guard let originalFilePath = attachment.originalFilePath else {
+            guard let originalFilePath = attachment.bridgeStream.originalFilePath else {
                 owsFailDebug("Missing originalFilePath.")
                 return nil
             }
@@ -57,7 +56,7 @@ public class AudioWaveformManager: NSObject {
             guard let value = buildAudioWaveForm(
                 forAudioPath: originalFilePath,
                 waveformPath: audioWaveformPath,
-                identifier: attachmentId,
+                identifier: .attachment(attachmentId),
                 highPriority: highPriority
             ) else {
                 return nil
@@ -75,7 +74,7 @@ public class AudioWaveformManager: NSObject {
             guard let value = buildAudioWaveForm(
                     forAudioPath: audioPath,
                     waveformPath: waveformPath,
-                    identifier: UUID().uuidString,
+                    identifier: .file(UUID()),
                     highPriority: false
             ) else {
                 return nil
@@ -84,11 +83,16 @@ public class AudioWaveformManager: NSObject {
         }
     }
 
+    private enum WaveformId: Hashable {
+        case attachment(TSResourceId)
+        case file(UUID)
+    }
+
     // This method should only be called with unfairLock acquired.
     private static func buildAudioWaveForm(
         forAudioPath audioPath: String,
         waveformPath: String,
-        identifier: String,
+        identifier: WaveformId,
         highPriority: Bool
     ) -> AudioWaveform? {
         if FileManager.default.fileExists(atPath: waveformPath) {
@@ -156,9 +160,11 @@ public class AudioWaveformManager: NSObject {
         let waveform = AudioWaveform()
 
         // Listen for sampling completion so we can cache the final waveform to disk.
-        let observer = SamplingObserver(waveform: waveform,
-                                        identifier: identifier,
-                                        audioWaveformPath: waveformPath)
+        let observer = SamplingObserver(
+            waveform: waveform,
+            identifier: identifier,
+            audioWaveformPath: waveformPath
+        )
         observerMap[identifier] = observer
         waveform.addSamplingObserver(observer)
 
@@ -170,12 +176,14 @@ public class AudioWaveformManager: NSObject {
     private class SamplingObserver: AudioWaveformSamplingObserver {
         // Retain waveform until sampling is complete.
         let waveform: AudioWaveform
-        let identifier: String
+        let identifier: WaveformId
         let audioWaveformPath: String
 
-        init(waveform: AudioWaveform,
-             identifier: String,
-             audioWaveformPath: String) {
+        init(
+            waveform: AudioWaveform,
+            identifier: WaveformId,
+            audioWaveformPath: String
+        ) {
             self.waveform = waveform
             self.identifier = identifier
             self.audioWaveformPath = audioWaveformPath

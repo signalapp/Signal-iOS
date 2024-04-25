@@ -151,7 +151,7 @@ class AudioMessagePresenter: AudioPresenter {
     }
 
     func audioWaveform(attachmentStream: TSResourceStream?) -> AudioWaveform? {
-        return attachmentStream?.bridgeStream.audioWaveform()
+        return attachmentStream?.audioWaveform()
     }
 }
 

@@ -43,6 +43,11 @@ public protocol TSResourceStream: TSResource {
 
     func thumbnailImage(quality: AttachmentThumbnailQuality) async -> UIImage?
     func thumbnailImageSync(quality: AttachmentThumbnailQuality) -> UIImage?
+
+    // MARK: - Audio waveform
+
+    func audioWaveform() -> AudioWaveform?
+    func highPriorityAudioWaveform() -> AudioWaveform?
 }
 
 extension TSResourceStream {

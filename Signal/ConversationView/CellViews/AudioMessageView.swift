@@ -294,7 +294,7 @@ class AudioMessageView: ManualStackView {
 
     func isPointInScrubbableRegion(_ point: CGPoint) -> Bool {
         // If we have a waveform but aren't done sampling it, don't allow scrubbing yet.
-        if let waveform = attachmentStream?.bridgeStream.audioWaveform(), !waveform.isSamplingComplete {
+        if let waveform = attachmentStream?.audioWaveform(), !waveform.isSamplingComplete {
             return false
         }
 

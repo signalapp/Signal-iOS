@@ -72,6 +72,8 @@ public class AttachmentStream {
         return tmpURL
     }
 
+    // MARK: - Thumbnails
+
     public func thumbnailImage(quality: AttachmentThumbnailQuality) async -> UIImage? {
         fatalError("Unimplemented!")
     }
@@ -114,5 +116,15 @@ public class AttachmentStream {
         case .large:
             return thumbnailDimensionPointsLarge()
         }
+    }
+
+    // MARK: - Audio Waveform
+
+    public func audioWaveform() -> AudioWaveform? {
+        AudioWaveformManager.audioWaveform(forAttachment: self, highPriority: false)
+    }
+
+    public func highPriorityAudioWaveform() -> AudioWaveform? {
+        AudioWaveformManager.audioWaveform(forAttachment: self, highPriority: true)
     }
 }
