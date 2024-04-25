@@ -782,7 +782,7 @@
 "CALL_VIEW_LEAVE_CALL_LABEL" = "Tinggalkan panggilan";
 
 /* Accessibility label for the More button in the Call Controls row. */
-"CALL_VIEW_MORE_LABEL" = "More";
+"CALL_VIEW_MORE_LABEL" = "Selanjutnya";
 
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Bisukan";
@@ -1116,6 +1116,9 @@
 
 /* Indicates that the user has a pending request with the other account. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Permintaan pesan tertunda";
+
+/* Message for a tooltip that appears above a parenthesized name for another user, indicating that that name is the name the other user set for themself. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "“%1$@” is the profile name this person set for themselves in Signal.";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Koneksi Signal";
@@ -1802,7 +1805,7 @@
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ dihapus dari daftar Kontak Anda.";
 
 /* Label indicating a user who deleted their account. */
-"DELETED_USER" = "Akun terhapus";
+"DELETED_USER" = "Akun Dihapus";
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "Anda telah keluar dari Signal di perangkat ini.";
@@ -3592,6 +3595,15 @@
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Panggilan Berakhir.";
 
+/* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user doesn't want to be reminded. */
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "Don't Remind Me";
+
+/* Title for a button in an in-app megaphone about a user's inactive linked device, temporarily dismissing the megaphone. */
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_GOT IT_BUTTON" = "Got It";
+
+/* Title for an in-app megaphone about a user's inactive linked device. */
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Inactive Linked Device";
+
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Obrolan dibisukan yang diarsipkan akan tetap diarsipkan saat ada pesan baru yang masuk.";
 
@@ -3794,7 +3806,7 @@
 "LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Pengelolaan kontak ponsel sudah tidak tersedia di iPad. Untuk menambahkan koneksi Signal ke kontak ponsel, buka Signal di ponsel Anda.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Pengelolaan kontak ponsel sudah tidak didukung di iPad. Perangkat ini akan terus menyinkronkan setiap perubahan pada daftar kontak dari Signal di ponsel Anda.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Pengelolaan kontak ponsel sudah tidak didukung di iPad. Perangkat ini akan terus menyinkronkan setiap perubahan daftar kontak dari Signal di ponsel Anda.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Selengkapnya";
@@ -4469,7 +4481,7 @@
 "NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE" = "Ini akan menghapus nama panggilan dan catatan secara permanen.";
 
 /* The title for a prompt confirming that the user wants to delete the nickname and note. */
-"NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "Hapus nama panggilan?";
+"NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE" = "Hapus Nama Panggilan?";
 
 /* The description below the title on the profile nickname editor view. */
 "NICKNAME_EDITOR_DESCRIPTION" = "Nama panggilan & catatan disimpan di Signal dan terenkripsi ujung-ke-ujung. Hanya Anda yang bisa melihatnya.";

@@ -782,7 +782,7 @@
 "CALL_VIEW_LEAVE_CALL_LABEL" = "전화 종료";
 
 /* Accessibility label for the More button in the Call Controls row. */
-"CALL_VIEW_MORE_LABEL" = "More";
+"CALL_VIEW_MORE_LABEL" = "더 보기";
 
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "알림 끄기";
@@ -1116,6 +1116,9 @@
 
 /* Indicates that the user has a pending request with the other account. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "보류 중인 메시지 요청";
+
+/* Message for a tooltip that appears above a parenthesized name for another user, indicating that that name is the name the other user set for themself. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "“%1$@” is the profile name this person set for themselves in Signal.";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal 커넥션";
@@ -1802,7 +1805,7 @@
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "내 연락처에서 %1$@ 님을 삭제하고 제거했습니다.";
 
 /* Label indicating a user who deleted their account. */
-"DELETED_USER" = "계정 삭제";
+"DELETED_USER" = "삭제된 계정";
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "이 기기의 Signal에서 로그아웃했습니다.";
@@ -3591,6 +3594,15 @@
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "통화 종료됨";
+
+/* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user doesn't want to be reminded. */
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "Don't Remind Me";
+
+/* Title for a button in an in-app megaphone about a user's inactive linked device, temporarily dismissing the megaphone. */
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_GOT IT_BUTTON" = "Got It";
+
+/* Title for an in-app megaphone about a user's inactive linked device. */
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Inactive Linked Device";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "알림을 끄고 보관한 대화는 새 메시지가 도착해도 보관 상태로 유지됩니다.";

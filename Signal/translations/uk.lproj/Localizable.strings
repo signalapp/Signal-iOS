@@ -782,7 +782,7 @@
 "CALL_VIEW_LEAVE_CALL_LABEL" = "Покинути дзвінок";
 
 /* Accessibility label for the More button in the Call Controls row. */
-"CALL_VIEW_MORE_LABEL" = "More";
+"CALL_VIEW_MORE_LABEL" = "Більше";
 
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Вимкнути мікрофон";
@@ -1116,6 +1116,9 @@
 
 /* Indicates that the user has a pending request with the other account. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Активний запит на повідомлення";
+
+/* Message for a tooltip that appears above a parenthesized name for another user, indicating that that name is the name the other user set for themself. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "“%1$@” is the profile name this person set for themselves in Signal.";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Контакт Signal";
@@ -1817,7 +1820,7 @@
 "DEREGISTRATION_WARNING_ACTION_TITLE" = "Перереєструйте пристрій";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "Остання активність %1$@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "Остання активність: %1$@";
 
 /* {{Short Date}} when device was linked. */
 "DEVICE_LINKED_AT_LABEL" = "Прив'язаний %1$@";
@@ -3515,7 +3518,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Дехто з ваших контактів користується Signal, включно з %1$@, %2$@ та %3$@.";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Розпочати свій перший чат.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Почніть перший чат.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%1$@ додав(-ла) вас в групу";
@@ -3530,7 +3533,7 @@
 "HOME_VIEW_TITLE_ARCHIVE" = "Архів";
 
 /* Title for the 'Select Chats' option in the ChatList. */
-"HOME_VIEW_TITLE_SELECT_CHATS" = "Обрати чати";
+"HOME_VIEW_TITLE_SELECT_CHATS" = "Вибрати чати";
 
 /* Title 'Read All' button in the toolbar of the ChatList if multi-section is active. */
 "HOME_VIEW_TOOLBAR_READ_ALL" = "Прочитати усі";
@@ -3592,6 +3595,15 @@
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Виклик завершено.";
 
+/* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user doesn't want to be reminded. */
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "Don't Remind Me";
+
+/* Title for a button in an in-app megaphone about a user's inactive linked device, temporarily dismissing the megaphone. */
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_GOT IT_BUTTON" = "Got It";
+
+/* Title for an in-app megaphone about a user's inactive linked device. */
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Inactive Linked Device";
+
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Стишені та заархівовані чати залишатимуться заархівованими після отримання нового повідомлення.";
 
@@ -3599,7 +3611,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Заархівовані чати переміщатимуться до вхідних після отримання нового повідомлення.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "Ще немає чатів.\nРозпочніть, написавши повідомлення друзям.";
+"INBOX_VIEW_EMPTY_INBOX" = "Чатів ще немає.\nНадішліть повідомлення комусь із друзів.";
 
 /* info message text in conversation view */
 "INCOMING_AUDIO_CALL" = "Вхідний голосовий дзвінок";
@@ -4373,7 +4385,7 @@
 "NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Відеовиклик";
 
 /* A label the cell that lets you add a new member to a group. */
-"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Знайти за номером телефону";
+"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Пошук за номером телефону";
 
 /* A label for the cell that lets you add a new member by their username */
 "NEW_CONVERSATION_FIND_BY_USERNAME" = "Пошук за іменем користувача";
@@ -4418,7 +4430,7 @@
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Оберіть групу";
 
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Знайти за номером телефону";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Пошук за номером телефону";
 
 /* Title for the 'new private story' confirmation view */
 "NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Дайте історії назву";
@@ -5213,7 +5225,7 @@
 "PIN_CREATION_CHANGING_TITLE" = "Змінити PIN-код";
 
 /* Title of the 'pin creation' confirmation view. */
-"PIN_CREATION_CONFIRM_TITLE" = "Підтвердіть свій PIN-код";
+"PIN_CREATION_CONFIRM_TITLE" = "Підтвердьте свій PIN-код";
 
 /* The explanation of confirmation in the 'pin creation' view. */
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "Введіть PIN-код, який ви тільки що створили.";
@@ -6356,7 +6368,7 @@
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "Не переносити";
 
 /* Body for the alert confirming whether the user wants transfer their payments balance before deleting their account. Embeds: {{ the current payment balance }}. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "На вашому балансі: %1$@. Якщо ви не перекажете ваші кошти на адресу іншого гаманця перед видаленням свого облікового запису, ви втратите їх назавжди.";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "На вашому балансі: %1$@. Якщо ви не перекажете ваші кошти на адресу іншого гаманця перед видаленням свого акаунту, ви втратите їх назавжди.";
 
 /* Title for the alert confirming whether the user wants transfer their payments balance before deleting their account. */
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "Перенести баланс платежів?";
@@ -6578,7 +6590,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "Оновити PIN-код";
 
 /* Description for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "Якщо ви маєте високий баланс, пропонуємо створити літерно-цифровий PIN-код для більшої безпеки вашого облікового запису.";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "Якщо ви маєте високий баланс, пропонуємо створити літерно-цифровий PIN-код для більшої безпеки вашого акаунту.";
 
 /* Title for the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Оновити ваш PIN-код";
@@ -6857,7 +6869,7 @@
 "SETTINGS_PAYMENTS_TITLE" = "Платежі";
 
 /* Error indicating that it is not valid to send yourself a payment. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "Ви не можете переказувати на власну адресу гаманцю Signal. Введіть адресу гаманця з вашого облікового запису, на яку можна здійснити платіж.";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF" = "Ви не можете переказувати на власну адресу гаманцю Signal. Введіть адресу гаманця з вашого акаунту, на яку можна здійснити платіж.";
 
 /* Footer of the 'transfer currency out' view in the payment settings. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER" = "Ви можете переказувати MobileCoin платежем на адресу гаманця, що його було надано біржею. Адреса гаманця — це рядок цифр та літер, який зазвичай розміщується під QR-кодом.";
@@ -6965,7 +6977,7 @@
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "PIN-код необхідно запам’ятати або надійно зберегти, оскільки його неможливо відновити. Якщо ви забудете свій PIN-код, то можете втратити дані при повторній реєстрації свого акаунту Signal.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Підтвердіть свій PIN-код Signal";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Підтвердьте свій PIN-код Signal";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Нагадування PIN-коду";
@@ -6989,7 +7001,7 @@
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Додаткові функції";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Показувати виклики у розділі Недавні";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Показувати виклики у «Недавніх»";
 
 /* The title for the privacy settings. */
 "SETTINGS_PRIVACY_TITLE" = "Конфіденційність";
@@ -7028,13 +7040,13 @@
 "SETTINGS_SCREEN_SECURITY" = "Приховувати екран у перемикачі застосунків";
 
 /* Footer for table section */
-"SETTINGS_SECTION_FOOTER_CALLING" = "Відображати виклики у розділі «Недавні» застосунку Телефон iOS.";
+"SETTINGS_SECTION_FOOTER_CALLING" = "Показувати виклики в списку викликів телефона, на вкладці «Недавні».";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Звуки";
 
 /* settings topic header for table section */
-"SETTINGS_SECTION_TITLE_CALLING" = "Телефонуємо";
+"SETTINGS_SECTION_TITLE_CALLING" = "Здійснення викликів";
 
 /* Section footer */
 "SETTINGS_SECURITY_DETAIL" = "Використовувати Touch ID, Face ID або код допуску пристрою для розблокування Signal.";
@@ -7322,7 +7334,7 @@
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "Якщо історії вимкнути, ви не зможете їх ні публікувати, ні переглядати.";
 
 /* Button to turn off stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Вимкнути сторіз";
+"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Вимкнути історії";
 
 /* Footer for the 'turn on' section of the stories settings */
 "STORIES_SETTINGS_TURN_ON_FOOTER" = "Публікуйте свої історії і переглядайте історії інших користувачів. Історії автоматично зникають через 24 години.";
@@ -7799,7 +7811,7 @@
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Тепер ви використовуєте останню версію Signal і можете попросити відправника повторно відправити це повідомлення.";
 
 /* Label indicating an unknown user. */
-"UNKNOWN_USER" = "Невідомо";
+"UNKNOWN_USER" = "Невідомий";
 
 /* Info Message when an unknown user disabled disappearing messages. */
 "UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Зникаючі повідомлення були відключені.";
@@ -7880,7 +7892,7 @@
 "USERNAME_EDUCATION_PRIVACY_TITLE" = "Конфіденційність номера телефону";
 
 /* Label for the 'set up' button on the username education sheet */
-"USERNAME_EDUCATION_SET_UP_BUTTON" = "Установити ім'я користувача";
+"USERNAME_EDUCATION_SET_UP_BUTTON" = "Створити ім'я користувача";
 
 /* Title to set up signal username */
 "USERNAME_EDUCATION_TITLE" = "Нові способи додавання контактів";

@@ -13,9 +13,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Audiobericht %1$d seconde</string>
+			<string>Spraakbericht %1$d seconde</string>
 			<key>other</key>
-			<string>Audiobericht %1$d seconden</string>
+			<string>Spraakbericht %1$d seconden</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
@@ -731,6 +731,22 @@
 			<string>Je kunt niet meer dan 1 item delen.</string>
 			<key>other</key>
 			<string>Je kunt niet meer dan %1$d items delen.</string>
+		</dict>
+	</dict>
+	<key>INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_BODY_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>To keep &quot;%2$@&quot; linked, open Signal on this device within one day.</string>
+			<key>other</key>
+			<string>To keep &quot;%2$@&quot; linked, open Signal on this device within %1$d days.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>

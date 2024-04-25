@@ -29,7 +29,7 @@
 "ACCESSIBILITY_LABEL_STICKER_FORMAT" = "Sticker lijkt op %1$@";
 
 /* Accessibility label for a voice memo. */
-"ACCESSIBILITY_LABEL_VOICE_MEMO" = "Audiobericht";
+"ACCESSIBILITY_LABEL_VOICE_MEMO" = "Spraakbericht";
 
 /* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the button on that warning, and tapping it lets users continue. */
 "ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_CONFIRM_BUTTON" = "Rapport exporteren";
@@ -158,7 +158,7 @@
 "ALL_MEDIA_FILE_TYPE_MEDIA" = "Media";
 
 /* Menu option to limit All Media view to displaying only GIFs */
-"ALL_MEDIA_FILTER_GIFS" = "GIFs";
+"ALL_MEDIA_FILTER_GIFS" = "GIF's";
 
 /* Menu option to remove content type restriction in All Media view */
 "ALL_MEDIA_FILTER_NONE" = "Alle media";
@@ -200,7 +200,7 @@
 "APP_LAUNCH_FAILURE_CONTINUE" = "Signal nogmaals openen";
 
 /* Message for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
-"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "Stuur een foutopsporingslogboek naar support@signal.org zodat we dit probleem kunnen oplossen.";
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "Stuur een foutopsporingslog naar support@signal.org zodat we dit probleem kunnen oplossen.";
 
 /* Title for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
 "APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "Kon Signal niet openen";
@@ -440,7 +440,7 @@
 "ATTACHMENT_TYPE_VIDEO" = "Video";
 
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Audiobericht";
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Spraakbericht";
 
 /* A string indicating that an audio message is playing. */
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Audiobericht";
@@ -782,7 +782,7 @@
 "CALL_VIEW_LEAVE_CALL_LABEL" = "Oproep verlaten";
 
 /* Accessibility label for the More button in the Call Controls row. */
-"CALL_VIEW_MORE_LABEL" = "More";
+"CALL_VIEW_MORE_LABEL" = "Meer";
 
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Microfoon dempen";
@@ -1117,6 +1117,9 @@
 /* Indicates that the user has a pending request with the other account. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Openstaand gespreksverzoek";
 
+/* Message for a tooltip that appears above a parenthesized name for another user, indicating that that name is the name the other user set for themself. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "“%1$@” is the profile name this person set for themselves in Signal.";
+
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal-contact";
 
@@ -1205,7 +1208,7 @@
 "CONTACT_SHARE_INVALID_CONTACT" = "Ongeldige contactpersoon.";
 
 /* Alert body when contacts disabled while trying to share a contact. */
-"CONTACT_SHARING_NO_ACCESS_BODY" = "Signal heeft toegang tot je contacten nodig. Ga naar iOS-instellingen en schakel contacten in. Je contacten zijn versleuteld en niet zichtbaar voor de Signal-service.";
+"CONTACT_SHARING_NO_ACCESS_BODY" = "Signal heeft toegang tot je contacten nodig. Ga naar iOS-instellingen en schakel contacten in. Je contacten zijn versleuteld en niet zichtbaar voor de Signal-dienst.";
 
 /* Alert title when contacts disabled while trying to share a contact. */
 "CONTACT_SHARING_NO_ACCESS_TITLE" = "Toegang tot contacten toestaan";
@@ -2420,7 +2423,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hoi, \n\n tegenwoordig gebruik ik Signal om de chats op mijn iPhone privé te houden. Ik zou het fijn vinden als jij het ook installeert, zodat we erop kunnen vertrouwen dat alleen jij en ik onze berichten kunnen lezen of onze oproepen kunnen horen. \n\n Signal is beschikbaar voor iPhones en Android. Download het hier: %1$@\n\nSignal werkt net als je bestaande berichten-app. We kunnen foto's en video's versturen, bellen en groepschats starten. Het beste is dat niemand anders er iets van kan zien, zelfs niet de mensen die Signal maken! \n\n Je kunt hier meer lezen over Open Whisper Systems, de mensen die Signal ontwikkelen: %2$@";
+"EMAIL_INVITE_BODY" = "Hoi, \n\n tegenwoordig gebruik ik Signal om de chats op mijn iPhone privé te houden. Ik zou het fijn vinden als jij het ook installeert, zodat we erop kunnen vertrouwen dat alleen jij en ik onze berichten kunnen lezen of onze oproepen kunnen horen. \n\n Signal is beschikbaar voor iPhones en Android. Download het hier: %1$@\n\nSignal werkt net als je bestaande berichtenapp. We kunnen foto's en video's versturen, bellen en groepschats starten. Het beste is dat niemand anders er iets van kan zien, zelfs niet de mensen die Signal maken! \n\n Je kunt hier meer lezen over Open Whisper Systems, de mensen die Signal ontwikkelen: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Laten we Signal gebruiken";
@@ -3592,6 +3595,15 @@
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Oproep beëindigd.";
 
+/* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user doesn't want to be reminded. */
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "Don't Remind Me";
+
+/* Title for a button in an in-app megaphone about a user's inactive linked device, temporarily dismissing the megaphone. */
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_GOT IT_BUTTON" = "Got It";
+
+/* Title for an in-app megaphone about a user's inactive linked device. */
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Inactive Linked Device";
+
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Gedempte chats die zijn gearchiveerd, blijven gearchiveerd als er een nieuw bericht binnenkomt.";
 
@@ -3656,10 +3668,10 @@
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Stickers";
 
 /* accessibility hint for the button which records voice memos */
-"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Dubbeltik en houd vast om een audiobericht op te nemen. Laat los om te verzenden of veeg naar links om te annuleren. Dubbeltik en veeg omhoog om een audiobericht te blijven opnemen nadat je los laat.";
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Dubbeltik en houd vast om een spraakbericht op te nemen. Laat los om te verzenden of veeg naar links om te annuleren. Dubbeltik en veeg omhoog om een spraakbericht te blijven opnemen nadat je los laat.";
 
 /* accessibility label for the button which records voice memos */
-"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "Audiobericht";
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "Spraakbericht";
 
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Ongeldig audiobestand.";
@@ -3884,7 +3896,7 @@
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%1$@";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - second line. */
-"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "Audioberichten en bestanden die je verstuurt en ontvangt worden hier weergegeven";
+"MEDIA_GALLERY_NO_AUDIO_SUBTITLE" = "Spraakberichten en audiobestanden die je verstuurt en ontvangt worden hier weergegeven";
 
 /* Displayed in All Media (Audio) screen when there's no audio files - first line. */
 "MEDIA_GALLERY_NO_AUDIO_TITLE" = "Geen audio";
@@ -4487,7 +4499,7 @@
 "NICKNAME_EDITOR_TITLE" = "Bijnaam";
 
 /* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Zoek contactpersonen op telefoonnummer";
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Zoeken op telefoonnummer";
 
 /* Label for a button that lets users search for contacts by username */
 "NO_CONTACTS_SEARCH_BY_USERNAME" = "Zoeken op gebruikersnaam";
@@ -4619,7 +4631,7 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Geef toestemmingen";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Door meldingen toe te staan kan Signal je laten weten wanneer je een bericht hebt ontvangen. Door het lezen van je systeemcontactenlijst toe te staan kan Signal je contactpersonen weergeven als je een gesprek met ze wil starten. Alle informatie over je contactpersonen blijft altijd versleuteld, zelf Signals ontwikkelaars kunnen de telefoonnummers en andere informatie over je contactpersonen nooit lezen.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Door meldingen toe te staan en toegang te geven tot je contacten, kan Signal je laten weten wanneer er berichten binnenkomen en kun je mensen vinden die je kent. Je contacten zijn versleuteld zodat de Signal-dienst deze niet kan zien.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Geef toestemmingen";
@@ -8069,10 +8081,10 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Veeg om te annuleren";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "Audiobericht";
+"VOICE_MESSAGE_FILE_NAME" = "Spraakbericht";
 
 /* Message for the tooltip indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Tik en houd vast om een audiobericht op te nemen.";
+"VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Tik en houd vast om een spraakbericht op te nemen.";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Voltooi de installatie op Signal Desktop.";

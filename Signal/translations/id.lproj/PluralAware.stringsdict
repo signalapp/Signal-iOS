@@ -641,6 +641,20 @@
 			<string>Anda tidak dapat membagi lebih dari %1$d item.</string>
 		</dict>
 	</dict>
+	<key>INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_BODY_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>To keep &quot;%2$@&quot; linked, open Signal on this device within %1$d days.</string>
+		</dict>
+	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

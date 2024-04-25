@@ -733,6 +733,22 @@
 			<string>Vous ne pouvez pas partager plus de %1$d éléments.</string>
 		</dict>
 	</dict>
+	<key>INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_BODY_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>To keep &quot;%2$@&quot; linked, open Signal on this device within one day.</string>
+			<key>other</key>
+			<string>To keep &quot;%2$@&quot; linked, open Signal on this device within %1$d days.</string>
+		</dict>
+	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -936,9 +952,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tous les contacts Signal · %1$d spectateur</string>
+			<string>Tous mes contacts Signal · %1$d personne</string>
 			<key>other</key>
-			<string>Tous les contacts Signal · %1$d spectateurs</string>
+			<string>Tous mes contacts Signal · %1$d personnes</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -952,9 +968,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tous les contacts Signal · %1$d exclu</string>
+			<string>Tous mes contacts Signal · %1$d exclu</string>
 			<key>other</key>
-			<string>Tous les contacts Signal · %1$d exclus</string>
+			<string>Tous mes contacts Signal · %1$d exclus</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
@@ -968,9 +984,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Partager uniquement avec · %1$d spectateur</string>
+			<string>Ne partager qu’avec · %1$d contact</string>
 			<key>other</key>
-			<string>Partager uniquement avec · %1$d spectateurs</string>
+			<string>Ne partager qu’avec · %1$d contacts</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>

@@ -782,7 +782,7 @@
 "CALL_VIEW_LEAVE_CALL_LABEL" = "Anruf verlassen";
 
 /* Accessibility label for the More button in the Call Controls row. */
-"CALL_VIEW_MORE_LABEL" = "More";
+"CALL_VIEW_MORE_LABEL" = "Mehr";
 
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Stummschalten";
@@ -1116,6 +1116,9 @@
 
 /* Indicates that the user has a pending request with the other account. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Ausstehende Unterhaltungsanfrage";
+
+/* Message for a tooltip that appears above a parenthesized name for another user, indicating that that name is the name the other user set for themself. Embeds {{name}} */
+"CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "“%1$@” is the profile name this person set for themselves in Signal.";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal-Kontakt";
@@ -2744,10 +2747,10 @@
 "GO_TO_SETTINGS_BUTTON" = "Einstellungen öffnen";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Du hast die Bearbeitungsberechtigten für Gruppendetails zu »%1$@« geändert.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Du hast die Berechtigung »Gruppendetails bearbeiten« zu »%1$@« geändert.";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ hat die Bearbeitungsberechtigten für Gruppendetails zu »%2$@« geändert.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ hat die Berechtigung »Gruppendetails bearbeiten« zu »%2$@« geändert.";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Gruppendetails können von »%1$@« geändert werden.";
@@ -2768,10 +2771,10 @@
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "Deaktiviert";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Du hast die Bearbeitungsberechtigten für die Gruppenmitgliedschaft zu »%1$@« geändert.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Du hast die Berechtigung »Mitglieder hinzufügen« zu »%1$@« geändert.";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ hat die Bearbeitungsberechtigten für die Gruppenmitgliedschaft zu »%2$@« geändert.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ hat die Berechtigung »Mitglieder hinzufügen« zu »%2$@« geändert.";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Die Gruppenmitgliedschaft kann von »%1$@« geändert werden.";
@@ -3591,6 +3594,15 @@
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Anruf beendet.";
+
+/* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user doesn't want to be reminded. */
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "Don't Remind Me";
+
+/* Title for a button in an in-app megaphone about a user's inactive linked device, temporarily dismissing the megaphone. */
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_GOT IT_BUTTON" = "Got It";
+
+/* Title for an in-app megaphone about a user's inactive linked device. */
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Inactive Linked Device";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Stummgeschaltete Chats, die archiviert sind, bleiben beim Eintreffen einer neuen Nachricht archiviert.";
