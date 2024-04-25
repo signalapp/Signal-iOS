@@ -278,9 +278,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                     transaction: transaction
                 )
                 return build(displayableText: displayableText)
-            } else if nil != oversizeTextAttachment.asTransitTierPointer()?.bridgePointerAndNotStream {
-                // TODO: Handle backup restore.
-                // TODO: If there's media, should we display that while the oversize text is downloading?
+            } else if oversizeTextAttachment.asTransitTierPointer() != nil {
                 return .oversizeTextDownloading
             } else {
                 throw OWSAssertionError("Invalid oversizeTextAttachment.")

@@ -34,6 +34,15 @@ extension AttachmentReference: TSResourceReference {
         }
     }
 
+    public var legacyMessageCaption: String? {
+        switch owner {
+        case .message(.bodyAttachment(let metadata)):
+            return metadata.caption?.text
+        default:
+            return nil
+        }
+    }
+
     public func hasSameOwner(as other: TSResourceReference) -> Bool {
         guard let other = other as? AttachmentReference else {
             return false

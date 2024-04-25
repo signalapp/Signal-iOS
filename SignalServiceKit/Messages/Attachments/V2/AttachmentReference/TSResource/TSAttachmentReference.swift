@@ -44,7 +44,20 @@ public class TSAttachmentReference: TSResourceReference {
 
     public var sourceFilename: String? { attachment?.sourceFilename }
 
+    public var sourceMediaSizePixels: CGSize? {
+        if
+            let attachmentPointer = attachment as? TSAttachmentPointer,
+            attachmentPointer.mediaSize.isNonEmpty
+        {
+            return attachmentPointer.mediaSize
+        } else {
+            return nil
+        }
+    }
+
     public var storyMediaCaption: StyleOnlyMessageBody? { nil }
+
+    public var legacyMessageCaption: String? { attachment?.caption }
 
     public var renderingFlag: AttachmentReference.RenderingFlag {
         switch attachment?.attachmentType {

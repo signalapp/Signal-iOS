@@ -20,11 +20,19 @@ public protocol TSResourceReference {
     /// NOT the same as the file name on disk.
     var sourceFilename: String? { get }
 
+    /// Media size (in pixels) from the sender, used for display size before downloading.
+    /// Not necessarily the same as the actual media size (if spoofed by the sender).
+    var sourceMediaSizePixels: CGSize? { get }
+
     /// Hint from the sender telling us how to render the attachment.
     var renderingFlag: AttachmentReference.RenderingFlag { get }
 
     /// Caption for story message media attachments
     var storyMediaCaption: StyleOnlyMessageBody? { get }
+
+    /// Caption for message body attachments.
+    /// Unused in the modern app but may be set for old messages.
+    var legacyMessageCaption: String? { get }
 
     // NOTE: mimeType and contentType are deliberately excluded from
     // this protocol; they have wildly different meanings in v1 and v2

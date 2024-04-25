@@ -141,28 +141,42 @@ class VideoPlaybackControlView: UIView {
     weak var delegate: VideoPlaybackControlViewDelegate?
 
     func updateWithMediaItem(_ mediaItem: MediaGalleryItem) {
-        let durationThreshold: TimeInterval = 30
         switch mediaItem.attachmentStream.attachmentStream.cachedContentType {
         case .video(let videoDuration, _):
             guard let videoDuration else { fallthrough }
-            showRewindAndFastForward = videoDuration >= durationThreshold
+            updateDuration(videoDuration)
         default:
-            showRewindAndFastForward = false
-            self.mediaItem = mediaItem
-
-            TSAttachmentVideoDurationHelper.shared.promisedDuration(
-                attachment: mediaItem.attachmentStream.attachmentStream.bridgeStream
-            ).observe { [weak self] result in
-                guard let self, self.mediaItem === mediaItem, case .success(let duration) = result else {
-                    self?.mediaItem = nil
-                    return
+            switch mediaItem.attachmentStream.attachmentStream.concreteStreamType {
+            case .v2(let attachmentStream):
+                switch attachmentStream.contentType {
+                case .file, .image, .animatedImage, .audio:
+                    break
+                case .video(let duration, _):
+                    updateDuration(duration)
                 }
-                self.showRewindAndFastForward = duration >= durationThreshold
+            case .legacy(let tsAttachmentStream):
+                showRewindAndFastForward = false
+                self.mediaItem = mediaItem
 
-                // Only hold on to mediaItem for as long as it is necessary.
-                self.mediaItem = nil
+                TSAttachmentVideoDurationHelper.shared.promisedDuration(
+                    attachment: tsAttachmentStream
+                ).observe { [weak self] result in
+                    guard let self, self.mediaItem === mediaItem, case .success(let duration) = result else {
+                        self?.mediaItem = nil
+                        return
+                    }
+                    self.updateDuration(duration)
+
+                    // Only hold on to mediaItem for as long as it is necessary.
+                    self.mediaItem = nil
+                }
             }
         }
+    }
+
+    private func updateDuration(_ duration: TimeInterval) {
+        let durationThreshold: TimeInterval = 30
+        self.showRewindAndFastForward = duration >= durationThreshold
     }
 
     private var isVideoPlaying = false

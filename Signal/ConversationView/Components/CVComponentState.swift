@@ -1229,7 +1229,7 @@ fileprivate extension CVComponentState.Builder {
             let attachmentTransitTierDownloadState =
                 attachment.attachment.transitTierDownloadState(tx: transaction.asV2Read)
 
-            let caption = attachment.attachment.bridge.caption
+            let caption = attachment.reference.legacyMessageCaption
             let hasCaption = caption.map {
                 return CVComponentState.displayableCaption(
                     text: $0,
@@ -1239,9 +1239,8 @@ fileprivate extension CVComponentState.Builder {
 
             guard let attachmentStream = attachment.attachment.asResourceStream() else {
                 var mediaSize: CGSize = .zero
-                if let attachmentPointer = attachment.attachment.asTransitTierPointer()?.bridgePointerAndNotStream,
-                   attachmentPointer.mediaSize.isNonEmpty {
-                    mediaSize = attachmentPointer.mediaSize
+                if let sourceMediaSizePixels = attachment.reference.sourceMediaSizePixels {
+                    mediaSize = sourceMediaSizePixels
                 } else {
                     owsFailDebug("Invalid attachment.")
                 }

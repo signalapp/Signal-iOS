@@ -109,9 +109,20 @@ class MediaGalleryCellItemPhotoVideo: PhotoGridItem {
 
     private var videoDurationPromise: Promise<TimeInterval> {
         owsAssert(galleryItem.isVideo)
-        return TSAttachmentVideoDurationHelper.shared.promisedDuration(
-            attachment: galleryItem.attachmentStream.attachmentStream.bridgeStream
-        )
+        switch galleryItem.attachmentStream.attachmentStream.concreteStreamType {
+        case .legacy(let tSAttachment):
+            return TSAttachmentVideoDurationHelper.shared.promisedDuration(
+                attachment: tSAttachment
+            )
+        case .v2(let attachment):
+            switch attachment.contentType {
+            case .file, .image, .animatedImage, .audio:
+                owsFailDebug("Non video type!")
+                return .value(0)
+            case .video(let duration, _):
+                return .value(duration)
+            }
+        }
     }
     var mediaMetadata: MediaMetadata? {
         return galleryItem.mediaMetadata

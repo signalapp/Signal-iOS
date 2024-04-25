@@ -377,7 +377,7 @@ extension ForwardMessageViewController {
                     return Promise(error: OWSAssertionError("Missing stickerAttachment."))
                 }
                 do {
-                    let stickerData = try stickerAttachment.readDataFromFile()
+                    let stickerData = try stickerAttachment.bridgeStream.readDataFromFile()
                     return send(toRecipientThreads: outgoingMessageRecipientThreads) { recipientThread in
                         self.send(uninstalledSticker: stickerMetadata,
                                   stickerData: stickerData,
@@ -603,7 +603,7 @@ public struct ForwardMessageItem {
     let messageBody: MessageBody?
     let linkPreviewDraft: OWSLinkPreviewDraft?
     let stickerMetadata: StickerMetadata?
-    let stickerAttachment: TSAttachmentStream?
+    let stickerAttachment: TSResourceStream?
     let textAttachment: TextAttachment?
 
     fileprivate class Builder {
@@ -614,7 +614,7 @@ public struct ForwardMessageItem {
         var messageBody: MessageBody?
         var linkPreviewDraft: OWSLinkPreviewDraft?
         var stickerMetadata: StickerMetadata?
-        var stickerAttachment: TSAttachmentStream?
+        var stickerAttachment: TSResourceStream?
         var textAttachment: TextAttachment?
 
         init(interaction: TSInteraction? = nil) {
@@ -725,7 +725,7 @@ public struct ForwardMessageItem {
                 builder.stickerMetadata = stickerMetadata
 
                 if let stickerAttachment = componentState.stickerAttachment {
-                    builder.stickerAttachment = stickerAttachment.bridgeStream
+                    builder.stickerAttachment = stickerAttachment
                 }
             }
         }
@@ -751,19 +751,24 @@ public struct ForwardMessageItem {
             let imageData: Data
             let mimetype: String
 
-            static func load(attachmentId: String,
-                             transaction: SDSAnyReadTransaction) -> LinkPreviewImage? {
-                guard let attachment = TSAttachmentStream.anyFetchAttachmentStream(uniqueId: attachmentId,
-                                                                                   transaction: transaction) else {
+            static func load(
+                attachmentId: TSResourceId,
+                transaction: SDSAnyReadTransaction
+            ) -> LinkPreviewImage? {
+                guard
+                    let attachment = DependenciesBridge.shared.tsResourceStore
+                        .fetch(attachmentId, tx: transaction.asV2Read)?
+                        .asResourceStream()
+                else {
                     owsFailDebug("Missing attachment.")
                     return nil
                 }
-                guard let mimeType = attachment.contentType.nilIfEmpty else {
+                guard let mimeType = attachment.mimeType.nilIfEmpty else {
                     owsFailDebug("Missing mimeType.")
                     return nil
                 }
                 do {
-                    let imageData = try attachment.readDataFromFile()
+                    let imageData = try attachment.bridgeStream.readDataFromFile()
                     return LinkPreviewImage(imageData: imageData, mimetype: mimeType)
                 } catch {
                     owsFailDebug("Error: \(error).")
@@ -776,7 +781,7 @@ public struct ForwardMessageItem {
             let imageAttachmentId = DependenciesBridge.shared.tsResourceStore.linkPreviewAttachment(
                 for: parentMessage,
                 tx: transaction.asV2Read
-            )?.resourceId.bridgeUniqueId,
+            )?.resourceId,
             let image = LinkPreviewImage.load(
                 attachmentId: imageAttachmentId,
                 transaction: transaction

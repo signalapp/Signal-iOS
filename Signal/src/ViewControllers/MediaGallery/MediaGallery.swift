@@ -66,7 +66,7 @@ class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
         self.albumIndex = albumIndex
         self.numItemsInAlbum = numItemsInAlbum
         self.orderingKey = MediaGalleryItemOrderingKey(messageSortKey: message.sortId, attachmentSortKey: albumIndex)
-        if let captionText = attachmentStream.attachmentStream.bridgeStream.caption?.filterForDisplay {
+        if let captionText = attachmentStream.reference.legacyMessageCaption?.filterForDisplay {
             self.captionForDisplay = .attachmentStreamCaption(captionText)
         } else if let body = message.body {
             let hydratedMessageBody = MessageBody(

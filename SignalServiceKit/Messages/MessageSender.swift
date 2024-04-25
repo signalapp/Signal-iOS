@@ -698,10 +698,7 @@ public class MessageSender: Dependencies {
                 return true
             }
             for attachment in message.allAttachments(transaction: tx) {
-                guard let attachment = attachment.asResourceStream()?.bridgeStream else {
-                    return false
-                }
-                guard (attachment.serverId != 0 || !attachment.cdnKey.isEmpty), attachment.isUploaded else {
+                guard attachment.isUploadedToTransitTier else {
                     return false
                 }
             }
