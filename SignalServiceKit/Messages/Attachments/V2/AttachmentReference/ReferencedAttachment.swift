@@ -22,6 +22,13 @@ public class ReferencedAttachment {
         }
         return .init(reference: reference, attachmentStream: attachmentStream)
     }
+
+    public var asReferencedTransitPointer: ReferencedAttachmentTransitPointer? {
+        guard let attachmentPointer = AttachmentTransitPointer(attachment: attachment) else {
+            return nil
+        }
+        return .init(reference: reference, attachmentPointer: attachmentPointer)
+    }
 }
 
 public class ReferencedAttachmentStream: ReferencedAttachment {
@@ -30,6 +37,15 @@ public class ReferencedAttachmentStream: ReferencedAttachment {
     public init(reference: AttachmentReference, attachmentStream: AttachmentStream) {
         self.attachmentStream = attachmentStream
         super.init(reference: reference, attachment: attachmentStream.attachment)
+    }
+}
+
+public class ReferencedAttachmentTransitPointer: ReferencedAttachment {
+    public let attachmentPointer: AttachmentTransitPointer
+
+    public init(reference: AttachmentReference, attachmentPointer: AttachmentTransitPointer) {
+        self.attachmentPointer = attachmentPointer
+        super.init(reference: reference, attachment: attachmentPointer.attachment)
     }
 }
 

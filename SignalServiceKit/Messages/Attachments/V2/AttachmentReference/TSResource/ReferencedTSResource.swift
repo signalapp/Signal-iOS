@@ -23,6 +23,13 @@ public class ReferencedTSResource {
         return .init(reference: reference, attachmentStream: resourceStream)
     }
 
+    public var asReferencedPointer: ReferencedTSResourcePointer? {
+        guard let resourcePointer = attachment.asTransitTierPointer() else {
+            return nil
+        }
+        return .init(reference: reference, attachmentPointer: resourcePointer)
+    }
+
     public func previewText() -> String {
         switch (reference.concreteType, attachment.concreteType) {
         case (.v2(let reference), .v2(let attachment)):
@@ -57,6 +64,15 @@ public class ReferencedTSResourceStream: ReferencedTSResource {
     }
 }
 
+public class ReferencedTSResourcePointer: ReferencedTSResource {
+    public let attachmentPointer: TSResourcePointer
+
+    public init(reference: TSResourceReference, attachmentPointer: TSResourcePointer) {
+        self.attachmentPointer = attachmentPointer
+        super.init(reference: reference, attachment: attachmentPointer.resource)
+    }
+}
+
 extension ReferencedAttachment {
 
     var referencedTSResource: ReferencedTSResource {
@@ -68,5 +84,12 @@ extension ReferencedAttachmentStream {
 
     var referencedTSResourceStream: ReferencedTSResourceStream {
         return .init(reference: reference, attachmentStream: attachmentStream)
+    }
+}
+
+extension ReferencedAttachmentTransitPointer {
+
+    var referencedTSResourcePointer: ReferencedTSResourcePointer {
+        return .init(reference: reference, attachmentPointer: attachmentPointer.asResourcePointer)
     }
 }
