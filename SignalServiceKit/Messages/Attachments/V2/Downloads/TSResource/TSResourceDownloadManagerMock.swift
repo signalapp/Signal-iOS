@@ -27,10 +27,6 @@ open class TSResourceDownloadManagerMock: TSResourceDownloadManager {
         return .value(())
     }
 
-    open func enqueueContactSyncDownload(attachmentPointer: TSAttachmentPointer) async throws -> TSResourceStream {
-        fatalError("Not ready to mock in tests!")
-    }
-
     open func cancelDownload(for attachmentId: TSResourceId, tx: DBWriteTransaction) {
         // Do nothing
     }

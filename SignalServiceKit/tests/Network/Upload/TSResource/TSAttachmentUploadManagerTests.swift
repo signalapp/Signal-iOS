@@ -84,7 +84,7 @@ class TSAttachmentUploadManagerTests: XCTestCase {
             let lastByte = size - 1
             XCTAssertEqual(request.allHTTPHeaderFields!["content-range"], "bytes \(nextByte)-\(lastByte)/\(size)")
         } else { XCTFail("Unexpected request encountered.") }
-        XCTAssertEqual(helper.mockResourceStore.uploadedAttachments.first!.asResourceStream()!.bridgeStream.sourceFilename, "test-file")
+        XCTAssertEqual(helper.mockResourceStore.uploadedAttachments.first!.sourceFilename, "test-file")
     }
 
     func testBadRangePrefixRestartUpload_v3_CDN2() async throws {
@@ -111,7 +111,7 @@ class TSAttachmentUploadManagerTests: XCTestCase {
             XCTAssertEqual(request.allHTTPHeaderFields!["Content-Length"], "\(size)")
             XCTAssertNil(request.allHTTPHeaderFields!["Content-Range"])
         } else { XCTFail("Unexpected request encountered.") }
-        XCTAssertEqual(helper.mockResourceStore.uploadedAttachments.first!.asResourceStream()!.bridgeStream.sourceFilename, "test-file")
+        XCTAssertEqual(helper.mockResourceStore.uploadedAttachments.first!.sourceFilename, "test-file")
     }
 
     func testFullRestartUpload_v3_CDN2() async throws {
@@ -143,6 +143,6 @@ class TSAttachmentUploadManagerTests: XCTestCase {
             XCTAssertEqual(request.allHTTPHeaderFields!["Content-Length"], "\(size)")
             XCTAssertNil(request.allHTTPHeaderFields!["Content-Range"])
         } else { XCTFail("Unexpected request encountered.") }
-        XCTAssertEqual(helper.mockResourceStore.uploadedAttachments.first!.asResourceStream()!.bridgeStream.sourceFilename, "test-file")
+        XCTAssertEqual(helper.mockResourceStore.uploadedAttachments.first!.sourceFilename, "test-file")
     }
 }

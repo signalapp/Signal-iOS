@@ -645,10 +645,21 @@ public enum TSAttachmentDownloadBehavior: UInt, Equatable {
 
 public extension TSAttachmentDownloadManager {
 
-    func enqueueContactSyncDownload(attachmentPointer: TSAttachmentPointer) -> Promise<TSAttachmentStream> {
-        let jobRequest = ContactSyncJobRequest(attachmentPointer: attachmentPointer)
-        enqueueDownload(jobRequest: jobRequest)
-        return jobRequest.job.promise
+    func enqueueContactSyncDownload(attachmentPointer: TSAttachmentPointer) async throws -> TSAttachmentStream {
+        // Dispatch to a background queue because the legacy code uses non-awaitable
+        // db writes, and therefore cannot be on a Task queue.
+        let (downloadPromise, downloadFuture) = Promise<TSAttachmentStream>.pending()
+        DispatchQueue.sharedBackground.async { [self] in
+            let jobRequest = ContactSyncJobRequest(attachmentPointer: attachmentPointer)
+            self.enqueueDownload(jobRequest: jobRequest)
+            let jobPromise = jobRequest.job.promise
+            downloadFuture.resolve(
+                on: SyncScheduler(),
+                with: jobPromise
+            )
+        }
+        return try await downloadPromise.awaitable()
+
     }
 
     private func enqueueDownload(jobRequest: JobRequest) {

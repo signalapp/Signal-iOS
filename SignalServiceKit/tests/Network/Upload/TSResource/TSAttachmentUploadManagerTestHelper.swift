@@ -184,7 +184,7 @@ class TSAttachmentUploadManagerMockHelper {
 class TSAttachmentUploadStoreMock: TSResourceStoreMock, TSResourceUploadStore {
     var filename: String!
     var size: Int!
-    var uploadedAttachments = [TSResourceStream]()
+    var uploadedAttachments = [TSAttachmentStream]()
 
     override func fetch(_ ids: [TSResourceId], tx: DBReadTransaction) -> [TSResource] {
         return ids.map { _ in
@@ -209,6 +209,6 @@ class TSAttachmentUploadStoreMock: TSResourceStoreMock, TSResourceUploadStore {
         uploadTimestamp: UInt64,
         tx: DBWriteTransaction
     ) {
-        uploadedAttachments.append(attachmentStream)
+        uploadedAttachments.append(attachmentStream as! TSAttachmentStream)
     }
 }

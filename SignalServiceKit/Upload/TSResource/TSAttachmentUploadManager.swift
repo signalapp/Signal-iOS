@@ -123,13 +123,18 @@ public actor TSAttachmentUploadManagerImpl: TSAttachmentUploadManager {
         tx: DBReadTransaction
     ) throws -> TSAttachmentStream {
         guard
-            let attachmentStream = tsResourceStore.fetch(.legacy(uniqueId: attachmentId), tx: tx)?.bridge as? TSAttachmentStream
+            let attachment = tsResourceStore.fetch(.legacy(uniqueId: attachmentId), tx: tx)?.asResourceStream()
         else {
             logger.warn("Missing attachment.")
             // Not finding a local attachment is a terminal failure.
             throw OWSUnretryableError()
         }
-        return attachmentStream
+        switch attachment.concreteStreamType {
+        case .legacy(let tsAttachmentStream):
+            return tsAttachmentStream
+        case .v2:
+            throw OWSUnretryableError()
+        }
     }
 
     // Update all the necessary places once the upload succeeds

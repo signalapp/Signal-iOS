@@ -224,7 +224,12 @@ extension MediaGalleryRecordFinder {
         while let next = try! cursor.next() {
             attachments.append(next)
         }
-        return attachments.map(\.bridgeReferenced)
+        return attachments.map {
+            return ReferencedTSResource(
+                reference: TSAttachmentReference(uniqueId: $0.uniqueId, attachment: $0),
+                attachment: $0
+            )
+        }
     }
 
     public func enumerateMediaAttachments(in dateInterval: DateInterval,
@@ -242,7 +247,7 @@ extension MediaGalleryRecordFinder {
         var index = range.lowerBound
         while let next = try! cursor.next() {
             owsAssertDebug(range.contains(index))
-            block(index, next.bridgeReferenced)
+            block(index, .init(reference: TSAttachmentReference(uniqueId: next.uniqueId, attachment: next), attachment: next))
             index += 1
         }
     }

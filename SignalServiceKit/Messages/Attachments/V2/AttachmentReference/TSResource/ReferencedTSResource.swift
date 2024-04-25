@@ -70,26 +70,3 @@ extension ReferencedAttachmentStream {
         return .init(reference: reference, attachmentStream: attachmentStream)
     }
 }
-
-extension TSAttachment {
-
-    // TODO: this is just to help with bridging while all TSResources are actually TSAttachments,
-    // and we are migrating code to TSResource that hands an instance to unmigrated code.
-    // Remove once all references to TSAttachment are replaced with TSResource.
-    public var bridgeReferenced: ReferencedTSResource {
-        return .init(reference: TSAttachmentReference(uniqueId: self.uniqueId, attachment: self), attachment: self)
-    }
-}
-
-extension TSAttachmentStream {
-
-    // TODO: this is just to help with bridging while all TSResources are actually TSAttachments,
-    // and we are migrating code to TSResource that hands an instance to unmigrated code.
-    // Remove once all references to TSAttachment are replaced with TSResource.
-    public var bridgeReferencedStream: ReferencedTSResourceStream {
-        return .init(
-            reference: TSAttachmentReference(uniqueId: self.uniqueId, attachment: self),
-            attachmentStream: self
-        )
-    }
-}

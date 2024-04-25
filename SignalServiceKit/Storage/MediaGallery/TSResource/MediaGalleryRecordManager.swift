@@ -61,7 +61,10 @@ public final class MediaGalleryRecordManager: NSObject {
         transaction: GRDBWriteTransaction
     ) throws {
         try insertGalleryRecordPrivate(
-            attachmentStream: attachmentStream.bridgeReferencedStream,
+            attachmentStream: ReferencedTSResourceStream(
+                reference: TSAttachmentReference(uniqueId: attachmentStream.uniqueId, attachment: attachmentStream),
+                attachmentStream: attachmentStream
+            ),
             transaction: transaction
         )
     }

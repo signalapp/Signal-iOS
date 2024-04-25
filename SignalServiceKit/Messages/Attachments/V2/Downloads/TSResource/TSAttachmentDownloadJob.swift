@@ -86,17 +86,15 @@ extension TSAttachmentDownloadManager {
                         return nil
                     }
                     return pointer
-                case .text:
+                case .text(let textAttachment):
                     guard
-                        let attachmentRef = DependenciesBridge.shared.tsResourceStore.linkPreviewAttachment(
-                            for: storyMessage,
-                            tx: tx.asV2Read
-                        ),
-                        let attachment = attachmentRef.fetch(tx: tx)
+                        let linkPreview = textAttachment.preview,
+                        let attachmentId = linkPreview.legacyImageAttachmentId,
+                        let attachment = TSAttachmentStore().attachments(withAttachmentIds: [attachmentId], tx: tx).first
                     else {
                         return nil
                     }
-                    return attachment.bridge as? TSAttachmentPointer
+                    return attachment as? TSAttachmentPointer
                 }
             }()
             guard let attachmentPointer else {

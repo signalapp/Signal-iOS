@@ -90,9 +90,8 @@ private class IncomingContactSyncJobRunner: JobRunner, Dependencies {
             let attachmentStream: TSAttachmentStream
             switch attachment {
             case let attachmentPointer as TSAttachmentPointer:
-                attachmentStream = try await DependenciesBridge.shared.tsResourceDownloadManager
+                attachmentStream = try await TSAttachmentDownloadManager()
                     .enqueueContactSyncDownload(attachmentPointer: attachmentPointer)
-                    .bridgeStream
             case let attachmentStreamValue as TSAttachmentStream:
                 attachmentStream = attachmentStreamValue
             default:

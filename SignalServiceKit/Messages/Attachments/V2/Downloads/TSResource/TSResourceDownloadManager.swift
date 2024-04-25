@@ -32,13 +32,6 @@ public protocol TSResourceDownloadManager {
         tx: DBWriteTransaction
     ) -> Promise<Void>
 
-    // TODO: contact syncs won't be V2 Attachments, because they
-    // have no owner (their parent message isn't saved to the db).
-    // Rethink this method signature.
-    func enqueueContactSyncDownload(
-        attachmentPointer: TSAttachmentPointer
-    ) async throws -> TSResourceStream
-
     func cancelDownload(for attachmentId: TSResourceId, tx: DBWriteTransaction)
 
     func downloadProgress(for attachmentId: TSResourceId, tx: DBReadTransaction) -> CGFloat?

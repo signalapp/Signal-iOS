@@ -116,23 +116,6 @@ public class TSResourceDownloadManagerImpl: TSResourceDownloadManager {
         }
     }
 
-    public func enqueueContactSyncDownload(
-        attachmentPointer: TSAttachmentPointer
-    ) async throws -> TSResourceStream {
-        // TODO: deal with v2 contact sync downloads.
-
-        // Dispatch to a background queue because the legacy code uses non-awaitable
-        // db writes, and therefore cannot be on a Task queue.
-        let (downloadPromise, downloadFuture) = Promise<TSAttachmentStream>.pending()
-        DispatchQueue.sharedBackground.async { [tsAttachmentDownloadManager] in
-            downloadFuture.resolve(
-                on: SyncScheduler(),
-                with: tsAttachmentDownloadManager.enqueueContactSyncDownload(attachmentPointer: attachmentPointer)
-            )
-        }
-        return try await downloadPromise.awaitable()
-    }
-
     public func cancelDownload(for attachmentId: TSResourceId, tx: DBWriteTransaction) {
         switch attachmentId {
         case .legacy(let uniqueId):
