@@ -20,7 +20,7 @@ public class AttachmentStream {
     public var contentHash: String { info.contentHash }
     public var encryptedFileSha256Digest: Data { info.encryptedFileSha256Digest }
     public var encryptedByteCount: UInt32 { info.encryptedByteCount }
-    public var unenecryptedByteCount: UInt32 { info.unenecryptedByteCount }
+    public var unencryptedByteCount: UInt32 { info.unencryptedByteCount }
     public var contentType: Attachment.ContentType { info.contentType }
 
     // MARK: - Init
@@ -65,7 +65,7 @@ public class AttachmentStream {
             metadata: EncryptionMetadata(
                 key: info.encryptionKey,
                 digest: info.encryptedFileSha256Digest,
-                plaintextLength: Int(info.unenecryptedByteCount)
+                plaintextLength: Int(info.unencryptedByteCount)
             ),
             output: tmpURL
         )

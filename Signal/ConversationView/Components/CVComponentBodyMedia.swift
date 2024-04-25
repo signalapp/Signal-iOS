@@ -223,7 +223,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                             }
                         }
                     }
-                let totalSize = pendingManualDownloadAttachments.map { $0.attachment.unenecryptedResourceByteCount ?? 0}.reduce(0, +)
+                let totalSize = pendingManualDownloadAttachments.map { $0.attachment.unencryptedResourceByteCount ?? 0}.reduce(0, +)
 
                 if totalSize > 0 {
                     var downloadSizeText = [OWSFormat.localizedFileSizeString(from: Int64(totalSize))]

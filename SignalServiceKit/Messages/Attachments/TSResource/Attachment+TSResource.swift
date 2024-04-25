@@ -14,7 +14,7 @@ extension Attachment: TSResource {
     }
 
     public var resourceEncryptionKey: Data? { streamInfo?.encryptionKey }
-    public var unenecryptedResourceByteCount: UInt32? { streamInfo?.unenecryptedByteCount }
+    public var unencryptedResourceByteCount: UInt32? { streamInfo?.unencryptedByteCount }
     public var encryptedResourceByteCount: UInt32? { streamInfo?.encryptedByteCount }
     public var encryptedResourceSha256Digest: Data? { streamInfo?.encryptedFileSha256Digest }
     public var transitCdnKey: String? { transitTierInfo?.cdnKey }
@@ -95,7 +95,7 @@ extension AttachmentStream: TSResource {
 
     public var resourceEncryptionKey: Data? { attachment.resourceEncryptionKey }
 
-    public var unenecryptedResourceByteCount: UInt32? { unenecryptedByteCount }
+    public var unencryptedResourceByteCount: UInt32? { unencryptedByteCount }
 
     public var encryptedResourceByteCount: UInt32? { encryptedByteCount }
 

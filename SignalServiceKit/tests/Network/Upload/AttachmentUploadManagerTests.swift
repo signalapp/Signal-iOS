@@ -87,7 +87,7 @@ class AttachmentUploadManagerTests: XCTestCase {
             let lastByte = encryptedSize - 1
             XCTAssertEqual(request.allHTTPHeaderFields!["content-range"], "bytes \(nextByte)-\(lastByte)/\(encryptedSize)")
         } else { XCTFail("Unexpected request encountered.") }
-        XCTAssertEqual(helper.mockAttachmentStore.uploadedAttachments.first!.unenecryptedByteCount, unencryptedSize)
+        XCTAssertEqual(helper.mockAttachmentStore.uploadedAttachments.first!.unencryptedByteCount, unencryptedSize)
     }
 
     func testBadRangePrefixRestartUpload_v3_CDN2() async throws {
@@ -115,7 +115,7 @@ class AttachmentUploadManagerTests: XCTestCase {
             XCTAssertEqual(request.allHTTPHeaderFields!["Content-Length"], "\(encryptedSize)")
             XCTAssertNil(request.allHTTPHeaderFields!["Content-Range"])
         } else { XCTFail("Unexpected request encountered.") }
-        XCTAssertEqual(helper.mockAttachmentStore.uploadedAttachments.first!.unenecryptedByteCount, unencryptedSize)
+        XCTAssertEqual(helper.mockAttachmentStore.uploadedAttachments.first!.unencryptedByteCount, unencryptedSize)
     }
 
     func testFullRestartUpload_v3_CDN2() async throws {
@@ -148,7 +148,7 @@ class AttachmentUploadManagerTests: XCTestCase {
             XCTAssertEqual(request.allHTTPHeaderFields!["Content-Length"], "\(encryptedSize)")
             XCTAssertNil(request.allHTTPHeaderFields!["Content-Range"])
         } else { XCTFail("Unexpected request encountered.") }
-        XCTAssertEqual(helper.mockAttachmentStore.uploadedAttachments.first!.unenecryptedByteCount, unencryptedSize)
+        XCTAssertEqual(helper.mockAttachmentStore.uploadedAttachments.first!.unencryptedByteCount, unencryptedSize)
     }
 
     // MARK: Testing reupload strategies
@@ -264,7 +264,7 @@ class AttachmentUploadManagerTests: XCTestCase {
                 key: Data(),
                 digest: Data(),
                 length: Int(encryptedSize),
-                plaintextLength: Int(streamInfo.unenecryptedByteCount)
+                plaintextLength: Int(streamInfo.unencryptedByteCount)
             )
         }
 
@@ -324,7 +324,7 @@ class AttachmentUploadManagerTests: XCTestCase {
                 key: Data(),
                 digest: Data(),
                 length: Int(encryptedSize),
-                plaintextLength: Int(streamInfo.unenecryptedByteCount)
+                plaintextLength: Int(streamInfo.unencryptedByteCount)
             )
         }
 

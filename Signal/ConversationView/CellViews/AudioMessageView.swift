@@ -505,7 +505,7 @@ extension AudioAttachment {
     var sizeString: String {
         switch state {
         case .attachmentStream(let stream, _):
-            return ByteCountFormatter().string(for: stream.attachmentStream.unenecryptedResourceByteCount) ?? ""
+            return ByteCountFormatter().string(for: stream.attachmentStream.unencryptedResourceByteCount) ?? ""
         case .attachmentPointer:
             owsFailDebug("Shouldn't get here - undownloaded media not implemented")
             return ""

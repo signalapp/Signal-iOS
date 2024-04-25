@@ -20,7 +20,7 @@ public protocol TSResource {
     /// Optional for legacy attachments; for v2 attachments this is non-optional.
     var resourceEncryptionKey: Data? { get }
 
-    var unenecryptedResourceByteCount: UInt32? { get }
+    var unencryptedResourceByteCount: UInt32? { get }
     var encryptedResourceByteCount: UInt32? { get }
 
     /// File digest info.

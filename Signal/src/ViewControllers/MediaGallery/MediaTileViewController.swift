@@ -1519,7 +1519,7 @@ extension MediaTileViewController: MediaGalleryPrimaryViewController {
         }
 
         let totalSize = items.reduce(Int64(0), { result, item in
-            result + Int64(item.attachmentStream.attachmentStream.unenecryptedResourceByteCount ?? 0)
+            result + Int64(item.attachmentStream.attachmentStream.unencryptedResourceByteCount ?? 0)
         })
         return (items.count, totalSize)
     }

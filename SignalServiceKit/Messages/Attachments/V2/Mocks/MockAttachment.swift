@@ -13,7 +13,7 @@ extension Attachment.StreamInfo {
     public static func mock(
         contentHash: String? = nil,
         encryptedByteCount: UInt32? = nil,
-        unenecryptedByteCount: UInt32? = nil,
+        unencryptedByteCount: UInt32? = nil,
         contentType: Attachment.ContentType? = nil,
         encryptionKey: Data? = nil,
         encryptedFileSha256Digest: Data? = nil
@@ -21,7 +21,7 @@ extension Attachment.StreamInfo {
         return Attachment.StreamInfo(
             contentHash: contentHash ?? "\(UInt64.random(in: 0..<(.max)))",
             encryptedByteCount: encryptedByteCount ?? UInt32.random(in: 0..<(UInt32(OWSMediaUtils.kMaxFileSizeGeneric))),
-            unenecryptedByteCount: unenecryptedByteCount ?? UInt32.random(in: 0..<(UInt32(OWSMediaUtils.kMaxFileSizeGeneric))),
+            unencryptedByteCount: unencryptedByteCount ?? UInt32.random(in: 0..<(UInt32(OWSMediaUtils.kMaxFileSizeGeneric))),
             contentType: contentType ?? .file,
             encryptionKey: encryptionKey ?? UInt64.random(in: 0..<(.max)).bigEndianData,
             encryptedFileSha256Digest: encryptedFileSha256Digest ?? UInt64.random(in: 0..<(.max)).bigEndianData
@@ -99,7 +99,7 @@ public class MockAttachment: Attachment {
             blurHash: blurHash,
             contentHash: streamInfo?.contentHash,
             encryptedByteCount: streamInfo?.encryptedByteCount,
-            unenecryptedByteCount: streamInfo?.unenecryptedByteCount,
+            unencryptedByteCount: streamInfo?.unencryptedByteCount,
             mimeType: mimeType ?? MimeType.applicationOctetStream.rawValue,
             contentType: streamInfo?.contentType,
             encryptionKey: streamInfo?.encryptionKey,

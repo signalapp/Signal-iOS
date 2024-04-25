@@ -27,7 +27,7 @@ extension TSAttachment: TSResource {
         return uploadTimestamp
     }
 
-    public var unenecryptedResourceByteCount: UInt32? {
+    public var unencryptedResourceByteCount: UInt32? {
         return byteCount
     }
 

@@ -137,7 +137,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         if let attachmentPointer = self.genericAttachment.attachmentPointer {
             var textComponents = [String]()
 
-            if let byteCount = attachmentPointer.resource.unenecryptedResourceByteCount, byteCount > 0 {
+            if let byteCount = attachmentPointer.resource.unencryptedResourceByteCount, byteCount > 0 {
                 textComponents.append(OWSFormat.localizedFileSizeString(from: Int64(byteCount)))
             }
 

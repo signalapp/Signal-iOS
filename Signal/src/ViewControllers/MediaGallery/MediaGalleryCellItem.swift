@@ -55,7 +55,7 @@ struct MediaGalleryCellItemAudio {
     var metadata: MediaMetadata
 
     var size: UInt {
-        UInt(attachmentStream.attachmentStream.unenecryptedResourceByteCount ?? 0)
+        UInt(attachmentStream.attachmentStream.unencryptedResourceByteCount ?? 0)
     }
     var duration: TimeInterval {
         switch attachmentStream.attachmentStream.computeContentType() {
@@ -138,7 +138,7 @@ extension MediaGalleryItem {
             sender: sender?.name ?? "",
             abbreviatedSender: sender?.abbreviatedName ?? "",
             filename: filename,
-            byteSize: Int(attachmentStream.attachmentStream.unenecryptedResourceByteCount ?? 0),
+            byteSize: Int(attachmentStream.attachmentStream.unencryptedResourceByteCount ?? 0),
             creationDate: receivedAtDate
         )
     }

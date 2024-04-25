@@ -107,7 +107,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
                 break
             }
 
-            if let formattedByteCount = byteCountFormatter.string(for: attachment.unenecryptedResourceByteCount) {
+            if let formattedByteCount = byteCountFormatter.string(for: attachment.unencryptedResourceByteCount) {
                 stackView.addArrangedSubview(buildValueLabel(
                     name: OWSLocalizedString(
                         "MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE",

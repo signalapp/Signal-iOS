@@ -240,7 +240,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             key: attachmentStream.info.encryptionKey,
             digest: attachmentStream.info.encryptedFileSha256Digest,
             length: Int(clamping: attachmentStream.info.encryptedByteCount),
-            plaintextLength: Int(clamping: attachmentStream.info.unenecryptedByteCount)
+            plaintextLength: Int(clamping: attachmentStream.info.unencryptedByteCount)
         )
         try attachmentEncrypter.decryptAttachment(at: attachmentStream.fileURL, metadata: decryptionMedatata, output: tmpDecryptedFile)
 

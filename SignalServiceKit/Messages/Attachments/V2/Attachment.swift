@@ -34,7 +34,7 @@ public class Attachment {
         /// Byte count of the encrypted fullsize resource
         public let encryptedByteCount: UInt32
         ///  Byte count of the decrypted fullsize resource
-        public let unenecryptedByteCount: UInt32
+        public let unencryptedByteCount: UInt32
 
         /// For downloaded attachments, the validated type of content in the actual file.
         public let contentType: ContentType
@@ -143,7 +143,7 @@ public class Attachment {
         blurHash: String?,
         contentHash: String?,
         encryptedByteCount: UInt32?,
-        unenecryptedByteCount: UInt32?,
+        unencryptedByteCount: UInt32?,
         mimeType: String,
         contentType: ContentType?,
         encryptionKey: Data?,
@@ -174,7 +174,7 @@ public class Attachment {
         self.streamInfo = StreamInfo(
             contentHash: contentHash,
             encryptedByteCount: encryptedByteCount,
-            unenecryptedByteCount: unenecryptedByteCount,
+            unencryptedByteCount: unencryptedByteCount,
             contentType: contentType,
             encryptionKey: encryptionKey,
             encryptedFileSha256Digest: encryptedFileSha256Digest
@@ -247,7 +247,7 @@ public class Attachment {
                 key: stream.info.encryptionKey,
                 digest: stream.info.encryptedFileSha256Digest,
                 encryptedDataLength: stream.info.encryptedByteCount,
-                plaintextDataLength: stream.info.unenecryptedByteCount
+                plaintextDataLength: stream.info.unencryptedByteCount
             ))
         } else {
             // Upload from scratch
@@ -260,7 +260,7 @@ extension Attachment.StreamInfo {
     fileprivate init?(
         contentHash: String?,
         encryptedByteCount: UInt32?,
-        unenecryptedByteCount: UInt32?,
+        unencryptedByteCount: UInt32?,
         contentType: Attachment.ContentType?,
         encryptionKey: Data?,
         encryptedFileSha256Digest: Data?
@@ -268,7 +268,7 @@ extension Attachment.StreamInfo {
         guard
             let contentHash,
             let encryptedByteCount,
-            let unenecryptedByteCount,
+            let unencryptedByteCount,
             let contentType,
             let encryptionKey,
             let encryptedFileSha256Digest
@@ -276,7 +276,7 @@ extension Attachment.StreamInfo {
             owsAssertDebug(
                 contentHash == nil
                 && encryptedByteCount == nil
-                && unenecryptedByteCount == nil
+                && unencryptedByteCount == nil
                 && contentType == nil
                 && encryptionKey == nil
                 && encryptedFileSha256Digest == nil,
@@ -286,7 +286,7 @@ extension Attachment.StreamInfo {
         }
         self.contentHash = contentHash
         self.encryptedByteCount = encryptedByteCount
-        self.unenecryptedByteCount = unenecryptedByteCount
+        self.unencryptedByteCount = unencryptedByteCount
         self.contentType = contentType
         self.encryptionKey = encryptionKey
         self.encryptedFileSha256Digest = encryptedFileSha256Digest

@@ -55,7 +55,7 @@ class AttachmentUploadManagerMockHelper {
             mockAttachment: MockAttachmentStream.mock(
                 streamInfo: .mock(
                     encryptedByteCount: encryptedSize,
-                    unenecryptedByteCount: unencryptedSize
+                    unencryptedByteCount: unencryptedSize
                 )
             ).attachment
         )

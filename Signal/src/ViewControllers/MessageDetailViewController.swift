@@ -298,7 +298,7 @@ class MessageDetailViewController: OWSTableViewController2 {
                 ))
             }
 
-            if let formattedByteCount = byteCountFormatter.string(for: attachment.attachment.unenecryptedResourceByteCount ?? 0) {
+            if let formattedByteCount = byteCountFormatter.string(for: attachment.attachment.unencryptedResourceByteCount ?? 0) {
                 messageStack.addArrangedSubview(Self.buildValueLabel(
                     name: OWSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE",
                                             comment: "Label for file size of attachments in the 'message metadata' view."),

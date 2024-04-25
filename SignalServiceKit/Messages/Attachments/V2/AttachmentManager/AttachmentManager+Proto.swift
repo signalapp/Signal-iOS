@@ -50,7 +50,7 @@ extension AttachmentManager {
 
         if let stream = pointer.attachment.asStream() {
             // If we have it downloaded and have the validated values, use them.
-            builder.setSize(stream.unenecryptedByteCount)
+            builder.setSize(stream.unencryptedByteCount)
 
             switch stream.contentType {
             case .file, .audio:
