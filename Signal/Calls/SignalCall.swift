@@ -24,6 +24,7 @@ public protocol CallObserver: AnyObject {
     func groupCallRequestGroupMembers(_ call: SignalCall)
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason)
     func groupCallReceivedReactions(_ call: SignalCall, reactions: [SignalRingRTC.Reaction])
+    func groupCallReceivedRaisedHands(_ call: SignalRingRTC.GroupCall, raisedHands: [UInt32])
 
     /// Invoked if a call message failed to send because of a safety number change
     /// UI observing call state may choose to alert the user (e.g. presenting a SafetyNumberConfirmationSheet)
@@ -45,6 +46,7 @@ public extension CallObserver {
     func groupCallRequestGroupMembers(_ call: SignalCall) {}
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {}
     func groupCallReceivedReactions(_ call: SignalCall, reactions: [SignalRingRTC.Reaction]) {}
+    func groupCallReceivedRaisedHands(_ call: SignalRingRTC.GroupCall, raisedHands: [UInt32]) {}
 
     func callMessageSendFailedUntrustedIdentity(_ call: SignalCall) {}
 }
@@ -54,6 +56,8 @@ public class SignalCall: CallManagerCallReference {
     private var audioSession: AudioSession { NSObject.audioSession }
     private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
     private var tsAccountManager: any TSAccountManager { DependenciesBridge.shared.tsAccountManager }
+
+    private(set) var raisedHands: Set<RemoteDeviceState> = []
 
     public let mode: Mode
     public enum Mode {
@@ -506,7 +510,16 @@ extension SignalCall: GroupCallDelegate {
     }
 
     public func groupCall(onRaisedHands groupCall: SignalRingRTC.GroupCall, raisedHands: [UInt32]) {
-        // TODO: Implement handling of raise hand.
+        guard FeatureFlags.callRaiseHandReceiveSupport else { return }
+
+        self.raisedHands = Set(raisedHands.compactMap { groupCall.remoteDeviceStates[$0] })
+
+        observers.elements.forEach {
+            $0.groupCallReceivedRaisedHands(
+                groupCall,
+                raisedHands: raisedHands
+            )
+        }
     }
 
     public func groupCall(onPeekChanged groupCall: GroupCall) {

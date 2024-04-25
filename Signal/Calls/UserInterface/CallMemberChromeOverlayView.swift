@@ -15,7 +15,20 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
 
     init(type: CallMemberView.MemberType) {
         self.type = type
+        switch type {
+        case .local, .remoteInIndividual:
+            self.raisedHandView = nil
+        case .remoteInGroup(let callMemberVisualContext):
+            switch callMemberVisualContext {
+            case .videoGrid, .speaker:
+                self.raisedHandView = RaisedHandView(useCompactSize: false)
+            case .videoOverflow:
+                self.raisedHandView = RaisedHandView(useCompactSize: true)
+            }
+        }
+
         super.init(frame: .zero)
+
         self.addLayoutGuide(layoutGuide)
         layoutGuideConstraints.append(layoutGuide.topAnchor.constraint(equalTo: self.topAnchor, constant: inset))
         layoutGuideConstraints.append(layoutGuide.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -inset))
@@ -39,6 +52,14 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
             muteIndicatorCircleView.bottomAnchor.constraint(equalTo: self.layoutGuide.bottomAnchor)
         ])
 
+        if let raisedHandView {
+            raisedHandView.isHidden = true
+            self.addSubview(raisedHandView)
+            raisedHandView.autoPinEdge(toSuperviewMargin: .top)
+            raisedHandView.autoPinEdge(toSuperviewMargin: .leading)
+            raisedHandView.autoPinEdge(toSuperviewMargin: .trailing, relation: .greaterThanOrEqual)
+        }
+
         switch type {
         case .local:
             addSubview(flipCameraButton)
@@ -47,7 +68,7 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
                 flipCameraButton.bottomAnchor.constraint(equalTo: self.layoutGuide.bottomAnchor)
             ])
             updateFlipCameraButton()
-        case .remoteInGroup(_), .remoteInIndividual:
+        case .remoteInGroup, .remoteInIndividual:
             break
         }
     }
@@ -69,6 +90,10 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
         updateMuteIndicatorHiddenState(
             call: call,
             isFullScreen: isFullScreen,
+            remoteGroupMemberDeviceState: remoteGroupMemberDeviceState
+        )
+        updateRaisedHand(
+            call: call,
             remoteGroupMemberDeviceState: remoteGroupMemberDeviceState
         )
     }
@@ -93,7 +118,7 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
         // For example, for non-expanded pip on iPad in group call of 3 members total.
         fileprivate static let mediumPipMinWidth: CGFloat = 72
         fileprivate static let expandedPipInset: CGFloat = 8
-        fileprivate static let normalPipInset: CGFloat = 6
+        fileprivate static let normalPipInset: CGFloat = 4
         fileprivate static let flipCameraButtonDimensionWhenPipExpanded: CGFloat = 48
         fileprivate static let flipCameraButtonDimensionWhenPipNormal: CGFloat = 28
         fileprivate static let flipCameraImageDimensionWhenPipExpanded: CGFloat = 24
@@ -109,6 +134,83 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
     private func updateLayoutGuideConstraints() {
         self.layoutGuideConstraints.forEach {
             $0.constant = $0.constant/abs($0.constant) * inset
+        }
+        self.layoutMargins = .init(margin: self.inset)
+    }
+
+    // MARK: - Raised hand
+
+    private let raisedHandView: RaisedHandView?
+    private func updateRaisedHand(
+        call: SignalCall,
+        remoteGroupMemberDeviceState: RemoteDeviceState?
+    ) {
+        guard let raisedHandView else { return }
+        guard
+            let deviceState = remoteGroupMemberDeviceState,
+            !WindowManager.shared.isCallInPip
+        else {
+            raisedHandView.isHidden = true
+            return
+        }
+
+        raisedHandView.name = databaseStorage.read { tx in
+            let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)
+            if deviceState.aci == localIdentifiers?.aci {
+                return CommonStrings.you
+            } else {
+                return contactsManager.displayName(for: deviceState.address, tx: tx).resolvedValue(useShortNameIfAvailable: true)
+            }
+        }
+
+        raisedHandView.isHidden = !call.raisedHands.contains(deviceState)
+    }
+
+    private class RaisedHandView: UIStackView {
+        private var useCompactSize: Bool
+        private var circleSize: CGFloat {
+            useCompactSize ? 28 : 40
+        }
+        private var iconSize: CGFloat {
+            useCompactSize ? 16 : 24
+        }
+
+        var name: String? {
+            didSet {
+                nameLabel.text = name
+            }
+        }
+
+        private let nameLabel = UILabel()
+
+        init(useCompactSize: Bool) {
+            self.useCompactSize = useCompactSize
+            super.init(frame: .zero)
+
+            self.axis = .horizontal
+            self.spacing = 8
+
+            let iconBackground = UIView()
+            self.addArrangedSubview(iconBackground)
+            iconBackground.autoSetDimensions(to: .square(self.circleSize))
+            iconBackground.backgroundColor = .ows_white
+            iconBackground.layer.cornerRadius = self.circleSize / 2
+
+            let iconView = UIImageView(image: .init(named: "raise_hand"))
+            iconBackground.addSubview(iconView)
+            iconView.autoSetDimensions(to: .square(self.iconSize))
+            iconView.autoCenterInSuperview()
+            iconView.tintColor = .ows_black
+
+            if !useCompactSize {
+                self.addArrangedSubview(nameLabel)
+                nameLabel.textColor = .ows_white
+                nameLabel.font = .dynamicTypeBody2
+            }
+        }
+
+        required init(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
         }
     }
 

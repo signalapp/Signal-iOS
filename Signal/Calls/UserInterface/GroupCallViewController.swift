@@ -863,6 +863,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
             pipSnapshot.alpha = 0
             self.view.frame = window.frame
             self.updateCallUI()
+            self.videoGrid.reloadData()
             self.scrollView.contentOffset = originalContentOffset
             self.view.layoutIfNeeded()
         }) { _ in
@@ -1075,6 +1076,10 @@ extension GroupCallViewController: CallObserver {
         self.incomingReactionsView.addReactions(reactions: mappedReactions)
     }
 
+    func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [UInt32]) {
+        updateCallUI()
+    }
+
     func callMessageSendFailedUntrustedIdentity(_ call: SignalCall) {
         AssertIsOnMainThread()
         guard call === self.call else { return owsFailDebug("Unexpected call \(call)") }
@@ -1111,6 +1116,8 @@ extension GroupCallViewController: CallHeaderDelegate {
         if groupCall.localDeviceState.joinState == .joined {
             isCallMinimized = true
             WindowManager.shared.leaveCallView()
+            // This ensures raised hands are removed
+            updateCallUI()
         } else {
             dismissCall()
         }

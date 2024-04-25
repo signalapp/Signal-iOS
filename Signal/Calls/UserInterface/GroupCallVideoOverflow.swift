@@ -221,6 +221,11 @@ extension GroupCallVideoOverflow: CallObserver {
 
         reloadData()
     }
+
+    func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [UInt32]) {
+        AssertIsOnMainThread()
+        reloadData()
+    }
 }
 
 class GroupCallVideoOverflowCell: UICollectionViewCell {
