@@ -8,7 +8,7 @@ import XCTest
 @testable import SignalServiceKit
 
 final class InactiveLinkedDeviceFinderTest: XCTestCase {
-    private var mockDateProvider: DateProvider = { Date() }
+    private var mockDateProvider: DateProvider!
     private var mockDB: DB!
     private var mockDeviceNameDecrypter: MockDeviceNameDecrypter!
     private var mockDeviceStore: MockDeviceStore!
@@ -17,17 +17,26 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
 
     private var inactiveLinkedDeviceFinder: InactiveLinkedDeviceFinderImpl!
 
+    private var activeLastSeenAt: Date {
+        return mockDateProvider()
+            .addingTimeInterval(-kMinuteInterval)
+    }
+
     private var inactiveLastSeenAt: Date {
         // The finder will consider anything not seen for (1 month - 1 week) to
         // be inactive, so we'll go back exactly that far and then go one more
         // hour back to avoid any boundary-time issues.
-        return Date()
+        return mockDateProvider()
             .addingTimeInterval(-kMonthInterval)
             .addingTimeInterval(kWeekInterval)
             .addingTimeInterval(-kHourInterval)
     }
 
     override func setUp() {
+        // Use the same date for all usages of the date provider across a test.
+        let nowDate = Date()
+        mockDateProvider = { nowDate }
+
         mockDB = MockDB()
         mockDeviceNameDecrypter = MockDeviceNameDecrypter()
         mockDeviceStore = MockDeviceStore()
@@ -69,27 +78,30 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
         XCTAssertEqual(mockDevicesService.refreshCount, 2)
     }
 
-    func testFetching() {
+    func testFetching() async {
         func findLeastActive() -> InactiveLinkedDevice? {
             return mockDB.read { inactiveLinkedDeviceFinder.findLeastActiveLinkedDevice(tx: $0) }
         }
 
-        let inactiveLastSeenAt = inactiveLastSeenAt
-
-        // Skip if not the primary.
-        mockTSAccountManager.registrationStateMock = { .provisioned }
+        // Nothing if never refreshed.
+        mockTSAccountManager.registrationStateMock = { .registered }
+        mockDeviceStore.devices = [
+            .primary(),
+            .fixture(name: "eye pad", lastSeenAt: inactiveLastSeenAt),
+        ]
         XCTAssertNil(findLeastActive())
 
-        // Nothing if no linked devices.
-        mockTSAccountManager.registrationStateMock = { .provisioned }
-        mockDeviceStore.devices = [.primary()]
-        XCTAssertNil(findLeastActive())
+        // Do a refresh...
+        mockTSAccountManager.registrationStateMock = { .registered }
+        await inactiveLinkedDeviceFinder.refreshLinkedDeviceStateIfNecessary()
+        XCTAssertEqual(mockDevicesService.refreshCount, 1)
 
         // Only include inactive devices.
         mockTSAccountManager.registrationStateMock = { .registered }
         mockDeviceStore.devices = [
             .primary(),
             .fixture(name: "eye pad", lastSeenAt: inactiveLastSeenAt),
+            .fixture(name: "lap top", lastSeenAt: activeLastSeenAt)
         ]
         XCTAssertEqual(
             findLeastActive(),
@@ -113,11 +125,22 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
                 expirationDate: inactiveLastSeenAt.addingTimeInterval(-kSecondInterval).addingTimeInterval(kMonthInterval)
             )
         )
+
+        // Nothing if no linked devices.
+        mockTSAccountManager.registrationStateMock = { .registered }
+        mockDeviceStore.devices = [.primary()]
+        XCTAssertNil(findLeastActive())
+
+        // Nothing if not a primary.
+        mockTSAccountManager.registrationStateMock = { .provisioned }
+        mockDeviceStore.devices = [
+            .primary(),
+            .fixture(name: "eye pad", lastSeenAt: inactiveLastSeenAt),
+        ]
+        XCTAssertNil(findLeastActive())
     }
 
     func testPermanentlyDisabling() async {
-        let inactiveLastSeenAt = inactiveLastSeenAt
-
         mockTSAccountManager.registrationStateMock = { .registered }
         mockDeviceStore.devices = [
             .primary(),
