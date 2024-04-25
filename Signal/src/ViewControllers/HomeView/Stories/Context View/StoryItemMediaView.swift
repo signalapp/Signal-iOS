@@ -849,12 +849,12 @@ class StoryItemMediaView: UIView {
         case .stream(let stream):
             let container = UIView()
 
-            guard let originalMediaUrl = stream.attachment.originalMediaURL else {
+            guard let originalMediaUrl = stream.attachment.attachmentStream.bridgeStream.originalMediaURL else {
                 owsFailDebug("Missing media for attachment stream")
                 return buildContentUnavailableView()
             }
 
-            guard let thumbnailImage = stream.attachment.thumbnailImageSmallSync() else {
+            guard let thumbnailImage = stream.attachment.attachmentStream.thumbnailImageSync(quality: .small) else {
                 owsFailDebug("Failed to generate thumbnail for attachment stream")
                 return buildContentUnavailableView()
             }
@@ -863,19 +863,20 @@ class StoryItemMediaView: UIView {
             container.addSubview(backgroundImageView)
             backgroundImageView.autoPinEdgesToSuperviewEdges()
 
-            if stream.attachment.isVideoMimeType {
+            switch stream.attachment.attachmentStream.computeContentType() {
+            case .video:
                 let videoView = buildVideoView(originalMediaUrl: originalMediaUrl, shouldLoop: stream.isLoopingVideo)
                 container.addSubview(videoView)
                 videoView.autoPinEdgesToSuperviewEdges()
-            } else if stream.attachment.isAnimatedContent {
+            case .animatedImage:
                 let yyImageView = buildYYImageView(originalMediaUrl: originalMediaUrl)
                 container.addSubview(yyImageView)
                 yyImageView.autoPinEdgesToSuperviewEdges()
-            } else if stream.attachment.isImageMimeType {
+            case .image:
                 let imageView = buildImageView(originalMediaUrl: originalMediaUrl)
                 container.addSubview(imageView)
                 imageView.autoPinEdgesToSuperviewEdges()
-            } else {
+            case .audio, .file:
                 owsFailDebug("Unexpected content type.")
                 return buildContentUnavailableView()
             }
@@ -1033,24 +1034,29 @@ class StoryItem: NSObject {
     let numberOfReplies: UInt64
     enum Attachment: Equatable {
         struct Pointer: Equatable {
+            let reference: TSResourceReference
             let attachment: TSResourcePointer
             let transitTierDownloadState: TSAttachmentPointerState?
-            let caption: String?
-            let captionStyles: [NSRangedValue<MessageBodyRanges.CollapsedStyle>]
+            var caption: String? { reference.storyMediaCaption?.text }
+            var captionStyles: [NSRangedValue<MessageBodyRanges.CollapsedStyle>] { reference.storyMediaCaption?.collapsedStyles ?? [] }
 
             static func == (lhs: StoryItem.Attachment.Pointer, rhs: StoryItem.Attachment.Pointer) -> Bool {
                 return lhs.attachment.resourceId == rhs.attachment.resourceId
+                    && lhs.reference.hasSameOwner(as: rhs.reference)
                     && lhs.transitTierDownloadState == rhs.transitTierDownloadState
-                    && lhs.caption == rhs.caption
-                    && lhs.captionStyles == rhs.captionStyles
             }
         }
 
         struct Stream: Equatable {
-            let attachment: TSAttachmentStream
-            let isLoopingVideo: Bool
-            let caption: String?
-            let captionStyles: [NSRangedValue<MessageBodyRanges.CollapsedStyle>]
+            let attachment: ReferencedTSResourceStream
+            var isLoopingVideo: Bool { attachment.reference.renderingFlag == .shouldLoop }
+            var caption: String? { attachment.reference.storyMediaCaption?.text }
+            var captionStyles: [NSRangedValue<MessageBodyRanges.CollapsedStyle>] { attachment.reference.storyMediaCaption?.collapsedStyles ?? [] }
+
+            static func == (lhs: StoryItem.Attachment.Stream, rhs: StoryItem.Attachment.Stream) -> Bool {
+                return lhs.attachment.attachmentStream.resourceId == rhs.attachment.attachmentStream.resourceId
+                    && lhs.attachment.reference.hasSameOwner(as: rhs.attachment.reference)
+            }
         }
 
         case pointer(Pointer)

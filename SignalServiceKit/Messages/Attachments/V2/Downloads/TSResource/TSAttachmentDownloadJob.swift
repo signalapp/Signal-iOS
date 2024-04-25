@@ -71,7 +71,7 @@ extension TSAttachmentDownloadManager {
                 switch storyMessage.attachment {
                 case .file, .foreignReferenceAttachment:
                     let attachment: TSAttachment
-                    switch storyMessage.fileAttachment(tx: tx)?.concreteType {
+                    switch storyMessage.fileAttachment(tx: tx)?.attachment.concreteType {
                     case .none:
                         owsFailDebug("Missing attachment: \(storyMessage.timestamp)")
                         return nil

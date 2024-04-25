@@ -8,7 +8,7 @@ import SignalUI
 
 class StoryThumbnailView: UIView {
     enum Attachment: Equatable {
-        case file(TSAttachment)
+        case file(ReferencedTSResource)
         case text(PreloadedTextAttachment)
         case missing
 
@@ -16,7 +16,7 @@ class StoryThumbnailView: UIView {
             switch storyMessage.attachment {
             case .file, .foreignReferenceAttachment:
                 guard
-                    let attachment = storyMessage.fileAttachment(tx: transaction)?.bridge
+                    let attachment = storyMessage.fileAttachment(tx: transaction)
                 else {
                     owsFailDebug("Unexpectedly missing attachment for story")
                     return .missing
@@ -24,6 +24,20 @@ class StoryThumbnailView: UIView {
                 return .file(attachment)
             case .text(let attachment):
                 return .text(.from(attachment, storyMessage: storyMessage, tx: transaction))
+            }
+        }
+
+        static func == (lhs: StoryThumbnailView.Attachment, rhs: StoryThumbnailView.Attachment) -> Bool {
+            switch (lhs, rhs) {
+            case (.file(let lhsAttachment), .file(let rhsAttachment)):
+                return lhsAttachment.attachment.resourceId == rhsAttachment.attachment.resourceId
+                    && lhsAttachment.reference.hasSameOwner(as: rhsAttachment.reference)
+            case (.text(let lhsTextAttachment), .text(let rhsTextAttachment)):
+                return lhsTextAttachment == rhsTextAttachment
+            case (.missing, .missing):
+                return true
+            case (.file, _), (.text, _), (.missing, _):
+                return false
             }
         }
     }
@@ -36,7 +50,11 @@ class StoryThumbnailView: UIView {
 
         switch attachment {
         case .file(let attachment):
-            if let pointer = attachment.asTransitTierPointer()?.bridgePointerAndNotStream {
+            if let stream = attachment.attachment.asResourceStream() {
+                let imageView = buildThumbnailImageView(stream: stream)
+                addSubview(imageView)
+                imageView.autoPinEdgesToSuperviewEdges()
+            } else if let pointer = attachment.attachment.asTransitTierPointer() {
                 let pointerView = UIView()
 
                 if let blurHashImageView = buildBlurHashImageViewIfAvailable(pointer: pointer) {
@@ -46,10 +64,6 @@ class StoryThumbnailView: UIView {
 
                 addSubview(pointerView)
                 pointerView.autoPinEdgesToSuperviewEdges()
-            } else if let stream = attachment.asResourceStream()?.bridgeStream {
-                let imageView = buildThumbnailImageView(stream: stream)
-                addSubview(imageView)
-                imageView.autoPinEdgesToSuperviewEdges()
             } else {
                 owsFailDebug("Unexpected attachment type \(type(of: attachment))")
             }
@@ -71,7 +85,7 @@ class StoryThumbnailView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func buildThumbnailImageView(stream: TSAttachmentStream) -> UIView {
+    private func buildThumbnailImageView(stream: TSResourceStream) -> UIView {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.layer.minificationFilter = .trilinear
@@ -83,22 +97,24 @@ class StoryThumbnailView: UIView {
         return imageView
     }
 
-    private static let thumbnailCache = LRUCache<String, UIImage>(maxSize: 64, shouldEvacuateInBackground: true)
-    private func applyThumbnailImage(to imageView: UIImageView, for stream: TSAttachmentStream) {
-        if let thumbnailImage = Self.thumbnailCache[stream.uniqueId] {
+    private static let thumbnailCache = LRUCache<TSResourceId, UIImage>(maxSize: 64, shouldEvacuateInBackground: true)
+    private func applyThumbnailImage(to imageView: UIImageView, for stream: TSResourceStream) {
+        if let thumbnailImage = Self.thumbnailCache[stream.resourceId] {
             imageView.image = thumbnailImage
         } else {
-            stream.thumbnailImageSmall { thumbnailImage in
+            Task {
+                guard let thumbnailImage = await stream.thumbnailImage(quality: .small) else {
+                    owsFailDebug("Failed to generate thumbnail")
+                    return
+                }
                 imageView.image = thumbnailImage
-                Self.thumbnailCache.setObject(thumbnailImage, forKey: stream.uniqueId)
-            } failure: {
-                owsFailDebug("Failed to generate thumbnail")
+                Self.thumbnailCache.setObject(thumbnailImage, forKey: stream.resourceId)
             }
         }
     }
 
-    private func buildBlurHashImageViewIfAvailable(pointer: TSAttachmentPointer) -> UIView? {
-        guard let blurHash = pointer.blurHash, let blurHashImage = BlurHash.image(for: blurHash) else {
+    private func buildBlurHashImageViewIfAvailable(pointer: TSResourcePointer) -> UIView? {
+        guard let blurHash = pointer.resource.resourceBlurHash, let blurHashImage = BlurHash.image(for: blurHash) else {
             return nil
         }
         let imageView = UIImageView()

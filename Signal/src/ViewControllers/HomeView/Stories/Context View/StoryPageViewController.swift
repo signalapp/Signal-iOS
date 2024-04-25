@@ -562,7 +562,7 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
         case .file, .foreignReferenceAttachment:
             attachment = databaseStorage.read { tx in
                 return presentingMessage.fileAttachment(tx: tx)
-            }
+            }?.attachment
         case .text:
             return nil
         }
@@ -581,7 +581,7 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
         let storyView: UIView
         switch presentingMessage.attachment {
         case .file, .foreignReferenceAttachment:
-            guard let attachment = databaseStorage.read(block: { presentingMessage.fileAttachment(tx: $0) }) else {
+            guard let attachment = databaseStorage.read(block: { presentingMessage.fileAttachment(tx: $0) })?.attachment else {
                 // Can happen if the story was deleted by the sender while in the viewer.
                 return nil
             }

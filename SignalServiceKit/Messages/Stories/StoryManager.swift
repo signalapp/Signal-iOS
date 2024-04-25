@@ -270,9 +270,12 @@ public class StoryManager: NSObject {
                     owsFailDebug("Missing attachment")
                     return
                 }
-                if let pointer = attachment.asTransitTierPointer()?.bridgePointerAndNotStream, [.downloading, .enqueued].contains(pointer.state) {
+                if attachment.attachment.asResourceStream() != nil {
                     unviewedDownloadedStoriesForContext += 1
-                } else if attachment.asResourceStream() != nil {
+                } else if
+                    let pointer = attachment.attachment.asTransitTierPointer(),
+                    [.downloading, .enqueued].contains(pointer.downloadState(tx: transaction.asV2Read))
+                {
                     unviewedDownloadedStoriesForContext += 1
                 }
             }

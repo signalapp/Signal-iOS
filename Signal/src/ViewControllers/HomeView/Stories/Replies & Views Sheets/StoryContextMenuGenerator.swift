@@ -590,7 +590,10 @@ extension StoryThumbnailView.Attachment {
         case .text:
             return true
         case .file(let attachment):
-            return (attachment.asResourceStream()?.bridgeStream)?.isVisualMediaMimeType ?? false
+            guard let stream = attachment.attachment.asResourceStream() else {
+                return false
+            }
+            return MimeTypeUtil.isSupportedVisualMediaMimeType(stream.mimeType)
         }
     }
 
@@ -602,9 +605,9 @@ extension StoryThumbnailView.Attachment {
         switch self {
         case .file(let attachment):
             guard
-                let attachment = attachment.asResourceStream()?.bridgeStream,
-                attachment.isVisualMediaMimeType,
-                let mediaURL = attachment.originalMediaURL
+                let attachment = attachment.attachment.asResourceStream(),
+                MimeTypeUtil.isSupportedVisualMediaMimeType(attachment.mimeType),
+                let mediaURL = attachment.bridgeStream.originalMediaURL
             else { break }
 
             vc.ows_askForMediaLibraryPermissions { isGranted in
@@ -613,9 +616,9 @@ extension StoryThumbnailView.Attachment {
                 }
 
                 PHPhotoLibrary.shared().performChanges({
-                    if attachment.isImageMimeType {
+                    if MimeTypeUtil.isSupportedImageMimeType(attachment.mimeType) {
                         PHAssetCreationRequest.creationRequestForAssetFromImage(atFileURL: mediaURL)
-                    } else if attachment.isVideoMimeType {
+                    } else if MimeTypeUtil.isSupportedVideoMimeType(attachment.mimeType) {
                         PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: mediaURL)
                     }
                 }, completionHandler: { didSucceed, error in
@@ -769,12 +772,12 @@ extension StoryContextMenuGenerator {
                 }
                 switch attachment {
                 case .file(let attachment):
-                    guard let attachment = attachment.asResourceStream()?.bridgeStream else {
+                    guard let attachment = attachment.attachment.asResourceStream() else {
                         completion(false)
                         return owsFailDebug("Unexpectedly tried to share undownloaded attachment")
                     }
                     self?.isDisplayingFollowup = true
-                    AttachmentSharing.showShareUI(for: attachment, sender: sourceView) { [weak self] in
+                    AttachmentSharing.showShareUI(for: attachment.bridgeStream, sender: sourceView) { [weak self] in
                         self?.isDisplayingFollowup = false
                         completion(true)
                     }

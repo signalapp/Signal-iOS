@@ -136,8 +136,14 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         }
     }
 
-    public func fileAttachment(tx: SDSAnyReadTransaction) -> TSResource? {
-        return DependenciesBridge.shared.tsResourceStore.mediaAttachment(for: self, tx: tx.asV2Read)?.fetch(tx: tx)
+    public func fileAttachment(tx: SDSAnyReadTransaction) -> ReferencedTSResource? {
+        guard
+            let reference = DependenciesBridge.shared.tsResourceStore.mediaAttachment(for: self, tx: tx.asV2Read),
+            let attachment = reference.fetch(tx: tx)
+        else {
+            return nil
+        }
+        return .init(reference: reference, attachment: attachment)
     }
 
     public var replyCount: UInt64
