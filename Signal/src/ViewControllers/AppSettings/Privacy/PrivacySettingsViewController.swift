@@ -196,29 +196,27 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         ))
         contents.add(paymentsSection)
 
-        if !CallUIAdapter.isCallkitDisabledForLocale {
-            let callsSection = OWSTableSection()
-            callsSection.headerTitle = OWSLocalizedString(
-                "SETTINGS_SECTION_TITLE_CALLING",
-                comment: "settings topic header for table section"
-            )
-            callsSection.footerTitle = OWSLocalizedString(
-                "SETTINGS_SECTION_FOOTER_CALLING",
-                comment: "Footer for table section"
-            )
-            callsSection.add(.switch(
-                withText: OWSLocalizedString(
-                    "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE",
-                    comment: "Short table cell label"
-                ),
-                isOn: { [unowned self] in
-                    return self.databaseStorage.read(block: self.preferences.isSystemCallLogEnabled(tx:))
-                },
-                target: self,
-                selector: #selector(didToggleEnableSystemCallLogSwitch)
-            ))
-            contents.add(callsSection)
-        }
+        let callsSection = OWSTableSection()
+        callsSection.headerTitle = OWSLocalizedString(
+            "SETTINGS_SECTION_TITLE_CALLING",
+            comment: "settings topic header for table section"
+        )
+        callsSection.footerTitle = OWSLocalizedString(
+            "SETTINGS_SECTION_FOOTER_CALLING",
+            comment: "Footer for table section"
+        )
+        callsSection.add(.switch(
+            withText: OWSLocalizedString(
+                "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE",
+                comment: "Short table cell label"
+            ),
+            isOn: { [unowned self] in
+                return self.databaseStorage.read(block: self.preferences.isSystemCallLogEnabled(tx:))
+            },
+            target: self,
+            selector: #selector(didToggleEnableSystemCallLogSwitch)
+        ))
+        contents.add(callsSection)
 
         let advancedSection = OWSTableSection()
         advancedSection.footerTitle = OWSLocalizedString(
