@@ -17,9 +17,9 @@ class AnimatedProgressView: UIView {
     }
 
     private let label = UILabel()
-    private let progressAnimation = AnimationView(name: "pinCreationInProgress")
-    private let errorAnimation = AnimationView(name: "pinCreationFail")
-    private let successAnimation = AnimationView(name: "pinCreationSuccess")
+    private let progressAnimation = LottieAnimationView(name: "pinCreationInProgress")
+    private let errorAnimation = LottieAnimationView(name: "pinCreationFail")
+    private let successAnimation = LottieAnimationView(name: "pinCreationSuccess")
 
     init(loadingText: String? = nil) {
         super.init(frame: .zero)
@@ -173,7 +173,7 @@ class AnimatedProgressView: UIView {
     }
 }
 
-private extension AnimationView {
+private extension LottieAnimationView {
     func playAndWhenFinished(_ completion: @escaping () -> Void) {
         play { didComplete in
             if didComplete {

@@ -129,7 +129,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     private func addAnimationView(anchor: UIView, name: String) {
         if UIAccessibility.isReduceMotionEnabled { return }
 
-        let animationView = AnimationView(name: name)
+        let animationView = LottieAnimationView(name: name)
         animationView.loopMode = .playOnce
         animationView.contentMode = .scaleAspectFit
         animationView.backgroundBehavior = .forceFinish
@@ -978,7 +978,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             // Switching modes causes animations to lose their anchors,
             // so we remove them.
             for subview in stackView.subviews {
-                if subview is AnimationView {
+                if subview is LottieAnimationView {
                     subview.removeFromSuperview()
                 }
             }

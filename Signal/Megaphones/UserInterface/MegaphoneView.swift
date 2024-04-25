@@ -215,7 +215,7 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
         return labelStack
     }
 
-    private var animationView: AnimationView?
+    private var animationView: LottieAnimationView?
     func createImageContainer() -> UIView {
         let container: UIView
 
@@ -243,7 +243,7 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
                 backgroundImageView.autoVCenterInSuperview()
             }
 
-            let animationView = AnimationView(name: animation.name)
+            let animationView = LottieAnimationView(name: animation.name)
             self.animationView = animationView
             animationView.contentMode = animation.contentMode
             animationView.animationSpeed = animation.speed

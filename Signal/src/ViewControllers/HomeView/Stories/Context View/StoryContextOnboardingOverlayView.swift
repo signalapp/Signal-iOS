@@ -111,7 +111,7 @@ class StoryContextOnboardingOverlayView: UIView, Dependencies {
 
     private lazy var blurView = UIVisualEffectView()
 
-    private var animationViews = [AnimationView]()
+    private var animationViews = [LottieAnimationView]()
 
     private func setupSubviews() {
         addSubview(blurView)
@@ -128,7 +128,7 @@ class StoryContextOnboardingOverlayView: UIView, Dependencies {
         for asset in assets {
             let imageContainer = UIView()
 
-            let animationView = AnimationView(name: asset.lottieName)
+            let animationView = LottieAnimationView(name: asset.lottieName)
             animationView.loopMode = .playOnce
             animationView.backgroundBehavior = .forceFinish
             animationView.autoSetDimensions(to: .square(54))

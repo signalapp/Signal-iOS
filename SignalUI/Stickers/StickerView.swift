@@ -77,7 +77,7 @@ public class StickerView {
             yyView.image = stickerImage
             stickerView = yyView
         case .signalLottie:
-            let lottieView = Lottie.AnimationView(filePath: stickerDataUrl.path)
+            let lottieView = LottieAnimationView(filePath: stickerDataUrl.path)
             lottieView.contentMode = .scaleAspectFit
             lottieView.animationSpeed = 1
             lottieView.loopMode = .loop

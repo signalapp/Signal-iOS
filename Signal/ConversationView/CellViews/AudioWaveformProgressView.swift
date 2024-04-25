@@ -68,7 +68,7 @@ class AudioWaveformProgressView: UIView {
     private let thumbView = UIView()
     private let playedShapeLayer = CAShapeLayer()
     private let unplayedShapeLayer = CAShapeLayer()
-    private let loadingAnimation: AnimationView
+    private let loadingAnimation: LottieAnimationView
 
     init(mediaCache: CVMediaCache) {
         self.loadingAnimation = mediaCache.buildLottieAnimationView(name: "waveformLoading")

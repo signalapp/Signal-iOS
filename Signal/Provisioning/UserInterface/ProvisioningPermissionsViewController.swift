@@ -10,7 +10,7 @@ import SignalUI
 
 public class ProvisioningPermissionsViewController: ProvisioningBaseViewController {
 
-    private let animationView = AnimationView(name: "notificationPermission")
+    private let animationView = LottieAnimationView(name: "notificationPermission")
 
     override public func loadView() {
         view = UIView()

@@ -57,12 +57,12 @@ class LottieToggleButton: UIButton {
         }
     }
 
-    private weak var animationView: AnimationView?
+    private weak var animationView: LottieAnimationView?
     private func updateAnimationView() {
         animationView?.removeFromSuperview()
         guard let animationName = animationName else { return }
 
-        let animationView = AnimationView(name: animationName)
+        let animationView = LottieAnimationView(name: animationName)
         self.animationView = animationView
 
         animationView.isUserInteractionEnabled = false

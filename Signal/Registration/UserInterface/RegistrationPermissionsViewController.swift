@@ -42,8 +42,8 @@ class RegistrationPermissionsViewController: OWSViewController {
 
     // MARK: Rendering
 
-    private lazy var animationView: AnimationView = {
-        let animationView = AnimationView(name: "notificationPermission")
+    private lazy var animationView: LottieAnimationView = {
+        let animationView = LottieAnimationView(name: "notificationPermission")
         animationView.loopMode = .playOnce
         animationView.backgroundBehavior = .pauseAndRestore
         animationView.contentMode = .scaleAspectFit

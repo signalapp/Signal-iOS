@@ -45,8 +45,8 @@ class AudioMessageView: ManualStackView {
 
     // MARK: - Views
 
-    private let playedDotAnimation: Lottie.AnimationView
-    private let playPauseAnimation: Lottie.AnimationView
+    private let playedDotAnimation: LottieAnimationView
+    private let playPauseAnimation: LottieAnimationView
     private let playPauseContainer = ManualLayoutView.circleView(name: "playPauseContainer")
     private let progressSlider = UISlider()
     private let waveformProgress: AudioWaveformProgressView

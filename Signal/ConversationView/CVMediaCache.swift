@@ -23,8 +23,7 @@ public class CVMediaCache: NSObject {
     private let stillMediaViewCache = MediaViewCache(maxSize: 12, shouldEvacuateInBackground: true)
     private let animatedMediaViewCache = MediaViewCache(maxSize: 6, shouldEvacuateInBackground: true)
 
-    private let lottieAnimationCache = LRUCache<String, Lottie.Animation>(maxSize: 8,
-                                                                          shouldEvacuateInBackground: true)
+    private let lottieAnimationCache = LRUCache<String, LottieAnimation>(maxSize: 8, shouldEvacuateInBackground: true)
     private let lottieImageProvider = BundleImageProvider(bundle: .main, searchPath: nil)
 
     public override init() {
@@ -53,13 +52,13 @@ public class CVMediaCache: NSObject {
         cache.set(key: key, value: ThreadSafeCacheHandle(value))
     }
 
-    public func getLottieAnimation(name: String) -> Lottie.Animation? {
+    public func getLottieAnimation(name: String) -> LottieAnimation? {
         AssertIsOnMainThread()
 
         if let value = lottieAnimationCache.get(key: name) {
             return value
         }
-        guard let value = Lottie.Animation.named(name) else {
+        guard let value = LottieAnimation.named(name) else {
             owsFailDebug("Invalid Lottie animation: \(name).")
             return nil
         }
@@ -67,13 +66,13 @@ public class CVMediaCache: NSObject {
         return value
     }
 
-    public func buildLottieAnimationView(name: String) -> Lottie.AnimationView {
+    public func buildLottieAnimationView(name: String) -> LottieAnimationView {
         AssertIsOnMainThread()
 
         // Don't use Lottie.AnimationCacheProvider; LRUCache is better.
-        let animation: Lottie.Animation? = getLottieAnimation(name: name)
+        let animation: LottieAnimation? = getLottieAnimation(name: name)
         // Don't specify textProvider.
-        let animationView = Lottie.AnimationView(animation: animation, imageProvider: lottieImageProvider)
+        let animationView = LottieAnimationView(animation: animation, imageProvider: lottieImageProvider)
         return animationView
     }
 

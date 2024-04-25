@@ -364,8 +364,8 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
     private var cameraZoomControlIPhoneConstraints: [NSLayoutConstraint]?
     private var cameraZoomControlIPadConstraints: [NSLayoutConstraint]?
 
-    private lazy var tapToFocusView: AnimationView = {
-        let view = AnimationView(name: "tap_to_focus")
+    private lazy var tapToFocusView: LottieAnimationView = {
+        let view = LottieAnimationView(name: "tap_to_focus")
         view.animationSpeed = 1
         view.backgroundBehavior = .forceFinish
         view.contentMode = .scaleAspectFit

@@ -416,7 +416,7 @@ class StoryContextViewController: OWSViewController {
         case .pending, .sending:
             sendingIndicatorStackView.isHidden = false
 
-            let sendingSpinner = AnimationView(name: "indeterminate_spinner_20")
+            let sendingSpinner = LottieAnimationView(name: "indeterminate_spinner_20")
             sendingSpinner.contentMode = .scaleAspectFit
             sendingSpinner.loopMode = .loop
             sendingSpinner.backgroundBehavior = .pauseAndRestore

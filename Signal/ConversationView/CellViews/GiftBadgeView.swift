@@ -203,11 +203,11 @@ class GiftBadgeView: ManualStackView {
 
     struct ActivityIndicator {
         var name: String
-        var view: AnimationView
+        var view: LottieAnimationView
     }
 
     private var _activityIndicator: ActivityIndicator?
-    private func activityIndicator(for state: State) -> AnimationView {
+    private func activityIndicator(for state: State) -> LottieAnimationView {
         let animationName: String
         if state.isIncoming && !state.conversationStyle.isDarkThemeEnabled {
             animationName = "indeterminate_spinner_blue"
@@ -217,7 +217,7 @@ class GiftBadgeView: ManualStackView {
         if let activityIndicator = self._activityIndicator, activityIndicator.name == animationName {
             return activityIndicator.view
         }
-        let view = AnimationView(name: animationName)
+        let view = LottieAnimationView(name: animationName)
         view.backgroundBehavior = .pauseAndRestore
         view.loopMode = .loop
         view.contentMode = .center

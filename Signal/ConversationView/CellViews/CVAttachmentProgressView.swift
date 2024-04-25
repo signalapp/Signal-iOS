@@ -87,8 +87,8 @@ public class CVAttachmentProgressView: ManualLayoutView {
         private let direction: Direction
         private let isDarkThemeEnabled: Bool
         private lazy var imageView = CVImageView()
-        private var unknownProgressView: Lottie.AnimationView?
-        private var progressView: Lottie.AnimationView?
+        private var unknownProgressView: LottieAnimationView?
+        private var progressView: LottieAnimationView?
         private let mediaCache: CVMediaCache
 
         var state: State = .none {
@@ -209,8 +209,8 @@ public class CVAttachmentProgressView: ManualLayoutView {
             addSubviewToFillSuperviewEdges(animationView)
         }
 
-        private func ensureAnimationView(_ animationView: Lottie.AnimationView?,
-                                         animationName: String) -> AnimationView {
+        private func ensureAnimationView(_ animationView: LottieAnimationView?,
+                                         animationName: String) -> LottieAnimationView {
             if let animationView = animationView {
                 return animationView
             } else {

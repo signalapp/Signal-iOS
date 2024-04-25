@@ -9,7 +9,7 @@ import SignalUI
 
 public class ProvisioningPrepViewController: ProvisioningBaseViewController {
 
-    lazy var animationView = AnimationView(name: isTransferring ? "launchApp-iPad" : "launchApp-iPhone")
+    lazy var animationView = LottieAnimationView(name: isTransferring ? "launchApp-iPad" : "launchApp-iPhone")
     let isTransferring: Bool
 
     public init(provisioningController: ProvisioningController, isTransferring: Bool) {

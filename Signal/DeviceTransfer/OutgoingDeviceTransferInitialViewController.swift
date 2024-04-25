@@ -8,7 +8,7 @@ import Lottie
 import SignalServiceKit
 
 class OutgoingDeviceTransferInitialViewController: DeviceTransferBaseViewController {
-    let animationView = AnimationView(name: "transfer")
+    let animationView = LottieAnimationView(name: "transfer")
 
     override func viewDidLoad() {
         super.viewDidLoad()

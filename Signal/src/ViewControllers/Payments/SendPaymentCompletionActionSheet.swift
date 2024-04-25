@@ -235,7 +235,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         let animationName = (Theme.isDarkThemeEnabled
                                 ? "payments_spinner_dark"
                                 : "payments_spinner")
-        let animationView = AnimationView(name: animationName)
+        let animationView = LottieAnimationView(name: animationName)
         animationView.backgroundBehavior = .pauseAndRestore
         animationView.loopMode = .loop
         animationView.contentMode = .scaleAspectFit
@@ -264,7 +264,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
 
         updateHeader(canCancel: false)
 
-        let animationView = AnimationView(name: "payments_spinner_success")
+        let animationView = LottieAnimationView(name: "payments_spinner_success")
         animationView.backgroundBehavior = .pauseAndRestore
         animationView.loopMode = .playOnce
         animationView.contentMode = .scaleAspectFit
@@ -303,7 +303,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
 
         updateHeader(canCancel: false)
 
-        let animationView = AnimationView(name: "payments_spinner_fail")
+        let animationView = LottieAnimationView(name: "payments_spinner_fail")
         animationView.backgroundBehavior = .pauseAndRestore
         animationView.loopMode = .playOnce
         animationView.contentMode = .scaleAspectFit

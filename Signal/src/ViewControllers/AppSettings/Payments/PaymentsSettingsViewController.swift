@@ -705,7 +705,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
 
-        let heroImageView = AnimationView(name: "activate-payments")
+        let heroImageView = LottieAnimationView(name: "activate-payments")
         heroImageView.contentMode = .scaleAspectFit
         let viewSize = view.bounds.size
         let heroSize = min(viewSize.width, viewSize.height) * 0.5
@@ -857,7 +857,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             buttonLabel.textColor = Theme.accentBlueColor
             buttonLabel.font = UIFont.dynamicTypeSubheadlineClamped
 
-            let animationView = AnimationView(name: iconName)
+            let animationView = LottieAnimationView(name: iconName)
             animationView.contentMode = .scaleAspectFit
             animationView.autoSetDimensions(to: .square(80))
 
