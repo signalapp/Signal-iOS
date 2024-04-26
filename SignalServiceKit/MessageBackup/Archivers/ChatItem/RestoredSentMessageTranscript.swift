@@ -27,9 +27,9 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
     let recipientStates: [MessageBackup.InteropAddress: TSOutgoingMessageRecipientState]
 
     internal static func from(
-        chatItem: BackupProtoChatItem,
+        chatItem: BackupProto.ChatItem,
         contents: MessageBackup.RestoredMessageContents,
-        outgoingDetails: BackupProtoChatItem.BackupProtoOutgoingMessageDetails,
+        outgoingDetails: BackupProto.ChatItem.OutgoingMessageDetails,
         context: MessageBackup.ChatRestoringContext,
         thread: MessageBackup.ChatThread
     ) -> MessageBackup.RestoreInteractionResult<RestoredSentMessageTranscript> {
@@ -133,7 +133,7 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
     }
 
     private static func recipientState(
-        for sendStatus: BackupProtoSendStatus,
+        for sendStatus: BackupProto.SendStatus,
         partialErrors: inout [MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>],
         chatItemId: MessageBackup.ChatItemId
     ) -> TSOutgoingMessageRecipientState? {

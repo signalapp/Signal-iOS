@@ -7,11 +7,11 @@ import Foundation
 import LibSignalClient
 
 /**
- * Archives a group (``TSGroupThread``) as a ``BackupProtoGroup``, which is a type of
- * ``BackupProtoRecipient``.
+ * Archives a group (``TSGroupThread``) as a ``BackupProto.Group``, which is a type of
+ * ``BackupProto.Recipient``.
  *
- * This is a bit confusing, because ``TSThread`` mostly corresponds to ``BackupProtoChat``,
- * and there will in fact _also_ be a ``BackupProtoChat`` for the group thread. Its just that our
+ * This is a bit confusing, because ``TSThread`` mostly corresponds to ``BackupProto.Chat``,
+ * and there will in fact _also_ be a ``BackupProto.Chat`` for the group thread. Its just that our
  * ``TSGroupThread`` contains all the metadata from both the Chat and Recipient representations
  * in the proto.
  */
@@ -93,7 +93,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
 
         let storyContext = storyStore.getOrCreateStoryContextAssociatedData(forGroupThread: groupThread, tx: tx)
 
-        var group = BackupProtoGroup(
+        var group = BackupProto.Group(
             masterKey: groupMasterKey,
             whitelisted: self.profileManager.isThread(inProfileWhitelist: groupThread, tx: tx),
             hideStory: storyContext.isHidden
@@ -111,17 +111,17 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
             stream,
             objectId: .group(groupId),
             frameBuilder: {
-                var recipient = BackupProtoRecipient(id: recipientId.value)
+                var recipient = BackupProto.Recipient(id: recipientId.value)
                 recipient.destination = .group(group)
 
-                var frame = BackupProtoFrame()
+                var frame = BackupProto.Frame()
                 frame.item = .recipient(recipient)
                 return frame
             }
         ).map { errors.append($0) }
     }
 
-    static func canRestore(_ recipient: BackupProtoRecipient) -> Bool {
+    static func canRestore(_ recipient: BackupProto.Recipient) -> Bool {
         switch recipient.destination {
         case .group:
             return true
@@ -131,11 +131,11 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
     }
 
     public func restore(
-        _ recipient: BackupProtoRecipient,
+        _ recipient: BackupProto.Recipient,
         context: MessageBackup.RecipientRestoringContext,
         tx: DBWriteTransaction
     ) -> RestoreFrameResult {
-        let groupProto: BackupProtoGroup
+        let groupProto: BackupProto.Group
         switch recipient.destination {
         case .group(let backupProtoGroup):
             groupProto = backupProtoGroup

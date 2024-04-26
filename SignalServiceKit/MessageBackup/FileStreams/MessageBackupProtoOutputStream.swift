@@ -29,10 +29,10 @@ public protocol MessageBackupProtoOutputStream {
     /// Write a header (BakckupInfo) to the backup file.
     /// It is the caller's responsibility to ensure this is always written, and is the first thing written,
     /// in order to produce a valid backup file.
-    func writeHeader(_ header: BackupProtoBackupInfo) -> MessageBackup.ProtoOutputStreamWriteResult
+    func writeHeader(_ header: BackupProto.BackupInfo) -> MessageBackup.ProtoOutputStreamWriteResult
 
     /// Write a frame to the backup file.
-    func writeFrame(_ frame: BackupProtoFrame) -> MessageBackup.ProtoOutputStreamWriteResult
+    func writeFrame(_ frame: BackupProto.Frame) -> MessageBackup.ProtoOutputStreamWriteResult
 
     /// Closes the output stream.
     /// - Returns: URL of the file written to.
@@ -55,7 +55,7 @@ internal class MessageBackupProtoOutputStreamImpl: MessageBackupProtoOutputStrea
         self.fileUrl = fileURL
     }
 
-    internal func writeHeader(_ header: BackupProtoBackupInfo) -> MessageBackup.ProtoOutputStreamWriteResult {
+    internal func writeHeader(_ header: BackupProto.BackupInfo) -> MessageBackup.ProtoOutputStreamWriteResult {
         let bytes: Data
         do {
             bytes = try ProtoEncoder().encode(header)
@@ -70,7 +70,7 @@ internal class MessageBackupProtoOutputStreamImpl: MessageBackupProtoOutputStrea
         return .success
     }
 
-    internal func writeFrame(_ frame: BackupProtoFrame) -> MessageBackup.ProtoOutputStreamWriteResult {
+    internal func writeFrame(_ frame: BackupProto.Frame) -> MessageBackup.ProtoOutputStreamWriteResult {
         let bytes: Data
         do {
             bytes = try ProtoEncoder().encode(frame)

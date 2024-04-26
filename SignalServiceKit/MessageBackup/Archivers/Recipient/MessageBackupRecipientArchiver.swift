@@ -6,7 +6,7 @@
 import Foundation
 
 /**
- * Archives all ``BackupProtoRecipient`` frames, fanning out to per-recipient-type
+ * Archives all ``BackupProto.Recipient`` frames, fanning out to per-recipient-type
  * ``MessageBackupRecipientDestinationArchiver`` concrete classes to do the actual frame creation and writing.
  */
 public protocol MessageBackupRecipientArchiver: MessageBackupProtoArchiver {
@@ -32,13 +32,13 @@ public protocol MessageBackupRecipientArchiver: MessageBackupProtoArchiver {
 
     typealias RestoreFrameResult = MessageBackup.RestoreFrameResult<RecipientId>
 
-    /// Restore a single ``BackupProtoRecipient`` frame.
+    /// Restore a single ``BackupProto.Recipient`` frame.
     ///
     /// - Returns: ``RestoreFrameResult.success`` if all frames were read without error.
     /// How to handle ``RestoreFrameResult.failure`` is up to the caller,
     /// but typically an error will be shown to the user, but the restore will be allowed to proceed.
     func restore(
-        _ recipient: BackupProtoRecipient,
+        _ recipient: BackupProto.Recipient,
         context: MessageBackup.RecipientRestoringContext,
         tx: DBWriteTransaction
     ) -> RestoreFrameResult
@@ -132,7 +132,7 @@ internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchive
     }
 
     func restore(
-        _ recipient: BackupProtoRecipient,
+        _ recipient: BackupProto.Recipient,
         context: MessageBackup.RecipientRestoringContext,
         tx: DBWriteTransaction
     ) -> RestoreFrameResult {

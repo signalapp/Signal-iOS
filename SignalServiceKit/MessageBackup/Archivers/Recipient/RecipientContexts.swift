@@ -30,7 +30,7 @@ extension MessageBackup {
      * to the ID addressing system of the backup protos.
      *
      * For example, we will assign a ``BackupRecipientId`` to each ``SignalRecipient`` as we
-     * insert them. Later, when we create the ``BackupProtoChat`` corresponding to the ``TSContactThread``
+     * insert them. Later, when we create the ``BackupProto.Chat`` corresponding to the ``TSContactThread``
      * for that recipient, we will need to add the corresponding ``BackupRecipientId``, which we look up
      * using the contact's Aci/Pni/e164, from the map this context keeps.
      */
@@ -139,7 +139,7 @@ extension MessageBackup {
 }
 
 extension MessageBackup.RecipientId: MessageBackupLoggableId {
-    public var typeLogString: String { "BackupProtoRecipient" }
+    public var typeLogString: String { "BackupProto.Recipient" }
 
     public var idLogString: String { "\(self.value)" }
 }
@@ -165,42 +165,42 @@ extension MessageBackup.RecipientArchivingContext.Address: MessageBackupLoggable
     }
 }
 
-extension BackupProtoRecipient {
+extension BackupProto.Recipient {
 
     public var recipientId: MessageBackup.RecipientId {
         return .init(id)
     }
 }
 
-extension BackupProtoChat {
+extension BackupProto.Chat {
 
     public var typedRecipientId: MessageBackup.RecipientId {
         return .init(recipientId)
     }
 }
 
-extension BackupProtoChatItem {
+extension BackupProto.ChatItem {
 
     public var authorRecipientId: MessageBackup.RecipientId {
         return .init(authorId)
     }
 }
 
-extension BackupProtoReaction {
+extension BackupProto.Reaction {
 
     public var authorRecipientId: MessageBackup.RecipientId {
         return .init(authorId)
     }
 }
 
-extension BackupProtoQuote {
+extension BackupProto.Quote {
 
     public var authorRecipientId: MessageBackup.RecipientId {
         return .init(authorId)
     }
 }
 
-extension BackupProtoSendStatus {
+extension BackupProto.SendStatus {
     public var destinationRecipientId: MessageBackup.RecipientId {
         return .init(recipientId)
     }

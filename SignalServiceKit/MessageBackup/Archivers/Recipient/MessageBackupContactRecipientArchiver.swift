@@ -7,8 +7,8 @@ import Foundation
 import LibSignalClient
 
 /**
- * Archives a contact (``SignalRecipient``) as a ``BackupProtoContact``, which is a type of
- * ``BackupProtoRecipient``.
+ * Archives a contact (``SignalRecipient``) as a ``BackupProto.Contact``, which is a type of
+ * ``BackupProto.Recipient``.
  */
 public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestinationArchiver {
 
@@ -91,7 +91,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
 
             let storyContext = recipient.aci.map { self.storyStore.getOrCreateStoryContextAssociatedData(for: $0, tx: tx) }
 
-            var contact = BackupProtoContact(
+            var contact = BackupProto.Contact(
                 blocked: blockedAddresses.contains(recipient.address),
                 hidden: self.recipientHidingManager.isHiddenRecipient(recipient, tx: tx),
                 unregisteredTimestamp: unregisteredAtTimestamp,
@@ -120,10 +120,10 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
                 stream,
                 objectId: .contact(contactAddress),
                 frameBuilder: {
-                    var recipient = BackupProtoRecipient(id: recipientId.value)
+                    var recipient = BackupProto.Recipient(id: recipientId.value)
                     recipient.destination = .contact(contact)
 
-                    var frame = BackupProtoFrame()
+                    var frame = BackupProto.Frame()
                     frame.item = .recipient(recipient)
                     return frame
                 }
@@ -137,7 +137,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         }
     }
 
-    static func canRestore(_ recipient: BackupProtoRecipient) -> Bool {
+    static func canRestore(_ recipient: BackupProto.Recipient) -> Bool {
         switch recipient.destination {
         case .contact:
             return true
@@ -147,11 +147,11 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
     }
 
     public func restore(
-        _ recipientProto: BackupProtoRecipient,
+        _ recipientProto: BackupProto.Recipient,
         context: MessageBackup.RecipientRestoringContext,
         tx: DBWriteTransaction
     ) -> RestoreFrameResult {
-        let contactProto: BackupProtoContact
+        let contactProto: BackupProto.Contact
         switch recipientProto.destination {
         case .contact(let backupProtoContact):
             contactProto = backupProtoContact
@@ -186,7 +186,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
                 return .failure(
                     [.invalidProtoData(
                         recipientProto.recipientId,
-                        .invalidAci(protoClass: BackupProtoContact.self)
+                        .invalidAci(protoClass: BackupProto.Contact.self)
                     )]
                 )
             }
@@ -199,7 +199,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
                 return .failure(
                     [.invalidProtoData(
                         recipientProto.recipientId,
-                        .invalidPni(protoClass: BackupProtoContact.self)
+                        .invalidPni(protoClass: BackupProto.Contact.self)
                     )]
                 )
             }
@@ -212,7 +212,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
                 return .failure(
                     [.invalidProtoData(
                         recipientProto.recipientId,
-                        .invalidE164(protoClass: BackupProtoContact.self)
+                        .invalidE164(protoClass: BackupProto.Contact.self)
                     )]
                 )
             }

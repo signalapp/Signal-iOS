@@ -93,7 +93,7 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
         var perRecipientErrors = [MessageBackup.ArchiveInteractionResult<Details.DirectionalDetails>.ArchiveFrameError]()
 
         var wasAnySendSealedSender = false
-        var outgoingMessage = BackupProtoChatItem.BackupProtoOutgoingMessageDetails()
+        var outgoingMessage = BackupProto.ChatItem.OutgoingMessageDetails()
 
         for (address, sendState) in message.recipientAddressStates ?? [:] {
             guard let recipientAddress = address.asSingleServiceIdBackupAddress()?.asArchivingAddress() else {
@@ -111,7 +111,7 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
             }
             var isNetworkFailure = false
             var isIdentityKeyMismatchFailure = false
-            let protoDeliveryStatus: BackupProtoSendStatus.BackupProtoStatus
+            let protoDeliveryStatus: BackupProto.SendStatus.Status
             let statusTimestamp: UInt64
             switch sendState.state {
             case OWSOutgoingMessageRecipientState.sent:
@@ -142,7 +142,7 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
                 statusTimestamp = message.timestamp
             }
 
-            var sendStatus = BackupProtoSendStatus(
+            var sendStatus = BackupProto.SendStatus(
                 recipientId: recipientId.value,
                 networkFailure: isNetworkFailure,
                 identityKeyMismatch: isIdentityKeyMismatchFailure,
@@ -177,12 +177,12 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
     // MARK: - Restoring
 
     func restoreChatItem(
-        _ chatItem: BackupProtoChatItem,
+        _ chatItem: BackupProto.ChatItem,
         thread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> MessageBackup.RestoreInteractionResult<Void> {
-        let outgoingDetails: BackupProtoChatItem.BackupProtoOutgoingMessageDetails
+        let outgoingDetails: BackupProto.ChatItem.OutgoingMessageDetails
         switch chatItem.directionalDetails {
         case .outgoing(let backupProtoChatItemOutgoingMessageDetails):
             outgoingDetails = backupProtoChatItemOutgoingMessageDetails

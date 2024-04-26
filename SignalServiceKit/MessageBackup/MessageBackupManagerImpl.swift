@@ -163,7 +163,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     }
 
     private func writeHeader(stream: MessageBackupProtoOutputStream, tx: DBWriteTransaction) throws {
-        let backupInfo = BackupProtoBackupInfo(
+        let backupInfo = BackupProto.BackupInfo(
             version: 1,
             backupTimeMs: dateProvider().ows_millisecondsSince1970
         )
@@ -212,7 +212,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             stream.closeFileStream()
         }
 
-        let backupInfo: BackupProtoBackupInfo
+        let backupInfo: BackupProto.BackupInfo
         var hasMoreFrames = false
         switch stream.readHeader() {
         case .success(let header, let moreBytesAvailable):
@@ -233,7 +233,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         )
 
         while hasMoreFrames {
-            let frame: BackupProtoFrame
+            let frame: BackupProto.Frame
             switch stream.readFrame() {
             case let .success(_frame, moreBytesAvailable):
                 frame = _frame

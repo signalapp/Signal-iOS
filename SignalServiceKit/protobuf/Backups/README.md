@@ -27,6 +27,7 @@ That script reads the `Backup.proto` file in this directory, downloads the
 ## Special considerations when using `Wire`
 
 `Wire` does not support adding a prefix to type names for namespacing purposes.
-To that end, ensure the names of `message`, `enum`, etc. types in
-`Backup.proto` (or other protos down the line) are namespaced within the proto
-itself; for example, prefer `message BackupProtoAccountData` to `message AccountData`.
+To achieve the same result we instead nest all proto types in `Backup.proto`
+under a top-level `message BackupProto`, such that when they are generated the
+corresponding Swift types are nested under a generated (empty)
+`struct BackupProto`.

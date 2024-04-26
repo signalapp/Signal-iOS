@@ -31,7 +31,7 @@ extension MessageBackup {
             //     construct objects that are parsed from the backup proto but require
             //     the TSMessage to exist first before they can be created/inserted.
 
-            fileprivate let reactions: [BackupProtoReaction]
+            fileprivate let reactions: [BackupProto.Reaction]
         }
 
         case text(Text)
@@ -82,10 +82,10 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
             return .notYetImplemented
         }
 
-        var standardMessage = BackupProtoStandardMessage()
+        var standardMessage = BackupProto.StandardMessage()
         var partialErrors = [MessageBackup.ArchiveInteractionResult<ChatItemType>.ArchiveFrameError]()
 
-        let text: BackupProtoText
+        let text: BackupProto.Text
         let textResult = archiveText(
             .init(text: body, ranges: message.bodyRanges ?? .empty),
             interactionUniqueId: message.uniqueInteractionId
@@ -98,7 +98,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
         }
         standardMessage.text = text
 
-        let quote: BackupProtoQuote?
+        let quote: BackupProto.Quote?
         if let quotedMessage = message.quotedMessage {
             let quoteResult = archiveQuote(
                 quotedMessage,
@@ -116,7 +116,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
         }
         standardMessage.quote = quote
 
-        let reactions: [BackupProtoReaction]
+        let reactions: [BackupProto.Reaction]
         let reactionsResult = reactionArchiver.archiveReactions(
             message,
             context: context,
@@ -140,11 +140,11 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
     private func archiveText(
         _ messageBody: MessageBody,
         interactionUniqueId: MessageBackup.InteractionUniqueId
-    ) -> MessageBackup.ArchiveInteractionResult<BackupProtoText> {
-        var text = BackupProtoText(body: messageBody.text)
+    ) -> MessageBackup.ArchiveInteractionResult<BackupProto.Text> {
+        var text = BackupProto.Text(body: messageBody.text)
 
         for bodyRangeParam in messageBody.ranges.toProtoBodyRanges() {
-            var bodyRange = BackupProtoBodyRange()
+            var bodyRange = BackupProto.BodyRange()
             bodyRange.start = bodyRangeParam.start
             bodyRange.length = bodyRangeParam.length
 
@@ -153,7 +153,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
                     mentionAci.serviceIdBinary.asData
                 )
             } else if let style = bodyRangeParam.style {
-                let backupProtoStyle: BackupProtoBodyRange.BackupProtoStyle = {
+                let backupProtoStyle: BackupProto.BodyRange.Style = {
                     switch style {
                     case .none: return .NONE
                     case .bold: return .BOLD
@@ -177,7 +177,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
         _ quotedMessage: TSQuotedMessage,
         interactionUniqueId: MessageBackup.InteractionUniqueId,
         context: MessageBackup.RecipientArchivingContext
-    ) -> MessageBackup.ArchiveInteractionResult<BackupProtoQuote> {
+    ) -> MessageBackup.ArchiveInteractionResult<BackupProto.Quote> {
         var partialErrors = [MessageBackup.ArchiveInteractionResult<ChatItemType>.ArchiveFrameError]()
 
         guard let authorAddress = quotedMessage.authorAddress.asSingleServiceIdBackupAddress() else {
@@ -192,7 +192,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
             )])
         }
 
-        var quote = BackupProtoQuote(authorId: authorId.value)
+        var quote = BackupProto.Quote(authorId: authorId.value)
         quote.targetSentTimestamp = quotedMessage.timestampValue?.uint64Value
         quote.type = quotedMessage.isGiftBadge ? .GIFTBADGE : .NORMAL
 
@@ -201,8 +201,8 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
                 .init(text: body, ranges: quotedMessage.bodyRanges ?? .empty),
                 interactionUniqueId: interactionUniqueId
             )
-            let text: BackupProtoText
-            switch textResult.bubbleUp(BackupProtoQuote.self, partialErrors: &partialErrors) {
+            let text: BackupProto.Text
+            switch textResult.bubbleUp(BackupProto.Quote.self, partialErrors: &partialErrors) {
             case .continue(let value):
                 text = value
             case .bubbleUpError(let errorResult):
@@ -286,7 +286,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
     // MARK: Helpers
 
     private func restoreStandardMessage(
-        _ standardMessage: BackupProtoStandardMessage,
+        _ standardMessage: BackupProto.StandardMessage,
         chatItemId: MessageBackup.ChatItemId,
         thread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
@@ -340,7 +340,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
     }
 
     func restoreMessageBody(
-        _ text: BackupProtoText,
+        _ text: BackupProto.Text,
         chatItemId: MessageBackup.ChatItemId
     ) -> MessageBackup.RestoreInteractionResult<MessageBody> {
         return restoreMessageBody(
@@ -352,7 +352,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
 
     private func restoreMessageBody(
         text: String,
-        bodyRangeProtos: [BackupProtoBodyRange],
+        bodyRangeProtos: [BackupProto.BodyRange],
         chatItemId: MessageBackup.ChatItemId
     ) -> MessageBackup.RestoreInteractionResult<MessageBody> {
         var partialErrors = [MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>]()
@@ -369,7 +369,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
                 guard let mentionAci = try? Aci.parseFrom(serviceIdBinary: aciData) else {
                     partialErrors.append(.invalidProtoData(
                         chatItemId,
-                        .invalidAci(protoClass: BackupProtoBodyRange.self)
+                        .invalidAci(protoClass: BackupProto.BodyRange.self)
                     ))
                     continue
                 }
@@ -395,7 +395,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
             case nil:
                 partialErrors.append(.invalidProtoData(
                     chatItemId,
-                    .invalidAci(protoClass: BackupProtoBodyRange.self)
+                    .invalidAci(protoClass: BackupProto.BodyRange.self)
                 ))
                 continue
             }
@@ -413,7 +413,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
     }
 
     func restoreQuote(
-        _ quote: BackupProtoQuote,
+        _ quote: BackupProto.Quote,
         chatItemId: MessageBackup.ChatItemId,
         thread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
@@ -519,7 +519,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
     }
 
     private func findTargetMessageForQuote(
-        quote: BackupProtoQuote,
+        quote: BackupProto.Quote,
         thread: MessageBackup.ChatThread,
         tx: DBReadTransaction
     ) -> TSMessage? {

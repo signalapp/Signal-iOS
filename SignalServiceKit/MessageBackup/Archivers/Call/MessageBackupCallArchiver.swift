@@ -4,7 +4,7 @@
 //
 
 extension MessageBackup {
-    /// An identifier for a ``BackupProtoCall`` backup frame.
+    /// An identifier for a ``BackupProto.Call`` backup frame.
     struct CallId: MessageBackupLoggableId {
         let callId: UInt64
         let conversationRecipientId: MessageBackup.RecipientId
@@ -19,7 +19,7 @@ extension MessageBackup {
 
         // MARK: MessageBackupLoggableId
 
-        public var typeLogString: String { "BackupProtoCall" }
+        public var typeLogString: String { "BackupProto.Call" }
         public var idLogString: String {
             /// Since call IDs are a cross-client identifier, we don't want to
             /// log them directly.

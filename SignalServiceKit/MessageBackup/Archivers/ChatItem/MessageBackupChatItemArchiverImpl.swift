@@ -195,7 +195,7 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
             return .success
         }
 
-        var chatItem = BackupProtoChatItem(
+        var chatItem = BackupProto.ChatItem(
             chatId: chatId.value,
             authorId: details.author.value,
             dateSent: interaction.timestamp,
@@ -216,7 +216,7 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
             stream,
             objectId: interaction.uniqueInteractionId
         ) {
-            var frame = BackupProtoFrame()
+            var frame = BackupProto.Frame()
             frame.item = .chatItem(chatItem)
             return frame
         }
@@ -232,7 +232,7 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
     }
 
     public func restore(
-        _ chatItem: BackupProtoChatItem,
+        _ chatItem: BackupProto.ChatItem,
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> RestoreFrameResult {

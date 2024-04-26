@@ -13,7 +13,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
     typealias PersistableGroupUpdateItem = TSInfoMessage.PersistableGroupUpdateItem
 
     internal static func restoreGroupUpdates(
-        groupUpdates: [BackupProtoGroupChangeChatUpdate.BackupProtoUpdate],
+        groupUpdates: [BackupProto.GroupChangeChatUpdate.Update],
         // We should never be comparing our pni as it can change,
         // we only ever want to compare our unchanging aci.
         localUserAci: Aci,
@@ -37,7 +37,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
     }
 
     private static func restoreGroupUpdate(
-        groupUpdate: BackupProtoGroupChangeChatUpdate.BackupProtoUpdate,
+        groupUpdate: BackupProto.GroupChangeChatUpdate.Update,
         localUserAci: Aci,
         chatItemId: MessageBackup.ChatItemId
     ) -> MessageBackup.RestoreInteractionResult<[PersistableGroupUpdateItem]> {
@@ -326,7 +326,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                 return .messageFailure([.invalidProtoData(
                     chatItemId,
                     .invalidServiceId(
-                        protoClass: BackupProtoSelfInvitedOtherUserToGroupUpdate.self
+                        protoClass: BackupProto.SelfInvitedOtherUserToGroupUpdate.self
                     )
                 )])
             }
@@ -641,7 +641,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
     }
 }
 
-extension Optional where Wrapped == BackupProtoGroupV2AccessLevel {
+extension Optional where Wrapped == BackupProto.GroupV2AccessLevel {
 
     fileprivate var swiftAccessLevel: GroupV2Access {
         switch self {

@@ -12,7 +12,7 @@ public protocol MessageBackupChatArchiver: MessageBackupProtoArchiver {
 
     typealias ArchiveMultiFrameResult = MessageBackup.ArchiveMultiFrameResult<MessageBackup.ThreadUniqueId>
 
-    /// Archive all ``TSThread``s (they map to ``BackupProtoChat``).
+    /// Archive all ``TSThread``s (they map to ``BackupProto.Chat``).
     ///
     /// - Returns: ``ArchiveMultiFrameResult.success`` if all frames were written without error, or either
     /// partial or complete failure otherwise.
@@ -28,13 +28,13 @@ public protocol MessageBackupChatArchiver: MessageBackupProtoArchiver {
 
     typealias RestoreFrameResult = MessageBackup.RestoreFrameResult<ChatId>
 
-    /// Restore a single ``BackupProtoChat`` frame.
+    /// Restore a single ``BackupProto.Chat`` frame.
     ///
     /// - Returns: ``RestoreFrameResult.success`` if all frames were read without error.
     /// How to handle ``RestoreFrameResult.failure`` is up to the caller,
     /// but typically an error will be shown to the user, but the restore will be allowed to proceed.
     func restore(
-        _ chat: BackupProtoChat,
+        _ chat: BackupProto.Chat,
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> RestoreFrameResult
@@ -234,7 +234,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
             dontNotifyForMentionsIfMuted = true
         }
 
-        let chat = BackupProtoChat(
+        let chat = BackupProto.Chat(
             id: chatId.value,
             recipientId: recipientId.value,
             archived: threadAssociatedData.isArchived,
@@ -249,7 +249,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
             stream,
             objectId: thread.uniqueThreadIdentifier
         ) {
-            var frame = BackupProtoFrame()
+            var frame = BackupProto.Frame()
             frame.item = .chat(chat)
             return frame
         }
@@ -263,7 +263,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
     // MARK: - Restoring
 
     public func restore(
-        _ chat: BackupProtoChat,
+        _ chat: BackupProto.Chat,
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> RestoreFrameResult {

@@ -1635,83 +1635,7 @@
 		D221A0E8169DFFC500537ABF /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D221A0E7169DFFC500537ABF /* AVFoundation.framework */; };
 		D24B5BD5169F568C00681372 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D24B5BD4169F568C00681372 /* AudioToolbox.framework */; };
 		D2AEACDC16C426DA00C364C0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
-		D90D4D272BBB42E10097C573 /* BackupProtoGroupInviteLinkDisabledUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4CE92BBB42D90097C573 /* BackupProtoGroupInviteLinkDisabledUpdate.swift */; };
-		D90D4D282BBB42E10097C573 /* BackupProtoGroupMembershipAccessLevelChangeUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4CEA2BBB42D90097C573 /* BackupProtoGroupMembershipAccessLevelChangeUpdate.swift */; };
-		D90D4D292BBB42E10097C573 /* BackupProtoGroupChangeChatUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4CEB2BBB42D90097C573 /* BackupProtoGroupChangeChatUpdate.swift */; };
-		D90D4D2A2BBB42E10097C573 /* BackupProtoGroupInvitationRevokedUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4CEC2BBB42D90097C573 /* BackupProtoGroupInvitationRevokedUpdate.swift */; };
-		D90D4D2B2BBB42E10097C573 /* BackupProtoCallChatUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4CED2BBB42D90097C573 /* BackupProtoCallChatUpdate.swift */; };
-		D90D4D2C2BBB42E10097C573 /* BackupProtoGroupInviteLinkResetUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4CEE2BBB42D90097C573 /* BackupProtoGroupInviteLinkResetUpdate.swift */; };
-		D90D4D2D2BBB42E10097C573 /* BackupProtoGroupSelfInvitationRevokedUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4CEF2BBB42D90097C573 /* BackupProtoGroupSelfInvitationRevokedUpdate.swift */; };
-		D90D4D2E2BBB42E10097C573 /* BackupProtoDistributionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4CF02BBB42D90097C573 /* BackupProtoDistributionList.swift */; };
-		D90D4D2F2BBB42E10097C573 /* BackupProtoGroupMemberJoinedByLinkUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4CF12BBB42DA0097C573 /* BackupProtoGroupMemberJoinedByLinkUpdate.swift */; };
-		D90D4D302BBB42E10097C573 /* BackupProtoChatItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4CF22BBB42DA0097C573 /* BackupProtoChatItem.swift */; };
-		D90D4D312BBB42E10097C573 /* BackupProtoBackupInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4CF32BBB42DA0097C573 /* BackupProtoBackupInfo.swift */; };
-		D90D4D322BBB42E10097C573 /* BackupProtoGroupAttributesAccessLevelChangeUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4CF42BBB42DA0097C573 /* BackupProtoGroupAttributesAccessLevelChangeUpdate.swift */; };
-		D90D4D332BBB42E10097C573 /* BackupProtoIndividualCallChatUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4CF52BBB42DA0097C573 /* BackupProtoIndividualCallChatUpdate.swift */; };
-		D90D4D342BBB42E10097C573 /* BackupProtoGroupUnknownInviteeUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4CF62BBB42DA0097C573 /* BackupProtoGroupUnknownInviteeUpdate.swift */; };
-		D90D4D352BBB42E10097C573 /* BackupProtoExpirationTimerChatUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4CF72BBB42DA0097C573 /* BackupProtoExpirationTimerChatUpdate.swift */; };
-		D90D4D362BBB42E10097C573 /* BackupProtoGroupMemberLeftUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4CF82BBB42DB0097C573 /* BackupProtoGroupMemberLeftUpdate.swift */; };
-		D90D4D372BBB42E10097C573 /* BackupProtoGroupV2MigrationUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4CF92BBB42DB0097C573 /* BackupProtoGroupV2MigrationUpdate.swift */; };
-		D90D4D382BBB42E10097C573 /* BackupProtoGroupAdminStatusUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4CFA2BBB42DB0097C573 /* BackupProtoGroupAdminStatusUpdate.swift */; };
-		D90D4D392BBB42E10097C573 /* BackupProtoGroupJoinRequestCanceledUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4CFB2BBB42DB0097C573 /* BackupProtoGroupJoinRequestCanceledUpdate.swift */; };
-		D90D4D3A2BBB42E10097C573 /* BackupProtoReaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4CFC2BBB42DB0097C573 /* BackupProtoReaction.swift */; };
-		D90D4D3B2BBB42E10097C573 /* BackupProtoGroupDescriptionUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4CFD2BBB42DB0097C573 /* BackupProtoGroupDescriptionUpdate.swift */; };
-		D90D4D3C2BBB42E10097C573 /* BackupProtoRemoteDeletedMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4CFE2BBB42DB0097C573 /* BackupProtoRemoteDeletedMessage.swift */; };
-		D90D4D3D2BBB42E10097C573 /* BackupProtoBodyRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4CFF2BBB42DC0097C573 /* BackupProtoBodyRange.swift */; };
-		D90D4D3E2BBB42E10097C573 /* BackupProtoGroupCallChatUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D002BBB42DC0097C573 /* BackupProtoGroupCallChatUpdate.swift */; };
-		D90D4D3F2BBB42E10097C573 /* BackupProtoAccountData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D012BBB42DC0097C573 /* BackupProtoAccountData.swift */; };
-		D90D4D402BBB42E10097C573 /* BackupProtoGroupInviteLinkAdminApprovalUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D022BBB42DC0097C573 /* BackupProtoGroupInviteLinkAdminApprovalUpdate.swift */; };
-		D90D4D412BBB42E10097C573 /* BackupProtoChat.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D032BBB42DC0097C573 /* BackupProtoChat.swift */; };
-		D90D4D422BBB42E10097C573 /* BackupProtoGroupMemberRemovedUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D042BBB42DC0097C573 /* BackupProtoGroupMemberRemovedUpdate.swift */; };
-		D90D4D432BBB42E10097C573 /* BackupProtoDocumentMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D052BBB42DC0097C573 /* BackupProtoDocumentMessage.swift */; };
-		D90D4D442BBB42E10097C573 /* BackupProtoProfileChangeChatUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D062BBB42DC0097C573 /* BackupProtoProfileChangeChatUpdate.swift */; };
-		D90D4D452BBB42E10097C573 /* BackupProtoGroupAnnouncementOnlyChangeUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D072BBB42DD0097C573 /* BackupProtoGroupAnnouncementOnlyChangeUpdate.swift */; };
-		D90D4D462BBB42E10097C573 /* BackupProtoContact.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D082BBB42DD0097C573 /* BackupProtoContact.swift */; };
-		D90D4D472BBB42E10097C573 /* BackupProtoRecipient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D092BBB42DD0097C573 /* BackupProtoRecipient.swift */; };
-		D90D4D482BBB42E10097C573 /* BackupProtoGroupV2AccessLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D0A2BBB42DD0097C573 /* BackupProtoGroupV2AccessLevel.swift */; };
-		D90D4D492BBB42E10097C573 /* BackupProtoGroupV2MigrationInvitedMembersUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D0B2BBB42DD0097C573 /* BackupProtoGroupV2MigrationInvitedMembersUpdate.swift */; };
-		D90D4D4A2BBB42E10097C573 /* BackupProtoGroupAvatarUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D0C2BBB42DD0097C573 /* BackupProtoGroupAvatarUpdate.swift */; };
-		D90D4D4B2BBB42E10097C573 /* BackupProtoLinkPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D0D2BBB42DD0097C573 /* BackupProtoLinkPreview.swift */; };
-		D90D4D4C2BBB42E10097C573 /* BackupProtoContactAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D0E2BBB42DD0097C573 /* BackupProtoContactAttachment.swift */; };
-		D90D4D4D2BBB42E10097C573 /* BackupProtoGenericGroupUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D0F2BBB42DE0097C573 /* BackupProtoGenericGroupUpdate.swift */; };
-		D90D4D4E2BBB42E10097C573 /* BackupProtoGroupMemberJoinedUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D102BBB42DE0097C573 /* BackupProtoGroupMemberJoinedUpdate.swift */; };
-		D90D4D4F2BBB42E10097C573 /* BackupProtoGroupExpirationTimerUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D112BBB42DE0097C573 /* BackupProtoGroupExpirationTimerUpdate.swift */; };
-		D90D4D502BBB42E10097C573 /* BackupProtoCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D122BBB42DE0097C573 /* BackupProtoCall.swift */; };
-		D90D4D512BBB42E10097C573 /* BackupProtoGroupJoinRequestUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D132BBB42DE0097C573 /* BackupProtoGroupJoinRequestUpdate.swift */; };
-		D90D4D522BBB42E10097C573 /* BackupProtoGroupV2MigrationDroppedMembersUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D142BBB42DE0097C573 /* BackupProtoGroupV2MigrationDroppedMembersUpdate.swift */; };
-		D90D4D532BBB42E10097C573 /* BackupProtoGroupV2MigrationSelfInvitedUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D152BBB42DE0097C573 /* BackupProtoGroupV2MigrationSelfInvitedUpdate.swift */; };
-		D90D4D542BBB42E10097C573 /* BackupProtoQuote.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D162BBB42DE0097C573 /* BackupProtoQuote.swift */; };
-		D90D4D552BBB42E10097C573 /* BackupProtoReleaseNotes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D172BBB42DF0097C573 /* BackupProtoReleaseNotes.swift */; };
-		D90D4D562BBB42E10097C573 /* BackupProtoGroupJoinRequestApprovalUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D182BBB42DF0097C573 /* BackupProtoGroupJoinRequestApprovalUpdate.swift */; };
-		D90D4D572BBB42E10097C573 /* BackupProtoGroupDescriptionChatUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D192BBB42DF0097C573 /* BackupProtoGroupDescriptionChatUpdate.swift */; };
-		D90D4D582BBB42E10097C573 /* BackupProtoGroupSequenceOfRequestsAndCancelsUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D1A2BBB42DF0097C573 /* BackupProtoGroupSequenceOfRequestsAndCancelsUpdate.swift */; };
-		D90D4D592BBB42E10097C573 /* BackupProtoGroupInvitationAcceptedUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D1B2BBB42DF0097C573 /* BackupProtoGroupInvitationAcceptedUpdate.swift */; };
-		D90D4D5A2BBB42E10097C573 /* BackupProtoGroupCreationUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D1C2BBB42DF0097C573 /* BackupProtoGroupCreationUpdate.swift */; };
-		D90D4D5B2BBB42E10097C573 /* BackupProtoFilePointer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D1D2BBB42DF0097C573 /* BackupProtoFilePointer.swift */; };
-		D90D4D5C2BBB42E10097C573 /* BackupProtoFrame.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D1E2BBB42E00097C573 /* BackupProtoFrame.swift */; };
-		D90D4D5D2BBB42E10097C573 /* BackupProtoGroupMemberAddedUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D1F2BBB42E00097C573 /* BackupProtoGroupMemberAddedUpdate.swift */; };
-		D90D4D5E2BBB42E10097C573 /* BackupProtoGroupInviteLinkEnabledUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D202BBB42E00097C573 /* BackupProtoGroupInviteLinkEnabledUpdate.swift */; };
-		D90D4D5F2BBB42E10097C573 /* BackupProtoContactMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D212BBB42E00097C573 /* BackupProtoContactMessage.swift */; };
-		D90D4D602BBB42E10097C573 /* BackupProtoGroupNameUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D222BBB42E00097C573 /* BackupProtoGroupNameUpdate.swift */; };
-		D90D4D612BBB42E10097C573 /* BackupProtoIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D232BBB42E00097C573 /* BackupProtoIdentity.swift */; };
-		D90D4D622BBB42E10097C573 /* BackupProtoGroupInvitationDeclinedUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D242BBB42E00097C573 /* BackupProtoGroupInvitationDeclinedUpdate.swift */; };
-		D90D4D632BBB42E10097C573 /* BackupProtoChatUpdateMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D252BBB42E00097C573 /* BackupProtoChatUpdateMessage.swift */; };
-		D90D4D642BBB42E10097C573 /* BackupProtoGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D262BBB42E10097C573 /* BackupProtoGroup.swift */; };
-		D90D4D742BBB45880097C573 /* BackupProtoText.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D652BBB45860097C573 /* BackupProtoText.swift */; };
-		D90D4D752BBB45880097C573 /* BackupProtoStickerPack.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D662BBB45860097C573 /* BackupProtoStickerPack.swift */; };
-		D90D4D762BBB45880097C573 /* BackupProtoStickerPackSticker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D672BBB45860097C573 /* BackupProtoStickerPackSticker.swift */; };
-		D90D4D772BBB45880097C573 /* BackupProtoSendStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D682BBB45860097C573 /* BackupProtoSendStatus.swift */; };
-		D90D4D782BBB45880097C573 /* BackupProtoSelfInvitedOtherUserToGroupUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D692BBB45860097C573 /* BackupProtoSelfInvitedOtherUserToGroupUpdate.swift */; };
-		D90D4D792BBB45880097C573 /* BackupProtoSticker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D6A2BBB45870097C573 /* BackupProtoSticker.swift */; };
-		D90D4D7A2BBB45880097C573 /* BackupProtoVoiceMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D6B2BBB45870097C573 /* BackupProtoVoiceMessage.swift */; };
-		D90D4D7B2BBB45880097C573 /* BackupProtoSelfInvitedToGroupUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D6C2BBB45870097C573 /* BackupProtoSelfInvitedToGroupUpdate.swift */; };
 		D90D4D7C2BBB45880097C573 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = D90D4D6D2BBB45870097C573 /* README.md */; };
-		D90D4D7D2BBB45880097C573 /* BackupProtoStickerMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D6E2BBB45870097C573 /* BackupProtoStickerMessage.swift */; };
-		D90D4D7E2BBB45880097C573 /* BackupProtoSelfRecipient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D6F2BBB45870097C573 /* BackupProtoSelfRecipient.swift */; };
-		D90D4D7F2BBB45880097C573 /* BackupProtoSimpleChatUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D702BBB45870097C573 /* BackupProtoSimpleChatUpdate.swift */; };
-		D90D4D802BBB45880097C573 /* BackupProtoThreadMergeChatUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D712BBB45880097C573 /* BackupProtoThreadMergeChatUpdate.swift */; };
-		D90D4D812BBB45880097C573 /* BackupProtoSessionSwitchoverChatUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D722BBB45880097C573 /* BackupProtoSessionSwitchoverChatUpdate.swift */; };
-		D90D4D822BBB45880097C573 /* BackupProtoStandardMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D732BBB45880097C573 /* BackupProtoStandardMessage.swift */; };
 		D90D4D842BBB61680097C573 /* MessageBackupEmptyFrameId.swift in Sources */ = {isa = PBXBuildFile; fileRef = D90D4D832BBB61680097C573 /* MessageBackupEmptyFrameId.swift */; };
 		D9106DFF2AC1FEFD007ABFE6 /* EmptyForCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9106DFE2AC1FEFD007ABFE6 /* EmptyForCodable.swift */; };
 		D9106E022AC20066007ABFE6 /* EmptyForCodableTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9106E002AC20061007ABFE6 /* EmptyForCodableTest.swift */; };
@@ -1854,6 +1778,7 @@
 		D9C0AE662BD7103100FCB05E /* InactiveLinkedDeviceFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C0AE642BD7103100FCB05E /* InactiveLinkedDeviceFinder.swift */; };
 		D9C0AE672BD7162300FCB05E /* InactiveLinkedDeviceFinderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C0AE612BD7102500FCB05E /* InactiveLinkedDeviceFinderTest.swift */; };
 		D9C0AE692BD82DBC00FCB05E /* InactiveLinkedDeviceReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C0AE682BD82DBC00FCB05E /* InactiveLinkedDeviceReminderMegaphone.swift */; };
+		D9C0AE6D2BDC520000FCB05E /* BackupProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C0AE6C2BDC520000FCB05E /* BackupProto.swift */; };
 		D9C2D77E299D750200D79715 /* UsernameEducationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D77D299D750200D79715 /* UsernameEducationManager.swift */; };
 		D9C2D780299EC11400D79715 /* CreateUsernameMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D77F299EC11400D79715 /* CreateUsernameMegaphone.swift */; };
 		D9C2D782299EEDDA00D79715 /* UsernameSelectionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D781299EEDDA00D79715 /* UsernameSelectionCoordinator.swift */; };
@@ -4598,83 +4523,7 @@
 		D24B5BD4169F568C00681372 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = ../../../../../../System/Library/Frameworks/AudioToolbox.framework; sourceTree = "<group>"; };
 		D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		D90D4C822BB633560097C573 /* Backup.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.protobuf; path = Backup.proto; sourceTree = "<group>"; };
-		D90D4CE92BBB42D90097C573 /* BackupProtoGroupInviteLinkDisabledUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupInviteLinkDisabledUpdate.swift; sourceTree = "<group>"; };
-		D90D4CEA2BBB42D90097C573 /* BackupProtoGroupMembershipAccessLevelChangeUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupMembershipAccessLevelChangeUpdate.swift; sourceTree = "<group>"; };
-		D90D4CEB2BBB42D90097C573 /* BackupProtoGroupChangeChatUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupChangeChatUpdate.swift; sourceTree = "<group>"; };
-		D90D4CEC2BBB42D90097C573 /* BackupProtoGroupInvitationRevokedUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupInvitationRevokedUpdate.swift; sourceTree = "<group>"; };
-		D90D4CED2BBB42D90097C573 /* BackupProtoCallChatUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoCallChatUpdate.swift; sourceTree = "<group>"; };
-		D90D4CEE2BBB42D90097C573 /* BackupProtoGroupInviteLinkResetUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupInviteLinkResetUpdate.swift; sourceTree = "<group>"; };
-		D90D4CEF2BBB42D90097C573 /* BackupProtoGroupSelfInvitationRevokedUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupSelfInvitationRevokedUpdate.swift; sourceTree = "<group>"; };
-		D90D4CF02BBB42D90097C573 /* BackupProtoDistributionList.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoDistributionList.swift; sourceTree = "<group>"; };
-		D90D4CF12BBB42DA0097C573 /* BackupProtoGroupMemberJoinedByLinkUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupMemberJoinedByLinkUpdate.swift; sourceTree = "<group>"; };
-		D90D4CF22BBB42DA0097C573 /* BackupProtoChatItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoChatItem.swift; sourceTree = "<group>"; };
-		D90D4CF32BBB42DA0097C573 /* BackupProtoBackupInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoBackupInfo.swift; sourceTree = "<group>"; };
-		D90D4CF42BBB42DA0097C573 /* BackupProtoGroupAttributesAccessLevelChangeUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupAttributesAccessLevelChangeUpdate.swift; sourceTree = "<group>"; };
-		D90D4CF52BBB42DA0097C573 /* BackupProtoIndividualCallChatUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoIndividualCallChatUpdate.swift; sourceTree = "<group>"; };
-		D90D4CF62BBB42DA0097C573 /* BackupProtoGroupUnknownInviteeUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupUnknownInviteeUpdate.swift; sourceTree = "<group>"; };
-		D90D4CF72BBB42DA0097C573 /* BackupProtoExpirationTimerChatUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoExpirationTimerChatUpdate.swift; sourceTree = "<group>"; };
-		D90D4CF82BBB42DB0097C573 /* BackupProtoGroupMemberLeftUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupMemberLeftUpdate.swift; sourceTree = "<group>"; };
-		D90D4CF92BBB42DB0097C573 /* BackupProtoGroupV2MigrationUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupV2MigrationUpdate.swift; sourceTree = "<group>"; };
-		D90D4CFA2BBB42DB0097C573 /* BackupProtoGroupAdminStatusUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupAdminStatusUpdate.swift; sourceTree = "<group>"; };
-		D90D4CFB2BBB42DB0097C573 /* BackupProtoGroupJoinRequestCanceledUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupJoinRequestCanceledUpdate.swift; sourceTree = "<group>"; };
-		D90D4CFC2BBB42DB0097C573 /* BackupProtoReaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoReaction.swift; sourceTree = "<group>"; };
-		D90D4CFD2BBB42DB0097C573 /* BackupProtoGroupDescriptionUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupDescriptionUpdate.swift; sourceTree = "<group>"; };
-		D90D4CFE2BBB42DB0097C573 /* BackupProtoRemoteDeletedMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoRemoteDeletedMessage.swift; sourceTree = "<group>"; };
-		D90D4CFF2BBB42DC0097C573 /* BackupProtoBodyRange.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoBodyRange.swift; sourceTree = "<group>"; };
-		D90D4D002BBB42DC0097C573 /* BackupProtoGroupCallChatUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupCallChatUpdate.swift; sourceTree = "<group>"; };
-		D90D4D012BBB42DC0097C573 /* BackupProtoAccountData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoAccountData.swift; sourceTree = "<group>"; };
-		D90D4D022BBB42DC0097C573 /* BackupProtoGroupInviteLinkAdminApprovalUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupInviteLinkAdminApprovalUpdate.swift; sourceTree = "<group>"; };
-		D90D4D032BBB42DC0097C573 /* BackupProtoChat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoChat.swift; sourceTree = "<group>"; };
-		D90D4D042BBB42DC0097C573 /* BackupProtoGroupMemberRemovedUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupMemberRemovedUpdate.swift; sourceTree = "<group>"; };
-		D90D4D052BBB42DC0097C573 /* BackupProtoDocumentMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoDocumentMessage.swift; sourceTree = "<group>"; };
-		D90D4D062BBB42DC0097C573 /* BackupProtoProfileChangeChatUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoProfileChangeChatUpdate.swift; sourceTree = "<group>"; };
-		D90D4D072BBB42DD0097C573 /* BackupProtoGroupAnnouncementOnlyChangeUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupAnnouncementOnlyChangeUpdate.swift; sourceTree = "<group>"; };
-		D90D4D082BBB42DD0097C573 /* BackupProtoContact.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoContact.swift; sourceTree = "<group>"; };
-		D90D4D092BBB42DD0097C573 /* BackupProtoRecipient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoRecipient.swift; sourceTree = "<group>"; };
-		D90D4D0A2BBB42DD0097C573 /* BackupProtoGroupV2AccessLevel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupV2AccessLevel.swift; sourceTree = "<group>"; };
-		D90D4D0B2BBB42DD0097C573 /* BackupProtoGroupV2MigrationInvitedMembersUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupV2MigrationInvitedMembersUpdate.swift; sourceTree = "<group>"; };
-		D90D4D0C2BBB42DD0097C573 /* BackupProtoGroupAvatarUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupAvatarUpdate.swift; sourceTree = "<group>"; };
-		D90D4D0D2BBB42DD0097C573 /* BackupProtoLinkPreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoLinkPreview.swift; sourceTree = "<group>"; };
-		D90D4D0E2BBB42DD0097C573 /* BackupProtoContactAttachment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoContactAttachment.swift; sourceTree = "<group>"; };
-		D90D4D0F2BBB42DE0097C573 /* BackupProtoGenericGroupUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGenericGroupUpdate.swift; sourceTree = "<group>"; };
-		D90D4D102BBB42DE0097C573 /* BackupProtoGroupMemberJoinedUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupMemberJoinedUpdate.swift; sourceTree = "<group>"; };
-		D90D4D112BBB42DE0097C573 /* BackupProtoGroupExpirationTimerUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupExpirationTimerUpdate.swift; sourceTree = "<group>"; };
-		D90D4D122BBB42DE0097C573 /* BackupProtoCall.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoCall.swift; sourceTree = "<group>"; };
-		D90D4D132BBB42DE0097C573 /* BackupProtoGroupJoinRequestUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupJoinRequestUpdate.swift; sourceTree = "<group>"; };
-		D90D4D142BBB42DE0097C573 /* BackupProtoGroupV2MigrationDroppedMembersUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupV2MigrationDroppedMembersUpdate.swift; sourceTree = "<group>"; };
-		D90D4D152BBB42DE0097C573 /* BackupProtoGroupV2MigrationSelfInvitedUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupV2MigrationSelfInvitedUpdate.swift; sourceTree = "<group>"; };
-		D90D4D162BBB42DE0097C573 /* BackupProtoQuote.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoQuote.swift; sourceTree = "<group>"; };
-		D90D4D172BBB42DF0097C573 /* BackupProtoReleaseNotes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoReleaseNotes.swift; sourceTree = "<group>"; };
-		D90D4D182BBB42DF0097C573 /* BackupProtoGroupJoinRequestApprovalUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupJoinRequestApprovalUpdate.swift; sourceTree = "<group>"; };
-		D90D4D192BBB42DF0097C573 /* BackupProtoGroupDescriptionChatUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupDescriptionChatUpdate.swift; sourceTree = "<group>"; };
-		D90D4D1A2BBB42DF0097C573 /* BackupProtoGroupSequenceOfRequestsAndCancelsUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupSequenceOfRequestsAndCancelsUpdate.swift; sourceTree = "<group>"; };
-		D90D4D1B2BBB42DF0097C573 /* BackupProtoGroupInvitationAcceptedUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupInvitationAcceptedUpdate.swift; sourceTree = "<group>"; };
-		D90D4D1C2BBB42DF0097C573 /* BackupProtoGroupCreationUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupCreationUpdate.swift; sourceTree = "<group>"; };
-		D90D4D1D2BBB42DF0097C573 /* BackupProtoFilePointer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoFilePointer.swift; sourceTree = "<group>"; };
-		D90D4D1E2BBB42E00097C573 /* BackupProtoFrame.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoFrame.swift; sourceTree = "<group>"; };
-		D90D4D1F2BBB42E00097C573 /* BackupProtoGroupMemberAddedUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupMemberAddedUpdate.swift; sourceTree = "<group>"; };
-		D90D4D202BBB42E00097C573 /* BackupProtoGroupInviteLinkEnabledUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupInviteLinkEnabledUpdate.swift; sourceTree = "<group>"; };
-		D90D4D212BBB42E00097C573 /* BackupProtoContactMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoContactMessage.swift; sourceTree = "<group>"; };
-		D90D4D222BBB42E00097C573 /* BackupProtoGroupNameUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupNameUpdate.swift; sourceTree = "<group>"; };
-		D90D4D232BBB42E00097C573 /* BackupProtoIdentity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoIdentity.swift; sourceTree = "<group>"; };
-		D90D4D242BBB42E00097C573 /* BackupProtoGroupInvitationDeclinedUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroupInvitationDeclinedUpdate.swift; sourceTree = "<group>"; };
-		D90D4D252BBB42E00097C573 /* BackupProtoChatUpdateMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoChatUpdateMessage.swift; sourceTree = "<group>"; };
-		D90D4D262BBB42E10097C573 /* BackupProtoGroup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoGroup.swift; sourceTree = "<group>"; };
-		D90D4D652BBB45860097C573 /* BackupProtoText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoText.swift; sourceTree = "<group>"; };
-		D90D4D662BBB45860097C573 /* BackupProtoStickerPack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoStickerPack.swift; sourceTree = "<group>"; };
-		D90D4D672BBB45860097C573 /* BackupProtoStickerPackSticker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoStickerPackSticker.swift; sourceTree = "<group>"; };
-		D90D4D682BBB45860097C573 /* BackupProtoSendStatus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoSendStatus.swift; sourceTree = "<group>"; };
-		D90D4D692BBB45860097C573 /* BackupProtoSelfInvitedOtherUserToGroupUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoSelfInvitedOtherUserToGroupUpdate.swift; sourceTree = "<group>"; };
-		D90D4D6A2BBB45870097C573 /* BackupProtoSticker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoSticker.swift; sourceTree = "<group>"; };
-		D90D4D6B2BBB45870097C573 /* BackupProtoVoiceMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoVoiceMessage.swift; sourceTree = "<group>"; };
-		D90D4D6C2BBB45870097C573 /* BackupProtoSelfInvitedToGroupUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoSelfInvitedToGroupUpdate.swift; sourceTree = "<group>"; };
 		D90D4D6D2BBB45870097C573 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		D90D4D6E2BBB45870097C573 /* BackupProtoStickerMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoStickerMessage.swift; sourceTree = "<group>"; };
-		D90D4D6F2BBB45870097C573 /* BackupProtoSelfRecipient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoSelfRecipient.swift; sourceTree = "<group>"; };
-		D90D4D702BBB45870097C573 /* BackupProtoSimpleChatUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoSimpleChatUpdate.swift; sourceTree = "<group>"; };
-		D90D4D712BBB45880097C573 /* BackupProtoThreadMergeChatUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoThreadMergeChatUpdate.swift; sourceTree = "<group>"; };
-		D90D4D722BBB45880097C573 /* BackupProtoSessionSwitchoverChatUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoSessionSwitchoverChatUpdate.swift; sourceTree = "<group>"; };
-		D90D4D732BBB45880097C573 /* BackupProtoStandardMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProtoStandardMessage.swift; sourceTree = "<group>"; };
 		D90D4D832BBB61680097C573 /* MessageBackupEmptyFrameId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupEmptyFrameId.swift; sourceTree = "<group>"; };
 		D9106DFE2AC1FEFD007ABFE6 /* EmptyForCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyForCodable.swift; sourceTree = "<group>"; };
 		D9106E002AC20061007ABFE6 /* EmptyForCodableTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyForCodableTest.swift; sourceTree = "<group>"; };
@@ -4825,6 +4674,7 @@
 		D9C0AE632BD7103100FCB05E /* OWSDeviceStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSDeviceStore.swift; sourceTree = "<group>"; };
 		D9C0AE642BD7103100FCB05E /* InactiveLinkedDeviceFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InactiveLinkedDeviceFinder.swift; sourceTree = "<group>"; };
 		D9C0AE682BD82DBC00FCB05E /* InactiveLinkedDeviceReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InactiveLinkedDeviceReminderMegaphone.swift; sourceTree = "<group>"; };
+		D9C0AE6C2BDC520000FCB05E /* BackupProto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProto.swift; sourceTree = "<group>"; };
 		D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+BetterIdentifierChecker.swift"; sourceTree = "<group>"; };
 		D9C2D77D299D750200D79715 /* UsernameEducationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameEducationManager.swift; sourceTree = "<group>"; };
 		D9C2D77F299EC11400D79715 /* CreateUsernameMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUsernameMegaphone.swift; sourceTree = "<group>"; };
@@ -9338,82 +9188,7 @@
 			isa = PBXGroup;
 			children = (
 				D90D4C822BB633560097C573 /* Backup.proto */,
-				D90D4D012BBB42DC0097C573 /* BackupProtoAccountData.swift */,
-				D90D4CF32BBB42DA0097C573 /* BackupProtoBackupInfo.swift */,
-				D90D4CFF2BBB42DC0097C573 /* BackupProtoBodyRange.swift */,
-				D90D4D122BBB42DE0097C573 /* BackupProtoCall.swift */,
-				D90D4CED2BBB42D90097C573 /* BackupProtoCallChatUpdate.swift */,
-				D90D4D032BBB42DC0097C573 /* BackupProtoChat.swift */,
-				D90D4CF22BBB42DA0097C573 /* BackupProtoChatItem.swift */,
-				D90D4D252BBB42E00097C573 /* BackupProtoChatUpdateMessage.swift */,
-				D90D4D082BBB42DD0097C573 /* BackupProtoContact.swift */,
-				D90D4D0E2BBB42DD0097C573 /* BackupProtoContactAttachment.swift */,
-				D90D4D212BBB42E00097C573 /* BackupProtoContactMessage.swift */,
-				D90D4CF02BBB42D90097C573 /* BackupProtoDistributionList.swift */,
-				D90D4D052BBB42DC0097C573 /* BackupProtoDocumentMessage.swift */,
-				D90D4CF72BBB42DA0097C573 /* BackupProtoExpirationTimerChatUpdate.swift */,
-				D90D4D1D2BBB42DF0097C573 /* BackupProtoFilePointer.swift */,
-				D90D4D1E2BBB42E00097C573 /* BackupProtoFrame.swift */,
-				D90D4D0F2BBB42DE0097C573 /* BackupProtoGenericGroupUpdate.swift */,
-				D90D4D262BBB42E10097C573 /* BackupProtoGroup.swift */,
-				D90D4CFA2BBB42DB0097C573 /* BackupProtoGroupAdminStatusUpdate.swift */,
-				D90D4D072BBB42DD0097C573 /* BackupProtoGroupAnnouncementOnlyChangeUpdate.swift */,
-				D90D4CF42BBB42DA0097C573 /* BackupProtoGroupAttributesAccessLevelChangeUpdate.swift */,
-				D90D4D0C2BBB42DD0097C573 /* BackupProtoGroupAvatarUpdate.swift */,
-				D90D4D002BBB42DC0097C573 /* BackupProtoGroupCallChatUpdate.swift */,
-				D90D4CEB2BBB42D90097C573 /* BackupProtoGroupChangeChatUpdate.swift */,
-				D90D4D1C2BBB42DF0097C573 /* BackupProtoGroupCreationUpdate.swift */,
-				D90D4D192BBB42DF0097C573 /* BackupProtoGroupDescriptionChatUpdate.swift */,
-				D90D4CFD2BBB42DB0097C573 /* BackupProtoGroupDescriptionUpdate.swift */,
-				D90D4D112BBB42DE0097C573 /* BackupProtoGroupExpirationTimerUpdate.swift */,
-				D90D4D1B2BBB42DF0097C573 /* BackupProtoGroupInvitationAcceptedUpdate.swift */,
-				D90D4D242BBB42E00097C573 /* BackupProtoGroupInvitationDeclinedUpdate.swift */,
-				D90D4CEC2BBB42D90097C573 /* BackupProtoGroupInvitationRevokedUpdate.swift */,
-				D90D4D022BBB42DC0097C573 /* BackupProtoGroupInviteLinkAdminApprovalUpdate.swift */,
-				D90D4CE92BBB42D90097C573 /* BackupProtoGroupInviteLinkDisabledUpdate.swift */,
-				D90D4D202BBB42E00097C573 /* BackupProtoGroupInviteLinkEnabledUpdate.swift */,
-				D90D4CEE2BBB42D90097C573 /* BackupProtoGroupInviteLinkResetUpdate.swift */,
-				D90D4D182BBB42DF0097C573 /* BackupProtoGroupJoinRequestApprovalUpdate.swift */,
-				D90D4CFB2BBB42DB0097C573 /* BackupProtoGroupJoinRequestCanceledUpdate.swift */,
-				D90D4D132BBB42DE0097C573 /* BackupProtoGroupJoinRequestUpdate.swift */,
-				D90D4D1F2BBB42E00097C573 /* BackupProtoGroupMemberAddedUpdate.swift */,
-				D90D4CF12BBB42DA0097C573 /* BackupProtoGroupMemberJoinedByLinkUpdate.swift */,
-				D90D4D102BBB42DE0097C573 /* BackupProtoGroupMemberJoinedUpdate.swift */,
-				D90D4CF82BBB42DB0097C573 /* BackupProtoGroupMemberLeftUpdate.swift */,
-				D90D4D042BBB42DC0097C573 /* BackupProtoGroupMemberRemovedUpdate.swift */,
-				D90D4CEA2BBB42D90097C573 /* BackupProtoGroupMembershipAccessLevelChangeUpdate.swift */,
-				D90D4D222BBB42E00097C573 /* BackupProtoGroupNameUpdate.swift */,
-				D90D4CEF2BBB42D90097C573 /* BackupProtoGroupSelfInvitationRevokedUpdate.swift */,
-				D90D4D1A2BBB42DF0097C573 /* BackupProtoGroupSequenceOfRequestsAndCancelsUpdate.swift */,
-				D90D4CF62BBB42DA0097C573 /* BackupProtoGroupUnknownInviteeUpdate.swift */,
-				D90D4D0A2BBB42DD0097C573 /* BackupProtoGroupV2AccessLevel.swift */,
-				D90D4D142BBB42DE0097C573 /* BackupProtoGroupV2MigrationDroppedMembersUpdate.swift */,
-				D90D4D0B2BBB42DD0097C573 /* BackupProtoGroupV2MigrationInvitedMembersUpdate.swift */,
-				D90D4D152BBB42DE0097C573 /* BackupProtoGroupV2MigrationSelfInvitedUpdate.swift */,
-				D90D4CF92BBB42DB0097C573 /* BackupProtoGroupV2MigrationUpdate.swift */,
-				D90D4D232BBB42E00097C573 /* BackupProtoIdentity.swift */,
-				D90D4CF52BBB42DA0097C573 /* BackupProtoIndividualCallChatUpdate.swift */,
-				D90D4D0D2BBB42DD0097C573 /* BackupProtoLinkPreview.swift */,
-				D90D4D062BBB42DC0097C573 /* BackupProtoProfileChangeChatUpdate.swift */,
-				D90D4D162BBB42DE0097C573 /* BackupProtoQuote.swift */,
-				D90D4CFC2BBB42DB0097C573 /* BackupProtoReaction.swift */,
-				D90D4D092BBB42DD0097C573 /* BackupProtoRecipient.swift */,
-				D90D4D172BBB42DF0097C573 /* BackupProtoReleaseNotes.swift */,
-				D90D4CFE2BBB42DB0097C573 /* BackupProtoRemoteDeletedMessage.swift */,
-				D90D4D692BBB45860097C573 /* BackupProtoSelfInvitedOtherUserToGroupUpdate.swift */,
-				D90D4D6C2BBB45870097C573 /* BackupProtoSelfInvitedToGroupUpdate.swift */,
-				D90D4D6F2BBB45870097C573 /* BackupProtoSelfRecipient.swift */,
-				D90D4D682BBB45860097C573 /* BackupProtoSendStatus.swift */,
-				D90D4D722BBB45880097C573 /* BackupProtoSessionSwitchoverChatUpdate.swift */,
-				D90D4D702BBB45870097C573 /* BackupProtoSimpleChatUpdate.swift */,
-				D90D4D732BBB45880097C573 /* BackupProtoStandardMessage.swift */,
-				D90D4D6A2BBB45870097C573 /* BackupProtoSticker.swift */,
-				D90D4D6E2BBB45870097C573 /* BackupProtoStickerMessage.swift */,
-				D90D4D662BBB45860097C573 /* BackupProtoStickerPack.swift */,
-				D90D4D672BBB45860097C573 /* BackupProtoStickerPackSticker.swift */,
-				D90D4D652BBB45860097C573 /* BackupProtoText.swift */,
-				D90D4D712BBB45880097C573 /* BackupProtoThreadMergeChatUpdate.swift */,
-				D90D4D6B2BBB45870097C573 /* BackupProtoVoiceMessage.swift */,
+				D9C0AE6C2BDC520000FCB05E /* BackupProto.swift */,
 				D90D4D6D2BBB45870097C573 /* README.md */,
 			);
 			name = Backups;
@@ -13632,82 +13407,7 @@
 				7254651E2BA012BD00EABFD2 /* AvatarBuilder.swift in Sources */,
 				720547F22B9C8F9900E2CF2F /* AvatarModel.swift in Sources */,
 				502C69722B06F07900012867 /* AwaitableAsyncBlockOperation.swift in Sources */,
-				D90D4D3F2BBB42E10097C573 /* BackupProtoAccountData.swift in Sources */,
-				D90D4D312BBB42E10097C573 /* BackupProtoBackupInfo.swift in Sources */,
-				D90D4D3D2BBB42E10097C573 /* BackupProtoBodyRange.swift in Sources */,
-				D90D4D502BBB42E10097C573 /* BackupProtoCall.swift in Sources */,
-				D90D4D2B2BBB42E10097C573 /* BackupProtoCallChatUpdate.swift in Sources */,
-				D90D4D412BBB42E10097C573 /* BackupProtoChat.swift in Sources */,
-				D90D4D302BBB42E10097C573 /* BackupProtoChatItem.swift in Sources */,
-				D90D4D632BBB42E10097C573 /* BackupProtoChatUpdateMessage.swift in Sources */,
-				D90D4D462BBB42E10097C573 /* BackupProtoContact.swift in Sources */,
-				D90D4D4C2BBB42E10097C573 /* BackupProtoContactAttachment.swift in Sources */,
-				D90D4D5F2BBB42E10097C573 /* BackupProtoContactMessage.swift in Sources */,
-				D90D4D2E2BBB42E10097C573 /* BackupProtoDistributionList.swift in Sources */,
-				D90D4D432BBB42E10097C573 /* BackupProtoDocumentMessage.swift in Sources */,
-				D90D4D352BBB42E10097C573 /* BackupProtoExpirationTimerChatUpdate.swift in Sources */,
-				D90D4D5B2BBB42E10097C573 /* BackupProtoFilePointer.swift in Sources */,
-				D90D4D5C2BBB42E10097C573 /* BackupProtoFrame.swift in Sources */,
-				D90D4D4D2BBB42E10097C573 /* BackupProtoGenericGroupUpdate.swift in Sources */,
-				D90D4D642BBB42E10097C573 /* BackupProtoGroup.swift in Sources */,
-				D90D4D382BBB42E10097C573 /* BackupProtoGroupAdminStatusUpdate.swift in Sources */,
-				D90D4D452BBB42E10097C573 /* BackupProtoGroupAnnouncementOnlyChangeUpdate.swift in Sources */,
-				D90D4D322BBB42E10097C573 /* BackupProtoGroupAttributesAccessLevelChangeUpdate.swift in Sources */,
-				D90D4D4A2BBB42E10097C573 /* BackupProtoGroupAvatarUpdate.swift in Sources */,
-				D90D4D3E2BBB42E10097C573 /* BackupProtoGroupCallChatUpdate.swift in Sources */,
-				D90D4D292BBB42E10097C573 /* BackupProtoGroupChangeChatUpdate.swift in Sources */,
-				D90D4D5A2BBB42E10097C573 /* BackupProtoGroupCreationUpdate.swift in Sources */,
-				D90D4D572BBB42E10097C573 /* BackupProtoGroupDescriptionChatUpdate.swift in Sources */,
-				D90D4D3B2BBB42E10097C573 /* BackupProtoGroupDescriptionUpdate.swift in Sources */,
-				D90D4D4F2BBB42E10097C573 /* BackupProtoGroupExpirationTimerUpdate.swift in Sources */,
-				D90D4D592BBB42E10097C573 /* BackupProtoGroupInvitationAcceptedUpdate.swift in Sources */,
-				D90D4D622BBB42E10097C573 /* BackupProtoGroupInvitationDeclinedUpdate.swift in Sources */,
-				D90D4D2A2BBB42E10097C573 /* BackupProtoGroupInvitationRevokedUpdate.swift in Sources */,
-				D90D4D402BBB42E10097C573 /* BackupProtoGroupInviteLinkAdminApprovalUpdate.swift in Sources */,
-				D90D4D272BBB42E10097C573 /* BackupProtoGroupInviteLinkDisabledUpdate.swift in Sources */,
-				D90D4D5E2BBB42E10097C573 /* BackupProtoGroupInviteLinkEnabledUpdate.swift in Sources */,
-				D90D4D2C2BBB42E10097C573 /* BackupProtoGroupInviteLinkResetUpdate.swift in Sources */,
-				D90D4D562BBB42E10097C573 /* BackupProtoGroupJoinRequestApprovalUpdate.swift in Sources */,
-				D90D4D392BBB42E10097C573 /* BackupProtoGroupJoinRequestCanceledUpdate.swift in Sources */,
-				D90D4D512BBB42E10097C573 /* BackupProtoGroupJoinRequestUpdate.swift in Sources */,
-				D90D4D5D2BBB42E10097C573 /* BackupProtoGroupMemberAddedUpdate.swift in Sources */,
-				D90D4D2F2BBB42E10097C573 /* BackupProtoGroupMemberJoinedByLinkUpdate.swift in Sources */,
-				D90D4D4E2BBB42E10097C573 /* BackupProtoGroupMemberJoinedUpdate.swift in Sources */,
-				D90D4D362BBB42E10097C573 /* BackupProtoGroupMemberLeftUpdate.swift in Sources */,
-				D90D4D422BBB42E10097C573 /* BackupProtoGroupMemberRemovedUpdate.swift in Sources */,
-				D90D4D282BBB42E10097C573 /* BackupProtoGroupMembershipAccessLevelChangeUpdate.swift in Sources */,
-				D90D4D602BBB42E10097C573 /* BackupProtoGroupNameUpdate.swift in Sources */,
-				D90D4D2D2BBB42E10097C573 /* BackupProtoGroupSelfInvitationRevokedUpdate.swift in Sources */,
-				D90D4D582BBB42E10097C573 /* BackupProtoGroupSequenceOfRequestsAndCancelsUpdate.swift in Sources */,
-				D90D4D342BBB42E10097C573 /* BackupProtoGroupUnknownInviteeUpdate.swift in Sources */,
-				D90D4D482BBB42E10097C573 /* BackupProtoGroupV2AccessLevel.swift in Sources */,
-				D90D4D522BBB42E10097C573 /* BackupProtoGroupV2MigrationDroppedMembersUpdate.swift in Sources */,
-				D90D4D492BBB42E10097C573 /* BackupProtoGroupV2MigrationInvitedMembersUpdate.swift in Sources */,
-				D90D4D532BBB42E10097C573 /* BackupProtoGroupV2MigrationSelfInvitedUpdate.swift in Sources */,
-				D90D4D372BBB42E10097C573 /* BackupProtoGroupV2MigrationUpdate.swift in Sources */,
-				D90D4D612BBB42E10097C573 /* BackupProtoIdentity.swift in Sources */,
-				D90D4D332BBB42E10097C573 /* BackupProtoIndividualCallChatUpdate.swift in Sources */,
-				D90D4D4B2BBB42E10097C573 /* BackupProtoLinkPreview.swift in Sources */,
-				D90D4D442BBB42E10097C573 /* BackupProtoProfileChangeChatUpdate.swift in Sources */,
-				D90D4D542BBB42E10097C573 /* BackupProtoQuote.swift in Sources */,
-				D90D4D3A2BBB42E10097C573 /* BackupProtoReaction.swift in Sources */,
-				D90D4D472BBB42E10097C573 /* BackupProtoRecipient.swift in Sources */,
-				D90D4D552BBB42E10097C573 /* BackupProtoReleaseNotes.swift in Sources */,
-				D90D4D3C2BBB42E10097C573 /* BackupProtoRemoteDeletedMessage.swift in Sources */,
-				D90D4D782BBB45880097C573 /* BackupProtoSelfInvitedOtherUserToGroupUpdate.swift in Sources */,
-				D90D4D7B2BBB45880097C573 /* BackupProtoSelfInvitedToGroupUpdate.swift in Sources */,
-				D90D4D7E2BBB45880097C573 /* BackupProtoSelfRecipient.swift in Sources */,
-				D90D4D772BBB45880097C573 /* BackupProtoSendStatus.swift in Sources */,
-				D90D4D812BBB45880097C573 /* BackupProtoSessionSwitchoverChatUpdate.swift in Sources */,
-				D90D4D7F2BBB45880097C573 /* BackupProtoSimpleChatUpdate.swift in Sources */,
-				D90D4D822BBB45880097C573 /* BackupProtoStandardMessage.swift in Sources */,
-				D90D4D792BBB45880097C573 /* BackupProtoSticker.swift in Sources */,
-				D90D4D7D2BBB45880097C573 /* BackupProtoStickerMessage.swift in Sources */,
-				D90D4D752BBB45880097C573 /* BackupProtoStickerPack.swift in Sources */,
-				D90D4D762BBB45880097C573 /* BackupProtoStickerPackSticker.swift in Sources */,
-				D90D4D742BBB45880097C573 /* BackupProtoText.swift in Sources */,
-				D90D4D802BBB45880097C573 /* BackupProtoThreadMergeChatUpdate.swift in Sources */,
-				D90D4D7A2BBB45880097C573 /* BackupProtoVoiceMessage.swift in Sources */,
+				D9C0AE6D2BDC520000FCB05E /* BackupProto.swift in Sources */,
 				F9C5CE3A289453B400548EEE /* BadgeAssets.swift in Sources */,
 				D979DA162B8D1FDD000EEAB8 /* BadgeCountFetcher.swift in Sources */,
 				F9C5CE37289453B400548EEE /* BadgeStore.swift in Sources */,

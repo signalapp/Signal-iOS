@@ -4,7 +4,7 @@
 //
 
 extension MessageBackup {
-    /// An identifier for the ``BackupProtoAccountData`` backup frame.
+    /// An identifier for the ``BackupProto.AccountData`` backup frame.
     ///
     /// Uses a singleton pattern, as there is only ever one account data frame
     /// in a backup.
@@ -15,7 +15,7 @@ extension MessageBackup {
 
         // MARK: MessageBackupLoggableId
 
-        public var typeLogString: String { "BackupProtoAccountData" }
+        public var typeLogString: String { "BackupProto.AccountData" }
         public var idLogString: String { "localUser" }
     }
 
@@ -26,7 +26,7 @@ extension MessageBackup {
 }
 
 /**
- * Archives the ``BackupProtoAccountData`` frame
+ * Archives the ``BackupProto.AccountData`` frame
  */
 public protocol MessageBackupAccountDataArchiver: MessageBackupProtoArchiver {
     typealias RestoreFrameResult = MessageBackup.RestoreFrameResult<MessageBackup.AccountDataId>
@@ -37,7 +37,7 @@ public protocol MessageBackupAccountDataArchiver: MessageBackupProtoArchiver {
     ) -> MessageBackup.ArchiveAccountDataResult
 
     func restore(
-        _ accountData: BackupProtoAccountData,
+        _ accountData: BackupProto.AccountData,
         tx: DBWriteTransaction
     ) -> RestoreFrameResult
 }
@@ -103,7 +103,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
             return .failure(.missingLocalProfileKey(MessageBackup.AccountDataId()))
         }
 
-        var accountData = BackupProtoAccountData(
+        var accountData = BackupProto.AccountData(
             profileKey: profileKeyData,
             givenName: localProfile.givenName ?? "",
             familyName: localProfile.familyName ?? "",
@@ -121,7 +121,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         accountData.accountSettings = buildAccountSettingsProto(tx: tx)
 
         let error = Self.writeFrameToStream(stream, objectId: MessageBackup.AccountDataId()) {
-            var frame = BackupProtoFrame()
+            var frame = BackupProto.Frame()
             frame.item = .account(accountData)
             return frame
         }
@@ -133,12 +133,12 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         }
     }
 
-    private func buildUsernameLinkProto(tx: DBReadTransaction) -> (username: String, usernameLink: BackupProtoAccountData.BackupProtoUsernameLink)? {
+    private func buildUsernameLinkProto(tx: DBReadTransaction) -> (username: String, usernameLink: BackupProto.AccountData.UsernameLink)? {
         switch self.localUsernameManager.usernameState(tx: tx) {
         case .unset, .linkCorrupted, .usernameAndLinkCorrupted:
             return nil
         case .available(let username, let usernameLink):
-            var usernameLink = BackupProtoAccountData.BackupProtoUsernameLink(
+            var usernameLink = BackupProto.AccountData.UsernameLink(
                 entropy: usernameLink.entropy,
                 serverId: usernameLink.handle.data
             )
@@ -154,7 +154,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         }
     }
 
-    private func buildAccountSettingsProto(tx: DBReadTransaction) -> BackupProtoAccountData.BackupProtoAccountSettings {
+    private func buildAccountSettingsProto(tx: DBReadTransaction) -> BackupProto.AccountData.AccountSettings {
 
         // Fetch all the account settings
         let readReceipts = receiptManager.areReadReceiptsEnabled(tx: tx)
@@ -182,7 +182,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         // Optional settings
         let preferredReactionEmoji = reactionManager.customEmojiSet(tx: tx)
         let storyViewReceiptsEnabled = storyManager.areViewReceiptsEnabled(tx: tx)
-        let phoneNumberSharingMode: BackupProtoAccountData.BackupProtoPhoneNumberSharingMode? = {
+        let phoneNumberSharingMode: BackupProto.AccountData.PhoneNumberSharingMode? = {
             switch udManager.phoneNumberSharingMode(tx: tx) {
             case .everybody:
                 return .EVERYBODY
@@ -194,7 +194,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         }()
 
         // Populate the proto with the settings
-        var accountSettings = BackupProtoAccountData.BackupProtoAccountSettings(
+        var accountSettings = BackupProto.AccountData.AccountSettings(
             readReceipts: readReceipts,
             sealedSenderIndicators: sealedSenderIndicators,
             typingIndicators: typingIndicatorsEnabled,
@@ -221,7 +221,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
     }
 
     public func restore(
-        _ accountData: BackupProtoAccountData,
+        _ accountData: BackupProto.AccountData,
         tx: DBWriteTransaction
     ) -> RestoreFrameResult {
 
@@ -316,7 +316,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
 }
 
 private extension Usernames.QRCodeColor {
-    var backupProtoColor: BackupProtoAccountData.BackupProtoUsernameLink.BackupProtoColor {
+    var backupProtoColor: BackupProto.AccountData.UsernameLink.Color {
         switch self {
         case .blue: return .BLUE
         case .white: return .WHITE
@@ -330,7 +330,7 @@ private extension Usernames.QRCodeColor {
     }
 }
 
-private extension BackupProtoAccountData.BackupProtoUsernameLink.BackupProtoColor {
+private extension BackupProto.AccountData.UsernameLink.Color {
     var qrCodeColor: Usernames.QRCodeColor {
         switch self {
         case .BLUE: return .blue

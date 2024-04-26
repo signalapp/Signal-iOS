@@ -44,7 +44,7 @@ extension TSInteraction {
     }
 }
 
-extension BackupProtoChatItem {
+extension BackupProto.ChatItem {
 
     internal var archiverType: MessageBackup.InteractionArchiverType {
         switch directionalDetails {

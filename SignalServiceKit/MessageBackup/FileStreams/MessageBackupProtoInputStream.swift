@@ -25,10 +25,10 @@ public protocol MessageBackupProtoInputStream {
 
     /// Read the single header object at the start of every backup file.
     /// If this header is missing or invalid, the backup should be discarded.
-    func readHeader() -> MessageBackup.ProtoInputStreamReadResult<BackupProtoBackupInfo>
+    func readHeader() -> MessageBackup.ProtoInputStreamReadResult<BackupProto.BackupInfo>
 
     /// Read a the next frame from the backup file.
-    func readFrame() -> MessageBackup.ProtoInputStreamReadResult<BackupProtoFrame>
+    func readFrame() -> MessageBackup.ProtoInputStreamReadResult<BackupProto.Frame>
 
     /// Close the stream. Attempting to read after closing will result in failures.
     func closeFileStream()
@@ -47,17 +47,17 @@ internal class MessageBackupProtoInputStreamImpl: MessageBackupProtoInputStream 
         self.inputStreamDelegate = inputStreamDelegate
     }
 
-    internal func readHeader() -> MessageBackup.ProtoInputStreamReadResult<BackupProtoBackupInfo> {
+    internal func readHeader() -> MessageBackup.ProtoInputStreamReadResult<BackupProto.BackupInfo> {
         return readProto { protoData in
             return try ProtoDecoder(enumDecodingStrategy: .returnNil)
-                .decode(BackupProtoBackupInfo.self, from: protoData)
+                .decode(BackupProto.BackupInfo.self, from: protoData)
         }
     }
 
-    internal func readFrame() -> MessageBackup.ProtoInputStreamReadResult<BackupProtoFrame> {
+    internal func readFrame() -> MessageBackup.ProtoInputStreamReadResult<BackupProto.Frame> {
         return readProto { protoData in
             return try ProtoDecoder(enumDecodingStrategy: .returnNil)
-                .decode(BackupProtoFrame.self, from: protoData)
+                .decode(BackupProto.Frame.self, from: protoData)
         }
     }
 

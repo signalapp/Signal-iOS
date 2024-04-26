@@ -14,10 +14,10 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
 
     private static func buildEmptyRevokedInvitees(
         count: UInt
-    ) -> [BackupProtoGroupInvitationRevokedUpdate.BackupProtoInvitee] {
+    ) -> [BackupProto.GroupInvitationRevokedUpdate.Invitee] {
         // All the invitees are empty; only their count matters.
         return (0..<count).map { _ in
-            return BackupProtoGroupInvitationRevokedUpdate.BackupProtoInvitee()
+            return BackupProto.GroupInvitationRevokedUpdate.Invitee()
         }
     }
 
@@ -29,7 +29,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
         // we only ever insert our aci and use special cases for our pni.
         localUserAci: Aci,
         interactionId: MessageBackup.InteractionUniqueId
-    ) -> MessageBackup.ArchiveInteractionResult<BackupProtoGroupChangeChatUpdate.BackupProtoUpdate> {
+    ) -> MessageBackup.ArchiveInteractionResult<BackupProto.GroupChangeChatUpdate.Update> {
         let localAciData = localUserAci.rawUUID.data
         func aciData(_ aci: AciUuid) -> Data {
             return aci.wrappedValue.rawUUID.data
@@ -41,12 +41,12 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             return serviceId.wrappedValue.serviceIdBinary.asData
         }
 
-        var update = BackupProtoGroupChangeChatUpdate.BackupProtoUpdate()
+        var update = BackupProto.GroupChangeChatUpdate.Update()
 
         func setUpdate<Proto>(
             _ proto: Proto,
             setOptionalFields: ((inout Proto) -> Void)? = nil,
-            asUpdate: (Proto) -> BackupProtoGroupChangeChatUpdate.BackupProtoUpdate.Update
+            asUpdate: (Proto) -> BackupProto.GroupChangeChatUpdate.Update.Update
         ) {
             var proto = proto
             setOptionalFields?(&proto)
@@ -61,14 +61,14 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             if count == 0 {
                 // If the count is 0, its actually just a request to join.
                 setUpdate(
-                    BackupProtoGroupJoinRequestUpdate(
+                    BackupProto.GroupJoinRequestUpdate(
                         requestorAci: aciData(requester)
                     ),
                     asUpdate: { .groupJoinRequestUpdate($0) }
                 )
             } else {
                 setUpdate(
-                    BackupProtoGroupSequenceOfRequestsAndCancelsUpdate(
+                    BackupProto.GroupSequenceOfRequestsAndCancelsUpdate(
                         requestorAci: aciData(requester),
                         count: .init(clamping: count)
                     ),
@@ -77,7 +77,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             }
         case .invitedPniPromotedToFullMemberAci(let newMember, let inviter):
             setUpdate(
-                BackupProtoGroupInvitationAcceptedUpdate(
+                BackupProto.GroupInvitationAcceptedUpdate(
                     newMemberAci: aciData(newMember)
                 ),
                 setOptionalFields: {
@@ -89,7 +89,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .genericUpdateByLocalUser:
             setUpdate(
-                BackupProtoGenericGroupUpdate(),
+                BackupProto.GenericGroupUpdate(),
                 setOptionalFields: {
                     $0.updaterAci = localAciData
                 },
@@ -97,7 +97,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .genericUpdateByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGenericGroupUpdate(),
+                BackupProto.GenericGroupUpdate(),
                 setOptionalFields: {
                     $0.updaterAci = aciData(updaterAci)
                 },
@@ -105,12 +105,12 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .genericUpdateByUnknownUser:
             setUpdate(
-                BackupProtoGenericGroupUpdate(),
+                BackupProto.GenericGroupUpdate(),
                 asUpdate: { .genericGroupUpdate($0) }
             )
         case .createdByLocalUser:
             setUpdate(
-                BackupProtoGroupCreationUpdate(),
+                BackupProto.GroupCreationUpdate(),
                 setOptionalFields: {
                     $0.updaterAci = localAciData
                 },
@@ -118,7 +118,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .createdByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupCreationUpdate(),
+                BackupProto.GroupCreationUpdate(),
                 setOptionalFields: {
                     $0.updaterAci = aciData(updaterAci)
                 },
@@ -126,7 +126,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .createdByUnknownUser:
             setUpdate(
-                BackupProtoGroupCreationUpdate(),
+                BackupProto.GroupCreationUpdate(),
                 asUpdate: { .groupCreationUpdate($0) }
             )
         case .inviteFriendsToNewlyCreatedGroup:
@@ -136,31 +136,31 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             return .skippableGroupUpdate(.inviteFriendsToNewlyCreatedGroup)
         case .wasMigrated:
             setUpdate(
-                BackupProtoGroupV2MigrationUpdate(),
+                BackupProto.GroupV2MigrationUpdate(),
                 asUpdate: { .groupV2MigrationUpdate($0) }
             )
         case .localUserInvitedAfterMigration:
             setUpdate(
-                BackupProtoGroupV2MigrationSelfInvitedUpdate(),
+                BackupProto.GroupV2MigrationSelfInvitedUpdate(),
                 asUpdate: { .groupV2MigrationSelfInvitedUpdate($0) }
             )
         case .otherUsersInvitedAfterMigration(let count):
             setUpdate(
-                BackupProtoGroupV2MigrationInvitedMembersUpdate(
+                BackupProto.GroupV2MigrationInvitedMembersUpdate(
                     invitedMembersCount: .init(clamping: count)
                 ),
                 asUpdate: { .groupV2MigrationInvitedMembersUpdate($0) }
             )
         case .otherUsersDroppedAfterMigration(let count):
             setUpdate(
-                BackupProtoGroupV2MigrationDroppedMembersUpdate(
+                BackupProto.GroupV2MigrationDroppedMembersUpdate(
                     droppedMembersCount: .init(clamping: count)
                 ),
                 asUpdate: { .groupV2MigrationDroppedMembersUpdate($0) }
             )
         case .nameChangedByLocalUser(let newGroupName):
             setUpdate(
-                BackupProtoGroupNameUpdate(),
+                BackupProto.GroupNameUpdate(),
                 setOptionalFields: {
                     $0.newGroupName = newGroupName
                     $0.updaterAci = localAciData
@@ -169,7 +169,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .nameChangedByOtherUser(let updaterAci, let newGroupName):
             setUpdate(
-                BackupProtoGroupNameUpdate(),
+                BackupProto.GroupNameUpdate(),
                 setOptionalFields: {
                     $0.newGroupName = newGroupName
                     $0.updaterAci = aciData(updaterAci)
@@ -178,7 +178,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .nameChangedByUnknownUser(let newGroupName):
             setUpdate(
-                BackupProtoGroupNameUpdate(),
+                BackupProto.GroupNameUpdate(),
                 setOptionalFields: {
                     $0.newGroupName = newGroupName
                 },
@@ -186,7 +186,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .nameRemovedByLocalUser:
             setUpdate(
-                BackupProtoGroupNameUpdate(),
+                BackupProto.GroupNameUpdate(),
                 setOptionalFields: {
                     // nil group name means removed.
                     $0.updaterAci = localAciData
@@ -195,7 +195,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .nameRemovedByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupNameUpdate(),
+                BackupProto.GroupNameUpdate(),
                 setOptionalFields: {
                     // nil group name means removed.
                     $0.updaterAci = aciData(updaterAci)
@@ -204,14 +204,14 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .nameRemovedByUnknownUser:
             setUpdate(
-                BackupProtoGroupNameUpdate(),
+                BackupProto.GroupNameUpdate(),
                 // nil group name means removed, updater unknown.
                 // nothing to set.
                 asUpdate: { .groupNameUpdate($0) }
             )
         case .avatarChangedByLocalUser:
             setUpdate(
-                BackupProtoGroupAvatarUpdate(wasRemoved: false),
+                BackupProto.GroupAvatarUpdate(wasRemoved: false),
                 setOptionalFields: {
                     $0.updaterAci = localAciData
                 },
@@ -219,7 +219,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .avatarChangedByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupAvatarUpdate(wasRemoved: false),
+                BackupProto.GroupAvatarUpdate(wasRemoved: false),
                 setOptionalFields: {
                     $0.updaterAci = aciData(updaterAci)
                 },
@@ -227,12 +227,12 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .avatarChangedByUnknownUser:
             setUpdate(
-                BackupProtoGroupAvatarUpdate(wasRemoved: false),
+                BackupProto.GroupAvatarUpdate(wasRemoved: false),
                 asUpdate: { .groupAvatarUpdate($0) }
             )
         case .avatarRemovedByLocalUser:
             setUpdate(
-                BackupProtoGroupAvatarUpdate(wasRemoved: true),
+                BackupProto.GroupAvatarUpdate(wasRemoved: true),
                 setOptionalFields: {
                     $0.updaterAci = localAciData
                 },
@@ -240,7 +240,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .avatarRemovedByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupAvatarUpdate(wasRemoved: true),
+                BackupProto.GroupAvatarUpdate(wasRemoved: true),
                 setOptionalFields: {
                     $0.updaterAci = aciData(updaterAci)
                 },
@@ -248,12 +248,12 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .avatarRemovedByUnknownUser:
             setUpdate(
-                BackupProtoGroupAvatarUpdate(wasRemoved: true),
+                BackupProto.GroupAvatarUpdate(wasRemoved: true),
                 asUpdate: { .groupAvatarUpdate($0) }
             )
         case .descriptionChangedByLocalUser(let newDescription):
             setUpdate(
-                BackupProtoGroupDescriptionUpdate(),
+                BackupProto.GroupDescriptionUpdate(),
                 setOptionalFields: {
                     $0.newDescription = newDescription
                     $0.updaterAci = localAciData
@@ -262,7 +262,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .descriptionChangedByOtherUser(let updaterAci, let newDescription):
             setUpdate(
-                BackupProtoGroupDescriptionUpdate(),
+                BackupProto.GroupDescriptionUpdate(),
                 setOptionalFields: {
                     $0.newDescription = newDescription
                     $0.updaterAci = aciData(updaterAci)
@@ -271,7 +271,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .descriptionChangedByUnknownUser(let newDescription):
             setUpdate(
-                BackupProtoGroupDescriptionUpdate(),
+                BackupProto.GroupDescriptionUpdate(),
                 setOptionalFields: {
                     $0.newDescription = newDescription
                 },
@@ -279,7 +279,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .descriptionRemovedByLocalUser:
             setUpdate(
-                BackupProtoGroupDescriptionUpdate(),
+                BackupProto.GroupDescriptionUpdate(),
                 setOptionalFields: {
                     // nil group description means removed.
                     $0.updaterAci = localAciData
@@ -288,7 +288,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .descriptionRemovedByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupDescriptionUpdate(),
+                BackupProto.GroupDescriptionUpdate(),
                 setOptionalFields: {
                     // nil group name means removed.
                     $0.updaterAci = aciData(updaterAci)
@@ -297,14 +297,14 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .descriptionRemovedByUnknownUser:
             setUpdate(
-                BackupProtoGroupDescriptionUpdate(),
+                BackupProto.GroupDescriptionUpdate(),
                 // nil group description means removed, updater unknown.
                 // nothing to set.
                 asUpdate: { .groupDescriptionUpdate($0) }
             )
         case .membersAccessChangedByLocalUser(let newAccess):
             setUpdate(
-                BackupProtoGroupMembershipAccessLevelChangeUpdate(),
+                BackupProto.GroupMembershipAccessLevelChangeUpdate(),
                 setOptionalFields: {
                     $0.updaterAci = localAciData
                     $0.accessLevel = newAccess.backupAccessLevel
@@ -313,7 +313,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .membersAccessChangedByOtherUser(let updaterAci, let newAccess):
             setUpdate(
-                BackupProtoGroupMembershipAccessLevelChangeUpdate(),
+                BackupProto.GroupMembershipAccessLevelChangeUpdate(),
                 setOptionalFields: {
                     $0.updaterAci = aciData(updaterAci)
                     $0.accessLevel = newAccess.backupAccessLevel
@@ -322,7 +322,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .membersAccessChangedByUnknownUser(let newAccess):
             setUpdate(
-                BackupProtoGroupMembershipAccessLevelChangeUpdate(),
+                BackupProto.GroupMembershipAccessLevelChangeUpdate(),
                 setOptionalFields: {
                     $0.accessLevel = newAccess.backupAccessLevel
                 },
@@ -330,7 +330,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .attributesAccessChangedByLocalUser(let newAccess):
             setUpdate(
-                BackupProtoGroupAttributesAccessLevelChangeUpdate(),
+                BackupProto.GroupAttributesAccessLevelChangeUpdate(),
                 setOptionalFields: {
                     $0.updaterAci = localAciData
                     $0.accessLevel = newAccess.backupAccessLevel
@@ -339,7 +339,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .attributesAccessChangedByOtherUser(let updaterAci, let newAccess):
             setUpdate(
-                BackupProtoGroupAttributesAccessLevelChangeUpdate(),
+                BackupProto.GroupAttributesAccessLevelChangeUpdate(),
                 setOptionalFields: {
                     $0.updaterAci = aciData(updaterAci)
                     $0.accessLevel = newAccess.backupAccessLevel
@@ -348,7 +348,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .attributesAccessChangedByUnknownUser(let newAccess):
             setUpdate(
-                BackupProtoGroupAttributesAccessLevelChangeUpdate(),
+                BackupProto.GroupAttributesAccessLevelChangeUpdate(),
                 setOptionalFields: {
                     $0.accessLevel = newAccess.backupAccessLevel
                 },
@@ -356,7 +356,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .announcementOnlyEnabledByLocalUser:
             setUpdate(
-                BackupProtoGroupAnnouncementOnlyChangeUpdate(isAnnouncementOnly: true),
+                BackupProto.GroupAnnouncementOnlyChangeUpdate(isAnnouncementOnly: true),
                 setOptionalFields: {
                     $0.updaterAci = localAciData
                 },
@@ -364,7 +364,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .announcementOnlyEnabledByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupAnnouncementOnlyChangeUpdate(isAnnouncementOnly: true),
+                BackupProto.GroupAnnouncementOnlyChangeUpdate(isAnnouncementOnly: true),
                 setOptionalFields: {
                     $0.updaterAci = aciData(updaterAci)
                 },
@@ -372,12 +372,12 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .announcementOnlyEnabledByUnknownUser:
             setUpdate(
-                BackupProtoGroupAnnouncementOnlyChangeUpdate(isAnnouncementOnly: true),
+                BackupProto.GroupAnnouncementOnlyChangeUpdate(isAnnouncementOnly: true),
                 asUpdate: { .groupAnnouncementOnlyChangeUpdate($0) }
             )
         case .announcementOnlyDisabledByLocalUser:
             setUpdate(
-                BackupProtoGroupAnnouncementOnlyChangeUpdate(isAnnouncementOnly: false),
+                BackupProto.GroupAnnouncementOnlyChangeUpdate(isAnnouncementOnly: false),
                 setOptionalFields: {
                     $0.updaterAci = localAciData
                 },
@@ -385,7 +385,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .announcementOnlyDisabledByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupAnnouncementOnlyChangeUpdate(isAnnouncementOnly: false),
+                BackupProto.GroupAnnouncementOnlyChangeUpdate(isAnnouncementOnly: false),
                 setOptionalFields: {
                     $0.updaterAci = aciData(updaterAci)
                 },
@@ -393,12 +393,12 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .announcementOnlyDisabledByUnknownUser:
             setUpdate(
-                BackupProtoGroupAnnouncementOnlyChangeUpdate(isAnnouncementOnly: false),
+                BackupProto.GroupAnnouncementOnlyChangeUpdate(isAnnouncementOnly: false),
                 asUpdate: { .groupAnnouncementOnlyChangeUpdate($0) }
             )
         case .localUserWasGrantedAdministratorByLocalUser:
             setUpdate(
-                BackupProtoGroupAdminStatusUpdate(
+                BackupProto.GroupAdminStatusUpdate(
                     memberAci: localAciData,
                     wasAdminStatusGranted: true
                 ),
@@ -409,7 +409,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .localUserWasGrantedAdministratorByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupAdminStatusUpdate(
+                BackupProto.GroupAdminStatusUpdate(
                     memberAci: localAciData,
                     wasAdminStatusGranted: true
                 ),
@@ -420,7 +420,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .localUserWasGrantedAdministratorByUnknownUser:
             setUpdate(
-                BackupProtoGroupAdminStatusUpdate(
+                BackupProto.GroupAdminStatusUpdate(
                     memberAci: localAciData,
                     wasAdminStatusGranted: true
                 ),
@@ -428,7 +428,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .otherUserWasGrantedAdministratorByLocalUser(let userAci):
             setUpdate(
-                BackupProtoGroupAdminStatusUpdate(
+                BackupProto.GroupAdminStatusUpdate(
                     memberAci: aciData(userAci),
                     wasAdminStatusGranted: true
                 ),
@@ -439,7 +439,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .otherUserWasGrantedAdministratorByOtherUser(let updaterAci, let userAci):
             setUpdate(
-                BackupProtoGroupAdminStatusUpdate(
+                BackupProto.GroupAdminStatusUpdate(
                     memberAci: aciData(userAci),
                     wasAdminStatusGranted: true
                 ),
@@ -450,7 +450,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .otherUserWasGrantedAdministratorByUnknownUser(let userAci):
             setUpdate(
-                BackupProtoGroupAdminStatusUpdate(
+                BackupProto.GroupAdminStatusUpdate(
                     memberAci: aciData(userAci),
                     wasAdminStatusGranted: true
                 ),
@@ -458,7 +458,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .localUserWasRevokedAdministratorByLocalUser:
             setUpdate(
-                BackupProtoGroupAdminStatusUpdate(
+                BackupProto.GroupAdminStatusUpdate(
                     memberAci: localAciData,
                     wasAdminStatusGranted: false
                 ),
@@ -469,7 +469,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .localUserWasRevokedAdministratorByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupAdminStatusUpdate(
+                BackupProto.GroupAdminStatusUpdate(
                     memberAci: localAciData,
                     wasAdminStatusGranted: false
                 ),
@@ -480,7 +480,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .localUserWasRevokedAdministratorByUnknownUser:
             setUpdate(
-                BackupProtoGroupAdminStatusUpdate(
+                BackupProto.GroupAdminStatusUpdate(
                     memberAci: localAciData,
                     wasAdminStatusGranted: false
                 ),
@@ -488,7 +488,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .otherUserWasRevokedAdministratorByLocalUser(let userAci):
             setUpdate(
-                BackupProtoGroupAdminStatusUpdate(
+                BackupProto.GroupAdminStatusUpdate(
                     memberAci: aciData(userAci),
                     wasAdminStatusGranted: false
                 ),
@@ -499,7 +499,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .otherUserWasRevokedAdministratorByOtherUser(let updaterAci, let userAci):
             setUpdate(
-                BackupProtoGroupAdminStatusUpdate(
+                BackupProto.GroupAdminStatusUpdate(
                     memberAci: aciData(userAci),
                     wasAdminStatusGranted: false
                 ),
@@ -510,7 +510,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .otherUserWasRevokedAdministratorByUnknownUser(let userAci):
             setUpdate(
-                BackupProtoGroupAdminStatusUpdate(
+                BackupProto.GroupAdminStatusUpdate(
                     memberAci: aciData(userAci),
                     wasAdminStatusGranted: false
                 ),
@@ -518,14 +518,14 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .localUserLeft:
             setUpdate(
-                BackupProtoGroupMemberLeftUpdate(
+                BackupProto.GroupMemberLeftUpdate(
                     aci: localAciData
                 ),
                 asUpdate: { .groupMemberLeftUpdate($0) }
             )
         case .localUserRemoved(let removerAci):
             setUpdate(
-                BackupProtoGroupMemberRemovedUpdate(
+                BackupProto.GroupMemberRemovedUpdate(
                     removedAci: localAciData
                 ),
                 setOptionalFields: {
@@ -535,21 +535,21 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .localUserRemovedByUnknownUser:
             setUpdate(
-                BackupProtoGroupMemberRemovedUpdate(
+                BackupProto.GroupMemberRemovedUpdate(
                     removedAci: localAciData
                 ),
                 asUpdate: { .groupMemberRemovedUpdate($0) }
             )
         case .otherUserLeft(let userAci):
             setUpdate(
-                BackupProtoGroupMemberLeftUpdate(
+                BackupProto.GroupMemberLeftUpdate(
                     aci: aciData(userAci)
                 ),
                 asUpdate: { .groupMemberLeftUpdate($0) }
             )
         case .otherUserRemovedByLocalUser(let userAci):
             setUpdate(
-                BackupProtoGroupMemberRemovedUpdate(
+                BackupProto.GroupMemberRemovedUpdate(
                     removedAci: aciData(userAci)
                 ),
                 setOptionalFields: {
@@ -559,7 +559,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .otherUserRemoved(let removerAci, let userAci):
             setUpdate(
-                BackupProtoGroupMemberRemovedUpdate(
+                BackupProto.GroupMemberRemovedUpdate(
                     removedAci: aciData(userAci)
                 ),
                 setOptionalFields: {
@@ -569,14 +569,14 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .otherUserRemovedByUnknownUser(let userAci):
             setUpdate(
-                BackupProtoGroupMemberRemovedUpdate(
+                BackupProto.GroupMemberRemovedUpdate(
                     removedAci: aciData(userAci)
                 ),
                 asUpdate: { .groupMemberRemovedUpdate($0) }
             )
         case .localUserWasInvitedByLocalUser:
             setUpdate(
-                BackupProtoSelfInvitedToGroupUpdate(),
+                BackupProto.SelfInvitedToGroupUpdate(),
                 setOptionalFields: {
                     $0.inviterAci = localAciData
                 },
@@ -584,7 +584,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .localUserWasInvitedByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoSelfInvitedToGroupUpdate(),
+                BackupProto.SelfInvitedToGroupUpdate(),
                 setOptionalFields: {
                     $0.inviterAci = aciData(updaterAci)
                 },
@@ -592,19 +592,19 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .localUserWasInvitedByUnknownUser:
             setUpdate(
-                BackupProtoSelfInvitedToGroupUpdate(),
+                BackupProto.SelfInvitedToGroupUpdate(),
                 asUpdate: { .selfInvitedToGroupUpdate($0) }
             )
         case .otherUserWasInvitedByLocalUser(let inviteeServiceId):
             setUpdate(
-                BackupProtoSelfInvitedOtherUserToGroupUpdate(
+                BackupProto.SelfInvitedOtherUserToGroupUpdate(
                     inviteeServiceId: serviceIdData(inviteeServiceId)
                 ),
                 asUpdate: { .selfInvitedOtherUserToGroupUpdate($0) }
             )
         case .unnamedUsersWereInvitedByLocalUser(let count):
             setUpdate(
-                BackupProtoGroupUnknownInviteeUpdate(
+                BackupProto.GroupUnknownInviteeUpdate(
                     inviteeCount: UInt32(clamping: count)
                 ),
                 setOptionalFields: {
@@ -614,7 +614,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .unnamedUsersWereInvitedByOtherUser(let updaterAci, let count):
             setUpdate(
-                BackupProtoGroupUnknownInviteeUpdate(
+                BackupProto.GroupUnknownInviteeUpdate(
                     inviteeCount: UInt32(clamping: count)
                 ),
                 setOptionalFields: {
@@ -624,14 +624,14 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .unnamedUsersWereInvitedByUnknownUser(let count):
             setUpdate(
-                BackupProtoGroupUnknownInviteeUpdate(
+                BackupProto.GroupUnknownInviteeUpdate(
                     inviteeCount: UInt32(clamping: count)
                 ),
                 asUpdate: { .groupUnknownInviteeUpdate($0) }
             )
         case .localUserAcceptedInviteFromInviter(let inviterAci):
             setUpdate(
-                BackupProtoGroupInvitationAcceptedUpdate(
+                BackupProto.GroupInvitationAcceptedUpdate(
                     newMemberAci: localAciData
                 ),
                 setOptionalFields: {
@@ -641,14 +641,14 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .localUserAcceptedInviteFromUnknownUser:
             setUpdate(
-                BackupProtoGroupInvitationAcceptedUpdate(
+                BackupProto.GroupInvitationAcceptedUpdate(
                     newMemberAci: localAciData
                 ),
                 asUpdate: { .groupInvitationAcceptedUpdate($0) }
             )
         case .otherUserAcceptedInviteFromLocalUser(let userAci):
             setUpdate(
-                BackupProtoGroupInvitationAcceptedUpdate(
+                BackupProto.GroupInvitationAcceptedUpdate(
                     newMemberAci: aciData(userAci)
                 ),
                 setOptionalFields: {
@@ -658,7 +658,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .otherUserAcceptedInviteFromInviter(let userAci, let inviterAci):
             setUpdate(
-                BackupProtoGroupInvitationAcceptedUpdate(
+                BackupProto.GroupInvitationAcceptedUpdate(
                     newMemberAci: aciData(userAci)
                 ),
                 setOptionalFields: {
@@ -668,28 +668,28 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .otherUserAcceptedInviteFromUnknownUser(let userAci):
             setUpdate(
-                BackupProtoGroupInvitationAcceptedUpdate(
+                BackupProto.GroupInvitationAcceptedUpdate(
                     newMemberAci: aciData(userAci)
                 ),
                 asUpdate: { .groupInvitationAcceptedUpdate($0) }
             )
         case .localUserJoined:
             setUpdate(
-                BackupProtoGroupMemberJoinedUpdate(
+                BackupProto.GroupMemberJoinedUpdate(
                     newMemberAci: localAciData
                 ),
                 asUpdate: { .groupMemberJoinedUpdate($0) }
             )
         case .otherUserJoined(let userAci):
             setUpdate(
-                BackupProtoGroupMemberJoinedUpdate(
+                BackupProto.GroupMemberJoinedUpdate(
                     newMemberAci: aciData(userAci)
                 ),
                 asUpdate: { .groupMemberJoinedUpdate($0) }
             )
         case .localUserAddedByLocalUser:
             setUpdate(
-                BackupProtoGroupMemberAddedUpdate(
+                BackupProto.GroupMemberAddedUpdate(
                     newMemberAci: localAciData,
                     // Note: on iOS we don't track if there was an invitation
                     // or who the inviter was.
@@ -702,7 +702,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .localUserAddedByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupMemberAddedUpdate(
+                BackupProto.GroupMemberAddedUpdate(
                     newMemberAci: localAciData,
                     // Note: on iOS we don't track if there was an invitation
                     // or who the inviter was.
@@ -715,7 +715,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .localUserAddedByUnknownUser:
             setUpdate(
-                BackupProtoGroupMemberAddedUpdate(
+                BackupProto.GroupMemberAddedUpdate(
                     newMemberAci: localAciData,
                     // Note: on iOS we don't track if there was an invitation
                     // or who the inviter was.
@@ -725,7 +725,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .otherUserAddedByLocalUser(let userAci):
             setUpdate(
-                BackupProtoGroupMemberAddedUpdate(
+                BackupProto.GroupMemberAddedUpdate(
                     newMemberAci: aciData(userAci),
                     // Note: on iOS we don't track if there was an invitation
                     // or who the inviter was.
@@ -738,7 +738,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .otherUserAddedByOtherUser(let updaterAci, let userAci):
             setUpdate(
-                BackupProtoGroupMemberAddedUpdate(
+                BackupProto.GroupMemberAddedUpdate(
                     newMemberAci: aciData(userAci),
                     // Note: on iOS we don't track if there was an invitation
                     // or who the inviter was.
@@ -751,7 +751,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .otherUserAddedByUnknownUser(let userAci):
             setUpdate(
-                BackupProtoGroupMemberAddedUpdate(
+                BackupProto.GroupMemberAddedUpdate(
                     newMemberAci: aciData(userAci),
                     // Note: on iOS we don't track if there was an invitation
                     // or who the inviter was.
@@ -761,7 +761,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .localUserDeclinedInviteFromInviter(let inviterAci):
             setUpdate(
-                BackupProtoGroupInvitationDeclinedUpdate(),
+                BackupProto.GroupInvitationDeclinedUpdate(),
                 setOptionalFields: {
                     $0.inviteeAci = localAciData
                     $0.inviterAci = aciData(inviterAci)
@@ -770,7 +770,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .localUserDeclinedInviteFromUnknownUser:
             setUpdate(
-                BackupProtoGroupInvitationDeclinedUpdate(),
+                BackupProto.GroupInvitationDeclinedUpdate(),
                 setOptionalFields: {
                     $0.inviteeAci = localAciData
                 },
@@ -778,7 +778,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .otherUserDeclinedInviteFromLocalUser(let invitee):
             setUpdate(
-                BackupProtoGroupInvitationDeclinedUpdate(),
+                BackupProto.GroupInvitationDeclinedUpdate(),
                 setOptionalFields: {
                     switch invitee.wrappedValue.concreteType {
                     case .pni:
@@ -794,7 +794,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .otherUserDeclinedInviteFromInviter(let invitee, let inviterAci):
             setUpdate(
-                BackupProtoGroupInvitationDeclinedUpdate(),
+                BackupProto.GroupInvitationDeclinedUpdate(),
                 setOptionalFields: {
                     switch invitee.wrappedValue.concreteType {
                     case .pni:
@@ -810,7 +810,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .otherUserDeclinedInviteFromUnknownUser(let invitee):
             setUpdate(
-                BackupProtoGroupInvitationDeclinedUpdate(),
+                BackupProto.GroupInvitationDeclinedUpdate(),
                 setOptionalFields: {
                     switch invitee.wrappedValue.concreteType {
                     case .pni:
@@ -825,7 +825,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .unnamedUserDeclinedInviteFromInviter(let inviterAci):
             setUpdate(
-                BackupProtoGroupInvitationDeclinedUpdate(),
+                BackupProto.GroupInvitationDeclinedUpdate(),
                 setOptionalFields: {
                     $0.inviterAci = aciData(inviterAci)
                 },
@@ -833,12 +833,12 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .unnamedUserDeclinedInviteFromUnknownUser:
             setUpdate(
-                BackupProtoGroupInvitationDeclinedUpdate(),
+                BackupProto.GroupInvitationDeclinedUpdate(),
                 asUpdate: { .groupInvitationDeclinedUpdate($0) }
             )
         case .localUserInviteRevoked(let revokerAci):
             setUpdate(
-                BackupProtoGroupSelfInvitationRevokedUpdate(),
+                BackupProto.GroupSelfInvitationRevokedUpdate(),
                 setOptionalFields: {
                     $0.revokerAci = aciData(revokerAci)
                 },
@@ -846,11 +846,11 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .localUserInviteRevokedByUnknownUser:
             setUpdate(
-                BackupProtoGroupSelfInvitationRevokedUpdate(),
+                BackupProto.GroupSelfInvitationRevokedUpdate(),
                 asUpdate: { .groupSelfInvitationRevokedUpdate($0) }
             )
         case .otherUserInviteRevokedByLocalUser(let invitee):
-            var inviteeProto = BackupProtoGroupInvitationRevokedUpdate.BackupProtoInvitee()
+            var inviteeProto = BackupProto.GroupInvitationRevokedUpdate.Invitee()
             switch invitee.wrappedValue.concreteType {
             case .aci(let aci):
                 inviteeProto.inviteeAci = aciData(aci.codableUuid)
@@ -859,7 +859,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             }
             // Note: on iOS we don't keep who the inviter was.
             setUpdate(
-                BackupProtoGroupInvitationRevokedUpdate(),
+                BackupProto.GroupInvitationRevokedUpdate(),
                 setOptionalFields: {
                     $0.updaterAci = localAciData
                     $0.invitees = [inviteeProto]
@@ -870,7 +870,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             // All the invitees are empty; only their count matters.
             let invitees = buildEmptyRevokedInvitees(count: count)
             setUpdate(
-                BackupProtoGroupInvitationRevokedUpdate(),
+                BackupProto.GroupInvitationRevokedUpdate(),
                 setOptionalFields: {
                     $0.updaterAci = localAciData
                     $0.invitees = invitees
@@ -881,7 +881,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             // All the invitees are empty; only their count matters.
             let invitees = buildEmptyRevokedInvitees(count: count)
             setUpdate(
-                BackupProtoGroupInvitationRevokedUpdate(),
+                BackupProto.GroupInvitationRevokedUpdate(),
                 setOptionalFields: {
                     $0.updaterAci = aciData(updaterAci)
                     $0.invitees = invitees
@@ -892,7 +892,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             // All the invitees are empty; only their count matters.
             let invitees = buildEmptyRevokedInvitees(count: count)
             setUpdate(
-                BackupProtoGroupInvitationRevokedUpdate(),
+                BackupProto.GroupInvitationRevokedUpdate(),
                 setOptionalFields: {
                     $0.invitees = invitees
                 },
@@ -900,21 +900,21 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .localUserRequestedToJoin:
             setUpdate(
-                BackupProtoGroupJoinRequestUpdate(
+                BackupProto.GroupJoinRequestUpdate(
                     requestorAci: localAciData
                 ),
                 asUpdate: { .groupJoinRequestUpdate($0) }
             )
         case .otherUserRequestedToJoin(let userAci):
             setUpdate(
-                BackupProtoGroupJoinRequestUpdate(
+                BackupProto.GroupJoinRequestUpdate(
                     requestorAci: aciData(userAci)
                 ),
                 asUpdate: { .groupJoinRequestUpdate($0) }
             )
         case .localUserRequestApproved(let approverAci):
             setUpdate(
-                BackupProtoGroupJoinRequestApprovalUpdate(
+                BackupProto.GroupJoinRequestApprovalUpdate(
                     requestorAci: localAciData,
                     wasApproved: true
                 ),
@@ -925,7 +925,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .localUserRequestApprovedByUnknownUser:
             setUpdate(
-                BackupProtoGroupJoinRequestApprovalUpdate(
+                BackupProto.GroupJoinRequestApprovalUpdate(
                     requestorAci: localAciData,
                     wasApproved: true
                 ),
@@ -933,7 +933,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .otherUserRequestApprovedByLocalUser(let userAci):
             setUpdate(
-                BackupProtoGroupJoinRequestApprovalUpdate(
+                BackupProto.GroupJoinRequestApprovalUpdate(
                     requestorAci: aciData(userAci),
                     wasApproved: true
                 ),
@@ -944,7 +944,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .otherUserRequestApproved(let userAci, let approverAci):
             setUpdate(
-                BackupProtoGroupJoinRequestApprovalUpdate(
+                BackupProto.GroupJoinRequestApprovalUpdate(
                     requestorAci: aciData(userAci),
                     wasApproved: true
                 ),
@@ -955,7 +955,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .otherUserRequestApprovedByUnknownUser(let userAci):
             setUpdate(
-                BackupProtoGroupJoinRequestApprovalUpdate(
+                BackupProto.GroupJoinRequestApprovalUpdate(
                     requestorAci: aciData(userAci),
                     wasApproved: true
                 ),
@@ -963,14 +963,14 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .localUserRequestCanceledByLocalUser:
             setUpdate(
-                BackupProtoGroupJoinRequestCanceledUpdate(
+                BackupProto.GroupJoinRequestCanceledUpdate(
                     requestorAci: localAciData
                 ),
                 asUpdate: { .groupJoinRequestCanceledUpdate($0) }
             )
         case .localUserRequestRejectedByUnknownUser:
             setUpdate(
-                BackupProtoGroupJoinRequestApprovalUpdate(
+                BackupProto.GroupJoinRequestApprovalUpdate(
                     requestorAci: localAciData,
                     wasApproved: false
                 ),
@@ -978,7 +978,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .otherUserRequestRejectedByLocalUser(let requesterAci):
             setUpdate(
-                BackupProtoGroupJoinRequestApprovalUpdate(
+                BackupProto.GroupJoinRequestApprovalUpdate(
                     requestorAci: aciData(requesterAci),
                     wasApproved: false
                 ),
@@ -989,7 +989,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .otherUserRequestRejectedByOtherUser(let updaterAci, let requesterAci):
             setUpdate(
-                BackupProtoGroupJoinRequestApprovalUpdate(
+                BackupProto.GroupJoinRequestApprovalUpdate(
                     requestorAci: aciData(requesterAci),
                     wasApproved: false
                 ),
@@ -1000,14 +1000,14 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .otherUserRequestCanceledByOtherUser(let requesterAci):
             setUpdate(
-                BackupProtoGroupJoinRequestCanceledUpdate(
+                BackupProto.GroupJoinRequestCanceledUpdate(
                     requestorAci: aciData(requesterAci)
                 ),
                 asUpdate: { .groupJoinRequestCanceledUpdate($0) }
             )
         case .otherUserRequestRejectedByUnknownUser(let requesterAci):
             setUpdate(
-                BackupProtoGroupJoinRequestApprovalUpdate(
+                BackupProto.GroupJoinRequestApprovalUpdate(
                     requestorAci: aciData(requesterAci),
                     wasApproved: false
                 ),
@@ -1016,7 +1016,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
         case .disappearingMessagesEnabledByLocalUser(let durationMs):
             let expiresInMs = UInt32(clamping: durationMs)
             setUpdate(
-                BackupProtoGroupExpirationTimerUpdate(
+                BackupProto.GroupExpirationTimerUpdate(
                     expiresInMs: expiresInMs
                 ),
                 setOptionalFields: {
@@ -1027,7 +1027,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
         case .disappearingMessagesEnabledByOtherUser(let updaterAci, let durationMs):
             let expiresInMs = UInt32(clamping: durationMs)
             setUpdate(
-                BackupProtoGroupExpirationTimerUpdate(
+                BackupProto.GroupExpirationTimerUpdate(
                     expiresInMs: expiresInMs
                 ),
                 setOptionalFields: {
@@ -1038,14 +1038,14 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
         case .disappearingMessagesEnabledByUnknownUser(let durationMs):
             let expiresInMs = UInt32(clamping: durationMs)
             setUpdate(
-                BackupProtoGroupExpirationTimerUpdate(
+                BackupProto.GroupExpirationTimerUpdate(
                     expiresInMs: expiresInMs
                 ),
                 asUpdate: { .groupExpirationTimerUpdate($0) }
             )
         case .disappearingMessagesDisabledByLocalUser:
             setUpdate(
-                BackupProtoGroupExpirationTimerUpdate(
+                BackupProto.GroupExpirationTimerUpdate(
                     // 0 means disabled.
                     expiresInMs: 0
                 ),
@@ -1056,7 +1056,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .disappearingMessagesDisabledByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupExpirationTimerUpdate(
+                BackupProto.GroupExpirationTimerUpdate(
                     // 0 means disabled.
                     expiresInMs: 0
                 ),
@@ -1067,7 +1067,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .disappearingMessagesDisabledByUnknownUser:
             setUpdate(
-                BackupProtoGroupExpirationTimerUpdate(
+                BackupProto.GroupExpirationTimerUpdate(
                     // 0 means disabled.
                     expiresInMs: 0
                 ),
@@ -1075,7 +1075,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .inviteLinkResetByLocalUser:
             setUpdate(
-                BackupProtoGroupInviteLinkResetUpdate(),
+                BackupProto.GroupInviteLinkResetUpdate(),
                 setOptionalFields: {
                     $0.updaterAci = localAciData
                 },
@@ -1083,7 +1083,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .inviteLinkResetByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupInviteLinkResetUpdate(),
+                BackupProto.GroupInviteLinkResetUpdate(),
                 setOptionalFields: {
                     $0.updaterAci = aciData(updaterAci)
                 },
@@ -1091,12 +1091,12 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .inviteLinkResetByUnknownUser:
             setUpdate(
-                BackupProtoGroupInviteLinkResetUpdate(),
+                BackupProto.GroupInviteLinkResetUpdate(),
                 asUpdate: { .groupInviteLinkResetUpdate($0) }
             )
         case .inviteLinkEnabledWithoutApprovalByLocalUser:
             setUpdate(
-                BackupProtoGroupInviteLinkEnabledUpdate(
+                BackupProto.GroupInviteLinkEnabledUpdate(
                     linkRequiresAdminApproval: false
                 ),
                 setOptionalFields: {
@@ -1106,7 +1106,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .inviteLinkEnabledWithoutApprovalByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupInviteLinkEnabledUpdate(
+                BackupProto.GroupInviteLinkEnabledUpdate(
                     linkRequiresAdminApproval: false
                 ),
                 setOptionalFields: {
@@ -1116,14 +1116,14 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .inviteLinkEnabledWithoutApprovalByUnknownUser:
             setUpdate(
-                BackupProtoGroupInviteLinkEnabledUpdate(
+                BackupProto.GroupInviteLinkEnabledUpdate(
                     linkRequiresAdminApproval: false
                 ),
                 asUpdate: { .groupInviteLinkEnabledUpdate($0) }
             )
         case .inviteLinkEnabledWithApprovalByLocalUser:
             setUpdate(
-                BackupProtoGroupInviteLinkEnabledUpdate(
+                BackupProto.GroupInviteLinkEnabledUpdate(
                     linkRequiresAdminApproval: true
                 ),
                 setOptionalFields: {
@@ -1133,7 +1133,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .inviteLinkEnabledWithApprovalByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupInviteLinkEnabledUpdate(
+                BackupProto.GroupInviteLinkEnabledUpdate(
                     linkRequiresAdminApproval: true
                 ),
                 setOptionalFields: {
@@ -1143,14 +1143,14 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .inviteLinkEnabledWithApprovalByUnknownUser:
             setUpdate(
-                BackupProtoGroupInviteLinkEnabledUpdate(
+                BackupProto.GroupInviteLinkEnabledUpdate(
                     linkRequiresAdminApproval: true
                 ),
                 asUpdate: { .groupInviteLinkEnabledUpdate($0) }
             )
         case .inviteLinkDisabledByLocalUser:
             setUpdate(
-                BackupProtoGroupInviteLinkDisabledUpdate(),
+                BackupProto.GroupInviteLinkDisabledUpdate(),
                 setOptionalFields: {
                     $0.updaterAci = localAciData
                 },
@@ -1158,7 +1158,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .inviteLinkDisabledByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupInviteLinkDisabledUpdate(),
+                BackupProto.GroupInviteLinkDisabledUpdate(),
                 setOptionalFields: {
                     $0.updaterAci = aciData(updaterAci)
                 },
@@ -1166,12 +1166,12 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .inviteLinkDisabledByUnknownUser:
             setUpdate(
-                BackupProtoGroupInviteLinkDisabledUpdate(),
+                BackupProto.GroupInviteLinkDisabledUpdate(),
                 asUpdate: { .groupInviteLinkDisabledUpdate($0) }
             )
         case .inviteLinkApprovalDisabledByLocalUser:
             setUpdate(
-                BackupProtoGroupInviteLinkAdminApprovalUpdate(
+                BackupProto.GroupInviteLinkAdminApprovalUpdate(
                     linkRequiresAdminApproval: false
                 ),
                 setOptionalFields: {
@@ -1181,7 +1181,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .inviteLinkApprovalDisabledByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupInviteLinkAdminApprovalUpdate(
+                BackupProto.GroupInviteLinkAdminApprovalUpdate(
                     linkRequiresAdminApproval: false
                 ),
                 setOptionalFields: {
@@ -1191,14 +1191,14 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .inviteLinkApprovalDisabledByUnknownUser:
             setUpdate(
-                BackupProtoGroupInviteLinkAdminApprovalUpdate(
+                BackupProto.GroupInviteLinkAdminApprovalUpdate(
                     linkRequiresAdminApproval: false
                 ),
                 asUpdate: { .groupInviteLinkAdminApprovalUpdate($0) }
             )
         case .inviteLinkApprovalEnabledByLocalUser:
             setUpdate(
-                BackupProtoGroupInviteLinkAdminApprovalUpdate(
+                BackupProto.GroupInviteLinkAdminApprovalUpdate(
                     linkRequiresAdminApproval: true
                 ),
                 setOptionalFields: {
@@ -1208,7 +1208,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .inviteLinkApprovalEnabledByOtherUser(let updaterAci):
             setUpdate(
-                BackupProtoGroupInviteLinkAdminApprovalUpdate(
+                BackupProto.GroupInviteLinkAdminApprovalUpdate(
                     linkRequiresAdminApproval: true
                 ),
                 setOptionalFields: {
@@ -1218,21 +1218,21 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .inviteLinkApprovalEnabledByUnknownUser:
             setUpdate(
-                BackupProtoGroupInviteLinkAdminApprovalUpdate(
+                BackupProto.GroupInviteLinkAdminApprovalUpdate(
                     linkRequiresAdminApproval: true
                 ),
                 asUpdate: { .groupInviteLinkAdminApprovalUpdate($0) }
             )
         case .localUserJoinedViaInviteLink:
             setUpdate(
-                BackupProtoGroupMemberJoinedByLinkUpdate(
+                BackupProto.GroupMemberJoinedByLinkUpdate(
                     newMemberAci: localAciData
                 ),
                 asUpdate: { .groupMemberJoinedByLinkUpdate($0) }
             )
         case .otherUserJoinedViaInviteLink(let userAci):
             setUpdate(
-                BackupProtoGroupMemberJoinedByLinkUpdate(
+                BackupProto.GroupMemberJoinedByLinkUpdate(
                     newMemberAci: aciData(userAci)
                 ),
                 asUpdate: { .groupMemberJoinedByLinkUpdate($0) }
@@ -1245,7 +1245,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
 
 extension GroupV2Access {
 
-    fileprivate var backupAccessLevel: BackupProtoGroupV2AccessLevel {
+    fileprivate var backupAccessLevel: BackupProto.GroupV2AccessLevel {
         switch self {
         case .unknown:
             return .UNKNOWN

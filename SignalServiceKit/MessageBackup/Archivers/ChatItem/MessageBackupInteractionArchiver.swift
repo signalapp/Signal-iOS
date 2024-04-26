@@ -41,15 +41,15 @@ extension MessageBackup {
     }
 
     internal struct InteractionArchiveDetails {
-        typealias DirectionalDetails = BackupProtoChatItem.DirectionalDetails
-        typealias ChatItemType = BackupProtoChatItem.Item
+        typealias DirectionalDetails = BackupProto.ChatItem.DirectionalDetails
+        typealias ChatItemType = BackupProto.ChatItem.Item
 
         let author: RecipientId
         let directionalDetails: DirectionalDetails
         let expireStartDate: UInt64?
         let expiresInMs: UInt64?
         // TODO: edit revisions
-        let revisions: [BackupProtoChatItem] = []
+        let revisions: [BackupProto.ChatItem] = []
         // TODO: sms
         let isSms: Bool = false
         let isSealedSender: Bool
@@ -118,7 +118,7 @@ internal protocol MessageBackupInteractionArchiver: MessageBackupProtoArchiver {
     ) -> MessageBackup.ArchiveInteractionResult<Details>
 
     func restoreChatItem(
-        _ chatItem: BackupProtoChatItem,
+        _ chatItem: BackupProto.ChatItem,
         thread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
@@ -253,7 +253,7 @@ extension MessageBackup.RestoreInteractionResult where Component == Void {
     }
 }
 
-extension BackupProtoChatItem {
+extension BackupProto.ChatItem {
 
     var id: MessageBackup.ChatItemId {
         return .init(self.dateSent)
@@ -278,7 +278,7 @@ extension MessageBackup.InteractionUniqueId: MessageBackupLoggableId {
 }
 
 extension MessageBackup.ChatItemId: MessageBackupLoggableId {
-    public var typeLogString: String { "BackupProtoChatItem" }
+    public var typeLogString: String { "BackupProto.ChatItem" }
 
     public var idLogString: String { "timestamp: \(value)" }
 }

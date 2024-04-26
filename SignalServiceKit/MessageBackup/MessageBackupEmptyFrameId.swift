@@ -4,7 +4,7 @@
 //
 
 extension MessageBackup {
-    /// An identifier for an empty ``BackupProtoFrame``.
+    /// An identifier for an empty ``BackupProto.Frame``.
     ///
     /// Uses a singleton pattern, as frames do not contain their own ID and
     /// consequently all empty frames are equivalent.

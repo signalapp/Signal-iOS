@@ -63,7 +63,7 @@ extension MessageBackup {
      * to the ID addressing system of the backup protos.
      *
      * For example, we will assign a ``MessageBackup/ChatId`` to each ``TSThread`` as we
-     * insert them. Later, when we create the ``BackupProtoChatItem`` corresponding to the ``TSThread``,
+     * insert them. Later, when we create the ``BackupProto.ChatItem`` corresponding to the ``TSThread``,
      * we will need to add the corresponding ``MessageBackup/ChatId``, which we look up using the thread id
      * this context keeps.
      */
@@ -139,14 +139,14 @@ extension MessageBackup {
     }
 }
 
-extension BackupProtoChat {
+extension BackupProto.Chat {
 
     public var chatId: MessageBackup.ChatId {
         return .init(id)
     }
 }
 
-extension BackupProtoChatItem {
+extension BackupProto.ChatItem {
 
     public var typedChatId: MessageBackup.ChatId {
         return .init(chatId)
@@ -174,7 +174,7 @@ extension MessageBackup.ThreadUniqueId: MessageBackupLoggableId {
 }
 
 extension MessageBackup.ChatId: MessageBackupLoggableId {
-    public var typeLogString: String { "BackupProtoChat" }
+    public var typeLogString: String { "BackupProto.Chat" }
 
     public var idLogString: String { "\(value)" }
 }

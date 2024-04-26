@@ -12,7 +12,7 @@ public protocol MessageBackupChatItemArchiver: MessageBackupProtoArchiver {
 
     typealias ArchiveMultiFrameResult = MessageBackup.ArchiveMultiFrameResult<MessageBackup.InteractionUniqueId>
 
-    /// Archive all ``TSInteraction``s (they map to ``BackupProtoChatItem`` and ``BackupProtoCall``).
+    /// Archive all ``TSInteraction``s (they map to ``BackupProto.ChatItem`` and ``BackupProto.Call``).
     ///
     /// - Returns: ``ArchiveMultiFrameResult.success`` if all frames were written without error, or either
     /// partial or complete failure otherwise.
@@ -28,13 +28,13 @@ public protocol MessageBackupChatItemArchiver: MessageBackupProtoArchiver {
 
     typealias RestoreFrameResult = MessageBackup.RestoreFrameResult<ChatItemId>
 
-    /// Restore a single ``BackupProtoChatItem`` frame.
+    /// Restore a single ``BackupProto.ChatItem`` frame.
     ///
     /// - Returns: ``RestoreFrameResult.success`` if all frames were read without error.
     /// How to handle ``RestoreFrameResult.failure`` is up to the caller,
     /// but typically an error will be shown to the user, but the restore will be allowed to proceed.
     func restore(
-        _ chatItem: BackupProtoChatItem,
+        _ chatItem: BackupProto.ChatItem,
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> RestoreFrameResult

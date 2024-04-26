@@ -134,42 +134,42 @@ extension MessageBackup {
         /// Could not parse an E164. Includes the class of the offending proto.
         case invalidE164(protoClass: Any.Type)
 
-        /// A BackupProtoContact with no aci, pni, or e164.
+        /// A BackupProto.Contact with no aci, pni, or e164.
         case contactWithoutIdentifiers
-        /// A BackupProtoRecipient with an unrecognized sub-type.
+        /// A BackupProto.Recipient with an unrecognized sub-type.
         case unrecognizedRecipientType
-        /// A BackupProtoContact for the local user. This shouldn't exist.
+        /// A BackupProto.Contact for the local user. This shouldn't exist.
         case otherContactWithLocalIdentifiers
 
         /// A message must come from either an Aci or an E164.
         /// One in the backup did not.
         case incomingMessageNotFromAciOrE164
-        /// Outgoing message's BackupProtoSendStatus can only be for BackupProtoContacts.
+        /// Outgoing message's BackupProto.SendStatus can only be for BackupProto.Contacts.
         /// One in the backup was to a group, self recipient, or something else.
         case outgoingNonContactMessageRecipient
-        /// A BackupProtoSendStatus had an unregonized BackupProtoSendStatusStatus.
+        /// A BackupProto.SendStatus had an unregonized BackupProto.SendStatusStatus.
         case unrecognizedMessageSendStatus
-        /// A BackupProtoChatItem with an unregonized item type.
+        /// A BackupProto.ChatItem with an unregonized item type.
         case unrecognizedChatItemType
 
-        /// BackupProtoReaction must come from either an Aci or an E164.
+        /// BackupProto.Reaction must come from either an Aci or an E164.
         /// One in the backup did not.
         case reactionNotFromAciOrE164
 
-        /// A BackupProtoBodyRange with a missing or unrecognized style.
+        /// A BackupProto.BodyRange with a missing or unrecognized style.
         case unrecognizedBodyRangeStyle
 
-        /// A BackupProtoGroup's gv2 master key could not be parsed by libsignal.
+        /// A BackupProto.Group's gv2 master key could not be parsed by libsignal.
         case invalidGV2MasterKey
 
-        /// A BackupProtoGroupChangeChatUpdate ChatItem with a non-group-chat chatId.
+        /// A BackupProto.GroupChangeChatUpdate ChatItem with a non-group-chat chatId.
         case groupUpdateMessageInNonGroupChat
-        /// A BackupProtoGroupChangeChatUpdate ChatItem without any updates!
+        /// A BackupProto.GroupChangeChatUpdate ChatItem without any updates!
         case emptyGroupUpdates
-        /// A BackupProtoGroupSequenceOfRequestsAndCancelsUpdate where
+        /// A BackupProto.GroupSequenceOfRequestsAndCancelsUpdate where
         /// the requester is the local user, which isn't allowed.
         case sequenceOfRequestsAndCancelsWithLocalAci
-        /// An unrecognized BackupProtoGroupChangeChatUpdate.
+        /// An unrecognized BackupProto.GroupChangeChatUpdate.
         case unrecognizedGroupUpdate
 
         /// A profile key for the local user that could not be parsed into a valid aes256 key
