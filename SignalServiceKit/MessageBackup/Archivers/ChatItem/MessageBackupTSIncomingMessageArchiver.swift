@@ -172,7 +172,7 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
             // TODO: handle edit states
             editState: .none,
             // TODO: expose + set expire start time
-            expiresInSeconds: chatItem.expiresInMs.map { UInt32($0) } ?? 0,
+            expiresInSeconds: chatItem.expiresInMs.map { UInt32($0 / 1000) } ?? 0,
             serverTimestamp: nil,
             serverDeliveryTimestamp: chatItem.dateSent,
             serverGuid: nil,
