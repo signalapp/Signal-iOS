@@ -84,7 +84,9 @@ public class FeatureFlags: NSObject {
         return false
     }
 
-    public static let periodicallyCheckDatabaseIntegrity: Bool = build.includes(.dev)
+    /// If we ever need to internally detect database corruption again in the
+    /// future, we can re-enable this.
+    public static let periodicallyCheckDatabaseIntegrity: Bool = false
 
     public static let doNotSendGroupChangeMessagesOnProfileKeyRotation = false
 
