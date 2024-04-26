@@ -974,7 +974,10 @@ fileprivate extension CVComponentState.Builder {
                 var mediaAlbumHasFailedAttachment = false
                 var mediaAlbumHasPendingAttachment = false
                 for attachment in bodyAttachments {
-                    guard let pointer = attachment.attachment.asTransitTierPointer() else {
+                    guard
+                        attachment.attachment.asResourceStream() == nil,
+                        let pointer = attachment.attachment.asTransitTierPointer()
+                    else {
                         continue
                     }
                     switch pointer.downloadState(tx: transaction.asV2Read) {
