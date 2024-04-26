@@ -41,8 +41,11 @@ public enum OWSChatConnectionState: Int, CustomDebugStringConvertible {
 }
 
 // MARK: -
-
 public class OWSChatConnection: NSObject {
+    public typealias RequestSuccess = (HTTPResponse) -> Void
+    public typealias RequestFailure = (OWSHTTPError) -> Void
+    fileprivate typealias RequestSuccessInternal = (HTTPResponse, RequestInfo) -> Void
+
     // Track where Dependencies are used throughout this class.
     fileprivate struct GlobalDependencies: Dependencies {}
 
@@ -50,61 +53,37 @@ public class OWSChatConnection: NSObject {
 
     fileprivate let serialQueue: DispatchQueue
 
-    // TODO: Should we use a higher-priority queue?
-    fileprivate static let messageProcessingQueue = DispatchQueue(label: "org.signal.chat-connection.message-processing")
-
     // MARK: -
 
     fileprivate let type: OWSChatConnectionType
     fileprivate let appExpiry: AppExpiry
     fileprivate let db: DB
 
-    private static let socketReconnectDelaySeconds: TimeInterval = 5
+    fileprivate static func label(forRequest request: TSRequest,
+                                  connectionType: OWSChatConnectionType,
+                                  requestInfo: RequestInfo?) -> String {
 
-    private var _currentWebSocket = AtomicOptional<WebSocketConnection>(nil, lock: .sharedGlobal)
-    fileprivate var currentWebSocket: WebSocketConnection? {
-        get {
-            _currentWebSocket.get()
+        var label = "\(connectionType), \(request)"
+        if let requestInfo = requestInfo {
+            label += ", [\(requestInfo.requestId)]"
         }
-        set {
-            let oldValue = _currentWebSocket.swap(newValue)
-            if oldValue != nil || newValue != nil {
-                owsAssertDebug(oldValue?.id != newValue?.id)
-            }
-
-            oldValue?.reset()
-
-            notifyStatusChange()
-        }
+        return label
     }
 
-    // MARK: -
-
+    // This var must be thread-safe.
     public var currentState: OWSChatConnectionState {
-        guard let currentWebSocket = self.currentWebSocket else {
-            return .closed
-        }
-        switch currentWebSocket.state {
-        case .open:
-            return .open
-        case .connecting:
-            return .connecting
-        case .disconnected:
-            return .closed
-        }
+        owsFailDebug("should be using a concrete subclass")
+        return .closed
     }
 
     // This var is thread-safe.
-    public var canMakeRequests: Bool {
+    public final var canMakeRequests: Bool {
         currentState == .open
     }
 
-    // This var is thread-safe.
+    // This var must be thread-safe.
     public var hasEmptiedInitialQueue: Bool {
-        guard let currentWebSocket = self.currentWebSocket else {
-            return false
-        }
-        return currentWebSocket.hasEmptiedInitialQueue.get()
+        false
     }
 
     // We cache this value instead of consulting [UIApplication sharedApplication].applicationState,
@@ -131,7 +110,7 @@ public class OWSChatConnection: NSObject {
 
     // MARK: - BackgroundKeepAlive
 
-    private enum BackgroundKeepAliveRequestType {
+    fileprivate enum BackgroundKeepAliveRequestType {
         case didReceivePush
         case receiveMessage
         case receiveResponse
@@ -165,7 +144,7 @@ public class OWSChatConnection: NSObject {
     private let unfairLock = UnfairLock()
 
     // This method is thread-safe.
-    private func ensureBackgroundKeepAlive(_ requestType: BackgroundKeepAliveRequestType) {
+    fileprivate func ensureBackgroundKeepAlive(_ requestType: BackgroundKeepAliveRequestType) {
         let keepAliveDuration = requestType.keepAliveDuration
         owsAssertDebug(keepAliveDuration > 0)
         let untilDate = Date().addingTimeInterval(keepAliveDuration)
@@ -205,11 +184,7 @@ public class OWSChatConnection: NSObject {
     }
 
     fileprivate var logPrefix: String {
-        if let currentWebSocket = currentWebSocket {
-            return currentWebSocket.logPrefix
-        } else {
-            return "[\(type)]"
-        }
+        "[\(type)]"
     }
 
     // MARK: -
@@ -284,8 +259,7 @@ public class OWSChatConnection: NSObject {
         lock: .init()
     )
 
-    private func notifyStatusChange() {
-        let newState = self.currentState
+    fileprivate func notifyStatusChange(newState: OWSChatConnectionState) {
         let (oldState, continuationsToResolve): (OWSChatConnectionState, [NSObject: CheckedContinuation<Void, Error>])
         (oldState, continuationsToResolve) = stateObservation.update {
             let oldState = $0.currentState
@@ -309,6 +283,10 @@ public class OWSChatConnection: NSObject {
             waiter.resume()
         }
         NotificationCenter.default.postNotificationNameAsync(Self.chatConnectionStateDidChange, object: nil)
+    }
+
+    fileprivate var cachedCurrentState: OWSChatConnectionState {
+        stateObservation.get().currentState
     }
 
     /// Only throws on cancellation.
@@ -350,16 +328,356 @@ public class OWSChatConnection: NSObject {
         })
     }
 
+    // MARK: - Socket LifeCycle
+
+    public static var canAppUseSocketsToMakeRequests: Bool {
+        if FeatureFlags.deprecateREST {
+            // When we deprecate REST, we will use web sockets in app extensions.
+            return true
+        }
+        if !CurrentAppContext().isMainApp {
+            return false
+        }
+        return true
+    }
+
+    // This var is thread-safe.
+    public var shouldSocketBeOpen: Bool {
+        desiredSocketState?.shouldSocketBeOpen ?? false
+    }
+
+    fileprivate enum DesiredSocketState: Equatable {
+        case closed(reason: String)
+        case open(reason: String)
+
+        public var shouldSocketBeOpen: Bool {
+            switch self {
+            case .closed:
+                return false
+            case .open:
+                return true
+            }
+        }
+    }
+
+    // This method is thread-safe.
+    fileprivate var desiredSocketState: DesiredSocketState? {
+        guard AppReadiness.isAppReady else {
+            return .closed(reason: "!isAppReady")
+        }
+
+        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
+            return .closed(reason: "!isRegisteredAndReady")
+        }
+
+        guard !appExpiry.isExpired else {
+            return .closed(reason: "appExpiry.isExpired")
+        }
+
+        guard Self.canAppUseSocketsToMakeRequests else {
+            return .closed(reason: "!canAppUseSocketsToMakeRequests")
+        }
+
+        if !unsubmittedRequestTokens.isEmpty {
+            return .open(reason: "unsubmittedRequestTokens")
+        }
+
+        guard GlobalDependencies.webSocketFactory.canBuildWebSocket else {
+            owsFailDebug("\(logPrefix) Could not build webSocket.")
+            return .closed(reason: "couldNotBuildWebSocket")
+        }
+
+        if appIsActive.get() {
+            // While app is active, keep web socket alive.
+            return .open(reason: "appIsActive")
+        }
+
+        if hasBackgroundKeepAlive {
+            // If app is doing any work in the background, keep web socket alive.
+            return .open(reason: "hasBackgroundKeepAlive")
+        }
+
+        return nil
+    }
+
+    // This method is thread-safe.
+    public func didReceivePush() {
+        owsAssertDebug(AppReadiness.isAppReady)
+
+        self.ensureBackgroundKeepAlive(.didReceivePush)
+    }
+
+    // This method aligns the socket state with the "desired" socket state.
+    //
+    // This method is thread-safe.
+    fileprivate func applyDesiredSocketState(completion: (() -> Void)? = nil) {
+
+        guard AppReadiness.isAppReady else {
+            AppReadiness.runNowOrWhenAppDidBecomeReadySync { [weak self] in
+                self?.applyDesiredSocketState(completion: completion)
+            }
+            return
+        }
+
+        serialQueue.async { [weak self] in
+            guard let self = self else {
+                completion?()
+                return
+            }
+
+            var shouldHaveBackgroundKeepAlive = false
+            if self.shouldSocketBeOpen {
+                self.ensureWebsocketExists()
+
+                // If we're keeping the webSocket open in the background,
+                // ensure that the "BackgroundKeepAlive" state is active.
+                shouldHaveBackgroundKeepAlive = !self.appIsActive.get()
+            } else {
+                self.disconnectIfNeeded()
+            }
+
+            if shouldHaveBackgroundKeepAlive {
+                if nil == self.backgroundKeepAliveTimer {
+                    // Start a new timer that will fire every second while the socket is open in the background.
+                    // This timer will ensure we close the websocket when the time comes.
+                    self.backgroundKeepAliveTimer = OffMainThreadTimer(timeInterval: 1, repeats: true) { [weak self] timer in
+                        guard let self = self else {
+                            timer.invalidate()
+                            return
+                        }
+                        self.applyDesiredSocketState()
+                    }
+                }
+                if nil == self.backgroundKeepAliveBackgroundTask {
+                    self.backgroundKeepAliveBackgroundTask = OWSBackgroundTask(label: "BackgroundKeepAlive") { [weak self] (_) in
+                        AssertIsOnMainThread()
+                        self?.applyDesiredSocketState()
+                    }
+                }
+            } else {
+                self.backgroundKeepAliveTimer?.invalidate()
+                self.backgroundKeepAliveTimer = nil
+                self.backgroundKeepAliveBackgroundTask = nil
+            }
+
+            completion?()
+        }
+    }
+
+    // This timer is used to check periodically whether we should
+    // close the socket.
+    private var backgroundKeepAliveTimer: OffMainThreadTimer?
+    // This is used to manage the iOS "background task" used to
+    // keep the app alive in the background.
+    private var backgroundKeepAliveBackgroundTask: OWSBackgroundTask?
+
+    // This method must be thread-safe.
+    fileprivate func cycleSocket() {
+        serialQueue.async {
+            self.disconnectIfNeeded()
+        }
+        applyDesiredSocketState()
+    }
+
+    fileprivate func ensureWebsocketExists() {
+        assertOnQueue(serialQueue)
+        owsFailDebug("should be using a concrete subclass")
+    }
+
+    fileprivate func disconnectIfNeeded() {
+        assertOnQueue(serialQueue)
+        owsFailDebug("should be using a concrete subclass")
+    }
+
+    // MARK: - Notifications
+
+    @objc
+    private func applicationDidBecomeActive(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        appIsActive.set(true)
+
+        applyDesiredSocketState()
+    }
+
+    @objc
+    private func applicationWillResignActive(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        appIsActive.set(false)
+
+        applyDesiredSocketState()
+    }
+
+    @objc
+    private func registrationStateDidChange(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        applyDesiredSocketState()
+    }
+
+    @objc
+    private func localNumberDidChange(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        cycleSocket()
+    }
+
+    @objc
+    private func isCensorshipCircumventionActiveDidChange(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        cycleSocket()
+    }
+
+    @objc
+    private func isSignalProxyReadyDidChange(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        guard SignalProxy.isEnabledAndReady else {
+            // When we tear down the relay, everything gets canceled.
+            return
+        }
+        // When we start the relay, we need to reconnect.
+        cycleSocket()
+    }
+
+    @objc
+    private func appExpiryDidChange(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        cycleSocket()
+    }
+
+    @objc
+    private func storiesEnabledStateDidChange(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        cycleSocket()
+    }
+
     // MARK: - Message Sending
 
-    public typealias RequestSuccess = (HTTPResponse) -> Void
-    public typealias RequestFailure = (OWSHTTPError) -> Void
-    fileprivate typealias RequestSuccessInternal = (HTTPResponse, RequestInfo) -> Void
+    public func makeRequest(_ request: TSRequest,
+                            unsubmittedRequestToken: UnsubmittedRequestToken) async throws -> HTTPResponse {
+        guard !appExpiry.isExpired else {
+            removeUnsubmittedRequestToken(unsubmittedRequestToken)
+
+            guard let requestUrl = request.url else {
+                owsFail("Missing requestUrl.")
+            }
+            throw OWSHTTPError.invalidAppState(requestUrl: requestUrl)
+        }
+
+        let connectionType = self.type
+
+        let isIdentifiedConnection = connectionType == .identified
+        let isIdentifiedRequest = request.shouldHaveAuthorizationHeaders && !request.isUDRequest
+        owsAssertDebug(isIdentifiedConnection == isIdentifiedRequest)
+
+        let (response, requestInfo) = try await withCheckedThrowingContinuation { continuation in
+            self.serialQueue.async {
+                self.makeRequestInternal(
+                    request,
+                    unsubmittedRequestToken: unsubmittedRequestToken,
+                    success: { continuation.resume(returning: ($0, $1)) },
+                    failure: { continuation.resume(throwing: $0) }
+                )
+            }
+        }
+
+        let label = Self.label(forRequest: request, connectionType: connectionType, requestInfo: requestInfo)
+        Logger.info("\(label): Request Succeeded (\(response.responseStatusCode))")
+
+        Self.outageDetection.reportConnectionSuccess()
+        return response
+    }
 
     fileprivate func makeRequestInternal(_ request: TSRequest,
                                          unsubmittedRequestToken: UnsubmittedRequestToken,
                                          success: @escaping RequestSuccessInternal,
                                          failure: @escaping RequestFailure) {
+        assertOnQueue(self.serialQueue)
+        owsFailDebug("should be using a concrete subclass")
+        guard let requestUrl = request.url else {
+            owsFail("Missing requestUrl.")
+        }
+        failure(.invalidAppState(requestUrl: requestUrl))
+    }
+}
+
+public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
+    // TODO: Should we use a higher-priority queue?
+    fileprivate static let messageProcessingQueue = DispatchQueue(label: "org.signal.chat-connection.message-processing")
+
+    private static let socketReconnectDelaySeconds: TimeInterval = 5
+
+    private var _currentWebSocket = AtomicOptional<WebSocketConnection>(nil, lock: .sharedGlobal)
+    fileprivate var currentWebSocket: WebSocketConnection? {
+        get {
+            _currentWebSocket.get()
+        }
+        set {
+            let oldValue = _currentWebSocket.swap(newValue)
+            if oldValue != nil || newValue != nil {
+                owsAssertDebug(oldValue?.id != newValue?.id)
+            }
+
+            oldValue?.reset()
+
+            notifyStatusChange(newState: currentState)
+        }
+    }
+
+    // MARK: -
+
+    public override var currentState: OWSChatConnectionState {
+        guard let currentWebSocket = self.currentWebSocket else {
+            return .closed
+        }
+        switch currentWebSocket.state {
+        case .open:
+            return .open
+        case .connecting:
+            return .connecting
+        case .disconnected:
+            return .closed
+        }
+    }
+
+    // This var is thread-safe.
+    public override var hasEmptiedInitialQueue: Bool {
+        guard let currentWebSocket = self.currentWebSocket else {
+            return false
+        }
+        return currentWebSocket.hasEmptiedInitialQueue.get()
+    }
+
+    fileprivate override var logPrefix: String {
+        if let currentWebSocket = currentWebSocket {
+            return currentWebSocket.logPrefix
+        } else {
+            return super.logPrefix
+        }
+    }
+
+    // This method is thread-safe.
+    fileprivate override var desiredSocketState: DesiredSocketState? {
+        if let desire = super.desiredSocketState {
+            return desire
+        }
+        if let currentWebSocket, currentWebSocket.hasPendingRequests {
+            return .open(reason: "hasPendingRequests")
+        }
+        return nil
+    }
+
+    // MARK: - Message Sending
+
+    fileprivate override func makeRequestInternal(_ request: TSRequest,
+                                                  unsubmittedRequestToken: UnsubmittedRequestToken,
+                                                  success: @escaping RequestSuccessInternal,
+                                                  failure: @escaping RequestFailure) {
         assertOnQueue(self.serialQueue)
 
         defer {
@@ -595,7 +913,7 @@ public class OWSChatConnection: NSObject {
             self?.serialQueue.async {
                 guard let self = self else { return }
                 if currentWebSocket.hasEmptiedInitialQueue.tryToSetFlag() {
-                    self.notifyStatusChange()
+                    self.notifyStatusChange(newState: self.currentState)
                 }
 
                 // We may have been holding the websocket open, waiting to drain the
@@ -619,13 +937,6 @@ public class OWSChatConnection: NSObject {
     }
 
     // This method is thread-safe.
-    private func cycleSocket() {
-        self.currentWebSocket = nil
-
-        applyDesiredSocketState()
-    }
-
-    // This method is thread-safe.
     private var webSocketAuthenticationQueryItems: [URLQueryItem]? {
         switch type {
         case .unidentified:
@@ -643,163 +954,7 @@ public class OWSChatConnection: NSObject {
         }
     }
 
-    // MARK: - Socket LifeCycle
-
-    public static var canAppUseSocketsToMakeRequests: Bool {
-        if FeatureFlags.deprecateREST {
-            // When we deprecate REST, we will use web sockets in app extensions.
-            return true
-        }
-        if !CurrentAppContext().isMainApp {
-            return false
-        }
-        return true
-    }
-
-    // This var is thread-safe.
-    public var shouldSocketBeOpen: Bool {
-        desiredSocketState.shouldSocketBeOpen
-    }
-
-    private enum DesiredSocketState: Equatable {
-        case closed(reason: String)
-        case open(reason: String)
-
-        public var shouldSocketBeOpen: Bool {
-            switch self {
-            case .closed:
-                return false
-            case .open:
-                return true
-            }
-        }
-    }
-
-    // This method is thread-safe.
-    private var desiredSocketState: DesiredSocketState {
-        guard AppReadiness.isAppReady else {
-            return .closed(reason: "!isAppReady")
-        }
-
-        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-            return .closed(reason: "!isRegisteredAndReady")
-        }
-
-        guard !appExpiry.isExpired else {
-            return .closed(reason: "appExpiry.isExpired")
-        }
-
-        guard Self.canAppUseSocketsToMakeRequests else {
-            return .closed(reason: "!canAppUseSocketsToMakeRequests")
-        }
-
-        if let currentWebSocket, currentWebSocket.hasPendingRequests {
-            return .open(reason: "hasPendingRequests")
-        }
-
-        if !unsubmittedRequestTokens.isEmpty {
-            return .open(reason: "unsubmittedRequestTokens")
-        }
-
-        guard GlobalDependencies.webSocketFactory.canBuildWebSocket else {
-            owsFailDebug("\(logPrefix) Could not build webSocket.")
-            return .closed(reason: "couldNotBuildWebSocket")
-        }
-
-        if appIsActive.get() {
-            // While app is active, keep web socket alive.
-            return .open(reason: "appIsActive")
-        }
-
-        if hasBackgroundKeepAlive {
-            // If app is doing any work in the background, keep web socket alive.
-            return .open(reason: "hasBackgroundKeepAlive")
-        }
-
-        return .closed(reason: "default false")
-    }
-
-    // This method is thread-safe.
-    public func didReceivePush() {
-        owsAssertDebug(AppReadiness.isAppReady)
-
-        self.ensureBackgroundKeepAlive(.didReceivePush)
-    }
-
-    // This method aligns the socket state with the "desired" socket state.
-    //
-    // This method is thread-safe.
-    private func applyDesiredSocketState(completion: (() -> Void)? = nil) {
-
-        guard AppReadiness.isAppReady else {
-            AppReadiness.runNowOrWhenAppDidBecomeReadySync { [weak self] in
-                self?.applyDesiredSocketState(completion: completion)
-            }
-            return
-        }
-
-        serialQueue.async { [weak self] in
-            guard let self = self else {
-                completion?()
-                return
-            }
-
-            var shouldHaveBackgroundKeepAlive = false
-            if self.desiredSocketState.shouldSocketBeOpen {
-                self.ensureWebsocketExists()
-
-                if self.currentState != .open {
-                    // If we want the socket to be open and it's not open,
-                    // start up the reconnect timer immediately (don't wait for an error).
-                    // There's little harm in it and this will make us more robust to edge
-                    // cases.
-                    self.ensureReconnectTimer()
-                }
-
-                // If we're keeping the webSocket open in the background,
-                // ensure that the "BackgroundKeepAlive" state is active.
-                shouldHaveBackgroundKeepAlive = !self.appIsActive.get()
-            } else {
-                self.clearReconnect()
-                self.currentWebSocket = nil
-            }
-
-            if shouldHaveBackgroundKeepAlive {
-                if nil == self.backgroundKeepAliveTimer {
-                    // Start a new timer that will fire every second while the socket is open in the background.
-                    // This timer will ensure we close the websocket when the time comes.
-                    self.backgroundKeepAliveTimer = OffMainThreadTimer(timeInterval: 1, repeats: true) { [weak self] timer in
-                        guard let self = self else {
-                            timer.invalidate()
-                            return
-                        }
-                        self.applyDesiredSocketState()
-                    }
-                }
-                if nil == self.backgroundKeepAliveBackgroundTask {
-                    self.backgroundKeepAliveBackgroundTask = OWSBackgroundTask(label: "BackgroundKeepAlive") { [weak self] (_) in
-                        AssertIsOnMainThread()
-                        self?.applyDesiredSocketState()
-                    }
-                }
-            } else {
-                self.backgroundKeepAliveTimer?.invalidate()
-                self.backgroundKeepAliveTimer = nil
-                self.backgroundKeepAliveBackgroundTask = nil
-            }
-
-            completion?()
-        }
-    }
-
-    // This timer is used to check periodically whether we should
-    // close the socket.
-    private var backgroundKeepAliveTimer: OffMainThreadTimer?
-    // This is used to manage the iOS "background task" used to
-    // keep the app alive in the background.
-    private var backgroundKeepAliveBackgroundTask: OWSBackgroundTask?
-
-    fileprivate func ensureWebsocketExists() {
+    fileprivate override func ensureWebsocketExists() {
         assertOnQueue(serialQueue)
 
         // Try to reuse the existing socket (if any) if it is in a valid state.
@@ -809,6 +964,11 @@ public class OWSChatConnection: NSObject {
                 self.clearReconnect()
                 return
             case .connecting:
+                // If we want the socket to be open and it's not open,
+                // start up the reconnect timer immediately (don't wait for an error).
+                // There's little harm in it and this will make us more robust to edge
+                // cases.
+                self.ensureReconnectTimer()
                 return
             case .disconnected:
                 break
@@ -856,156 +1016,45 @@ public class OWSChatConnection: NSObject {
                 self.cycleSocket()
             }
         }
+
+        // If we want the socket to be open and it's not open,
+        // start up the reconnect timer immediately (don't wait for an error).
+        // There's little harm in it and this will make us more robust to edge
+        // cases.
+        self.ensureReconnectTimer()
+    }
+
+    fileprivate override func disconnectIfNeeded() {
+        self.clearReconnect()
+        self.currentWebSocket = nil
     }
 
     // MARK: - Reconnect
 
     private var reconnectTimer: OffMainThreadTimer?
 
-    // This method is thread-safe.
-    private func ensureReconnectTimer() {
-        serialQueue.async { [weak self] in
-            guard let self = self else { return }
-            if let reconnectTimer = self.reconnectTimer {
-                owsAssertDebug(reconnectTimer.isValid)
-            } else {
-                // TODO: It'd be nice to do exponential backoff.
-                self.reconnectTimer = OffMainThreadTimer(timeInterval: Self.socketReconnectDelaySeconds,
-                                                         repeats: true) { [weak self] timer in
-                    guard let self = self else {
-                        timer.invalidate()
-                        return
-                    }
-                    self.applyDesiredSocketState()
+    fileprivate func ensureReconnectTimer() {
+        assertOnQueue(serialQueue)
+        if let reconnectTimer = self.reconnectTimer {
+            owsAssertDebug(reconnectTimer.isValid)
+        } else {
+            // TODO: It'd be nice to do exponential backoff.
+            self.reconnectTimer = OffMainThreadTimer(timeInterval: Self.socketReconnectDelaySeconds,
+                                                     repeats: true) { [weak self] timer in
+                guard let self = self else {
+                    timer.invalidate()
+                    return
                 }
+                self.applyDesiredSocketState()
             }
         }
     }
 
-    // This method is thread-safe.
     private func clearReconnect() {
         assertOnQueue(serialQueue)
 
         reconnectTimer?.invalidate()
         reconnectTimer = nil
-    }
-
-    // MARK: - Notifications
-
-    @objc
-    private func applicationDidBecomeActive(_ notification: NSNotification) {
-        AssertIsOnMainThread()
-
-        appIsActive.set(true)
-
-        applyDesiredSocketState()
-    }
-
-    @objc
-    private func applicationWillResignActive(_ notification: NSNotification) {
-        AssertIsOnMainThread()
-
-        appIsActive.set(false)
-
-        applyDesiredSocketState()
-    }
-
-    @objc
-    private func registrationStateDidChange(_ notification: NSNotification) {
-        AssertIsOnMainThread()
-
-        applyDesiredSocketState()
-    }
-
-    @objc
-    private func localNumberDidChange(_ notification: NSNotification) {
-        AssertIsOnMainThread()
-
-        cycleSocket()
-    }
-
-    @objc
-    private func isCensorshipCircumventionActiveDidChange(_ notification: NSNotification) {
-        AssertIsOnMainThread()
-
-        cycleSocket()
-    }
-
-    @objc
-    private func isSignalProxyReadyDidChange(_ notification: NSNotification) {
-        AssertIsOnMainThread()
-
-        guard SignalProxy.isEnabledAndReady else {
-            // When we tear down the relay, everything gets canceled.
-            return
-        }
-        // When we start the relay, we need to reconnect.
-        cycleSocket()
-    }
-
-    @objc
-    private func appExpiryDidChange(_ notification: NSNotification) {
-        AssertIsOnMainThread()
-
-        cycleSocket()
-    }
-
-    @objc
-    private func storiesEnabledStateDidChange(_ notification: NSNotification) {
-        AssertIsOnMainThread()
-
-        cycleSocket()
-    }
-}
-
-// MARK: -
-
-extension OWSChatConnection {
-
-    fileprivate static func label(forRequest request: TSRequest,
-                                  connectionType: OWSChatConnectionType,
-                                  requestInfo: RequestInfo?) -> String {
-
-        var label = "\(connectionType), \(request)"
-        if let requestInfo = requestInfo {
-            label += ", [\(requestInfo.requestId)]"
-        }
-        return label
-    }
-
-    public func makeRequest(_ request: TSRequest,
-                            unsubmittedRequestToken: UnsubmittedRequestToken) async throws -> HTTPResponse {
-        guard !appExpiry.isExpired else {
-            removeUnsubmittedRequestToken(unsubmittedRequestToken)
-
-            guard let requestUrl = request.url else {
-                owsFail("Missing requestUrl.")
-            }
-            throw OWSHTTPError.invalidAppState(requestUrl: requestUrl)
-        }
-
-        let connectionType = self.type
-
-        let isIdentifiedConnection = connectionType == .identified
-        let isIdentifiedRequest = request.shouldHaveAuthorizationHeaders && !request.isUDRequest
-        owsAssertDebug(isIdentifiedConnection == isIdentifiedRequest)
-
-        let (response, requestInfo) = try await withCheckedThrowingContinuation { continuation in
-            self.serialQueue.async {
-                self.makeRequestInternal(
-                    request,
-                    unsubmittedRequestToken: unsubmittedRequestToken,
-                    success: { continuation.resume(returning: ($0, $1)) },
-                    failure: { continuation.resume(throwing: $0) }
-                )
-            }
-        }
-
-        let label = Self.label(forRequest: request, connectionType: connectionType, requestInfo: requestInfo)
-        Logger.info("\(label): Request Succeeded (\(response.responseStatusCode))")
-
-        Self.outageDetection.reportConnectionSuccess()
-        return response
     }
 }
 
@@ -1128,7 +1177,7 @@ private class RequestInfo {
 
 // MARK: -
 
-extension OWSChatConnection: SSKWebSocketDelegate {
+extension OWSChatConnectionUsingSSKWebSocket: SSKWebSocketDelegate {
 
     public func websocketDidConnect(socket eventSocket: SSKWebSocket) {
         assertOnQueue(self.serialQueue)
@@ -1153,7 +1202,7 @@ extension OWSChatConnection: SSKWebSocketDelegate {
 
         outageDetection.reportConnectionSuccess()
 
-        notifyStatusChange()
+        notifyStatusChange(newState: .open)
     }
 
     public func websocketDidDisconnectOrFail(socket eventSocket: SSKWebSocket, error: Error) {
@@ -1224,7 +1273,7 @@ extension OWSChatConnection: SSKWebSocketDelegate {
 
 // MARK: -
 
-extension OWSChatConnection: WebSocketConnectionDelegate {
+extension OWSChatConnectionUsingSSKWebSocket: WebSocketConnectionDelegate {
     fileprivate func webSocketSendHeartBeat(_ webSocket: WebSocketConnection) {
         if shouldSocketBeOpen {
             webSocket.writePing()
@@ -1368,7 +1417,7 @@ private class WebSocketConnection {
     }
 }
 
-internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnection {
+internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSSKWebSocket {
     private var chatService: ChatService
 
     private var _shadowingFrequency: Double
@@ -1466,24 +1515,19 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnection {
         }
     }
 
-    fileprivate override var currentWebSocket: WebSocketConnection? {
-        get { super.currentWebSocket }
-        set {
-            super.currentWebSocket = newValue
-            if newValue == nil {
-                // This is a disconnect.
-                // Doing this asynchronously means there is a chance of spuriously failing a future shadow request:
-                // 1. An entire request succeeds on the SSKWebSocket-based socket.
-                // 2. The libsignal web socket is disconnected.
-                // 3. The shadow request on the libsignal is thus cancelled.
-                // We track these errors separately just in case.
-                Task {
-                    do {
-                        try await chatService.disconnect()
-                    } catch {
-                        Logger.error("\(logPrefix): failed to disconnect libsignal: \(error)")
-                    }
-                }
+    fileprivate override func disconnectIfNeeded() {
+        super.disconnectIfNeeded()
+
+        // Doing this asynchronously means there is a chance of spuriously failing a future shadow request:
+        // 1. An entire request succeeds on the SSKWebSocket-based socket.
+        // 2. The libsignal web socket is disconnected.
+        // 3. The shadow request on the libsignal is thus cancelled.
+        // We track these errors separately just in case.
+        Task {
+            do {
+                try await chatService.disconnect()
+            } catch {
+                Logger.error("\(logPrefix): failed to disconnect libsignal: \(error)")
             }
         }
     }
@@ -1569,6 +1613,206 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnection {
                 default:
                     $0.healthcheckFailures += 1
                 }
+            }
+        }
+    }
+}
+
+internal class OWSChatConnectionUsingLibSignal: OWSChatConnection {
+    var chatService: ChatService
+
+    // Libsignal's ChatService expects callers to avoid racing connect() and disconnect() calls.
+    // We track the completion of the most recent connect() and disconnect() to do so.
+    // Combined with currentState, this lets us decide whether an additional connect() or disconnect()
+    // would be redundant.
+
+    private enum TransitionTask {
+        case connecting(Task<Bool, Never>)
+        case disconnecting(Task<Void, Never>)
+    }
+
+    private var _mostRecentTransition: TransitionTask?
+    private var mostRecentTransition: TransitionTask? {
+        get {
+            assertOnQueue(serialQueue)
+            return _mostRecentTransition
+        }
+        set {
+            assertOnQueue(serialQueue)
+            _mostRecentTransition = newValue
+        }
+    }
+
+    internal init(chatService: ChatService, type: OWSChatConnectionType, appExpiry: AppExpiry, db: DB) {
+        self.chatService = chatService
+        super.init(type: type, appExpiry: appExpiry, db: db)
+    }
+
+    fileprivate override func ensureWebsocketExists() {
+        assertOnQueue(serialQueue)
+
+        let disconnectingTask: Task<Void, Never>?
+        if case .disconnecting(let task) = mostRecentTransition {
+            disconnectingTask = task
+        } else if currentState == .closed {
+            disconnectingTask = nil
+        } else {
+            owsAssertDebug(mostRecentTransition != nil, "once out of the closed state, we should always have a transition")
+            // The most recent transition was attempting to connect, and we have not yet observed a failure.
+            // That's as good as we're going to get.
+            return
+        }
+
+        // We have to do this *before* we actually start the connect Task,
+        // because otherwise there's a (tiny) chance the connect could finish immediately,
+        // and then we'd transition *back* from .open to .connecting.
+        // mostRecentTransition is protected by serialQueue, though,
+        // so anything done in response to the notification will still be sufficiently synchronized.
+        notifyStatusChange(newState: .connecting)
+
+        mostRecentTransition = .connecting(Task {
+            // Finish disconnecting before we try to reopen.
+            await disconnectingTask?.value
+            do {
+                owsAssertDebug(type == .unidentified, "identified connection not supported yet")
+                try await chatService.connectUnauthenticated()
+                notifyStatusChange(newState: .open)
+                outageDetection.reportConnectionSuccess()
+                return true
+            } catch {
+                Logger.error("\(self.logPrefix): failed to connect: \(error)")
+                notifyStatusChange(newState: .closed)
+                outageDetection.reportConnectionFailure()
+                return false
+            }
+        })
+    }
+
+    fileprivate override func disconnectIfNeeded() {
+        assertOnQueue(serialQueue)
+
+        guard case .connecting(let connectingTask) = mostRecentTransition else {
+            // Either we are already disconnecting,
+            // or we finished disconnecting,
+            // or we were never connected to begin with.
+            return
+        }
+
+        mostRecentTransition = .disconnecting(
+            Task {
+                do {
+                    // Finish opening before disconnecting.
+                    // (We can't use waitForOpen() here because that will wait forever if the connection fails.)
+                    if await connectingTask.value {
+                        try await chatService.disconnect()
+                    }
+                } catch {
+                    Logger.info("\(self.logPrefix): error while disconnecting: \(error)")
+                }
+            }
+        )
+        notifyStatusChange(newState: .closed)
+    }
+
+    public override var currentState: OWSChatConnectionState {
+        // We can't really be more precise than this because of (1) libsignal handling reconnects,
+        // and (2) async means it'll immediately be out of date. This describes intent, anyway.
+        return cachedCurrentState
+    }
+
+    fileprivate override var logPrefix: String {
+        "[\(type): libsignal]"
+    }
+
+    fileprivate override func makeRequestInternal(_ request: TSRequest,
+                                                  unsubmittedRequestToken: UnsubmittedRequestToken,
+                                                  success: @escaping RequestSuccessInternal,
+                                                  failure: @escaping RequestFailure) {
+        var unsubmittedRequestTokenForEarlyExit: Optional = unsubmittedRequestToken
+        defer {
+            if let unsubmittedRequestTokenForEarlyExit {
+                removeUnsubmittedRequestToken(unsubmittedRequestTokenForEarlyExit)
+            }
+        }
+
+        guard let requestInfo = RequestInfo(request: request,
+                                            connectionType: type,
+                                            success: success,
+                                            failure: failure) else {
+            // Failure already reported by the init.
+            return
+        }
+        let label = Self.label(forRequest: request,
+                               connectionType: type,
+                               requestInfo: requestInfo)
+
+        let httpHeaders = OWSHttpHeaders(httpHeaders: request.allHTTPHeaderFields, overwriteOnConflict: false)
+        httpHeaders.addDefaultHeaders()
+
+        let body: Data
+        if let existingBody = request.httpBody {
+            body = existingBody
+        } else {
+            // TODO: Do we need body & headers for requests with no parameters?
+            do {
+                body = try JSONSerialization.data(withJSONObject: request.parameters, options: [])
+            } catch {
+                owsFailDebug("\(label) Error: \(error).")
+                requestInfo.didFailInvalidRequest()
+                return
+            }
+
+            // If we're going to use the json serialized parameters as our body, we should overwrite
+            // the Content-Type on the request.
+            httpHeaders.addHeader("Content-Type",
+                                  value: "application/json",
+                                  overwriteOnConflict: true)
+        }
+
+        let requestUrl = requestInfo.requestUrl
+        owsAssertDebug(requestUrl.scheme == nil)
+        owsAssertDebug(requestUrl.host == nil)
+        owsAssertDebug(!requestUrl.path.hasPrefix("/"))
+
+        let libsignalRequest = ChatService.Request(method: requestInfo.httpMethod, pathAndQuery: "/\(requestUrl)", headers: httpHeaders.headers, body: body, timeout: 10)
+
+        Logger.info("\(label) Making request")
+
+        unsubmittedRequestTokenForEarlyExit = nil
+        _ = Promise.wrapAsync { [self] in
+            // LibSignalClient's ChatService doesn't keep track of outstanding requests,
+            // so we keep the request token alive until we get the response instead.
+            defer {
+                removeUnsubmittedRequestToken(unsubmittedRequestToken)
+            }
+            return try await chatService.unauthenticatedSend(libsignalRequest)
+        }.done(on: self.serialQueue) { (response: ChatService.Response) in
+            if DebugFlags.internalLogging, !response.message.isEmpty {
+                Logger.info("\(label) received response, status: \(response.status), message: \(response.message)")
+            } else {
+                Logger.info("\(label) received response, status: \(response.status)")
+            }
+
+            self.ensureBackgroundKeepAlive(.receiveResponse)
+
+            let headers = OWSHttpHeaders(httpHeaders: response.headers, overwriteOnConflict: false)
+
+            requestInfo.complete(status: Int(response.status), headers: headers, data: response.body)
+
+            // We may have been holding the websocket open, waiting for this response.
+            // Check if we should close the websocket.
+            self.applyDesiredSocketState()
+
+        }.catch(on: self.serialQueue) { error in
+            switch error as? SignalError {
+            case .connectionTimeoutError(_):
+                _ = requestInfo.timeoutIfNecessary()
+                // libsignal handles reconnecting after timeouts
+            case .webSocketError(_), .connectionFailed(_):
+                requestInfo.didFailDueToNetwork()
+            default:
+                owsFailDebug("\(label) failed with an unexpected error: \(error)")
+                requestInfo.didFailDueToNetwork()
             }
         }
     }

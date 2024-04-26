@@ -26,14 +26,16 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
     public init(appExpiry: AppExpiry, db: DB, libsignalNet: Net, userDefaults: UserDefaults) {
         AssertIsOnMainThread()
 
-        connectionIdentified = OWSChatConnection(
+        connectionIdentified = OWSChatConnectionUsingSSKWebSocket(
             type: .identified,
             appExpiry: appExpiry,
             db: db
         )
 
-        if userDefaults.bool(forKey: Self.enableShadowingDefaultsKey) {
-            let chatService = libsignalNet.createChatService(username: "", password: "")
+        let chatService = libsignalNet.createChatService(username: "", password: "")
+        if userDefaults.bool(forKey: Self.shouldUseLibsignalDefaultsKey) {
+            connectionUnidentified = OWSChatConnectionUsingLibSignal(chatService: chatService, type: .unidentified, appExpiry: appExpiry, db: db)
+        } else if userDefaults.bool(forKey: Self.enableShadowingDefaultsKey) {
             let shadowingConnection = OWSChatConnectionWithLibSignalShadowing(
                 chatService: chatService,
                 type: .unidentified,
@@ -48,10 +50,9 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
                 Logger.info("Using unauth OWSChatConnectionWithLibSignalShadowing, shadowing frequency \(frequency)")
                 shadowingConnection.updateShadowingFrequency(frequency)
             }
-
             connectionUnidentified = shadowingConnection
         } else {
-            connectionUnidentified = OWSChatConnection(type: .unidentified, appExpiry: appExpiry, db: db)
+            connectionUnidentified = OWSChatConnectionUsingSSKWebSocket(type: .unidentified, appExpiry: appExpiry, db: db)
         }
 
         SwiftSingletons.register(self)
@@ -162,6 +163,19 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
         in defaults: UserDefaults
     ) {
         defaults.set(enableShadowingForUnidentifiedWebsocket, forKey: enableShadowingDefaultsKey)
+    }
+
+    private static var shouldUseLibsignalDefaultsKey: String = "UseLibsignalForUnidentifiedWebsocket"
+
+    /// We cache this in UserDefaults because it's used too early to access the RemoteConfig object.
+    ///
+    /// It also makes it possible to override the setting in Xcode via the Scheme settings:
+    /// add the arguments "-UseLibsignalForUnidentifiedWebsocket YES" to the invocation of the app.
+    static func saveShouldUseLibsignalForUnidentifiedWebsocket(
+        _ shouldUseLibsignalForUnidentifiedWebsocket: Bool,
+        in defaults: UserDefaults
+    ) {
+        defaults.set(shouldUseLibsignalForUnidentifiedWebsocket, forKey: shouldUseLibsignalDefaultsKey)
     }
 }
 

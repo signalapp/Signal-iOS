@@ -168,6 +168,10 @@
             argument = "-AppLaunchesAttempted 1"
             isEnabled = "NO">
          </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-UseLibsignalForUnidentifiedWebsocket YES"
+            isEnabled = "NO">
+         </CommandLineArgument>
       </CommandLineArguments>
       <EnvironmentVariables>
          <EnvironmentVariable

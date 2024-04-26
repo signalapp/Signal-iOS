@@ -259,6 +259,11 @@ public class RemoteConfig: NSObject {
         ))
     }
 
+    @available(*, unavailable, message: "cached in UserDefaults by ChatConnectionManager")
+    public static var experimentalTransportUseLibsignal: Bool {
+        return false
+    }
+
     public static var experimentalTransportShadowingHigh: Bool {
         return isEnabled(.experimentalTransportShadowingHigh, defaultValue: DebugFlags.internalLogging)
     }
@@ -489,6 +494,7 @@ private enum IsEnabledFlag: String, FlagType {
     case ringrtcNwPathMonitorTrialKillSwitch = "ios.ringrtcNwPathMonitorTrialKillSwitch"
     case enableGifSearch = "global.gifSearch"
     case serviceExtensionFailureKillSwitch = "ios.serviceExtensionFailureKillSwitch"
+    case experimentalTransportUseLibsignal = "ios.experimentalTransportEnabled.libsignal"
     case experimentalTransportShadowingHigh = "ios.experimentalTransportEnabled.shadowingHigh"
     case experimentalTransportShadowingEnabled = "ios.experimentalTransportEnabled.shadowing"
 
@@ -510,6 +516,7 @@ private enum IsEnabledFlag: String, FlagType {
         case .ringrtcNwPathMonitorTrialKillSwitch: fallthrough
         case .enableGifSearch: fallthrough
         case .serviceExtensionFailureKillSwitch: fallthrough
+        case .experimentalTransportUseLibsignal: fallthrough
         case .experimentalTransportShadowingHigh: fallthrough
         case .experimentalTransportShadowingEnabled:
             return false
@@ -534,6 +541,7 @@ private enum IsEnabledFlag: String, FlagType {
         case .enableAutoAPNSRotation: fallthrough
         case .ringrtcNwPathMonitorTrialKillSwitch: fallthrough
         case .enableGifSearch: fallthrough
+        case .experimentalTransportUseLibsignal: fallthrough
         case .experimentalTransportShadowingHigh: fallthrough
         case .experimentalTransportShadowingEnabled:
             return false
@@ -915,6 +923,12 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
                     let isKilled = isEnabledFlags[flag.rawValue] ?? false
                     return !isKilled
                 }(),
+                in: CurrentAppContext().appUserDefaults()
+            )
+            // Similarly, persist the choice of libsignal for the chat websockets.
+            let shouldUseLibsignalForUnidentifiedWebsocket = isEnabledFlags[IsEnabledFlag.experimentalTransportUseLibsignal.rawValue] ?? false
+            ChatConnectionManagerImpl.saveShouldUseLibsignalForUnidentifiedWebsocket(
+                shouldUseLibsignalForUnidentifiedWebsocket,
                 in: CurrentAppContext().appUserDefaults()
             )
 
