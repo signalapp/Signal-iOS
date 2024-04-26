@@ -68,6 +68,16 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
                 Logger.warn("Skipping empty recipient")
                 return
             }
+
+            guard !context.localIdentifiers.containsAnyOf(
+                aci: recipient.aci,
+                phoneNumber: E164(recipient.phoneNumber?.stringValue),
+                pni: recipient.pni
+            ) else {
+                // Skip local user
+                return
+            }
+
             let recipientAddress = contactAddress.asArchivingAddress()
 
             let recipientId = context.assignRecipientId(to: recipientAddress)
