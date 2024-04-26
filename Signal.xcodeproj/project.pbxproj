@@ -576,6 +576,9 @@
 		50101FB22B083C8100C648E4 /* ChatListSettingsButtonState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50101FB12B083C8100C648E4 /* ChatListSettingsButtonState.swift */; };
 		50101FB42B08447000C648E4 /* ChatListProxyButtonCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50101FB32B08447000C648E4 /* ChatListProxyButtonCreator.swift */; };
 		501052642BDAEEDC0097DDC5 /* MobileCoinExternal.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501052632BDAEEDC0097DDC5 /* MobileCoinExternal.pb.swift */; };
+		501052672BDB22940097DDC5 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 501052652BDB15B90097DDC5 /* PrivacyInfo.xcprivacy */; };
+		501052692BDB232A0097DDC5 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 501052682BDB232A0097DDC5 /* PrivacyInfo.xcprivacy */; };
+		5010526B2BDB23F50097DDC5 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 5010526A2BDB23F50097DDC5 /* PrivacyInfo.xcprivacy */; };
 		5011D1CB293FC7E000064098 /* DomainFrontingCountryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D1CA293FC7E000064098 /* DomainFrontingCountryViewController.swift */; };
 		5011D1CD29400E7300064098 /* DeviceProvisioningURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D1CC29400E7300064098 /* DeviceProvisioningURL.swift */; };
 		5011D9702A0429B6000FE8E5 /* ThreadMergerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D96F2A0429B6000FE8E5 /* ThreadMergerTest.swift */; };
@@ -3521,6 +3524,9 @@
 		50101FB12B083C8100C648E4 /* ChatListSettingsButtonState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListSettingsButtonState.swift; sourceTree = "<group>"; };
 		50101FB32B08447000C648E4 /* ChatListProxyButtonCreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListProxyButtonCreator.swift; sourceTree = "<group>"; };
 		501052632BDAEEDC0097DDC5 /* MobileCoinExternal.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MobileCoinExternal.pb.swift; sourceTree = "<group>"; };
+		501052652BDB15B90097DDC5 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		501052682BDB232A0097DDC5 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		5010526A2BDB23F50097DDC5 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		5011D1CA293FC7E000064098 /* DomainFrontingCountryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainFrontingCountryViewController.swift; sourceTree = "<group>"; };
 		5011D1CC29400E7300064098 /* DeviceProvisioningURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceProvisioningURL.swift; sourceTree = "<group>"; };
 		5011D96F2A0429B6000FE8E5 /* ThreadMergerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadMergerTest.swift; sourceTree = "<group>"; };
@@ -6066,6 +6072,7 @@
 				342FFE97272458AA000AC89F /* NSEContext.swift */,
 				342FFE95272458A4000AC89F /* NSEEnvironment.swift */,
 				D943F3EE2892F89B008C0C8B /* NSELogger.swift */,
+				501052682BDB232A0097DDC5 /* PrivacyInfo.xcprivacy */,
 				342FFE9C272458D4000AC89F /* SignalNSE-AppStore.entitlements */,
 				342FFE9B272458D4000AC89F /* SignalNSE.entitlements */,
 			);
@@ -6814,6 +6821,7 @@
 			children = (
 				4535186F1FC635DD00210559 /* Info.plist */,
 				4535186C1FC635DD00210559 /* MainInterface.storyboard */,
+				5010526A2BDB23F50097DDC5 /* PrivacyInfo.xcprivacy */,
 				347850561FD86544007B8332 /* SAEFailedViewController.swift */,
 				3461284A1FD0B93F00532771 /* SAELoadViewController.swift */,
 				7677E40E29F79BF300AC6A75 /* SAEScreenLockViewController.swift */,
@@ -9316,6 +9324,7 @@
 			isa = PBXGroup;
 			children = (
 				B6B6C3C419193F5B00C0B76B /* Translations */,
+				501052652BDB15B90097DDC5 /* PrivacyInfo.xcprivacy */,
 				882F8DE5251AB23600AA4359 /* Settings.bundle */,
 				D221A095169C9E5E00537ABF /* Signal-Info.plist */,
 				D221A09B169C9E5E00537ABF /* Signal-Prefix.pch */,
@@ -11944,6 +11953,7 @@
 				342FFEAC27249C9A000AC89F /* note.aifc in Resources */,
 				342FFEA427245CA6000AC89F /* NSE-Images.xcassets in Resources */,
 				342FFEB227249C9A000AC89F /* popcorn.aifc in Resources */,
+				501052692BDB232A0097DDC5 /* PrivacyInfo.xcprivacy in Resources */,
 				342FFEA827249C9A000AC89F /* pulse.aifc in Resources */,
 				342FFEAD27249C9A000AC89F /* synth.aifc in Resources */,
 			);
@@ -11978,6 +11988,7 @@
 			files = (
 				3478504C1FD7496D007B8332 /* Images.xcassets in Resources */,
 				4535186E1FC635DD00210559 /* MainInterface.storyboard in Resources */,
+				5010526B2BDB23F50097DDC5 /* PrivacyInfo.xcprivacy in Resources */,
 				7665BC9E2A3A72910060279B /* Symbols.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -12067,6 +12078,7 @@
 				1466AB282817F7E7003B3D9F /* PluralAware.stringsdict in Resources */,
 				45B74A7D2044AAB600CD42F8 /* popcorn-quiet.aifc in Resources */,
 				45B74A842044AAB600CD42F8 /* popcorn.aifc in Resources */,
+				501052672BDB22940097DDC5 /* PrivacyInfo.xcprivacy in Resources */,
 				45B74A802044AAB600CD42F8 /* pulse-quiet.aifc in Resources */,
 				45B74A822044AAB600CD42F8 /* pulse.aifc in Resources */,
 				886CB07C24E78F2200753909 /* Reflection.m4r in Resources */,
