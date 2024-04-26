@@ -624,24 +624,30 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     // We want to delay asking for a review until an opportune time.
     // If the user has *just* launched Signal they intend to do something, we don't want to interrupt them.
 
-    private static var callCount: UInt = 0
-    private static var reviewRequested = false
+    private static var requestReviewCount = 0
+    private static var didRequestReview = false
 
-    func requestReviewIfAppropriate() {
-        Self.callCount += 1
+    private func requestReviewIfAppropriate() {
+        Self.requestReviewCount += 1
 
-        if hasEverAppeared && Self.callCount > 25 {
-            // In Debug this pops up *every* time, which is helpful, but annoying.
-            // In Production this will pop up at most 3 times per 365 days.
-    #if !DEBUG
-            if !Self.reviewRequested {
-                // Despite `SKStoreReviewController` docs, some people have reported seeing the "request review" prompt
-                // repeatedly after first installation. Let's make sure it only happens at most once per launch.
-                SKStoreReviewController.requestReview()
-                Self.reviewRequested = true
-            }
-    #endif
+        // Despite `SKStoreReviewController` docs, some people have reported seeing
+        // the "request review" prompt repeatedly after first installation. Let's
+        // make sure it only happens at most once per launch.
+        if Self.didRequestReview {
+            return
         }
+
+        guard hasEverAppeared, Self.requestReviewCount > 25 else {
+            return
+        }
+
+        guard let windowScene = self.view.window?.windowScene else {
+            return
+        }
+
+        // In Production this will pop up at most 3 times per 365 days.
+        SKStoreReviewController.requestReview(in: windowScene)
+        Self.didRequestReview = true
     }
 
     // MARK: View State
