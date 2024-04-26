@@ -92,6 +92,12 @@ class InternalSettingsViewController: OWSTableViewController2 {
             }
         ))
 
+        if FeatureFlags.messageBackupFileAlpha {
+            debugSection.add(.actionItem(withText: "Export Message Backup proto") {
+                self.exportMessageBackupProto()
+            })
+        }
+
         contents.add(debugSection)
 
         let (contactThreadCount, groupThreadCount, messageCount, attachmentCount, subscriberID) = databaseStorage.read { tx in
@@ -179,5 +185,43 @@ class InternalSettingsViewController: OWSTableViewController2 {
         contents.add(paymentsSection)
 
         self.contents = contents
+    }
+}
+
+// MARK: -
+
+private extension InternalSettingsViewController {
+    func exportMessageBackupProto() {
+        guard let localIdentifiers = databaseStorage.read(block: {tx in
+            return DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)
+        }) else {
+            return
+        }
+
+        ModalActivityIndicatorViewController.present(
+            fromViewController: self,
+            canCancel: false
+        ) { modal in
+            Task {
+                do {
+                    let fileUrl = try await DependenciesBridge.shared.messageBackupManager.createBackup(localIdentifiers: localIdentifiers)
+                    await MainActor.run {
+                        modal.dismiss()
+
+                        let activityVC = UIActivityViewController(
+                            activityItems: [fileUrl],
+                            applicationActivities: nil
+                        )
+                        activityVC.popoverPresentationController?.sourceView = self.view
+                        self.present(activityVC, animated: true)
+                    }
+                } catch {
+                    owsFailDebug("Failed to create backup!")
+                    await MainActor.run {
+                        modal.dismiss()
+                    }
+                }
+            }
+        }
     }
 }
