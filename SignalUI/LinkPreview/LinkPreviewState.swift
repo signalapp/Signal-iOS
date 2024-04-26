@@ -179,7 +179,7 @@ public class LinkPreviewDraft: LinkPreviewState {
             owsFailDebug("Missing imageData.")
             return .zero
         }
-        let imageMetadata = (imageData as NSData).imageMetadata(withPath: nil, mimeType: nil)
+        let imageMetadata = imageData.imageMetadata(withPath: nil, mimeType: nil)
         guard imageMetadata.isValid else {
             owsFailDebug("Invalid image.")
             return .zero

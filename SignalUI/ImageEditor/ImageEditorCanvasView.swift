@@ -1279,7 +1279,7 @@ class ImageEditorCanvasView: UIView {
         let dstScale: CGFloat = 1.0 // The size is specified in pixels, not in points.
         let viewSize = dstSizePixels
 
-        let hasAlpha = NSData.hasAlpha(forValidImageFilePath: model.srcImagePath)
+        let hasAlpha = Data.hasAlpha(forValidImageFilePath: model.srcImagePath)
 
         // We use an UIImageView + UIView.renderAsImage() instead of a CGGraphicsContext
         // Because CALayer.renderInContext() doesn't honor CALayer properties like frame,

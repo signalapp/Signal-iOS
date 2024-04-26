@@ -61,7 +61,7 @@ fileprivate extension CVComponentState {
                 )
             }
         }.map(on: DispatchQueue.global()) { (avatarData: Data) -> Void in
-            let imageMetadata = (avatarData as NSData).imageMetadata(withPath: nil, mimeType: nil)
+            let imageMetadata = avatarData.imageMetadata(withPath: nil, mimeType: nil)
             let cacheFileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: imageMetadata.fileExtension,
                                                               isAvailableWhileDeviceLocked: true)
             guard imageMetadata.isValid else {

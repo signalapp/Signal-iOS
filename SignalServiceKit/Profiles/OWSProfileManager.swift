@@ -1456,7 +1456,7 @@ extension OWSProfileManager {
             let response = try await urlSession.downloadTaskPromise(avatarUrlPath, method: .get).awaitable()
             let decryptedFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
             try decryptAvatar(at: response.downloadUrl, to: decryptedFileUrl, profileKey: profileKey)
-            guard NSData.ows_isValidImage(at: decryptedFileUrl, mimeType: nil) else {
+            guard Data.ows_isValidImage(at: decryptedFileUrl, mimeType: nil) else {
                 throw OWSGenericError("Couldn't validate avatar")
             }
             guard UIImage(contentsOfFile: decryptedFileUrl.path) != nil else {

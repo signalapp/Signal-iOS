@@ -11,14 +11,14 @@ class SignalAttachmentTest: SignalBaseTest {
     // MARK: - Utilities
 
     func testMetadataStrippingDoesNotChangeOrientation(url: URL) throws {
-        let size = NSData.imageSize(forFilePath: url.path, mimeType: "image/jpeg")
+        let size = Data.imageSize(forFilePath: url.path, mimeType: "image/jpeg")
 
         let dataSource = try DataSourcePath.dataSource(with: url, shouldDeleteOnDeallocation: false)
         let attachment = SignalAttachment.attachment(
             dataSource: dataSource,
             dataUTI: kUTTypeJPEG as String
         )
-        let newSize = (attachment.data as NSData).imageMetadata(withPath: nil, mimeType: "image/jpeg").pixelSize
+        let newSize = attachment.data.imageMetadata(withPath: nil, mimeType: "image/jpeg").pixelSize
 
         XCTAssertEqual(newSize, size, "image dimensions changed for \(url.lastPathComponent)")
     }

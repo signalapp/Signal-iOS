@@ -404,7 +404,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
 
             // Sticker type metadata isn't reliable, so determine the sticker type by examining the actual sticker data.
             let stickerType: StickerType
-            let imageMetadata = (stickerData as NSData).imageMetadata(withPath: nil, mimeType: nil)
+            let imageMetadata = stickerData.imageMetadata(withPath: nil, mimeType: nil)
             switch imageMetadata.imageFormat {
             case .png:
                 stickerType = .apng
@@ -423,7 +423,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 return nil
 
             default:
-                owsFailDebug("Invalid sticker data format: \(NSStringForImageFormat(imageMetadata.imageFormat))")
+                owsFailDebug("Invalid sticker data format: \(imageMetadata.imageFormat)")
                 return nil
             }
 
@@ -431,7 +431,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             let thumbnailImage: UIImage? = { () -> UIImage? in
                 switch stickerType {
                 case .webp:
-                    let image: UIImage? = (stickerData as NSData).stillForWebpData()
+                    let image: UIImage? = stickerData.stillForWebpData()
                     return image
                 case .signalLottie:
                     return nil

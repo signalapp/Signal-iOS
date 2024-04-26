@@ -29,7 +29,7 @@ public class OnboardingStoryManagerFilesystem: NSObject {
     }
 
     public class func isValidImage(at url: URL, mimeType: String?) -> Bool {
-        return NSData.ows_isValidImage(at: url, mimeType: mimeType)
+        return Data.ows_isValidImage(at: url, mimeType: mimeType)
     }
 }
 

@@ -59,7 +59,7 @@ public class StickerView {
             return nil
         }
 
-        guard NSData.ows_isValidImage(at: stickerDataUrl, mimeType: stickerType.contentType) else {
+        guard Data.ows_isValidImage(at: stickerDataUrl, mimeType: stickerType.contentType) else {
             owsFailDebug("Invalid sticker.")
             return nil
         }

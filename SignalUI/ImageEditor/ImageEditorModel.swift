@@ -77,7 +77,7 @@ class ImageEditorModel: NSObject {
             throw ImageEditorError.invalidInput
         }
 
-        let srcImageSizePixels = NSData.imageSize(forFilePath: srcImagePath, mimeType: mimeType)
+        let srcImageSizePixels = Data.imageSize(forFilePath: srcImagePath, mimeType: mimeType)
         guard srcImageSizePixels.width > 0, srcImageSizePixels.height > 0 else {
             Logger.error("Couldn't determine image size.")
             throw ImageEditorError.invalidInput
@@ -321,7 +321,7 @@ class ImageEditorModel: NSObject {
             return nil
         }
 
-        let hasAlpha = NSData.hasAlpha(forValidImageFilePath: imagePath)
+        let hasAlpha = Data.hasAlpha(forValidImageFilePath: imagePath)
 
         UIGraphicsBeginImageContextWithOptions(cropRect.size, !hasAlpha, srcImage.scale)
         defer { UIGraphicsEndImageContext() }

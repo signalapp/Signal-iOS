@@ -5,7 +5,6 @@
 
 #import "TSGroupModel.h"
 #import "FunctionalUtil.h"
-#import "NSData+Image.h"
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalCoreKit/Randomness.h>

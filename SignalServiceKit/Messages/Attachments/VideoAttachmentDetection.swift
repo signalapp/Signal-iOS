@@ -81,7 +81,7 @@ fileprivate extension TSAttachmentStream {
             return false
         }
 
-        let imageMetadata = NSData.imageMetadata(withPath: filePath, mimeType: contentType)
+        let imageMetadata = Data.imageMetadata(withPath: filePath, mimeType: contentType)
         guard imageMetadata.isValid else {
             return false
         }

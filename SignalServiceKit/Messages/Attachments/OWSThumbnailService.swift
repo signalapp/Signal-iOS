@@ -154,7 +154,7 @@ public class OWSThumbnailService: NSObject {
         let mightBeWebp = attachment.contentType == MimeType.imageWebp.rawValue
         if mightBeWebp,
            let filePath = attachment.originalFilePath {
-            let imageMetadata = NSData.imageMetadata(withPath: filePath, mimeType: nil)
+            let imageMetadata = Data.imageMetadata(withPath: filePath, mimeType: nil)
             if imageMetadata.imageFormat != .unknown,
                let mimeType = imageMetadata.mimeType {
                 contentType = mimeType

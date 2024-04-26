@@ -205,11 +205,11 @@ class GifPickerCell: UICollectionViewCell {
            let video = LoopingVideo(url: URL(fileURLWithPath: asset.filePath)) {
             mp4View.video = video
             mp4View.isHidden = false
-        } else if NSData.ows_isValidImage(atPath: asset.filePath, mimeType: MimeType.imageGif.rawValue),
+        } else if Data.ows_isValidImage(atPath: asset.filePath, mimeType: MimeType.imageGif.rawValue),
                   let image = YYImage(contentsOfFile: asset.filePath) {
             imageView.image = image
             imageView.isHidden = false
-        } else if NSData.ows_isValidImage(atPath: asset.filePath, mimeType: MimeType.imageJpeg.rawValue),
+        } else if Data.ows_isValidImage(atPath: asset.filePath, mimeType: MimeType.imageJpeg.rawValue),
                   let image = UIImage(contentsOfFile: asset.filePath) {
             imageView.image = image
             imageView.isHidden = false

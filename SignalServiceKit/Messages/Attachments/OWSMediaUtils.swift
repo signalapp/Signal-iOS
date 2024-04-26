@@ -44,7 +44,7 @@ public class OWSMediaUtils: NSObject {
         guard FileManager.default.fileExists(atPath: path) else {
             throw OWSMediaError.failure(description: "Media file missing.")
         }
-        guard NSData.ows_isValidImage(atPath: path) else {
+        guard Data.ows_isValidImage(atPath: path) else {
             throw OWSMediaError.failure(description: "Invalid image.")
         }
         guard let originalImage = UIImage(contentsOfFile: path) else {
@@ -58,7 +58,7 @@ public class OWSMediaUtils: NSObject {
         guard FileManager.default.fileExists(atPath: path) else {
             throw OWSMediaError.failure(description: "Media file missing.")
         }
-        guard NSData.ows_isValidImage(atPath: path) else {
+        guard Data.ows_isValidImage(atPath: path) else {
             throw OWSMediaError.failure(description: "Invalid image.")
         }
         guard let originalImage = UIImage(contentsOfFile: path) else {
@@ -94,10 +94,10 @@ public class OWSMediaUtils: NSObject {
         guard FileManager.default.fileExists(atPath: path) else {
             throw OWSMediaError.failure(description: "Media file missing.")
         }
-        guard NSData.ows_isValidImage(atPath: path) else {
+        guard Data.ows_isValidImage(atPath: path) else {
             throw OWSMediaError.failure(description: "Invalid image.")
         }
-        let data = try Data(contentsOf: URL(fileURLWithPath: path)) as NSData
+        let data = try Data(contentsOf: URL(fileURLWithPath: path))
         guard let stillImage = data.stillForWebpData() else {
             throw OWSMediaError.failure(description: "Could not generate still.")
         }

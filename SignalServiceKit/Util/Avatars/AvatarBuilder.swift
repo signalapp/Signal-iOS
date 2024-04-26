@@ -949,7 +949,7 @@ public class AvatarBuilder: NSObject {
     ) -> UIImage? {
         let diameterPixels = avatarContent.diameterPixels
         if shouldValidate {
-            guard NSData.ows_isValidImage(atPath: fileUrl.path) else {
+            guard Data.ows_isValidImage(atPath: fileUrl.path) else {
                 owsFailDebug("Invalid image.")
                 return nil
             }

@@ -409,7 +409,7 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
             return Promise.value(nil)
         }
         return firstly(on: Self.workQueue) { () -> PreviewThumbnail? in
-            let imageMetadata = (srcImageData as NSData).imageMetadata(withPath: nil, mimeType: srcMimeType)
+            let imageMetadata = srcImageData.imageMetadata(withPath: nil, mimeType: srcMimeType)
             guard imageMetadata.isValid else {
                 return nil
             }
@@ -425,7 +425,7 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
                 owsFailDebug("Invalid imageFormat.")
                 return nil
             case .webp:
-                guard let stillImage = (srcImageData as NSData).stillForWebpData() else {
+                guard let stillImage = srcImageData.stillForWebpData() else {
                     owsFailDebug("Couldn't derive still image for Webp.")
                     return nil
                 }

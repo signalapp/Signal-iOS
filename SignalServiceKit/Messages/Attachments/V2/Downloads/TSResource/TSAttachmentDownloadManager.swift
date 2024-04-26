@@ -511,7 +511,7 @@ public class TSAttachmentDownloadManager: NSObject {
                                     job: Job) {
         if job.category.isSticker,
            let filePath = attachmentStream.originalFilePath {
-            let imageMetadata = NSData.imageMetadata(withPath: filePath, mimeType: nil)
+            let imageMetadata = Data.imageMetadata(withPath: filePath, mimeType: nil)
             if imageMetadata.imageFormat != .unknown,
                let mimeTypeFromMetadata = imageMetadata.mimeType {
                 attachmentStream.replaceUnsavedContentType(mimeTypeFromMetadata)

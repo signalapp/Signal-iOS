@@ -133,7 +133,7 @@ public class MessageStickerManagerImpl: MessageStickerManager {
         do {
             let dataSource = try DataSourcePath.dataSource(with: stickerDataUrl, shouldDeleteOnDeallocation: false)
             let mimeType: String
-            let imageMetadata = NSData.imageMetadata(withPath: stickerDataUrl.path, mimeType: nil)
+            let imageMetadata = Data.imageMetadata(withPath: stickerDataUrl.path, mimeType: nil)
             if imageMetadata.imageFormat != .unknown,
                let mimeTypeFromMetadata = imageMetadata.mimeType {
                 mimeType = mimeTypeFromMetadata
@@ -199,7 +199,7 @@ public class MessageStickerManagerImpl: MessageStickerManager {
         let fileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: fileExtension)
         try stickerData.write(to: fileUrl)
 
-        let imageMetadata = NSData.imageMetadata(withPath: fileUrl.path, mimeType: nil)
+        let imageMetadata = Data.imageMetadata(withPath: fileUrl.path, mimeType: nil)
         if imageMetadata.imageFormat != .unknown,
            let mimeTypeFromMetadata = imageMetadata.mimeType {
             mimeType = mimeTypeFromMetadata

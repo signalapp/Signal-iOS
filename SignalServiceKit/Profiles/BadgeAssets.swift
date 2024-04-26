@@ -122,7 +122,7 @@ public class BadgeAssets: NSObject {
             guard OWSFileSystem.fileOrFolderExists(url: resultUrl) else {
                 throw OWSAssertionError("Sprite url missing")
             }
-            guard NSData.ows_isValidImage(at: resultUrl, mimeType: nil) else {
+            guard Data.ows_isValidImage(at: resultUrl, mimeType: nil) else {
                 throw OWSAssertionError("Invalid sprite")
             }
             try OWSFileSystem.moveFile(from: resultUrl, to: spriteUrl)
@@ -130,7 +130,7 @@ public class BadgeAssets: NSObject {
     }
 
     private func extractSpritesFromSpritesheetIfNecessary() throws {
-        guard NSData.ows_isValidImage(atPath: fileUrlForSpritesheet().path) else {
+        guard Data.ows_isValidImage(atPath: fileUrlForSpritesheet().path) else {
             throw OWSAssertionError("Invalid spritesheet source image")
         }
 

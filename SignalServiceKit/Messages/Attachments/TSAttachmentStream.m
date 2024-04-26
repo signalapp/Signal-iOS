@@ -4,7 +4,6 @@
 //
 
 #import "TSAttachmentStream.h"
-#import "NSData+Image.h"
 #import "OWSError.h"
 #import "OWSFileSystem.h"
 #import "TSAttachmentPointer.h"
