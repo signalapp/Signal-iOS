@@ -24,7 +24,7 @@ public enum Upload {
         public static let uploadReuseWindow: TimeInterval = 60 * 60 * 24 * 3 // 3 days
     }
 
-    internal struct Form: Codable {
+    public struct Form: Codable {
         private enum CodingKeys: String, CodingKey {
             case headers = "headers"
             case signedUploadLocation = "signedUploadLocation"

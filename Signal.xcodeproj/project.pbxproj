@@ -1557,6 +1557,7 @@
 		C13A484729B650BC00BA9005 /* UsernameValidationObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13A484629B650BC00BA9005 /* UsernameValidationObserver.swift */; };
 		C13B9BB22A17BC32007F74C4 /* EditManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C182C4BD29E45D80007F7A7C /* EditManagerTests.swift */; };
 		C13B9BB62A1819C7007F74C4 /* OutgoingEditMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13B9BB52A1819C7007F74C4 /* OutgoingEditMessage.swift */; };
+		C14391132BD1C0DF00ED6FCB /* MessageBackupRequestManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14391122BD1C0DF00ED6FCB /* MessageBackupRequestManager.swift */; };
 		C14EC1A22BA891D200A4D064 /* TransformingInputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14EC1A12BA891D200A4D064 /* TransformingInputStream.swift */; };
 		C14EC1A92BAA4B5F00A4D064 /* StreamTransformTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14EC1A82BAA4B5F00A4D064 /* StreamTransformTests.swift */; };
 		C14EC1AB2BAB57B900A4D064 /* DecryptingStreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14EC1AA2BAB57B900A4D064 /* DecryptingStreamTransform.swift */; };
@@ -1565,9 +1566,13 @@
 		C167F1E52A7162D700D4A9AF /* SSKKyberPreKeyStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C167F1E42A7162D700D4A9AF /* SSKKyberPreKeyStoreTest.swift */; };
 		C169095F2A4DE2A200B6A65D /* EditMessageWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C169095E2A4DE2A200B6A65D /* EditMessageWrapper.swift */; };
 		C16B8B752B8940D40030BA24 /* OWSOutgoingSentMessageTranscript.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16B8B742B8940D40030BA24 /* OWSOutgoingSentMessageTranscript.swift */; };
+		C17310A52BD9D43D00B7A151 /* MessageBackupRemoteInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17310A42BD9D43D00B7A151 /* MessageBackupRemoteInfo.swift */; };
+		C17310A72BD9D45400B7A151 /* MessageBackupServiceAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17310A62BD9D45400B7A151 /* MessageBackupServiceAuth.swift */; };
 		C17345BB2A5E000300C6426D /* PreKeyTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17345BA2A5E000300C6426D /* PreKeyTarget.swift */; };
 		C176B48A299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C176B489299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift */; };
 		C179B01E29ED94FA00275AD1 /* EditRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = C179B01D29ED94FA00275AD1 /* EditRecord.swift */; };
+		C18806342BD8080B0024044A /* MessageBackupAuthCredentialManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18806332BD8080B0024044A /* MessageBackupAuthCredentialManager.swift */; };
+		C18806362BD947970024044A /* OWSRequestFactory+MessageBackup.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18806352BD947970024044A /* OWSRequestFactory+MessageBackup.swift */; };
 		C18B56B92B07BC12000A441F /* TSAttachmentUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18B56B82B07BC12000A441F /* TSAttachmentUpload.swift */; };
 		C18CA8342B6D6F8400D411B0 /* TSAttachmentUploadManagerTestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18CA8332B6D6F8400D411B0 /* TSAttachmentUploadManagerTestHelper.swift */; };
 		C18D4A952B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18D4A942B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift */; };
@@ -4508,6 +4513,7 @@
 		C13769412AFC20B900B4952D /* DonationPaymentDetailsSelectIdealBankViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationPaymentDetailsSelectIdealBankViewController.swift; sourceTree = "<group>"; };
 		C13A484629B650BC00BA9005 /* UsernameValidationObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationObserver.swift; sourceTree = "<group>"; };
 		C13B9BB52A1819C7007F74C4 /* OutgoingEditMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingEditMessage.swift; sourceTree = "<group>"; };
+		C14391122BD1C0DF00ED6FCB /* MessageBackupRequestManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupRequestManager.swift; sourceTree = "<group>"; };
 		C14EC1A12BA891D200A4D064 /* TransformingInputStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformingInputStream.swift; sourceTree = "<group>"; };
 		C14EC1A82BAA4B5F00A4D064 /* StreamTransformTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamTransformTests.swift; sourceTree = "<group>"; };
 		C14EC1AA2BAB57B900A4D064 /* DecryptingStreamTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecryptingStreamTransform.swift; sourceTree = "<group>"; };
@@ -4516,11 +4522,15 @@
 		C167F1E42A7162D700D4A9AF /* SSKKyberPreKeyStoreTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKKyberPreKeyStoreTest.swift; sourceTree = "<group>"; };
 		C169095E2A4DE2A200B6A65D /* EditMessageWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMessageWrapper.swift; sourceTree = "<group>"; };
 		C16B8B742B8940D40030BA24 /* OWSOutgoingSentMessageTranscript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingSentMessageTranscript.swift; sourceTree = "<group>"; };
+		C17310A42BD9D43D00B7A151 /* MessageBackupRemoteInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupRemoteInfo.swift; sourceTree = "<group>"; };
+		C17310A62BD9D45400B7A151 /* MessageBackupServiceAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupServiceAuth.swift; sourceTree = "<group>"; };
 		C17345BA2A5E000300C6426D /* PreKeyTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyTarget.swift; sourceTree = "<group>"; };
 		C176B489299DA25500B1900D /* PhoneNumberPrivacySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberPrivacySettingsViewController.swift; sourceTree = "<group>"; };
 		C179B01D29ED94FA00275AD1 /* EditRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditRecord.swift; sourceTree = "<group>"; };
 		C182BEF529ACFCB200E8E1E2 /* UsernameValidationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManagerTests.swift; sourceTree = "<group>"; };
 		C182C4BD29E45D80007F7A7C /* EditManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerTests.swift; sourceTree = "<group>"; };
+		C18806332BD8080B0024044A /* MessageBackupAuthCredentialManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupAuthCredentialManager.swift; sourceTree = "<group>"; };
+		C18806352BD947970024044A /* OWSRequestFactory+MessageBackup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSRequestFactory+MessageBackup.swift"; sourceTree = "<group>"; };
 		C18B56B82B07BC12000A441F /* TSAttachmentUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAttachmentUpload.swift; sourceTree = "<group>"; };
 		C18CA8332B6D6F8400D411B0 /* TSAttachmentUploadManagerTestHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAttachmentUploadManagerTestHelper.swift; sourceTree = "<group>"; };
 		C18D4A942B4CBC1300C3F412 /* DonationViewsUtil+IDEAL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+IDEAL.swift"; sourceTree = "<group>"; };
@@ -6949,6 +6959,7 @@
 			children = (
 				50552C292BAB8E7D00815474 /* AuthCredentialManager.swift */,
 				50552C2B2BAB8E8500815474 /* AuthCredentialStore.swift */,
+				C18806332BD8080B0024044A /* MessageBackupAuthCredentialManager.swift */,
 				5013365E2B2BC2EF004119F1 /* ZkParamsMigrator.swift */,
 			);
 			path = ZkParams;
@@ -7636,6 +7647,9 @@
 				665C0D5B2ADF538100539A37 /* MessageBackupManager.swift */,
 				665C0D5D2ADF53E200539A37 /* MessageBackupManagerImpl.swift */,
 				C10E9FAE2BB778E100A609B9 /* MessageBackupManagerMock.swift */,
+				C17310A42BD9D43D00B7A151 /* MessageBackupRemoteInfo.swift */,
+				C14391122BD1C0DF00ED6FCB /* MessageBackupRequestManager.swift */,
+				C17310A62BD9D45400B7A151 /* MessageBackupServiceAuth.swift */,
 			);
 			path = MessageBackup;
 			sourceTree = "<group>";
@@ -11168,6 +11182,7 @@
 				5018B9DC2ADF4157001DFB12 /* AuthedDevice.swift */,
 				664160CF29A6D60A00F5BA85 /* ChatServiceAuth.swift */,
 				D95C39E5296DE9E900A9DA23 /* OWSRequestFactory+BoostPayments.swift */,
+				C18806352BD947970024044A /* OWSRequestFactory+MessageBackup.swift */,
 				F9D5BFCC2979A017001737E5 /* OWSRequestFactory+Spam.swift */,
 				D95C39E7296DEBFB00A9DA23 /* OWSRequestFactory+Usernames.swift */,
 				F9C5CAE4289453B200548EEE /* OWSRequestFactory.h */,
@@ -13978,6 +13993,7 @@
 				5052AF5E2ACB0E9700D7EE9F /* MergePair.swift in Sources */,
 				66BB4D592AD8BF6200A84219 /* MergingDict.swift in Sources */,
 				66CD25642B06949C00139E17 /* MessageBackupAccountDataArchiver.swift in Sources */,
+				C18806342BD8080B0024044A /* MessageBackupAuthCredentialManager.swift in Sources */,
 				66CD256C2B06967900139E17 /* MessageBackupCallArchiver.swift in Sources */,
 				66CD25662B0695F400139E17 /* MessageBackupChatArchiver.swift in Sources */,
 				66CD25682B06960F00139E17 /* MessageBackupChatItemArchiver.swift in Sources */,
@@ -14007,6 +14023,9 @@
 				6605B9822B19547C00E8A68A /* MessageBackupReactionArchiver.swift in Sources */,
 				66CD25622B06948900139E17 /* MessageBackupRecipientArchiver.swift in Sources */,
 				66CD25702B06E29B00139E17 /* MessageBackupRecipientDestinationArchiver.swift in Sources */,
+				C17310A52BD9D43D00B7A151 /* MessageBackupRemoteInfo.swift in Sources */,
+				C14391132BD1C0DF00ED6FCB /* MessageBackupRequestManager.swift in Sources */,
+				C17310A72BD9D45400B7A151 /* MessageBackupServiceAuth.swift in Sources */,
 				66CD256A2B06963200139E17 /* MessageBackupStickerPackArchiver.swift in Sources */,
 				66CD258F2B0EB4AC00139E17 /* MessageBackupTSIncomingMessageArchiver.swift in Sources */,
 				66CD25932B0EC55100139E17 /* MessageBackupTSMessageContentsArchiver.swift in Sources */,
@@ -14203,6 +14222,7 @@
 				F9C5CC6E289453B300548EEE /* OWSRecoverableDecryptionPlaceholder+SDS.swift in Sources */,
 				F9C5CC85289453B300548EEE /* OWSRecoverableDecryptionPlaceholder.m in Sources */,
 				D95C39E6296DE9E900A9DA23 /* OWSRequestFactory+BoostPayments.swift in Sources */,
+				C18806362BD947970024044A /* OWSRequestFactory+MessageBackup.swift in Sources */,
 				F9D5BFCD2979A017001737E5 /* OWSRequestFactory+Spam.swift in Sources */,
 				D95C39E8296DEBFB00A9DA23 /* OWSRequestFactory+Usernames.swift in Sources */,
 				F9C5CDB9289453B400548EEE /* OWSRequestFactory.m in Sources */,

@@ -20,6 +20,13 @@ public protocol MessageBackupKeyMaterial {
     /// to create the anonymous credentials for interacting with server stored backups
     func backupID(localAci: Aci, tx: DBReadTransaction) throws -> Data
 
+    /// Private key derived from the BackupKey + ACI that is used for signing backup auth presentations.
+    func backupPrivateKey(localAci: Aci, tx: DBReadTransaction) throws -> PrivateKey
+
+    /// LibSignal.BackupAuthCredentialRequestContext derived from the ACI and BackupKey and used primarily
+    /// for building backup credentials.
+    func backupAuthRequestContext(localAci: Aci, tx: DBReadTransaction) throws -> BackupAuthCredentialRequestContext
+
     /// Builds an encrypting StreamTransform object derived from the backup master key and the backupID
     func createEncryptingStreamTransform(localAci: Aci, tx: DBReadTransaction) throws -> EncryptingStreamTransform
 

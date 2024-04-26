@@ -9,10 +9,12 @@ import LibSignalClient
 class AuthCredentialStore {
     private let callLinkAuthCredentialStore: any KeyValueStore
     private let groupAuthCredentialStore: any KeyValueStore
+    private let backupAuthCredentialStore: any KeyValueStore
 
     init(keyValueStoreFactory: any KeyValueStoreFactory) {
         self.callLinkAuthCredentialStore = keyValueStoreFactory.keyValueStore(collection: "CallLinkAuthCredential")
         self.groupAuthCredentialStore = keyValueStoreFactory.keyValueStore(collection: "GroupsV2Impl.authCredentialStoreStore")
+        self.backupAuthCredentialStore = keyValueStoreFactory.keyValueStore(collection: "BackupAuthCredential")
     }
 
     private static func callLinkAuthCredentialKey(for redemptionTime: UInt64) -> String {
@@ -21,6 +23,10 @@ class AuthCredentialStore {
 
     private static func groupAuthCredentialKey(for redemptionTime: UInt64) -> String {
         return "ACWP_\(redemptionTime)"
+    }
+
+    private static func backupAuthCredentialKey(for redemptionTime: UInt64) -> String {
+        return "\(redemptionTime)"
     }
 
     func callLinkAuthCredential(
@@ -77,5 +83,38 @@ class AuthCredentialStore {
 
     func removeAllGroupAuthCredentials(tx: DBWriteTransaction) {
         groupAuthCredentialStore.removeAll(transaction: tx)
+    }
+
+    func backupAuthCredential(
+        for redemptionTime: UInt64,
+        tx: DBReadTransaction
+    ) -> BackupAuthCredential? {
+        do {
+            return try backupAuthCredentialStore.getData(
+                Self.backupAuthCredentialKey(for: redemptionTime),
+                transaction: tx
+            ).map {
+                return try BackupAuthCredential.init(contents: [UInt8]($0))
+            }
+        } catch {
+            Logger.warn("Invalid backup credential format")
+            return nil
+        }
+    }
+
+    func setBackupAuthCredential(
+        _ credential: BackupAuthCredential,
+        for redemptionTime: UInt64,
+        tx: DBWriteTransaction
+    ) {
+        backupAuthCredentialStore.setData(
+            credential.serialize().asData,
+            key: Self.backupAuthCredentialKey(for: redemptionTime),
+            transaction: tx
+        )
+    }
+
+    func removeAllBackupAuthCredentials(tx: DBWriteTransaction) {
+        backupAuthCredentialStore.removeAll(transaction: tx)
     }
 }

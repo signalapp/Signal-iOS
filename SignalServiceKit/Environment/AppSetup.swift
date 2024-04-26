@@ -656,6 +656,7 @@ public class AppSetup {
             viewOnceMessages: SentMessageTranscriptReceiverImpl.Wrappers.ViewOnceMessages()
         )
 
+        let messageBackupKeyMaterial = MessageBackupKeyMaterialImpl(svr: svr)
         let preferences = Preferences()
         let storyStore = StoryStoreImpl()
         let subscriptionManager = testDependencies?.subscriptionManager ?? SubscriptionManagerImpl()
@@ -678,6 +679,19 @@ public class AppSetup {
                 udManager: MessageBackup.AccountData.Wrappers.UDManager(udManager: udManager),
                 usernameEducationManager: usernameEducationManager,
                 userProfile: MessageBackup.AccountData.Wrappers.UserProfile()
+            ),
+            backupRequestManager: MessageBackupRequestManagerImpl(
+                db: db,
+                messageBackupAuthCredentialManager: MessageBackupAuthCredentialManagerImpl(
+                    authCredentialStore: authCredentialStore,
+                    dateProvider: dateProvider,
+                    db: db,
+                    keyValueStoreFactory: keyValueStoreFactory,
+                    messageBackupKeyMaterial: messageBackupKeyMaterial,
+                    networkManager: networkManager
+                ),
+                messageBackupKeyMaterial: messageBackupKeyMaterial,
+                networkManager: networkManager
             ),
             chatArchiver: MessageBackupChatArchiverImpl(
                 dmConfigurationStore: disappearingMessagesConfigurationStore,
@@ -710,7 +724,7 @@ public class AppSetup {
                 usernameLookupManager: usernameLookupManager
             ),
             streamProvider: MessageBackupProtoStreamProviderImpl(
-                backupKeyMaterial: MessageBackupKeyMaterialImpl(svr: svr)
+                backupKeyMaterial: messageBackupKeyMaterial
             )
         )
 

@@ -12,6 +12,7 @@ public class BackupError: Error {}
 public class MessageBackupManagerImpl: MessageBackupManager {
 
     private let accountDataArchiver: MessageBackupAccountDataArchiver
+    private let backupRequestManager: MessageBackupRequestManager
     private let chatArchiver: MessageBackupChatArchiver
     private let chatItemArchiver: MessageBackupChatItemArchiver
     private let dateProvider: DateProvider
@@ -22,6 +23,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
     public init(
         accountDataArchiver: MessageBackupAccountDataArchiver,
+        backupRequestManager: MessageBackupRequestManager,
         chatArchiver: MessageBackupChatArchiver,
         chatItemArchiver: MessageBackupChatItemArchiver,
         dateProvider: @escaping DateProvider,
@@ -31,6 +33,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         streamProvider: MessageBackupProtoStreamProvider
     ) {
         self.accountDataArchiver = accountDataArchiver
+        self.backupRequestManager = backupRequestManager
         self.chatArchiver = chatArchiver
         self.chatItemArchiver = chatItemArchiver
         self.dateProvider = dateProvider

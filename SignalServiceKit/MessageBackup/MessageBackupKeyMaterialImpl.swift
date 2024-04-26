@@ -15,12 +15,22 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
 
         static let MessageBackupEncryptionInfoString = "20231003_Signal_Backups_EncryptMessageBackup"
         static let MessageBackupEncryptionDataLength = 64
+
+        static let MessageBackupPrivateKeyInfoString = "20231003_Signal_Backups_GenerateBackupIdKeyPair"
+        static let MessageBackupPrivateKeyDataLength = 32
     }
 
     private let svr: SecureValueRecovery
 
     public init(svr: SecureValueRecovery) {
         self.svr = svr
+    }
+
+    public func backupAuthRequestContext(localAci: Aci, tx: DBReadTransaction) throws -> BackupAuthCredentialRequestContext {
+        guard let backupKey = svr.data(for: .backupKey, transaction: tx) else {
+            throw MessageBackupKeyMaterialError.missingMasterKey
+        }
+        return BackupAuthCredentialRequestContext.create(backupKey: backupKey.rawData, aci: localAci.rawUUID)
     }
 
     public func backupID(localAci: Aci, tx: DBReadTransaction) throws -> Data {
@@ -38,6 +48,26 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
             info: infoData
         )
         return Data(keyBytes)
+    }
+
+    public func backupPrivateKey(localAci: Aci, tx: DBReadTransaction) throws -> PrivateKey {
+        guard let backupKey = svr.data(for: .backupKey, transaction: tx) else {
+            throw MessageBackupKeyMaterialError.missingMasterKey
+        }
+
+        guard let infoData = Constants.MessageBackupPrivateKeyInfoString.data(using: .utf8) else {
+            owsFailDebug("Failed to encode data")
+            throw MessageBackupKeyMaterialError.invalidKeyInfo
+        }
+
+        let privateKeyBytes = try hkdf(
+            outputLength: Constants.MessageBackupPrivateKeyDataLength,
+            inputKeyMaterial: backupKey.rawData,
+            salt: localAci.serviceIdBinary,
+            info: infoData
+        )
+
+        return try PrivateKey(privateKeyBytes)
     }
 
     public func createEncryptingStreamTransform(localAci: Aci, tx: DBReadTransaction) throws -> EncryptingStreamTransform {
