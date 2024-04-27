@@ -4,7 +4,6 @@
 //
 
 #import "OWSOperation.h"
-#import "NSTimer+OWS.h"
 #import "OWSBackgroundTask.h"
 #import "OWSError.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>

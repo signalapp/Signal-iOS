@@ -31,7 +31,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/LegacySendingChain.h>
 #import <SignalServiceKit/LegacySessionRecord.h>
 #import <SignalServiceKit/LegacySessionState.h>
-#import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
 #import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
