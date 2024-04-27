@@ -147,11 +147,6 @@ public class MediaGalleryAccessoriesHelper {
         var uiAction: UIAction {
             return UIAction(title: title, image: icon, state: state) { _ in handler() }
         }
-
-        @available(iOS, deprecated: 14.0)
-        var uiAlertAction: UIAlertAction {
-            return UIAlertAction(title: title, style: .default) { _ in handler() }
-        }
     }
 
     // MARK: - Batch Selection
@@ -262,24 +257,6 @@ public class MediaGalleryAccessoriesHelper {
         return UIBarButtonItem(customView: button)
     }()
 
-    @available(iOS, deprecated: 14.0)
-    @objc
-    private func showFilterMenu(_ sender: Any) {
-        guard let viewController else { return }
-
-        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        for action in filterMenuItemsAndCurrentValue().items.map({ $0.uiAlertAction}) {
-            actionSheet.addAction(action)
-        }
-        actionSheet.addAction(UIAlertAction(title: CommonStrings.cancelButton, style: .cancel))
-        viewController.present(actionSheet, animated: true, completion: nil)
-    }
-
-    @objc
-    private func disableFiltering(_ sender: Any) {
-        viewController?.disableFiltering()
-    }
-
     func updateFilterButton() {
         if let button = filterButton.customView as? UIButton {
             let (buttonTitle, menuItems) = filterMenuItemsAndCurrentValue()
@@ -338,19 +315,6 @@ public class MediaGalleryAccessoriesHelper {
         primaryAction: nil,
         menu: createLayoutPickerMenu(checkedLayout: .grid)
     )
-
-    @objc
-    @available(iOS, deprecated: 14.0)
-    private func presentLayoutPicker(_ sender: Any) {
-        guard let viewController else { return }
-
-        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        for action in [ gridMenuItem(isChecked: false), listMenuItem(isChecked: false) ] {
-            actionSheet.addAction(action.uiAlertAction)
-        }
-        actionSheet.addAction(UIAlertAction(title: CommonStrings.cancelButton, style: .cancel))
-        viewController.present(actionSheet, animated: true, completion: nil)
-    }
 
     // MARK: - Footer
 
