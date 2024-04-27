@@ -270,23 +270,13 @@ extension LocationPicker: UISearchResultsUpdating {
         let searchTerm = term.trimmingCharacters(in: CharacterSet.whitespaces)
         if !searchTerm.isEmpty {
             // Search after a slight delay to debounce while the user is typing.
-            searchTimer = Timer.weakScheduledTimer(
-                withTimeInterval: 0.1,
-                target: self,
-                selector: #selector(searchFromTimer),
-                userInfo: [LocationPicker.SearchTermKey: searchTerm],
-                repeats: false
-            )
+            searchTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { [weak self] _ in
+                self?.searchFromTimer(searchTerm)
+            }
         }
     }
 
-    @objc
-    private func searchFromTimer(_ timer: Timer) {
-        guard let userInfo = timer.userInfo as? [String: AnyObject],
-            let term = userInfo[LocationPicker.SearchTermKey] as? String else {
-                return owsFailDebug("Unexpectedly attempted to search with no term")
-        }
-
+    private func searchFromTimer(_ term: String) {
         let request = MKLocalSearch.Request()
         request.naturalLanguageQuery = term
 

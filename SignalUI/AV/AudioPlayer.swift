@@ -94,13 +94,9 @@ public class AudioPlayer: NSObject {
         audioPlayer?.play()
 
         audioPlayerPoller?.invalidate()
-        let audioPlayerPoller = Timer.weakTimer(
-            withTimeInterval: 0.05,
-            target: self,
-            selector: #selector(audioPlayerUpdated(timer:)),
-            userInfo: nil,
-            repeats: true
-        )
+        let audioPlayerPoller = Timer(timeInterval: 0.05, repeats: true) { [weak self] timer in
+            self?.audioPlayerUpdated(timer: timer)
+        }
         RunLoop.main.add(audioPlayerPoller, forMode: .common)
         self.audioPlayerPoller = audioPlayerPoller
 
@@ -326,7 +322,6 @@ public class AudioPlayer: NSObject {
 
     // MARK: Events
 
-    @objc
     private func audioPlayerUpdated(timer: Timer) {
         AssertIsOnMainThread()
 

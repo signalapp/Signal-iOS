@@ -773,16 +773,11 @@ class GroupCallViewController: UIViewController {
         }
 
         guard controlTimeoutTimer == nil else { return }
-        controlTimeoutTimer = .weakScheduledTimer(
-            withTimeInterval: 5,
-            target: self,
-            selector: #selector(timeoutControls),
-            userInfo: nil,
-            repeats: false
-        )
+        controlTimeoutTimer = .scheduledTimer(withTimeInterval: 5, repeats: false) { [weak self] _ in
+            self?.timeoutControls()
+        }
     }
 
-    @objc
     private func timeoutControls() {
         controlTimeoutTimer?.invalidate()
         controlTimeoutTimer = nil

@@ -384,11 +384,9 @@ extension LinkedDevicesTableViewController: LinkDeviceViewControllerDelegate {
         self.isEditing = false
 
         pollingRefreshTimer?.invalidate()
-        pollingRefreshTimer = Timer.weakScheduledTimer(withTimeInterval: 10.0,
-                                                       target: self,
-                                                       selector: #selector(refreshDevices),
-                                                       userInfo: nil,
-                                                       repeats: true)
+        pollingRefreshTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { [weak self] _ in
+            self?.refreshDevices()
+        }
 
         let progressText = OWSLocalizedString("WAITING_TO_COMPLETE_DEVICE_LINK_TEXT",
                                              comment: "Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop")

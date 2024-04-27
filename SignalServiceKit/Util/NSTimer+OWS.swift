@@ -27,6 +27,7 @@ private class TimerProxy {
 extension Timer {
     /// This method avoids the classic NSTimer retain cycle bug by using a weak reference to the target.
     @objc
+    @available(swift, obsoleted: 1)
     public static func weakScheduledTimer(withTimeInterval timeInterval: TimeInterval,
                                           target: AnyObject,
                                           selector: Selector,
@@ -38,6 +39,7 @@ extension Timer {
 
     /// This method avoids the classic NSTimer retain cycle bug by using a weak reference to the target.
     @objc
+    @available(swift, obsoleted: 1)
     public static func weakTimer(withTimeInterval timeInterval: TimeInterval,
                                  target: AnyObject,
                                  selector: Selector,

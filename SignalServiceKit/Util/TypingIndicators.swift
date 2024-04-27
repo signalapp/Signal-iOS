@@ -233,24 +233,19 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
                 sendTypingMessageIfNecessary(for: threadUniqueId, action: .started)
 
                 sendRefreshTimer?.invalidate()
-                sendRefreshTimer = Timer.weakScheduledTimer(withTimeInterval: 10,
-                                                            target: self,
-                                                            selector: #selector(OutgoingIndicators.sendRefreshTimerDidFire),
-                                                            userInfo: nil,
-                                                            repeats: false)
+                sendRefreshTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { [weak self] _ in
+                    self?.sendRefreshTimerDidFire()
+                }
             } else {
                 // If the user types a character into the compose box, and the sendRefresh timer is running:
             }
 
             sendPauseTimer?.invalidate()
-            sendPauseTimer = Timer.weakScheduledTimer(withTimeInterval: 3,
-                                                      target: self,
-                                                      selector: #selector(OutgoingIndicators.sendPauseTimerDidFire),
-                                                      userInfo: nil,
-                                                      repeats: false)
+            sendPauseTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { [weak self] _ in
+                self?.sendPauseTimerDidFire()
+            }
         }
 
-        @objc
         func sendPauseTimerDidFire() {
             AssertIsOnMainThread()
 
@@ -263,18 +258,15 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             sendPauseTimer = nil
         }
 
-        @objc
         func sendRefreshTimerDidFire() {
             AssertIsOnMainThread()
 
             sendTypingMessageIfNecessary(for: threadUniqueId, action: .started)
 
             sendRefreshTimer?.invalidate()
-            sendRefreshTimer = Timer.weakScheduledTimer(withTimeInterval: 10,
-                                                        target: self,
-                                                        selector: #selector(sendRefreshTimerDidFire),
-                                                        userInfo: nil,
-                                                        repeats: false)
+            sendRefreshTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: false) { [weak self] _ in
+                self?.sendRefreshTimerDidFire()
+            }
         }
 
         func didSendOutgoingMessage() {
@@ -388,13 +380,9 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             AssertIsOnMainThread()
 
             displayTypingTimer?.invalidate()
-            displayTypingTimer = Timer.weakScheduledTimer(
-                withTimeInterval: 15,
-                target: self,
-                selector: #selector(IncomingIndicators.displayTypingTimerDidFire),
-                userInfo: nil,
-                repeats: false
-            )
+            displayTypingTimer = Timer.scheduledTimer(withTimeInterval: 15, repeats: false) { [weak self] _ in
+                self?.displayTypingTimerDidFire()
+            }
             if !isTyping {
                 startedTypingTimestamp = NSDate.ows_millisecondTimeStamp()
             }
@@ -407,7 +395,6 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             clearTyping()
         }
 
-        @objc
         func displayTypingTimerDidFire() {
             AssertIsOnMainThread()
 

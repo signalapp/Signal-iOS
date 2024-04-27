@@ -206,7 +206,9 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         // NOTE: It will still intercept user interactions while hidden, as it
         //       should.
         self.presentTimer?.invalidate()
-        self.presentTimer = Timer.weakScheduledTimer(withTimeInterval: presentationDelay, target: self, selector: #selector(presentTimerFired), userInfo: nil, repeats: false)
+        self.presentTimer = Timer.scheduledTimer(withTimeInterval: presentationDelay, repeats: false) { [weak self] _ in
+            self?.presentTimerFired()
+        }
     }
 
     public override func viewWillDisappear(_ animated: Bool) {
@@ -228,7 +230,6 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         self.presentTimer = nil
     }
 
-    @objc
     private func presentTimerFired() {
         AssertIsOnMainThread()
 

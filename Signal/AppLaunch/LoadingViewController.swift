@@ -70,10 +70,14 @@ public class LoadingViewController: UIViewController {
         // We only show the "loading" UI if it's a slow launch. Otherwise this ViewController
         // should be indistinguishable from the launch screen.
         let kTopLabelThreshold: TimeInterval = 5
-        topLabelTimer = Timer.weakScheduledTimer(withTimeInterval: kTopLabelThreshold, target: self, selector: #selector(showTopLabel), userInfo: nil, repeats: false)
+        topLabelTimer = Timer.scheduledTimer(withTimeInterval: kTopLabelThreshold, repeats: false) { [weak self] _ in
+            self?.showTopLabel()
+        }
 
         let kBottomLabelThreshold: TimeInterval = 15
-        topLabelTimer = Timer.weakScheduledTimer(withTimeInterval: kBottomLabelThreshold, target: self, selector: #selector(showBottomLabelAnimated), userInfo: nil, repeats: false)
+        bottomLabelTimer = Timer.scheduledTimer(withTimeInterval: kBottomLabelThreshold, repeats: false) { [weak self] _ in
+            self?.showBottomLabelAnimated()
+        }
     }
 
     // UIStackView removes hidden subviews from the layout.
@@ -84,7 +88,6 @@ public class LoadingViewController: UIViewController {
     // high enough to avoid this UIStackView behavior.
     private let kMinAlpha: CGFloat = 0.1
 
-    @objc
     private func showBottomLabelAnimated() {
         bottomLabel.layer.removeAllAnimations()
         bottomLabel.alpha = kMinAlpha
@@ -93,7 +96,6 @@ public class LoadingViewController: UIViewController {
         }
     }
 
-    @objc
     private func showTopLabel() {
         topLabel.layer.removeAllAnimations()
         topLabel.alpha = 0.2

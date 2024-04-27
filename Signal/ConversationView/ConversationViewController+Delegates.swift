@@ -399,15 +399,12 @@ extension ConversationViewController: ConversationCollectionViewDelegate {
         // that it is always cleared in a timely way, even if the animation
         // is cancelled. Wait no more than N seconds.
         scrollingAnimationCompletionTimer?.invalidate()
-        scrollingAnimationCompletionTimer = Timer.weakScheduledTimer(withTimeInterval: 5,
-                                                                     target: self,
-                                                                     selector: #selector(scrollingAnimationCompletionTimerDidFire),
-                                                                     userInfo: nil,
-                                                                     repeats: false)
+        scrollingAnimationCompletionTimer = .scheduledTimer(withTimeInterval: 5, repeats: false) { [weak self] _ in
+            self?.scrollingAnimationCompletionTimerDidFire()
+        }
     }
 
-    @objc
-    private func scrollingAnimationCompletionTimerDidFire(_ timer: Timer) {
+    private func scrollingAnimationCompletionTimerDidFire() {
         AssertIsOnMainThread()
 
         Logger.warn("Scrolling animation did not complete in a timely way.")

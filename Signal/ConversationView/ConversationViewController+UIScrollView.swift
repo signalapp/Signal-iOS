@@ -161,13 +161,9 @@ extension ConversationViewController: UIScrollViewDelegate {
 
         // We need to manually schedule this timer using NSRunLoopCommonModes
         // or it won't fire during scrolling.
-        let scrollUpdateTimer = Timer.weakTimer(
-            withTimeInterval: 0.1,
-            target: self,
-            selector: #selector(scrollUpdateTimerDidFire),
-            userInfo: nil,
-            repeats: false
-        )
+        let scrollUpdateTimer = Timer(timeInterval: 0.1, repeats: false) { [weak self] _ in
+            self?.scrollUpdateTimerDidFire()
+        }
         self.scrollUpdateTimer = scrollUpdateTimer
         RunLoop.main.add(scrollUpdateTimer, forMode: .common)
     }
@@ -178,7 +174,6 @@ extension ConversationViewController: UIScrollViewDelegate {
         }
     }
 
-    @objc
     private func scrollUpdateTimerDidFire() {
         AssertIsOnMainThread()
 

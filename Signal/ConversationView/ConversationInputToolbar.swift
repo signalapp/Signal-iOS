@@ -1534,12 +1534,9 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         )
 
         voiceMemoUpdateTimer?.invalidate()
-        voiceMemoUpdateTimer = Timer.weakScheduledTimer(
-            withTimeInterval: 0.1,
-            target: self,
-            selector: #selector(updateVoiceMemo),
-            userInfo: nil,
-            repeats: true)
+        voiceMemoUpdateTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+            self?.updateVoiceMemo()
+        }
     }
 
     func showVoiceMemoDraft(_ voiceMemoDraft: VoiceMessageInterruptedDraft) {
@@ -1670,7 +1667,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         voiceMemoCancelLabel?.alpha = CGFloat.clamp01(1 - cancelAlpha)
     }
 
-    @objc
     private func updateVoiceMemo() {
         AssertIsOnMainThread()
 
