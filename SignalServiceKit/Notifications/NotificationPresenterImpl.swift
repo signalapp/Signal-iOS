@@ -1149,27 +1149,16 @@ public class NotificationPresenterImpl: NotificationPresenter {
             }
         }()
 
-        let sendMessageIntent: INSendMessageIntent
-        if #available(iOS 14, *) {
-            sendMessageIntent = INSendMessageIntent(
-                recipients: nil,
-                outgoingMessageType: .outgoingMessageText,
-                content: nil,
-                speakableGroupName: INSpeakableString(spokenPhrase: storyName),
-                conversationIdentifier: conversationIdentifier,
-                serviceName: nil,
-                sender: person
-            )
-        } else {
-            sendMessageIntent = INSendMessageIntent(
-                recipients: nil,
-                content: nil,
-                speakableGroupName: INSpeakableString(spokenPhrase: storyName),
-                conversationIdentifier: conversationIdentifier,
-                serviceName: nil,
-                sender: person
-            )
-        }
+        let sendMessageIntent = INSendMessageIntent(
+            recipients: nil,
+            outgoingMessageType: .outgoingMessageText,
+            content: nil,
+            speakableGroupName: INSpeakableString(spokenPhrase: storyName),
+            conversationIdentifier: conversationIdentifier,
+            serviceName: nil,
+            sender: person,
+            attachments: nil
+        )
         let interaction = INInteraction(intent: sendMessageIntent, response: nil)
         interaction.direction = .outgoing
         let notificationTitle = storyName

@@ -350,27 +350,16 @@ extension TSThread {
         }
         let inSender = inPersonForRecipient(senderAddress, transaction: transaction)
 
-        let sendMessageIntent: INSendMessageIntent
-        if #available(iOS 14, *) {
-            sendMessageIntent = INSendMessageIntent(
-                recipients: recipients,
-                outgoingMessageType: .outgoingMessageText,
-                content: nil,
-                speakableGroupName: isGroupThread ? INSpeakableString(spokenPhrase: threadName) : nil,
-                conversationIdentifier: conversationIdentifier,
-                serviceName: nil,
-                sender: inSender
-            )
-        } else {
-            sendMessageIntent = INSendMessageIntent(
-                recipients: recipients,
-                content: nil,
-                speakableGroupName: isGroupThread ? INSpeakableString(spokenPhrase: threadName) : nil,
-                conversationIdentifier: conversationIdentifier,
-                serviceName: nil,
-                sender: inSender
-            )
-        }
+        let sendMessageIntent = INSendMessageIntent(
+            recipients: recipients,
+            outgoingMessageType: .outgoingMessageText,
+            content: nil,
+            speakableGroupName: isGroupThread ? INSpeakableString(spokenPhrase: threadName) : nil,
+            conversationIdentifier: conversationIdentifier,
+            serviceName: nil,
+            sender: inSender,
+            attachments: nil
+        )
 
         if isGroupThread {
             if #available(iOS 15, *) {

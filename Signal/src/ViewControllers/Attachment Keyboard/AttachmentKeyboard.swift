@@ -72,22 +72,12 @@ class AttachmentKeyboard: CustomKeyboard {
     }
 
     private func checkPermissions() {
-        let authorizationStatus: PHAuthorizationStatus = {
-            if #available(iOS 14, *) {
-                return PHPhotoLibrary.authorizationStatus(for: .readWrite)
-            } else {
-                return PHPhotoLibrary.authorizationStatus()
-            }
-        }()
+        let authorizationStatus: PHAuthorizationStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
         guard authorizationStatus != .notDetermined else {
             let handler: (PHAuthorizationStatus) -> Void = { status in
                 self.recentPhotosCollectionView.mediaLibraryAuthorizationStatus = status
             }
-            if #available(iOS 14, *) {
-                PHPhotoLibrary.requestAuthorization(for: .readWrite, handler: handler)
-            } else {
-                PHPhotoLibrary.requestAuthorization(handler)
-            }
+            PHPhotoLibrary.requestAuthorization(for: .readWrite, handler: handler)
             return
         }
         recentPhotosCollectionView.mediaLibraryAuthorizationStatus = authorizationStatus

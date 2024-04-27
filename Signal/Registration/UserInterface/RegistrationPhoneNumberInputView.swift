@@ -127,17 +127,7 @@ class RegistrationPhoneNumberInputView: UIStackView {
         result.font = UIFont.dynamicTypeBodyClamped
         result.textAlignment = .left
         result.textContentType = .telephoneNumber
-
-        if #available(iOS 14, *) {
-            result.keyboardType = .phonePad
-        } else {
-            // There's [a bug][0] in iOS 13 where predictions aren't provided for `.numberPad`
-            // keyboard types. We could change this to `.numbersAndPunctuation` if we wanted to
-            // trade predictions for a less-appropriate keyboard.
-            // [0]: https://developer.apple.com/forums/thread/120703
-            result.keyboardType = .numberPad
-        }
-
+        result.keyboardType = .phonePad
         result.placeholder = OWSLocalizedString(
             "ONBOARDING_PHONE_NUMBER_PLACEHOLDER",
             comment: "Placeholder string for phone number field during registration"

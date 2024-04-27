@@ -1216,11 +1216,7 @@ class MediaPickerThumbnailButton: UIButton {
         placeholderView.autoPinEdgesToSuperviewEdges(with: contentEdgeInsets)
 
         var authorizationStatus: PHAuthorizationStatus
-        if #available(iOS 14, *) {
-            authorizationStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
-        } else {
-            authorizationStatus = PHPhotoLibrary.authorizationStatus()
-        }
+        authorizationStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
         guard authorizationStatus == .authorized else { return }
 
         // Async Fetch last image

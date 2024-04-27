@@ -145,14 +145,10 @@ class RecentPhotosCollectionView: UICollectionView {
     }
 
     private var hasAccessToPhotos: Bool {
-        guard #available(iOS 14, *) else {
-            return mediaLibraryAuthorizationStatus == .authorized
-        }
         return [.authorized, .limited].contains(mediaLibraryAuthorizationStatus)
     }
 
     private var isAccessToPhotosLimited: Bool {
-        guard #available(iOS 14, *) else { return false }
         return mediaLibraryAuthorizationStatus == .limited
     }
 
@@ -210,8 +206,7 @@ class RecentPhotosCollectionView: UICollectionView {
             comment: "Button in chat attachment panel that allows to select photos/videos Signal has access to."
         ))
         button.block = {
-            guard #available(iOS 14, *),
-                let frontmostVC = CurrentAppContext().frontmostViewController() else { return }
+            guard let frontmostVC = CurrentAppContext().frontmostViewController() else { return }
             PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: frontmostVC)
         }
         let stackView = UIStackView(arrangedSubviews: [ textLabel, button ])

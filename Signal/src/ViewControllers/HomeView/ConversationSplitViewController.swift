@@ -125,7 +125,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         // try and open the app in landscape. We work around this by dispatching to the next runloop
         // at which point things have stabilized.
         if UIApplication.shared.applicationState != .active, lastActiveInterfaceOrientation != CurrentAppContext().interfaceOrientation {
-            if #available(iOS 14, *) { owsFailDebug("check if this still happens") }
+            owsFailDebug("check if this still happens")
             // Reset this to avoid getting stuck in a loop. We're becoming active.
             lastActiveInterfaceOrientation = CurrentAppContext().interfaceOrientation
             DispatchQueue.main.async { self.presentThread(thread, action: action, focusMessageId: focusMessageId, animated: animated) }
@@ -190,7 +190,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         // try and open the app in landscape. We work around this by dispatching to the next runloop
         // at which point things have stabilized.
         if UIApplication.shared.applicationState != .active, lastActiveInterfaceOrientation != CurrentAppContext().interfaceOrientation {
-            if #available(iOS 14, *) { owsFailDebug("check if this still happens") }
+            owsFailDebug("check if this still happens")
             // Reset this to avoid getting stuck in a loop. We're becoming active.
             lastActiveInterfaceOrientation = CurrentAppContext().interfaceOrientation
             DispatchQueue.main.async { self.showMyStoriesController(animated: animated) }

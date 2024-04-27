@@ -256,12 +256,8 @@ public class MediaGalleryAccessoriesHelper {
             button.setImage(chevronImage, for: .normal)
             button.setPaddingBetweenImageAndText(to: 4, isRightToLeft: !CurrentAppContext().isRTL)
             button.semanticContentAttribute = CurrentAppContext().isRTL ? .forceLeftToRight : .forceRightToLeft
-            if #available(iOS 14, *) {
-                button.menu = menuItems.menu()
-                button.showsMenuAsPrimaryAction = true
-            } else {
-                button.addTarget(self, action: #selector(showFilterMenu), for: .touchUpInside)
-            }
+            button.menu = menuItems.menu()
+            button.showsMenuAsPrimaryAction = true
         }
         return UIBarButtonItem(customView: button)
     }()
@@ -288,9 +284,7 @@ public class MediaGalleryAccessoriesHelper {
         if let button = filterButton.customView as? UIButton {
             let (buttonTitle, menuItems) = filterMenuItemsAndCurrentValue()
             button.setAttributedTitle(buttonTitle, for: .normal)
-            if #available(iOS 14, *) {
-                button.menu = menuItems.menu()
-            }
+            button.menu = menuItems.menu()
             button.sizeToFit()
         }
     }
@@ -331,39 +325,19 @@ public class MediaGalleryAccessoriesHelper {
         return menuItems.menu(with: options)
     }
 
-    private lazy var listViewButton: UIBarButtonItem = {
-        guard #available(iOS 14, *) else {
-            return UIBarButtonItem(
-                image: UIImage(imageLiteralResourceName: "list-bullet"),
-                style: .plain,
-                target: self,
-                action: #selector(presentLayoutPicker)
-            )
-        }
-        return UIBarButtonItem(
-            title: nil,
-            image: UIImage(imageLiteralResourceName: "list-bullet"),
-            primaryAction: nil,
-            menu: createLayoutPickerMenu(checkedLayout: .list)
-        )
-    }()
+    private lazy var listViewButton: UIBarButtonItem = UIBarButtonItem(
+        title: nil,
+        image: UIImage(imageLiteralResourceName: "list-bullet"),
+        primaryAction: nil,
+        menu: createLayoutPickerMenu(checkedLayout: .list)
+    )
 
-    private lazy var gridViewButton: UIBarButtonItem = {
-        guard #available(iOS 14, *) else {
-            return UIBarButtonItem(
-                image: UIImage(imageLiteralResourceName: "grid-square"),
-                style: .plain,
-                target: self,
-                action: #selector(presentLayoutPicker)
-            )
-        }
-        return UIBarButtonItem(
-            title: nil,
-            image: UIImage(imageLiteralResourceName: "grid-square"),
-            primaryAction: nil,
-            menu: createLayoutPickerMenu(checkedLayout: .grid)
-        )
-    }()
+    private lazy var gridViewButton: UIBarButtonItem = UIBarButtonItem(
+        title: nil,
+        image: UIImage(imageLiteralResourceName: "grid-square"),
+        primaryAction: nil,
+        menu: createLayoutPickerMenu(checkedLayout: .grid)
+    )
 
     @objc
     @available(iOS, deprecated: 14.0)
