@@ -178,7 +178,6 @@
 		342FFE59271DAA25000AC89F /* AudioSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE58271DAA25000AC89F /* AudioSession.swift */; };
 		342FFE62271DB2E7000AC89F /* AppContext+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE61271DB2E7000AC89F /* AppContext+SignalUI.swift */; };
 		342FFE6A271EF502000AC89F /* ConversationSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE67271EF4FF000AC89F /* ConversationSearch.swift */; };
-		342FFE76271EF581000AC89F /* CNContactViewController+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE6E271EF580000AC89F /* CNContactViewController+OWS.m */; };
 		342FFE77271EF581000AC89F /* UIApplication+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE6F271EF580000AC89F /* UIApplication+OWS.swift */; };
 		342FFE7A271EF581000AC89F /* UIResponder+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE73271EF580000AC89F /* UIResponder+OWS.swift */; };
 		342FFE7B271EF581000AC89F /* UIStoryboard+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE74271EF580000AC89F /* UIStoryboard+OWS.swift */; };
@@ -2889,9 +2888,7 @@
 		342FFE61271DB2E7000AC89F /* AppContext+SignalUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AppContext+SignalUI.swift"; sourceTree = "<group>"; };
 		342FFE67271EF4FF000AC89F /* ConversationSearch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ConversationSearch.swift; path = UserInterface/ConversationSearch.swift; sourceTree = "<group>"; };
 		342FFE69271EF500000AC89F /* WindowManagerFix.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WindowManagerFix.m; path = UserInterface/WindowManagerFix.m; sourceTree = "<group>"; };
-		342FFE6E271EF580000AC89F /* CNContactViewController+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CNContactViewController+OWS.m"; sourceTree = "<group>"; };
 		342FFE6F271EF580000AC89F /* UIApplication+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIApplication+OWS.swift"; sourceTree = "<group>"; };
-		342FFE70271EF580000AC89F /* CNContactViewController+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CNContactViewController+OWS.h"; sourceTree = "<group>"; };
 		342FFE73271EF580000AC89F /* UIResponder+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIResponder+OWS.swift"; sourceTree = "<group>"; };
 		342FFE74271EF580000AC89F /* UIStoryboard+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIStoryboard+OWS.swift"; sourceTree = "<group>"; };
 		342FFE7D271EF5B1000AC89F /* ReturnToCallViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReturnToCallViewController.swift; sourceTree = "<group>"; };
@@ -5901,8 +5898,6 @@
 		342FFE6C271EF580000AC89F /* Categories */ = {
 			isa = PBXGroup;
 			children = (
-				342FFE70271EF580000AC89F /* CNContactViewController+OWS.h */,
-				342FFE6E271EF580000AC89F /* CNContactViewController+OWS.m */,
 				342FFE6F271EF580000AC89F /* UIApplication+OWS.swift */,
 				342FFE73271EF580000AC89F /* UIResponder+OWS.swift */,
 				342FFE74271EF580000AC89F /* UIStoryboard+OWS.swift */,
@@ -12705,7 +12700,6 @@
 				34E95C22269F4F4F004807EC /* CLVRenderState.swift in Sources */,
 				34E95C25269F4F4F004807EC /* CLVTableDataSource.swift in Sources */,
 				34E95C24269F4F4F004807EC /* CLVViewState.swift in Sources */,
-				342FFE76271EF581000AC89F /* CNContactViewController+OWS.m in Sources */,
 				886BB3D425BA0CA900079781 /* ColorAndWallpaperSettingsViewController.swift in Sources */,
 				32B3286524C6957B00E4F974 /* ComposeSupportEmailOperation.swift in Sources */,
 				8835DE01230DBF7E00DC6B66 /* ComposeViewController.swift in Sources */,
