@@ -95,7 +95,11 @@ public class AudioPlayer: NSObject {
 
         audioPlayerPoller?.invalidate()
         let audioPlayerPoller = Timer(timeInterval: 0.05, repeats: true) { [weak self] timer in
-            self?.audioPlayerUpdated(timer: timer)
+            guard let self else {
+                timer.invalidate()
+                return
+            }
+            self.audioPlayerUpdated(timer: timer)
         }
         RunLoop.main.add(audioPlayerPoller, forMode: .common)
         self.audioPlayerPoller = audioPlayerPoller

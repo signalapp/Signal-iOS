@@ -343,8 +343,12 @@ extension ConversationViewController {
         markAsReadLogger.info("Starting read timer for \(caller).")
 
         readTimer?.invalidate()
-        let readTimer = Timer(timeInterval: 0.1, repeats: true) { [weak self] _ in
-            self?.readTimerDidFire()
+        let readTimer = Timer(timeInterval: 0.1, repeats: true) { [weak self] timer in
+            guard let self else {
+                timer.invalidate()
+                return
+            }
+            self.readTimerDidFire()
         }
         self.readTimer = readTimer
         RunLoop.main.add(readTimer, forMode: .common)
@@ -380,8 +384,12 @@ extension ConversationViewController {
 
     func startReloadTimer() {
         AssertIsOnMainThread()
-        let reloadTimer = Timer(timeInterval: 1, repeats: true) { [weak self] _ in
-            self?.reloadTimerDidFire()
+        let reloadTimer = Timer(timeInterval: 1, repeats: true) { [weak self] timer in
+            guard let self else {
+                timer.invalidate()
+                return
+            }
+            self.reloadTimerDidFire()
         }
         self.reloadTimer = reloadTimer
         RunLoop.main.add(reloadTimer, forMode: .common)

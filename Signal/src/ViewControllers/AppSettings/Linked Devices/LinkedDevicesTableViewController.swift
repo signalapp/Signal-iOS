@@ -384,8 +384,12 @@ extension LinkedDevicesTableViewController: LinkDeviceViewControllerDelegate {
         self.isEditing = false
 
         pollingRefreshTimer?.invalidate()
-        pollingRefreshTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { [weak self] _ in
-            self?.refreshDevices()
+        pollingRefreshTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { [weak self] timer in
+            guard let self else {
+                timer.invalidate()
+                return
+            }
+            self.refreshDevices()
         }
 
         let progressText = OWSLocalizedString("WAITING_TO_COMPLETE_DEVICE_LINK_TEXT",
