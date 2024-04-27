@@ -313,4 +313,39 @@ final class StringTest: XCTestCase {
         XCTAssertEqual("+123321", ("+123" + "జ్ఞ‌ా" + "321+").filteredAsE164)
         XCTAssertEqual("+123321", ("+123" + "گچپژ" + "321+").filteredAsE164)
     }
+
+    func test_ensureArabicNumerals() {
+        let zeroToNineTests: [String] = [
+            "০১২৩৪৫৬৭৮৯", // Bengali
+            "၀၁၂၃၄၅၆၇၈၉", // Burmese
+            "〇一二三四五六七八九", // Chinese (Simplified), Japanese
+            "零一二三四五六七八九", // Chinese (Traditional)
+            "०१२३४५६७८९", // Devanagari (Sanskrit, Hindi, and other Indian languages)
+            "٠١٢٣٤٥٦٧٨٩", // Eastern Arabic
+            "૦૧૨૩૪૫૬૭૮૯", // Gujarati
+            "੦੧੨੩੪੫੬੭੮੯", // Gurmukhi (Punjabi)
+            "೦೧೨೩೪೫೬೭೮೯", // Kannada
+            "൦൧൨൩൪൫൬൭൮൯", // Malayalam
+            "୦୧୨୩୪୫୬୭୮୯", // Odia
+            "۰۱۲۳۴۵۶۷۸۹", // Persian, Urdu
+            "௦௧௨௩௪௫௬௭௮௯", // Tamil
+            "౦౧౨౩౪౫౬౭౮౯", // Telugu
+            "๐๑๒๓๔๕๖๗๘๙", // Thai
+            "0123456789", // Western arabic
+        ]
+
+        for zeroToNineTest in zeroToNineTests {
+            XCTAssertEqual(zeroToNineTest.ensureArabicNumerals, "0123456789")
+        }
+
+        // In mixed strings, only replaces the numerals.
+        XCTAssertEqual("نمرا ١٢٣٤٥ يا".ensureArabicNumerals, "نمرا 12345 يا")
+
+        // Appropriately handles characters that extend across multiple unicode scalars
+        XCTAssertEqual("123 👩🏻‍🔬🧛🏿‍♀️🤦🏽‍♀️🏳️‍🌈 ١٢٣".ensureArabicNumerals, "123 👩🏻‍🔬🧛🏿‍♀️🤦🏽‍♀️🏳️‍🌈 123")
+
+        // In strings without numerals, does nothing.
+        XCTAssertEqual("a".ensureArabicNumerals, "a")
+        XCTAssertEqual("".ensureArabicNumerals, "")
+    }
 }
