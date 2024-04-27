@@ -36,7 +36,7 @@ class MediaInteractiveDismiss: UIPercentDrivenInteractiveTransition {
                                                       target: self,
                                                       action: #selector(handleGesture(_:)))
         // Allow panning with trackpad
-        if #available(iOS 13.4, *) { gesture.allowedScrollTypesMask = .continuous }
+        gesture.allowedScrollTypesMask = .continuous
         view.addGestureRecognizer(gesture)
     }
 

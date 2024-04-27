@@ -360,12 +360,10 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
         addGestureRecognizer(tapGestureRecognizer)
         self.tapGestureRecognizer = tapGestureRecognizer
 
-        if #available(iOS 13.4, *) {
-            let highlightHoverGestureRecognizer = UIHoverGestureRecognizer(target: self, action: #selector(hoverGestureRecognized(sender:)))
-            highlightHoverGestureRecognizer.delegate = self
-            addGestureRecognizer(highlightHoverGestureRecognizer)
-            self.highlightHoverGestureRecognizer = highlightHoverGestureRecognizer
-        }
+        let highlightHoverGestureRecognizer = UIHoverGestureRecognizer(target: self, action: #selector(hoverGestureRecognized(sender:)))
+        highlightHoverGestureRecognizer.delegate = self
+        addGestureRecognizer(highlightHoverGestureRecognizer)
+        self.highlightHoverGestureRecognizer = highlightHoverGestureRecognizer
 
         layer.cornerRadius = cornerRadius
         layer.shadowRadius = 64

@@ -1495,8 +1495,8 @@ extension OWSProfileManager {
             try? writeHandle.close()
         }
 
-        let concatenatedLength = Int(try readHandle._seekToEnd())
-        try readHandle._seek(toOffset: 0)
+        let concatenatedLength = Int(try readHandle.seekToEnd())
+        try readHandle.seek(toOffset: 0)
 
         let nonceLength = Aes256GcmEncryptedData.nonceLength
         let authenticationTagLength = Aes256GcmEncryptedData.authenticationTagLength
@@ -1506,54 +1506,20 @@ extension OWSProfileManager {
             throw OWSGenericError("ciphertext too short")
         }
 
-        let nonceData = try readHandle._read(count: nonceLength)
+        let nonceData = try readHandle.read(upToCount: nonceLength) ?? Data()
 
         let decryptor = try Aes256GcmDecryption(key: profileKey.keyData, nonce: nonceData, associatedData: [])
         while remainingLength > 0 {
             let kBatchLimit = 32768
-            var payloadData: Data = try readHandle._read(count: min(remainingLength, kBatchLimit))
+            var payloadData: Data = try readHandle.read(upToCount: min(remainingLength, kBatchLimit)) ?? Data()
             try decryptor.decrypt(&payloadData)
-            try writeHandle._write(contentsOf: payloadData)
+            try writeHandle.write(contentsOf: payloadData)
             remainingLength -= payloadData.count
         }
 
-        let authenticationTag = try readHandle._read(count: authenticationTagLength)
+        let authenticationTag = try readHandle.read(upToCount: authenticationTagLength) ?? Data()
         guard try decryptor.verifyTag(authenticationTag) else {
             throw OWSGenericError("failed to decrypt")
-        }
-    }
-}
-
-private extension FileHandle {
-    func _seekToEnd() throws -> UInt64 {
-        if #available(iOS 13.4, *) {
-            return try seekToEnd()
-        } else {
-            return seekToEndOfFile()
-        }
-    }
-
-    func _seek(toOffset offset: UInt64) throws {
-        if #available(iOS 13.4, *) {
-            try seek(toOffset: offset)
-        } else {
-            seek(toFileOffset: offset)
-        }
-    }
-
-    func _read(count: Int) throws -> Data {
-        if #available(iOS 13.4, *) {
-            return try read(upToCount: count) ?? Data()
-        } else {
-            return readData(ofLength: count)
-        }
-    }
-
-    func _write(contentsOf data: Data) throws {
-        if #available(iOS 13.4, *) {
-            try write(contentsOf: data)
-        } else {
-            write(data)
         }
     }
 }

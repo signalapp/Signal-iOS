@@ -25,14 +25,12 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
         collectionViewContextMenuGestureRecognizer.delegate = self
         collectionView.addGestureRecognizer(collectionViewContextMenuGestureRecognizer)
 
-        if #available(iOS 13.4, *) {
-            let collectionViewContextMenuSecondaryClickRecognizer = UITapGestureRecognizer()
-            collectionViewContextMenuSecondaryClickRecognizer.addTarget(self, action: #selector(handleSecondaryClickGesture))
-            collectionViewContextMenuSecondaryClickRecognizer.buttonMaskRequired = [.secondary]
-            collectionViewContextMenuSecondaryClickRecognizer.delegate = self
-            collectionView.addGestureRecognizer(collectionViewContextMenuSecondaryClickRecognizer)
-            self.collectionViewContextMenuSecondaryClickRecognizer = collectionViewContextMenuSecondaryClickRecognizer
-        }
+        let collectionViewContextMenuSecondaryClickRecognizer = UITapGestureRecognizer()
+        collectionViewContextMenuSecondaryClickRecognizer.addTarget(self, action: #selector(handleSecondaryClickGesture))
+        collectionViewContextMenuSecondaryClickRecognizer.buttonMaskRequired = [.secondary]
+        collectionViewContextMenuSecondaryClickRecognizer.delegate = self
+        collectionView.addGestureRecognizer(collectionViewContextMenuSecondaryClickRecognizer)
+        self.collectionViewContextMenuSecondaryClickRecognizer = collectionViewContextMenuSecondaryClickRecognizer
 
         collectionViewPanGestureRecognizer.addTarget(self, action: #selector(handlePanGesture))
         collectionViewPanGestureRecognizer.delegate = self
@@ -42,7 +40,7 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
         collectionViewTapGestureRecognizer.require(toFail: collectionViewLongPressGestureRecognizer)
 
         // Allow panning with trackpad
-        if #available(iOS 13.4, *) { collectionViewPanGestureRecognizer.allowedScrollTypesMask = .continuous }
+        collectionViewPanGestureRecognizer.allowedScrollTypesMask = .continuous
 
         // There are cases where we don't have a navigation controller, such as if we got here through 3d touch.
         // Make sure we only register the gesture interaction if it actually exists. This helps the swipe back
@@ -91,7 +89,7 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
     }
 
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive event: UIEvent) -> Bool {
-        if #available(iOS 13.4, *), collectionViewContextMenuSecondaryClickRecognizer == gestureRecognizer {
+        if collectionViewContextMenuSecondaryClickRecognizer == gestureRecognizer {
             return event.buttonMask == .secondary
         }
 

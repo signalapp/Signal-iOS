@@ -151,7 +151,7 @@ class MessageDetailViewController: OWSTableViewController2 {
         let panGesture = DirectionalPanGestureRecognizer(direction: .horizontal, target: self, action: #selector(handlePan))
 
         // Allow panning with trackpad
-        if #available(iOS 13.4, *) { panGesture.allowedScrollTypesMask = .continuous }
+        panGesture.allowedScrollTypesMask = .continuous
 
         view.addGestureRecognizer(panGesture)
 
