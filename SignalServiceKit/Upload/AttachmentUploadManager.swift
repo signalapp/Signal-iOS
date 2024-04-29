@@ -65,6 +65,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         do {
             let upload = AttachmentUpload(
                 localMetadata: localMetadata,
+                formSource: .remote,
                 signalService: signalService,
                 networkManager: networkManager,
                 chatConnectionManager: chatConnectionManager,
@@ -123,6 +124,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         do {
             let upload = AttachmentUpload(
                 localMetadata: localMetadata,
+                formSource: .remote,
                 signalService: signalService,
                 networkManager: networkManager,
                 chatConnectionManager: chatConnectionManager,

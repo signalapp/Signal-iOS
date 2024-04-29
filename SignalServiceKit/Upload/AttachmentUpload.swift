@@ -21,9 +21,11 @@ public struct AttachmentUpload {
     private let logger: PrefixedLogger
 
     private let localMetadata: Upload.LocalUploadMetadata
+    private let formSource: Upload.FormSource
 
     public init(
         localMetadata: Upload.LocalUploadMetadata,
+        formSource: Upload.FormSource,
         signalService: OWSSignalServiceProtocol,
         networkManager: NetworkManager,
         chatConnectionManager: ChatConnectionManager,
@@ -31,6 +33,7 @@ public struct AttachmentUpload {
         logger: PrefixedLogger
     ) {
         self.localMetadata = localMetadata
+        self.formSource = formSource
         self.signalService = signalService
         self.networkManager = networkManager
         self.chatConnectionManager = chatConnectionManager
@@ -56,7 +59,7 @@ public struct AttachmentUpload {
             }
         }
 
-        return try await attemptUpload(localMetadata: localMetadata, progress: progress)
+        return try await attemptUpload(localMetadata: localMetadata, formSource: formSource, progress: progress)
     }
 
     /// The retriable parts of the upload.
@@ -76,10 +79,22 @@ public struct AttachmentUpload {
     /// Resumption of an active upload can be handled at a lower level, but if the endpoint returns an
     /// error that requires a full restart, this is the method that will be called to fetch a new upload form and
     /// rebuild the endpoint and upload state before trying again
-    private func attemptUpload(localMetadata: Upload.LocalUploadMetadata, count: UInt = 0, progress: Upload.ProgressBlock?) async throws -> Upload.Result {
+    private func attemptUpload(
+        localMetadata: Upload.LocalUploadMetadata,
+        formSource: Upload.FormSource,
+        count: UInt = 0,
+        progress: Upload.ProgressBlock?
+    ) async throws -> Upload.Result {
         logger.info("Begin upload.")
         do {
-            let attempt = try await buildAttempt(for: localMetadata, count: count, logger: logger)
+            let form: Upload.Form
+            switch formSource {
+            case .local(let localForm):
+                form = localForm
+            case .remote:
+                form = try await fetchUploadForm()
+            }
+            let attempt = try await buildAttempt(for: localMetadata, form: form, logger: logger)
             return try await performResumableUpload(attempt: attempt, progress: progress)
         } catch {
             // Anything besides 'restart' should be handled below this method,
@@ -95,7 +110,7 @@ public struct AttachmentUpload {
                     try await sleep(for: delay)
                 }
 
-                return try await attemptUpload(localMetadata: localMetadata, count: count + 1, progress: progress)
+                return try await attemptUpload(localMetadata: localMetadata, formSource: formSource, count: count + 1, progress: progress)
             } else {
                 throw error
             }
@@ -220,13 +235,16 @@ public struct AttachmentUpload {
 
     // MARK: - Helper Methods
 
+    private func fetchUploadForm() async throws -> Upload.Form {
+        let request = OWSRequestFactory.allocAttachmentRequestV4()
+        return try await fetchUploadForm(request: request)
+    }
+
     private func buildAttempt(
         for localMetadata: Upload.LocalUploadMetadata,
-        count: UInt = 0,
+        form: Upload.Form,
         logger: PrefixedLogger
     ) async throws -> Upload.Attempt {
-        let request = OWSRequestFactory.allocAttachmentRequestV4()
-        let form: Upload.Form = try await fetchUploadForm(request: request)
         let endpoint: UploadEndpoint = try {
             switch form.cdnNumber {
             case 2:
