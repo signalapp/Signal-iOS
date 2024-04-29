@@ -531,7 +531,7 @@ public class OWSChatConnection: NSObject {
     }
 
     @objc
-    private func isSignalProxyReadyDidChange(_ notification: NSNotification) {
+    fileprivate func isSignalProxyReadyDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
         guard SignalProxy.isEnabledAndReady else {
@@ -1418,7 +1418,8 @@ private class WebSocketConnection {
 }
 
 internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSSKWebSocket {
-    private var chatService: ChatService
+    private var libsignalNet: Net
+    @Atomic private var chatService: ChatService?
 
     private var _shadowingFrequency: Double
     private var shadowingFrequency: Double {
@@ -1463,11 +1464,46 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
         }
     }
 
-    internal init(chatService: ChatService, type: OWSChatConnectionType, appExpiry: AppExpiry, db: DB, shadowingFrequency: Double) {
+    private static func makeChatService(libsignalNet: Net) -> ChatService {
+        return libsignalNet.createChatService(username: "", password: "")
+    }
+
+    internal init(libsignalNet: Net, type: OWSChatConnectionType, appExpiry: AppExpiry, db: DB, shadowingFrequency: Double) {
         owsAssert((0.0...1.0).contains(shadowingFrequency))
-        self.chatService = chatService
+        self.libsignalNet = libsignalNet
         self._shadowingFrequency = shadowingFrequency
         super.init(type: type, appExpiry: appExpiry, db: db)
+        resetChatServiceForProxy()
+    }
+
+    private func resetChatServiceForProxy() {
+        if !SignalProxy.isEnabled {
+            libsignalNet.clearProxy()
+            self.chatService = Self.makeChatService(libsignalNet: libsignalNet)
+        } else if let (proxyHost, proxyPort) = SignalProxy.host.flatMap({ SignalProxy.ProxyClient.parseHost($0) }) {
+            do {
+                try libsignalNet.setProxy(host: proxyHost, port: proxyPort)
+                self.chatService = Self.makeChatService(libsignalNet: libsignalNet)
+            } catch {
+                Logger.error("failed to set proxy for libsignal: \(error)")
+                libsignalNet.clearProxy()
+                // This is not ideal, but it's probably better than sending traffic somewhere other than specified.
+                // (We don't expect this to happen; it would imply a host that SignalProxy thinks is okay
+                // but libsignal does not.)
+                self.chatService = nil
+            }
+        } else {
+            Logger.warn("failed to set proxy for libsignal (missing or invalid host '\(SignalProxy.host ?? "")')")
+        }
+    }
+
+    fileprivate override func isSignalProxyReadyDidChange(_ notification: NSNotification) {
+        resetChatServiceForProxy()
+        super.isSignalProxyReadyDidChange(notification)
+        // Sometimes the super implementation cycles the main socket,
+        // but sometimes it waits for the proxy to close the socket.
+        // In that case we need to apply the correct state for the libsignal shadow.
+        applyDesiredSocketState()
     }
 
     private func shouldSendShadowRequest() -> Bool {
@@ -1478,10 +1514,6 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
         if GlobalDependencies.signalService.isCensorshipCircumventionManuallyDisabled {
             // libsignal-net currently always tries censorship circumvention mode as a fallback,
             // so it should work in scenarios where CC is *on*.
-            return false
-        }
-        if SignalProxy.isEnabled {
-            // libsignal-net does not yet support proxies.
             return false
         }
         return shadowingFrequency == 1.0 || Double.random(in: 0.0..<1.0) < shadowingFrequency
@@ -1508,8 +1540,10 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
         Task {
             do {
                 owsAssertDebug(type == .unidentified)
-                let debugInfo = try await chatService.connectUnauthenticated()
-                Logger.verbose("\(logPrefix): libsignal shadowing socket connected: \(debugInfo.connectionInfo)")
+                // A nil chatService is one that's been explicitly disabled.
+                if let debugInfo = try await chatService?.connectUnauthenticated() {
+                    Logger.verbose("\(logPrefix): libsignal shadowing socket connected: \(debugInfo.connectionInfo)")
+                }
             } catch {
                 Logger.error("\(logPrefix): failed to connect libsignal: \(error)")
             }
@@ -1526,7 +1560,7 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
         // We track these errors separately just in case.
         Task {
             do {
-                try await chatService.disconnect()
+                try await chatService?.disconnect()
             } catch {
                 Logger.error("\(logPrefix): failed to disconnect libsignal: \(error)")
             }
@@ -1549,6 +1583,14 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
     }
 
     private func sendShadowRequest(originalRequestId: UInt64, notifyOnFailure: Bool) async {
+        guard let chatService else {
+            // If libsignal was explicitly disabled (from an unsupported configuration, for example),
+            // there's not much we can do. Skip the shadowing request.
+            // We don't expect this to happen, but we don't need to log on every request if it does;
+            // there are logs whenever chatService gets set to nil.
+            return
+        }
+
         let updateStatsAsync = { (modify: @escaping (inout Stats) -> Void) in
             // We care that stats are updated atomically, but not urgently.
             self.db.asyncWrite { [weak self] transaction in

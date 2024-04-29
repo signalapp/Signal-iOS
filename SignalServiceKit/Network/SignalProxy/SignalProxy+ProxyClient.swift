@@ -24,12 +24,10 @@ extension SignalProxy {
             self.relayClient = relayClient
         }
 
-        func start() {
-            guard !isStarted else { return }
-            isStarted = true
-
-            guard let proxyHostComponents = SignalProxy.host?.components(separatedBy: ":"), let proxyHost = proxyHostComponents[safe: 0] else {
-                return stop(error: OWSAssertionError("Unexpectedly missing proxy host!"))
+        static func parseHost(_ host: String) -> (String, UInt16)? {
+            let proxyHostComponents = host.components(separatedBy: ":")
+            guard let proxyHost = proxyHostComponents[safe: 0] else {
+                return nil
             }
 
             let proxyPort: UInt16
@@ -37,6 +35,16 @@ extension SignalProxy {
                 proxyPort = port
             } else {
                 proxyPort = 443
+            }
+            return (proxyHost, proxyPort)
+        }
+
+        func start() {
+            guard !isStarted else { return }
+            isStarted = true
+
+            guard let (proxyHost, proxyPort) = SignalProxy.host.flatMap({ Self.parseHost($0) }) else {
+                return stop(error: OWSAssertionError("Unexpectedly missing proxy host!"))
             }
 
             // Special case for testing: UNENCRYPTED_FOR_TESTING@foo.bar connects over TCP instead of TLS.

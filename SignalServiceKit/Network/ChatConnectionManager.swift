@@ -37,7 +37,7 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
             connectionUnidentified = OWSChatConnectionUsingLibSignal(chatService: chatService, type: .unidentified, appExpiry: appExpiry, db: db)
         } else if userDefaults.bool(forKey: Self.enableShadowingDefaultsKey) {
             let shadowingConnection = OWSChatConnectionWithLibSignalShadowing(
-                chatService: chatService,
+                libsignalNet: libsignalNet,
                 type: .unidentified,
                 appExpiry: appExpiry,
                 db: db,
