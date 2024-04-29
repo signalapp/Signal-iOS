@@ -1475,8 +1475,9 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
         if CurrentAppContext().isRunningTests {
             return false
         }
-        if GlobalDependencies.signalService.isCensorshipCircumventionActive {
-            // libsignal-net does not yet support censorship circumvention.
+        if GlobalDependencies.signalService.isCensorshipCircumventionManuallyDisabled {
+            // libsignal-net currently always tries censorship circumvention mode as a fallback,
+            // so it should work in scenarios where CC is *on*.
             return false
         }
         if SignalProxy.isEnabled {
