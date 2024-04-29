@@ -120,11 +120,11 @@ public class AttachmentStream {
 
     // MARK: - Audio Waveform
 
-    public func audioWaveform() -> AudioWaveform? {
-        AudioWaveformManager.audioWaveform(forAttachment: self, highPriority: false)
+    public func audioWaveform() -> Task<AudioWaveform, Error> {
+        DependenciesBridge.shared.audioWaveformManager.audioWaveform(forAttachment: self, highPriority: false)
     }
 
-    public func highPriorityAudioWaveform() -> AudioWaveform? {
-        AudioWaveformManager.audioWaveform(forAttachment: self, highPriority: true)
+    public func highPriorityAudioWaveform() -> Task<AudioWaveform, Error> {
+        DependenciesBridge.shared.audioWaveformManager.audioWaveform(forAttachment: self, highPriority: true)
     }
 }

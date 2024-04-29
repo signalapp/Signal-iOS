@@ -935,6 +935,9 @@
 		6698FC1A2980AB45004EFC30 /* DependenciesBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC192980AB45004EFC30 /* DependenciesBridge.swift */; };
 		6698FC1C2980AE00004EFC30 /* SecureValueRecoveryObjcBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC1B2980AE00004EFC30 /* SecureValueRecoveryObjcBridge.swift */; };
 		669947BA2A20129000E4DC0C /* SVR2Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669947B92A20129000E4DC0C /* SVR2Shims.swift */; };
+		669A2FCC2BD9D32400166DB6 /* AudioWaveformManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669A2FCB2BD9D32400166DB6 /* AudioWaveformManager.swift */; };
+		669A2FCE2BD9D48800166DB6 /* AudioWaveform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669A2FCD2BD9D48800166DB6 /* AudioWaveform.swift */; };
+		669A2FD02BDB068200166DB6 /* AudioWaveformManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669A2FCF2BDB068200166DB6 /* AudioWaveformManagerMock.swift */; };
 		669C4AAC2B7D4E56001EF103 /* DatabaseChanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669C4AAB2B7D4E56001EF103 /* DatabaseChanges.swift */; };
 		669C4AAE2B7D4F7F001EF103 /* DatabaseChangesSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669C4AAD2B7D4F7F001EF103 /* DatabaseChangesSnapshot.swift */; };
 		669E8FE828B4153C00043D28 /* OWSUrlSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FE728B4153B00043D28 /* OWSUrlSession.swift */; };
@@ -2551,7 +2554,7 @@
 		F9C5CE2E289453B400548EEE /* DataSource.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB5C289453B200548EEE /* DataSource.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE2F289453B400548EEE /* SwiftSingletons.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB5D289453B200548EEE /* SwiftSingletons.swift */; };
 		F9C5CE33289453B400548EEE /* LocalDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB61289453B200548EEE /* LocalDevice.swift */; };
-		F9C5CE34289453B400548EEE /* AudioWaveform.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB62289453B200548EEE /* AudioWaveform.swift */; };
+		F9C5CE34289453B400548EEE /* AudioWaveformManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB62289453B200548EEE /* AudioWaveformManagerImpl.swift */; };
 		F9C5CE35289453B400548EEE /* DarwinNotificationName.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB63289453B200548EEE /* DarwinNotificationName.swift */; };
 		F9C5CE36289453B400548EEE /* Batching.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB64289453B200548EEE /* Batching.swift */; };
 		F9C5CE37289453B400548EEE /* BadgeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB66289453B200548EEE /* BadgeStore.swift */; };
@@ -3814,6 +3817,9 @@
 		6698FC192980AB45004EFC30 /* DependenciesBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependenciesBridge.swift; sourceTree = "<group>"; };
 		6698FC1B2980AE00004EFC30 /* SecureValueRecoveryObjcBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureValueRecoveryObjcBridge.swift; sourceTree = "<group>"; };
 		669947B92A20129000E4DC0C /* SVR2Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVR2Shims.swift; sourceTree = "<group>"; };
+		669A2FCB2BD9D32400166DB6 /* AudioWaveformManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformManager.swift; sourceTree = "<group>"; };
+		669A2FCD2BD9D48800166DB6 /* AudioWaveform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveform.swift; sourceTree = "<group>"; };
+		669A2FCF2BDB068200166DB6 /* AudioWaveformManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformManagerMock.swift; sourceTree = "<group>"; };
 		669C4AAB2B7D4E56001EF103 /* DatabaseChanges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseChanges.swift; sourceTree = "<group>"; };
 		669C4AAD2B7D4F7F001EF103 /* DatabaseChangesSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseChangesSnapshot.swift; sourceTree = "<group>"; };
 		669E8FDB28B02CC400043D28 /* OWSURLBuilderUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSURLBuilderUtil.swift; sourceTree = "<group>"; };
@@ -5467,7 +5473,7 @@
 		F9C5CB5C289453B200548EEE /* DataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataSource.h; sourceTree = "<group>"; };
 		F9C5CB5D289453B200548EEE /* SwiftSingletons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftSingletons.swift; sourceTree = "<group>"; };
 		F9C5CB61289453B200548EEE /* LocalDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalDevice.swift; sourceTree = "<group>"; };
-		F9C5CB62289453B200548EEE /* AudioWaveform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioWaveform.swift; sourceTree = "<group>"; };
+		F9C5CB62289453B200548EEE /* AudioWaveformManagerImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioWaveformManagerImpl.swift; sourceTree = "<group>"; };
 		F9C5CB63289453B200548EEE /* DarwinNotificationName.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DarwinNotificationName.swift; sourceTree = "<group>"; };
 		F9C5CB64289453B200548EEE /* Batching.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Batching.swift; sourceTree = "<group>"; };
 		F9C5CB66289453B200548EEE /* BadgeStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BadgeStore.swift; sourceTree = "<group>"; };
@@ -7656,6 +7662,17 @@
 			path = ViewControllerContext;
 			sourceTree = "<group>";
 		};
+		669A2FCA2BD9D13800166DB6 /* AudioWaveform */ = {
+			isa = PBXGroup;
+			children = (
+				669A2FCD2BD9D48800166DB6 /* AudioWaveform.swift */,
+				669A2FCB2BD9D32400166DB6 /* AudioWaveformManager.swift */,
+				F9C5CB62289453B200548EEE /* AudioWaveformManagerImpl.swift */,
+				669A2FCF2BDB068200166DB6 /* AudioWaveformManagerMock.swift */,
+			);
+			path = AudioWaveform;
+			sourceTree = "<group>";
+		};
 		669FAE0C2B744BA4009EE2FE /* Quotes */ = {
 			isa = PBXGroup;
 			children = (
@@ -7758,6 +7775,7 @@
 				66E1AD8F2B91336800C56B7B /* AttachmentManager */,
 				66E1AD7F2B8FDA5500C56B7B /* AttachmentReference */,
 				66E1AD512B8D016000C56B7B /* AttachmentStore */,
+				669A2FCA2BD9D13800166DB6 /* AudioWaveform */,
 				6660725C2BAB36860084B3D2 /* DataSource */,
 				66D7B93E2B9A67A20005C98B /* Downloads */,
 				66076B672BC0A05B0043D547 /* Migration */,
@@ -10970,7 +10988,6 @@
 				F972180528DE37A200113D9F /* AppVersion.swift */,
 				F9C5CB38289453B200548EEE /* Array+SSK.swift */,
 				F9C5CB25289453B200548EEE /* Atomics.swift */,
-				F9C5CB62289453B200548EEE /* AudioWaveform.swift */,
 				502C69712B06F07900012867 /* AwaitableAsyncBlockOperation.swift */,
 				F9C5CB64289453B200548EEE /* Batching.swift */,
 				F9C5CB40289453B200548EEE /* Bench.swift */,
@@ -13369,7 +13386,10 @@
 				66DA59C62BBB090C00D0EC58 /* AttachmentUpload.swift in Sources */,
 				66C1A8772BB75E560076C65A /* AttachmentUploadManager.swift in Sources */,
 				66D7B9092B9291BD0005C98B /* AttachmentUploadStore.swift in Sources */,
-				F9C5CE34289453B400548EEE /* AudioWaveform.swift in Sources */,
+				669A2FCE2BD9D48800166DB6 /* AudioWaveform.swift in Sources */,
+				669A2FCC2BD9D32400166DB6 /* AudioWaveformManager.swift in Sources */,
+				F9C5CE34289453B400548EEE /* AudioWaveformManagerImpl.swift in Sources */,
+				669A2FD02BDB068200166DB6 /* AudioWaveformManagerMock.swift in Sources */,
 				50552C2A2BAB8E7D00815474 /* AuthCredentialManager.swift in Sources */,
 				50552C2C2BAB8E8500815474 /* AuthCredentialStore.swift in Sources */,
 				66533E3C29BA8BB200E8D928 /* AuthedAccount.swift in Sources */,

@@ -47,10 +47,13 @@ final class VoiceMessageInterruptedDraft: VoiceMessageSendableDraft {
 
     // MARK: -
 
-    public private(set) lazy var audioWaveform: AudioWaveform? = {
+    public private(set) lazy var audioWaveformTask: Task<AudioWaveform, Error> = {
         // The file at `waveformPath` is created lazily by accessing this property.
         // It's used solely for UI and thus isn't created until it's needed.
-        AudioWaveformManager.audioWaveform(forAudioPath: audioFileUrl.path, waveformPath: waveformFileUrl.path)
+        DependenciesBridge.shared.audioWaveformManager.audioWaveform(
+            forAudioPath: audioFileUrl.path,
+            waveformPath: waveformFileUrl.path
+        )
     }()
 
     public private(set) lazy var audioPlayer: AudioPlayer = {

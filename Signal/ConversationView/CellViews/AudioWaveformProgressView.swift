@@ -37,10 +37,11 @@ class AudioWaveformProgressView: UIView {
         }
     }
 
-    var audioWaveform: AudioWaveform? {
+    private(set) var audioWaveform: AudioWaveform?
+
+    var audioWaveformTask: Task<AudioWaveform, Error>? {
         didSet {
-            guard audioWaveform != oldValue else { return }
-            audioWaveform?.addSamplingObserver(self)
+            waitForWaveform()
         }
     }
 
@@ -112,7 +113,7 @@ class AudioWaveformProgressView: UIView {
             }
         }
 
-        guard audioWaveform?.isSamplingComplete == true else {
+        guard let audioWaveform else {
             resetContents(showLoadingAnimation: true)
             return
         }
@@ -135,8 +136,8 @@ class AudioWaveformProgressView: UIView {
         // Calculate the number of lines we want to render based on the view width.
         let targetSamplesCount = Int((width + minSampleSpacing) / (sampleWidth + minSampleSpacing))
 
-        guard let amplitudes = audioWaveform?.normalizedLevelsToDisplay(sampleCount: targetSamplesCount),
-              amplitudes.count > 0 else {
+        let amplitudes = audioWaveform.normalizedLevelsToDisplay(sampleCount: targetSamplesCount)
+        guard amplitudes.count > 0 else {
             owsFailDebug("Missing sample amplitudes.")
             resetContents(showLoadingAnimation: false)
             return
@@ -195,10 +196,20 @@ class AudioWaveformProgressView: UIView {
             path.append(UIBezierPath(roundedRect: sampleFrame, cornerRadius: sampleWidth / 2))
         }
     }
-}
 
-extension AudioWaveformProgressView: AudioWaveformSamplingObserver {
-    func audioWaveformDidFinishSampling(_ audioWaveform: AudioWaveform) {
-        DispatchQueue.main.async { self.redrawSamples() }
+    private var waveformWaitingTask: Task<Void, Never>?
+
+    private func waitForWaveform() {
+        waveformWaitingTask?.cancel()
+        guard let audioWaveformTask else {
+            return
+        }
+        waveformWaitingTask = Task<Void, Never> {
+            let waveform = try? await audioWaveformTask.value
+            if !Task.isCancelled {
+                self.audioWaveform = waveform
+                self.redrawSamples()
+            }
+        }
     }
 }

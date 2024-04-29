@@ -182,7 +182,9 @@ public class AppSetup {
             tsResourceStore: tsResourceStore
         )
         let videoDurationHelper = VideoDurationHelperImpl()
+        let audioWaveformManager = AudioWaveformManagerImpl()
         let attachmentDownloadManager = AttachmentDownloadManagerImpl(
+            audioWaveformManager: audioWaveformManager,
             schedulers: schedulers,
             signalService: signalService,
             videoDurationHelper: videoDurationHelper
@@ -800,6 +802,7 @@ public class AppSetup {
             attachmentManager: attachmentManager,
             attachmentStore: attachmentStore,
             attachmentUploadManager: attachmentUploadManager,
+            audioWaveformManager: audioWaveformManager,
             authorMergeHelper: authorMergeHelper,
             badgeCountFetcher: badgeCountFetcher,
             callRecordDeleteManager: callRecordDeleteManager,

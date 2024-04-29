@@ -58,7 +58,7 @@ class VoiceMessageDraftView: UIStackView {
         waveformView.thumbColor = playedColor
         waveformView.playedColor = playedColor
         waveformView.unplayedColor = Theme.isDarkThemeEnabled ? .ows_gray60 : .ows_gray25
-        waveformView.audioWaveform = voiceMessageInterruptedDraft.audioWaveform
+        waveformView.audioWaveformTask = voiceMessageInterruptedDraft.audioWaveformTask
         waveformView.autoSetDimension(.height, toSize: 22)
 
         addArrangedSubview(waveformView)

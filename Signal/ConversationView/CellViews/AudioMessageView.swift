@@ -294,7 +294,7 @@ class AudioMessageView: ManualStackView {
 
     func isPointInScrubbableRegion(_ point: CGPoint) -> Bool {
         // If we have a waveform but aren't done sampling it, don't allow scrubbing yet.
-        if let waveform = attachmentStream?.audioWaveform(), !waveform.isSamplingComplete {
+        if waveformProgress.audioWaveformTask != nil, waveformProgress.audioWaveform == nil {
             return false
         }
 
@@ -398,8 +398,8 @@ class AudioMessageView: ManualStackView {
 
         visibleProgressRatio = audioProgressRatio
 
-        if let waveform = presentation.audioWaveform(attachmentStream: attachmentStream) {
-            waveformProgress.audioWaveform = waveform
+        if let waveformTask = presentation.audioWaveform(attachmentStream: attachmentStream) {
+            waveformProgress.audioWaveformTask = waveformTask
             waveformProgress.isHidden = false
             progressSlider.isHidden = true
         } else {

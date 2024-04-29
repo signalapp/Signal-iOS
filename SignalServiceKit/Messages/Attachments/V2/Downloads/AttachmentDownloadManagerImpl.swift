@@ -7,15 +7,18 @@ import Foundation
 
 public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
+    private let audioWaveformManager: AudioWaveformManager
     private let schedulers: Schedulers
     private let signalService: OWSSignalServiceProtocol
     private let videoDurationHelper: VideoDurationHelper
 
     public init(
+        audioWaveformManager: AudioWaveformManager,
         schedulers: Schedulers,
         signalService: OWSSignalServiceProtocol,
         videoDurationHelper: VideoDurationHelper
     ) {
+        self.audioWaveformManager = audioWaveformManager
         self.schedulers = schedulers
         self.signalService = signalService
         self.videoDurationHelper = videoDurationHelper

@@ -46,8 +46,8 @@ public protocol TSResourceStream: TSResource {
 
     // MARK: - Audio waveform
 
-    func audioWaveform() -> AudioWaveform?
-    func highPriorityAudioWaveform() -> AudioWaveform?
+    func audioWaveform() -> Task<AudioWaveform, Error>
+    func highPriorityAudioWaveform() -> Task<AudioWaveform, Error>
 }
 
 extension TSResourceStream {
