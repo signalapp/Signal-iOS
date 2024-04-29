@@ -115,6 +115,7 @@ post_install do |installer|
   update_frameworks_script(installer)
   disable_non_development_pod_warnings(installer)
   fix_ringrtc_project_symlink(installer)
+  fetch_ringrtc
   copy_acknowledgements
 end
 
@@ -270,6 +271,10 @@ def fix_ringrtc_project_symlink(installer)
   end
 end
 
+def fetch_ringrtc
+  `make fetch-ringrtc`
+end
+
 def copy_acknowledgements
   targets = [
     'Signal',
@@ -283,8 +288,11 @@ def copy_acknowledgements
     'SignalUITests'
   ]
   acknowledgements_files = targets.map do |target|
-    "Pods/Target Support Files/Pods-#{target}/Pods-#{target}-Acknowledgements.plist"
+    "Pods/Target Support Files/Pods-#{target}/Pods-#{target}-acknowledgements.plist"
   end
+  acknowledgements_files << "Pods/LibSignalClient/acknowledgments/acknowledgments.plist"
+  acknowledgements_files << "Pods/SignalRingRTC/acknowledgments/acknowledgments.plist"
+  acknowledgements_files << "Pods/SignalRingRTC/out/release/acknowledgments-webrtc-ios.plist"
 
   def get_specifier_groups(acknowledgements_files)
     acknowledgements_files.map do |file|
@@ -370,9 +378,26 @@ def copy_acknowledgements
 
   add_in_repo_third_party_code_licenses(all_acknowledgements_specifiers)
 
-  cleaned_acknowledgements_specifiers = all_acknowledgements_specifiers
-    .uniq {|s| s["Title"]}
-    .sort_by {|s| s["Title"].downcase}
+  libraries_by_license = Hash.new { |h, k| h[k] = [] }
+  all_acknowledgements_specifiers.each do |v|
+    v["Title"].split(", ").each do |title|
+      libraries_by_license[[v["FooterText"], v["License"]]] << title
+    end
+  end
+
+  grouped_acknowledgements_specifiers = []
+  libraries_by_license.each do |key, value|
+    titles = value.uniq.sort_by { |s| s.downcase }.join(", ")
+    acknowledgement = {
+      "Type" => "PSGroupSpecifier",
+      "Title" => titles,
+      "FooterText" => key[0],
+    }
+    acknowledgement["License"] = key[1] if key[1]
+    grouped_acknowledgements_specifiers << acknowledgement
+  end
+
+  cleaned_acknowledgements_specifiers = grouped_acknowledgements_specifiers.sort_by {|s| s["Title"].downcase}
   final_specifiers = [header_specifier] + cleaned_acknowledgements_specifiers + [footer_specifier]
 
   write_output_file(final_specifiers)
