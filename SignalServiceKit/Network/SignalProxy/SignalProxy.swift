@@ -101,6 +101,7 @@ public class SignalProxy: NSObject {
             proxyUrl.path.isEmpty,
             proxyUrl.query == nil,
             proxyUrl.fragment == nil,
+            proxyUrl.port != 0,
             let proxyHost = proxyUrl.host
         else {
             return false
