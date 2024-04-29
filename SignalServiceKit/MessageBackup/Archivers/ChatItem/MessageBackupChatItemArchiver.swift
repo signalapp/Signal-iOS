@@ -6,11 +6,32 @@
 import Foundation
 import LibSignalClient
 
+public extension MessageBackup {
+
+    /// An identifier for a ``BackupProto.ChatItem`` backup frame.
+    struct ChatItemId: MessageBackupLoggableId, Hashable {
+        let value: UInt64
+
+        public init(backupProtoChatItem: BackupProto.ChatItem) {
+            self.value = backupProtoChatItem.dateSent
+        }
+
+        public init(interaction: TSInteraction) {
+            self.value = interaction.timestamp
+        }
+
+        // MARK: MessageBackupLoggableId
+
+        public var typeLogString: String { "BackupProto.ChatItem" }
+        public var idLogString: String { "timestamp: \(value)" }
+    }
+}
+
 public protocol MessageBackupChatItemArchiver: MessageBackupProtoArchiver {
 
     typealias ChatItemId = MessageBackup.ChatItemId
-
     typealias ArchiveMultiFrameResult = MessageBackup.ArchiveMultiFrameResult<MessageBackup.InteractionUniqueId>
+    typealias RestoreFrameResult = MessageBackup.RestoreFrameResult<ChatItemId>
 
     /// Archive all ``TSInteraction``s (they map to ``BackupProto.ChatItem`` and ``BackupProto.Call``).
     ///
@@ -25,8 +46,6 @@ public protocol MessageBackupChatItemArchiver: MessageBackupProtoArchiver {
         context: MessageBackup.ChatArchivingContext,
         tx: DBReadTransaction
     ) -> ArchiveMultiFrameResult
-
-    typealias RestoreFrameResult = MessageBackup.RestoreFrameResult<ChatItemId>
 
     /// Restore a single ``BackupProto.ChatItem`` frame.
     ///

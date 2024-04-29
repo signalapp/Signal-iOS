@@ -6,38 +6,17 @@
 import Foundation
 
 extension MessageBackup {
-
-    public struct InteractionUniqueId: ExpressibleByStringLiteral, Hashable {
-        public typealias StringLiteralType = String
-
-        internal let value: String
-
-        public init(stringLiteral value: String) {
-            self.value = value
-        }
-
-        public init(_ value: String) {
-            self.value = value
-        }
-    }
-
-    public struct ChatItemId: ExpressibleByIntegerLiteral, Hashable {
-
-        public typealias IntegerLiteralType = UInt64
-
-        internal let value: UInt64
-
-        public init(integerLiteral value: UInt64) {
-            self.value = value
-        }
-
-        fileprivate init(_ value: UInt64) {
-            self.value = value
-        }
+    public struct InteractionUniqueId: MessageBackupLoggableId, Hashable {
+        let value: String
 
         public init(interaction: TSInteraction) {
-            self.value = interaction.timestamp
+            self.value = interaction.uniqueId
         }
+
+        // MARK: MessageBackupLoggableId
+
+        public var typeLogString: String { "TSInteraction" }
+        public var idLogString: String { value }
     }
 
     internal struct InteractionArchiveDetails {
@@ -256,29 +235,17 @@ extension MessageBackup.RestoreInteractionResult where Component == Void {
 extension BackupProto.ChatItem {
 
     var id: MessageBackup.ChatItemId {
-        return .init(self.dateSent)
+        return .init(backupProtoChatItem: self)
     }
 }
 
 extension TSInteraction {
 
     var uniqueInteractionId: MessageBackup.InteractionUniqueId {
-        return .init(self.uniqueId)
+        return .init(interaction: self)
     }
 
     var chatItemId: MessageBackup.ChatItemId {
         return .init(interaction: self)
     }
-}
-
-extension MessageBackup.InteractionUniqueId: MessageBackupLoggableId {
-    public var typeLogString: String { "TSInteraction" }
-
-    public var idLogString: String { value }
-}
-
-extension MessageBackup.ChatItemId: MessageBackupLoggableId {
-    public var typeLogString: String { "BackupProto.ChatItem" }
-
-    public var idLogString: String { "timestamp: \(value)" }
 }
