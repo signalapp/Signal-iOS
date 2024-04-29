@@ -28,7 +28,7 @@ protocol UploadEndpoint {
     ///   - startPoint: The current byte range to start uploading at.
     ///   - attempt: The current upload attempt, containing the local file metadata, upload endpoint, and target location.
     ///   - progress: Callback called with progress data as reported by the internal upload implementation
-    func performUpload(startPoint: Int, attempt: Upload.Attempt, progress progressBlock: @escaping UploadEndpointProgress) async throws -> Upload.Result
+    func performUpload(startPoint: Int, attempt: Upload.Attempt, progress progressBlock: @escaping UploadEndpointProgress) async throws
 }
 
 extension Upload {

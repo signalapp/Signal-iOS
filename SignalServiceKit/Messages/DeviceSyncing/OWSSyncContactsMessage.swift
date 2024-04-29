@@ -8,10 +8,10 @@ import SignalCoreKit
 
 public final class OWSSyncContactsMessage: OWSOutgoingSyncMessage {
 
-    private let uploadedAttachment: Upload.Result
+    private let uploadedAttachment: Upload.Result<Upload.LocalUploadMetadata>
 
     public init(
-        uploadedAttachment: Upload.Result,
+        uploadedAttachment: Upload.Result<Upload.LocalUploadMetadata>,
         thread: TSThread,
         tx: SDSAnyReadTransaction
     ) {
@@ -36,7 +36,6 @@ public final class OWSSyncContactsMessage: OWSOutgoingSyncMessage {
 
         // contact proto has a fixed type
         attachmentBuilder.setContentType(MimeType.applicationOctetStream.rawValue)
-
         attachmentBuilder.setCdnNumber(uploadedAttachment.cdnNumber)
         attachmentBuilder.setCdnKey(uploadedAttachment.cdnKey)
         attachmentBuilder.setSize(uploadedAttachment.localUploadMetadata.plaintextDataLength)

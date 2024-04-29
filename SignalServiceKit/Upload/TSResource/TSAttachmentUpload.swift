@@ -53,7 +53,7 @@ public struct TSAttachmentUpload {
     /// This method is responsible for encrypting the source data and creating the temporary file that
     /// the rest of the upload will use. From this point forward,  the upload doesn't have any
     /// knowledge of the source (attachment, backup, image, etc)
-    public func start(progress: Upload.ProgressBlock?) async throws -> Upload.Result {
+    public func start(progress: Upload.ProgressBlock?) async throws -> Upload.Result<Upload.LocalUploadMetadata> {
         try Task.checkCancellation()
 
         // Encrypt local data to a temporary location. This is stable across retries
@@ -89,11 +89,18 @@ public struct TSAttachmentUpload {
     /// Resumption of an active upload can be handled at a lower level, but if the endpoint returns an
     /// error that requires a full restart, this is the method that will be called to fetch a new upload form and
     /// rebuild the endpoint and upload state before trying again
-    private func attemptUpload(localMetadata: Upload.LocalUploadMetadata, count: UInt = 0, progress: Upload.ProgressBlock?) async throws -> Upload.Result {
+    private func attemptUpload(localMetadata: Upload.LocalUploadMetadata, count: UInt = 0, progress: Upload.ProgressBlock?) async throws -> Upload.Result<Upload.LocalUploadMetadata> {
         logger.info("Begin upload.")
         do {
             let attempt = try await buildAttempt(for: localMetadata, count: count, logger: logger)
-            return try await performResumableUpload(attempt: attempt, progress: progress)
+            try await performResumableUpload(attempt: attempt, progress: progress)
+            return Upload.Result(
+                cdnKey: attempt.cdnKey,
+                cdnNumber: attempt.cdnNumber,
+                localUploadMetadata: localMetadata,
+                beginTimestamp: attempt.beginTimestamp,
+                finishTimestamp: Date().ows_millisecondsSince1970
+            )
         } catch {
             // Anything besides 'restart' should be handled below this method,
             // or is an unhandled error that should be thrown to the caller
@@ -145,7 +152,7 @@ public struct TSAttachmentUpload {
         attempt: Upload.Attempt,
         count: UInt = 0,
         progress: Upload.ProgressBlock?
-    ) async throws -> Upload.Result {
+    ) async throws {
         guard count < Upload.Constants.uploadMaxRetries else {
             throw Upload.Error.uploadFailure(recovery: .noMoreRetries)
         }
@@ -157,9 +164,9 @@ public struct TSAttachmentUpload {
         if count > 0 {
             let uploadProgress = try await getResumableUploadProgress(attempt: attempt)
             switch uploadProgress {
-            case .complete(let result):
+            case .complete:
                 attempt.logger.info("Complete upload reported by endpoint.")
-                return result
+                return
             case .uploaded(let updatedBytesAlreadUploaded):
                 attempt.logger.info("Endpoint reported \(updatedBytesAlreadUploaded)/\(attempt.localMetadata.encryptedDataLength) uploaded.")
                 bytesAlreadyUploaded = updatedBytesAlreadUploaded
@@ -184,13 +191,12 @@ public struct TSAttachmentUpload {
         }
 
         do {
-            let result = try await attempt.endpoint.performUpload(
+            try await attempt.endpoint.performUpload(
                 startPoint: bytesAlreadyUploaded,
                 attempt: attempt,
                 progress: wrappedProgressBlock
             )
             attempt.logger.info("Attachment uploaded successfully.")
-            return result
         } catch {
             if let statusCode = error.httpStatusCode {
                 attempt.logger.warn("Encountered error during upload. (code=\(statusCode)")
@@ -227,7 +233,7 @@ public struct TSAttachmentUpload {
             }
 
             attempt.logger.info("Resuming upload.")
-            return try await performResumableUpload(attempt: attempt, count: count + 1, progress: progress)
+            try await performResumableUpload(attempt: attempt, count: count + 1, progress: progress)
         }
     }
 
@@ -262,6 +268,8 @@ public struct TSAttachmentUpload {
         }()
         let uploadLocation = try await endpoint.fetchResumableUploadLocation()
         return Upload.Attempt(
+            cdnKey: form.cdnKey,
+            cdnNumber: form.cdnNumber,
             localMetadata: localMetadata,
             beginTimestamp: Date.ows_millisecondTimestamp(),
             endpoint: endpoint,

@@ -8,7 +8,7 @@ import Foundation
 public protocol TSResourceUploadManager {
 
     /// Upload a transient attachment that isn't saved to the database for sending.
-    func uploadTransientAttachment(dataSource: DataSource) async throws -> Upload.Result
+    func uploadTransientAttachment(dataSource: DataSource) async throws -> Upload.Result<Upload.LocalUploadMetadata>
 
     /// Upload a TSAttachment to the given endpoint.
     /// - Parameters:
@@ -42,7 +42,7 @@ public class TSResourceUploadManagerImpl: TSResourceUploadManager {
         NotificationCenter.default.removeObserver(self)
     }
 
-    public func uploadTransientAttachment(dataSource: DataSource) async throws -> Upload.Result {
+    public func uploadTransientAttachment(dataSource: DataSource) async throws -> Upload.Result<Upload.LocalUploadMetadata> {
         // Note this doesn't actually do anything v2 attachment related; AttachmentUploadManager is just
         // where transient attachment upload code lives. (Because this class and TSAttachmentUploadManager
         // will eventually be deleted but that code should live on.)

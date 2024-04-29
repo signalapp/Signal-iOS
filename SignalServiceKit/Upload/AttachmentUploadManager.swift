@@ -8,7 +8,7 @@ import Foundation
 public protocol AttachmentUploadManager {
 
     /// Upload a transient attachment that isn't saved to the database for sending.
-    func uploadTransientAttachment(dataSource: DataSource) async throws -> Upload.Result
+    func uploadTransientAttachment(dataSource: DataSource) async throws -> Upload.Result<Upload.LocalUploadMetadata>
 
     /// Upload an Attachment to the given endpoint.
     /// Will fail if the attachment doesn't exist or isn't available locally.
@@ -52,7 +52,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         self.storyStore = storyStore
     }
 
-    public func uploadTransientAttachment(dataSource: DataSource) async throws -> Upload.Result {
+    public func uploadTransientAttachment(dataSource: DataSource) async throws -> Upload.Result<Upload.LocalUploadMetadata> {
         let logger = PrefixedLogger(prefix: "[Upload]", suffix: "[transient]")
 
         let temporaryFile = fileSystem.temporaryFileUrl()
@@ -74,10 +74,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             )
 
             // We don't show progress for transient uploads
-            let result = try await upload.start(progress: nil)
-
-            return result
-
+            return try await upload.start(progress: nil)
         } catch {
             if error.isNetworkFailureOrTimeout {
                 logger.warn("Upload failed due to network error")
@@ -175,7 +172,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     // Update all the necessary places once the upload succeeds
     private func update(
         attachmentId: Attachment.IDType,
-        with result: Upload.Result,
+        with result: Upload.Result<Upload.LocalUploadMetadata>,
         logger: PrefixedLogger
     ) async {
         await db.awaitableWrite { tx in

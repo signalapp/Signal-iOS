@@ -6,7 +6,7 @@
 import Foundation
 @testable import SignalServiceKit
 
-extension AttachmentUpload {
+extension AttachmentUploadManagerImpl {
     enum Mocks {
         typealias NetworkManager = _AttachmentUploadManager_NetworkManagerMock
         typealias URLSession = _AttachmentUploadManager_OWSURLSessionMock

@@ -141,7 +141,7 @@ public actor TSAttachmentUploadManagerImpl: TSAttachmentUploadManager {
     private func update(
         attachmentId: String,
         messageIds: [String],
-        with result: Upload.Result,
+        with result: Upload.Result<Upload.LocalUploadMetadata>,
         logger: PrefixedLogger
     ) async throws {
         try await db.awaitableWrite { tx in

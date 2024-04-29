@@ -101,13 +101,7 @@ struct UploadEndpointCDN2: UploadEndpoint {
         switch statusCode {
         case 200, 201:
             // completed, so return 'OK' TODO:
-            return .complete(Upload.Result(
-                cdnKey: uploadForm.cdnKey,
-                cdnNumber: uploadForm.cdnNumber,
-                localUploadMetadata: attempt.localMetadata,
-                beginTimestamp: attempt.beginTimestamp,
-                finishTimestamp: Date().ows_millisecondsSince1970
-            ))
+            return .complete
         case 308:
             break
         default:
@@ -153,7 +147,7 @@ struct UploadEndpointCDN2: UploadEndpoint {
         startPoint: Int,
         attempt: Upload.Attempt,
         progress progressBlock: @escaping UploadEndpointProgress
-    ) async throws -> Upload.Result {
+    ) async throws {
         let totalDataLength = attempt.localMetadata.encryptedDataLength
         var headers = [String: String]()
         let fileUrl: URL
@@ -196,13 +190,5 @@ struct UploadEndpointCDN2: UploadEndpoint {
             fileUrl: fileUrl,
             progress: progressBlock
         ).awaitable()
-
-        return Upload.Result(
-            cdnKey: uploadForm.cdnKey,
-            cdnNumber: uploadForm.cdnNumber,
-            localUploadMetadata: attempt.localMetadata,
-            beginTimestamp: attempt.beginTimestamp,
-            finishTimestamp: Date().ows_millisecondsSince1970
-        )
     }
 }

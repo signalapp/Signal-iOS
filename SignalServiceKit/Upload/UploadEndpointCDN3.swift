@@ -79,7 +79,7 @@ struct UploadEndpointCDN3: UploadEndpoint {
         startPoint: Int,
         attempt: Upload.Attempt,
         progress progressBlock: @escaping UploadEndpointProgress
-    ) async throws -> Upload.Result {
+    ) async throws {
         let urlSession = signalService.urlSessionForCdn(cdnNumber: uploadForm.cdnNumber)
         let totalDataLength = attempt.localMetadata.encryptedDataLength
 
@@ -142,13 +142,7 @@ struct UploadEndpointCDN3: UploadEndpoint {
 
             switch response.responseStatusCode {
             case 200...204:
-                return Upload.Result(
-                    cdnKey: uploadForm.cdnKey,
-                    cdnNumber: uploadForm.cdnNumber,
-                    localUploadMetadata: attempt.localMetadata,
-                    beginTimestamp: attempt.beginTimestamp,
-                    finishTimestamp: Date().ows_millisecondsSince1970
-                )
+                return
             default:
                 throw Upload.Error.unknown
             }

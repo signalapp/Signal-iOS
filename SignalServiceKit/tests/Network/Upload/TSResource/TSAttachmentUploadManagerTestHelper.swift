@@ -8,13 +8,13 @@ import Foundation
 
 class TSAttachmentUploadManagerMockHelper {
     var mockDB = MockDB()
-    var mockURLSession = AttachmentUpload.Mocks.URLSession()
-    var mockNetworkManager = AttachmentUpload.Mocks.NetworkManager()
+    var mockURLSession = AttachmentUploadManagerImpl.Mocks.URLSession()
+    var mockNetworkManager = AttachmentUploadManagerImpl.Mocks.NetworkManager()
     var mockServiceManager = OWSSignalServiceMock()
-    var mockChatConnectionManager = AttachmentUpload.Mocks.ChatConnectionManager()
-    var mockAttachmentEncrypter = AttachmentUpload.Mocks.AttachmentEncrypter()
+    var mockChatConnectionManager = AttachmentUploadManagerImpl.Mocks.ChatConnectionManager()
+    var mockAttachmentEncrypter = AttachmentUploadManagerImpl.Mocks.AttachmentEncrypter()
     var mockBlurHash = TSAttachmentUpload.Mocks.BlurHash()
-    var mockFileSystem = AttachmentUpload.Mocks.FileSystem()
+    var mockFileSystem = AttachmentUploadManagerImpl.Mocks.FileSystem()
     var mockInteractionStore = MockInteractionStore()
     var mockResourceStore = TSAttachmentUploadStoreMock()
 

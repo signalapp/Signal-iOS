@@ -68,7 +68,7 @@ public enum Upload {
         case restart
 
         // The endpoint reported a complete upload.
-        case complete(Upload.Result)
+        case complete
 
         // Contains the number of bytes the upload endpoint has received.  This
         // can be 0 bytes, which is effectively a new upload, but can use the
@@ -101,12 +101,9 @@ public enum Upload {
         }
     }
 
-    public struct LocalUploadMetadata {
+    public struct BackupUploadMetadata {
         /// File URL of the data consisting of "iv  + encrypted data + hmac"
         let fileUrl: URL
-
-        /// encryption key + hmac
-        let key: Data
 
         /// The digest of the encrypted file.  The encrypted file consist of "iv + encrypted data + hmac"
         let digest: Data
@@ -114,14 +111,31 @@ public enum Upload {
         /// The length of the encrypted data, consiting of "iv  + encrypted data + hmac"
         let encryptedDataLength: UInt32
 
-        /// The length of the encrypted data, consiting of "iv  + encrypted data + hmac"
+        /// The length of the unencrypted data
         let plaintextDataLength: UInt32
     }
 
-    public struct Result {
+    public struct LocalUploadMetadata: UploadMetadata {
+        /// File URL of the data consisting of "iv  + encrypted data + hmac"
+        public let fileUrl: URL
+
+        /// encryption key + hmac
+        public let key: Data
+
+        /// The digest of the encrypted file.  The encrypted file consist of "iv + encrypted data + hmac"
+        public let digest: Data
+
+        /// The length of the encrypted data, consiting of "iv  + encrypted data + hmac"
+        public let encryptedDataLength: UInt32
+
+        /// The length of the unencrypted data
+        public let plaintextDataLength: UInt32
+    }
+
+    public struct Result<Metadata: UploadMetadata> {
         let cdnKey: String
         let cdnNumber: UInt32
-        let localUploadMetadata: LocalUploadMetadata
+        let localUploadMetadata: Metadata
 
         // Timestamp the upload attempt began
         let beginTimestamp: UInt64
@@ -131,7 +145,9 @@ public enum Upload {
     }
 
     public struct Attempt {
-        let localMetadata: Upload.LocalUploadMetadata
+        let cdnKey: String
+        let cdnNumber: UInt32
+        let localMetadata: UploadMetadata
         let beginTimestamp: UInt64
         let endpoint: UploadEndpoint
         let uploadLocation: URL

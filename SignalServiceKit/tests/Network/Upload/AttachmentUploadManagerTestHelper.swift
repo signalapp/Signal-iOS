@@ -28,15 +28,15 @@ class AttachmentUploadManagerMockHelper {
     var mockDate = Date()
     lazy var mockDateProvider = { return self.mockDate }
     var mockDB = MockDB()
-    var mockURLSession = AttachmentUpload.Mocks.URLSession()
-    var mockNetworkManager = AttachmentUpload.Mocks.NetworkManager()
+    var mockURLSession = AttachmentUploadManagerImpl.Mocks.URLSession()
+    var mockNetworkManager = AttachmentUploadManagerImpl.Mocks.NetworkManager()
     var mockServiceManager = OWSSignalServiceMock()
-    var mockChatConnectionManager = AttachmentUpload.Mocks.ChatConnectionManager()
-    var mockFileSystem = AttachmentUpload.Mocks.FileSystem()
+    var mockChatConnectionManager = AttachmentUploadManagerImpl.Mocks.ChatConnectionManager()
+    var mockFileSystem = AttachmentUploadManagerImpl.Mocks.FileSystem()
     var mockInteractionStore = MockInteractionStore()
     var mockStoryStore = StoryStoreMock()
     var mockAttachmentStore = AttachmentUploadStoreMock()
-    var mockAttachmentEncrypter = AttachmentUpload.Mocks.AttachmentEncrypter()
+    var mockAttachmentEncrypter = AttachmentUploadManagerImpl.Mocks.AttachmentEncrypter()
 
     var capturedRequests = [MockResultType]()
 
