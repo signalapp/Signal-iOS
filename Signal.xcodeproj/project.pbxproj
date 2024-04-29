@@ -352,7 +352,6 @@
 		34A6C28021E503E700B5B12E /* OWSImagePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A6C27F21E503E600B5B12E /* OWSImagePickerController.swift */; };
 		34A8B3512190A40E00218A25 /* CVMediaAlbumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A8B3502190A40E00218A25 /* CVMediaAlbumView.swift */; };
 		34A954B2271A471300B05242 /* SignalUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34A954A8271A471200B05242 /* SignalUI.framework */; };
-		34A954BA271A471300B05242 /* SignalUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A954AA271A471300B05242 /* SignalUI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34A954BD271A471300B05242 /* SignalUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 34A954A8271A471200B05242 /* SignalUI.framework */; };
 		34A954BE271A471300B05242 /* SignalUI.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 34A954A8271A471200B05242 /* SignalUI.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		34A954DC271B4F3E00B05242 /* Theme+Icons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A954D4271B4F3E00B05242 /* Theme+Icons.swift */; };
@@ -3075,7 +3074,6 @@
 		34A6C27F21E503E600B5B12E /* OWSImagePickerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSImagePickerController.swift; sourceTree = "<group>"; };
 		34A8B3502190A40E00218A25 /* CVMediaAlbumView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVMediaAlbumView.swift; sourceTree = "<group>"; };
 		34A954A8271A471200B05242 /* SignalUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SignalUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		34A954AA271A471300B05242 /* SignalUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SignalUI.h; sourceTree = "<group>"; };
 		34A954B1271A471300B05242 /* SignalUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SignalUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		34A954CA271B4BE600B05242 /* ShareViewDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareViewDelegate.swift; sourceTree = "<group>"; };
 		34A954D4271B4F3E00B05242 /* Theme+Icons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Theme+Icons.swift"; sourceTree = "<group>"; };
@@ -6166,7 +6164,6 @@
 				34A95566271B510500B05242 /* ViewControllers */,
 				34A95508271B510400B05242 /* Views */,
 				34A955A8271B510500B05242 /* Wallpapers */,
-				34A954AA271A471300B05242 /* SignalUI.h */,
 			);
 			path = SignalUI;
 			sourceTree = "<group>";
@@ -11200,7 +11197,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				34A954BA271A471300B05242 /* SignalUI.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
