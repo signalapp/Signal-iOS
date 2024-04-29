@@ -137,7 +137,7 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
         }
 
         sortedMembers = unsortedMembers.sorted {
-            let nameComparison = $0.comparableName.isLessThanOrNilIfEqual($0.comparableName)
+            let nameComparison = $0.comparableName.isLessThanOrNilIfEqual($1.comparableName)
             if let nameComparison {
                 return nameComparison
             }
