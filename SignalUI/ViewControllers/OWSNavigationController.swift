@@ -53,7 +53,7 @@ extension OWSNavigationChildController {
 /// This navigation controller subclass should be used anywhere we might
 /// want to cancel back button presses or back gestures due to, for example,
 /// unsaved changes.
-open class OWSNavigationController: OWSNavigationControllerBase {
+open class OWSNavigationController: UINavigationController {
 
     private var owsNavigationBar: OWSNavigationBar {
         return navigationBar as! OWSNavigationBar
@@ -245,23 +245,10 @@ extension OWSNavigationController: UINavigationBarDelegate {
         // wasBackButtonClicked is true if the back button was pressed but not
         // if a back gesture was performed or if the view is popped programmatically.
         let wasBackButtonClicked = topViewController?.navigationItem == item
-        var result = true
-        if wasBackButtonClicked {
-            if let child = topViewController?.getFinalNavigationChildController() {
-                result = !child.shouldCancelNavigationBack
-            }
+        if wasBackButtonClicked, let child = topViewController?.getFinalNavigationChildController() {
+            return !child.shouldCancelNavigationBack
         }
-
-        // If we're not going to cancel the pop/back, we need to call the super
-        // implementation since it has important side effects.
-        if result {
-            // NOTE: result might end up false if the super implementation cancels the
-            // the pop/back.
-            super.ows_navigationBar(navigationBar, shouldPop: item)
-            result = true
-        }
-
-        return result
+        return true
     }
 }
 

@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalServiceKit
+import UIKit
 
 /// Represents the chat color chosen for a particular scope.
 ///

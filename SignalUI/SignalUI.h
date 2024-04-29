@@ -10,6 +10,3 @@ FOUNDATION_EXPORT double SignalUIVersionNumber;
 
 //! Project version string for SignalUI.
 FOUNDATION_EXPORT const unsigned char SignalUIVersionString[];
-
-// The public headers of the framework
-#import <SignalUI/OWSNavigationControllerBase.h>

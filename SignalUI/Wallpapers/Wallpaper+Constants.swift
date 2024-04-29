@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import UIKit
 
 extension Wallpaper {
     var asColorOrGradientSetting: ColorOrGradientSetting? {

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import UIKit
 
 public protocol TextViewWithPlaceholderDelegate: AnyObject {
     /// A method invoked by the text field when its cursor/selection changed without any change

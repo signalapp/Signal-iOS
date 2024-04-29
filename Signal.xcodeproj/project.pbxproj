@@ -76,10 +76,8 @@
 		3402AA55271D9DCD0084CBAE /* AttachmentTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95597271B510500B05242 /* AttachmentTextView.swift */; };
 		3402AA56271D9DCD0084CBAE /* FindByPhoneNumberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9557D271B510500B05242 /* FindByPhoneNumberViewController.swift */; };
 		3402AA57271D9DCD0084CBAE /* MediaMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95578271B510500B05242 /* MediaMessageView.swift */; };
-		3402AA58271D9DCD0084CBAE /* OWSNavigationControllerBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A9556B271B510500B05242 /* OWSNavigationControllerBase.m */; };
 		3402AA5A271D9DCD0084CBAE /* OWSTableViewController2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9558B271B510500B05242 /* OWSTableViewController2.swift */; };
 		3402AA5B271D9DCD0084CBAE /* StickerPackCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95570271B510500B05242 /* StickerPackCollectionView.swift */; };
-		3402AA5D271D9DCD0084CBAE /* OWSNavigationControllerBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A95582271B510500B05242 /* OWSNavigationControllerBase.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3402AA62271D9DEC0084CBAE /* ThreadUtil+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9FC271D9CB80084CBAE /* ThreadUtil+SignalUI.swift */; };
 		3402AA63271D9DEC0084CBAE /* ContactShareViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955A5271B510500B05242 /* ContactShareViewModel.swift */; };
 		3402AA65271D9DEC0084CBAE /* ThreadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955A7271B510500B05242 /* ThreadViewModel.swift */; };
@@ -3147,7 +3145,6 @@
 		34A95564271B510400B05242 /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
 		34A95567271B510500B05242 /* OWSWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSWindow.swift; sourceTree = "<group>"; };
 		34A95569271B510500B05242 /* ActionSheetController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionSheetController.swift; sourceTree = "<group>"; };
-		34A9556B271B510500B05242 /* OWSNavigationControllerBase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OWSNavigationControllerBase.m; sourceTree = "<group>"; };
 		34A9556E271B510500B05242 /* LinearHorizontalLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinearHorizontalLayout.swift; sourceTree = "<group>"; };
 		34A9556F271B510500B05242 /* StickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerView.swift; sourceTree = "<group>"; };
 		34A95570271B510500B05242 /* StickerPackCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerPackCollectionView.swift; sourceTree = "<group>"; };
@@ -3160,7 +3157,6 @@
 		34A9557D271B510500B05242 /* FindByPhoneNumberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindByPhoneNumberViewController.swift; sourceTree = "<group>"; };
 		34A9557E271B510500B05242 /* SpamCaptchaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamCaptchaViewController.swift; sourceTree = "<group>"; };
 		34A9557F271B510500B05242 /* TextApprovalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextApprovalViewController.swift; sourceTree = "<group>"; };
-		34A95582271B510500B05242 /* OWSNavigationControllerBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSNavigationControllerBase.h; sourceTree = "<group>"; };
 		34A9558A271B510500B05242 /* ContactFieldViewHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactFieldViewHelper.swift; sourceTree = "<group>"; };
 		34A9558B271B510500B05242 /* OWSTableViewController2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTableViewController2.swift; sourceTree = "<group>"; };
 		34A9558D271B510500B05242 /* EditContactShareNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditContactShareNameViewController.swift; sourceTree = "<group>"; };
@@ -6376,8 +6372,6 @@
 				880C2E01262A19DE006650B6 /* InteractiveSheetViewController.swift */,
 				34A95591271B510500B05242 /* ModalActivityIndicatorViewController.swift */,
 				665EF86C290C385B00F490D2 /* OWSNavigationController.swift */,
-				34A95582271B510500B05242 /* OWSNavigationControllerBase.h */,
-				34A9556B271B510500B05242 /* OWSNavigationControllerBase.m */,
 				765283AD2A00D8B4004583A9 /* OWSTableContents.swift */,
 				765283B12A00D8EC004583A9 /* OWSTableItem.swift */,
 				765283AF2A00D8CE004583A9 /* OWSTableSection.swift */,
@@ -11206,7 +11200,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3402AA5D271D9DCD0084CBAE /* OWSNavigationControllerBase.h in Headers */,
 				34A954BA271A471300B05242 /* SignalUI.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -12432,7 +12425,6 @@
 				3402AA71271D9E180084CBAE /* OWSLayerView.swift in Sources */,
 				3402AAB1271D9E180084CBAE /* OWSNavigationBar.swift in Sources */,
 				665EF86D290C385B00F490D2 /* OWSNavigationController.swift in Sources */,
-				3402AA58271D9DCD0084CBAE /* OWSNavigationControllerBase.m in Sources */,
 				764FE0432A2F049C004D2804 /* OWSSearchBar.swift in Sources */,
 				3402AA70271D9E180084CBAE /* OWSStackView.swift in Sources */,
 				765283AE2A00D8B4004583A9 /* OWSTableContents.swift in Sources */,
