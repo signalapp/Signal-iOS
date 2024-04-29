@@ -211,6 +211,7 @@ extension BackupProto {
         public var hideStory: Bool
         @ProtoDefaulted
         public var storySendMode: BackupProto.Group.StorySendMode?
+        public var snapshot: BackupProto.Group.GroupSnapshot?
         public var unknownFields: UnknownFields = .init()
 
         public init(
@@ -2796,6 +2797,7 @@ extension BackupProto.Group : Proto3Codable {
         var whitelisted: Bool = false
         var hideStory: Bool = false
         var storySendMode: BackupProto.Group.StorySendMode? = nil
+        var snapshot: BackupProto.Group.GroupSnapshot? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
@@ -2804,6 +2806,7 @@ extension BackupProto.Group : Proto3Codable {
             case 2: whitelisted = try protoReader.decode(Bool.self)
             case 3: hideStory = try protoReader.decode(Bool.self)
             case 4: storySendMode = try protoReader.decode(BackupProto.Group.StorySendMode.self)
+            case 5: snapshot = try protoReader.decode(BackupProto.Group.GroupSnapshot.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -2813,6 +2816,7 @@ extension BackupProto.Group : Proto3Codable {
         self.whitelisted = whitelisted
         self.hideStory = hideStory
         self._storySendMode.wrappedValue = try BackupProto.Group.StorySendMode.defaultIfMissing(storySendMode)
+        self.snapshot = snapshot
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
@@ -2820,6 +2824,7 @@ extension BackupProto.Group : Proto3Codable {
         try protoWriter.encode(tag: 2, value: self.whitelisted)
         try protoWriter.encode(tag: 3, value: self.hideStory)
         try protoWriter.encode(tag: 4, value: self.storySendMode)
+        try protoWriter.encode(tag: 5, value: self.snapshot)
         try protoWriter.writeUnknownFields(unknownFields)
     }
 
@@ -2834,6 +2839,7 @@ extension BackupProto.Group : Codable {
         self.whitelisted = try container.decode(Bool.self, forKey: "whitelisted")
         self.hideStory = try container.decode(Bool.self, forKey: "hideStory")
         self._storySendMode.wrappedValue = try container.decodeIfPresent(BackupProto.Group.StorySendMode.self, forKey: "storySendMode")
+        self.snapshot = try container.decodeIfPresent(BackupProto.Group.GroupSnapshot.self, forKey: "snapshot")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -2850,6 +2856,7 @@ extension BackupProto.Group : Codable {
             try container.encode(self.hideStory, forKey: "hideStory")
         }
         try container.encodeIfPresent(self.storySendMode, forKey: "storySendMode")
+        try container.encodeIfPresent(self.snapshot, forKey: "snapshot")
     }
 
 }
@@ -2879,9 +2886,897 @@ extension BackupProto.Group {
 
     }
 
+    /**
+     * A copy of the static Group state defined in `Groups.proto`, with all
+     * plaintext fields (contrasted with that proto's encrypted fields).
+     */
+    public struct GroupSnapshot {
+
+        public var publicKey: Foundation.Data
+        public var title: BackupProto.Group.GroupAttributeBlob?
+        public var descriptionText: BackupProto.Group.GroupAttributeBlob?
+        public var avatarUrl: String
+        public var disappearingMessagesTimer: BackupProto.Group.GroupAttributeBlob?
+        public var accessControl: BackupProto.Group.AccessControl?
+        public var version: UInt32
+        public var members: [BackupProto.Group.Member] = []
+        public var membersPendingProfileKey: [BackupProto.Group.MemberPendingProfileKey] = []
+        public var membersPendingAdminApproval: [BackupProto.Group.MemberPendingAdminApproval] = []
+        public var inviteLinkPassword: Foundation.Data
+        public var announcementsOnly: Bool
+        public var membersBanned: [BackupProto.Group.MemberBanned] = []
+        public var unknownFields: UnknownFields = .init()
+
+        public init(
+            publicKey: Foundation.Data,
+            avatarUrl: String,
+            version: UInt32,
+            inviteLinkPassword: Foundation.Data,
+            announcementsOnly: Bool,
+            configure: (inout Self) -> Swift.Void = { _ in }
+        ) {
+            self.publicKey = publicKey
+            self.avatarUrl = avatarUrl
+            self.version = version
+            self.inviteLinkPassword = inviteLinkPassword
+            self.announcementsOnly = announcementsOnly
+            configure(&self)
+        }
+
+    }
+
+    public struct GroupAttributeBlob {
+
+        public var content: BackupProto.Group.GroupAttributeBlob.Content?
+        public var unknownFields: UnknownFields = .init()
+
+        public init(configure: (inout Self) -> Swift.Void = { _ in }) {
+            configure(&self)
+        }
+
+    }
+
+    public struct Member {
+
+        public var userId: Foundation.Data
+        public var role: BackupProto.Group.Member.Role
+        public var profileKey: Foundation.Data
+        public var joinedAtVersion: UInt32
+        public var unknownFields: UnknownFields = .init()
+
+        public init(
+            userId: Foundation.Data,
+            role: BackupProto.Group.Member.Role,
+            profileKey: Foundation.Data,
+            joinedAtVersion: UInt32
+        ) {
+            self.userId = userId
+            self.role = role
+            self.profileKey = profileKey
+            self.joinedAtVersion = joinedAtVersion
+        }
+
+    }
+
+    public struct MemberPendingProfileKey {
+
+        public var member: BackupProto.Group.Member?
+        public var addedByUserId: Foundation.Data
+        public var timestamp: UInt64
+        public var unknownFields: UnknownFields = .init()
+
+        public init(
+            addedByUserId: Foundation.Data,
+            timestamp: UInt64,
+            configure: (inout Self) -> Swift.Void = { _ in }
+        ) {
+            self.addedByUserId = addedByUserId
+            self.timestamp = timestamp
+            configure(&self)
+        }
+
+    }
+
+    public struct MemberPendingAdminApproval {
+
+        public var userId: Foundation.Data
+        public var profileKey: Foundation.Data
+        public var timestamp: UInt64
+        public var unknownFields: UnknownFields = .init()
+
+        public init(
+            userId: Foundation.Data,
+            profileKey: Foundation.Data,
+            timestamp: UInt64
+        ) {
+            self.userId = userId
+            self.profileKey = profileKey
+            self.timestamp = timestamp
+        }
+
+    }
+
+    public struct MemberBanned {
+
+        public var userId: Foundation.Data
+        public var timestamp: UInt64
+        public var unknownFields: UnknownFields = .init()
+
+        public init(userId: Foundation.Data, timestamp: UInt64) {
+            self.userId = userId
+            self.timestamp = timestamp
+        }
+
+    }
+
+    public struct AccessControl {
+
+        public var attributes: BackupProto.Group.AccessControl.AccessRequired
+        public var members: BackupProto.Group.AccessControl.AccessRequired
+        public var addFromInviteLink: BackupProto.Group.AccessControl.AccessRequired
+        public var unknownFields: UnknownFields = .init()
+
+        public init(
+            attributes: BackupProto.Group.AccessControl.AccessRequired,
+            members: BackupProto.Group.AccessControl.AccessRequired,
+            addFromInviteLink: BackupProto.Group.AccessControl.AccessRequired
+        ) {
+            self.attributes = attributes
+            self.members = members
+            self.addFromInviteLink = addFromInviteLink
+        }
+
+    }
+
 }
 
 extension BackupProto.Group.StorySendMode : Sendable {
+}
+
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.Group.GroupSnapshot : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.Group.GroupSnapshot : Hashable {
+}
+#endif
+
+extension BackupProto.Group.GroupSnapshot : Sendable {
+}
+
+extension BackupProto.Group.GroupSnapshot : ProtoMessage {
+
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/BackupProto.BackupProto.Group.GroupSnapshot"
+    }
+
+}
+
+extension BackupProto.Group.GroupSnapshot : Proto3Codable {
+
+    public init(from protoReader: ProtoReader) throws {
+        var publicKey: Foundation.Data = .init()
+        var title: BackupProto.Group.GroupAttributeBlob? = nil
+        var descriptionText: BackupProto.Group.GroupAttributeBlob? = nil
+        var avatarUrl: String = ""
+        var disappearingMessagesTimer: BackupProto.Group.GroupAttributeBlob? = nil
+        var accessControl: BackupProto.Group.AccessControl? = nil
+        var version: UInt32 = 0
+        var members: [BackupProto.Group.Member] = []
+        var membersPendingProfileKey: [BackupProto.Group.MemberPendingProfileKey] = []
+        var membersPendingAdminApproval: [BackupProto.Group.MemberPendingAdminApproval] = []
+        var inviteLinkPassword: Foundation.Data = .init()
+        var announcementsOnly: Bool = false
+        var membersBanned: [BackupProto.Group.MemberBanned] = []
+
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
+            switch tag {
+            case 1: publicKey = try protoReader.decode(Foundation.Data.self)
+            case 2: title = try protoReader.decode(BackupProto.Group.GroupAttributeBlob.self)
+            case 11: descriptionText = try protoReader.decode(BackupProto.Group.GroupAttributeBlob.self)
+            case 3: avatarUrl = try protoReader.decode(String.self)
+            case 4: disappearingMessagesTimer = try protoReader.decode(BackupProto.Group.GroupAttributeBlob.self)
+            case 5: accessControl = try protoReader.decode(BackupProto.Group.AccessControl.self)
+            case 6: version = try protoReader.decode(UInt32.self)
+            case 7: try protoReader.decode(into: &members)
+            case 8: try protoReader.decode(into: &membersPendingProfileKey)
+            case 9: try protoReader.decode(into: &membersPendingAdminApproval)
+            case 10: inviteLinkPassword = try protoReader.decode(Foundation.Data.self)
+            case 12: announcementsOnly = try protoReader.decode(Bool.self)
+            case 13: try protoReader.decode(into: &membersBanned)
+            default: try protoReader.readUnknownField(tag: tag)
+            }
+        }
+        self.unknownFields = try protoReader.endMessage(token: token)
+
+        self.publicKey = publicKey
+        self.title = title
+        self.descriptionText = descriptionText
+        self.avatarUrl = avatarUrl
+        self.disappearingMessagesTimer = disappearingMessagesTimer
+        self.accessControl = accessControl
+        self.version = version
+        self.members = members
+        self.membersPendingProfileKey = membersPendingProfileKey
+        self.membersPendingAdminApproval = membersPendingAdminApproval
+        self.inviteLinkPassword = inviteLinkPassword
+        self.announcementsOnly = announcementsOnly
+        self.membersBanned = membersBanned
+    }
+
+    public func encode(to protoWriter: ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.publicKey)
+        try protoWriter.encode(tag: 2, value: self.title)
+        try protoWriter.encode(tag: 11, value: self.descriptionText)
+        try protoWriter.encode(tag: 3, value: self.avatarUrl)
+        try protoWriter.encode(tag: 4, value: self.disappearingMessagesTimer)
+        try protoWriter.encode(tag: 5, value: self.accessControl)
+        try protoWriter.encode(tag: 6, value: self.version)
+        try protoWriter.encode(tag: 7, value: self.members)
+        try protoWriter.encode(tag: 8, value: self.membersPendingProfileKey)
+        try protoWriter.encode(tag: 9, value: self.membersPendingAdminApproval)
+        try protoWriter.encode(tag: 10, value: self.inviteLinkPassword)
+        try protoWriter.encode(tag: 12, value: self.announcementsOnly)
+        try protoWriter.encode(tag: 13, value: self.membersBanned)
+        try protoWriter.writeUnknownFields(unknownFields)
+    }
+
+}
+
+#if !WIRE_REMOVE_CODABLE
+extension BackupProto.Group.GroupSnapshot : Codable {
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.publicKey = try container.decode(stringEncoded: Foundation.Data.self, forKey: "publicKey")
+        self.title = try container.decodeIfPresent(BackupProto.Group.GroupAttributeBlob.self, forKey: "title")
+        self.descriptionText = try container.decodeIfPresent(BackupProto.Group.GroupAttributeBlob.self, forKey: "descriptionText")
+        self.avatarUrl = try container.decode(String.self, forKey: "avatarUrl")
+        self.disappearingMessagesTimer = try container.decodeIfPresent(BackupProto.Group.GroupAttributeBlob.self, forKey: "disappearingMessagesTimer")
+        self.accessControl = try container.decodeIfPresent(BackupProto.Group.AccessControl.self, forKey: "accessControl")
+        self.version = try container.decode(UInt32.self, forKey: "version")
+        self.members = try container.decodeProtoArray(BackupProto.Group.Member.self, forKey: "members")
+        self.membersPendingProfileKey = try container.decodeProtoArray(BackupProto.Group.MemberPendingProfileKey.self, forKey: "membersPendingProfileKey")
+        self.membersPendingAdminApproval = try container.decodeProtoArray(BackupProto.Group.MemberPendingAdminApproval.self, forKey: "membersPendingAdminApproval")
+        self.inviteLinkPassword = try container.decode(stringEncoded: Foundation.Data.self, forKey: "inviteLinkPassword")
+        self.announcementsOnly = try container.decode(Bool.self, forKey: "announcementsOnly")
+        self.membersBanned = try container.decodeProtoArray(BackupProto.Group.MemberBanned.self, forKey: "membersBanned")
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
+
+        if includeDefaults || !self.publicKey.isEmpty {
+            try container.encode(stringEncoded: self.publicKey, forKey: "publicKey")
+        }
+        try container.encodeIfPresent(self.title, forKey: "title")
+        try container.encodeIfPresent(self.descriptionText, forKey: "descriptionText")
+        if includeDefaults || !self.avatarUrl.isEmpty {
+            try container.encode(self.avatarUrl, forKey: "avatarUrl")
+        }
+        try container.encodeIfPresent(self.disappearingMessagesTimer, forKey: "disappearingMessagesTimer")
+        try container.encodeIfPresent(self.accessControl, forKey: "accessControl")
+        if includeDefaults || self.version != 0 {
+            try container.encode(self.version, forKey: "version")
+        }
+        if includeDefaults || !self.members.isEmpty {
+            try container.encodeProtoArray(self.members, forKey: "members")
+        }
+        if includeDefaults || !self.membersPendingProfileKey.isEmpty {
+            try container.encodeProtoArray(self.membersPendingProfileKey, forKey: "membersPendingProfileKey")
+        }
+        if includeDefaults || !self.membersPendingAdminApproval.isEmpty {
+            try container.encodeProtoArray(self.membersPendingAdminApproval, forKey: "membersPendingAdminApproval")
+        }
+        if includeDefaults || !self.inviteLinkPassword.isEmpty {
+            try container.encode(stringEncoded: self.inviteLinkPassword, forKey: "inviteLinkPassword")
+        }
+        if includeDefaults || self.announcementsOnly != false {
+            try container.encode(self.announcementsOnly, forKey: "announcementsOnly")
+        }
+        if includeDefaults || !self.membersBanned.isEmpty {
+            try container.encodeProtoArray(self.membersBanned, forKey: "membersBanned")
+        }
+    }
+
+}
+#endif
+
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.Group.GroupAttributeBlob : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.Group.GroupAttributeBlob : Hashable {
+}
+#endif
+
+extension BackupProto.Group.GroupAttributeBlob : Sendable {
+}
+
+extension BackupProto.Group.GroupAttributeBlob : ProtoDefaultedValue {
+
+    public static var defaultedValue: BackupProto.Group.GroupAttributeBlob {
+        BackupProto.Group.GroupAttributeBlob()
+    }
+}
+
+extension BackupProto.Group.GroupAttributeBlob : ProtoMessage {
+
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/BackupProto.BackupProto.Group.GroupAttributeBlob"
+    }
+
+}
+
+extension BackupProto.Group.GroupAttributeBlob : Proto3Codable {
+
+    public init(from protoReader: ProtoReader) throws {
+        var content: BackupProto.Group.GroupAttributeBlob.Content? = nil
+
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
+            switch tag {
+            case 1: content = .title(try protoReader.decode(String.self))
+            case 2: content = .avatar(try protoReader.decode(Foundation.Data.self))
+            case 3: content = .disappearingMessagesDuration(try protoReader.decode(UInt32.self))
+            case 4: content = .descriptionText(try protoReader.decode(String.self))
+            default: try protoReader.readUnknownField(tag: tag)
+            }
+        }
+        self.unknownFields = try protoReader.endMessage(token: token)
+
+        self.content = content
+    }
+
+    public func encode(to protoWriter: ProtoWriter) throws {
+        if let content = self.content {
+            try content.encode(to: protoWriter)
+        }
+        try protoWriter.writeUnknownFields(unknownFields)
+    }
+
+}
+
+#if !WIRE_REMOVE_CODABLE
+extension BackupProto.Group.GroupAttributeBlob : Codable {
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        if let title = try container.decodeIfPresent(String.self, forKey: "title") {
+            self.content = .title(title)
+        } else if let avatar = try container.decodeIfPresent(Foundation.Data.self, forKey: "avatar") {
+            self.content = .avatar(avatar)
+        } else if let disappearingMessagesDuration = try container.decodeIfPresent(UInt32.self, forKey: "disappearingMessagesDuration") {
+            self.content = .disappearingMessagesDuration(disappearingMessagesDuration)
+        } else if let descriptionText = try container.decodeIfPresent(String.self, forKey: "descriptionText") {
+            self.content = .descriptionText(descriptionText)
+        } else {
+            self.content = nil
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+
+        switch self.content {
+        case .title(let title): try container.encode(title, forKey: "title")
+        case .avatar(let avatar): try container.encode(avatar, forKey: "avatar")
+        case .disappearingMessagesDuration(let disappearingMessagesDuration): try container.encode(disappearingMessagesDuration, forKey: "disappearingMessagesDuration")
+        case .descriptionText(let descriptionText): try container.encode(descriptionText, forKey: "descriptionText")
+        case Optional.none: break
+        }
+    }
+
+}
+#endif
+
+/**
+ * Subtypes within BackupProto.Group.GroupAttributeBlob
+ */
+extension BackupProto.Group.GroupAttributeBlob {
+
+    public enum Content {
+
+        case title(String)
+        case avatar(Foundation.Data)
+        case disappearingMessagesDuration(UInt32)
+        case descriptionText(String)
+
+        fileprivate func encode(to protoWriter: ProtoWriter) throws {
+            switch self {
+            case .title(let title): try protoWriter.encode(tag: 1, value: title)
+            case .avatar(let avatar): try protoWriter.encode(tag: 2, value: avatar)
+            case .disappearingMessagesDuration(let disappearingMessagesDuration): try protoWriter.encode(tag: 3, value: disappearingMessagesDuration)
+            case .descriptionText(let descriptionText): try protoWriter.encode(tag: 4, value: descriptionText)
+            }
+        }
+
+    }
+
+}
+
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.Group.GroupAttributeBlob.Content : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.Group.GroupAttributeBlob.Content : Hashable {
+}
+#endif
+
+extension BackupProto.Group.GroupAttributeBlob.Content : Sendable {
+}
+
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.Group.Member : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.Group.Member : Hashable {
+}
+#endif
+
+extension BackupProto.Group.Member : Sendable {
+}
+
+extension BackupProto.Group.Member : ProtoMessage {
+
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/BackupProto.BackupProto.Group.Member"
+    }
+
+}
+
+extension BackupProto.Group.Member : Proto3Codable {
+
+    public init(from protoReader: ProtoReader) throws {
+        var userId: Foundation.Data = .init()
+        var role: BackupProto.Group.Member.Role? = nil
+        var profileKey: Foundation.Data = .init()
+        var joinedAtVersion: UInt32 = 0
+
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
+            switch tag {
+            case 1: userId = try protoReader.decode(Foundation.Data.self)
+            case 2: role = try protoReader.decode(BackupProto.Group.Member.Role.self)
+            case 3: profileKey = try protoReader.decode(Foundation.Data.self)
+            case 5: joinedAtVersion = try protoReader.decode(UInt32.self)
+            default: try protoReader.readUnknownField(tag: tag)
+            }
+        }
+        self.unknownFields = try protoReader.endMessage(token: token)
+
+        self.userId = userId
+        self.role = try BackupProto.Group.Member.Role.defaultIfMissing(role)
+        self.profileKey = profileKey
+        self.joinedAtVersion = joinedAtVersion
+    }
+
+    public func encode(to protoWriter: ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.userId)
+        try protoWriter.encode(tag: 2, value: self.role)
+        try protoWriter.encode(tag: 3, value: self.profileKey)
+        try protoWriter.encode(tag: 5, value: self.joinedAtVersion)
+        try protoWriter.writeUnknownFields(unknownFields)
+    }
+
+}
+
+#if !WIRE_REMOVE_CODABLE
+extension BackupProto.Group.Member : Codable {
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.userId = try container.decode(stringEncoded: Foundation.Data.self, forKey: "userId")
+        self.role = try container.decode(BackupProto.Group.Member.Role.self, forKey: "role")
+        self.profileKey = try container.decode(stringEncoded: Foundation.Data.self, forKey: "profileKey")
+        self.joinedAtVersion = try container.decode(UInt32.self, forKey: "joinedAtVersion")
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
+
+        if includeDefaults || !self.userId.isEmpty {
+            try container.encode(stringEncoded: self.userId, forKey: "userId")
+        }
+        if includeDefaults || self.role.rawValue != 0 {
+            try container.encode(self.role, forKey: "role")
+        }
+        if includeDefaults || !self.profileKey.isEmpty {
+            try container.encode(stringEncoded: self.profileKey, forKey: "profileKey")
+        }
+        if includeDefaults || self.joinedAtVersion != 0 {
+            try container.encode(self.joinedAtVersion, forKey: "joinedAtVersion")
+        }
+    }
+
+}
+#endif
+
+/**
+ * Subtypes within BackupProto.Group.Member
+ */
+extension BackupProto.Group.Member {
+
+    public enum Role : Int32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
+
+        case UNKNOWN = 0
+        case DEFAULT = 1
+        case ADMINISTRATOR = 2
+
+        public static var defaultedValue: BackupProto.Group.Member.Role {
+            BackupProto.Group.Member.Role.UNKNOWN
+        }
+        public var description: String {
+            switch self {
+            case .UNKNOWN: return "UNKNOWN"
+            case .DEFAULT: return "DEFAULT"
+            case .ADMINISTRATOR: return "ADMINISTRATOR"
+            }
+        }
+
+    }
+
+}
+
+extension BackupProto.Group.Member.Role : Sendable {
+}
+
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.Group.MemberPendingProfileKey : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.Group.MemberPendingProfileKey : Hashable {
+}
+#endif
+
+extension BackupProto.Group.MemberPendingProfileKey : Sendable {
+}
+
+extension BackupProto.Group.MemberPendingProfileKey : ProtoMessage {
+
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/BackupProto.BackupProto.Group.MemberPendingProfileKey"
+    }
+
+}
+
+extension BackupProto.Group.MemberPendingProfileKey : Proto3Codable {
+
+    public init(from protoReader: ProtoReader) throws {
+        var member: BackupProto.Group.Member? = nil
+        var addedByUserId: Foundation.Data = .init()
+        var timestamp: UInt64 = 0
+
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
+            switch tag {
+            case 1: member = try protoReader.decode(BackupProto.Group.Member.self)
+            case 2: addedByUserId = try protoReader.decode(Foundation.Data.self)
+            case 3: timestamp = try protoReader.decode(UInt64.self)
+            default: try protoReader.readUnknownField(tag: tag)
+            }
+        }
+        self.unknownFields = try protoReader.endMessage(token: token)
+
+        self.member = member
+        self.addedByUserId = addedByUserId
+        self.timestamp = timestamp
+    }
+
+    public func encode(to protoWriter: ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.member)
+        try protoWriter.encode(tag: 2, value: self.addedByUserId)
+        try protoWriter.encode(tag: 3, value: self.timestamp)
+        try protoWriter.writeUnknownFields(unknownFields)
+    }
+
+}
+
+#if !WIRE_REMOVE_CODABLE
+extension BackupProto.Group.MemberPendingProfileKey : Codable {
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.member = try container.decodeIfPresent(BackupProto.Group.Member.self, forKey: "member")
+        self.addedByUserId = try container.decode(stringEncoded: Foundation.Data.self, forKey: "addedByUserId")
+        self.timestamp = try container.decode(stringEncoded: UInt64.self, forKey: "timestamp")
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
+
+        try container.encodeIfPresent(self.member, forKey: "member")
+        if includeDefaults || !self.addedByUserId.isEmpty {
+            try container.encode(stringEncoded: self.addedByUserId, forKey: "addedByUserId")
+        }
+        if includeDefaults || self.timestamp != 0 {
+            try container.encode(stringEncoded: self.timestamp, forKey: "timestamp")
+        }
+    }
+
+}
+#endif
+
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.Group.MemberPendingAdminApproval : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.Group.MemberPendingAdminApproval : Hashable {
+}
+#endif
+
+extension BackupProto.Group.MemberPendingAdminApproval : Sendable {
+}
+
+extension BackupProto.Group.MemberPendingAdminApproval : ProtoMessage {
+
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/BackupProto.BackupProto.Group.MemberPendingAdminApproval"
+    }
+
+}
+
+extension BackupProto.Group.MemberPendingAdminApproval : Proto3Codable {
+
+    public init(from protoReader: ProtoReader) throws {
+        var userId: Foundation.Data = .init()
+        var profileKey: Foundation.Data = .init()
+        var timestamp: UInt64 = 0
+
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
+            switch tag {
+            case 1: userId = try protoReader.decode(Foundation.Data.self)
+            case 2: profileKey = try protoReader.decode(Foundation.Data.self)
+            case 4: timestamp = try protoReader.decode(UInt64.self)
+            default: try protoReader.readUnknownField(tag: tag)
+            }
+        }
+        self.unknownFields = try protoReader.endMessage(token: token)
+
+        self.userId = userId
+        self.profileKey = profileKey
+        self.timestamp = timestamp
+    }
+
+    public func encode(to protoWriter: ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.userId)
+        try protoWriter.encode(tag: 2, value: self.profileKey)
+        try protoWriter.encode(tag: 4, value: self.timestamp)
+        try protoWriter.writeUnknownFields(unknownFields)
+    }
+
+}
+
+#if !WIRE_REMOVE_CODABLE
+extension BackupProto.Group.MemberPendingAdminApproval : Codable {
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.userId = try container.decode(stringEncoded: Foundation.Data.self, forKey: "userId")
+        self.profileKey = try container.decode(stringEncoded: Foundation.Data.self, forKey: "profileKey")
+        self.timestamp = try container.decode(stringEncoded: UInt64.self, forKey: "timestamp")
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
+
+        if includeDefaults || !self.userId.isEmpty {
+            try container.encode(stringEncoded: self.userId, forKey: "userId")
+        }
+        if includeDefaults || !self.profileKey.isEmpty {
+            try container.encode(stringEncoded: self.profileKey, forKey: "profileKey")
+        }
+        if includeDefaults || self.timestamp != 0 {
+            try container.encode(stringEncoded: self.timestamp, forKey: "timestamp")
+        }
+    }
+
+}
+#endif
+
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.Group.MemberBanned : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.Group.MemberBanned : Hashable {
+}
+#endif
+
+extension BackupProto.Group.MemberBanned : Sendable {
+}
+
+extension BackupProto.Group.MemberBanned : ProtoMessage {
+
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/BackupProto.BackupProto.Group.MemberBanned"
+    }
+
+}
+
+extension BackupProto.Group.MemberBanned : Proto3Codable {
+
+    public init(from protoReader: ProtoReader) throws {
+        var userId: Foundation.Data = .init()
+        var timestamp: UInt64 = 0
+
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
+            switch tag {
+            case 1: userId = try protoReader.decode(Foundation.Data.self)
+            case 2: timestamp = try protoReader.decode(UInt64.self)
+            default: try protoReader.readUnknownField(tag: tag)
+            }
+        }
+        self.unknownFields = try protoReader.endMessage(token: token)
+
+        self.userId = userId
+        self.timestamp = timestamp
+    }
+
+    public func encode(to protoWriter: ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.userId)
+        try protoWriter.encode(tag: 2, value: self.timestamp)
+        try protoWriter.writeUnknownFields(unknownFields)
+    }
+
+}
+
+#if !WIRE_REMOVE_CODABLE
+extension BackupProto.Group.MemberBanned : Codable {
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.userId = try container.decode(stringEncoded: Foundation.Data.self, forKey: "userId")
+        self.timestamp = try container.decode(stringEncoded: UInt64.self, forKey: "timestamp")
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
+
+        if includeDefaults || !self.userId.isEmpty {
+            try container.encode(stringEncoded: self.userId, forKey: "userId")
+        }
+        if includeDefaults || self.timestamp != 0 {
+            try container.encode(stringEncoded: self.timestamp, forKey: "timestamp")
+        }
+    }
+
+}
+#endif
+
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.Group.AccessControl : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.Group.AccessControl : Hashable {
+}
+#endif
+
+extension BackupProto.Group.AccessControl : Sendable {
+}
+
+extension BackupProto.Group.AccessControl : ProtoMessage {
+
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/BackupProto.BackupProto.Group.AccessControl"
+    }
+
+}
+
+extension BackupProto.Group.AccessControl : Proto3Codable {
+
+    public init(from protoReader: ProtoReader) throws {
+        var attributes: BackupProto.Group.AccessControl.AccessRequired? = nil
+        var members: BackupProto.Group.AccessControl.AccessRequired? = nil
+        var addFromInviteLink: BackupProto.Group.AccessControl.AccessRequired? = nil
+
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
+            switch tag {
+            case 1: attributes = try protoReader.decode(BackupProto.Group.AccessControl.AccessRequired.self)
+            case 2: members = try protoReader.decode(BackupProto.Group.AccessControl.AccessRequired.self)
+            case 3: addFromInviteLink = try protoReader.decode(BackupProto.Group.AccessControl.AccessRequired.self)
+            default: try protoReader.readUnknownField(tag: tag)
+            }
+        }
+        self.unknownFields = try protoReader.endMessage(token: token)
+
+        self.attributes = try BackupProto.Group.AccessControl.AccessRequired.defaultIfMissing(attributes)
+        self.members = try BackupProto.Group.AccessControl.AccessRequired.defaultIfMissing(members)
+        self.addFromInviteLink = try BackupProto.Group.AccessControl.AccessRequired.defaultIfMissing(addFromInviteLink)
+    }
+
+    public func encode(to protoWriter: ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.attributes)
+        try protoWriter.encode(tag: 2, value: self.members)
+        try protoWriter.encode(tag: 3, value: self.addFromInviteLink)
+        try protoWriter.writeUnknownFields(unknownFields)
+    }
+
+}
+
+#if !WIRE_REMOVE_CODABLE
+extension BackupProto.Group.AccessControl : Codable {
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.attributes = try container.decode(BackupProto.Group.AccessControl.AccessRequired.self, forKey: "attributes")
+        self.members = try container.decode(BackupProto.Group.AccessControl.AccessRequired.self, forKey: "members")
+        self.addFromInviteLink = try container.decode(BackupProto.Group.AccessControl.AccessRequired.self, forKey: "addFromInviteLink")
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
+
+        if includeDefaults || self.attributes.rawValue != 0 {
+            try container.encode(self.attributes, forKey: "attributes")
+        }
+        if includeDefaults || self.members.rawValue != 0 {
+            try container.encode(self.members, forKey: "members")
+        }
+        if includeDefaults || self.addFromInviteLink.rawValue != 0 {
+            try container.encode(self.addFromInviteLink, forKey: "addFromInviteLink")
+        }
+    }
+
+}
+#endif
+
+/**
+ * Subtypes within BackupProto.Group.AccessControl
+ */
+extension BackupProto.Group.AccessControl {
+
+    public enum AccessRequired : Int32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
+
+        case UNKNOWN = 0
+        case ANY = 1
+        case MEMBER = 2
+        case ADMINISTRATOR = 3
+        case UNSATISFIABLE = 4
+
+        public static var defaultedValue: BackupProto.Group.AccessControl.AccessRequired {
+            BackupProto.Group.AccessControl.AccessRequired.UNKNOWN
+        }
+        public var description: String {
+            switch self {
+            case .UNKNOWN: return "UNKNOWN"
+            case .ANY: return "ANY"
+            case .MEMBER: return "MEMBER"
+            case .ADMINISTRATOR: return "ADMINISTRATOR"
+            case .UNSATISFIABLE: return "UNSATISFIABLE"
+            }
+        }
+
+    }
+
+}
+
+extension BackupProto.Group.AccessControl.AccessRequired : Sendable {
 }
 
 #if !WIRE_REMOVE_EQUATABLE

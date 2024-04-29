@@ -87,10 +87,11 @@ public class StoryManager: NSObject {
         }
 
         if let profileKey = storyMessage.profileKey {
-            profileManager.setProfileKeyDataAndFetchProfile(
+            profileManager.setProfileKeyData(
                 profileKey,
                 for: author,
                 onlyFillInIfMissing: false,
+                shouldFetchProfile: true,
                 userProfileWriter: .localUser,
                 localIdentifiers: localIdentifiers,
                 authedAccount: .implicit(),

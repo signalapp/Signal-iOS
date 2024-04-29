@@ -31,10 +31,11 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
         // Configure UDManager
         self.write { transaction in
-            self.profileManager.setProfileKeyDataAndFetchProfile(
+            self.profileManager.setProfileKeyData(
                 OWSAES256Key.generateRandom().keyData,
                 for: localIdentifiers.aci,
                 onlyFillInIfMissing: false,
+                shouldFetchProfile: true,
                 userProfileWriter: .tests,
                 localIdentifiers: localIdentifiers,
                 authedAccount: .implicit(),
@@ -104,10 +105,11 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
         let bobRecipientAci = Aci.randomForTesting()
         self.write { transaction in
-            self.profileManager.setProfileKeyDataAndFetchProfile(
+            self.profileManager.setProfileKeyData(
                 OWSAES256Key.generateRandom().keyData,
                 for: bobRecipientAci,
                 onlyFillInIfMissing: false,
+                shouldFetchProfile: true,
                 userProfileWriter: .tests,
                 localIdentifiers: localIdentifiers,
                 authedAccount: .implicit(),

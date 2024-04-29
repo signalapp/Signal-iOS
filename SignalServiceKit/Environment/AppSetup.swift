@@ -714,6 +714,7 @@ public class AppSetup {
             localRecipientArchiver: MessageBackupLocalRecipientArchiverImpl(),
             recipientArchiver: MessageBackupRecipientArchiverImpl(
                 blockingManager: MessageBackup.Wrappers.BlockingManager(blockingManager),
+                disappearingMessageConfigStore: disappearingMessagesConfigurationStore,
                 groupsV2: groupsV2,
                 profileManager: MessageBackup.Wrappers.ProfileManager(profileManager),
                 recipientDatabaseTable: recipientDatabaseTable,

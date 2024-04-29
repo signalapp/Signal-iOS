@@ -55,6 +55,8 @@ public protocol _MessageBackup_ProfileManagerShim {
 
     func getLocalUsersProfile(tx: DBReadTransaction) -> OWSUserProfile?
 
+    func getProfileKeyData(for address: SignalServiceAddress, tx: DBReadTransaction) -> Data?
+
     func allWhitelistedRegisteredAddresses(tx: DBReadTransaction) -> [SignalServiceAddress]
 
     func isThread(inProfileWhitelist thread: TSThread, tx: DBReadTransaction) -> Bool
@@ -63,16 +65,27 @@ public protocol _MessageBackup_ProfileManagerShim {
 
     func addToWhitelist(_ thread: TSGroupThread, tx: DBWriteTransaction)
 
+    func setProfileKey(
+        _ profileKey: OWSAES256Key,
+        forAci aci: Aci,
+        localIdentifiers: LocalIdentifiers,
+        tx: DBWriteTransaction
+    )
+
     func insertOtherUserProfile(
         givenName: String?,
         familyName: String?,
-        profileKey: Data?,
+        profileKey: OWSAES256Key?,
         address: OWSUserProfile.Address,
         tx: DBWriteTransaction
     )
 }
 
 public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManagerShim {
+    private var userProfileWriter: UserProfileWriter {
+        // [Backups] TODO: add a dedicated profile writer case
+        return .storageService
+    }
 
     private let profileManager: ProfileManager
 
@@ -88,6 +101,10 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
         return OWSUserProfile.getUserProfileForLocalUser(tx: SDSDB.shimOnlyBridge(tx))
     }
 
+    public func getProfileKeyData(for address: SignalServiceAddress, tx: DBReadTransaction) -> Data? {
+        profileManager.profileKeyData(for: address, transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
     public func allWhitelistedRegisteredAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] {
         profileManager.allWhitelistedRegisteredAddresses(tx: SDSDB.shimOnlyBridge(tx))
     }
@@ -99,7 +116,7 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
     public func addToWhitelist(_ address: SignalServiceAddress, tx: DBWriteTransaction) {
         profileManager.addUser(
             toProfileWhitelist: address,
-            userProfileWriter: .storageService, /* TODO */
+            userProfileWriter: userProfileWriter,
             transaction: SDSDB.shimOnlyBridge(tx)
         )
     }
@@ -108,10 +125,28 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
         profileManager.addThread(toProfileWhitelist: thread, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
+    public func setProfileKey(
+        _ profileKey: OWSAES256Key,
+        forAci aci: Aci,
+        localIdentifiers: LocalIdentifiers,
+        tx: DBWriteTransaction
+    ) {
+        profileManager.setProfileKeyData(
+            profileKey.keyData,
+            for: aci,
+            onlyFillInIfMissing: false,
+            shouldFetchProfile: false,
+            userProfileWriter: userProfileWriter,
+            localIdentifiers: localIdentifiers,
+            authedAccount: .implicit(),
+            tx: tx
+        )
+    }
+
     public func insertOtherUserProfile(
         givenName: String?,
         familyName: String?,
-        profileKey: Data?,
+        profileKey: OWSAES256Key?,
         address: OWSUserProfile.Address,
         tx: DBWriteTransaction
     ) {
@@ -122,7 +157,7 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
             address: address,
             givenName: givenName,
             familyName: familyName,
-            profileKey: profileKey.flatMap(OWSAES256Key.init(data:))
+            profileKey: profileKey
         ).anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
     }
 }

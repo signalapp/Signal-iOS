@@ -492,10 +492,11 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 
         // If our local profile key record differs from what's on the service, use the service's value.
         if let profileKey = record.profileKey, localUserProfile?.profileKey?.keyData != profileKey {
-            profileManager.setProfileKeyDataAndFetchProfile(
+            profileManager.setProfileKeyData(
                 profileKey,
                 for: serviceIds.aciOrElsePni,
                 onlyFillInIfMissing: false,
+                shouldFetchProfile: true,
                 userProfileWriter: .storageService,
                 localIdentifiers: localIdentifiers,
                 authedAccount: authedAccount,
@@ -1305,10 +1306,11 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         // can ever change the profile key other than the primary device.
         let allowsRemoteProfileKeyChanges = !profileManager.hasLocalProfile() || !isPrimaryDevice
         if allowsRemoteProfileKeyChanges, let profileKey = record.profileKey, localUserProfile?.profileKey?.keyData != profileKey {
-            profileManager.setProfileKeyDataAndFetchProfile(
+            profileManager.setProfileKeyData(
                 profileKey,
                 for: localIdentifiers.aci,
                 onlyFillInIfMissing: false,
+                shouldFetchProfile: true,
                 userProfileWriter: .storageService,
                 localIdentifiers: localIdentifiers,
                 authedAccount: authedAccount,

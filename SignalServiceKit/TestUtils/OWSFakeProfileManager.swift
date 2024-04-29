@@ -65,10 +65,11 @@ extension OWSFakeProfileManager: ProfileManager {
     ) {
     }
 
-    public func setProfileKeyDataAndFetchProfile(
+    public func setProfileKeyData(
         _ profileKeyData: Data,
         for serviceId: ServiceId,
         onlyFillInIfMissing: Bool,
+        shouldFetchProfile: Bool,
         userProfileWriter: UserProfileWriter,
         localIdentifiers: LocalIdentifiers,
         authedAccount: AuthedAccount,

@@ -20,6 +20,7 @@ public struct TSGroupModelBuilder: Dependencies {
     public var avatarUrlPath: String?
     public var inviteLinkPassword: Data?
     public var isAnnouncementsOnly: Bool = false
+
     public var isJoinRequestPlaceholder: Bool = false
     public var addedByAddress: SignalServiceAddress?
     public var wasJustMigrated: Bool = false

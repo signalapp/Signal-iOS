@@ -596,11 +596,12 @@ extension OWSProfileManager: ProfileManager, Dependencies {
 
     // MARK: - Other User's Profiles
 
-    /// Updates the profile key & fetches the latest profile.
-    public func setProfileKeyDataAndFetchProfile(
+    /// Updates the profile key, optionally fetching the latest profile.
+    public func setProfileKeyData(
         _ profileKeyData: Data,
         for serviceId: ServiceId,
         onlyFillInIfMissing: Bool,
+        shouldFetchProfile: Bool,
         userProfileWriter: UserProfileWriter,
         localIdentifiers: LocalIdentifiers,
         authedAccount: AuthedAccount,
@@ -633,9 +634,12 @@ extension OWSProfileManager: ProfileManager, Dependencies {
         // so skip the update profile for address call.
         if case .otherUser(let serviceId) = address {
             udManager.setUnidentifiedAccessMode(.unknown, for: serviceId, tx: SDSDB.shimOnlyBridge(tx))
-            tx.addSyncCompletion {
-                let profileFetcher = SSKEnvironment.shared.profileFetcherRef
-                _ = profileFetcher.fetchProfileSync(for: serviceId, options: [.mainAppOnly], authedAccount: authedAccount)
+
+            if shouldFetchProfile {
+                tx.addSyncCompletion {
+                    let profileFetcher = SSKEnvironment.shared.profileFetcherRef
+                    _ = profileFetcher.fetchProfileSync(for: serviceId, options: [.mainAppOnly], authedAccount: authedAccount)
+                }
             }
         }
 
@@ -655,10 +659,11 @@ extension OWSProfileManager: ProfileManager, Dependencies {
         tx: DBWriteTransaction
     ) {
         for (aci, profileKey) in authoritativeProfileKeys {
-            setProfileKeyDataAndFetchProfile(
+            setProfileKeyData(
                 profileKey,
                 for: aci,
                 onlyFillInIfMissing: false,
+                shouldFetchProfile: true,
                 userProfileWriter: userProfileWriter,
                 localIdentifiers: localIdentifiers,
                 authedAccount: .implicit(),
@@ -669,10 +674,11 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             if authoritativeProfileKeys[aci] != nil {
                 continue
             }
-            setProfileKeyDataAndFetchProfile(
+            setProfileKeyData(
                 profileKey,
                 for: aci,
                 onlyFillInIfMissing: true,
+                shouldFetchProfile: true,
                 userProfileWriter: userProfileWriter,
                 localIdentifiers: localIdentifiers,
                 authedAccount: .implicit(),

@@ -51,8 +51,15 @@ java \
     --swift_out="$BACKUP_PROTOS_DIR" \
     > /dev/null
 
+if [ "$?" -ne 0 ]; then
+    echo "Error: failed to compile protos!"
+    exit 1
+fi
+
 # ------ #
 
 echo "Adding license header to generated files..."
 
-"$REPO_ROOT"/Scripts/lint/lint-license-headers --fix
+BACKUP_PROTO_FILES=$(find "$BACKUP_PROTOS_DIR" -name "*.swift")
+
+"$REPO_ROOT"/Scripts/lint/lint-license-headers --fix $BACKUP_PROTO_FILES

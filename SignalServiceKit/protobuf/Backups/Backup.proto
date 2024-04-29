@@ -125,6 +125,80 @@ message BackupProto {
     bool whitelisted = 2;
     bool hideStory = 3;
     optional StorySendMode storySendMode = 4;
+    GroupSnapshot snapshot = 5;
+
+    // A copy of the static Group state defined in `Groups.proto`, with all
+    // plaintext fields (contrasted with that proto's encrypted fields).
+    message GroupSnapshot {
+      bytes publicKey = 1;
+      GroupAttributeBlob title = 2;
+      GroupAttributeBlob descriptionText = 11;
+      string avatarUrl = 3;
+      GroupAttributeBlob disappearingMessagesTimer = 4;
+      AccessControl accessControl = 5;
+      uint32 version = 6;
+      repeated Member members = 7;
+      repeated MemberPendingProfileKey membersPendingProfileKey = 8;
+      repeated MemberPendingAdminApproval membersPendingAdminApproval = 9;
+      bytes inviteLinkPassword = 10;
+      bool announcementsOnly = 12;
+      repeated MemberBanned membersBanned = 13;
+    }
+
+    message GroupAttributeBlob {
+      oneof content {
+        string title = 1;
+        bytes  avatar = 2;
+        uint32 disappearingMessagesDuration = 3;
+        string descriptionText = 4;
+      }
+    }
+
+    message Member {
+      enum Role {
+        UNKNOWN = 0;
+        DEFAULT = 1;
+        ADMINISTRATOR = 2;
+      }
+
+      bytes userId = 1;
+      Role role = 2;
+      bytes profileKey = 3;
+      reserved /*presentation*/ 4; // The field is deprecated in the context of static group state
+      uint32 joinedAtVersion = 5;
+    }
+
+    message MemberPendingProfileKey {
+      Member member = 1;
+      bytes addedByUserId = 2;
+      uint64 timestamp = 3;
+    }
+
+    message MemberPendingAdminApproval {
+      bytes userId = 1;
+      bytes profileKey = 2;
+      reserved /*presentation*/ 3; // The field is deprecated in the context of static group state
+      uint64 timestamp = 4;
+    }
+
+    message MemberBanned {
+      bytes userId = 1;
+      uint64 timestamp = 2;
+    }
+
+    message AccessControl {
+      enum AccessRequired {
+        UNKNOWN = 0;
+        ANY = 1;
+        MEMBER = 2;
+        ADMINISTRATOR = 3;
+        UNSATISFIABLE = 4;
+      }
+
+      AccessRequired attributes = 1;
+      AccessRequired members = 2;
+      AccessRequired addFromInviteLink = 3;
+    }
   }
 
   message SelfRecipient {}

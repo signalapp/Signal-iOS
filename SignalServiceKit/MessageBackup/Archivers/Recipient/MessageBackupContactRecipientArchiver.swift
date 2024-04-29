@@ -181,14 +181,10 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         let aci: Aci?
         let pni: Pni?
         let e164: E164?
+        let profileKey: OWSAES256Key?
         if let aciRaw = contactProto.aci {
             guard let aciUuid = UUID(data: aciRaw) else {
-                return .failure(
-                    [.invalidProtoData(
-                        recipientProto.recipientId,
-                        .invalidAci(protoClass: BackupProto.Contact.self)
-                    )]
-                )
+                return .failure([.invalidProtoData(recipientProto.recipientId, .invalidAci(protoClass: BackupProto.Contact.self))])
             }
             aci = Aci.init(fromUUID: aciUuid)
         } else {
@@ -196,12 +192,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         }
         if let pniRaw = contactProto.pni {
             guard let pniUuid = UUID(data: pniRaw) else {
-                return .failure(
-                    [.invalidProtoData(
-                        recipientProto.recipientId,
-                        .invalidPni(protoClass: BackupProto.Contact.self)
-                    )]
-                )
+                return .failure([.invalidProtoData(recipientProto.recipientId, .invalidPni(protoClass: BackupProto.Contact.self))])
             }
             pni = Pni.init(fromUUID: pniUuid)
         } else {
@@ -209,28 +200,26 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         }
         if let contactProtoE164 = contactProto.e164 {
             guard let protoE164 = E164(contactProtoE164) else {
-                return .failure(
-                    [.invalidProtoData(
-                        recipientProto.recipientId,
-                        .invalidE164(protoClass: BackupProto.Contact.self)
-                    )]
-                )
+                return .failure([.invalidProtoData(recipientProto.recipientId, .invalidE164(protoClass: BackupProto.Contact.self))])
             }
             e164 = protoE164
         } else {
             e164 = nil
+        }
+        if let contactProtoProfileKeyData = contactProto.profileKey {
+            guard let protoProfileKey = OWSAES256Key(data: contactProtoProfileKeyData) else {
+                return .failure([.invalidProtoData(recipientProto.recipientId, .invalidProfileKey(protoClass: BackupProto.Contact.self))])
+            }
+            profileKey = protoProfileKey
+        } else {
+            profileKey = nil
         }
 
         guard
             let address = MessageBackup.ContactAddress(aci: aci, pni: pni, e164: e164)
         else {
             // Need at least one identifier!
-            return .failure(
-                [.invalidProtoData(
-                    recipientProto.recipientId,
-                    .contactWithoutIdentifiers
-                )]
-            )
+            return .failure([.invalidProtoData(recipientProto.recipientId, .contactWithoutIdentifiers)])
         }
         context[recipientProto.recipientId] = .contact(address)
 
@@ -291,7 +280,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         profileManager.insertOtherUserProfile(
             givenName: contactProto.profileGivenName,
             familyName: contactProto.profileFamilyName,
-            profileKey: contactProto.profileKey,
+            profileKey: profileKey,
             address: profileAddress,
             tx: tx
         )

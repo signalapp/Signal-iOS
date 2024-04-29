@@ -47,6 +47,7 @@ public protocol MessageBackupRecipientArchiver: MessageBackupProtoArchiver {
 internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchiver {
 
     private let blockingManager: MessageBackup.Shims.BlockingManager
+    private let disappearingMessageConfigStore: DisappearingMessagesConfigurationStore
     private let groupsV2: GroupsV2
     private let profileManager: MessageBackup.Shims.ProfileManager
     private let recipientDatabaseTable: any RecipientDatabaseTable
@@ -60,6 +61,7 @@ internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchive
 
     public init(
         blockingManager: MessageBackup.Shims.BlockingManager,
+        disappearingMessageConfigStore: DisappearingMessagesConfigurationStore,
         groupsV2: GroupsV2,
         profileManager: MessageBackup.Shims.ProfileManager,
         recipientDatabaseTable: any RecipientDatabaseTable,
@@ -72,6 +74,7 @@ internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchive
         usernameLookupManager: UsernameLookupManager
     ) {
         self.blockingManager = blockingManager
+        self.disappearingMessageConfigStore = disappearingMessageConfigStore
         self.groupsV2 = groupsV2
         self.profileManager = profileManager
         self.recipientDatabaseTable = recipientDatabaseTable
@@ -97,6 +100,7 @@ internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchive
             usernameLookupManager: usernameLookupManager
         ),
         MessageBackupGroupRecipientArchiver(
+            disappearingMessageConfigStore: disappearingMessageConfigStore,
             groupsV2: groupsV2,
             profileManager: profileManager,
             storyStore: storyStore,

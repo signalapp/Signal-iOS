@@ -63,6 +63,9 @@ extension MessageBackup {
 
         /// The profileKey for the local user is missing
         case missingLocalProfileKey
+
+        /// Parameters required to archive a GV2 group member are missing
+        case missingRequiredGroupMemberParams
     }
 
     /// Error archiving an entire category of frames; not attributable to one single frame.
@@ -133,6 +136,9 @@ extension MessageBackup {
         case invalidServiceId(protoClass: Any.Type)
         /// Could not parse an E164. Includes the class of the offending proto.
         case invalidE164(protoClass: Any.Type)
+        /// Could not parse an ``OWSAES256Key`` profile key. Includes the class
+        /// of the offending proto.
+        case invalidProfileKey(protoClass: Any.Type)
 
         /// A BackupProto.Contact with no aci, pni, or e164.
         case contactWithoutIdentifiers
@@ -161,6 +167,16 @@ extension MessageBackup {
 
         /// A BackupProto.Group's gv2 master key could not be parsed by libsignal.
         case invalidGV2MasterKey
+        /// A BackupProtoGroup was missing its group snapshot.
+        case missingGV2GroupSnapshot
+        /// A ``BackupProtoGroup/BackupProtoFullGroupMember/role`` was
+        /// unrecognized. Includes the class of the offending proto.
+        case unrecognizedGV2MemberRole(protoClass: Any.Type)
+        /// A ``BackupProtoGroup/BackupProtoMemberPendingProfileKey`` was
+        /// missing its member details.
+        case invitedGV2MemberMissingMemberDetails
+        /// We failed to build a V2 group model while restoring a group.
+        case failedToBuildGV2GroupModel
 
         /// A BackupProto.GroupChangeChatUpdate ChatItem with a non-group-chat chatId.
         case groupUpdateMessageInNonGroupChat
@@ -226,6 +242,8 @@ extension MessageBackup.ArchiveFrameErrorType {
             return "Missing required local profile"
         case .missingLocalProfileKey:
             return "Missing required local profile key"
+        case .missingRequiredGroupMemberParams:
+            return "Missing required parameters for a GV2 group member!"
         }
     }
 }
@@ -264,6 +282,8 @@ extension MessageBackup.RestoreFrameErrorType {
                 return "Invalid service id in \(String(describing: protoClass)) proto"
             case .invalidE164(let protoClass):
                 return "Invalid e164 in \(String(describing: protoClass)) proto"
+            case .invalidProfileKey(let protoClass):
+                return "Invalid profile key in \(String(describing: protoClass)) proto"
             case .contactWithoutIdentifiers:
                 return "Contact proto missing aci, pni and e164"
             case .unrecognizedRecipientType:
@@ -284,6 +304,14 @@ extension MessageBackup.RestoreFrameErrorType {
                 return "Unrecognized body range style type"
             case .invalidGV2MasterKey:
                 return "Invalid GV2 master key data"
+            case .missingGV2GroupSnapshot:
+                return "GV2 group missing group snapshot"
+            case .unrecognizedGV2MemberRole(let protoClass):
+                return "Invalid GV2 member role in \(String(describing: protoClass)) proto"
+            case .invitedGV2MemberMissingMemberDetails:
+                return "Invited GV2 member missing member details"
+            case .failedToBuildGV2GroupModel:
+                return "Failed to build a V2 group model from assembled builder"
             case .groupUpdateMessageInNonGroupChat:
                 return "Group update message found in 1:1 chat"
             case .emptyGroupUpdates:
@@ -343,9 +371,15 @@ extension MessageBackup {
                 )
                 continue
             }
-            var collapsedLog = collapsedLogs[collapseKey] ?? CollapsedErrorLog()
-            collapsedLog.collapse(error)
-            collapsedLogs.replace(key: collapseKey, value: collapsedLog)
+
+            if var existingLog = collapsedLogs[collapseKey] {
+                existingLog.collapse(error)
+                collapsedLogs.replace(key: collapseKey, value: existingLog)
+            } else {
+                var newLog = CollapsedErrorLog()
+                newLog.collapse(error)
+                collapsedLogs.append(key: collapseKey, value: newLog)
+            }
         }
 
         logAsIs.forEach { Logger.error($0) }
@@ -439,7 +473,8 @@ extension MessageBackup {
                     .invalidReactionAddress,
                     .emptyGroupUpdate,
                     .missingLocalProfile,
-                    .missingLocalProfileKey:
+                    .missingLocalProfileKey,
+                    .missingRequiredGroupMemberParams:
                 // Log each of these as we see them.
                 return nil
             }
@@ -566,6 +601,15 @@ extension MessageBackup {
         ) -> Self {
             return .init(id, .missingLocalProfileKey, file, function, line)
         }
+
+        public static func missingRequiredGroupMemberParams(
+            _ id: AppIdType,
+            file: StaticString = #file,
+            function: StaticString = #function,
+            line: UInt = #line
+        ) -> Self {
+            return .init(id, .missingRequiredGroupMemberParams, file, function, line)
+        }
     }
 
     /// Transparent wrapper around ``FatalArchivingErrorType`` that has custom
@@ -690,6 +734,7 @@ extension MessageBackup {
                         .invalidPni,
                         .invalidServiceId,
                         .invalidE164,
+                        .invalidProfileKey,
                         .contactWithoutIdentifiers,
                         .unrecognizedRecipientType,
                         .otherContactWithLocalIdentifiers,
@@ -700,6 +745,10 @@ extension MessageBackup {
                         .reactionNotFromAciOrE164,
                         .unrecognizedBodyRangeStyle,
                         .invalidGV2MasterKey,
+                        .missingGV2GroupSnapshot,
+                        .unrecognizedGV2MemberRole,
+                        .invitedGV2MemberMissingMemberDetails,
+                        .failedToBuildGV2GroupModel,
                         .groupUpdateMessageInNonGroupChat,
                         .emptyGroupUpdates,
                         .sequenceOfRequestsAndCancelsWithLocalAci,

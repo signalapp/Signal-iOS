@@ -1778,6 +1778,7 @@
 		D9C0AE672BD7162300FCB05E /* InactiveLinkedDeviceFinderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C0AE612BD7102500FCB05E /* InactiveLinkedDeviceFinderTest.swift */; };
 		D9C0AE692BD82DBC00FCB05E /* InactiveLinkedDeviceReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C0AE682BD82DBC00FCB05E /* InactiveLinkedDeviceReminderMegaphone.swift */; };
 		D9C0AE6D2BDC520000FCB05E /* BackupProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C0AE6C2BDC520000FCB05E /* BackupProto.swift */; };
+		D9C0AE6B2BDB212F00FCB05E /* MessageBackupLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C0AE6A2BDB212F00FCB05E /* MessageBackupLogger.swift */; };
 		D9C2D77E299D750200D79715 /* UsernameEducationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D77D299D750200D79715 /* UsernameEducationManager.swift */; };
 		D9C2D780299EC11400D79715 /* CreateUsernameMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D77F299EC11400D79715 /* CreateUsernameMegaphone.swift */; };
 		D9C2D782299EEDDA00D79715 /* UsernameSelectionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D781299EEDDA00D79715 /* UsernameSelectionCoordinator.swift */; };
@@ -4669,6 +4670,7 @@
 		D9C0AE642BD7103100FCB05E /* InactiveLinkedDeviceFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InactiveLinkedDeviceFinder.swift; sourceTree = "<group>"; };
 		D9C0AE682BD82DBC00FCB05E /* InactiveLinkedDeviceReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InactiveLinkedDeviceReminderMegaphone.swift; sourceTree = "<group>"; };
 		D9C0AE6C2BDC520000FCB05E /* BackupProto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProto.swift; sourceTree = "<group>"; };
+		D9C0AE6A2BDB212F00FCB05E /* MessageBackupLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupLogger.swift; sourceTree = "<group>"; };
 		D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+BetterIdentifierChecker.swift"; sourceTree = "<group>"; };
 		D9C2D77D299D750200D79715 /* UsernameEducationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameEducationManager.swift; sourceTree = "<group>"; };
 		D9C2D77F299EC11400D79715 /* CreateUsernameMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUsernameMegaphone.swift; sourceTree = "<group>"; };
@@ -7488,6 +7490,7 @@
 				D90D4D832BBB61680097C573 /* MessageBackupEmptyFrameId.swift */,
 				C1A0F79C2B9F57340009DC0D /* MessageBackupKeyMaterial.swift */,
 				C1A0F79E2B9F59920009DC0D /* MessageBackupKeyMaterialImpl.swift */,
+				D9C0AE6A2BDB212F00FCB05E /* MessageBackupLogger.swift */,
 				665C0D5F2ADF57D000539A37 /* MessageBackupManager+Shims.swift */,
 				665C0D5B2ADF538100539A37 /* MessageBackupManager.swift */,
 				665C0D5D2ADF53E200539A37 /* MessageBackupManagerImpl.swift */,
@@ -13716,6 +13719,7 @@
 				C1A0F79D2B9F57340009DC0D /* MessageBackupKeyMaterial.swift in Sources */,
 				C1A0F79F2B9F59920009DC0D /* MessageBackupKeyMaterialImpl.swift in Sources */,
 				66CD25792B0832A400139E17 /* MessageBackupLocalRecipientArchiver.swift in Sources */,
+				D9C0AE6B2BDB212F00FCB05E /* MessageBackupLogger.swift in Sources */,
 				665C0D602ADF57D000539A37 /* MessageBackupManager+Shims.swift in Sources */,
 				665C0D5C2ADF538100539A37 /* MessageBackupManager.swift in Sources */,
 				665C0D5E2ADF53E200539A37 /* MessageBackupManagerImpl.swift in Sources */,

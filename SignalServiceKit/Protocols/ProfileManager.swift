@@ -92,10 +92,11 @@ public protocol ProfileManager: ProfileManagerProtocol {
         tx: DBWriteTransaction
     )
 
-    func setProfileKeyDataAndFetchProfile(
+    func setProfileKeyData(
         _ profileKeyData: Data,
         for serviceId: ServiceId,
         onlyFillInIfMissing: Bool,
+        shouldFetchProfile: Bool,
         userProfileWriter: UserProfileWriter,
         localIdentifiers: LocalIdentifiers,
         authedAccount: AuthedAccount,
