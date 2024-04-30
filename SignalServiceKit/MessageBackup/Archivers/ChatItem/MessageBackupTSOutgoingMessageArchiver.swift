@@ -33,9 +33,9 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
     ) -> MessageBackup.ArchiveInteractionResult<Details> {
         guard let message = interaction as? TSOutgoingMessage else {
             // Should be impossible.
-            return .completeFailure(.developerError(
+            return .completeFailure(.fatalArchiveError(.developerError(
                 OWSAssertionError("Invalid interaction type")
-            ))
+            )))
         }
 
         var partialErrors = [MessageBackupChatItemArchiver.ArchiveMultiFrameResult.ArchiveFrameError]()
@@ -97,15 +97,16 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
 
         for (address, sendState) in message.recipientAddressStates ?? [:] {
             guard let recipientAddress = address.asSingleServiceIdBackupAddress()?.asArchivingAddress() else {
-                perRecipientErrors.append(.invalidOutgoingMessageRecipient(
+                perRecipientErrors.append(.archiveFrameError(
+                    .invalidOutgoingMessageRecipient,
                     message.uniqueInteractionId
                 ))
                 continue
             }
             guard let recipientId = recipientContext[recipientAddress] else {
-                perRecipientErrors.append(.referencedRecipientIdMissing(
-                    message.uniqueInteractionId,
-                    recipientAddress
+                perRecipientErrors.append(.archiveFrameError(
+                    .referencedRecipientIdMissing(recipientAddress),
+                    message.uniqueInteractionId
                 ))
                 continue
             }
@@ -188,15 +189,15 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
             outgoingDetails = backupProtoChatItemOutgoingMessageDetails
         case nil, .incoming, .directionless:
             // Should be impossible.
-            return .messageFailure([.developerError(
-                chatItem.id,
-                OWSAssertionError("OutgoingMessageArchiver given non-outgoing message!")
+            return .messageFailure([.restoreFrameError(
+                .developerError(OWSAssertionError("OutgoingMessageArchiver given non-outgoing message!")),
+                chatItem.id
             )])
         }
 
         guard let chatItemType = chatItem.item else {
             // Unrecognized item type!
-            return .messageFailure([.invalidProtoData(chatItem.id, .unrecognizedChatItemType)])
+            return .messageFailure([.restoreFrameError(.invalidProtoData(.unrecognizedChatItemType), chatItem.id)])
         }
 
         var partialErrors = [MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>]()
@@ -238,7 +239,7 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
             }
             message = outgoingMessage
         case .failure(let error):
-            partialErrors.append(.databaseInsertionFailed(chatItem.id, error))
+            partialErrors.append(.restoreFrameError(.databaseInsertionFailed(error), chatItem.id))
             return .messageFailure(partialErrors)
         }
 

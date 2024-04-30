@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalCoreKit
 
 extension MessageBackup {
 
@@ -11,333 +11,365 @@ extension MessageBackup {
 
     // MARK: - Archiving
 
-    /// Error archiving a frame.
-    ///
-    /// You don't construct these directly; instead use ``ArchiveFrameError``
-    /// which captures the callsite line information for logging.
-    fileprivate enum ArchiveFrameErrorType {
+    /// Error while archiving a single frame.
+    public struct ArchiveFrameError<AppIdType: MessageBackupLoggableId>: MessageBackupLoggableError {
+        public enum ErrorType {
+            /// An error occurred serializing the proto.
+            /// - Note
+            /// Logging the raw error is safe, as it'll just contain proto field
+            /// names.
+            case protoSerializationError(RawError)
+            /// An error occurred during file IO.
+            /// - Note
+            /// Logging the raw error is safe, as we generate the file we stream
+            /// without user input.
+            case fileIOError(RawError)
 
-        // MARK: Backup generation errors
+            /// The object we are archiving references a recipient that should already have an id assigned
+            /// from having been archived, but does not.
+            /// e.g. we try to archive a message to a recipient aci, but that aci has no ``MessageBackup.RecipientId``.
+            case referencedRecipientIdMissing(RecipientArchivingContext.Address)
 
-        case protoSerializationError(RawError)
-        case fileIOError(RawError)
+            /// The object we are archiving references a chat that should already have an id assigned
+            /// from having been archived, but does not.
+            /// e.g. we try to archive a message to a thread, but that group has no ``MessageBackup.ChatId``.
+            case referencedThreadIdMissing(ThreadUniqueId)
 
-        /// The object we are archiving references a recipient that should already have an id assigned
-        /// from having been archived, but does not.
-        /// e.g. we try to archive a message to a recipient aci, but that aci has no ``MessageBackup.RecipientId``.
-        case referencedRecipientIdMissing(RecipientArchivingContext.Address)
+            /// An error generating the master key for a group, causing the group to be skipped.
+            case groupMasterKeyError(RawError)
 
-        /// The object we are archiving references a chat that should already have an id assigned
-        /// from having been archived, but does not.
-        /// e.g. we try to archive a message to a thread, but that group has no ``MessageBackup.ChatId``.
-        case referencedThreadIdMissing(ThreadUniqueId)
+            /// A contact thread has an invalid or missing address information, causing the
+            /// thread to be skipped.
+            case contactThreadMissingAddress
 
-        // MARK: DB read errors
+            /// An incoming message has an invalid or missing author address information,
+            /// causing the message to be skipped.
+            case invalidIncomingMessageAuthor
+            /// An outgoing message has an invalid or missing recipient address information,
+            /// causing the message to be skipped.
+            case invalidOutgoingMessageRecipient
+            /// An quote has an invalid or missing author address information,
+            /// causing the containing message to be skipped.
+            case invalidQuoteAuthor
 
-        /// An error generating the master key for a group, causing the group to be skipped.
-        case groupMasterKeyError(RawError)
+            /// A reaction has an invalid or missing author address information, causing the
+            /// reaction to be skipped.
+            case invalidReactionAddress
 
-        /// A contact thread has an invalid or missing address information, causing the
-        /// thread to be skipped.
-        case contactThreadMissingAddress
+            /// A group update message with no updates actually inside it, which is invalid.
+            case emptyGroupUpdate
 
-        /// An incoming message has an invalid or missing author address information,
-        /// causing the message to be skipped.
-        case invalidIncomingMessageAuthor
-        /// An outgoing message has an invalid or missing recipient address information,
-        /// causing the message to be skipped.
-        case invalidOutgoingMessageRecipient
-        /// An quote has an invalid or missing author address information,
-        /// causing the containing message to be skipped.
-        case invalidQuoteAuthor
+            /// The profile for the local user is missing.
+            case missingLocalProfile
+            /// The profile key for the local user is missing.
+            case missingLocalProfileKey
 
-        /// A reaction has an invalid or missing author address information, causing the
-        /// reaction to be skipped.
-        case invalidReactionAddress
+            /// Parameters required to archive a GV2 group member are missing
+            case missingRequiredGroupMemberParams
+        }
 
-        /// A group update message with no updates actually inside it, which is invalid.
-        case emptyGroupUpdate
+        private let type: ErrorType
+        private let id: AppIdType
+        private let file: StaticString
+        private let function: StaticString
+        private let line: UInt
 
-        /// The profile for the local user is missing
-        case missingLocalProfile
+        /// Create a new error instance.
+        ///
+        /// Exposed as a static method rather than an initializer to help
+        /// callsites have some context without needing to put the exhaustive
+        /// (namespaced) type name at each site.
+        public static func archiveFrameError(
+            _ type: ErrorType,
+            _ id: AppIdType,
+            _ file: StaticString = #file,
+            _ function: StaticString = #function,
+            _ line: UInt = #line
+        ) -> ArchiveFrameError {
+            return ArchiveFrameError(type: type, id: id, file: file, function: function, line: line)
+        }
 
-        /// The profileKey for the local user is missing
-        case missingLocalProfileKey
+        // MARK: MessageBackupLoggableError
 
-        /// Parameters required to archive a GV2 group member are missing
-        case missingRequiredGroupMemberParams
+        public var typeLogString: String {
+            return "ArchiveFrameError: \(String(describing: type))"
+        }
+
+        public var idLogString: String {
+            return "\(id.typeLogString).\(id.idLogString)"
+        }
+
+        public var callsiteLogString: String {
+            return "\(file):\(function):\(line)"
+        }
+
+        public var collapseKey: String? {
+            switch type {
+            case .protoSerializationError(let rawError):
+                // We don't want to re-log every instance of this we see.
+                // Collapse them by the raw error itself.
+                return "\(rawError)"
+            case .referencedRecipientIdMissing, .referencedThreadIdMissing:
+                // Collapse these by the id they refer to, which is in the "type".
+                return typeLogString
+            case
+                    .fileIOError,
+                    .groupMasterKeyError,
+                    .contactThreadMissingAddress,
+                    .invalidIncomingMessageAuthor,
+                    .invalidOutgoingMessageRecipient,
+                    .invalidQuoteAuthor,
+                    .invalidReactionAddress,
+                    .emptyGroupUpdate,
+                    .missingLocalProfile,
+                    .missingLocalProfileKey,
+                    .missingRequiredGroupMemberParams:
+                // Log any others as we see them.
+                return nil
+            }
+        }
     }
 
-    /// Error archiving an entire category of frames; not attributable to one single frame.
-    ///
-    /// You don't construct these directly; instead use ``FatalArchivingError``
-    /// which captures the callsite line information for logging.
-    fileprivate enum FatalArchivingErrorType {
-        /// Error iterating over all threads for backup purposes.
-        case threadIteratorError(RawError)
+    /// Error archiving an entire category of frames; not attributable to a
+    /// single frame.
+    public struct FatalArchivingError: MessageBackupLoggableError {
+        public enum ErrorType {
+            /// Error iterating over all threads for backup purposes.
+            case threadIteratorError(RawError)
 
-        /// Some unrecognized thread was found when iterating over all threads.
-        case unrecognizedThreadType
+            /// Some unrecognized thread was found when iterating over all threads.
+            case unrecognizedThreadType
 
-        /// Error iterating over all interactions for backup purposes.
-        case interactionIteratorError(RawError)
+            /// Error iterating over all interactions for backup purposes.
+            case interactionIteratorError(RawError)
 
-        /// These should never happen; it means some invariant in the backup code
-        /// we could not enforce with the type system was broken. Nothing was wrong with
-        /// the proto or local database; its the iOS backup code that has a bug somewhere.
-        case developerError(OWSAssertionError)
+            /// These should never happen; it means some invariant in the backup code
+            /// we could not enforce with the type system was broken. Nothing was wrong with
+            /// the proto or local database; its the iOS backup code that has a bug somewhere.
+            case developerError(OWSAssertionError)
+        }
+
+        private let type: ErrorType
+        private let file: StaticString
+        private let function: StaticString
+        private let line: UInt
+
+        /// Create a new error instance.
+        ///
+        /// Exposed as a static method rather than an initializer to help
+        /// callsites have some context without needing to put the exhaustive
+        /// (namespaced) type name at each site.
+        public static func fatalArchiveError(
+            _ type: ErrorType,
+            _ file: StaticString = #file,
+            _ function: StaticString = #function,
+            _ line: UInt = #line
+        ) -> FatalArchivingError {
+            return FatalArchivingError(type: type, file: file, function: function, line: line)
+        }
+
+        // MARK: MessageBackupLoggableError
+
+        public var typeLogString: String {
+            return "FatalArchiveError: \(String(describing: type))"
+        }
+
+        public var idLogString: String {
+            return ""
+        }
+
+        public var callsiteLogString: String {
+            return "\(file):\(function):\(line)"
+        }
+
+        public var collapseKey: String? {
+            // Log each of these as we see them.
+            return nil
+        }
     }
-
-    // MARK: - Restoring
 
     /// Error restoring a frame.
-    ///
-    /// You don't construct these directly; instead use ``RestoreFrameError``
-    /// which captures the callsite line information for logging.
-    fileprivate enum RestoreFrameErrorType {
+    public struct RestoreFrameError<ProtoIdType: MessageBackupLoggableId>: MessageBackupLoggableError {
+        public enum ErrorType {
+            public enum InvalidProtoDataError {
+                /// Some recipient identifier being referenced was not present earlier in the backup file.
+                case recipientIdNotFound(RecipientId)
+                /// Some chat identifier being referenced was not present earlier in the backup file.
+                case chatIdNotFound(ChatId)
 
-        // MARK: Invalid proto contents
+                /// Could not parse an Aci. Includes the class of the offending proto.
+                case invalidAci(protoClass: Any.Type)
+                /// Could not parse an Pni. Includes the class of the offending proto.
+                case invalidPni(protoClass: Any.Type)
+                /// Could not parse an Aci. Includes the class of the offending proto.
+                case invalidServiceId(protoClass: Any.Type)
+                /// Could not parse an E164. Includes the class of the offending proto.
+                case invalidE164(protoClass: Any.Type)
+                /// Could not parse an ``OWSAES256Key`` profile key. Includes the class
+                /// of the offending proto.
+                case invalidProfileKey(protoClass: Any.Type)
 
-        /// The proto contained invalid or self-contradictory data, e.g an invalid ACI.
-        case invalidProtoData(InvalidProtoDataError)
+                /// A BackupProto.Contact with no aci, pni, or e164.
+                case contactWithoutIdentifiers
+                /// A BackupProto.Recipient with an unrecognized sub-type.
+                case unrecognizedRecipientType
+                /// A BackupProto.Contact for the local user. This shouldn't exist.
+                case otherContactWithLocalIdentifiers
 
-        // MARK: Restoration errors
+                /// A message must come from either an Aci or an E164.
+                /// One in the backup did not.
+                case incomingMessageNotFromAciOrE164
+                /// Outgoing message's BackupProto.SendStatus can only be for BackupProto.Contacts.
+                /// One in the backup was to a group, self recipient, or something else.
+                case outgoingNonContactMessageRecipient
+                /// A BackupProto.SendStatus had an unregonized BackupProto.SendStatusStatus.
+                case unrecognizedMessageSendStatus
+                /// A BackupProto.ChatItem with an unregonized item type.
+                case unrecognizedChatItemType
 
-        /// The object being restored depended on a TSThread that should have been created earlier but was not.
-        /// This could be either a group or contact thread, we are restoring a frame that doesn't care (e.g. a ChatItem).
-        case referencedChatThreadNotFound(ThreadUniqueId)
-        /// The object being inserted depended on a TSGroupThread that should have been created earlier but was not.
-        /// The overlap with referencedChatThreadNotFound is confusing, but this is for restoring group-specific metadata.
-        case referencedGroupThreadNotFound(GroupId)
-        case databaseInsertionFailed(RawError)
+                /// BackupProto.Reaction must come from either an Aci or an E164.
+                /// One in the backup did not.
+                case reactionNotFromAciOrE164
 
-        /// These should never happen; it means some invariant we could not
-        /// enforce with the type system was broken. Nothing was wrong with
-        /// the proto; its the iOS code that has a bug somewhere.
-        case developerError(OWSAssertionError)
+                /// A BackupProto.BodyRange with a missing or unrecognized style.
+                case unrecognizedBodyRangeStyle
 
-        // TODO: remove once all known types are handled.
-        case unimplemented
-    }
+                /// A BackupProto.Group's gv2 master key could not be parsed by libsignal.
+                case invalidGV2MasterKey
+                /// A BackupProtoGroup was missing its group snapshot.
+                case missingGV2GroupSnapshot
+                /// A ``BackupProtoGroup/BackupProtoFullGroupMember/role`` was
+                /// unrecognized. Includes the class of the offending proto.
+                case unrecognizedGV2MemberRole(protoClass: Any.Type)
+                /// A ``BackupProtoGroup/BackupProtoMemberPendingProfileKey`` was
+                /// missing its member details.
+                case invitedGV2MemberMissingMemberDetails
+                /// We failed to build a V2 group model while restoring a group.
+                case failedToBuildGV2GroupModel
 
-    /// Sub-type for ``RestoreFrameErrorType``, specifically for errors in
-    /// the backup proto.
-    public enum InvalidProtoDataError {
-        /// Some recipient identifier being referenced was not present earlier in the backup file.
-        case recipientIdNotFound(RecipientId)
-        /// Some chat identifier being referenced was not present earlier in the backup file.
-        case chatIdNotFound(ChatId)
+                /// A BackupProto.GroupChangeChatUpdate ChatItem with a non-group-chat chatId.
+                case groupUpdateMessageInNonGroupChat
+                /// A BackupProto.GroupChangeChatUpdate ChatItem without any updates!
+                case emptyGroupUpdates
+                /// A BackupProto.GroupSequenceOfRequestsAndCancelsUpdate where
+                /// the requester is the local user, which isn't allowed.
+                case sequenceOfRequestsAndCancelsWithLocalAci
+                /// An unrecognized BackupProto.GroupChangeChatUpdate.
+                case unrecognizedGroupUpdate
 
-        /// Could not parse an Aci. Includes the class of the offending proto.
-        case invalidAci(protoClass: Any.Type)
-        /// Could not parse an Pni. Includes the class of the offending proto.
-        case invalidPni(protoClass: Any.Type)
-        /// Could not parse an Aci. Includes the class of the offending proto.
-        case invalidServiceId(protoClass: Any.Type)
-        /// Could not parse an E164. Includes the class of the offending proto.
-        case invalidE164(protoClass: Any.Type)
-        /// Could not parse an ``OWSAES256Key`` profile key. Includes the class
-        /// of the offending proto.
-        case invalidProfileKey(protoClass: Any.Type)
+                /// A profile key for the local user that could not be parsed into a valid aes256 key
+                case invalidLocalProfileKey
+                /// A profile key for the local user that could not be parsed into a valid aes256 key
+                case invalidUsernameLink
 
-        /// A BackupProto.Contact with no aci, pni, or e164.
-        case contactWithoutIdentifiers
-        /// A BackupProto.Recipient with an unrecognized sub-type.
-        case unrecognizedRecipientType
-        /// A BackupProto.Contact for the local user. This shouldn't exist.
-        case otherContactWithLocalIdentifiers
-
-        /// A message must come from either an Aci or an E164.
-        /// One in the backup did not.
-        case incomingMessageNotFromAciOrE164
-        /// Outgoing message's BackupProto.SendStatus can only be for BackupProto.Contacts.
-        /// One in the backup was to a group, self recipient, or something else.
-        case outgoingNonContactMessageRecipient
-        /// A BackupProto.SendStatus had an unregonized BackupProto.SendStatusStatus.
-        case unrecognizedMessageSendStatus
-        /// A BackupProto.ChatItem with an unregonized item type.
-        case unrecognizedChatItemType
-
-        /// BackupProto.Reaction must come from either an Aci or an E164.
-        /// One in the backup did not.
-        case reactionNotFromAciOrE164
-
-        /// A BackupProto.BodyRange with a missing or unrecognized style.
-        case unrecognizedBodyRangeStyle
-
-        /// A BackupProto.Group's gv2 master key could not be parsed by libsignal.
-        case invalidGV2MasterKey
-        /// A BackupProtoGroup was missing its group snapshot.
-        case missingGV2GroupSnapshot
-        /// A ``BackupProtoGroup/BackupProtoFullGroupMember/role`` was
-        /// unrecognized. Includes the class of the offending proto.
-        case unrecognizedGV2MemberRole(protoClass: Any.Type)
-        /// A ``BackupProtoGroup/BackupProtoMemberPendingProfileKey`` was
-        /// missing its member details.
-        case invitedGV2MemberMissingMemberDetails
-        /// We failed to build a V2 group model while restoring a group.
-        case failedToBuildGV2GroupModel
-
-        /// A BackupProto.GroupChangeChatUpdate ChatItem with a non-group-chat chatId.
-        case groupUpdateMessageInNonGroupChat
-        /// A BackupProto.GroupChangeChatUpdate ChatItem without any updates!
-        case emptyGroupUpdates
-        /// A BackupProto.GroupSequenceOfRequestsAndCancelsUpdate where
-        /// the requester is the local user, which isn't allowed.
-        case sequenceOfRequestsAndCancelsWithLocalAci
-        /// An unrecognized BackupProto.GroupChangeChatUpdate.
-        case unrecognizedGroupUpdate
-
-        /// A profile key for the local user that could not be parsed into a valid aes256 key
-        case invalidLocalProfileKey
-        /// A profile key for the local user that could not be parsed into a valid aes256 key
-        case invalidUsernameLink
-
-        /// A frame was entirely missing its enclosed item.
-        case frameMissingItem
-    }
-}
-
-extension MessageBackup.ArchiveFrameErrorType {
-
-    var logString: String {
-        switch self {
-        case .protoSerializationError(let rawError):
-            // Logging the raw error is safe; its just proto field names.
-            return "Proto serialization error: \(rawError)"
-        case .fileIOError(let rawError):
-            // Logging the raw error is safe; we generate the file we stream
-            // without user input so its filename is not risky.
-            return "Output stream file i/o error \(rawError)"
-        case .referencedRecipientIdMissing(let address):
-            switch address {
-            case .contact(let contactAddress):
-                return "Referenced contact recipient id missing, "
-                    + "aci:\(contactAddress.aci?.logString ?? "?") "
-                    + "pni:\(contactAddress.pni?.logString ?? "?") "
-                    // Rely on the log scrubber to scrub the e164.
-                    + "e164:\(contactAddress.e164?.stringValue ?? "?")"
-            case .group(let groupId):
-                // Rely on the log scrubber to scrub the group id.
-                return "Referenced group recipient id missing: \(groupId)"
+                /// A frame was entirely missing its enclosed item.
+                case frameMissingItem
             }
-        case .referencedThreadIdMissing(let threadUniqueId):
-            return "Referenced thread id missing: \(threadUniqueId.value)"
-        case .groupMasterKeyError(let rawError):
-            // Rely on the log scrubber to scrub any group ids in the error.
-            return "Group master key generation error: \(rawError)"
-        case .contactThreadMissingAddress:
-            return "Found TSContactThread with missing/invalid contact address"
-        case .invalidIncomingMessageAuthor:
-            return "Found incoming message with missing/invalid author"
-        case .invalidOutgoingMessageRecipient:
-            return "Found outgoing message with missing/invalid recipient(s)"
-        case .invalidQuoteAuthor:
-            return "Found TSQuotedMessage with missing invalid author"
-        case .invalidReactionAddress:
-            return "Found OWSReaction with missing/invalid author"
-        case .emptyGroupUpdate:
-            return "Found group update TSInfoMessage with no updates"
-        case .missingLocalProfile:
-            return "Missing required local profile"
-        case .missingLocalProfileKey:
-            return "Missing required local profile key"
-        case .missingRequiredGroupMemberParams:
-            return "Missing required parameters for a GV2 group member!"
+
+            /// The proto contained invalid or self-contradictory data, e.g an invalid ACI.
+            case invalidProtoData(InvalidProtoDataError)
+
+            /// The object being restored depended on a TSThread that should have been created earlier but was not.
+            /// This could be either a group or contact thread, we are restoring a frame that doesn't care (e.g. a ChatItem).
+            case referencedChatThreadNotFound(ThreadUniqueId)
+            /// The object being inserted depended on a TSGroupThread that should have been created earlier but was not.
+            /// The overlap with referencedChatThreadNotFound is confusing, but this is for restoring group-specific metadata.
+            case referencedGroupThreadNotFound(GroupId)
+            case databaseInsertionFailed(RawError)
+
+            /// These should never happen; it means some invariant we could not
+            /// enforce with the type system was broken. Nothing was wrong with
+            /// the proto; its the iOS code that has a bug somewhere.
+            case developerError(OWSAssertionError)
+
+            // [Backups] TODO: remove once all known types are handled.
+            case unimplemented
         }
-    }
-}
 
-extension MessageBackup.FatalArchivingErrorType {
+        private let type: ErrorType
+        private let id: ProtoIdType
+        private let file: StaticString
+        private let function: StaticString
+        private let line: UInt
 
-    var logString: String {
-        switch self {
-        case .threadIteratorError(let rawError):
-            return "Error enumerating all TSThreads: \(rawError)"
-        case .unrecognizedThreadType:
-            return "Unrecognized TSThread subclass found when iterating all TSThreads"
-        case .interactionIteratorError(let rawError):
-            return "Error enumerating all TSInteractions \(rawError)"
-        case .developerError(let owsAssertionError):
-            return "Developer error: \(owsAssertionError.description)"
+        /// Create a new error instance.
+        ///
+        /// Exposed as a static method rather than an initializer to help
+        /// callsites have some context without needing to put the exhaustive
+        /// (namespaced) type name at each site.
+        public static func restoreFrameError(
+            _ type: ErrorType,
+            _ id: ProtoIdType,
+            _ file: StaticString = #file,
+            _ function: StaticString = #function,
+            _ line: UInt = #line
+        ) -> RestoreFrameError {
+            return RestoreFrameError(type: type, id: id, file: file, function: function, line: line)
         }
-    }
-}
 
-extension MessageBackup.RestoreFrameErrorType {
+        public var typeLogString: String {
+            return "RestoreFrameError: \(String(describing: type))"
+        }
 
-    var logString: String {
-        switch self {
-        case .invalidProtoData(let invalidProtoDataError):
-            switch invalidProtoDataError {
-            case .recipientIdNotFound(let recipientId):
-                return "Recipient id not found: \(recipientId.value)"
-            case .chatIdNotFound(let chatId):
-                return "Chat id not found: \(chatId.value)"
-            case .invalidAci(let protoClass):
-                return "Invalid aci in \(String(describing: protoClass)) proto"
-            case .invalidPni(let protoClass):
-                return "Invalid pni in \(String(describing: protoClass)) proto"
-            case .invalidServiceId(let protoClass):
-                return "Invalid service id in \(String(describing: protoClass)) proto"
-            case .invalidE164(let protoClass):
-                return "Invalid e164 in \(String(describing: protoClass)) proto"
-            case .invalidProfileKey(let protoClass):
-                return "Invalid profile key in \(String(describing: protoClass)) proto"
-            case .contactWithoutIdentifiers:
-                return "Contact proto missing aci, pni and e164"
-            case .unrecognizedRecipientType:
-                return "Unrecognized recipient type"
-            case .otherContactWithLocalIdentifiers:
-                return "Contact proto for the local account"
-            case .incomingMessageNotFromAciOrE164:
-                return "Incoming message from pni (not aci or e164)"
-            case .outgoingNonContactMessageRecipient:
-                return "Outgoing message recipient is group, story, or other non-contact"
-            case .unrecognizedMessageSendStatus:
-                return "Unrecognized message send status"
-            case .unrecognizedChatItemType:
-                return "Unrecognized ChatItem type"
-            case .reactionNotFromAciOrE164:
-                return "Reaction from pni (not aci or e164)"
-            case .unrecognizedBodyRangeStyle:
-                return "Unrecognized body range style type"
-            case .invalidGV2MasterKey:
-                return "Invalid GV2 master key data"
-            case .missingGV2GroupSnapshot:
-                return "GV2 group missing group snapshot"
-            case .unrecognizedGV2MemberRole(let protoClass):
-                return "Invalid GV2 member role in \(String(describing: protoClass)) proto"
-            case .invitedGV2MemberMissingMemberDetails:
-                return "Invited GV2 member missing member details"
-            case .failedToBuildGV2GroupModel:
-                return "Failed to build a V2 group model from assembled builder"
-            case .groupUpdateMessageInNonGroupChat:
-                return "Group update message found in 1:1 chat"
-            case .emptyGroupUpdates:
-                return "Group update message with empty updates"
-            case .sequenceOfRequestsAndCancelsWithLocalAci:
-                return "Collapsed sequence of requests and cancels with local user's aci"
-            case .unrecognizedGroupUpdate:
-                return "Unrecognized group update type"
-            case .frameMissingItem:
-                return "Backup frame missing enclosed item"
-            case .invalidLocalProfileKey:
-                return "Invalid profile key for local user"
-            case .invalidUsernameLink:
-                return "Username link data present, but invalid"
+        public var idLogString: String {
+            return "\(id.typeLogString).\(id.idLogString)"
+        }
+
+        public var callsiteLogString: String {
+            return "\(file):\(function) line \(line)"
+        }
+
+        public var collapseKey: String? {
+            switch type {
+            case .invalidProtoData(let invalidProtoDataError):
+                switch invalidProtoDataError {
+                case .recipientIdNotFound, .chatIdNotFound:
+                    // Collapse these by the id they refer to, which is in the "type".
+                    return typeLogString
+                case
+                        .invalidAci,
+                        .invalidPni,
+                        .invalidServiceId,
+                        .invalidE164,
+                        .invalidProfileKey,
+                        .contactWithoutIdentifiers,
+                        .unrecognizedRecipientType,
+                        .otherContactWithLocalIdentifiers,
+                        .incomingMessageNotFromAciOrE164,
+                        .outgoingNonContactMessageRecipient,
+                        .unrecognizedMessageSendStatus,
+                        .unrecognizedChatItemType,
+                        .reactionNotFromAciOrE164,
+                        .unrecognizedBodyRangeStyle,
+                        .invalidGV2MasterKey,
+                        .missingGV2GroupSnapshot,
+                        .unrecognizedGV2MemberRole,
+                        .invitedGV2MemberMissingMemberDetails,
+                        .failedToBuildGV2GroupModel,
+                        .groupUpdateMessageInNonGroupChat,
+                        .emptyGroupUpdates,
+                        .sequenceOfRequestsAndCancelsWithLocalAci,
+                        .unrecognizedGroupUpdate,
+                        .frameMissingItem,
+                        .invalidLocalProfileKey,
+                        .invalidUsernameLink:
+                    // Collapse all others by the id of the containing frame.
+                    return idLogString
+                }
+            case .referencedChatThreadNotFound, .referencedGroupThreadNotFound:
+                // Collapse these by the id they refer to, which is in the "type".
+                return typeLogString
+            case .databaseInsertionFailed(let rawError):
+                // We don't want to re-log every instance of this we see if they repeat.
+                // Collapse them by the raw error itself.
+                return "\(rawError)"
+            case .developerError:
+                // Log each of these as we see them.
+                return nil
+            case .unimplemented:
+                // Collapse these by the callsite.
+                return callsiteLogString
             }
-        case .referencedChatThreadNotFound(let threadUniqueId):
-            return "Referenced thread with id not found: \(threadUniqueId.value)"
-        case .referencedGroupThreadNotFound(let groupId):
-            // Rely on the log scrubber to scrub the group id.
-            return "Referenced TSGroupThread with group id not found: \(groupId)"
-        case .databaseInsertionFailed(let rawError):
-            return "DB insertion error: \(rawError)"
-        case .developerError(let owsAssertionError):
-            return "Developer error: \(owsAssertionError.description)"
-        case .unimplemented:
-            return "UNIMPLEMENTED!"
         }
     }
 }
@@ -410,428 +442,6 @@ extension MessageBackup {
                 + "from: \(idLogStrings) "
                 + "example callsite: \(exampleCallsiteString ?? "none")"
             )
-        }
-    }
-}
-
-extension MessageBackup {
-
-    /// Transparent wrapper around ``ArchiveFrameErrorType`` that has custom
-    /// initializers that captures file, function, line callsite info for logging (impossible with a pure enum).
-    public struct ArchiveFrameError<AppIdType: MessageBackupLoggableId>: MessageBackupLoggableError {
-
-        fileprivate let type: ArchiveFrameErrorType
-        fileprivate let id: AppIdType
-        fileprivate let file: StaticString
-        fileprivate let function: StaticString
-        fileprivate let line: UInt
-
-        fileprivate init(
-            _ id: AppIdType,
-            _ type: ArchiveFrameErrorType,
-            _ file: StaticString,
-            _ function: StaticString,
-            _ line: UInt
-        ) {
-            self.id = id
-            self.type = type
-            self.file = file
-            self.function = function
-            self.line = line
-        }
-
-        public var typeLogString: String {
-            return "Frame Archiving Error: \(type.logString)"
-        }
-
-        public var idLogString: String {
-            return "\(id.typeLogString).\(id.idLogString)"
-        }
-
-        public var callsiteLogString: String {
-            return "\(file):\(function) line \(line)"
-        }
-
-        public var collapseKey: String? {
-            switch type {
-            case .protoSerializationError(let rawError):
-                // We don't want to re-log every instance of this we see.
-                // Collapse them by the raw error itself.
-                return "\(rawError)"
-
-            case .referencedRecipientIdMissing, .referencedThreadIdMissing:
-                // Collapse these by the id they refer to, which is in the "type".
-                return typeLogString
-
-            case
-                    .fileIOError,
-                    .groupMasterKeyError,
-                    .contactThreadMissingAddress,
-                    .invalidIncomingMessageAuthor,
-                    .invalidOutgoingMessageRecipient,
-                    .invalidQuoteAuthor,
-                    .invalidReactionAddress,
-                    .emptyGroupUpdate,
-                    .missingLocalProfile,
-                    .missingLocalProfileKey,
-                    .missingRequiredGroupMemberParams:
-                // Log each of these as we see them.
-                return nil
-            }
-        }
-
-        public static func protoSerializationError(
-            _ id: AppIdType,
-            _ error: RawError,
-            file: StaticString = #file,
-            function: StaticString = #function,
-            line: UInt = #line
-        ) -> Self {
-            return .init(id, .protoSerializationError(error), file, function, line)
-        }
-
-        public static func fileIOError(
-            _ id: AppIdType,
-            _ error: RawError,
-            file: StaticString = #file,
-            function: StaticString = #function,
-            line: UInt = #line
-        ) -> Self {
-            return .init(id, .fileIOError(error), file, function, line)
-        }
-
-        public static func referencedRecipientIdMissing(
-            _ id: AppIdType,
-            _ address: RecipientArchivingContext.Address,
-            file: StaticString = #file,
-            function: StaticString = #function,
-            line: UInt = #line
-        ) -> Self {
-            return .init(id, .referencedRecipientIdMissing(address), file, function, line)
-        }
-
-        public static func referencedThreadIdMissing(
-            _ id: AppIdType,
-            _ threadId: ThreadUniqueId,
-            file: StaticString = #file,
-            function: StaticString = #function,
-            line: UInt = #line
-        ) -> Self {
-            return .init(id, .referencedThreadIdMissing(threadId), file, function, line)
-        }
-
-        public static func groupMasterKeyError(
-            _ id: AppIdType,
-            _ error: RawError,
-            file: StaticString = #file,
-            function: StaticString = #function,
-            line: UInt = #line
-        ) -> Self {
-            return .init(id, .groupMasterKeyError(error), file, function, line)
-        }
-
-        public static func contactThreadMissingAddress(
-            _ id: AppIdType,
-            file: StaticString = #file,
-            function: StaticString = #function,
-            line: UInt = #line
-        ) -> Self {
-            return .init(id, .contactThreadMissingAddress, file, function, line)
-        }
-
-        public static func invalidIncomingMessageAuthor(
-            _ id: AppIdType,
-            file: StaticString = #file,
-            function: StaticString = #function,
-            line: UInt = #line
-        ) -> Self {
-            return .init(id, .invalidIncomingMessageAuthor, file, function, line)
-        }
-
-        public static func invalidOutgoingMessageRecipient(
-            _ id: AppIdType,
-            file: StaticString = #file,
-            function: StaticString = #function,
-            line: UInt = #line
-        ) -> Self {
-            return .init(id, .invalidOutgoingMessageRecipient, file, function, line)
-        }
-
-        public static func invalidQuoteAuthor(
-            _ id: AppIdType,
-            file: StaticString = #file,
-            function: StaticString = #function,
-            line: UInt = #line
-        ) -> Self {
-            return .init(id, .invalidQuoteAuthor, file, function, line)
-        }
-
-        public static func invalidReactionAddress(
-            _ id: AppIdType,
-            file: StaticString = #file,
-            function: StaticString = #function,
-            line: UInt = #line
-        ) -> Self {
-            return .init(id, .invalidReactionAddress, file, function, line)
-        }
-
-        public static func emptyGroupUpdate(
-            _ id: AppIdType,
-            file: StaticString = #file,
-            function: StaticString = #function,
-            line: UInt = #line
-        ) -> Self {
-            return .init(id, .emptyGroupUpdate, file, function, line)
-        }
-
-        public static func missingLocalProfile(
-            _ id: AppIdType,
-            file: StaticString = #file,
-            function: StaticString = #function,
-            line: UInt = #line
-        ) -> Self {
-            return .init(id, .missingLocalProfile, file, function, line)
-        }
-
-        public static func missingLocalProfileKey(
-            _ id: AppIdType,
-            file: StaticString = #file,
-            function: StaticString = #function,
-            line: UInt = #line
-        ) -> Self {
-            return .init(id, .missingLocalProfileKey, file, function, line)
-        }
-
-        public static func missingRequiredGroupMemberParams(
-            _ id: AppIdType,
-            file: StaticString = #file,
-            function: StaticString = #function,
-            line: UInt = #line
-        ) -> Self {
-            return .init(id, .missingRequiredGroupMemberParams, file, function, line)
-        }
-    }
-
-    /// Transparent wrapper around ``FatalArchivingErrorType`` that has custom
-    /// initializers that captures file, function, line callsite info for logging (impossible with a pure enum).
-    public struct FatalArchivingError: MessageBackupLoggableError {
-
-        fileprivate let type: FatalArchivingErrorType
-        fileprivate let file: StaticString
-        fileprivate let function: StaticString
-        fileprivate let line: UInt
-
-        fileprivate init(
-            _ type: FatalArchivingErrorType,
-            _ file: StaticString,
-            _ function: StaticString,
-            _ line: UInt
-        ) {
-            self.type = type
-            self.file = file
-            self.function = function
-            self.line = line
-        }
-
-        public var typeLogString: String {
-            return "Fatal Archiving Error: \(type.logString)"
-        }
-
-        public var idLogString: String {
-            return ""
-        }
-
-        public var callsiteLogString: String {
-            return "\(file):\(function) line \(line)"
-        }
-
-        public var collapseKey: String? {
-            // Log each of these as we see them.
-            return nil
-        }
-
-        public static func threadIteratorError(
-            _ error: RawError,
-            file: StaticString = #file,
-            function: StaticString = #function,
-            line: UInt = #line
-        ) -> Self {
-            return .init(.threadIteratorError(error), file, function, line)
-        }
-
-        public static func unrecognizedThreadType(
-            file: StaticString = #file,
-            function: StaticString = #function,
-            line: UInt = #line
-        ) -> Self {
-            return .init(.unrecognizedThreadType, file, function, line)
-        }
-
-        public static func interactionIteratorError(
-            _ error: RawError,
-            file: StaticString = #file,
-            function: StaticString = #function,
-            line: UInt = #line
-        ) -> Self {
-            return .init(.interactionIteratorError(error), file, function, line)
-        }
-
-        public static func developerError(
-            _ error: OWSAssertionError,
-            file: StaticString = #file,
-            function: StaticString = #function,
-            line: UInt = #line
-        ) -> Self {
-            return .init(.developerError(error), file, function, line)
-        }
-    }
-
-    /// Transparent wrapper around ``RestoreFrameErrorType`` that has custom
-    /// initializers that captures file, function, line callsite info for logging (impossible with a pure enum).
-    public struct RestoreFrameError<ProtoIdType: MessageBackupLoggableId>: MessageBackupLoggableError {
-
-        fileprivate let type: RestoreFrameErrorType
-        fileprivate let id: ProtoIdType
-        fileprivate let file: StaticString
-        fileprivate let function: StaticString
-        fileprivate let line: UInt
-
-        fileprivate init(
-            _ id: ProtoIdType,
-            _ type: RestoreFrameErrorType,
-            _ file: StaticString,
-            _ function: StaticString,
-            _ line: UInt
-        ) {
-            self.id = id
-            self.type = type
-            self.file = file
-            self.function = function
-            self.line = line
-        }
-
-        public var typeLogString: String {
-            return "Frame Restoring Error: \(type.logString)"
-        }
-
-        public var idLogString: String {
-            return "\(id.typeLogString).\(id.idLogString)"
-        }
-
-        public var callsiteLogString: String {
-            return "\(file):\(function) line \(line)"
-        }
-
-        public var collapseKey: String? {
-            switch type {
-            case .invalidProtoData(let invalidProtoDataError):
-                switch invalidProtoDataError {
-                case .recipientIdNotFound, .chatIdNotFound:
-                    // Collapse these by the id they refer to, which is in the "type".
-                    return typeLogString
-                case
-                        .invalidAci,
-                        .invalidPni,
-                        .invalidServiceId,
-                        .invalidE164,
-                        .invalidProfileKey,
-                        .contactWithoutIdentifiers,
-                        .unrecognizedRecipientType,
-                        .otherContactWithLocalIdentifiers,
-                        .incomingMessageNotFromAciOrE164,
-                        .outgoingNonContactMessageRecipient,
-                        .unrecognizedMessageSendStatus,
-                        .unrecognizedChatItemType,
-                        .reactionNotFromAciOrE164,
-                        .unrecognizedBodyRangeStyle,
-                        .invalidGV2MasterKey,
-                        .missingGV2GroupSnapshot,
-                        .unrecognizedGV2MemberRole,
-                        .invitedGV2MemberMissingMemberDetails,
-                        .failedToBuildGV2GroupModel,
-                        .groupUpdateMessageInNonGroupChat,
-                        .emptyGroupUpdates,
-                        .sequenceOfRequestsAndCancelsWithLocalAci,
-                        .unrecognizedGroupUpdate,
-                        .frameMissingItem,
-                        .invalidLocalProfileKey,
-                        .invalidUsernameLink:
-                    // Collapse these by the id of the containing frame.
-                    return idLogString
-                }
-            case .referencedChatThreadNotFound, .referencedGroupThreadNotFound:
-                // Collapse these by the id they refer to, which is in the "type".
-                return typeLogString
-            case .databaseInsertionFailed(let rawError):
-                // We don't want to re-log every instance of this we see if they repeat.
-                // Collapse them by the raw error itself.
-                return "\(rawError)"
-            case .developerError:
-                // Log each of these as we see them.
-                return nil
-            case .unimplemented:
-                // Collapse these by the callsite.
-                return callsiteLogString
-            }
-        }
-
-        public static func invalidProtoData(
-            _ id: ProtoIdType,
-            _ error: InvalidProtoDataError,
-            file: StaticString = #file,
-            function: StaticString = #function,
-            line: UInt = #line
-        ) -> Self {
-            return .init(id, .invalidProtoData(error), file, function, line)
-        }
-
-        public static func referencedChatThreadNotFound(
-            _ id: ProtoIdType,
-            _ threadId: ThreadUniqueId,
-            file: StaticString = #file,
-            function: StaticString = #function,
-            line: UInt = #line
-        ) -> Self {
-            return .init(id, .referencedChatThreadNotFound(threadId), file, function, line)
-        }
-
-        public static func referencedGroupThreadNotFound(
-            _ id: ProtoIdType,
-            _ groupId: GroupId,
-            file: StaticString = #file,
-            function: StaticString = #function,
-            line: UInt = #line
-        ) -> Self {
-            return .init(id, .referencedGroupThreadNotFound(groupId), file, function, line)
-        }
-
-        public static func databaseInsertionFailed(
-            _ id: ProtoIdType,
-            _ error: RawError,
-            file: StaticString = #file,
-            function: StaticString = #function,
-            line: UInt = #line
-        ) -> Self {
-            return .init(id, .databaseInsertionFailed(error), file, function, line)
-        }
-
-        public static func developerError(
-            _ id: ProtoIdType,
-            _ error: OWSAssertionError,
-            file: StaticString = #file,
-            function: StaticString = #function,
-            line: UInt = #line
-        ) -> Self {
-            return .init(id, .developerError(error), file, function, line)
-        }
-
-        public static func unimplemented(
-            _ id: ProtoIdType,
-            file: StaticString = #file,
-            function: StaticString = #function,
-            line: UInt = #line
-        ) -> Self {
-            return .init(id, .unimplemented, file, function, line)
         }
     }
 }

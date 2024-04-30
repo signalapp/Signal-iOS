@@ -63,9 +63,9 @@ extension MessageBackupProtoArchiver {
         case .success:
             return nil
         case .fileIOError(let error):
-            return .fileIOError(objectId, error)
+            return .archiveFrameError(.fileIOError(error), objectId)
         case .protoSerializationError(let error):
-            return .protoSerializationError(objectId, error)
+            return .archiveFrameError(.protoSerializationError(error), objectId)
         }
     }
 }

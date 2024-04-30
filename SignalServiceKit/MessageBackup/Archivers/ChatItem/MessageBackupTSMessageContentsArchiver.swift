@@ -182,13 +182,13 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
 
         guard let authorAddress = quotedMessage.authorAddress.asSingleServiceIdBackupAddress() else {
             // Fail the whole message if we fail archiving a quote.
-            return .messageFailure([.invalidQuoteAuthor(interactionUniqueId)])
+            return .messageFailure([.archiveFrameError(.invalidQuoteAuthor, interactionUniqueId)])
         }
         guard let authorId = context[.contact(authorAddress)] else {
             // Fail the whole message if we fail archiving a quote.
-            return .messageFailure([.referencedRecipientIdMissing(
-                interactionUniqueId,
-                .contact(authorAddress)
+            return .messageFailure([.archiveFrameError(
+                .referencedRecipientIdMissing(.contact(authorAddress)),
+                interactionUniqueId
             )])
         }
 
@@ -247,13 +247,13 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
                 tx: tx
             )
         case .updateMessage:
-            return .messageFailure([.developerError(
-                chatItemId,
-                OWSAssertionError("Chat update has no contents to restore!")
+            return .messageFailure([.restoreFrameError(
+                .developerError(OWSAssertionError("Chat update has no contents to restore!")),
+                chatItemId
             )])
         case .contactMessage, .stickerMessage, .remoteDeletedMessage:
             // Other types not supported yet.
-            return .messageFailure([.unimplemented(chatItemId)])
+            return .messageFailure([.restoreFrameError(.unimplemented, chatItemId)])
         }
     }
 
@@ -314,7 +314,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
 
         guard let text = standardMessage.text else {
             // Non-text not supported yet.
-            return .messageFailure([.unimplemented(chatItemId)])
+            return .messageFailure([.restoreFrameError(.unimplemented, chatItemId)])
         }
 
         let messageBodyResult = restoreMessageBody(text, chatItemId: chatItemId)
@@ -367,9 +367,9 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
             switch bodyRange.associatedValue {
             case .mentionAci(let aciData):
                 guard let mentionAci = try? Aci.parseFrom(serviceIdBinary: aciData) else {
-                    partialErrors.append(.invalidProtoData(
-                        chatItemId,
-                        .invalidAci(protoClass: BackupProto.BodyRange.self)
+                    partialErrors.append(.restoreFrameError(
+                        .invalidProtoData(.invalidAci(protoClass: BackupProto.BodyRange.self)),
+                        chatItemId
                     ))
                     continue
                 }
@@ -378,7 +378,10 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
                 let swiftStyle: MessageBodyRanges.SingleStyle
                 switch protoBodyRangeStyle {
                 case .NONE:
-                    partialErrors.append(.invalidProtoData(chatItemId, .unrecognizedBodyRangeStyle))
+                    partialErrors.append(.restoreFrameError(
+                        .invalidProtoData(.unrecognizedBodyRangeStyle),
+                        chatItemId
+                    ))
                     continue
                 case .BOLD:
                     swiftStyle = .bold
@@ -393,9 +396,9 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
                 }
                 bodyStyles.append(.init(swiftStyle, range: range))
             case nil:
-                partialErrors.append(.invalidProtoData(
-                    chatItemId,
-                    .invalidAci(protoClass: BackupProto.BodyRange.self)
+                partialErrors.append(.restoreFrameError(
+                    .invalidProtoData(.invalidAci(protoClass: BackupProto.BodyRange.self)),
+                    chatItemId
                 ))
                 continue
             }
@@ -422,20 +425,23 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
         let authorAddress: MessageBackup.InteropAddress
         switch context.recipientContext[quote.authorRecipientId] {
         case .none:
-            return .messageFailure([.invalidProtoData(chatItemId, .recipientIdNotFound(quote.authorRecipientId))])
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.recipientIdNotFound(quote.authorRecipientId)),
+                chatItemId
+            )])
         case .localAddress:
             authorAddress = context.recipientContext.localIdentifiers.aciAddress
         case .group:
             // A group cannot be an author for a message!
-            return .messageFailure([.invalidProtoData(
-                chatItemId,
-                .incomingMessageNotFromAciOrE164
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.incomingMessageNotFromAciOrE164),
+                chatItemId
             )])
         case .contact(let contactAddress):
             guard contactAddress.aci != nil || contactAddress.e164 != nil else {
-                return .messageFailure([.invalidProtoData(
-                    chatItemId,
-                    .incomingMessageNotFromAciOrE164
+                return .messageFailure([.restoreFrameError(
+                    .invalidProtoData(.incomingMessageNotFromAciOrE164),
+                    chatItemId
                 )])
             }
             authorAddress = contactAddress.asInteropAddress()
@@ -497,7 +503,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
 
         guard let quoteBody else {
             // Non-text not supported yet.
-            return .messageFailure([.unimplemented(chatItemId)])
+            return .messageFailure([.restoreFrameError(.unimplemented, chatItemId)])
         }
 
         // TODO: support attachments

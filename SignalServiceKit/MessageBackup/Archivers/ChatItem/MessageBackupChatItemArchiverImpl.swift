@@ -99,7 +99,7 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
         } catch let error {
             // Errors thrown here are from the iterator's SQL query,
             // not the individual interaction handler.
-            return .completeFailure(.interactionIteratorError(error))
+            return .completeFailure(.fatalArchiveError(.interactionIteratorError(error)))
         }
 
         if let completeFailureError {
@@ -140,9 +140,9 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
         var partialErrors = [ArchiveMultiFrameResult.ArchiveFrameError]()
 
         guard let chatId = context[interaction.uniqueThreadIdentifier] else {
-            partialErrors.append(.referencedThreadIdMissing(
-                interaction.uniqueInteractionId,
-                interaction.uniqueThreadIdentifier
+            partialErrors.append(.archiveFrameError(
+                .referencedThreadIdMissing(interaction.uniqueThreadIdentifier),
+                interaction.uniqueInteractionId
             ))
             return .partialSuccess(partialErrors)
         }
@@ -244,13 +244,19 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
         }
 
         guard let threadUniqueId = context[chatItem.typedChatId] else {
-            return .failure([.invalidProtoData(chatItem.id, .chatIdNotFound(chatItem.typedChatId))])
+            return .failure([.restoreFrameError(
+                .invalidProtoData(.chatIdNotFound(chatItem.typedChatId)),
+                chatItem.id
+            )])
         }
 
         guard
             let threadRaw = threadStore.fetchThread(uniqueId: threadUniqueId.value, tx: tx)
         else {
-            return .failure([.referencedChatThreadNotFound(chatItem.id, threadUniqueId)])
+            return .failure([.restoreFrameError(
+                .referencedChatThreadNotFound(threadUniqueId),
+                chatItem.id
+            )])
         }
 
         let thread: MessageBackup.ChatThread
@@ -261,9 +267,9 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
         } else {
             // It should be enforced by ChatRestoringContext that any
             // thread ID in it maps to a valid TSContact- or TSGroup- thread.
-            return .failure([.developerError(
-                chatItem.id,
-                OWSAssertionError("Invalid TSThread type for chatId")
+            return .failure([.restoreFrameError(
+                .developerError(OWSAssertionError("Invalid TSThread type for chatId")),
+                chatItem.id
             )])
         }
 

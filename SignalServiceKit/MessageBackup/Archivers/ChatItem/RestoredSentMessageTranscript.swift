@@ -87,16 +87,16 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
                 recipientAddress = address.asInteropAddress()
             case .none:
                 // Missing recipient! Fail this one recipient but keep going.
-                partialErrors.append(.invalidProtoData(
-                    chatItem.id,
-                    .recipientIdNotFound(recipientID)
+                partialErrors.append(.restoreFrameError(
+                    .invalidProtoData(.recipientIdNotFound(recipientID)),
+                    chatItem.id
                 ))
                 continue
             case .localAddress, .group:
                 // Recipients can only be contacts.
-                partialErrors.append(.invalidProtoData(
-                    chatItem.id,
-                    .outgoingNonContactMessageRecipient
+                partialErrors.append(.restoreFrameError(
+                    .invalidProtoData(.outgoingNonContactMessageRecipient),
+                    chatItem.id
                 ))
                 continue
             }
@@ -138,9 +138,9 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
         chatItemId: MessageBackup.ChatItemId
     ) -> TSOutgoingMessageRecipientState? {
         guard let recipientState = TSOutgoingMessageRecipientState() else {
-            partialErrors.append(.databaseInsertionFailed(
-                chatItemId,
-                OWSAssertionError("Unable to create recipient state!")
+            partialErrors.append(.restoreFrameError(
+                .databaseInsertionFailed(OWSAssertionError("Unable to create recipient state!")),
+                chatItemId
             ))
             return nil
         }
@@ -149,7 +149,7 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
 
         switch sendStatus.deliveryStatus {
         case nil, .UNKNOWN:
-            partialErrors.append(.invalidProtoData(chatItemId, .unrecognizedMessageSendStatus))
+            partialErrors.append(.restoreFrameError(.invalidProtoData(.unrecognizedMessageSendStatus), chatItemId))
             return nil
         case .PENDING:
             recipientState.state = .pending

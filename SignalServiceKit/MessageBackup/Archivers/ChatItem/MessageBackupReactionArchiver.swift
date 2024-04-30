@@ -36,14 +36,14 @@ internal class MessageBackupReactionArchiver: MessageBackupProtoArchiver {
                 )?.asArchivingAddress()
             else {
                 // Skip this reaction.
-                errors.append(.invalidReactionAddress(message.uniqueInteractionId))
+                errors.append(.archiveFrameError(.invalidReactionAddress, message.uniqueInteractionId))
                 continue
             }
 
             guard let authorId = context[authorAddress] else {
-                errors.append(.referencedRecipientIdMissing(
-                    message.uniqueInteractionId,
-                    authorAddress
+                errors.append(.archiveFrameError(
+                    .referencedRecipientIdMissing(authorAddress),
+                    message.uniqueInteractionId
                 ))
                 continue
             }
@@ -108,21 +108,23 @@ internal class MessageBackupReactionArchiver: MessageBackupProtoArchiver {
                         tx: tx
                     )
                 } else {
-                    reactionErrors.append(
-                        .invalidProtoData(chatItemId, .reactionNotFromAciOrE164)
-                    )
+                    reactionErrors.append(.restoreFrameError(
+                        .invalidProtoData(.reactionNotFromAciOrE164),
+                        chatItemId
+                    ))
                     continue
                 }
             case .group:
                 // Referencing a group as the author is invalid.
-                reactionErrors.append(
-                    .invalidProtoData(chatItemId, .reactionNotFromAciOrE164)
-                )
+                reactionErrors.append(.restoreFrameError(
+                    .invalidProtoData(.reactionNotFromAciOrE164),
+                    chatItemId
+                ))
                 continue
             case nil:
-                reactionErrors.append(.invalidProtoData(
-                    chatItemId,
-                    .recipientIdNotFound(reaction.authorRecipientId)
+                reactionErrors.append(.restoreFrameError(
+                    .invalidProtoData(.recipientIdNotFound(reaction.authorRecipientId)),
+                    chatItemId
                 ))
                 continue
             }

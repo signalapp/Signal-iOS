@@ -11,7 +11,7 @@ extension MessageBackup {
     public struct AccountDataId: MessageBackupLoggableId {
         static let localUser = AccountDataId()
 
-        init() {}
+        private init() {}
 
         // MARK: MessageBackupLoggableId
 
@@ -97,10 +97,10 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
     ) -> MessageBackup.ArchiveAccountDataResult {
 
         guard let localProfile = userProfile.getLocalProfile(tx: tx) else {
-            return .failure(.missingLocalProfile(MessageBackup.AccountDataId()))
+            return .failure(.archiveFrameError(.missingLocalProfile, .localUser))
         }
         guard let profileKeyData = localProfile.profileKey?.keyData else {
-            return .failure(.missingLocalProfileKey(MessageBackup.AccountDataId()))
+            return .failure(.archiveFrameError(.missingLocalProfileKey, .localUser))
         }
 
         var accountData = BackupProto.AccountData(
@@ -120,7 +120,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
 
         accountData.accountSettings = buildAccountSettingsProto(tx: tx)
 
-        let error = Self.writeFrameToStream(stream, objectId: MessageBackup.AccountDataId()) {
+        let error = Self.writeFrameToStream(stream, objectId: MessageBackup.AccountDataId.localUser) {
             var frame = BackupProto.Frame()
             frame.item = .account(accountData)
             return frame
@@ -226,7 +226,10 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
     ) -> RestoreFrameResult {
 
         guard let profileKey = OWSAES256Key(data: accountData.profileKey) else {
-            return .failure([.invalidProtoData(.init(), .invalidLocalProfileKey)])
+            return .failure([.restoreFrameError(
+                .invalidProtoData(.invalidLocalProfileKey),
+                .localUser
+            )])
         }
 
         // Restore Subscription data, if nod a default value
@@ -303,7 +306,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
             {
                 localUsernameManager.setLocalUsername(username: username, usernameLink: linkData, tx: tx)
             } else {
-                return .failure([.invalidProtoData(.init(), .invalidUsernameLink)])
+                return .failure([.restoreFrameError(.invalidProtoData(.invalidUsernameLink), .localUser)])
             }
         }
 

@@ -58,7 +58,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
             }
         } catch {
             // The enumeration of threads failed, not the processing of one single thread.
-            return .completeFailure(.threadIteratorError(error))
+            return .completeFailure(.fatalArchiveError(.threadIteratorError(error)))
         }
 
         if errors.isEmpty {
@@ -93,7 +93,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
             groupMasterKey = try groupSecretParams.getMasterKey().serialize().asData
             groupPublicKey = try groupSecretParams.getPublicParams().serialize().asData
         } catch {
-            errors.append(.groupMasterKeyError(groupAppId, error))
+            errors.append(.archiveFrameError(.groupMasterKeyError(error), groupAppId))
             return
         }
 
@@ -134,7 +134,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
                     let role = groupMembership.role(for: address),
                     let profileKey = profileManager.getProfileKeyData(for: address, tx: tx)
                 else {
-                    errors.append(.missingRequiredGroupMemberParams(groupAppId))
+                    errors.append(.archiveFrameError(.missingRequiredGroupMemberParams, groupAppId))
                     return nil
                 }
 
@@ -146,7 +146,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
                     let role = groupMembership.role(for: address),
                     let addedByAci = groupMembership.addedByAci(forInvitedMember: address)
                 else {
-                    errors.append(.missingRequiredGroupMemberParams(groupAppId))
+                    errors.append(.archiveFrameError(.missingRequiredGroupMemberParams, groupAppId))
                     return nil
                 }
 
@@ -168,7 +168,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
                     let aci = address.aci,
                     let profileKey = profileManager.getProfileKeyData(for: address, tx: tx)
                 else {
-                    errors.append(.missingRequiredGroupMemberParams(groupAppId))
+                    errors.append(.archiveFrameError(.missingRequiredGroupMemberParams, groupAppId))
                     return nil
                 }
 
@@ -223,12 +223,10 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
         case .group(let backupProtoGroup):
             groupProto = backupProtoGroup
         case nil, .contact, .distributionList, .selfRecipient, .releaseNotes:
-            return .failure(
-                [.developerError(
-                    recipient.recipientId,
-                    OWSAssertionError("Invalid proto for class")
-                )]
-            )
+            return .failure([.restoreFrameError(
+                .developerError(OWSAssertionError("Invalid proto for class")),
+                recipient.recipientId
+            )])
         }
 
         // MARK: Assemble the group model
@@ -238,28 +236,28 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
             let masterKey = groupProto.masterKey
 
             guard groupsV2.isValidGroupV2MasterKey(masterKey) else {
-                return .failure([.invalidProtoData(recipient.recipientId, .invalidGV2MasterKey)])
+                return .failure([.restoreFrameError(.invalidProtoData(.invalidGV2MasterKey), recipient.recipientId)])
             }
 
             groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
         } catch {
-            return .failure([.invalidProtoData(recipient.recipientId, .invalidGV2MasterKey)])
+            return .failure([.restoreFrameError(.invalidProtoData(.invalidGV2MasterKey), recipient.recipientId)])
         }
 
         guard let groupSnapshot = groupProto.snapshot else {
-            return .failure([.invalidProtoData(recipient.recipientId, .missingGV2GroupSnapshot)])
+            return .failure([.restoreFrameError(.invalidProtoData(.missingGV2GroupSnapshot), recipient.recipientId)])
         }
 
         var groupMembershipBuilder = GroupMembership.Builder()
         for fullMember in groupSnapshot.members {
             guard let aci = try? Aci.parseFrom(serviceIdBinary: fullMember.userId) else {
-                return .failure([.invalidProtoData(recipient.recipientId, .invalidAci(protoClass: BackupProto.Group.Member.self))])
+                return .failure([.restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto.Group.Member.self)), recipient.recipientId)])
             }
             guard let role = TSGroupMemberRole(backupProtoRole: fullMember.role) else {
-                return .failure([.invalidProtoData(recipient.recipientId, .unrecognizedGV2MemberRole(protoClass: BackupProto.Group.Member.self))])
+                return .failure([.restoreFrameError(.invalidProtoData(.unrecognizedGV2MemberRole(protoClass: BackupProto.Group.Member.self)), recipient.recipientId)])
             }
             guard let profileKey = OWSAES256Key(data: fullMember.profileKey) else {
-                return .failure([.invalidProtoData(recipient.recipientId, .invalidProfileKey(protoClass: BackupProto.Group.Member.self))])
+                return .failure([.restoreFrameError(.invalidProtoData(.invalidProfileKey(protoClass: BackupProto.Group.Member.self)), recipient.recipientId)])
             }
 
             groupMembershipBuilder.addFullMember(aci, role: role)
@@ -272,16 +270,16 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
         }
         for invitedMember in groupSnapshot.membersPendingProfileKey {
             guard let memberDetails = invitedMember.member else {
-                return .failure([.invalidProtoData(recipient.recipientId, .invitedGV2MemberMissingMemberDetails)])
+                return .failure([.restoreFrameError(.invalidProtoData(.invitedGV2MemberMissingMemberDetails), recipient.recipientId)])
             }
             guard let serviceId = try? ServiceId.parseFrom(serviceIdBinary: memberDetails.userId) else {
-                return .failure([.invalidProtoData(recipient.recipientId, .invalidServiceId(protoClass: BackupProto.Group.MemberPendingProfileKey.self))])
+                return .failure([.restoreFrameError(.invalidProtoData(.invalidServiceId(protoClass: BackupProto.Group.MemberPendingProfileKey.self)), recipient.recipientId)])
             }
             guard let role = TSGroupMemberRole(backupProtoRole: memberDetails.role) else {
-                return .failure([.invalidProtoData(recipient.recipientId, .unrecognizedGV2MemberRole(protoClass: BackupProto.Group.MemberPendingProfileKey.self))])
+                return .failure([.restoreFrameError(.invalidProtoData(.unrecognizedGV2MemberRole(protoClass: BackupProto.Group.MemberPendingProfileKey.self)), recipient.recipientId)])
             }
             guard let addedByAci = try? Aci.parseFrom(serviceIdBinary: invitedMember.addedByUserId) else {
-                return .failure([.invalidProtoData(recipient.recipientId, .invalidAci(protoClass: BackupProto.Group.MemberPendingProfileKey.self))])
+                return .failure([.restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto.Group.MemberPendingProfileKey.self)), recipient.recipientId)])
             }
 
             groupMembershipBuilder.addInvitedMember(
@@ -292,10 +290,10 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
         }
         for requestingMember in groupSnapshot.membersPendingAdminApproval {
             guard let aci = try? Aci.parseFrom(serviceIdBinary: requestingMember.userId) else {
-                return .failure([.invalidProtoData(recipient.recipientId, .invalidAci(protoClass: BackupProto.Group.MemberPendingAdminApproval.self))])
+                return .failure([.restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto.Group.MemberPendingAdminApproval.self)), recipient.recipientId)])
             }
             guard let profileKey = OWSAES256Key(data: requestingMember.profileKey) else {
-                return .failure([.invalidProtoData(recipient.recipientId, .invalidProfileKey(protoClass: BackupProto.Group.MemberPendingAdminApproval.self))])
+                return .failure([.restoreFrameError(.invalidProtoData(.invalidProfileKey(protoClass: BackupProto.Group.MemberPendingAdminApproval.self)), recipient.recipientId)])
             }
 
             groupMembershipBuilder.addRequestingMember(aci)
@@ -308,7 +306,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
         }
         for bannedMember in groupSnapshot.membersBanned {
             guard let aci = try? Aci.parseFrom(serviceIdBinary: bannedMember.userId) else {
-                return .failure([.invalidProtoData(recipient.recipientId, .invalidAci(protoClass: BackupProto.Group.MemberBanned.self))])
+                return .failure([.restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto.Group.MemberBanned.self)), recipient.recipientId)])
             }
             let bannedAtTimestampMillis = bannedMember.timestamp
 
@@ -333,7 +331,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
         groupModelBuilder.isAnnouncementsOnly = groupSnapshot.announcementsOnly
 
         guard let groupModel: TSGroupModelV2 = try? groupModelBuilder.buildAsV2() else {
-            return .failure([.invalidProtoData(recipient.recipientId, .failedToBuildGV2GroupModel)])
+            return .failure([.restoreFrameError(.invalidProtoData(.failedToBuildGV2GroupModel), recipient.recipientId)])
         }
 
         // MARK: Use the group model to create a group thread

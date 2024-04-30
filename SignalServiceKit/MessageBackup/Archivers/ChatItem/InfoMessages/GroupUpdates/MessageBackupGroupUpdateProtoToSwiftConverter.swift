@@ -59,12 +59,10 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
         ) -> UnwrappedAci {
             let aciData = proto[keyPath: aciKeyPath]
             guard let aciUuid = UUID(data: aciData) else {
-                return .invalidAci(
-                    .invalidProtoData(
-                        chatItemId,
-                        .invalidAci(protoClass: Proto.self)
-                    )
-                )
+                return .invalidAci(.restoreFrameError(
+                    .invalidProtoData(.invalidAci(protoClass: Proto.self)),
+                    chatItemId
+                ))
             }
             let aci = Aci(fromUUID: aciUuid)
             if aci == localUserAci {
@@ -81,12 +79,10 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                 return .unknown
             }
             guard let aciUuid = UUID(data: aciData) else {
-                return .invalidAci(
-                    .invalidProtoData(
-                        chatItemId,
-                        .invalidAci(protoClass: Proto.self)
-                    )
-                )
+                return .invalidAci(.restoreFrameError(
+                    .invalidProtoData(.invalidAci(protoClass: Proto.self)),
+                    chatItemId
+                ))
             }
             let aci = Aci(fromUUID: aciUuid)
             if aci == localUserAci {
@@ -98,7 +94,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
 
         switch groupUpdate.update {
         case .none:
-            return .messageFailure([.invalidProtoData(chatItemId, .unrecognizedGroupUpdate)])
+            return .messageFailure([.restoreFrameError(.invalidProtoData(.unrecognizedGroupUpdate), chatItemId)])
         case .genericGroupUpdate(let proto):
             switch unwrapAci(proto, \.updaterAci) {
             case .unknown:
@@ -323,11 +319,9 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
             case .some(let serviceId):
                 return .success([.otherUserWasInvitedByLocalUser(inviteeServiceId: serviceId.codableUppercaseString)])
             case .none:
-                return .messageFailure([.invalidProtoData(
-                    chatItemId,
-                    .invalidServiceId(
-                        protoClass: BackupProto.SelfInvitedOtherUserToGroupUpdate.self
-                    )
+                return .messageFailure([.restoreFrameError(
+                    .invalidProtoData(.invalidServiceId(protoClass: BackupProto.SelfInvitedOtherUserToGroupUpdate.self)),
+                    chatItemId
                 )])
             }
         case .groupUnknownInviteeUpdate(let proto):
@@ -602,9 +596,10 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
         case .groupSequenceOfRequestsAndCancelsUpdate(let proto):
             switch unwrapAci(proto, \.requestorAci) {
             case .localUser:
-                return .messageFailure([
-                    .invalidProtoData(chatItemId, .sequenceOfRequestsAndCancelsWithLocalAci)
-                ])
+                return .messageFailure([.restoreFrameError(
+                    .invalidProtoData(.sequenceOfRequestsAndCancelsWithLocalAci),
+                    chatItemId
+                )])
             // We assume it is the tail to start out with; if we see a subsequent join request
             // from the same invite then we will mark it as not the tail.
             case .otherUser(let aci):

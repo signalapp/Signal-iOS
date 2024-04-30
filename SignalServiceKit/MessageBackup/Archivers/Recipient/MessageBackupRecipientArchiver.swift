@@ -146,9 +146,9 @@ internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchive
             }
             return archiver.restore(recipient, context: context, tx: tx)
         }
-        return .failure([.invalidProtoData(
-            recipient.recipientId,
-            .unrecognizedRecipientType
+        return .failure([.restoreFrameError(
+            .invalidProtoData(.unrecognizedRecipientType),
+            recipient.recipientId
         )])
     }
 }

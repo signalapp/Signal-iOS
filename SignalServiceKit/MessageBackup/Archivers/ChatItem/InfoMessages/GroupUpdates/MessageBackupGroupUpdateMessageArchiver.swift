@@ -33,9 +33,9 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
     ) -> MessageBackup.ArchiveInteractionResult<Details> {
         guard let infoMessage = interaction as? TSInfoMessage else {
             // Should be impossible.
-            return .completeFailure(.developerError(
+            return .completeFailure(.fatalArchiveError(.developerError(
                 OWSAssertionError("Invalid interaction type")
-            ))
+            )))
         }
         let groupUpdateItems: [TSInfoMessage.PersistableGroupUpdateItem]
         switch infoMessage.groupUpdateMetadata(
@@ -43,9 +43,9 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
         ) {
         case .nonGroupUpdate:
             // Should be impossible.
-            return .completeFailure(.developerError(
+            return .completeFailure(.fatalArchiveError(.developerError(
                 OWSAssertionError("Invalid interaction type")
-            ))
+            )))
         case .legacyRawString:
             return .skippableGroupUpdate(.legacyRawString)
         case .newGroup(let groupModel, let updateMetadata):
@@ -147,7 +147,7 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
                 // Its ok; we just skipped everything.
                 return .skippableGroupUpdate(latestSkipError)
             }
-            return .messageFailure(partialErrors + [.emptyGroupUpdate(interactionId)])
+            return .messageFailure(partialErrors + [.archiveFrameError(.emptyGroupUpdate, interactionId)])
         }
 
         var groupChangeChatUpdate = BackupProto.GroupChangeChatUpdate()
@@ -169,9 +169,10 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
         let groupThread: TSGroupThread
         switch thread {
         case .contact:
-            return .messageFailure([
-                .invalidProtoData(chatItem.id, .groupUpdateMessageInNonGroupChat)
-            ])
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.groupUpdateMessageInNonGroupChat),
+                chatItem.id
+            )])
         case .groupV2(let tSGroupThread):
             groupThread = tSGroupThread
         }
@@ -183,15 +184,15 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
             case .groupChange(let groupChangeChatUpdate):
                 groupUpdate = groupChangeChatUpdate
             default:
-                return .messageFailure([.developerError(
-                    chatItem.id,
-                    OWSAssertionError("Got non group change update message in GroupUpdate archiver!")
+                return .messageFailure([.restoreFrameError(
+                    .developerError(OWSAssertionError("Got non group change update message in GroupUpdate archiver!")),
+                    chatItem.id
                 )])
             }
         default:
-            return .messageFailure([.developerError(
-                chatItem.id,
-                OWSAssertionError("Got non update message in GroupUpdate archiver!")
+            return .messageFailure([.restoreFrameError(
+                .developerError(OWSAssertionError("Got non update message in GroupUpdate archiver!")),
+                chatItem.id
             )])
         }
 
@@ -212,9 +213,10 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
 
         guard persistableUpdates.isEmpty.negated else {
             // We can't have an empty array of updates!
-            return .messageFailure(partialErrors + [
-                .invalidProtoData(chatItem.id, .emptyGroupUpdates)
-            ])
+            return .messageFailure(partialErrors + [.restoreFrameError(
+                .invalidProtoData(.emptyGroupUpdates),
+                chatItem.id
+            )])
         }
 
         // FIRST, try and do any collapsing. This might collapse

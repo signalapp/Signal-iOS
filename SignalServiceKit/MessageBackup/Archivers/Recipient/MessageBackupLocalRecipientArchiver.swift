@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalCoreKit
 
 extension MessageBackup {
 
@@ -90,9 +90,9 @@ public class MessageBackupLocalRecipientArchiverImpl: MessageBackupLocalRecipien
         case .selfRecipient:
             break
         case nil, .contact, .group, .distributionList, .releaseNotes:
-            return .failure([.developerError(
-                recipient.recipientId,
-                OWSAssertionError("Non self recipient sent to local recipient archiver")
+            return .failure([.restoreFrameError(
+                .developerError(OWSAssertionError("Non self recipient sent to local recipient archiver")),
+                recipient.recipientId
             )])
         }
 

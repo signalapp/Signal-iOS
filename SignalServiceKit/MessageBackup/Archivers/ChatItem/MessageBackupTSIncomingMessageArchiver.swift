@@ -30,9 +30,9 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
     ) -> MessageBackup.ArchiveInteractionResult<Details> {
         guard let message = interaction as? TSIncomingMessage else {
             // Should be impossible.
-            return .completeFailure(.developerError(
+            return .completeFailure(.fatalArchiveError(.developerError(
                 OWSAssertionError("Invalid interaction type")
-            ))
+            )))
         }
 
         var partialErrors = [MessageBackupChatItemArchiver.ArchiveMultiFrameResult.ArchiveFrameError]()
@@ -53,12 +53,12 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
             )?.asArchivingAddress()
         else {
             // This is an invalid message.
-            return .messageFailure([.invalidIncomingMessageAuthor(message.uniqueInteractionId)])
+            return .messageFailure([.archiveFrameError(.invalidIncomingMessageAuthor, message.uniqueInteractionId)])
         }
         guard let author = context.recipientContext[authorAddress] else {
-            return .messageFailure([.referencedRecipientIdMissing(
-                message.uniqueInteractionId,
-                authorAddress
+            return .messageFailure([.archiveFrameError(
+                .referencedRecipientIdMissing(authorAddress),
+                message.uniqueInteractionId
             )])
         }
 
@@ -117,9 +117,9 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
             incomingDetails = incomingMessageDetails
         case nil, .outgoing, .directionless:
             // Should be impossible.
-            return .messageFailure([.developerError(
-                chatItem.id,
-                OWSAssertionError("IncomingMessageArchiver given non-incoming message!")
+            return .messageFailure([.restoreFrameError(
+                .developerError(OWSAssertionError("IncomingMessageArchiver given non-incoming message!")),
+                chatItem.id
             )])
         }
 
@@ -136,14 +136,18 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
                 fallthrough
             }
         default:
-            return .messageFailure([
-                .invalidProtoData(chatItem.id, .incomingMessageNotFromAciOrE164)
-            ])
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.incomingMessageNotFromAciOrE164),
+                chatItem.id
+            )])
         }
 
         guard let messageType = chatItem.item else {
             // Unrecognized item type!
-            return .messageFailure([.invalidProtoData(chatItem.id, .unrecognizedChatItemType)])
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.unrecognizedChatItemType),
+                chatItem.id
+            )])
         }
 
         var partialErrors = [MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>]()

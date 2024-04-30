@@ -93,7 +93,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
                     tx: tx
                 )
             } else {
-                completeFailureError = .unrecognizedThreadType()
+                completeFailureError = .fatalArchiveError(.unrecognizedThreadType)
                 return
             }
 
@@ -111,7 +111,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         do {
             try threadStore.enumerateNonStoryThreads(tx: tx, block: archiveThread(_:stop:))
         } catch let error {
-            return .completeFailure(.threadIteratorError(error))
+            return .completeFailure(.fatalArchiveError(.threadIteratorError(error)))
         }
 
         if let completeFailureError {
@@ -156,15 +156,16 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
                 e164: E164(thread.contactPhoneNumber)
             )?.asArchivingAddress()
         else {
-            return .partialSuccess([
-                .contactThreadMissingAddress(thread.uniqueThreadIdentifier)
-            ])
+            return .partialSuccess([.archiveFrameError(
+                .contactThreadMissingAddress,
+                thread.uniqueThreadIdentifier
+            )])
         }
 
         guard let recipientId = context.recipientContext[recipientAddress] else {
-            return .partialSuccess([.referencedRecipientIdMissing(
-                thread.uniqueThreadIdentifier,
-                recipientAddress
+            return .partialSuccess([.archiveFrameError(
+                .referencedRecipientIdMissing(recipientAddress),
+                thread.uniqueThreadIdentifier
             )])
         }
 
@@ -188,9 +189,9 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
 
         let recipientAddress = MessageBackup.RecipientArchivingContext.Address.group(thread.groupId)
         guard let recipientId = context.recipientContext[recipientAddress] else {
-            return .partialSuccess([.referencedRecipientIdMissing(
-                thread.uniqueThreadIdentifier,
-                recipientAddress
+            return .partialSuccess([.archiveFrameError(
+                .referencedRecipientIdMissing(recipientAddress),
+                thread.uniqueThreadIdentifier
             )])
         }
 
@@ -270,9 +271,10 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         let thread: MessageBackup.ChatThread
         switch context.recipientContext[chat.typedRecipientId] {
         case .none:
-            return .failure(
-                [.invalidProtoData(chat.chatId, .recipientIdNotFound(chat.typedRecipientId))]
-            )
+            return .failure([.restoreFrameError(
+                .invalidProtoData(.recipientIdNotFound(chat.typedRecipientId)),
+                chat.chatId
+            )])
         case .localAddress:
             let noteToSelfThread = threadStore.getOrCreateContactThread(
                 with: context.recipientContext.localIdentifiers.aciAddress,
@@ -286,9 +288,10 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
                 let groupThread = threadStore.fetchGroupThread(groupId: groupId, tx: tx),
                 groupThread.isGroupV2Thread
             else {
-                return .failure(
-                    [.referencedGroupThreadNotFound(chat.chatId, groupId)]
-                )
+                return .failure([.restoreFrameError(
+                    .referencedGroupThreadNotFound(groupId),
+                    chat.chatId
+                )])
             }
             thread = .groupV2(groupThread)
         case .contact(let address):

@@ -313,8 +313,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 }
             case .call(let backupProtoCall):
                 // TODO: Not yet implemented.
-                try processRestoreFrameErrors(errors: [
-                    .unimplemented(MessageBackup.CallId(
+                try processRestoreFrameErrors(errors: [.restoreFrameError(
+                    .unimplemented,
+                    MessageBackup.CallId(
                         callId: backupProtoCall.callId,
                         conversationRecipientId: MessageBackup.RecipientId(
                             integerLiteral: backupProtoCall.conversationRecipientId
@@ -323,19 +324,16 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 ])
             case .stickerPack(let backupProtoStickerPack):
                 // TODO: Not yet implemented.
-                try processRestoreFrameErrors(errors: [
-                    .unimplemented(MessageBackup.StickerPackId(
-                        backupProtoStickerPack.id
-                    ))
-                ])
+                try processRestoreFrameErrors(errors: [.restoreFrameError(
+                    .unimplemented,
+                    MessageBackup.StickerPackId(backupProtoStickerPack.id)
+                )])
             case nil:
                 owsFailDebug("Frame missing item!")
-                try processRestoreFrameErrors(errors: [
-                    .invalidProtoData(
-                        MessageBackup.EmptyFrameId.shared,
-                        .frameMissingItem
-                    )
-                ])
+                try processRestoreFrameErrors(errors: [.restoreFrameError(
+                    .invalidProtoData(.frameMissingItem),
+                    MessageBackup.EmptyFrameId.shared
+                )])
             }
         }
 
