@@ -182,6 +182,7 @@ private class TrackingStreamTransform: StreamTransform, FinalizableStreamTransfo
     public func readBufferedData() throws -> Data { .init() }
 
     public func finalize() throws -> Data {
+        self.hasFinalized = true
         self._digest = try self.digestContext?.finalize()
         return Data()
     }
