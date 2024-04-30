@@ -10,14 +10,10 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString *const OWSOrphanDataCleaner_LastCleaningVersionKey;
 extern NSString *const OWSOrphanDataCleaner_LastCleaningDateKey;
 
-@class SDSKeyValueStore;
-
 // Notes:
 //
 // * On disk, we only bother cleaning up files, not directories.
 @interface OWSOrphanDataCleaner : NSObject
-
-+ (SDSKeyValueStore *)keyValueStore;
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
@@ -26,9 +22,6 @@ extern NSString *const OWSOrphanDataCleaner_LastCleaningDateKey;
 + (void)auditAndCleanup:(BOOL)shouldCleanup;
 // This is exposed for the tests.
 + (void)auditAndCleanup:(BOOL)shouldCleanup completion:(nullable dispatch_block_t)completion;
-
-// Exposed for Swift
-+ (BOOL)isMainAppAndActive;
 
 @end
 

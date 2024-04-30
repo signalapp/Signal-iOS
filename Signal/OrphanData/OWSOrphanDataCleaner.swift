@@ -38,8 +38,17 @@ class OWSOrphanData: NSObject {
 private typealias OrphanDataBlock = (_ orphanData: OWSOrphanData) -> ()
 
 extension OWSOrphanDataCleaner {
+
+    /// Unlike CurrentAppContext().isMainAppAndActive, this method can be safely
+    /// invoked off the main thread.
+    @objc static var isMainAppAndActive: Bool {
+        CurrentAppContext().reportedApplicationState == .active
+    }
+
+    @objc static let keyValueStore = SDSKeyValueStore(collection: "OWSOrphanDataCleaner_Collection")
+
     /// We use the lowest priority possible.
-    @objc static var workQueue = DispatchQueue.global(qos: .background)
+    @objc static let workQueue = DispatchQueue.global(qos: .background)
 
     static func auditOnLaunchIfNecessary() {
         AssertIsOnMainThread()
@@ -53,7 +62,7 @@ extension OWSOrphanDataCleaner {
     }
 
     private static func shouldAuditWithSneakyTransaction() -> Bool {
-        let kvs = keyValueStore()
+        let kvs = keyValueStore
         let currentAppVersion = AppVersionImpl.shared.currentAppVersion
 
         return databaseStorage.read { transaction -> Bool in
@@ -112,7 +121,7 @@ extension OWSOrphanDataCleaner {
                 try JobRecordFinderImpl<JobRecordType>(db: DependenciesBridge.shared.db).enumerateJobRecords(
                     transaction: transaction.asV2Read,
                     block: { jobRecord, stop in
-                        guard isMainAppAndActive() else {
+                        guard isMainAppAndActive else {
                             shouldAbort = true
                             stop = true
                             return
@@ -309,7 +318,7 @@ extension OWSOrphanDataCleaner {
     /// abort if the app resigns active, in order to avoid `0xdead10cc` crashes.
     @objc
     static func processOrphansSync(_ orphanData: OWSOrphanData, shouldRemoveOrphans: Bool) -> Bool {
-        guard isMainAppAndActive() else {
+        guard isMainAppAndActive else {
             return false
         }
 
@@ -324,7 +333,7 @@ extension OWSOrphanDataCleaner {
         databaseStorage.write { transaction in
             var interactionsRemoved: UInt = 0
             for interactionId in orphanData.interactionIds {
-                guard isMainAppAndActive() else {
+                guard isMainAppAndActive else {
                     shouldAbort = true
                     return
                 }
@@ -350,7 +359,7 @@ extension OWSOrphanDataCleaner {
 
             var attachmentsRemoved: UInt = 0
             for attachmentId in orphanData.attachmentIds {
-                guard isMainAppAndActive() else {
+                guard isMainAppAndActive else {
                     shouldAbort = true
                     return
                 }
@@ -380,7 +389,7 @@ extension OWSOrphanDataCleaner {
 
             var reactionsRemoved: UInt = 0
             for reactionId in orphanData.reactionIds {
-                guard isMainAppAndActive() else {
+                guard isMainAppAndActive else {
                     shouldAbort = true
                     return
                 }
@@ -397,7 +406,7 @@ extension OWSOrphanDataCleaner {
 
             var mentionsRemoved: UInt = 0
             for mentionId in orphanData.mentionIds {
-                guard isMainAppAndActive() else {
+                guard isMainAppAndActive else {
                     shouldAbort = true
                     return
                 }
@@ -424,7 +433,7 @@ extension OWSOrphanDataCleaner {
         var filesRemoved: UInt = 0
         let filePaths = orphanData.filePaths.sorted()
         for filePath in filePaths {
-            guard isMainAppAndActive() else {
+            guard isMainAppAndActive else {
                 return false
             }
 
@@ -468,7 +477,7 @@ extension OWSOrphanDataCleaner {
         // Sort by longest path to shortest path so that we remove files before we
         // try to remove the directories that contain them.
         for fileOrDirectoryPath in fileAndDirectoryPaths.sorted(by: { $0.count < $1.count }).reversed() {
-            if !self.isMainAppAndActive() {
+            if !self.isMainAppAndActive {
                 return false
             }
             do {

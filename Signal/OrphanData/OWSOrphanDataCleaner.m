@@ -25,23 +25,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 
 @implementation OWSOrphanDataCleaner
 
-+ (SDSKeyValueStore *)keyValueStore
-{
-    static SDSKeyValueStore *keyValueStore = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        NSString *const OWSOrphanDataCleaner_Collection = @"OWSOrphanDataCleaner_Collection";
-        keyValueStore = [[SDSKeyValueStore alloc] initWithCollection:OWSOrphanDataCleaner_Collection];
-    });
-    return keyValueStore;
-}
-
-/// Unlike CurrentAppContext().isMainAppAndActive, this method can be safely
-/// invoked off the main thread.
-+ (BOOL)isMainAppAndActive
-{
-    return CurrentAppContext().reportedApplicationState == UIApplicationStateActive;
-}
 
 + (long long)fileSizeOfFilePath:(NSString *)filePath
 {
