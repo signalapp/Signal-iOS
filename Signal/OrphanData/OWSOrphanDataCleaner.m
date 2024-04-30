@@ -475,11 +475,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     [self auditAndCleanup:shouldRemoveOrphans completion:^ {}];
 }
 
-// We use the lowest priority possible.
-+ (dispatch_queue_t)workQueue
-{
-    return dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
-}
 
 + (void)auditAndCleanup:(BOOL)shouldRemoveOrphans completion:(nullable dispatch_block_t)completion
 {

@@ -38,6 +38,9 @@ class OWSOrphanData: NSObject {
 private typealias OrphanDataBlock = (_ orphanData: OWSOrphanData) -> ()
 
 extension OWSOrphanDataCleaner {
+    /// We use the lowest priority possible.
+    @objc static var workQueue = DispatchQueue.global(qos: .background)
+
     static func auditOnLaunchIfNecessary() {
         AssertIsOnMainThread()
 
