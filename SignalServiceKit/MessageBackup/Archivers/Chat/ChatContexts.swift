@@ -8,19 +8,25 @@ import LibSignalClient
 
 extension MessageBackup {
 
-    public struct ChatId: ExpressibleByIntegerLiteral, Hashable {
+    public struct ChatId: Hashable, MessageBackupLoggableId {
+        let value: UInt64
 
-        public typealias IntegerLiteralType = UInt64
-
-        internal let value: UInt64
-
-        public init(integerLiteral value: UInt64) {
+        public init(value: UInt64) {
             self.value = value
         }
 
-        fileprivate init(_ value: UInt64) {
-            self.value = value
+        fileprivate init(chat: BackupProto.Chat) {
+            self.init(value: chat.id)
         }
+
+        fileprivate init(chatItem: BackupProto.ChatItem) {
+            self.init(value: chatItem.chatId)
+        }
+
+        // MARK: MessageBackupLoggableId
+
+        public var typeLogString: String { "BackupProto.Chat" }
+        public var idLogString: String { "\(value)" }
     }
 
     /// Chats only exist for group (v2) and contact threads, not story threads.
@@ -40,22 +46,33 @@ extension MessageBackup {
         }
 
         public var uniqueId: MessageBackup.ThreadUniqueId {
-            return .init(self.thread.uniqueId)
+            return .init(chatThread: self)
         }
     }
 
-    public struct ThreadUniqueId: ExpressibleByStringLiteral, Hashable {
-        public typealias StringLiteralType = String
+    public struct ThreadUniqueId: Hashable, MessageBackupLoggableId {
+        let value: String
 
-        internal let value: String
-
-        public init(stringLiteral value: String) {
+        public init(value: String) {
             self.value = value
         }
 
-        public init(_ value: String) {
-            self.value = value
+        fileprivate init(thread: TSThread) {
+            self.init(value: thread.uniqueId)
         }
+
+        fileprivate init(interaction: TSInteraction) {
+            self.init(value: interaction.uniqueThreadId)
+        }
+
+        fileprivate init(chatThread: ChatThread) {
+            self.init(thread: chatThread.thread)
+        }
+
+        // MARK: MessageBackupLoggableId
+
+        public var typeLogString: String { "TSThread" }
+        public var idLogString: String { value }
     }
 
     /**
@@ -71,7 +88,7 @@ extension MessageBackup {
 
         public let recipientContext: RecipientArchivingContext
 
-        private var currentChatId: ChatId = 1
+        private var currentChatId = ChatId(value: 1)
         private let map = SharedMap<ThreadUniqueId, ChatId>()
 
         internal init(recipientContext: RecipientArchivingContext) {
@@ -80,7 +97,7 @@ extension MessageBackup {
 
         internal func assignChatId(to threadUniqueId: ThreadUniqueId) -> ChatId {
             defer {
-                currentChatId = ChatId(currentChatId.value + 1)
+                currentChatId = ChatId(value: currentChatId.value + 1)
             }
             map[threadUniqueId] = currentChatId
             return currentChatId
@@ -142,39 +159,27 @@ extension MessageBackup {
 extension BackupProto.Chat {
 
     public var chatId: MessageBackup.ChatId {
-        return .init(id)
+        return MessageBackup.ChatId(chat: self)
     }
 }
 
 extension BackupProto.ChatItem {
 
     public var typedChatId: MessageBackup.ChatId {
-        return .init(chatId)
+        return MessageBackup.ChatId(chatItem: self)
     }
 }
 
 extension TSThread {
 
     public var uniqueThreadIdentifier: MessageBackup.ThreadUniqueId {
-        return .init(self.uniqueId)
+        return MessageBackup.ThreadUniqueId(thread: self)
     }
 }
 
 extension TSInteraction {
 
     public var uniqueThreadIdentifier: MessageBackup.ThreadUniqueId {
-        return .init(self.uniqueThreadId)
+        return MessageBackup.ThreadUniqueId(interaction: self)
     }
-}
-
-extension MessageBackup.ThreadUniqueId: MessageBackupLoggableId {
-    public var typeLogString: String { "TSThread" }
-
-    public var idLogString: String { value }
-}
-
-extension MessageBackup.ChatId: MessageBackupLoggableId {
-    public var typeLogString: String { "BackupProto.Chat" }
-
-    public var idLogString: String { "\(value)" }
 }

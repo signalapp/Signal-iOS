@@ -48,7 +48,7 @@ public protocol MessageBackupLocalRecipientArchiver: MessageBackupProtoArchiver 
 
 public class MessageBackupLocalRecipientArchiverImpl: MessageBackupLocalRecipientArchiver {
 
-    private static let localRecipientId = RecipientId(integerLiteral: 1)
+    private static let localRecipientId = RecipientId(value: 1)
 
     public func archiveLocalRecipient(stream: MessageBackupProtoOutputStream) -> MessageBackup.ArchiveLocalRecipientResult {
         let error = Self.writeFrameToStream(

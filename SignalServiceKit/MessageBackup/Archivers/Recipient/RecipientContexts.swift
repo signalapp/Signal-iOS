@@ -8,18 +8,35 @@ import LibSignalClient
 
 extension MessageBackup {
 
-    public struct RecipientId: ExpressibleByIntegerLiteral, Hashable {
+    public struct RecipientId: Hashable {
+        let value: UInt64
 
-        public typealias IntegerLiteralType = UInt64
-
-        internal let value: UInt64
-
-        public init(integerLiteral value: UInt64) {
+        public init(value: UInt64) {
             self.value = value
         }
 
-        fileprivate init(_ value: UInt64) {
-            self.value = value
+        fileprivate init(recipient: BackupProto.Recipient) {
+            self.init(value: recipient.id)
+        }
+
+        fileprivate init(chat: BackupProto.Chat) {
+            self.init(value: chat.recipientId)
+        }
+
+        fileprivate init(chatItem: BackupProto.ChatItem) {
+            self.init(value: chatItem.authorId)
+        }
+
+        fileprivate init(reaction: BackupProto.Reaction) {
+            self.init(value: reaction.authorId)
+        }
+
+        fileprivate init(quote: BackupProto.Quote) {
+            self.init(value: quote.authorId)
+        }
+
+        fileprivate init(sendStatus: BackupProto.SendStatus) {
+            self.init(value: sendStatus.recipientId)
         }
     }
 
@@ -59,7 +76,7 @@ extension MessageBackup {
             self.localRecipientId = localRecipientId
 
             // Start after the local recipient id.
-            currentRecipientId = RecipientId(localRecipientId.value + 1)
+            currentRecipientId = RecipientId(value: localRecipientId.value + 1)
 
             // Also insert the local identifiers, just in case we try and look
             // up the local recipient by .contact enum case.
@@ -74,7 +91,7 @@ extension MessageBackup {
 
         internal func assignRecipientId(to address: Address) -> RecipientId {
             defer {
-                currentRecipientId = RecipientId(currentRecipientId.value + 1)
+                currentRecipientId = RecipientId(value: currentRecipientId.value + 1)
             }
             switch address {
             case .group(let groupId):
@@ -168,40 +185,40 @@ extension MessageBackup.RecipientArchivingContext.Address: MessageBackupLoggable
 extension BackupProto.Recipient {
 
     public var recipientId: MessageBackup.RecipientId {
-        return .init(id)
+        return MessageBackup.RecipientId(recipient: self)
     }
 }
 
 extension BackupProto.Chat {
 
     public var typedRecipientId: MessageBackup.RecipientId {
-        return .init(recipientId)
+        return MessageBackup.RecipientId(chat: self)
     }
 }
 
 extension BackupProto.ChatItem {
 
     public var authorRecipientId: MessageBackup.RecipientId {
-        return .init(authorId)
+        return MessageBackup.RecipientId(chatItem: self)
     }
 }
 
 extension BackupProto.Reaction {
 
     public var authorRecipientId: MessageBackup.RecipientId {
-        return .init(authorId)
+        return MessageBackup.RecipientId(reaction: self)
     }
 }
 
 extension BackupProto.Quote {
 
     public var authorRecipientId: MessageBackup.RecipientId {
-        return .init(authorId)
+        return MessageBackup.RecipientId(quote: self)
     }
 }
 
 extension BackupProto.SendStatus {
     public var destinationRecipientId: MessageBackup.RecipientId {
-        return .init(recipientId)
+        return MessageBackup.RecipientId(sendStatus: self)
     }
 }

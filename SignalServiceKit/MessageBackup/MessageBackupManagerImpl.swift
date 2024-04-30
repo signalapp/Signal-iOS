@@ -318,7 +318,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                     MessageBackup.CallId(
                         callId: backupProtoCall.callId,
                         conversationRecipientId: MessageBackup.RecipientId(
-                            integerLiteral: backupProtoCall.conversationRecipientId
+                            value: backupProtoCall.conversationRecipientId
                         )
                     ))
                 ])
