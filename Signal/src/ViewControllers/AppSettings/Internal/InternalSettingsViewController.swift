@@ -204,7 +204,7 @@ private extension InternalSettingsViewController {
         ) { modal in
             Task {
                 do {
-                    let fileUrl = try await DependenciesBridge.shared.messageBackupManager.createBackup(localIdentifiers: localIdentifiers)
+                    let fileUrl = try await DependenciesBridge.shared.messageBackupManager.createBackup(localIdentifiers: localIdentifiers).fileUrl
                     await MainActor.run {
                         modal.dismiss()
 
