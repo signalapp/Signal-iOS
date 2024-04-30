@@ -98,8 +98,8 @@ public class FeatureFlags: NSObject {
 
     public static let callLinkJoin = build.includes(.dev)
 
-    public static let callReactionReceiveSupport = build.includes(.internal)
-    public static let callReactionSendSupport = build.includes(.internal)
+    public static let callReactionReceiveSupport = build.includes(.production)
+    public static let callReactionSendSupport = build.includes(.production)
 
     public static let callRaiseHandReceiveSupport = build.includes(.dev)
 }
