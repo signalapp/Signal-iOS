@@ -21,26 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *const OWSOrphanDataCleaner_LastCleaningVersionKey = @"OWSOrphanDataCleaner_LastCleaningVersionKey";
 NSString *const OWSOrphanDataCleaner_LastCleaningDateKey = @"OWSOrphanDataCleaner_LastCleaningDateKey";
 
-@interface OWSOrphanData : NSObject
-
-@property (nonatomic) NSSet<NSString *> *interactionIds;
-@property (nonatomic) NSSet<NSString *> *attachmentIds;
-@property (nonatomic) NSSet<NSString *> *filePaths;
-@property (nonatomic) NSSet<NSString *> *reactionIds;
-@property (nonatomic) NSSet<NSString *> *mentionIds;
-@property (nonatomic) NSSet<NSString *> *fileAndDirectoryPaths;
-@property (nonatomic) BOOL hasOrphanedPacksOrStickers;
-
-@end
-
-#pragma mark -
-
-@implementation OWSOrphanData
-
-@end
-
-#pragma mark -
-
 typedef void (^OrphanDataBlock)(OWSOrphanData *);
 
 @implementation OWSOrphanDataCleaner
@@ -481,15 +461,13 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     [orphanFileAndDirectoryPaths unionSet:voiceMessageDraftOrphanedPaths];
     [orphanFileAndDirectoryPaths unionSet:wallpaperOrphanedPaths];
 
-    OWSOrphanData *result = [OWSOrphanData new];
-    result.interactionIds = [orphanInteractionIds copy];
-    result.attachmentIds = [orphanAttachmentIds copy];
-    result.filePaths = [orphanFilePaths copy];
-    result.reactionIds = [orphanReactionIds copy];
-    result.mentionIds = [orphanMentionIds copy];
-    result.fileAndDirectoryPaths = [orphanFileAndDirectoryPaths copy];
-    result.hasOrphanedPacksOrStickers = hasOrphanedPacksOrStickers;
-    return result;
+    return [[OWSOrphanData alloc] initWithInteractionIds:[orphanInteractionIds copy]
+                                           attachmentIds:[orphanAttachmentIds copy]
+                                               filePaths:[orphanFilePaths copy]
+                                             reactionIds:[orphanReactionIds copy]
+                                              mentionIds:[orphanMentionIds copy]
+                                   fileAndDirectoryPaths:[orphanFileAndDirectoryPaths copy]
+                              hasOrphanedPacksOrStickers:hasOrphanedPacksOrStickers];
 }
 
 + (void)auditAndCleanup:(BOOL)shouldRemoveOrphans

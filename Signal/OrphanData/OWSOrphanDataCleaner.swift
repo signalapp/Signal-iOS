@@ -8,6 +8,35 @@ import SignalCoreKit
 import SignalServiceKit
 import SignalUI
 
+// TODO: Convert to struct after all code is swift.
+@objcMembers
+class OWSOrphanData: NSObject {
+    let interactionIds: Set<String>
+    let attachmentIds: Set<String>
+    let filePaths: Set<String>
+    let reactionIds: Set<String>
+    let mentionIds: Set<String>
+    let fileAndDirectoryPaths: Set<String>
+    let hasOrphanedPacksOrStickers: Bool
+
+    init(interactionIds: Set<String>,
+         attachmentIds: Set<String>,
+         filePaths: Set<String>,
+         reactionIds: Set<String>,
+         mentionIds: Set<String>,
+         fileAndDirectoryPaths: Set<String>,
+         hasOrphanedPacksOrStickers: Bool) {
+        self.interactionIds = interactionIds
+        self.attachmentIds = attachmentIds
+        self.filePaths = filePaths
+        self.reactionIds = reactionIds
+        self.mentionIds = mentionIds
+        self.fileAndDirectoryPaths = fileAndDirectoryPaths
+        self.hasOrphanedPacksOrStickers = hasOrphanedPacksOrStickers
+    }
+}
+private typealias OrphanDataBlock = (_ orphanData: OWSOrphanData) -> ()
+
 extension OWSOrphanDataCleaner {
     static func auditOnLaunchIfNecessary() {
         AssertIsOnMainThread()
