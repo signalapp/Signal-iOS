@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalRingRTC
 import SignalServiceKit
 import UIKit
@@ -298,6 +299,23 @@ class IncomingReactionsView: UIView, ReactionReceiver {
     }
 }
 
+// MARK: - ReactionBurstAligner
+
+extension IncomingReactionsView: ReactionBurstAligner {
+    func burstStartingPoint(in view: UIView) -> CGPoint {
+        let y = self.bounds.maxY - Constants.reactionViewHeight
+        let originalPosition = CGPoint(x: 0, y: y)
+        return self.convert(
+            originalPosition,
+            to: view
+        )
+    }
+
+    func emojiStartingSize() -> CGFloat {
+        return ReactionView.Constants.emojiDimension
+    }
+}
+
 // MARK: - Model classes/structs
 
 class ReactionsModel {
@@ -389,6 +407,7 @@ class ReactionsModel {
 struct Reaction {
     let emoji: String
     let name: String
+    let aci: Aci
     let timestamp: TimeInterval
 
     let uuid = UUID()
@@ -396,10 +415,12 @@ struct Reaction {
     init(
         emoji: String,
         name: String,
+        aci: Aci,
         timestamp: TimeInterval
     ) {
         self.emoji = emoji
         self.name = name
+        self.aci = aci
         self.timestamp = timestamp
     }
 }

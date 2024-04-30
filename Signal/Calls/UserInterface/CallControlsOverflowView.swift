@@ -19,7 +19,7 @@ class CallControlsOverflowView: UIView {
     }()
 
     private var reactionSender: ReactionSender?
-    private var reactionReceiver: ReactionReceiver?
+    private var reactionsSink: ReactionsSink?
 
     private weak var emojiPickerSheetPresenter: EmojiPickerSheetPresenter?
 
@@ -38,13 +38,13 @@ class CallControlsOverflowView: UIView {
 
     convenience init(
         reactionSender: ReactionSender,
-        reactionReceiver: ReactionReceiver,
+        reactionsSink: ReactionsSink,
         emojiPickerSheetPresenter: EmojiPickerSheetPresenter,
         callControlsOverflowPresenter: CallControlsOverflowPresenter
     ) {
         self.init(frame: .zero)
         self.reactionSender = reactionSender
-        self.reactionReceiver = reactionReceiver
+        self.reactionsSink = reactionsSink
         self.emojiPickerSheetPresenter = emojiPickerSheetPresenter
         self.callControlsOverflowPresenter = callControlsOverflowPresenter
     }
@@ -123,12 +123,20 @@ extension CallControlsOverflowView: MessageReactionPickerDelegate {
     private func react(with reaction: String) {
         self.callControlsOverflowPresenter?.willSendReaction()
         self.reactionSender?.react(value: reaction)
+        let localAci = databaseStorage.read { tx in
+            DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci
+        }
+        guard let localAci else {
+            owsFailDebug("Local user is in call but doesn't have ACI!")
+            return
+        }
         // Locally-sent reactions do not come in via the API, so we add them here.
-        self.reactionReceiver?.addReactions(
+        self.reactionsSink?.addReactions(
             reactions: [
                 Reaction(
                     emoji: reaction,
                     name: CommonStrings.you,
+                    aci: localAci,
                     timestamp: Date.timeIntervalSinceReferenceDate
                 )
             ]
@@ -143,12 +151,6 @@ protocol ReactionSender {
 }
 
 extension GroupCall: ReactionSender {}
-
-// MARK: ReactionReceiver
-
-protocol ReactionReceiver {
-    func addReactions(reactions: [Reaction])
-}
 
 // MARK: - EmojiPickerSheetPresenter
 

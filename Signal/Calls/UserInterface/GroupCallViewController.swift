@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalServiceKit
 import SignalRingRTC
 import SignalUI
@@ -98,10 +99,19 @@ class GroupCallViewController: UIViewController {
     private var postAnimationUpdateMemberViewFramesSize: CGSize?
     private var postAnimationUpdateMemberViewFramesControlsAreHidden: Bool?
 
+    private lazy var reactionsBurstView: ReactionsBurstView = {
+        ReactionsBurstView(burstAligner: self.incomingReactionsView)
+    }()
+    private lazy var reactionsSink: ReactionsSink = {
+        ReactionsSink(reactionReceivers: [
+            self.incomingReactionsView,
+            self.reactionsBurstView
+        ])
+    }()
     private lazy var callControlsOverflowView: CallControlsOverflowView = {
         return CallControlsOverflowView(
             reactionSender: self.groupCall,
-            reactionReceiver: self.incomingReactionsView,
+            reactionsSink: self.reactionsSink,
             emojiPickerSheetPresenter: self,
             callControlsOverflowPresenter: self
         )
@@ -250,13 +260,11 @@ class GroupCallViewController: UIViewController {
         scrollView.addSubview(videoGrid)
         scrollView.addSubview(speakerPage)
 
-        if FeatureFlags.callReactionReceiveSupport {
-            view.addSubview(incomingReactionsView)
-            incomingReactionsView.autoPinEdge(.leading, to: .leading, of: view, withOffset: 22)
-            incomingReactionsView.autoPinEdge(.bottom, to: .top, of: videoOverflow, withOffset: -25)
-            incomingReactionsView.widthAnchor.constraint(equalToConstant: IncomingReactionsView.Constants.viewWidth).isActive = true
-            incomingReactionsView.heightAnchor.constraint(equalToConstant: IncomingReactionsView.viewHeight).isActive = true
-        }
+        view.addSubview(incomingReactionsView)
+        incomingReactionsView.autoPinEdge(.leading, to: .leading, of: view, withOffset: 22)
+        incomingReactionsView.autoPinEdge(.bottom, to: .top, of: videoOverflow, withOffset: -25)
+        incomingReactionsView.widthAnchor.constraint(equalToConstant: IncomingReactionsView.Constants.viewWidth).isActive = true
+        incomingReactionsView.heightAnchor.constraint(equalToConstant: IncomingReactionsView.viewHeight).isActive = true
 
         scrollView.addSubview(swipeToastView)
         swipeToastView.autoPinEdge(.bottom, to: .bottom, of: videoGrid, withOffset: -22)
@@ -275,6 +283,9 @@ class GroupCallViewController: UIViewController {
             callControlsOverflowView.autoPinEdge(.trailing, to: .trailing, of: view, withOffset: -12)
         }
         callControlsOverflowView.autoPinEdge(.bottom, to: .top, of: callControls, withOffset: -12)
+
+        view.addSubview(reactionsBurstView)
+        reactionsBurstView.autoPinEdgesToSuperviewEdges()
 
         view.addGestureRecognizer(tapGesture)
 
@@ -1053,22 +1064,36 @@ extension GroupCallViewController: CallObserver {
     }
 
     func groupCallReceivedReactions(_ call: SignalCall, reactions: [SignalRingRTC.Reaction]) {
+        let localAci = databaseStorage.read { tx in
+            return DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci
+        }
+        guard let localAci else {
+            owsFailDebug("Local user is in call but doesn't have ACI!")
+            return
+        }
         let mappedReactions = databaseStorage.read { tx in
-            let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)
             return reactions.map { reaction in
                 let name: String
+                let aci: Aci
                 if
                     let remoteDeviceState = call.groupCall.remoteDeviceStates[reaction.demuxId],
-                    remoteDeviceState.aci != localIdentifiers?.aci
+                    remoteDeviceState.aci != localAci
                 {
                     name = contactsManager.displayName(for: remoteDeviceState.address, tx: tx).resolvedValue()
+                    aci = remoteDeviceState.aci
                 } else {
                     name = CommonStrings.you
+                    aci = localAci
                 }
-                return Reaction(emoji: reaction.value, name: name, timestamp: Date.timeIntervalSinceReferenceDate)
+                return Reaction(
+                    emoji: reaction.value,
+                    name: name,
+                    aci: aci,
+                    timestamp: Date.timeIntervalSinceReferenceDate
+                )
             }
         }
-        self.incomingReactionsView.addReactions(reactions: mappedReactions)
+        self.reactionsSink.addReactions(reactions: mappedReactions)
     }
 
     func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [UInt32]) {

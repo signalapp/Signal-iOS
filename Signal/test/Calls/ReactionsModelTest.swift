@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import XCTest
 
 @testable import Signal
@@ -35,7 +36,7 @@ final class ReactionsModelTest: XCTestCase {
         XCTAssert(model.changesSinceLastDiff() == nil)
 
         // Add one.
-        let r1 = Reaction(emoji: "🤣", name: "Much LOL", timestamp: Date.timeIntervalSinceReferenceDate)
+        let r1 = Reaction(emoji: "🤣", name: "Much LOL", aci: Aci(fromUUID: UUID()), timestamp: Date.timeIntervalSinceReferenceDate)
         model.add(reactions: [r1])
         XCTAssert(
             changesMatchExpected(
@@ -48,8 +49,8 @@ final class ReactionsModelTest: XCTestCase {
         )
 
         // Add two together.
-        let r2 = Reaction(emoji: "🫠", name: "Monsieur Melty Face", timestamp: Date.timeIntervalSinceReferenceDate)
-        let r3 = Reaction(emoji: "🤮", name: "Blehhh", timestamp: Date.timeIntervalSinceReferenceDate)
+        let r2 = Reaction(emoji: "🫠", name: "Monsieur Melty Face", aci: Aci(fromUUID: UUID()), timestamp: Date.timeIntervalSinceReferenceDate)
+        let r3 = Reaction(emoji: "🤮", name: "Blehhh", aci: Aci(fromUUID: UUID()), timestamp: Date.timeIntervalSinceReferenceDate)
         model.add(reactions: [r2, r3])
         XCTAssert(
             changesMatchExpected(
@@ -65,12 +66,12 @@ final class ReactionsModelTest: XCTestCase {
         XCTAssert(model.changesSinceLastDiff() == nil)
 
         // Add more reactions than the max (5).
-        let r4 = Reaction(emoji: "🙈", name: "Monkey See Monkey Do", timestamp: Date.timeIntervalSinceReferenceDate)
-        let r5 = Reaction(emoji: "😠", name: "Grumpy", timestamp: Date.timeIntervalSinceReferenceDate)
-        let r6 = Reaction(emoji: "🤧", name: "Sneezy", timestamp: Date.timeIntervalSinceReferenceDate)
-        let r7 = Reaction(emoji: "🥸", name: "Incognito", timestamp: Date.timeIntervalSinceReferenceDate)
-        let r8 = Reaction(emoji: "🥺", name: "Dawwwww", timestamp: Date.timeIntervalSinceReferenceDate)
-        let r9 = Reaction(emoji: "🥳", name: "Par-tay", timestamp: Date.timeIntervalSinceReferenceDate)
+        let r4 = Reaction(emoji: "🙈", name: "Monkey See Monkey Do", aci: Aci(fromUUID: UUID()), timestamp: Date.timeIntervalSinceReferenceDate)
+        let r5 = Reaction(emoji: "😠", name: "Grumpy", aci: Aci(fromUUID: UUID()), timestamp: Date.timeIntervalSinceReferenceDate)
+        let r6 = Reaction(emoji: "🤧", name: "Sneezy", aci: Aci(fromUUID: UUID()), timestamp: Date.timeIntervalSinceReferenceDate)
+        let r7 = Reaction(emoji: "🥸", name: "Incognito", aci: Aci(fromUUID: UUID()), timestamp: Date.timeIntervalSinceReferenceDate)
+        let r8 = Reaction(emoji: "🥺", name: "Dawwwww", aci: Aci(fromUUID: UUID()), timestamp: Date.timeIntervalSinceReferenceDate)
+        let r9 = Reaction(emoji: "🥳", name: "Par-tay", aci: Aci(fromUUID: UUID()), timestamp: Date.timeIntervalSinceReferenceDate)
         model.add(reactions: [r4, r5, r6, r7, r8, r9])
         XCTAssert(
             changesMatchExpected(
@@ -83,8 +84,8 @@ final class ReactionsModelTest: XCTestCase {
         )
 
         // Add a couple more to get changes in all categories.
-        let r10 = Reaction(emoji: "😩", name: "No compile", timestamp: Date.timeIntervalSinceReferenceDate)
-        let r11 = Reaction(emoji: "👽", name: "Outta this world", timestamp: Date.timeIntervalSinceReferenceDate)
+        let r10 = Reaction(emoji: "😩", name: "No compile", aci: Aci(fromUUID: UUID()), timestamp: Date.timeIntervalSinceReferenceDate)
+        let r11 = Reaction(emoji: "👽", name: "Outta this world", aci: Aci(fromUUID: UUID()), timestamp: Date.timeIntervalSinceReferenceDate)
         model.add(reactions: [r10, r11])
         XCTAssert(
             changesMatchExpected(
@@ -98,7 +99,7 @@ final class ReactionsModelTest: XCTestCase {
 
         // Make separate adds/removes and make sure the changeset coalesces all changes.
         model.remove(uuids: [r7.uuid])
-        let r12 = Reaction(emoji: "🍀", name: "Lucky", timestamp: Date.timeIntervalSinceReferenceDate)
+        let r12 = Reaction(emoji: "🍀", name: "Lucky", aci: Aci(fromUUID: UUID()), timestamp: Date.timeIntervalSinceReferenceDate)
         model.add(reactions: [r12])
         model.remove(uuids: [r8.uuid])
         model.remove(uuids: [r9.uuid])
