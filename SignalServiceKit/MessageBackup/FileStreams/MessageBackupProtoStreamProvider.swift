@@ -7,8 +7,9 @@ import Foundation
 import LibSignalClient
 
 extension MessageBackup {
+    public typealias MetadataProvider = () throws -> Upload.BackupUploadMetadata
     public enum OpenProtoOutputStreamResult {
-        case success(MessageBackupProtoOutputStream)
+        case success(MessageBackupProtoOutputStream, MetadataProvider)
         /// Unable to open a file stream due to file I/O errors.
         case unableToOpenFileStream
     }
@@ -63,11 +64,15 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
         }
 
         do {
+            let inputTrackingTransform = TrackingStreamTransform()
+            let outputTrackingTransform = TrackingStreamTransform(calculateDigest: true)
             let transformingOutputStream = TransformingOutputStream(
                 transforms: [
+                    inputTrackingTransform,
                     ChunkedOutputStreamTransform(),
                     try GzipStreamTransform(.compress),
-                    try backupKeyMaterial.createEncryptingStreamTransform(localAci: localAci, tx: tx)
+                    try backupKeyMaterial.createEncryptingStreamTransform(localAci: localAci, tx: tx),
+                    outputTrackingTransform
                 ],
                 outputStream: outputStream,
                 runLoop: streamRunloop
@@ -78,7 +83,15 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
                 outputStreamDelegate: outputStreamDelegate,
                 fileURL: fileUrl
             )
-            return .success(messageBackupOutputStream)
+
+            return .success(messageBackupOutputStream, {
+                return Upload.BackupUploadMetadata(
+                    fileUrl: fileUrl,
+                    digest: try outputTrackingTransform.digest(),
+                    encryptedDataLength: UInt32(clamping: outputTrackingTransform.count),
+                    plaintextDataLength: UInt32(clamping: inputTrackingTransform.count)
+                )
+            })
         } catch {
             return .unableToOpenFileStream
         }
@@ -131,5 +144,45 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
                 _hadError.set(true)
             }
         }
+    }
+}
+
+private class TrackingStreamTransform: StreamTransform, FinalizableStreamTransform {
+    public var hasFinalized: Bool = false
+    public let hasPendingBytes = false
+
+    private var digestContext: SHA256DigestContext?
+    private var _digest: Data?
+    public func digest() throws -> Data {
+        guard calculateDigest else {
+            throw OWSAssertionError("Not configured to calculate digest")
+        }
+        guard hasFinalized, let digest = _digest else {
+            throw OWSAssertionError("Reading digest before finalized")
+        }
+        return digest
+    }
+
+    private let calculateDigest: Bool
+    init(calculateDigest: Bool = false) {
+        self.calculateDigest = calculateDigest
+        if calculateDigest {
+            self.digestContext = SHA256DigestContext()
+        }
+    }
+
+    public private(set) var count: Int = 0
+
+    public func transform(data: Data) throws -> Data {
+        try digestContext?.update(data)
+        count += data.count
+        return data
+    }
+
+    public func readBufferedData() throws -> Data { .init() }
+
+    public func finalize() throws -> Data {
+        self._digest = try self.digestContext?.finalize()
+        return Data()
     }
 }

@@ -35,8 +35,7 @@ public protocol MessageBackupProtoOutputStream {
     func writeFrame(_ frame: BackupProto.Frame) -> MessageBackup.ProtoOutputStreamWriteResult
 
     /// Closes the output stream.
-    /// - Returns: URL of the file written to.
-    func closeFileStream() -> URL
+    func closeFileStream() throws
 }
 
 internal class MessageBackupProtoOutputStreamImpl: MessageBackupProtoOutputStream {
@@ -44,6 +43,7 @@ internal class MessageBackupProtoOutputStreamImpl: MessageBackupProtoOutputStrea
     private var outputStream: OutputStreamable
     private var outputStreamDelegate: StreamDelegate
     private var fileUrl: URL
+    private var uploadMetadata: Upload.BackupUploadMetadata?
 
     internal init(
         outputStream: OutputStreamable,
@@ -85,8 +85,7 @@ internal class MessageBackupProtoOutputStreamImpl: MessageBackupProtoOutputStrea
         return .success
     }
 
-    public func closeFileStream() -> URL {
+    public func closeFileStream() throws {
         try? outputStream.close()
-        return fileUrl
     }
 }

@@ -80,9 +80,11 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         tx: DBWriteTransaction
     ) throws -> URL {
         let stream: MessageBackupProtoOutputStream
+        let metadataProvider: MessageBackup.MetadataProvider
         switch streamProvider.openOutputFileStream(localAci: localIdentifiers.aci, tx: tx) {
-        case .success(let streamResult):
+        case let .success(streamResult, metadataProviderResult):
             stream = streamResult
+            metadataProvider = metadataProviderResult
         case .unableToOpenFileStream:
             throw OWSAssertionError("Unable to open output stream")
         }
@@ -159,7 +161,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             try processFatalArchivingError(error: error)
         }
 
-        return stream.closeFileStream()
+        try stream.closeFileStream()
+        return try metadataProvider().fileUrl
     }
 
     private func writeHeader(stream: MessageBackupProtoOutputStream, tx: DBWriteTransaction) throws {

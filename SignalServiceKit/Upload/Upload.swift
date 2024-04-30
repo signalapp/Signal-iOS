@@ -101,18 +101,18 @@ public enum Upload {
         }
     }
 
-    public struct BackupUploadMetadata {
+    public struct BackupUploadMetadata: UploadMetadata {
         /// File URL of the data consisting of "iv  + encrypted data + hmac"
-        let fileUrl: URL
+        public let fileUrl: URL
 
         /// The digest of the encrypted file.  The encrypted file consist of "iv + encrypted data + hmac"
-        let digest: Data
+        public let digest: Data
 
         /// The length of the encrypted data, consiting of "iv  + encrypted data + hmac"
-        let encryptedDataLength: UInt32
+        public let encryptedDataLength: UInt32
 
         /// The length of the unencrypted data
-        let plaintextDataLength: UInt32
+        public let plaintextDataLength: UInt32
     }
 
     public struct LocalUploadMetadata: UploadMetadata {
