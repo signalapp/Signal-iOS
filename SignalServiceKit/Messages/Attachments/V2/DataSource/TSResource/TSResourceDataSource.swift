@@ -10,7 +10,7 @@ import Foundation
 public struct TSResourceDataSource {
     let mimeType: String
     let caption: MessageBody?
-    let renderingFlag: AttachmentReference.RenderingFlag
+    private(set) var renderingFlag: AttachmentReference.RenderingFlag
     let sourceFilename: String?
 
     let dataSource: Source
@@ -113,6 +113,15 @@ public struct TSResourceDataSource {
             )
         default:
             fatalError("Invalid type combination!")
+        }
+    }
+
+    mutating func removeBorderlessRenderingFlagIfPresent() {
+        switch renderingFlag {
+        case .default, .voiceMessage, .shouldLoop:
+            break
+        case .borderless:
+            renderingFlag = .default
         }
     }
 }

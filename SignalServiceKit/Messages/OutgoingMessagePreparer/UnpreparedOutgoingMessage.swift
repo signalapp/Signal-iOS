@@ -255,8 +255,19 @@ public class UnpreparedOutgoingMessage {
             )
         }
         if message.unsavedBodyMediaAttachments.count > 0 {
+            // Borderless is disallowed on any message with a quoted reply.
+            let unsavedBodyMediaAttachments: [TSResourceDataSource]
+            if quotedReplyBuilder != nil {
+                unsavedBodyMediaAttachments = message.unsavedBodyMediaAttachments.map {
+                    var attachment = $0
+                    attachment.removeBorderlessRenderingFlagIfPresent()
+                    return attachment
+                }
+            } else {
+                unsavedBodyMediaAttachments = message.unsavedBodyMediaAttachments
+            }
             try DependenciesBridge.shared.tsResourceManager.createBodyMediaAttachmentStreams(
-                consuming: message.unsavedBodyMediaAttachments,
+                consuming: unsavedBodyMediaAttachments,
                 message: message.message,
                 tx: tx.asV2Write
             )
