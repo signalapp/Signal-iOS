@@ -268,6 +268,42 @@ extension OWSOrphanDataCleaner {
 
     // MARK: - Remove
 
+    /// Calls `failure` on exhausting all remaining retries, usually indicating that
+    /// orphan processing aborted due to the app resigning active. This method is
+    /// extremely careful to abort if the app resigns active, in order to avoid
+    /// `0xdead10cc` crashes.
+    @objc
+    static func processOrphans(_ orphanData: OWSOrphanData,
+                               remainingRetries: Int,
+                               shouldRemoveOrphans: Bool,
+                               success: @escaping () -> Void,
+                               failure: @escaping () -> Void) {
+        guard remainingRetries > 0 else {
+            Logger.info("Aborting orphan data audit.")
+            workQueue.async(failure)
+            return
+        }
+
+        // Wait until the app is active...
+        CurrentAppContext().runNowOr(whenMainAppIsActive: {
+            // ...but perform the work off the main thread.
+            let backgroundTask = OWSBackgroundTask(label: #function)
+            workQueue.async {
+                let result = processOrphansSync(orphanData, shouldRemoveOrphans: shouldRemoveOrphans)
+                if result {
+                    success()
+                } else {
+                    processOrphans(orphanData,
+                                   remainingRetries: remainingRetries - 1,
+                                   shouldRemoveOrphans: shouldRemoveOrphans,
+                                   success: success,
+                                   failure: failure)
+                }
+                backgroundTask.end()
+            }
+        })
+    }
+
     /// Returns `false` on failure, usually indicating that orphan processing
     /// aborted due to the app resigning active.  This method is extremely careful to
     /// abort if the app resigns active, in order to avoid `0xdead10cc` crashes.

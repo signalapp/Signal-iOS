@@ -557,44 +557,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         }];
 }
 
-// Returns NO on failure, usually indicating that orphan processing
-// aborted due to the app resigning active.  This method is extremely careful to
-// abort if the app resigns active, in order to avoid 0xdead10cc crashes.
-+ (void)processOrphans:(OWSOrphanData *)orphanData
-       remainingRetries:(NSInteger)remainingRetries
-    shouldRemoveOrphans:(BOOL)shouldRemoveOrphans
-                success:(dispatch_block_t)success
-                failure:(dispatch_block_t)failure
-{
-    OWSAssertDebug(orphanData);
-
-    if (remainingRetries < 1) {
-        OWSLogInfo(@"Aborting orphan data audit.");
-        dispatch_async(self.workQueue, ^{ failure(); });
-        return;
-    }
-
-    // Wait until the app is active...
-    [CurrentAppContext() runNowOrWhenMainAppIsActive:^{
-        // ...but perform the work off the main thread.
-        OWSBackgroundTask *_Nullable backgroundTask =
-            [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
-        dispatch_async(self.workQueue, ^{
-            BOOL result = [self processOrphansSync:orphanData shouldRemoveOrphans:shouldRemoveOrphans];
-            if (result) {
-                success();
-            } else {
-                [self processOrphans:orphanData
-                       remainingRetries:remainingRetries - 1
-                    shouldRemoveOrphans:shouldRemoveOrphans
-                                success:success
-                                failure:failure];
-            }
-            [backgroundTask endBackgroundTask];
-        });
-    }];
-}
-
 @end
 
 NS_ASSUME_NONNULL_END
