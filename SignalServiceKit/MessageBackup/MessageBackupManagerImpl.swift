@@ -10,6 +10,10 @@ public class NotImplementedError: Error {}
 public class BackupError: Error {}
 
 public class MessageBackupManagerImpl: MessageBackupManager {
+    private enum Constants {
+        static let keyValueStoreCollectionName = "MessageBackupManager"
+        static let keyValueStoreHasReservedBackupKey = "HasReservedBackupKey"
+    }
 
     private let accountDataArchiver: MessageBackupAccountDataArchiver
     private let backupRequestManager: MessageBackupRequestManager
@@ -17,6 +21,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let chatItemArchiver: MessageBackupChatItemArchiver
     private let dateProvider: DateProvider
     private let db: DB
+    private let kvStore: KeyValueStore
     private let localRecipientArchiver: MessageBackupLocalRecipientArchiver
     private let recipientArchiver: MessageBackupRecipientArchiver
     private let streamProvider: MessageBackupProtoStreamProvider
@@ -28,6 +33,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         chatItemArchiver: MessageBackupChatItemArchiver,
         dateProvider: @escaping DateProvider,
         db: DB,
+        kvStoreFactory: KeyValueStoreFactory,
         localRecipientArchiver: MessageBackupLocalRecipientArchiver,
         recipientArchiver: MessageBackupRecipientArchiver,
         streamProvider: MessageBackupProtoStreamProvider
@@ -41,6 +47,33 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.localRecipientArchiver = localRecipientArchiver
         self.recipientArchiver = recipientArchiver
         self.streamProvider = streamProvider
+
+        self.kvStore = kvStoreFactory.keyValueStore(collection: Constants.keyValueStoreCollectionName)
+    }
+
+    /// Initialize Message Backups by reserving a backup ID and registering a public key used to sign backup auth credentials.
+    /// These registration calls are safe to call multiple times, but to avoid unecessary network calls, the app will remember if
+    /// backups have been successfully registered on this device and will no-op in this case.
+    private func reserveAndRegister(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws {
+        guard db.read(block: { tx in
+            return kvStore.getBool(Constants.keyValueStoreHasReservedBackupKey, transaction: tx) ?? false
+        }).negated else {
+            return
+        }
+
+        // Both reserveBackupId and registerBackupKeys can be called multiple times, so if
+        // we think the backupId needs to be registered, register the public key at the same time.
+
+        try await backupRequestManager.reserveBackupId(localAci: localIdentifiers.aci, auth: auth)
+
+        let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(localAci: localIdentifiers.aci, auth: auth)
+
+        try await backupRequestManager.registerBackupKeys(auth: backupAuth)
+
+        // Remember this device has registered for backups
+        await db.awaitableWrite { [weak self] tx in
+            self?.kvStore.setBool(true, key: Constants.keyValueStoreHasReservedBackupKey, transaction: tx)
+        }
     }
 
     public func createBackup(localIdentifiers: LocalIdentifiers) async throws -> URL {

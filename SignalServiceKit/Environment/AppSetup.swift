@@ -711,6 +711,7 @@ public class AppSetup {
             ),
             dateProvider: dateProvider,
             db: db,
+            kvStoreFactory: keyValueStoreFactory,
             localRecipientArchiver: MessageBackupLocalRecipientArchiverImpl(),
             recipientArchiver: MessageBackupRecipientArchiverImpl(
                 blockingManager: MessageBackup.Wrappers.BlockingManager(blockingManager),
