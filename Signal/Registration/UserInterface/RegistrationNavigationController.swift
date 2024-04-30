@@ -573,8 +573,8 @@ extension RegistrationNavigationController: RegistrationRestoreFromBackupPresent
         pushNextController(coordinator.skipRestoreFromBackup())
     }
 
-    func didSelectBackup(fileUrl: URL) {
-        let guarantee = coordinator.restoreFromMessageBackup(fileUrl: fileUrl)
+    func didSelectBackup(type: RegistrationMessageBackupRestoreType) {
+        let guarantee = coordinator.restoreFromMessageBackup(type: type)
         pushNextController(guarantee, loadingMode: .restoringBackup)
     }
 }

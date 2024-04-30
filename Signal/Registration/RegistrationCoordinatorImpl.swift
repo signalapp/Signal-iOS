@@ -258,7 +258,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         }
     }
 
-    public func restoreFromMessageBackup(fileUrl: URL) -> Guarantee<RegistrationStep> {
+    public func restoreFromMessageBackup(type: RegistrationMessageBackupRestoreType) -> Guarantee<RegistrationStep> {
         Logger.info("")
         switch getPathway() {
         case
@@ -270,7 +270,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             owsFailBeta("Shouldn't be restoring from non-profile paths.")
             return nextStep()
         case .profileSetup(let identity):
-            return restoreFromMessageBackup(fileUrl: fileUrl, identity: identity)
+            return restoreFromMessageBackup(type: type, identity: identity)
         }
     }
 
@@ -413,9 +413,22 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return self.nextStep()
     }
 
-    private func restoreFromMessageBackup(fileUrl: URL, identity: AccountIdentity) -> Guarantee<RegistrationStep> {
+    private func restoreFromMessageBackup(
+        type: RegistrationMessageBackupRestoreType,
+        identity: AccountIdentity
+    ) -> Guarantee<RegistrationStep> {
         Logger.info("")
         return Promise.wrapAsync {
+            let fileUrl: URL
+            switch type {
+            case .local(let localFileUrl):
+                fileUrl = localFileUrl
+            case .remote:
+                fileUrl = try await self.deps.messageBackupManager.downloadBackup(
+                    localIdentifiers: identity.localIdentifiers,
+                    auth: identity.chatServiceAuth
+                )
+            }
             try await self.deps.messageBackupManager.importBackup(
                 localIdentifiers: identity.localIdentifiers,
                 fileUrl: fileUrl

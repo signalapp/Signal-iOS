@@ -7,8 +7,13 @@ import SignalServiceKit
 import SignalUI
 
 protocol RegistrationRestoreFromBackupPresenter: AnyObject {
-    func didSelectBackup(fileUrl: URL)
+    func didSelectBackup(type: RegistrationMessageBackupRestoreType)
     func skipRestoreFromBackup()
+}
+
+public enum RegistrationMessageBackupRestoreType {
+    case local(fileUrl: URL)
+    case remote
 }
 
 class RegistrationRestoreFromBackupViewController: OWSViewController {
@@ -197,7 +202,16 @@ class RegistrationRestoreFromBackupViewController: OWSViewController {
         }
 #endif
 
-        showMessageBackupPicker()
+        let actionSheet = ActionSheetController(title: "Choose backup import source:")
+        let localFileAction = ActionSheetAction(title: "Local backup") { [weak self] _ in
+            self?.showMessageBackupPicker()
+        }
+        actionSheet.addAction(localFileAction)
+        let remoteFileAction = ActionSheetAction(title: "Remote backup") { [weak self] _ in
+            self?.presenter?.didSelectBackup(type: .remote)
+        }
+        actionSheet.addAction(remoteFileAction)
+        presentActionSheet(actionSheet)
     }
 
     @objc
@@ -216,10 +230,10 @@ class RegistrationRestoreFromBackupViewController: OWSViewController {
 
 extension RegistrationRestoreFromBackupViewController: UIDocumentPickerDelegate {
 
-    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+    public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let fileUrl = urls.first else {
             return
         }
-        presenter?.didSelectBackup(fileUrl: fileUrl)
+        presenter?.didSelectBackup(type: .local(fileUrl: fileUrl))
     }
 }

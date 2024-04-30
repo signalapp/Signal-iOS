@@ -109,7 +109,7 @@ public protocol RegistrationCoordinator {
     func skipDeviceTransfer() -> Guarantee<RegistrationStep>
 
     /// Set the target backup fileUrl to be used in the next step to restore the system.
-    func restoreFromMessageBackup(fileUrl: URL) -> Guarantee<RegistrationStep>
+    func restoreFromMessageBackup(type: RegistrationMessageBackupRestoreType) -> Guarantee<RegistrationStep>
 
     /// Mark the users choice to skip restoring from backup and continuing to the next step.
     func skipRestoreFromBackup() -> Guarantee<RegistrationStep>
