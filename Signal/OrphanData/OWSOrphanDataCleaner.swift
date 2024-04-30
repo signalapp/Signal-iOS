@@ -265,8 +265,165 @@ extension OWSOrphanDataCleaner {
 
     // MARK: - Remove
 
+    /// Returns `false` on failure, usually indicating that orphan processing
+    /// aborted due to the app resigning active.  This method is extremely careful to
+    /// abort if the app resigns active, in order to avoid `0xdead10cc` crashes.
     @objc
-    static func removeOrphanedFileAndDirectoryPaths(_ fileAndDirectoryPaths: Set<String>) -> Bool {
+    static func processOrphansSync(_ orphanData: OWSOrphanData, shouldRemoveOrphans: Bool) -> Bool {
+        guard isMainAppAndActive() else {
+            return false
+        }
+
+        var shouldAbort = false
+
+        // We need to avoid cleaning up new files that are still in the process of
+        // being created/written, so we don't clean up anything recent.
+        let minimumOrphanAgeSeconds: TimeInterval = CurrentAppContext().isRunningTests ? 0 : 15 * kMinuteInterval
+        let appLaunchTime = CurrentAppContext().appLaunchTime
+        let thresholdTimestamp = appLaunchTime.timeIntervalSince1970 - minimumOrphanAgeSeconds
+        let thresholdDate = Date(timeIntervalSince1970: thresholdTimestamp)
+        databaseStorage.write { transaction in
+            var interactionsRemoved: UInt = 0
+            for interactionId in orphanData.interactionIds {
+                guard isMainAppAndActive() else {
+                    shouldAbort = true
+                    return
+                }
+                guard let interaction = TSInteraction.anyFetch(uniqueId: interactionId, transaction: transaction) else {
+                    // This could just be a race condition, but it should be very unlikely.
+                    Logger.warn("Could not load interaction: \(interactionId)")
+                    continue
+                }
+                // Don't delete interactions which were created in the last N minutes.
+                let creationDate = NSDate.ows_date(withMillisecondsSince1970: interaction.timestamp) as Date
+                guard creationDate <= thresholdDate else {
+                    Logger.info("Skipping orphan interaction due to age: \(creationDate.timeIntervalSinceNow)")
+                    continue
+                }
+                Logger.info("Removing orphan message: \(interaction.uniqueId)")
+                interactionsRemoved += 1
+                guard shouldRemoveOrphans else {
+                    continue
+                }
+                interaction.anyRemove(transaction: transaction)
+            }
+            Logger.info("Deleted orphan interactions: \(interactionsRemoved)")
+
+            var attachmentsRemoved: UInt = 0
+            for attachmentId in orphanData.attachmentIds {
+                guard isMainAppAndActive() else {
+                    shouldAbort = true
+                    return
+                }
+                guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction) else {
+                    // This can happen on launch since we sync contacts/groups, especially if you have a lot of attachments
+                    // to churn through, it's likely it's been deleted since starting this job.
+                    Logger.warn("Could not load attachment: \(attachmentId)")
+                    continue
+                }
+                guard let attachmentStream = attachment as? TSAttachmentStream else {
+                    continue
+                }
+                // Don't delete attachments which were created in the last N minutes.
+                let creationDate = attachmentStream.creationTimestamp
+                guard creationDate <= thresholdDate else {
+                    Logger.info("Skipping orphan attachment due to age: \(creationDate.timeIntervalSinceNow)")
+                    continue
+                }
+                Logger.info("Removing orphan attachmentStream: \(attachmentStream.uniqueId)")
+                attachmentsRemoved += 1
+                guard shouldRemoveOrphans else {
+                    continue
+                }
+                attachmentStream.anyRemove(transaction: transaction)
+            }
+            Logger.info("Deleted orphan attachments: \(attachmentsRemoved)")
+
+            var reactionsRemoved: UInt = 0
+            for reactionId in orphanData.reactionIds {
+                guard isMainAppAndActive() else {
+                    shouldAbort = true
+                    return
+                }
+
+                let performedCleanup = ReactionManager.tryToCleanupOrphanedReaction(uniqueId: reactionId,
+                                                                                    thresholdDate: thresholdDate,
+                                                                                    shouldPerformRemove: shouldRemoveOrphans,
+                                                                                    transaction: transaction)
+                if performedCleanup {
+                    reactionsRemoved += 1
+                }
+            }
+            Logger.info("Deleted orphan reactions: \(reactionsRemoved)")
+
+            var mentionsRemoved: UInt = 0
+            for mentionId in orphanData.mentionIds {
+                guard isMainAppAndActive() else {
+                    shouldAbort = true
+                    return
+                }
+
+                let performedCleanup = MentionFinder.tryToCleanupOrphanedMention(uniqueId: mentionId,
+                                                                                 thresholdDate: thresholdDate,
+                                                                                 shouldPerformRemove: shouldRemoveOrphans,
+                                                                                 transaction: transaction)
+                if performedCleanup {
+                    mentionsRemoved += 1
+                }
+            }
+            Logger.info("Deleted orphan mentions: \(mentionsRemoved)")
+
+            if orphanData.hasOrphanedPacksOrStickers {
+                StickerManager.cleanUpOrphanedData(tx: transaction)
+            }
+        }
+
+        guard !shouldAbort else {
+            return false
+        }
+
+        var filesRemoved: UInt = 0
+        let filePaths = orphanData.filePaths.sorted()
+        for filePath in filePaths {
+            guard isMainAppAndActive() else {
+                return false
+            }
+
+            guard let attributes = try? FileManager.default.attributesOfItem(atPath: filePath) else {
+                // This is fine; the file may have been deleted since we found it.
+                Logger.warn("Could not get attributes of file at: \(filePath)")
+                continue
+            }
+            // Don't delete files which were created in the last N minutes.
+            if let creationDate = (attributes as NSDictionary).fileModificationDate(), creationDate > thresholdDate {
+                Logger.info("Skipping file due to age: \(creationDate.timeIntervalSinceNow)")
+                continue
+            }
+            Logger.info("Deleting file: \(filePath)")
+            filesRemoved += 1
+            guard shouldRemoveOrphans else {
+                continue
+            }
+            guard OWSFileSystem.fileOrFolderExists(atPath: filePath) else {
+                // Already removed.
+                continue
+            }
+            if !OWSFileSystem.deleteFile(filePath, ignoreIfMissing: true) {
+                owsFailDebug("Could not remove orphan file")
+            }
+        }
+        Logger.info("Deleted orphan files: \(filesRemoved)")
+
+        if shouldRemoveOrphans {
+            guard removeOrphanedFileAndDirectoryPaths(orphanData.fileAndDirectoryPaths) else {
+                return false
+            }
+        }
+
+        return true
+    }
+
+    private static func removeOrphanedFileAndDirectoryPaths(_ fileAndDirectoryPaths: Set<String>) -> Bool {
         var successCount = 0
         var errorCount = 0
         // Sort by longest path to shortest path so that we remove files before we

@@ -1107,7 +1107,7 @@ public class StickerManager: NSObject {
     }
 
     @objc
-    static func cleanUpOrphanedData(tx: SDSAnyWriteTransaction) {
+    public static func cleanUpOrphanedData(tx: SDSAnyWriteTransaction) {
         // We re-compute the orphaned packs within the write transaction. It's
         // possible that a new pack was being saved during the read transaction,
         // and it's possible that an orphaned pack is no longer orphaned. Most of
