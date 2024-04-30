@@ -25,34 +25,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 
 @implementation OWSOrphanDataCleaner
 
-
-+ (long long)fileSizeOfFilePath:(NSString *)filePath
-{
-    NSError *error;
-    NSNumber *fileSize = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error][NSFileSize];
-    if (error) {
-        if ([error.domain isEqualToString:NSCocoaErrorDomain] && error.code == 260) {
-            OWSLogWarn(@"can't find size of missing file.");
-        } else {
-            OWSFailDebug(@"attributesOfItemAtPath: %@ error: %@", filePath, error);
-        }
-        return 0;
-    }
-    return fileSize.longLongValue;
-}
-
-+ (nullable NSNumber *)fileSizeOfFilePathsSafe:(NSArray<NSString *> *)filePaths
-{
-    long long result = 0;
-    for (NSString *filePath in filePaths) {
-        if (!self.isMainAppAndActive) {
-            return nil;
-        }
-        result += [self fileSizeOfFilePath:filePath];
-    }
-    return @(result);
-}
-
 + (nullable NSSet<NSString *> *)filePathsInDirectorySafe:(NSString *)dirPath
 {
     NSMutableSet *filePaths = [NSMutableSet new];
@@ -235,9 +207,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         return nil;
     }
 
-    NSNumber *_Nullable totalFileSize = [self fileSizeOfFilePathsSafe:allOnDiskFilePaths.allObjects];
-
-    if (!totalFileSize || !self.isMainAppAndActive) {
+    if (!self.isMainAppAndActive) {
         return nil;
     }
 
