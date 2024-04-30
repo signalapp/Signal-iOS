@@ -16,6 +16,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     }
 
     private let accountDataArchiver: MessageBackupAccountDataArchiver
+    private let attachmentUploadManager: AttachmentUploadManager
     private let backupRequestManager: MessageBackupRequestManager
     private let chatArchiver: MessageBackupChatArchiver
     private let chatItemArchiver: MessageBackupChatItemArchiver
@@ -28,6 +29,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
     public init(
         accountDataArchiver: MessageBackupAccountDataArchiver,
+        attachmentUploadManager: AttachmentUploadManager,
         backupRequestManager: MessageBackupRequestManager,
         chatArchiver: MessageBackupChatArchiver,
         chatItemArchiver: MessageBackupChatItemArchiver,
@@ -39,6 +41,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         streamProvider: MessageBackupProtoStreamProvider
     ) {
         self.accountDataArchiver = accountDataArchiver
+        self.attachmentUploadManager = attachmentUploadManager
         self.backupRequestManager = backupRequestManager
         self.chatArchiver = chatArchiver
         self.chatItemArchiver = chatItemArchiver
@@ -76,7 +79,19 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         }
     }
 
-    public func createBackup(localIdentifiers: LocalIdentifiers) async throws -> URL {
+    public func uploadBackup(
+        metadata: Upload.BackupUploadMetadata,
+        localIdentifiers: LocalIdentifiers,
+        auth: ChatServiceAuth
+    ) async throws -> Upload.Result<Upload.BackupUploadMetadata> {
+        // This will return early if this device has already registered the backup ID.
+        try await reserveAndRegister(localIdentifiers: localIdentifiers, auth: auth)
+        let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(localAci: localIdentifiers.aci, auth: auth)
+        let form = try await backupRequestManager.fetchBackupUploadForm(auth: backupAuth)
+        return try await attachmentUploadManager.uploadBackup(localUploadMetadata: metadata, form: form)
+    }
+
+    public func createBackup(localIdentifiers: LocalIdentifiers) async throws -> Upload.BackupUploadMetadata {
         guard FeatureFlags.messageBackupFileAlpha else {
             owsFailDebug("Should not be able to use backups!")
             throw NotImplementedError()
@@ -111,7 +126,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private func _createBackup(
         localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
-    ) throws -> URL {
+    ) throws -> Upload.BackupUploadMetadata {
         let stream: MessageBackupProtoOutputStream
         let metadataProvider: MessageBackup.MetadataProvider
         switch streamProvider.openOutputFileStream(localAci: localIdentifiers.aci, tx: tx) {
@@ -195,7 +210,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         }
 
         try stream.closeFileStream()
-        return try metadataProvider().fileUrl
+        return try metadataProvider()
     }
 
     private func writeHeader(stream: MessageBackupProtoOutputStream, tx: DBWriteTransaction) throws {

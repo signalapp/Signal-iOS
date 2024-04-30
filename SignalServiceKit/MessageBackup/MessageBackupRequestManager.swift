@@ -61,7 +61,7 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
         let request = try OWSRequestFactory.reserveBackupId(backupId: base64RequestContext, auth: auth)
         let response = try await networkManager.makePromise(
             request: request,
-            canUseWebSocket: true
+            canUseWebSocket: false // TODO[Backups]: Switch this back to true when reg supports websockets
         ).awaitable()
     }
 
@@ -154,7 +154,7 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
     ) async throws -> HTTPResponse {
         return try await networkManager.makePromise(
             request: requestFactory(auth),
-            canUseWebSocket: true
+            canUseWebSocket: false // TODO[Backups]: Switch this back to true when reg supports websockets
         ).awaitable()
     }
 

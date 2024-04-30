@@ -6,6 +6,8 @@
 import Foundation
 
 public protocol AttachmentUploadManager {
+    /// Upload a transient backup file that isn't an attachment (not saved to the database or sent).
+    func uploadBackup(localUploadMetadata: Upload.BackupUploadMetadata, form: Upload.Form) async throws -> Upload.Result<Upload.BackupUploadMetadata>
 
     /// Upload a transient attachment that isn't saved to the database for sending.
     func uploadTransientAttachment(dataSource: DataSource) async throws -> Upload.Result<Upload.LocalUploadMetadata>
@@ -50,6 +52,35 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         self.networkManager = networkManager
         self.signalService = signalService
         self.storyStore = storyStore
+    }
+
+    public func uploadBackup(localUploadMetadata: Upload.BackupUploadMetadata, form: Upload.Form) async throws -> Upload.Result<Upload.BackupUploadMetadata> {
+        let logger = PrefixedLogger(prefix: "[Upload]", suffix: "[backup]")
+        do {
+            let upload = AttachmentUpload(
+                localMetadata: localUploadMetadata,
+                formSource: .local(form),
+                signalService: signalService,
+                networkManager: networkManager,
+                chatConnectionManager: chatConnectionManager,
+                fileSystem: fileSystem,
+                logger: logger
+            )
+            return try await upload.start(progress: nil)
+        } catch {
+            if error.isNetworkFailureOrTimeout {
+                logger.warn("Upload failed due to network error")
+            } else if error is CancellationError {
+                logger.warn("Upload cancelled")
+            } else {
+                if let statusCode = error.httpStatusCode {
+                    logger.warn("Unexpected upload error [status: \(statusCode)]")
+                } else {
+                    logger.warn("Unexpected upload error")
+                }
+            }
+            throw error
+        }
     }
 
     public func uploadTransientAttachment(dataSource: DataSource) async throws -> Upload.Result<Upload.LocalUploadMetadata> {

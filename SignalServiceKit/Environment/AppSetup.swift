@@ -665,6 +665,19 @@ public class AppSetup {
         let systemStoryManager = testDependencies?.systemStoryManager ?? SystemStoryManager()
         let typingIndicators = TypingIndicatorsImpl()
 
+        let attachmentUploadManager = AttachmentUploadManagerImpl(
+            attachmentEncrypter: Upload.Wrappers.AttachmentEncrypter(),
+            attachmentStore: attachmentStore,
+            chatConnectionManager: chatConnectionManager,
+            dateProvider: dateProvider,
+            db: db,
+            fileSystem: Upload.Wrappers.FileSystem(),
+            interactionStore: interactionStore,
+            networkManager: networkManager,
+            signalService: signalService,
+            storyStore: storyStore
+        )
+
         let messageBackupManager = MessageBackupManagerImpl(
             accountDataArchiver: MessageBackupAccountDataArchiverImpl(
                 disappearingMessageConfigurationStore: disappearingMessagesConfigurationStore,
@@ -682,6 +695,7 @@ public class AppSetup {
                 usernameEducationManager: usernameEducationManager,
                 userProfile: MessageBackup.AccountData.Wrappers.UserProfile()
             ),
+            attachmentUploadManager: attachmentUploadManager,
             backupRequestManager: MessageBackupRequestManagerImpl(
                 db: db,
                 messageBackupAuthCredentialManager: MessageBackupAuthCredentialManagerImpl(
@@ -759,18 +773,7 @@ public class AppSetup {
             fileSystem: Upload.Wrappers.FileSystem(),
             tsResourceStore: tsResourceStore
         )
-        let attachmentUploadManager = AttachmentUploadManagerImpl(
-            attachmentEncrypter: Upload.Wrappers.AttachmentEncrypter(),
-            attachmentStore: attachmentStore,
-            chatConnectionManager: chatConnectionManager,
-            dateProvider: dateProvider,
-            db: db,
-            fileSystem: Upload.Wrappers.FileSystem(),
-            interactionStore: interactionStore,
-            networkManager: networkManager,
-            signalService: signalService,
-            storyStore: storyStore
-        )
+
         let tsResourceUploadManager = TSResourceUploadManagerImpl(
             attachmentUploadManager: attachmentUploadManager,
             tsAttachmentUploadManager: tsAttachmentUploadManager

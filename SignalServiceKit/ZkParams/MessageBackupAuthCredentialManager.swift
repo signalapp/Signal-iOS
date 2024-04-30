@@ -109,7 +109,7 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
 
         let response = try await networkManager.makePromise(
             request: request,
-            canUseWebSocket: true
+            canUseWebSocket: false // TODO[Backups]: Switch this back to true when reg supports websockets
         ).awaitable()
 
         guard let data = response.responseBodyData else {
