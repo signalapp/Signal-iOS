@@ -11,6 +11,10 @@ open class AttachmentDownloadManagerMock: AttachmentDownloadManager {
 
     public init() {}
 
+    public func downloadBackup(metadata: MessageBackupRemoteInfo, authHeaders: [String: String]) -> Promise<URL> {
+        return .pending().0
+    }
+
     public func downloadTransientAttachment(metadata: AttachmentDownloads.DownloadMetadata) -> Promise<URL> {
         return .pending().0
     }

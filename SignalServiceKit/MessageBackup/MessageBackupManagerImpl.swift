@@ -16,6 +16,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     }
 
     private let accountDataArchiver: MessageBackupAccountDataArchiver
+    private let attachmentDownloadManager: AttachmentDownloadManager
     private let attachmentUploadManager: AttachmentUploadManager
     private let backupRequestManager: MessageBackupRequestManager
     private let chatArchiver: MessageBackupChatArchiver
@@ -29,6 +30,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
     public init(
         accountDataArchiver: MessageBackupAccountDataArchiver,
+        attachmentDownloadManager: AttachmentDownloadManager,
         attachmentUploadManager: AttachmentUploadManager,
         backupRequestManager: MessageBackupRequestManager,
         chatArchiver: MessageBackupChatArchiver,
@@ -41,6 +43,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         streamProvider: MessageBackupProtoStreamProvider
     ) {
         self.accountDataArchiver = accountDataArchiver
+        self.attachmentDownloadManager = attachmentDownloadManager
         self.attachmentUploadManager = attachmentUploadManager
         self.backupRequestManager = backupRequestManager
         self.chatArchiver = chatArchiver
@@ -77,6 +80,17 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         await db.awaitableWrite { [weak self] tx in
             self?.kvStore.setBool(true, key: Constants.keyValueStoreHasReservedBackupKey, transaction: tx)
         }
+    }
+
+    public func downloadBackup(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws -> URL {
+        let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(localAci: localIdentifiers.aci, auth: auth)
+        let info = try await backupRequestManager.fetchBackupInfo(auth: backupAuth)
+        let credentials = try await backupRequestManager.fetchCDNReadCredentials(cdn: info.cdn, auth: backupAuth)
+        let tmpFileUrl = try await attachmentDownloadManager.downloadBackup(
+            metadata: info,
+            authHeaders: credentials.headers
+        ).awaitable()
+        return tmpFileUrl
     }
 
     public func uploadBackup(

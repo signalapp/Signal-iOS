@@ -24,6 +24,14 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         self.videoDurationHelper = videoDurationHelper
     }
 
+    public func downloadBackup(metadata: MessageBackupRemoteInfo, authHeaders: [String: String]) -> Promise<URL> {
+        let downloadState = DownloadState(type: .backup(metadata, authHeaders: authHeaders))
+        return firstly(on: schedulers.sync) { () -> Promise<URL> in
+            let maxDownloadSize = MessageBackup.Constants.maxDownloadSizeBytes
+            return self.download(downloadState: downloadState, maxDownloadSizeBytes: maxDownloadSize)
+        }
+    }
+
     public func downloadTransientAttachment(metadata: AttachmentDownloads.DownloadMetadata) -> Promise<URL> {
         // TODO: this should enqueue the download and all that. For now this class
         // only does the transient download so do it immediately.
@@ -64,15 +72,60 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         case oversize
     }
 
+    private enum DownloadType {
+        case backup(MessageBackupRemoteInfo, authHeaders: [String: String])
+        case attachment(DownloadMetadata)
+
+        // MARK: - Helpers
+        func urlPath() throws -> String {
+            switch self {
+            case .backup(let info, _):
+                return "backups/\(info.backupDir)/\(info.backupName)"
+            case .attachment(let metadata):
+                guard let encodedKey = metadata.cdnKey.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
+                    throw OWSAssertionError("Invalid cdnKey.")
+                }
+                return "attachments/\(encodedKey)"
+            }
+        }
+
+        func cdnNumber() -> UInt32 {
+            switch self {
+            case .backup(let info, _):
+                return UInt32(clamping: info.cdn)
+            case .attachment(let metadata):
+                return metadata.cdnNumber
+            }
+        }
+
+        func additionalHeaders() -> [String: String] {
+            switch self {
+            case .backup(_, let authHeaders):
+                return authHeaders
+            case .attachment:
+                return [:]
+            }
+        }
+    }
+
     private class DownloadState {
-        let metadata: DownloadMetadata
-
         let startDate = Date()
+        let type: DownloadType
 
-        init(
-            metadata: DownloadMetadata
-        ) {
-            self.metadata = metadata
+        init(type: DownloadType) {
+            self.type = type
+        }
+
+        func urlPath() throws -> String {
+            return try type.urlPath()
+        }
+
+        func cdnNumber() -> UInt32 {
+            return type.cdnNumber()
+        }
+
+        func additionalHeaders() -> [String: String] {
+            return type.additionalHeaders()
         }
     }
 
@@ -82,10 +135,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
         // We want to avoid large downloads from a compromised or buggy service.
         let maxDownloadSize = RemoteConfig.maxAttachmentDownloadSizeBytes
+        let downloadState = DownloadState(type: .attachment(metadata))
 
         return firstly(on: schedulers.sync) { () -> Promise<URL> in
             self.download(
-                metadata: metadata,
+                downloadState: downloadState,
                 maxDownloadSizeBytes: maxDownloadSize
             )
         }.then(on: schedulers.sync) { (encryptedFileUrl: URL) -> Promise<URL> in
@@ -95,12 +149,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     }
 
     private func download(
-        metadata: DownloadMetadata,
+        downloadState: DownloadState,
         maxDownloadSizeBytes: UInt
     ) -> Promise<URL> {
-
-        let downloadState = DownloadState(metadata: metadata)
-
         return firstly(on: schedulers.sync) { () -> Promise<URL> in
             self.downloadAttempt(
                 downloadState: downloadState,
@@ -119,11 +170,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         let (promise, future) = Promise<URL>.pending()
 
         firstly(on: schedulers.global()) { () -> Promise<OWSUrlDownloadResponse> in
-            let urlSession = self.signalService.urlSessionForCdn(cdnNumber: downloadState.metadata.cdnNumber)
-            let urlPath = try Self.urlPath(for: downloadState)
-            let headers: [String: String] = [
-                "Content-Type": MimeType.applicationOctetStream.rawValue
-            ]
+            let urlSession = self.signalService.urlSessionForCdn(cdnNumber: downloadState.cdnNumber())
+            let urlPath = try downloadState.urlPath()
+            var headers = downloadState.additionalHeaders()
+            headers["Content-Type"] = MimeType.applicationOctetStream.rawValue
 
             let progress = { (task: URLSessionTask, progress: Progress) in
                 self.handleDownloadProgress(
@@ -270,16 +320,6 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             }
         }
         return promise
-    }
-
-    // MARK: - Helpers
-
-    private class func urlPath(for downloadState: DownloadState) throws -> String {
-        guard let encodedKey = downloadState.metadata.cdnKey.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
-            throw OWSAssertionError("Invalid cdnKey.")
-        }
-        let urlPath = "attachments/\(encodedKey)"
-        return urlPath
     }
 
     func copyThumbnailForQuotedReplyIfNeeded(_ downloadedAttachment: AttachmentStream) {

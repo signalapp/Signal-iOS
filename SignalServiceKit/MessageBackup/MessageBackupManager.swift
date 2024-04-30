@@ -12,5 +12,7 @@ public protocol MessageBackupManager {
 
     func uploadBackup(metadata: Upload.BackupUploadMetadata, localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws -> Upload.Result<Upload.BackupUploadMetadata>
 
+    func downloadBackup(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws -> URL
+
     func importBackup(localIdentifiers: LocalIdentifiers, fileUrl: URL) async throws
 }

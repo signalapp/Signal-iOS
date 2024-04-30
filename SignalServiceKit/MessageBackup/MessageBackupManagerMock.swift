@@ -22,6 +22,10 @@ open class MessageBackupManagerMock: MessageBackupManager {
         )
     }
 
+    public func downloadBackup(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws -> URL {
+        return URL(string: "file://")!
+    }
+
     public func createBackup(localIdentifiers: LocalIdentifiers) async throws -> Upload.BackupUploadMetadata {
         return .init(
             fileUrl: URL(string: "file://")!,

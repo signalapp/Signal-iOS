@@ -101,7 +101,7 @@ extension OWSRequestFactory {
 
     public static func fetchCDNCredentials(auth: MessageBackupServiceAuth, cdn: Int32) -> TSRequest {
         let request = TSRequest(
-            url: URL(string: "v1/archives?cdn=\(cdn)")!,
+            url: URL(string: "v1/archives/auth/read?cdn=\(cdn)")!,
             method: "GET",
             parameters: nil
         )

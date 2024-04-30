@@ -695,6 +695,7 @@ public class AppSetup {
                 usernameEducationManager: usernameEducationManager,
                 userProfile: MessageBackup.AccountData.Wrappers.UserProfile()
             ),
+            attachmentDownloadManager: attachmentDownloadManager,
             attachmentUploadManager: attachmentUploadManager,
             backupRequestManager: MessageBackupRequestManagerImpl(
                 db: db,

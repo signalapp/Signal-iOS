@@ -40,6 +40,11 @@ public enum AttachmentDownloads {
 
 public protocol AttachmentDownloadManager {
 
+    func downloadBackup(
+        metadata: MessageBackupRemoteInfo,
+        authHeaders: [String: String]
+    ) -> Promise<URL>
+
     func downloadTransientAttachment(
         metadata: AttachmentDownloads.DownloadMetadata
     ) -> Promise<URL>
