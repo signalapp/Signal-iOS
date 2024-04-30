@@ -390,7 +390,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
         case none
         case uploading(attachmentStream: TSResourceStream)
         case pendingDownload(attachmentPointer: TSResourcePointer)
-        case downloading(attachmentPointer: TSResourcePointer)
+        case downloading(attachmentPointer: TSResourcePointer, transitTierDownloadState: AttachmentDownloadState)
         case unknown
     }
 
@@ -423,7 +423,10 @@ public class CVAttachmentProgressView: ManualLayoutView {
             case .none:
                 return .pendingDownload(attachmentPointer: attachmentPointer.attachmentPointer)
             case .failed, .enqueued, .downloading:
-                return .downloading(attachmentPointer: attachmentPointer.attachmentPointer)
+                return .downloading(
+                    attachmentPointer: attachmentPointer.attachmentPointer,
+                    transitTierDownloadState: transitTierDownloadState
+                )
             }
         }
     }

@@ -209,10 +209,10 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
                 attachmentPointer: attachmentPointer,
                 transitTierDownloadState: .none
             )
-        case .downloading(let attachmentPointer):
+        case .downloading(let attachmentPointer, let transitTierDownloadState):
             direction = .download(
                 attachmentPointer: attachmentPointer,
-                transitTierDownloadState: .downloading
+                transitTierDownloadState: transitTierDownloadState
             )
         case .unknown:
             owsFailDebug("Unknown progress type.")

@@ -105,12 +105,12 @@ public class CVMediaView: ManualLayoutViewWithLayer {
             // attachments; CVComponentBodyMedia will add a download
             // button if any media in the gallery is pending.
             return false
-        case .downloading(let attachmentPointer):
+        case .downloading(let attachmentPointer, let transitTierDownloadState):
             backgroundColor = (Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05)
 
             direction = .download(
                 attachmentPointer: attachmentPointer,
-                transitTierDownloadState: .downloading
+                transitTierDownloadState: transitTierDownloadState
             )
         case .unknown:
             owsFailDebug("Unknown progress type.")
