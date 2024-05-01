@@ -8,6 +8,11 @@ import SignalCoreKit
 import SignalServiceKit
 import SignalUI
 
+private enum Constants {
+    static let lastCleaningVersionKey = "OWSOrphanDataCleaner_LastCleaningVersionKey"
+    static let lastCleaningDateKey = "OWSOrphanDataCleaner_LastCleaningDateKey"
+}
+
 // TODO: Convert to struct after all code is swift.
 @objcMembers
 class OWSOrphanData: NSObject {
@@ -110,7 +115,7 @@ extension OWSOrphanDataCleaner {
             }
 
             let lastCleaningVersion = kvs.getString(
-                OWSOrphanDataCleaner_LastCleaningVersionKey,
+                Constants.lastCleaningVersionKey,
                 transaction: transaction
             )
             guard let lastCleaningVersion else {
@@ -123,7 +128,7 @@ extension OWSOrphanDataCleaner {
             }
 
             let lastCleaningDate = kvs.getDate(
-                OWSOrphanDataCleaner_LastCleaningDateKey,
+                Constants.lastCleaningDateKey,
                 transaction: transaction
             )
             guard let lastCleaningDate else {

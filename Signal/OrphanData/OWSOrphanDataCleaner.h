@@ -7,9 +7,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *const OWSOrphanDataCleaner_LastCleaningVersionKey;
-extern NSString *const OWSOrphanDataCleaner_LastCleaningDateKey;
-
 // Notes:
 //
 // * On disk, we only bother cleaning up files, not directories.
