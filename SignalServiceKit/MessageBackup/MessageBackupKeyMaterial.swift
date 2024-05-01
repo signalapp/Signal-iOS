@@ -27,6 +27,8 @@ public protocol MessageBackupKeyMaterial {
     /// for building backup credentials.
     func backupAuthRequestContext(localAci: Aci, tx: DBReadTransaction) throws -> BackupAuthCredentialRequestContext
 
+    func messageBackupKey(localAci: Aci, tx: DBReadTransaction) throws -> MessageBackupKey
+
     /// Builds an encrypting StreamTransform object derived from the backup master key and the backupID
     func createEncryptingStreamTransform(localAci: Aci, tx: DBReadTransaction) throws -> EncryptingStreamTransform
 

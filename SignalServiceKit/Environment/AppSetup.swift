@@ -728,6 +728,7 @@ public class AppSetup {
             db: db,
             kvStoreFactory: keyValueStoreFactory,
             localRecipientArchiver: MessageBackupLocalRecipientArchiverImpl(),
+            messageBackupKeyMaterial: messageBackupKeyMaterial,
             recipientArchiver: MessageBackupRecipientArchiverImpl(
                 blockingManager: MessageBackup.Wrappers.BlockingManager(blockingManager),
                 disappearingMessageConfigStore: disappearingMessagesConfigurationStore,

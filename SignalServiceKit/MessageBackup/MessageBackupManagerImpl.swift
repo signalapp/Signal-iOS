@@ -9,6 +9,13 @@ import LibSignalClient
 public class NotImplementedError: Error {}
 public class BackupError: Error {}
 
+public enum BackupValidationError: Error {
+    case unknownFields([String])
+    case validationFailed(message: String, unknownFields: [String])
+    case ioError(String)
+    case unknownError
+}
+
 public class MessageBackupManagerImpl: MessageBackupManager {
     private enum Constants {
         static let keyValueStoreCollectionName = "MessageBackupManager"
@@ -25,6 +32,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let db: DB
     private let kvStore: KeyValueStore
     private let localRecipientArchiver: MessageBackupLocalRecipientArchiver
+    private let messageBackupKeyMaterial: MessageBackupKeyMaterial
     private let recipientArchiver: MessageBackupRecipientArchiver
     private let streamProvider: MessageBackupProtoStreamProvider
 
@@ -39,6 +47,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         db: DB,
         kvStoreFactory: KeyValueStoreFactory,
         localRecipientArchiver: MessageBackupLocalRecipientArchiver,
+        messageBackupKeyMaterial: MessageBackupKeyMaterial,
         recipientArchiver: MessageBackupRecipientArchiver,
         streamProvider: MessageBackupProtoStreamProvider
     ) {
@@ -51,6 +60,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.dateProvider = dateProvider
         self.db = db
         self.localRecipientArchiver = localRecipientArchiver
+        self.messageBackupKeyMaterial = messageBackupKeyMaterial
         self.recipientArchiver = recipientArchiver
         self.streamProvider = streamProvider
 
@@ -90,6 +100,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             metadata: info,
             authHeaders: credentials.headers
         ).awaitable()
+
+        // Once protos calm down, this can be enabled to warn/error on failed validation
+        // try await validateBackup(localIdentifiers: localIdentifiers, fileUrl: tmpFileUrl)
+
         return tmpFileUrl
     }
 
@@ -400,6 +414,38 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         }
 
         return stream.closeFileStream()
+    }
+
+    public func validateBackup(localIdentifiers: LocalIdentifiers, fileUrl: URL) async throws {
+        let key = try db.read { tx in
+            return try messageBackupKeyMaterial.messageBackupKey(localAci: localIdentifiers.aci, tx: tx)
+        }
+        let fileSize = OWSFileSystem.fileSize(ofPath: fileUrl.path)?.uint64Value ?? 0
+
+        do {
+            let result = try validateMessageBackup(key: key, purpose: .remoteBackup, length: fileSize) {
+                if let inputStream = try? FileHandle(forReadingFrom: fileUrl) {
+                    return inputStream
+                } else {
+                    return SignalInputStreamAdapter([UInt8]())
+                }
+            }
+            if result.fields.count > 0 {
+                throw BackupValidationError.unknownFields(result.fields)
+            }
+        } catch {
+            switch error {
+            case let validationError as MessageBackupValidationError:
+                throw BackupValidationError.validationFailed(
+                    message: validationError.errorMessage,
+                    unknownFields: validationError.unknownFields.fields
+                )
+            case SignalError.ioError(let description):
+                throw BackupValidationError.ioError(description)
+            default:
+                throw BackupValidationError.unknownError
+            }
+        }
     }
 
     private func processRestoreFrameErrors<IdType>(

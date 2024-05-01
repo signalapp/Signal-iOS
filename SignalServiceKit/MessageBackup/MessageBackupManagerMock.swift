@@ -8,6 +8,8 @@ import Foundation
 #if TESTABLE_BUILD
 
 open class MessageBackupManagerMock: MessageBackupManager {
+    public func validateBackup(localIdentifiers: LocalIdentifiers, fileUrl: URL) async throws { }
+
     public func uploadBackup(metadata: Upload.BackupUploadMetadata, localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws -> Upload.Result<Upload.BackupUploadMetadata> {
         return Upload.Result(
             cdnKey: "cdnKey",

@@ -70,6 +70,13 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
         return try PrivateKey(privateKeyBytes)
     }
 
+    public func messageBackupKey(localAci: Aci, tx: DBReadTransaction) throws -> MessageBackupKey {
+        guard let masterKey = svr.masterKeyDataForKeysSyncMessage(tx: tx) else {
+            throw MessageBackupKeyMaterialError.missingMasterKey
+        }
+        return try MessageBackupKey(masterKey: Array(masterKey), aci: localAci)
+    }
+
     public func createEncryptingStreamTransform(localAci: Aci, tx: DBReadTransaction) throws -> EncryptingStreamTransform {
         guard let backupKey = svr.data(for: .backupKey, transaction: tx) else {
             throw MessageBackupKeyMaterialError.missingMasterKey

@@ -7,6 +7,8 @@ import Foundation
 
 public protocol MessageBackupManager {
 
+    func validateBackup(localIdentifiers: LocalIdentifiers, fileUrl: URL) async throws
+
     /// Outputs file url the backup proto is located at.
     func createBackup(localIdentifiers: LocalIdentifiers) async throws -> Upload.BackupUploadMetadata
 
