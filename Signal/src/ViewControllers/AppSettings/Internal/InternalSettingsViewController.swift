@@ -204,16 +204,44 @@ private extension InternalSettingsViewController {
         ) { modal in
             Task {
                 do {
-                    let fileUrl = try await DependenciesBridge.shared.messageBackupManager.createBackup(localIdentifiers: localIdentifiers).fileUrl
+                    let metadata = try await DependenciesBridge.shared.messageBackupManager.createBackup(localIdentifiers: localIdentifiers)
                     await MainActor.run {
-                        modal.dismiss()
+                        let actionSheet = ActionSheetController(title: "Choose backup destination:")
 
-                        let activityVC = UIActivityViewController(
-                            activityItems: [fileUrl],
-                            applicationActivities: nil
-                        )
-                        activityVC.popoverPresentationController?.sourceView = self.view
-                        self.present(activityVC, animated: true)
+                        let localFileAction = ActionSheetAction(title: "Local device") { _ in
+                            let activityVC = UIActivityViewController(
+                                activityItems: [metadata.fileUrl],
+                                applicationActivities: nil
+                            )
+                            let vc = UIApplication.shared.frontmostViewController!
+                            activityVC.popoverPresentationController?.sourceView = vc.view
+                            activityVC.completionWithItemsHandler = { _, _, _, _ in
+                                modal.dismiss()
+                            }
+                            vc.present(activityVC, animated: true)
+                        }
+                        actionSheet.addAction(localFileAction)
+
+                        let remoteFileAction = ActionSheetAction(title: "Remote server") { _ in
+                            Task { @MainActor in
+                                let vc = UIApplication.shared.frontmostViewController!
+                                do {
+                                    _ = try await DependenciesBridge.shared.messageBackupManager.uploadBackup(
+                                        metadata: metadata,
+                                        localIdentifiers: localIdentifiers,
+                                        auth: .implicit()
+                                    )
+                                    vc.presentToast(text: "Success!")
+                                } catch {
+                                    vc.presentToast(text: "Failed! \(error.localizedDescription)")
+                                }
+                                modal.dismiss()
+                            }
+                        }
+                        actionSheet.addAction(remoteFileAction)
+
+                        let vc = UIApplication.shared.frontmostViewController!
+                        vc.presentActionSheet(actionSheet)
                     }
                 } catch {
                     owsFailDebug("Failed to create backup!")
