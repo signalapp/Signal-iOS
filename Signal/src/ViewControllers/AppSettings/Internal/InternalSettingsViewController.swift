@@ -192,8 +192,11 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
 private extension InternalSettingsViewController {
     func exportMessageBackupProto() {
+        let messageBackupManager = DependenciesBridge.shared.messageBackupManager
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+
         guard let localIdentifiers = databaseStorage.read(block: {tx in
-            return DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)
+            return tsAccountManager.localIdentifiers(tx: tx.asV2Read)
         }) else {
             return
         }
@@ -202,9 +205,15 @@ private extension InternalSettingsViewController {
             fromViewController: self,
             canCancel: false
         ) { modal in
+            func dismissModalAndToast(_ message: String) {
+                modal.dismiss {
+                    self.presentToast(text: message)
+                }
+            }
+
             Task {
                 do {
-                    let metadata = try await DependenciesBridge.shared.messageBackupManager.createBackup(localIdentifiers: localIdentifiers)
+                    let metadata = try await messageBackupManager.createBackup(localIdentifiers: localIdentifiers)
                     await MainActor.run {
                         let actionSheet = ActionSheetController(title: "Choose backup destination:")
 
@@ -213,40 +222,47 @@ private extension InternalSettingsViewController {
                                 activityItems: [metadata.fileUrl],
                                 applicationActivities: nil
                             )
-                            let vc = UIApplication.shared.frontmostViewController!
-                            activityVC.popoverPresentationController?.sourceView = vc.view
+                            activityVC.popoverPresentationController?.sourceView = self.view
                             activityVC.completionWithItemsHandler = { _, _, _, _ in
                                 modal.dismiss()
                             }
-                            vc.present(activityVC, animated: true)
+                            modal.present(activityVC, animated: true)
                         }
-                        actionSheet.addAction(localFileAction)
 
                         let remoteFileAction = ActionSheetAction(title: "Remote server") { _ in
-                            Task { @MainActor in
-                                let vc = UIApplication.shared.frontmostViewController!
+                            Task {
+                                let uploadError: Error?
                                 do {
-                                    _ = try await DependenciesBridge.shared.messageBackupManager.uploadBackup(
+                                    _ = try await messageBackupManager.uploadBackup(
                                         metadata: metadata,
                                         localIdentifiers: localIdentifiers,
                                         auth: .implicit()
                                     )
-                                    vc.presentToast(text: "Success!")
-                                } catch {
-                                    vc.presentToast(text: "Failed! \(error.localizedDescription)")
+                                    uploadError = nil
+                                } catch let error {
+                                    uploadError = error
                                 }
-                                modal.dismiss()
+
+                                await MainActor.run {
+                                    dismissModalAndToast({
+                                        if let uploadError {
+                                            return "Failed! \(uploadError.localizedDescription)"
+                                        }
+
+                                        return "Success!"
+                                    }())
+                                }
                             }
                         }
-                        actionSheet.addAction(remoteFileAction)
 
-                        let vc = UIApplication.shared.frontmostViewController!
-                        vc.presentActionSheet(actionSheet)
+                        actionSheet.addAction(localFileAction)
+                        actionSheet.addAction(remoteFileAction)
+                        modal.presentActionSheet(actionSheet)
                     }
                 } catch {
                     owsFailDebug("Failed to create backup!")
                     await MainActor.run {
-                        modal.dismiss()
+                        dismissModalAndToast("Failed to create backup!")
                     }
                 }
             }
