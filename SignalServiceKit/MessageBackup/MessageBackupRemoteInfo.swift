@@ -21,5 +21,5 @@ public struct MessageBackupRemoteInfo: Decodable {
     public let backupName: String
 
     /// The amount of space used to store media
-    let usedSpace: Int64? // TODO: Determine if this should be optional
+    let usedSpace: Int64
 }
