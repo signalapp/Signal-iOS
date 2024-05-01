@@ -1683,19 +1683,27 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
             groupSecretParamsData: groupV2Params.groupSecretParamsData
         ).awaitable()
 
-        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
+        guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
             throw OWSAssertionError("Missing localAci.")
         }
         guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
             throw OWSAssertionError("Invalid group model.")
         }
         let groupMembership = groupModelV2.groupMembership
-        if groupMembership.isFullMember(localAci) ||
-            groupMembership.isRequestingMember(localAci) {
+        if groupMembership.isFullMember(localIdentifiers.aci) ||
+            groupMembership.isRequestingMember(localIdentifiers.aci) {
             // We're already in the group.
             return groupThread
-        } else if groupMembership.isInvitedMember(localAci) {
-            // We're already an invited member; try to join by accepting the invite.
+        } else if groupMembership.isInvitedMember(localIdentifiers.aci) {
+            // We're already invited by ACI; try to join by accepting the invite.
+            // That will make us a full member; requesting to join via
+            // the invite link might make us a requesting member.
+            return try await GroupManager.localAcceptInviteToGroupV2(groupModel: groupModelV2).awaitable()
+        } else if
+            let pni = localIdentifiers.pni,
+            groupMembership.isInvitedMember(pni)
+        {
+            // We're already invited by PNI; try to join by accepting the invite.
             // That will make us a full member; requesting to join via
             // the invite link might make us a requesting member.
             return try await GroupManager.localAcceptInviteToGroupV2(groupModel: groupModelV2).awaitable()
