@@ -13,9 +13,7 @@ private enum Constants {
     static let lastCleaningDateKey = "OWSOrphanDataCleaner_LastCleaningDateKey"
 }
 
-// TODO: Convert to struct after all code is swift.
-@objcMembers
-class OWSOrphanData: NSObject {
+private struct OWSOrphanData {
     let interactionIds: Set<String>
     let attachmentIds: Set<String>
     let filePaths: Set<String>
@@ -23,29 +21,15 @@ class OWSOrphanData: NSObject {
     let mentionIds: Set<String>
     let fileAndDirectoryPaths: Set<String>
     let hasOrphanedPacksOrStickers: Bool
-
-    init(interactionIds: Set<String>,
-         attachmentIds: Set<String>,
-         filePaths: Set<String>,
-         reactionIds: Set<String>,
-         mentionIds: Set<String>,
-         fileAndDirectoryPaths: Set<String>,
-         hasOrphanedPacksOrStickers: Bool) {
-        self.interactionIds = interactionIds
-        self.attachmentIds = attachmentIds
-        self.filePaths = filePaths
-        self.reactionIds = reactionIds
-        self.mentionIds = mentionIds
-        self.fileAndDirectoryPaths = fileAndDirectoryPaths
-        self.hasOrphanedPacksOrStickers = hasOrphanedPacksOrStickers
-    }
 }
-typealias OrphanDataBlock = (_ orphanData: OWSOrphanData) -> ()
+private typealias OrphanDataBlock = (_ orphanData: OWSOrphanData) -> ()
 
-extension OWSOrphanDataCleaner {
+// Notes:
+//
+// * On disk, we only bother cleaning up files, not directories.
+enum OWSOrphanDataCleaner {
 
-    @objc
-    static func filePaths(inDirectorySafe dirPath: String) -> Set<String>? {
+    private static func filePaths(inDirectorySafe dirPath: String) -> Set<String>? {
         guard FileManager.default.fileExists(atPath: dirPath) else {
             return []
         }
@@ -84,14 +68,14 @@ extension OWSOrphanDataCleaner {
 
     /// Unlike CurrentAppContext().isMainAppAndActive, this method can be safely
     /// invoked off the main thread.
-    @objc static var isMainAppAndActive: Bool {
+    private static var isMainAppAndActive: Bool {
         CurrentAppContext().reportedApplicationState == .active
     }
-
-    @objc static let keyValueStore = SDSKeyValueStore(collection: "OWSOrphanDataCleaner_Collection")
+    private static let databaseStorage = SDSDatabaseStorage.shared
+    private static let keyValueStore = SDSKeyValueStore(collection: "OWSOrphanDataCleaner_Collection")
 
     /// We use the lowest priority possible.
-    @objc static let workQueue = DispatchQueue.global(qos: .background)
+    private static let workQueue = DispatchQueue.global(qos: .background)
 
     static func auditOnLaunchIfNecessary() {
         AssertIsOnMainThread()
@@ -102,6 +86,72 @@ extension OWSOrphanDataCleaner {
         // flag - the cleanup will just be a dry run with logging.
         let shouldCleanUp = true
         auditAndCleanup(shouldCleanUp)
+    }
+
+    /// This is exposed for the debug UI and tests.
+    static func auditAndCleanup(_ shouldRemoveOrphans: Bool, completion: (() -> Void)? = nil) {
+        AssertIsOnMainThread()
+
+        guard AppReadiness.isAppReady else {
+            owsFailDebug("can't audit orphan data until app is ready.")
+            return
+        }
+        guard CurrentAppContext().isMainApp else {
+            owsFailDebug("can't audit orphan data in app extensions.")
+            return
+        }
+
+        Logger.info("Starting orphan data \(shouldRemoveOrphans ? "cleanup" : "audit")")
+
+        // Orphan cleanup has two risks:
+        //
+        // * As a long-running process that involves access to the
+        //   shared data container, it could cause 0xdead10cc.
+        // * It could accidentally delete data still in use,
+        //   e.g. a profile avatar which has been saved to disk
+        //   but whose OWSUserProfile hasn't been saved yet.
+        //
+        // To prevent 0xdead10cc, the cleaner continually checks
+        // whether the app has resigned active.  If so, it aborts.
+        // Each phase (search, re-search, processing) retries N times,
+        // then gives up until the next app launch.
+        //
+        // To prevent accidental data deletion, we take the following
+        // measures:
+        //
+        // * Only cleanup data of the following types (which should
+        //   include all relevant app data): profile avatar,
+        //   attachment, temporary files (including temporary
+        //   attachments).
+        // * We don't delete any data created more recently than N seconds
+        //   _before_ when the app launched.  This prevents any stray data
+        //   currently in use by the app from being accidentally cleaned
+        //   up.
+        let maxRetries = 3
+        findOrphanData(withRetries: maxRetries) { orphanData in
+            processOrphans(orphanData,
+                           remainingRetries: maxRetries,
+                           shouldRemoveOrphans: shouldRemoveOrphans) {
+                Logger.info("Completed orphan data cleanup.")
+
+                databaseStorage.write { transaction in
+                    keyValueStore.setString(AppVersionImpl.shared.currentAppVersion,
+                                            key: Constants.lastCleaningVersionKey,
+                                            transaction: transaction)
+                    keyValueStore.setDate(Date(),
+                                          key: Constants.lastCleaningDateKey,
+                                          transaction: transaction)
+                }
+
+                completion?()
+            } failure: {
+                Logger.info("Aborting orphan data cleanup.")
+                completion?()
+            }
+        } failure: {
+            Logger.info("Aborting orphan data cleanup.")
+            completion?()
+        }
     }
 
     private static func shouldAuditWithSneakyTransaction() -> Bool {
@@ -151,8 +201,7 @@ extension OWSOrphanDataCleaner {
         }
     }
 
-    @objc
-    static func findJobRecordAttachmentIds(transaction: SDSAnyReadTransaction) -> [String]? {
+    private static func findJobRecordAttachmentIds(transaction: SDSAnyReadTransaction) -> [String]? {
         var attachmentIds = [String]()
         var shouldAbort = false
 
@@ -265,8 +314,7 @@ extension OWSOrphanDataCleaner {
     ///   They can't be cleaned up - we don't want to delete the TSAttachmentStream or
     ///   its corresponding message. Better that the broken message shows up in the
     ///   conversation view.
-    @objc
-    static func findOrphanData(withRetries remainingRetries: Int,
+    private static func findOrphanData(withRetries remainingRetries: Int,
                                success: @escaping OrphanDataBlock,
                                failure: @escaping () -> Void) {
         guard remainingRetries > 0 else {
@@ -619,8 +667,7 @@ extension OWSOrphanDataCleaner {
         return Set(orphanedRelativePaths.lazy.map { basePath.appendingPathComponent($0) })
     }
 
-    @objc
-    static func findOrphanedVoiceMessageDraftPaths() -> Set<String> {
+    private static func findOrphanedVoiceMessageDraftPaths() -> Set<String> {
         findOrphanedPaths(
             baseUrl: VoiceMessageInterruptedDraftStore.draftVoiceMessageDirectory,
             fetchExpectedRelativePaths: {
@@ -629,8 +676,7 @@ extension OWSOrphanDataCleaner {
         )
     }
 
-    @objc
-    static func findOrphanedWallpaperPaths() -> Set<String> {
+    private static func findOrphanedWallpaperPaths() -> Set<String> {
         findOrphanedPaths(
             baseUrl: DependenciesBridge.shared.wallpaperStore.customPhotoDirectory,
             fetchExpectedRelativePaths: { Wallpaper.allCustomPhotoRelativePaths(tx: $0.asV2Read) }
@@ -643,12 +689,11 @@ extension OWSOrphanDataCleaner {
     /// orphan processing aborted due to the app resigning active. This method is
     /// extremely careful to abort if the app resigns active, in order to avoid
     /// `0xdead10cc` crashes.
-    @objc
-    static func processOrphans(_ orphanData: OWSOrphanData,
-                               remainingRetries: Int,
-                               shouldRemoveOrphans: Bool,
-                               success: @escaping () -> Void,
-                               failure: @escaping () -> Void) {
+    private static func processOrphans(_ orphanData: OWSOrphanData,
+                                       remainingRetries: Int,
+                                       shouldRemoveOrphans: Bool,
+                                       success: @escaping () -> Void,
+                                       failure: @escaping () -> Void) {
         guard remainingRetries > 0 else {
             Logger.info("Aborting orphan data audit.")
             workQueue.async(failure)
@@ -678,8 +723,7 @@ extension OWSOrphanDataCleaner {
     /// Returns `false` on failure, usually indicating that orphan processing
     /// aborted due to the app resigning active.  This method is extremely careful to
     /// abort if the app resigns active, in order to avoid `0xdead10cc` crashes.
-    @objc
-    static func processOrphansSync(_ orphanData: OWSOrphanData, shouldRemoveOrphans: Bool) -> Bool {
+    private static func processOrphansSync(_ orphanData: OWSOrphanData, shouldRemoveOrphans: Bool) -> Bool {
         guard isMainAppAndActive else {
             return false
         }
@@ -894,14 +938,12 @@ extension OWSOrphanDataCleaner {
 
     // MARK: - Helpers
 
-    @objc
-    static func legacyAttachmentUniqueIds(_ message: TSMessage) -> [String] {
+    private static func legacyAttachmentUniqueIds(_ message: TSMessage) -> [String] {
         let ids = TSAttachmentStore().allAttachmentIds(for: message)
         return Array(ids)
     }
 
-    @objc
-    static func legacyAttachmentUniqueId(_ storyMessage: StoryMessage) -> String? {
+    private static func legacyAttachmentUniqueId(_ storyMessage: StoryMessage) -> String? {
         switch storyMessage.attachment {
         case .file(let file):
             return file.attachmentId

@@ -4,5 +4,4 @@
 //
 
 // Separate iOS Frameworks from other imports.
-#import "OWSOrphanDataCleaner.h"
 #import "WindowManagerFix.h"
