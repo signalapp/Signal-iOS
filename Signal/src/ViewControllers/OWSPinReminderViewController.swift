@@ -310,7 +310,7 @@ public class PinReminderViewController: OWSViewController {
                     return
                 }
                 // We have a legacy pin that may have been truncated to 16 characters.
-                let truncatedPinCode = pin.substring(to: Int(kLegacyTruncated2FAv1PinLength))
+                let truncatedPinCode = String(pin.prefix(Int(kLegacyTruncated2FAv1PinLength)))
                 self.verifyAndDismissOnSuccess(truncatedPinCode, silent: silent)
                 return
             }

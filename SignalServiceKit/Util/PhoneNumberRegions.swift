@@ -36,7 +36,7 @@ public class PhoneNumberRegions: Equatable, ExpressibleByArrayLiteral, CustomDeb
             owsFailDebug("Invalid e164: \(e164).")
             return false
         }
-        let e164WithoutPrefix = e164.substring(from: e164Prefix.count)
+        let e164WithoutPrefix = String(e164.dropFirst(e164Prefix.count))
         if e164WithoutPrefix.isEmpty {
             owsFailDebug("Invalid e164: \(e164).")
             return false

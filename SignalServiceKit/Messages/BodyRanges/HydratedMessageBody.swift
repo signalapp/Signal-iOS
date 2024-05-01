@@ -547,79 +547,61 @@ public class HydratedMessageBody: Equatable, Hashable {
 
     // MARK: - Truncation
 
-    private struct TruncationLength {
-        // Length defined by displayed grapheme clusters.
-        // What you get from String.count
-        let graphemeClusterCount: Int
-        // Length defined by utf16 characters.
-        // What you get from NSString.length or String.utf16.count
-        let utf16Count: Int
-    }
-
     /// NOTE: if there is a mention at the truncation point, we instead truncate sooner
     /// so as to not cut off mid-mention.
-    public func truncating(
-        desiredLength rawDesiredLength: Int,
+    public func truncatingIfNeeded(
+        maxGlyphCount: Int,
         truncationSuffix: String
-    ) -> HydratedMessageBody {
+    ) -> HydratedMessageBody? {
+        guard var truncatedBody = hydratedText.trimmedIfNeeded(maxGlyphCount: maxGlyphCount) else {
+            return nil
+        }
+
         // Input is defined in grapheme clusters (doesn't cut emoji off)
         // but mentions and styles are defined in utf16 character counts.
-        let desiredLength = TruncationLength(
-            graphemeClusterCount: rawDesiredLength,
-            utf16Count: hydratedText.prefix(rawDesiredLength).utf16.count
-        )
+        var truncatedUtf16Length = truncatedBody.utf16.count
 
-        var possibleOverlappingMention: NSRange?
         for mentionAttribute in self.mentionAttributes {
-            if mentionAttribute.range.contains(desiredLength.utf16Count) {
-                possibleOverlappingMention = mentionAttribute.range
+            if mentionAttribute.range.contains(truncatedUtf16Length) {
+                // There's a mention overlapping our normal truncate point, we want to truncate sooner
+                // so we don't "split" the mention.
+                truncatedBody = (truncatedBody as NSString).substring(to: mentionAttribute.range.location)
+                truncatedUtf16Length = truncatedBody.utf16.count
                 break
             }
-            if mentionAttribute.range.location > desiredLength.utf16Count {
+            if mentionAttribute.range.location > truncatedUtf16Length {
                 // mentions are ordered; can early exit if we pass it.
                 break
             }
         }
 
-        // There's a mention overlapping our normal truncate point, we want to truncate sooner
-        // so we don't "split" the mention.
-        var finalLength = desiredLength
-        if let possibleOverlappingMention, possibleOverlappingMention.location < desiredLength.utf16Count {
-            // This would truncate in the middle of a grapheme cluster if the mention
-            // starts in the middle of one. That should be impossible, though.
-            finalLength = TruncationLength(
-                graphemeClusterCount: (hydratedText as NSString).substring(to: possibleOverlappingMention.location).count,
-                utf16Count: possibleOverlappingMention.location
-            )
-        }
-
         var mentionHydrationStrings = [Aci: String]()
         let mentions = self.mentionAttributes.filter({
-            guard $0.range.location < finalLength.utf16Count else {
+            guard $0.range.location < truncatedUtf16Length else {
                 return false
             }
             mentionHydrationStrings[$0.value.mentionAci] = $0.value.displayName
             return true
         })
-        let unhydratedMentions = self.unhydratedMentions.filter { $0.range.upperBound <= finalLength.utf16Count }
+        let unhydratedMentions = self.unhydratedMentions.filter { $0.range.upperBound <= truncatedUtf16Length }
         let styles = self.styleAttributes.compactMap { (styleAttribute) -> NSRangedValue<StyleAttribute>? in
-            if styleAttribute.range.location > finalLength.utf16Count {
+            if styleAttribute.range.location > truncatedUtf16Length {
                 return nil
-            } else if styleAttribute.range.upperBound <= finalLength.utf16Count {
+            } else if styleAttribute.range.upperBound <= truncatedUtf16Length {
                 return styleAttribute
             } else {
                 return .init(
                     styleAttribute.value,
                     range: NSRange(
                         location: styleAttribute.range.location,
-                        length: finalLength.utf16Count - styleAttribute.range.location
+                        length: truncatedUtf16Length - styleAttribute.range.location
                     )
                 )
             }
         }
 
         let newSelf = HydratedMessageBody(
-            hydratedText: String(hydratedText.prefix(finalLength.graphemeClusterCount)) + truncationSuffix,
+            hydratedText: truncatedBody + truncationSuffix,
             unhydratedMentions: unhydratedMentions,
             mentionAttributes: mentions,
             styleAttributes: styles
@@ -846,8 +828,6 @@ public class HydratedMessageBody: Equatable, Hashable {
 
     // This misdirection is because we do not want to expose hydratedText externally;
     // that makes it very easy to misuse this class as just a plaintext string.
-
-    public var rawTextLength: Int { (hydratedText as NSString).length }
 
     public var accessibilityDescription: String { hydratedText }
 

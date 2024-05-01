@@ -489,37 +489,18 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             } else if attachment?.mimeType == MimeType.textXSignalPlain.rawValue {
                 // If the attachment is "oversize text", try the quote as a reply to text, not as
                 // a reply to an attachment.
-                if let oversizeTextData = try? attachment?.asResourceStream()?.decryptedRawDataSync(),
-                   let oversizeText = String(data: oversizeTextData, encoding: .utf8) {
+                if
+                    let oversizeTextData = try? attachment?.asResourceStream()?.decryptedRawDataSync(),
+                    let oversizeText = String(data: oversizeTextData, encoding: .utf8)
+                {
                     // We don't need to include the entire text body of the message, just
                     // enough to render a snippet.  kOversizeTextMessageSizeThreshold is our
                     // limit on how long text should be in protos since they'll be stored in
                     // the database. We apply this constant here for the same reasons.
-                    // First, truncate to the rough max characters.
-                    var truncatedText = oversizeText.substring(to: Int(kOversizeTextMessageSizeThreshold) - 1)
-                    // But kOversizeTextMessageSizeThreshold is in _bytes_, not characters,
-                    // so we need to continue to trim the string until it fits.
-                    var truncatedTextDataSize = truncatedText.data(using: .utf8)?.count ?? 0
-                    while truncatedText.count > 0 && truncatedTextDataSize >= kOversizeTextMessageSizeThreshold {
-                        // A very coarse binary search by halving is acceptable, since
-                        // kOversizeTextMessageSizeThreshold is much longer than our target
-                        // length of "three short lines of text on any device we might
-                        // display this on.
-                        //
-                        // The search will always converge since in the worst case (namely
-                        // a single character which in utf-8 is >= 1024 bytes) the loop will
-                        // exit when the string is empty.
-                        truncatedText = truncatedText.substring(to: truncatedText.count / 2)
-                        truncatedTextDataSize = truncatedText.data(using: .utf8)?.count ?? 0
-                    }
-                    if truncatedTextDataSize < kOversizeTextMessageSizeThreshold {
-                        return createDraftReply(content: .text(
-                            MessageBody(text: truncatedText, ranges: originalMessage.bodyRanges ?? .empty)
-                        ))
-                    } else {
-                        owsFailDebug("Missing valid text snippet.")
-                        return createTextDraftReplyOrNil()
-                    }
+                    let truncatedText = oversizeText.trimToUtf8ByteCount(Int(kOversizeTextMessageSizeThreshold) - 1)
+                    return createDraftReply(content: .text(
+                        MessageBody(text: truncatedText, ranges: originalMessage.bodyRanges ?? .empty)
+                    ))
                 } else {
                     return createTextDraftReplyOrNil()
                 }

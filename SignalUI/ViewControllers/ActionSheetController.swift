@@ -601,6 +601,6 @@ extension String {
 
     private static func formattedDisplayName(_ displayName: String, maxLength: Int) -> String {
         guard displayName.count > maxLength else { return displayName }
-        return displayName.substring(to: maxLength).appending("…")
+        return "\(displayName.prefix(maxLength))…"
     }
 }

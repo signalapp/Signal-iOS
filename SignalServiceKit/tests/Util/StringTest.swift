@@ -348,4 +348,18 @@ final class StringTest: XCTestCase {
         XCTAssertEqual("a".ensureArabicNumerals, "a")
         XCTAssertEqual("".ensureArabicNumerals, "")
     }
+
+    func testTrimToGlyphCount() {
+        XCTAssertEqual("🥹🥷🥹🥷🥹".trimToGlyphCount(4), "🥹🥷🥹🥷")
+    }
+
+    func testTrimmedIfNeeded() {
+        XCTAssertEqual("🥹🥷🥹🥷🥹".trimmedIfNeeded(maxGlyphCount: 4), "🥹🥷🥹🥷")
+        XCTAssertEqual("🥹🥷🥹🥷🥹".trimmedIfNeeded(maxGlyphCount: 5), nil)
+        XCTAssertEqual("🥹🥷🥹🥷🥹".trimmedIfNeeded(maxGlyphCount: 6), nil)
+    }
+
+    func testTrimToUtf8Count() {
+        XCTAssertEqual("🥹🥷🥹🥷🥹".trimToUtf8ByteCount(9), "🥹🥷")
+    }
 }

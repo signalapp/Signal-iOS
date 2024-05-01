@@ -129,7 +129,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         }
 
         func hexFormatData(_ data: Data) -> String {
-            "0x" + data.hexadecimalString.substring(to: 8) + "…"
+            return "0x\(data.hexadecimalString.prefix(8))…"
         }
 
         if let recipientPublicAddressData = mobileCoin.recipientPublicAddressData {

@@ -93,9 +93,9 @@ public class TextFieldFormatting: Dependencies {
         // Construct the new contents of the text field by:
         // 1. Determining the "left" substring: the contents of the old text _before_ the deletion range.
         //    Filtering will remove non-decimal digit characters like hyphen "-".
-        var left = oldText.substring(to: range.location).digitsOnly
+        var left = (oldText as NSString).substring(to: range.location).digitsOnly
         // 2. Determining the "right" substring: the contents of the old text _after_ the deletion range.
-        let right = oldText.substring(from: range.location + range.length).digitsOnly
+        let right = (oldText as NSString).substring(from: range.location + range.length).digitsOnly
         // 3. Determining the "center" substring: the contents of the new insertion text.
         let center = insertionText.digitsOnly
 
@@ -105,10 +105,10 @@ public class TextFieldFormatting: Dependencies {
         //     parentheses).
         let isJustDeletion = insertionText.isEmpty
         if isJustDeletion {
-            let deletedText = oldText.substring(withRange: range)
+            let deletedText = (oldText as NSString).substring(with: range)
             let didDeleteFormatting = deletedText.count == 1 && deletedText.digitsOnly.isEmpty
             if didDeleteFormatting && !left.isEmpty {
-                left = left.substring(to: left.count - 1)
+                left = String(left.dropLast())
             }
         }
 
@@ -118,7 +118,7 @@ public class TextFieldFormatting: Dependencies {
 
         // 5. Construct the "formatted" new text by inserting a hyphen if necessary.
         // reformat the phone number, trying to keep the cursor beside the inserted or deleted digit
-        let cursorPositionAfterChange = min(left.count + center.count, textAfterChange.count)
+        let cursorPositionAfterChange = min(left.utf16.count + center.utf16.count, textAfterChange.utf16.count)
 
         let formattedText = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(
             toLookLikeAPhoneNumber: textAfterChange,
@@ -158,9 +158,9 @@ public class TextFieldFormatting: Dependencies {
         // Construct the new contents of the text field by:
         // 1. Determining the "left" substring: the contents of the old text _before_ the deletion range.
         //    Filtering will remove non-decimal digit characters.
-        let left = oldText.substring(to: range.location).digitsOnly
+        let left = (oldText as NSString).substring(to: range.location).digitsOnly
         // 2. Determining the "right" substring: the contents of the old text _after_ the deletion range.
-        let right = oldText.substring(from: range.location + range.length).digitsOnly
+        let right = (oldText as NSString).substring(from: range.location + range.length).digitsOnly
         // 3. Determining the "center" substring: the contents of the new insertion text.
         let center = insertionText.digitsOnly
         // 4. Construct the "raw" new text by concatenating left, center and right.
@@ -171,7 +171,7 @@ public class TextFieldFormatting: Dependencies {
         // 6. Construct the final text.
         textField.text = textAfterChange
 
-        let cursorPositionAfterChange = min(left.count + center.count, textAfterChange.count)
+        let cursorPositionAfterChange = min(left.utf16.count + center.utf16.count, textAfterChange.utf16.count)
         if let position = textField.position(from: textField.beginningOfDocument, offset: cursorPositionAfterChange) {
             textField.selectedTextRange = textField.textRange(from: position, to: position)
         }
@@ -203,7 +203,7 @@ public class TextFieldFormatting: Dependencies {
             examplePhoneNumber = formattedPhoneNumber
         }
 
-        examplePhoneNumber = examplePhoneNumber.substring(from: callingCode.count)
+        examplePhoneNumber = String(examplePhoneNumber.dropFirst(callingCode.count))
 
         guard includeExampleLabel else {
             return examplePhoneNumber
@@ -227,8 +227,8 @@ private extension String {
         //
         // NOTE: The actual limit is 18, not 15, because of certain invalid phone numbers in Germany.
         //       https://github.com/googlei18n/libphonenumber/blob/master/FALSEHOODS.md
-        if count > Self.kMaxPhoneNumberLength {
-            return substring(to: Self.kMaxPhoneNumberLength)
+        if self.count > Self.kMaxPhoneNumberLength {
+            return String(self.prefix(Self.kMaxPhoneNumberLength))
         }
         return self
     }

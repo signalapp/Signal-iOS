@@ -243,57 +243,63 @@ public class DisplayableText: NSObject {
         // Only show up to N characters of text.
         let kMaxTextDisplayLength = 512
         let kMaxSnippetNewLines = 15
-        let truncatedContent: Content?
 
-        if fullContent.textValue.stringLength > kMaxTextDisplayLength {
-            var snippetLength = kMaxTextDisplayLength
-
-            func deriveSnippetLengthForPlaintext(_ text: String) -> Int {
-                // Message bubbles by default should be short. We don't ever
-                // want to show more than X new lines in the truncated text.
-                let newLineMatches = newLineRegex.matches(
-                    in: text,
-                    options: [],
-                    range: NSRange(location: 0, length: kMaxTextDisplayLength)
-                )
-                if newLineMatches.count > kMaxSnippetNewLines {
-                    return newLineMatches[kMaxSnippetNewLines - 1].range.location
-                }
-                return kMaxTextDisplayLength
+        func truncatePlaintext(_ text: String) -> String? {
+            guard let truncatedText = text.trimmedIfNeeded(maxGlyphCount: kMaxTextDisplayLength) else {
+                return nil
             }
+            // Message bubbles by default should be short. We don't ever
+            // want to show more than X new lines in the truncated text.
+            let newLineMatches = newLineRegex.matches(
+                in: truncatedText,
+                options: [],
+                range: truncatedText.entireRange
+            )
+            guard newLineMatches.count <= kMaxSnippetNewLines else {
+                let matchRange = Range(newLineMatches[kMaxSnippetNewLines].range, in: truncatedText)!
+                return String(truncatedText[..<matchRange.lowerBound])
+            }
+            return truncatedText
+        }
 
+        let truncatedContent = { () -> Content? in
             switch textValue {
             case .text(let text):
-                snippetLength = deriveSnippetLengthForPlaintext(text)
+                guard var truncatedText = truncatePlaintext(text) else {
+                    return nil
+                }
+                truncatedText = truncatedText.ows_stripped() + Self.truncatedTextSuffix
+                return Content(
+                    textValue: .text(truncatedText),
+                    naturalAlignment: truncatedText.naturalTextAlignment
+                )
 
-                let truncatedText = (text.substring(to: snippetLength)
-                                        .ows_stripped()
-                                        + Self.truncatedTextSuffix)
-                truncatedContent = Content(textValue: .text(truncatedText),
-                                           naturalAlignment: truncatedText.naturalTextAlignment)
             case .attributedText(let attributedText):
-                snippetLength = deriveSnippetLengthForPlaintext(attributedText.string)
-
-                let truncatedText = attributedText
-                    .attributedSubstring(from: NSRange(location: 0, length: snippetLength))
-                    .ows_stripped()
+                guard let truncatedPlaintext = truncatePlaintext(attributedText.string) else {
+                    return nil
+                }
+                let truncatedAttributedText = (
+                    attributedText.attributedSubstring(from: truncatedPlaintext.entireRange).ows_stripped()
                     + Self.truncatedTextSuffix
-                truncatedContent = Content(
-                    textValue: .attributedText(truncatedText),
-                    naturalAlignment: truncatedText.string.naturalTextAlignment
+                )
+                return Content(
+                    textValue: .attributedText(truncatedAttributedText),
+                    naturalAlignment: truncatedAttributedText.string.naturalTextAlignment
                 )
 
             case .messageBody(let messageBody):
-                let truncatedBody = messageBody.truncating(desiredLength: snippetLength, truncationSuffix: Self.truncatedTextSuffix)
-
-                truncatedContent = Content(
+                guard let truncatedBody = messageBody.truncatingIfNeeded(
+                    maxGlyphCount: kMaxTextDisplayLength,
+                    truncationSuffix: Self.truncatedTextSuffix
+                ) else {
+                    return nil
+                }
+                return Content(
                     textValue: .messageBody(truncatedBody),
                     naturalAlignment: truncatedBody.naturalTextAlignment
                 )
             }
-        } else {
-            truncatedContent = nil
-        }
+        }()
 
         return DisplayableText(fullContent: fullContent, truncatedContent: truncatedContent)
     }

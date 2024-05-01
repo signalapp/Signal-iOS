@@ -172,10 +172,7 @@ class RegistrationVerificationCodeView: UIView {
     }
 
     private func digit(at index: Int) -> String {
-        guard index < digitText.count else {
-            return ""
-        }
-        return digitText.substring(from: index).substring(to: 1)
+        return String(digitText.dropFirst(index).prefix(1))
     }
 
     // Ensure that all labels are displaying the correct
@@ -243,15 +240,15 @@ extension RegistrationVerificationCodeView: UITextFieldDelegate {
         if let textFieldText = textField.text {
             oldText = textFieldText
         }
-        let left = oldText.substring(to: range.location)
-        let right = oldText.substring(from: range.location + range.length)
+        let left = (oldText as NSString).substring(to: range.location)
+        let right = (oldText as NSString).substring(from: range.location + range.length)
         let unfiltered = left + newString + right
         let characterSet = CharacterSet(charactersIn: "0123456789")
         let filtered = unfiltered.components(separatedBy: characterSet.inverted).joined()
-        let filteredAndTrimmed = filtered.substring(to: 1)
+        let filteredAndTrimmed = String(filtered.prefix(1))
         textField.text = filteredAndTrimmed
 
-        digitText = digitText.substring(to: currentDigitIndex) + filteredAndTrimmed
+        digitText = String(digitText.prefix(currentDigitIndex)) + filteredAndTrimmed
 
         updateViewState()
 
@@ -273,7 +270,7 @@ extension RegistrationVerificationCodeView: UITextFieldDelegate {
 extension RegistrationVerificationCodeView: RegistrationVerificationCodeTextFieldDelegate {
     public func textFieldDidDeletePrevious() {
         if digitText.isEmpty { return }
-        digitText = digitText.substring(to: currentDigitIndex - 1)
+        digitText = String(digitText.prefix(currentDigitIndex - 1))
 
         updateViewState()
     }

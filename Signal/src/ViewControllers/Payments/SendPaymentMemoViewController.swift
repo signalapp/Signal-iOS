@@ -162,16 +162,16 @@ public class SendPaymentMemoViewController: OWSViewController {
 extension SendPaymentMemoViewController: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString: String) -> Bool {
         // Truncate the replacement to fit.
-        let left: String = (textField.text ?? "").substring(to: range.location)
-        let right: String = (textField.text ?? "").substring(from: range.location + range.length)
+        let left: String = ((textField.text ?? "") as NSString).substring(to: range.location)
+        let right: String = ((textField.text ?? "") as NSString).substring(from: range.location + range.length)
         let maxReplacementLength = PaymentsImpl.maxPaymentMemoMessageLength - Int(left.count + right.count)
-        let center = replacementString.substring(to: maxReplacementLength)
+        let center = String(replacementString.prefix(maxReplacementLength))
         textField.text = (left + center + right)
 
         updateMemoCharacterCount()
 
         // Place the cursor after the truncated replacement.
-        let positionAfterChange = left.count + center.count
+        let positionAfterChange = left.utf16.count + center.utf16.count
         guard let position = textField.position(from: textField.beginningOfDocument, offset: positionAfterChange) else {
             owsFailDebug("Invalid position")
             return false

@@ -27,17 +27,6 @@ public enum CVTextValue: Equatable, Hashable {
         return self.isEmpty ? nil : self
     }
 
-    public var stringLength: Int {
-        switch self {
-        case .text(let text):
-            return (text as NSString).length
-        case .attributedText(let attributedText):
-            return attributedText.length
-        case .messageBody(let hydratedMessageBody):
-            return hydratedMessageBody.rawTextLength
-        }
-    }
-
     public var naturalTextAligment: NSTextAlignment {
         switch self {
         case .text(let text):

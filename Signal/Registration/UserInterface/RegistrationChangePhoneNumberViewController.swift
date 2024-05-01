@@ -169,7 +169,7 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
                 owsFailDebug("Example phone number missing calling code. phoneNumber: \(phoneNumber), callingCode: \(valueViews.callingCode).")
                 return nil
             }
-            guard let formattedWithoutCallingCode = formatted.substring(from: valueViews.callingCode.count).nilIfEmpty else {
+            guard let formattedWithoutCallingCode = String(formatted.dropFirst(valueViews.callingCode.count)).nilIfEmpty else {
                 owsFailDebug("Invalid phone number. phoneNumber: \(phoneNumber), callingCode: \(valueViews.callingCode).")
                 return nil
             }

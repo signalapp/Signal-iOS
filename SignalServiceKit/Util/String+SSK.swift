@@ -76,14 +76,6 @@ public extension String {
         allSatisfy { $0.isASCII && ($0.isLetter || $0.isNumber) }
     }
 
-    func substring(from index: Int) -> String {
-        return String(self[self.index(self.startIndex, offsetBy: index)...])
-    }
-
-    func substring(to index: Int) -> String {
-        return String(prefix(index))
-    }
-
     func substring(withRange range: NSRange) -> String {
         (self as NSString).substring(with: range)
     }
@@ -655,54 +647,27 @@ public extension String {
             })
     }
 
+    func trimmedIfNeeded(maxGlyphCount: Int) -> String? {
+        // This is O(maxGlyphCount) instead of O(self.count).
+        if self.dropFirst(maxGlyphCount).isEmpty {
+            return nil
+        }
+        return String(self.prefix(maxGlyphCount))
+    }
+
     func trimToGlyphCount(_ maxGlyphCount: Int) -> String {
-        guard glyphCount > maxGlyphCount else {
-            return self
-        }
-        // Binary search for longest substring with valid glyph count.
-        var left: Int = 0
-        var right = count
-        while true {
-            let mid = (left + right) / 2
-            guard left != right,
-                  mid != left,
-                  mid != right else {
-                let result = substring(to: left)
-                owsAssertDebug(result.glyphCount <= maxGlyphCount)
-                return result
-            }
-            let segment = substring(to: mid)
-            if segment.glyphCount <= maxGlyphCount {
-                left = mid
-            } else {
-                right = mid
-            }
-        }
+        return self.trimmedIfNeeded(maxGlyphCount: maxGlyphCount) ?? self
     }
 
     func trimToUtf8ByteCount(_ maxByteCount: Int) -> String {
-        guard utf8.count > maxByteCount else {
-            return self
-        }
-        // Binary search for longest substring with valid UTF-8 count.
-        var left: Int = 0
-        var right = count
-        while true {
-            let mid = (left + right) / 2
-            guard left != right,
-                  mid != left,
-                  mid != right else {
-                let result = substring(to: left)
-                owsAssertDebug(result.utf8.count <= maxByteCount)
-                return result
-            }
-            let segment = substring(to: mid)
-            if segment.utf8.count <= maxByteCount {
-                left = mid
-            } else {
-                right = mid
+        var utf8Count = 0
+        for index in self.indices {
+            utf8Count += self[index].utf8.count
+            if utf8Count > maxByteCount {
+                return String(self[..<index])
             }
         }
+        return self
     }
 }
 
