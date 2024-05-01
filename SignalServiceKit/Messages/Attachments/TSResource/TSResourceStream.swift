@@ -3,20 +3,27 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import AVFoundation
 import Foundation
 
 /// A TSResource for which we have the fullsize data on local disk.
 public protocol TSResourceStream: TSResource {
 
-    func fileURLForDeletion() throws -> URL
+    /// Reads the type-agnostic raw data of the attachment file from disk.
+    /// Throws an error if reading/decrypting the file fails.
+    func decryptedRawData() throws -> Data
 
     /// Interprets the data on disk as a string with standard encoding (utf-8, but thats an implementation detail).
-    func decryptedLongText() -> String?
+    /// Throws an error if reading/decrypting the file fails or the data is incompatible with UIImage.
+    func decryptedLongText() throws -> String
 
-    func decryptedRawDataSync() throws -> Data
-    func decryptedRawData() async throws -> Data
+    /// Interprets the data on disk as a UIImage.
+    /// Throws an error if reading/decrypting the file fails or the data is incompatible with UIImage.
+    func decryptedImage() throws -> UIImage
 
-    func decryptedImage() async throws -> UIImage
+    /// Interprets the data on disk as an AVAsset (video or audio).
+    /// Throws an error if reading/decrypting the file fails or the data is incompatible with AVAsset.
+    func decryptedAVAsset() throws -> AVAsset
 
     var concreteStreamType: ConcreteTSResourceStream { get }
 

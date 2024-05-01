@@ -60,7 +60,7 @@ public class ContactShareViewModel: NSObject {
             case .file, .video, .animatedImage, .audio:
                 avatarImageData = nil
             case .image:
-                avatarImageData = try? avatarAttachment.decryptedRawDataSync()
+                avatarImageData = try? avatarAttachment.decryptedRawData()
             }
             self.init(
                 contactShareRecord: contactShareRecord,

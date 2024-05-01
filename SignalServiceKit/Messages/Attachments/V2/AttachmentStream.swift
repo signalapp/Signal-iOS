@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import AVFoundation
 import Foundation
 
 /// Represents a downloaded attachment with the fullsize contents available on local disk.
@@ -70,6 +71,24 @@ public class AttachmentStream {
             output: tmpURL
         )
         return tmpURL
+    }
+
+    // MARK: - Accessing file data
+
+    public func decryptedRawData() throws -> Data {
+        fatalError("Unimplemented!")
+    }
+
+    public func decryptedLongText() throws -> String {
+        fatalError("Unimplemented!")
+    }
+
+    public func decryptedImage() throws -> UIImage {
+        fatalError("Unimplemented!")
+    }
+
+    public func decryptedAVAsset() throws -> AVAsset {
+        fatalError("Unimplemented!")
     }
 
     // MARK: - Thumbnails

@@ -45,25 +45,6 @@ extension Attachment: TSResource {
 // MARK: - Attachment Stream
 
 extension AttachmentStream: TSResourceStream {
-    public func fileURLForDeletion() throws -> URL {
-        fatalError("Unimplemented!")
-    }
-
-    public func decryptedLongText() -> String? {
-        fatalError("Unimplemented!")
-    }
-
-    public func decryptedRawData() async throws -> Data {
-        fatalError("Unimplemented!")
-    }
-
-    public func decryptedRawDataSync() throws -> Data {
-        fatalError("Unimplemented!")
-    }
-
-    public func decryptedImage() async throws -> UIImage {
-        fatalError("Unimplemented!")
-    }
 
     public var concreteStreamType: ConcreteTSResourceStream {
         return .v2(self)

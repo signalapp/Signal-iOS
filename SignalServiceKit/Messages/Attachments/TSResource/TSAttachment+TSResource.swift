@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import AVFoundation
 import Foundation
 
 extension TSAttachment: TSResource {
@@ -76,45 +77,40 @@ extension TSAttachment: TSResource {
 
 extension TSAttachmentStream: TSResourceStream {
 
-    public func fileURLForDeletion() throws -> URL {
-        // We guard that this is non-nil on the cast above.
-        let filePath = self.originalFilePath!
-        return URL(fileURLWithPath: filePath)
-    }
-
-    public func decryptedLongText() -> String? {
-        guard let fileUrl = self.originalMediaURL else {
-            return nil
-        }
-
-        guard let data = try? Data(contentsOf: fileUrl) else {
-            return nil
-        }
-
-        guard let text = String(data: data, encoding: .utf8) else {
-            owsFailDebug("Can't parse oversize text data.")
-            return nil
-        }
-        return text
-    }
-
-    public func decryptedRawDataSync() throws -> Data {
+    public func decryptedRawData() throws -> Data {
         guard let originalFilePath else {
             throw OWSAssertionError("Missing file path!")
         }
         return try NSData(contentsOfFile: originalFilePath) as Data
     }
 
-    public func decryptedRawData() async throws -> Data {
-        return try decryptedRawDataSync()
+    public func decryptedLongText() throws -> String {
+        guard let fileUrl = self.originalMediaURL else {
+            throw OWSAssertionError("Missing file")
+        }
+
+        let data = try Data(contentsOf: fileUrl)
+
+        guard let text = String(data: data, encoding: .utf8) else {
+            throw OWSAssertionError("Can't parse oversize text data.")
+        }
+        return text
     }
 
-    public func decryptedImage() async throws -> UIImage {
+    public func decryptedImage() throws -> UIImage {
         // TSAttachments keep the file decrypted on disk.
         guard let originalImage = self.originalImage else {
             throw OWSAssertionError("Not a valid image!")
         }
         return originalImage
+    }
+
+    public func decryptedAVAsset() throws -> AVAsset {
+        guard let filePath = self.originalFilePath else {
+            throw OWSAssertionError("Missing file")
+        }
+        let fileUrl = URL(fileURLWithPath: filePath)
+        return AVURLAsset(url: fileUrl)
     }
 
     public var concreteStreamType: ConcreteTSResourceStream {

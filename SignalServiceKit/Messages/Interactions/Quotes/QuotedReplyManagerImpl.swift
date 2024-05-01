@@ -396,7 +396,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             guard
                 let attachmentRef = attachmentStore.stickerAttachment(for: originalMessage, tx: tx),
                 let attachment = attachmentStore.fetch(attachmentRef.resourceId, tx: tx),
-                let stickerData = try? attachment.asResourceStream()?.decryptedRawDataSync()
+                let stickerData = try? attachment.asResourceStream()?.decryptedRawData()
             else {
                 owsFailDebug("Couldn't load sticker data")
                 return nil
@@ -490,7 +490,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 // If the attachment is "oversize text", try the quote as a reply to text, not as
                 // a reply to an attachment.
                 if
-                    let oversizeTextData = try? attachment?.asResourceStream()?.decryptedRawDataSync(),
+                    let oversizeTextData = try? attachment?.asResourceStream()?.decryptedRawData(),
                     let oversizeText = String(data: oversizeTextData, encoding: .utf8)
                 {
                     // We don't need to include the entire text body of the message, just
