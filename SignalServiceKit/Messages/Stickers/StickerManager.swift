@@ -1101,7 +1101,7 @@ public class StickerManager: NSObject {
     }
 
     @objc
-    static func hasOrphanedData(tx: SDSAnyReadTransaction) -> Bool {
+    public static func hasOrphanedData(tx: SDSAnyReadTransaction) -> Bool {
         let (packsToRemove, stickersToRemove) = fetchOrphanedPacksAndStickers(tx: tx)
         return !packsToRemove.isEmpty || !stickersToRemove.isEmpty
     }

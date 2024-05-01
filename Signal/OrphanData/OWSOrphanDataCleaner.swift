@@ -35,7 +35,7 @@ class OWSOrphanData: NSObject {
         self.hasOrphanedPacksOrStickers = hasOrphanedPacksOrStickers
     }
 }
-private typealias OrphanDataBlock = (_ orphanData: OWSOrphanData) -> ()
+typealias OrphanDataBlock = (_ orphanData: OWSOrphanData) -> ()
 
 extension OWSOrphanDataCleaner {
 
@@ -243,6 +243,325 @@ extension OWSOrphanDataCleaner {
     }
 
     // MARK: - Find
+
+    /// This method finds but does not delete orphan data.
+    ///
+    /// The follow items are considered orphan data:
+    /// * Orphan `TSInteraction`s (with no thread).
+    /// * Orphan `TSAttachment`s (with no message).
+    /// * Orphan attachment files (with no corresponding `TSAttachment`).
+    /// * Orphan profile avatars.
+    /// * Temporary files (all).
+    ///
+    /// It also finds but we don't clean these up:
+    /// * Missing attachment files (cannot be cleaned up).
+    ///   These are attachments which have no file on disk. The should be extremely rare -
+    ///   the only cases I have seen are probably due to debugging.
+    ///   They can't be cleaned up - we don't want to delete the TSAttachmentStream or
+    ///   its corresponding message. Better that the broken message shows up in the
+    ///   conversation view.
+    @objc
+    static func findOrphanData(withRetries remainingRetries: Int,
+                               success: @escaping OrphanDataBlock,
+                               failure: @escaping () -> Void) {
+        guard remainingRetries > 0 else {
+            Logger.info("Aborting orphan data search. No more retries.")
+            workQueue.async(failure)
+            return
+        }
+
+        Logger.info("Enqueuing an orphan data search. Remaining retries: \(remainingRetries)")
+
+        // Wait until the app is active...
+        CurrentAppContext().runNowOr(whenMainAppIsActive: {
+            // ...but perform the work off the main thread.
+            let backgroundTask = OWSBackgroundTask(label: #function)
+            workQueue.async {
+                if let orphanData = findOrphanDataSync() {
+                    success(orphanData)
+                } else {
+                    findOrphanData(withRetries: remainingRetries - 1, success: success, failure: failure)
+                }
+                backgroundTask.end()
+            }
+        })
+    }
+
+    /// Returns `nil` on failure, usually indicating that the search
+    /// aborted due to the app resigning active. This method is extremely careful to
+    /// abort if the app resigns active, in order to avoid `0xdead10cc` crashes.
+    private static func findOrphanDataSync() -> OWSOrphanData? {
+        var shouldAbort = false
+
+        let legacyAttachmentsDirPath = TSAttachmentStream.legacyAttachmentsDirPath()
+        let sharedDataAttachmentsDirPath = TSAttachmentStream.sharedDataAttachmentsDirPath()
+        guard let legacyAttachmentFilePaths = filePaths(inDirectorySafe: legacyAttachmentsDirPath), isMainAppAndActive else {
+            return nil
+        }
+        guard let sharedDataAttachmentFilePaths = filePaths(inDirectorySafe: sharedDataAttachmentsDirPath), isMainAppAndActive else {
+            return nil
+        }
+
+        let legacyProfileAvatarsDirPath = OWSUserProfile.legacyProfileAvatarsDirPath
+        let sharedDataProfileAvatarsDirPath = OWSUserProfile.sharedDataProfileAvatarsDirPath
+        guard let legacyProfileAvatarsFilePaths = filePaths(inDirectorySafe: legacyProfileAvatarsDirPath), isMainAppAndActive else {
+            return nil
+        }
+        guard let sharedDataProfileAvatarFilePaths = filePaths(inDirectorySafe: sharedDataProfileAvatarsDirPath), isMainAppAndActive else {
+            return nil
+        }
+
+        guard let allGroupAvatarFilePaths = filePaths(inDirectorySafe: TSGroupModel.avatarsDirectory.path), isMainAppAndActive else {
+            return nil
+        }
+
+        let stickersDirPath = StickerManager.cacheDirUrl().path
+        guard let allStickerFilePaths = filePaths(inDirectorySafe: stickersDirPath), isMainAppAndActive else {
+            return nil
+        }
+
+        let allOnDiskFilePaths: Set<String> = {
+            var result: Set<String> = []
+            result.formUnion(legacyAttachmentFilePaths)
+            result.formUnion(sharedDataAttachmentFilePaths)
+            result.formUnion(legacyProfileAvatarsFilePaths)
+            result.formUnion(sharedDataProfileAvatarFilePaths)
+            result.formUnion(allGroupAvatarFilePaths)
+            result.formUnion(allStickerFilePaths)
+            // TODO: Badges?
+
+            // This should be redundant, but this will future-proof us against
+            // ever accidentally removing the GRDB databases during
+            // orphan clean up.
+            let grdbPrimaryDirectoryPath = GRDBDatabaseStorageAdapter.databaseDirUrl(directoryMode: .primary).path
+            let grdbHotswapDirectoryPath = GRDBDatabaseStorageAdapter.databaseDirUrl(directoryMode: .hotswapLegacy).path
+            let grdbTransferDirectoryPath: String?
+            if GRDBDatabaseStorageAdapter.hasAssignedTransferDirectory && TSAccountManagerObjcBridge.isTransferInProgressWithMaybeTransaction {
+                grdbTransferDirectoryPath = GRDBDatabaseStorageAdapter.databaseDirUrl(directoryMode: .transfer).path
+            } else {
+                grdbTransferDirectoryPath = nil
+            }
+
+            let databaseFilePaths: Set<String> = {
+                var filePathsToSubtract: Set<String> = []
+                for filePath in result {
+                    if filePath.hasPrefix(grdbPrimaryDirectoryPath) {
+                        Logger.info("Protecting database file: \(filePath)")
+                        filePathsToSubtract.insert(filePath)
+                    } else if filePath.hasPrefix(grdbHotswapDirectoryPath) {
+                        Logger.info("Protecting database hotswap file: \(filePath)")
+                        filePathsToSubtract.insert(filePath)
+                    } else if let grdbTransferDirectoryPath, filePath.hasPrefix(grdbTransferDirectoryPath) {
+                        Logger.info("Protecting database hotswap file: \(filePath)")
+                        filePathsToSubtract.insert(filePath)
+                    }
+                }
+                return filePathsToSubtract
+            }()
+            result.subtract(databaseFilePaths)
+
+            return result
+        }()
+
+        let profileAvatarFilePaths: Set<String> = {
+            var result: Set<String> = []
+            databaseStorage.read { transaction in
+                result = OWSProfileManager.allProfileAvatarFilePaths(with: transaction)
+            }
+            return result
+        }()
+
+        guard let groupAvatarFilePaths = {
+            do {
+                var result: Set<String> = []
+                try databaseStorage.read { transaction in
+                    result = try TSGroupModel.allGroupAvatarFilePaths(transaction: transaction)
+                }
+                return result
+            } catch {
+                owsFailDebug("Failed to query group avatar file paths \(error)")
+                return nil
+            }
+        }() else {
+            return nil
+        }
+
+        guard isMainAppAndActive else {
+            return nil
+        }
+
+        let voiceMessageDraftOrphanedPaths = findOrphanedVoiceMessageDraftPaths()
+
+        guard isMainAppAndActive else {
+            return nil
+        }
+
+        let wallpaperOrphanedPaths = findOrphanedWallpaperPaths()
+
+        guard isMainAppAndActive else {
+            return nil
+        }
+
+        // Attachments
+        var attachmentStreamCount: Int = 0
+        var allAttachmentFilePaths: Set<String> = []
+        var allAttachmentIds: Set<String> = []
+        var allReactionIds: Set<String> = []
+        var allMentionIds: Set<String> = []
+        var orphanInteractionIds: Set<String> = []
+        var allMessageAttachmentIds: Set<String> = []
+        var allStoryAttachmentIds: Set<String> = []
+        var allMessageReactionIds: Set<String> = []
+        var allMessageMentionIds: Set<String> = []
+        var activeStickerFilePaths: Set<String> = []
+        var hasOrphanedPacksOrStickers = false
+        databaseStorage.read { transaction in
+            TSAttachmentStream.anyEnumerate(transaction: transaction, batched: true) { attachment, stop in
+                guard isMainAppAndActive else {
+                    shouldAbort = true
+                    stop.pointee = true
+                    return
+                }
+                guard let attachmentStream = attachment as? TSAttachmentStream else {
+                    return
+                }
+                allAttachmentIds.insert(attachment.uniqueId)
+                attachmentStreamCount += 1
+                if let filePath = attachmentStream.originalFilePath {
+                    allAttachmentFilePaths.insert(filePath)
+                } else {
+                    owsFailDebug("attachment has no file path.")
+                }
+
+                allAttachmentFilePaths.formUnion(attachmentStream.allSecondaryFilePaths())
+            }
+
+            if shouldAbort {
+                return
+            }
+
+            let threadIds: Set<String> = Set(TSThread.anyAllUniqueIds(transaction: transaction))
+
+            var allInteractionIds: Set<String> = []
+            TSInteraction.anyEnumerate(transaction: transaction, batched: true) { interaction, stop in
+                guard isMainAppAndActive else {
+                    shouldAbort = true
+                    stop.pointee = true
+                    return
+                }
+                if interaction.uniqueThreadId.isEmpty || !threadIds.contains(interaction.uniqueThreadId) {
+                    orphanInteractionIds.insert(interaction.uniqueId)
+                }
+
+                allInteractionIds.insert(interaction.uniqueId)
+                guard let message = interaction as? TSMessage else {
+                    return
+                }
+                allMessageAttachmentIds.formUnion(legacyAttachmentUniqueIds(message))
+            }
+
+            if shouldAbort {
+                return
+            }
+
+            OWSReaction.anyEnumerate(transaction: transaction, batchingPreference: .batched()) { reaction, stop in
+                guard isMainAppAndActive else {
+                    shouldAbort = true
+                    stop.pointee = true
+                    return
+                }
+                allReactionIds.insert(reaction.uniqueId)
+                if allInteractionIds.contains(reaction.uniqueMessageId) {
+                    allMessageReactionIds.insert(reaction.uniqueId)
+                }
+            }
+
+            if shouldAbort {
+                return
+            }
+
+            TSMention.anyEnumerate(transaction: transaction, batchingPreference: .batched()) { mention, stop in
+                guard isMainAppAndActive else {
+                    shouldAbort = true
+                    stop.pointee = true
+                    return
+                }
+                allMentionIds.insert(mention.uniqueId)
+                if allInteractionIds.contains(mention.uniqueMessageId) {
+                    allMessageMentionIds.insert(mention.uniqueId)
+                }
+            }
+
+            if shouldAbort {
+                return
+            }
+
+            StoryMessage.anyEnumerate(transaction: transaction, batchingPreference: .batched()) { message, stop in
+                guard isMainAppAndActive else {
+                    shouldAbort = true
+                    stop.pointee = true
+                    return
+                }
+                if let attachmentUniqueId = legacyAttachmentUniqueId(message) {
+                    allStoryAttachmentIds.insert(attachmentUniqueId)
+                }
+            }
+
+            if shouldAbort {
+                return
+            }
+
+            guard let jobRecordAttachmentIds = findJobRecordAttachmentIds(transaction: transaction) else {
+                shouldAbort = true
+                return
+            }
+
+            allMessageAttachmentIds.formUnion(jobRecordAttachmentIds)
+
+            activeStickerFilePaths.formUnion(StickerManager.filePathsForAllInstalledStickers(transaction: transaction))
+
+            hasOrphanedPacksOrStickers = StickerManager.hasOrphanedData(tx: transaction)
+        }
+        if shouldAbort {
+            return nil
+        }
+
+        var orphanFilePaths = allOnDiskFilePaths
+        orphanFilePaths.subtract(allAttachmentFilePaths)
+        orphanFilePaths.subtract(profileAvatarFilePaths)
+        orphanFilePaths.subtract(groupAvatarFilePaths)
+        orphanFilePaths.subtract(activeStickerFilePaths)
+        var missingAttachmentFilePaths = allAttachmentFilePaths
+        missingAttachmentFilePaths.subtract(allOnDiskFilePaths)
+
+        var orphanAttachmentIds = allAttachmentIds
+        orphanAttachmentIds.subtract(allMessageAttachmentIds)
+        orphanAttachmentIds.subtract(allStoryAttachmentIds)
+        var missingAttachmentIds = allMessageAttachmentIds
+        missingAttachmentIds.subtract(allAttachmentIds)
+
+        var orphanReactionIds = allReactionIds
+        orphanReactionIds.subtract(allMessageReactionIds)
+        var missingReactionIds = allMessageReactionIds
+        missingReactionIds.subtract(allReactionIds)
+
+        var orphanMentionIds = allMentionIds
+        orphanMentionIds.subtract(allMessageMentionIds)
+        var missingMentionIds = allMessageMentionIds
+        missingMentionIds.subtract(allMentionIds)
+
+        var orphanFileAndDirectoryPaths: Set<String> = []
+        orphanFileAndDirectoryPaths.formUnion(voiceMessageDraftOrphanedPaths)
+        orphanFileAndDirectoryPaths.formUnion(wallpaperOrphanedPaths)
+
+        return OWSOrphanData(interactionIds: orphanInteractionIds,
+                             attachmentIds: orphanAttachmentIds,
+                             filePaths: orphanFilePaths,
+                             reactionIds: orphanReactionIds,
+                             mentionIds: orphanMentionIds,
+                             fileAndDirectoryPaths: orphanFileAndDirectoryPaths,
+                             hasOrphanedPacksOrStickers: hasOrphanedPacksOrStickers)
+    }
 
     /// Finds paths in `baseUrl` not present in `fetchExpectedRelativePaths()`.
     private static func findOrphanedPaths(
