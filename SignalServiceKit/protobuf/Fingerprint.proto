@@ -21,9 +21,9 @@ message LogicalFingerprint {
 
 message LogicalFingerprints {
   // @required
-  optional uint32             version           = 1;
+  optional uint32 version = 1;
   // @required
-  optional LogicalFingerprint localFingerprint  = 2;
+  optional LogicalFingerprint localFingerprint = 2;
   // @required
   optional LogicalFingerprint remoteFingerprint = 3;
 }

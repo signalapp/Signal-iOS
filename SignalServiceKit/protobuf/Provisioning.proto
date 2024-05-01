@@ -21,7 +21,7 @@ message ProvisionEnvelope {
   // @required
   optional bytes publicKey = 1;
   // @required
-  optional bytes body      = 2; // Encrypted ProvisionMessage
+  optional bytes body = 2; // Encrypted ProvisionMessage
 }
 
 message ProvisionMessage {

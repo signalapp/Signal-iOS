@@ -8,17 +8,17 @@ syntax = "proto3";
 // iOS - package name determines class prefix
 package GroupsProtos;
 
-option java_package        = "org.signal.storageservice.protos.groups";
+option java_package = "org.signal.storageservice.protos.groups";
 option java_multiple_files = true;
 
 message AvatarUploadAttributes {
-  string key        = 1;
+  string key = 1;
   string credential = 2;
-  string acl        = 3;
-  string algorithm  = 4;
-  string date       = 5;
-  string policy     = 6;
-  string signature  = 7;
+  string acl = 3;
+  string algorithm = 4;
+  string date = 5;
+  string policy = 6;
+  string signature = 7;
 }
 
 // MARK: - Stored data
@@ -26,24 +26,24 @@ message AvatarUploadAttributes {
 // Represents a member of the group.
 message Member {
   enum Role {
-    UNKNOWN       = 0;
+    UNKNOWN = 0;
     // A normal member.
-    DEFAULT       = 1;
+    DEFAULT = 1;
     // A group admin.
     ADMINISTRATOR = 2;
   }
 
   // The member's encrypted ServiceId.
-  bytes  userId           = 1;
-  Role   role             = 2;
+  bytes userId = 1;
+  Role role = 2;
   // The member's encrypted profile key.
-  bytes  profileKey       = 3;
+  bytes profileKey = 3;
   // The group revision at which this member joined.
   uint32 joinedAtRevision = 5;
 
   // A `LibSignalClient.ProfileKeyCredentialPresentation` created by the
   // client and used by the server to populate the other fields.
-  bytes  presentation     = 4;
+  bytes presentation = 4;
 }
 
 // An invited member of the group.
@@ -53,89 +53,89 @@ message Member {
 // profile key to the group.
 message PendingMember {
   // The invited member.
-  Member member        = 1;
+  Member member = 1;
   // The encrypted ACI of the group member who invited this member.
-  bytes  addedByUserId = 2;
+  bytes addedByUserId = 2;
   // The timestamp of the invite, in epoch milliseconds.
-  uint64 timestamp     = 3;
+  uint64 timestamp = 3;
 }
 
 // A user who has requested to join the group, and is pending admin approval.
 message RequestingMember {
   // The user's encrypted ACI.
-  bytes  userId       = 1;
+  bytes userId = 1;
   // The user's encrypted profile key.
-  bytes  profileKey   = 2;
+  bytes profileKey = 2;
   // The timestamp at which they requested to join, in epoch milliseconds.
-  uint64 timestamp    = 4;
+  uint64 timestamp = 4;
 
   // A `LibSignalClient.ProfileKeyCredentialPresentation` created by the
   // client and used by the server to populate the other fields.
-  bytes  presentation = 3;
+  bytes presentation = 3;
 }
 
 // A user who has been banned from the group.
 message BannedMember {
   // The user's encrypted ServiceId.
-  bytes userId             = 1;
+  bytes userId = 1;
   // The time at which the user was banned, in epoch milliseconds.
   uint64 bannedAtTimestamp = 2;
 }
 
 message AccessControl {
   enum AccessRequired {
-      UNKNOWN       = 0;
-      ANY           = 1;
-      MEMBER        = 2; // Any group member can make the modification
+      UNKNOWN = 0;
+      ANY = 1;
+      MEMBER = 2; // Any group member can make the modification
       ADMINISTRATOR = 3; // Only administrators can make the modification
       UNSATISFIABLE = 4;
   }
 
-  AccessRequired attributes        = 1; // Who can modify the group title, avatar, disappearing messages timer
-  AccessRequired members           = 2; // Who can add people to the group
+  AccessRequired attributes = 1; // Who can modify the group title, avatar, disappearing messages timer
+  AccessRequired members = 2; // Who can add people to the group
   AccessRequired addFromInviteLink = 3;
 }
 
 message Group {
-           // `LibSignalClient.GroupPublicParams`.
-           bytes            publicKey                 = 1;
-           // The encrypted title of the group as a `GroupAttributeBlob`.
-           bytes            title                     = 2;
-           // Pointer to the encrypted avatar.
-           //
-           // - SeeAlso `key` from `AvatarUploadAttributes`.
-           //
-           // - Note:
-           // The data downloaded from this pointer is a `GroupAttributeBlob`.
-           string           avatar                    = 3;
-           // The encrypted disappearing message timer of the group as a
-           // `GroupAttributeBlob`.
-           bytes            disappearingMessagesTimer = 4;
-           // The encrypted description of the group as a `GroupAttributeBlob`.
-           bytes            descriptionBytes          = 11;
-           AccessControl    accessControl             = 5;
-           // The current revision number of the group.
-           uint32           revision                  = 6;
-  repeated Member           members                   = 7;
-  repeated PendingMember    pendingMembers            = 8;
-  repeated RequestingMember requestingMembers         = 9;
-           bytes            inviteLinkPassword        = 10;
-           bool             announcementsOnly         = 12;
-  repeated BannedMember     bannedMembers             = 13;
+  // `LibSignalClient.GroupPublicParams`.
+  bytes publicKey = 1;
+  // The encrypted title of the group as a `GroupAttributeBlob`.
+  bytes title = 2;
+  // Pointer to the encrypted avatar.
+  //
+  // - SeeAlso `key` from `AvatarUploadAttributes`.
+  //
+  // - Note:
+  // The data downloaded from this pointer is a `GroupAttributeBlob`.
+  string avatar = 3;
+  // The encrypted disappearing message timer of the group as a
+  // `GroupAttributeBlob`.
+  bytes disappearingMessagesTimer = 4;
+  // The encrypted description of the group as a `GroupAttributeBlob`.
+  bytes descriptionBytes = 11;
+  AccessControl accessControl = 5;
+  // The current revision number of the group.
+  uint32 revision = 6;
+  repeated Member members = 7;
+  repeated PendingMember pendingMembers = 8;
+  repeated RequestingMember requestingMembers = 9;
+  bytes inviteLinkPassword = 10;
+  bool announcementsOnly = 12;
+  repeated BannedMember bannedMembers = 13;
 }
 
 message GroupAttributeBlob {
   oneof content {
-    string title                        = 1;
-    bytes  avatar                       = 2;
+    string title = 1;
+    bytes avatar = 2;
     uint32 disappearingMessagesDuration = 3;
-    string descriptionText              = 4;
+    string descriptionText = 4;
   }
 }
 
 message GroupInviteLink {
   message GroupInviteLinkContentsV1 {
-    bytes groupMasterKey     = 1;
+    bytes groupMasterKey = 1;
     bytes inviteLinkPassword = 2;
   }
 
@@ -145,14 +145,14 @@ message GroupInviteLink {
 }
 
 message GroupJoinInfo {
-  bytes                        publicKey            = 1;
-  bytes                        title                = 2;
-  string                       avatar               = 3;
-  uint32                       memberCount          = 4;
-  AccessControl.AccessRequired addFromInviteLink    = 5;
-  uint32                       revision             = 6;
-  bool                         pendingAdminApproval = 7;
-  bytes                        descriptionBytes     = 8;
+  bytes publicKey = 1;
+  bytes title = 2;
+  string avatar = 3;
+  uint32 memberCount = 4;
+  AccessControl.AccessRequired addFromInviteLink = 5;
+  uint32 revision = 6;
+  bool pendingAdminApproval = 7;
+  bytes descriptionBytes = 8;
 }
 
 // MARK: - Group changes
@@ -160,8 +160,8 @@ message GroupJoinInfo {
 message GroupChange {
   message Actions {
     message AddMemberAction {
-      Member added              = 1;
-      bool   joinFromInviteLink = 2;
+      Member added = 1;
+      bool joinFromInviteLink = 2;
     }
 
     message DeleteMemberAction {
@@ -169,8 +169,8 @@ message GroupChange {
     }
 
     message ModifyMemberRoleAction {
-      bytes       userId = 1;
-      Member.Role role   = 2;
+      bytes userId = 1;
+      Member.Role role = 2;
     }
 
     message ModifyMemberProfileKeyAction {
@@ -215,8 +215,8 @@ message GroupChange {
     }
 
     message PromoteRequestingMemberAction {
-      bytes       userId = 1;
-      Member.Role role   = 2;
+      bytes userId = 1;
+      Member.Role role = 2;
     }
 
     message AddBannedMemberAction {
@@ -272,41 +272,41 @@ message GroupChange {
       bool announcementsOnly = 1;
     }
 
-             bytes                                      sourceUserId                    = 1; // Encrypted ServiceId for who made the change
-             uint32                                     revision                        = 2; // The change revision number
-    repeated AddMemberAction                            addMembers                      = 3; // Members added
-    repeated DeleteMemberAction                         deleteMembers                   = 4; // Members deleted
-    repeated ModifyMemberRoleAction                     modifyMemberRoles               = 5; // Modified member roles
-    repeated ModifyMemberProfileKeyAction               modifyMemberProfileKeys         = 6; // Modified member profile keys
-    repeated AddPendingMemberAction                     addPendingMembers               = 7; // Pending members added
-    repeated DeletePendingMemberAction                  deletePendingMembers            = 8; // Pending members deleted
-    repeated PromotePendingMemberAction                 promotePendingMembers           = 9; // Pending invitations accepted
-             ModifyTitleAction                          modifyTitle                     = 10; // Changed title
-             ModifyAvatarAction                         modifyAvatar                    = 11; // Changed avatar
-             ModifyDisappearingMessagesTimerAction      modifyDisappearingMessagesTimer = 12; // Changed timer
-             ModifyAttributesAccessControlAction        modifyAttributesAccess          = 13; // Changed attributes access control
-             ModifyMembersAccessControlAction           modifyMemberAccess              = 14; // Changed membership access control
-             ModifyAddFromInviteLinkAccessControlAction modifyAddFromInviteLinkAccess   = 15;  // change epoch = 1
-    repeated AddRequestingMemberAction                  addRequestingMembers            = 16;  // change epoch = 1
-    repeated DeleteRequestingMemberAction               deleteRequestingMembers         = 17;  // change epoch = 1
-    repeated PromoteRequestingMemberAction              promoteRequestingMembers        = 18;  // change epoch = 1
-             ModifyInviteLinkPasswordAction             modifyInviteLinkPassword        = 19;  // change epoch = 1
-             ModifyDescriptionAction                    modifyDescription               = 20;  // change epoch = 2
-             ModifyAnnouncementsOnlyAction              modifyAnnouncementsOnly         = 21;  // change epoch = 3
-    repeated AddBannedMemberAction                      addBannedMembers                = 22;  // change epoch = 4
-    repeated DeleteBannedMemberAction                   deleteBannedMembers             = 23;  // change epoch = 4
-    repeated PromoteMemberPendingPniAciProfileKeyAction promotePniPendingMembers        = 24;  // change epoch = 5
+    bytes sourceUserId = 1; // Encrypted ServiceId for who made the change
+    uint32 revision = 2; // The change revision number
+    repeated AddMemberAction addMembers = 3; // Members added
+    repeated DeleteMemberAction deleteMembers = 4; // Members deleted
+    repeated ModifyMemberRoleAction modifyMemberRoles = 5; // Modified member roles
+    repeated ModifyMemberProfileKeyAction modifyMemberProfileKeys = 6; // Modified member profile keys
+    repeated AddPendingMemberAction addPendingMembers = 7; // Pending members added
+    repeated DeletePendingMemberAction deletePendingMembers = 8; // Pending members deleted
+    repeated PromotePendingMemberAction promotePendingMembers = 9; // Pending invitations accepted
+    ModifyTitleAction modifyTitle = 10; // Changed title
+    ModifyAvatarAction modifyAvatar = 11; // Changed avatar
+    ModifyDisappearingMessagesTimerAction modifyDisappearingMessagesTimer = 12; // Changed timer
+    ModifyAttributesAccessControlAction modifyAttributesAccess = 13; // Changed attributes access control
+    ModifyMembersAccessControlAction modifyMemberAccess = 14; // Changed membership access control
+    ModifyAddFromInviteLinkAccessControlAction modifyAddFromInviteLinkAccess = 15;  // change epoch = 1
+    repeated AddRequestingMemberAction addRequestingMembers = 16;  // change epoch = 1
+    repeated DeleteRequestingMemberAction deleteRequestingMembers = 17;  // change epoch = 1
+    repeated PromoteRequestingMemberAction promoteRequestingMembers = 18;  // change epoch = 1
+    ModifyInviteLinkPasswordAction modifyInviteLinkPassword = 19;  // change epoch = 1
+    ModifyDescriptionAction modifyDescription = 20;  // change epoch = 2
+    ModifyAnnouncementsOnlyAction modifyAnnouncementsOnly = 21;  // change epoch = 3
+    repeated AddBannedMemberAction addBannedMembers = 22;  // change epoch = 4
+    repeated DeleteBannedMemberAction deleteBannedMembers = 23;  // change epoch = 4
+    repeated PromoteMemberPendingPniAciProfileKeyAction promotePniPendingMembers = 24;  // change epoch = 5
   }
 
-  bytes  actions         = 1; // The serialized actions
-  bytes  serverSignature = 2; // Server’s signature over serialized actions
-  uint32 changeEpoch     = 3;
+  bytes actions = 1; // The serialized actions
+  bytes serverSignature = 2; // Server’s signature over serialized actions
+  uint32 changeEpoch = 3;
 }
 
 message GroupChanges {
   message GroupChangeState {
     GroupChange groupChange = 1;
-    Group       groupState  = 2;
+    Group groupState = 2;
   }
 
   repeated bytes /*GroupChangeState*/ groupChanges = 1;

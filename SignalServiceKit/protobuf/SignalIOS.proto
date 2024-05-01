@@ -14,7 +14,7 @@ message DeviceName {
   // @required
   optional bytes ephemeralPublic = 1;
   // @required
-  optional bytes syntheticIv     = 2;
+  optional bytes syntheticIv = 2;
   // @required
-  optional bytes ciphertext      = 3;
+  optional bytes ciphertext = 3;
 }
