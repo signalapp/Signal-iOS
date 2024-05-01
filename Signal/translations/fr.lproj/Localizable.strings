@@ -1,5 +1,5 @@
 /* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Pas maintenant";
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Plus tard";
 
 /* Title for the 'about' help section */
 "ABOUT_SECTION_TITLE" = "À propos de Signal";
@@ -119,7 +119,7 @@
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Voulez-vous partager votre profil avec cet utilisateur ?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
-"ALERT_ACTION_ACKNOWLEDGE" = "Compris";
+"ALERT_ACTION_ACKNOWLEDGE" = "J’ai compris";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
 "ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Impossible de distribuer du contenu de %1$@. Il peut s’agir d’un message, d’un sticker, d’une réaction, d’une confirmation de lecture ou d’un contenu multimédia.";
@@ -236,7 +236,7 @@
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Saisir votre nom";
 
 /* Label for the 'dismiss' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Pas maintenant";
+"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Plus tard";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "La version %1$@ est maintenant proposée dans la logithèque App Store.";
@@ -294,9 +294,6 @@
 
 /* Apple Pay donation error for decline failures where the payment cannot be authorized. */
 "APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Vérifiez si votre mode de paiement est à jour dans Apple Pay. Dans le cas contraire, mettez-le à jour et réessayez.";
-
-/* Name of application */
-"APPLICATION_NAME" = "Signal";
 
 /* On the iOS home screen, if you tap and hold the Signal icon, this shortcut will appear. Tapping it will let users send a new message. You may want to refer to similar behavior in other iOS apps, such as Messages, for equivalent strings. */
 "APPLICATION_SHORTCUT_NEW_MESSAGE" = "Nouveau message";
@@ -653,7 +650,7 @@
 "BUTTON_NO" = "Non";
 
 /* Label for the 'not now' button. */
-"BUTTON_NOT_NOW" = "Pas maintenant";
+"BUTTON_NOT_NOW" = "Plus tard";
 
 /* Label for the 'okay' button. */
 "BUTTON_OKAY" = "D’accord";
@@ -1118,7 +1115,7 @@
 "CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Invitation par message en attente";
 
 /* Message for a tooltip that appears above a parenthesized name for another user, indicating that that name is the name the other user set for themself. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "“%1$@” is the profile name this person set for themselves in Signal.";
+"CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "« %1$@ » est le nom de profil que cette personne s’est attribué dans Signal.";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Contact Signal";
@@ -1175,7 +1172,7 @@
 "CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Activer Contacts";
 
 /* Snooze action text for contact permission reminder megaphone */
-"CONTACT_PERMISSION_NOT_NOW_ACTION" = "Pas maintenant";
+"CONTACT_PERMISSION_NOT_NOW_ACTION" = "Plus tard";
 
 /* Action text for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Activer";
@@ -1823,7 +1820,7 @@
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Dernière activité %1$@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Relié le %1$@";
+"DEVICE_LINKED_AT_LABEL" = "Associé le %1$@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Échec de mise à jour de la liste des appareils";
@@ -1844,13 +1841,13 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Arrêter le transfert ?";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Si vous utilisiez Signal sur un iPad relié auparavant, vous pouvez transférer votre compte et vos messages vers cet appareil en toute sécurité.";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Si vous utilisiez jusqu’ici Signal sur un iPad associé, vous pouvez transférer votre compte et vos messages vers cet appareil en toute sécurité.";
 
 /* The body for the device transfer 'choice' view 'register' option */
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Poursuivre sans transférer ni compte ni messages";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Ajouter cet iPad en tant que nouvel appareil relié, sans transférer l’historique des messages";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Associer cet iPad en tant que nouvel appareil sans transférer l’historique des messages";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Ajouter en tant que nouvel appareil";
@@ -1889,7 +1886,7 @@
 "DEVICE_TRANSFER_ERROR_GENERIC" = "Le transfert n’a pas pu être effectué. Veuillez vous assurer que vos appareils sont proches l’un de l’autre puis réessayez.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Afin de configurer cet iPad en tant qu’appareil relié, vous devez lire le code avec votre ancien iPad";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Pour configurer cet iPad en tant qu’appareil associé, scannez le code avec votre ancien iPad.";
 
 /* An error indicating the user must scan this code with a primary device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "Afin de transférer votre compte, vous devez lire le code avec votre iPhone";
@@ -2423,7 +2420,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Bonjour,\n\nDernièrement, j’utilise Signal pour assurer la confidentialité des conversations sur mon iPhone. J’aimerais que vous l’installiez aussi afin que nous puissions être sûrs que seuls vous et moi pouvons lire nos messages ou entendre nos appels.\n\nSignal est proposée pour iPhone et Android. Obtenez-la ici : %1$@\n\nSignal fonctionne comme votre appli de messagerie existante. Nous pouvons envoyer des photos et des vidéos, effectuer des appels et lancer des conversations de groupe. Le grand intérêt est que personne d’autre ne peut rien voir de tout cela, pas même les créateurs de Signal.\n\nVous pouvez en savoir davantage sur « Open Whisper Systems », les personnes derrière Signal, ici : %2$@.";
+"EMAIL_INVITE_BODY" = "Bonjour,\n\nJ’ai récemment installé Signal sur mon iPhone pour assurer la confidentialité de mes conversations. Et si vous l’installiez aussi ? Nous serions ainsi sûrs que nos messages et nos appels restent privés.\n\nL’application Signal est disponible sur iPhone et sur Android. Vous pouvez la télécharger ici : %1$@\n\nComme toutes les applications de messagerie, Signal permet d’envoyer des photos et des vidéos, de passer des appels et de lancer des conversations de groupe. Ce qui la différencie des autres ? C’est qu’absolument personne ne peut accéder aux contenus que vous partagez avec vos amis. Pas même les créateurs de Signal.\n\nPour en savoir plus sur « Open Whisper Systems », autrement dit, sur les créateurs de Signal, c’est par ici : %2$@.";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Passons à Signal";
@@ -3596,13 +3593,13 @@
 "IN_CALL_TERMINATED" = "Appel terminé";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user doesn't want to be reminded. */
-"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "Don't Remind Me";
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "Ne plus afficher de rappels";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, temporarily dismissing the megaphone. */
-"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_GOT IT_BUTTON" = "Got It";
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_GOT IT_BUTTON" = "J’ai compris";
 
 /* Title for an in-app megaphone about a user's inactive linked device. */
-"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Inactive Linked Device";
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Appareil associé inactif";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Les conversations mises en sourdine restent archivées, même lorsque vous recevez un nouveau message.";
@@ -3611,7 +3608,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Les conversations archivées sont déplacées vers la boîte de réception à l'arrivée d'un nouveau message.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "Aucune conversation pour l’instant.\nCommencez en envoyant un message à un ami.";
+"INBOX_VIEW_EMPTY_INBOX" = "Aucune conversation pour le moment.\nPour commencer, envoyez un message à un ami.";
 
 /* info message text in conversation view */
 "INCOMING_AUDIO_CALL" = "Appel vocal entrant";
@@ -3776,7 +3773,7 @@
 "LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "Que sont les Nouveaux groupes ?";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "Ce code QR n’est pas valide. Veuillez vous assurer de lire le code QR affiché sur l’appareil que vous souhaitez relier.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "Ce code QR est incorrect. Veuillez scanner le code QR affiché sur l’appareil à associer.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Échec de liaison de l’appareil";
@@ -3785,13 +3782,13 @@
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "Cet appareil pourra voir vos groupes et contacts, accéder à vos conversations et envoyer des messages en votre nom.";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Relier cet appareil ?";
+"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Associer cet appareil ?";
 
 /* attempt another linking */
 "LINK_DEVICE_RESTART" = "Réessayer";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Lisez le code QR affiché sur l’appareil que vous souhaitez relier.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scannez le code QR affiché sur l’appareil à associer.";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Scannez le code QR pour associer un nouvel appareil.";
@@ -4307,10 +4304,10 @@
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Pour cette fonction, Signal exige l’accès à vos photos.";
 
 /* An error shown as the title of an alert when try to link a new device & the user is already at the limit. */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "Impossible de relier d’autres appareils.";
+"MULTIDEVICE_PAIRING_MAX_DESC" = "Impossible d’associer d’autres appareils.";
 
 /* A recovery suggestion shown as the body of an alert when try to link a new device & the user is already at the limit. */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Vous avez atteint le nombre maximal d’appareils que vous pouvez relier actuellement à votre compte. Veuillez supprimer un appareil et réessayer.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Vous avez atteint le nombre maximal d’appareils que vous pouvez associer à votre compte. Veuillez supprimer un appareil et réessayer.";
 
 /* Text for a toast confirming that the mic has been muted for a call. */
 "MUTE_CONFIRMATION_TOAST_LABEL" = "Micro désactivé";
@@ -4535,7 +4532,7 @@
 "NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Activer les notifications";
 
 /* Snooze action text for contact permission reminder megaphone */
-"NOTIFICATION_PERMISSION_NOT_NOW_ACTION" = "Pas maintenant";
+"NOTIFICATION_PERMISSION_NOT_NOW_ACTION" = "Plus tard";
 
 /* Action text for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Activer";
@@ -4607,25 +4604,25 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Inscrire l’iPad";
 
 /* button indicating that the user will link their phone */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Relier l’iPhone";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Associer l’iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Toucher « Inscrire l’iPad », vous permettra de créer un tout nouveau compte Signal ou de transférer un compte existant vers cet iPad. Cela désactivera Signal sur tout autre appareil actuellement inscrit avec le même numéro de téléphone.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Toucher « Relier l’iPhone », vous permettra de connecter votre téléphone à un compte existant. Il n’est généralement pas recommandé de relier votre téléphone et cela limitera certaines fonctions telles que les appels.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "L’option « Associer l’iPhone », vous permet d’associer votre téléphone à un compte existant. Il n’est généralement pas recommandé d’associer le téléphone : cela limite certaines fonctionnalités, telles que les appels.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Inscrire cet iPad";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Relier cet iPhone";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Associer cet iPhone";
 
 /* warning to the user that registering an ipad is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Inscrire cet iPad désactivera Signal sur tout autre appareil actuellement inscrit avec ce même numéro de téléphone.";
 
 /* warning to the user that linking a phone is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Il n’est pas recommandé de relier votre iPhone, ce qui limitera les fonctions principales.";
+"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Il n’est pas recommandé d’associer votre iPhone : des fonctionnalités essentielles s’en trouveront limitées.";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Accorder les autorisations";
@@ -6020,7 +6017,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Impossible de récupérer le code de liaison";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Pour relier cet appareil à un autre compte, vous devez d’abord réinitialiser cet appareil. Voulez-vous vraiment effacer tout l’historique (messages, fichiers joints, appels, etc.) ? Cette action est irréversible.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Pour associer cet appareil à un autre compte, vous devez d’abord le réinitialiser. Voulez-vous vraiment effacer tout l’historique de cet appareil : messages, fichiers joints, appels, etc. ? Cette action est irréversible.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Tout supprimer";
@@ -6962,7 +6959,7 @@
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Qui peut me retrouver grâce à mon numéro de téléphone";
 
 /* Description label for Phone Number Privacy */
-"SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "Choisissez qui peut voir votre numéro de téléphone et qui peut vous contacter sur Signal avec celui-ci.";
+"SETTINGS_PHONE_NUMBER_PRIVACY_DESCRIPTION_LABEL" = "Choisissez qui peut voir votre numéro de téléphone et qui peut l’utiliser pour vous rechercher sur Signal.";
 
 /* The title for phone number privacy settings. */
 "SETTINGS_PHONE_NUMBER_PRIVACY_TITLE" = "Numéro de téléphone";
@@ -7493,7 +7490,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Vos contacts peuvent voir votre nom et votre photo de profil. Ils peuvent aussi afficher vos stories, sauf si vous décidez de les masquer.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "Les <strong>contacts Signal</strong> sont des personnes en qui vous avez choisi d’avoir confiance, que ce soit en :";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "Les <strong>contacts Signal</strong> sont des personnes en qui vous avez confiance pour au moins une des raisons suivantes :";
 
 /* Label for the stories section of the settings view */
 "STORY_SETTINGS_TITLE" = "Stories";
@@ -7520,7 +7517,7 @@
 "STORY_VIEWER_ONBOARDING_3" = "Balayez vers la droite pour quitter";
 
 /* Confirmation text shown the first time the user opens the story viewer to dismiss instructions. */
-"STORY_VIEWER_ONBOARDING_CONFIRMATION" = "Compris";
+"STORY_VIEWER_ONBOARDING_CONFIRMATION" = "J’ai compris";
 
 /* Text indicating that the user has views turned off */
 "STORY_VIEWS_OFF" = "Affichage désactivé";
@@ -7628,7 +7625,7 @@
 "SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Votre abonnement a été annulé";
 
 /* Sustainer view Not Now Action sheet button */
-"SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Pas maintenant";
+"SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Plus tard";
 
 /* Update Subscription? Action sheet message, embeds {{Price}} */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Le montant total (%1$@) du prix du nouvel abonnement vous sera facturé aujourd’hui. Votre abonnement sera renouvelé tous les mois.";
@@ -8051,7 +8048,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Examiner les numéros de sécurité";
 
 /* Instructions for verifying your safety number. Embeds {{contact's name}} */
-"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "Pour vérifier le chiffrement de bout en bout avec %1$@, comparez les chiffres ci-dessus avec leur appareil. Vous pouvez aussi scanner le code sur leur appareil.";
+"VERIFY_SAFETY_NUMBER_INSTRUCTIONS" = "Pour vérifier le chiffrement de bout en bout de vos communications avec %1$@, comparez les chiffres ci-dessus avec ceux de son appareil. Vous pouvez aussi scanner le code QR qui s’affiche sur son appareil.";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
 "VIDEO_BROKEN" = "Impossible de lire la vidéo";

@@ -744,9 +744,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>To keep &quot;%2$@&quot; linked, open Signal on this device within one day.</string>
+			<string>Öffne Signal auf dem Gerät innerhalb %1$d Tages, damit »%2$@« weiterhin gekoppelt bleibt.</string>
 			<key>other</key>
-			<string>To keep &quot;%2$@&quot; linked, open Signal on this device within %1$d days.</string>
+			<string>Öffne Signal auf dem Gerät innerhalb von %1$d Tagen, damit »%2$@« weiterhin gekoppelt bleibt.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>

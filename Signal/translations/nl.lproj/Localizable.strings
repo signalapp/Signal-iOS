@@ -295,9 +295,6 @@
 /* Apple Pay donation error for decline failures where the payment cannot be authorized. */
 "APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Ga na dat de betalingsinformatie juist in ingevoerd in Apple Pay. Zo niet, pas het aan en probeer het vervolgens opnieuw.";
 
-/* Name of application */
-"APPLICATION_NAME" = "Signal";
-
 /* On the iOS home screen, if you tap and hold the Signal icon, this shortcut will appear. Tapping it will let users send a new message. You may want to refer to similar behavior in other iOS apps, such as Messages, for equivalent strings. */
 "APPLICATION_SHORTCUT_NEW_MESSAGE" = "Nieuw bericht";
 
@@ -1118,7 +1115,7 @@
 "CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Openstaand gespreksverzoek";
 
 /* Message for a tooltip that appears above a parenthesized name for another user, indicating that that name is the name the other user set for themself. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "“%1$@” is the profile name this person set for themselves in Signal.";
+"CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "‘%1$@’ is de profielnaam die deze persoon voor zichzelf heeft ingesteld in Signal.";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal-contact";
@@ -3596,13 +3593,13 @@
 "IN_CALL_TERMINATED" = "Oproep beëindigd.";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user doesn't want to be reminded. */
-"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "Don't Remind Me";
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "Herinnering is niet nodig";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, temporarily dismissing the megaphone. */
-"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_GOT IT_BUTTON" = "Got It";
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_GOT IT_BUTTON" = "Begrepen";
 
 /* Title for an in-app megaphone about a user's inactive linked device. */
-"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Inactive Linked Device";
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Inactief gekoppeld apparaat";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Gedempte chats die zijn gearchiveerd, blijven gearchiveerd als er een nieuw bericht binnenkomt.";
@@ -7040,7 +7037,7 @@
 "SETTINGS_SCREEN_SECURITY" = "Verberg Signal in de lijst van recent geopende apps";
 
 /* Footer for table section */
-"SETTINGS_SECTION_FOOTER_CALLING" = "Signal-oproepen weergeven in de ‘Recentelijk’-lijst in de iOS-telefoonapp.";
+"SETTINGS_SECTION_FOOTER_CALLING" = "Signal-oproepen weergeven in de ‘Recent’-lijst in de iOS-telefoonapp.";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Geluiden";
@@ -7070,13 +7067,13 @@
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Afbeeldingen en video's";
 
 /* Setting for enabling & disabling iOS contact sharing. */
-"SETTINGS_SHARING_SUGGESTIONS" = "Laat iOS je contactpersonen lezen";
+"SETTINGS_SHARING_SUGGESTIONS" = "Laat iOS je contacten lezen";
 
 /* Footer for setting for enabling & disabling contact sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Als je gebruik wilt maken van functionaliteiten zoals dingen uit andere apps direct doorsturen naar een Signal-contactpersoon, dan is het nodig om iOS je Signal-contactpersonen te laten lezen.";
+"SETTINGS_SHARING_SUGGESTIONS_FOOTER" = "Geef iOS toegang tot je Signal-contacten en chats om Signal-contacten weer te geven als suggestie bij het delen vanuit andere apps.";
 
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
-"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Als je gebruik wilt maken van functionaliteiten zoals dingen uit andere apps direct doorsturen naar een Signal-contactpersoon en doorsturen van meldingen, dan is het nodig om iOS je Signal-contactpersonen te laten lezen.";
+"SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Geef iOS toegang tot je Signal-contacten en chats om Signal-contacten weer te geven als suggestie bij het delen vanuit andere apps en meldingen.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registratievergrendeling";
@@ -7811,7 +7808,7 @@
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Je kunt de verzender vragen om dit bericht nu opnieuw te verzenden omdat je nu de meest recente versie van Signal gebruikt.";
 
 /* Label indicating an unknown user. */
-"UNKNOWN_USER" = "Gebruiker niet bekend";
+"UNKNOWN_USER" = "Onbekend";
 
 /* Info Message when an unknown user disabled disappearing messages. */
 "UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Verdwijnende berichten zijn uitgeschakeld.";

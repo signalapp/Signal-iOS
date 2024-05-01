@@ -295,9 +295,6 @@
 /* Apple Pay donation error for decline failures where the payment cannot be authorized. */
 "APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Überprüfe, ob deine Zahlungsmethode in Apple Pay aktuell ist. Falls nicht, aktualisiere sie und versuche es erneut.";
 
-/* Name of application */
-"APPLICATION_NAME" = "Signal";
-
 /* On the iOS home screen, if you tap and hold the Signal icon, this shortcut will appear. Tapping it will let users send a new message. You may want to refer to similar behavior in other iOS apps, such as Messages, for equivalent strings. */
 "APPLICATION_SHORTCUT_NEW_MESSAGE" = "Neue Nachricht";
 
@@ -1118,7 +1115,7 @@
 "CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Ausstehende Unterhaltungsanfrage";
 
 /* Message for a tooltip that appears above a parenthesized name for another user, indicating that that name is the name the other user set for themself. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "“%1$@” is the profile name this person set for themselves in Signal.";
+"CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "»%1$@« ist der Profilname, den diese Person in Signal für sich festgelegt hat.";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Signal-Kontakt";
@@ -2234,7 +2231,7 @@
 "DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "Bescheinigung teilen";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "Vielen Dank, dass du Signal unterstützt. Deine Spende trägt dazu bei, die Entwicklung von Open-Source-Datenschutztechnologien voranzutreiben, die die freie Meinungsäußerung schützen und eine sichere globale Kommunikation für Millionen von Menschen auf der ganzen Welt ermöglichen. Falls du deinen Wohnsitz in den USA hast, bewahre bitte diese Bescheinigung für deine Steuerunterlagen auf. Die Signal Technology Foundation ist eine steuerbefreite gemeinnützige Organisation in den USA gemäß Abschnitt 501c3 des Internal Revenue Code. Unsere Federal Tax ID lautet 82-4506840.";
+"DONATION_RECEIPT_FOOTER" = "Vielen Dank, dass du Signal unterstützt. Deine Spende trägt dazu bei, die Entwicklung von Open-Source-Datenschutztechnologien voranzutreiben, die die freie Meinungsäußerung schützen und eine sichere globale Kommunikation für Millionen von Menschen auf der ganzen Welt ermöglichen. Falls du deinen Wohnsitz in den USA hast, bewahre bitte diese Bescheinigung für deine Steuerunterlagen auf. Die Signal Stiftung (Signal Technology Foundation) ist eine steuerbefreite gemeinnützige Organisation in den USA gemäß Abschnitt 501c3 des Internal Revenue Code. Unsere Federal Tax ID lautet 82-4506840.";
 
 /* Title for receipts for donations given on a friend's behalf */
 "DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Spende für einen Freund";
@@ -2525,7 +2522,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Serverfehler. Bitte versuche es später erneut.";
 
 /* Description for errors returned from the server due to suspected spam. */
-"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Vor Senden der Nachricht erfordert der Server eine Nutzerverifikation.";
+"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "Vor Senden der Nachricht erfordert der Server eine Nutzerverifizierung.";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Ein unbekannter Fehler ist aufgetreten.";
@@ -3596,13 +3593,13 @@
 "IN_CALL_TERMINATED" = "Anruf beendet.";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user doesn't want to be reminded. */
-"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "Don't Remind Me";
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "Mich nicht erinnern";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, temporarily dismissing the megaphone. */
-"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_GOT IT_BUTTON" = "Got It";
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_GOT IT_BUTTON" = "Verstanden";
 
 /* Title for an in-app megaphone about a user's inactive linked device. */
-"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Inactive Linked Device";
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Inaktive gekoppelte Geräte";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Stummgeschaltete Chats, die archiviert sind, bleiben beim Eintreffen einer neuen Nachricht archiviert.";
@@ -3653,7 +3650,7 @@
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "Die Telefonnummer von %1$@ hat sich geändert.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%1$@ ist bei Signal!";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%1$@ nutzt Signal!";
 
 /* Label at the top of the input text when editing a message */
 "INPUT_TOOLBAR_EDIT_MESSAGE_LABEL" = "Nachricht bearbeiten";
@@ -3761,7 +3758,7 @@
 "LEAVE_GROUP_FAILED" = "Beim Verlassen der Gruppe ist ein Fehler aufgetreten.";
 
 /* Text in a sheet explaining details about 'Legacy Groups'. */
-"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "„Gruppen alten Typs“ sind Gruppen, die Funktionen wie @Erwähnungen und Admins nicht unterstützen. Die meisten Gruppen alten Typs wurden entweder automatisch oder manuell zu „Neuen Gruppen“ aktualisiert. Aufgrund einer längeren Inaktivität kann diese Gruppe kein Upgrade mehr erhalten.\n\nUm diesen Chat fortzuführen, musst du eine neue Gruppe erstellen.";
+"LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY" = "»Gruppen alten Typs« sind Gruppen, die Funktionen wie @Erwähnungen und Admins nicht unterstützen. Die meisten Gruppen alten Typs wurden entweder automatisch oder manuell zu »Neuen Gruppen« aktualisiert. Aufgrund einer längeren Inaktivität kann diese Gruppe kein Upgrade mehr erhalten.\n\nUm diesen Chat fortzuführen, musst du eine neue Gruppe erstellen.";
 
 /* Title for a sheet explaining details about 'Legacy Groups'. */
 "LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE" = "Gruppe alten Typs";
@@ -4703,7 +4700,7 @@
 "ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Gib den Code ein, den wir an %1$@ gesendet haben";
 
 /* Title label for the onboarding verification page */
-"ONBOARDING_VERIFICATION_TITLE_LABEL" = "Verifikationscode";
+"ONBOARDING_VERIFICATION_TITLE_LABEL" = "Verifizierungscode";
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Einstellungen";
@@ -5063,7 +5060,7 @@
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Anfrage ablehnen";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Beitrittsanfrage von „%1$@“ ablehnen? Eine erneute Beitrittsanfrage über den Gruppen-Link ist dann nicht mehr möglich.";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Beitrittsanfrage von »%1$@« ablehnen? Eine erneute Beitrittsanfrage über den Gruppen-Link ist dann nicht mehr möglich.";
 
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "Keine ausstehenden Beitrittsanfragen.";
@@ -5384,7 +5381,7 @@
 "PRIVACY_TAP_TO_SCAN" = "Zum Scannen antippen";
 
 /* Button that lets user mark another user's identity as unverified. */
-"PRIVACY_UNVERIFY_BUTTON" = "Verifikation entfernen";
+"PRIVACY_UNVERIFY_BUTTON" = "Verifizierung entfernen";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Dies scheint nicht deine Sicherheitsnummer mit %1$@ zu sein. Verifizierst du den richtigen Kontakt?";
@@ -5747,7 +5744,7 @@
 "REGISTRATION_PHONE_NUMBER_TITLE" = "Deine Telefonnummer";
 
 /* Message for confirmation alert when requesting a voice code during phone number registration. */
-"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "Du erhältst einen Anruf zur Verifikation dieser Telefonnummer. Ist deine angezeigte Nummer korrekt?";
+"REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE" = "Du erhältst einen Anruf zur Verifizierung dieser Telefonnummer. Ist deine angezeigte Nummer korrekt?";
 
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "Telefonnummer";
@@ -5822,7 +5819,7 @@
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Ungültige Telefonnummer";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "Ein Verifikationscode wird an diese Telefonnummer gesendet. Ist deine obige Telefonnummer korrekt?";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "Ein Verifizierungscode wird an diese Telefonnummer gesendet. Ist deine obige Telefonnummer korrekt?";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Bestätigung für Telefonnummer: %1$@";
@@ -5954,7 +5951,7 @@
 "SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Zurück";
 
 /* Message contents for the vague message safety tip. */
-"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Spammer beginnen oft mit einer einfachen Nachricht wie „Hallo“, um dich anzulocken. Wenn du antwortest, wirst du möglicherweise weiter kontaktiert.";
+"SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Spammer beginnen oft mit einer einfachen Nachricht wie »Hallo«, um dich anzulocken. Wenn du antwortest, wirst du möglicherweise weiter kontaktiert.";
 
 /* Message title describing the safety tip about vague messages. */
 "SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "Vage oder irrelevante Nachrichten";
@@ -7166,25 +7163,25 @@
 "SOUNDS_NONE" = "Keiner";
 
 /* Text for toast presented after spam verification has been completed */
-"SPAM_CAPTCHA_COMPLETED_TOAST" = "Verifikation abgeschlossen.";
+"SPAM_CAPTCHA_COMPLETED_TOAST" = "Verifizierung abgeschlossen.";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Falls du die Verifikation überspringst, kannst du eventuell keine Nachrichten mehr empfangen oder versenden.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Falls du die Verifizierung überspringst, kannst du eventuell keine Nachrichten mehr empfangen oder versenden.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Ohne Verifikation fortfahren?";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Ohne Verifizierung fortfahren?";
 
 /* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "Bitte hilf dabei, Spam auf Signal zu verhindern, und schließe die Verifikation ab.\n\nNach abgeschlossener Verifikation kannst du wieder kommunizieren. Alle pausierten Nachrichten werden dann automatisch versendet.";
+"SPAM_CAPTCHA_SHEET_BODY" = "Bitte hilf dabei, Spam auf Signal zu verhindern, und schließe die Verifizierung ab.\n\nNach abgeschlossener Verifizierung kannst du wieder kommunizieren. Alle pausierten Nachrichten werden dann automatisch versendet.";
 
 /* Title for action sheet explaining captcha requirement. */
 "SPAM_CAPTCHA_SHEET_TITLE" = "Verifizieren zum Senden weiterer Nachrichten";
 
 /* Action to skip verification */
-"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Verifikation überspringen";
+"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Verifizierung überspringen";
 
 /* Title for the captcha view controller */
-"SPAM_CAPTCHA_VIEW_CONTROLLER" = "Verifikation abschließen";
+"SPAM_CAPTCHA_VIEW_CONTROLLER" = "Verifizierung abschließen";
 
 /* Text for a toast confirming that the speakerphone has been turned off for a call. */
 "SPEAKERPHONE_OFF_CONFIRMATION_TOAST_LABEL" = "Lautsprecher aus";
@@ -8042,7 +8039,7 @@
 "VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "Du hast %1$@ auf einem anderen Gerät als verifiziert markiert.";
 
 /* Generic message indicating that verification state changed for a given user. */
-"VERIFICATION_STATE_CHANGE_GENERIC" = "Verifikationsstatus hat sich geändert.";
+"VERIFICATION_STATE_CHANGE_GENERIC" = "Verifizierungsstatus hat sich geändert.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
 "VERIFY_PRIVACY" = "Sicherheitsnummer anzeigen";

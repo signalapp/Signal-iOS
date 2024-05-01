@@ -122,13 +122,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Зрозуміло";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Не вдалося доставити вам повідомлення, стікер, реакцію, сповіщення про прочитання або медіафайл у цьому чаті від користувача %1$@.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Не вдалося доставити вам повідомлення, стікер, реакцію, відмітку про читання або медіафайл у цьому чаті від користувача %1$@.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Проблема з доставленням";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Не вдалося доставити вам повідомлення, стікер, реакцію, сповіщення про прочитання або медіафайл від користувача %1$@. Користувач намагався надіслати це безпосередньо вам або в груповий чат.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Не вдалося доставити вам повідомлення, стікер, реакцію, відмітку про читання або медіафайл від користувача %1$@. Користувач намагався надіслати це безпосередньо вам або в груповий чат.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Відхилити";
@@ -294,9 +294,6 @@
 
 /* Apple Pay donation error for decline failures where the payment cannot be authorized. */
 "APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Упевніться, що дані вашого способу платежу оновлено в Apple Pay. Якщо ні, оновіть їх та спробуйте знов.";
-
-/* Name of application */
-"APPLICATION_NAME" = "Signal";
 
 /* On the iOS home screen, if you tap and hold the Signal icon, this shortcut will appear. Tapping it will let users send a new message. You may want to refer to similar behavior in other iOS apps, such as Messages, for equivalent strings. */
 "APPLICATION_SHORTCUT_NEW_MESSAGE" = "Нове повідомлення";
@@ -665,7 +662,7 @@
 "BUTTON_SELECT" = "Вибрати";
 
 /* Label for the 'set' button. */
-"BUTTON_SET" = "Задати";
+"BUTTON_SET" = "Установити";
 
 /* Label for the 'share' button. */
 "BUTTON_SHARE" = "Поділитися";
@@ -1118,7 +1115,7 @@
 "CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Активний запит на повідомлення";
 
 /* Message for a tooltip that appears above a parenthesized name for another user, indicating that that name is the name the other user set for themself. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "“%1$@” is the profile name this person set for themselves in Signal.";
+"CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "%1$@ — це ім'я, яке сам користувач встановив у своєму профілі Signal.";
 
 /* A label indicating a user is a signal connection. */
 "CONTACT_ABOUT_SHEET_SIGNAL_CONNECTION_LABEL" = "Контакт Signal";
@@ -1382,7 +1379,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Додати до контактів телефона";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Оберіть, хто може редагувати ім'я групи, фото, опис та час видалення повідомлень.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Оберіть, хто може змінювати назву, фото, опис групи і таймер тимчасових повідомлень.";
 
 /* Button to start a audio call */
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "аудіо";
@@ -1445,13 +1442,13 @@
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Запити та запрошення";
 
 /* label for 'always' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Завжди повідомляти";
+"CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Завжди сповіщати";
 
 /* label for 'never' option for mention notifications in conversation settings */
-"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Не сповіщати, якщо сповіщення вимкнені";
+"CONVERSATION_SETTINGS_MENTION_MODE_NEVER" = "Не сповіщати, якщо сповіщення вимкнено";
 
 /* Title of the 'mention notification mode' action sheet. */
-"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Отримувати сповіщення, якщо вас згадали в чатах із вимкнутими сповіщеннями?";
+"CONVERSATION_SETTINGS_MENTION_NOTIFICATION_MODE_ACTION_SHEET_TITLE" = "Отримувати сповіщення, коли вас згадують, навіть якщо сповіщення від чату вимкнено?";
 
 /* label for 'mentions' cell in conversation settings */
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "Згадати";
@@ -1475,7 +1472,7 @@
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "Не сповіщати";
 
 /* Indicates that the current thread is not muted. */
-"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Сповіщення увімкнені";
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Сповіщення ввімкнено";
 
 /* Label for button to mute a thread for a day. */
 "CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "1 день";
@@ -1943,28 +1940,28 @@
 "DEVICE_TRANSFER_TRANSFERRING_TITLE" = "Передача даних";
 
 /* table cell label in conversation settings */
-"DISAPPEARING_MESSAGES" = "Зникаючі повідомлення";
+"DISAPPEARING_MESSAGES" = "Тимчасові повідомлення";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Повідомлення у цьому чаті зникатимуть через %1$@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Повідомлення в цьому чаті зникають через %1$@.";
 
 /* Disappearing message option to define a custom time */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Власний час";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Свій час";
 
 /* The unit for a number of days */
 "DISAPPEARING_MESSAGES_DAYS" = "дні";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Якщо увімкнути — нові надіслані та отримані повідомлення у цій розмові, що їх було прочитано, зникатимуть після перегляду.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Якщо ввімкнути цю функцію, нові повідомлення, надіслані та отримані в цьому чаті, зникатимуть після перегляду.";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "Наразі повідомлення зникатимуть за %1$@";
+"DISAPPEARING_MESSAGES_HINT" = "Тепер повідомлення зникають через %1$@";
 
 /* The unit for a number of hours */
 "DISAPPEARING_MESSAGES_HOURS" = "годин";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "Налаштування зникаючих повідомлень";
+"DISAPPEARING_MESSAGES_LABEL" = "Налаштування тимчасових повідомлень";
 
 /* The unit for a number of minutes */
 "DISAPPEARING_MESSAGES_MINUTES" = "хвилин";
@@ -1973,7 +1970,7 @@
 "DISAPPEARING_MESSAGES_SECONDS" = "секунди";
 
 /* subheading in privacy settings */
-"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Якщо увімкнути — у нових, створених вами розмовах, надіслані та отримані повідомлення, що їх було прочитано, зникатимуть після перегляду.";
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "Якщо ввімкнути цю функцію, нові повідомлення, надіслані та отримані в нових чатах, що ви почали, зникатимуть після перегляду.";
 
 /* The unit for a number of weeks */
 "DISAPPEARING_MESSAGES_WEEKS" = "тижні";
@@ -2144,7 +2141,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "Підтвердити донат";
 
 /* When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\". */
-"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "У цьому чаті ввімкнені зникомі повідомлення. Повідомлення про донат зникне через %1$@.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "У цьому чаті ввімкнено тимчасові повідомлення. Повідомлення про донат зникне через %1$@.";
 
 /* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, this error message is shown. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "Не вдалося задонатити. Перевірте підключення до мережі і спробуйте знову.";
@@ -2561,7 +2558,7 @@
 "ERROR_MESSAGE_NO_SESSION" = "Немає доступного сеансу для контакту.";
 
 /* Shown when signal users safety numbers changed */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Код безпеки змінився.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Змінився код безпеки.";
 
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Код безпеки для чату з %1$@ змінився.";
@@ -2573,7 +2570,7 @@
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Виникла невідома помилка.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Код безпеки змінився.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Змінився код безпеки.";
 
 /* Error indicating network connectivity problems. */
 "ERROR_NETWORK_FAILURE" = "Помилка мережі";
@@ -2714,7 +2711,7 @@
 "GET_STARTED_CARD_AVATAR_BUILDER" = "Додати фото";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Запросити друзів";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Запрошення";
 
 /* 'Get Started' button directing users to create a group */
 "GET_STARTED_CARD_NEW_GROUP" = "Нова група";
@@ -3071,10 +3068,10 @@
 "GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Поділиться цим посиланням з друзями, щоб вони змогли швидко приєднатись до групи.";
 
 /* Title for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_TITLE" = "Запросити друзів";
+"GROUP_LINK_PROMOTION_ALERT_TITLE" = "Запрошення";
 
 /* Suggestion to invite more group members via the group invite link. */
-"GROUP_LINK_PROMOTION_UPDATE" = "Запрошуйте друзів до вашої групи використовуючи посилання групи";
+"GROUP_LINK_PROMOTION_UPDATE" = "Запросіть друзів до своєї групи, надіславши їм посилання";
 
 /* Description text in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Люди, які сканують цей код, зможуть приєднатися до вашої групи. Адміністраторам все одно доведеться затверджувати нових учасників, якщо ви ввімкнули це налаштування.";
@@ -3194,7 +3191,7 @@
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Адміністратор";
 
 /* Label indicating that a new group has no other members. */
-"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Після створення групи ви зможете додати чи запросити до неї друзів.";
+"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Додати чи запросити до групи друзів можна після її створення.";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Учасники";
@@ -3596,13 +3593,13 @@
 "IN_CALL_TERMINATED" = "Виклик завершено.";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user doesn't want to be reminded. */
-"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "Don't Remind Me";
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "Не нагадувати";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, temporarily dismissing the megaphone. */
-"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_GOT IT_BUTTON" = "Got It";
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_GOT IT_BUTTON" = "Зрозуміло";
 
 /* Title for an in-app megaphone about a user's inactive linked device. */
-"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Inactive Linked Device";
+"INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_TITLE" = "Неактивний зв'язаний пристрій";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
 "INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Стишені та заархівовані чати залишатимуться заархівованими після отримання нового повідомлення.";
@@ -3695,7 +3692,7 @@
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Пошук";
 
 /* Navbar title */
-"INVITE_FRIENDS_PICKER_TITLE" = "Запросити друзів";
+"INVITE_FRIENDS_PICKER_TITLE" = "Запрошення";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Якщо запросити кілька користувачів одночасно, то створиться група й одержувачі зможуть побачити одне одного.";
@@ -3800,7 +3797,7 @@
 "LINK_NEW_DEVICE_TITLE" = "Прив’язати новий пристрій";
 
 /* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Попередній перегляд посилань";
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Попередній вигляд вебсторінки";
 
 /* Shown in an alert when trying to edit a contact. */
 "LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Ви більше не можете змінювати контакти телефона на iPad. Щоб додати до них контакти Signal, відкрийте Signal на телефоні.";
@@ -4040,7 +4037,7 @@
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "Тип MIME";
 
 /* Label for the 'disappears' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "Зникає";
+"MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "Зникне через";
 
 /* Status label for messages which are delivered. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Доставлено";
@@ -4556,7 +4553,7 @@
 "NOTIFICATIONS_FOOTER_WARNING" = "Можливі дії \"Позначити як прочитано\", \"Відповісти\" та \"Передзвонити\".";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "Без імені чи вмісту";
+"NOTIFICATIONS_NONE" = "Без імені й вмісту";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "Відтворювати, коли програма відкрита";
@@ -4724,10 +4721,10 @@
 "OS_SOON_TO_EXPIRE_AND_DEVICE_WILL_BE_STUCK_FORMAT" = "Незабаром Signal припинить підтримувати версію iOS вашого пристрою. Щоб користуватися застосунком і надалі, перейдіть на новіший пристрій до %1$@.";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
-"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%1$@ вимикає зникаючі повідомлення.";
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Користувач %1$@ вимкнув тимчасові повідомлення.";
 
 /* Info Message when another user enabled disappearing messages. Embeds {{name of other user}} and {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%1$@ встановлює час зникання повідомлень на %2$@.";
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Користувач %1$@ встановив таймер тимчасових повідомлень на %2$@.";
 
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Наразі в Signal виникли технічні неполадки. Ми намагаємося відновити сервіс якомога швидше.";
@@ -5897,7 +5894,7 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Усе одно надіслати";
 
 /* Message for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "Ці користувачі, ймовірно, перевстановили застосунок чи змінили пристрої. Підтвердіть ваші коди безпеки, щоб впевнитись у приватності.";
+"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "Можливо, ці користувачі перевстановили застосунок або замінили пристрої. Перевірте коди безпеки для чатів з цими користувачами, щоб упевнитись у конфіденційності спілкування.";
 
 /* Text explaining that the given contact previously had their safety number verified. */
 "SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Підтверджені раніше";
@@ -6113,10 +6110,10 @@
 "SEND_MEDIA_TURN_OFF_MM_TITLE" = "Вимкнути мультирежим?";
 
 /* String describing high quality sent media */
-"SENT_MEDIA_QUALITY_HIGH" = "Великий";
+"SENT_MEDIA_QUALITY_HIGH" = "Висока";
 
 /* String describing standard quality sent media */
-"SENT_MEDIA_QUALITY_STANDARD" = "Стандартне";
+"SENT_MEDIA_QUALITY_STANDARD" = "Стандартна";
 
 /* Users can donate to Signal with a bank account. This is the label for email field on that screen. */
 "SEPA_DONATION_EMAIL_LABEL" = "Електронна пошта";
@@ -6386,10 +6383,10 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Видалити все";
 
 /* Label for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES" = "Зникаючі повідомлення";
+"SETTINGS_DISAPPEARING_MESSAGES" = "Тимчасові повідомлення";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Встановіть таймер зникнення повідомлень за замовчуванням для усіх нових чатів, які ви створите.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Установіть стандартний таймер для тимчасових повідомлень у всіх нових чатах, які ви починаєте.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Підтримати Signal";
@@ -6416,10 +6413,10 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Умови використання та політика конфіденційності";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Генерувати попередній перегляд посилань";
+"SETTINGS_LINK_PREVIEWS" = "Генерувати попередній вигляд вебсторінок";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Для надісланих повідомлень отримувати дані попереднього перегляду посилань напряму з веб-сайтів.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Показувати попередній вигляд вебсторінок за посиланнями, які ви надсилаєте в повідомленнях.";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Ніколи";
@@ -6443,7 +6440,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "Відео";
 
 /* Explanation for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING_FOOTER" = "Бачити та відправляти сповіщення про набір повідомлень. Вимкнене налаштування не дозволить бачити звіти про прочитані повідомлення та про повідомлення, що набирають інші користувачі.";
+"SETTINGS_MESSAGING_FOOTER" = "Ці функції дають вам і вашим співрозмовникам змогу бачити, що повідомлення прочитано / триває набір тексту. Якщо їх вимкнути, ви не будете бачити відміток про читання ваших повідомлень і індикаторів набору тексту.";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Налаштування";
@@ -7001,13 +6998,13 @@
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Додаткові функції";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Показувати виклики у «Недавніх»";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Показувати виклики в «Недавніх»";
 
 /* The title for the privacy settings. */
 "SETTINGS_PRIVACY_TITLE" = "Конфіденційність";
 
 /* Label for the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPT" = "Звіти про прочитання";
+"SETTINGS_READ_RECEIPT" = "Відмітки про читання";
 
 /* Action to turn off registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Відключити";
@@ -7085,7 +7082,7 @@
 "SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Потребує вашого PIN-коду Signal задля повторної реєстрації цього номеру телефону у Signal.";
 
 /* Label for the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS" = "Сповіщення про набір тексту";
+"SETTINGS_TYPING_INDICATORS" = "Індикатор набору тексту";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Прихований відправник";
@@ -7649,7 +7646,7 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Підтвердження";
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
-"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Час зникнення повідомлення буде встановлено на %1$@, коли ви його відправите.";
+"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Таймер цього тимчасового повідомлення буде встановлено на %1$@, коли ви його відправите.";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Спільних груп немає. Переглядайте запити уважно.";
@@ -7814,10 +7811,10 @@
 "UNKNOWN_USER" = "Невідомий";
 
 /* Info Message when an unknown user disabled disappearing messages. */
-"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Зникаючі повідомлення були відключені.";
+"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Тимчасові повідомлення вимкнено.";
 
 /* Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Було встановлено час зникнення повідомлення %1$@.";
+"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Таймер тимчасових повідомлень встановлено на %1$@.";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Невідомо";
@@ -8066,7 +8063,7 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Ви вже переглянули це повідомлення.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Натисніть тут, щоб ваше повідомлення зникло після того, як буде переглянуто.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Натисніть тут, щоб це повідомлення зникло після перегляду.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "Вихідні одноразові медіа-файли автоматично видаляються після того, як були відправлені.";
@@ -8183,10 +8180,10 @@
 "YOU_DELETED_THIS_MESSAGE" = "Ви видалили це повідомлення.";
 
 /* Info Message when you disabled disappearing messages. */
-"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Ви вимкнули зникаючі повідомлення.";
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Ви вимкнули тимчасові повідомлення.";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Ви повинні завершити реєстрацію перед продовженням.";
 
 /* Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Ви встановили час зникнення повідомлень на %1$@.";
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Ви встановили таймер тимчасових повідомлень на %1$@.";

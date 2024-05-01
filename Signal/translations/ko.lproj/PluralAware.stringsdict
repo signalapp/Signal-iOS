@@ -652,7 +652,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>To keep &quot;%2$@&quot; linked, open Signal on this device within %1$d days.</string>
+			<string>&apos;%2$@&apos;의 연결 상태를 유지하려면 해당 기기에서 %1$d일 이내에 Signal을 여세요.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
