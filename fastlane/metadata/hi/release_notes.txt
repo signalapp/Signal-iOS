@@ -1,1 +1,1 @@
-• हमने खुद से कहा कि हम ऐसा कभी नहीं करेंगे, कि हम आलसी रिलीज़ नोट्स वाले अन्य ऐप्स की तरह नहीं होंगे, लेकिन इस अपडेट में वास्तव में "बग फिक्स और कार्य-प्रदर्शन सुधार" शामिल हैं।
+• Now you can react with any emoji during a Signal call. Smile even if your camera is off, share a heart if you love what you're hearing, or vote for sushi instead of pizza without saying a word. And you'll even see an animation of everyone's emojional outburst if enough people in the call react with the same emoji all at once.

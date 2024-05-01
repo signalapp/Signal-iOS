@@ -1,1 +1,1 @@
-• We told ourselves that we would never do this, that we wouldn't be like the other apps with their lazy release notes, but this update really does include "bug fixes and performance improvements."
+• Now you can react with any emoji during a Signal call. Smile even if your camera is off, share a heart if you love what you're hearing, or vote for sushi instead of pizza without saying a word. And you'll even see an animation of everyone's emojional outburst if enough people in the call react with the same emoji all at once.
