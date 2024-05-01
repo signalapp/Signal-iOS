@@ -29,43 +29,6 @@ private typealias OrphanDataBlock = (_ orphanData: OWSOrphanData) -> ()
 // * On disk, we only bother cleaning up files, not directories.
 enum OWSOrphanDataCleaner {
 
-    private static func filePaths(inDirectorySafe dirPath: String) -> Set<String>? {
-        guard FileManager.default.fileExists(atPath: dirPath) else {
-            return []
-        }
-        do {
-            var result: Set<String> = []
-            let fileNames = try FileManager.default.contentsOfDirectory(atPath: dirPath)
-            for fileName in fileNames {
-                guard isMainAppAndActive else {
-                    return nil
-                }
-                let filePath = dirPath.appendingPathComponent(fileName)
-                var isDirectory: ObjCBool = false
-                if FileManager.default.fileExists(atPath: filePath, isDirectory: &isDirectory) {
-                    if isDirectory.boolValue {
-                        guard let dirPaths = filePaths(inDirectorySafe: filePath) else {
-                            return nil
-                        }
-                        result.formUnion(dirPaths)
-                    } else {
-                        result.insert(filePath)
-                    }
-                }
-            }
-            return result
-        } catch {
-            switch error {
-            case POSIXError.ENOENT, CocoaError.fileReadNoSuchFile:
-                // Races may cause files to be removed while we crawl the directory contents.
-                Logger.warn("Error: \(error)")
-            default:
-                owsFailDebug("Error: \(error)")
-            }
-            return []
-        }
-    }
-
     /// Unlike CurrentAppContext().isMainAppAndActive, this method can be safely
     /// invoked off the main thread.
     private static var isMainAppAndActive: Bool {
@@ -951,6 +914,43 @@ enum OWSOrphanDataCleaner {
             return textAttachment.preview?.legacyImageAttachmentId
         case .foreignReferenceAttachment:
             return nil
+        }
+    }
+
+    private static func filePaths(inDirectorySafe dirPath: String) -> Set<String>? {
+        guard FileManager.default.fileExists(atPath: dirPath) else {
+            return []
+        }
+        do {
+            var result: Set<String> = []
+            let fileNames = try FileManager.default.contentsOfDirectory(atPath: dirPath)
+            for fileName in fileNames {
+                guard isMainAppAndActive else {
+                    return nil
+                }
+                let filePath = dirPath.appendingPathComponent(fileName)
+                var isDirectory: ObjCBool = false
+                if FileManager.default.fileExists(atPath: filePath, isDirectory: &isDirectory) {
+                    if isDirectory.boolValue {
+                        guard let dirPaths = filePaths(inDirectorySafe: filePath) else {
+                            return nil
+                        }
+                        result.formUnion(dirPaths)
+                    } else {
+                        result.insert(filePath)
+                    }
+                }
+            }
+            return result
+        } catch {
+            switch error {
+            case POSIXError.ENOENT, CocoaError.fileReadNoSuchFile:
+                // Races may cause files to be removed while we crawl the directory contents.
+                Logger.warn("Error: \(error)")
+            default:
+                owsFailDebug("Error: \(error)")
+            }
+            return []
         }
     }
 }
