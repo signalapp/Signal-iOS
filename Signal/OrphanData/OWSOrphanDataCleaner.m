@@ -25,44 +25,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 
 @implementation OWSOrphanDataCleaner
 
-+ (nullable NSSet<NSString *> *)filePathsInDirectorySafe:(NSString *)dirPath
-{
-    NSMutableSet *filePaths = [NSMutableSet new];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:dirPath]) {
-        return filePaths;
-    }
-    NSError *error;
-    NSArray<NSString *> *fileNames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dirPath error:&error];
-    if (error) {
-        if ([error hasDomain:NSPOSIXErrorDomain code:ENOENT] ||
-            [error hasDomain:NSCocoaErrorDomain code:NSFileReadNoSuchFileError]) {
-            // Races may cause files to be removed while we crawl the directory contents.
-            OWSLogWarn(@"Error: %@", error);
-        } else {
-            OWSFailDebug(@"Error: %@", error);
-        }
-        return [NSSet new];
-    }
-    for (NSString *fileName in fileNames) {
-        if (!self.isMainAppAndActive) {
-            return nil;
-        }
-        NSString *filePath = [dirPath stringByAppendingPathComponent:fileName];
-        BOOL isDirectory;
-        [[NSFileManager defaultManager] fileExistsAtPath:filePath isDirectory:&isDirectory];
-        if (isDirectory) {
-            NSSet<NSString *> *_Nullable dirPaths = [self filePathsInDirectorySafe:filePath];
-            if (!dirPaths) {
-                return nil;
-            }
-            [filePaths unionSet:dirPaths];
-        } else {
-            [filePaths addObject:filePath];
-        }
-    }
-    return filePaths;
-}
-
 // This method finds (but does not delete):
 //
 // * Orphan TSInteractions (with no thread).
