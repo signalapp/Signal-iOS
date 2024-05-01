@@ -7,17 +7,6 @@ import GRDB
 import LibSignalClient
 import SignalCoreKit
 
-/// We need to query the system preferences to achieve the behaviour at Messages on iOS.
-/// 
-/// If we ask NSPersonNameComponentsFormatter for "short" we will get the nickname if it
-/// exists but if it _doesn't_ exit we'll just get the first name. (Or the name pattern
-/// the user has selected in their system preferences. This means that in the conversation
-/// list in the left, where Messages displays the full name of a contact if they don't
-/// have a nickname, we'd just display the Short Name. To match the behaviour we ask
-/// UserDefaults for the value of this key and prefer to use the nickname, if available,
-/// in the conversation list.
-private let kSignalPreferNicknamesPreference = "NSPersonNameDefaultShouldPreferNicknamesPreference"
-
 @objc(SignalAccount)
 public final class SignalAccount: NSObject, SDSCodableModel, Decodable {
     public static let databaseTableName = "model_SignalAccount"
@@ -271,11 +260,16 @@ extension SignalAccount {
         return components
     }
 
-    /// Whether nicknames should be used.
-    ///
-    /// - SeeAlso: docs on``kSignalPreferNicknamesPreference``.
-    public static func shouldUseNicknames(userDefaults: UserDefaults = .standard) -> Bool {
-        userDefaults.bool(forKey: kSignalPreferNicknamesPreference)
+    /// If we ask PersonNameComponentsFormatter for `.short`, we will get the
+    /// nickname (if it exists). To match the system behavior for the chat list,
+    /// we use the nickname in lieu of the full name as well.
+    public static func shouldUseNicknames() -> Bool {
+        var nameComponents = PersonNameComponents()
+        nameComponents.givenName = "givenName"
+        nameComponents.nickname = "nickname"
+        let nameFormatter = PersonNameComponentsFormatter()
+        nameFormatter.style = .short
+        return nameFormatter.string(from: nameComponents) == "nickname"
     }
 }
 
