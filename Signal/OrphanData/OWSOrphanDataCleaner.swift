@@ -22,7 +22,7 @@ private struct OWSOrphanData {
     let fileAndDirectoryPaths: Set<String>
     let hasOrphanedPacksOrStickers: Bool
 }
-private typealias OrphanDataBlock = (_ orphanData: OWSOrphanData) -> ()
+private typealias OrphanDataBlock = (_ orphanData: OWSOrphanData) -> Void
 
 // Notes:
 //
@@ -278,8 +278,8 @@ enum OWSOrphanDataCleaner {
     ///   its corresponding message. Better that the broken message shows up in the
     ///   conversation view.
     private static func findOrphanData(withRetries remainingRetries: Int,
-                               success: @escaping OrphanDataBlock,
-                               failure: @escaping () -> Void) {
+                                       success: @escaping OrphanDataBlock,
+                                       failure: @escaping () -> Void) {
         guard remainingRetries > 0 else {
             Logger.info("Aborting orphan data search. No more retries.")
             workQueue.async(failure)
