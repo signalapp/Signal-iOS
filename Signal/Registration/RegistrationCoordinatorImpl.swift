@@ -4014,7 +4014,6 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             return
                 FeatureFlags.messageBackupFileAlphaRegistrationFlow
                 && inMemoryState.hasBackedUpToSVR
-                && inMemoryState.didHaveSVRBackupsPriorToReg
                 && !inMemoryState.hasRestoredFromLocalMessageBackup
                 && !inMemoryState.hasSkippedRestoreFromMessageBackup
         case .changingNumber, .reRegistering:
