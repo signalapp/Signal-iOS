@@ -37,13 +37,19 @@ extension ProfileFetcher {
     }
 }
 
+public enum ProfileFetcherError: Error {
+    case skippingAppExtensionFetch
+    case skippingOpportunisticFetch
+}
+
 public actor ProfileFetcherImpl: ProfileFetcher {
+    private let jobCreator: (ServiceId, AuthedAccount) -> ProfileFetcherJob
+    private let reachabilityManager: any SSKReachabilityManager
+    private let tsAccountManager: any TSAccountManager
 
-    private var serviceIdQueue = OrderedSet<ServiceId>()
+    private let recentFetchResults = LRUCache<ServiceId, FetchResult>(maxSize: 16000, nseMaxSize: 4000)
 
-    private var isUpdateInFlight = false
-
-    private struct UpdateOutcome {
+    private struct FetchResult {
         let outcome: Outcome
         enum Outcome {
             case success
@@ -51,23 +57,16 @@ public actor ProfileFetcherImpl: ProfileFetcher {
             case requestFailure(ProfileRequestError)
             case otherFailure
         }
-        let date: Date
+        let completionDate: MonotonicDate
 
-        init(_ outcome: Outcome) {
+        init(outcome: Outcome, completionDate: MonotonicDate) {
             self.outcome = outcome
-            self.date = Date()
+            self.completionDate = completionDate
         }
     }
 
-    private var lastOutcomeMap = LRUCache<ServiceId, UpdateOutcome>(maxSize: 16 * 1000, nseMaxSize: 4 * 1000)
-
-    private var lastRateLimitErrorDate: Date?
-
-    private var observers = [NSObjectProtocol]()
-
-    private let jobCreator: (ServiceId, AuthedAccount) -> ProfileFetcherJob
-    private let reachabilityManager: any SSKReachabilityManager
-    private let tsAccountManager: any TSAccountManager
+    private var rateLimitExpirationDate: MonotonicDate = .distantPast
+    private var scheduledOpportunisticDate: MonotonicDate = .distantPast
 
     public init(
         db: any DB,
@@ -100,35 +99,7 @@ public actor ProfileFetcherImpl: ProfileFetcher {
                 versionedProfiles: versionedProfiles
             )
         }
-
         SwiftSingletons.register(self)
-
-        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
-            Task {
-                await self.registerObservers()
-                await self.process()
-            }
-        }
-    }
-
-    private func registerObservers() {
-        let nc = NotificationCenter.default
-        observers.append(nc.addObserver(
-            forName: SSKReachability.owsReachabilityDidChange,
-            object: nil,
-            queue: nil,
-            using: { _ in Task { await self.process() } }
-        ))
-        observers.append(nc.addObserver(
-            forName: .registrationStateDidChange,
-            object: nil,
-            queue: nil,
-            using: { _ in Task { await self.process() } }
-        ))
-    }
-
-    deinit {
-        observers.forEach { NotificationCenter.default.removeObserver($0) }
     }
 
     public nonisolated func fetchProfileSyncImpl(
@@ -137,8 +108,8 @@ public actor ProfileFetcherImpl: ProfileFetcher {
         authedAccount: AuthedAccount
     ) -> Task<FetchedProfile, Error> {
         return Task {
-            return try await self.fetchProfileImpl(
-                for: serviceId,
+            return try await self.fetchProfileWithOptions(
+                serviceId: serviceId,
                 options: options,
                 authedAccount: authedAccount
             )
@@ -150,121 +121,125 @@ public actor ProfileFetcherImpl: ProfileFetcher {
         options: ProfileFetchOptions,
         authedAccount: AuthedAccount
     ) async throws -> FetchedProfile {
+        return try await fetchProfileWithOptions(
+            serviceId: serviceId,
+            options: options,
+            authedAccount: authedAccount
+        )
+    }
+
+    private func fetchProfileWithOptions(
+        serviceId: ServiceId,
+        options: ProfileFetchOptions,
+        authedAccount: AuthedAccount
+    ) async throws -> FetchedProfile {
         if options.contains(.opportunistic) {
-            await self._fetchProfiles(serviceIds: [serviceId])
-            // TODO: Clean up this type so that we can pass back real results.
-            throw OWSGenericError("Detaching profile fetch because it's opportunistic.")
+            if !CurrentAppContext().isMainApp {
+                throw ProfileFetcherError.skippingOpportunisticFetch
+            }
+            return try await fetchProfileOpportunistically(serviceId: serviceId, authedAccount: authedAccount)
         }
         // We usually only refresh profiles in the MainApp to decrease the
         // chance of missed SN notifications in the AppExtension for our users
         // who choose not to verify contacts.
         if options.contains(.mainAppOnly), !CurrentAppContext().isMainApp {
-            throw OWSGenericError("Skipping profile fetch because we're not the main app.")
+            throw ProfileFetcherError.skippingAppExtensionFetch
         }
-        return try await jobCreator(serviceId, authedAccount).run()
+        return try await fetchProfileUrgently(serviceId: serviceId, authedAccount: authedAccount)
     }
 
-    private func _fetchProfiles(serviceIds: [ServiceId]) async {
-        guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-            return
+    private func fetchProfileOpportunistically(
+        serviceId: ServiceId,
+        authedAccount: AuthedAccount
+    ) async throws -> FetchedProfile {
+        if CurrentAppContext().isRunningTests {
+            throw ProfileFetcherError.skippingOpportunisticFetch
         }
-        guard let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
-            owsFailDebug("missing localIdentifiers")
-            return
+        guard shouldOpportunisticallyFetch(serviceId: serviceId) else {
+            throw ProfileFetcherError.skippingOpportunisticFetch
         }
-        for serviceId in serviceIds {
-            if localIdentifiers.contains(serviceId: serviceId) {
-                continue
-            }
-            if serviceIdQueue.contains(serviceId) {
-                continue
-            }
-            serviceIdQueue.append(serviceId)
+        guard isRegisteredOrExplicitlyAuthenticated(authedAccount: authedAccount) else {
+            throw ProfileFetcherError.skippingOpportunisticFetch
         }
-        await process()
+        // We don't need opportunistic fetches for ourself.
+        let localIdentifiers = try tsAccountManager.localIdentifiersWithMaybeSneakyTransaction(authedAccount: authedAccount)
+        guard !localIdentifiers.contains(serviceId: serviceId) else {
+            throw ProfileFetcherError.skippingOpportunisticFetch
+        }
+        try await waitIfNecessary()
+        // Check again since we might have fetched while waiting.
+        guard shouldOpportunisticallyFetch(serviceId: serviceId) else {
+            throw ProfileFetcherError.skippingOpportunisticFetch
+        }
+        return try await fetchProfileUrgently(serviceId: serviceId, authedAccount: authedAccount)
     }
 
-    private func dequeueServiceIdToUpdate() -> ServiceId? {
-        while true {
-            // Dequeue.
-            guard let serviceId = serviceIdQueue.first else {
-                return nil
-            }
-            serviceIdQueue.remove(serviceId)
-
-            // De-bounce.
-            guard shouldUpdateServiceId(serviceId) else {
-                continue
-            }
-
-            return serviceId
+    private func isRegisteredOrExplicitlyAuthenticated(authedAccount: AuthedAccount) -> Bool {
+        switch authedAccount.info {
+        case .implicit:
+            return tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
+        case .explicit:
+            return true
         }
     }
 
-    private func process() async {
-        // Only one update in flight at a time.
-        guard !isUpdateInFlight else {
-            return
-        }
-
-        guard
-            CurrentAppContext().isMainApp,
-            reachabilityManager.isReachable,
-            tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered,
-            !DebugFlags.reduceLogChatter
-        else {
-            return
-        }
-
-        guard let serviceId = dequeueServiceIdToUpdate() else {
-            return
-        }
-
-        isUpdateInFlight = true
-
-        defer {
-            Task {
-                // We need to throttle these jobs.
-                //
-                // The profile fetch rate limit is a bucket size of 4320, which refills at
-                // a rate of 3 per minute.
-                //
-                // This class handles the "bulk" profile fetches which are common but not
-                // urgent. The app also does other "blocking" profile fetches which are
-                // urgent but not common. To help ensure that "blocking" profile fetches
-                // succeed, the "bulk" profile fetches are cautious. This takes two forms:
-                //
-                // * Rate-limiting bulk profiles faster than the service's rate limit.
-                // * Backing off aggressively if we hit the rate limit.
-                try? await Task.sleep(nanoseconds: 100 * NSEC_PER_MSEC)
-                self.isUpdateInFlight = false
-                await self.process()
-            }
-        }
-
-        // Wait before updating if we've recently hit the rate limit.
-        // This will give the rate limit bucket time to refill.
-        if let lastRateLimitErrorDate, -lastRateLimitErrorDate.timeIntervalSinceNow < 5*kMinuteInterval {
-            try? await Task.sleep(nanoseconds: 20 * NSEC_PER_SEC)
-        }
-
+    private func fetchProfileUrgently(
+        serviceId: ServiceId,
+        authedAccount: AuthedAccount
+    ) async throws -> FetchedProfile {
+        let result = await Result { try await jobCreator(serviceId, authedAccount).run() }
+        let outcome: FetchResult.Outcome
         do {
-            _ = try await fetchProfile(for: serviceId)
-            lastOutcomeMap[serviceId] = UpdateOutcome(.success)
-        } catch ProfileRequestError.rateLimit {
-            lastRateLimitErrorDate = Date()
-            lastOutcomeMap[serviceId] = UpdateOutcome(.requestFailure(.rateLimit))
+            _ = try result.get()
+            outcome = .success
         } catch let error as ProfileRequestError {
-            lastOutcomeMap[serviceId] = UpdateOutcome(.requestFailure(error))
+            outcome = .requestFailure(error)
         } catch where error.isNetworkFailureOrTimeout {
-            lastOutcomeMap[serviceId] = UpdateOutcome(.networkFailure)
+            outcome = .networkFailure
         } catch {
-            lastOutcomeMap[serviceId] = UpdateOutcome(.otherFailure)
+            outcome = .otherFailure
+        }
+        let now = MonotonicDate()
+        if case .failure(ProfileRequestError.rateLimit) = result {
+            self.rateLimitExpirationDate = now.adding(5*kMinuteInterval)
+        }
+        self.recentFetchResults[serviceId] = FetchResult(outcome: outcome, completionDate: now)
+        return try result.get()
+    }
+
+    private func waitIfNecessary() async throws {
+        let now = MonotonicDate()
+
+        // We need to throttle these jobs.
+        //
+        // The profile fetch rate limit is a bucket size of 4320, which refills at
+        // a rate of 3 per minute.
+        //
+        // This class handles the "bulk" profile fetches which are common but not
+        // urgent. The app also does other "blocking" profile fetches which are
+        // urgent but not common. To help ensure that "blocking" profile fetches
+        // succeed, the "bulk" profile fetches are cautious. This takes two forms:
+        //
+        // * Rate-limiting bulk profiles faster than the service's rate limit.
+        // * Backing off aggressively if we hit the rate limit.
+
+        let minimumDelay: TimeInterval
+        if now < rateLimitExpirationDate {
+            minimumDelay = 20
+        } else {
+            minimumDelay = 0.1
+        }
+
+        let minimumDate = self.scheduledOpportunisticDate.adding(minimumDelay)
+        self.scheduledOpportunisticDate = max(now, minimumDate)
+
+        if now < minimumDate {
+            try await Task.sleep(nanoseconds: minimumDate - now)
         }
     }
 
-    private func shouldUpdateServiceId(_ serviceId: ServiceId) -> Bool {
-        guard let lastOutcome = lastOutcomeMap[serviceId] else {
+    private func shouldOpportunisticallyFetch(serviceId: ServiceId) -> Bool {
+        guard let fetchResult = self.recentFetchResults[serviceId] else {
             return true
         }
 
@@ -272,7 +247,7 @@ public actor ProfileFetcherImpl: ProfileFetcher {
         if DebugFlags.aggressiveProfileFetching.get() {
             retryDelay = 0
         } else {
-            switch lastOutcome.outcome {
+            switch fetchResult.outcome {
             case .success:
                 retryDelay = 2 * kMinuteInterval
             case .networkFailure:
@@ -288,6 +263,6 @@ public actor ProfileFetcherImpl: ProfileFetcher {
             }
         }
 
-        return -lastOutcome.date.timeIntervalSinceNow >= retryDelay
+        return MonotonicDate() > fetchResult.completionDate.adding(retryDelay)
     }
 }

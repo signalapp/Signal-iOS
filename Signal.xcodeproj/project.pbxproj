@@ -592,6 +592,7 @@
 		502D45462A09C2EE00B8BCE0 /* DisappearingMessagesConfigurationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502D45452A09C2EE00B8BCE0 /* DisappearingMessagesConfigurationStore.swift */; };
 		502D45482A0AD7BE00B8BCE0 /* ThreadReplyInfoStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502D45472A0AD7BE00B8BCE0 /* ThreadReplyInfoStore.swift */; };
 		502D69322A7AC07C0085B656 /* Dictionary+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502D69312A7AC07C0085B656 /* Dictionary+SSK.swift */; };
+		50311B8B2BC0C2A100AE5A5F /* MonotonicDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50311B8A2BC0C2A100AE5A5F /* MonotonicDate.swift */; };
 		503158F22B57B0010023A5DB /* ServiceIdTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503158F12B57B0010023A5DB /* ServiceIdTest.swift */; };
 		5033D45F29D4DAAC007FEADA /* ThreadMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D45E29D4DAAC007FEADA /* ThreadMerger.swift */; };
 		5033D46129D638FD007FEADA /* ThreadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5033D46029D638FD007FEADA /* ThreadStore.swift */; };
@@ -3466,6 +3467,7 @@
 		502D45452A09C2EE00B8BCE0 /* DisappearingMessagesConfigurationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisappearingMessagesConfigurationStore.swift; sourceTree = "<group>"; };
 		502D45472A0AD7BE00B8BCE0 /* ThreadReplyInfoStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadReplyInfoStore.swift; sourceTree = "<group>"; };
 		502D69312A7AC07C0085B656 /* Dictionary+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dictionary+SSK.swift"; sourceTree = "<group>"; };
+		50311B8A2BC0C2A100AE5A5F /* MonotonicDate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonotonicDate.swift; sourceTree = "<group>"; };
 		503158F12B57B0010023A5DB /* ServiceIdTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceIdTest.swift; sourceTree = "<group>"; };
 		5033D45E29D4DAAC007FEADA /* ThreadMerger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadMerger.swift; sourceTree = "<group>"; };
 		5033D46029D638FD007FEADA /* ThreadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadStore.swift; sourceTree = "<group>"; };
@@ -7122,6 +7124,7 @@
 			isa = PBXGroup;
 			children = (
 				6600F36B298DAA6200B1EDB7 /* DateProvider.swift */,
+				50311B8A2BC0C2A100AE5A5F /* MonotonicDate.swift */,
 			);
 			path = DateProvider;
 			sourceTree = "<group>";
@@ -13798,6 +13801,7 @@
 				D990CACA2B4CCB9D000A99A2 /* MockUsernameLinkManager.swift in Sources */,
 				D990CAC82B4CCB8F000A99A2 /* MockUsernameLookupManager.swift in Sources */,
 				F9C5CE29289453B400548EEE /* ModelReadCache.swift in Sources */,
+				50311B8B2BC0C2A100AE5A5F /* MonotonicDate.swift in Sources */,
 				725465162BA00BE400EABFD2 /* NameResolver.swift in Sources */,
 				F9C5CDC4289453B400548EEE /* NetworkInterfaceSet.swift in Sources */,
 				F9C5CDAF289453B400548EEE /* NetworkManager.swift in Sources */,
