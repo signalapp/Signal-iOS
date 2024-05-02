@@ -497,7 +497,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                     // enough to render a snippet.  kOversizeTextMessageSizeThreshold is our
                     // limit on how long text should be in protos since they'll be stored in
                     // the database. We apply this constant here for the same reasons.
-                    let truncatedText = oversizeText.trimToUtf8ByteCount(Int(kOversizeTextMessageSizeThreshold) - 1)
+                    let truncatedText = oversizeText.trimToUtf8ByteCount(Int(kOversizeTextMessageSizeThreshold))
                     return createDraftReply(content: .text(
                         MessageBody(text: truncatedText, ranges: originalMessage.bodyRanges ?? .empty)
                     ))

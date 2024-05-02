@@ -801,18 +801,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         requiredProtocolVersion = SSKProtoDataMessageProtocolVersionViewOnceVideo;
     }
 
-    if ([self.body lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= kOversizeTextMessageSizeThreshold) {
-        [builder setBody:self.body];
-    } else {
-        OWSFailDebug(@"message body length too long.");
-        NSString *truncatedBody = [self.body copy];
-        while ([truncatedBody lengthOfBytesUsingEncoding:NSUTF8StringEncoding] > kOversizeTextMessageSizeThreshold) {
-            OWSLogError(@"truncating body which is too long: %lu",
-                (unsigned long)[truncatedBody lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
-            truncatedBody = [truncatedBody substringToIndex:truncatedBody.length / 2];
-        }
-        [builder setBody:truncatedBody];
-    }
+    NSString *body = self.body;
+    NSString *trimmedBody = [body trimToUtf8ByteCount:(NSInteger)kOversizeTextMessageSizeThreshold];
+    OWSAssertDebug(body.length == trimmedBody.length);
+    [builder setBody:trimmedBody];
 
     NSArray<SSKProtoBodyRange *> *bodyRanges =
         [self.bodyRanges toProtoBodyRangesWithBodyLength:(NSInteger)self.body.length];

@@ -692,6 +692,10 @@ public extension NSString {
     var containsOnlyEmoji: Bool {
         return (self as String).containsOnlyEmoji
     }
+
+    func trimToUtf8ByteCount(_ maxByteCount: Int) -> String {
+        return (self as String).trimToUtf8ByteCount(maxByteCount)
+    }
 }
 
 // MARK: - encodeURIComponent

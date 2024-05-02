@@ -1638,7 +1638,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         // Seamlessly convert oversize text messages to oversize text attachments.
         var quotedMessageAssetLoader = quotedMessageAssetLoaderParam
         var quotedMessageBody = quotedMessageBodyParam
-        if let quotedMessageBodyParam, quotedMessageBodyParam.lengthOfBytes(using: .utf8) >= kOversizeTextMessageSizeThreshold {
+        if let quotedMessageBodyParam, quotedMessageBodyParam.lengthOfBytes(using: .utf8) > kOversizeTextMessageSizeThreshold {
             owsAssertDebug(quotedMessageAssetLoaderParam == nil)
             quotedMessageAssetLoader = DebugUIMessagesAssetLoader.oversizeTextInstance(text: quotedMessageBodyParam)
             quotedMessageBody = nil
@@ -1646,7 +1646,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
         var replyAssetLoader = replyAssetLoaderParam
         var replyMessageBody = replyMessageBodyParam
-        if let replyMessageBodyParam, replyMessageBodyParam.lengthOfBytes(using: .utf8) >= kOversizeTextMessageSizeThreshold {
+        if let replyMessageBodyParam, replyMessageBodyParam.lengthOfBytes(using: .utf8) > kOversizeTextMessageSizeThreshold {
             owsAssertDebug(replyAssetLoaderParam == nil)
             replyAssetLoader = DebugUIMessagesAssetLoader.oversizeTextInstance(text: replyMessageBodyParam)
             replyMessageBody = nil
@@ -3875,7 +3875,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         // Seamlessly convert oversize text messages to oversize text attachments.
         let messageBody: String?
         let fakeAssetLoader: DebugUIMessagesAssetLoader?
-        if let messageBodyParam, messageBodyParam.lengthOfBytes(using: .utf8) >= kOversizeTextMessageSizeThreshold {
+        if let messageBodyParam, messageBodyParam.lengthOfBytes(using: .utf8) > kOversizeTextMessageSizeThreshold {
             owsAssertDebug(fakeAssetLoaderParam == nil)
             messageBody = nil
             fakeAssetLoader = DebugUIMessagesAssetLoader.oversizeTextInstance(text: messageBodyParam)
@@ -4088,7 +4088,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         // Seamlessly convert oversize text messages to oversize text attachments.
         let messageBody: String?
         let fakeAssetLoader: DebugUIMessagesAssetLoader?
-        if let messageBodyParam, messageBodyParam.lengthOfBytes(using: .utf8) >= kOversizeTextMessageSizeThreshold {
+        if let messageBodyParam, messageBodyParam.lengthOfBytes(using: .utf8) > kOversizeTextMessageSizeThreshold {
             owsAssertDebug(fakeAssetLoaderParam == nil)
             messageBody = nil
             fakeAssetLoader = DebugUIMessagesAssetLoader.oversizeTextInstance(text: messageBodyParam)
@@ -4223,7 +4223,7 @@ extension DebugUIMessages {
 
     private static func randomOversizeText() -> String {
         var message = String()
-        while message.lengthOfBytes(using: .utf8) < kOversizeTextMessageSizeThreshold {
+        while message.lengthOfBytes(using: .utf8) <= kOversizeTextMessageSizeThreshold {
             message += """
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse rutrum, nulla
 vitae pretium hendrerit, tellus turpis pharetra libero, vitae sodales tortor ante vel
