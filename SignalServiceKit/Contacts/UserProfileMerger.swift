@@ -36,7 +36,7 @@ class UserProfileMerger: RecipientMergeObserver {
                                 return
                             }
                             let profileFetcher = SSKEnvironment.shared.profileFetcherRef
-                            _ = profileFetcher.fetchProfileSync(for: serviceId, options: [.mainAppOnly])
+                            _ = profileFetcher.fetchProfileSync(for: serviceId)
                         }
                     }
                 )

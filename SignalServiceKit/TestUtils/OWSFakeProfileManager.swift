@@ -10,8 +10,7 @@ import SignalCoreKit
 #if TESTABLE_BUILD
 
 extension OWSFakeProfileManager: ProfileManager {
-
-    public func fetchLocalUsersProfile(mainAppOnly: Bool, authedAccount: AuthedAccount) -> Promise<FetchedProfile> {
+    public func fetchLocalUsersProfile(authedAccount: AuthedAccount) -> Promise<FetchedProfile> {
         return Promise(error: OWSGenericError("Not supported."))
     }
 

@@ -181,7 +181,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
             }
 
             // Kick off an async profile fetch (not awaited)
-            _ = profileManager.fetchLocalUsersProfile(mainAppOnly: true, authedAccount: authedAccount)
+            _ = profileManager.fetchLocalUsersProfile(authedAccount: authedAccount)
 
             await db.awaitableWrite { tx in
                 self.kvStore.setString(currentAppVersion, key: Keys.lastUpdateAppVersion, transaction: tx)

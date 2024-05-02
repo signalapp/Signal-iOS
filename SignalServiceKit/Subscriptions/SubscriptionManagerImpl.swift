@@ -826,7 +826,7 @@ public class SubscriptionManagerImpl: NSObject {
                 throw OWSRetryableSubscriptionError()
             }
         }.then(on: DispatchQueue.global()) {
-            self.profileManagerImpl.fetchLocalUsersProfile(mainAppOnly: false, authedAccount: .implicit()).asVoid()
+            self.profileManagerImpl.fetchLocalUsersProfile(authedAccount: .implicit()).asVoid()
         }
     }
 

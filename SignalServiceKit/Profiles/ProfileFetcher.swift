@@ -11,7 +11,6 @@ public struct ProfileFetchOptions: OptionSet {
     public init(rawValue: Int) { self.rawValue = rawValue }
 
     public static let opportunistic: Self = .init(rawValue: 1 << 0)
-    public static let mainAppOnly: Self = .init(rawValue: 1 << 1)
 }
 
 public protocol ProfileFetcher {
@@ -38,7 +37,6 @@ extension ProfileFetcher {
 }
 
 public enum ProfileFetcherError: Error {
-    case skippingAppExtensionFetch
     case skippingOpportunisticFetch
 }
 
@@ -138,12 +136,6 @@ public actor ProfileFetcherImpl: ProfileFetcher {
                 throw ProfileFetcherError.skippingOpportunisticFetch
             }
             return try await fetchProfileOpportunistically(serviceId: serviceId, authedAccount: authedAccount)
-        }
-        // We usually only refresh profiles in the MainApp to decrease the
-        // chance of missed SN notifications in the AppExtension for our users
-        // who choose not to verify contacts.
-        if options.contains(.mainAppOnly), !CurrentAppContext().isMainApp {
-            throw ProfileFetcherError.skippingAppExtensionFetch
         }
         return try await fetchProfileUrgently(serviceId: serviceId, authedAccount: authedAccount)
     }

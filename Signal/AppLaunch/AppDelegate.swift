@@ -577,7 +577,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             Task { [profileManager] in
                 do {
                     _ = try await profileManager.fetchLocalUsersProfile(
-                        mainAppOnly: true,
                         authedAccount: .implicit()
                     ).awaitable()
                     try await profileManager.downloadAndDecryptLocalUserAvatarIfNeeded(

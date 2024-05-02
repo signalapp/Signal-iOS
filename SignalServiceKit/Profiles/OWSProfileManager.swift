@@ -15,13 +15,12 @@ public class OWSProfileManagerSwiftValues {
 }
 
 extension OWSProfileManager: ProfileManager, Dependencies {
-    public func fetchLocalUsersProfile(mainAppOnly: Bool, authedAccount: AuthedAccount) -> Promise<FetchedProfile> {
+    public func fetchLocalUsersProfile(authedAccount: AuthedAccount) -> Promise<FetchedProfile> {
         return Promise.wrapAsync {
             let profileFetcher = SSKEnvironment.shared.profileFetcherRef
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
             return try await profileFetcher.fetchProfile(
                 for: tsAccountManager.localIdentifiersWithMaybeSneakyTransaction(authedAccount: authedAccount).aci,
-                options: mainAppOnly ? [.mainAppOnly] : [],
                 authedAccount: authedAccount
             )
         }
@@ -634,11 +633,10 @@ extension OWSProfileManager: ProfileManager, Dependencies {
         // so skip the update profile for address call.
         if case .otherUser(let serviceId) = address {
             udManager.setUnidentifiedAccessMode(.unknown, for: serviceId, tx: SDSDB.shimOnlyBridge(tx))
-
             if shouldFetchProfile {
                 tx.addSyncCompletion {
                     let profileFetcher = SSKEnvironment.shared.profileFetcherRef
-                    _ = profileFetcher.fetchProfileSync(for: serviceId, options: [.mainAppOnly], authedAccount: authedAccount)
+                    _ = profileFetcher.fetchProfileSync(for: serviceId, authedAccount: authedAccount)
                 }
             }
         }
@@ -996,7 +994,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             // If we're changing the profile key, then the normal "fetch our profile"
             // method will fail because it will the just-obsoleted profile key.
             if newProfileKey == nil {
-                _ = try await fetchLocalUsersProfile(mainAppOnly: false, authedAccount: authedAccount).awaitable()
+                _ = try await fetchLocalUsersProfile(authedAccount: authedAccount).awaitable()
             }
         } catch let error where error.isNetworkFailureOrTimeout {
             // We retry network errors forever (with exponential backoff).

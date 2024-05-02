@@ -201,7 +201,6 @@ public final class RequestMaker: Dependencies {
             let profileFetcher = SSKEnvironment.shared.profileFetcherRef
             _ = try? await profileFetcher.fetchProfile(
                 for: serviceId,
-                options: [.mainAppOnly],
                 authedAccount: authedAccount
             )
         }

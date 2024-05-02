@@ -40,7 +40,7 @@ public enum OptionalChange<Wrapped: Equatable>: Equatable {
 }
 
 public protocol ProfileManager: ProfileManagerProtocol {
-    func fetchLocalUsersProfile(mainAppOnly: Bool, authedAccount: AuthedAccount) -> Promise<FetchedProfile>
+    func fetchLocalUsersProfile(authedAccount: AuthedAccount) -> Promise<FetchedProfile>
     func fetchUserProfiles(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [OWSUserProfile?]
 
     func downloadAndDecryptLocalUserAvatarIfNeeded(authedAccount: AuthedAccount) async throws
