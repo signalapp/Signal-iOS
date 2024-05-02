@@ -62,8 +62,8 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
         return self;
     }
 
-    _authorUUID = incomingMessageBuilder.authorAci.serviceIdUppercaseString;
-    _authorPhoneNumber = incomingMessageBuilder.authorE164.stringValue;
+    _authorUUID = incomingMessageBuilder.authorAciObjC.serviceIdUppercaseString;
+    _authorPhoneNumber = incomingMessageBuilder.authorE164ObjC.stringValue;
     _deprecated_sourceDeviceId = 1;
     _read = incomingMessageBuilder.read;
     _serverTimestamp = incomingMessageBuilder.serverTimestamp;

@@ -43,10 +43,13 @@ final class DisappearingMessageFinderTest: SSKBaseTestSwift {
 
             let thread = self.thread(with: transaction)
 
-            let incomingMessageBuilder = TSIncomingMessageBuilder(thread: thread, messageBody: body)
-            incomingMessageBuilder.timestamp = 1
-            incomingMessageBuilder.authorAci = AciObjC(otherAddress.aci!)
-            incomingMessageBuilder.expiresInSeconds = expiresInSeconds
+            let incomingMessageBuilder: TSIncomingMessageBuilder = .withDefaults(
+                thread: thread,
+                timestamp: 1,
+                authorAci: otherAddress.aci,
+                messageBody: body,
+                expiresInSeconds: expiresInSeconds
+            )
             let message = incomingMessageBuilder.build()
             message.anyInsert(transaction: transaction)
 

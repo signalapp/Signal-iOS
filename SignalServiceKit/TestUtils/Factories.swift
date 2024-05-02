@@ -262,9 +262,7 @@ public class IncomingMessageFactory: NSObject, Factory {
 
         let thread = threadCreator(transaction)
 
-        // The builder() factory method requires us to specify every
-        // property so that this will break if we add any new properties.
-        let builder = TSIncomingMessageBuilder.builder(
+        let builder = TSIncomingMessageBuilder(
             thread: thread,
             timestamp: timestampBuilder(),
             authorAci: authorAciBuilder(thread),
@@ -273,7 +271,9 @@ public class IncomingMessageFactory: NSObject, Factory {
             bodyRanges: bodyRangesBuilder(),
             editState: editStateBuilder(),
             expiresInSeconds: expiresInSecondsBuilder(),
-            serverTimestamp: serverTimestampBuilder(),
+            expireStartedAt: 0,
+            read: false,
+            serverTimestamp: serverTimestampBuilder().map { NSNumber(value: $0) },
             serverDeliveryTimestamp: serverDeliveryTimestampBuilder(),
             serverGuid: serverGuidBuilder(),
             wasReceivedByUD: wasReceivedByUDBuilder(),

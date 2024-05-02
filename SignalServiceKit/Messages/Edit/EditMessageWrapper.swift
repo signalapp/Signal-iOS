@@ -107,6 +107,7 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
             thread: thread,
             timestamp: timestamp,
             authorAci: authorAci,
+            authorE164: nil,
             messageBody: body,
             bodyRanges: bodyRanges,
             editState: editState,
@@ -123,7 +124,8 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
             storyAuthorAci: message.storyAuthorAci?.wrappedAciValue,
             storyTimestamp: message.storyTimestamp?.uint64Value,
             storyReactionEmoji: message.storyReactionEmoji,
-            giftBadge: message.giftBadge
+            giftBadge: message.giftBadge,
+            paymentNotification: nil
         )
     }
 

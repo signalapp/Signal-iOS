@@ -146,7 +146,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
                 transaction: transaction
             )
 
-            let messageBuilder = TSIncomingMessageBuilder(
+            let messageBuilder: TSIncomingMessageBuilder = .withDefaults(
                 thread: oldThread,
                 authorAci: aci,
                 messageBody: "Test 123"
@@ -226,7 +226,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
                 transaction: transaction
             )
 
-            let messageBuilder = TSIncomingMessageBuilder(
+            let messageBuilder: TSIncomingMessageBuilder = .withDefaults(
                 thread: oldThread,
                 authorAci: oldAci,
                 messageBody: "Test 123"

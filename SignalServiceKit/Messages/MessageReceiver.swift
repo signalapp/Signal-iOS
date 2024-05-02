@@ -1028,10 +1028,7 @@ public final class MessageReceiver: Dependencies {
 
         // Legit usage of senderTimestamp when creating an incoming group message
         // record.
-        //
-        // The builder() factory method requires us to specify every property so
-        // that this will break if we add any new properties.
-        let messageBuilder = TSIncomingMessageBuilder.builder(
+        let messageBuilder = TSIncomingMessageBuilder(
             thread: thread,
             timestamp: envelope.timestamp,
             authorAci: envelope.sourceAci,
@@ -1040,7 +1037,9 @@ public final class MessageReceiver: Dependencies {
             bodyRanges: bodyRanges,
             editState: .none,
             expiresInSeconds: dataMessage.expireTimer,
-            serverTimestamp: envelope.serverTimestamp,
+            expireStartedAt: 0,
+            read: false,
+            serverTimestamp: NSNumber(value: envelope.serverTimestamp),
             serverDeliveryTimestamp: request.serverDeliveryTimestamp,
             serverGuid: serverGuid?.uuidString.lowercased(),
             wasReceivedByUD: request.wasReceivedByUD,

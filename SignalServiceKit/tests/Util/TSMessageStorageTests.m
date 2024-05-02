@@ -66,9 +66,10 @@
 
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         TSIncomingMessageBuilder *incomingMessageBuilder =
-            [TSIncomingMessageBuilder incomingMessageBuilderWithThread:self.thread messageBody:body];
-        incomingMessageBuilder.timestamp = timestamp;
-        incomingMessageBuilder.authorAci = [self otherAci];
+            [TSIncomingMessageBuilder withDefaultsObjcWithThread:self.thread
+                                                     messageBody:body
+                                                       timestamp:timestamp
+                                                       authorAci:[self otherAci]];
         TSIncomingMessage *newMessage = [incomingMessageBuilder build];
 
         [newMessage anyInsertWithTransaction:transaction];
@@ -95,9 +96,10 @@
         NSMutableArray<TSIncomingMessage *> *messages = [NSMutableArray new];
         for (uint64_t i = 0; i < 10; i++) {
             TSIncomingMessageBuilder *incomingMessageBuilder =
-                [TSIncomingMessageBuilder incomingMessageBuilderWithThread:self.thread messageBody:body];
-            incomingMessageBuilder.timestamp = i + 1;
-            incomingMessageBuilder.authorAci = [self otherAci];
+                [TSIncomingMessageBuilder withDefaultsObjcWithThread:self.thread
+                                                         messageBody:body
+                                                           timestamp:(i + 1)
+                                                           authorAci:[self otherAci]];
             TSIncomingMessage *newMessage = [incomingMessageBuilder build];
 
             [messages addObject:newMessage];
@@ -146,9 +148,10 @@
             NSUInteger memberIdx = (i % thread.groupModel.groupMembers.count);
             SignalServiceAddress *authorAddress = thread.groupModel.groupMembers[memberIdx];
             TSIncomingMessageBuilder *incomingMessageBuilder =
-                [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:body];
-            incomingMessageBuilder.timestamp = i + 1;
-            incomingMessageBuilder.authorAci = (AciObjC *)authorAddress.serviceIdObjC;
+                [TSIncomingMessageBuilder withDefaultsObjcWithThread:thread
+                                                         messageBody:body
+                                                           timestamp:(i + 1)
+                                                           authorAci:(AciObjC *)authorAddress.serviceIdObjC];
             TSIncomingMessage *newMessage = [incomingMessageBuilder build];
             [newMessage anyInsertWithTransaction:transaction];
             [messages addObject:newMessage];

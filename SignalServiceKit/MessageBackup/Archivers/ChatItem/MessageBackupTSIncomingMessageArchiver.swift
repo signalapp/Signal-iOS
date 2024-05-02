@@ -166,17 +166,18 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
 
         let messageBody = contents.body
 
-        let messageBuilder = TSIncomingMessageBuilder.builder(
+        let messageBuilder = TSIncomingMessageBuilder(
             thread: thread.thread,
             timestamp: incomingDetails.dateReceived,
             authorAci: authorAci,
             authorE164: authorE164,
             messageBody: messageBody?.text,
             bodyRanges: messageBody?.ranges,
-            // TODO: handle edit states
+            // [Backups] TODO: handle edit states
             editState: .none,
-            // TODO: expose + set expire start time
             expiresInSeconds: chatItem.expiresInMs.map { UInt32($0 / 1000) } ?? 0,
+            expireStartedAt: chatItem.expireStartDate ?? 0,
+            read: incomingDetails.read,
             serverTimestamp: nil,
             serverDeliveryTimestamp: chatItem.dateSent,
             serverGuid: nil,

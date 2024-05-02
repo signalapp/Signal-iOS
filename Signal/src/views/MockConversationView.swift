@@ -198,7 +198,7 @@ private class MockThread: TSContactThread {
 
 private class MockIncomingMessage: TSIncomingMessage {
     init(messageBody: String, thread: MockThread) {
-        let builder = TSIncomingMessageBuilder(
+        let builder: TSIncomingMessageBuilder = .withDefaults(
             thread: thread,
             authorAci: thread.contactAddress.aci!,
             messageBody: messageBody

@@ -148,12 +148,12 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
             }
 
             // Message
-            let messageBuilder = TSIncomingMessageBuilder.incomingMessageBuilder(
+            let messageBuilder: TSIncomingMessageBuilder = .withDefaults(
                 thread: contactThread,
+                timestamp: 1234,
+                authorAci: contactAci,
                 messageBody: "test outgoing message"
             )
-            messageBuilder.timestamp = 1234
-            messageBuilder.authorAci = AciObjC(contactAci)
             let message = messageBuilder.build()
             message.anyInsert(transaction: transaction)
 
@@ -308,12 +308,12 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
                 transaction: transaction
             )
 
-            let messageBuilder = TSIncomingMessageBuilder.incomingMessageBuilder(
+            let messageBuilder: TSIncomingMessageBuilder = .withDefaults(
                 thread: contactThread,
+                timestamp: 1234,
+                authorAci: contactAci,
                 messageBody: "foo bar"
             )
-            messageBuilder.timestamp = 1234
-            messageBuilder.authorAci = AciObjC(contactAci)
             let message = messageBuilder.build()
             message.anyInsert(transaction: transaction)
         }

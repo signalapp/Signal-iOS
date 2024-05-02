@@ -49,7 +49,7 @@ class TSMessageTest: SSKBaseTestSwift {
         }
 
         do {
-            let builder = TSIncomingMessageBuilder.incomingMessageBuilder(thread: self.thread)
+            let builder: TSIncomingMessageBuilder = .withDefaults(thread: self.thread)
             builder.timestamp = now - kMinuteInMs
             let message = builder.build()
 

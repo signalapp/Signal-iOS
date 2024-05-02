@@ -3246,9 +3246,12 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 let randomText = randomText()
 
                 // Legit usage of SenderTimestamp to backdate incoming sent messages for Debug
-                let incomingMessageBuilder = TSIncomingMessageBuilder(thread: thread, messageBody: randomText)
-                incomingMessageBuilder.timestamp = timestamp
-                incomingMessageBuilder.authorAci = AciObjC(incomingSenderAci)
+                let incomingMessageBuilder: TSIncomingMessageBuilder = .withDefaults(
+                    thread: thread,
+                    timestamp: timestamp,
+                    authorAci: incomingSenderAci,
+                    messageBody: randomText
+                )
                 let incomingMessage = incomingMessageBuilder.build()
                 incomingMessage.anyInsert(transaction: transaction)
                 incomingMessage.debugonly_markAsReadNow(transaction: transaction)
@@ -3408,8 +3411,11 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             let numberOfCases = isTextOnly ? 2 : 4
             switch Int.random(in: 0..<numberOfCases) {
             case 0:
-                let incomingMessageBuilder = TSIncomingMessageBuilder(thread: thread, messageBody: randomText)
-                incomingMessageBuilder.authorAci = AciObjC(incomingSenderAci)
+                let incomingMessageBuilder: TSIncomingMessageBuilder = .withDefaults(
+                    thread: thread,
+                    authorAci: incomingSenderAci,
+                    messageBody: randomText
+                )
                 let message = incomingMessageBuilder.build()
                 message.anyInsert(transaction: transaction)
                 message.debugonly_markAsReadNow(transaction: transaction)
@@ -3423,8 +3429,10 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 )
 
             case 2:
-                let incomingMessageBuilder = TSIncomingMessageBuilder(thread: thread)
-                incomingMessageBuilder.authorAci = AciObjC(incomingSenderAci)
+                let incomingMessageBuilder: TSIncomingMessageBuilder = .withDefaults(
+                    thread: thread,
+                    authorAci: incomingSenderAci
+                )
 
                 let message = incomingMessageBuilder.build()
                 message.anyInsert(transaction: transaction)
@@ -3625,9 +3633,12 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
         let now = Date.ows_millisecondTimestamp()
         let messageBody = "Should disappear 60s after \(now)"
-        let incomingMessageBuilder = TSIncomingMessageBuilder.incomingMessageBuilder(thread: thread, messageBody: messageBody)
-        incomingMessageBuilder.authorAci = AciObjC(aci)
-        incomingMessageBuilder.expiresInSeconds = 60
+        let incomingMessageBuilder: TSIncomingMessageBuilder = .withDefaults(
+            thread: thread,
+            authorAci: aci,
+            messageBody: messageBody,
+            expiresInSeconds: 60
+        )
         let message = incomingMessageBuilder.build()
         // private setter to avoid starting expire machinery.
         message.wasRead = true
@@ -4062,8 +4073,11 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
         let authorAci = DebugUIMessages.anyIncomingSenderAddress(forThread: thread)!.aci!
 
-        let incomingMessageBuilder = TSIncomingMessageBuilder(thread: thread, messageBody: messageBody)
-        incomingMessageBuilder.authorAci = AciObjC(authorAci)
+        let incomingMessageBuilder: TSIncomingMessageBuilder = .withDefaults(
+            thread: thread,
+            authorAci: authorAci,
+            messageBody: messageBody
+        )
         let message = incomingMessageBuilder.build()
         quotedMessage.map { message.update(with: $0, transaction: transaction) }
         message.anyInsert(transaction: transaction)
@@ -4097,8 +4111,11 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             fakeAssetLoader = fakeAssetLoaderParam
         }
 
-        let incomingMessageBuilder = TSIncomingMessageBuilder(thread: thread, messageBody: messageBody)
-        incomingMessageBuilder.authorAci = AciObjC(authorAci)
+        let incomingMessageBuilder: TSIncomingMessageBuilder = .withDefaults(
+            thread: thread,
+            authorAci: authorAci,
+            messageBody: messageBody
+        )
         let message = incomingMessageBuilder.build()
         quotedMessageBuilder.map { message.update(with: $0.info.quotedMessage, transaction: transaction) }
         message.anyInsert(transaction: transaction)
