@@ -3538,6 +3538,9 @@
 		5077B5B32BBC687C00EF399E /* CurrentCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentCall.swift; sourceTree = "<group>"; };
 		5077B5B72BBC7FE600EF399E /* ContactTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactTest.swift; sourceTree = "<group>"; };
 		507CD5E429660D5100E47DAC /* ServiceId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceId.swift; sourceTree = "<group>"; };
+		507D614B2BE433EE00DA7BA3 /* be */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = be; path = translations/be.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		507D614C2BE433EE00DA7BA3 /* be */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = be; path = translations/be.lproj/Localizable.strings; sourceTree = "<group>"; };
+		507D614D2BE433EE00DA7BA3 /* be */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = be; path = translations/be.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		507E1BDE2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSKeyedUnarchiver+SSK.swift"; sourceTree = "<group>"; };
 		508347052AABBF9900DD2EC0 /* ProfileManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileManagerTest.swift; sourceTree = "<group>"; };
 		508F0345296F72F4001D88D0 /* CustomCellBackgroundColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCellBackgroundColor.swift; sourceTree = "<group>"; };
@@ -11654,6 +11657,7 @@
 				en,
 				Base,
 				ar,
+				be,
 				bn,
 				ca,
 				cs,
@@ -14741,6 +14745,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				500049AD2833013D006A7466 /* ar */,
+				507D614D2BE433EE00DA7BA3 /* be */,
 				500049AE28330143006A7466 /* bn */,
 				1466AB2B2817F811003B3D9F /* ca */,
 				500049B528330152006A7466 /* cs */,
@@ -14800,6 +14805,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				888A27E924B3E97F0045D639 /* ar */,
+				507D614B2BE433EE00DA7BA3 /* be */,
 				88E1EACA26BB283D00AD0C2D /* bn */,
 				888A27E524B3E97E0045D639 /* ca */,
 				888A27F624B3E9800045D639 /* cs */,
@@ -14851,6 +14857,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				3495BC911F1426B800B478F5 /* ar */,
+				507D614C2BE433EE00DA7BA3 /* be */,
 				B69C2D1A1AA5447600A640C2 /* ca */,
 				B69C2D1B1AA5448300A640C2 /* cs */,
 				B6BC3D0C1AA544B100C2907F /* da */,

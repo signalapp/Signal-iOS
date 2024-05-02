@@ -8,6 +8,7 @@ import Foundation
 // Maps Smartling language codes to .strings/.stringsdict language codes.
 private let languageMap: [String: String] = [
     "ar": "ar",
+    "be-BY": "be",
     "bn-BD": "bn",
     "ca": "ca",
     "cs": "cs",

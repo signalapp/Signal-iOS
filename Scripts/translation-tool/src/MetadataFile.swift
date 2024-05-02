@@ -43,6 +43,7 @@ private let languageMap: [String: [String]] = [
     "zh-HK": ["zh-Hant"]
 
     // These don't exist in App Store Connect, so there's no need to fetch them from Smartling.
+    // "be-BY": [],
     // "bn-BD": [],
     // "fa-IR": [],
     // "ga-IE": [],
