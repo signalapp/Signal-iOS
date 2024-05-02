@@ -659,7 +659,7 @@ public extension String {
         return self.trimmedIfNeeded(maxGlyphCount: maxGlyphCount) ?? self
     }
 
-    func trimToUtf8ByteCount(_ maxByteCount: Int) -> String {
+    func trimmedIfNeeded(maxByteCount: Int) -> String? {
         var utf8Count = 0
         for index in self.indices {
             utf8Count += self[index].utf8.count
@@ -667,7 +667,11 @@ public extension String {
                 return String(self[..<index])
             }
         }
-        return self
+        return nil
+    }
+
+    func trimToUtf8ByteCount(_ maxByteCount: Int) -> String {
+        return self.trimmedIfNeeded(maxByteCount: maxByteCount) ?? self
     }
 }
 

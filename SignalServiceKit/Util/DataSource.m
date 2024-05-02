@@ -83,12 +83,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-+ (_Nullable id<DataSource>)dataSourceWithOversizeText:(NSString *_Nullable)text
++ (id<DataSource>)dataSourceWithOversizeText:(NSString *)text
 {
-    if (!text) {
-        return nil;
-    }
-
     NSData *data = [text.filterStringForDisplay dataUsingEncoding:NSUTF8StringEncoding];
     return [[self alloc] initWithData:data fileExtension:MimeTypeUtil.oversizeTextAttachmentFileExtension];
 }

@@ -203,17 +203,12 @@ extension UnpreparedOutgoingMessage {
         guard let messageBody, !messageBody.text.isEmpty else {
             return (nil, nil)
         }
-        if messageBody.text.lengthOfBytes(using: .utf8) >= kOversizeTextMessageSizeThreshold {
-            let truncatedText = messageBody.text.truncated(toByteCount: kOversizeTextMessageSizeThreshold)
+        if let truncatedText = messageBody.text.trimmedIfNeeded(maxByteCount: Int(kOversizeTextMessageSizeThreshold)) {
             let bodyRanges = messageBody.ranges
-            let truncatedBody = truncatedText.map { MessageBody(text: $0, ranges: bodyRanges) }
+            let truncatedBody = MessageBody(text: truncatedText, ranges: bodyRanges)
 
-            if let dataSource = DataSourceValue.dataSource(withOversizeText: messageBody.text) {
-                return (truncatedBody, dataSource)
-            } else {
-                owsFailDebug("dataSource was unexpectedly nil")
-                return (truncatedBody, nil)
-            }
+            let dataSource = DataSourceValue.dataSource(withOversizeText: messageBody.text)
+            return (truncatedBody, dataSource)
         } else {
             return (messageBody, nil)
         }

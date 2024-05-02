@@ -473,7 +473,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     public class func trustRoot() -> PublicKey {
-        guard let trustRootData = NSData(fromBase64String: TSConstants.kUDTrustRoot) else {
+        guard let trustRootData = Data(base64Encoded: TSConstants.kUDTrustRoot) else {
             // This exits.
             owsFail("Invalid trust root data.")
         }

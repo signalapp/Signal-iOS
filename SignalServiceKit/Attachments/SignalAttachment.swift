@@ -1272,20 +1272,6 @@ public class SignalAttachment: NSObject {
                              maxFileSize: kMaxFileSizeAudio)
     }
 
-    // MARK: Oversize Text Attachments
-
-    // Factory method for oversize text attachments.
-    //
-    // NOTE: The attachment returned by this method may not be valid.
-    //       Check the attachment's error property.
-    private class func oversizeTextAttachment(text: String?) -> SignalAttachment {
-        let dataSource = DataSourceValue.dataSource(withOversizeText: text)
-        return newAttachment(dataSource: dataSource,
-                             dataUTI: MimeTypeUtil.oversizeTextAttachmentUti,
-                             validUTISet: nil,
-                             maxFileSize: kMaxFileSizeGeneric)
-    }
-
     // MARK: Generic Attachments
 
     // Factory method for generic attachments.
