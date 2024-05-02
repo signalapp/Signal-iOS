@@ -21,11 +21,6 @@ extern NSString *const OWSApplicationDidBecomeActiveNotification;
 typedef void (^BackgroundTaskExpirationHandler)(void);
 typedef void (^AppActiveBlock)(void);
 
-NSString *NSStringForUIApplicationState(UIApplicationState value);
-
-@class ActionSheetAction;
-@class OWSAES256Key;
-
 @protocol AppContext <NSObject>
 
 @property (nonatomic, readonly) BOOL isMainApp;
