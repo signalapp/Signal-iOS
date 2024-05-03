@@ -44,9 +44,12 @@ struct TurnServerInfo {
             return nil
         }
 
-        if let hostnameAttribute = attributes["hostname"] as? String {
+        switch attributes["hostname"] {
+        case let hostnameAttribute as String:
             hostname = hostnameAttribute
-        } else {
+        case is NSNull:
+            hostname = ""
+        default:
             return nil
         }
     }
