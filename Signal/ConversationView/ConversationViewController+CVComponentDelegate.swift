@@ -249,9 +249,7 @@ extension ConversationViewController: CVComponentDelegate {
     public func didTapGenericAttachment(_ attachment: CVComponentGenericAttachment) -> CVAttachmentTapAction {
         AssertIsOnMainThread()
 
-        if attachment.canQuickLook {
-            let previewController = QLPreviewController()
-            previewController.dataSource = attachment
+        if let previewController = attachment.createQLPreviewController() {
             self.present(previewController, animated: true, completion: nil)
             return .handledByDelegate
         } else if PKAddPassesViewController.canAddPasses(),

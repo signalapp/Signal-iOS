@@ -1079,9 +1079,7 @@ extension MessageDetailViewController: CVComponentDelegate {
     }
 
     func didTapGenericAttachment(_ attachment: CVComponentGenericAttachment) -> CVAttachmentTapAction {
-        if attachment.canQuickLook {
-            let previewController = QLPreviewController()
-            previewController.dataSource = attachment
+        if let previewController = attachment.createQLPreviewController() {
             present(previewController, animated: true)
             return .handledByDelegate
         } else {

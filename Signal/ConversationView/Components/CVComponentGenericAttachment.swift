@@ -23,6 +23,11 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         super.init(itemModel: itemModel)
     }
 
+    deinit {
+        // Wipe the value so we delete the file
+        self.qlPreviewTmpFileUrl = nil
+    }
+
     public func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView {
         CVComponentViewGenericAttachment()
     }
@@ -307,12 +312,41 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         return true
     }
 
-    public var canQuickLook: Bool {
-        guard #available(iOS 14.8, *) else { return false }
-        guard let url = attachmentStream?.bridgeStream.originalMediaURL else {
-            return false
+    private var qlPreviewTmpFileUrl: URL? {
+        didSet {
+            if let oldValue {
+                try? OWSFileSystem.deleteFile(url: oldValue)
+            }
         }
-        return QLPreviewController.canPreview(url as NSURL)
+    }
+
+    public func createQLPreviewController() -> QLPreviewController? {
+        guard #available(iOS 14.8, *) else { return nil }
+
+        switch attachmentStream?.concreteStreamType {
+        case nil:
+            return nil
+        case .legacy(let tsAttachmentStream):
+            guard
+                let url = tsAttachmentStream.originalMediaURL,
+                QLPreviewController.canPreview(url as NSURL)
+            else {
+                return nil
+            }
+        case .v2(let attachmentStream):
+            guard let url = try? attachmentStream.makeDecryptedCopy() else {
+                return nil
+            }
+            guard QLPreviewController.canPreview(url as NSURL) else {
+                try? OWSFileSystem.deleteFile(url: url)
+                return nil
+            }
+            self.qlPreviewTmpFileUrl = url
+        }
+        let previewController = QLPreviewController()
+        previewController.dataSource = self
+        previewController.delegate = self
+        return previewController
     }
 
     /// Returns the `PKPass` represented by this attachment, if any.
@@ -369,14 +403,29 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
     }
 }
 
-extension CVComponentGenericAttachment: QLPreviewControllerDataSource {
+extension CVComponentGenericAttachment: QLPreviewControllerDataSource, QLPreviewControllerDelegate {
     public func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
         return 1
     }
 
     public func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
         owsAssertDebug(index == 0)
-        return (attachmentStream?.bridgeStream.originalMediaURL as QLPreviewItem?) ?? UnavailableItem()
+
+        let url: URL? = {
+            switch attachmentStream?.concreteStreamType {
+            case .legacy(let tsAttachmentStream):
+                return tsAttachmentStream.originalMediaURL
+            case .v2:
+                return qlPreviewTmpFileUrl
+            case nil:
+                return nil
+            }
+        }()
+        return url.map { $0 as NSURL } ?? UnavailableItem()
+    }
+
+    public func previewControllerDidDismiss(_ controller: QLPreviewController) {
+        self.qlPreviewTmpFileUrl = nil
     }
 
     private class UnavailableItem: NSObject, QLPreviewItem {
