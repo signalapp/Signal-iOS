@@ -24,14 +24,71 @@ public class VideoPlayer: Dependencies {
 
     weak public var delegate: VideoPlayerDelegate?
 
-    convenience public init(url: URL) {
-        self.init(url: url, shouldLoop: false)
+    public convenience init(decryptedFileUrl: URL) {
+        self.init(decryptedFileUrl: decryptedFileUrl, shouldLoop: false)
     }
 
-    public init(url: URL, shouldLoop: Bool, shouldMixAudioWithOthers: Bool = false) {
-        avPlayer = AVPlayer(url: url)
+    public convenience init(decryptedFileUrl: URL, shouldLoop: Bool, shouldMixAudioWithOthers: Bool = false) {
+        let avPlayer = AVPlayer(url: decryptedFileUrl)
+        self.init(
+            avPlayer: avPlayer,
+            shouldLoop: shouldLoop,
+            shouldMixAudioWithOthers: shouldMixAudioWithOthers,
+            audioDescription: "[VideoPlayer] url:\(decryptedFileUrl)"
+        )
+    }
+
+    public convenience init(
+        attachment: ReferencedTSResourceStream,
+        shouldMixAudioWithOthers: Bool = false
+    ) throws {
+        try self.init(
+            attachment: attachment.attachmentStream,
+            shouldLoop: attachment.reference.renderingFlag == .shouldLoop,
+            shouldMixAudioWithOthers: shouldMixAudioWithOthers,
+            audioDescription: attachment.reference.sourceFilename.map { "[VideoPlayer] \($0)" }
+        )
+    }
+
+    public convenience init(
+        attachment: TSResourceStream,
+        shouldLoop: Bool,
+        shouldMixAudioWithOthers: Bool = false
+    ) throws {
+        try self.init(
+            attachment: attachment,
+            shouldLoop: shouldLoop,
+            shouldMixAudioWithOthers: shouldMixAudioWithOthers,
+            audioDescription: nil
+        )
+    }
+
+    private convenience init(
+        attachment: TSResourceStream,
+        shouldLoop: Bool,
+        shouldMixAudioWithOthers: Bool,
+        audioDescription: String?
+    ) throws {
+        let asset = try attachment.decryptedAVAsset()
+        let playerItem = AVPlayerItem(asset: asset)
+        let avPlayer = AVPlayer(playerItem: playerItem)
+        self.init(
+            avPlayer: avPlayer,
+            shouldLoop: shouldLoop,
+            shouldMixAudioWithOthers: shouldMixAudioWithOthers,
+            audioDescription: "[VideoPlayer]"
+        )
+    }
+
+    private init(
+        avPlayer: AVPlayer,
+        shouldLoop: Bool,
+        shouldMixAudioWithOthers: Bool,
+        audioDescription: String
+    ) {
+        self.avPlayer = avPlayer
         audioActivity = AudioActivity(
-            audioDescription: "[VideoPlayer] url:\(url)",
+            audioDescription: audioDescription,
             behavior: shouldMixAudioWithOthers ? .playbackMixWithOthers : .playback
         )
         self.shouldLoop = shouldLoop

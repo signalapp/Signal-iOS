@@ -256,15 +256,11 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
     }
 
     private func buildVideoPlayerView() -> VideoPlayerView? {
-        guard let attachmentUrl = attachmentStream.bridgeStream.originalMediaURL else {
-            owsFailBeta("Invalid URL")
+        guard let videoPlayer = try? VideoPlayer(attachment: galleryItem.attachmentStream) else {
+            owsFailBeta("Invalid attachment")
             return nil
         }
-        if !FileManager.default.fileExists(atPath: attachmentUrl.path) {
-            owsFailBeta("Missing video file")
-        }
 
-        let videoPlayer = VideoPlayer(url: attachmentUrl)
         videoPlayer.seek(to: .zero)
 
         let videoPlayerView = VideoPlayerView()

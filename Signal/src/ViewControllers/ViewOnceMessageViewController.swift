@@ -316,7 +316,8 @@ class ViewOnceMessageViewController: OWSViewController {
             let videoContainer = UIView()
 
             let videoUrl = URL(fileURLWithPath: content.filePath)
-            let player = VideoPlayer(url: videoUrl, shouldLoop: true)
+            // TODO: think about view once
+            let player = VideoPlayer(decryptedFileUrl: videoUrl, shouldLoop: true)
             self.videoPlayer = player
             player.delegate = self
 

@@ -849,11 +849,6 @@ class StoryItemMediaView: UIView {
         case .stream(let stream):
             let container = UIView()
 
-            guard let originalMediaUrl = stream.attachment.attachmentStream.bridgeStream.originalMediaURL else {
-                owsFailDebug("Missing media for attachment stream")
-                return buildContentUnavailableView()
-            }
-
             guard let thumbnailImage = stream.attachment.attachmentStream.thumbnailImageSync(quality: .small) else {
                 owsFailDebug("Failed to generate thumbnail for attachment stream")
                 return buildContentUnavailableView()
@@ -865,7 +860,7 @@ class StoryItemMediaView: UIView {
 
             switch stream.attachment.attachmentStream.computeContentType() {
             case .video:
-                let videoView = buildVideoView(originalMediaUrl: originalMediaUrl, shouldLoop: stream.isLoopingVideo)
+                let videoView = buildVideoView(attachment: stream.attachment)
                 container.addSubview(videoView)
                 videoView.autoPinEdgesToSuperviewEdges()
             case .animatedImage:
@@ -913,8 +908,11 @@ class StoryItemMediaView: UIView {
 
     private var videoPlayerLoopCount = 0
     private var videoPlayer: VideoPlayer?
-    private func buildVideoView(originalMediaUrl: URL, shouldLoop: Bool) -> UIView {
-        let player = VideoPlayer(url: originalMediaUrl, shouldLoop: shouldLoop, shouldMixAudioWithOthers: true)
+    private func buildVideoView(attachment: ReferencedTSResourceStream) -> UIView {
+        guard let player = try? VideoPlayer(attachment: attachment, shouldMixAudioWithOthers: true) else {
+            owsFailDebug("Could not load attachment.")
+            return buildContentUnavailableView()
+        }
         player.delegate = self
         self.videoPlayer = player
         updateMuteState()

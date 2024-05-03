@@ -29,7 +29,7 @@ class VideoEditorView: UIView {
 
     private lazy var playerView: VideoPlayerView = {
         let playerView = VideoPlayerView()
-        playerView.videoPlayer = VideoPlayer(url: URL(fileURLWithPath: model.srcVideoPath))
+        playerView.videoPlayer = VideoPlayer(decryptedFileUrl: URL(fileURLWithPath: model.srcVideoPath))
         playerView.delegate = self
         return playerView
     }()
