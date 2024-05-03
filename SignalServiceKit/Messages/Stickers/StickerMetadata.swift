@@ -8,7 +8,6 @@ import Foundation
 @objc
 public enum StickerType: UInt {
     case webp
-    case signalLottie
     case apng
     case gif
 
@@ -17,8 +16,6 @@ public enum StickerType: UInt {
             switch contentType {
             case MimeType.imageWebp.rawValue:
                 return .webp
-            case MimeType.textXSignalStickerLottie.rawValue:
-                return .signalLottie
             case MimeType.imagePng.rawValue:
                 return .apng
             case MimeType.imageGif.rawValue:
@@ -37,8 +34,6 @@ public enum StickerType: UInt {
         switch self {
         case .webp:
             return MimeType.imageWebp.rawValue
-        case .signalLottie:
-            return MimeType.textXSignalStickerLottie.rawValue
         case .apng:
             return MimeType.imagePng.rawValue
         case .gif:
@@ -50,8 +45,6 @@ public enum StickerType: UInt {
         switch self {
         case .webp:
             return "webp"
-        case .signalLottie:
-            return MimeTypeUtil.lottieStickerFileExtension
         case .apng:
             return "png"
         case .gif:

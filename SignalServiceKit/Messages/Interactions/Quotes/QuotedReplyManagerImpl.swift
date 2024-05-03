@@ -415,9 +415,6 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             case .webp:
                 stickerType = .webp
 
-            case .lottieSticker:
-                stickerType = .signalLottie
-
             case .unknown:
                 owsFailDebug("Unknown sticker data format")
                 return nil
@@ -433,8 +430,6 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 case .webp:
                     let image: UIImage? = stickerData.stillForWebpData()
                     return image
-                case .signalLottie:
-                    return nil
                 case .apng:
                     return UIImage(data: stickerData)
                 case .gif:

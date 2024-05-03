@@ -26,8 +26,6 @@ public enum MimeType: String {
     case imageXWindowsBmp = "image/x-windows-bmp"
     /// oversized text message
     case textXSignalPlain = "text/x-signal-plain"
-    // TODO: Remove this; it's unused.
-    case textXSignalStickerLottie = "text/x-signal-sticker-lottie"
     /// unknown for tests
     case unknownMimetype = "unknown/mimetype"
 }
@@ -75,9 +73,6 @@ public class MimeTypeUtil: NSObject {
     public static let mimeTypeOversizeTextMessage = MimeType.textXSignalPlain.rawValue
     @objc
     @available(swift, obsoleted: 1)
-    public static let mimeTypeLottieSticker = MimeType.textXSignalStickerLottie.rawValue
-    @objc
-    @available(swift, obsoleted: 1)
     public static let mimeTypeImageApng1 = MimeType.imageApng.rawValue
     @objc
     @available(swift, obsoleted: 1)
@@ -90,8 +85,6 @@ public class MimeTypeUtil: NSObject {
     public static let unknownTestAttachmentUti = "org.whispersystems.unknown"
     @objc
     public static let syncMessageFileExtension = "bin"
-    // TODO: Remove this; it's unused.
-    public static let lottieStickerFileExtension = "lottiesticker"
 
     // MARK: - Supported Mime Types
     @objc
@@ -255,15 +248,11 @@ public class MimeTypeUtil: NSObject {
         MimeType.imageWebp.rawValue: "webp",
     ]
     public static let supportedDefinitelyAnimatedMimeTypesToExtensionTypes: [String: String] = {
-        var result = [
+        return [
             MimeType.imageGif.rawValue: "gif",
             MimeType.imageApng.rawValue: "png",
             MimeType.imageVndMozillaApng.rawValue: "png",
         ]
-        if FeatureFlags.supportAnimatedStickers_Lottie {
-            result[MimeType.textXSignalStickerLottie.rawValue] = lottieStickerFileExtension
-        }
-        return result
     }()
     public static let supportedMaybeAnimatedMimeTypesToExtensionTypes: [String: String] = {
         var result = supportedDefinitelyAnimatedMimeTypesToExtensionTypes
@@ -1351,8 +1340,6 @@ public class MimeTypeUtil: NSObject {
         "mpeg",
     ]
     public static let genericExtensionTypesToMimeTypes: [String: String] = [
-        // Custom MIME types.
-        lottieStickerFileExtension: MimeType.textXSignalStickerLottie.rawValue,
         // Common MIME types.
         "123": "application/vnd.lotus-1-2-3",
         "3dml": "text/vnd.in3d.3dml",

@@ -61,9 +61,6 @@ public class FeatureFlags: NSObject {
 
     public static let preRegDeviceTransfer = build.includes(.dev)
 
-    @objc
-    public static let supportAnimatedStickers_Lottie = false
-
     public static let paymentsScrubDetails = false
 
     public static let deprecateREST = false

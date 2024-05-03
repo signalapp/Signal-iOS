@@ -18,7 +18,6 @@ enum ImageFormat: CustomStringConvertible {
     case webp
     case heic
     case heif
-    case lottieSticker
 
     var description: String {
         switch self {
@@ -40,8 +39,6 @@ enum ImageFormat: CustomStringConvertible {
             "ImageFormat_Heic"
         case .heif:
             "ImageFormat_Heif"
-        case .lottieSticker:
-            "ImageFormat_LottieSticker"
         }
     }
 
@@ -63,12 +60,6 @@ enum ImageFormat: CustomStringConvertible {
             return MimeType.imageHeic
         case .heif:
             return MimeType.imageHeif
-        case .lottieSticker:
-            if FeatureFlags.supportAnimatedStickers_Lottie {
-                return MimeType.textXSignalStickerLottie
-            } else {
-                return nil
-            }
         case .unknown:
             return nil
         }
@@ -82,8 +73,6 @@ enum ImageFormat: CustomStringConvertible {
             return true
         case .gif:
             return data.ows_hasValidGifSize
-        case .lottieSticker:
-            return FeatureFlags.supportAnimatedStickers_Lottie
         }
     }
 
@@ -121,12 +110,6 @@ enum ImageFormat: CustomStringConvertible {
         case .heif:
             guard let mimeType else { return true }
             return mimeType.caseInsensitiveCompare(MimeType.imageHeif.rawValue) == .orderedSame
-        case .lottieSticker:
-            guard FeatureFlags.supportAnimatedStickers_Lottie else {
-                return false
-            }
-            guard let mimeType else { return true }
-            return mimeType.caseInsensitiveCompare(MimeType.textXSignalStickerLottie.rawValue) == .orderedSame
         }
     }
 }
@@ -330,7 +313,7 @@ extension Data {
         }
     }
 
-    fileprivate func ows_guessImageFormat(canBeLottieSticker: Bool = false) -> ImageFormat {
+    fileprivate func ows_guessImageFormat() -> ImageFormat {
         guard count >= 2 else {
             return .unknown
         }
@@ -351,13 +334,7 @@ extension Data {
             // First two letters of RIFF tag.
             return .webp
         default:
-            if canBeLottieSticker && self[0] == 0x7b {
-                // Lottie is just JSON.
-                // Lottie files always start with '{', so we just check for that.
-                return .lottieSticker
-            } else {
-                return ows_guessHighEfficiencyImageFormat()
-            }
+            return ows_guessHighEfficiencyImageFormat()
         }
     }
 
@@ -477,8 +454,7 @@ extension Data {
     /// If maxImageDimension is supplied we enforce the _smaller_ of
     /// that value and the per-format max dimension
     public func imageMetadata(withPath filePath: String?, mimeType declaredMimeType: String?, ignoreFileSize: Bool = false) -> ImageMetadata {
-        let canBeLottieSticker = declaredMimeType == MimeType.textXSignalStickerLottie.rawValue
-        let imageFormat = ows_guessImageFormat(canBeLottieSticker: canBeLottieSticker)
+        let imageFormat = ows_guessImageFormat()
         guard imageFormat.isValid(data: self) else {
             Logger.warn("Image does not have valid format.")
             return .invalid()
@@ -510,8 +486,6 @@ extension Data {
         switch imageFormat {
         case .gif:
             // TODO: We currently treat all GIFs as animated. We could reflect the actual image content.
-            isAnimated = true
-        case .lottieSticker:
             isAnimated = true
         case .webp:
             let webpMetadata = metadataForWebp
@@ -559,8 +533,6 @@ extension Data {
                 return .invalid()
             }
             return .init(isValid: true, imageFormat: imageFormat, pixelSize: imageSize, hasAlpha: true, isAnimated: isAnimated)
-        } else if imageFormat == .lottieSticker {
-            return .init(isValid: true, imageFormat: imageFormat, pixelSize: .zero, hasAlpha: true, isAnimated: isAnimated)
         }
 
         guard let imageSource = CGImageSourceCreateWithData(self as CFData, nil) else {
