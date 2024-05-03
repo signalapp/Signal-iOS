@@ -118,13 +118,16 @@ public class OWSMediaUtils: NSObject {
         guard isValidVideo(asset: asset) else {
             throw OWSMediaError.failure(description: "Invalid video.")
         }
+        return try thumbnail(forVideo: asset, maxSizePixels: maxSizePixels)
+    }
 
+    public class func thumbnail(forVideo asset: AVAsset, maxSizePixels: CGSize) throws -> UIImage {
         let generator = AVAssetImageGenerator(asset: asset)
         generator.maximumSize = maxSizePixels
         generator.appliesPreferredTrackTransform = true
         let time: CMTime = CMTimeMake(value: 1, timescale: 60)
         let cgImage = try generator.copyCGImage(at: time, actualTime: nil)
-        let image = UIImage(cgImage: cgImage, scale: scale, orientation: .up)
+        let image = UIImage(cgImage: cgImage, scale: UIScreen.main.scale, orientation: .up)
         return image
     }
 

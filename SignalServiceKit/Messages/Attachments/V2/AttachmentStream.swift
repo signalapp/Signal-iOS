@@ -100,9 +100,9 @@ public class AttachmentStream {
             throw OWSAssertionError("Requesting image from non-visual attachment")
         case .image, .animatedImage:
             return try UIImage.from(self)
-        case .video:
-            // TODO: still image from video
-            throw OWSAssertionError("Unimplemented")
+        case .video(_, let pixelSize):
+            let asset = try AVAsset.from(self)
+            return try OWSMediaUtils.thumbnail(forVideo: asset, maxSizePixels: pixelSize)
         }
     }
 
