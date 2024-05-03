@@ -532,7 +532,10 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
-        let libsignalNet = Net(env: TSConstants.isUsingProductionService ? .production : .staging)
+        let libsignalNet = Net(
+            env: TSConstants.isUsingProductionService ? .production : .staging,
+            userAgent: OWSHttpHeaders.userAgentHeaderValueSignalIos
+        )
         let chatConnectionManager = ChatConnectionManagerImpl(
             appExpiry: appExpiry,
             db: db,

@@ -424,11 +424,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
         do {
             let result = try validateMessageBackup(key: key, purpose: .remoteBackup, length: fileSize) {
-                if let inputStream = try? FileHandle(forReadingFrom: fileUrl) {
-                    return inputStream
-                } else {
-                    return SignalInputStreamAdapter([UInt8]())
-                }
+                return try FileHandle(forReadingFrom: fileUrl)
             }
             if result.fields.count > 0 {
                 throw BackupValidationError.unknownFields(result.fields)
