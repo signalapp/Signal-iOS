@@ -336,12 +336,12 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
     }
 
     public func showShareUI(from view: UIView) {
-        guard let attachmentStream = attachmentStream else {
+        guard let attachmentStream = try? attachmentStream?.asShareableResource() else {
             owsFailDebug("should not show the share UI unless there's a downloaded attachment")
             return
         }
         // TODO: Ensure share UI is shown from correct location.
-        AttachmentSharing.showShareUI(for: attachmentStream.bridgeStream, sender: view)
+        AttachmentSharing.showShareUI(for: attachmentStream, sender: view)
     }
 
     // MARK: -

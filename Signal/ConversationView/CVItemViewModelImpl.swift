@@ -202,33 +202,18 @@ extension CVItemViewModelImpl {
         !shareableAttachments.isEmpty
     }
 
-    private var shareableAttachments: [TSAttachmentStream] {
+    private var shareableAttachments: [ShareableTSResource] {
         guard !isViewOnce else {
             return []
         }
 
         if let attachment = self.audioAttachmentStream {
-            return [attachment.bridgeStream]
+            return [try? attachment.asShareableResource()].compacted()
         } else if let attachment = self.genericAttachmentStream {
-            return [attachment.bridgeStream]
+            return [try? attachment.asShareableResource()].compacted()
         } else {
-            return self.bodyMediaAttachmentStreams.lazy.filter { attachment in
-                switch attachment.computeContentType() {
-                case .audio, .file:
-                    return false
-                case .image, .animatedImage:
-                    return true
-                case .video:
-                    if
-                        let filePath = attachment.bridgeStream.originalFilePath,
-                        UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(filePath)
-                    {
-                        return true
-                    }
-                    return false
-                }
-            }.map { attachment in
-                return attachment.bridgeStream
+            return self.bodyMediaAttachmentStreams.compactMap { attachment in
+                return try? attachment.asShareableResource()
             }
         }
     }

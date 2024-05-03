@@ -12,24 +12,28 @@ public class AttachmentSharing {
 
     // MARK: -
 
-    // For reasons unknown, xcode 14, but not xcode 15, fails to compile this method
-    // if it uses TSResourceStream instead of TSAttachmentStream.
     public static func showShareUI(
-        for attachmentStream: TSAttachmentStream,
+        for attachment: ShareableAttachment,
         sender: Any? = nil,
         completion: (() -> Void)? = nil
     ) {
-        showShareUIForActivityItems([attachmentStream], sender: sender, completion: completion)
+        showShareUIForActivityItems(
+            [attachment],
+            sender: sender,
+            completion: completion
+        )
     }
 
-    // For reasons unknown, xcode 14, but not xcode 15, fails to compile this method
-    // if it uses TSResourceStream instead of TSAttachmentStream.
     public static func showShareUI(
-        for attachmentStreams: [TSAttachmentStream],
+        for attachments: [ShareableAttachment],
         sender: Any? = nil,
         completion: (() -> Void)? = nil
     ) {
-        showShareUIForActivityItems(attachmentStreams, sender: sender, completion: completion)
+        showShareUIForActivityItems(
+            attachments,
+            sender: sender,
+            completion: completion
+        )
     }
 
     // MARK: -
@@ -76,7 +80,7 @@ public class AttachmentSharing {
 
     // MARK: -
 
-    private static func showShareUIForActivityItems(
+    internal static func showShareUIForActivityItems(
         _ activityItems: [Any],
         sender: Any?,
         completion: (() -> Void)? = nil
@@ -130,23 +134,85 @@ public class AttachmentSharing {
     }
 }
 
-extension TSAttachmentStream: UIActivityItemSource {
+extension AttachmentStream {
+
+    public func asShareableAttachment() throws -> ShareableAttachment? {
+        return try ShareableAttachment(self)
+    }
+}
+
+public class ShareableAttachment: NSObject, UIActivityItemSource {
+
+    /// Throws an error if decryption fails.
+    /// Returns nil if the attachment cannot be shared with the system sharesheet.
+    public init?(_ attachmentStream: AttachmentStream) throws {
+        self.attachmentStream = attachmentStream
+        if attachmentStream.mimeType == MimeType.imageWebp.rawValue {
+            self.shareType = .image
+            return
+        }
+        if
+            !MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(attachmentStream.mimeType),
+            MimeTypeUtil.isSupportedImageMimeType(attachmentStream.mimeType)
+        {
+            self.shareType = .image
+            return
+        }
+
+        let decryptedFileUrl = try attachmentStream.makeDecryptedCopy()
+
+        switch attachmentStream.contentType {
+        case .audio, .file:
+            return nil
+        case .image, .animatedImage:
+            break
+        case .video:
+            // Some videos don't support sharing.
+            guard UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(decryptedFileUrl.path) else {
+                return nil
+            }
+        }
+
+        self.shareType = .decryptedFileURL(decryptedFileUrl)
+    }
+
+    // HACK: If this is an image we want to provide the image object to
+    // the share sheet rather than the file path. This ensures that when
+    // the user saves multiple images to their camera roll the OS doesn't
+    // asynchronously read the files and save them to them in a random
+    // order. Note: when sharing a mixture of image and non-image data
+    // (e.g. an album with photos and videos) the OS will still incorrectly
+    // order the video items. I haven't found any way to work around this
+    // since videos may only be shared as URLs.
+    private enum ShareType {
+        case decryptedFileURL(URL)
+        /// We load the image into memory when it is requested, so that we theoretically
+        /// can load them one at a time and not all up front when sharing more than one.
+        case image
+    }
+
+    private let attachmentStream: AttachmentStream
+    private let shareType: ShareType
+
+    deinit {
+        switch shareType {
+        case .decryptedFileURL(let fileUrl):
+            // Best effort deletion; its a tmp file anyway.
+            try? OWSFileSystem.deleteFile(url: fileUrl)
+        case .image:
+            break
+        }
+    }
 
     // called to determine data type. only the class of the return type is consulted. it should match what
     // -itemForActivityType: returns later
     public func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
-        // HACK: If this is an image we want to provide the image object to
-        // the share sheet rather than the file path. This ensures that when
-        // the user saves multiple images to their camera roll the OS doesn't
-        // asynchronously read the files and save them to them in a random
-        // order. Note: when sharing a mixture of image and non-image data
-        // (e.g. an album with photos and videos) the OS will still incorrectly
-        // order the video items. I haven't found any way to work around this
-        // since videos may only be shared as URLs.
-        if isImageMimeType {
-            return UIImage()
+        switch shareType {
+        case .decryptedFileURL(let url):
+            return url as Any
+        case .image:
+            return UIImage() as Any
         }
-        return originalMediaURL as Any
     }
 
     // called to fetch data after an activity is selected. you can return nil.
@@ -154,16 +220,12 @@ extension TSAttachmentStream: UIActivityItemSource {
         _ activityViewController: UIActivityViewController,
         itemForActivityType activityType: UIActivity.ActivityType?
     ) -> Any? {
-        if contentType == MimeType.imageWebp.rawValue {
-            return originalImage
+        switch shareType {
+        case .decryptedFileURL(let url):
+            return url
+        case .image:
+            return try? attachmentStream.decryptedImage()
         }
-        if getAnimatedMimeType() == .animated {
-            return originalMediaURL
-        }
-        if isImageMimeType {
-            return originalImage
-        }
-        return originalMediaURL
     }
 }
 

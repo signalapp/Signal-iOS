@@ -772,12 +772,12 @@ extension StoryContextMenuGenerator {
                 }
                 switch attachment {
                 case .file(let attachment):
-                    guard let attachment = attachment.attachment.asResourceStream() else {
+                    guard let attachment = try? attachment.attachment.asResourceStream()?.asShareableResource() else {
                         completion(false)
                         return owsFailDebug("Unexpectedly tried to share undownloaded attachment")
                     }
                     self?.isDisplayingFollowup = true
-                    AttachmentSharing.showShareUI(for: attachment.bridgeStream, sender: sourceView) { [weak self] in
+                    AttachmentSharing.showShareUI(for: attachment, sender: sourceView) { [weak self] in
                         self?.isDisplayingFollowup = false
                         completion(true)
                     }

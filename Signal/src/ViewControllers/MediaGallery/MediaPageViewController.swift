@@ -482,7 +482,12 @@ class MediaPageViewController: UIPageViewController {
 
     private func shareCurrentMedia(fromNavigationBar: Bool) {
         guard let currentViewController else { return }
-        let attachmentStream = currentViewController.galleryItem.attachmentStream.attachmentStream.bridgeStream
+        guard
+            let attachmentStream = try? currentViewController.galleryItem.attachmentStream
+                .attachmentStream.asShareableResource()
+        else {
+            return
+        }
         let sender = fromNavigationBar ? barButtonShareMedia : bottomMediaPanel
         AttachmentSharing.showShareUI(for: attachmentStream, sender: sender)
     }

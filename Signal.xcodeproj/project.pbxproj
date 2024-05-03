@@ -1101,6 +1101,7 @@
 		66FC638C29E9E9D200F00DAC /* TextCheckingDataItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638B29E9E9D200F00DAC /* TextCheckingDataItem.swift */; };
 		66FC638E29EDABAC00F00DAC /* SearchDisplayConfigurations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638D29EDABAC00F00DAC /* SearchDisplayConfigurations.swift */; };
 		66FC639029EDC1E600F00DAC /* ContactSupportAlert+Registration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC638F29EDC1E600F00DAC /* ContactSupportAlert+Registration.swift */; };
+		66FF4D302BE2FA3400106033 /* AttachmentSharing+TSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FF4D2E2BE2E15900106033 /* AttachmentSharing+TSResource.swift */; };
 		720547F22B9C8F9900E2CF2F /* AvatarModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883A7FD1269F642F00841DF9 /* AvatarModel.swift */; };
 		720547F52B9C97EC00E2CF2F /* APNSRotationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6675F64C2925C012007A311E /* APNSRotationStore.swift */; };
 		720547F62B9C985300E2CF2F /* RefreshEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3406D31D25DBF70400885B14 /* RefreshEvent.swift */; };
@@ -3993,6 +3994,7 @@
 		66FC638B29E9E9D200F00DAC /* TextCheckingDataItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextCheckingDataItem.swift; sourceTree = "<group>"; };
 		66FC638D29EDABAC00F00DAC /* SearchDisplayConfigurations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchDisplayConfigurations.swift; sourceTree = "<group>"; };
 		66FC638F29EDC1E600F00DAC /* ContactSupportAlert+Registration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContactSupportAlert+Registration.swift"; sourceTree = "<group>"; };
+		66FF4D2E2BE2E15900106033 /* AttachmentSharing+TSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentSharing+TSResource.swift"; sourceTree = "<group>"; };
 		67391FF368D9A60FC8B73F0E /* Pods-Signal.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.profiling.xcconfig"; path = "Target Support Files/Pods-Signal/Pods-Signal.profiling.xcconfig"; sourceTree = "<group>"; };
 		675486AB8F0612FF2C717BAE /* Pods_SignalUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6BB92957776B3173894CD3E9 /* Pods-SignalServiceKit.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKit.app store release.xcconfig"; path = "Target Support Files/Pods-SignalServiceKit/Pods-SignalServiceKit.app store release.xcconfig"; sourceTree = "<group>"; };
@@ -7005,6 +7007,7 @@
 		50BF51062BB201AE00C2C309 /* Sharing */ = {
 			isa = PBXGroup;
 			children = (
+				66FF4D2D2BE2E14700106033 /* TSResource */,
 				762EBBCF2A2FB759002FD28F /* AttachmentSharing.swift */,
 			);
 			path = Sharing;
@@ -8157,6 +8160,14 @@
 				6652DF682A045ED600EF90E7 /* StyleOnlyMessageBodyTests.swift */,
 			);
 			path = BodyRanges;
+			sourceTree = "<group>";
+		};
+		66FF4D2D2BE2E14700106033 /* TSResource */ = {
+			isa = PBXGroup;
+			children = (
+				66FF4D2E2BE2E15900106033 /* AttachmentSharing+TSResource.swift */,
+			);
+			path = TSResource;
 			sourceTree = "<group>";
 		};
 		720547F12B9C8F5E00E2CF2F /* Avatars */ = {
@@ -12332,6 +12343,7 @@
 				3402AA34271D9DCD0084CBAE /* AttachmentItemCollection.swift in Sources */,
 				661566722BCEDD58003F1647 /* AttachmentMultisend.swift in Sources */,
 				3402AA3D271D9DCD0084CBAE /* AttachmentPrepViewController.swift in Sources */,
+				66FF4D302BE2FA3400106033 /* AttachmentSharing+TSResource.swift in Sources */,
 				762EBBD02A2FB759002FD28F /* AttachmentSharing.swift in Sources */,
 				3402AA42271D9DCD0084CBAE /* AttachmentTextToolbar.swift in Sources */,
 				3402AA55271D9DCD0084CBAE /* AttachmentTextView.swift in Sources */,
