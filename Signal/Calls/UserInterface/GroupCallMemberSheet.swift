@@ -142,7 +142,7 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
                 return nameComparison
             }
             if $0.aci != $1.aci {
-                return $0.aci.serviceIdString < $1.aci.serviceIdString
+                return $0.aci < $1.aci
             }
             return $0.lastResortSortKey < $1.lastResortSortKey
         }
