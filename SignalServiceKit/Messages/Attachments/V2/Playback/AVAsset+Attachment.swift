@@ -26,6 +26,34 @@ extension AVAsset {
         plaintextLength: UInt32,
         mimeType: String
     ) throws -> AVAsset {
+        func createAsset(mimeTypeOverride: String? = nil) throws -> AVAsset {
+            return try AVAsset._fromEncryptedFile(
+                at: fileURL,
+                encryptionKey: encryptionKey,
+                plaintextLength: plaintextLength,
+                mimeType: mimeTypeOverride ?? mimeType
+            )
+        }
+
+        guard let mimeTypeOverride = MimeTypeUtil.alternativeAudioMimeType(mimeType: mimeType) else {
+            // If we have no override just return the first thing we get.
+            return try createAsset()
+        }
+
+        if let asset = try? createAsset(), asset.isReadable {
+            return asset
+        }
+
+        // Give it a second try with the overriden mimeType
+        return try createAsset(mimeTypeOverride: mimeTypeOverride)
+    }
+
+    private static func _fromEncryptedFile(
+        at fileURL: URL,
+        encryptionKey: Data,
+        plaintextLength: UInt32,
+        mimeType: String
+    ) throws -> AVAsset {
         let fileHandle = try Cryptography.encryptedAttachmentFileHandle(
             at: fileURL,
             plaintextLength: plaintextLength,
