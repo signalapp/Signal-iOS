@@ -22,7 +22,10 @@ extension Attachment {
         case image(pixelSize: CGSize)
         case video(duration: TimeInterval, pixelSize: CGSize)
         case animatedImage(pixelSize: CGSize)
-        case audio(duration: TimeInterval)
+        /// `waveformFilePath` points at the ``AudioWaveform`` file encrypted
+        /// with the ``Attachment``'s `encryptionKey`. If nil, no waveform is available
+        /// and no attempt should be made to generate a new one.
+        case audio(duration: TimeInterval, waveformFilePath: String?)
     }
 }
 

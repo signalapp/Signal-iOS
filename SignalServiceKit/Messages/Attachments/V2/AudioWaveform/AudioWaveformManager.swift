@@ -22,4 +22,12 @@ public protocol AudioWaveformManager {
         forAudioPath audioPath: String,
         waveformPath: String
     ) -> Task<AudioWaveform, Error>
+
+    func audioWaveform(
+        forEncryptedAudioFileAtPath filePath: String,
+        encryptionKey: Data,
+        plaintextDataLength: UInt32,
+        mimeType: String,
+        outputWaveformPath: String
+    ) async throws
 }

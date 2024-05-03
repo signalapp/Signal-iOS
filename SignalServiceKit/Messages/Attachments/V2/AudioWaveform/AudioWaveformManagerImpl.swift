@@ -24,10 +24,45 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
         forAttachment attachment: TSResourceStream,
         highPriority: Bool
     ) -> Task<AudioWaveform, Error> {
+        switch attachment.concreteStreamType {
+        case .legacy(let tsAttachmentStream):
+            return _audioWaveform(forAttachment: tsAttachmentStream, highPriority: highPriority)
+        case .v2(let attachmentStream):
+            switch attachmentStream.info.contentType {
+            case .file, .image, .video, .animatedImage:
+                return Task {
+                    throw OWSAssertionError("Invalid attachment type!")
+                }
+            case .audio(_, let waveformFilePath):
+                guard let waveformFilePath else {
+                    return Task {
+                        // We could not generate a waveform at write time; don't retry now.
+                        throw AudioWaveformError.invalidAudioFile
+                    }
+                }
+                let encryptionKey = attachmentStream.info.encryptionKey
+                return Task {
+                    let fileURL = URL(fileURLWithPath: waveformFilePath)
+                    let data = try Cryptography.decryptFile(
+                        at: fileURL,
+                        metadata: .init(
+                            key: encryptionKey
+                        )
+                    )
+                    return try AudioWaveform(archivedData: data)
+                }
+            }
+        }
+    }
+
+    private func _audioWaveform(
+        forAttachment attachment: TSAttachmentStream,
+        highPriority: Bool
+    ) -> Task<AudioWaveform, Error> {
         let attachmentId = attachment.resourceId
         let mimeType = attachment.mimeType
-        let audioWaveformPath = attachment.bridgeStream.audioWaveformPath
-        let originalFilePath = attachment.bridgeStream.originalFilePath
+        let audioWaveformPath = attachment.audioWaveformPath
+        let originalFilePath = attachment.originalFilePath
 
         return Task {
             guard MimeTypeUtil.isSupportedAudioMimeType(mimeType) else {
@@ -46,7 +81,7 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
             }
 
             return try await self.buildAudioWaveForm(
-                forAudioPath: originalFilePath,
+                source: .unencryptedFile(path: originalFilePath),
                 waveformPath: audioWaveformPath,
                 identifier: .attachment(attachmentId),
                 highPriority: highPriority
@@ -59,10 +94,42 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
         waveformPath: String
     ) -> Task<AudioWaveform, Error> {
         return buildAudioWaveForm(
-            forAudioPath: audioPath,
+            source: .unencryptedFile(path: audioPath),
             waveformPath: waveformPath,
             identifier: .file(UUID()),
             highPriority: false
+        )
+    }
+
+    public func audioWaveform(
+        forEncryptedAudioFileAtPath filePath: String,
+        encryptionKey: Data,
+        plaintextDataLength: UInt32,
+        mimeType: String,
+        outputWaveformPath: String
+    ) async throws {
+        let task = buildAudioWaveForm(
+            source: .encryptedFile(
+                path: filePath,
+                encryptionKey: encryptionKey,
+                plaintextDataLength: plaintextDataLength,
+                mimeType: mimeType
+            ),
+            waveformPath: outputWaveformPath,
+            identifier: .file(UUID()),
+            highPriority: false
+        )
+        // Don't need the waveform; its written to disk by now.
+        _ = try await task.value
+    }
+
+    private enum AVAssetSource {
+        case unencryptedFile(path: String)
+        case encryptedFile(
+            path: String,
+            encryptionKey: Data,
+            plaintextDataLength: UInt32,
+            mimeType: String
         )
     }
 
@@ -88,7 +155,7 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
     private var cache = LRUCache<AttachmentId, Weak<AudioWaveform>>(maxSize: 64)
 
     private func buildAudioWaveForm(
-        forAudioPath audioPath: String,
+        source: AVAssetSource,
         waveformPath: String,
         identifier: WaveformId,
         highPriority: Bool
@@ -104,7 +171,7 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
             let taskQueue = highPriority ? self.highPriorityTaskQueue : self.taskQueue
             return try await taskQueue.enqueue(operation: {
                 let waveform = try await self._buildAudioWaveForm(
-                    forAudioPath: audioPath,
+                    source: source,
                     waveformPath: waveformPath,
                     identifier: identifier,
                     highPriority: highPriority
@@ -117,7 +184,7 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
     }
 
     private func _buildAudioWaveForm(
-        forAudioPath audioPath: String,
+        source: AVAssetSource,
         waveformPath: String,
         identifier: WaveformId,
         highPriority: Bool
@@ -134,45 +201,17 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
             }
         }
 
-        let audioUrl = URL(fileURLWithPath: audioPath)
-
-        var asset = AVURLAsset(url: audioUrl)
-
-        if !asset.isReadable {
-            // In some cases, Android sends audio messages with the "audio/mpeg" content type. This
-            // makes our choice of file extension ambiguous—`.mp3` or `.m4a`? AVFoundation uses the
-            // extension to read the file, and if the extension is wrong, it won't be readable.
-            //
-            // We "lie" about the extension to generate the waveform so that AVFoundation may read
-            // it. This is brittle but necessary to work around the buggy marriage of Android's
-            // content type and AVFoundation's behavior.
-            //
-            // Note that we probably still want this code even if Android updates theirs, because
-            // iOS users might have existing attachments.
-            //
-            // See a similar comment in `AudioPlayer` and
-            // <https://github.com/signalapp/Signal-iOS/issues/3590>.
-            let extensionOverride: String?
-            switch audioUrl.pathExtension {
-            case "m4a": extensionOverride = "aac"
-            case "mp3": extensionOverride = "m4a"
-            default: extensionOverride = nil
-            }
-
-            if let extensionOverride {
-                let symlinkPath = OWSFileSystem.temporaryFilePath(
-                    fileExtension: extensionOverride,
-                    isAvailableWhileDeviceLocked: true
-                )
-                do {
-                    try FileManager.default.createSymbolicLink(atPath: symlinkPath,
-                                                               withDestinationPath: audioPath)
-                } catch {
-                    owsFailDebug("Failed to create voice memo symlink: \(error)")
-                    throw AudioWaveformError.fileIOError
-                }
-                asset = AVURLAsset(url: URL(fileURLWithPath: symlinkPath))
-            }
+        let asset: AVAsset
+        switch source {
+        case .unencryptedFile(let path):
+            asset = try assetFromUnencryptedAudioFile(atAudioPath: path)
+        case let .encryptedFile(path, encryptionKey, plaintextDataLength, mimeType):
+            asset = try assetFromEncryptedAudioFile(
+                atPath: path,
+                encryptionKey: encryptionKey,
+                plaintextDataLength: plaintextDataLength,
+                mimeType: mimeType
+            )
         }
 
         guard asset.isReadable else {
@@ -189,7 +228,15 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
         do {
             let parentDirectoryPath = (waveformPath as NSString).deletingLastPathComponent
             if OWSFileSystem.ensureDirectoryExists(parentDirectoryPath) {
-                try waveform.write(toFile: waveformPath, atomically: true)
+                switch source {
+                case .unencryptedFile:
+                    try waveform.write(toFile: waveformPath, atomically: true)
+                case .encryptedFile(_, let encryptionKey, _, _):
+                    let waveformData = try waveform.archive()
+                    let (encryptedWaveform, _) = try Cryptography.encrypt(waveformData, encryptionKey: encryptionKey)
+                    try encryptedWaveform.write(to: URL(fileURLWithPath: waveformPath), options: .atomicWrite)
+                }
+
             } else {
                 owsFailDebug("Could not create parent directory.")
             }
@@ -198,6 +245,96 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
         }
 
         return waveform
+    }
+
+    private func assetFromUnencryptedAudioFile(
+        atAudioPath audioPath: String
+    ) throws -> AVAsset {
+        let audioUrl = URL(fileURLWithPath: audioPath)
+
+        var asset = AVURLAsset(url: audioUrl)
+
+        if !asset.isReadable {
+            if let extensionOverride = Self.extensionOverride(forPathExtension: audioUrl.pathExtension) {
+                let symlinkPath = OWSFileSystem.temporaryFilePath(
+                    fileExtension: extensionOverride,
+                    isAvailableWhileDeviceLocked: true
+                )
+                do {
+                    try FileManager.default.createSymbolicLink(atPath: symlinkPath,
+                                                               withDestinationPath: audioPath)
+                } catch {
+                    owsFailDebug("Failed to create voice memo symlink: \(error)")
+                    throw AudioWaveformError.fileIOError
+                }
+                asset = AVURLAsset(url: URL(fileURLWithPath: symlinkPath))
+            }
+        }
+
+        return asset
+    }
+
+    private func assetFromEncryptedAudioFile(
+        atPath filePath: String,
+        encryptionKey: Data,
+        plaintextDataLength: UInt32,
+        mimeType: String
+    ) throws -> AVAsset {
+        let audioUrl = URL(fileURLWithPath: filePath)
+
+        var initialError: Error?
+        do {
+            let asset = try AVAsset.fromEncryptedFile(
+                at: audioUrl,
+                encryptionKey: encryptionKey,
+                plaintextLength: plaintextDataLength,
+                mimeType: mimeType
+            )
+            if asset.isReadable {
+                return asset
+            }
+        } catch let error {
+            initialError = error
+        }
+
+        if
+            let pathExtension = MimeTypeUtil.fileExtensionForMimeType(mimeType),
+            let extensionOverride = Self.extensionOverride(forPathExtension: pathExtension),
+            let mimeTypeOverride = MimeTypeUtil.mimeTypeForFileExtension(extensionOverride)
+        {
+            // Give it a second try with the overriden mimeType
+            return try AVAsset.fromEncryptedFile(
+                at: audioUrl,
+                encryptionKey: encryptionKey,
+                plaintextLength: plaintextDataLength,
+                mimeType: mimeTypeOverride
+            )
+        } else {
+            throw initialError ?? OWSAssertionError("Unreadable AVAsset!")
+        }
+    }
+
+    private static func extensionOverride(forPathExtension pathExtension: String) -> String? {
+        // In some cases, Android sends audio messages with the "audio/mpeg" content type. This
+        // makes our choice of file extension ambiguous—`.mp3` or `.m4a`? AVFoundation uses the
+        // extension to read the file, and if the extension is wrong, it won't be readable.
+        //
+        // We "lie" about the extension to generate the waveform so that AVFoundation may read
+        // it. This is brittle but necessary to work around the buggy marriage of Android's
+        // content type and AVFoundation's behavior.
+        //
+        // Note that we probably still want this code even if Android updates theirs, because
+        // iOS users might have existing attachments.
+        //
+        // See a similar comment in `AudioPlayer` and
+        // <https://github.com/signalapp/Signal-iOS/issues/3590>.
+        let extensionOverride: String?
+        switch pathExtension {
+        case "m4a": extensionOverride = "aac"
+        case "mp3": extensionOverride = "m4a"
+        default: extensionOverride = nil
+        }
+        return extensionOverride
     }
 
     // MARK: - Sampling

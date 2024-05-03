@@ -17,7 +17,7 @@ extension Attachment.ContentType {
             return .video(duration: duration, pixelSize: .init(getCached: { pixelSize }, compute: { pixelSize }))
         case .animatedImage(let pixelSize):
             return .animatedImage(pixelSize: .init(getCached: { pixelSize }, compute: { pixelSize }))
-        case .audio(let duration):
+        case .audio(let duration, _):
             return .audio(duration: .init(getCached: { duration }, compute: { duration }))
         }
     }

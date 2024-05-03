@@ -21,11 +21,23 @@ public class AudioWaveform: Equatable {
 
     // MARK: - Caching
 
+    public init(archivedData: Data) throws {
+        let unarchivedSamples = try NSKeyedUnarchiver.unarchivedObject(ofClass: NSArray.self, from: archivedData)
+        guard let unarchivedSamples = unarchivedSamples as? [Float] else {
+            throw OWSAssertionError("Failed to unarchive decibel samples")
+        }
+        decibelSamples = unarchivedSamples
+    }
+
     public init(contentsOfFile filePath: String) throws {
         guard let unarchivedSamples = NSKeyedUnarchiver.unarchiveObject(withFile: filePath) as? [Float] else {
             throw OWSAssertionError("Failed to unarchive decibel samples")
         }
         decibelSamples = unarchivedSamples
+    }
+
+    public func archive() throws -> Data {
+        return try NSKeyedArchiver.archivedData(withRootObject: decibelSamples, requiringSecureCoding: false)
     }
 
     public func write(toFile filePath: String, atomically: Bool) throws {
