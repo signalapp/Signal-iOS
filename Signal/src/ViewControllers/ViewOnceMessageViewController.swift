@@ -260,7 +260,8 @@ class ViewOnceMessageViewController: OWSViewController {
 
         switch content.type {
         case .loopingVideo:
-            guard let video = LoopingVideo(url: URL(fileURLWithPath: filePath)) else {
+            // TODO: think about view once
+            guard let video = LoopingVideo(decryptedLocalFileUrl: URL(fileURLWithPath: filePath)) else {
                 owsFailDebug("Could not load attachment.")
                 return nil
             }

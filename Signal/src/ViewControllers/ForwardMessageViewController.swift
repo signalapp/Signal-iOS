@@ -377,7 +377,7 @@ extension ForwardMessageViewController {
                     return Promise(error: OWSAssertionError("Missing stickerAttachment."))
                 }
                 do {
-                    let stickerData = try stickerAttachment.bridgeStream.readDataFromFile()
+                    let stickerData = try stickerAttachment.decryptedRawData()
                     return send(toRecipientThreads: outgoingMessageRecipientThreads) { recipientThread in
                         self.send(uninstalledSticker: stickerMetadata,
                                   stickerData: stickerData,
@@ -768,7 +768,7 @@ public struct ForwardMessageItem {
                     return nil
                 }
                 do {
-                    let imageData = try attachment.bridgeStream.readDataFromFile()
+                    let imageData = try attachment.decryptedRawData()
                     return LinkPreviewImage(imageData: imageData, mimetype: mimeType)
                 } catch {
                     owsFailDebug("Error: \(error).")

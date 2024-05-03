@@ -49,7 +49,6 @@ enum PhotoGridItemType {
 public struct MediaMetadata {
     var sender: String
     var abbreviatedSender: String
-    var filename: String?
     var byteSize: Int
     var creationDate: Date?
 }

@@ -202,7 +202,7 @@ class GifPickerCell: UICollectionViewCell {
         }
 
         if asset.assetDescription.fileExtension == "mp4",
-           let video = LoopingVideo(url: URL(fileURLWithPath: asset.filePath)) {
+           let video = LoopingVideo(decryptedLocalFileUrl: URL(fileURLWithPath: asset.filePath)) {
             mp4View.video = video
             mp4View.isHidden = false
         } else if Data.ows_isValidImage(atPath: asset.filePath, mimeType: MimeType.imageGif.rawValue),

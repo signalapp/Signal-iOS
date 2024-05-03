@@ -246,11 +246,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
     }
 
     private func buildLoopingVideoPlayerView() -> LoopingVideoView? {
-        guard let attachmentUrl = attachmentStream.bridgeStream.originalMediaURL else {
-            owsFailBeta("Invalid URL")
-            return nil
-        }
-        guard let loopingVideo = LoopingVideo(url: attachmentUrl) else {
+        guard let loopingVideo = LoopingVideo(attachmentStream) else {
             owsFailBeta("Invalid looping video")
             return nil
         }

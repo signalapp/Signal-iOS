@@ -1530,16 +1530,7 @@ public extension CVComponentState {
 
         let text = { () -> String in
             do {
-                guard let url = attachmentStream.bridgeStream.originalMediaURL else {
-                    owsFailDebug("Missing originalMediaURL.")
-                    return ""
-                }
-                let data = try Data(contentsOf: url)
-                guard let string = String(data: data, encoding: .utf8) else {
-                    owsFailDebug("Couldn't parse oversize text.")
-                    return ""
-                }
-                return string
+                return try attachmentStream.decryptedLongText()
             } catch {
                 owsFailDebug("Couldn't load oversize text: \(error).")
                 return ""

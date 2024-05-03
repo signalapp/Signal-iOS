@@ -131,13 +131,9 @@ class MediaGalleryCellItemPhotoVideo: PhotoGridItem {
 
 extension MediaGalleryItem {
     var mediaMetadata: MediaMetadata? {
-        let filename = attachmentStream.attachmentStream.bridgeStream.originalFilePath.map {
-            ($0 as NSString).lastPathComponent as String
-        }
         return MediaMetadata(
             sender: sender?.name ?? "",
             abbreviatedSender: sender?.abbreviatedName ?? "",
-            filename: filename,
             byteSize: Int(attachmentStream.attachmentStream.unencryptedResourceByteCount ?? 0),
             creationDate: receivedAtDate
         )

@@ -38,8 +38,13 @@ extension TSAttachment: TSResource {
     }
 
     public var encryptedResourceByteCount: UInt32? {
-        // Unavailable for legacy attachments
-        return nil
+        guard
+            let originalFilePath = (self as? TSAttachmentStream)?.originalFilePath,
+            let nsFileSize = OWSFileSystem.fileSize(ofPath: originalFilePath)
+        else {
+            return nil
+        }
+        return nsFileSize.uint32Value
     }
 
     public var encryptedResourceSha256Digest: Data? {

@@ -12,11 +12,37 @@ import YYImage
 public class LoopingVideo: NSObject {
     fileprivate var asset: AVAsset
 
-    public init?(url: URL) {
+    public convenience init?(_ attachment: SignalAttachment) {
+        guard let url = attachment.dataUrl else {
+            return nil
+        }
+        self.init(decryptedLocalFileUrl: url)
+    }
+
+    public convenience init?(_ attachment: TSResourceStream) {
+        switch attachment.concreteStreamType {
+        case .legacy(let tsAttachmentStream):
+            guard let url = tsAttachmentStream.originalMediaURL else {
+                return nil
+            }
+            self.init(decryptedLocalFileUrl: url)
+        case .v2(let attachmentStream):
+            guard let asset = try? attachmentStream.decryptedAVAsset() else {
+                return nil
+            }
+            self.init(asset: asset)
+        }
+    }
+
+    public convenience init?(decryptedLocalFileUrl url: URL) {
         guard OWSMediaUtils.isVideoOfValidContentTypeAndSize(path: url.path) else {
             return nil
         }
-        self.asset = AVAsset(url: url)
+        self.init(asset: AVAsset(url: url))
+    }
+
+    private init(asset: AVAsset) {
+        self.asset = asset
         super.init()
     }
 }

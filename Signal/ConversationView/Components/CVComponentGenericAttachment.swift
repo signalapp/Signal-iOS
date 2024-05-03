@@ -152,12 +152,8 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
                 text = textComponents.joined(separator: " • ")
             }
         } else if let attachmentStream = attachmentStream {
-            if let originalFilePath = attachmentStream.bridgeStream.originalFilePath,
-               let nsFileSize = OWSFileSystem.fileSize(ofPath: originalFilePath) {
-                let fileSize = nsFileSize.int64Value
-                if fileSize > 0 {
-                    text = OWSFormat.localizedFileSizeString(from: fileSize)
-                }
+            if let fileSize = attachmentStream.encryptedResourceByteCount {
+                text = OWSFormat.localizedFileSizeString(from: Int64(fileSize))
             }
         } else {
             owsFailDebug("Invalid attachment")
@@ -329,7 +325,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         guard attachmentStream?.mimeType == "application/vnd.apple.pkpass" else {
             return nil
         }
-        guard let data = try? attachmentStream?.bridgeStream.readDataFromFile() else {
+        guard let data = try? attachmentStream?.decryptedRawData() else {
             return nil
         }
         return try? PKPass(data: data)

@@ -119,9 +119,10 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
     }
 
     private func createLoopingVideoPreview() {
-        guard let url = attachment.dataUrl,
-              let video = LoopingVideo(url: url),
-              let previewImage = attachment.videoPreview() else {
+        guard
+            let video = LoopingVideo(attachment),
+            let previewImage = attachment.videoPreview()
+        else {
             createGenericPreview()
             return
         }
