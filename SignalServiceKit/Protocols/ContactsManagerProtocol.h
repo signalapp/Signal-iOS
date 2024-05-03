@@ -43,9 +43,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)shortDisplayNameStringForAddress:(SignalServiceAddress *)address
                                    transaction:(SDSAnyReadTransaction *)transaction;
 
-- (NSArray<SignalServiceAddress *> *)sortSignalServiceAddressesObjC:(NSArray<SignalServiceAddress *> *)addresses
-                                                        transaction:(SDSAnyReadTransaction *)transaction;
-
 @end
 
 NS_ASSUME_NONNULL_END

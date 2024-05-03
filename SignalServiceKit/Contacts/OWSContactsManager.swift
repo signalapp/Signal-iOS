@@ -159,10 +159,6 @@ extension OWSContactsManager: SystemContactsFetcherDelegate {
     public func shortDisplayNameString(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
         displayName(for: address, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
     }
-
-    public func sortSignalServiceAddressesObjC(_ addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
-        sortSignalServiceAddresses(addresses, transaction: transaction)
-    }
 }
 
 // MARK: - OWSContactsMangerSwiftValues

@@ -45,10 +45,6 @@ public class FakeContactsManager: NSObject, ContactManager {
         return nil
     }
 
-    public func sortSignalServiceAddressesObjC(_ addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
-        return addresses
-    }
-
     public func leaseCacheSize(_ cacheSize: Int) -> ModelReadCacheSizeLease {
         fatalError()
     }

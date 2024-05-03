@@ -82,8 +82,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<SignalServiceAddress *> *)joinedMemberAddresses
 {
-    return [self.joinedMemberUuids
-        map:^(NSString *aciString) { return [[SignalServiceAddress alloc] initWithAciString:aciString]; }];
+    return [(self.joinedMemberUuids ?: @[]) map:^(
+        NSString *aciString) { return [[SignalServiceAddress alloc] initWithAciString:aciString]; }];
 }
 
 - (nullable SignalServiceAddress *)creatorAddress
@@ -98,115 +98,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (OWSInteractionType)interactionType
 {
     return OWSInteractionType_Call;
-}
-
-#pragma mark - Methods
-
-- (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    if (self.hasEnded) {
-        return OWSLocalizedString(
-            @"GROUP_CALL_ENDED_MESSAGE", @"Text in conversation view for a group call that has since ended");
-    } else if (self.creatorAddress.isLocalAddress) {
-        return OWSLocalizedString(@"GROUP_CALL_STARTED_BY_YOU", @"Text explaining that you started a group call.");
-    } else if (self.creatorAddress) {
-        NSString *creatorDisplayName = [self participantNameForAddress:self.creatorAddress transaction:transaction];
-        NSString *formatString = OWSLocalizedString(@"GROUP_CALL_STARTED_MESSAGE_FORMAT",
-            @"Text explaining that someone started a group call. Embeds {{call creator display name}}");
-        return [NSString stringWithFormat:formatString, creatorDisplayName];
-    } else {
-        return OWSLocalizedString(@"GROUP_CALL_SOMEONE_STARTED_MESSAGE",
-            @"Text in conversation view for a group call that someone started. We don't know who");
-    }
-}
-
-- (NSString *)systemTextWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    NSString *threeOrMoreFormat = NSLocalizedStringFromTableInBundle(@"GROUP_CALL_MANY_PEOPLE_HERE_%d",
-        @"PluralAware",
-        NSBundle.mainBundle.appBundle,
-        @"Text explaining that there are three or more people in the group call. Embeds {{ %1$@ participantCount-2, "
-        @"%2$@ participant1, %3$@ participant2 }}");
-    NSString *twoFormat = OWSLocalizedString(@"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT",
-        @"Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 "
-        @"}}");
-    NSString *onlyCreatorFormat = OWSLocalizedString(@"GROUP_CALL_STARTED_MESSAGE_FORMAT",
-        @"Text explaining that someone started a group call. Embeds {{call creator display name}}");
-    NSString *youCreatedString
-        = OWSLocalizedString(@"GROUP_CALL_STARTED_BY_YOU", @"Text explaining that you started a group call.");
-    NSString *onlyYouString
-        = OWSLocalizedString(@"GROUP_CALL_YOU_ARE_HERE", @"Text explaining that you are in the group call.");
-    NSString *onlyOneFormat = OWSLocalizedString(@"GROUP_CALL_ONE_PERSON_HERE_FORMAT",
-        @"Text explaining that there is one person in the group call. Embeds {member name}");
-    NSString *endedString = OWSLocalizedString(
-        @"GROUP_CALL_ENDED_MESSAGE", @"Text in conversation view for a group call that has since ended");
-    NSString *someoneString = OWSLocalizedString(@"GROUP_CALL_SOMEONE_STARTED_MESSAGE",
-        @"Text in conversation view for a group call that someone started. We don't know who");
-
-    NSArray<SignalServiceAddress *> *addresses =
-        [self.contactManagerObjC sortSignalServiceAddressesObjC:self.joinedMemberAddresses transaction:transaction];
-
-    NSUInteger localUserInsertionIndex = 0, creatorInsertionIndex = 0;
-    NSMutableArray<SignalServiceAddress *> *sortedAddresses = [NSMutableArray array];
-
-    for (SignalServiceAddress *address in addresses) {
-        if (address.isLocalAddress) {
-            [sortedAddresses insertObject:address atIndex:localUserInsertionIndex];
-            localUserInsertionIndex++;
-            creatorInsertionIndex++;
-            continue;
-        }
-        if ([address isEqualToAddress:self.creatorAddress]) {
-            [sortedAddresses insertObject:address atIndex:creatorInsertionIndex];
-            creatorInsertionIndex++;
-            continue;
-        }
-        [sortedAddresses addObject:address];
-    }
-
-    if (self.hasEnded) {
-        return endedString;
-    }
-
-    if (sortedAddresses.count >= 3) {
-        NSString *firstName = [self participantNameForAddress:sortedAddresses[0] transaction:transaction];
-        NSString *secondName = [self participantNameForAddress:sortedAddresses[1] transaction:transaction];
-        return [NSString localizedStringWithFormat:threeOrMoreFormat, sortedAddresses.count - 2, firstName, secondName];
-    }
-    if (sortedAddresses.count == 2) {
-        NSString *firstName = [self participantNameForAddress:sortedAddresses[0] transaction:transaction];
-        NSString *secondName = [self participantNameForAddress:sortedAddresses[1] transaction:transaction];
-        return [NSString stringWithFormat:twoFormat, firstName, secondName];
-    }
-    if (sortedAddresses.count == 0) {
-        return someoneString;
-    }
-    if ([sortedAddresses[0] isEqualToAddress:self.creatorAddress]) {
-        if (sortedAddresses[0].isLocalAddress) {
-            return youCreatedString;
-        } else {
-            NSString *name = [self participantNameForAddress:sortedAddresses[0] transaction:transaction];
-            return [NSString stringWithFormat:onlyCreatorFormat, name];
-        }
-    } else {
-        if (sortedAddresses[0].isLocalAddress) {
-            return onlyYouString;
-        } else {
-            NSString *name = [self participantNameForAddress:sortedAddresses[0] transaction:transaction];
-            return [NSString stringWithFormat:onlyOneFormat, name];
-        }
-    }
-}
-
-#pragma mark - Private
-
-- (NSString *)participantNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
-{
-    if (address.isLocalAddress) {
-        return OWSLocalizedString(@"YOU", "Second person pronoun to represent the local user.");
-    } else {
-        return [self.contactManagerObjC displayNameStringForAddress:address transaction:transaction];
-    }
 }
 
 @end

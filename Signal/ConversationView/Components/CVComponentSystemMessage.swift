@@ -706,7 +706,7 @@ extension CVComponentSystemMessage {
         } else if let call = interaction as? TSCall {
             return call.previewText(transaction: transaction)
         } else if let groupCall = interaction as? OWSGroupCallMessage {
-            return groupCall.systemText(with: transaction)
+            return groupCall.systemText(tx: transaction)
         } else {
             owsFailDebug("Not a system message.")
             return ""

@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// Represents a group call-related update that lives in chat history.
 ///
 /// Not to be confused with an ``OutgoingGroupCallUpdateMessage``.
-@interface OWSGroupCallMessage : TSInteraction <OWSPreviewText>
+@interface OWSGroupCallMessage : TSInteraction
 
 /// The ACI-string of the creator of the call.
 /// - Note
@@ -90,8 +90,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 // clang-format on
 
 // --- CODE GENERATION MARKER
-
-- (NSString *)systemTextWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 
