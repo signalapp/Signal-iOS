@@ -214,8 +214,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
                 view = buildPlaceholderView()
             }
         } else if attachmentStream.computeContentType().isAnimatedImage {
-            if let filePath = attachmentStream.bridgeStream.originalFilePath {
-                let animatedGif = YYImage(contentsOfFile: filePath)
+            if let animatedGif = try? attachmentStream.decryptedYYImage() {
                 view = YYAnimatedImageView(image: animatedGif)
             } else {
                 view = buildPlaceholderView()

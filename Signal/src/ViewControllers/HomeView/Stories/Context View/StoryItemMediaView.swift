@@ -869,11 +869,11 @@ class StoryItemMediaView: UIView {
                 container.addSubview(videoView)
                 videoView.autoPinEdgesToSuperviewEdges()
             case .animatedImage:
-                let yyImageView = buildYYImageView(originalMediaUrl: originalMediaUrl)
+                let yyImageView = buildYYImageView(attachment: stream.attachment.attachmentStream)
                 container.addSubview(yyImageView)
                 yyImageView.autoPinEdgesToSuperviewEdges()
             case .image:
-                let imageView = buildImageView(originalMediaUrl: originalMediaUrl)
+                let imageView = buildImageView(attachment: stream.attachment.attachmentStream)
                 container.addSubview(imageView)
                 imageView.autoPinEdgesToSuperviewEdges()
             case .audio, .file:
@@ -930,8 +930,10 @@ class StoryItemMediaView: UIView {
     }
 
     private var yyImageView: YYAnimatedImageView?
-    private func buildYYImageView(originalMediaUrl: URL) -> UIView {
-        guard let image = YYImage(contentsOfFile: originalMediaUrl.path) else {
+    private func buildYYImageView(attachment: TSResourceStream) -> UIView {
+        guard
+            let image = try? attachment.decryptedYYImage()
+        else {
             owsFailDebug("Could not load attachment.")
             return buildContentUnavailableView()
         }
@@ -950,8 +952,8 @@ class StoryItemMediaView: UIView {
         return animatedImageView
     }
 
-    private func buildImageView(originalMediaUrl: URL) -> UIView {
-        guard let image = UIImage(contentsOfFile: originalMediaUrl.path) else {
+    private func buildImageView(attachment: TSResourceStream) -> UIView {
+        guard let image = try? attachment.decryptedImage() else {
             owsFailDebug("Could not load attachment.")
             return buildContentUnavailableView()
         }

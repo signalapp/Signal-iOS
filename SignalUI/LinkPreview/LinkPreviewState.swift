@@ -273,12 +273,8 @@ public class LinkPreviewSent: LinkPreviewState {
         DispatchQueue.global().async {
             switch attachmentStream.computeContentType() {
             case .animatedImage:
-                guard let imageFilepath = attachmentStream.bridgeStream.originalFilePath else {
-                    owsFailDebug("Attachment is missing file path.")
-                    return
-                }
-                guard let image = YYImage(contentsOfFile: imageFilepath) else {
-                    owsFailDebug("Could not load image: \(imageFilepath)")
+                guard let image = try? attachmentStream.decryptedYYImage() else {
+                    owsFailDebug("Could not load image")
                     return
                 }
                 completion(image)

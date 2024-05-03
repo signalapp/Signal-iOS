@@ -5,6 +5,7 @@
 
 import AVFoundation
 import Foundation
+import YYImage
 
 extension TSAttachment: TSResource {
 
@@ -103,6 +104,16 @@ extension TSAttachmentStream: TSResourceStream {
             throw OWSAssertionError("Not a valid image!")
         }
         return originalImage
+    }
+
+    public func decryptedYYImage() throws -> YYImage {
+        guard let filePath = self.originalFilePath else {
+            throw OWSAssertionError("Missing file")
+        }
+        guard let image = YYImage(contentsOfFile: filePath) else {
+            throw OWSAssertionError("Invalid image")
+        }
+        return image
     }
 
     public func decryptedAVAsset() throws -> AVAsset {

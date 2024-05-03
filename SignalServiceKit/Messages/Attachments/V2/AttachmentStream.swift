@@ -5,6 +5,7 @@
 
 import AVFoundation
 import Foundation
+import YYImage
 
 /// Represents a downloaded attachment with the fullsize contents available on local disk.
 public class AttachmentStream {
@@ -103,6 +104,15 @@ public class AttachmentStream {
         case .video(_, let pixelSize):
             let asset = try AVAsset.from(self)
             return try OWSMediaUtils.thumbnail(forVideo: asset, maxSizePixels: pixelSize)
+        }
+    }
+
+    public func decryptedYYImage() throws -> YYImage {
+        switch contentType {
+        case .file, .audio, .video:
+            throw OWSAssertionError("Requesting image from non-visual attachment")
+        case .image, .animatedImage:
+            return try YYImage.yyImage(from: self)
         }
     }
 

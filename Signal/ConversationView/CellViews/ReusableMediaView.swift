@@ -320,10 +320,7 @@ class MediaViewAdapterAnimated: MediaViewAdapterSwift {
         guard attachmentStream.computeContentType().isAnimatedImage else {
             return Promise(error: ReusableMediaError.invalidMedia)
         }
-        guard let filePath = attachmentStream.bridgeStream.originalFilePath else {
-            return Promise(error: OWSAssertionError("Attachment stream missing original file path."))
-        }
-        guard let animatedImage = YYImage(contentsOfFile: filePath) else {
+        guard let animatedImage = try? attachmentStream.decryptedYYImage() else {
             return Promise(error: OWSAssertionError("Invalid animated image."))
         }
         return Promise.value(animatedImage)
@@ -504,16 +501,13 @@ public class MediaViewAdapterSticker: NSObject, MediaViewAdapterSwift {
         case .video, .audio, .file:
             return Promise(error: ReusableMediaError.invalidMedia)
         }
-        guard let filePath = attachmentStream.bridgeStream.originalFilePath else {
-            return Promise(error: OWSAssertionError("Attachment stream missing original file path."))
-        }
         if shouldBeRenderedByYY {
-            guard let animatedImage = YYImage(contentsOfFile: filePath) else {
+            guard let animatedImage = try? attachmentStream.decryptedYYImage() else {
                 return Promise(error: OWSAssertionError("Invalid animated image."))
             }
             return Promise.value(animatedImage)
         } else {
-            guard let image = UIImage(contentsOfFile: filePath) else {
+            guard let image = try? attachmentStream.decryptedImage() else {
                 return Promise(error: OWSAssertionError("Invalid image."))
             }
             return Promise.value(image)

@@ -5,6 +5,7 @@
 
 import AVFoundation
 import Foundation
+import YYImage
 
 /// A TSResource for which we have the fullsize data on local disk.
 public protocol TSResourceStream: TSResource {
@@ -20,6 +21,11 @@ public protocol TSResourceStream: TSResource {
     /// Interprets the data on disk as a UIImage.
     /// Throws an error if reading/decrypting the file fails or the data is incompatible with UIImage.
     func decryptedImage() throws -> UIImage
+
+    /// Interprets the data on disk as a YYImage.
+    /// Throws an error if reading/decrypting the file fails or the data is incompatible with YYImage.
+    /// YYImage is typically used for animated images, but is a subclass of UIImage and supports stills too.
+    func decryptedYYImage() throws -> YYImage
 
     /// Interprets the data on disk as an AVAsset (video or audio).
     /// Throws an error if reading/decrypting the file fails or the data is incompatible with AVAsset.
