@@ -58,7 +58,7 @@ final class VoiceMessageInterruptedDraft: VoiceMessageSendableDraft {
     }()
 
     public private(set) lazy var audioPlayer: AudioPlayer = {
-        AudioPlayer(mediaUrl: audioFileUrl, audioBehavior: .audioMessagePlayback)
+        AudioPlayer(decryptedFileUrl: audioFileUrl, audioBehavior: .audioMessagePlayback)
     }()
 
     public private(set) lazy var duration: TimeInterval? = {

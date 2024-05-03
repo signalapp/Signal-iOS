@@ -51,7 +51,21 @@ public class AudioPlayer: NSObject {
 
     public var isLooping: Bool = false
 
-    private let mediaUrl: URL
+    private enum Source {
+        case decryptedFile(URL)
+        case attachment(TSResourceStream)
+
+        var description: String {
+            switch self {
+            case .decryptedFile(let url):
+                return url.absoluteString
+            case .attachment(let attachment):
+                return attachment.mimeType
+            }
+        }
+    }
+
+    private let source: Source
 
     private var audioPlayer: AVPlayer?
 
@@ -59,9 +73,24 @@ public class AudioPlayer: NSObject {
 
     private let audioActivity: AudioActivity
 
-    public init(mediaUrl: URL, audioBehavior: AudioBehavior) {
-        self.mediaUrl = mediaUrl
-        audioActivity = AudioActivity(audioDescription: "\(Self.logTag()) \(mediaUrl)", behavior: audioBehavior)
+    public convenience init(decryptedFileUrl: URL, audioBehavior: AudioBehavior) {
+        self.init(source: .decryptedFile(decryptedFileUrl), audioBehavior: audioBehavior)
+    }
+
+    public convenience init?(attachment: SignalAttachment, audioBehavior: AudioBehavior) {
+        guard let url = attachment.dataUrl else {
+            return nil
+        }
+        self.init(source: .decryptedFile(url), audioBehavior: audioBehavior)
+    }
+
+    public convenience init(attachment: TSResourceStream, audioBehavior: AudioBehavior) {
+        self.init(source: .attachment(attachment), audioBehavior: audioBehavior)
+    }
+
+    private init(source: Source, audioBehavior: AudioBehavior) {
+        self.source = source
+        audioActivity = AudioActivity(audioDescription: "\(Self.logTag()) \(source.description)", behavior: audioBehavior)
 
         super.init()
 
@@ -163,7 +192,7 @@ public class AudioPlayer: NSObject {
             return
         }
 
-        func makeAudioPlayer() throws -> AVPlayer {
+        func makeAudioPlayer(mediaUrl: URL) throws -> AVPlayer {
             var asset = AVURLAsset(url: mediaUrl)
             if !asset.isReadable {
                 if let extensionOverride = MimeTypeUtil.alternativeAudioFileExtension(fileExtension: mediaUrl.pathExtension) {
@@ -183,7 +212,13 @@ public class AudioPlayer: NSObject {
 
         let audioPlayer: AVPlayer
         do {
-            audioPlayer = try makeAudioPlayer()
+            switch source {
+            case .decryptedFile(let url):
+                audioPlayer = try makeAudioPlayer(mediaUrl: url)
+            case .attachment(let attachment):
+                let asset = try attachment.decryptedAVAsset()
+                audioPlayer = .init(playerItem: .init(asset: asset))
+            }
         } catch let error as NSError {
             Logger.error("Error: \(error)")
             stop()
@@ -248,7 +283,7 @@ public class AudioPlayer: NSObject {
     public func setCurrentTime(_ currentTime: TimeInterval) {
         setupAudioPlayer()
 
-        guard 
+        guard
             let audioPlayer,
             let timescale = audioPlayer.currentItem?.duration.timescale
         else {
