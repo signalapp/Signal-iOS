@@ -502,17 +502,17 @@ public class StickerManager: NSObject {
         StickerType.stickerType(forContentType: contentType)
     }
 
-    @objc(installedStickerMetadataWithSneakyTransaction:)
-    public class func installedStickerMetadataWithSneakyTransaction(stickerInfo: StickerInfo) -> StickerMetadata? {
+    public class func installedStickerMetadataWithSneakyTransaction(stickerInfo: StickerInfo) -> (any StickerMetadata)? {
         databaseStorage.read { transaction in
             self.installedStickerMetadata(stickerInfo: stickerInfo,
                                           transaction: transaction)
         }
     }
 
-    @objc
-    public class func installedStickerMetadata(stickerInfo: StickerInfo,
-                                               transaction: SDSAnyReadTransaction) -> StickerMetadata? {
+    public class func installedStickerMetadata(
+        stickerInfo: StickerInfo,
+        transaction: SDSAnyReadTransaction
+    ) -> (any StickerMetadata)? {
 
         let uniqueId = InstalledSticker.uniqueId(for: stickerInfo)
         guard let installedSticker = InstalledSticker.anyFetch(uniqueId: uniqueId,
@@ -524,19 +524,22 @@ public class StickerManager: NSObject {
                                         transaction: transaction)
     }
 
-    @objc
-    public class func installedStickerMetadata(installedSticker: InstalledSticker,
-                                               transaction: SDSAnyReadTransaction) -> StickerMetadata? {
+    public class func installedStickerMetadata(
+        installedSticker: InstalledSticker,
+        transaction: SDSAnyReadTransaction
+    ) -> (any StickerMetadata)? {
 
         let stickerInfo = installedSticker.info
         let stickerType = StickerType.stickerType(forContentType: installedSticker.contentType)
         guard let stickerDataUrl = self.stickerDataUrl(stickerInfo: stickerInfo, stickerType: stickerType, verifyExists: true) else {
             return nil
         }
-        return StickerMetadata(stickerInfo: stickerInfo,
-                               stickerType: stickerType,
-                               stickerDataUrl: stickerDataUrl,
-                               emojiString: installedSticker.emojiString)
+        return DecryptedStickerMetadata(
+            stickerInfo: stickerInfo,
+            stickerType: stickerType,
+            stickerDataUrl: stickerDataUrl,
+            emojiString: installedSticker.emojiString
+        )
     }
 
     @objc

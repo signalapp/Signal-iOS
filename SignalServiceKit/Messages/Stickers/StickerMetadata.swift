@@ -30,7 +30,7 @@ public enum StickerType: UInt {
         }
     }
 
-    public var contentType: String {
+    public var mimeType: String {
         switch self {
         case .webp:
             return MimeType.imageWebp.rawValue
@@ -60,72 +60,146 @@ public enum StickerType: UInt {
 // This might represent an "installed" sticker, a "transient" sticker (used
 // to render sticker pack views for uninstalled packs) or a sticker received
 // in a message.
-@objc
-public class StickerMetadata: NSObject {
-    @objc
-    public let stickerInfo: StickerInfo
+public protocol StickerMetadata: Hashable {
+    var stickerInfo: StickerInfo { get }
+    var stickerType: StickerType { get }
+    // May contain multiple emoji.
+    var emojiString: String? { get }
 
-    @objc
+    /// Check if the sticker's data is valid, if applicable.
+    func isValidImage() -> Bool
+
+    /// Read the sticker data off disk into memory, typically for display or sending.
+    func readStickerData() throws -> Data
+}
+
+extension StickerMetadata {
     public var packId: Data {
         stickerInfo.packId
     }
 
-    @objc
     public var packKey: Data {
         stickerInfo.packKey
     }
 
-    @objc
     public var packInfo: StickerPackInfo {
         StickerPackInfo(packId: packId, packKey: packKey)
     }
 
-    @objc
     public var stickerId: UInt32 {
         stickerInfo.stickerId
     }
 
-    @objc
+    public var firstEmoji: String? {
+        StickerManager.firstEmoji(inEmojiString: emojiString)
+    }
+
+    public var mimeType: String {
+        stickerType.mimeType
+    }
+}
+
+public class DecryptedStickerMetadata: StickerMetadata {
+
+    public let stickerInfo: StickerInfo
     public let stickerType: StickerType
-
-    @objc
     public let stickerDataUrl: URL
-
-    // May contain multiple emoji.
-    @objc
     public let emojiString: String?
 
-    @objc
-    public init(stickerInfo: StickerInfo,
-                stickerType: StickerType,
-                stickerDataUrl: URL,
-                emojiString: String?) {
+    public init(
+        stickerInfo: StickerInfo,
+        stickerType: StickerType,
+        stickerDataUrl: URL,
+        emojiString: String?
+    ) {
         self.stickerInfo = stickerInfo
         self.stickerType = stickerType
         self.stickerDataUrl = stickerDataUrl
         self.emojiString = emojiString
     }
 
-    @objc
-    public var firstEmoji: String? {
-        StickerManager.firstEmoji(inEmojiString: emojiString)
+    public func isValidImage() -> Bool {
+        return Data.ows_isValidImage(at: stickerDataUrl, mimeType: mimeType)
     }
 
-    @objc
-    public var contentType: String {
-        stickerType.contentType
+    public func readStickerData() throws -> Data {
+        return try Data(contentsOf: stickerDataUrl)
     }
 
-    @objc
-    public override func isEqual(_ object: Any?) -> Bool {
-        guard let other = object as? StickerMetadata else {
-            return false
-        }
-        return stickerInfo.asKey() == other.stickerInfo.asKey()
+    public static func == (lhs: DecryptedStickerMetadata, rhs: DecryptedStickerMetadata) -> Bool {
+        return lhs.stickerInfo.asKey() == rhs.stickerInfo.asKey()
     }
 
-    @objc
-    public override var hash: Int {
-        stickerInfo.asKey().hashValue
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(stickerInfo.asKey().hashValue)
+    }
+}
+
+public class EncryptedStickerMetadata: StickerMetadata {
+
+    public let stickerInfo: StickerInfo
+    public let stickerType: StickerType
+    public let emojiString: String?
+
+    public let encryptedStickerDataUrl: URL
+    public let encryptionKey: Data
+    public let plaintextLength: UInt32
+
+    public init(
+        stickerInfo: StickerInfo,
+        stickerType: StickerType,
+        emojiString: String?,
+        encryptedStickerDataUrl: URL,
+        encryptionKey: Data,
+        plaintextLength: UInt32
+    ) {
+        self.stickerInfo = stickerInfo
+        self.stickerType = stickerType
+        self.emojiString = emojiString
+        self.encryptedStickerDataUrl = encryptedStickerDataUrl
+        self.encryptionKey = encryptionKey
+        self.plaintextLength = plaintextLength
+    }
+
+    public func isValidImage() -> Bool {
+        /// We validate data prior to encryption; no need to re-validate at read time.
+        return true
+    }
+
+    public func readStickerData() throws -> Data {
+        return try Cryptography.decryptFile(
+            at: encryptedStickerDataUrl,
+            metadata: .init(
+                key: encryptionKey,
+                plaintextLength: Int(plaintextLength)
+            )
+        )
+    }
+
+    public static func == (lhs: EncryptedStickerMetadata, rhs: EncryptedStickerMetadata) -> Bool {
+        return lhs.stickerInfo.asKey() == rhs.stickerInfo.asKey()
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(stickerInfo.asKey().hashValue)
+    }
+}
+
+extension EncryptedStickerMetadata {
+
+    public static func from(
+        attachment: AttachmentStream,
+        stickerInfo: StickerInfo,
+        stickerType: StickerType,
+        emojiString: String?
+    ) -> EncryptedStickerMetadata {
+        return .init(
+            stickerInfo: stickerInfo,
+            stickerType: stickerType,
+            emojiString: emojiString,
+            encryptedStickerDataUrl: attachment.fileURL,
+            encryptionKey: attachment.info.encryptionKey,
+            plaintextLength: attachment.info.unencryptedByteCount
+        )
     }
 }

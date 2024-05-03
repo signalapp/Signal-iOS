@@ -108,7 +108,7 @@ public extension ThreadUtil {
                 return
             }
 
-            guard let stickerData = try? Data(contentsOf: stickerMetadata.stickerDataUrl) else {
+            guard let stickerData = try? stickerMetadata.readStickerData() else {
                 owsFailDebug("Couldn't load sticker data.")
                 return
             }
@@ -127,7 +127,7 @@ public extension ThreadUtil {
 
     @discardableResult
     class func enqueueMessage(
-        withUninstalledSticker stickerMetadata: StickerMetadata,
+        withUninstalledSticker stickerMetadata: any StickerMetadata,
         stickerData: Data,
         thread: TSThread
     ) -> TSOutgoingMessage {

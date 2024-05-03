@@ -37,7 +37,7 @@ enum SendMessageUnapprovedContent {
     case text(messageBody: MessageBody)
     case contactShare(contactShare: ContactShareViewModel)
     // stickerAttachment is required if the sticker is not installed.
-    case sticker(stickerMetadata: StickerMetadata, stickerAttachment: TSAttachmentStream?)
+    case sticker(stickerMetadata: any StickerMetadata, stickerAttachment: TSAttachmentStream?)
     case genericAttachment(signalAttachmentProvider: SignalAttachmentProvider)
     case media(signalAttachmentProviders: [SignalAttachmentProvider], messageBody: MessageBody?)
 
@@ -113,8 +113,8 @@ enum SendMessageUnapprovedContent {
 enum SendMessageApprovedContent {
     case text(messageBody: MessageBody, linkPreviewDraft: OWSLinkPreviewDraft?)
     case contactShare(contactShare: ContactShareDraft)
-    case installedSticker(stickerMetadata: StickerMetadata)
-    case uninstalledSticker(stickerMetadata: StickerMetadata, stickerData: Data)
+    case installedSticker(stickerMetadata: any StickerMetadata)
+    case uninstalledSticker(stickerMetadata: any StickerMetadata, stickerData: Data)
     case genericAttachment(signalAttachmentProvider: SignalAttachmentProvider)
     case borderlessMedia(signalAttachmentProvider: SignalAttachmentProvider)
     case media(signalAttachments: [SignalAttachment], messageBody: MessageBody?)

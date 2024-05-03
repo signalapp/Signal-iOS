@@ -32,15 +32,18 @@ public class StickerView {
         return stickerView(stickerInfo: stickerInfo, stickerMetadata: stickerMetadata, size: size)
     }
 
-    private static func stickerView(stickerInfo: StickerInfo,
-                                    stickerMetadata: StickerMetadata,
-                                    size: CGFloat? = nil) -> UIView? {
-
-        let stickerDataUrl = stickerMetadata.stickerDataUrl
-
-        guard let stickerView = self.stickerView(stickerInfo: stickerInfo,
-                                                 stickerType: stickerMetadata.stickerType,
-                                                 stickerDataUrl: stickerDataUrl) else {
+    private static func stickerView(
+        stickerInfo: StickerInfo,
+        stickerMetadata: any StickerMetadata,
+        size: CGFloat? = nil
+    ) -> UIView? {
+        guard
+            let stickerView = self.stickerView(
+                stickerInfo: stickerInfo,
+                stickerType: stickerMetadata.stickerType,
+                stickerMetadata: stickerMetadata
+            )
+        else {
             Logger.warn("Could not load sticker for display.")
             return nil
         }
@@ -50,24 +53,25 @@ public class StickerView {
         return stickerView
     }
 
-    static func stickerView(stickerInfo: StickerInfo,
-                            stickerType: StickerType,
-                            stickerDataUrl: URL) -> UIView? {
-
-        guard OWSFileSystem.fileOrFolderExists(url: stickerDataUrl) else {
-            Logger.warn("Sticker path does not exist: \(stickerDataUrl).")
+    static func stickerView(
+        stickerInfo: StickerInfo,
+        stickerType: StickerType,
+        stickerMetadata: any StickerMetadata
+    ) -> UIView? {
+        guard let stickerData = try? stickerMetadata.readStickerData() else {
+            Logger.warn("Sticker data does not exist.")
             return nil
         }
 
-        guard Data.ows_isValidImage(at: stickerDataUrl, mimeType: stickerType.contentType) else {
-            owsFailDebug("Invalid sticker.")
+        guard stickerMetadata.isValidImage() else {
+            owsFailDebug("Invalid sticker")
             return nil
         }
 
         let stickerView: UIView
         switch stickerType {
         case .webp, .apng, .gif:
-            guard let stickerImage = YYImage(contentsOfFile: stickerDataUrl.path) else {
+            guard let stickerImage = YYImage(data: stickerData) else {
                 owsFailDebug("Sticker could not be parsed.")
                 return nil
             }

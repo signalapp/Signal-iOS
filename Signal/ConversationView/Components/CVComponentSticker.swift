@@ -11,7 +11,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
     public var componentKey: CVComponentKey { .sticker }
 
     private let sticker: CVComponentState.Sticker
-    private var stickerMetadata: StickerMetadata? {
+    private var stickerMetadata: (any StickerMetadata)? {
         sticker.stickerMetadata
     }
     private var attachmentStream: ReferencedTSResourceStream? {

@@ -459,7 +459,7 @@ extension ForwardMessageViewController {
         return Promise.value(())
     }
 
-    fileprivate func send(uninstalledSticker stickerMetadata: StickerMetadata, stickerData: Data, thread: TSThread) -> Promise<Void> {
+    fileprivate func send(uninstalledSticker stickerMetadata: any StickerMetadata, stickerData: Data, thread: TSThread) -> Promise<Void> {
         ThreadUtil.enqueueMessage(withUninstalledSticker: stickerMetadata, stickerData: stickerData, thread: thread)
         return Promise.value(())
     }
@@ -602,7 +602,7 @@ public struct ForwardMessageItem {
     let contactShare: ContactShareViewModel?
     let messageBody: MessageBody?
     let linkPreviewDraft: OWSLinkPreviewDraft?
-    let stickerMetadata: StickerMetadata?
+    let stickerMetadata: (any StickerMetadata)?
     let stickerAttachment: TSResourceStream?
     let textAttachment: TextAttachment?
 
@@ -613,7 +613,7 @@ public struct ForwardMessageItem {
         var contactShare: ContactShareViewModel?
         var messageBody: MessageBody?
         var linkPreviewDraft: OWSLinkPreviewDraft?
-        var stickerMetadata: StickerMetadata?
+        var stickerMetadata: (any StickerMetadata)?
         var stickerAttachment: TSResourceStream?
         var textAttachment: TextAttachment?
 

@@ -27,7 +27,7 @@ public protocol StickerPackDataSource: AnyObject {
     var installedCoverInfo: StickerInfo? { get }
     var installedStickerInfos: [StickerInfo] { get }
 
-    func metadata(forSticker stickerInfo: StickerInfo) -> StickerMetadata?
+    func metadata(forSticker stickerInfo: StickerInfo) -> (any StickerMetadata)?
 }
 
 // MARK: -
@@ -276,7 +276,7 @@ extension InstalledStickerPackDataSource: StickerPackDataSource {
         return stickerInfos
     }
 
-    public func metadata(forSticker stickerInfo: StickerInfo) -> StickerMetadata? {
+    public func metadata(forSticker stickerInfo: StickerInfo) -> (any StickerMetadata)? {
         AssertIsOnMainThread()
 
         // This logic is perf-sensitive and on the main thread;
@@ -317,7 +317,7 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
     private let installedDataSource: InstalledStickerPackDataSource
 
     // This should only be accessed on the main thread.
-    private var stickerMetadataMap = [String: StickerMetadata]()
+    private var stickerMetadataMap = [String: any StickerMetadata]()
     private var temporaryFileUrls = [URL]()
 
     public init(stickerPackInfo: StickerPackInfo,
@@ -484,10 +484,12 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
             return
         }
         let stickerType = StickerManager.stickerType(forContentType: stickerPackItem.contentType)
-        let stickerMetadata = StickerMetadata(stickerInfo: stickerInfo,
-                                              stickerType: stickerType,
-                                              stickerDataUrl: temporaryFileUrl,
-                                              emojiString: stickerPackItem.emojiString)
+        let stickerMetadata = DecryptedStickerMetadata(
+            stickerInfo: stickerInfo,
+            stickerType: stickerType,
+            stickerDataUrl: temporaryFileUrl,
+            emojiString: stickerPackItem.emojiString
+        )
         stickerMetadataMap[key] = stickerMetadata
         ensureState()
         fireDidChange()
@@ -563,7 +565,7 @@ extension TransientStickerPackDataSource: StickerPackDataSource {
         return stickerInfos
     }
 
-    public func metadata(forSticker stickerInfo: StickerInfo) -> StickerMetadata? {
+    public func metadata(forSticker stickerInfo: StickerInfo) -> (any StickerMetadata)? {
         AssertIsOnMainThread()
 
         let key = stickerInfo.asKey()
@@ -651,7 +653,7 @@ extension RecentStickerPackDataSource: StickerPackDataSource {
         return stickerInfos
     }
 
-    public func metadata(forSticker stickerInfo: StickerInfo) -> StickerMetadata? {
+    public func metadata(forSticker stickerInfo: StickerInfo) -> (any StickerMetadata)? {
         AssertIsOnMainThread()
 
         // This logic is perf-sensitive and on the main thread;

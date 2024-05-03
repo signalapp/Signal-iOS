@@ -195,7 +195,7 @@ public class MessageStickerManagerImpl: MessageStickerManager {
             throw StickerError.assertionFailure
         }
         let fileExtension = stickerType.fileExtension
-        var mimeType = stickerType.contentType
+        var mimeType = stickerType.mimeType
         let fileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: fileExtension)
         try stickerData.write(to: fileUrl)
 

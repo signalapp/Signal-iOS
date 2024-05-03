@@ -27,7 +27,7 @@ public class CVComponentStateWrapper: NSObject, CVItemViewModel {
         return componentState.giftBadge != nil
     }
 
-    public var stickerMetadata: StickerMetadata? {
+    public var stickerMetadata: (any StickerMetadata)? {
         AssertIsOnMainThread()
 
         return componentState.stickerMetadata
@@ -297,7 +297,7 @@ public extension CVComponentState {
         return contactShare.state.contactShare
     }
 
-    var stickerMetadata: StickerMetadata? {
+    var stickerMetadata: (any StickerMetadata)? {
         sticker?.stickerMetadata
     }
 

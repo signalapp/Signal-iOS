@@ -12,7 +12,7 @@ public protocol CVItemViewModel: AnyObject {
     var linkPreviewAttachment: TSResource? { get }
     var stickerInfo: StickerInfo? { get }
     var stickerAttachment: TSResourceStream? { get }
-    var stickerMetadata: StickerMetadata? { get }
+    var stickerMetadata: (any StickerMetadata)? { get }
     var isGiftBadge: Bool { get }
     var hasRenderableContent: Bool { get }
 }

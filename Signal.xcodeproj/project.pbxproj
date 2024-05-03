@@ -964,6 +964,7 @@
 		66AE5779298440A100E40CFA /* ViewControllerContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC13297F38BB004EFC30 /* ViewControllerContext.swift */; };
 		66AE57802984AB9F00E40CFA /* ToyExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AE577E2984AB8700E40CFA /* ToyExample.swift */; };
 		66AEFCA42A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AEFCA32A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift */; };
+		66B78E032BE59B860022580E /* StickerMetadata+TSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B78E022BE59B860022580E /* StickerMetadata+TSResource.swift */; };
 		66B8B28028C94C0F005EAFE0 /* DelegatingContextMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B8B27F28C94C0F005EAFE0 /* DelegatingContextMenuButton.swift */; };
 		66B9437E2A6EFCD900DCF2FF /* SpoilerParticleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B9437D2A6EFCD900DCF2FF /* SpoilerParticleView.swift */; };
 		66B943812A6F217600DCF2FF /* SpoilerParticleShader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 66B9437F2A6F216D00DCF2FF /* SpoilerParticleShader.metal */; };
@@ -3859,6 +3860,7 @@
 		66AE577E2984AB8700E40CFA /* ToyExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToyExample.swift; sourceTree = "<group>"; };
 		66AEFCA32A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerableLabelAnimator.swift; sourceTree = "<group>"; };
 		66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalAttachment+VideoSegmenting.swift"; sourceTree = "<group>"; };
+		66B78E022BE59B860022580E /* StickerMetadata+TSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StickerMetadata+TSResource.swift"; sourceTree = "<group>"; };
 		66B8B27F28C94C0F005EAFE0 /* DelegatingContextMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatingContextMenuButton.swift; sourceTree = "<group>"; };
 		66B9437D2A6EFCD900DCF2FF /* SpoilerParticleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerParticleView.swift; sourceTree = "<group>"; };
 		66B9437F2A6F216D00DCF2FF /* SpoilerParticleShader.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = SpoilerParticleShader.metal; sourceTree = "<group>"; };
@@ -7780,6 +7782,14 @@
 			path = UserInterface;
 			sourceTree = "<group>";
 		};
+		66B78E012BE59B780022580E /* TSResource */ = {
+			isa = PBXGroup;
+			children = (
+				66B78E022BE59B860022580E /* StickerMetadata+TSResource.swift */,
+			);
+			path = TSResource;
+			sourceTree = "<group>";
+		};
 		66B9437C2A6EEAA600DCF2FF /* SpoilerRendering */ = {
 			isa = PBXGroup;
 			children = (
@@ -10396,6 +10406,7 @@
 		F9C5C917289453B100548EEE /* Stickers */ = {
 			isa = PBXGroup;
 			children = (
+				66B78E012BE59B780022580E /* TSResource */,
 				F9C5C91A289453B100548EEE /* CDNDownloadOperation.swift */,
 				F9C5C91F289453B100548EEE /* DefaultStickers.swift */,
 				F9C5C922289453B100548EEE /* DownloadStickerOperation.swift */,
@@ -14237,6 +14248,7 @@
 				F9C5CC1B289453B300548EEE /* StickerError.swift in Sources */,
 				F9C5CC13289453B300548EEE /* StickerInfo.m in Sources */,
 				F9C5CC0B289453B300548EEE /* StickerManager.swift in Sources */,
+				66B78E032BE59B860022580E /* StickerMetadata+TSResource.swift in Sources */,
 				F9C5CC0D289453B300548EEE /* StickerMetadata.swift in Sources */,
 				F9C5CC0E289453B300548EEE /* StickerPack+SDS.swift in Sources */,
 				F9C5CC17289453B300548EEE /* StickerPack.m in Sources */,

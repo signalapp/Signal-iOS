@@ -1065,8 +1065,10 @@ class ImageEditorCanvasView: UIView {
             image = cachedImage
         case (.none, .regular(let stickerInfo)):
             // Regular sticker. Fetch its image
-            guard let metadata = StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: stickerInfo),
-                  let stickerImage = UIImage(contentsOfFile: metadata.stickerDataUrl.path)
+            guard
+                let metadata = StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: stickerInfo),
+                let imageData = try? metadata.readStickerData(),
+                let stickerImage = UIImage(data: imageData)
             else {
                 owsFailDebug("Failed to retrieve sticker image")
                 return nil

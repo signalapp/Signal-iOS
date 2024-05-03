@@ -175,7 +175,7 @@ public class CVComponentState: Equatable, Dependencies {
 
     enum Sticker: Equatable {
         case available(
-            stickerMetadata: StickerMetadata,
+            stickerMetadata: any StickerMetadata,
             attachmentStream: ReferencedTSResourceStream
         )
         case downloading(attachmentPointer: ReferencedTSResourcePointer)
@@ -184,7 +184,7 @@ public class CVComponentState: Equatable, Dependencies {
             transitTierDownloadState: AttachmentDownloadState
         )
 
-        public var stickerMetadata: StickerMetadata? {
+        public var stickerMetadata: (any StickerMetadata)? {
             switch self {
             case .available(let stickerMetadata, _):
                 return stickerMetadata
@@ -216,7 +216,7 @@ public class CVComponentState: Equatable, Dependencies {
         static func == (lhs: CVComponentState.Sticker, rhs: CVComponentState.Sticker) -> Bool {
             switch (lhs, rhs) {
             case let (.available(lhsData, lhsStream), .available(rhsData, rhsStream)):
-                return lhsData == rhsData
+                return lhsData.stickerInfo.asKey() == rhsData.stickerInfo.asKey()
                     && lhsStream.attachment.resourceId == rhsStream.attachment.resourceId
                     && lhsStream.reference.hasSameOwner(as: rhsStream.reference)
             case let (.downloading(lhsPointer), .downloading(rhsPointer)):
@@ -1188,13 +1188,15 @@ fileprivate extension CVComponentState.Builder {
                 throw OWSAssertionError("Invalid sticker.")
             }
             let stickerType = StickerManager.stickerType(forContentType: attachmentStream.mimeType)
-            guard let stickerDataUrl = attachmentStream.bridgeStream.originalMediaURL else {
+            guard
+                let stickerMetadata = attachmentStream.asStickerMetadata(
+                    stickerInfo: messageSticker.info,
+                    stickerType: stickerType,
+                    emojiString: messageSticker.emoji
+                )
+            else {
                 throw OWSAssertionError("Invalid sticker.")
             }
-            let stickerMetadata = StickerMetadata(stickerInfo: messageSticker.info,
-                                                  stickerType: stickerType,
-                                                  stickerDataUrl: stickerDataUrl,
-                                                  emojiString: messageSticker.emoji)
             self.sticker = .available(
                 stickerMetadata: stickerMetadata,
                 attachmentStream: .init(reference: attachmentReference, attachmentStream: attachmentStream)
