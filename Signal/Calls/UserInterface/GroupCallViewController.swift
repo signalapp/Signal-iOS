@@ -622,7 +622,11 @@ class GroupCallViewController: UIViewController {
                 size: size
             )
         } else if !callControlsOverflowContentIsHidden {
-            owsFailDebug("Call Controls Overflow content should never be visible while Call Controls are hidden.")
+            owsFailDebug("Call Controls Overflow content should never be visible while Call Controls are hidden. Desired new state: \(self.callControlsDisplayState).")
+            recoverFromOverflowOnlyCallControlsDisplayState(
+                newState: self.callControlsDisplayState,
+                size: size
+            )
         } else {
             self.callControlDisplayStateDidChange(
                 oldState: .none,
@@ -633,6 +637,31 @@ class GroupCallViewController: UIViewController {
 
         scheduleControlTimeoutIfNecessary()
         updateSwipeToastView()
+    }
+
+    // Theoretically, we should never show the call controls overflow _only_, without call controls
+    // accompanying it. However, this does somehow happen. As a quick fix, we'll bring the UI back
+    // to a sane state via this method. But a deeper investigation as to how this state is reached
+    // in the first place is warranted.
+    private func recoverFromOverflowOnlyCallControlsDisplayState(
+        newState: CallControlsDisplayState,
+        size: CGSize?
+    ) {
+        switch newState {
+        case .callControlsAndOverflow:
+            animateCallControls(
+                hideCallControls: false,
+                size: size
+            )
+        case .callControlsOnly:
+            animateCallControls(
+                hideCallControls: false,
+                size: size
+            )
+            self.callControlsOverflowView.animateOut()
+        case .none:
+            self.callControlsOverflowView.animateOut()
+        }
     }
 
     private func callControlDisplayStateDidChange(
