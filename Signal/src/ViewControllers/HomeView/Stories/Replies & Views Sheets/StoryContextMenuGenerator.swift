@@ -606,9 +606,23 @@ extension StoryThumbnailView.Attachment {
         case .file(let attachment):
             guard
                 let attachment = attachment.attachment.asResourceStream(),
-                MimeTypeUtil.isSupportedVisualMediaMimeType(attachment.mimeType),
-                let mediaURL = attachment.bridgeStream.originalMediaURL
+                MimeTypeUtil.isSupportedVisualMediaMimeType(attachment.mimeType)
             else { break }
+
+            var mediaURL: URL?
+            let shouldDeleteFileAfterComplete: Bool
+            switch attachment.concreteStreamType {
+            case .legacy(let tsAttachmentStream):
+                mediaURL = tsAttachmentStream.originalMediaURL
+                shouldDeleteFileAfterComplete = false
+            case .v2(let attachmentStream):
+                // Make a copy since we are about to send this off to the system anyway.
+                mediaURL = try? attachmentStream.makeDecryptedCopy()
+                shouldDeleteFileAfterComplete = true
+            }
+            guard let mediaURL else {
+                break
+            }
 
             vc.ows_askForMediaLibraryPermissions { isGranted in
                 guard isGranted else {
@@ -623,6 +637,9 @@ extension StoryThumbnailView.Attachment {
                     }
                 }, completionHandler: { didSucceed, error in
                     DispatchQueue.main.async {
+                        if shouldDeleteFileAfterComplete {
+                            try? OWSFileSystem.deleteFile(url: mediaURL)
+                        }
                         if didSucceed {
                             let toastController = ToastController(
                                 text: OWSLocalizedString(
