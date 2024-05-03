@@ -98,13 +98,10 @@ public class AttachmentStream {
         switch contentType {
         case .file, .audio:
             throw OWSAssertionError("Requesting image from non-visual attachment")
-        case .image:
+        case .image, .animatedImage:
             return try UIImage.from(self)
         case .video:
             // TODO: still image from video
-            throw OWSAssertionError("Unimplemented")
-        case .animatedImage:
-            // TODO: still image from animated image
             throw OWSAssertionError("Unimplemented")
         }
     }

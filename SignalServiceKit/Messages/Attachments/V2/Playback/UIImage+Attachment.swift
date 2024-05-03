@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import YYImage
 
 extension UIImage {
 
@@ -53,7 +54,15 @@ extension UIImage {
                     plaintextLength: Int(plaintextLength)
                 )
             )
-            guard let image = UIImage(data: data) else {
+            let image: UIImage?
+            if mimeType.caseInsensitiveCompare(MimeType.imageWebp.rawValue) == .orderedSame {
+                /// Use YYImage for webp.
+                image = YYImage(data: data)
+            } else {
+                image = UIImage(data: data)
+            }
+
+            guard let image else {
                 throw OWSAssertionError("Failed to load image")
             }
             return image
