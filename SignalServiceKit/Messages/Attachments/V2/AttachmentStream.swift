@@ -76,19 +76,46 @@ public class AttachmentStream {
     // MARK: - Accessing file data
 
     public func decryptedRawData() throws -> Data {
-        fatalError("Unimplemented!")
+        return try Cryptography.decryptFile(
+            at: fileURL,
+            metadata: .init(
+                key: info.encryptionKey,
+                length: Int(info.encryptedByteCount),
+                plaintextLength: Int(info.unencryptedByteCount)
+            )
+        )
     }
 
     public func decryptedLongText() throws -> String {
-        fatalError("Unimplemented!")
+        let data = try decryptedRawData()
+        guard let text = String(data: data, encoding: .utf8) else {
+            throw OWSAssertionError("Can't parse oversize text data.")
+        }
+        return text
     }
 
     public func decryptedImage() throws -> UIImage {
-        fatalError("Unimplemented!")
+        switch contentType {
+        case .file, .audio:
+            throw OWSAssertionError("Requesting image from non-visual attachment")
+        case .image:
+            return try UIImage.from(self)
+        case .video:
+            // TODO: still image from video
+            throw OWSAssertionError("Unimplemented")
+        case .animatedImage:
+            // TODO: still image from animated image
+            throw OWSAssertionError("Unimplemented")
+        }
     }
 
     public func decryptedAVAsset() throws -> AVAsset {
-        fatalError("Unimplemented!")
+        switch contentType {
+        case .file, .image, .animatedImage:
+            throw OWSAssertionError("Requesting AVAsset from incompatible attachment")
+        case .video, .audio:
+            return try AVAsset.from(self)
+        }
     }
 
     // MARK: - Thumbnails
