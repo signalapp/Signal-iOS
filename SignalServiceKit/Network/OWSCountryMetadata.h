@@ -8,7 +8,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSCountryMetadata : NSObject
 
 @property (nonatomic) NSString *name;
-@property (nonatomic) NSString *tld;
 @property (nonatomic, nullable) NSString *frontingDomain;
 @property (nonatomic) NSString *countryCode;
 @property (nonatomic) NSString *localizedCountryName;
