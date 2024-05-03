@@ -168,12 +168,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
     }
 
     private var fileTypeLabelConfig: CVLabelConfig {
-        var filename: String = attachment.reference.sourceFilename ?? ""
-        if filename.isEmpty,
-           let attachmentStream = attachmentStream,
-           let originalFilePath = attachmentStream.bridgeStream.originalFilePath {
-            filename = (originalFilePath as NSString).lastPathComponent
-        }
+        let filename: String = attachment.reference.sourceFilename ?? ""
         var fileExtension: String = (filename as NSString).pathExtension
         if fileExtension.isEmpty {
             fileExtension = MimeTypeUtil.fileExtensionForMimeType(attachment.attachment.mimeType) ?? ""
