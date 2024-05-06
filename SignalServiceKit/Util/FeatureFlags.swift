@@ -70,8 +70,6 @@ public class FeatureFlags: NSObject {
     public static let useCallMemberComposableViewsForRemoteUsersInGroupCalls = false
     public static let useCallMemberComposableViewsForRemoteUserInIndividualCalls = false
 
-    public static let useLibSignalNetForCdsi = build.includes(.internal)
-
     @objc
     public static var notificationServiceExtension: Bool {
         // The CallKit APIs for the NSE are only available from iOS 14.5 and on,

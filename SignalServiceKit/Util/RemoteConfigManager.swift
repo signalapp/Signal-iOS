@@ -273,6 +273,10 @@ public class RemoteConfig: NSObject {
         return false
     }
 
+    public static var cdsiLookupWithLibsignal: Bool {
+        return isEnabled(.cdsiLookupWithLibsignal, defaultValue: true)
+    }
+
     /// The time a linked device may be offline before it expires and is
     /// unlinked.
     public static var linkedDeviceLifespan: TimeInterval {
@@ -497,6 +501,7 @@ private enum IsEnabledFlag: String, FlagType {
     case experimentalTransportUseLibsignal = "ios.experimentalTransportEnabled.libsignal"
     case experimentalTransportShadowingHigh = "ios.experimentalTransportEnabled.shadowingHigh"
     case experimentalTransportShadowingEnabled = "ios.experimentalTransportEnabled.shadowing"
+    case cdsiLookupWithLibsignal = "ios.cdsiLookup.libsignal"
 
     var isSticky: Bool {
         switch self {
@@ -518,12 +523,14 @@ private enum IsEnabledFlag: String, FlagType {
         case .serviceExtensionFailureKillSwitch: fallthrough
         case .experimentalTransportUseLibsignal: fallthrough
         case .experimentalTransportShadowingHigh: fallthrough
-        case .experimentalTransportShadowingEnabled:
+        case .experimentalTransportShadowingEnabled: fallthrough
+        case .cdsiLookupWithLibsignal:
             return false
         }
     }
     var isHotSwappable: Bool {
         switch self {
+        case .cdsiLookupWithLibsignal: fallthrough
         case .serviceExtensionFailureKillSwitch:
             return true
         case .automaticSessionResetKillSwitch: fallthrough
