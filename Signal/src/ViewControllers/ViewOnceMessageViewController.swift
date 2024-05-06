@@ -121,20 +121,18 @@ class ViewOnceMessageViewController: OWSViewController {
             }
 
             let viewOnceType: Content.ContentType
-            if attachmentRef.renderingFlag == .shouldLoop {
+            switch attachmentStream.computeContentType() {
+            case .animatedImage:
+                viewOnceType = .animatedImage
+            case .image:
+                viewOnceType = .stillImage
+            case .video where attachmentRef.renderingFlag == .shouldLoop:
                 viewOnceType = .loopingVideo
-            } else {
-                switch attachmentStream.computeContentType() {
-                case .animatedImage:
-                    viewOnceType = .animatedImage
-                case .image:
-                    viewOnceType = .stillImage
-                case .video:
-                    viewOnceType = .video
-                case .audio, .file:
-                    owsFailDebug("Unexpected content type.")
-                    return
-                }
+            case .video:
+                viewOnceType = .video
+            case .audio, .file:
+                owsFailDebug("Unexpected content type.")
+                return
             }
 
             // To ensure that we never show the content more than once,
