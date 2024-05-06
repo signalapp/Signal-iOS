@@ -133,6 +133,7 @@ class CameraCaptureControl: UIView {
 
     enum State {
         case initial
+        case maybeStartingRecording
         case recording
         case recordingLocked
         case recordingUsingVoiceOver
@@ -203,7 +204,7 @@ class CameraCaptureControl: UIView {
 
     private func updateShutterButtonAppearanceForCurrentState() {
         switch state {
-        case .initial:
+        case .initial, .maybeStartingRecording:
             shutterButtonInnerCircle.alpha = 1
             shutterButtonInnerCircle.backgroundColor = .clear
 
@@ -339,6 +340,7 @@ class CameraCaptureControl: UIView {
         case .began:
             guard state == .initial else { break }
 
+            state = .maybeStartingRecording
             sliderTrackingProgress = 0
             initialTouchLocation = currentLocation
             initialZoomPosition = nil
@@ -468,7 +470,7 @@ class CameraCaptureControl: UIView {
                     finishVideoRecording()
                 }
 
-            case .initial:
+            case .initial, .maybeStartingRecording:
                 capturePhoto()
 
             case .recordingLocked, .recordingUsingVoiceOver:

@@ -1160,6 +1160,7 @@ extension PhotoCaptureViewController {
     @objc
     private func didSwipeToTextComposer(gesture: UISwipeGestureRecognizer) {
         guard composerMode == .camera else { return }
+        guard bottomBar.captureControl.state == .initial else { return }
         setComposerMode(.text, animated: true)
     }
 }
