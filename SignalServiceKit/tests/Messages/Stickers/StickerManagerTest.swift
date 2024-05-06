@@ -8,7 +8,7 @@ import Foundation
 import SignalCoreKit
 @testable import SignalServiceKit
 
-class StickerManagerTest: SSKBaseTestSwift {
+class StickerManagerTest: SSKBaseTest {
 
     func testFirstEmoji() {
         XCTAssertNil(StickerManager.firstEmoji(inEmojiString: nil))

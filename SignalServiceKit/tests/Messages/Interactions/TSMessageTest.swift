@@ -6,7 +6,7 @@
 @testable import SignalServiceKit
 import XCTest
 
-class TSMessageTest: SSKBaseTestSwift {
+class TSMessageTest: SSKBaseTest {
     private var thread: TSThread!
 
     override func setUp() {

@@ -120,23 +120,6 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
         )
     }
 
-    #if TESTABLE_BUILD
-    @objc
-    static func withDefaultsObjc(
-        thread: TSThread,
-        messageBody: String,
-        timestamp: UInt64,
-        authorAci: AciObjC
-    ) -> TSIncomingMessageBuilder {
-        return .withDefaults(
-            thread: thread,
-            timestamp: timestamp,
-            authorAci: authorAci.wrappedAciValue,
-            messageBody: messageBody
-        )
-    }
-    #endif
-
     private var hasBuilt = false
 
     @objc

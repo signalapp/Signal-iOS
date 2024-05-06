@@ -21,7 +21,7 @@ class MockSSKPreferences: LinkPreviewManagerImpl.Shims.SSKPreferences {
     }
 }
 
-class OWSLinkPreviewTest: SSKBaseTestSwift {
+class OWSLinkPreviewTest: SSKBaseTest {
     let shouldRunNetworkTests = false
 
     var mockDB: MockDB!

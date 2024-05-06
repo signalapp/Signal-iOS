@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-final class OutgoingCallEventSyncMessageSerializationTest: SSKBaseTestSwift {
+final class OutgoingCallEventSyncMessageSerializationTest: SSKBaseTest {
     /// ``OutgoingCallEventSyncMessage`` used to be defined in ObjC. This test
     /// contains a hardcoded base64url-encoded representation of an instance of
     /// that class that was archived:

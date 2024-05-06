@@ -9,7 +9,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-final class DisappearingMessageFinderTest: SSKBaseTestSwift {
+final class DisappearingMessageFinderTest: SSKBaseTest {
     private var finder: DisappearingMessagesFinder!
     private let now: UInt64 = 1700000000000
 

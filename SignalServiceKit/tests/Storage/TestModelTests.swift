@@ -7,7 +7,7 @@ import Foundation
 import XCTest
 @testable import SignalServiceKit
 
-class TestModelTests: SSKBaseTestSwift {
+class TestModelTests: SSKBaseTest {
 
     func testTestModel() {
 

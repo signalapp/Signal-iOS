@@ -9,7 +9,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-final class DatabaseRecoveryTest: SSKBaseTestSwift {
+final class DatabaseRecoveryTest: SSKBaseTest {
     // MARK: - Setup
 
     private var keychainStorage: MockKeychainStorage!

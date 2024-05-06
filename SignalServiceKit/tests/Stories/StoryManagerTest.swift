@@ -9,7 +9,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class StoryManagerTest: SSKBaseTestSwift {
+class StoryManagerTest: SSKBaseTest {
 
     override func setUp() {
         super.setUp()

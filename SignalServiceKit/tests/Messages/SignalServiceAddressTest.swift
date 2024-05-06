@@ -891,7 +891,7 @@ class SignalServiceAddressTest: XCTestCase {
     }
 }
 
-class SignalServiceAddress2Test: SSKBaseTestSwift {
+class SignalServiceAddress2Test: SSKBaseTest {
     func testPersistence() throws {
         struct TestCase {
             var originalAddress: SignalServiceAddress

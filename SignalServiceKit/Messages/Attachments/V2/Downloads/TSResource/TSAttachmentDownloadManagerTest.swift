@@ -7,7 +7,7 @@ import Foundation
 import XCTest
 @testable import SignalServiceKit
 
-class TSAttachmentDownloadManagerTest: SSKBaseTestSwift {
+class TSAttachmentDownloadManagerTest: SSKBaseTest {
 
     func testEnumerateMessagesWithLegacyAttachments() throws {
         func makeRandomAttachment(tx: SDSAnyWriteTransaction) -> TSAttachment {

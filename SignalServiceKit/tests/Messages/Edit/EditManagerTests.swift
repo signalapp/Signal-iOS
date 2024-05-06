@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class EditManagerTests: SSKBaseTestSwift {
+class EditManagerTests: SSKBaseTest {
     var db: DB!
     var authorAci: Aci!
     var thread: TSThread!

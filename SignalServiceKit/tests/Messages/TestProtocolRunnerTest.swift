@@ -8,7 +8,7 @@ import LibSignalClient
 
 @testable import SignalServiceKit
 
-class TestProtocolRunnerTest: SSKBaseTestSwift {
+class TestProtocolRunnerTest: SSKBaseTest {
 
     var aliceClient: FakeSignalClient!
     var bobClient: FakeSignalClient!

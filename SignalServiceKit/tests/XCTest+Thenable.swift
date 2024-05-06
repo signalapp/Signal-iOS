@@ -1,11 +1,11 @@
 //
-// Copyright 2018 Signal Messenger, LLC
+// Copyright 2024 Signal Messenger, LLC
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalCoreKit
+
 import XCTest
-@testable import SignalServiceKit
-import CocoaLumberjack
 
 extension Thenable {
     func expect(timeout: TimeInterval, file: StaticString = #file, line: UInt = #line) -> Value {
@@ -19,44 +19,6 @@ extension Thenable {
         }
         _ = XCTWaiter.wait(for: [expectation], timeout: timeout)
         return try! XCTUnwrap(result, file: file, line: line)
-    }
-}
-
-@objc
-public class SSKBaseTestSwift: XCTestCase {
-    @objc
-    public override func setUp() {
-        super.setUp()
-
-        DDLog.add(DDTTYLogger.sharedInstance!)
-
-        SetCurrentAppContext(TestAppContext(), true)
-
-        MockSSKEnvironment.activate()
-    }
-
-    @objc
-    public override func tearDown() {
-        MockSSKEnvironment.flushAndWait()
-        super.tearDown()
-    }
-
-    @objc
-    public func read(_ block: (SDSAnyReadTransaction) -> Void) {
-        return databaseStorage.read(block: block)
-    }
-
-    public func write<T>(_ block: (SDSAnyWriteTransaction) -> T) -> T {
-        return databaseStorage.write(block: block)
-    }
-
-    public func write<T>(_ block: (SDSAnyWriteTransaction) throws -> T) throws -> T {
-        try databaseStorage.write(block: block)
-    }
-
-    @objc
-    public func asyncWrite(_ block: @escaping (SDSAnyWriteTransaction) -> Void) {
-        return databaseStorage.asyncWrite(block: block)
     }
 }
 

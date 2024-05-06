@@ -101,7 +101,7 @@ extension FooBarManager {
 }
 
 // That works in production code, but when you try and test you run into some problems:
-private class FooBarManagerTest: SSKBaseTestSwift {
+private class FooBarManagerTest: SSKBaseTest {
 
     var fooBarManager: FooBarManager!
 

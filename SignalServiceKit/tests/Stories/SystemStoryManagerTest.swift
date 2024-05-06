@@ -6,7 +6,7 @@
 import XCTest
 @testable import SignalServiceKit
 
-class SystemStoryManagerTest: SSKBaseTestSwift {
+class SystemStoryManagerTest: SSKBaseTest {
 
     let timeout: TimeInterval = 5
 

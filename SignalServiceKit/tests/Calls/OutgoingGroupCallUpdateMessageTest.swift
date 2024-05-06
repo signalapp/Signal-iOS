@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-final class OutgoingGroupCallUpdateMessageSerializationTest: SSKBaseTestSwift {
+final class OutgoingGroupCallUpdateMessageSerializationTest: SSKBaseTest {
     /// Confirms that an ``OutgoingGroupCallUpdateMessage`` (de)serializes.
     func testGroupCallUpdateMessageRoundTrip() throws {
         databaseStorage.write { tx in

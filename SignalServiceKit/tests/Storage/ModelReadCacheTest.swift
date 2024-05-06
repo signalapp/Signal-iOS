@@ -30,7 +30,7 @@ private class FakeAdapter: ModelCacheAdapter<OWSUserProfile.Address, OWSUserProf
     }
 }
 
-class ModelReadCacheTest: SSKBaseTestSwift {
+class ModelReadCacheTest: SSKBaseTest {
     private lazy var adapter = { FakeAdapter(cacheName: "fake", cacheCountLimit: 1024, cacheCountLimitNSE: 1024) }()
 
     override func setUp() {

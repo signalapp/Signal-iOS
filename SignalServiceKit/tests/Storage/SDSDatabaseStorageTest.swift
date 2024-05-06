@@ -33,7 +33,7 @@ extension TSInteraction {
 
 // MARK: -
 
-class SDSDatabaseStorageTest: SSKBaseTestSwift {
+class SDSDatabaseStorageTest: SSKBaseTest {
 
     // MARK: - Test Life Cycle
 

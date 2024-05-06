@@ -22,7 +22,7 @@ extension SSKPreKeyStore {
     }
 }
 
-class SSKPreKeyStoreTests: SSKBaseTestSwift {
+class SSKPreKeyStoreTests: SSKBaseTest {
 
     private var aciPreKeyStore: SSKPreKeyStore!
     private var pniPreKeyStore: SSKPreKeyStore!

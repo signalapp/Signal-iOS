@@ -7,7 +7,7 @@ import Foundation
 import XCTest
 @testable import SignalServiceKit
 
-class SDSKeyValueStoreTest: SSKBaseTestSwift {
+class SDSKeyValueStoreTest: SSKBaseTest {
 
     func test_bool() {
         let store = SDSKeyValueStore(collection: "test")

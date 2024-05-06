@@ -43,7 +43,7 @@ class MockObserver: DatabaseChangeDelegate {
 
 // MARK: -
 
-class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
+class SDSDatabaseStorageObservationTest: SSKBaseTest {
     func testGRDBSyncWrite() {
         // Make sure there's already at least one thread.
         let someThread = self.write { transaction in

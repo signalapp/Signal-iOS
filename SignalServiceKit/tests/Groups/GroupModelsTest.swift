@@ -15,7 +15,7 @@ private extension Aci {
     static let aci3 = Aci.randomForTesting()
 }
 
-class GroupModelsTest: SSKBaseTestSwift {
+class GroupModelsTest: SSKBaseTest {
 
     func testGroupMembershipChangingFullMembers() {
         var builder1 = GroupMembership.Builder()

@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class OWSIdentityManagerTests: SSKBaseTestSwift {
+class OWSIdentityManagerTests: SSKBaseTest {
     private var identityManager: OWSIdentityManagerImpl { DependenciesBridge.shared.identityManager as! OWSIdentityManagerImpl }
 
     override func setUp() {

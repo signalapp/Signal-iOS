@@ -9,7 +9,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class BlockingManagerTests: SSKBaseTestSwift {
+class BlockingManagerTests: SSKBaseTest {
     // Some tests will use this to simulate the state as seen by another process
     // If working correctly, state should be reloaded
     var remoteState = BlockingManager.State._testing_createEmpty()

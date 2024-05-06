@@ -9,7 +9,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class SignalRecipientTest: SSKBaseTestSwift {
+class SignalRecipientTest: SSKBaseTest {
 
     private lazy var localAci = Aci.randomForTesting()
     private lazy var localPhoneNumber = E164("+16505550199")!

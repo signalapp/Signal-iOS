@@ -7,7 +7,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-final class OWSDisappearingMessagesJobTest: SSKBaseTestSwift {
+final class OWSDisappearingMessagesJobTest: SSKBaseTest {
     private func message(
         withBody body: String,
         expiresInSeconds: UInt32,

@@ -9,7 +9,7 @@ import SignalCoreKit
 import LibSignalClient
 @testable import SignalServiceKit
 
-class OWSUDManagerTest: SSKBaseTestSwift {
+class OWSUDManagerTest: SSKBaseTest {
 
     private var udManagerImpl: OWSUDManagerImpl {
         return SSKEnvironment.shared.udManager as! OWSUDManagerImpl

@@ -6,7 +6,7 @@
 import XCTest
 import SignalServiceKit
 
-class OutgoingGroupUpdateMessageTest: SSKBaseTestSwift {
+class OutgoingGroupUpdateMessageTest: SSKBaseTest {
     override func setUp() {
         super.setUp()
         tsAccountManager.registerForTests(withLocalNumber: "+12225550101", uuid: UUID(), pni: UUID())

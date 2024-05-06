@@ -8,7 +8,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class BlockingManagerStateTests: SSKBaseTestSwift {
+class BlockingManagerStateTests: SSKBaseTest {
     var dut = BlockingManager.State._testing_createEmpty()
 
     override func setUp() {

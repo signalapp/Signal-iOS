@@ -6,7 +6,7 @@
 import XCTest
 @testable import SignalServiceKit
 
-class DeliveryReceiptContextTests: SSKBaseTestSwift {
+class DeliveryReceiptContextTests: SSKBaseTest {
     func testExecutesDifferentMessages() throws {
         let aliceRecipient = SignalServiceAddress(phoneNumber: "+12345678900")
         var timestamp: UInt64?

@@ -8,7 +8,7 @@ import XCTest
 import GRDB
 import LibSignalClient
 
-class MessageProcessingIntegrationTest: SSKBaseTestSwift {
+class MessageProcessingIntegrationTest: SSKBaseTest {
 
     let localE164Identifier = "+13235551234"
     let localAci = Aci.randomForTesting()

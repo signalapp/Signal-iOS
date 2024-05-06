@@ -6,7 +6,7 @@
 import XCTest
 import SignalServiceKit
 
-class OWSOutgoingReactionMessageTest: SSKBaseTestSwift {
+class OWSOutgoingReactionMessageTest: SSKBaseTest {
     private lazy var reactionMessage: OWSOutgoingReactionMessage = {
         write { transaction in
             let thread = TSContactThread.getOrCreateThread(

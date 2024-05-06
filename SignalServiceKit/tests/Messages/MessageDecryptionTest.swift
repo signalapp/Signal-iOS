@@ -7,7 +7,7 @@ import XCTest
 @testable import SignalServiceKit
 import LibSignalClient
 
-class MessageDecryptionTest: SSKBaseTestSwift {
+class MessageDecryptionTest: SSKBaseTest {
     let localE164Identifier = "+13235551234"
     let localAci = UUID()
     let localPni = UUID()

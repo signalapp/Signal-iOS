@@ -4,8 +4,8 @@
 //
 
 #import "PhoneNumberUtil.h"
-#import "SSKBaseTestObjC.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <XCTest/XCTest.h>
 
 @interface PhoneNumberUtilTest : XCTestCase
 @end

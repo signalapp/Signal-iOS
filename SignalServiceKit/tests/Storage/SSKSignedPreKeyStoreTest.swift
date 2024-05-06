@@ -15,7 +15,7 @@ private extension SSKSignedPreKeyStore {
     }
 }
 
-class SSKSignedPreKeyStoreTest: SSKBaseTestSwift {
+class SSKSignedPreKeyStoreTest: SSKBaseTest {
     func testPniStoreIsSeparate() {
         let aciStore = SSKSignedPreKeyStore(for: .aci)
         let pniStore = SSKSignedPreKeyStore(for: .pni)
