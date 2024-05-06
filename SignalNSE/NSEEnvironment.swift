@@ -11,7 +11,7 @@ class NSEEnvironment: Dependencies {
 
     init() {
         self.appContext = NSEContext()
-        SetCurrentAppContext(self.appContext, false)
+        SetCurrentAppContext(self.appContext)
     }
 
     // MARK: -

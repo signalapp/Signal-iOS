@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)appDocumentDirectoryPath
 {
-    return CurrentAppContext().appDocumentDirectoryPath;
+    return AppContextObjcBridge.CurrentAppContext.appDocumentDirectoryPath;
 }
 
 + (NSURL *)appSharedDataDirectoryURL
@@ -101,7 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)appSharedDataDirectoryPath
 {
-    return CurrentAppContext().appSharedDataDirectoryPath;
+    return AppContextObjcBridge.CurrentAppContext.appSharedDataDirectoryPath;
 }
 
 + (NSString *)cachesDirectoryPath
@@ -317,7 +317,7 @@ static void ClearOldTemporaryDirectoriesSync(void)
     // Ignore the "current" temp directory.
     NSString *currentTempDirName = OWSTemporaryDirectory().lastPathComponent;
 
-    NSDate *thresholdDate = CurrentAppContext().appLaunchTime;
+    NSDate *thresholdDate = AppContextObjcBridge.CurrentAppContext.appLaunchTime;
     NSString *dirPath = NSTemporaryDirectory();
     NSError *error;
     NSArray<NSString *> *fileNames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dirPath error:&error];

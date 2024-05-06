@@ -419,7 +419,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     BOOL needsToClearArchived = threadAssociatedData.isArchived && wasMessageInserted;
 
     // Shouldn't clear archived during migrations.
-    if (!CurrentAppContext().isRunningTests && !AppReadiness.isAppReady) {
+    if (!AppContextObjcBridge.CurrentAppContext.isRunningTests && !AppReadiness.isAppReady) {
         needsToClearArchived = NO;
     }
 

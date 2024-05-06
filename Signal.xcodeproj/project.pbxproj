@@ -1123,6 +1123,7 @@
 		72345D1E2B9A1F64000237B3 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */; };
 		72345D1F2B9A1FCF000237B3 /* DateUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3452851A26DE890300824983 /* DateUtil.swift */; };
 		72345D202B9A2035000237B3 /* MobileCoinHelperMinimal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BB78B4272C510800DA0D04 /* MobileCoinHelperMinimal.swift */; };
+		724329692BE3A0C60089206A /* AppContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 724329682BE3A0C60089206A /* AppContext.swift */; };
 		724D47B02B97BE13001BE973 /* ZkParamsMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5013365E2B2BC2EF004119F1 /* ZkParamsMigrator.swift */; };
 		724D47B22B97BE96001BE973 /* ZkParamsMigratorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501336602B2BCA1F004119F1 /* ZkParamsMigratorTest.swift */; };
 		724D47B52B97C28F001BE973 /* ProfileManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508347052AABBF9900DD2EC0 /* ProfileManagerTest.swift */; };
@@ -4023,6 +4024,7 @@
 		6BB92957776B3173894CD3E9 /* Pods-SignalServiceKit.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKit.app store release.xcconfig"; path = "Target Support Files/Pods-SignalServiceKit/Pods-SignalServiceKit.app store release.xcconfig"; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		721BC7EB2BC8253600648981 /* MimeTypeUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MimeTypeUtil.swift; sourceTree = "<group>"; };
+		724329682BE3A0C60089206A /* AppContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppContext.swift; sourceTree = "<group>"; };
 		7254651C2BA00FD200EABFD2 /* LocalUserDisplayMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalUserDisplayMode.swift; sourceTree = "<group>"; };
 		72976BF12BDCF00C0054FAC2 /* NSTimer+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSTimer+OWS.swift"; sourceTree = "<group>"; };
 		72B4819C2BD60FDF008B8BA1 /* OWSMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSMath.swift; sourceTree = "<group>"; };
@@ -11083,6 +11085,7 @@
 				6675F64C2925C012007A311E /* APNSRotationStore.swift */,
 				F9C5CB00289453B200548EEE /* AppContext.h */,
 				F9C5CB41289453B200548EEE /* AppContext.m */,
+				724329682BE3A0C60089206A /* AppContext.swift */,
 				F9C5CB6F289453B200548EEE /* AppExpiry.swift */,
 				F9C5CB53289453B200548EEE /* AppReadiness.h */,
 				F9C5CB81289453B200548EEE /* AppReadiness.swift */,
@@ -13456,6 +13459,7 @@
 				667DEE5F2BC7175300EFF32D /* AllMediaCategory.swift in Sources */,
 				720547F52B9C97EC00E2CF2F /* APNSRotationStore.swift in Sources */,
 				F9C5CE13289453B400548EEE /* AppContext.m in Sources */,
+				724329692BE3A0C60089206A /* AppContext.swift in Sources */,
 				F9C5CE40289453B400548EEE /* AppExpiry.swift in Sources */,
 				F9C5CE52289453B400548EEE /* AppReadiness.swift in Sources */,
 				725465642BA0369D00EABFD2 /* AppSetup.swift in Sources */,

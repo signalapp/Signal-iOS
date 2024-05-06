@@ -12,7 +12,7 @@ open class SignalBaseTest: XCTestCase {
     public override func setUp() {
         super.setUp()
 
-        SetCurrentAppContext(TestAppContext(), true)
+        SetCurrentAppContext(TestAppContext())
         MockSSKEnvironment.activate()
     }
 

@@ -49,7 +49,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         // This should be the first thing we do.
         let appContext = ShareAppExtensionContext(rootViewController: self)
-        SetCurrentAppContext(appContext, false)
+        SetCurrentAppContext(appContext)
 
         let debugLogger = DebugLogger.shared
         debugLogger.enableTTYLoggingIfNeeded()

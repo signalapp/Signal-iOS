@@ -496,7 +496,7 @@ NSString *NSStringForAttachmentThumbnailQuality(TSAttachmentThumbnailQuality val
 
 - (BOOL)canAsyncUpdate
 {
-    return !CurrentAppContext().isRunningTests;
+    return !AppContextObjcBridge.CurrentAppContext.isRunningTests;
 }
 
 - (BOOL)isValidVideo
@@ -745,7 +745,7 @@ NSString *NSStringForAttachmentThumbnailQuality(TSAttachmentThumbnailQuality val
 {
     OWSAssertDebug([self isAudioMimeType]);
 
-    if (CurrentAppContext().isRunningTests) {
+    if (AppContextObjcBridge.CurrentAppContext.isRunningTests) {
         // Return an arbitrary non-zero value to avoid
         // expected exceptions in AVFoundation.
         return 1;

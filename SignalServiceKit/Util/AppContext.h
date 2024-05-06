@@ -7,17 +7,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// These are fired whenever the corresponding "main app" or "app extension"
-// notification is fired.
-//
-// 1. This saves you the work of observing both.
-// 2. This allows us to ensure that any critical work (e.g. re-opening
-//    databases) has been done before app re-enters foreground, etc.
-extern NSString *const OWSApplicationDidEnterBackgroundNotification;
-extern NSString *const OWSApplicationWillEnterForegroundNotification;
-extern NSString *const OWSApplicationWillResignActiveNotification;
-extern NSString *const OWSApplicationDidBecomeActiveNotification;
-
 typedef void (^BackgroundTaskExpirationHandler)(void);
 typedef void (^AppActiveBlock)(void);
 
@@ -119,8 +108,5 @@ typedef void (^AppActiveBlock)(void);
 - (void)resetAppDataAndExit;
 
 @end
-
-id<AppContext> CurrentAppContext(void);
-void SetCurrentAppContext(id<AppContext> appContext, BOOL isRunningTests);
 
 NS_ASSUME_NONNULL_END

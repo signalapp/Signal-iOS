@@ -67,7 +67,7 @@ typedef NSNumber *OWSTaskId;
     self.backgroundTaskId = UIBackgroundTaskInvalid;
     self.expirationMap = [NSMutableDictionary new];
     self.idCounter = 0;
-    self.isAppActive = CurrentAppContext().isMainAppAndActive;
+    self.isAppActive = AppContextObjcBridge.CurrentAppContext.isMainAppAndActive;
 
     OWSSingletonAssert();
 
@@ -76,16 +76,16 @@ typedef NSNumber *OWSTaskId;
 
 - (void)observeNotifications
 {
-    if (!CurrentAppContext().isMainApp) {
+    if (!AppContextObjcBridge.CurrentAppContext.isMainApp) {
         return;
     }
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive:)
-                                                 name:OWSApplicationDidBecomeActiveNotification
+                                                 name:AppContextObjcBridge.owsApplicationDidBecomeActiveNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationWillResignActive:)
-                                                 name:OWSApplicationWillResignActiveNotification
+                                                 name:AppContextObjcBridge.owsApplicationWillResignActiveNotification
                                                object:nil];
 }
 
@@ -167,7 +167,7 @@ typedef NSNumber *OWSTaskId;
 // Begins or end a background task if necessary.
 - (BOOL)ensureBackgroundTaskState
 {
-    if (!CurrentAppContext().isMainApp) {
+    if (!AppContextObjcBridge.CurrentAppContext.isMainApp) {
         // We can't create background tasks in the SAE, but pretend that we succeeded.
         return YES;
     }
@@ -192,7 +192,7 @@ typedef NSNumber *OWSTaskId;
             OWSLogInfo(@"Ending background task.");
             UIBackgroundTaskIdentifier backgroundTaskId = self.backgroundTaskId;
             self.backgroundTaskId = UIBackgroundTaskInvalid;
-            [CurrentAppContext() endBackgroundTask:backgroundTaskId];
+            [AppContextObjcBridge.CurrentAppContext endBackgroundTask:backgroundTaskId];
             return YES;
         }
     }
@@ -201,12 +201,12 @@ typedef NSNumber *OWSTaskId;
 // Returns NO if the background task cannot be begun.
 - (BOOL)startBackgroundTask
 {
-    OWSAssertDebug(CurrentAppContext().isMainApp);
+    OWSAssertDebug(AppContextObjcBridge.CurrentAppContext.isMainApp);
 
     @synchronized(self) {
         OWSAssertDebug(self.backgroundTaskId == UIBackgroundTaskInvalid);
 
-        self.backgroundTaskId = [CurrentAppContext() beginBackgroundTaskWithExpirationHandler:^{
+        self.backgroundTaskId = [AppContextObjcBridge.CurrentAppContext beginBackgroundTaskWithExpirationHandler:^{
             // Supposedly [UIApplication beginBackgroundTaskWithExpirationHandler]'s handler
             // will always be called on the main thread, but in practice we've observed
             // otherwise.
@@ -253,7 +253,7 @@ typedef NSNumber *OWSTaskId;
         }
         if (backgroundTaskId != UIBackgroundTaskInvalid) {
             // Apparently we need to "end" even expired background tasks.
-            [CurrentAppContext() endBackgroundTask:backgroundTaskId];
+            [AppContextObjcBridge.CurrentAppContext endBackgroundTask:backgroundTaskId];
         }
     });
 }

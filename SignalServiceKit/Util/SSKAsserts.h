@@ -5,7 +5,6 @@
 
 #import <SignalCoreKit/NSObject+OWS.h>
 #import <SignalCoreKit/OWSAsserts.h>
-#import <SignalServiceKit/AppContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -35,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #define OWSSingletonAssertInit()                                                                                       \
     @synchronized([self class]) {                                                                                      \
-        if (!CurrentAppContext().isRunningTests) {                                                                     \
+        if (!AppContextObjcBridge.CurrentAppContext.isRunningTests) {                                                  \
             OWSAssertDebug(!_isSingletonCreated);                                                                      \
             _isSingletonCreated = YES;                                                                                 \
         }                                                                                                              \

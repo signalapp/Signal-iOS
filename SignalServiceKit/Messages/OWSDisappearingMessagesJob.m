@@ -64,11 +64,11 @@ void AssertIsOnDisappearingMessagesQueue(void)
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive:)
-                                                 name:OWSApplicationDidBecomeActiveNotification
+                                                 name:AppContextObjcBridge.owsApplicationDidBecomeActiveNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationWillResignActive:)
-                                                 name:OWSApplicationWillResignActiveNotification
+                                                 name:AppContextObjcBridge.owsApplicationWillResignActiveNotification
                                                object:nil];
 
     return self;
@@ -169,7 +169,7 @@ void AssertIsOnDisappearingMessagesQueue(void)
     OWSAssertDebug(date);
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        if (!CurrentAppContext().isMainAppAndActive) {
+        if (!AppContextObjcBridge.CurrentAppContext.isMainAppAndActive) {
             // Don't schedule run when inactive or not in main app.
             return;
         }
@@ -198,7 +198,7 @@ void AssertIsOnDisappearingMessagesQueue(void)
 {
     OWSAssertIsOnMainThread();
 
-    if (!CurrentAppContext().isMainAppAndActive) {
+    if (!AppContextObjcBridge.CurrentAppContext.isMainAppAndActive) {
         // Don't schedule run when inactive or not in main app.
         OWSFailDebug(@"Disappearing messages job timer fired while main app inactive.");
         return;
@@ -220,7 +220,7 @@ void AssertIsOnDisappearingMessagesQueue(void)
         recentlyScheduledDisappearanceTimer = YES;
     }
 
-    if (!CurrentAppContext().isMainAppAndActive) {
+    if (!AppContextObjcBridge.CurrentAppContext.isMainAppAndActive) {
         return;
     }
 
