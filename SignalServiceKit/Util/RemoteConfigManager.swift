@@ -265,7 +265,7 @@ public class RemoteConfig: NSObject {
     }
 
     public static var experimentalTransportShadowingHigh: Bool {
-        return isEnabled(.experimentalTransportShadowingHigh, defaultValue: DebugFlags.internalLogging)
+        return isEnabled(.experimentalTransportShadowingHigh, defaultValue: DebugFlags.betaLogging)
     }
 
     @available(*, unavailable, message: "cached in UserDefaults by ChatConnectionManager")
