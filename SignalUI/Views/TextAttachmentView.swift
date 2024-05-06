@@ -610,7 +610,9 @@ open class TextAttachmentView: UIView {
                     thumbnailImageView.image = image
                 } else {
                     linkPreview.imageAsync(thumbnailQuality: thumbnailQuality) { image in
-                        thumbnailImageView.image = image
+                        DispatchQueue.main.async {
+                            thumbnailImageView.image = image
+                        }
                     }
                 }
             } else {
