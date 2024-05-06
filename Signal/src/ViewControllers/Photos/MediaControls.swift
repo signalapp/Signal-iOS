@@ -150,6 +150,13 @@ class CameraCaptureControl: UIView {
     }
 
     private var sliderTrackingProgress: CGFloat = 0 {
+        willSet {
+            if newValue > 0 {
+                // Prepare "slide to lock" UI in case user swipes right too fast
+                // and animation for setState(.recording) isn't finished yet.
+                prepareLongPressVideoRecordingControlsIfNecessary()
+            }
+        }
         didSet {
             guard isRecordingWithLongPress else { return }
 
@@ -177,28 +184,26 @@ class CameraCaptureControl: UIView {
         }
 
         if animationDuration > 0 {
-            UIView.animate(withDuration: animationDuration,
-                           delay: 0,
-                           options: [ .beginFromCurrentState ],
-                           animations: {
-                self.updateShutterButtonAppearanceForCurrentState()
-                self.setNeedsLayout()
-                self.layoutIfNeeded()
-            },
-                           completion: { _ in
-                // When switching to "recording" state we want to prepare "slide to lock" UI elements
-                // in the completion handler because none of those elements are needed yet a this point.
-                // Adding the controls to the view hierarchy outside of the animation block
-                // also fixes an issue where stop button would be visible briefly during shutter button animations.
-                if self.state == .recording && isRecordingWithLongPress {
-                    self.prepareLongPressVideoRecordingControls()
+            UIView.animate(
+                withDuration: animationDuration,
+                delay: 0,
+                options: [ .beginFromCurrentState ],
+                animations: {
+                    self.updateShutterButtonAppearanceForCurrentState()
+                    self.setNeedsLayout()
+                    self.layoutIfNeeded()
+                },
+                completion: { _ in
+                    // When switching to "recording" state we want to prepare "slide to lock" UI elements
+                    // in the completion handler because none of those elements are needed yet a this point.
+                    // Adding the controls to the view hierarchy outside of the animation block
+                    // also fixes an issue where stop button would be visible briefly during shutter button animations.
+                    self.prepareLongPressVideoRecordingControlsIfNecessary()
                 }
-            })
+            )
         } else {
             updateShutterButtonAppearanceForCurrentState()
-            if state == .recording && isRecordingWithLongPress {
-                prepareLongPressVideoRecordingControls()
-            }
+            prepareLongPressVideoRecordingControlsIfNecessary()
         }
     }
 
@@ -471,6 +476,9 @@ class CameraCaptureControl: UIView {
                 }
 
             case .initial, .maybeStartingRecording:
+                if state == .maybeStartingRecording {
+                    state = .initial
+                }
                 capturePhoto()
 
             case .recordingLocked, .recordingUsingVoiceOver:
@@ -524,7 +532,9 @@ class CameraCaptureControl: UIView {
         }
     }
 
-    private func prepareLongPressVideoRecordingControls() {
+    private func prepareLongPressVideoRecordingControlsIfNecessary() {
+        guard state == .recording && sliderTrackingProgress == 0 && isRecordingWithLongPress else { return }
+
         initializeVideoRecordingControlsIfNecessary()
 
         stopButton.alpha = 1
