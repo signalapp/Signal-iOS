@@ -27,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _joinedMemberUuids = [joinedMemberAcis map:^(AciObjC *aci) { return aci.serviceIdUppercaseString; }];
+    _hasEnded = joinedMemberAcis.count == 0;
     _creatorUuid = creatorAci.serviceIdUppercaseString;
 
     return self;

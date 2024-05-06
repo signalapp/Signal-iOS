@@ -7,10 +7,12 @@ import Foundation
 
 extension MessageBackup {
 
-    internal enum InteractionArchiverType: Equatable {
+    enum ChatItemArchiverType: Equatable {
         case incomingMessage
         case outgoingMessage
         case groupUpdateInfoMessage
+        case individualCall
+        case groupCall
         // TODO: remove once all types are implemented
         case unimplemented
     }
@@ -18,16 +20,18 @@ extension MessageBackup {
 
 extension TSInteraction {
 
-    internal func archiverType(
+    func archiverType(
         localIdentifiers: LocalIdentifiers
-    ) -> MessageBackup.InteractionArchiverType {
+    ) -> MessageBackup.ChatItemArchiverType {
         if self is TSIncomingMessage {
             return .incomingMessage
-        }
-        if self is TSOutgoingMessage {
+        } else if self is TSOutgoingMessage {
             return .outgoingMessage
-        }
-        if let infoMessage = self as? TSInfoMessage {
+        } else if self is TSCall {
+            return .individualCall
+        } else if self is OWSGroupCallMessage {
+            return .groupCall
+        } else if let infoMessage = self as? TSInfoMessage {
             switch infoMessage.groupUpdateMetadata(localIdentifiers: localIdentifiers) {
             case .nonGroupUpdate:
                 // TODO: other info message types
@@ -46,7 +50,7 @@ extension TSInteraction {
 
 extension BackupProto.ChatItem {
 
-    internal var archiverType: MessageBackup.InteractionArchiverType {
+    internal var archiverType: MessageBackup.ChatItemArchiverType {
         switch directionalDetails {
         case .incoming:
             return .incomingMessage

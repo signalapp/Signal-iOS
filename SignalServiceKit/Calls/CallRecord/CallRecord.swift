@@ -115,11 +115,6 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
     /// This field is only usable if this record represents a group ring.
     public internal(set) var groupCallRingerAci: Aci? {
         get {
-            guard isGroupRing else {
-                CallRecordLogger.shared.error("Requested group call ringer, but this record wasn't a group ring!")
-                return nil
-            }
-
             return _groupCallRingerAci.map { Aci(fromUUID: $0) }
         }
         set {

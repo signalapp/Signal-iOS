@@ -88,7 +88,7 @@ internal protocol MessageBackupInteractionArchiver: MessageBackupProtoArchiver {
 
     typealias Details = MessageBackup.InteractionArchiveDetails
 
-    static var archiverType: MessageBackup.InteractionArchiverType { get }
+    static var archiverType: MessageBackup.ChatItemArchiverType { get }
 
     func archiveInteraction(
         _ interaction: TSInteraction,

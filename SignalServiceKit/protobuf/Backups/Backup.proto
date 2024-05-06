@@ -19,8 +19,7 @@ message BackupProto {
       Recipient recipient = 2;
       Chat chat = 3;
       ChatItem chatItem = 4;
-      Call call = 5;
-      StickerPack stickerPack = 6;
+      StickerPack stickerPack = 5;
     }
   }
 
@@ -240,37 +239,6 @@ message BackupProto {
     bool firstUse = 4;
     bool verified = 5;
     bool nonblockingApproval = 6;
-  }
-
-  message Call {
-    enum Type {
-      UNKNOWN_TYPE = 0;
-      AUDIO_CALL = 1;
-      VIDEO_CALL = 2;
-      GROUP_CALL = 3;
-      AD_HOC_CALL = 4;
-    }
-
-    enum Event {
-      UNKNOWN_EVENT = 0;
-      OUTGOING = 1; // 1:1 calls only
-      ACCEPTED = 2; // 1:1 and group calls. Group calls: You accepted a ring.
-      NOT_ACCEPTED = 3; // 1:1 calls only,
-      MISSED = 4; // 1:1 and group. Group calls: The remote ring has expired or was cancelled by the ringer.
-      DELETE = 5; // 1:1 and Group/Ad-Hoc Calls.
-      GENERIC_GROUP_CALL = 6; // Group/Ad-Hoc Calls only. Initial state
-      JOINED = 7; // Group Calls: User has joined the group call.
-      DECLINED = 8; // Group Calls: If you declined a ring.
-      OUTGOING_RING = 9; // Group Calls: If you are ringing a group.
-    }
-
-    uint64 callId = 1;
-    uint64 conversationRecipientId = 2;
-    optional Type type = 3;
-    bool outgoing = 4;
-    uint64 timestamp = 5;
-    optional uint64 ringerRecipientId = 6;
-    optional Event event = 7;
   }
 
   message ChatItem {
@@ -563,34 +531,72 @@ message BackupProto {
       ProfileChangeChatUpdate profileChange = 4;
       ThreadMergeChatUpdate threadMerge = 5;
       SessionSwitchoverChatUpdate sessionSwitchover = 6;
-      CallChatUpdate callingMessage = 7;
+      IndividualCall individualCall = 7;
+      GroupCall groupCall = 8;
     }
   }
 
-  message CallChatUpdate {
-    oneof call {
-      uint64 callId = 1; // maps to id of call from call log
-      IndividualCallChatUpdate callMessage = 2;
-      GroupCallChatUpdate groupCall = 3;
-    }
-  }
-
-  message IndividualCallChatUpdate {
+  message IndividualCall {
     enum Type {
-      UNKNOWN = 0;
-      INCOMING_AUDIO_CALL = 1;
-      INCOMING_VIDEO_CALL = 2;
-      OUTGOING_AUDIO_CALL = 3;
-      OUTGOING_VIDEO_CALL = 4;
-      MISSED_AUDIO_CALL = 5;
-      MISSED_VIDEO_CALL = 6;
+      UNKNOWN_TYPE = 0;
+      AUDIO_CALL = 1;
+      VIDEO_CALL = 2;
     }
+
+    enum Direction {
+      UNKNOWN_DIRECTION = 0;
+      INCOMING = 1;
+      OUTGOING = 2;
+    }
+
+    enum State {
+      UNKNOWN_STATE = 0;
+      ACCEPTED = 1;
+      NOT_ACCEPTED = 2;
+      // An incoming call that is no longer ongoing, which we neither accepted
+      // not actively declined. For example, it expired, was canceled by the
+      // sender, or was rejected due to being in another call.
+      MISSED = 3;
+      // We auto-declined an incoming call due to a notification profile.
+      MISSED_NOTIFICATION_PROFILE = 4;
+    }
+
+    optional uint64 callId = 1;
+    Type type = 2;
+    Direction direction = 3;
+    State state = 4;
+    uint64 startedCallTimestamp = 5;
   }
 
-  message GroupCallChatUpdate {
-    optional bytes startedCallAci = 1;
-    uint64 startedCallTimestamp = 2;
-    repeated bytes inCallAcis = 3;
+  message GroupCall {
+    enum State {
+      UNKNOWN_STATE = 0;
+      // A group call was started without ringing.
+      GENERIC = 1;
+      // We joined a group call that was started without ringing.
+      JOINED = 2;
+      // An incoming group call is actively ringing.
+      RINGING = 3;
+      // We accepted an incoming group ring.
+      ACCEPTED = 4;
+      // We declined an incoming group ring.
+      DECLINED = 5;
+      // We missed an incoming group ring, for example because it expired.
+      MISSED = 6;
+      // We auto-declined an incoming group ring due to a notification profile.
+      MISSED_NOTIFICATION_PROFILE = 7;
+      // An outgoing ring was started. We don't track any state for outgoing rings
+      // beyond that they started.
+      OUTGOING_RING = 8;
+    }
+
+    optional uint64 callId = 1;
+    State state = 2;
+    optional uint64 ringerRecipientId = 3;
+    optional uint64 startedCallRecipientId = 4;
+    uint64 startedCallTimestamp = 5;
+    // The time the call ended. 0 indicates an unknown time.
+    uint64 endedCallTimestamp = 6;
   }
 
   message SimpleChatUpdate {

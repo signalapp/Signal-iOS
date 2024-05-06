@@ -793,7 +793,7 @@
 		662590BF2B56ECA8001FDCDD /* MessageBackupGroupUpdateMessageArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590BE2B56ECA8001FDCDD /* MessageBackupGroupUpdateMessageArchiver.swift */; };
 		662590CB2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590CA2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift */; };
 		662590CD2B5994DC001FDCDD /* MessageBackupGroupUpdateSwiftToProtoConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590CC2B5994DC001FDCDD /* MessageBackupGroupUpdateSwiftToProtoConverter.swift */; };
-		662590CF2B59BE64001FDCDD /* MessageBackupInteractionArchiverType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590CE2B59BE64001FDCDD /* MessageBackupInteractionArchiverType.swift */; };
+		662590CF2B59BE64001FDCDD /* MessageBackupChatItemArchiverType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590CE2B59BE64001FDCDD /* MessageBackupChatItemArchiverType.swift */; };
 		662590D12B5B525E001FDCDD /* MessageBackupErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590D02B5B525E001FDCDD /* MessageBackupErrors.swift */; };
 		66290FED2BCDE5ED0062605F /* TSResourceMultisend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66290FEC2BCDE5ED0062605F /* TSResourceMultisend.swift */; };
 		662AC9252A460477009E2D5F /* FingerprintViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9242A460477009E2D5F /* FingerprintViewController.swift */; };
@@ -1759,6 +1759,7 @@
 		D9A81C6D2BAA59EF00C07D2B /* MockCallRecordSyncMessageConversationIdAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A81C6C2BAA59EF00C07D2B /* MockCallRecordSyncMessageConversationIdAdapter.swift */; };
 		D9A81C6F2BAB43D900C07D2B /* CallRecordMissedCallManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A81C6E2BAB43D900C07D2B /* CallRecordMissedCallManagerTest.swift */; };
 		D9A81C712BAB443600C07D2B /* MockCallRecordQuerier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A81C702BAB443600C07D2B /* MockCallRecordQuerier.swift */; };
+		D9A85DC22BE1719C003F7045 /* MessageBackupGroupCallArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A85DC12BE1719C003F7045 /* MessageBackupGroupCallArchiver.swift */; };
 		D9AA37A02A86E0910088EFFB /* OutgoingCallEventSyncMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AA379F2A86E0910088EFFB /* OutgoingCallEventSyncMessageTest.swift */; };
 		D9AA37A42A8A9A910088EFFB /* OutgoingGroupCallUpdateMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AA37A32A8A9A910088EFFB /* OutgoingGroupCallUpdateMessage.swift */; };
 		D9AB38D0283C38B10003C038 /* InteractionFinderPerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */; };
@@ -1784,6 +1785,7 @@
 		D9C0AE692BD82DBC00FCB05E /* InactiveLinkedDeviceReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C0AE682BD82DBC00FCB05E /* InactiveLinkedDeviceReminderMegaphone.swift */; };
 		D9C0AE6B2BDB212F00FCB05E /* MessageBackupLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C0AE6A2BDB212F00FCB05E /* MessageBackupLogger.swift */; };
 		D9C0AE6D2BDC520000FCB05E /* BackupProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C0AE6C2BDC520000FCB05E /* BackupProto.swift */; };
+		D9C0AE6F2BDC6B3800FCB05E /* MessageBackupIndividualCallArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C0AE6E2BDC6B3800FCB05E /* MessageBackupIndividualCallArchiver.swift */; };
 		D9C2D77E299D750200D79715 /* UsernameEducationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D77D299D750200D79715 /* UsernameEducationManager.swift */; };
 		D9C2D780299EC11400D79715 /* CreateUsernameMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D77F299EC11400D79715 /* CreateUsernameMegaphone.swift */; };
 		D9C2D782299EEDDA00D79715 /* UsernameSelectionCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C2D781299EEDDA00D79715 /* UsernameSelectionCoordinator.swift */; };
@@ -3682,7 +3684,7 @@
 		662590BE2B56ECA8001FDCDD /* MessageBackupGroupUpdateMessageArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupGroupUpdateMessageArchiver.swift; sourceTree = "<group>"; };
 		662590CA2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupGroupUpdateProtoToSwiftConverter.swift; sourceTree = "<group>"; };
 		662590CC2B5994DC001FDCDD /* MessageBackupGroupUpdateSwiftToProtoConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupGroupUpdateSwiftToProtoConverter.swift; sourceTree = "<group>"; };
-		662590CE2B59BE64001FDCDD /* MessageBackupInteractionArchiverType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupInteractionArchiverType.swift; sourceTree = "<group>"; };
+		662590CE2B59BE64001FDCDD /* MessageBackupChatItemArchiverType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupChatItemArchiverType.swift; sourceTree = "<group>"; };
 		662590D02B5B525E001FDCDD /* MessageBackupErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupErrors.swift; sourceTree = "<group>"; };
 		66290FEC2BCDE5ED0062605F /* TSResourceMultisend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceMultisend.swift; sourceTree = "<group>"; };
 		662AC9242A460477009E2D5F /* FingerprintViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintViewController.swift; sourceTree = "<group>"; };
@@ -4659,6 +4661,7 @@
 		D9A81C6C2BAA59EF00C07D2B /* MockCallRecordSyncMessageConversationIdAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCallRecordSyncMessageConversationIdAdapter.swift; sourceTree = "<group>"; };
 		D9A81C6E2BAB43D900C07D2B /* CallRecordMissedCallManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordMissedCallManagerTest.swift; sourceTree = "<group>"; };
 		D9A81C702BAB443600C07D2B /* MockCallRecordQuerier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCallRecordQuerier.swift; sourceTree = "<group>"; };
+		D9A85DC12BE1719C003F7045 /* MessageBackupGroupCallArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupGroupCallArchiver.swift; sourceTree = "<group>"; };
 		D9AA379F2A86E0910088EFFB /* OutgoingCallEventSyncMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingCallEventSyncMessageTest.swift; sourceTree = "<group>"; };
 		D9AA37A32A8A9A910088EFFB /* OutgoingGroupCallUpdateMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingGroupCallUpdateMessage.swift; sourceTree = "<group>"; };
 		D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InteractionFinderPerformanceTests.swift; sourceTree = "<group>"; };
@@ -4685,6 +4688,7 @@
 		D9C0AE682BD82DBC00FCB05E /* InactiveLinkedDeviceReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InactiveLinkedDeviceReminderMegaphone.swift; sourceTree = "<group>"; };
 		D9C0AE6A2BDB212F00FCB05E /* MessageBackupLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupLogger.swift; sourceTree = "<group>"; };
 		D9C0AE6C2BDC520000FCB05E /* BackupProto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackupProto.swift; sourceTree = "<group>"; };
+		D9C0AE6E2BDC6B3800FCB05E /* MessageBackupIndividualCallArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupIndividualCallArchiver.swift; sourceTree = "<group>"; };
 		D9C2D777299B07D300D79715 /* Usernames+BetterIdentifierChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+BetterIdentifierChecker.swift"; sourceTree = "<group>"; };
 		D9C2D77D299D750200D79715 /* UsernameEducationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameEducationManager.swift; sourceTree = "<group>"; };
 		D9C2D77F299EC11400D79715 /* CreateUsernameMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUsernameMegaphone.swift; sourceTree = "<group>"; };
@@ -7942,11 +7946,12 @@
 		66CD255D2B06886800139E17 /* ChatItem */ = {
 			isa = PBXGroup;
 			children = (
+				D9C0AE702BDC6B4000FCB05E /* Calls */,
 				662590C82B599467001FDCDD /* InfoMessages */,
 				66CD25672B06960F00139E17 /* MessageBackupChatItemArchiver.swift */,
 				66CD25882B0EA39200139E17 /* MessageBackupChatItemArchiverImpl.swift */,
+				662590CE2B59BE64001FDCDD /* MessageBackupChatItemArchiverType.swift */,
 				66CD258C2B0EB3A700139E17 /* MessageBackupInteractionArchiver.swift */,
-				662590CE2B59BE64001FDCDD /* MessageBackupInteractionArchiverType.swift */,
 				6605B9812B19547C00E8A68A /* MessageBackupReactionArchiver.swift */,
 				66CD258E2B0EB4AC00139E17 /* MessageBackupTSIncomingMessageArchiver.swift */,
 				66CD25922B0EC55100139E17 /* MessageBackupTSMessageContentsArchiver.swift */,
@@ -9551,6 +9556,15 @@
 				D9B95A9429E682E900D7CB95 /* JobRecordTest.swift */,
 			);
 			path = JobRecords;
+			sourceTree = "<group>";
+		};
+		D9C0AE702BDC6B4000FCB05E /* Calls */ = {
+			isa = PBXGroup;
+			children = (
+				D9A85DC12BE1719C003F7045 /* MessageBackupGroupCallArchiver.swift */,
+				D9C0AE6E2BDC6B3800FCB05E /* MessageBackupIndividualCallArchiver.swift */,
+			);
+			path = Calls;
 			sourceTree = "<group>";
 		};
 		D9C2D78529A80BE700D79715 /* ChangePhoneNumber */ = {
@@ -13755,17 +13769,19 @@
 				66CD25662B0695F400139E17 /* MessageBackupChatArchiver.swift in Sources */,
 				66CD25682B06960F00139E17 /* MessageBackupChatItemArchiver.swift in Sources */,
 				66CD25892B0EA39200139E17 /* MessageBackupChatItemArchiverImpl.swift in Sources */,
+				662590CF2B59BE64001FDCDD /* MessageBackupChatItemArchiverType.swift in Sources */,
 				66CD25912B0EC20800139E17 /* MessageBackupConstants.swift in Sources */,
 				6619A1CB2B2D176E004B38FE /* MessageBackupContactAddress.swift in Sources */,
 				66CD256E2B06E14F00139E17 /* MessageBackupContactRecipientArchiver.swift in Sources */,
 				D90D4D842BBB61680097C573 /* MessageBackupEmptyFrameId.swift in Sources */,
 				662590D12B5B525E001FDCDD /* MessageBackupErrors.swift in Sources */,
+				D9A85DC22BE1719C003F7045 /* MessageBackupGroupCallArchiver.swift in Sources */,
 				66CD257B2B08374600139E17 /* MessageBackupGroupRecipientArchiver.swift in Sources */,
 				662590BF2B56ECA8001FDCDD /* MessageBackupGroupUpdateMessageArchiver.swift in Sources */,
 				662590CB2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift in Sources */,
 				662590CD2B5994DC001FDCDD /* MessageBackupGroupUpdateSwiftToProtoConverter.swift in Sources */,
+				D9C0AE6F2BDC6B3800FCB05E /* MessageBackupIndividualCallArchiver.swift in Sources */,
 				66CD258D2B0EB3A700139E17 /* MessageBackupInteractionArchiver.swift in Sources */,
-				662590CF2B59BE64001FDCDD /* MessageBackupInteractionArchiverType.swift in Sources */,
 				C1A0F79D2B9F57340009DC0D /* MessageBackupKeyMaterial.swift in Sources */,
 				C1A0F79F2B9F59920009DC0D /* MessageBackupKeyMaterialImpl.swift in Sources */,
 				66CD25792B0832A400139E17 /* MessageBackupLocalRecipientArchiver.swift in Sources */,

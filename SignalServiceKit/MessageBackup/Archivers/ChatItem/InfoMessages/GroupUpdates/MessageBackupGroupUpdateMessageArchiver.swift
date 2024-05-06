@@ -10,6 +10,8 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
 
     typealias PersistableGroupUpdateItem = TSInfoMessage.PersistableGroupUpdateItem
 
+    static let archiverType: MessageBackup.ChatItemArchiverType = .groupUpdateInfoMessage
+
     private let groupUpdateBuilder: GroupUpdateItemBuilder
     private let groupUpdateHelper: GroupUpdateInfoMessageInserterBackupHelper
     private let interactionStore: InteractionStore
@@ -23,8 +25,6 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
         self.groupUpdateHelper = groupUpdateHelper
         self.interactionStore = interactionStore
     }
-
-    static let archiverType = MessageBackup.InteractionArchiverType.groupUpdateInfoMessage
 
     func archiveInteraction(
         _ interaction: TSInteraction,

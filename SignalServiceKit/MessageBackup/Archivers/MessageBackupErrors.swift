@@ -66,6 +66,9 @@ extension MessageBackup {
 
             /// Parameters required to archive a GV2 group member are missing
             case missingRequiredGroupMemberParams
+
+            /// A group call record had an invalid individual-call status.
+            case groupCallRecordHadIndividualCallStatus
         }
 
         private let type: ErrorType
@@ -123,7 +126,8 @@ extension MessageBackup {
                     .emptyGroupUpdate,
                     .missingLocalProfile,
                     .missingLocalProfileKey,
-                    .missingRequiredGroupMemberParams:
+                    .missingRequiredGroupMemberParams,
+                    .groupCallRecordHadIndividualCallStatus:
                 // Log any others as we see them.
                 return nil
             }
@@ -257,13 +261,32 @@ extension MessageBackup {
                 /// An unrecognized BackupProto.GroupChangeChatUpdate.
                 case unrecognizedGroupUpdate
 
+                /// A frame was entirely missing its enclosed item.
+                case frameMissingItem
+
                 /// A profile key for the local user that could not be parsed into a valid aes256 key
                 case invalidLocalProfileKey
                 /// A profile key for the local user that could not be parsed into a valid aes256 key
-                case invalidUsernameLink
+                case invalidLocalUsernameLink
 
-                /// A frame was entirely missing its enclosed item.
-                case frameMissingItem
+                /// A BackupProto.IndividualCall chat item update was associated
+                /// with a thread that was not a contact thread.
+                case individualCallNotInContactThread
+                /// A BackupProto.IndividualCall had an unrecognized type.
+                case individualCallUnrecognizedType
+                /// A BackupProto.IndividualCall had an unrecognized direction.
+                case individualCallUnrecognizedDirection
+                /// A BackupProto.IndividualCall had an unrecognized state.
+                case individualCallUnrecognizedState
+
+                /// A BackupProto.GroupCall chat item update was associated with
+                /// a thread that was not a group thread.
+                case groupCallNotInGroupThread
+                /// A BackupProto.GroupCall had an unrecognized state.
+                case groupCallUnrecognizedState
+                /// A BackupProto.GroupCall referenced a recipient that was not
+                /// a contact or otherwise did not contain an ACI.
+                case groupCallRecipientIdNotAnAci(RecipientId)
             }
 
             /// The proto contained invalid or self-contradictory data, e.g an invalid ACI.
@@ -352,7 +375,14 @@ extension MessageBackup {
                         .unrecognizedGroupUpdate,
                         .frameMissingItem,
                         .invalidLocalProfileKey,
-                        .invalidUsernameLink:
+                        .invalidLocalUsernameLink,
+                        .individualCallNotInContactThread,
+                        .individualCallUnrecognizedType,
+                        .individualCallUnrecognizedDirection,
+                        .individualCallUnrecognizedState,
+                        .groupCallNotInGroupThread,
+                        .groupCallUnrecognizedState,
+                        .groupCallRecipientIdNotAnAci:
                     // Collapse all others by the id of the containing frame.
                     return idLogString
                 }

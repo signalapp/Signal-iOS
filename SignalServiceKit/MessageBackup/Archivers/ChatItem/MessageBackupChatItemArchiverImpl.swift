@@ -6,41 +6,50 @@
 import Foundation
 import LibSignalClient
 
-public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
+public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
 
+    private let callRecordStore: CallRecordStore
     private let dateProvider: DateProvider
+    private let groupCallRecordManager: GroupCallRecordManager
     private let groupUpdateHelper: GroupUpdateInfoMessageInserterBackupHelper
     private let groupUpdateItemBuilder: GroupUpdateItemBuilder
+    private let individualCallRecordManager: IndividualCallRecordManager
     private let interactionStore: InteractionStore
     private let reactionStore: ReactionStore
     private let sentMessageTranscriptReceiver: SentMessageTranscriptReceiver
     private let threadStore: ThreadStore
 
     public init(
+        callRecordStore: CallRecordStore,
         dateProvider: @escaping DateProvider,
+        groupCallRecordManager: GroupCallRecordManager,
         groupUpdateHelper: GroupUpdateInfoMessageInserterBackupHelper,
         groupUpdateItemBuilder: GroupUpdateItemBuilder,
+        individualCallRecordManager: IndividualCallRecordManager,
         interactionStore: InteractionStore,
         reactionStore: ReactionStore,
         sentMessageTranscriptReceiver: SentMessageTranscriptReceiver,
         threadStore: ThreadStore
     ) {
+        self.callRecordStore = callRecordStore
         self.dateProvider = dateProvider
+        self.groupCallRecordManager = groupCallRecordManager
         self.groupUpdateHelper = groupUpdateHelper
         self.groupUpdateItemBuilder = groupUpdateItemBuilder
+        self.individualCallRecordManager = individualCallRecordManager
         self.interactionStore = interactionStore
         self.reactionStore = reactionStore
         self.sentMessageTranscriptReceiver = sentMessageTranscriptReceiver
         self.threadStore = threadStore
     }
 
-    private lazy var reactionArchiver = MessageBackupReactionArchiver(reactionStore: reactionStore)
-
+    private lazy var reactionArchiver = MessageBackupReactionArchiver(
+        reactionStore: reactionStore
+    )
     private lazy var contentsArchiver = MessageBackupTSMessageContentsArchiver(
         interactionStore: interactionStore,
         reactionArchiver: reactionArchiver
     )
-
     private lazy var incomingMessageArchiver =
         MessageBackupTSIncomingMessageArchiver(
             contentsArchiver: contentsArchiver,
@@ -58,6 +67,16 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
             groupUpdateHelper: groupUpdateHelper,
             interactionStore: interactionStore
         )
+    private lazy var individualCallArchiver = MessageBackupIndividualCallArchiver(
+        callRecordStore: callRecordStore,
+        individualCallRecordManager: individualCallRecordManager,
+        interactionStore: interactionStore
+    )
+    private lazy var groupCallArchiver = MessageBackupGroupCallArchiver(
+        callRecordStore: callRecordStore,
+        groupCallRecordManager: groupCallRecordManager,
+        interactionStore: interactionStore
+    )
     // TODO: need for info messages. not story messages, those are skipped.
     // are there other message types? what about e.g. payment messages?
     // anything that isnt a TSOutgoingMessage or TSIncomingMessage.
@@ -114,7 +133,7 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
     // TODO: once we have a complete set of archivers, this
     // should return a non-optional value.
     private func archiver(
-        for archiverType: MessageBackup.InteractionArchiverType
+        for archiverType: MessageBackup.ChatItemArchiverType
     ) -> MessageBackupInteractionArchiver? {
         let archiver: MessageBackupInteractionArchiver
         switch archiverType {
@@ -122,6 +141,10 @@ public class MessageBackupChatItemArchiverImp: MessageBackupChatItemArchiver {
             archiver = incomingMessageArchiver
         case .outgoingMessage:
             archiver = outgoingMessageArchiver
+        case .individualCall:
+            archiver = individualCallArchiver
+        case .groupCall:
+            archiver = groupCallArchiver
         case .groupUpdateInfoMessage:
             archiver = groupUpdateMessageArchiver
         case .unimplemented:

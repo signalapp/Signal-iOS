@@ -354,36 +354,6 @@ extension BackupProto {
 
     }
 
-    public struct Call {
-
-        public var callId: UInt64
-        public var conversationRecipientId: UInt64
-        @ProtoDefaulted
-        public var type: BackupProto.Call.Type_?
-        public var outgoing: Bool
-        public var timestamp: UInt64
-        @ProtoDefaulted
-        public var ringerRecipientId: UInt64?
-        @ProtoDefaulted
-        public var event: BackupProto.Call.Event?
-        public var unknownFields: UnknownFields = .init()
-
-        public init(
-            callId: UInt64,
-            conversationRecipientId: UInt64,
-            outgoing: Bool,
-            timestamp: UInt64,
-            configure: (inout Self) -> Swift.Void = { _ in }
-        ) {
-            self.callId = callId
-            self.conversationRecipientId = conversationRecipientId
-            self.outgoing = outgoing
-            self.timestamp = timestamp
-            configure(&self)
-        }
-
-    }
-
     public struct ChatItem {
 
         /**
@@ -733,36 +703,57 @@ extension BackupProto {
 
     }
 
-    public struct CallChatUpdate {
+    public struct IndividualCall {
 
-        public var call: BackupProto.CallChatUpdate.Call?
+        @ProtoDefaulted
+        public var callId: UInt64?
+        public var type: BackupProto.IndividualCall.Type_
+        public var direction: BackupProto.IndividualCall.Direction
+        public var state: BackupProto.IndividualCall.State
+        public var startedCallTimestamp: UInt64
         public var unknownFields: UnknownFields = .init()
 
-        public init(configure: (inout Self) -> Swift.Void = { _ in }) {
+        public init(
+            type: BackupProto.IndividualCall.Type_,
+            direction: BackupProto.IndividualCall.Direction,
+            state: BackupProto.IndividualCall.State,
+            startedCallTimestamp: UInt64,
+            configure: (inout Self) -> Swift.Void = { _ in }
+        ) {
+            self.type = type
+            self.direction = direction
+            self.state = state
+            self.startedCallTimestamp = startedCallTimestamp
             configure(&self)
         }
 
     }
 
-    public struct IndividualCallChatUpdate {
-
-        public var unknownFields: UnknownFields = .init()
-
-        public init() {
-        }
-
-    }
-
-    public struct GroupCallChatUpdate {
+    public struct GroupCall {
 
         @ProtoDefaulted
-        public var startedCallAci: Foundation.Data?
+        public var callId: UInt64?
+        public var state: BackupProto.GroupCall.State
+        @ProtoDefaulted
+        public var ringerRecipientId: UInt64?
+        @ProtoDefaulted
+        public var startedCallRecipientId: UInt64?
         public var startedCallTimestamp: UInt64
-        public var inCallAcis: [Foundation.Data] = []
+        /**
+         * The time the call ended. 0 indicates an unknown time.
+         */
+        public var endedCallTimestamp: UInt64
         public var unknownFields: UnknownFields = .init()
 
-        public init(startedCallTimestamp: UInt64, configure: (inout Self) -> Swift.Void = { _ in }) {
+        public init(
+            state: BackupProto.GroupCall.State,
+            startedCallTimestamp: UInt64,
+            endedCallTimestamp: UInt64,
+            configure: (inout Self) -> Swift.Void = { _ in }
+        ) {
+            self.state = state
             self.startedCallTimestamp = startedCallTimestamp
+            self.endedCallTimestamp = endedCallTimestamp
             configure(&self)
         }
 
@@ -1555,8 +1546,7 @@ extension BackupProto.Frame : Proto3Codable {
             case 2: item = .recipient(try protoReader.decode(BackupProto.Recipient.self))
             case 3: item = .chat(try protoReader.decode(BackupProto.Chat.self))
             case 4: item = .chatItem(try protoReader.decode(BackupProto.ChatItem.self))
-            case 5: item = .call(try protoReader.decode(BackupProto.Call.self))
-            case 6: item = .stickerPack(try protoReader.decode(BackupProto.StickerPack.self))
+            case 5: item = .stickerPack(try protoReader.decode(BackupProto.StickerPack.self))
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -1587,8 +1577,6 @@ extension BackupProto.Frame : Codable {
             self.item = .chat(chat)
         } else if let chatItem = try container.decodeIfPresent(BackupProto.ChatItem.self, forKey: "chatItem") {
             self.item = .chatItem(chatItem)
-        } else if let call = try container.decodeIfPresent(BackupProto.Call.self, forKey: "call") {
-            self.item = .call(call)
         } else if let stickerPack = try container.decodeIfPresent(BackupProto.StickerPack.self, forKey: "stickerPack") {
             self.item = .stickerPack(stickerPack)
         } else {
@@ -1604,7 +1592,6 @@ extension BackupProto.Frame : Codable {
         case .recipient(let recipient): try container.encode(recipient, forKey: "recipient")
         case .chat(let chat): try container.encode(chat, forKey: "chat")
         case .chatItem(let chatItem): try container.encode(chatItem, forKey: "chatItem")
-        case .call(let call): try container.encode(call, forKey: "call")
         case .stickerPack(let stickerPack): try container.encode(stickerPack, forKey: "stickerPack")
         case Optional.none: break
         }
@@ -1624,7 +1611,6 @@ extension BackupProto.Frame {
         case recipient(BackupProto.Recipient)
         case chat(BackupProto.Chat)
         case chatItem(BackupProto.ChatItem)
-        case call(BackupProto.Call)
         case stickerPack(BackupProto.StickerPack)
 
         fileprivate func encode(to protoWriter: ProtoWriter) throws {
@@ -1633,8 +1619,7 @@ extension BackupProto.Frame {
             case .recipient(let recipient): try protoWriter.encode(tag: 2, value: recipient)
             case .chat(let chat): try protoWriter.encode(tag: 3, value: chat)
             case .chatItem(let chatItem): try protoWriter.encode(tag: 4, value: chatItem)
-            case .call(let call): try protoWriter.encode(tag: 5, value: call)
-            case .stickerPack(let stickerPack): try protoWriter.encode(tag: 6, value: stickerPack)
+            case .stickerPack(let stickerPack): try protoWriter.encode(tag: 5, value: stickerPack)
             }
         }
 
@@ -4256,209 +4241,6 @@ extension BackupProto.Identity : Codable {
 
 }
 #endif
-
-#if !WIRE_REMOVE_EQUATABLE
-extension BackupProto.Call : Equatable {
-}
-#endif
-
-#if !WIRE_REMOVE_HASHABLE
-extension BackupProto.Call : Hashable {
-}
-#endif
-
-extension BackupProto.Call : Sendable {
-}
-
-extension BackupProto.Call : ProtoMessage {
-
-    public static func protoMessageTypeURL() -> String {
-        return "type.googleapis.com/BackupProto.BackupProto.Call"
-    }
-
-}
-
-extension BackupProto.Call : Proto3Codable {
-
-    public init(from protoReader: ProtoReader) throws {
-        var callId: UInt64 = 0
-        var conversationRecipientId: UInt64 = 0
-        var type: BackupProto.Call.Type_? = nil
-        var outgoing: Bool = false
-        var timestamp: UInt64 = 0
-        var ringerRecipientId: UInt64? = nil
-        var event: BackupProto.Call.Event? = nil
-
-        let token = try protoReader.beginMessage()
-        while let tag = try protoReader.nextTag(token: token) {
-            switch tag {
-            case 1: callId = try protoReader.decode(UInt64.self)
-            case 2: conversationRecipientId = try protoReader.decode(UInt64.self)
-            case 3: type = try protoReader.decode(BackupProto.Call.Type_.self)
-            case 4: outgoing = try protoReader.decode(Bool.self)
-            case 5: timestamp = try protoReader.decode(UInt64.self)
-            case 6: ringerRecipientId = try protoReader.decode(UInt64.self)
-            case 7: event = try protoReader.decode(BackupProto.Call.Event.self)
-            default: try protoReader.readUnknownField(tag: tag)
-            }
-        }
-        self.unknownFields = try protoReader.endMessage(token: token)
-
-        self.callId = callId
-        self.conversationRecipientId = conversationRecipientId
-        self._type.wrappedValue = try BackupProto.Call.Type_.defaultIfMissing(type)
-        self.outgoing = outgoing
-        self.timestamp = timestamp
-        self._ringerRecipientId.wrappedValue = ringerRecipientId
-        self._event.wrappedValue = try BackupProto.Call.Event.defaultIfMissing(event)
-    }
-
-    public func encode(to protoWriter: ProtoWriter) throws {
-        try protoWriter.encode(tag: 1, value: self.callId)
-        try protoWriter.encode(tag: 2, value: self.conversationRecipientId)
-        try protoWriter.encode(tag: 3, value: self.type)
-        try protoWriter.encode(tag: 4, value: self.outgoing)
-        try protoWriter.encode(tag: 5, value: self.timestamp)
-        try protoWriter.encode(tag: 6, value: self.ringerRecipientId)
-        try protoWriter.encode(tag: 7, value: self.event)
-        try protoWriter.writeUnknownFields(unknownFields)
-    }
-
-}
-
-#if !WIRE_REMOVE_CODABLE
-extension BackupProto.Call : Codable {
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.callId = try container.decode(stringEncoded: UInt64.self, forKey: "callId")
-        self.conversationRecipientId = try container.decode(stringEncoded: UInt64.self, forKey: "conversationRecipientId")
-        self._type.wrappedValue = try container.decodeIfPresent(BackupProto.Call.Type_.self, forKey: "type")
-        self.outgoing = try container.decode(Bool.self, forKey: "outgoing")
-        self.timestamp = try container.decode(stringEncoded: UInt64.self, forKey: "timestamp")
-        self._ringerRecipientId.wrappedValue = try container.decodeIfPresent(stringEncoded: UInt64.self, forKey: "ringerRecipientId")
-        self._event.wrappedValue = try container.decodeIfPresent(BackupProto.Call.Event.self, forKey: "event")
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
-        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
-
-        if includeDefaults || self.callId != 0 {
-            try container.encode(stringEncoded: self.callId, forKey: "callId")
-        }
-        if includeDefaults || self.conversationRecipientId != 0 {
-            try container.encode(stringEncoded: self.conversationRecipientId, forKey: "conversationRecipientId")
-        }
-        try container.encodeIfPresent(self.type, forKey: "type")
-        if includeDefaults || self.outgoing != false {
-            try container.encode(self.outgoing, forKey: "outgoing")
-        }
-        if includeDefaults || self.timestamp != 0 {
-            try container.encode(stringEncoded: self.timestamp, forKey: "timestamp")
-        }
-        try container.encodeIfPresent(stringEncoded: self.ringerRecipientId, forKey: "ringerRecipientId")
-        try container.encodeIfPresent(self.event, forKey: "event")
-    }
-
-}
-#endif
-
-/**
- * Subtypes within BackupProto.Call
- */
-extension BackupProto.Call {
-
-    public enum Type_ : Int32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
-
-        case UNKNOWN_TYPE = 0
-        case AUDIO_CALL = 1
-        case VIDEO_CALL = 2
-        case GROUP_CALL = 3
-        case AD_HOC_CALL = 4
-
-        public static var defaultedValue: BackupProto.Call.Type_ {
-            BackupProto.Call.Type_.UNKNOWN_TYPE
-        }
-        public var description: String {
-            switch self {
-            case .UNKNOWN_TYPE: return "UNKNOWN_TYPE"
-            case .AUDIO_CALL: return "AUDIO_CALL"
-            case .VIDEO_CALL: return "VIDEO_CALL"
-            case .GROUP_CALL: return "GROUP_CALL"
-            case .AD_HOC_CALL: return "AD_HOC_CALL"
-            }
-        }
-
-    }
-
-    public enum Event : Int32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
-
-        case UNKNOWN_EVENT = 0
-        /**
-         * 1:1 calls only
-         */
-        case OUTGOING = 1
-        /**
-         * 1:1 and group calls. Group calls: You accepted a ring.
-         */
-        case ACCEPTED = 2
-        /**
-         * 1:1 calls only,
-         */
-        case NOT_ACCEPTED = 3
-        /**
-         * 1:1 and group. Group calls: The remote ring has expired or was cancelled by the ringer.
-         */
-        case MISSED = 4
-        /**
-         * 1:1 and Group/Ad-Hoc Calls.
-         */
-        case DELETE = 5
-        /**
-         * Group/Ad-Hoc Calls only. Initial state
-         */
-        case GENERIC_GROUP_CALL = 6
-        /**
-         * Group Calls: User has joined the group call.
-         */
-        case JOINED = 7
-        /**
-         * Group Calls: If you declined a ring.
-         */
-        case DECLINED = 8
-        /**
-         * Group Calls: If you are ringing a group.
-         */
-        case OUTGOING_RING = 9
-
-        public static var defaultedValue: BackupProto.Call.Event {
-            BackupProto.Call.Event.UNKNOWN_EVENT
-        }
-        public var description: String {
-            switch self {
-            case .UNKNOWN_EVENT: return "UNKNOWN_EVENT"
-            case .OUTGOING: return "OUTGOING"
-            case .ACCEPTED: return "ACCEPTED"
-            case .NOT_ACCEPTED: return "NOT_ACCEPTED"
-            case .MISSED: return "MISSED"
-            case .DELETE: return "DELETE"
-            case .GENERIC_GROUP_CALL: return "GENERIC_GROUP_CALL"
-            case .JOINED: return "JOINED"
-            case .DECLINED: return "DECLINED"
-            case .OUTGOING_RING: return "OUTGOING_RING"
-            }
-        }
-
-    }
-
-}
-
-extension BackupProto.Call.Type_ : Sendable {
-}
-
-extension BackupProto.Call.Event : Sendable {
-}
 
 #if !WIRE_REMOVE_EQUATABLE
 extension BackupProto.ChatItem : Equatable {
@@ -7686,7 +7468,8 @@ extension BackupProto.ChatUpdateMessage : Proto3Codable {
             case 4: update = .profileChange(try protoReader.decode(BackupProto.ProfileChangeChatUpdate.self))
             case 5: update = .threadMerge(try protoReader.decode(BackupProto.ThreadMergeChatUpdate.self))
             case 6: update = .sessionSwitchover(try protoReader.decode(BackupProto.SessionSwitchoverChatUpdate.self))
-            case 7: update = .callingMessage(try protoReader.decode(BackupProto.CallChatUpdate.self))
+            case 7: update = .individualCall(try protoReader.decode(BackupProto.IndividualCall.self))
+            case 8: update = .groupCall(try protoReader.decode(BackupProto.GroupCall.self))
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -7721,8 +7504,10 @@ extension BackupProto.ChatUpdateMessage : Codable {
             self.update = .threadMerge(threadMerge)
         } else if let sessionSwitchover = try container.decodeIfPresent(BackupProto.SessionSwitchoverChatUpdate.self, forKey: "sessionSwitchover") {
             self.update = .sessionSwitchover(sessionSwitchover)
-        } else if let callingMessage = try container.decodeIfPresent(BackupProto.CallChatUpdate.self, forKey: "callingMessage") {
-            self.update = .callingMessage(callingMessage)
+        } else if let individualCall = try container.decodeIfPresent(BackupProto.IndividualCall.self, forKey: "individualCall") {
+            self.update = .individualCall(individualCall)
+        } else if let groupCall = try container.decodeIfPresent(BackupProto.GroupCall.self, forKey: "groupCall") {
+            self.update = .groupCall(groupCall)
         } else {
             self.update = nil
         }
@@ -7738,7 +7523,8 @@ extension BackupProto.ChatUpdateMessage : Codable {
         case .profileChange(let profileChange): try container.encode(profileChange, forKey: "profileChange")
         case .threadMerge(let threadMerge): try container.encode(threadMerge, forKey: "threadMerge")
         case .sessionSwitchover(let sessionSwitchover): try container.encode(sessionSwitchover, forKey: "sessionSwitchover")
-        case .callingMessage(let callingMessage): try container.encode(callingMessage, forKey: "callingMessage")
+        case .individualCall(let individualCall): try container.encode(individualCall, forKey: "individualCall")
+        case .groupCall(let groupCall): try container.encode(groupCall, forKey: "groupCall")
         case Optional.none: break
         }
     }
@@ -7759,7 +7545,8 @@ extension BackupProto.ChatUpdateMessage {
         case profileChange(BackupProto.ProfileChangeChatUpdate)
         case threadMerge(BackupProto.ThreadMergeChatUpdate)
         case sessionSwitchover(BackupProto.SessionSwitchoverChatUpdate)
-        case callingMessage(BackupProto.CallChatUpdate)
+        case individualCall(BackupProto.IndividualCall)
+        case groupCall(BackupProto.GroupCall)
 
         fileprivate func encode(to protoWriter: ProtoWriter) throws {
             switch self {
@@ -7769,7 +7556,8 @@ extension BackupProto.ChatUpdateMessage {
             case .profileChange(let profileChange): try protoWriter.encode(tag: 4, value: profileChange)
             case .threadMerge(let threadMerge): try protoWriter.encode(tag: 5, value: threadMerge)
             case .sessionSwitchover(let sessionSwitchover): try protoWriter.encode(tag: 6, value: sessionSwitchover)
-            case .callingMessage(let callingMessage): try protoWriter.encode(tag: 7, value: callingMessage)
+            case .individualCall(let individualCall): try protoWriter.encode(tag: 7, value: individualCall)
+            case .groupCall(let groupCall): try protoWriter.encode(tag: 8, value: groupCall)
             }
         }
 
@@ -7791,301 +7579,349 @@ extension BackupProto.ChatUpdateMessage.Update : Sendable {
 }
 
 #if !WIRE_REMOVE_EQUATABLE
-extension BackupProto.CallChatUpdate : Equatable {
+extension BackupProto.IndividualCall : Equatable {
 }
 #endif
 
 #if !WIRE_REMOVE_HASHABLE
-extension BackupProto.CallChatUpdate : Hashable {
+extension BackupProto.IndividualCall : Hashable {
 }
 #endif
 
-extension BackupProto.CallChatUpdate : Sendable {
+extension BackupProto.IndividualCall : Sendable {
 }
 
-extension BackupProto.CallChatUpdate : ProtoDefaultedValue {
-
-    public static var defaultedValue: BackupProto.CallChatUpdate {
-        BackupProto.CallChatUpdate()
-    }
-}
-
-extension BackupProto.CallChatUpdate : ProtoMessage {
+extension BackupProto.IndividualCall : ProtoMessage {
 
     public static func protoMessageTypeURL() -> String {
-        return "type.googleapis.com/BackupProto.BackupProto.CallChatUpdate"
+        return "type.googleapis.com/BackupProto.BackupProto.IndividualCall"
     }
 
 }
 
-extension BackupProto.CallChatUpdate : Proto3Codable {
+extension BackupProto.IndividualCall : Proto3Codable {
 
     public init(from protoReader: ProtoReader) throws {
-        var call: BackupProto.CallChatUpdate.Call? = nil
-
-        let token = try protoReader.beginMessage()
-        while let tag = try protoReader.nextTag(token: token) {
-            switch tag {
-            case 1: call = .callId(try protoReader.decode(UInt64.self))
-            case 2: call = .callMessage(try protoReader.decode(BackupProto.IndividualCallChatUpdate.self))
-            case 3: call = .groupCall(try protoReader.decode(BackupProto.GroupCallChatUpdate.self))
-            default: try protoReader.readUnknownField(tag: tag)
-            }
-        }
-        self.unknownFields = try protoReader.endMessage(token: token)
-
-        self.call = call
-    }
-
-    public func encode(to protoWriter: ProtoWriter) throws {
-        if let call = self.call {
-            try call.encode(to: protoWriter)
-        }
-        try protoWriter.writeUnknownFields(unknownFields)
-    }
-
-}
-
-#if !WIRE_REMOVE_CODABLE
-extension BackupProto.CallChatUpdate : Codable {
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        if let callId = try container.decodeIfPresent(UInt64.self, forKey: "callId") {
-            self.call = .callId(callId)
-        } else if let callMessage = try container.decodeIfPresent(BackupProto.IndividualCallChatUpdate.self, forKey: "callMessage") {
-            self.call = .callMessage(callMessage)
-        } else if let groupCall = try container.decodeIfPresent(BackupProto.GroupCallChatUpdate.self, forKey: "groupCall") {
-            self.call = .groupCall(groupCall)
-        } else {
-            self.call = nil
-        }
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
-
-        switch self.call {
-        case .callId(let callId): try container.encode(callId, forKey: "callId")
-        case .callMessage(let callMessage): try container.encode(callMessage, forKey: "callMessage")
-        case .groupCall(let groupCall): try container.encode(groupCall, forKey: "groupCall")
-        case Optional.none: break
-        }
-    }
-
-}
-#endif
-
-/**
- * Subtypes within BackupProto.CallChatUpdate
- */
-extension BackupProto.CallChatUpdate {
-
-    public enum Call {
-
-        /**
-         * maps to id of call from call log
-         */
-        case callId(UInt64)
-        case callMessage(BackupProto.IndividualCallChatUpdate)
-        case groupCall(BackupProto.GroupCallChatUpdate)
-
-        fileprivate func encode(to protoWriter: ProtoWriter) throws {
-            switch self {
-            case .callId(let callId): try protoWriter.encode(tag: 1, value: callId)
-            case .callMessage(let callMessage): try protoWriter.encode(tag: 2, value: callMessage)
-            case .groupCall(let groupCall): try protoWriter.encode(tag: 3, value: groupCall)
-            }
-        }
-
-    }
-
-}
-
-#if !WIRE_REMOVE_EQUATABLE
-extension BackupProto.CallChatUpdate.Call : Equatable {
-}
-#endif
-
-#if !WIRE_REMOVE_HASHABLE
-extension BackupProto.CallChatUpdate.Call : Hashable {
-}
-#endif
-
-extension BackupProto.CallChatUpdate.Call : Sendable {
-}
-
-#if !WIRE_REMOVE_EQUATABLE
-extension BackupProto.IndividualCallChatUpdate : Equatable {
-}
-#endif
-
-#if !WIRE_REMOVE_HASHABLE
-extension BackupProto.IndividualCallChatUpdate : Hashable {
-}
-#endif
-
-extension BackupProto.IndividualCallChatUpdate : Sendable {
-}
-
-extension BackupProto.IndividualCallChatUpdate : ProtoDefaultedValue {
-
-    public static var defaultedValue: BackupProto.IndividualCallChatUpdate {
-        BackupProto.IndividualCallChatUpdate()
-    }
-}
-
-extension BackupProto.IndividualCallChatUpdate : ProtoMessage {
-
-    public static func protoMessageTypeURL() -> String {
-        return "type.googleapis.com/BackupProto.BackupProto.IndividualCallChatUpdate"
-    }
-
-}
-
-extension BackupProto.IndividualCallChatUpdate : Proto3Codable {
-
-    public init(from protoReader: ProtoReader) throws {
-        let token = try protoReader.beginMessage()
-        while let tag = try protoReader.nextTag(token: token) {
-            switch tag {
-            default: try protoReader.readUnknownField(tag: tag)
-            }
-        }
-        self.unknownFields = try protoReader.endMessage(token: token)
-
-    }
-
-    public func encode(to protoWriter: ProtoWriter) throws {
-        try protoWriter.writeUnknownFields(unknownFields)
-    }
-
-}
-
-#if !WIRE_REMOVE_CODABLE
-extension BackupProto.IndividualCallChatUpdate : Codable {
-
-    public enum CodingKeys : CodingKey {
-    }
-
-}
-#endif
-
-/**
- * Subtypes within BackupProto.IndividualCallChatUpdate
- */
-extension BackupProto.IndividualCallChatUpdate {
-
-    public enum Type_ : Int32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
-
-        case UNKNOWN = 0
-        case INCOMING_AUDIO_CALL = 1
-        case INCOMING_VIDEO_CALL = 2
-        case OUTGOING_AUDIO_CALL = 3
-        case OUTGOING_VIDEO_CALL = 4
-        case MISSED_AUDIO_CALL = 5
-        case MISSED_VIDEO_CALL = 6
-
-        public static var defaultedValue: BackupProto.IndividualCallChatUpdate.Type_ {
-            BackupProto.IndividualCallChatUpdate.Type_.UNKNOWN
-        }
-        public var description: String {
-            switch self {
-            case .UNKNOWN: return "UNKNOWN"
-            case .INCOMING_AUDIO_CALL: return "INCOMING_AUDIO_CALL"
-            case .INCOMING_VIDEO_CALL: return "INCOMING_VIDEO_CALL"
-            case .OUTGOING_AUDIO_CALL: return "OUTGOING_AUDIO_CALL"
-            case .OUTGOING_VIDEO_CALL: return "OUTGOING_VIDEO_CALL"
-            case .MISSED_AUDIO_CALL: return "MISSED_AUDIO_CALL"
-            case .MISSED_VIDEO_CALL: return "MISSED_VIDEO_CALL"
-            }
-        }
-
-    }
-
-}
-
-extension BackupProto.IndividualCallChatUpdate.Type_ : Sendable {
-}
-
-#if !WIRE_REMOVE_EQUATABLE
-extension BackupProto.GroupCallChatUpdate : Equatable {
-}
-#endif
-
-#if !WIRE_REMOVE_HASHABLE
-extension BackupProto.GroupCallChatUpdate : Hashable {
-}
-#endif
-
-extension BackupProto.GroupCallChatUpdate : Sendable {
-}
-
-extension BackupProto.GroupCallChatUpdate : ProtoMessage {
-
-    public static func protoMessageTypeURL() -> String {
-        return "type.googleapis.com/BackupProto.BackupProto.GroupCallChatUpdate"
-    }
-
-}
-
-extension BackupProto.GroupCallChatUpdate : Proto3Codable {
-
-    public init(from protoReader: ProtoReader) throws {
-        var startedCallAci: Foundation.Data? = nil
+        var callId: UInt64? = nil
+        var type: BackupProto.IndividualCall.Type_? = nil
+        var direction: BackupProto.IndividualCall.Direction? = nil
+        var state: BackupProto.IndividualCall.State? = nil
         var startedCallTimestamp: UInt64 = 0
-        var inCallAcis: [Foundation.Data] = []
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: startedCallAci = try protoReader.decode(Foundation.Data.self)
-            case 2: startedCallTimestamp = try protoReader.decode(UInt64.self)
-            case 3: try protoReader.decode(into: &inCallAcis)
+            case 1: callId = try protoReader.decode(UInt64.self)
+            case 2: type = try protoReader.decode(BackupProto.IndividualCall.Type_.self)
+            case 3: direction = try protoReader.decode(BackupProto.IndividualCall.Direction.self)
+            case 4: state = try protoReader.decode(BackupProto.IndividualCall.State.self)
+            case 5: startedCallTimestamp = try protoReader.decode(UInt64.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
-        self._startedCallAci.wrappedValue = startedCallAci
+        self._callId.wrappedValue = callId
+        self.type = try BackupProto.IndividualCall.Type_.defaultIfMissing(type)
+        self.direction = try BackupProto.IndividualCall.Direction.defaultIfMissing(direction)
+        self.state = try BackupProto.IndividualCall.State.defaultIfMissing(state)
         self.startedCallTimestamp = startedCallTimestamp
-        self.inCallAcis = inCallAcis
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
-        try protoWriter.encode(tag: 1, value: self.startedCallAci)
-        try protoWriter.encode(tag: 2, value: self.startedCallTimestamp)
-        try protoWriter.encode(tag: 3, value: self.inCallAcis)
+        try protoWriter.encode(tag: 1, value: self.callId)
+        try protoWriter.encode(tag: 2, value: self.type)
+        try protoWriter.encode(tag: 3, value: self.direction)
+        try protoWriter.encode(tag: 4, value: self.state)
+        try protoWriter.encode(tag: 5, value: self.startedCallTimestamp)
         try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }
 
 #if !WIRE_REMOVE_CODABLE
-extension BackupProto.GroupCallChatUpdate : Codable {
+extension BackupProto.IndividualCall : Codable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self._startedCallAci.wrappedValue = try container.decodeIfPresent(stringEncoded: Foundation.Data.self, forKey: "startedCallAci")
+        self._callId.wrappedValue = try container.decodeIfPresent(stringEncoded: UInt64.self, forKey: "callId")
+        self.type = try container.decode(BackupProto.IndividualCall.Type_.self, forKey: "type")
+        self.direction = try container.decode(BackupProto.IndividualCall.Direction.self, forKey: "direction")
+        self.state = try container.decode(BackupProto.IndividualCall.State.self, forKey: "state")
         self.startedCallTimestamp = try container.decode(stringEncoded: UInt64.self, forKey: "startedCallTimestamp")
-        self.inCallAcis = try container.decodeProtoArray(Foundation.Data.self, forKey: "inCallAcis")
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        try container.encodeIfPresent(stringEncoded: self.startedCallAci, forKey: "startedCallAci")
+        try container.encodeIfPresent(stringEncoded: self.callId, forKey: "callId")
+        if includeDefaults || self.type.rawValue != 0 {
+            try container.encode(self.type, forKey: "type")
+        }
+        if includeDefaults || self.direction.rawValue != 0 {
+            try container.encode(self.direction, forKey: "direction")
+        }
+        if includeDefaults || self.state.rawValue != 0 {
+            try container.encode(self.state, forKey: "state")
+        }
         if includeDefaults || self.startedCallTimestamp != 0 {
             try container.encode(stringEncoded: self.startedCallTimestamp, forKey: "startedCallTimestamp")
-        }
-        if includeDefaults || !self.inCallAcis.isEmpty {
-            try container.encodeProtoArray(self.inCallAcis, forKey: "inCallAcis")
         }
     }
 
 }
 #endif
+
+/**
+ * Subtypes within BackupProto.IndividualCall
+ */
+extension BackupProto.IndividualCall {
+
+    public enum Type_ : Int32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
+
+        case UNKNOWN_TYPE = 0
+        case AUDIO_CALL = 1
+        case VIDEO_CALL = 2
+
+        public static var defaultedValue: BackupProto.IndividualCall.Type_ {
+            BackupProto.IndividualCall.Type_.UNKNOWN_TYPE
+        }
+        public var description: String {
+            switch self {
+            case .UNKNOWN_TYPE: return "UNKNOWN_TYPE"
+            case .AUDIO_CALL: return "AUDIO_CALL"
+            case .VIDEO_CALL: return "VIDEO_CALL"
+            }
+        }
+
+    }
+
+    public enum Direction : Int32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
+
+        case UNKNOWN_DIRECTION = 0
+        case INCOMING = 1
+        case OUTGOING = 2
+
+        public static var defaultedValue: BackupProto.IndividualCall.Direction {
+            BackupProto.IndividualCall.Direction.UNKNOWN_DIRECTION
+        }
+        public var description: String {
+            switch self {
+            case .UNKNOWN_DIRECTION: return "UNKNOWN_DIRECTION"
+            case .INCOMING: return "INCOMING"
+            case .OUTGOING: return "OUTGOING"
+            }
+        }
+
+    }
+
+    public enum State : Int32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
+
+        case UNKNOWN_STATE = 0
+        case ACCEPTED = 1
+        case NOT_ACCEPTED = 2
+        /**
+         * An incoming call that is no longer ongoing, which we neither accepted
+         * not actively declined. For example, it expired, was canceled by the
+         * sender, or was rejected due to being in another call.
+         */
+        case MISSED = 3
+        /**
+         * We auto-declined an incoming call due to a notification profile.
+         */
+        case MISSED_NOTIFICATION_PROFILE = 4
+
+        public static var defaultedValue: BackupProto.IndividualCall.State {
+            BackupProto.IndividualCall.State.UNKNOWN_STATE
+        }
+        public var description: String {
+            switch self {
+            case .UNKNOWN_STATE: return "UNKNOWN_STATE"
+            case .ACCEPTED: return "ACCEPTED"
+            case .NOT_ACCEPTED: return "NOT_ACCEPTED"
+            case .MISSED: return "MISSED"
+            case .MISSED_NOTIFICATION_PROFILE: return "MISSED_NOTIFICATION_PROFILE"
+            }
+        }
+
+    }
+
+}
+
+extension BackupProto.IndividualCall.Type_ : Sendable {
+}
+
+extension BackupProto.IndividualCall.Direction : Sendable {
+}
+
+extension BackupProto.IndividualCall.State : Sendable {
+}
+
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.GroupCall : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.GroupCall : Hashable {
+}
+#endif
+
+extension BackupProto.GroupCall : Sendable {
+}
+
+extension BackupProto.GroupCall : ProtoMessage {
+
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/BackupProto.BackupProto.GroupCall"
+    }
+
+}
+
+extension BackupProto.GroupCall : Proto3Codable {
+
+    public init(from protoReader: ProtoReader) throws {
+        var callId: UInt64? = nil
+        var state: BackupProto.GroupCall.State? = nil
+        var ringerRecipientId: UInt64? = nil
+        var startedCallRecipientId: UInt64? = nil
+        var startedCallTimestamp: UInt64 = 0
+        var endedCallTimestamp: UInt64 = 0
+
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
+            switch tag {
+            case 1: callId = try protoReader.decode(UInt64.self)
+            case 2: state = try protoReader.decode(BackupProto.GroupCall.State.self)
+            case 3: ringerRecipientId = try protoReader.decode(UInt64.self)
+            case 4: startedCallRecipientId = try protoReader.decode(UInt64.self)
+            case 5: startedCallTimestamp = try protoReader.decode(UInt64.self)
+            case 6: endedCallTimestamp = try protoReader.decode(UInt64.self)
+            default: try protoReader.readUnknownField(tag: tag)
+            }
+        }
+        self.unknownFields = try protoReader.endMessage(token: token)
+
+        self._callId.wrappedValue = callId
+        self.state = try BackupProto.GroupCall.State.defaultIfMissing(state)
+        self._ringerRecipientId.wrappedValue = ringerRecipientId
+        self._startedCallRecipientId.wrappedValue = startedCallRecipientId
+        self.startedCallTimestamp = startedCallTimestamp
+        self.endedCallTimestamp = endedCallTimestamp
+    }
+
+    public func encode(to protoWriter: ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.callId)
+        try protoWriter.encode(tag: 2, value: self.state)
+        try protoWriter.encode(tag: 3, value: self.ringerRecipientId)
+        try protoWriter.encode(tag: 4, value: self.startedCallRecipientId)
+        try protoWriter.encode(tag: 5, value: self.startedCallTimestamp)
+        try protoWriter.encode(tag: 6, value: self.endedCallTimestamp)
+        try protoWriter.writeUnknownFields(unknownFields)
+    }
+
+}
+
+#if !WIRE_REMOVE_CODABLE
+extension BackupProto.GroupCall : Codable {
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self._callId.wrappedValue = try container.decodeIfPresent(stringEncoded: UInt64.self, forKey: "callId")
+        self.state = try container.decode(BackupProto.GroupCall.State.self, forKey: "state")
+        self._ringerRecipientId.wrappedValue = try container.decodeIfPresent(stringEncoded: UInt64.self, forKey: "ringerRecipientId")
+        self._startedCallRecipientId.wrappedValue = try container.decodeIfPresent(stringEncoded: UInt64.self, forKey: "startedCallRecipientId")
+        self.startedCallTimestamp = try container.decode(stringEncoded: UInt64.self, forKey: "startedCallTimestamp")
+        self.endedCallTimestamp = try container.decode(stringEncoded: UInt64.self, forKey: "endedCallTimestamp")
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
+
+        try container.encodeIfPresent(stringEncoded: self.callId, forKey: "callId")
+        if includeDefaults || self.state.rawValue != 0 {
+            try container.encode(self.state, forKey: "state")
+        }
+        try container.encodeIfPresent(stringEncoded: self.ringerRecipientId, forKey: "ringerRecipientId")
+        try container.encodeIfPresent(stringEncoded: self.startedCallRecipientId, forKey: "startedCallRecipientId")
+        if includeDefaults || self.startedCallTimestamp != 0 {
+            try container.encode(stringEncoded: self.startedCallTimestamp, forKey: "startedCallTimestamp")
+        }
+        if includeDefaults || self.endedCallTimestamp != 0 {
+            try container.encode(stringEncoded: self.endedCallTimestamp, forKey: "endedCallTimestamp")
+        }
+    }
+
+}
+#endif
+
+/**
+ * Subtypes within BackupProto.GroupCall
+ */
+extension BackupProto.GroupCall {
+
+    public enum State : Int32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
+
+        case UNKNOWN_STATE = 0
+        /**
+         * A group call was started without ringing.
+         */
+        case GENERIC = 1
+        /**
+         * We joined a group call that was started without ringing.
+         */
+        case JOINED = 2
+        /**
+         * An incoming group call is actively ringing.
+         */
+        case RINGING = 3
+        /**
+         * We accepted an incoming group ring.
+         */
+        case ACCEPTED = 4
+        /**
+         * We declined an incoming group ring.
+         */
+        case DECLINED = 5
+        /**
+         * We missed an incoming group ring, for example because it expired.
+         */
+        case MISSED = 6
+        /**
+         * We auto-declined an incoming group ring due to a notification profile.
+         */
+        case MISSED_NOTIFICATION_PROFILE = 7
+        /**
+         * An outgoing ring was started. We don't track any state for outgoing rings
+         * beyond that they started.
+         */
+        case OUTGOING_RING = 8
+
+        public static var defaultedValue: BackupProto.GroupCall.State {
+            BackupProto.GroupCall.State.UNKNOWN_STATE
+        }
+        public var description: String {
+            switch self {
+            case .UNKNOWN_STATE: return "UNKNOWN_STATE"
+            case .GENERIC: return "GENERIC"
+            case .JOINED: return "JOINED"
+            case .RINGING: return "RINGING"
+            case .ACCEPTED: return "ACCEPTED"
+            case .DECLINED: return "DECLINED"
+            case .MISSED: return "MISSED"
+            case .MISSED_NOTIFICATION_PROFILE: return "MISSED_NOTIFICATION_PROFILE"
+            case .OUTGOING_RING: return "OUTGOING_RING"
+            }
+        }
+
+    }
+
+}
+
+extension BackupProto.GroupCall.State : Sendable {
+}
 
 #if !WIRE_REMOVE_EQUATABLE
 extension BackupProto.SimpleChatUpdate : Equatable {

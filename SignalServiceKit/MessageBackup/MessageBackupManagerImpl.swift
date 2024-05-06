@@ -387,17 +387,6 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 case .failure(let errors):
                     try processRestoreFrameErrors(errors: errors)
                 }
-            case .call(let backupProtoCall):
-                // TODO: Not yet implemented.
-                try processRestoreFrameErrors(errors: [.restoreFrameError(
-                    .unimplemented,
-                    MessageBackup.CallId(
-                        callId: backupProtoCall.callId,
-                        conversationRecipientId: MessageBackup.RecipientId(
-                            value: backupProtoCall.conversationRecipientId
-                        )
-                    ))
-                ])
             case .stickerPack(let backupProtoStickerPack):
                 // TODO: Not yet implemented.
                 try processRestoreFrameErrors(errors: [.restoreFrameError(

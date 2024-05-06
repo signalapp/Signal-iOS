@@ -8,6 +8,8 @@ import LibSignalClient
 
 internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionArchiver {
 
+    static let archiverType: MessageBackup.ChatItemArchiverType = .incomingMessage
+
     private let contentsArchiver: MessageBackupTSMessageContentsArchiver
     private let interactionStore: InteractionStore
 
@@ -18,8 +20,6 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
         self.contentsArchiver = contentsArchiver
         self.interactionStore = interactionStore
     }
-
-    static let archiverType = MessageBackup.InteractionArchiverType.incomingMessage
 
     // MARK: - Archiving
 

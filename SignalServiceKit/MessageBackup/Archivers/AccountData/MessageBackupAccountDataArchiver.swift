@@ -306,7 +306,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
             {
                 localUsernameManager.setLocalUsername(username: username, usernameLink: linkData, tx: tx)
             } else {
-                return .failure([.restoreFrameError(.invalidProtoData(.invalidUsernameLink), .localUser)])
+                return .failure([.restoreFrameError(.invalidProtoData(.invalidLocalUsernameLink), .localUser)])
             }
         }
 

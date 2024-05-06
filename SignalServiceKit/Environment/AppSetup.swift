@@ -718,10 +718,13 @@ public class AppSetup {
                 pinnedThreadManager: pinnedThreadManager,
                 threadStore: threadStore
             ),
-            chatItemArchiver: MessageBackupChatItemArchiverImp(
+            chatItemArchiver: MessageBackupChatItemArchiverImpl(
+                callRecordStore: callRecordStore,
                 dateProvider: dateProvider,
+                groupCallRecordManager: groupCallRecordManager,
                 groupUpdateHelper: GroupUpdateInfoMessageInserterBackupHelperImpl(),
                 groupUpdateItemBuilder: groupUpdateItemBuilder,
+                individualCallRecordManager: individualCallRecordManager,
                 interactionStore: interactionStore,
                 reactionStore: ReactionStoreImpl(),
                 sentMessageTranscriptReceiver: sentMessageTranscriptReceiver,
