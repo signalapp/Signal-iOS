@@ -843,8 +843,13 @@ extension MediaPageViewController: ForwardMessageDelegate {
 }
 
 extension MediaPageViewController: UINavigationBarDelegate {
+
     func navigationBar(_ navigationBar: UINavigationBar, shouldPop item: UINavigationItem) -> Bool {
         dismissSelf(animated: true)
         return false
+    }
+
+    func navigationBar(_ navigationBar: UINavigationBar, didPop item: UINavigationItem) {
+        dismissSelf(animated: true)
     }
 }
