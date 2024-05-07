@@ -1379,7 +1379,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Ajouter aux contacts du téléphone";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choisissez qui peut modifier le nom, la photo, la description et la minuterie des messages éphémères du groupe.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choisissez qui peut modifier le nom, la photo et la description du groupe, ou encore le délai avant disparition des messages éphémères.";
 
 /* Button to start a audio call */
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "audio";
@@ -2702,19 +2702,19 @@
 "GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Nouveau message";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "Commençons";
+"GET_STARTED_BANNER_TITLE" = "C’est parti !";
 
 /* 'Get Started' button directing users to appearance */
 "GET_STARTED_CARD_APPEARANCE" = "Apparence";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "Ajouter une photo";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Photo";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Inviter des amis";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Invitation";
 
 /* 'Get Started' button directing users to create a group */
-"GET_STARTED_CARD_NEW_GROUP" = "Nouveau groupe";
+"GET_STARTED_CARD_NEW_GROUP" = "Groupe";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Échec de récupération du GIF demandé. Veuillez vous assurer d’être en ligne.";
@@ -6386,7 +6386,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES" = "Messages éphémères";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Définissez une minuterie par défaut pour les messages éphémères pour toutes les nouvelles conversations que vous démarrez.";
+"SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Définissez le délai après lequel les messages éphémères disparaissent des nouvelles conversations que vous avez initiées.";
 
 /* Title for the 'donate to signal' link in settings. */
 "SETTINGS_DONATE" = "Faire un don à Signal";
@@ -7646,7 +7646,7 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Confirmer";
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
-"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "La minuterie des messages éphémères sera définie sur %1$@ quand vous échangez des messages avec cette personne.";
+"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Lorsque vous enverrez des messages à ce contact, le délai avant disparition des messages éphémères sera défini sur %1$@.";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Aucun groupe en commun. Examinez les demandes avec attention.";

@@ -110,7 +110,7 @@
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%1$@ ужо ўдзельнік %2$@";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%1$@ быў(-ла) даданы(а) ў %2$@";
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%1$@ быў(-ла) даданы(а) у %2$@";
 
 /* Title of the 'add to group' view. */
 "ADD_TO_GROUP_TITLE" = "Дадаць у групу";
@@ -128,7 +128,7 @@
 "ALERT_DELIVERY_ISSUE_TITLE" = "Памылка дастаўкі";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Паведамленне, стыкер, рэакцыя, паведамленне аб прачытанні або медыяфайл не могуць быць дастаўлены вам ад %1$@. Магчыма, гэтая асоба спрабавала адправіць гэта непасрэдна вам або праз ту цi іншую групу.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Паведамленне, стыкер, рэакцыя, паведамленне аб прачытанні або медыяфайл не могуць быць дастаўлены вам ад %1$@. Магчыма, гэтая асоба спрабавала адправіць гэта непасрэдна вам або праз тую ці іншую групу.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Скінуць";
@@ -155,7 +155,7 @@
 "ALL_MEDIA_FILE_TYPE_AUDIO" = "Аўдыё";
 
 /* Media (i.e., graphical) file type in All Meda file type picker. */
-"ALL_MEDIA_FILE_TYPE_MEDIA" = "Медыяфайлы";
+"ALL_MEDIA_FILE_TYPE_MEDIA" = "Медыяфайл";
 
 /* Menu option to limit All Media view to displaying only GIFs */
 "ALL_MEDIA_FILTER_GIFS" = "GIF";
@@ -164,7 +164,7 @@
 "ALL_MEDIA_FILTER_NONE" = "Усе медыяфайлы";
 
 /* Menu option to limit All Media view to displaying only photos */
-"ALL_MEDIA_FILTER_PHOTOS" = "Фатаграфіі";
+"ALL_MEDIA_FILTER_PHOTOS" = "Фота";
 
 /* Menu option to limit All Media view to displaying only videos */
 "ALL_MEDIA_FILTER_VIDEOS" = "Відэа";
@@ -200,7 +200,7 @@
 "APP_LAUNCH_FAILURE_CONTINUE" = "Адкрыць тады Signal";
 
 /* Message for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
-"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "Калі ласка, адашліце журнал адладкі на support@signal.org, каб мы змаглі выправіць гэтую непаладку.";
+"APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "Калі ласка, адпраўце журнал адладкі на support@signal.org, каб мы змаглі выправіць гэтую непаладку.";
 
 /* Title for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
 "APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE" = "Не атрымалася адкрыць Signal";
@@ -263,10 +263,10 @@
 "APPLE_PAY_DONATION_ERROR_CALL_ISSUER" = "Праверце, ці правільны ваш спосаб аплаты ў Apple Pay. Калі не, абнавіце яго і паўтарыце спробу. Калі праблема не знікае, звярніцеся да свайго банка.";
 
 /* Apple Pay donation error for decline failures where the card is not supported. */
-"APPLE_PAY_DONATION_ERROR_CARD_NOT_SUPPORTED" = "Ваша карта не падтрымлівае гэты тып пакупкi. Паспрабуйце іншы спосаб аплаты або звярніцеся да свайго банка для атрымання дадатковай інфармацыі.";
+"APPLE_PAY_DONATION_ERROR_CARD_NOT_SUPPORTED" = "Ваша карта не падтрымлівае гэты тып пакупкі. Паспрабуйце іншы спосаб аплаты або звярніцеся да свайго банка для атрымання дадатковай інфармацыі.";
 
 /* Apple Pay donation error for decline failures where the card has expired. */
-"APPLE_PAY_DONATION_ERROR_EXPIRED_CARD" = "Тэрмін дзеяння вашай карты скончыўся. Праверце, цi правільны ваш спосаб аплаты ў Apple Pay. Калі не, абнавіце яго і паўтарыце спробу.";
+"APPLE_PAY_DONATION_ERROR_EXPIRED_CARD" = "Тэрмін дзеяння вашай карты скончыўся. Праверце, ці правільны ваш спосаб аплаты ў Apple Pay. Калі не, абнавіце яго і паўтарыце спробу.";
 
 /* Apple Pay donation error for decline failures where the card number is incorrect. */
 "APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "Нумар вашай карткі няправільны. Праверце, ці ваш спосаб аплаты правільна ўведзены ў Apple Pay. Калі не, абнавіце яго і паўтарыце спробу.";
@@ -293,7 +293,7 @@
 "APPLE_PAY_DONATION_ERROR_OTHER" = "Паспрабуйце іншы спосаб аплаты або звярніцеся да свайго банка для атрымання дадатковай інфармацыі.";
 
 /* Apple Pay donation error for decline failures where the payment cannot be authorized. */
-"APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Праверце, цi правільны ваш спосаб аплаты ў Apple Pay. Калі не, абнавіце яго і паўтарыце спробу.";
+"APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Праверце, ці правільны ваш спосаб аплаты ў Apple Pay. Калі не, абнавіце яго і паўтарыце спробу.";
 
 /* On the iOS home screen, if you tap and hold the Signal icon, this shortcut will appear. Tapping it will let users send a new message. You may want to refer to similar behavior in other iOS apps, such as Messages, for equivalent strings. */
 "APPLICATION_SHORTCUT_NEW_MESSAGE" = "Новае паведамленне";
@@ -305,7 +305,7 @@
 "ASPECT_RATIO_ORIGINAL" = "Арыгінал";
 
 /* One of the choices for pre-defined aspect ratio of a photo in media editor. */
-"ASPECT_RATIO_SQUARE" = "квадрат";
+"ASPECT_RATIO_SQUARE" = "Квадрат";
 
 /* Variable aspect ratio, eg 3:4. %1$@ and %2$@ are numbers. */
 "ASPECT_RATIO_X_BY_Y" = "%1$@:%2$@";
@@ -404,7 +404,7 @@
 "ATTACHMENT_KEYBOARD_PAYMENT" = "Плацеж";
 
 /* A button to open the photo picker from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_PHOTOS" = "Фатаграфіі";
+"ATTACHMENT_KEYBOARD_PHOTOS" = "Фота";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Далучэнне";
@@ -413,7 +413,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Не атрымалася выбраць дакумент.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Калі ласка, стварыце сціснуты архіў гэтага файла або каталога і паспрабуйце даслаць нанова.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Калі ласка, стварыце сціснуты архіў гэтага файла або каталога і паспрабуйце адправіць нанова.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Тып файла не падтрымліваецца";
@@ -485,10 +485,10 @@
 "BADGE_DETAILS_TITLE_FOR_SUPPORTER" = "%1$@ падтрымлівае Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_BODY" = "Тэрмін дзеяння вашага значка падтрымкі скончыўся, і ён больш не бачны ў вашым профілі.\n\nВы можаце працягваць карыстацца Signal, але мы будзем вельмі ўдзячны, калi вы станеце штомесячным спонсарам, каб падтрымаць тэхналогію, зробленую для вас.";
+"BADGE_EXPIRED_BOOST_BODY" = "Тэрмін дзеяння вашага значка падтрымкі скончыўся, і ён больш не бачны ў вашым профілі.\n\nВы можаце працягваць карыстацца Signal, але мы будзем вельмі ўдзячны, калі вы станеце штомесячным спонсарам, каб падтрымаць тэхналогію, зробленую для вас.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Тэрмін дзеяння вашага значка падтрымкі скончыўся, і ён больш не бачны ў вашым профілі.\n\nВы можаце зноў актываваць свой значок падтрымкі яшчэ на 30 дзён пасля аднаразовага ахвяравання.";
+"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Тэрмін дзеяння вашага значка падтрымкі скончыўся, і ён больш не бачны ў вашым профілі.\n\nВы можаце зноў актываваць свой значок падтрымкі яшчэ на 30 дзён пасля разавага ахвяравання.";
 
 /* Title for boost on the badge expiration sheet. */
 "BADGE_EXPIRED_BOOST_TITLE" = "Тэрмін дзеяння значка скончыўся";
@@ -518,7 +518,7 @@
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Паказаць у профілі";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Зрабіць асаблівы значок";
+"BADGE_THANKS_MAKE_FEATURED" = "Выбраць асаблівы значок";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
 "BADGE_THANKS_TITLE" = "Дзякуй за вашу падтрымку!";
@@ -578,7 +578,7 @@
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Вы зможаце адпраўляць паведамленні і тэлефанаваць адзін аднаму.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Існуючыя ўдзельнікі суполкі змогуць зноў дадаць вас да гэтай групы.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Існуючыя ўдзельнікі групы змогуць зноў дадаць вас да гэтай групы.";
 
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Удзельнікі групы змогуць зноў дадаць вас у гэтую групу.";
@@ -608,10 +608,10 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Памылка";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%1$@ быў разблакаваны.";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%1$@ быў(-ла) разблакаваны(-а).";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Існуючыя ўдзельнікі групы змогуць зноў дадаць вас да гэтай групы.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Існуючыя ўдзельнікі групы могуць зноў дадаць вас да гэтай групы.";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Заблакаваныя карыстальнікі не змогуць вам тэлефанаваць або адпраўляць паведамленні.";
@@ -701,7 +701,7 @@
 "CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Прапушчаны галасавы званок у %1$@";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Уключыце доступ да мікрафона ў Наладах iOS, каб рабіць званкі і запісваць галасавыя паведамленні ў Signal.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Уключыце доступ да мікрафона ў наладах iOS, каб рабіць званкі і запісваць галасавыя паведамленні ў Signal.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Патрабуецца доступ да мікрафона";
@@ -740,10 +740,10 @@
 "CALL_USER_ALERT_CALL_BUTTON" = "Пазваніць";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
-"CALL_USER_ALERT_MESSAGE_FORMAT" = "Жадаеце тэлефанаваць %1$@?";
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "Жадаеце пазваніць %1$@?";
 
 /* Title for alert offering to call a user. */
-"CALL_USER_ALERT_TITLE" = "Тэлефанаваць?";
+"CALL_USER_ALERT_TITLE" = "Пазваніць?";
 
 /* notification body */
 "CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Уваходны відэазванок…";
@@ -779,13 +779,13 @@
 "CALL_VIEW_LEAVE_CALL_LABEL" = "Пакінуць званок";
 
 /* Accessibility label for the More button in the Call Controls row. */
-"CALL_VIEW_MORE_LABEL" = "Больш падрабязна";
+"CALL_VIEW_MORE_LABEL" = "Дадаткова";
 
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Апавяшч. адкл.";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%1$@ атрымае ад вас запыт на паведамленне. Вы зможаце тэлефанаваць, калі ваш запыт на паведамленне будзе прыняты.";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%1$@ атрымае ад вас запыт на паведамленне. Вы зможаце пазваніць, калі ваш запыт на паведамленне будзе прыняты.";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Змяніць напрамак камеры";
@@ -1055,7 +1055,7 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "Параўнаць з буферам абмену";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Выбраць або шукаць карыстальніка Signal, каб распачаць з iм чат.";
+"COMPOSE_BUTTON_HINT" = "Выбраць або шукаць карыстальніка Signal, каб распачаць з ім чат.";
 
 /* Accessibility label from compose button. */
 "COMPOSE_BUTTON_LABEL" = "Напісаць паведамленне";
@@ -1076,7 +1076,7 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_CTA" = "Адкрыць «Налады»";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Уключыце доступ да кантактаў у праграме «Налады iOS», каб бачыць, хто з вашых кантактаў з'яўляецца карыстальнікам Signal.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Уключыце доступ да кантактаў у наладах iOS, каб бачыць, хто з вашых кантактаў з'яўляецца карыстальнікам Signal.";
 
 /* Configure reactions title text */
 "CONFIGURE_REACTIONS" = "Наладзіць рэакцыі";
@@ -1190,7 +1190,7 @@
 "CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Няма адраса электроннай пошты.";
 
 /* table cell subtitle when contact card has no known phone number */
-"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Няма нумар тэлефона.";
+"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Няма нумара тэлефона.";
 
 /* navbar title for contact picker when sharing a contact */
 "CONTACT_PICKER_TITLE" = "Выбраць кантакт";
@@ -1385,7 +1385,7 @@
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "аўдыё";
 
 /* Footer string for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Падтрымлівайце Signal i атрымлівайце значкі для свайго профілю. Націсніце на значок, каб даведацца больш.";
+"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Падтрымлівайце Signal і атрымлівайце значкі для свайго профілю. Націсніце на значок, каб даведацца больш.";
 
 /* Header title for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "Значкі";
@@ -1433,7 +1433,7 @@
 "CONVERSATION_SETTINGS_GROUP_LINK" = "Спасылка на групу";
 
 /* Label for 'make group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Зрабіць адмiнiстратарам";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Зрабіць адміністратарам";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%1$@ зможа рэдагаваць гэту групу і яе ўдзельнікаў.";
@@ -1580,7 +1580,7 @@
 "CORRUPTED_SESSION_DESCRIPTION" = "Калі вы скінеце сеанс, вы па-ранейшаму зможаце атрымліваць паведамленні ад %1$@, але будзе немагчыма аднавіць раней пашкоджаныя паведамленні.";
 
 /* No comment provided by engineer. */
-"COUNTRYCODE_SELECT_TITLE" = "Выбраць код краіны";
+"COUNTRYCODE_SELECT_TITLE" = "Выберыце код краіны";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
 "CREATE_USERNAME_MEGAPHONE_BODY" = "Прадстаўляем канфідэнцыйнасць нумара тэлефона, дадатковыя імёны карыстальніка і спасылкі.";
@@ -1589,25 +1589,25 @@
 "CREATE_USERNAME_MEGAPHONE_TITLE" = "Новыя спосабы для сувязі";
 
 /* Credit/debit card donation error for decline failures where the card has expired. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "Тэрмін дзеяння вашай карты скончыўся. Праверце рэквізіты вашай карткі і паўтарыце спробу.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "Тэрмін дзеяння вашай карты скончыўся. Праверце даныя вашай карткі і паўтарыце спробу.";
 
 /* Credit/debit card donation error for decline failures where the card number is incorrect. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "Нумар вашай карткі няправільны. Праверце рэквізіты вашай карткі і паўтарыце спробу.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "Нумар вашай карткі няправільны. Праверце даныя вашай карткі і паўтарыце спробу.";
 
 /* Credit/debit card donation error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Нумар CVC вашай карткі няправільны. Праверце рэквізіты вашай карткі і паўтарыце спробу.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Нумар CVC вашай карткі няправільны. Праверце даныя вашай карткі і паўтарыце спробу.";
 
 /* Credit/debit card donation error for decline failures where the expiration month on the payment method is incorrect. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "Месяц сканчэння тэрміну дзеяння вашай карткі няправільны. Праверце рэквізіты вашай карткі і паўтарыце спробу.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "Месяц сканчэння тэрміну дзеяння вашай карткі няправільны. Праверце даныя вашай карткі і паўтарыце спробу.";
 
 /* Credit/debit card donation error for decline failures where the expiration year on the payment method is incorrect. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_YEAR" = "Год сканчэння тэрміну дзеяння вашай карткі няправільны. Праверце рэквізіты вашай карткі і паўтарыце спробу.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_YEAR" = "Год сканчэння тэрміну дзеяння вашай карткі няправільны. Праверце даныя вашай карткі і паўтарыце спробу.";
 
 /* Credit/debit card donation error for unspecified decline failures. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_OTHER" = "Праверце рэквізіты вашай карткі і паўтарыце спробу. Калі праблема не знікне, звярніцеся да свайго банка.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_OTHER" = "Праверце даныя вашай карткі і паўтарыце спробу. Калі праблема не знікне, звярніцеся да свайго банка.";
 
 /* Credit/debit card donation error for decline failures where the payment cannot be authorized. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Праверце рэквізіты вашай карткі і паўтарыце спробу.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Праверце даныя вашай карткі і паўтарыце спробу.";
 
 /* Title for the 'crop/scale image' dialog. */
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "Перасунуць і маштабаваць";
@@ -1766,7 +1766,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Выдаленне ўліковага запісу…";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Няма падключэння да інтэрнэту Праверце, каб быў уключаны Wi-Fi або мабільныя даныя, і паўтарыце спробу.";
+"DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Няма падключэння да інтэрнэту. Праверце, каб быў уключаны Wi-Fi або мабільныя даныя, і паўтарыце спробу.";
 
 /* Title for the 'phone number' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "Нумар тэлефона";
@@ -1775,7 +1775,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Пацвердзіць свой нумар Signal";
 
 /* Title for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Выдалены ўліковы запіс";
+"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Выдаліць уліковы запіс";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "Нумар тэлефона, які вы ўвялі, не супадае з нумарам тэлефона вашага ўліковага запісу.";
@@ -1793,7 +1793,7 @@
 "DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Гэтая асоба будзе выдалена з вашых тэлефонных кантактаў. Вы не ўбачыце гэтую асобу падчас пошуку. Калі яна напіша вам, вы атрымаеце запыт на абмен паведамленнямі.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_TITLE" = "Выдаліць кантакт i прыбраць яго з вашага спісу?";
+"DELETE_CONTACT_ACTION_SHEET_TITLE" = "Выдаліць кантакт і прыбраць яго з вашага спісу?";
 
 /* Title of button for deleting system contact. */
 "DELETE_CONTACT_BUTTON" = "Выдаліць кантакт";
@@ -1895,13 +1895,13 @@
 "DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "Не хапае вольнага месца, каб завяршыць перанос";
 
 /* An error indicating the user must update their device before trying to transfer. */
-"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Зрабіце абнаўленне да апошняй версіі Signal i паўтарыце спробу";
+"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Зрабіце абнаўленне да апошняй версіі Signal і паўтарыце спробу";
 
 /* Button shown to expand a QR code and view it fullscreen. */
 "DEVICE_TRANSFER_EXPAND_QR_CODE_BUTTON" = "Павялічыць";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Перанесці свой уліковы запіс Signal на новую прыладу iOS. Пераканайцеся, што ваша новая прылада ўключаная i знаходзіцца побач.";
+"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Перанесці свой уліковы запіс Signal на новую прыладу iOS. Пераканайцеся, што ваша новая прылада ўключаная і знаходзіцца побач.";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_TITLE" = "Перанесці ўліковы запіс";
@@ -1991,10 +1991,10 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Краіна для абыходу цэнзуры";
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate. Embeds {{formatted amount of money}}, such as \"$20\". */
-"DONATE_BUTTON" = "Ахвяраваць %1$@";
+"DONATE_BUTTON" = "Зрабіць ахвяраванне %1$@";
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\". */
-"DONATE_BUTTON_MONTHLY" = "Ахвяраваць %1$@/месяц";
+"DONATE_BUTTON_MONTHLY" = "Зрабіць ахвяраванне %1$@/месяц";
 
 /* When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with bank transfer. */
 "DONATE_CHOOSE_BANK_TRANSFER_AS_PAYMENT_METHOD" = "Банкаўскі перавод";
@@ -2012,7 +2012,7 @@
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "Атрымайце значок %1$@ на 30 дзён";
 
 /* When users make donations on a friend's behalf, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Ахвяраванне для Signal %1$@";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Ахвяраванне %1$@ для Signal";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money per month}}, such as \"$5/month\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Зрабіць ахвяраванне %1$@ для Signal";
@@ -2069,7 +2069,7 @@
 "DONATE_SCREEN_ERROR_TITLE_YOU_HAVE_A_PAYMENT_PROCESSING" = "Ваша ахвяраванне апрацоўваецца";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
-"DONATE_SCREEN_MONTHLY_CHOICE" = "Штомесячна";
+"DONATE_SCREEN_MONTHLY_CHOICE" = "Штомесячнае";
 
 /* On the donation screen, you can see a list of monthly subscription levels. If you already have one of these and it expires soon, this text is shown below it indicating when it will expire. Embeds {{formatted renewal date}}, such as \"June 9, 2010\". */
 "DONATE_SCREEN_MONTHLY_SUBSCRIPTION_EXPIRES_ON_DATE" = "Сканчаецца: %1$@";
@@ -2084,7 +2084,7 @@
 "DONATE_SCREEN_MONTHLY_SUBSCRIPTION_TITLE" = "%1$@/месяц";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
-"DONATE_SCREEN_ONE_TIME_CHOICE" = "Адзін раз";
+"DONATE_SCREEN_ONE_TIME_CHOICE" = "Разавае";
 
 /* On the donation screen, if you already have a subscription, you'll see a button to update your subscription. This is the text on that button. */
 "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "Абнавіць падпіску";
@@ -2102,7 +2102,7 @@
 "DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Ваша разавае ахвяраванне чакае разгляду. Вы зможаце размясціць значок %1$@ у сваім профілі, калі мы атрымаем ваша ахвяраванне.\n\nАпрацоўка банкаўскіх пераводаў звычайна займае 1 працоўны дзень.";
 
 /* Message for a sheet explaining that a recurring donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Ваша штомесячнае ахвяраванне чакае разгляду. Вы зможаце размясціць значок %1$@ у сваім профілі, калi мы атрымаем ваша ахвяраванне.\n\nАпрацоўка банкаўскіх пераводаў звычайна займае 1 працоўны дзень.";
+"DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Ваша штомесячнае ахвяраванне чакае разгляду. Вы зможаце размясціць значок %1$@ у сваім профілі, калі мы атрымаем ваша ахвяраванне.\n\nАпрацоўка банкаўскіх пераводаў звычайна займае 1 працоўны дзень.";
 
 /* Title for a button asking the user to renew their subscription, because it has expired. */
 "DONATION_BADGE_ISSUE_SHEET_RENEW_SUBSCRIPTION_BUTTON_TITLE" = "Падоўжыць падпіску";
@@ -2141,7 +2141,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "Пацвердзіць ахвяраванне";
 
 /* When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\". */
-"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "Для гэтага чата ўключаны знікаючыя паведамленні. Ваша паведамленне аб ахвяраванні знікне ў %1$@.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "Для гэтага чата ўключаны знікаючыя паведамленні. Ваша паведамленне аб ахвяраванні знікне праз %1$@.";
 
 /* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, this error message is shown. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "Немагчыма зрабіць ахвяраванне. Праверце падключэнне і паўтарыце спробу.";
@@ -2150,25 +2150,25 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_TITLE" = "Немагчыма зрабіць ахвяраванне";
 
 /* Users can donate on a friend's behalf. This tells users that this will be a one-time donation. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_DESCRIPTION" = "Аднаразовае ахвяраванне";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_DESCRIPTION" = "Разавае ахвяраванне";
 
 /* Users can donate on a friend's behalf. If the payment fails and the user has not been charged, this error message is shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_BODY" = "Ваш плацеж не атрымалася апрацаваць, і вашы сродкі не былі cпiсаны. Паўтарыце спробу.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_BODY" = "Ваш плацеж не атрымалася апрацаваць, і вашы сродкі не былі cпісаны. Паўтарыце спробу.";
 
 /* Users can donate on a friend's behalf. If the payment fails and the user has not been charged, an error dialog will be shown. This is the title of that dialog. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE" = "Плацеж не атрымаўся";
 
 /* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, this error message will be shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY" = "Ваша плацеж быў апрацаваны, але Signal не зможа адправіць паведамленне аб гэтым ахвяраванні. Калi ласка, звярніцеся да службы падтрымкі.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY" = "Ваш плацеж быў апрацаваны, але Signal не зможа адправіць паведамленне аб гэтым ахвяраванні. Калі ласка, звярніцеся да службы падтрымкі.";
 
 /* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, an error dialog will be shown. This is the title of that dialog. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_TITLE" = "Ахвяраванне не атрымалася";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_TITLE" = "Зрабіць ахвяраванне не атрымалася";
 
 /* A friend has donated on your behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_INCOMING" = "✨ %1$@ зрабіў(-ла) ахвяраванне вам";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_INCOMING" = "✨ %1$@ зрабіў(-ла) ахвяраванне для вас";
 
 /* You have a made a donation on a friend's behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_OUTGOING" = "✨ Вы ахвяравалі %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_OUTGOING" = "✨ Вы зрабілі ахвяраванне для %1$@";
 
 /* You received a donation from a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_RECEIVED_TITLE_FORMAT" = "%1$@ ахвяравана для Signal ад вашага імя";
@@ -2195,7 +2195,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Ахвяраванне ад імя %1$@";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Вы зрабілі ахвяраванне Signal ад імя %1$@. Гэты карыстальнік, калі пажадае, зможа прадэманстраваць сваю падтрымку ў яго профілі.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Вы зрабілі ахвяраванне для Signal ад імя %1$@. Гэты карыстальнік, калі пажадае, зможа прадэманстраваць сваю падтрымку ў сваім профілі.";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the title on that sheet. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE" = "Дзякуй за вашу падтрымку!";
@@ -2204,13 +2204,13 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_VIEW" = "Прагледзець";
 
 /* A friend has donated on your behalf and you received a badge. This text says that you received a badge, and from whom. Embeds {{contact's short name, such as a first name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "%1$@ зрабіў(-ла) ахвяраванне Signal ад вашага імя! Прадэманструйце сваю падтрымку Signal у вашым профілі.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "%1$@ зрабіў(-ла) ахвяраванне для Signal ад вашага імя! Прадэманструйце сваю падтрымку Signal у вашым профілі.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
 "DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Канфідэнцыйны абмен паведамленнямі. Без рэкламы, без трэкераў, без сачэння.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal існуе за кошт ахвяраванняў, то бок ваша канфiдэнцыйнасць для нас стаіць на першым месцы. Signal створаны для вас, а не для атрымання вашых даных i прыбытку.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal існуе за кошт ахвяраванняў, то бок ваша канфідэнцыйнасць для нас стаіць на першым месцы. Signal створаны для вас, а не для атрымання вашых даных і прыбытку.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen. */
 "DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "Калі гэта магчыма, зрабіце ахвяраванне сёння, каб Signal заставаўся заўсёды вясёлым, надзейным і даступным для ўсіх.";
@@ -2237,7 +2237,7 @@
 "DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Ахвяраванне для сябра";
 
 /* Title for one-time donation receipts */
-"DONATION_RECEIPT_ONE_TIME" = "Адзін раз";
+"DONATION_RECEIPT_ONE_TIME" = "Разавае";
 
 /* Title for recurring donation receipts */
 "DONATION_RECEIPT_RECURRING" = "Рэгулярнае";
@@ -2267,7 +2267,7 @@
 "DONATION_SCREEN_DONATE_BUTTON" = "Зрабіць ахвяраванне";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
-"DONATION_SCREENS_HEADER_DESCRIPTION" = "Канфідэнцыйны абмен паведамленнямі, які існуе дзякуючы вашай падтрымцы. Без рэкламы, без трэкераў, без кампрамісаў. Ахвяраваць, каб падтрымаць Signal.";
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "Канфідэнцыйны абмен паведамленнямі, які існуе дзякуючы вашай падтрымцы. Без рэкламы, без трэкераў, без кампрамісаў. Зрабіце ахвяраванне зараз, каб падтрымаць Signal.";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
 "DONATION_SCREENS_HEADER_READ_MORE" = "Чытаць далей";
@@ -2288,7 +2288,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "Паўтарыць спробу";
 
 /* Prompt the user asking if they want to keep the current in-flight, but unauthorized donation, or try again. */
-"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Не атрымалася пацвердзіць ваша ахвяраванне праз iDEAL. Праверце сваю банкаўскаю праграму, каб ухваліць ваша ахвяраванне, цi паўтарыце спробу.";
+"DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE" = "Не атрымалася пацвердзіць ваша ахвяраванне праз iDEAL. Праверце сваю банкаўскаю праграму, каб ухваліць ваша ахвяраванне, ці паўтарыце спробу.";
 
 /* Message for an alert explaining that a one-time payment made via bank transfer is being processed. */
 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE" = "Ваш банкаўскі перавод чакае разгляду. Апрацоўка банкаўскіх пераводаў звычайна займае 1 працоўны дзень.";
@@ -2327,7 +2327,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_BANK_PAYMENT_PROCESSING" = "Ахвяраванне чакае разгляду";
 
 /* A label describing a donation payment that was made by a method other than bank transfer (such as by credit card), which is still processing and has not completed. */
-"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_NON_BANK_PAYMENT_PROCESSING" = "Апрацоўванне ахвяравання…";
+"DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_NON_BANK_PAYMENT_PROCESSING" = "Апрацоўка ахвяравання…";
 
 /* A label describing a donation payment that has failed to process. */
 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_PAYMENT_FAILED" = "Памылка падчас апрацоўкі ахвяравання";
@@ -2339,13 +2339,13 @@
 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_WAITING_FOR_AUTHORIZATION" = "Чаканне аўтарызацыі";
 
 /* A string describing the amount and currency of a one-time payment. Embeds {{ the amount, formatted as a currency }}. */
-"DONATION_SETTINGS_ONE_TIME_AMOUNT_FORMAT" = "%1$@ аднаразова";
+"DONATION_SETTINGS_ONE_TIME_AMOUNT_FORMAT" = "%1$@ разава";
 
 /* Title for the \"donate for a friend\" button on the donation view. */
 "DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND" = "Зрабіць ахвяраванне для сябра";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
-"DONATION_VIEW_DONATION_TO_SIGNAL" = "Ахвяраваць для Signal";
+"DONATION_VIEW_DONATION_TO_SIGNAL" = "Ахвяраванне для Signal";
 
 /* Title for the 'Donor FAQ' button on the donation screen */
 "DONATION_VIEW_DONOR_FAQ" = "FAQ аб ахвяраваннях";
@@ -2360,7 +2360,7 @@
 "DONATION_VIEW_MONTHLY_DONATION_TO_SIGNAL" = "Штомесячнае ахвяраванне для Signal";
 
 /* Title for the 'more' section on the donation screen */
-"DONATION_VIEW_MORE_SECTION_TITLE" = "Больш падрабязна";
+"DONATION_VIEW_MORE_SECTION_TITLE" = "Дадаткова";
 
 /* Title for the 'my support' section in the donation view */
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "Мая падтрымка";
@@ -2369,13 +2369,13 @@
 "DONATION_VIEW_OTHER_WAYS_TO_DONATE_TITLE" = "Іншыя спосабы для ахвяравання";
 
 /* Title on the 'Donate to Signal' screen */
-"DONATION_VIEW_TITLE" = "Зрабіць ахвяраванне для Signal";
+"DONATION_VIEW_TITLE" = "Зрабіце ахвяраванне для Signal";
 
 /* Label for the currency picker button in donation views */
 "DONATIONS_CURRENCY_PICKER_LABEL" = "Валюта";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Вы можаце ўключыць доступ у праграме «Наладах iOS».";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Вы можаце ўключыць доступ у наладах iOS.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal патрабуе доступу да кантактаў, каб рэдагаваць інфармацыю кантактаў";
@@ -2414,19 +2414,19 @@
 "EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "Рэдагаваць паведамленне";
 
 /* Error message to display to user when a message is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Змянення могуць быць унесены толькі на працягу 24 гадзін з моманту адпраўкі гэтага паведамлення.";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Змяненні могуць быць унесены толькі на працягу 24 гадзін з моманту адпраўкі гэтага паведамлення.";
 
 /* Edit failed for an unexpected reason */
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Прывітанне!\n\nАпошнім часам я выкарыстоўваю Signal, каб быць упэўненым у канфідэнцыйнасцi чатаў на сваім iPhone. Прапаную ўсталяваць гэту праграму і табе, каб мы маглі дакладна ведаць, што ніхто, акрамя нас з табой, не чытае нашы паведамленні і не чуе нашы размовы .\n\nSignal даступны для iPhone і Android. Запампуйце яго тут: %1$@\n\nSignal працуе так, як i мэсанджар, што вы ўжо выкарыстоўваеце. Мы зможам адпраўляць фота і відэа, рабіць званкі і ствараць групавыя чаты. І самае галоўнае – ніхто, акрамя нас, не можа бачыць нічога з гэтага, нават распрацоўнікі Signal!\n\nБольш падрабязна аб Open Whisper Systems, распрацоўніках Signal, можна даведацца тут: %2$@";
+"EMAIL_INVITE_BODY" = "Прывітанне!\n\nАпошнім часам я выкарыстоўваю Signal, каб быць упэўненым у канфідэнцыйнасці чатаў на сваім iPhone. Прапаную ўсталяваць гэту праграму і табе, каб мы маглі дакладна ведаць, што ніхто, акрамя нас з табой, не чытае нашы паведамленні і не чуе нашы размовы.\n\nSignal даступны для iPhone і Android. Запампуй яго тут: %1$@\n\nSignal працуе так, як і мэсанджар, што ты ўжо выкарыстоўваеш. Мы зможам адпраўляць фота і відэа, рабіць званкі і ствараць групавыя чаты. І самае галоўнае – ніхто, акрамя нас, не можа бачыць нічога з гэтага, нават распрацоўнікі Signal!\n\nБольш падрабязна аб Open Whisper Systems, распрацоўніках Signal, можна даведацца тут: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Давайце пяройдзем на Signal";
 
 /* Description for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_MESSAGE" = "Ваша прылада не наладжана, каб адпраўляць электронны ліст. Каб адправіць запыт у службу падтрымкі, наладзьце электронную пошту на сваёй прыладзе або адпраўце электронны лiст на support@signal.org";
+"EMAIL_SIGNAL_MESSAGE" = "Ваша прылада не наладжана, каб адпраўляць электронны ліст. Каб адправіць запыт у службу падтрымкі, наладзьце электронную пошту на сваёй прыладзе або адпраўце электронны ліст на support@signal.org";
 
 /* Title for the fallback support sheet if user cannot send email */
 "EMAIL_SIGNAL_TITLE" = "Электронная пошта недаступная";
@@ -2465,7 +2465,7 @@
 "EMPTY_CONTACTS_LABEL_LINE1" = "Ніхто з вашых кантактаў не мае Signal.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Чаму вам не запрасіць каго-небудзь з iх?";
+"EMPTY_CONTACTS_LABEL_LINE2" = "Чаму вам не запрасіць каго-небудзь з іх?";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Занята";
@@ -2531,7 +2531,7 @@
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Кантакт не з'яўляецца карыстальнікам Signal.";
 
 /* Error message indicating that attachment download(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Не атрымалася запампаваць далучэнне.";
+"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Не атрымалася спампаваць далучэнне.";
 
 /* Error message indicating that attachment upload(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "Не атрымалася запампаваць далучэнне.";
@@ -2576,7 +2576,7 @@
 "ERROR_NETWORK_FAILURE" = "Памылка сеткі";
 
 /* Format string for an error alert notification message. Embeds {{ error string }} */
-"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Вы дапаможаце нам палепшыць Signal, калi паведаміце аб гэтай памылцы i дашлеце нам журналы адладкі з вашай прылады на support@signal.org; %1$@";
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Вы дапаможаце нам палепшыць Signal, калі паведаміце аб гэтай памылцы і адправіце нам журналы адладкі з вашай прылады на support@signal.org; %1$@";
 
 /* Format string for an error alert notification title. */
 "ERROR_NOTIFICATION_TITLE" = "Signal Beta: адбылася памылка";
@@ -2642,7 +2642,7 @@
 "FIND_ACCOUNT_INFO_SHEET_TITLE" = "Знайсці інфармацыю аб сваім рахунку";
 
 /* A footer below the username text field describing what should be entered */
-"FIND_BY_USERNAME_FOOTER" = "Увядзіце імя карыстальніка, за якім iдзе кропка і набор лічбаў.";
+"FIND_BY_USERNAME_FOOTER" = "Увядзіце імя карыстальніка, за якім ідзе кропка і набор лічбаў.";
 
 /* A placeholder value for the text field for finding an account by their username */
 "FIND_BY_USERNAME_PLACEHOLDER" = "Імя карыстальніка";
@@ -2663,7 +2663,7 @@
 "FINISH_GROUP_CREATION_LABEL" = "Скончыць стварэнне групы";
 
 /* Tooltip notifying users that the flip camera button moved to the picture-in-picture view of themselves in a call */
-"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "Флiп-камера была перасунута сюды. Націсніце на сваё відэа i паглядзіце, як яна працуе";
+"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "Флiп-камера была перасунута сюды. Націсніце на сваё відэа і паглядзіце, як яна працуе";
 
 /* Label and title for 'contact forwarding' views. */
 "FORWARD_CONTACT" = "Пераслаць кантакт";
@@ -2705,13 +2705,13 @@
 "GET_STARTED_BANNER_TITLE" = "Пачаць";
 
 /* 'Get Started' button directing users to appearance */
-"GET_STARTED_CARD_APPEARANCE" = "Знешні выгляд";
+"GET_STARTED_CARD_APPEARANCE" = "Знеш. выгляд";
 
 /* 'Get Started' button direction users to avatar builder */
 "GET_STARTED_CARD_AVATAR_BUILDER" = "Дадаць фота";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Запрасіць сяброў";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Запрасіць";
 
 /* 'Get Started' button directing users to create a group */
 "GET_STARTED_CARD_NEW_GROUP" = "Новая група";
@@ -2750,7 +2750,7 @@
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ змяніў(-ла) рэдактара інфармацыі аб групе на «%2$@».";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Інфармацыю аб групе могуць змяніць «%1$@».";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Інфармацыю аб групе можа змяніць «%1$@».";
 
 /* Description of the 'admins only' access level. */
 "GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Толькі адміністратары";
@@ -2813,10 +2813,10 @@
 "GROUP_CALL_IS_FULL" = "Званок запоўнены";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Званок у %1$@…";
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Званок %1$@…";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Званок у %1$@ і ў %2$@…";
+"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Званок %1$@ і %2$@…";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "Далучыцца да званка";
@@ -2882,7 +2882,7 @@
 "GROUP_CALL_STARTED_BY_YOU" = "Вы пачалі групавы званок";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
-"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%1$@ пачаў групавы званок";
+"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%1$@ пачаў(-ла) групавы званок";
 
 /* Text displayed when trying to turn on ringing when calling a large group. */
 "GROUP_CALL_TOO_LARGE_TO_RING" = "Немагчыма тэлефанаваць удзельнікам, бо група занадта вялікая.";
@@ -2891,7 +2891,7 @@
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ і %2$@ у гэтым званку";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "Вас адключылi ад званка. Праверце падключэнне і паўтарыце спробу.";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "Вас адключылі ад званка. Праверце падключэнне і паўтарыце спробу.";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name} */
 "GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%1$@ атрымае апавяшчэнне";
@@ -2924,7 +2924,7 @@
 "GROUP_CREATION_FAILED" = "Не ўсе ўдзельнікі могуць быць дададзены ў групу. Паспрабаваць зноў.";
 
 /* Text indication the user can tap to view the full group description */
-"GROUP_DESCRIPTION_MORE" = "чытаць далей";
+"GROUP_DESCRIPTION_MORE" = "яшчэ";
 
 /* Placeholder text for 'group description' field. */
 "GROUP_DESCRIPTION_PLACEHOLDER" = "Дадаць апісанне групы…";
@@ -2993,7 +2993,7 @@
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ уключыў(-ла) ухваленне адміністратарам для спасылкі на групу.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the name of the member. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "Карыстальнік «%1$@» не можа быць аўтаматычна даданы вамі ў гэту групу. Яго запрасілі далучыцца, і ён не ўбачаць паведамленняў у групе, пакуль не прыме запыт.";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "Карыстальнік «%1$@» не можа быць аўтаматычна даданы вамі ў гэту групу. Яго запрасілі далучыцца, і ён не ўбачыць паведамленняў у групе, пакуль не прыме запыт.";
 
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Гэтыя карыстальнікі не могуць быць аўтаматычна даданы вамі ў гэту групу. Iх запрасілі далучыцца, і яны не ўбачаць паведамленняў у групе, пакуль не прымуць запыт.";
@@ -3044,7 +3044,7 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Паўтарыце спробу.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Гэта несапраўдная спасылка для групы. Перш чым спрабаваць далучыцца, пераканайцеся, што спасылка не пашкоджаная і правільная.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Гэта несапраўдная спасылка на групу. Перш чым спрабаваць далучыцца, пераканайцеся, што спасылка не пашкоджаная і правільная.";
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Несапраўдная спасылка";
@@ -3188,7 +3188,7 @@
 "GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "Удзельнік дадаў вас у групу.";
 
 /* Label indicating that a group member is an admin. */
-"GROUP_MEMBER_ADMIN_INDICATOR" = "Адмiнiстратар";
+"GROUP_MEMBER_ADMIN_INDICATOR" = "Адміністратар";
 
 /* Label indicating that a new group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Вы можаце дадаць або запрасіць сяброў пасля стварэння гэтай групы.";
@@ -3197,7 +3197,7 @@
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Удзельнікі";
 
 /* A title string for a view that allows a user to review name collisions in group membership */
-"GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Разглядзець удзельнiкаў";
+"GROUP_MEMBERSHIP_NAME_COLLISION_TITLE" = "Разглядзець удзельнікаў";
 
 /* Placeholder text for 'group name' field. */
 "GROUP_NAME_PLACEHOLDER" = "Назва групы (абавязкова)";
@@ -3266,7 +3266,7 @@
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ выдаліў(-ла) %2$@.";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Вы ўхвалілі запыт на далучэнне да групы ад %1$@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Вы ўхвалілі запыт далучыцца да групы ад %1$@.";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ ухваліў(-ла) запыт далучыцца да групы ад %1$@.";
@@ -3275,13 +3275,13 @@
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "Запыт на далучэнне да групы ад %1$@ быў ухвалены.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
-"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%1$@ адмяніў(-ла) запыт на далучэнне да групы.";
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%1$@ адмяніў(-ла) запыт далучыцца да групы.";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Вы адхілілі запыт на далучэнне да групы ад %1$@.";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ rejecting user name }}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ адхіліў(-ла) запыт на далучэнне да групы ад %1$@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ адхіліў(-ла) запыт далучыцца да групы ад %1$@.";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "Запыт на далучэнне да групы ад %1$@ быў адхілены.";
@@ -3443,7 +3443,7 @@
 "GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Перш чым пакінуць, выберыце новага адміністратара для гэтай групы.";
 
 /* Title for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Выбраць новага адміністратара";
+"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Выберыце новага адміністратара";
 
 /* Label for the 'replace group admin' button. */
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Выбраць новага адміністратара";
@@ -3536,7 +3536,7 @@
 "HOME_VIEW_TOOLBAR_READ_ALL" = "Чытаць усе";
 
 /* Label for both bank chooser header and the bank form field on the iDEAL payment detail page. */
-"IDEAL_DONATION_CHOOSE_YOUR_BANK_LABEL" = "Выбраць свой банк";
+"IDEAL_DONATION_CHOOSE_YOUR_BANK_LABEL" = "Выберыце свой банк";
 
 /* Fallback title confirming recurring donation with bank. */
 "IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "Пацвердзіць сваё ахвяраванне";
@@ -3545,7 +3545,7 @@
 "IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "Каб наладзіць рэгулярнае ахвяраванне, націсніце «Працягнуць», каб пацвердзіць спісанне сродкаў у памеры €0,01 у вашым банку. Гэтая сума будзе аўтаматычна вернута, і гэта дазволіць спісваць з вашага рахунку ахвяраванне ў памеры %1$@/месяц.";
 
 /* Title confirming recurring donation with bank. */
-"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "Пацвердзіць сваё ахвяраванне праз %1$@";
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "Пацвердзіце сваё ахвяраванне праз %1$@";
 
 /* The image editor hint that you can draw blur */
 "IMAGE_EDITOR_BLUR_HINT" = "Размалёўвайце любыя фрагменты для размыцця";
@@ -3566,10 +3566,10 @@
 "IN_CALL_CONNECTING" = "Падключэнне…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
-"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Адказана на iншай прыладзе.";
+"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Адказана на іншай прыладзе.";
 
 /* Call screen label when call was canceled on this device because the call recipient has a call in progress on another device. */
-"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Прапушчаны, таму што iдзе званок на іншай прыладзе.";
+"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Прапушчаны, таму што ідзе званок на іншай прыладзе.";
 
 /* Call screen label when call was canceled on this device because the call recipient declined on another device. */
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Адхілена на іншай прыладзе.";
@@ -3641,7 +3641,7 @@
 "INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_MESSAGE" = "Signal атрымаў апавяшчэнне, што гэтая асоба можа рассылаць спам. Signal не можа бачыць змесціва ніякага чата.";
 
 /* Title of the alert shown when a user taps on 'learn more' via the spam info message. */
-"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Паскардзіцца на спам";
+"INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Паскарджаны на спам";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
@@ -3665,7 +3665,7 @@
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Стыкеры";
 
 /* accessibility hint for the button which records voice memos */
-"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Каб запісаць, двойчы націснуць і ўтрымліваць. Адпусціць, каб адправіць, або пацягнуць улева, каб адмяніць. Каб зафiксаваць запіс, двойчы націснуць і пацягнуць уверх.";
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT" = "Каб запісаць, двойчы націснуць і ўтрымліваць. Адпусціць, каб адправіць, або пацягнуць улева, каб адмяніць. Каб зафіксаваць запіс, двойчы націснуць і пацягнуць уверх.";
 
 /* accessibility label for the button which records voice memos */
 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "Галасавое паведамленне";
@@ -3677,7 +3677,7 @@
 "INVALID_PROXY_HOST_ERROR" = "Проксі-адрас, што вы ўвялi, несапраўдны: праверце адрас і паўтарыце спробу.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Уключыце доступ да кантактаў у праграме «Налады iOS», каб запрасіць сваіх сяброў далучыцца да Signal.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Уключыце доступ да кантактаў у наладах iOS, каб запрасіць сваіх сяброў далучыцца да Signal.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Дазволіць доступ да кантакту";
@@ -3686,7 +3686,7 @@
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Запрасіць сяброў у Signal";
 
 /* Header label above a section for more options for adding contacts */
-"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "Больш";
+"INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "Дадаткова";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Пошук";
@@ -3731,7 +3731,7 @@
 "KEY_COMMAND_NEXT_CONVERSATION" = "Перайсці ў наступны чат";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Перайсці ў папярэднi чат";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Перайсці ў папярэдні чат";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "Пошук";
@@ -3848,7 +3848,7 @@
 "LOCATION_PICKER_TITLE" = "Выберыце «Месцазнаходжанне»";
 
 /* Title for the 'logging' help section. */
-"LOGGING_SECTION" = "Вядзенне журнала";
+"LOGGING_SECTION" = "Вядзенне журнала адладкі";
 
 /* Footer for the 'logging' help section. */
 "LOGGING_SECTION_FOOTER" = "З журналамі адладкі Signal будзе лягчэй выправіць непаладкі і збоі.";
@@ -3974,7 +3974,7 @@
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "Адкрыць спасылку";
 
 /* Label for button to open a signal proxy. */
-"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Адкрыць проксi Signal";
+"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Адкрыць проксі Signal";
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Прагледзець набор стыкераў";
@@ -4130,13 +4130,13 @@
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "Калі вы не ўпэўненыя, ад каго прыйшоў запыт, прагледзьце кантакты ніжэй і прыміце рашэнне.";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
-"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Разглядзець запрос";
+"MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "Разглядзець запыт";
 
 /* A button that updates a known contact's information to resolve a name collision */
 "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION" = "Абнавіць кантакт";
 
 /* Action sheet message to confirm reporting a conversation as spam via a message request. */
-"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Signal атрымаў апавяшчэнне, што гэтая асоба можа рассылаць спам. Signal не можа бачыць змесціва ніякага чата.";
+"MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE" = "Signal атрымае апавяшчэнне, што гэтая асоба можа рассылаць спам. Signal не можа бачыць змесціва ніякага чата.";
 
 /* Action sheet title to confirm reporting a conversation as spam via a message request. */
 "MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE" = "Паскардзіцца на спам?";
@@ -4163,7 +4163,7 @@
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Разблакаваць гэту групу і раскрыць свае імя і фота яе ўдзельнікам? Вы не атрымаеце паведамленняў, пакуль не разблакуеце гэту групу.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Разблакаваць гэту групу? Яе ўдзельнiкi не даведаюцца, што вы бачылі іх паведамленні, пакуль вы не разблакуеце iх.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_V2" = "Разблакаваць гэту групу? Яе ўдзельнікі не даведаюцца, што вы бачылі іх паведамленні, пакуль вы не разблакуеце іх.";
 
 /* A button used to continue a conversation and share your profile. */
 "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "Працягнуць";
@@ -4211,7 +4211,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "Спампоўка";
 
 /* status meesage for edited messages */
-"MESSAGE_STATUS_EDITED" = "Адрэдагаванае";
+"MESSAGE_STATUS_EDITED" = "Зменена";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Не атрымалася адправіць.";
@@ -4280,25 +4280,25 @@
 "MISSED_CALL_DO_NOT_DISTURB" = "Прапушчаны званок, калі ўключаны рэжым «Не турбаваць»";
 
 /* info message text in conversation view (use Apple's name for 'Focus') */
-"MISSED_CALL_FOCUS_MODE" = "Прапушчаны званок, калі ўключаны рэжым «Факусаванне»";
+"MISSED_CALL_FOCUS_MODE" = "Прапушчаны званок, калі ўключаны рэжым «Факусіраванне»";
 
 /* info message text in conversation view */
 "MISSED_VIDEO_CALL" = "Прапушчаны відэазванок";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Уключыце доступ да камеры ў праграме «Налады iOS», каб рабіць відэазванкі ў Signal.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Уключыце доступ да камеры ў наладах iOS, каб рабіць відэазванкі ў Signal.";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal патрабуе доступу да вашай камеры.";
 
 /* Alert body indicating the user has denied location permissions */
-"MISSING_LOCATION_PERMISSION_MESSAGE" = "Вы можаце ўключыць гэты дазвол у праграме «Налады iOS».";
+"MISSING_LOCATION_PERMISSION_MESSAGE" = "Вы можаце ўключыць гэты дазвол у наладах iOS.";
 
 /* Alert title indicating the user has denied location permissions */
 "MISSING_LOCATION_PERMISSION_TITLE" = "Signal патрабуе доступу да вашага месцазнаходжання для гэтай функцыі.";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Вы можаце ўключыць гэты дазвол у праграме «Налады iOS».";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Вы можаце ўключыць гэты дазвол у наладах iOS.";
 
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal патрабуе доступу да вашых фота для гэтай функцыі.";
@@ -4334,10 +4334,10 @@
 "MY_STORY_NAME" = "Мая гісторыя";
 
 /* Subtitle shown on my story in the conversation picker when sending a story for the first time with unset my story privacy settings. */
-"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Выбраць таго, хто можа бачыць вашу гісторыю";
+"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Выбраць таго, хто можа прагледзець вашу гісторыю";
 
 /* Title for the my story settings sheet */
-"MY_STORY_SETTINGS_SHEET_TITLE" = "Канфідэнцыйнасць «Маiх гісторый»";
+"MY_STORY_SETTINGS_SHEET_TITLE" = "Канфідэнцыйнасць «Маіх гісторый»";
 
 /* Title for the my story settings view */
 "MY_STORY_SETTINGS_TITLE" = "Мая гісторыя";
@@ -4367,7 +4367,7 @@
 "NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "Аўдыязванок";
 
 /* Accessibility hint describing the action of the new call button on the Calls Tab */
-"NEW_CALL_HINT" = "Выберыце кантакт або групу, каб пачаць з iмi новы званок.";
+"NEW_CALL_HINT" = "Выберыце кантакт або групу, каб пачаць з імi новы званок.";
 
 /* Accessibility label for the new call button on the Calls Tab */
 "NEW_CALL_LABEL" = "Новы званок";
@@ -4409,7 +4409,7 @@
 "NEW_GROUP_DEFAULT_TITLE" = "Новая група";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
-"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%1$@ у %2$@";
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "Ад %1$@ да %2$@";
 
 /* The title for the 'name new group' view. */
 "NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "Назва групы";
@@ -4439,7 +4439,7 @@
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "Патрэбна назва гісторыі.";
 
 /* Title for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Адсутнічае назва групы";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Адсутнічае назва гісторыі";
 
 /* Section footer for the name text field on the 'new private story' creation view */
 "NEW_PRIVATE_STORY_NAME_FOOTER" = "Толькі вы можаце бачыць назву гэтай гісторыі.";
@@ -4553,10 +4553,10 @@
 "NOTIFICATIONS_FOOTER_WARNING" = "Мажлівыя дзеянні «Пазначыць як прачытанае», «Адказаць» і «Перазваніць».";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "Без назвы i змесціва";
+"NOTIFICATIONS_NONE" = "Без назвы і змесціва";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "Прайграваць, калi праграма адкрытая";
+"NOTIFICATIONS_SECTION_INAPP" = "Прайграваць, калі праграма адкрытая";
 
 /* Label for settings UI that allows user to add a new notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Дадаць персаналізаваны гук…";
@@ -4610,7 +4610,7 @@
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Калі націснуць «Рэгістраваць iPad», можна стварыць цалкам новы ўліковы запіс Signal або перанесці існуючы ўліковы запіс на гэты iPad. Signal адключыцца на іншых прыладах, што зарэгістраваны на сённяшні час з такім жа нумарам тэлефона.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Калi націснуць «Прывязаць iPhone», можна падключыць тэлефон да існуючага ўліковага запісу. Звязаць тэлефон мы звычайна не рэкамендуем, бо гэта абмяжуе некаторыя функцыі, напрыклад, званкі.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Калі націснуць «Звязаць iPhone», можна падключыць тэлефон да існуючага ўліковага запісу. Звязаць тэлефон мы звычайна не рэкамендуем, бо гэта абмяжуе некаторыя функцыі, напрыклад, званкі.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Зарэгістраваць гэты iPad";
@@ -4619,16 +4619,16 @@
 "ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Звязаць гэты iPhone";
 
 /* warning to the user that registering an ipad is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Калi зарэгістраваць гэты iPad, Signal адключыцца на іншых прыладах, што зарэгістраваны на сённяшні час з такім жа нумарам тэлефона.";
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Калі зарэгістраваць гэты iPad, Signal адключыцца на іншых прыладах, што зарэгістраваны на сённяшні час з такім жа нумарам тэлефона.";
 
 /* warning to the user that linking a phone is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Звязаць тэлефон мы звычайна не рэкамендуем, бо гэта абмяжуе некаторыя функцыі, напрыклад, званкі.";
+"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Звязаць тэлефон мы звычайна не рэкамендуем, бо гэта абмяжуе асноўныя функцыі.";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Уключыць дазволы";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Калi ўключаны дазвол апавяшчэнняў і кантактаў, вы бачыце, што прыходзяць паведамленні і можаце знаходзіць людзей, якіх вы ведаеце. Кантакты зашыфраваны, таму служба Signal не можа бачыць іх.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Калі ўключаны дазвол апавяшчэнняў і кантактаў, вы бачыце, што прыходзяць паведамленні і можаце знаходзіць людзей, якіх вы ведаеце. Кантакты зашыфраваны, таму служба Signal не можа бачыць іх.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Уключыць дазволы";
@@ -4649,7 +4649,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Несапраўдны нумар тэлефона. Для рэгістрацыі ўвядзіце сапраўдны нумар тэлефона.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "У вас скончыліся PIN-коды, але вы па-ранейшаму зможаце мець доступ да свайго ўліковага запісу Signal, калi створыце новы PIN-код. Для канфідэнцыйнасцi і бяспекі ваш уліковы запіс будзе адноўлены без захавання інфармацыі профілю або наладаў.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "У вас скончыліся PIN-коды, але вы па-ранейшаму зможаце мець доступ да свайго ўліковага запісу Signal, калі створыце новы PIN-код. Для канфідэнцыйнасці і бяспекі ваш уліковы запіс будзе адноўлены без захавання інфармацыі профілю або наладаў.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Даведацца больш пра PIN-коды";
@@ -4658,7 +4658,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "Няправільны PIN-код";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when it is unknown if reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "У вас скончыліся спробы ўводу PIN-кода, але вы па-ранейшаму можаце атрымаць доступ да ўліковага запісу Signal, калі пацвердзіце свой нумар тэлефона. Для канфідэнцыйнасцi і бяспекі ваш уліковы запіс будзе адноўлены без захавання інфармацыі профілю або наладаў.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "У вас скончыліся спробы ўводу PIN-кода, але вы па-ранейшаму можаце атрымаць доступ да ўліковага запісу Signal, калі пацвердзіце свой нумар тэлефона. Для канфідэнцыйнасці і бяспекі ваш уліковы запіс будзе адноўлены без захавання інфармацыі профілю або наладаў.";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Умовы & Палітыка канфідэнцыйнасці";
@@ -4673,7 +4673,7 @@
 "ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "Пазваніць мне";
 
 /* Format string for button counting down time until phone call verification can be performed. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Патэлефанаваць мне праз %1$@";
+"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Пазваніць праз %1$@";
 
 /* Label for a progress spinner currently validating code */
 "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Пацвярджэнне кода…";
@@ -4691,7 +4691,7 @@
 "ONBOARDING_VERIFICATION_HELP_LINK" = "Праблемы з рэгістрацыяй?";
 
 /* Label for button to resend SMS verification code. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON" = "Адправіць код яшчэ раз";
+"ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON" = "Паўторна адправіць код";
 
 /* Format string for button counting down time until SMS code can be resent. Embeds {{time remaining}}. */
 "ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "Паўторна адправіць код праз %1$@";
@@ -4820,7 +4820,7 @@
 "PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Вам неабходна ўключыць код доступу ў наладах iOS, каб выкарыстоўваць блакіроўку плацяжоў.";
 
 /* First time payments suggest payments lock message */
-"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "Дадайце яшчэ адзін узровень бяспекі і актывуйце код доступу або Touch ID для адпраўкі сродкаў";
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "Дадайце яшчэ адзін узровень бяспекі і актывуйце код доступу або Touch ID для пераводу сродкаў";
 
 /* First time payments suggest payments lock message */
 "PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "Дадайце яшчэ адзін узровень бяспекі і актывуйце Face ID для пераводу сродкаў.";
@@ -4853,7 +4853,7 @@
 "PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_TITLE" = "Памылка біяметрычнай аўтэнтыфікацыі";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'payments lock'. */
-"PAYMENTS_LOCK_REASON_UNLOCK_PAYMENTS_LOCK" = "Прайсцi аўтэнтыфікацыю, каб пацвердзіць плацёж.";
+"PAYMENTS_LOCK_REASON_UNLOCK_PAYMENTS_LOCK" = "Прайсці аўтэнтыфікацыю, каб пацвердзіць плацеж.";
 
 /* Label for the 'add memo' ui in the 'send payment' UI. */
 "PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "Дадаць нататку";
@@ -5015,13 +5015,13 @@
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "Каб адправіць плацеж гэтаму карыстальніку, яму трэба прыняць ад вас запыт на адпраўку паведамленняў.";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "Каб адправіць плацеж гэтаму карыстальніку, яму трэба прыняць ад вас запыт на адпраўку паведамленняў. Дашліце яму паведамленне, каб стварыць запыт на адпраўку паведамленняў.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "Каб адправіць плацеж гэтаму карыстальніку, яму трэба прыняць ад вас запыт на адпраўку паведамленняў. Адпраўце яму паведамленне, каб стварыць запыт на адпраўку паведамленняў.";
 
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Немагчыма адправіць плацеж";
 
 /* The label for the 'send request' button in alerts and action sheets. */
-"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_BUTTON" = "Даслаць запыт";
+"PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_BUTTON" = "Адправіць запыт";
 
 /* Message for error alert indicating that a given user cannot receive payments because they have not enabled payments. */
 "PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE" = "Жадаеце адправіць яму запыт на актывацыю «Плацяжоў»?";
@@ -5048,7 +5048,7 @@
 "PENDING_CHANGES_ACTION_SHEET_MESSAGE" = "Жадаеце скасаваць гэтыя змянення?";
 
 /* The alert title if user tries to exit a task without saving changes. */
-"PENDING_CHANGES_ACTION_SHEET_TITLE" = "Незахаваныя змянення";
+"PENDING_CHANGES_ACTION_SHEET_TITLE" = "Незахаваныя змяненні";
 
 /* Title of 'accept member request to join group' button. */
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Дадаць у групу";
@@ -5075,7 +5075,7 @@
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "Прагледзець запыты";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "%1$@ быў(-ла) адмоўлены(-а).";
+"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "«%1$@» быў(-ла) адмоўлены(-а).";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Адклікаць запрашэнне";
@@ -5096,7 +5096,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Запрошаныя іншымі";
 
 /* Title for the 'people you invited' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Запрошаныя іншымі";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Запрошаныя вамі";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Памылка ўваходнага паведамлення";
@@ -5105,7 +5105,7 @@
 "PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Медыяфайл для аднаразовага прагляду";
 
 /* Label for outgoing view-once messages. */
-"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Медыяфайлы";
+"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Медыяфайл";
 
 /* inbox cell and notification text for a view-once photo. */
 "PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Фота для аднаразовага прагляду";
@@ -5195,7 +5195,7 @@
 "PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA" = "Перайсці ў чат";
 
 /* Message for a sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
-"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "Распачаць чат з «%1$@»";
+"PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT" = "Распачніце чат з «%1$@»";
 
 /* Title for sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}. */
 "PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "%1$@ знойдзена";
@@ -5222,7 +5222,7 @@
 "PIN_CREATION_CHANGING_TITLE" = "Змяніць свой PIN-код";
 
 /* Title of the 'pin creation' confirmation view. */
-"PIN_CREATION_CONFIRM_TITLE" = "Пацвердзіць свой PIN-код";
+"PIN_CREATION_CONFIRM_TITLE" = "Пацвердзіце свой PIN-код";
 
 /* The explanation of confirmation in the 'pin creation' view. */
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "Увядзіце толькі што створаны вамі PIN-код.";
@@ -5246,7 +5246,7 @@
 "PIN_CREATION_EXPLANATION" = "PIN-коды трымаюць інфармацыю, што захоўваецца ў Signal, зашыфраванай, таму толькі вы можаце атрымаць да яе доступ. Ваш профіль, налады і кантакты будуць адноўлены, калі вы зробіце паўторнае ўсталяванне. Вам не спатрэбіцца PIN-код, каб адкрыць праграму.";
 
 /* Learn more action on the pin creation view */
-"PIN_CREATION_LEARN_MORE" = "Больш падрабязна пра PIN-коды";
+"PIN_CREATION_LEARN_MORE" = "Дадаткова пра PIN-коды";
 
 /* Users can create PINs to restore their account data later. They can learn more about this on a sheet. This is the text on that sheet. */
 "PIN_CREATION_LEARN_MORE_TEXT" = "PIN-коды трымаюць вашу інфармацыю, што захоўваецца ў Signal, зашыфраванай, таму толькі вы можаце атрымаць да яе доступ. Ваш профіль, налады і кантакты будуць адноўлены, калі вы зробіце паўторнае ўсталяванне.";
@@ -5294,7 +5294,7 @@
 "PIN_CREATION_SKIP" = "Адключыць PIN-код";
 
 /* Title of the 'pin creation' view. */
-"PIN_CREATION_TITLE" = "Стварыць свой PIN-код";
+"PIN_CREATION_TITLE" = "Стварыце свой PIN-код";
 
 /* Label indicating that the attempted PIN is too weak */
 "PIN_CREATION_WEAK_ERROR" = "Выберыце больш надзейны PIN-код";
@@ -5417,7 +5417,7 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Выдаліць персаналізаваную гісторыю";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Вы ўпэўнены, што жадаеце выдаліць «%1$@»? Абнаўленні, што вы абагулiлi ў гэтай гісторыі, будуць таксама выдалены.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Вы ўпэўнены, што жадаеце выдаліць «%1$@»? Абнаўленні, што вы абагулілі ў гэтай гісторыі, будуць таксама выдалены.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Выдаліць";
@@ -5435,7 +5435,7 @@
 "PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Напішыце некалькі слоў пра сябе…";
 
 /* The 'Be kind' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Будзьце ветлівым";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Будзьце ветлівымі";
 
 /* The 'Coffee lover' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_COFFEE_LOVER" = "Аматар кавы";
@@ -5450,16 +5450,16 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Размаўляйце свабодна";
 
 /* The 'Taking a break' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Калi ёсць перапынак";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Калі ёсць перапынак";
 
 /* The 'Working on something new' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "Калi працуеш над нечым новым";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "Калі працуеш над нечым новым";
 
 /* Title for the profile bio view. */
 "PROFILE_BIO_VIEW_TITLE" = "Аб кантакце";
 
 /* Title for the profile bio view. Embeds {{ the number of characters that can be added to the profile bio without hitting the length limit }}. */
-"PROFILE_BIO_VIEW_TITLE_FORMAT" = "Пра (%1$@)";
+"PROFILE_BIO_VIEW_TITLE_FORMAT" = "Аб профілі (%1$@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
 "PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ змяніў(-ла) назву свайго профілю з %2$@ на %3$@.";
@@ -5516,7 +5516,7 @@
 "PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "Імя (абавязкова)";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
-"PROFILE_VIEW_NO_CONNECTION" = "Профіль можна абнавіць толькі пры падключэнні да iнтэрнэту.";
+"PROFILE_VIEW_NO_CONNECTION" = "Профіль можна абнавіць толькі пры падключэнні да інтэрнэту.";
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "Ваш профіль і змяненні ў ім будуць бачныя людзям, якім вы адпраўляеце паведамленні, вашым кантактам і групам.";
@@ -5666,7 +5666,7 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Патрэбна дапамога?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Ваш PIN-код — гэта код з 4+ сімвалаў, якi вы стварылі i які можа быць лічбавым або змяшчаць літары i лічбы. Калі вы не можаце ўспомніць свой PIN-код, вам патрэбна пачакаць 7 дзён, каб нанова зарэгістраваць свой уліковы запіс.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Ваш PIN-код — гэта код з 4+ сімвалаў, які вы стварылі і які можа быць лічбавым або змяшчаць літары і лічбы. Калі вы не можаце ўспомніць свой PIN-код, вам патрэбна пачакаць 7 дзён, каб нанова зарэгістраваць свой уліковы запіс.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN */
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Ваш PIN-код — гэта код з 4+ сімвалаў, якi вы стварылі i які можа быць лічбавым або змяшчаць літары i лічбы. Калі вы не памятаеце свой PIN-код, вы можаце зарэгістравацца і выкарыстоўваць свой уліковы запіс, але вы страціце некаторыя захаваныя налады, такія як ваша інфармацыя профілю.";
@@ -5678,16 +5678,16 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Няправільны PIN-код";
 
 /* No comment provided by engineer. */
-"REGISTER_CONTACTS_WELCOME" = "Вiтаем!";
+"REGISTER_CONTACTS_WELCOME" = "Вітаем!";
 
 /* Body of action sheet shown when rate-limited during registration. */
-"REGISTER_RATE_LIMITING_ALERT" = "Вы зрабілі занадта шмат спробаў. Пачакайце некалькі хвілін, перш чым паўтарыць спробу.";
+"REGISTER_RATE_LIMITING_ALERT" = "Вы зрабілі занадта шмат спроб. Пачакайце некалькі хвілін, перш чым паўтарыць спробу.";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_BODY" = "Вы зрабілі занадта шмат спробаў. Пачакайце хвілінку, перш чым паўтарыць спробу.";
+"REGISTER_RATE_LIMITING_BODY" = "Вы зрабілі занадта шмат спроб. Пачакайце хвілінку, перш чым паўтарыць спробу.";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_ERROR" = "Вы зрабілі занадта шмат спробаў. Пачакайце хвілінку, перш чым паўтарыць спробу.";
+"REGISTER_RATE_LIMITING_ERROR" = "Вы зрабілі занадта шмат спроб. Пачакайце хвілінку, перш чым паўтарыць спробу.";
 
 /* Title of alert shown when push tokens sync job fails. */
 "REGISTRATION_BODY" = "Паўторная рэгістрацыя для атрымання push-паведамленняў не атрымалася.";
@@ -5714,13 +5714,13 @@
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Перанесці ўліковы запіс & паведамленні";
 
 /* Placeholder text for the phone number textfield */
-"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Увесцi нумар";
+"REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Увесці нумар";
 
 /* No comment provided by engineer. */
 "REGISTRATION_ERROR" = "Памылка рэгістрацыі";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\". */
-"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Ваш уліковы запіс быў заблакаваны, каб абараніць вашу канфiдэнцыйнасць і бяспеку. Пасля %1$@ дзён бяздзейнасці ў сваім уліковым запісе вы зможаце паўторна зарэгістраваць гэты нумар тэлефона без уводу PIN-кода. Увесь кантэнт будзе выдалены.";
+"REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT" = "Ваш уліковы запіс быў заблакаваны, каб абараніць вашу канфідэнцыйнасць і бяспеку. Пасля %1$@ дзён бяздзейнасці ў сваім уліковым запісе вы зможаце паўторна зарэгістраваць гэты нумар тэлефона без уводу PIN-кода. Увесь кантэнт будзе выдалены.";
 
 /* Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information. */
 "REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON" = "Даведацца больш пра блакаванне ўліковага запісу";
@@ -5753,13 +5753,13 @@
 "REGISTRATION_PIN_CONFIRM_SUBTITLE" = "Паўторна ўвядзіце толькі што створаны вамі PIN-код.";
 
 /* During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens. */
-"REGISTRATION_PIN_CONFIRM_TITLE" = "Пацвердзіць свой PIN-код";
+"REGISTRATION_PIN_CONFIRM_TITLE" = "Пацвердзіце свой PIN-код";
 
 /* During registration, users are asked to create a PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
 "REGISTRATION_PIN_CREATE_SUBTITLE" = "PIN-коды дапамагаюць вам аднавіць свой уліковы запіс і надзейна захоўваюць вашу інфармацыю дзякуючы шыфраванню Signal.";
 
 /* During registration, users are asked to create a PIN code. This is the title on the screen where this happens. */
-"REGISTRATION_PIN_CREATE_TITLE" = "Стварыць свой PIN-код";
+"REGISTRATION_PIN_CREATE_TITLE" = "Стварыце свой PIN-код";
 
 /* During re-registration, users may be asked to re-enter their PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
 "REGISTRATION_PIN_ENTER_EXISTING_SUBTITLE" = "PIN-коды дапамагаюць вам аднавіць свой уліковы запіс і надзейна захоўваюць вашу інфармацыю дзякуючы шыфраванню Signal.";
@@ -5777,10 +5777,10 @@
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "Імя";
 
 /* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the message on a sheet that appears when they do that. */
-"REGISTRATION_PROFILE_SETUP_MORE_INFO_DETAILS" = "Ваша імя, фота і iх змянення будуць бачныя вашым кантактам, а таксама калі вы пачынаеце або прымаеце новыя чаты.";
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_DETAILS" = "Ваша імя, фота і іх змянення будуць бачныя вашым кантактам, а таксама калі вы пачынаеце або прымаеце новыя чаты.";
 
 /* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the title on a sheet that appears when they do that. */
-"REGISTRATION_PROFILE_SETUP_MORE_INFO_TITLE" = "Аб канфiдэнцыйнасці профілю";
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_TITLE" = "Аб канфідэнцыйнасці профілю";
 
 /* During registration, users set up their profile. This is the subtitle on the screen where this is done. It tells users about the privacy of their profile. A \"learn more\" link will be added to the end of this string. */
 "REGISTRATION_PROFILE_SETUP_SUBTITLE" = "Ваш профіль будзе бачны людзям, якім вы адпраўляеце паведамленні, вашым кантактам і групам.";
@@ -5804,13 +5804,13 @@
 "REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "Мы не змаглі адправіць вам праверачны код праз SMS. Паспрабуйце тады атрымаць код праз галасавы званок.";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
-"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "Вы зрабілі занадта шмат спробаў увесці гэты код. Калі ласка, адпраўце код паўторна і паўтарыце спробу пазней.";
+"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "Вы зрабілі занадта шмат спроб увесці гэты код. Калі ласка, адпраўце код паўторна і паўтарыце спробу.";
 
 /* Alert shown when submitting a verification code too many times. Embeds {{ duration }}, such as \"5:00\" */
-"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "Вы зрабілі занадта шмат спробаў увесці гэты код. Паўтарыце спробу праз %1$@";
+"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "Вы зрабілі занадта шмат спроб увесці гэты код. Паўтарыце спробу праз %1$@";
 
 /* During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message. */
-"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "Код, што вы ўвялі, несапраўдны. Калі ласка, адпраўце код паўторна і паўтарыце спробу пазней.";
+"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "Код, што вы ўвялі, несапраўдны. Калі ласка, адпраўце код паўторна і паўтарыце спробу.";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Для рэгістрацыі ўвядзіце сапраўдны нумар тэлефона.";
@@ -5924,7 +5924,7 @@
 "SAFETY_TIPS_CRYPTO_TITLE" = "Махлярства з крыптавалютай або грашыма";
 
 /* Message contents for the safety tip concerning fake businesses. */
-"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Будзьце пiльнымi, калі з вамі звязваюцца прадпрыемствы або дзяржаўныя ўстановы. Паведамленні, якія тычацца падатковых органаў, кур'ераў і іншага, могуць быць спамам.";
+"SAFETY_TIPS_FAKE_BUSINESS_BODY" = "Будзьце пільнымі, калі з вамі звязваюцца прадпрыемствы або дзяржаўныя ўстановы. Паведамленні, якія тычацца падатковых органаў, кур'ераў і іншага, могуць быць спамам.";
 
 /* Message title describing the safety tip about unknown or fake businesses. */
 "SAFETY_TIPS_FAKE_BUSINESS_TITLE" = "Фэйкавыя прадпрыемствы і ўстановы";
@@ -5936,10 +5936,10 @@
 "SAFETY_TIPS_HEADER_TITLE" = "Парады па бяспецы";
 
 /* Message describing safety tips for 1:1 conversations. */
-"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "Будзьце пільнымі, калi прымаеце запыты на паведамленні ад незнаёмых людзей. Сцеражыцеся наступнага:";
+"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "Будзьце пільнымі, калі прымаеце запыты на паведамленні ад незнаёмых людзей. Сцеражыцеся наступнага:";
 
 /* Message contents for the unknown links in messages safety tip. */
-"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "Будзьце пільнымі, калi атрымліваеце ад незнаёмых людзей паведамленні са спасылкамі на вэб-сайты. Ніколі не адкрывайце спасылкі ад людзей, да якіх няма даверу.";
+"SAFETY_TIPS_MESSAGE_LINKS_BODY" = "Будзьце пільнымі, калі атрымліваеце ад незнаёмых людзей паведамленні са спасылкамі на вэб-сайты. Ніколі не адкрывайце спасылкі ад людзей, да якіх няма даверу.";
 
 /* Message title describing the safety tip about unknown links in messages. */
 "SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Паведамленні са спасылкамі";
@@ -6059,13 +6059,13 @@
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Я не маю Signal на сваім тэлефоне…";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Перайдзіце ў App Store на сваім тэлефоне, усталюйце Signal, завяршыце працэс рэгістрацыі, i тады вы зможаце звязаць свой iPad да таго ж уліковага запісу.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Перайдзіце ў App Store на сваім тэлефоне, усталюйце Signal, завяршыце працэс рэгістрацыі, і тады вы зможаце звязаць свой iPad да таго ж уліковага запісу.";
 
 /* alert title */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Усталюйце Signal на свой тэлефон";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Націсніце на свае фота профілю, каб адкрыць налады Signal на тэлефоне. Потым на «Звязаныяпрылады» і «Звязаць новую прыладу», пасля чаго праскануйце гэты код:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Націсніце на свае фота профілю, каб адкрыць налады Signal на тэлефоне. Потым на «Звязаныя прылады» і «Звязаць новую прыладу», пасля чаго праскануйце гэты код:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Дапамогу па звязванню iPad можна знайсці тут";
@@ -6287,7 +6287,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Змяніць нумар";
 
 /* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "Вы збіраецеся змяніць свой нумар тэлефона з %1$@ на %2$@.\n\nПерш чым працягнуць, праверце, ці правільны нумар ніжэй.";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "Вы збіраецеся змяніць свой нумар тэлефона з %1$@ на %2$@.\n\nПерш чым працягнуць, праверце, ці нумар ніжэй правільны.";
 
 /* Label for the 'country code' row in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD" = "Код краіны";
@@ -6320,10 +6320,10 @@
 "SETTINGS_CHATS" = "Чаты";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Прыбраць гісторыю чата";
+"SETTINGS_CLEAR_HISTORY" = "Ачысціць гісторыю чата";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Аўтарскія праваы Signal Messenger\nЛіцэнзія AGPLv3";
+"SETTINGS_COPYRIGHT" = "Аўтарскія правы Signal Messenger\nЛіцэнзія AGPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Выкарыстанне даных";
@@ -6347,7 +6347,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Скінуць налады аўтаматычнай запампоўкі";
 
 /* Item title for the sent media quality setting */
-"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Якасць адпраўленых медыяфайлаў";
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Якасць адпраўленага медыяфайла";
 
 /* Section footer for the sent media section in data settings */
 "SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Выбраць якасць для фота і відэа, што вы адпраўляеце.";
@@ -6359,13 +6359,13 @@
 "SETTINGS_DATA_TITLE" = "Выкарыстанне даных";
 
 /* No comment provided by engineer. */
-"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Выдалены ўліковы запіс";
+"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Выдаліць уліковы запіс";
 
 /* Button for to _not_ transfer the user's payments balance before deleting their account. */
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "Не рабіць перавод";
 
 /* Body for the alert confirming whether the user wants transfer their payments balance before deleting their account. Embeds: {{ the current payment balance }}. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "Ваш баланс у памеры %1$@. Калі вы не перавядзеце свае сродкі на званок з іншым адрасам перад выдаленнем свайго ўліковага запісу, вы страціце iх назаўсёды.";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "Ваш баланс у памеры %1$@. Калі вы не перавядзеце свае сродкі на званок з іншым адрасам перад выдаленнем свайго ўліковага запісу, вы страціце іх назаўсёды.";
 
 /* Title for the alert confirming whether the user wants transfer their payments balance before deleting their account. */
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "Перавесці рэшткі балансу?";
@@ -6404,10 +6404,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Гук паведамлення";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Чаты без паведамленняў, якія архіваваны, застануцца ў архіве, калі прыйдзе новае паведамленне.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Чаты з адключанымі апавяшчэннямі, якія архіваваны, застануцца ў архіве, калі прыйдзе новае паведамленне.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Трымайце чаты без паведамленняў архіваванымi";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Трымайце чаты з адключанымі апавяшчэннямі архіваванымі";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Умовы & Палітыка канфідэнцыйнасці";
@@ -6434,7 +6434,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_DOCUMENT" = "Дакументы";
 
 /* Label for the 'photo' attachment type in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_TYPE_PHOTO" = "Фатаграфіі";
+"SETTINGS_MEDIA_DOWNLOAD_TYPE_PHOTO" = "Фота";
 
 /* Label for the 'video' attachment type in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "Відэа";
@@ -6491,7 +6491,7 @@
 "SETTINGS_PAYMENTS_ALL_RECORDS" = "Усе плацяжы";
 
 /* Format string for the 'local balance converted into local currency' indicator. Embeds: {{ %1$@ the local balance in the local currency, %2$@ the local currency code, %3$@ the date the currency conversion rate was obtained. }}.. */
-"SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ на %3$@";
+"SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ у %3$@";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
 "SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Опцыя «Плацяжы» ў Signal больш недаступная. Вы па-ранейшаму можаце пераводзіць сродкі для абмену, але больш не зможаце адпраўляць і атрымліваць плацяжы або дадаваць сродкі.";
@@ -6557,13 +6557,13 @@
 "SETTINGS_PAYMENTS_ENABLE_PAYMENTS_LOCK_PROMPT" = "Блакіроўка плацяжоў";
 
 /* Description for the 'About MobileCoin' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin – гэта новая лічбавая валюта з акцэнтам на канфiдэнцыйнасць.";
+"SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin – гэта новая лічбавая валюта з акцэнтам на канфідэнцыйнасць.";
 
 /* Title for the 'About MobileCoin' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_TITLE" = "Аб MobileCoin";
 
 /* Description for the 'Adding to your wallet' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "Вы можаце дадаць сродкі для выкарыстання ў Signal, калi адправіце MobileCoin на адрас вашага кашалька.";
+"SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_DESCRIPTION" = "Вы можаце дадаць сродкі для выкарыстання ў Signal, калі адправіце MobileCoin на адрас вашага кашалька.";
 
 /* Title for the 'Adding to your wallet' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ADDING_TO_YOUR_WALLET_TITLE" = "Дадаць сродкі";
@@ -6587,7 +6587,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "Абнавіць PIN-код";
 
 /* Description for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "Калi вы маеце высокі баланс, можна абнавіць свой PIN-код на код з літараў i лічбаў, каб зрабіць ваш уліковы запіс яшчэ больш надзейным.";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "Калі вы маеце высокі баланс, можна абнавіць свой PIN-код на код з літараў і лічбаў, каб зрабіць ваш уліковы запіс яшчэ больш надзейным.";
 
 /* Title for the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Абнавіць свой PIN-код";
@@ -6620,19 +6620,19 @@
 "SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Плацяжы актываваны.";
 
 /* Message for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Выкарыстоўваць Signal для адпраўкі і атрымання MobileCoin, новай лічбавай валюты з акцэнтам на канфiдэнцыйнасць. Актываваць, каб пачаць.";
+"SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Выкарыстоўваць Signal для адпраўкі і атрымання MobileCoin, новай лічбавай валюты з акцэнтам на канфідэнцыйнасць. Актываваць, каб пачаць.";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_REACTIVATE_BUTTON" = "Нанова актываваць плацяжы";
 
 /* Title for the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Новая функцыя: плацяжы";
+"SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Прадстаўляем плацяжы";
 
 /* Button when discarding recovery phrase. */
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "Прапусціць фразу для аднаўлення";
 
 /* Message of confirmation alert when discarding recovery phrase. */
-"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE" = "Ваша фраза для аднаўлення дапаможа аднавіць баланс, калi нешта здарыцца. Мы вельмі просім вас захаваць яе.";
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE" = "Ваша фраза для аднаўлення дапаможа аднавіць баланс, калі нешта здарыцца. Мы вельмі просім вас захаваць яе.";
 
 /* Title of confirmation alert when discarding recovery phrase. */
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE" = "Працягнуць без захавання?";
@@ -6641,10 +6641,10 @@
 "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Ваш баланс будзе аўтаматычна адноўлены падчас паўторнага ўсталявання Signal, калі вы пацвердзіце свой PIN-код Signal. Вы таксама можаце аднавіць свой баланс з дапамогай фразы для аднаўлення, якая складаецца з 24 унікальных слоў. Запішыце і захавайце яе ў надзейным месцы.";
 
 /* Explanation of the 'payments passphrase' when there is a balance. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "Вы маеце баланс! Час захаваць вашу фразу для аднаўлення —ключ з 24 слоў, які вы можаце выкарыстаць, каб аднавіць баланс.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "Вы маеце баланс! Час захаваць вашу фразу для аднаўлення — ключ з 24 слоў, які вы можаце выкарыстаць, каб аднавіць баланс.";
 
 /* Explanation of the 'payments passphrase' when from the help card. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD" = "Час захаваць вашу фразу для аднаўлення —ключ з 24 слоў, які вы можаце выкарыстаць, каб аднавіць баланс.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD" = "Час захаваць вашу фразу для аднаўлення — ключ з 24 слоў, які вы можаце выкарыстаць, каб аднавіць баланс.";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Дадаць сродкі";
@@ -6662,7 +6662,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "Атрымана ад %1$@";
 
 /* Label for the sender in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "Адпраўлена";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "Адпраўлена ад";
 
 /* Label for the sender in the payment details view in the app settings when the status is 'Failed'. Followed by sender name. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_ATTEMPTED" = "Спроба зроблена";
@@ -6692,7 +6692,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "Недастаткова MOB, каб завяршыць гэты плацеж. Ваш бягучы баланс %1$@.";
 
 /* Title for the 'insufficient balance for payment' alert. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "Не хапае сродкаў";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "Недастатковы баланс";
 
 /* Format string for the sender of an incoming payment. Embeds: {{ the name of the sender of the payment}}. */
 "SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "Ад %1$@";
@@ -6878,7 +6878,7 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE" = "Няправільны адрас";
 
 /* Placeholder text for the address text field in the 'transfer currency out' settings view. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "Каму: сканаваць або ўвесці адрас кашальк";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "Каму: сканаваць або ўвесці адрас кашалька";
 
 /* Label for 'transfer currency out' view in the payment settings. */
 "SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "Перавесці для абмену";
@@ -6980,7 +6980,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Напаміны PIN-кода";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PIN-коды трымаюць інфармацыю, што захоўваецца ў Signal, зашыфраванай, таму толькі вы можаце атрымаць да яе доступ. Ваш PIN немагчыма аднавіць. Ваш профіль, налады і кантакты будуць адноўлены, калi вы зробіце паўторнае ўсталяванне Signal.";
+"SETTINGS_PINS_FOOTER" = "PIN-коды трымаюць інфармацыю, што захоўваецца ў Signal, зашыфраванай, таму толькі вы можаце атрымаць да яе доступ. Ваш PIN-код немагчыма аднавіць. Ваш профіль, налады і кантакты будуць адноўлены, калі вы зробіце паўторнае ўсталяванне Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Змяніць свой PIN-код";
@@ -6992,7 +6992,7 @@
 "SETTINGS_PINS_TITLE" = "PIN-код Signal";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Налады абыходу цэнзуры, проксі, рэтрансляцыі званкоў і прыхаванага адпраўшчыка.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Налады абыходу цэнзуры, проксі, рэтрансляцыі званкоў і прыхаванага адпраўніка.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Пашыраныя";
@@ -7028,7 +7028,7 @@
 "SETTINGS_REREGISTER_BUTTON" = "Зарэгістравацца паўторна";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Затрымка блакавання экрана";
+"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Затрымка блакіроўкі экрана";
 
 /* Label for the 'enable screen lock' switch of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Блакіроўка экрана";
@@ -7037,7 +7037,7 @@
 "SETTINGS_SCREEN_SECURITY" = "Схаваць экран у пераключальніку праграмы";
 
 /* Footer for table section */
-"SETTINGS_SECTION_FOOTER_CALLING" = "Паказваць званкі ў спісе «Нядаўнія» ў праграме iOS Phone.";
+"SETTINGS_SECTION_FOOTER_CALLING" = "Паказваць званкі ў спісе «Нядаўнія» ў праграме «Тэлефон» iOS.";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Гукі";
@@ -7082,10 +7082,10 @@
 "SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Патрэбен ваш PIN-код Signal, каб нанова зарэгістраваць ваш нумар тэлефона ў Signal.";
 
 /* Label for the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS" = "Індыкатары набора тэксту";
+"SETTINGS_TYPING_INDICATORS" = "Індыкатары набору тэксту";
 
 /* table section label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Прыхаваны адпраўшчык";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Прыхаваны адпраўнік";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Паказваць значок статусу";
@@ -7094,7 +7094,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Дазволіць ад усіх";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Дазволіць прыхаванага адпраўшчыка для ўваходных паведамленняў ад людзей, якіх няма ў вашых кантактах і якім вы яшчэ не раскрывалі свой профіль.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Дазволіць прыхаванага адпраўніка для ўваходных паведамленняў ад людзей, якіх няма ў вашых кантактах і якім вы яшчэ не раскрывалі свой профіль.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Версія";
@@ -7115,13 +7115,13 @@
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Запусціце праграму Signal, каб зарэгістравацца.";
 
 /* Title indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Signal не зарэгістраваны";
+"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Не зарэгістраваны";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Запусціце праграму Signal, каб зрабіць абнаўленне або зарэгістравацца.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Signal не гатовы";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Не гатова";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Немагчыма адправіць далучэнне";
@@ -7376,7 +7376,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Гісторыя адкрытая";
 
 /* Text explaining that you will not see any views for your story because you have view receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Уключыце апавяшчэнні аб праглядзе, каб ведаць, хто прагледзеў вашы гісторыі.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Уключыце апавяшчэнні аб праглядах, каб ведаць, хто прагледзеў вашы гісторыі.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Прагляды";
@@ -7496,13 +7496,13 @@
 "STORY_SETTINGS_TITLE" = "Гісторыі";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Выберыце тых з вашых кантактаў Signal, хто можа бачыць вашу гісторыю. Змянення не закрануць гісторыі, што вы ўжо адправілі.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Выберыце тых з вашых кантактаў Signal, хто можа бачыць вашу гісторыю. Змянення не закрануць гісторый, што вы ўжо адправілі.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Хто можа прагледзець гэту гісторыю";
 
 /* Header for the 'viewers' section on the 'story settings' bottom sheet */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Выберыце тых з вашых кантактаў Signal, хто можа бачыць вашу гісторыю. Вы можаце ў любы момант змяніць гэта ў наладах канфiдэнцыйнасці.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Выберыце тых з вашых кантактаў Signal, хто можа бачыць вашу гісторыю. Вы можаце ў любы момант змяніць гэта ў наладах канфідэнцыйнасці.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
 "STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Відэа, што адпраўлены ў Гісторыі, будуць скарочаны да %1$d-сек кліпаў і адпраўлены як шэраг гісторый.";
@@ -7598,10 +7598,10 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Пацвердзіць адмену?";
 
 /* Action sheet message for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Не атрымалася дадаць ваш значок у ваш уліковы запіс. Калi ласка, звярніцеся да службы падтрымкі.";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Не атрымалася дадаць ваш значок у ваш уліковы запіс. Калі ласка, звярніцеся да службы падтрымкі.";
 
 /* Action sheet title for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Не атрымалася дадаць ваш значок";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Не атрымалася дадаць значок";
 
 /* Action sheet title for Error Authorizing Payment sheet */
 "SUSTAINER_VIEW_ERROR_AUTHORIZING_PAYMENT_TITLE" = "Памылка падчас аўтарызацыі плацяжу";
@@ -7613,7 +7613,7 @@
 "SUSTAINER_VIEW_PRICING" = "%1$@/месяц";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Апрацоўванне ахвяравання…";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Апрацоўка ахвяравання…";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Абнаўленне %1$@";
@@ -7661,10 +7661,10 @@
 "TEXT_MENU_BOLD" = "Тоўсты";
 
 /* Option in selected text edit menu to clear all text formatting in the selected text range */
-"TEXT_MENU_CLEAR_FORMATTING" = "Ачысціць фарматаванне";
+"TEXT_MENU_CLEAR_FORMATTING" = "Ачысціць фармаціраванне";
 
 /* Option in selected text edit menu to view text formatting options */
-"TEXT_MENU_FORMAT" = "Фарматаваць";
+"TEXT_MENU_FORMAT" = "Фармаціраваць";
 
 /* Option in selected text edit menu to make text italic */
 "TEXT_MENU_ITALIC" = "Курсіў";
@@ -7715,10 +7715,10 @@
 "THREAD_MERGE_LEARN_MORE" = "Пасля абмену паведамленнямі з %1$@ вы даведаліся, што гэты нумар належыць %2$@. Гэта прыватны нумар.\n\nГісторыя вашых паведамленняў для абодвух чатаў была аб'яднана тут.";
 
 /* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameter is replaced with the contact's name (eg John Doe). */
-"THREAD_MERGE_NO_PHONE_NUMBER" = "Гісторыя вашых паведамленняў з %1$@ і іншым чатам, які належаў яму/ёй, была аб'яднана.";
+"THREAD_MERGE_NO_PHONE_NUMBER" = "Гісторыя вашых паведамленняў з %1$@ і іншым чатам, які належаў яму/ёй, была аб'яднаная.";
 
 /* A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameters are replaced with the contact's name (eg John Doe) and their phone number (eg +1 650 555 0100). */
-"THREAD_MERGE_PHONE_NUMBER" = "Гісторыя вашых паведамленняў з %1$@ і яго/яе нумарам %2$@ была аб'яднана.";
+"THREAD_MERGE_PHONE_NUMBER" = "Гісторыя вашых паведамленняў з %1$@ і яго/яе нумарам %2$@ была аб'яднаная.";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%1$@ дзён";
@@ -7805,7 +7805,7 @@
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Вы можаце папрасіць %1$@ адправіць паўторна гэта паведамленне, калі вы выкарыстоўваеце апошнюю версію Signal.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Вы можаце папрасіць адпраўшчыка адправіць лаць паўторна гэта паведамленне, калі вы выкарыстоўваеце апошнюю версію Signal.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Вы можаце папрасіць адпраўніка адправіць паўторна гэта паведамленне, калі вы выкарыстоўваеце апошнюю версію Signal.";
 
 /* Label indicating an unknown user. */
 "UNKNOWN_USER" = "Невядома";
@@ -7907,7 +7907,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_COLOR_BUTTON" = "колер";
 
 /* Text for a label explaining what the username link and QR code give others access to. */
-"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Абагульвайце свой QR-код i далучайцеся толькі да тых, да каго вы маеце давер. Калі вы абагулiлi, іншыя карыстальнікі змогуць убачыць ваша імя карыстальніка і распачаць з вамі чат.";
+"USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Абагульвайце свой QR-код і далучайцеся толькі да тых, да каго маеце давер. Калі вы абагулiлi, іншыя карыстальнікі змогуць убачыць ваша імя карыстальніка і распачаць з вамі чат.";
 
 /* Text presented in an action sheet notifying the user their qr code and link are not set. */
 "USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QR-код і спасылка не ўсталяваны. Праверце падключэнне да сеткі і паўтарыце спробу.";
@@ -8006,7 +8006,7 @@
 "USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Гэта імя карыстальніка недаступнае";
 
 /* An error message shown when the user has attempted too many username reservations. */
-"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Занадта шмат спробаў. Калі ласка, паўтарыце спробу пазней";
+"USERNAME_SELECTION_RESERVATION_RATE_LIMITED_ERROR_MESSAGE" = "Занадта шмат спроб. Калі ласка, паўтарыце спробу пазней";
 
 /* The placeholder for a text field into which users can type their desired username. */
 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Імя карыстальніка";
@@ -8090,7 +8090,7 @@
 "WALLPAPER_GRADIENT_COLORS_ACCESSIBILITY_LABEL" = "Градыент з %1$@ і %2$@";
 
 /* Placeholder text for header of the wallpaper mini preview */
-"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Імя кантакта";
+"WALLPAPER_MINI_PREVIEW_CONTACT_NAME" = "Імя кантакту";
 
 /* Blur button on wallpaper preview. */
 "WALLPAPER_PREVIEW_BLUR_BUTTON" = "Размыць фота";
@@ -8126,10 +8126,10 @@
 "WALLPAPER_SETTINGS_DIM_WALLPAPER" = "Цёмная тэма зацямняе шпалеры";
 
 /* An error indicating to the user that we failed to clear the wallpaper. */
-"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "Не атрымалася прыбраць шпалеры. Паўтарыце спробу пазней або звярніцеся да службы падтрымкі, калі памылка не знікне.";
+"WALLPAPER_SETTINGS_FAILED_TO_CLEAR" = "Не атрымалася ачысціць шпалеры. Паўтарыце спробу пазней або звярніцеся да службы падтрымкі, калі памылка не знікне.";
 
 /* An error indicating to the user that we failed to reset all wallpapers. */
-"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Не атрымалася прыбраць усе шпалеры. Паўтарыце спробу пазней або звярніцеся да службы падтрымкі, калі памылка не знікне.";
+"WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Не атрымалася скінуць усе шпалеры. Паўтарыце спробу пазней або звярніцеся да службы падтрымкі, калі памылка не знікне.";
 
 /* Label for 'reset all chat colors' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "Скінуць усе колеры";

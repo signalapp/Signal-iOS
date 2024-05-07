@@ -2708,10 +2708,10 @@
 "GET_STARTED_CARD_APPEARANCE" = "Görünüm";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "Fotoğraf Ekleyin";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Foto Ekle";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Arkadaşlarını davet et";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Davet et";
 
 /* 'Get Started' button directing users to create a group */
 "GET_STARTED_CARD_NEW_GROUP" = "Yeni grup";

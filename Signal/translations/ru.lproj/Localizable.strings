@@ -2708,10 +2708,10 @@
 "GET_STARTED_CARD_APPEARANCE" = "Внешний вид";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "Добавить фото";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Доб. фото";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Пригласить друзей";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Звать друзей";
 
 /* 'Get Started' button directing users to create a group */
 "GET_STARTED_CARD_NEW_GROUP" = "Новая группа";

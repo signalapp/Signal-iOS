@@ -35,7 +35,7 @@
 			<key>one</key>
 			<string>Дадаць удзельніка</string>
 			<key>few</key>
-			<string>Дадаць удзельнікаў</string>
+			<string>Дадаць удзельніка</string>
 			<key>many</key>
 			<string>Дадаць удзельнікаў</string>
 			<key>other</key>
@@ -55,11 +55,11 @@
 			<key>one</key>
 			<string>Дадаць удзельніка ў «%2$@»?</string>
 			<key>few</key>
-			<string>Дадаць %1$d удзельнікаў у «%2$@»?</string>
+			<string>Дадаць %1$d удзельніка ў «%2$@»?</string>
 			<key>many</key>
 			<string>Дадаць %1$d удзельнікаў у «%2$@»?</string>
 			<key>other</key>
-			<string>Дадаць  %1$d удзельнікаў у «%2$@»?</string>
+			<string>Дадаць %1$d удзельнікаў у «%2$@»?</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -75,7 +75,7 @@
 			<key>one</key>
 			<string>Дадаць новага удзельніка</string>
 			<key>few</key>
-			<string>Дадаць новых удзельнікаў</string>
+			<string>Дадаць новыя ўдзельніка</string>
 			<key>many</key>
 			<string>Дадаць новых удзельнікаў</string>
 			<key>other</key>
@@ -113,13 +113,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Гэты персаналізаваны колер ёсць у %1$d чаце. Жадаеце выдаліць яго для ўсіх чатаў?</string>
+			<string>Гэты карыстальніцкі колер ёсць у %1$d чаце. Жадаеце выдаліць яго для ўсіх чатаў?</string>
 			<key>few</key>
-			<string>Гэты персаналізаваны колер ёсць у %1$d чатах. Жадаеце выдаліць яго для ўсіх чатаў?</string>
+			<string>Гэты карыстальніцкі колер ёсць у %1$d чатах. Жадаеце выдаліць яго для ўсіх чатаў?</string>
 			<key>many</key>
-			<string>Гэты персаналізаваны колер ёсць у %1$d чатах. Жадаеце выдаліць яго для ўсіх чатаў?</string>
+			<string>Гэты карыстальніцкі колер ёсць у %1$d чатах. Жадаеце выдаліць яго для ўсіх чатаў?</string>
 			<key>other</key>
-			<string>Гэты персаналізаваны колер ёсць у %1$d чатах. Жадаеце выдаліць яго для ўсіх чатаў?</string>
+			<string>Гэты карыстальніцкі колер ёсць у %1$d чатах. Жадаеце выдаліць яго для ўсіх чатаў?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -177,9 +177,9 @@
 			<key>few</key>
 			<string>Гэтыя чаты будуць выдалены з гэтай прылады.</string>
 			<key>many</key>
-			<string>Гэтыя чаты будуць выдалены з гэтай прылады.</string>
+			<string>Гэтыя чатаў будуць выдалены з гэтай прылады.</string>
 			<key>other</key>
-			<string>Гэтыя чаты будуць выдалены з гэтай прылады.</string>
+			<string>Гэтыя чатаў будуць выдалены з гэтай прылады.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -452,9 +452,9 @@
 			<key>few</key>
 			<string>У гэтым званку · %1$d асобы</string>
 			<key>many</key>
-			<string>У гэтым званку · %1$d асобаў</string>
+			<string>У гэтым званку · %1$d асоб</string>
 			<key>other</key>
-			<string>У гэтым званку · %1$d асобаў</string>
+			<string>У гэтым званку · %1$d асоб</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d</key>
@@ -610,7 +610,7 @@
 			<key>one</key>
 			<string>%1$d удзельнік групы мае тое самае імя.</string>
 			<key>few</key>
-			<string>%1$d ўдзельнікі групы маюць аднолькавыя імёны.</string>
+			<string>%1$d удзельнікі групы маюць аднолькавыя імёны.</string>
 			<key>many</key>
 			<string>%1$d удзельнікаў групы маюць аднолькавыя імёны.</string>
 			<key>other</key>
@@ -690,7 +690,7 @@
 			<key>one</key>
 			<string>%1$d удзельнік групы мае тое самае імя. Праглядзіце ўдзельнікаў ніжэй і прыміце рашэнне.</string>
 			<key>few</key>
-			<string>%1$d ўдзельнікі групы маюць аднолькавыя імёны. Праглядзіце ўдзельнікаў ніжэй і прыміце рашэнне.</string>
+			<string>%1$d удзельнікі групы маюць аднолькавыя імёны. Праглядзіце ўдзельнікаў ніжэй і прыміце рашэнне.</string>
 			<key>many</key>
 			<string>%1$d удзельнікаў групы маюць аднолькавыя імёны. Праглядзіце ўдзельнікаў ніжэй і прыміце рашэнне.</string>
 			<key>other</key>
@@ -752,9 +752,9 @@
 			<key>few</key>
 			<string>%1$d асобы былі запрошаны ў групу.</string>
 			<key>many</key>
-			<string>%1$d асобаў былі запрошаны ў групу.</string>
+			<string>%1$d асоб былі запрошаны ў групу.</string>
 			<key>other</key>
-			<string>%1$d асобаў былі запрошаны ў групу.</string>
+			<string>%1$d асоб былі запрошаны ў групу.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
@@ -790,11 +790,11 @@
 			<key>one</key>
 			<string>Запрашэнне ў групу было адклікана для %1$d асобы.</string>
 			<key>few</key>
-			<string>Запрашэнні ў групу былі адкліканы для %1$d асобаў.</string>
+			<string>Запрашэнні ў групу былі адкліканы для %1$d асоб.</string>
 			<key>many</key>
-			<string>Запрашэнні ў групу былі адкліканы для %1$d асобаў.</string>
+			<string>Запрашэнні ў групу былі адкліканы для %1$d асоб.</string>
 			<key>other</key>
-			<string>Запрашэнні ў групу былі адкліканы для %1$d асобаў.</string>
+			<string>Запрашэнні ў групу былі адкліканы для %1$d асоб.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
@@ -810,11 +810,11 @@
 			<key>one</key>
 			<string>%2$@ адклікаў(-ла) запрашэнне ў групу для %1$d асобы.</string>
 			<key>few</key>
-			<string>%2$@ адклікаў(-ла) запрашэнне ў групу для %1$d асобаў.</string>
+			<string>%2$@ адклікаў(-ла) запрашэнне ў групу для %1$d асоб.</string>
 			<key>many</key>
-			<string>%2$@ адклікаў(-ла) запрашэнне ў групу для %1$d асобаў.</string>
+			<string>%2$@ адклікаў(-ла) запрашэнне ў групу для %1$d асоб.</string>
 			<key>other</key>
-			<string>%2$@ адклікаў(-ла) запрашэнне ў групу для %1$d асобаў.</string>
+			<string>%2$@ адклікаў(-ла) запрашэнне ў групу для %1$d асоб.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_AND_CANCELED_%d</key>
@@ -1110,7 +1110,7 @@
 			<key>one</key>
 			<string>%1$d рэакцыя з %2$@.</string>
 			<key>few</key>
-			<string>%1$d рэакцыi з %2$@.</string>
+			<string>%1$d рэакцыі з %2$@.</string>
 			<key>many</key>
 			<string>%1$d рэакцый з %2$@.</string>
 			<key>other</key>
@@ -1312,9 +1312,9 @@
 			<key>few</key>
 			<string>%2$@ запрасіў(-ла) %1$d асобы</string>
 			<key>many</key>
-			<string>%2$@ запрасіў(-ла) %1$d асобаў</string>
+			<string>%2$@ запрасіў(-ла) %1$d асоб</string>
 			<key>other</key>
-			<string>%2$@ запрасіў(-ла) %1$d асобаў</string>
+			<string>%2$@ запрасіў(-ла) %1$d асоб</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REQUEST_BANNER_%d</key>
@@ -1372,9 +1372,9 @@
 			<key>few</key>
 			<string>Адклікаць запрашэнні</string>
 			<key>many</key>
-			<string>Адклікаць запрашэнні</string>
+			<string>Адклікаць запрашэнняў</string>
 			<key>other</key>
-			<string>Адклікаць запрашэнні</string>
+			<string>Адклікаць запрашэнняў</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
@@ -1432,9 +1432,9 @@
 			<key>few</key>
 			<string>%1$d спробы</string>
 			<key>many</key>
-			<string>%1$d спробаў</string>
+			<string>%1$d спроб</string>
 			<key>other</key>
-			<string>%1$d спробаў</string>
+			<string>%1$d спроб</string>
 		</dict>
 	</dict>
 	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>
@@ -1448,13 +1448,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Не ўсе элементы могуць быць адпраўлены ў выбраную вамі гісторыю, таму што гэты тып файла не падтрымліваецца.</string>
+			<string>Не ўсе элемент могуць быць адпраўлены ў выбраную вамі гісторыю, таму што гэты тып файла не падтрымліваецца.</string>
 			<key>few</key>
-			<string>Не ўсе элементы могуць быць адпраўлены ў выбраныя вамі гісторыі, таму што гэты тып файла не падтрымліваецца.</string>
+			<string>Не ўсе элемента могуць быць адпраўлены ў выбраныя вамі гісторыі, таму што гэты тып файла не падтрымліваецца.</string>
 			<key>many</key>
-			<string>Не ўсе элементы могуць быць адпраўлены ў выбраныя вамі гісторыі, таму што гэты тып файла не падтрымліваецца.</string>
+			<string>Не ўсе элементаў могуць быць адпраўлены ў выбраныя вамі гісторыі, таму што гэты тып файла не падтрымліваецца.</string>
 			<key>other</key>
-			<string>Не ўсе элементы могуць быць адпраўлены ў выбраныя вамі гісторыі, таму што гэты тып файла не падтрымліваецца.</string>
+			<string>Не ўсе элементаў могуць быць адпраўлены ў выбраныя вамі гісторыі, таму што гэты тып файла не падтрымліваецца.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
@@ -1492,7 +1492,7 @@
 			<key>few</key>
 			<string>%1$d гледачы</string>
 			<key>many</key>
-			<string>%1$d  гледачоў</string>
+			<string>%1$d гледачоў</string>
 			<key>other</key>
 			<string>%1$d гледачоў</string>
 		</dict>
@@ -1528,13 +1528,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Адпраўленне…</string>
+			<string>Адпраўка…</string>
 			<key>few</key>
-			<string>Адпраўленне %1$d…</string>
+			<string>Адпраўка %1$d…</string>
 			<key>many</key>
-			<string>Адпраўленне %1$d…</string>
+			<string>Адпраўка %1$d…</string>
 			<key>other</key>
-			<string>Адпраўленне %1$d…</string>
+			<string>Адпраўка %1$d…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>

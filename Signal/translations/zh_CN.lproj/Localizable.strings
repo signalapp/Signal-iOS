@@ -2702,7 +2702,7 @@
 "GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "新消息！";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "开始使用";
+"GET_STARTED_BANNER_TITLE" = "开始";
 
 /* 'Get Started' button directing users to appearance */
 "GET_STARTED_CARD_APPEARANCE" = "外观";

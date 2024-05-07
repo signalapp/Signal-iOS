@@ -1985,7 +1985,7 @@
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "Abzeichen im Profil anzeigen";
 
 /* Title for the proxy confirmation */
-"DO_YOU_WANT_TO_USE_PROXY" = "Möchtest du diese Proxyadresse verwenden?";
+"DO_YOU_WANT_TO_USE_PROXY" = "Möchtest du diese Proxy-Adresse verwenden?";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Ort für Zensurumgehung";
@@ -2708,10 +2708,10 @@
 "GET_STARTED_CARD_APPEARANCE" = "Darstellung";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "Foto hinzufügen";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Neues Foto";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Freunde einladen";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Einladen";
 
 /* 'Get Started' button directing users to create a group */
 "GET_STARTED_CARD_NEW_GROUP" = "Neue Gruppe";
@@ -5531,7 +5531,7 @@
 "PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "Andere können dir jetzt über deinen optionalen Nutzernamen eine Nachricht schicken, sodass du deine Telefonnummer nicht mehr herausgeben musst.";
 
 /* The title for the address of the signal proxy */
-"PROXY_ADDRESS" = "Proxyadresse";
+"PROXY_ADDRESS" = "Proxy-Adresse";
 
 /* The provided proxy connected successfully */
 "PROXY_CONNECTED_SUCCESSFULLY" = "Signal ist mit dem Proxy verbunden. In »Einstellungen« kannst du ihn jederzeit ausschalten.";
@@ -5540,7 +5540,7 @@
 "PROXY_FAILED_TO_CONNECT" = "Es konnte keine Verbindung zum Proxy hergestellt werden. Überprüfe die Proxy-Adresse und versuche es erneut.";
 
 /* Placeholder text for signal proxy host */
-"PROXY_PLACEHOLDER" = "Proxyadresse eingeben";
+"PROXY_PLACEHOLDER" = "Proxy-Adresse eingeben";
 
 /* Title for the signal proxy settings */
 "PROXY_SETTINGS_TITLE" = "Proxy";
@@ -7094,7 +7094,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Von jedem erlauben";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "»Vertraulicher Absender« aktivieren für eingehende Nachrichten von Nichtkontakten und weiterhin Kontakten, mit denen du dein Profil nicht geteilt hast.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "»Vertraulicher Absender« aktivieren für eingehende Nachrichten von Nichtkontakten sowie Menschen, mit denen du dein Profil nicht geteilt hast";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Version";

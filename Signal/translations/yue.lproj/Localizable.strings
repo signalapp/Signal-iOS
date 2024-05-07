@@ -2702,19 +2702,19 @@
 "GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "有新訊息！";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "開波";
+"GET_STARTED_BANNER_TITLE" = "開始使用";
 
 /* 'Get Started' button directing users to appearance */
-"GET_STARTED_CARD_APPEARANCE" = "版面";
+"GET_STARTED_CARD_APPEARANCE" = "外觀";
 
 /* 'Get Started' button direction users to avatar builder */
 "GET_STARTED_CARD_AVATAR_BUILDER" = "加張相";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "誠邀好友";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "邀請好友";
 
 /* 'Get Started' button directing users to create a group */
-"GET_STARTED_CARD_NEW_GROUP" = "開個新谷";
+"GET_STARTED_CARD_NEW_GROUP" = "開個新群組";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "攞唔到要求嘅 GIF。請查驗您係咪已經連咗上網。";
