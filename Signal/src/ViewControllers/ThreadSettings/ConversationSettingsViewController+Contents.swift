@@ -108,67 +108,68 @@ extension ConversationSettingsViewController {
         stackView.addArrangedSubview(dateLabel)
         stackView.setCustomSpacing(10, after: dateLabel)
 
-        let description: String
-        switch callViewModel.direction {
-        case .outgoing:
-            switch callViewModel.recipientType {
-            case .individual(type: .audio, contactThread: _):
-                description = OWSLocalizedString(
-                    "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL",
-                    comment: "A label indicating that a call was an outgoing audio call"
-                )
-            case .individual(type: .video, contactThread: _), .group(groupThread: _):
-                description = OWSLocalizedString(
-                    "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL",
-                    comment: "A label indicating that a call was an outgoing video call"
-                )
+        typealias CallRow = (icon: ThemeIcon, description: String, timestamp: String)
+        let callRows: [CallRow] = callViewModel.allCallRecords.map { callRecord in
+            let icon: ThemeIcon = switch callRecord.callType {
+            case .audioCall:
+                .phone16
+            case .groupCall, .videoCall:
+                .video16
             }
-        case .incoming:
-            switch callViewModel.recipientType {
-            case .individual(type: .audio, contactThread: _):
-                description = OWSLocalizedString(
-                    "CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL",
-                    comment: "A label indicating that a call was an incoming audio call"
-                )
-            case .individual(type: .video, contactThread: _), .group(groupThread: _):
-                description = OWSLocalizedString(
-                    "CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL",
-                    comment: "A label indicating that a call was an incoming video call"
-                )
+
+            let description: String = switch (callRecord.callStatus.isMissedCall, callRecord.callDirection) {
+            case (false, .outgoing):
+                switch callRecord.callType {
+                case .audioCall:
+                    OWSLocalizedString(
+                        "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL",
+                        comment: "A label indicating that a call was an outgoing audio call"
+                    )
+                case .videoCall, .groupCall:
+                    OWSLocalizedString(
+                        "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL",
+                        comment: "A label indicating that a call was an outgoing video call"
+                    )
+                }
+            case (false, .incoming):
+                switch callRecord.callType {
+                case .audioCall:
+                    OWSLocalizedString(
+                        "CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL",
+                        comment: "A label indicating that a call was an incoming audio call"
+                    )
+                case .videoCall, .groupCall:
+                    OWSLocalizedString(
+                        "CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL",
+                        comment: "A label indicating that a call was an incoming video call"
+                    )
+                }
+            case (true, _):
+                switch callRecord.callType {
+                case .audioCall:
+                    OWSLocalizedString(
+                        "CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL",
+                        comment: "A label indicating that a call was an missed audio call"
+                    )
+                case .videoCall, .groupCall:
+                    OWSLocalizedString(
+                        "CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL",
+                        comment: "A label indicating that a call was an missed video call"
+                    )
+                }
             }
-        case .missed:
-            switch callViewModel.recipientType {
-            case .individual(type: .audio, contactThread: _):
-                description = OWSLocalizedString(
-                    "CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL",
-                    comment: "A label indicating that a call was an missed audio call"
-                )
-            case .individual(type: .video, contactThread: _), .group(groupThread: _):
-                description = OWSLocalizedString(
-                    "CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL",
-                    comment: "A label indicating that a call was an missed video call"
-                )
-            }
+
+            let timestamp = DateUtil.formatDateAsTime(callRecord.callBeganDate)
+            return (icon, description, timestamp)
         }
 
-        let icon: ThemeIcon
-        switch callViewModel.recipientType {
-        case .individual(type: .audio, contactThread: _):
-            icon = .phone16
-        case .individual(type: .video, contactThread: _), .group(groupThread: _):
-            icon = .video16
-        }
-
-        let callDatesToDisplay: [Date] = callViewModel.allCallRecords.map { $0.callBeganDate }
-        let timestampsToDisplay: [String] = callDatesToDisplay.map { DateUtil.formatDateAsTime($0) }
-
-        for timestamp in timestampsToDisplay {
+        for callRow in callRows {
             stackView.addArrangedSubview({
                 let hStack = UIStackView()
                 hStack.axis = .horizontal
                 hStack.spacing = 6
                 hStack.addArrangedSubview(UIImageView.withTemplateIcon(
-                    icon,
+                    callRow.icon,
                     tintColor: Theme.primaryTextColor,
                     constrainedTo: .square(16)
                 ))
@@ -177,7 +178,7 @@ extension ConversationSettingsViewController {
                 let descriptionLabel = UILabel()
                 descriptionLabel.font = .dynamicTypeSubheadline
                 descriptionLabel.textColor = Theme.primaryTextColor
-                descriptionLabel.text = description
+                descriptionLabel.text = callRow.description
                 hStack.addArrangedSubview(descriptionLabel)
 
                 hStack.addArrangedSubview(UIView.hStretchingSpacer())
@@ -185,7 +186,7 @@ extension ConversationSettingsViewController {
                 let timestampLabel = UILabel()
                 timestampLabel.font = .dynamicTypeSubheadline
                 timestampLabel.textColor = Theme.secondaryTextAndIconColor
-                timestampLabel.text = timestamp
+                timestampLabel.text = callRow.timestamp
                 hStack.addArrangedSubview(timestampLabel)
 
                 return hStack
