@@ -62,11 +62,3 @@ public protocol TSResourceStream: TSResource {
     func audioWaveform() -> Task<AudioWaveform, Error>
     func highPriorityAudioWaveform() -> Task<AudioWaveform, Error>
 }
-
-extension TSResourceStream {
-
-    // TODO: this is just to help with bridging while all TSResources are actually TSAttachments,
-    // and we are migrating code to TSResource that hands an instance to unmigrated code.
-    // Remove once all references to TSAttachment are replaced with TSResource.
-    public var bridgeStream: TSAttachmentStream { self as! TSAttachmentStream }
-}

@@ -15,7 +15,7 @@ enum Media {
     var image: UIImage? {
         switch self {
         case let .gallery(item):
-            return item.attachmentStream.attachmentStream.bridgeStream.originalImage
+            return try? item.attachmentStream.attachmentStream.decryptedImage()
         case let .image(image):
             return image
         }
