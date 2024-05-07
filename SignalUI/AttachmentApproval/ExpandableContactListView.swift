@@ -7,9 +7,17 @@ import UIKit
 
 class ExpandableContactListView: UIView {
 
+    private class var listFormatter: ListFormatter {
+        let formatter = ListFormatter()
+        if let identifier = NSLocale.preferredLanguages.first {
+            formatter.locale = Locale(identifier: identifier)
+        }
+        return formatter
+    }
+
     var contactNames: [String] = [] {
         didSet {
-            textLabel.text = ListFormatter().string(from: contactNames)
+            textLabel.text = Self.listFormatter.string(from: contactNames)
         }
     }
 
