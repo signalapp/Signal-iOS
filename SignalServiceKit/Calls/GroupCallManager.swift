@@ -222,7 +222,7 @@ public class GroupCallManager {
 
         switch interactionToUpdate {
         case .found(let interactionToUpdate):
-            let wasOldMessageEmpty = interactionToUpdate.joinedMemberUuids?.count == 0 && !interactionToUpdate.hasEnded
+            let wasOldMessageEmpty = interactionToUpdate.joinedMemberAcis.isEmpty && !interactionToUpdate.hasEnded
 
             logger.info("Updating group call interaction for thread \(groupThread.uniqueId), callId \(currentCallId). Joined member count: \(joinedMemberAcis.count)")
 

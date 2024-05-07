@@ -1334,7 +1334,7 @@ extension CVComponentSystemMessage {
         // Assume the current thread supports calling if we have no delegate. This ensures we always
         // overestimate cell measurement in cases where the current thread doesn't support calling.
         let isCallingSupported = ConversationViewController.canCall(threadViewModel: threadViewModel)
-        let isCallActive = (!groupCallMessage.hasEnded && !groupCallMessage.joinedMemberAddresses.isEmpty)
+        let isCallActive = (!groupCallMessage.hasEnded && !groupCallMessage.joinedMemberAcis.isEmpty)
 
         guard isCallingSupported, isCallActive else {
             return nil

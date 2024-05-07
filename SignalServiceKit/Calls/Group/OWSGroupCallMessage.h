@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// - Note
 /// The name contains `Uuid` for SDS compatibility, but this is an ACI.
 @property (nonatomic, nullable) NSString *creatorUuid;
-@property (nonatomic, readonly, nullable) SignalServiceAddress *creatorAddress;
+@property (nonatomic, readonly, nullable) AciObjC *creatorAci;
 
 /// The ACI-strings of the members of the call.
 /// - Note
@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// - Note
 /// The name contains `Uuid` for SDS compatibility, but these are ACIs.
 @property (nonatomic, nullable) NSArray<NSString *> *joinedMemberUuids;
-@property (nonatomic, readonly) NSArray<SignalServiceAddress *> *joinedMemberAddresses;
+@property (nonatomic, readonly) NSArray<AciObjC *> *joinedMemberAcis;
 
 /// Whether the call has been ended, or is still in-progress.
 @property (nonatomic) BOOL hasEnded;

@@ -79,7 +79,8 @@ extension OWSGroupCallMessage {
             comment: "Text in conversation view for a group call that someone started. We don't know who"
         )
 
-        let addresses = NSObject.contactsManager.sortSignalServiceAddresses(self.joinedMemberAddresses, transaction: tx)
+        let joinedMemberAddresses = self.joinedMemberAcis.map { SignalServiceAddress($0.wrappedValue) }
+        let addresses = NSObject.contactsManager.sortSignalServiceAddresses(joinedMemberAddresses, transaction: tx)
 
         var localAddresses = [SignalServiceAddress]()
         var creatorAddresses = [SignalServiceAddress]()
@@ -89,7 +90,7 @@ extension OWSGroupCallMessage {
                 localAddresses.append(address)
                 continue
             }
-            if address == self.creatorAddress {
+            if let creatorAci, address.serviceIdObjC == creatorAci {
                 creatorAddresses.append(address)
                 continue
             }
@@ -110,7 +111,7 @@ extension OWSGroupCallMessage {
         if sortedAddresses.count == 0 {
             return someoneString
         }
-        if sortedAddresses[0] == self.creatorAddress {
+        if let creatorAci, sortedAddresses[0].serviceIdObjC == creatorAci {
             if sortedAddresses[0].isLocalAddress {
                 return self.groupCallStartedByYou
             } else {
@@ -135,11 +136,11 @@ extension OWSGroupCallMessage: OWSPreviewText {
         if hasEnded {
             return self.groupCallEndedMessage
         }
-        if let creatorAddress, creatorAddress.isLocalAddress {
+        if let creatorAci, SignalServiceAddress(creatorAci.wrappedAciValue).isLocalAddress {
             return self.groupCallStartedByYou
         }
-        if let creatorAddress {
-            let creatorDisplayName = self.participantName(for: creatorAddress, tx: transaction)
+        if let creatorAci {
+            let creatorDisplayName = self.participantName(for: SignalServiceAddress(creatorAci.wrappedAciValue), tx: transaction)
             let formatString = OWSLocalizedString(
                 "GROUP_CALL_STARTED_MESSAGE_FORMAT",
                 comment: "Text explaining that someone started a group call. Embeds {{call creator display name}}"

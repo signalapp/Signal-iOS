@@ -81,16 +81,16 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (NSArray<SignalServiceAddress *> *)joinedMemberAddresses
+- (NSArray<AciObjC *> *)joinedMemberAcis
 {
     return [(self.joinedMemberUuids ?: @[]) map:^(
-        NSString *aciString) { return [[SignalServiceAddress alloc] initWithAciString:aciString]; }];
+        NSString *aciString) { return [[AciObjC alloc] initWithAciString:aciString]; }];
 }
 
-- (nullable SignalServiceAddress *)creatorAddress
+- (nullable AciObjC *)creatorAci
 {
     if (self.creatorUuid) {
-        return [[SignalServiceAddress alloc] initWithAciString:self.creatorUuid];
+        return [[AciObjC alloc] initWithAciString:self.creatorUuid];
     } else {
         return nil;
     }

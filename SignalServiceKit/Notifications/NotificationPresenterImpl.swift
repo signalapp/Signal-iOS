@@ -1092,8 +1092,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 }
             } else if
                 let callMessage = tsInteraction as? OWSGroupCallMessage,
-                let callCreator = callMessage.creatorAddress,
-                let intent = thread.generateSendMessageIntent(context: .senderAddress(callCreator), transaction: transaction)
+                let callCreator = callMessage.creatorAci?.wrappedAciValue,
+                let intent = thread.generateSendMessageIntent(context: .senderAddress(SignalServiceAddress(callCreator)), transaction: transaction)
             {
                 wrapIntent(intent)
             }

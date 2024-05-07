@@ -14,7 +14,7 @@ class ConversationViewModel {
 
     static func load(for thread: TSThread, tx: SDSAnyReadTransaction) -> ConversationViewModel {
         let groupCallInProgress = GroupCallInteractionFinder().unendedCallsForGroupThread(thread, transaction: tx)
-            .filter { $0.joinedMemberAddresses.count > 0 }
+            .filter { !$0.joinedMemberAcis.isEmpty }
             .count > 0
 
         let isSystemContact = thread.isSystemContact(contactsManager: NSObject.contactsManagerImpl, tx: tx)
