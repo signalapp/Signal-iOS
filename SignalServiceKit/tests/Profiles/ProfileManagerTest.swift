@@ -101,6 +101,18 @@ class ProfileManagerTest: XCTestCase {
                 ),
                 "YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGkCwwdHlUkbnVsbNgNDg8QERITFBUWFxcXFxsXViRjbGFzc1JpZF8QFnByb2ZpbGVCaW9FbW9qaUNoYW5nZWRfEBhwcm9maWxlRmFtaWx5TmFtZUNoYW5nZWRfEBFwcm9maWxlQmlvQ2hhbmdlZF8QF3Byb2ZpbGVHaXZlbk5hbWVDaGFuZ2VkXxARdXNlclByb2ZpbGVXcml0ZXJfEBhwcm9maWxlQXZhdGFyRGF0YUNoYW5nZWSAA4ACCAgICBAACF8QJDAwMDAwMDAwLTAwMDAtNDAwMC1BMDAwLTAwMDAwMDAwMDAwMNIfICEiWiRjbGFzc25hbWVYJGNsYXNzZXNfECRTaWduYWxNZXNzYWdpbmcuUGVuZGluZ1Byb2ZpbGVVcGRhdGWiIyRfECRTaWduYWxNZXNzYWdpbmcuUGVuZGluZ1Byb2ZpbGVVcGRhdGVYTlNPYmplY3QACAARABoAJAApADIANwBJAEwAUQBTAFgAXgBvAHYAeQCSAK0AwQDbAO8BCgEMAQ4BDwEQAREBEgEUARUBPAFBAUwBVQF8AX8BpgAAAAAAAAIBAAAAAAAAACUAAAAAAAAAAAAAAAAAAAGv"
             ),
+            (
+                PendingProfileUpdate(
+                    profileGivenName: .noChange,
+                    profileFamilyName: .noChange,
+                    profileBio: .noChange,
+                    profileBioEmoji: .noChange,
+                    profileAvatarData: .noChangeButMustReupload,
+                    visibleBadgeIds: .noChange,
+                    userProfileWriter: .localUser
+                ),
+                "YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGkCwwfIFUkbnVsbNkNDg8QERITFBUWFxgYGBgYHR5WJGNsYXNzUmlkXxAYcHJvZmlsZUF2YXRhckRhdGFDaGFuZ2VkXxAYcHJvZmlsZUZhbWlseU5hbWVDaGFuZ2VkXxARcHJvZmlsZUJpb0NoYW5nZWRfEBZwcm9maWxlQmlvRW1vamlDaGFuZ2VkXxAXcHJvZmlsZUdpdmVuTmFtZUNoYW5nZWRfEBF1c2VyUHJvZmlsZVdyaXRlcl8QHXByb2ZpbGVBdmF0YXJEYXRhTXVzdFJldXBsb2FkgAOAAggICAgIEAAJXxAkMDAwMDAwMDAtMDAwMC00MDAwLUEwMDAtMDAwMDAwMDAwMDAw0iEiIyRaJGNsYXNzbmFtZVgkY2xhc3Nlc18QJVNpZ25hbFNlcnZpY2VLaXQuUGVuZGluZ1Byb2ZpbGVVcGRhdGWiJSZfECVTaWduYWxTZXJ2aWNlS2l0LlBlbmRpbmdQcm9maWxlVXBkYXRlWE5TT2JqZWN0AAgAEQAaACQAKQAyADcASQBMAFEAUwBYAF4AcQB4AHsAlgCxAMUA3gD4AQwBLAEuATABMQEyATMBNAE1ATcBOAFfAWQBbwF4AaABowHLAAAAAAAAAgEAAAAAAAAAJwAAAAAAAAAAAAAAAAAAAdQ="
+            ),
         ]
         let expectedId = UUID(uuidString: "00000000-0000-4000-A000-000000000000")!
         for (expectedValue, encodedValue) in testCases {

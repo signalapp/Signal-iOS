@@ -105,7 +105,12 @@ class ZkParamsMigrator {
             Logger.info("Re-uploading local profile due to zkgroup update.")
             firstly {
                 db.write { tx in
-                    profileManager.reuploadLocalProfile(unsavedRotatedProfileKey: nil, authedAccount: .implicit(), tx: tx)
+                    profileManager.reuploadLocalProfile(
+                        unsavedRotatedProfileKey: nil,
+                        mustReuploadAvatar: false,
+                        authedAccount: .implicit(),
+                        tx: tx
+                    )
                 }
             }.catch { error in
                 Logger.warn("Error: \(error)")

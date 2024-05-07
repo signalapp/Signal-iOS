@@ -535,7 +535,12 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             tx.addSyncCompletion {
                 Self.storageServiceManager.recordPendingLocalAccountUpdates()
             }
-            _ = profileManager.reuploadLocalProfile(unsavedRotatedProfileKey: nil, authedAccount: .implicit(), tx: tx.asV2Write)
+            _ = profileManager.reuploadLocalProfile(
+                unsavedRotatedProfileKey: nil,
+                mustReuploadAvatar: false,
+                authedAccount: .implicit(),
+                tx: tx.asV2Write
+            )
         }
     }
 }

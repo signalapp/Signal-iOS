@@ -39,6 +39,45 @@ public enum OptionalChange<Wrapped: Equatable>: Equatable {
     }
 }
 
+public enum OptionalAvatarChange<Wrapped: Equatable>: Equatable {
+    /// There's no change to the avatar. The existing one is fine.
+    case noChange
+
+    /// There's no user-provided change to the avatar, but the avatar needs to
+    /// be re-uploaded anyways (perhaps we're rotating the profile key or
+    /// perhaps we detected an inconsistency).
+    case noChangeButMustReupload
+
+    /// There's a change to the avatar.
+    case setTo(Wrapped)
+
+    public func map<U>(_ transform: (Wrapped) -> U) -> OptionalAvatarChange<U> {
+        switch self {
+        case .noChange:
+            return .noChange
+        case .noChangeButMustReupload:
+            return .noChangeButMustReupload
+        case .setTo(let value):
+            return .setTo(transform(value))
+        }
+    }
+
+    private var importanceLevel: Int {
+        switch self {
+        case .noChange:
+            return 0
+        case .noChangeButMustReupload:
+            return 1
+        case .setTo:
+            return 2
+        }
+    }
+
+    public func isLessImportantThan(_ otherValue: OptionalAvatarChange<Wrapped>) -> Bool {
+        return self.importanceLevel < otherValue.importanceLevel
+    }
+}
+
 public protocol ProfileManager: ProfileManagerProtocol {
     func fetchLocalUsersProfile(authedAccount: AuthedAccount) -> Promise<FetchedProfile>
     func fetchUserProfiles(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [OWSUserProfile?]
@@ -72,7 +111,7 @@ public protocol ProfileManager: ProfileManagerProtocol {
         profileFamilyName: OptionalChange<OWSUserProfile.NameComponent?>,
         profileBio: OptionalChange<String?>,
         profileBioEmoji: OptionalChange<String?>,
-        profileAvatarData: OptionalChange<Data?>,
+        profileAvatarData: OptionalAvatarChange<Data?>,
         visibleBadgeIds: OptionalChange<[String]>,
         unsavedRotatedProfileKey: OWSAES256Key?,
         userProfileWriter: UserProfileWriter,
@@ -82,6 +121,7 @@ public protocol ProfileManager: ProfileManagerProtocol {
 
     func reuploadLocalProfile(
         unsavedRotatedProfileKey: OWSAES256Key?,
+        mustReuploadAvatar: Bool,
         authedAccount: AuthedAccount,
         tx: DBWriteTransaction
     ) -> Promise<Void>

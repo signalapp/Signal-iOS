@@ -117,6 +117,7 @@ final class LocalProfileChecker {
     private func reconcileProfile() async throws {
         let mostRecentRemoteProfile = try await waitForSteadyState()
 
+        var mustReuploadAvatar = false
         let shouldReuploadProfile = db.read { tx in
             guard let localAddress = tsAccountManager.localIdentifiers(tx: tx)?.aciAddress else {
                 owsFailDebug("Not registered.")
@@ -134,6 +135,7 @@ final class LocalProfileChecker {
             // source of truth.
             var mismatchedProperties = [String]()
             if localProfile.avatarUrlPath != mostRecentRemoteProfile.avatarUrlPath {
+                mustReuploadAvatar = true
                 mismatchedProperties.append("avatarUrlPath")
             }
             if localProfile.givenName != (try? decryptedProfile.nameComponents.get()?.givenName) {
@@ -172,7 +174,12 @@ final class LocalProfileChecker {
         }
 
         try await db.awaitableWrite { [profileManager] tx in
-            profileManager.reuploadLocalProfile(unsavedRotatedProfileKey: nil, authedAccount: .implicit(), tx: tx)
+            profileManager.reuploadLocalProfile(
+                unsavedRotatedProfileKey: nil,
+                mustReuploadAvatar: mustReuploadAvatar,
+                authedAccount: .implicit(),
+                tx: tx
+            )
         }.awaitable()
     }
 }

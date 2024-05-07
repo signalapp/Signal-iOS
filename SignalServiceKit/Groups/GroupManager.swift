@@ -1446,7 +1446,12 @@ public class GroupManager: NSObject {
         // We've never uploaded a profile key commitment - do so now.
         Logger.info("No profile key credential available for local account - uploading local profile!")
         _ = await databaseStorage.awaitableWrite { tx in
-            NSObject.profileManager.reuploadLocalProfile(unsavedRotatedProfileKey: nil, authedAccount: .implicit(), tx: tx.asV2Write)
+            NSObject.profileManager.reuploadLocalProfile(
+                unsavedRotatedProfileKey: nil,
+                mustReuploadAvatar: false,
+                authedAccount: .implicit(),
+                tx: tx.asV2Write
+            )
         }
     }
 }

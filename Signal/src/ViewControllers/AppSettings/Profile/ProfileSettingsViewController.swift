@@ -719,7 +719,14 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                     profileFamilyName: profileValues.familyName.changedValue,
                     profileBio: profileValues.bio.changedValue,
                     profileBioEmoji: profileValues.bioEmoji.changedValue,
-                    profileAvatarData: profileValues.avatarData.changedValue,
+                    profileAvatarData: { () -> OptionalAvatarChange<Data?> in
+                        switch profileValues.avatarData.changedValue {
+                        case .noChange:
+                            return .noChange
+                        case .setTo(let newValue):
+                            return .setTo(newValue)
+                        }
+                    }(),
                     visibleBadgeIds: profileValues.visibleBadgeIds.changedValue,
                     unsavedRotatedProfileKey: nil,
                     userProfileWriter: .localUser,

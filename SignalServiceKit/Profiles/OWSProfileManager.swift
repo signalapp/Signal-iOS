@@ -106,7 +106,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
         profileFamilyName: OptionalChange<OWSUserProfile.NameComponent?>,
         profileBio: OptionalChange<String?>,
         profileBioEmoji: OptionalChange<String?>,
-        profileAvatarData: OptionalChange<Data?>,
+        profileAvatarData: OptionalAvatarChange<Data?>,
         visibleBadgeIds: OptionalChange<[String]>,
         unsavedRotatedProfileKey: OWSAES256Key?,
         userProfileWriter: UserProfileWriter,
@@ -122,7 +122,6 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             profileBioEmoji: profileBioEmoji,
             profileAvatarData: profileAvatarData,
             visibleBadgeIds: visibleBadgeIds,
-            unsavedRotatedProfileKey: unsavedRotatedProfileKey,
             userProfileWriter: userProfileWriter,
             tx: tx
         )
@@ -144,6 +143,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
     // This will re-upload the existing local profile state.
     public func reuploadLocalProfile(
         unsavedRotatedProfileKey: OWSAES256Key?,
+        mustReuploadAvatar: Bool,
         authedAccount: AuthedAccount,
         tx: DBWriteTransaction
     ) -> Promise<Void> {
@@ -151,12 +151,12 @@ extension OWSProfileManager: ProfileManager, Dependencies {
 
         let profileChanges = currentPendingProfileChanges(tx: SDSDB.shimOnlyBridge(tx))
         return updateLocalProfile(
-            profileGivenName: profileChanges?.profileGivenName ?? .noChange,
-            profileFamilyName: profileChanges?.profileFamilyName ?? .noChange,
-            profileBio: profileChanges?.profileBio ?? .noChange,
-            profileBioEmoji: profileChanges?.profileBioEmoji ?? .noChange,
-            profileAvatarData: profileChanges?.profileAvatarData ?? .noChange,
-            visibleBadgeIds: profileChanges?.visibleBadgeIds ?? .noChange,
+            profileGivenName: .noChange,
+            profileFamilyName: .noChange,
+            profileBio: .noChange,
+            profileBioEmoji: .noChange,
+            profileAvatarData: mustReuploadAvatar ? .noChangeButMustReupload : .noChange,
+            visibleBadgeIds: .noChange,
             unsavedRotatedProfileKey: unsavedRotatedProfileKey,
             userProfileWriter: profileChanges?.userProfileWriter ?? .reupload,
             authedAccount: authedAccount,
@@ -330,7 +330,12 @@ extension OWSProfileManager: ProfileManager, Dependencies {
 
             let newProfileKey = OWSAES256Key.generateRandom()
             let uploadPromise = await self.databaseStorage.awaitableWrite { tx in
-                self.reuploadLocalProfile(unsavedRotatedProfileKey: newProfileKey, authedAccount: authedAccount, tx: tx.asV2Write)
+                self.reuploadLocalProfile(
+                    unsavedRotatedProfileKey: newProfileKey,
+                    mustReuploadAvatar: true,
+                    authedAccount: authedAccount,
+                    tx: tx.asV2Write
+                )
             }
             try await uploadPromise.awaitable()
 
@@ -553,7 +558,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
     @available(swift, obsoleted: 1.0)
     func reuploadLocalProfileWithSneakyTransaction(authedAccount: AuthedAccount) -> AnyPromise {
         return AnyPromise(databaseStorage.write { tx in
-            reuploadLocalProfile(unsavedRotatedProfileKey: nil, authedAccount: authedAccount, tx: tx.asV2Write)
+            reuploadLocalProfile(unsavedRotatedProfileKey: nil, mustReuploadAvatar: false, authedAccount: authedAccount, tx: tx.asV2Write)
         })
     }
 
@@ -881,7 +886,12 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             }
             do {
                 let uploadPromise = await self.databaseStorage.awaitableWrite { tx in
-                    return self.reuploadLocalProfile(unsavedRotatedProfileKey: nil, authedAccount: authedAccount, tx: tx.asV2Write)
+                    return self.reuploadLocalProfile(
+                        unsavedRotatedProfileKey: nil,
+                        mustReuploadAvatar: true,
+                        authedAccount: authedAccount,
+                        tx: tx.asV2Write
+                    )
                 }
                 try await uploadPromise.awaitable()
                 Logger.info("Avatar repair succeeded.")
@@ -927,7 +937,6 @@ extension OWSProfileManager: ProfileManager, Dependencies {
         do {
             let avatarUpdate = try await buildAvatarUpdate(
                 avatarChange: profileChanges.profileAvatarData,
-                isRotatingProfileKey: newProfileKey != nil,
                 authedAccount: authedAccount
             )
 
@@ -1010,15 +1019,15 @@ extension OWSProfileManager: ProfileManager, Dependencies {
     ///
     /// Most fields are re-encrypted with every update. However, the avatar can
     /// be large, so we only update it if absolutely necessary. We must update
-    /// the profile avatar in two cases:
+    /// the profile avatar in three cases:
     ///   (1) The avatar has changed (duh!).
     ///   (2) The profile key has changed.
-    /// In the former case, we'll always have the new avatar because we're
+    ///   (3) The remote avatar doesn't match the local avatar.
+    /// In the first case, we'll always have the new avatar because we're
     /// actively changing it. In the latter case, another device may have
     /// changed it, so we may need to download it to re-encrypt it.
     private func buildAvatarUpdate(
-        avatarChange: OptionalChange<Data?>,
-        isRotatingProfileKey: Bool,
+        avatarChange: OptionalAvatarChange<Data?>,
         authedAccount: AuthedAccount
     ) async throws -> (remoteMutation: VersionedProfileAvatarMutation, filenameChange: OptionalChange<String?>) {
         switch avatarChange {
@@ -1029,21 +1038,20 @@ extension OWSProfileManager: ProfileManager, Dependencies {
                 return (.changeAvatar(newAvatar), .setTo(avatarFilename))
             }
             return (.clearAvatar, .setTo(nil))
-        case .noChange:
-            // This is case (2).
-            if isRotatingProfileKey {
-                do {
-                    try await downloadAndDecryptLocalUserAvatarIfNeeded(authedAccount: authedAccount)
-                } catch where !error.isNetworkFailureOrTimeout {
-                    // Ignore the error because it's not likely to go away if we retry. If we
-                    // can't decrypt the existing avatar, then we don't really have any choice
-                    // other than blowing it away.
-                }
-                if let avatarFilename = localUserProfile().avatarFileName, let avatarData = localProfileAvatarData() {
-                    return (.changeAvatar(avatarData), .setTo(avatarFilename))
-                }
-                return (.clearAvatar, .setTo(nil))
+        case .noChangeButMustReupload:
+            // This is case (2) and (3).
+            do {
+                try await downloadAndDecryptLocalUserAvatarIfNeeded(authedAccount: authedAccount)
+            } catch where !error.isNetworkFailureOrTimeout {
+                // Ignore the error because it's not likely to go away if we retry. If we
+                // can't decrypt the existing avatar, then we don't really have any choice
+                // other than blowing it away.
             }
+            if let avatarFilename = localUserProfile().avatarFileName, let avatarData = localProfileAvatarData() {
+                return (.changeAvatar(avatarData), .setTo(avatarFilename))
+            }
+            return (.clearAvatar, .setTo(nil))
+        case .noChange:
             // We aren't changing the avatar, so use the existing value.
             if localUserProfile().avatarUrlPath != nil {
                 return (.keepAvatar, .noChange)
@@ -1072,9 +1080,8 @@ extension OWSProfileManager: ProfileManager, Dependencies {
         profileFamilyName: OptionalChange<OWSUserProfile.NameComponent?>,
         profileBio: OptionalChange<String?>,
         profileBioEmoji: OptionalChange<String?>,
-        profileAvatarData: OptionalChange<Data?>,
+        profileAvatarData: OptionalAvatarChange<Data?>,
         visibleBadgeIds: OptionalChange<[String]>,
-        unsavedRotatedProfileKey: OWSAES256Key?,
         userProfileWriter: UserProfileWriter,
         tx: SDSAnyWriteTransaction
     ) -> PendingProfileUpdate {
@@ -1084,7 +1091,15 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             profileFamilyName: profileFamilyName.orElseIfNoChange(oldChanges?.profileFamilyName ?? .noChange),
             profileBio: profileBio.orElseIfNoChange(oldChanges?.profileBio ?? .noChange),
             profileBioEmoji: profileBioEmoji.orElseIfNoChange(oldChanges?.profileBioEmoji ?? .noChange),
-            profileAvatarData: profileAvatarData.orElseIfNoChange(oldChanges?.profileAvatarData ?? .noChange),
+            profileAvatarData: { () -> OptionalAvatarChange<Data?> in
+                let newValue = profileAvatarData
+                // If newValue isn't as important as oldValue, prefer oldValue. If there's
+                // a tie, prefer newValue.
+                if let oldValue = oldChanges?.profileAvatarData, newValue.isLessImportantThan(oldValue) {
+                    return oldValue
+                }
+                return newValue
+            }(),
             visibleBadgeIds: visibleBadgeIds.orElseIfNoChange(oldChanges?.visibleBadgeIds ?? .noChange),
             userProfileWriter: userProfileWriter
         )
@@ -1233,7 +1248,7 @@ public class PendingProfileUpdate: NSObject, NSCoding {
     let profileFamilyName: OptionalChange<OWSUserProfile.NameComponent?>
     let profileBio: OptionalChange<String?>
     let profileBioEmoji: OptionalChange<String?>
-    let profileAvatarData: OptionalChange<Data?>
+    let profileAvatarData: OptionalAvatarChange<Data?>
     let visibleBadgeIds: OptionalChange<[String]>
 
     let userProfileWriter: UserProfileWriter
@@ -1243,7 +1258,7 @@ public class PendingProfileUpdate: NSObject, NSCoding {
         profileFamilyName: OptionalChange<OWSUserProfile.NameComponent?>,
         profileBio: OptionalChange<String?>,
         profileBioEmoji: OptionalChange<String?>,
-        profileAvatarData: OptionalChange<Data?>,
+        profileAvatarData: OptionalAvatarChange<Data?>,
         visibleBadgeIds: OptionalChange<[String]>,
         userProfileWriter: UserProfileWriter
     ) {
@@ -1261,7 +1276,7 @@ public class PendingProfileUpdate: NSObject, NSCoding {
         return self.id == other.id
     }
 
-    private static func normalizeAvatar(_ avatarData: OptionalChange<Data?>) -> OptionalChange<Data?> {
+    private static func normalizeAvatar(_ avatarData: OptionalAvatarChange<Data?>) -> OptionalAvatarChange<Data?> {
         return avatarData.map { $0?.nilIfEmpty }
     }
 
@@ -1278,10 +1293,25 @@ public class PendingProfileUpdate: NSObject, NSCoding {
         case userProfileWriter
 
         var changedKey: String { rawValue + "Changed" }
+        var mustReuploadKey: String { rawValue + "MustReupload" }
     }
 
     private static func encodeOptionalChange<T>(_ value: OptionalChange<T?>, for codingKey: NSCodingKeys, with aCoder: NSCoder) {
         switch value {
+        case .noChange:
+            aCoder.encode(false, forKey: codingKey.changedKey)
+        case .setTo(let value):
+            if let value {
+                aCoder.encode(value, forKey: codingKey.rawValue)
+            }
+        }
+    }
+
+    private static func encodeOptionalAvatarChange<T>(_ value: OptionalAvatarChange<T?>, for codingKey: NSCodingKeys, with aCoder: NSCoder) {
+        switch value {
+        case .noChangeButMustReupload:
+            aCoder.encode(true, forKey: codingKey.mustReuploadKey)
+            fallthrough
         case .noChange:
             aCoder.encode(false, forKey: codingKey.changedKey)
         case .setTo(let value):
@@ -1306,13 +1336,23 @@ public class PendingProfileUpdate: NSObject, NSCoding {
         Self.encodeOptionalChange(profileFamilyName.map { $0?.stringValue.rawValue }, for: .profileFamilyName, with: aCoder)
         Self.encodeOptionalChange(profileBio, for: .profileBio, with: aCoder)
         Self.encodeOptionalChange(profileBioEmoji, for: .profileBioEmoji, with: aCoder)
-        Self.encodeOptionalChange(profileAvatarData, for: .profileAvatarData, with: aCoder)
+        Self.encodeOptionalAvatarChange(profileAvatarData, for: .profileAvatarData, with: aCoder)
         Self.encodeVisibleBadgeIds(visibleBadgeIds, for: .visibleBadgeIds, with: aCoder)
         aCoder.encodeCInt(Int32(userProfileWriter.rawValue), forKey: NSCodingKeys.userProfileWriter.rawValue)
     }
 
     private static func decodeOptionalChange<T>(for codingKey: NSCodingKeys, with aDecoder: NSCoder) -> OptionalChange<T?> {
         if aDecoder.containsValue(forKey: codingKey.changedKey), !aDecoder.decodeBool(forKey: codingKey.changedKey) {
+            return .noChange
+        }
+        return .setTo(aDecoder.decodeObject(forKey: codingKey.rawValue) as? T? ?? nil)
+    }
+
+    private static func decodeOptionalAvatarChange<T>(for codingKey: NSCodingKeys, with aDecoder: NSCoder) -> OptionalAvatarChange<T?> {
+        if aDecoder.containsValue(forKey: codingKey.changedKey), !aDecoder.decodeBool(forKey: codingKey.changedKey) {
+            if aDecoder.containsValue(forKey: codingKey.mustReuploadKey), aDecoder.decodeBool(forKey: codingKey.mustReuploadKey) {
+                return .noChangeButMustReupload
+            }
             return .noChange
         }
         return .setTo(aDecoder.decodeObject(forKey: codingKey.rawValue) as? T? ?? nil)
@@ -1374,7 +1414,7 @@ public class PendingProfileUpdate: NSObject, NSCoding {
         self.profileFamilyName = Self.decodeOptionalNameChange(for: .profileFamilyName, with: aDecoder)
         self.profileBio = Self.decodeOptionalChange(for: .profileBio, with: aDecoder)
         self.profileBioEmoji = Self.decodeOptionalChange(for: .profileBioEmoji, with: aDecoder)
-        self.profileAvatarData = Self.normalizeAvatar(Self.decodeOptionalChange(for: .profileAvatarData, with: aDecoder))
+        self.profileAvatarData = Self.normalizeAvatar(Self.decodeOptionalAvatarChange(for: .profileAvatarData, with: aDecoder))
         self.visibleBadgeIds = Self.decodeVisibleBadgeIds(for: .visibleBadgeIds, with: aDecoder)
         if
             aDecoder.containsValue(forKey: NSCodingKeys.userProfileWriter.rawValue),
