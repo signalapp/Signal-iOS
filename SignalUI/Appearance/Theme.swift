@@ -93,6 +93,17 @@ final public class Theme: NSObject {
         shared.setCurrentMode(mode)
     }
 
+    public class func performWithModeAsCurrent(_ mode: Mode, _ operation: () -> Void) {
+        shared.performWithModeAsCurrent(mode, operation)
+    }
+
+    private func performWithModeAsCurrent(_ mode: Mode, _ operation: () -> Void) {
+        let previousMode = cachedCurrentMode
+        defer { cachedCurrentMode = previousMode }
+        cachedCurrentMode = mode
+        operation()
+    }
+
     private var cachedIsDarkThemeEnabled: Bool?
     private var cachedCurrentMode: Mode?
 
@@ -177,7 +188,7 @@ final public class Theme: NSObject {
     private func setCurrentMode(_ mode: Mode) {
         AssertIsOnMainThread()
 
-        let wasDarkThemeEnabled = cachedIsDarkThemeEnabled
+        let previousMode = cachedCurrentMode
 
         switch mode {
         case .light:
@@ -195,7 +206,7 @@ final public class Theme: NSObject {
             Theme.keyValueStore.setUInt(mode.rawValue, key: KVSKeys.currentMode, transaction: transaction)
         }
 
-        if wasDarkThemeEnabled != cachedIsDarkThemeEnabled {
+        if previousMode != mode {
             themeDidChange()
         }
     }
@@ -233,10 +244,7 @@ final public class Theme: NSObject {
 
     private func themeDidChange() {
         Theme.setupSignalAppearance()
-
-        UIView.performWithoutAnimation {
-            NotificationCenter.default.post(name: Notification.Name.themeDidChange, object: nil)
-        }
+        NotificationCenter.default.post(name: .themeDidChange, object: self)
     }
 
     // MARK: - UI Colors

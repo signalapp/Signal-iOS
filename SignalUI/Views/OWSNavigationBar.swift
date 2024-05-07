@@ -123,17 +123,14 @@ public class OWSNavigationBar: UINavigationBar {
         }
 
         if animated {
-            let animation = CATransition()
-            animation.duration = 0.35
-            animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-            animation.type = .fade
-            layer.add(animation, forKey: "ows_fade")
+            UIView.transition(with: self, duration: 0 /* inherit */, options: .transitionCrossDissolve) {
+                appearance.apply(to: self)
+                self.appearance = appearance
+            }
         } else {
-            layer.removeAnimation(forKey: "ows_fade")
+            appearance.apply(to: self)
+            self.appearance = appearance
         }
-
-        appearance.apply(to: self)
-        self.appearance = appearance
     }
 
     // MARK: - iOS >15 blur hacks

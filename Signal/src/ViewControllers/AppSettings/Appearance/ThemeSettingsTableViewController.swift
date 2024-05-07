@@ -40,8 +40,16 @@ class ThemeSettingsTableViewController: OWSTableViewController2 {
     }
 
     private func changeThemeMode(_ mode: Theme.Mode) {
-        Theme.setCurrentMode(mode)
-        updateTableContents()
+        UIView.animate(withDuration: 0) { [self] in
+            Theme.performWithModeAsCurrent(mode) {
+                updateTableContents()
+            }
+        } completion: { [weak self] _ in
+            guard let window = self?.view.window else { return }
+            UIView.transition(with: window, duration: 0.5, options: .transitionCrossDissolve) {
+                Theme.setCurrentMode(mode)
+            }
+        }
     }
 
     static var currentThemeName: String {

@@ -48,7 +48,7 @@ public class OWSWindow: UIWindow {
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
-        if previousTraitCollection?.userInterfaceStyle != traitCollection.userInterfaceStyle {
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
             Theme.systemThemeChanged()
         }
     }
