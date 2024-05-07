@@ -101,13 +101,13 @@
 "ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "‘%1$@’ aan de groep ‘%2$@’ toevoegen?";
 
 /* The title on the 'add to group' confirmation action sheet. */
-"ADD_TO_GROUP_ACTION_SHEET_TITLE" = "Persoon toevoegen";
+"ADD_TO_GROUP_ACTION_SHEET_TITLE" = "Nieuw lid toevoegen";
 
 /* Text indicating your contact is already a member of the group on the 'add to group' view. */
-"ADD_TO_GROUP_ALREADY_A_MEMBER" = "Is al een groepslid";
+"ADD_TO_GROUP_ALREADY_A_MEMBER" = "Is al lid van deze groep";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%1$@ is al een lid van de groep ‘%2$@’";
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%1$@ is al lid van de groep ‘%2$@’";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%1$@ is aan de groep ‘%2$@’ toegevoegd";
@@ -485,10 +485,10 @@
 "BADGE_DETAILS_TITLE_FOR_SUPPORTER" = "%1$@ steunt Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_BODY" = "Je Boost-badge is verlopen en is daarom niet langer zichtbaar op je profiel.\n\nJe kunt Signal gewoon blijven gebruiken, maar wil je onze technologie, die voor jou is gebouwd, ook steunen? Overweeg dan om een maandelijkse donatie in te stellen.";
+"BADGE_EXPIRED_BOOST_BODY" = "Je ‘Boost’-badge is verlopen en is daarom niet langer zichtbaar op je profiel.\n\nJe kunt Signal gewoon blijven gebruiken, maar wil je onze technologie, die voor jou is gebouwd, ook steunen? Overweeg dan om een maandelijkse donatie in te stellen.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Je Boost-badge is verlopen en is daarom niet langer zichtbaar op je profiel.\n\nJe kunt je Boost-badge opnieuw voor 30 dagen activeren met een eenmalige donatie.";
+"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Je ‘Boost’-badge is verlopen en is daarom niet langer zichtbaar op je profiel.\n\nJe kunt je ‘Boost’-badge opnieuw voor 30 dagen activeren met een eenmalige donatie.";
 
 /* Title for boost on the badge expiration sheet. */
 "BADGE_EXPIRED_BOOST_TITLE" = "Badge verlopen";
@@ -1919,7 +1919,7 @@
 "DEVICE_TRANSFER_QRCODE_TITLE" = "QR-code scannen";
 
 /* The explanation on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Houd de apparaten bij elkaar in de buurt en houd de Signal-app open op beide apparaten. De gegevens worden eind-tot-eind-versleuteld uitgewisseld.";
+"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Houd de apparaten bij elkaar in de buurt en houd de Signal-app open op beide apparaten. De gegevens worden end-to-end-versleuteld uitgewisseld.";
 
 /* The title on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Er worden nu gegevens ontvangen";
@@ -2600,19 +2600,19 @@
 "EXIT_REREGISTRATION" = "Registratie verlaten";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Deze versie van Signal is verlopen. Update om berichten te versturen en te ontvangen.";
+"EXPIRATION_ERROR" = "Deze versie van Signal is verlopen. Werk Signal bij om berichten te versturen en te ontvangen.";
 
 /* If the user's app is too old, they'll be shown a warning asking them to upgrade. This is the text on the warning, and tapping it will open the App Store page for Signal. */
 "EXPIRATION_WARNING_ACTION_TITLE" = "Nu bijwerken";
 
 /* Label warning the user that the app will expire soon. Embeds {{date}}. */
-"EXPIRATION_WARNING_SOON" = "Deze versie van Signal verloopt op %1$@. Update om berichten te blijven sturen.";
+"EXPIRATION_WARNING_SOON" = "Deze versie van Signal verloopt op %1$@. Werk Signal bij om berichten te blijven sturen.";
 
 /* Label warning the user that the app will expire today. */
-"EXPIRATION_WARNING_TODAY" = "Deze versie van Signal verloopt vandaag. Update om berichten te blijven sturen.";
+"EXPIRATION_WARNING_TODAY" = "Deze versie van Signal verloopt vandaag. Werk Signal bij om berichten te blijven sturen.";
 
 /* action sheet header when re-sending message which failed because of an invalid key signature */
-"FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE" = "Kan bericht niet verzenden omdat %1$@ Signal moet updaten en openen.";
+"FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE" = "Kan bericht niet verzenden omdat %1$@ Signal moet bijwerken en openen.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Te veel fouten bij dit contact. Probeer het later opnieuw.";
@@ -2702,16 +2702,16 @@
 "GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Nieuw bericht!";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "Maak een begin";
+"GET_STARTED_BANNER_TITLE" = "Aan de slag";
 
 /* 'Get Started' button directing users to appearance */
 "GET_STARTED_CARD_APPEARANCE" = "Uiterlijk";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "Profielfoto toevoegen";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Profielfoto";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Vrienden uitnodigen";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Uitnodigen";
 
 /* 'Get Started' button directing users to create a group */
 "GET_STARTED_CARD_NEW_GROUP" = "Nieuwe groep";
@@ -2993,10 +2993,10 @@
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ heeft beheerdersgoedkeuring van nieuwe leden ingeschakeld voor de groepslink.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the name of the member. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%1$@ personen kunnen door jou niet direct aan de groep worden toegevoerd, vanwege de voorkeuren welke ze voor zichzelf hebben ingesteld. Ze zijn uitgenodigd om lid te worden van de groep, en ze zullen geen groepsberichten ontvangen totdat ze de uitnodiging geaccepteerd hebben.";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%1$@ personen kunnen door jou niet direct aan de groep worden toegevoegd. Ze zijn uitgenodigd om lid te worden van de groep, en ze zullen geen groepsberichten ontvangen totdat ze de uitnodiging geaccepteerd hebben.";
 
 /* Message for an alert indicating that some members were invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Deze personen kunnen door jou niet direct aan de groep worden toegevoerd, vanwege de voorkeuren welke ze voor zichzelf hebben ingesteld. Ze zijn uitgenodigd om lid te worden van de groep, en ze zullen geen groepsberichten ontvangen totdat ze de uitnodiging geaccepteerd hebben.";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Deze personen kunnen door jou niet direct aan de groep worden toegevoegd. Ze zijn uitgenodigd om lid te worden van de groep, en ze zullen geen groepsberichten ontvangen totdat ze de uitnodiging geaccepteerd hebben.";
 
 /* Message indicating that 'announcement-only' mode was disabled. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "De groepsinstellingen zijn aangepast om alle groepsleden de mogelijkheid te geven om berichten te verzenden en oproepen te beginnen.";
@@ -4103,7 +4103,7 @@
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "Je zult deze groep verlaten en niet langer berichten of meldingen ontvangen.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "%1$@ blokkeren en verwijderen?";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "%1$@ blokkeren en verlaten?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Verwijderen";
@@ -5207,7 +5207,7 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Naamloos album";
 
 /* Pressing this button pins a thread */
-"PIN_ACTION" = "Vastprikken";
+"PIN_ACTION" = "Vastzetten";
 
 /* Error body indicating that the attempt to change a PIN failed. */
 "PIN_CHANGE_ERROR_MESSAGE" = "Je nieuwe pincode kan niet worden aangemaakt. Je oude pincode is al wel ongeldig geworden. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
@@ -5273,7 +5273,7 @@
 "PIN_CREATION_PIN_PROGRESS" = "Pincode aan het aanmaken…";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Zolang je telefoonnummer nog voor dit apparaat geregistreerd staat kun je je pincode nog wijzigen.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Zolang je telefoonnummer voor dit apparaat geregistreerd staat kun je je pincode nog wijzigen.";
 
 /* Action of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Uitschakelen";
@@ -5354,10 +5354,10 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "Je pincode moet uit ten minste 4 cijfers bestaan.";
 
 /* An explanation that you have already pinned the maximum number of conversations. */
-"PINNED_CONVERSATION_LIMIT" = "Je kunt niet meer dan 4 chats vastprikken.";
+"PINNED_CONVERSATION_LIMIT" = "Je kunt niet meer dan 4 chats vastzetten.";
 
 /* The title for pinned conversation section on the conversation list */
-"PINNED_SECTION_TITLE" = "Vastgeprikt";
+"PINNED_SECTION_TITLE" = "Vastgezet";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_ACTION" = "Pincode aanmaken";
@@ -5693,10 +5693,10 @@
 "REGISTRATION_BODY" = "Opnieuw registreren voor pushmeldingen is mislukt.";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the action button on that alert. */
-"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "Updaten";
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION" = "Bijwerken";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the description text on that alert. */
-"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "Update naar de nieuwste versie van Signal om door te gaan met de registratie.";
+"REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION" = "Werk bij naar de nieuwste versie van Signal om door te gaan met de registratie.";
 
 /* During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the title on that alert. */
 "REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE" = "Update vereist";
@@ -6059,7 +6059,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Ik heb de Signal-app niet op mij telefoon…";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Ga naar de app-winkel op je telefoon, installeer Signal en voltooi de registratie op je telefoon. Daarna kun je je iPad koppelen aan hetzelfde Signal-account.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Ga naar de App Store op je telefoon, installeer Signal en voltooi de registratie op je telefoon. Daarna kun je je iPad koppelen aan hetzelfde Signal-account.";
 
 /* alert title */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Installeer Signal op je telefoon";
@@ -6161,7 +6161,7 @@
 "SEPA_DONATION_NAME_PLACEHOLDER" = "Naam rekeninghouder";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal maakt gebruik van end-to-end encryptie en het kan nodig zijn om je chatsessie soms te vernieuwen. Dit heeft geen invloed op de beveiliging van je chat, maar je hebt misschien een bericht van dit contact gemist en je kunt ze vragen het opnieuw te sturen.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal maakt gebruik van end-to-end-versleuteling en het kan nodig zijn om je chatsessie soms te vernieuwen. Dit heeft geen invloed op de beveiliging van je chat, maar je hebt misschien een bericht van dit contact gemist en je kunt ze vragen het opnieuw te sturen.";
 
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "Chatsessie vernieuwd";

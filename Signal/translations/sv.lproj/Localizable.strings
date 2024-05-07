@@ -2708,10 +2708,10 @@
 "GET_STARTED_CARD_APPEARANCE" = "Utseende";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "Lägg till foto";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Välj foto";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Bjud in vänner";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Bjud in";
 
 /* 'Get Started' button directing users to create a group */
 "GET_STARTED_CARD_NEW_GROUP" = "Ny grupp";

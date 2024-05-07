@@ -2702,10 +2702,10 @@
 "GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "새 메시지";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "시작하기";
+"GET_STARTED_BANNER_TITLE" = "시작";
 
 /* 'Get Started' button directing users to appearance */
-"GET_STARTED_CARD_APPEARANCE" = "모양";
+"GET_STARTED_CARD_APPEARANCE" = "디자인";
 
 /* 'Get Started' button direction users to avatar builder */
 "GET_STARTED_CARD_AVATAR_BUILDER" = "사진 추가";

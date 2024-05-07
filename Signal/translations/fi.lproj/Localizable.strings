@@ -2702,7 +2702,7 @@
 "GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Uusi viesti!";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "Aloittaminen";
+"GET_STARTED_BANNER_TITLE" = "Aloita";
 
 /* 'Get Started' button directing users to appearance */
 "GET_STARTED_CARD_APPEARANCE" = "Ulkoasu";
@@ -2711,7 +2711,7 @@
 "GET_STARTED_CARD_AVATAR_BUILDER" = "Lisää kuva";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Kutsu ystäviä";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Kutsu muita";
 
 /* 'Get Started' button directing users to create a group */
 "GET_STARTED_CARD_NEW_GROUP" = "Uusi ryhmä";

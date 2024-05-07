@@ -1100,7 +1100,7 @@
 "CONFIRM_LEAVE_GROUP_TITLE" = "Ви дійсно хочете вийти?";
 
 /* Button text */
-"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Привязати новий пристрій";
+"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Зв'язати новий пристрій";
 
 /* Indicates that the user has blocked the other account. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "Користувача %1$@ заблоковано";
@@ -1265,7 +1265,7 @@
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Спробувати знову";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Ваш журнал налагодження допоможе нам швидше усунути проблему. Надсилання журналу необов'язкове.";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Ваш журнал налагодження допоможе нам швидше усунути проблему. Надсилати журнал необов'язково.";
 
 /* Alert title */
 "CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Надіслати журнал налагодження?";
@@ -1331,16 +1331,16 @@
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Вимкнути сповіщення чату на…";
 
 /* 1 day */
-"CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 день";
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 день";
 
 /* 1 hour */
-"CONVERSATION_MUTE_CONFIRMATION_OPTION_1H" = "1 година";
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1H" = "1 година";
 
 /* 1 week */
-"CONVERSATION_MUTE_CONFIRMATION_OPTION_1W" = "1 тиждень";
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1W" = "1 тиждень";
 
 /* 8 hours */
-"CONVERSATION_MUTE_CONFIRMATION_OPTION_8H" = "8 годин";
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_8H" = "8 годин";
 
 /* Always */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "Завжди";
@@ -1466,7 +1466,7 @@
 "CONVERSATION_SETTINGS_MUTE_BUTTON" = "не сповіщати";
 
 /* Label for button to mute a thread for eight hours. */
-"CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 годин";
+"CONVERSATION_SETTINGS_MUTE_EIGHT_HOUR_ACTION" = "8 годин";
 
 /* label for 'mute thread' cell in conversation settings */
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "Не сповіщати";
@@ -1475,16 +1475,16 @@
 "CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Сповіщення ввімкнено";
 
 /* Label for button to mute a thread for a day. */
-"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "1 день";
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "1 день";
 
 /* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "1 година";
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "1 година";
 
 /* Label for button to mute a thread for a minute. */
-"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "1 хвилина";
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "1 хвилина";
 
 /* Label for button to mute a thread for a week. */
-"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "1 тиждень";
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "1 тиждень";
 
 /* Indicates that this thread is muted forever. */
 "CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Завжди";
@@ -1958,13 +1958,13 @@
 "DISAPPEARING_MESSAGES_HINT" = "Тепер повідомлення зникають через %1$@";
 
 /* The unit for a number of hours */
-"DISAPPEARING_MESSAGES_HOURS" = "годин";
+"DISAPPEARING_MESSAGES_HOURS" = "години";
 
 /* Accessibility label for disappearing messages */
 "DISAPPEARING_MESSAGES_LABEL" = "Налаштування тимчасових повідомлень";
 
 /* The unit for a number of minutes */
-"DISAPPEARING_MESSAGES_MINUTES" = "хвилин";
+"DISAPPEARING_MESSAGES_MINUTES" = "хвилини";
 
 /* The unit for a number of seconds */
 "DISAPPEARING_MESSAGES_SECONDS" = "секунди";
@@ -2414,7 +2414,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "Змінити повідомлення";
 
 /* Error message to display to user when a message is too old to edit */
-"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Вносити зміни можна протягом 24 годин із моменту надсилання повідомлення.";
+"EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Редагувати повідомлення можна лише протягом 24 годин з моменту надсилання.";
 
 /* Edit failed for an unexpected reason */
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
@@ -3794,7 +3794,7 @@
 "LINK_NEW_DEVICE_SUBTITLE" = "Відскануйте QR-код щоб прив'язати новий пристрій.";
 
 /* Navigation title when scanning QR code to add new device. */
-"LINK_NEW_DEVICE_TITLE" = "Прив’язати новий пристрій";
+"LINK_NEW_DEVICE_TITLE" = "Зв'язати новий пристрій";
 
 /* Label for link previews with an unknown host. */
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Попередній вигляд вебсторінки";
@@ -5045,7 +5045,7 @@
 "PAYMENTS_UNKNOWN_PAYMENT" = "Хибний платіж";
 
 /* The alert message if user tries to exit a task without saving changes. */
-"PENDING_CHANGES_ACTION_SHEET_MESSAGE" = "Ви хочете відхилити ці зміни?";
+"PENDING_CHANGES_ACTION_SHEET_MESSAGE" = "Відхилити ці зміни?";
 
 /* The alert title if user tries to exit a task without saving changes. */
 "PENDING_CHANGES_ACTION_SHEET_TITLE" = "Незбережені зміни";
@@ -5330,7 +5330,7 @@
 "PIN_REMINDER_MEGAPHONE_BODY" = "Іноді ми будемо просити вас підтвердити ваш PIN-код, щоб ви його не забували.";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
-"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Ми нагадаємо вам знову через кілька днів.";
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Через кілька днів ми нагадаємо знов.";
 
 /* Title for PIN reminder megaphone */
 "PIN_REMINDER_MEGAPHONE_TITLE" = "Підтвердіть свій PIN-код Signal";
@@ -5339,10 +5339,10 @@
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Ми нагадаємо знову завтра.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Ми нагадаємо знов через кілька тижнів.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Через кілька тижнів ми нагадаємо знов.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
-"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Ми нагадаємо знову через тижнь.";
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Через тиждень ми нагадаємо знов.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "Невірний PIN-код, спробуйте ще раз.";
@@ -6347,7 +6347,7 @@
 "SETTINGS_DATA_MEDIA_AUTO_DOWNLOAD_RESET" = "Скинути налаштування автозавантаження";
 
 /* Item title for the sent media quality setting */
-"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Якість відправлених медіа";
+"SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Якість медіафайлів, які ви надсилаєте";
 
 /* Section footer for the sent media section in data settings */
 "SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Оберіть якість відправлених фото та відео.";
@@ -6395,7 +6395,7 @@
 "SETTINGS_HELP" = "Допомога";
 
 /* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "Запросити ваших друзів";
+"SETTINGS_INVITE_TITLE" = "Запросити друзів";
 
 /* Label for settings view that allows user to change the chat color and wallpaper. */
 "SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Колір чату та шпалери";
@@ -7478,19 +7478,19 @@
 "STORY_SENDING" = "Надсилаємо…";
 
 /* First bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Почали з ними розмову";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "ви почали з ними чат; або";
 
 /* Second bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Схвалили запит на повідомлення";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "ви схвалили їхній запит на повідомлення; або";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Вони є в контактах вашого телефона";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "вони є в контактах вашого телефона.";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Ваші контакти можуть бачити ваше ім'я та фото, а також усе, що ви викладаєте в «Моїй історії», якщо ви її не приховали.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Ваші контакти бачать ваше ім'я та фото, а також усе, що ви викладаєте в «Моїй історії», якщо ви її не приховали.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Контакти Signal</bold> — це люди, яким ви вирішили довіряти одним із таких способів:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Контакти Signal</bold> — це люди, яким ви довіряєте. Ця довіра виявляється в тому, що:";
 
 /* Label for the stories section of the settings view */
 "STORY_SETTINGS_TITLE" = "Історії";
@@ -7721,43 +7721,43 @@
 "THREAD_MERGE_PHONE_NUMBER" = "Вашу історію повідомлень із користувачем %1$@ і номером %2$@ було об'єднано.";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS" = "%1$@ днів";
+"TIME_AMOUNT_DAYS" = "%1$@ днів";
 
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%1$@д";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS" = "%1$@ годин";
+"TIME_AMOUNT_HOURS" = "%1$@ годин";
 
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%1$@г";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES" = "%1$@ хвилин";
+"TIME_AMOUNT_MINUTES" = "%1$@ хвилин";
 
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%1$@х";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS" = "%1$@ секунд";
+"TIME_AMOUNT_SECONDS" = "%1$@ секунд";
 
 /* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%1$@с";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_DAY" = "%1$@ день";
+"TIME_AMOUNT_SINGLE_DAY" = "%1$@ день";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_HOUR" = "%1$@ година";
+"TIME_AMOUNT_SINGLE_HOUR" = "%1$@ годину";
 
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_MINUTE" = "%1$@ хвилина";
+"TIME_AMOUNT_SINGLE_MINUTE" = "%1$@ хвилину";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_WEEK" = "%1$@ тиждень";
+"TIME_AMOUNT_SINGLE_WEEK" = "%1$@ тиждень";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS" = "%1$@ тижнів";
+"TIME_AMOUNT_WEEKS" = "%1$@ тижні";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%1$@т";
@@ -7997,10 +7997,10 @@
 "USERNAME_SELECTION_INVALID_DISCRIMINATOR_ERROR_MESSAGE" = "Недійсне ім'я користувача, введіть мінімум 2 цифри";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Завдяки цим цифрам ваше ім'я користувача конфіденційне, а ви не отримуєте небажаних повідомлень. Повідомляйте своє ім'я користувача тільки тим людям і групам, з якими хочете спілкуватися. Якщо змінити ім'я користувача, цифри також зміняться.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Завдяки цифрам ваше ім'я користувача конфіденційне, а ви не отримуєте небажаних повідомлень. Повідомляйте своє ім'я користувача тільки тим людям і групам, з якими хочете спілкуватися. Якщо змінити ім'я користувача, цифри також зміняться.";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "Що означають ці цифри?";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "Що це за цифри?";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
 "USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Це ім'я користувача недоступне";

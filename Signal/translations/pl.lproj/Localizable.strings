@@ -2708,10 +2708,10 @@
 "GET_STARTED_CARD_APPEARANCE" = "Wygląd";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "Dodaj zdjęcie";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Dodaj foto";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Zaproś znajomych";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Zaproś";
 
 /* 'Get Started' button directing users to create a group */
 "GET_STARTED_CARD_NEW_GROUP" = "Nowa grupa";

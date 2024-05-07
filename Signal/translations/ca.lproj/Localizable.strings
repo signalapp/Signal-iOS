@@ -2702,16 +2702,16 @@
 "GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Missatge nou!";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "Comenceu";
+"GET_STARTED_BANNER_TITLE" = "Començar";
 
 /* 'Get Started' button directing users to appearance */
-"GET_STARTED_CARD_APPEARANCE" = "Aparença";
+"GET_STARTED_CARD_APPEARANCE" = "Disseny";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "Afegiu-hi una fotografia";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Afegir foto";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Convideu-hi amistats";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Afegir amics";
 
 /* 'Get Started' button directing users to create a group */
 "GET_STARTED_CARD_NEW_GROUP" = "Grup nou";

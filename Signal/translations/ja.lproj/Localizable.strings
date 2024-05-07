@@ -2705,10 +2705,10 @@
 "GET_STARTED_BANNER_TITLE" = "始めましょう";
 
 /* 'Get Started' button directing users to appearance */
-"GET_STARTED_CARD_APPEARANCE" = "デザイン";
+"GET_STARTED_CARD_APPEARANCE" = "外観";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "画像を追加";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "画像を追加する";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "友達を招待する";

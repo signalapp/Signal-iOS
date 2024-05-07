@@ -2708,10 +2708,10 @@
 "GET_STARTED_CARD_APPEARANCE" = "كۆرۈنۈش";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "رەسىم قوش";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "رەسىم قوشۇش";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "دوستلىرىڭىزنى تەكلىپ قىلىڭ";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "دوست تەكلىپى";
 
 /* 'Get Started' button directing users to create a group */
 "GET_STARTED_CARD_NEW_GROUP" = "يېڭى گۇرۇپپا";

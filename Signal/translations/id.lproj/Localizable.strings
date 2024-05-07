@@ -2702,13 +2702,13 @@
 "GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Pesan Baru!";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "Memulai";
+"GET_STARTED_BANNER_TITLE" = "Mulai";
 
 /* 'Get Started' button directing users to appearance */
-"GET_STARTED_CARD_APPEARANCE" = "Penampilan";
+"GET_STARTED_CARD_APPEARANCE" = "Tampilan";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "Tambahkan Foto";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Tambah Foto";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Undang teman";

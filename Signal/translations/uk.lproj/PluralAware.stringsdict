@@ -308,13 +308,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d хвилину тому</string>
+			<string>%1$d хвилину тому</string>
 			<key>few</key>
-			<string>%1$d хвилини тому</string>
+			<string>%1$d хвилини тому</string>
 			<key>many</key>
-			<string>%1$d хвилин тому</string>
+			<string>%1$d хвилин тому</string>
 			<key>other</key>
-			<string>%1$d хвилини тому</string>
+			<string>%1$d хвилини тому</string>
 		</dict>
 	</dict>
 	<key>DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d</key>
@@ -608,7 +608,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d учасник групи має таке саме ім&apos;я.</string>
+			<string>%1$d учасник групи має однакові імена.</string>
 			<key>few</key>
 			<string>%1$d учасники групи мають однакові імена.</string>
 			<key>many</key>
@@ -688,7 +688,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d учасник групи має таке саме ім&apos;я. Перегляньте учасника або вчиніть з ним як пропонується.</string>
+			<string>%1$d учасник групи має однакові імена. Перегляньте учасників або вчиніть з ними як пропонується.</string>
 			<key>few</key>
 			<string>%1$d учасники групи мають однакові імена. Перегляньте учасників або вчиніть з ними як пропонується.</string>
 			<key>many</key>

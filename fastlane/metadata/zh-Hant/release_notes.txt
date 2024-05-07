@@ -1,1 +1,2 @@
-• Now you can react with any emoji during a Signal call. Smile even if your camera is off, share a heart if you love what you're hearing, or vote for sushi instead of pizza without saying a word. And you'll even see an animation of everyone's emojional outburst if enough people in the call react with the same emoji all at once.
+• 現在，你可以在 Signal 通話期間使用任何表情符號傳送心情回應。就算鏡頭沒開，你也可以傳送微笑；如果聽到喜歡的內容，就送出一顆心吧；或者不用開口，也可以放棄披薩改投壽司一票。如果通話中有夠多的人同時使用一樣的表情符號傳送心情回應，你甚至會看到每個人表情符號大爆發的動畫。
+

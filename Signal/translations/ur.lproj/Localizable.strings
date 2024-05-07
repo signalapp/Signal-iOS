@@ -2702,16 +2702,16 @@
 "GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "نیا پیغام!";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "شروع کرتے ہیں";
+"GET_STARTED_BANNER_TITLE" = "شروع کریں";
 
 /* 'Get Started' button directing users to appearance */
-"GET_STARTED_CARD_APPEARANCE" = "ظہور ہونا";
+"GET_STARTED_CARD_APPEARANCE" = "رنگ روپ";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "تصویر لگاو";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "تصویر لگائیں";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "دوستوں کو مدعو کریں";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "دوست بلائیں";
 
 /* 'Get Started' button directing users to create a group */
 "GET_STARTED_CARD_NEW_GROUP" = "نیا گروپ";

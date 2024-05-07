@@ -2702,10 +2702,10 @@
 "GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "มีข้อความใหม่!";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "เริ่มต้น";
+"GET_STARTED_BANNER_TITLE" = "เริ่มต้นใช้งาน";
 
 /* 'Get Started' button directing users to appearance */
-"GET_STARTED_CARD_APPEARANCE" = "หน้าตา";
+"GET_STARTED_CARD_APPEARANCE" = "ลักษณะ";
 
 /* 'Get Started' button direction users to avatar builder */
 "GET_STARTED_CARD_AVATAR_BUILDER" = "เพิ่มรูปภาพ";

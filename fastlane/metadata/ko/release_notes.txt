@@ -1,1 +1,1 @@
-• Now you can react with any emoji during a Signal call. Smile even if your camera is off, share a heart if you love what you're hearing, or vote for sushi instead of pizza without saying a word. And you'll even see an animation of everyone's emojional outburst if enough people in the call react with the same emoji all at once.
+• 이제 Signal 통화 중에 모든 이모지를 사용하여 반응할 수 있습니다.

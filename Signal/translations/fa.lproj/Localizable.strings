@@ -2705,7 +2705,7 @@
 "GET_STARTED_BANNER_TITLE" = "شروع";
 
 /* 'Get Started' button directing users to appearance */
-"GET_STARTED_CARD_APPEARANCE" = "ظاهر برنامه";
+"GET_STARTED_CARD_APPEARANCE" = "نمای ظاهری";
 
 /* 'Get Started' button direction users to avatar builder */
 "GET_STARTED_CARD_AVATAR_BUILDER" = "افزودن عکس";

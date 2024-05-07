@@ -2708,7 +2708,7 @@
 "GET_STARTED_CARD_APPEARANCE" = "Diện mạo";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "Thêm hình ảnh";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Thêm ảnh";
 
 /* 'Get Started' button directing users to invite friends */
 "GET_STARTED_CARD_INVITE_FRIENDS" = "Mời bạn bè";

@@ -2702,19 +2702,19 @@
 "GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Teachtaireacht Nua!";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "Tosaigh";
+"GET_STARTED_BANNER_TITLE" = "Tosaigh air";
 
 /* 'Get Started' button directing users to appearance */
 "GET_STARTED_CARD_APPEARANCE" = "Cuma";
 
 /* 'Get Started' button direction users to avatar builder */
-"GET_STARTED_CARD_AVATAR_BUILDER" = "Cuir grianghraf leis";
+"GET_STARTED_CARD_AVATAR_BUILDER" = "Cuir leis";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Tabhair cuirí do chairde";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Cuirí cairde";
 
 /* 'Get Started' button directing users to create a group */
-"GET_STARTED_CARD_NEW_GROUP" = "Baicle nua";
+"GET_STARTED_CARD_NEW_GROUP" = "Grúpa nua";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Níorbh fhéidir an GIF a fháil. Deimhnigh go bhfuil tú ar líne.";
