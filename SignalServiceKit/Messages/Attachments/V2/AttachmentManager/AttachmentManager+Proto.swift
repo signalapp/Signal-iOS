@@ -55,7 +55,7 @@ extension AttachmentManager {
             switch stream.contentType {
             case .file, .audio:
                 break
-            case .image(let pixelSize), .animatedImage(let pixelSize), .video(_, let pixelSize):
+            case .image(let pixelSize), .animatedImage(let pixelSize), .video(_, let pixelSize, _):
                 setMediaSizePixels(_: pixelSize)
             }
         } else {

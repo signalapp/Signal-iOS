@@ -20,7 +20,9 @@ extension Attachment {
         case file
 
         case image(pixelSize: CGSize)
-        case video(duration: TimeInterval, pixelSize: CGSize)
+        /// `stillFrameFilePath` points at an image file encrypted with the ``Attachment``'s `encryptionKey`.
+        /// If nil, no still frame is available and no attempt should be made to generate a new one.
+        case video(duration: TimeInterval, pixelSize: CGSize, stillFrameFilePath: String?)
         case animatedImage(pixelSize: CGSize)
         /// `waveformFilePath` points at the ``AudioWaveform`` file encrypted
         /// with the ``Attachment``'s `encryptionKey`. If nil, no waveform is available

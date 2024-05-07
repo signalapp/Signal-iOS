@@ -121,6 +121,8 @@ public class OWSMediaUtils: NSObject {
         return try thumbnail(forVideo: asset, maxSizePixels: maxSizePixels)
     }
 
+    public static let videoStillFrameMimeType = MimeType.imageJpeg
+
     public class func thumbnail(forVideo asset: AVAsset, maxSizePixels: CGSize) throws -> UIImage {
         let generator = AVAssetImageGenerator(asset: asset)
         generator.maximumSize = maxSizePixels
@@ -129,6 +131,15 @@ public class OWSMediaUtils: NSObject {
         let cgImage = try generator.copyCGImage(at: time, actualTime: nil)
         let image = UIImage(cgImage: cgImage, scale: UIScreen.main.scale, orientation: .up)
         return image
+    }
+
+    public class func thumbnailData(forVideo asset: AVAsset, maxSizePixels: CGSize) throws -> Data {
+        let image = try thumbnail(forVideo: asset, maxSizePixels: maxSizePixels)
+        owsAssertDebug(Self.videoStillFrameMimeType == MimeType.imageJpeg)
+        guard let data = image.jpegData(compressionQuality: 0.8) else {
+            throw OWSAssertionError("Unable to serialize image!")
+        }
+        return data
     }
 
     @objc

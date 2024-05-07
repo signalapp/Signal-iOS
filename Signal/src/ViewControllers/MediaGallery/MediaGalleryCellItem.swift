@@ -119,7 +119,7 @@ class MediaGalleryCellItemPhotoVideo: PhotoGridItem {
             case .file, .image, .animatedImage, .audio:
                 owsFailDebug("Non video type!")
                 return .value(0)
-            case .video(let duration, _):
+            case .video(let duration, _, _):
                 return .value(duration)
             }
         }

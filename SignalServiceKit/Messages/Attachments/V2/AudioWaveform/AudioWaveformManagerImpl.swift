@@ -34,6 +34,7 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
                     throw OWSAssertionError("Invalid attachment type!")
                 }
             case .audio(_, let waveformFilePath):
+                // TODO: convert relative file path to absolute
                 guard let waveformFilePath else {
                     return Task {
                         // We could not generate a waveform at write time; don't retry now.

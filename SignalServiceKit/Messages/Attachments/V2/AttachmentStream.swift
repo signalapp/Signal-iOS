@@ -101,9 +101,17 @@ public class AttachmentStream {
             throw OWSAssertionError("Requesting image from non-visual attachment")
         case .image, .animatedImage:
             return try UIImage.from(self)
-        case .video(_, let pixelSize):
-            let asset = try AVAsset.from(self)
-            return try OWSMediaUtils.thumbnail(forVideo: asset, maxSizePixels: pixelSize)
+        case .video(_, _, let stillImageFilePath):
+            // TODO: convert relative file path to absolute
+            guard let stillImageFilePath else {
+                throw OWSAssertionError("Still image unavailable for video")
+            }
+            return try UIImage.fromEncryptedFile(
+                at: URL(fileURLWithPath: stillImageFilePath),
+                encryptionKey: info.encryptionKey,
+                plaintextLength: info.unencryptedByteCount,
+                mimeType: OWSMediaUtils.videoStillFrameMimeType.rawValue
+            )
         }
     }
 
