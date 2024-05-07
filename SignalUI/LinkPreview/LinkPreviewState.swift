@@ -317,7 +317,7 @@ public class LinkPreviewSent: LinkPreviewState {
                 return pixelSize.compute()
             case .animatedImage(let pixelSize):
                 return pixelSize.compute()
-            case .audio, .video, .file:
+            case .audio, .video, .file, .invalid:
                 return .zero
             }
         }()

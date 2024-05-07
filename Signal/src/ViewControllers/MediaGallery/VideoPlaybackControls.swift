@@ -149,7 +149,7 @@ class VideoPlaybackControlView: UIView {
             switch mediaItem.attachmentStream.attachmentStream.concreteStreamType {
             case .v2(let attachmentStream):
                 switch attachmentStream.contentType {
-                case .file, .image, .animatedImage, .audio:
+                case .file, .invalid, .image, .animatedImage, .audio:
                     break
                 case .video(let duration, _, _):
                     updateDuration(duration)

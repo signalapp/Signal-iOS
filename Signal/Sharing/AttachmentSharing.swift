@@ -159,21 +159,25 @@ public class ShareableAttachment: NSObject, UIActivityItemSource {
             return
         }
 
-        let decryptedFileUrl = try attachmentStream.makeDecryptedCopy()
-
         switch attachmentStream.contentType {
         case .audio, .file:
             return nil
         case .image, .animatedImage:
-            break
+            shareType = .decryptedFileURL(try attachmentStream.makeDecryptedCopy())
         case .video:
+            let decryptedFileUrl = try attachmentStream.makeDecryptedCopy()
             // Some videos don't support sharing.
             guard UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(decryptedFileUrl.path) else {
                 return nil
             }
+            self.shareType = .decryptedFileURL(decryptedFileUrl)
+        case .invalid:
+            // Let the user try to share as long as its a visual mime type.
+            guard MimeTypeUtil.isSupportedVisualMediaMimeType(attachmentStream.mimeType) else {
+                return nil
+            }
+            shareType = .decryptedFileURL(try attachmentStream.makeDecryptedCopy())
         }
-
-        self.shareType = .decryptedFileURL(decryptedFileUrl)
     }
 
     // HACK: If this is an image we want to provide the image object to

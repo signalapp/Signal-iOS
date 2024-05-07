@@ -9,6 +9,10 @@ import Foundation
 public typealias TSResourceContentTypeRaw = Attachment.ContentTypeRaw
 
 public enum TSResourceContentType {
+    /// MIME type indicated it should be some other non-file type but validation failed.
+    /// Inspect ``TSResource/mimeType`` to determine what type it tried to be.
+    case invalid
+
     /// Some arbitrary file. Used when no other case applies.
     case file
 
@@ -31,6 +35,8 @@ extension TSResourceContentType {
 
     public var raw: TSResourceContentTypeRaw {
         switch self {
+        case .invalid:
+            return .invalid
         case .file:
             return .file
         case .image:

@@ -97,7 +97,7 @@ public class AttachmentStream {
 
     public func decryptedImage() throws -> UIImage {
         switch contentType {
-        case .file, .audio:
+        case .file, .invalid, .audio:
             throw OWSAssertionError("Requesting image from non-visual attachment")
         case .image, .animatedImage:
             return try UIImage.from(self)
@@ -117,7 +117,7 @@ public class AttachmentStream {
 
     public func decryptedYYImage() throws -> YYImage {
         switch contentType {
-        case .file, .audio, .video:
+        case .file, .invalid, .audio, .video:
             throw OWSAssertionError("Requesting image from non-visual attachment")
         case .image, .animatedImage:
             return try YYImage.yyImage(from: self)
@@ -126,7 +126,7 @@ public class AttachmentStream {
 
     public func decryptedAVAsset() throws -> AVAsset {
         switch contentType {
-        case .file, .image, .animatedImage:
+        case .file, .invalid, .image, .animatedImage:
             throw OWSAssertionError("Requesting AVAsset from incompatible attachment")
         case .video, .audio:
             return try AVAsset.from(self)

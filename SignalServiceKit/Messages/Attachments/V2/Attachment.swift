@@ -22,8 +22,8 @@ public class Attachment {
     public let blurHash: String?
 
     /// MIME type we get from the attachment's sender, known even before downloading the attachment.
-    /// **If undownloaded, unverified and may not match the type of the actual bytes.**
-    /// Validated once downloaded.
+    /// **If undownloaded, unverified (spoofable by the sender) and may not match the type of the actual bytes.**
+    /// If downloaded, check ``AttachmentStream/contentType`` for a validated representation of the type..
     public let mimeType: String
 
     /// Information for the "stream" (the attachment downloaded and locally available).

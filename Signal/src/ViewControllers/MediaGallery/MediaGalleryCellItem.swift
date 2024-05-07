@@ -116,7 +116,7 @@ class MediaGalleryCellItemPhotoVideo: PhotoGridItem {
             )
         case .v2(let attachment):
             switch attachment.contentType {
-            case .file, .image, .animatedImage, .audio:
+            case .file, .invalid, .image, .animatedImage, .audio:
                 owsFailDebug("Non video type!")
                 return .value(0)
             case .video(let duration, _, _):

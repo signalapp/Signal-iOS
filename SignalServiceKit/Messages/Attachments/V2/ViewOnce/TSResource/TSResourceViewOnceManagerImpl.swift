@@ -83,7 +83,7 @@ public class TSResourceViewOnceManagerImpl: TSResourceViewOnceManager {
                 viewOnceType = .loopingVideo
             case .video:
                 viewOnceType = .video
-            case .audio, .file:
+            case .audio, .file, .invalid:
                 owsFailDebug("Unexpected content type.")
                 return
             }

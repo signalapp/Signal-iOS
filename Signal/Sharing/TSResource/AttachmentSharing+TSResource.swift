@@ -96,6 +96,11 @@ public class ShareableTSAttachment: NSObject, UIActivityItemSource {
             } else {
                 return nil
             }
+        case .invalid:
+            // Let the user try to share as long as its a visual mime type.
+            guard MimeTypeUtil.isSupportedVisualMediaMimeType(attachmentStream.mimeType) else {
+                return nil
+            }
         }
     }
 

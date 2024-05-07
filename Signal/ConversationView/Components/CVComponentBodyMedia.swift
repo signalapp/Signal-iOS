@@ -33,7 +33,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 if !MimeTypeUtil.isSupportedImageMimeType(item.attachment.attachment.attachment.mimeType) {
                     return false
                 }
-            case .video, .audio, .file:
+            case .video, .audio, .file, .invalid:
                 return false
             }
         }

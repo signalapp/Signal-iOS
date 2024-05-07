@@ -6,16 +6,24 @@
 import Foundation
 
 extension Attachment {
+    /// WARNING: these values are serialized to the database; changing them is dangerous.
     public enum ContentTypeRaw: Int {
+        /// MIME type indicated it should be some other non-file type but validation failed.
+        /// Inspect ``Attachment/mimeType`` to determine what type it tried to be.
+        case invalid = 0
         /// Some arbitrary file. Used when no other case applies.
-        case file = 0
-        case image = 1
-        case video = 2
-        case animatedImage = 3
-        case audio = 4
+        case file = 1
+        case image = 2
+        case video = 3
+        case animatedImage = 4
+        case audio = 5
     }
 
     public enum ContentType {
+        /// MIME type indicated it should be some other non-file type but validation failed.
+        /// Inspect ``Attachment/mimeType`` to determine what type it tried to be.
+        case invalid
+
         /// Some arbitrary file. Used when no other case applies.
         case file
 
@@ -82,6 +90,8 @@ extension Attachment.ContentType {
 
     public var raw: Attachment.ContentTypeRaw {
         switch self {
+        case .invalid:
+            return .invalid
         case .file:
             return .file
         case .image:

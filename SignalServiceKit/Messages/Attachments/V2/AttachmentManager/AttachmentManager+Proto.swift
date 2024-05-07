@@ -53,7 +53,7 @@ extension AttachmentManager {
             builder.setSize(stream.unencryptedByteCount)
 
             switch stream.contentType {
-            case .file, .audio:
+            case .file, .invalid, .audio:
                 break
             case .image(let pixelSize), .animatedImage(let pixelSize), .video(_, let pixelSize, _):
                 setMediaSizePixels(_: pixelSize)

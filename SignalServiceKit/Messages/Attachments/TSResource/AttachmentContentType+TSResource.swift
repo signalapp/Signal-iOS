@@ -9,6 +9,8 @@ extension Attachment.ContentType {
 
     public var resourceType: TSResourceContentType {
         switch self {
+        case .invalid:
+            return .invalid
         case .file:
             return .file
         case .image(let pixelSize):

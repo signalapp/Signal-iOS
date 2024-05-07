@@ -29,7 +29,7 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
             return _audioWaveform(forAttachment: tsAttachmentStream, highPriority: highPriority)
         case .v2(let attachmentStream):
             switch attachmentStream.info.contentType {
-            case .file, .image, .video, .animatedImage:
+            case .file, .invalid, .image, .video, .animatedImage:
                 return Task {
                     throw OWSAssertionError("Invalid attachment type!")
                 }

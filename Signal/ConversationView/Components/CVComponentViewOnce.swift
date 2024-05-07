@@ -396,7 +396,7 @@ fileprivate extension CVComponentViewOnce {
         switch viewOnceState {
         case let .incomingAvailable(attachmentStream, _):
             switch attachmentStream.cachedContentType {
-            case .file, .audio:
+            case .file, .invalid, .audio:
                 owsFailDebug("Invalid view once type")
                 return .unknown
             case .image:

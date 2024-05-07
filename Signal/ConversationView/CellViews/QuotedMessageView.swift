@@ -211,7 +211,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
 
         var isAudioAttachment: Bool {
             switch quotedReplyModel.originalContent.attachmentCachedContentType {
-            case .file, .image, .video, .animatedImage:
+            case .file, .invalid, .image, .video, .animatedImage:
                 return false
             case .audio:
                 return true
@@ -226,7 +226,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
 
         var isVideoAttachment: Bool {
             switch quotedReplyModel.originalContent.attachmentCachedContentType {
-            case .file, .image, .audio, .animatedImage:
+            case .file, .invalid, .image, .audio, .animatedImage:
                 return false
             case .video:
                 return true

@@ -497,7 +497,7 @@ public class MediaViewAdapterSticker: NSObject, MediaViewAdapterSwift {
         switch attachmentStream.computeContentType() {
         case .image, .animatedImage:
             break
-        case .video, .audio, .file:
+        case .video, .audio, .file, .invalid:
             return Promise(error: ReusableMediaError.invalidMedia)
         }
         if shouldBeRenderedByYY {

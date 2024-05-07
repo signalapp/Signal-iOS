@@ -1348,7 +1348,7 @@ fileprivate extension CVComponentState.Builder {
                         fallthrough
                     }
                     mediaSizePixels = pixelSize
-                case .audio, .file:
+                case .audio, .file, .invalid:
                     Logger.warn("Filtering media with invalid size.")
                     mediaAlbumItems.append(CVMediaAlbumItem(
                         attachment: cvAttachment,

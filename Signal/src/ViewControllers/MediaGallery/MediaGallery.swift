@@ -87,7 +87,7 @@ class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
         switch attachmentStream.attachmentStream.cachedContentType {
         case .video:
             return  renderingFlag != .shouldLoop
-        case .file, .image, .animatedImage, .audio:
+        case .file, .invalid, .image, .animatedImage, .audio:
             return false
         case nil:
             return MimeTypeUtil.isSupportedVideoMimeType(mimeType) && renderingFlag != .shouldLoop
@@ -100,7 +100,7 @@ class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
             return true
         case .video:
             return  renderingFlag == .shouldLoop
-        case .file, .image, .audio:
+        case .file, .invalid, .image, .audio:
             return false
         case nil:
             return MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(mimeType) || renderingFlag == .shouldLoop
@@ -111,7 +111,7 @@ class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
         switch attachmentStream.attachmentStream.cachedContentType {
         case .image:
             return  true
-        case .file, .video, .animatedImage, .audio:
+        case .file, .invalid, .video, .animatedImage, .audio:
             return false
         case nil:
             return MimeTypeUtil.isSupportedImageMimeType(mimeType)
@@ -120,7 +120,7 @@ class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
 
     var imageSizePoints: CGSize {
         switch attachmentStream.attachmentStream.cachedContentType {
-        case .file, .audio, .video, nil:
+        case .file, .invalid, .audio, .video, nil:
             return .zero
         case .image(let pixelSize), .animatedImage(let pixelSize):
             guard let pixelSize = pixelSize.getCached() else { return .zero }

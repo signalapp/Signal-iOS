@@ -184,6 +184,18 @@ extension TSAttachmentStream: TSResourceStream {
             }
         }
 
+        // If we have a known mime type, and the isValid{type} value is set and false,
+        // we know its invalid.
+        if isValidVideoCached?.boolValue == false, MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
+            return .invalid
+        }
+        if isValidImageCached?.boolValue == false, MimeTypeUtil.isSupportedImageMimeType(mimeType) {
+            return .invalid
+        }
+        if isAnimatedCached?.boolValue == false, MimeTypeUtil.isSupportedMaybeAnimatedMimeType(mimeType) {
+            return .invalid
+        }
+
         // If we got this far no cached value was true.
         // But if they're all non-nil, we can return .file.
         // Otherwise we haven't checked (and cached) all the types
