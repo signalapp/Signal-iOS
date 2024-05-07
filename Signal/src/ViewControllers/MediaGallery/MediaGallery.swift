@@ -84,15 +84,38 @@ class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
     private var mimeType: String { attachmentStream.attachmentStream.mimeType }
 
     var isVideo: Bool {
-        return MimeTypeUtil.isSupportedVideoMimeType(mimeType) && renderingFlag != .shouldLoop
+        switch attachmentStream.attachmentStream.cachedContentType {
+        case .video:
+            return  renderingFlag != .shouldLoop
+        case .file, .image, .animatedImage, .audio:
+            return false
+        case nil:
+            return MimeTypeUtil.isSupportedVideoMimeType(mimeType) && renderingFlag != .shouldLoop
+        }
     }
 
     var isAnimated: Bool {
-        return MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(mimeType) || renderingFlag == .shouldLoop
+        switch attachmentStream.attachmentStream.cachedContentType {
+        case .animatedImage:
+            return true
+        case .video:
+            return  renderingFlag == .shouldLoop
+        case .file, .image, .audio:
+            return false
+        case nil:
+            return MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(mimeType) || renderingFlag == .shouldLoop
+        }
     }
 
     var isImage: Bool {
-        return MimeTypeUtil.isSupportedImageMimeType(mimeType)
+        switch attachmentStream.attachmentStream.cachedContentType {
+        case .image:
+            return  true
+        case .file, .video, .animatedImage, .audio:
+            return false
+        case nil:
+            return MimeTypeUtil.isSupportedImageMimeType(mimeType)
+        }
     }
 
     var imageSizePoints: CGSize {

@@ -1284,7 +1284,11 @@ fileprivate extension CVComponentState.Builder {
 
         var mediaAlbumItems = [CVMediaAlbumItem]()
         for attachment in mediaAttachments {
-            guard MimeTypeUtil.isSupportedVisualMediaMimeType(attachment.attachment.mimeType) else {
+            guard
+                // Use the validated content type and only fall back to the mime type.
+                (attachment.attachment.asResourceStream()?.cachedContentType)?.isVisualMedia
+                ?? MimeTypeUtil.isSupportedVisualMediaMimeType(attachment.attachment.mimeType)
+            else {
                 // Well behaving clients should not send a mix of visual media (like JPG) and non-visual media (like PDF's)
                 // Since we're not coped to handle a mix of media, return @[]
                 owsAssertDebug(mediaAlbumItems.count == 0)
@@ -1382,7 +1386,11 @@ fileprivate extension CVComponentState.Builder {
             }
         }
 
-        guard MimeTypeUtil.isSupportedAudioMimeType(attachment.attachment.mimeType) else {
+        guard
+            // Use the validated content type and only fall back to the mime type.
+            (attachment.attachment.asResourceStream()?.cachedContentType)?.isAudio
+            ?? MimeTypeUtil.isSupportedAudioMimeType(attachment.attachment.mimeType)
+        else {
             buildGenericAttachment()
             return
         }

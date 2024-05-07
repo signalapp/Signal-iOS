@@ -395,15 +395,27 @@ fileprivate extension CVComponentViewOnce {
     private var viewOnceMessageType: ViewOnceMessageType {
         switch viewOnceState {
         case let .incomingAvailable(attachmentStream, _):
-            let mimeType = attachmentStream.mimeType
-            if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
-                return .video
-            } else {
-                owsAssertDebug(
-                    MimeTypeUtil.isSupportedImageMimeType(mimeType)
-                    || MimeTypeUtil.isSupportedMaybeAnimatedMimeType(mimeType)
-                )
+            switch attachmentStream.cachedContentType {
+            case .file, .audio:
+                owsFailDebug("Invalid view once type")
+                return .unknown
+            case .image:
                 return .photo
+            case .video:
+                return .video
+            case .animatedImage:
+                return .photo
+            case nil:
+                let mimeType = attachmentStream.mimeType
+                if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
+                    return .video
+                } else {
+                    owsAssertDebug(
+                        MimeTypeUtil.isSupportedImageMimeType(mimeType)
+                        || MimeTypeUtil.isSupportedMaybeAnimatedMimeType(mimeType)
+                    )
+                    return .photo
+                }
             }
         case .unknown,
              .incomingExpired,

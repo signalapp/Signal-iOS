@@ -479,7 +479,8 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             let attachmentRef = DependenciesBridge.shared.tsResourceStore
                 .bodyMediaAttachments(for: nextMessage, tx: transaction.asV2Read).first,
             let attachment = attachmentRef.fetch(tx: transaction),
-            MimeTypeUtil.isSupportedAudioMimeType(attachment.mimeType)
+            (attachment.asResourceStream()?.cachedContentType)?.isAudio
+                ?? MimeTypeUtil.isSupportedAudioMimeType(attachment.mimeType)
         {
 
             if let stream = attachment.asResourceStream() {

@@ -759,6 +759,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
             let firstAttachment = mediaAttachments.first
         {
             let firstRenderingFlag = firstAttachment.reference.renderingFlag
+            // Mime type is spoofable by the sender but for the purpose of showing notifications,
+            // trust the sender (if they _intended_ to send an image, say they sent an image).
             let firstMimeType = firstAttachment.attachment.mimeType
 
             if mediaAttachments.count > 1 {

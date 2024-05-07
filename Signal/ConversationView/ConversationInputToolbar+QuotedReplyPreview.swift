@@ -452,6 +452,7 @@ private class QuotedMessageSnippetView: UIView {
             let contentImageView = buildImageView(image: thumbnailImage)
             contentImageView.clipsToBounds = true
 
+            // Mime type is spoofable by the sender but this view doesn't support playback anyway.
             if MimeTypeUtil.isSupportedVideoMimeType(attachment.mimeType) {
                 let playIconImageView = buildImageView(image: UIImage(imageLiteralResourceName: "play-fill"))
                 playIconImageView.tintColor = .white

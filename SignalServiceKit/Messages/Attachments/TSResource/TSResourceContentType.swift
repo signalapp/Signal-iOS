@@ -47,5 +47,6 @@ extension TSResourceContentType {
     public var isImage: Bool { raw.isImage }
     public var isVideo: Bool { raw.isVideo }
     public var isAnimatedImage: Bool { raw.isAnimatedImage }
+    public var isVisualMedia: Bool { raw.isVisualMedia }
     public var isAudio: Bool { raw.isAudio }
 }

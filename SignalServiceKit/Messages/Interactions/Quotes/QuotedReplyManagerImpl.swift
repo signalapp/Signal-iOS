@@ -462,7 +462,8 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             let attachment = attachmentStore.fetch(attachmentRef.resourceId, tx: tx)
             if
                 let stream = attachment?.asResourceStream(),
-                MimeTypeUtil.isSupportedVisualMediaMimeType(stream.mimeType),
+                stream.cachedContentType?.isVisualMedia
+                    ?? MimeTypeUtil.isSupportedVisualMediaMimeType(stream.mimeType),
                 let thumbnailImage = stream.thumbnailImageSync(quality: .small)
             {
 
