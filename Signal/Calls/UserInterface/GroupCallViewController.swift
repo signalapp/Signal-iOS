@@ -1037,6 +1037,15 @@ extension GroupCallViewController: CallObserver {
 
         isAnyRemoteDeviceScreenSharing = call.groupCall.remoteDeviceStates.values.first { $0.sharingScreen == true } != nil
 
+        if groupCall.remoteDeviceStates.isEmpty {
+            switch self.callControlsDisplayState {
+            case .callControlsAndOverflow, .callControlsOnly:
+                break
+            case .none:
+                self.callControlsDisplayState = .callControlsOnly
+            }
+        }
+
         updateCallUI()
     }
 
