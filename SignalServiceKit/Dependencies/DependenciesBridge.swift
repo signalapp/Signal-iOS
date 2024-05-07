@@ -46,6 +46,7 @@ public class DependenciesBridge {
     public let attachmentManager: AttachmentManager
     public let attachmentStore: AttachmentStore
     public let attachmentUploadManager: AttachmentUploadManager
+    public let attachmentViewOnceManager: AttachmentViewOnceManager
     public let audioWaveformManager: AudioWaveformManager
     public let authorMergeHelper: AuthorMergeHelper
     public let badgeCountFetcher: BadgeCountFetcher
@@ -121,6 +122,7 @@ public class DependenciesBridge {
     public let tsResourceManager: TSResourceManager
     public let tsResourceStore: TSResourceStore
     public let tsResourceUploadManager: TSResourceUploadManager
+    public let tsResourceViewOnceManager: TSResourceViewOnceManager
     public let usernameApiClient: UsernameApiClient
     public let usernameEducationManager: UsernameEducationManager
     public let usernameLinkManager: UsernameLinkManager
@@ -137,6 +139,7 @@ public class DependenciesBridge {
         attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
         attachmentUploadManager: AttachmentUploadManager,
+        attachmentViewOnceManager: AttachmentViewOnceManager,
         audioWaveformManager: AudioWaveformManager,
         authorMergeHelper: AuthorMergeHelper,
         badgeCountFetcher: BadgeCountFetcher,
@@ -212,6 +215,7 @@ public class DependenciesBridge {
         tsResourceManager: TSResourceManager,
         tsResourceStore: TSResourceStore,
         tsResourceUploadManager: TSResourceUploadManager,
+        tsResourceViewOnceManager: TSResourceViewOnceManager,
         usernameApiClient: UsernameApiClient,
         usernameEducationManager: UsernameEducationManager,
         usernameLinkManager: UsernameLinkManager,
@@ -227,6 +231,7 @@ public class DependenciesBridge {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
         self.attachmentUploadManager = attachmentUploadManager
+        self.attachmentViewOnceManager = attachmentViewOnceManager
         self.audioWaveformManager = audioWaveformManager
         self.authorMergeHelper = authorMergeHelper
         self.badgeCountFetcher = badgeCountFetcher
@@ -302,6 +307,7 @@ public class DependenciesBridge {
         self.tsResourceManager = tsResourceManager
         self.tsResourceStore = tsResourceStore
         self.tsResourceUploadManager = tsResourceUploadManager
+        self.tsResourceViewOnceManager = tsResourceViewOnceManager
         self.usernameApiClient = usernameApiClient
         self.usernameEducationManager = usernameEducationManager
         self.usernameLinkManager = usernameLinkManager

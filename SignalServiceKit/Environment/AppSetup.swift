@@ -791,6 +791,16 @@ public class AppSetup {
         let attachmentCloner = SignalAttachmentClonerImpl()
         let tsResourceCloner = SignalTSResourceClonerImpl(attachmentCloner: attachmentCloner)
 
+        let attachmentViewOnceManager = AttachmentViewOnceManagerImpl(
+            attachmentStore: attachmentStore,
+            db: db,
+            interactionStore: interactionStore
+        )
+        let tsResourceViewOnceManager = TSResourceViewOnceManagerImpl(
+            attachmentViewOnceManager: attachmentViewOnceManager,
+            db: db
+        )
+
         let deviceManager = OWSDeviceManagerImpl(
             databaseStorage: db,
             keyValueStoreFactory: keyValueStoreFactory
@@ -815,6 +825,7 @@ public class AppSetup {
             attachmentManager: attachmentManager,
             attachmentStore: attachmentStore,
             attachmentUploadManager: attachmentUploadManager,
+            attachmentViewOnceManager: attachmentViewOnceManager,
             audioWaveformManager: audioWaveformManager,
             authorMergeHelper: authorMergeHelper,
             badgeCountFetcher: badgeCountFetcher,
@@ -890,6 +901,7 @@ public class AppSetup {
             tsResourceManager: tsResourceManager,
             tsResourceStore: tsResourceStore,
             tsResourceUploadManager: tsResourceUploadManager,
+            tsResourceViewOnceManager: tsResourceViewOnceManager,
             usernameApiClient: usernameApiClient,
             usernameEducationManager: usernameEducationManager,
             usernameLinkManager: usernameLinkManager,

@@ -964,6 +964,14 @@
 		66AE57802984AB9F00E40CFA /* ToyExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AE577E2984AB8700E40CFA /* ToyExample.swift */; };
 		66AEFCA42A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AEFCA32A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift */; };
 		66B78E032BE59B860022580E /* StickerMetadata+TSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B78E022BE59B860022580E /* StickerMetadata+TSResource.swift */; };
+		66B78E062BE5AADF0022580E /* AttachmentViewOnceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B78E052BE5AADF0022580E /* AttachmentViewOnceManager.swift */; };
+		66B78E082BE5AAFC0022580E /* AttachmentViewOnceManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B78E072BE5AAFB0022580E /* AttachmentViewOnceManagerImpl.swift */; };
+		66B78E0B2BE5AB0D0022580E /* TSResourceViewOnceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B78E0A2BE5AB0D0022580E /* TSResourceViewOnceManager.swift */; };
+		66B78E0D2BE5AB220022580E /* TSResourceViewOnceManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B78E0C2BE5AB220022580E /* TSResourceViewOnceManagerMock.swift */; };
+		66B78E0F2BE5AB2C0022580E /* TSResourceViewOnceManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B78E0E2BE5AB2C0022580E /* TSResourceViewOnceManagerImpl.swift */; };
+		66B78E112BE5AB360022580E /* AttachmentViewOnceManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B78E102BE5AB360022580E /* AttachmentViewOnceManagerMock.swift */; };
+		66B78E132BE5AB7E0022580E /* ViewOnceContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B78E122BE5AB7E0022580E /* ViewOnceContent.swift */; };
+		66B78E152BE5ABA60022580E /* TSViewOnceContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B78E142BE5ABA60022580E /* TSViewOnceContent.swift */; };
 		66B8B28028C94C0F005EAFE0 /* DelegatingContextMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B8B27F28C94C0F005EAFE0 /* DelegatingContextMenuButton.swift */; };
 		66B9437E2A6EFCD900DCF2FF /* SpoilerParticleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B9437D2A6EFCD900DCF2FF /* SpoilerParticleView.swift */; };
 		66B943812A6F217600DCF2FF /* SpoilerParticleShader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 66B9437F2A6F216D00DCF2FF /* SpoilerParticleShader.metal */; };
@@ -3859,6 +3867,14 @@
 		66AEFCA32A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerableLabelAnimator.swift; sourceTree = "<group>"; };
 		66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalAttachment+VideoSegmenting.swift"; sourceTree = "<group>"; };
 		66B78E022BE59B860022580E /* StickerMetadata+TSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StickerMetadata+TSResource.swift"; sourceTree = "<group>"; };
+		66B78E052BE5AADF0022580E /* AttachmentViewOnceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentViewOnceManager.swift; sourceTree = "<group>"; };
+		66B78E072BE5AAFB0022580E /* AttachmentViewOnceManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentViewOnceManagerImpl.swift; sourceTree = "<group>"; };
+		66B78E0A2BE5AB0D0022580E /* TSResourceViewOnceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceViewOnceManager.swift; sourceTree = "<group>"; };
+		66B78E0C2BE5AB220022580E /* TSResourceViewOnceManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceViewOnceManagerMock.swift; sourceTree = "<group>"; };
+		66B78E0E2BE5AB2C0022580E /* TSResourceViewOnceManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceViewOnceManagerImpl.swift; sourceTree = "<group>"; };
+		66B78E102BE5AB360022580E /* AttachmentViewOnceManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentViewOnceManagerMock.swift; sourceTree = "<group>"; };
+		66B78E122BE5AB7E0022580E /* ViewOnceContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewOnceContent.swift; sourceTree = "<group>"; };
+		66B78E142BE5ABA60022580E /* TSViewOnceContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSViewOnceContent.swift; sourceTree = "<group>"; };
 		66B8B27F28C94C0F005EAFE0 /* DelegatingContextMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatingContextMenuButton.swift; sourceTree = "<group>"; };
 		66B9437D2A6EFCD900DCF2FF /* SpoilerParticleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerParticleView.swift; sourceTree = "<group>"; };
 		66B9437F2A6F216D00DCF2FF /* SpoilerParticleShader.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = SpoilerParticleShader.metal; sourceTree = "<group>"; };
@@ -7786,6 +7802,29 @@
 			path = TSResource;
 			sourceTree = "<group>";
 		};
+		66B78E042BE5AACB0022580E /* ViewOnce */ = {
+			isa = PBXGroup;
+			children = (
+				66B78E092BE5AB000022580E /* TSResource */,
+				66B78E052BE5AADF0022580E /* AttachmentViewOnceManager.swift */,
+				66B78E072BE5AAFB0022580E /* AttachmentViewOnceManagerImpl.swift */,
+				66B78E102BE5AB360022580E /* AttachmentViewOnceManagerMock.swift */,
+				66B78E122BE5AB7E0022580E /* ViewOnceContent.swift */,
+			);
+			path = ViewOnce;
+			sourceTree = "<group>";
+		};
+		66B78E092BE5AB000022580E /* TSResource */ = {
+			isa = PBXGroup;
+			children = (
+				66B78E0A2BE5AB0D0022580E /* TSResourceViewOnceManager.swift */,
+				66B78E0E2BE5AB2C0022580E /* TSResourceViewOnceManagerImpl.swift */,
+				66B78E0C2BE5AB220022580E /* TSResourceViewOnceManagerMock.swift */,
+				66B78E142BE5ABA60022580E /* TSViewOnceContent.swift */,
+			);
+			path = TSResource;
+			sourceTree = "<group>";
+		};
 		66B9437C2A6EEAA600DCF2FF /* SpoilerRendering */ = {
 			isa = PBXGroup;
 			children = (
@@ -7826,6 +7865,7 @@
 				66D7B90C2B9798770005C98B /* QuotedMessageAttachment */,
 				66E1AD8C2B912A3000C56B7B /* TSResource */,
 				664E8D8D2BD72FF900C4968A /* VideoDuration */,
+				66B78E042BE5AACB0022580E /* ViewOnce */,
 				66D7B91C2B97C5330005C98B /* Attachment+ContentType.swift */,
 				66E1AD752B8FD0B700C56B7B /* Attachment.swift */,
 				66D7B9062B928BD50005C98B /* AttachmentStream.swift */,
@@ -13452,6 +13492,9 @@
 				66DA59C62BBB090C00D0EC58 /* AttachmentUpload.swift in Sources */,
 				66C1A8772BB75E560076C65A /* AttachmentUploadManager.swift in Sources */,
 				66D7B9092B9291BD0005C98B /* AttachmentUploadStore.swift in Sources */,
+				66B78E062BE5AADF0022580E /* AttachmentViewOnceManager.swift in Sources */,
+				66B78E082BE5AAFC0022580E /* AttachmentViewOnceManagerImpl.swift in Sources */,
+				66B78E112BE5AB360022580E /* AttachmentViewOnceManagerMock.swift in Sources */,
 				669A2FCE2BD9D48800166DB6 /* AudioWaveform.swift in Sources */,
 				669A2FCC2BD9D32400166DB6 /* AudioWaveformManager.swift in Sources */,
 				F9C5CE34289453B400548EEE /* AudioWaveformManagerImpl.swift in Sources */,
@@ -14435,11 +14478,15 @@
 				66C102F82B6306B900B47EC2 /* TSResourceThumbnail.swift in Sources */,
 				66C1A87D2BB77AB70076C65A /* TSResourceUploadManager.swift in Sources */,
 				66E1AD9A2B91499700C56B7B /* TSResourceUploadStore.swift in Sources */,
+				66B78E0B2BE5AB0D0022580E /* TSResourceViewOnceManager.swift in Sources */,
+				66B78E0F2BE5AB2C0022580E /* TSResourceViewOnceManagerImpl.swift in Sources */,
+				66B78E0D2BE5AB220022580E /* TSResourceViewOnceManagerMock.swift in Sources */,
 				F9C5CCCF289453B300548EEE /* TSThread+OWS.swift in Sources */,
 				F9C5CCDF289453B300548EEE /* TSThread+SDS.swift in Sources */,
 				F9C5CCDE289453B300548EEE /* TSThread.m in Sources */,
 				F9C5CBE3289453B300548EEE /* TSUnreadIndicatorInteraction+SDS.swift in Sources */,
 				F9C5CBD9289453B300548EEE /* TSUnreadIndicatorInteraction.m in Sources */,
+				66B78E152BE5ABA60022580E /* TSViewOnceContent.swift in Sources */,
 				D91A39E32AD9D1A000F57A61 /* TSYapDatabaseObject+SQLiteRowId.swift in Sources */,
 				F9C5CD5A289453B300548EEE /* TSYapDatabaseObject.m in Sources */,
 				F9C5CC38289453B300548EEE /* TypingIndicatorMessage.swift in Sources */,
@@ -14487,6 +14534,7 @@
 				724D47B92B97C301001BE973 /* VersionedProfilesImpl.swift in Sources */,
 				45A66116299EDF3000632EE2 /* VideoAttachmentDetection.swift in Sources */,
 				664E8D8F2BD7301A00C4968A /* VideoDurationHelper.swift in Sources */,
+				66B78E132BE5AB7E0022580E /* ViewOnceContent.swift in Sources */,
 				F9C5CDD5289453B400548EEE /* ViewOnceMessages.swift in Sources */,
 				7255A4C92B98DF5500E95368 /* VoiceMessageConstants.swift in Sources */,
 				7255A4CA2B98DF5500E95368 /* VoiceMessageInterruptedDraftStore.swift in Sources */,

@@ -41,7 +41,7 @@ public class LoopingVideo: NSObject {
         self.init(asset: AVAsset(url: url))
     }
 
-    private init(asset: AVAsset) {
+    public init(asset: AVAsset) {
         self.asset = asset
         super.init()
     }

@@ -80,11 +80,11 @@ public class VideoPlayer: Dependencies {
         )
     }
 
-    private init(
+    public init(
         avPlayer: AVPlayer,
         shouldLoop: Bool,
-        shouldMixAudioWithOthers: Bool,
-        audioDescription: String
+        shouldMixAudioWithOthers: Bool = false,
+        audioDescription: String = "[VideoPlayer]"
     ) {
         self.avPlayer = avPlayer
         audioActivity = AudioActivity(
