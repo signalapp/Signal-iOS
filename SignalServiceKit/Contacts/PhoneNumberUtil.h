@@ -21,10 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
                                    to:(NSString *)target
                     stickingRightward:(bool)preferHigh;
 
-+ (nullable NBPhoneNumber *)getExampleNumberForType:(NSString *)regionCode
-                                               type:(NBEPhoneNumberType)type
-                                  nbPhoneNumberUtil:(NBPhoneNumberUtil *)nbPhoneNumberUtil;
-
 @end
 
 NS_ASSUME_NONNULL_END

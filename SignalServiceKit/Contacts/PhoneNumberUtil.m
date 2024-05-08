@@ -94,20 +94,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-+ (nullable NBPhoneNumber *)getExampleNumberForType:(NSString *)regionCode
-                                               type:(NBEPhoneNumberType)type
-                                  nbPhoneNumberUtil:(NBPhoneNumberUtil *)nbPhoneNumberUtil
-{
-    NSError *error;
-    NBPhoneNumber *_Nullable nbPhoneNumber = [nbPhoneNumberUtil getExampleNumberForType:regionCode
-                                                                                   type:type
-                                                                                  error:&error];
-    if (error != nil) {
-        OWSFailDebug(@"Error: %@", error);
-    }
-    return nbPhoneNumber;
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

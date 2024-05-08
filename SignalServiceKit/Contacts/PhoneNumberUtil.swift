@@ -755,4 +755,13 @@ extension PhoneNumberUtil {
         "TA", // 0
         "UM", // 0
     ]
+
+    private static func getExampleNumber(forType regionCode: String, type: NBEPhoneNumberType, nbPhoneNumberUtil: NBPhoneNumberUtil) -> NBPhoneNumber? {
+        do {
+            return try nbPhoneNumberUtil.getExampleNumber(forType: regionCode, type: type)
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return nil
+        }
+    }
 }
