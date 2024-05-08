@@ -20,6 +20,9 @@ extension MessageBackup {
         case fileNotFound
         /// Unable to open a file stream due to file I/O errors.
         case unableToOpenFileStream
+
+        /// Unable to open a file stream due to HMAC validation failing on the encrypted file
+        case unableToDecryptFile
     }
 }
 
@@ -52,7 +55,7 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
     public func openOutputFileStream(localAci: Aci, tx: DBReadTransaction) -> MessageBackup.OpenProtoOutputStreamResult {
         let fileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
         guard let outputStream = OutputStream(url: fileUrl, append: false) else {
-           return .unableToOpenFileStream
+            return .unableToOpenFileStream
         }
         let outputStreamDelegate = StreamDelegate()
         outputStream.delegate = outputStreamDelegate
@@ -64,14 +67,15 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
         }
 
         do {
-            let inputTrackingTransform = TrackingStreamTransform()
-            let outputTrackingTransform = TrackingStreamTransform(calculateDigest: true)
+            let inputTrackingTransform = MetadataStreamTransform()
+            let outputTrackingTransform = MetadataStreamTransform(calculateDigest: true)
             let transformingOutputStream = TransformingOutputStream(
                 transforms: [
                     inputTrackingTransform,
                     ChunkedOutputStreamTransform(),
                     try GzipStreamTransform(.compress),
                     try backupKeyMaterial.createEncryptingStreamTransform(localAci: localAci, tx: tx),
+                    try backupKeyMaterial.createHmacGeneratingStreamTransform(localAci: localAci, tx: tx),
                     outputTrackingTransform
                 ],
                 outputStream: outputStream,
@@ -101,29 +105,27 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
         guard OWSFileSystem.fileOrFolderExists(url: fileURL) else {
             return .fileNotFound
         }
-        guard let inputStream = InputStream(url: fileURL) else {
-            return .unableToOpenFileStream
-        }
-        let inputStreamDelegate = StreamDelegate()
-        inputStream.delegate = inputStreamDelegate
-        let streamRunloop = RunLoop.current
-        inputStream.schedule(in: streamRunloop, forMode: .default)
-        inputStream.open()
-        guard inputStream.streamStatus == .open else {
-            return .unableToOpenFileStream
+
+        guard validateBackupHMAC(localAci: localAci, fileURL: fileURL, tx: tx) else {
+            return .unableToDecryptFile
         }
 
         do {
-            let transformableInputStream = TransformingInputStream(
+            let inputStreamDelegate = StreamDelegate()
+            guard let transformableInputStream = openTransformingInputFileStream(
+                localAci: localAci,
+                fileURL: fileURL,
+                inputStreamDelegate: inputStreamDelegate,
                 transforms: [
+                    try backupKeyMaterial.createHmacValidatingStreamTransform(localAci: localAci, tx: tx),
                     try backupKeyMaterial.createDecryptingStreamTransform(localAci: localAci, tx: tx),
                     try GzipStreamTransform(.decompress),
                     ChunkedInputStreamTransform(),
                 ],
-                inputStream: inputStream,
-                runLoop: streamRunloop
-            )
-
+                tx: tx
+            ) else {
+                return .unableToOpenFileStream
+            }
             let messageBackupInputStream = MessageBackupProtoInputStreamImpl(
                 inputStream: transformableInputStream,
                 inputStreamDelegate: inputStreamDelegate
@@ -131,6 +133,58 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
             return .success(messageBackupInputStream)
         } catch {
             return .unableToOpenFileStream
+        }
+    }
+
+    private func openTransformingInputFileStream(
+        localAci: Aci,
+        fileURL: URL,
+        inputStreamDelegate: StreamDelegate?,
+        transforms: [any StreamTransform],
+        tx: DBReadTransaction
+    ) -> TransformingInputStream? {
+        guard let inputStream = InputStream(url: fileURL) else {
+            return nil
+        }
+        inputStream.delegate = inputStreamDelegate
+        let streamRunloop = RunLoop.current
+        inputStream.schedule(in: streamRunloop, forMode: .default)
+        inputStream.open()
+        guard inputStream.streamStatus == .open else {
+            return nil
+        }
+
+        return TransformingInputStream(
+            transforms: transforms,
+            inputStream: inputStream,
+            runLoop: streamRunloop
+        )
+    }
+
+    private func validateBackupHMAC(localAci: Aci, fileURL: URL, tx: DBReadTransaction) -> Bool {
+        do {
+            guard let inputStream = openTransformingInputFileStream(
+                localAci: localAci,
+                fileURL: fileURL,
+                inputStreamDelegate: nil,
+                transforms: [
+                    try backupKeyMaterial.createHmacValidatingStreamTransform(localAci: localAci, tx: tx)
+                ],
+                tx: tx
+            ) else {
+                owsFailDebug("Failed to open output stream to validate backup.")
+                return false
+            }
+
+            // Read through the input stream. The HmacStreamTransform will both build
+            // an HMAC of the input data and read the HMAC from the end of the input file.
+            // Once the end of the stream is reached, the transform will compare the
+            // HMACs and throw an exception if they differ.
+            while try inputStream.read(maxLength: 32 * 1024).count > 0 { }
+            try inputStream.close()
+            return true
+        } catch {
+            return false
         }
     }
 
@@ -144,46 +198,5 @@ public class MessageBackupProtoStreamProviderImpl: MessageBackupProtoStreamProvi
                 _hadError.set(true)
             }
         }
-    }
-}
-
-private class TrackingStreamTransform: StreamTransform, FinalizableStreamTransform {
-    public var hasFinalized: Bool = false
-    public let hasPendingBytes = false
-
-    private var digestContext: SHA256DigestContext?
-    private var _digest: Data?
-    public func digest() throws -> Data {
-        guard calculateDigest else {
-            throw OWSAssertionError("Not configured to calculate digest")
-        }
-        guard hasFinalized, let digest = _digest else {
-            throw OWSAssertionError("Reading digest before finalized")
-        }
-        return digest
-    }
-
-    private let calculateDigest: Bool
-    init(calculateDigest: Bool = false) {
-        self.calculateDigest = calculateDigest
-        if calculateDigest {
-            self.digestContext = SHA256DigestContext()
-        }
-    }
-
-    public private(set) var count: Int = 0
-
-    public func transform(data: Data) throws -> Data {
-        try digestContext?.update(data)
-        count += data.count
-        return data
-    }
-
-    public func readBufferedData() throws -> Data { .init() }
-
-    public func finalize() throws -> Data {
-        self.hasFinalized = true
-        self._digest = try self.digestContext?.finalize()
-        return Data()
     }
 }

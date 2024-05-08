@@ -36,8 +36,6 @@ public class GzipStreamTransform: StreamTransform, FinalizableStreamTransform {
         static let GzipInflateHeaderWindowBits: Int32 = 32
     }
 
-    public func readBufferedData() throws -> Data { return Data() }
-    public var hasPendingBytes: Bool { false }
     public private(set) var hasFinalized = false
 
     private var outputCount: Int = 0

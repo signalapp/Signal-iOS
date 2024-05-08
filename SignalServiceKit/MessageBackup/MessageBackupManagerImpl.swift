@@ -285,6 +285,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw OWSAssertionError("file not found!")
         case .unableToOpenFileStream:
             throw OWSAssertionError("unable to open input stream")
+        case .unableToDecryptFile:
+            throw OWSAssertionError("encrypted file failed HMAC validation")
         }
 
         defer {

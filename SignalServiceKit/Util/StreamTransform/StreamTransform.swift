@@ -17,13 +17,19 @@ public protocol StreamTransform {
     /// the returned Data object will be empty)
     func transform(data: Data) throws -> Data
 
+    /// Returns `true` if the transform has pending bytes buffered.
+    var hasPendingBytes: Bool { get }
+}
+
+public extension StreamTransform {
+    var hasPendingBytes: Bool { return false }
+}
+
+public protocol BufferedStreamTransform {
     /// Returns data buffered by the transform.  Depending on internal implementations
     /// this may return all or just part of the buffered data.  Callers can consult
     /// `hasPendingBytes` to determing if this call should be expected to return data.
     func readBufferedData() throws -> Data
-
-    /// Returns `true` if the transform has pending bytes buffered.
-    var hasPendingBytes: Bool { get }
 }
 
 public protocol FinalizableStreamTransform {
@@ -73,9 +79,16 @@ public extension Array where Element == any StreamTransform {
             }
             // There are still bytes on the current transform, so return those
             // This could be before or after the transform has finalized.
-            if transform.hasPendingBytes {
-                return try transform.readBufferedData()
-            } else if
+            if
+                transform.hasPendingBytes,
+                let bufferedStreamTransform = transform as? BufferedStreamTransform
+            {
+                let data = try bufferedStreamTransform.readBufferedData()
+                if data.count > 0 {
+                    return data
+                }
+            }
+            if
                 let finalizableTransform = transform as? FinalizableStreamTransform,
                 !finalizableTransform.hasFinalized
             {

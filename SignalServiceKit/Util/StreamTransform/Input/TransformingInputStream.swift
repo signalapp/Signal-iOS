@@ -60,13 +60,16 @@ public final class TransformingInputStream: InputStreamable {
             let streamData = try inputStream.read(maxLength: requestedLength)
 
             // Transform the data.
-            return try transforms.reduce(streamData) { try $1.transform(data: $0) }
-        } else {
-            // If there is no data remaining in the inputStream, read out any
-            // remaining data in the transfom buffers, finalize the transforms
-            // and read any data resulting from that.
-            return try transforms.readNextRemainingBytes()
+            let data = try transforms.reduce(streamData) { try $1.transform(data: $0) }
+            if data.count > 0 {
+                return data
+            }
         }
+
+        // If there is no data remaining in the inputStream, read out any
+        // remaining data in the transfom buffers, finalize the transforms
+        // and read any data resulting from that.
+        return try transforms.readNextRemainingBytes()
     }
 
     public func remove(from runloop: RunLoop, forMode mode: RunLoop.Mode) {

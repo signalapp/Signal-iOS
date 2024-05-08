@@ -55,7 +55,6 @@ final class TransformingOutputStreamTests: XCTestCase {
             hasFinalized = true
             return "F0".data(using: .utf8)!
         }
-        func readBufferedData() throws -> Data { Data() }
     }
 
     private class TestStreamTransform2: StreamTransform, FinalizableStreamTransform {
@@ -80,8 +79,6 @@ final class TransformingOutputStreamTests: XCTestCase {
             returnData.append("}".data(using: .utf8)!)
             return returnData
         }
-
-        func readBufferedData() throws -> Data { Data() }
 
         func finalize() throws -> Data {
             hasFinalized = true
@@ -116,7 +113,6 @@ final class TransformingOutputStreamTests: XCTestCase {
             hasFinalized = true
             return "F2".data(using: .utf8)!
         }
-        func readBufferedData() throws -> Data { Data() }
     }
 }
 

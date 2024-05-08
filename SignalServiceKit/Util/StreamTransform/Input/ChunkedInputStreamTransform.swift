@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class ChunkedInputStreamTransform: StreamTransform {
+public class ChunkedInputStreamTransform: StreamTransform, BufferedStreamTransform {
 
     private var buffer = Data()
 

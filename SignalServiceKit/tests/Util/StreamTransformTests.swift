@@ -186,10 +186,9 @@ final class EncryptionStreamTransformTests: XCTestCase {
     func testRoundtrip() throws {
         let iv = Cryptography.generateRandomBytes(UInt(16))
         let encryptionKey = Cryptography.generateRandomBytes(UInt(32))
-        let hmacKey = Cryptography.generateRandomBytes(UInt(32))
 
-        let outputStream = try EncryptingStreamTransform(iv: iv, encryptionKey: encryptionKey, hmacKey: hmacKey)
-        let inputStream = try DecryptingStreamTransform(encryptionKey: encryptionKey, hmacKey: hmacKey)
+        let outputStream = try EncryptingStreamTransform(iv: iv, encryptionKey: encryptionKey)
+        let inputStream = try DecryptingStreamTransform(encryptionKey: encryptionKey)
 
         let data1 = "TestString".data(using: .utf8)!
 

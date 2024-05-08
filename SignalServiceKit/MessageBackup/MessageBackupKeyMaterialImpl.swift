@@ -78,34 +78,26 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
     }
 
     public func createEncryptingStreamTransform(localAci: Aci, tx: DBReadTransaction) throws -> EncryptingStreamTransform {
-        guard let backupKey = svr.data(for: .backupKey, transaction: tx) else {
-            throw MessageBackupKeyMaterialError.missingMasterKey
-        }
-        let backupId = try backupID(localAci: localAci, tx: tx)
-        guard let infoData = Constants.MessageBackupEncryptionInfoString.data(using: .utf8) else {
-            owsFailDebug("Failed to encode data")
-            throw MessageBackupKeyMaterialError.invalidKeyInfo
-        }
-
-        let keyBytes = try hkdf(
-            outputLength: Constants.MessageBackupEncryptionDataLength,
-            inputKeyMaterial: backupKey.rawData,
-            salt: backupId,
-            info: infoData
-        )
-
-        guard keyBytes.count == Constants.MessageBackupEncryptionDataLength else {
-            throw MessageBackupKeyMaterialError.invalidEncryptionKey
-        }
-
-        return try EncryptingStreamTransform(
-            iv: Randomness.generateRandomBytes(16),
-            encryptionKey: Data(Array(keyBytes[32..<64])),
-            hmacKey: Data(Array(keyBytes[0..<32]))
-        )
+        let (encryptionKey, _) = try buildEncryptionMaterial(localAci: localAci, tx: tx)
+        return try EncryptingStreamTransform(iv: Randomness.generateRandomBytes(16), encryptionKey: encryptionKey)
     }
 
     public func createDecryptingStreamTransform(localAci: Aci, tx: DBReadTransaction) throws -> DecryptingStreamTransform {
+        let (encryptionKey, _) = try buildEncryptionMaterial(localAci: localAci, tx: tx)
+        return try DecryptingStreamTransform(encryptionKey: encryptionKey)
+    }
+
+    public func createHmacGeneratingStreamTransform(localAci: Aci, tx: DBReadTransaction) throws -> HmacStreamTransform {
+        let (_, hmacKey) = try buildEncryptionMaterial(localAci: localAci, tx: tx)
+        return try HmacStreamTransform(hmacKey: hmacKey, operation: .generate)
+    }
+
+    public func createHmacValidatingStreamTransform(localAci: Aci, tx: DBReadTransaction) throws -> HmacStreamTransform {
+        let (_, hmacKey) = try buildEncryptionMaterial(localAci: localAci, tx: tx)
+        return try HmacStreamTransform(hmacKey: hmacKey, operation: .validate)
+    }
+
+    private func buildEncryptionMaterial(localAci: Aci, tx: DBReadTransaction) throws -> (encryptionKey: Data, hmacKey: Data) {
         guard let backupKey = svr.data(for: .backupKey, transaction: tx) else {
             throw MessageBackupKeyMaterialError.missingMasterKey
         }
@@ -126,9 +118,6 @@ public struct MessageBackupKeyMaterialImpl: MessageBackupKeyMaterial {
             throw MessageBackupKeyMaterialError.invalidEncryptionKey
         }
 
-        return try DecryptingStreamTransform(
-            encryptionKey: Data(Array(keyBytes[32..<64])),
-            hmacKey: Data(Array(keyBytes[0..<32]))
-        )
+        return (encryptionKey: Data(Array(keyBytes[32..<64])), hmacKey: Data(Array(keyBytes[0..<32])))
     }
 }

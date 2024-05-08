@@ -1581,6 +1581,8 @@
 		C167387529E8397B0068EA92 /* EditMessageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C167387429E8397B0068EA92 /* EditMessageStore.swift */; };
 		C167F1E52A7162D700D4A9AF /* SSKKyberPreKeyStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C167F1E42A7162D700D4A9AF /* SSKKyberPreKeyStoreTest.swift */; };
 		C169095F2A4DE2A200B6A65D /* EditMessageWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C169095E2A4DE2A200B6A65D /* EditMessageWrapper.swift */; };
+		C16AFAC92BE9CA2700838FFB /* MetadataStreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16AFAC82BE9CA2700838FFB /* MetadataStreamTransform.swift */; };
+		C16AFACB2BE9CA6F00838FFB /* HmacStreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16AFACA2BE9CA6F00838FFB /* HmacStreamTransform.swift */; };
 		C16B8B752B8940D40030BA24 /* OWSOutgoingSentMessageTranscript.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16B8B742B8940D40030BA24 /* OWSOutgoingSentMessageTranscript.swift */; };
 		C17310A52BD9D43D00B7A151 /* MessageBackupRemoteInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17310A42BD9D43D00B7A151 /* MessageBackupRemoteInfo.swift */; };
 		C17310A72BD9D45400B7A151 /* MessageBackupServiceAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17310A62BD9D45400B7A151 /* MessageBackupServiceAuth.swift */; };
@@ -4475,6 +4477,8 @@
 		C167387429E8397B0068EA92 /* EditMessageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMessageStore.swift; sourceTree = "<group>"; };
 		C167F1E42A7162D700D4A9AF /* SSKKyberPreKeyStoreTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKKyberPreKeyStoreTest.swift; sourceTree = "<group>"; };
 		C169095E2A4DE2A200B6A65D /* EditMessageWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMessageWrapper.swift; sourceTree = "<group>"; };
+		C16AFAC82BE9CA2700838FFB /* MetadataStreamTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataStreamTransform.swift; sourceTree = "<group>"; };
+		C16AFACA2BE9CA6F00838FFB /* HmacStreamTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HmacStreamTransform.swift; sourceTree = "<group>"; };
 		C16B8B742B8940D40030BA24 /* OWSOutgoingSentMessageTranscript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingSentMessageTranscript.swift; sourceTree = "<group>"; };
 		C17310A42BD9D43D00B7A151 /* MessageBackupRemoteInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupRemoteInfo.swift; sourceTree = "<group>"; };
 		C17310A62BD9D45400B7A151 /* MessageBackupServiceAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupServiceAuth.swift; sourceTree = "<group>"; };
@@ -9064,6 +9068,8 @@
 				C1DD78AE2BB1CF300020F064 /* Input */,
 				C1DD78AF2BB1CF450020F064 /* Output */,
 				C1CF83D12B9A1FCB00CDC9C4 /* GzipStreamTransform.swift */,
+				C16AFACA2BE9CA6F00838FFB /* HmacStreamTransform.swift */,
+				C16AFAC82BE9CA2700838FFB /* MetadataStreamTransform.swift */,
 				C1DD78AC2BB1CF110020F064 /* Streamable.swift */,
 				C1BF1F702BA0D7CC0004B112 /* StreamTransform.swift */,
 			);
@@ -13700,6 +13706,7 @@
 				725465552BA0282D00EABFD2 /* GroupV2UpdatesImpl.swift in Sources */,
 				C1CF83D22B9A1FCB00CDC9C4 /* GzipStreamTransform.swift in Sources */,
 				72345D1E2B9A1F64000237B3 /* HapticFeedback.swift in Sources */,
+				C16AFACB2BE9CA6F00838FFB /* HmacStreamTransform.swift in Sources */,
 				F9C5CD94289453B300548EEE /* HTMLMetadata.swift in Sources */,
 				F9C5CDC2289453B400548EEE /* HTTPEntities.swift in Sources */,
 				F9C5CDB4289453B400548EEE /* HTTPUtils.swift in Sources */,
@@ -13846,6 +13853,7 @@
 				F9C5CC64289453B300548EEE /* MessageSendLog.swift in Sources */,
 				F9C5CC19289453B300548EEE /* MessageSticker.swift in Sources */,
 				66E793E52BC0D8A600929E5E /* MessageStickerManager.swift in Sources */,
+				C16AFAC92BE9CA2700838FFB /* MetadataStreamTransform.swift in Sources */,
 				721BC7EC2BC8253600648981 /* MimeTypeUtil.swift in Sources */,
 				501052642BDAEEDC0097DDC5 /* MobileCoinExternal.pb.swift in Sources */,
 				F9C5CD7B289453B300548EEE /* MobileCoinHelper.swift in Sources */,

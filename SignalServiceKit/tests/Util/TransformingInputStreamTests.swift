@@ -11,14 +11,13 @@ final class TransformingInputStreamTests: XCTestCase {
 
         let iv = Cryptography.generateRandomBytes(UInt(16))
         let encryptionKey = Cryptography.generateRandomBytes(UInt(32))
-        let hmacKey = Cryptography.generateRandomBytes(UInt(32))
 
         let outputStream = TextBackedOutputStream()
         let transformingOutputStream = TransformingOutputStream(
             transforms: [
                 ChunkedOutputStreamTransform(),
                 try GzipStreamTransform(.compress),
-                try EncryptingStreamTransform(iv: iv, encryptionKey: encryptionKey, hmacKey: hmacKey)
+                try EncryptingStreamTransform(iv: iv, encryptionKey: encryptionKey)
             ],
             outputStream: outputStream
         )
@@ -34,7 +33,7 @@ final class TransformingInputStreamTests: XCTestCase {
 
         let transformingIntputStream = TransformingInputStream(
             transforms: [
-                try DecryptingStreamTransform(encryptionKey: encryptionKey, hmacKey: hmacKey),
+                try DecryptingStreamTransform(encryptionKey: encryptionKey),
                 try GzipStreamTransform(.decompress),
                 ChunkedInputStreamTransform()
             ],
