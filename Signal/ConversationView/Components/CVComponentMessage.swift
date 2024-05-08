@@ -705,7 +705,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             selectionViews.append(componentView.secondarySelectionView)
         }
 
-        // Configure hOuterStack/hInnerStack animations animations
+        // Configure hOuterStack/hInnerStack animations
         if isShowingSelectionUI || wasShowingSelectionUI {
             // Configure selection animations
             let selectionViewWidth = ConversationStyle.selectionViewWidth
