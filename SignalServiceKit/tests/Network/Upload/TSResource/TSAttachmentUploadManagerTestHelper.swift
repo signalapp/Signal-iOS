@@ -9,7 +9,7 @@ import Foundation
 class TSAttachmentUploadManagerMockHelper {
     var mockDB = MockDB()
     var mockURLSession = AttachmentUploadManagerImpl.Mocks.URLSession()
-    var mockNetworkManager = AttachmentUploadManagerImpl.Mocks.NetworkManager()
+    var mockNetworkManager = AttachmentUploadManagerImpl.Mocks.NetworkManager(libsignalNet: nil)
     var mockServiceManager = OWSSignalServiceMock()
     var mockChatConnectionManager = AttachmentUploadManagerImpl.Mocks.ChatConnectionManager()
     var mockAttachmentEncrypter = AttachmentUploadManagerImpl.Mocks.AttachmentEncrypter()

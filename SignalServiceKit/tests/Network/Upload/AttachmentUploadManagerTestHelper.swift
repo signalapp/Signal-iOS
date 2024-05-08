@@ -29,7 +29,7 @@ class AttachmentUploadManagerMockHelper {
     lazy var mockDateProvider = { return self.mockDate }
     var mockDB = MockDB()
     var mockURLSession = AttachmentUploadManagerImpl.Mocks.URLSession()
-    var mockNetworkManager = AttachmentUploadManagerImpl.Mocks.NetworkManager()
+    var mockNetworkManager = AttachmentUploadManagerImpl.Mocks.NetworkManager(libsignalNet: nil)
     var mockServiceManager = OWSSignalServiceMock()
     var mockChatConnectionManager = AttachmentUploadManagerImpl.Mocks.ChatConnectionManager()
     var mockFileSystem = AttachmentUploadManagerImpl.Mocks.FileSystem()

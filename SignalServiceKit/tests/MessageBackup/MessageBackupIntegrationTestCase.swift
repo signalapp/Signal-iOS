@@ -103,7 +103,7 @@ class MessageBackupIntegrationTestCase: XCTestCase {
             currentCallThreadProvider: CrashyMocks.MockCurrentCallThreadProvider(),
             notificationPresenter: CrashyMocks.MockNotificationPresenter(),
             testDependencies: AppSetup.TestDependencies(
-                networkManager: CrashyMocks.MockNetworkManager(),
+                networkManager: CrashyMocks.MockNetworkManager(libsignalNet: nil),
                 webSocketFactory: CrashyMocks.MockWebSocketFactory()
             )
         ).prepareDatabase().awaitable()

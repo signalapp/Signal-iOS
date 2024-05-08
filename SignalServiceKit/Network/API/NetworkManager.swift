@@ -4,14 +4,16 @@
 //
 
 import Foundation
+import LibSignalClient
 
 // A class used for making HTTP requests against the main service.
 @objc
 public class NetworkManager: NSObject {
     private let restNetworkManager = RESTNetworkManager()
+    public let libsignalNet: Net?
 
-    @objc
-    public override init() {
+    public init(libsignalNet: Net?) {
+        self.libsignalNet = libsignalNet
         super.init()
 
         SwiftSingletons.register(self)

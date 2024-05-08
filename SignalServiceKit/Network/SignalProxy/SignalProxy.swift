@@ -128,13 +128,28 @@ public class SignalProxy: NSObject {
         // The NSE manages the proxy relay itself
         guard !CurrentAppContext().isNSE else { return }
 
+        let libsignalNet = NSObject.networkManager.libsignalNet
         if isEnabled {
+            if let (proxyHost, proxyPort) = host.flatMap({ ProxyClient.parseHost($0) }) {
+                do {
+                    try libsignalNet?.setProxy(host: proxyHost, port: proxyPort)
+                } catch {
+                    owsFailDebug("failed to set proxy on libsignal-net (need better validation)")
+                    // This will poison the Net instance, failing all new connections,
+                    // until a valid proxy is set or cleared.
+                }
+            } else {
+                // We can't print the invalid host in the logs, because that's private!
+                owsFailDebug("failed to parse previously-validated proxy host")
+            }
+
             if restartIfNeeded && relayServer.isStarted {
                 relayServer.restartIfNeeded(ignoreBackoff: true)
             } else {
                 relayServer.start()
             }
         } else {
+            libsignalNet?.clearProxy()
             relayServer.stop()
         }
     }

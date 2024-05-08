@@ -128,6 +128,11 @@ public class AppSetup {
         let tsConstants = TSConstants.shared
         let keyValueStoreFactory = testDependencies.keyValueStoreFactory ?? SDSKeyValueStoreFactory()
 
+        let libsignalNet = Net(
+            env: TSConstants.isUsingProductionService ? .production : .staging,
+            userAgent: OWSHttpHeaders.userAgentHeaderValueSignalIos
+        )
+
         let recipientDatabaseTable = RecipientDatabaseTableImpl()
         let recipientFetcher = RecipientFetcherImpl(recipientDatabaseTable: recipientDatabaseTable)
         let recipientIdFinder = RecipientIdFinder(recipientDatabaseTable: recipientDatabaseTable, recipientFetcher: recipientFetcher)
@@ -145,7 +150,7 @@ public class AppSetup {
         let messageSender = testDependencies.messageSender ?? MessageSender()
         let messageSenderJobQueue = MessageSenderJobQueue()
         let modelReadCaches = testDependencies.modelReadCaches ?? ModelReadCaches(factory: ModelReadCacheFactory())
-        let networkManager = testDependencies.networkManager ?? NetworkManager()
+        let networkManager = testDependencies.networkManager ?? NetworkManager(libsignalNet: libsignalNet)
         let ows2FAManager = OWS2FAManager()
         let paymentsHelper = testDependencies.paymentsHelper ?? PaymentsHelperImpl()
         let pniSignalProtocolStore = SignalProtocolStoreImpl(
@@ -589,10 +594,6 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
-        let libsignalNet = Net(
-            env: TSConstants.isUsingProductionService ? .production : .staging,
-            userAgent: OWSHttpHeaders.userAgentHeaderValueSignalIos
-        )
         let chatConnectionManager = ChatConnectionManagerImpl(
             appExpiry: appExpiry,
             db: db,

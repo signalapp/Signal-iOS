@@ -36,7 +36,7 @@ public class MockSSKEnvironment: NSObject {
                 keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
                 messageSender: FakeMessageSender(),
                 modelReadCaches: ModelReadCaches(factory: TestableModelReadCacheFactory()),
-                networkManager: OWSFakeNetworkManager(),
+                networkManager: OWSFakeNetworkManager(libsignalNet: nil),
                 paymentsCurrencies: MockPaymentsCurrencies(),
                 paymentsHelper: MockPaymentsHelper(),
                 pendingReceiptRecorder: NoopPendingReceiptRecorder(),
