@@ -247,7 +247,7 @@ extension SignalApp {
         }
     }
 
-    static func resetAppDataAndExit() {
+    static func resetAppDataAndExit() -> Never {
         resetAppData()
         exit(0)
     }

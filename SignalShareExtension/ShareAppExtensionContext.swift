@@ -127,10 +127,7 @@ extension ShareAppExtensionContext: AppContext {
         return reportedApplicationState == .active
     }
 
-    func beginBackgroundTask(expirationHandler: @escaping BackgroundTaskExpirationHandler) -> UIBackgroundTaskIdentifier {
-        return .invalid
-    }
-
+    func beginBackgroundTask(with expirationHandler: BackgroundTaskExpirationHandler) -> UIBackgroundTaskIdentifier { .invalid }
     func endBackgroundTask(_ backgroundTaskIdentifier: UIBackgroundTaskIdentifier) {
         owsAssertBeta(backgroundTaskIdentifier == .invalid)
     }
@@ -149,7 +146,7 @@ extension ShareAppExtensionContext: AppContext {
 
     func open(_ url: URL, completion: ((Bool) -> Void)? = nil) { }
 
-    func runNowOr(whenMainAppIsActive block: @escaping AppActiveBlock) {
+    func runNowOrWhenMainAppIsActive(_ block: AppActiveBlock) {
         owsFailBeta("Cannot run main app active blocks in share extension.")
     }
 
@@ -197,7 +194,7 @@ extension ShareAppExtensionContext: AppContext {
 
     var hasActiveCall: Bool { false }
 
-    func resetAppDataAndExit() {
-        owsFailBeta("Not main app.")
+    func resetAppDataAndExit() -> Never {
+        owsFail("Not main app.")
     }
 }

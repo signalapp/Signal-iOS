@@ -508,7 +508,7 @@ open class TextAttachmentView: UIView {
         if let linkPreviewTooltipView = linkPreviewTooltipView {
             if let container = linkPreviewTooltipView.superview,
                linkPreviewTooltipView.frame.contains(gesture.location(in: container)) {
-                CurrentAppContext().open(linkPreviewTooltipView.url)
+                CurrentAppContext().open(linkPreviewTooltipView.url, completion: nil)
             } else {
                 linkPreviewTooltipView.removeFromSuperview()
                 self.linkPreviewTooltipView = nil

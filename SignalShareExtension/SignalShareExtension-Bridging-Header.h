@@ -10,5 +10,4 @@
 #import <SignalCoreKit/NSObject+OWS.h>
 #import <SignalCoreKit/OWSAsserts.h>
 #import <SignalCoreKit/OWSLogs.h>
-#import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppReadiness.h>

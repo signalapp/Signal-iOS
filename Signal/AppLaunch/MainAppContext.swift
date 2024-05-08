@@ -123,7 +123,7 @@ class MainAppContext: NSObject, AppContext {
 
     func isAppForegroundAndActive() -> Bool { reportedApplicationState == .active }
 
-    func beginBackgroundTask(expirationHandler: @escaping BackgroundTaskExpirationHandler) -> UIBackgroundTaskIdentifier {
+    func beginBackgroundTask(with expirationHandler: @escaping BackgroundTaskExpirationHandler) -> UIBackgroundTaskIdentifier {
         UIApplication.shared.beginBackgroundTask(expirationHandler: expirationHandler)
     }
 
@@ -161,7 +161,7 @@ class MainAppContext: NSObject, AppContext {
 
     private var appActiveBlocks = [AppActiveBlock]()
 
-    func runNowOr(whenMainAppIsActive block: @escaping AppActiveBlock) {
+    func runNowOrWhenMainAppIsActive(_ block: @escaping AppActiveBlock) {
         DispatchMainThreadSafe {
             if self.isMainAppAndActive {
                 block()
@@ -206,7 +206,7 @@ class MainAppContext: NSObject, AppContext {
 
     var debugLogsDirPath: String { DebugLogger.mainAppDebugLogsDirPath }
 
-    func resetAppDataAndExit() {
+    func resetAppDataAndExit() -> Never {
         SignalApp.resetAppDataAndExit()
     }
 }

@@ -11,7 +11,6 @@ FOUNDATION_EXPORT double SignalServiceKitVersionNumber;
 //! Project version string for SignalServiceKit.
 FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 
-#import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/AxolotlExceptions.h>
 #import <SignalServiceKit/BaseModel.h>
@@ -133,6 +132,5 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/TSUnreadIndicatorInteraction.h>
 #import <SignalServiceKit/TSYapDatabaseObject.h>
-#import <SignalServiceKit/TestAppContext.h>
 #import <SignalServiceKit/TestModel.h>
 #import <SignalServiceKit/YDBStorage.h>

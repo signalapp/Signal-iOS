@@ -79,10 +79,7 @@ class NSEContext: NSObject, AppContext {
     let reportedApplicationState: UIApplication.State = .background
     let statusBarHeight: CGFloat = .zero
 
-    func beginBackgroundTask(expirationHandler: @escaping BackgroundTaskExpirationHandler) -> UInt { 0 }
-    func endBackgroundTask(_ backgroundTaskIdentifier: UInt) {}
-
-    func beginBackgroundTask(expirationHandler: @escaping BackgroundTaskExpirationHandler) -> UIBackgroundTaskIdentifier { .invalid }
+    func beginBackgroundTask(with expirationHandler: BackgroundTaskExpirationHandler) -> UIBackgroundTaskIdentifier { .invalid }
     func endBackgroundTask(_ backgroundTaskIdentifier: UIBackgroundTaskIdentifier) {}
 
     func ensureSleepBlocking(_ shouldBeBlocking: Bool, blockingObjectsDescription: String) {}
@@ -91,10 +88,10 @@ class NSEContext: NSObject, AppContext {
     func openSystemSettings() {}
     func open(_ url: URL, completion: ((Bool) -> Void)? = nil) {}
 
-    func runNowOr(whenMainAppIsActive block: @escaping AppActiveBlock) {}
+    func runNowOrWhenMainAppIsActive(_ block: () -> Void) {}
 
-    func resetAppDataAndExit() {
-        owsFailDebug("Should not reset app data from NSE")
+    func resetAppDataAndExit() -> Never {
+        owsFail("Should not reset app data from NSE")
     }
 
     var debugLogsDirPath: String {

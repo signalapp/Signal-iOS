@@ -289,7 +289,7 @@ enum OWSOrphanDataCleaner {
         Logger.info("Enqueuing an orphan data search. Remaining retries: \(remainingRetries)")
 
         // Wait until the app is active...
-        CurrentAppContext().runNowOr(whenMainAppIsActive: {
+        CurrentAppContext().runNowOrWhenMainAppIsActive {
             // ...but perform the work off the main thread.
             let backgroundTask = OWSBackgroundTask(label: #function)
             workQueue.async {
@@ -300,7 +300,7 @@ enum OWSOrphanDataCleaner {
                 }
                 backgroundTask.end()
             }
-        })
+        }
     }
 
     /// Returns `nil` on failure, usually indicating that the search
@@ -664,7 +664,7 @@ enum OWSOrphanDataCleaner {
         }
 
         // Wait until the app is active...
-        CurrentAppContext().runNowOr(whenMainAppIsActive: {
+        CurrentAppContext().runNowOrWhenMainAppIsActive {
             // ...but perform the work off the main thread.
             let backgroundTask = OWSBackgroundTask(label: #function)
             workQueue.async {
@@ -680,7 +680,7 @@ enum OWSOrphanDataCleaner {
                 }
                 backgroundTask.end()
             }
-        })
+        }
     }
 
     /// Returns `false` on failure, usually indicating that orphan processing
