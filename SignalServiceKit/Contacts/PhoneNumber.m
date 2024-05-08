@@ -4,7 +4,6 @@
 //
 
 #import "PhoneNumber.h"
-#import "PhoneNumberUtil.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <libPhoneNumber_iOS/NBAsYouTypeFormatter.h>
 #import <libPhoneNumber_iOS/NBMetadataHelper.h>

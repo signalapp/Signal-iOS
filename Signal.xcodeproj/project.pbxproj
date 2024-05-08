@@ -2306,7 +2306,6 @@
 		F9C5CCB5289453B300548EEE /* Contact.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9CD289453B100548EEE /* Contact.m */; };
 		F9C5CCB9289453B300548EEE /* OWSDisappearingMessagesConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9D1289453B100548EEE /* OWSDisappearingMessagesConfiguration.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCBA289453B300548EEE /* TSThread.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9D2289453B100548EEE /* TSThread.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CCBB289453B300548EEE /* PhoneNumberUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9D3289453B100548EEE /* PhoneNumberUtil.m */; };
 		F9C5CCBC289453B300548EEE /* PhoneNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9D4289453B100548EEE /* PhoneNumber.m */; };
 		F9C5CCC0289453B300548EEE /* ContactDiscoveryTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9D9289453B100548EEE /* ContactDiscoveryTask.swift */; };
 		F9C5CCC3289453B300548EEE /* ContactDiscoveryOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DC289453B100548EEE /* ContactDiscoveryOperation.swift */; };
@@ -2331,7 +2330,6 @@
 		F9C5CCD8289453B300548EEE /* ThreadAssociatedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9F2289453B100548EEE /* ThreadAssociatedData.swift */; };
 		F9C5CCDA289453B300548EEE /* OWSDisappearingMessagesConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9F4289453B100548EEE /* OWSDisappearingMessagesConfiguration.swift */; };
 		F9C5CCDB289453B300548EEE /* PhoneNumber.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9F5289453B100548EEE /* PhoneNumber.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CCDC289453B300548EEE /* PhoneNumberUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9F6289453B100548EEE /* PhoneNumberUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCDD289453B300548EEE /* SignalAccountFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9F7289453B100548EEE /* SignalAccountFinder.swift */; };
 		F9C5CCDE289453B300548EEE /* TSThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9F8289453B100548EEE /* TSThread.m */; };
 		F9C5CCDF289453B300548EEE /* TSThread+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9F9289453B100548EEE /* TSThread+SDS.swift */; };
@@ -5241,7 +5239,6 @@
 		F9C5C9CD289453B100548EEE /* Contact.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Contact.m; sourceTree = "<group>"; };
 		F9C5C9D1289453B100548EEE /* OWSDisappearingMessagesConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDisappearingMessagesConfiguration.h; sourceTree = "<group>"; };
 		F9C5C9D2289453B100548EEE /* TSThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSThread.h; sourceTree = "<group>"; };
-		F9C5C9D3289453B100548EEE /* PhoneNumberUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneNumberUtil.m; sourceTree = "<group>"; };
 		F9C5C9D4289453B100548EEE /* PhoneNumber.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneNumber.m; sourceTree = "<group>"; };
 		F9C5C9D9289453B100548EEE /* ContactDiscoveryTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryTask.swift; sourceTree = "<group>"; };
 		F9C5C9DC289453B100548EEE /* ContactDiscoveryOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryOperation.swift; sourceTree = "<group>"; };
@@ -5266,7 +5263,6 @@
 		F9C5C9F2289453B100548EEE /* ThreadAssociatedData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadAssociatedData.swift; sourceTree = "<group>"; };
 		F9C5C9F4289453B100548EEE /* OWSDisappearingMessagesConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSDisappearingMessagesConfiguration.swift; sourceTree = "<group>"; };
 		F9C5C9F5289453B100548EEE /* PhoneNumber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneNumber.h; sourceTree = "<group>"; };
-		F9C5C9F6289453B100548EEE /* PhoneNumberUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneNumberUtil.h; sourceTree = "<group>"; };
 		F9C5C9F7289453B100548EEE /* SignalAccountFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalAccountFinder.swift; sourceTree = "<group>"; };
 		F9C5C9F8289453B100548EEE /* TSThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSThread.m; sourceTree = "<group>"; };
 		F9C5C9F9289453B100548EEE /* TSThread+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSThread+SDS.swift"; sourceTree = "<group>"; };
@@ -10656,8 +10652,6 @@
 				F9C5C9F5289453B100548EEE /* PhoneNumber.h */,
 				F9C5C9D4289453B100548EEE /* PhoneNumber.m */,
 				5033D46229D64ADF007FEADA /* PhoneNumberChangedMessageInserter.swift */,
-				F9C5C9F6289453B100548EEE /* PhoneNumberUtil.h */,
-				F9C5C9D3289453B100548EEE /* PhoneNumberUtil.m */,
 				F9C5C9F0289453B100548EEE /* PhoneNumberUtil.swift */,
 				50C98A402B69D9340065BD2E /* PhoneNumberVisibilityFetcher.swift */,
 				B95BBAC12BB36025009EFB4A /* ProfileName.swift */,
@@ -11393,7 +11387,6 @@
 				F9C5CD0B289453B300548EEE /* OWSViewedReceiptsForLinkedDevicesMessage.h in Headers */,
 				F9C5CD11289453B300548EEE /* OWSViewOnceMessageReadSyncMessage.h in Headers */,
 				F9C5CCDB289453B300548EEE /* PhoneNumber.h in Headers */,
-				F9C5CCDC289453B300548EEE /* PhoneNumberUtil.h in Headers */,
 				F9C5CC5B289453B300548EEE /* PreKeyBundle+jsonDict.h in Headers */,
 				F9C5CD43289453B300548EEE /* PreKeyBundle.h in Headers */,
 				F9C5CD46289453B300548EEE /* PreKeyRecord.h in Headers */,
@@ -14083,7 +14076,6 @@
 				664657312AC36A130099DE1C /* PhoneNumberDiscoverabilityManager.swift in Sources */,
 				664657332AC36A510099DE1C /* PhoneNumberDiscoverabilityManagerImpl.swift in Sources */,
 				F9CAC7832919B35E00EEC1DE /* PhoneNumberRegions.swift in Sources */,
-				F9C5CCBB289453B300548EEE /* PhoneNumberUtil.m in Sources */,
 				F9C5CCD6289453B300548EEE /* PhoneNumberUtil.swift in Sources */,
 				50C98A412B69D9340065BD2E /* PhoneNumberVisibilityFetcher.swift in Sources */,
 				6694BF682B36484900B18764 /* PinnedThreadManager.swift in Sources */,

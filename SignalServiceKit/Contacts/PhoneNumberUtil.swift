@@ -21,6 +21,101 @@ public class PhoneNumberUtilSwiftValues {
 
 // MARK: -
 
+@objc
+public class PhoneNumberUtil: NSObject {
+    public let swiftValues: PhoneNumberUtilSwiftValues
+
+    public init(swiftValues: PhoneNumberUtilSwiftValues) {
+        self.swiftValues = swiftValues
+
+        super.init()
+
+        SwiftSingletons.register(self)
+    }
+
+    // TODO: This function should use characters instead of UTF16 code units, but it's been translated as-is from ObjC for now.
+    /// Translates cursor position from a given offset to another offset between a source and target string.
+    ///
+    /// - Parameters:
+    ///   - offset: UTF-16 code unit offset into the source string
+    /// - Returns:
+    ///   a UTF-16 code unit offset into the target string
+    public static func translateCursorPosition(_ offset: UInt, from source: String, to target: String, stickingRightward preferHigh: Bool) -> UInt {
+        owsAssertDebug(offset <= source.utf16.count)
+        if offset > source.utf16.count {
+            return 0
+        }
+
+        let n = source.utf16.count
+        let m = target.utf16.count
+
+        var moves = Array(repeating: Array(repeating: Int(0), count: m + 1), count: n + 1)
+        do {
+            // Wagner-Fischer algorithm for computing edit distance, with a tweaks:
+            // - Tracks best moves at each location, to allow reconstruction of edit path
+            // - Does not allow substitutions
+            // - Over-values digits relative to other characters, so they're "harder" to delete or insert
+            let digitValue: UInt = 10
+            var scores = Array(repeating: Array(repeating: UInt(0), count: m + 1), count: n + 1)
+            moves[0][0] = 0  // (match) move up and left
+            scores[0][0] = 0
+            if n > 0 {
+                for i in 1...n {
+                    scores[i][0] = UInt(i)
+                    moves[i][0] = -1  // (deletion) move left
+                }
+            }
+            if m > 0 {
+                for j in 1...m {
+                    scores[0][j] = UInt(j)
+                    moves[0][j] = +1  // (insertion) move up
+                }
+            }
+
+            if n > 0 && m > 0 {
+                let digits = CharacterSet.decimalDigits as NSCharacterSet
+                for i in 1...n {
+                    let c1 = source.utf16[source.utf16.index(source.utf16.startIndex, offsetBy: i - 1)]
+                    let isDigit1 = digits.characterIsMember(c1)
+                    for j in 1...m {
+                        let c2 = target.utf16[target.utf16.index(target.utf16.startIndex, offsetBy: j - 1)]
+                        let isDigit2 = digits.characterIsMember(c2)
+                        if c1 == c2 {
+                            scores[i][j] = scores[i - 1][j - 1]
+                            moves[i][j] = 0  // move up-and-left
+                        } else {
+                            let del = scores[i - 1][j] + (isDigit1 ? digitValue : UInt(1))
+                            let ins = scores[i][j - 1] + (isDigit2 ? digitValue : UInt(1))
+                            let isDel = del < ins
+                            scores[i][j] = isDel ? del : ins
+                            moves[i][j] = isDel ? -1 : +1
+                        }
+                    }
+                }
+            }
+        }
+
+        // Backtrack to find desired corresponding offset
+        var i = n
+        var j = m
+        while true {
+            if i == offset && preferHigh {
+                return UInt(j)
+            }
+            while moves[i][j] == +1 {
+                j -= 1  // zip upward
+            }
+            if i == offset {
+                return UInt(j)  // late exit
+            }
+            if moves[i][j] == 0 {
+                j -= 1
+            }
+            i -= 1
+        }
+    }
+}
+
 extension PhoneNumberUtil {
     // country code -> calling code
     public func callingCode(fromCountryCode countryCode: String) -> String? {
