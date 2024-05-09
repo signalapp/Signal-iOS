@@ -144,6 +144,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         isViewVisible = true
+        cameraCaptureSession.updateVideoCaptureOrientation()
     }
 
     override func viewWillDisappear(_ animated: Bool) {

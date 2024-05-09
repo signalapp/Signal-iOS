@@ -342,6 +342,12 @@ class CameraCaptureSession: NSObject {
         videoConnection.videoOrientation = orientation
     }
 
+    func updateVideoCaptureOrientation() {
+        sessionQueue.async {
+            self.videoCapture.setVideoOrientation(self.captureOrientation)
+        }
+    }
+
     // Outputs initial orientation.
     private func beginObservingOrientationChanges() -> AVCaptureVideoOrientation? {
         guard motionManager == nil else { return nil }
@@ -381,6 +387,8 @@ class CameraCaptureSession: NSObject {
                 return
             }
             self.captureOrientation = orientation
+
+            self.updateVideoCaptureOrientation()
 
             DispatchQueue.main.async {
                 self.delegate?.cameraCaptureSession(self, didChangeOrientation: orientation)
@@ -782,11 +790,9 @@ class CameraCaptureSession: NSObject {
             self.setTorchMode(self.flashMode.toTorchMode)
 
             let audioCaptureStarted = self.startAudioCapture()
-            let captureOrientation = self.captureOrientation
 
             do {
                 try videoCapture.beginRecording(
-                    captureOrientation: captureOrientation,
                     aspectRatio: aspectRatio,
                     includeAudio: audioCaptureStarted
                 )
@@ -1136,20 +1142,17 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
     let videoDataOutput = AVCaptureVideoDataOutput()
     let audioDataOutput = AVCaptureAudioDataOutput()
 
-    private static let videoCaptureQueue = DispatchQueue(label: "org.signal.capture.video", qos: .userInteractive)
-    private var videoCaptureQueue: DispatchQueue { VideoCapture.videoCaptureQueue }
-
-    private static let audioCaptureQueue = DispatchQueue(label: "org.signal.capture.audio", qos: .userInteractive)
-    private var audioCaptureQueue: DispatchQueue { VideoCapture.audioCaptureQueue }
-
+    private let videoCaptureQueue = DispatchQueue(label: "org.signal.capture.video", qos: .userInteractive)
+    private let audioCaptureQueue = DispatchQueue(label: "org.signal.capture.audio", qos: .userInteractive)
     private let recordingQueue = DispatchQueue(label: "org.signal.capture.recording", qos: .userInteractive)
 
     private var assetWriter: AVAssetWriter?
     private var videoWriterInput: AVAssetWriterInput?
     private var audioWriterInput: AVAssetWriterInput?
 
+    // Access on `recordingQueue`.
     private var isAssetWriterSessionStarted = false
-    private var isAssetWriterAcceptingSampleBuffers = AtomicBool(false, lock: .sharedGlobal)
+    private var isAssetWriterAcceptingSampleBuffers = false
     private var needsFinishAssetWriterSession = false
 
     weak var delegate: VideoCaptureDelegate?
@@ -1167,16 +1170,8 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         audioDataOutput.setSampleBufferDelegate(self, queue: audioCaptureQueue)
     }
 
-    func beginRecording(
-        captureOrientation: AVCaptureVideoOrientation,
-        aspectRatio: CGFloat,
-        includeAudio: Bool
-    ) throws {
-        guard let videoConnection = videoDataOutput.connection(with: .video) else {
-            throw OWSAssertionError("videoConnection was unexpectedly nil")
-        }
-        videoConnection.videoOrientation = captureOrientation
-
+    // main thread
+    func beginRecording(aspectRatio: CGFloat, includeAudio: Bool) throws {
         let outputURL = OWSFileSystem.temporaryFileUrl(fileExtension: "mp4")
         let assetWriter = try AVAssetWriter(outputURL: outputURL, fileType: .mp4)
 
@@ -1213,7 +1208,7 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
             throw PhotoCaptureError.initializationFailed
         }
 
-        Logger.info("videoOrientation: \(captureOrientation), captured: \(capturedWidth)x\(capturedHeight), output: \(outputSize.width)x\(outputSize.height), aspectRatio: \(aspectRatio)")
+        Logger.info("captured: \(capturedWidth)x\(capturedHeight), output: \(outputSize.width)x\(outputSize.height), aspectRatio: \(aspectRatio)")
 
         let videoWriterInput = AVAssetWriterInput(
             mediaType: .video,
@@ -1250,9 +1245,12 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         }
         self.assetWriter = assetWriter
 
-        isAssetWriterAcceptingSampleBuffers.set(true)
+        recordingQueue.async {
+            self.isAssetWriterAcceptingSampleBuffers = true
+        }
     }
 
+    // main thread
     func stopRecording() {
         AssertIsOnMainThread()
 
@@ -1277,13 +1275,14 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         return CMTimeSubtract(timeOfLastAppendedVideoSampleBuffer, timeOfFirstAppendedVideoSampleBuffer)
     }
 
+    // `recordingQueue`
     private func finishAssetWriterSession() {
         guard let assetWriter else {
             owsFailBeta("assetWriter is nil")
             return
         }
 
-        isAssetWriterAcceptingSampleBuffers.set(false)
+        isAssetWriterAcceptingSampleBuffers = false
 
         videoSampleTimeLock.lock()
         let timeOfLastAppendedVideoSampleBuffer = timeOfLastAppendedVideoSampleBuffer
@@ -1315,6 +1314,16 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         }
     }
 
+    func setVideoOrientation(_ videoOrientation: AVCaptureVideoOrientation) {
+        guard let videoConnection = videoDataOutput.connection(with: .video) else {
+            owsFailBeta("videoConnection was unexpectedly nil")
+            return
+        }
+        Logger.info("set videoOrientation: \(videoOrientation)")
+        videoConnection.videoOrientation = videoOrientation
+    }
+
+    // `recordingQueue`
     private func append(sampleBuffer: CMSampleBuffer, to assetWriterInput: AVAssetWriterInput) {
         guard let assetWriter else {
             owsFailBeta("assetWriter is nil")
@@ -1331,8 +1340,7 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
             }
         }
 
-        let acceptingSampleBuffers = isAssetWriterAcceptingSampleBuffers.get()
-        guard acceptingSampleBuffers && isAssetWriterSessionStarted else {
+        guard isAssetWriterAcceptingSampleBuffers && isAssetWriterSessionStarted else {
             return
         }
         guard assetWriterInput.isReadyForMoreMediaData else {
@@ -1369,8 +1377,9 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         }
     }
 
+    // `videoCaptureQueue` or `audioCaptureQueue`
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        guard isAssetWriterAcceptingSampleBuffers.get() else {
+        guard assetWriter != nil else {
             // Scan for QR codes when _not_ recording.
             qrCodeSampleBufferScanner.captureOutput(output, didOutput: sampleBuffer, from: connection)
             return
