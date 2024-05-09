@@ -2190,7 +2190,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                       componentView: componentView,
                                       messageSwipeActionState: messageSwipeActionState,
                                       hasFinished: false)
-            tryToApplySwipeAction(componentView: componentView, isAnimated: false)
+            tryToApplySwipeAction(componentView: componentView)
         }
     }
 
@@ -2241,9 +2241,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                       componentView: componentView,
                                       messageSwipeActionState: messageSwipeActionState,
                                       hasFinished: hasFinished)
-            let hasFailed = [.failed, .cancelled].contains(sender.state)
-            let isAnimated = !hasFailed
-            tryToApplySwipeAction(componentView: componentView, isAnimated: isAnimated)
+            tryToApplySwipeAction(componentView: componentView)
             if sender.state == .ended {
                 clearSwipeAction(componentView: componentView,
                                  renderItem: renderItem,
@@ -2262,7 +2260,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             owsFailDebug("Unexpected componentView.")
             return
         }
-        tryToApplySwipeAction(componentView: componentView, isAnimated: false)
+        tryToApplySwipeAction(componentView: componentView)
     }
 
     public override func cellDidBecomeVisible(componentView: CVComponentView,
@@ -2274,7 +2272,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             owsFailDebug("Unexpected componentView.")
             return
         }
-        tryToApplySwipeAction(componentView: componentView, isAnimated: false)
+        tryToApplySwipeAction(componentView: componentView)
     }
 
     public override func contextMenuAccessoryViews(componentView: CVComponentView) -> [ContextMenuTargetedPreviewAccessory]? {
@@ -2442,10 +2440,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         }
     }
 
-    private func tryToApplySwipeAction(
-        componentView: CVComponentViewMessage,
-        isAnimated: Bool
-    ) {
+    private func tryToApplySwipeAction(componentView: CVComponentViewMessage) {
         AssertIsOnMainThread()
 
         guard let swipeActionProgress = swipeActionProgress else {
@@ -2485,21 +2480,11 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             iconAlpha = CGFloat.inverseLerp(alpha, min: 0, max: swipeActionOffsetThreshold).clamp01()
         }
 
-        let animations = {
-            swipeToReplyIconView.alpha = iconAlpha
-            componentView.setSwipeToReplyOffset(fastOffset: CGPoint(x: position, y: 0),
-                                                slowOffset: CGPoint(x: slowPosition, y: 0))
-        }
-        if isAnimated {
-            UIView.animate(withDuration: 0.1,
-                           delay: 0,
-                           options: [.beginFromCurrentState],
-                           animations: animations,
-                           completion: nil)
-        } else {
-            componentView.removeSwipeActionAnimations()
-            animations()
-        }
+        componentView.removeSwipeActionAnimations()
+
+        swipeToReplyIconView.alpha = iconAlpha
+        componentView.setSwipeToReplyOffset(fastOffset: CGPoint(x: position, y: 0),
+                                            slowOffset: CGPoint(x: slowPosition, y: 0))
     }
 
     private func clearSwipeAction(componentView: CVComponentViewMessage,
