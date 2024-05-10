@@ -1043,6 +1043,7 @@ extension PhotoCaptureViewController {
         }
         cameraCaptureSession.switchCameraPosition().done { [weak self] in
             self?.updateUIOnCameraPositionChange(animated: true)
+            self?.cameraCaptureSession.updateVideoCaptureOrientation()
         }.catch { error in
             self.showFailureUI(error: error)
         }
