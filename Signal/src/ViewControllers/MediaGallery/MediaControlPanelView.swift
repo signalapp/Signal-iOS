@@ -196,7 +196,11 @@ class MediaControlPanelView: UIView {
         ])
 
         // Attach leading, top and trailing edges of each view to respective layout guide.
-        thumbnailStripTopMargin = thumbnailStrip.topAnchor.constraint(equalTo: thumbnailStripArea.topAnchor)
+        thumbnailStripTopMargin = {
+            let constraint = thumbnailStrip.topAnchor.constraint(equalTo: thumbnailStripArea.topAnchor)
+            constraint.priority = .defaultHigh + 100
+            return constraint
+        }()
         addConstraints([
             captionView.leadingAnchor.constraint(equalTo: captionViewArea.leadingAnchor),
             captionView.topAnchor.constraint(equalTo: captionViewArea.topAnchor, constant: 12),
@@ -210,11 +214,7 @@ class MediaControlPanelView: UIView {
             thumbnailStrip.leadingAnchor.constraint(equalTo: thumbnailStripArea.leadingAnchor),
             thumbnailStripTopMargin!,
             thumbnailStrip.trailingAnchor.constraint(equalTo: thumbnailStripArea.trailingAnchor),
-            {
-                let constraint = thumbnailStrip.bottomAnchor.constraint(equalTo: thumbnailStripArea.bottomAnchor)
-                constraint.priority = .defaultHigh + 100
-                return constraint
-            }()
+            thumbnailStrip.bottomAnchor.constraint(equalTo: thumbnailStripArea.bottomAnchor)
        ])
 
         // Position Share and Forward buttons.
@@ -436,14 +436,20 @@ class MediaControlPanelView: UIView {
 
     private var videoPlayer: VideoPlayer?
 
-    // Call when user taps on media rail thumbnail and there's a non-interactive transition to a new media.
-    func configureWithMediaItem(_ item: MediaGalleryItem, videoPlayer: VideoPlayer?, animated: Bool) {
+    func configureWithMediaItem(
+        _ item: MediaGalleryItem,
+        videoPlayer: VideoPlayer?,
+        transitionDirection: UIPageViewController.NavigationDirection,
+        animated: Bool
+    ) {
         guard currentItem !== item else { return }
 
         currentItem = item
         if currentMediaAlbum?.items.contains(item) != true {
             currentMediaAlbum = mediaGallery.album(for: item)
         }
+
+        let animationDuration: TimeInterval = animated ? 0.3 : 0
 
         // Show / hide video playback controls.
         if let videoPlayer, item.isVideo {
@@ -463,16 +469,16 @@ class MediaControlPanelView: UIView {
                 performInitialLayoutForPlayerControls()
             }
 
-            playerControlsView.setIsHidden(false, animated: animated)
-            playerProgressView.setIsHidden(false, animated: animated)
+            playerControlsView.setIsHidden(false, withAnimationDuration: animationDuration)
+            playerProgressView.setIsHidden(false, withAnimationDuration: animationDuration)
         } else {
             self.videoPlayer = nil
 
             if let videoPlaybackControlView, !videoPlaybackControlView.isHidden {
-                videoPlaybackControlView.setIsHidden(true, animated: animated)
+                videoPlaybackControlView.setIsHidden(true, withAnimationDuration: animationDuration)
             }
             if let videoPlaybackProgressView, !videoPlaybackProgressView.isHidden {
-                videoPlaybackProgressView.setIsHidden(true, animated: animated)
+                videoPlaybackProgressView.setIsHidden(true, withAnimationDuration: animationDuration)
                 videoPlaybackProgressView.videoPlayer = nil
             }
         }
@@ -481,15 +487,61 @@ class MediaControlPanelView: UIView {
         captionView.content = item.captionForDisplay
 
         // Update media strip.
-        thumbnailStrip.configureCellViews(
-            itemProvider: currentMediaAlbum!,
-            focusedItem: item,
-            cellViewBuilder: { _ in
-                return GalleryRailCellView(configuration: Self.galleryCellConfiguration)
-            },
-            animated: animated && !thumbnailStrip.isHidden
-        )
-        thumbnailStrip.setIsHidden(shouldHideThumbnailStrip, animated: animated)
+        let shouldHideThumbnailStrip = shouldHideThumbnailStrip
+
+        // Don't update thumbnail strip if we're going to hide it for better visual experience.
+        if !shouldHideThumbnailStrip {
+            thumbnailStrip.configureCellViews(
+                itemProvider: currentMediaAlbum!,
+                focusedItem: item,
+                cellViewBuilder: { _ in
+                    return GalleryRailCellView(configuration: Self.galleryCellConfiguration)
+                },
+                animated: animated && !thumbnailStrip.isHidden
+            )
+        }
+
+        if animationDuration > 0, shouldHideThumbnailStrip != thumbnailStrip.isHidden {
+            let animator = UIViewPropertyAnimator(
+                duration: animationDuration,
+                springDamping: 1,
+                springResponse: 0.3
+            )
+
+            var offset: CGFloat = 20
+            if transitionDirection == .reverse {
+                offset = -offset
+            }
+            if CurrentAppContext().isRTL {
+                offset = -offset
+            }
+            if shouldHideThumbnailStrip {
+                animator.addAnimations {
+                    self.thumbnailStrip.alpha = 0
+                    self.thumbnailStrip.layer.transform = CATransform3DMakeTranslation(-offset, 0, 0)
+                }
+                animator.addCompletion { _ in
+                    self.thumbnailStrip.alpha = 1
+                    self.thumbnailStrip.layer.transform = CATransform3DIdentity
+
+                    self.thumbnailStrip.isHidden = true
+                }
+            } else {
+                thumbnailStrip.alpha = 0
+                thumbnailStrip.layer.transform = CATransform3DMakeTranslation(offset, 0, 0)
+
+                thumbnailStrip.isHidden = false
+
+                animator.addAnimations {
+                    self.thumbnailStrip.alpha = 1
+                    self.thumbnailStrip.layer.transform = CATransform3DIdentity
+                }
+            }
+
+            animator.startAnimation()
+        } else {
+            thumbnailStrip.isHidden = shouldHideThumbnailStrip
+        }
 
         setNeedsUpdateConstraints()
     }

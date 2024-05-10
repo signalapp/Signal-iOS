@@ -227,6 +227,8 @@ class MediaPageViewController: UIPageViewController {
         return currentViewController?.galleryItem
     }
 
+    private var currentPageSwipeDirection: UIPageViewController.NavigationDirection = .forward
+
     private func setCurrentItem(
         _ item: MediaGalleryItem,
         direction: UIPageViewController.NavigationDirection,
@@ -242,11 +244,11 @@ class MediaPageViewController: UIPageViewController {
         let mediaPage = buildGalleryPage(galleryItem: item)
         mediaPage.shouldAutoPlayVideo = true
         setViewControllers([mediaPage], direction: direction, animated: animated) { _ in
-            self.didTransitionToNewPage(animated: animated)
+            self.didTransitionToNewPage(animated: animated, direction: direction)
         }
     }
 
-    private func didTransitionToNewPage(animated: Bool) {
+    private func didTransitionToNewPage(animated: Bool, direction: UIPageViewController.NavigationDirection) {
         guard let currentViewController else {
             owsFailBeta("No MediaItemViewController")
             return
@@ -255,6 +257,7 @@ class MediaPageViewController: UIPageViewController {
         bottomMediaPanel.configureWithMediaItem(
             currentViewController.galleryItem,
             videoPlayer: currentViewController.videoPlayer,
+            transitionDirection: direction,
             animated: animated
         )
 
@@ -586,6 +589,22 @@ extension MediaPageViewController: UIPageViewControllerDelegate {
 
     func pageViewController(
         _ pageViewController: UIPageViewController,
+        willTransitionTo pendingViewControllers: [UIViewController]
+    ) {
+        guard let currentPage = pageViewController.viewControllers?.first as? MediaItemViewController,
+              let newPage = pendingViewControllers.first as? MediaItemViewController else
+        {
+            return
+        }
+        if currentPage.galleryItem.orderingKey < newPage.galleryItem.orderingKey {
+            currentPageSwipeDirection = .forward
+        } else {
+            currentPageSwipeDirection = .reverse
+        }
+    }
+
+    func pageViewController(
+        _ pageViewController: UIPageViewController,
         didFinishAnimating finished: Bool,
         previousViewControllers: [UIViewController],
         transitionCompleted: Bool
@@ -597,7 +616,7 @@ extension MediaPageViewController: UIPageViewControllerDelegate {
         }
 
         if transitionCompleted {
-            didTransitionToNewPage(animated: true)
+            didTransitionToNewPage(animated: true, direction: currentPageSwipeDirection)
         }
     }
 }
