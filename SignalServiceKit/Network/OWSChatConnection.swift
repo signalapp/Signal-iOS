@@ -1817,7 +1817,7 @@ internal class OWSChatConnectionUsingLibSignal: OWSChatConnection {
         owsAssertDebug(requestUrl.host == nil)
         owsAssertDebug(!requestUrl.path.hasPrefix("/"))
 
-        let libsignalRequest = ChatService.Request(method: requestInfo.httpMethod, pathAndQuery: "/\(requestUrl)", headers: httpHeaders.headers, body: body, timeout: 10)
+        let libsignalRequest = ChatService.Request(method: requestInfo.httpMethod, pathAndQuery: "/\(requestUrl.relativeString)", headers: httpHeaders.headers, body: body, timeout: 10)
 
         Logger.info("\(label) Making request")
 
