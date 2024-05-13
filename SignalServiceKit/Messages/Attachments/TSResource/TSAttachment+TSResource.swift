@@ -126,22 +126,7 @@ extension TSAttachmentStream: TSResourceStream {
             throw OWSAssertionError("Missing file")
         }
         let fileUrl = URL(fileURLWithPath: filePath)
-        var asset = AVURLAsset(url: fileUrl)
-        if
-            !asset.isReadable,
-            let extensionOverride = MimeTypeUtil.alternativeAudioFileExtension(fileExtension: fileUrl.pathExtension)
-        {
-            let symlinkUrl = OWSFileSystem.temporaryFileUrl(
-                fileExtension: extensionOverride,
-                isAvailableWhileDeviceLocked: true
-            )
-            try FileManager.default.createSymbolicLink(
-                at: symlinkUrl,
-                withDestinationURL: fileUrl
-            )
-            asset = AVURLAsset(url: symlinkUrl)
-        }
-        return asset
+        return AVURLAsset(url: fileUrl)
     }
 
     public var concreteStreamType: ConcreteTSResourceStream {

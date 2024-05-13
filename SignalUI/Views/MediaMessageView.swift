@@ -82,11 +82,12 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
     }
 
     private func createAudioPreview() {
-        guard let audioPlayer = AudioPlayer(attachment: attachment, audioBehavior: .playback) else {
+        guard let dataUrl = attachment.dataUrl else {
             createGenericPreview()
             return
         }
 
+        let audioPlayer = AudioPlayer(mediaUrl: dataUrl, audioBehavior: .playback)
         audioPlayer.delegate = self
         self.audioPlayer = audioPlayer
 

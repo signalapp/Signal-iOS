@@ -384,7 +384,17 @@ private class CVAudioPlayback: NSObject, AudioPlayerDelegate {
         }
         self.attachmentId = attachmentStream.attachmentStream.resourceId
 
-        audioPlayer = AudioPlayer(attachment: attachmentStream.attachmentStream, audioBehavior: .audioMessagePlayback)
+        guard let mediaURL = attachmentStream.attachmentStream.bridgeStream.originalMediaURL else {
+            owsFailDebug("mediaURL was unexpectedly nil for attachment: \(attachmentStream)")
+            return nil
+        }
+
+        guard FileManager.default.fileExists(atPath: mediaURL.path) else {
+            owsFailDebug("audio file missing at path: \(mediaURL)")
+            return nil
+        }
+
+        audioPlayer = AudioPlayer(mediaUrl: mediaURL, audioBehavior: .audioMessagePlayback)
         uniqueThreadId = attachment.owningMessage?.uniqueThreadId
 
         super.init()

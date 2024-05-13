@@ -255,7 +255,7 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
         var asset = AVURLAsset(url: audioUrl)
 
         if !asset.isReadable {
-            if let extensionOverride = MimeTypeUtil.alternativeAudioFileExtension(fileExtension: audioUrl.pathExtension) {
+            if let extensionOverride = Self.extensionOverride(forPathExtension: audioUrl.pathExtension) {
                 let symlinkPath = OWSFileSystem.temporaryFilePath(
                     fileExtension: extensionOverride,
                     isAvailableWhileDeviceLocked: true
@@ -281,12 +281,60 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
         mimeType: String
     ) throws -> AVAsset {
         let audioUrl = URL(fileURLWithPath: filePath)
-        return try AVAsset.fromEncryptedFile(
-            at: audioUrl,
-            encryptionKey: encryptionKey,
-            plaintextLength: plaintextDataLength,
-            mimeType: mimeType
-        )
+
+        var initialError: Error?
+        do {
+            let asset = try AVAsset.fromEncryptedFile(
+                at: audioUrl,
+                encryptionKey: encryptionKey,
+                plaintextLength: plaintextDataLength,
+                mimeType: mimeType
+            )
+            if asset.isReadable {
+                return asset
+            }
+        } catch let error {
+            initialError = error
+        }
+
+        if
+            let pathExtension = MimeTypeUtil.fileExtensionForMimeType(mimeType),
+            let extensionOverride = Self.extensionOverride(forPathExtension: pathExtension),
+            let mimeTypeOverride = MimeTypeUtil.mimeTypeForFileExtension(extensionOverride)
+        {
+            // Give it a second try with the overriden mimeType
+            return try AVAsset.fromEncryptedFile(
+                at: audioUrl,
+                encryptionKey: encryptionKey,
+                plaintextLength: plaintextDataLength,
+                mimeType: mimeTypeOverride
+            )
+        } else {
+            throw initialError ?? OWSAssertionError("Unreadable AVAsset!")
+        }
+    }
+
+    private static func extensionOverride(forPathExtension pathExtension: String) -> String? {
+        // In some cases, Android sends audio messages with the "audio/mpeg" content type. This
+        // makes our choice of file extension ambiguous—`.mp3` or `.m4a`? AVFoundation uses the
+        // extension to read the file, and if the extension is wrong, it won't be readable.
+        //
+        // We "lie" about the extension to generate the waveform so that AVFoundation may read
+        // it. This is brittle but necessary to work around the buggy marriage of Android's
+        // content type and AVFoundation's behavior.
+        //
+        // Note that we probably still want this code even if Android updates theirs, because
+        // iOS users might have existing attachments.
+        //
+        // See a similar comment in `AudioPlayer` and
+        // <https://github.com/signalapp/Signal-iOS/issues/3590>.
+        let extensionOverride: String?
+        switch pathExtension {
+        case "m4a": extensionOverride = "aac"
+        case "mp3": extensionOverride = "m4a"
+        default: extensionOverride = nil
+        }
+        return extensionOverride
     }
 
     // MARK: - Sampling

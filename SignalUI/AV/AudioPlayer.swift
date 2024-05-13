@@ -37,7 +37,7 @@ public class AudioPlayer: NSObject {
     public weak var delegate: AudioPlayerDelegate?
 
     public var duration: TimeInterval {
-        _duration ?? 0
+        audioPlayer?.duration ?? 0
     }
 
     // 1 (default) is normal playback speed. 0.5 is half speed, 2.0 is twice as fast.
@@ -51,46 +51,17 @@ public class AudioPlayer: NSObject {
 
     public var isLooping: Bool = false
 
-    private enum Source {
-        case decryptedFile(URL)
-        case attachment(TSResourceStream)
+    private let mediaUrl: URL
 
-        var description: String {
-            switch self {
-            case .decryptedFile(let url):
-                return url.absoluteString
-            case .attachment(let attachment):
-                return attachment.mimeType
-            }
-        }
-    }
-
-    private let source: Source
-
-    private var audioPlayer: AVPlayer?
+    private var audioPlayer: AVAudioPlayer?
 
     private var audioPlayerPoller: Timer?
 
     private let audioActivity: AudioActivity
 
-    public convenience init(decryptedFileUrl: URL, audioBehavior: AudioBehavior) {
-        self.init(source: .decryptedFile(decryptedFileUrl), audioBehavior: audioBehavior)
-    }
-
-    public convenience init?(attachment: SignalAttachment, audioBehavior: AudioBehavior) {
-        guard let url = attachment.dataUrl else {
-            return nil
-        }
-        self.init(source: .decryptedFile(url), audioBehavior: audioBehavior)
-    }
-
-    public convenience init(attachment: TSResourceStream, audioBehavior: AudioBehavior) {
-        self.init(source: .attachment(attachment), audioBehavior: audioBehavior)
-    }
-
-    private init(source: Source, audioBehavior: AudioBehavior) {
-        self.source = source
-        audioActivity = AudioActivity(audioDescription: "\(Self.logTag()) \(source.description)", behavior: audioBehavior)
+    public init(mediaUrl: URL, audioBehavior: AudioBehavior) {
+        self.mediaUrl = mediaUrl
+        audioActivity = AudioActivity(audioDescription: "\(Self.logTag()) \(mediaUrl)", behavior: audioBehavior)
 
         super.init()
 
@@ -109,26 +80,6 @@ public class AudioPlayer: NSObject {
 
     // MARK: - Playback
 
-    private var currentTime: TimeInterval {
-        guard
-            let cmTime = audioPlayer?.currentTime(),
-            cmTime.timescale > 0
-        else {
-            return 0
-        }
-        return CMTimeGetSeconds(cmTime)
-    }
-
-    private var _duration: TimeInterval? {
-        guard
-            let cmTime = audioPlayer?.currentItem?.duration,
-            cmTime.timescale > 0
-        else {
-            return nil
-        }
-        return CMTimeGetSeconds(cmTime)
-    }
-
     public func play() {
         AssertIsOnMainThread()
 
@@ -140,7 +91,7 @@ public class AudioPlayer: NSObject {
 
         delegate?.audioPlaybackState = .playing
 
-        audioPlayer?.playImmediately(atRate: playbackRate)
+        audioPlayer?.play()
 
         audioPlayerPoller?.invalidate()
         let audioPlayerPoller = Timer(timeInterval: 0.05, repeats: true) { [weak self] timer in
@@ -171,7 +122,7 @@ public class AudioPlayer: NSObject {
 
         audioPlayerPoller?.invalidate()
 
-        delegate?.setAudioProgress(self.currentTime, duration: self.duration, playbackRate: playbackRate)
+        delegate?.setAudioProgress(audioPlayer.currentTime, duration: audioPlayer.duration, playbackRate: playbackRate)
 
         updateNowPlayingInfo()
 
@@ -192,33 +143,33 @@ public class AudioPlayer: NSObject {
             return
         }
 
-        func makeAudioPlayer(mediaUrl: URL) throws -> AVPlayer {
-            var asset = AVURLAsset(url: mediaUrl)
-            if !asset.isReadable {
-                if let extensionOverride = MimeTypeUtil.alternativeAudioFileExtension(fileExtension: mediaUrl.pathExtension) {
-                    let symlinkUrl = OWSFileSystem.temporaryFileUrl(
-                        fileExtension: extensionOverride,
-                        isAvailableWhileDeviceLocked: true
-                    )
-                    try FileManager.default.createSymbolicLink(
-                        at: symlinkUrl,
-                        withDestinationURL: mediaUrl
-                    )
-                    asset = AVURLAsset(url: symlinkUrl)
-                }
-            }
-            return AVPlayer(playerItem: .init(asset: asset))
+        // In some cases, Android sends audio messages with the "audio/mpeg" content type. This
+        // makes our choice of file extension ambiguous—`.mp3` or `.m4a`? AVFoundation uses the
+        // extension to read the file, and if the extension is wrong, it won't be playable.
+        //
+        // In this case, we use a file type hint to tell AVFoundation to try the other type. This
+        // is brittle but necessary to work around the buggy marriage of Android's content type and
+        // AVFoundation's default behavior.
+        //
+        // Note that we probably still want this code even if Android updates theirs, because
+        // iOS users might have existing attachments.
+        //
+        // See a similar comment in `AudioWaveformManager` and
+        // <https://github.com/signalapp/Signal-iOS/issues/3590>.
+        let fileTypeHint: AVFileType?
+        lazy var isReadable = AVURLAsset(url: mediaUrl).isReadable
+        switch mediaUrl.pathExtension {
+        case "mp3": fileTypeHint = isReadable ? nil : AVFileType.m4a
+        case "m4a": fileTypeHint = isReadable ? nil : AVFileType.mp3
+        default: fileTypeHint = nil
         }
 
-        let audioPlayer: AVPlayer
+        let audioPlayer: AVAudioPlayer
         do {
-            switch source {
-            case .decryptedFile(let url):
-                audioPlayer = try makeAudioPlayer(mediaUrl: url)
-            case .attachment(let attachment):
-                let asset = try attachment.decryptedAVAsset()
-                audioPlayer = .init(playerItem: .init(asset: asset))
-            }
+            audioPlayer = try AVAudioPlayer(
+                contentsOf: mediaUrl,
+                fileTypeHint: fileTypeHint?.rawValue
+            )
         } catch let error as NSError {
             Logger.error("Error: \(error)")
             stop()
@@ -237,13 +188,15 @@ public class AudioPlayer: NSObject {
             return
         }
 
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(audioPlayerDidFinishPlaying),
-            name: AVPlayerItem.didPlayToEndTimeNotification,
-            object: audioPlayer.currentItem
-        )
+        audioPlayer.delegate = self
+        // Always enable playback rate from the start; it can only
+        // be set before playing begins.
+        audioPlayer.enableRate = true
         audioPlayer.rate = playbackRate
+        audioPlayer.prepareToPlay()
+        if isLooping {
+            audioPlayer.numberOfLoops = -1
+        }
         self.audioPlayer = audioPlayer
 
         if delegate?.audioPlaybackState == .stopped {
@@ -283,18 +236,14 @@ public class AudioPlayer: NSObject {
     public func setCurrentTime(_ currentTime: TimeInterval) {
         setupAudioPlayer()
 
-        guard
-            let audioPlayer,
-            let timescale = audioPlayer.currentItem?.duration.timescale
-        else {
+        guard let audioPlayer else {
             owsFailDebug("audioPlayer == nil")
             return
         }
 
-        let cmTime = CMTimeMake(value: Int64(currentTime * Double(timescale)), timescale: timescale)
-        audioPlayer.seek(to: cmTime, toleranceBefore: .zero, toleranceAfter: .zero)
+        audioPlayer.currentTime = currentTime
 
-        delegate?.setAudioProgress(self.currentTime, duration: self.duration, playbackRate: playbackRate)
+        delegate?.setAudioProgress(audioPlayer.currentTime, duration: audioPlayer.duration, playbackRate: playbackRate)
 
         updateNowPlayingInfo()
     }
@@ -320,7 +269,7 @@ public class AudioPlayer: NSObject {
         guard supportsBackgroundPlaybackControls else { return }
 
         guard
-            audioPlayer != nil,
+            let audioPlayer,
             let backgroundPlaybackName = audioActivity.backgroundPlaybackName, !backgroundPlaybackName.isEmpty
         else {
             return
@@ -328,8 +277,8 @@ public class AudioPlayer: NSObject {
 
         MPNowPlayingInfoCenter.default().nowPlayingInfo = [
             MPMediaItemPropertyTitle: backgroundPlaybackName,
-            MPMediaItemPropertyPlaybackDuration: self.duration,
-            MPNowPlayingInfoPropertyElapsedPlaybackTime: self.currentTime
+            MPMediaItemPropertyPlaybackDuration: audioPlayer.duration,
+            MPNowPlayingInfoPropertyElapsedPlaybackTime: audioPlayer.currentTime
         ]
     }
 
@@ -381,28 +330,22 @@ public class AudioPlayer: NSObject {
         AssertIsOnMainThread()
 
         owsAssertDebug(audioPlayerPoller != nil)
-        guard audioPlayer != nil else {
+        guard let audioPlayer else {
             owsFailDebug("audioPlayer == nil")
             return
         }
 
-        delegate?.setAudioProgress(self.currentTime, duration: self.duration, playbackRate: playbackRate)
+        delegate?.setAudioProgress(audioPlayer.currentTime, duration: audioPlayer.duration, playbackRate: playbackRate)
     }
 }
 
-extension AudioPlayer {
+extension AudioPlayer: AVAudioPlayerDelegate {
 
-    @objc
-    fileprivate func audioPlayerDidFinishPlaying() {
+    public func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         AssertIsOnMainThread()
 
         stop()
-        audioPlayer?.seek(to: .zero, toleranceBefore: .zero, toleranceAfter: .zero)
 
         delegate?.audioPlayerDidFinish()
-
-        if self.isLooping {
-            self.play()
-        }
     }
 }

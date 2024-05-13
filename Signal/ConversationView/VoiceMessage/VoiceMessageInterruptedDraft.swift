@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import AVFoundation
 import Foundation
 import SignalServiceKit
 import SignalUI
@@ -58,14 +57,13 @@ final class VoiceMessageInterruptedDraft: VoiceMessageSendableDraft {
     }()
 
     public private(set) lazy var audioPlayer: AudioPlayer = {
-        AudioPlayer(decryptedFileUrl: audioFileUrl, audioBehavior: .audioMessagePlayback)
+        AudioPlayer(mediaUrl: audioFileUrl, audioBehavior: .audioMessagePlayback)
     }()
 
     public private(set) lazy var duration: TimeInterval? = {
         guard OWSFileSystem.fileOrFolderExists(url: audioFileUrl) else { return nil }
-        return try? AVAudioPlayer(
-            contentsOf: audioFileUrl
-        ).duration
+        audioPlayer.setupAudioPlayer()
+        return audioPlayer.duration
     }()
 
     // MARK: -
