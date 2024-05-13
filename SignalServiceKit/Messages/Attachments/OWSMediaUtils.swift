@@ -249,7 +249,7 @@ public class OWSMediaUtils: NSObject {
     @objc
     public static let kMaxVideoDimensions: CGFloat = 4096 // 4k video width
     @objc
-    public static let kMaxAnimatedImageDimensions: UInt = 1 * 1024
+    public static let kMaxAnimatedImageDimensions: UInt = 12 * 1024
     @objc
     public static let kMaxStillImageDimensions: UInt = 12 * 1024
 }
