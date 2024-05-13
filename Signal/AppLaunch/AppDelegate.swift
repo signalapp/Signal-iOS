@@ -464,7 +464,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             // This runs every 24 hours or so.
             let messageSendLog = SSKEnvironment.shared.messageSendLogRef
-            messageSendLog.cleanUpAndScheduleNextOccurrence(on: DispatchQueue.global(qos: .utility))
+            messageSendLog.cleanUpAndScheduleNextOccurrence(on: DependenciesBridge.shared.schedulers)
         }
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {

@@ -362,16 +362,22 @@ public class MessageSendLog {
         }
     }
 
-    public func cleanUpAndScheduleNextOccurrence(on scheduler: Scheduler) {
-        scheduler.async {
+    public func cleanUpAndScheduleNextOccurrence(on schedulers: Schedulers) {
+        AssertIsOnMainThread()
+        let backgroundTask = OWSBackgroundTask(label: #function)
+        schedulers.global(qos: .utility).async {
+            defer {
+                schedulers.main.async(backgroundTask.end)
+            }
+
             do {
                 try self.cleanUpExpiredEntries()
             } catch {
                 Logger.warn("Couldn't prune stale MSL entries \(error)")
             }
 
-            scheduler.asyncAfter(wallDeadline: .now() + kDayInterval) { [weak self] in
-                self?.cleanUpAndScheduleNextOccurrence(on: scheduler)
+            schedulers.main.asyncAfter(wallDeadline: .now() + kDayInterval) { [weak self] in
+                self?.cleanUpAndScheduleNextOccurrence(on: schedulers)
             }
         }
     }
