@@ -9148,7 +9148,9 @@
 				D221A08A169C9E5E00537ABF /* Products */,
 				07B6BFA4D17E1353B0696C14 /* Pods */,
 			);
+			indentWidth = 4;
 			sourceTree = "<group>";
+			tabWidth = 4;
 		};
 		D221A08A169C9E5E00537ABF /* Products */ = {
 			isa = PBXGroup;
