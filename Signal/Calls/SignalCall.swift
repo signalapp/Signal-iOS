@@ -488,7 +488,6 @@ extension SignalCall: GroupCallDelegate {
     }
 
     public func groupCall(onReactions groupCall: SignalRingRTC.GroupCall, reactions: [SignalRingRTC.Reaction]) {
-        guard FeatureFlags.callReactionReceiveSupport else { return }
         observers.elements.forEach {
             $0.groupCallReceivedReactions(
                 self,

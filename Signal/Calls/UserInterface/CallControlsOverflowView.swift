@@ -28,10 +28,8 @@ class CallControlsOverflowView: UIView {
     private override init(frame: CGRect) {
         super.init(frame: frame)
 
-        if FeatureFlags.callReactionSendSupport {
-            self.addSubview(reactionPicker)
-            reactionPicker.autoPinEdgesToSuperviewEdges()
-        }
+        self.addSubview(reactionPicker)
+        reactionPicker.autoPinEdgesToSuperviewEdges()
 
         // TODO: Add Raise Hand button
     }

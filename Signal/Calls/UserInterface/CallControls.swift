@@ -483,9 +483,6 @@ private class CallControlsViewModel {
     }
 
     var moreButtonIsHidden: Bool {
-        guard FeatureFlags.callReactionSendSupport else {
-            return true
-        }
         switch call.mode {
         case .individual(_):
             return true
