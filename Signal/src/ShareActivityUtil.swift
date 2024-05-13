@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import UIKit
 
 enum ShareActivityUtil {
     public static func present(

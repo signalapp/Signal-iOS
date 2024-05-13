@@ -3,7 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import Foundation
 import SignalUI
+import UIKit
 
 class BlurredToolbarContainer: UIView {
     let toolbar = UIToolbar()

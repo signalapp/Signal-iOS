@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalUI
+import UIKit
 
 class GroupCallSwipeToastView: UIView {
 

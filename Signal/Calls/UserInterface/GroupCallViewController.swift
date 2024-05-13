@@ -8,6 +8,7 @@ import LibSignalClient
 import SignalServiceKit
 import SignalRingRTC
 import SignalUI
+import UIKit
 
 // TODO: Eventually add 1:1 call support to this view
 // and replace CallViewController

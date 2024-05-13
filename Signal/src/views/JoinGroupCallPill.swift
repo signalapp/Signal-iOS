@@ -4,6 +4,7 @@
 //
 
 import SignalUI
+import UIKit
 
 class JoinGroupCallPill: UIControl {
 

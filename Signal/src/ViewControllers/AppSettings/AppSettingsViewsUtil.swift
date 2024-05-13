@@ -4,6 +4,7 @@
 //
 
 import SignalUI
+import UIKit
 
 public class AppSettingsViewsUtil {
     public class func newCell(cellOuterInsets: UIEdgeInsets) -> UITableViewCell {

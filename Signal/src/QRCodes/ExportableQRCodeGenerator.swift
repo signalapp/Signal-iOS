@@ -3,6 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import Foundation
+import UIKit
+
 /// A generator producing QR codes for export from the app.
 ///
 /// The QR codes are scaled up and have a black foreground over a white

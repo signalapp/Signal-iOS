@@ -6,6 +6,7 @@
 import Foundation
 import SignalServiceKit
 import SignalUI
+import UIKit
 
 extension MediaTileViewController: MediaGalleryCollectionViewUpdaterDelegate {
 

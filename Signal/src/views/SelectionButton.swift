@@ -4,6 +4,7 @@
 //
 
 import SignalUI
+import UIKit
 
 /// A checkmark in a circle to indicate an item (typically in a table view or collection view) is
 /// selected.
