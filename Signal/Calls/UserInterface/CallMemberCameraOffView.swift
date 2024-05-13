@@ -61,8 +61,11 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
                 self.detailedNoVideoIndicatorView = self.createDetailedVideoOffIndicatorView()
                 self.noVideoIndicatorImageView = self.createVideoOffIndicatorImageView()
             }
-        case .remoteInIndividual, .remoteInGroup(_):
-            self.avatarView = ConversationAvatarView(localUserDisplayMode: .asUser, badged: false)
+        case .remoteInGroup(_), .remoteInIndividual:
+            self.avatarView = ConversationAvatarView(
+                localUserDisplayMode: .asUser,
+                badged: false
+            )
         }
     }
 

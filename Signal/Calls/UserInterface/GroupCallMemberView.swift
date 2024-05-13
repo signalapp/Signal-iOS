@@ -111,7 +111,7 @@ class GroupCallMemberView: UIView, CallMemberView_GroupBridge {
     var associatedCallMemberVideoView: CallMemberVideoView? { return nil }
     var isCallMinimized: Bool = false
     func cleanupVideoViews() { /* Implemented by subclass if applicable */ }
-    func applyChangesToCallMemberViewAndVideoView(startWithVideoView: Bool = false, apply: (UIView) -> Void) {
+    func applyChangesToCallMemberViewAndVideoView(startWithVideoView: Bool = true, apply: (UIView) -> Void) {
         apply(self)
     }
     func configureRemoteVideo(device: RemoteDeviceState, context: CallMemberVisualContext) { /* Implemented by subclass if applicable */ }

@@ -190,7 +190,7 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
         )
     }
 
-    func applyChangesToCallMemberViewAndVideoView(startWithVideoView: Bool = false, apply: (UIView) -> Void) {
+    func applyChangesToCallMemberViewAndVideoView(startWithVideoView: Bool = true, apply: (UIView) -> Void) {
         if startWithVideoView {
             apply(self._associatedCallMemberVideoView)
             apply(self)
@@ -614,13 +614,15 @@ protocol AnimatableLocalMemberViewDelegate: AnyObject {
 // MARK: - Bridges
 
 /// For both local and remote call member views in group calls.
-protocol CallMemberView_GroupBridge: UIView {
+protocol CallMemberView_GroupBridge: UIView, CallMemberView_RemoteMemberBridge {
     var isCallMinimized: Bool { get set }
     var errorPresenter: CallMemberErrorPresenter? { get set }
     func cleanupVideoViews()
     func configureRemoteVideo(device: RemoteDeviceState, context: CallMemberVisualContext)
     func clearConfiguration()
+}
 
+protocol CallMemberView_RemoteMemberBridge: UIView {
     /// Applies the changes in the `apply` block to both the `CallMemberView` and
     /// its `associatedCallMemberVideoView`. (See documentation of the latter to
     /// understand why it is not simply a subview of the former. The tl;dr is:
@@ -638,12 +640,17 @@ protocol CallMemberView_GroupBridge: UIView {
     func applyChangesToCallMemberViewAndVideoView(startWithVideoView: Bool, apply: (UIView) -> Void)
 }
 
-protocol CallMemberView_IndividualRemoteBridge: UIView {
+extension CallMemberView_RemoteMemberBridge {
+    func applyChangesToCallMemberViewAndVideoView(startWithVideoView: Bool = true, apply: (UIView) -> Void) {
+        return self.applyChangesToCallMemberViewAndVideoView(startWithVideoView: startWithVideoView, apply: apply)
+    }
+}
+
+protocol CallMemberView_IndividualRemoteBridge: UIView, CallMemberView_RemoteMemberBridge {
     var isGroupCall: Bool { get set }
     var isScreenShare: Bool { get set }
     var isFullScreen: Bool { get set }
     var remoteVideoView: RemoteVideoView? { get }
-    func applyChangesToCallMemberViewAndVideoView(startWithVideoView: Bool, apply: (UIView) -> Void)
     func configure(
         call: SignalCall,
         isFullScreen: Bool,

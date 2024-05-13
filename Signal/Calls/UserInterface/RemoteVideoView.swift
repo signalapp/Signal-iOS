@@ -190,7 +190,7 @@ extension RemoteVideoView: RTCVideoRenderer {
     // MARK: - CallMemberView_IndividualRemoteBridge
 
     var associatedCallMemberVideoView: CallMemberVideoView? { return nil }
-    func applyChangesToCallMemberViewAndVideoView(startWithVideoView: Bool, apply: (UIView) -> Void) {
+    func applyChangesToCallMemberViewAndVideoView(startWithVideoView: Bool = true, apply: (UIView) -> Void) {
         apply(self)
     }
     var remoteVideoView: RemoteVideoView? { return self }

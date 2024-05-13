@@ -97,6 +97,8 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         sizeClass: .customDiameter(200),
         localUserDisplayMode: .asUser,
         badged: false)
+    // TODO: When `remoteMemberView` is a `CallMemberView`, a camera-off avatar
+    // will not need to be handled by `IndividualCallVC`.
     private lazy var contactAvatarContainerView = UIView.container()
     private lazy var callStatusLabel = UILabel()
     private lazy var backButton = UIButton()
@@ -188,10 +190,10 @@ class IndividualCallViewController: OWSViewController, CallObserver {
     deinit {
         // These views might be in the return to call PIP's hierarchy,
         // we want to remove them so they are free'd when the call ends
-        remoteMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+        remoteMemberView.applyChangesToCallMemberViewAndVideoView { view in
             view.removeFromSuperview()
         }
-        localVideoView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+        localVideoView.applyChangesToCallMemberViewAndVideoView { view in
             view.removeFromSuperview()
         }
     }
@@ -240,6 +242,13 @@ class IndividualCallViewController: OWSViewController, CallObserver {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        if FeatureFlags.useCallMemberComposableViewsForRemoteUserInIndividualCalls {
+            // `IndividualCallVC` should not manage showing/hiding the new member view.
+            remoteMemberView.applyChangesToCallMemberViewAndVideoView { view in
+                view.isHidden = false
+            }
+        }
 
         contactNameLabel.text = databaseStorage.read { tx in
             return contactsManager.displayName(for: thread.contactAddress, tx: tx).resolvedValue()
@@ -329,14 +338,14 @@ class IndividualCallViewController: OWSViewController, CallObserver {
     }
 
     func createVideoViews() {
-        remoteMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: true) { aView in
+        remoteMemberView.applyChangesToCallMemberViewAndVideoView { aView in
             aView.isUserInteractionEnabled = false
             aView.isHidden = true
             view.addSubview(aView)
         }
         remoteMemberView.isGroupCall = false
 
-        localVideoView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: true) { aView in
+        localVideoView.applyChangesToCallMemberViewAndVideoView { aView in
             // We want the local video view to use the aspect ratio of the screen, so we change it to "aspect fill".
             aView.contentMode = .scaleAspectFill
             aView.clipsToBounds = true
@@ -493,7 +502,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         callStatusLabel.setContentHuggingVerticalHigh()
         callStatusLabel.setCompressionResistanceHigh()
 
-        remoteMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+        remoteMemberView.applyChangesToCallMemberViewAndVideoView { view in
             view.autoPinEdgesToSuperviewEdges()
         }
 
@@ -513,8 +522,11 @@ class IndividualCallViewController: OWSViewController, CallObserver {
     }
 
     internal func updateRemoteVideoLayout() {
-        remoteMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
-            view.isHidden = !self.hasRemoteVideoTrack
+        if !FeatureFlags.useCallMemberComposableViewsForRemoteUserInIndividualCalls {
+            // `IndividualCallVC` manages showing/hiding the old member view.
+            remoteMemberView.applyChangesToCallMemberViewAndVideoView { view in
+                view.isHidden = !self.hasRemoteVideoTrack
+            }
         }
         updateCallUI()
     }
@@ -570,7 +582,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
             view.bringSubviewToFront(topGradientView)
             view.bringSubviewToFront(bottomContainerView)
             view.layoutIfNeeded()
-            localVideoView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { aView in
+            localVideoView.applyChangesToCallMemberViewAndVideoView { aView in
                 aView.frame = view.frame
             }
             return
@@ -578,7 +590,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
 
         guard !localVideoView.isHidden else { return }
 
-        localVideoView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: true) { aView in
+        localVideoView.applyChangesToCallMemberViewAndVideoView { aView in
             view.bringSubviewToFront(aView)
         }
         view.bringSubviewToFront(callControlsConfirmationToastContainerView)
@@ -608,7 +620,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         UIView.animate(
             withDuration: 0.25,
             animations: {
-                self.localVideoView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+                self.localVideoView.applyChangesToCallMemberViewAndVideoView { view in
                     view.frame = newFrame
                 }
             },
@@ -641,7 +653,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
 
             flipCameraTooltipManager.dismissTooltip()
 
-            localVideoView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+            localVideoView.applyChangesToCallMemberViewAndVideoView { view in
                 view.frame.origin.y += translation.y
                 view.frame.origin.x += translation.x
             }
@@ -770,7 +782,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         // Marquee scrolling is distracting during a video call, disable it.
         contactNameLabel.labelize = call.individualCall.hasLocalVideo
 
-        localVideoView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+        localVideoView.applyChangesToCallMemberViewAndVideoView { view in
             // In the context of `isCallInPip`, the "pip" refers to when the entire call is in a pip
             // (ie, minimized in the app). This is not to be confused with the local member view pip
             // (ie, when the call is full screen and the local user is displayed in a pip).
@@ -822,7 +834,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         }
 
         // Update local video
-        localVideoView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+        localVideoView.applyChangesToCallMemberViewAndVideoView { view in
             view.layer.cornerRadius = isRenderingLocalVanityVideo ? 0 : CallMemberView.Constants.defaultPipCornerRadius
         }
         updateLocalVideoLayout()
@@ -1123,8 +1135,8 @@ extension IndividualCallViewController: UIGestureRecognizerDelegate {
 }
 
 extension IndividualCallViewController: CallViewControllerWindowReference {
-    var remoteVideoViewReference: UIView { remoteMemberView }
-    var localVideoViewReference: UIView { localVideoView }
+    var remoteVideoViewReference: CallMemberView_RemoteMemberBridge { remoteMemberView }
+    var localVideoViewReference: CallMemberView { localVideoView }
     var remoteVideoAddress: SignalServiceAddress { thread.contactAddress }
 
     public func returnFromPip(pipWindow: UIWindow) {
@@ -1161,7 +1173,7 @@ extension IndividualCallViewController: CallViewControllerWindowReference {
 
     func willMoveToPip(pipWindow: UIWindow) {
         flipCameraTooltipManager.dismissTooltip()
-        localVideoView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+        localVideoView.applyChangesToCallMemberViewAndVideoView { view in
             view.isHidden = true
         }
     }

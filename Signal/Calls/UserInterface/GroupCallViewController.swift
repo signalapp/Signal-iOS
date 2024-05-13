@@ -422,22 +422,22 @@ class GroupCallViewController: UIViewController {
 
         updateVideoOverflowTrailingConstraint()
 
-        localMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+        localMemberView.applyChangesToCallMemberViewAndVideoView { view in
             view.removeFromSuperview()
         }
 
-        speakerView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+        speakerView.applyChangesToCallMemberViewAndVideoView { view in
             view.removeFromSuperview()
         }
         switch groupCall.localDeviceState.joinState {
         case .joined:
             if groupCall.remoteDeviceStates.count > 0 {
-                speakerView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: true) { view in
+                speakerView.applyChangesToCallMemberViewAndVideoView { view in
                     speakerPage.addSubview(view)
                     view.autoPinEdgesToSuperviewEdges()
                 }
 
-                localMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: true) { aView in
+                localMemberView.applyChangesToCallMemberViewAndVideoView { aView in
                     view.insertSubview(aView, belowSubview: callControlsConfirmationToastContainerView)
                 }
 
@@ -455,7 +455,7 @@ class GroupCallViewController: UIViewController {
                     } else {
                         y = videoOverflow.frame.origin.y
                     }
-                    localMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+                    localMemberView.applyChangesToCallMemberViewAndVideoView { view in
                         view.frame = CGRect(
                             x: size.width - pipSize.width - 16,
                             y: y,
@@ -471,7 +471,7 @@ class GroupCallViewController: UIViewController {
                         isVideoMuted: call.isOutgoingVideoMuted
                     )
                 } else {
-                    localMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+                    localMemberView.applyChangesToCallMemberViewAndVideoView { view in
                         view.frame = CGRect(
                             x: size.width - pipSize.width - 16,
                             y: yMax - pipSize.height,
@@ -488,13 +488,13 @@ class GroupCallViewController: UIViewController {
                     )
                 }
             } else {
-                localMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: true) { view in
+                localMemberView.applyChangesToCallMemberViewAndVideoView { view in
                     speakerPage.addSubview(view)
                     view.frame = CGRect(origin: .zero, size: size)
                 }
             }
         case .notJoined, .joining, .pending:
-            localMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: true) { view in
+            localMemberView.applyChangesToCallMemberViewAndVideoView { view in
                 speakerPage.addSubview(view)
                 view.frame = CGRect(origin: .zero, size: size)
             }
@@ -569,7 +569,7 @@ class GroupCallViewController: UIViewController {
             isFullScreen: isFullScreen
         )
 
-        localMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+        localMemberView.applyChangesToCallMemberViewAndVideoView { view in
             // In the context of `isCallInPip`, the "pip" refers to when the entire call is in a pip
             // (ie, minimized in the app). This is not to be confused with the local member view pip
             // (ie, when the call is full screen and the local user is displayed in a pip).
@@ -836,8 +836,8 @@ class GroupCallViewController: UIViewController {
 }
 
 extension GroupCallViewController: CallViewControllerWindowReference {
-    var localVideoViewReference: UIView { localMemberView }
-    var remoteVideoViewReference: UIView { speakerView }
+    var localVideoViewReference: CallMemberView { localMemberView }
+    var remoteVideoViewReference: CallMemberView_RemoteMemberBridge { speakerView }
 
     var remoteVideoAddress: SignalServiceAddress {
         guard let firstMember = groupCall.remoteDeviceStates.sortedByAddedTime.first else {
@@ -877,7 +877,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
 
     func willMoveToPip(pipWindow: UIWindow) {
         flipCameraTooltipManager.dismissTooltip()
-        localMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { view in
+        localMemberView.applyChangesToCallMemberViewAndVideoView { view in
             view.isHidden = true
         }
     }

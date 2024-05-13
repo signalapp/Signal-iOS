@@ -21,7 +21,14 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
             self.addSubview(localVideoView)
             localVideoView.contentMode = .scaleAspectFill
             self.callViewWrapper = .local(localVideoView)
-        case .remoteInGroup(_), .remoteInIndividual:
+        case .remoteInIndividual:
+            let remoteVideoView = RemoteVideoView()
+            remoteVideoView.isGroupCall = false
+            remoteVideoView.isUserInteractionEnabled = false
+            self.addSubview(remoteVideoView)
+            remoteVideoView.autoPinEdgesToSuperviewEdges()
+            self.callViewWrapper = .remoteInIndividual(remoteVideoView)
+        case .remoteInGroup(_):
             break
         }
     }
@@ -42,7 +49,6 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
         }
     }
 
-    private var hasConfiguredOnce = false
     func configure(
         call: SignalCall,
         isFullScreen: Bool = false,
@@ -52,7 +58,7 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
         clipsToBounds = true
         switch type {
         case .local:
-            self.isHidden = call.isOutgoingVideoMuted
+            self.isHidden = call.isOutgoingVideoMuted || WindowManager.shared.isCallInPip
             if case let .local(videoView) = callViewWrapper {
                 videoView.captureSession = call.videoCaptureController.captureSession
             } else {
@@ -68,15 +74,6 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
             }
         case .remoteInIndividual:
             self.isHidden = !call.individualCall.isRemoteVideoEnabled
-            if !hasConfiguredOnce {
-                let remoteVideoView = RemoteVideoView()
-                remoteVideoView.isGroupCall = false
-                remoteVideoView.isUserInteractionEnabled = false
-                self.addSubview(remoteVideoView)
-                remoteVideoView.autoPinEdgesToSuperviewEdges()
-                self.callViewWrapper = .remoteInIndividual(remoteVideoView)
-                hasConfiguredOnce = true
-            }
         }
     }
 

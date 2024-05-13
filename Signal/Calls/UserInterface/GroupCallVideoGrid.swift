@@ -137,7 +137,7 @@ class GroupCallVideoGridCell: UICollectionViewCell {
         }
         super.init(frame: frame)
 
-        memberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: true) { view in
+        memberView.applyChangesToCallMemberViewAndVideoView { view in
             contentView.addSubview(view)
             view.autoPinEdgesToSuperviewEdges()
         }

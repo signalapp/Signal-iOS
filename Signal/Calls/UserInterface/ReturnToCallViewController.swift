@@ -6,9 +6,9 @@
 import SignalServiceKit
 import SignalUI
 
-public protocol CallViewControllerWindowReference: AnyObject {
-    var localVideoViewReference: UIView { get }
-    var remoteVideoViewReference: UIView { get }
+protocol CallViewControllerWindowReference: AnyObject {
+    var localVideoViewReference: CallMemberView { get }
+    var remoteVideoViewReference: CallMemberView_RemoteMemberBridge { get }
     var remoteVideoAddress: SignalServiceAddress { get }
     var view: UIView! { get }
 
@@ -38,7 +38,7 @@ public class ReturnToCallViewController: UIViewController {
 
     private weak var callViewController: CallViewControllerWindowReference?
 
-    public func displayForCallViewController(_ callViewController: CallViewControllerWindowReference) {
+    func displayForCallViewController(_ callViewController: CallViewControllerWindowReference) {
         guard callViewController !== self.callViewController else { return }
 
         guard let callViewSnapshot = callViewController.view.snapshotView(afterScreenUpdates: false) else {
@@ -47,11 +47,15 @@ public class ReturnToCallViewController: UIViewController {
 
         self.callViewController = callViewController
 
-        view.addSubview(callViewController.remoteVideoViewReference)
-        callViewController.remoteVideoViewReference.autoPinEdgesToSuperviewEdges()
+        callViewController.remoteVideoViewReference.applyChangesToCallMemberViewAndVideoView { view in
+            self.view.addSubview(view)
+            view.autoPinEdgesToSuperviewEdges()
+        }
 
-        view.addSubview(callViewController.localVideoViewReference)
-        callViewController.localVideoViewReference.layer.cornerRadius = 6
+        callViewController.localVideoViewReference.applyChangesToCallMemberViewAndVideoView { view in
+            self.view.addSubview(view)
+            view.layer.cornerRadius = 6
+        }
         updateLocalVideoFrame()
 
         let profileImage = databaseStorage.read { transaction -> UIImage? in
@@ -70,8 +74,12 @@ public class ReturnToCallViewController: UIViewController {
     }
 
     public func resignCall() {
-        callViewController?.localVideoViewReference.removeFromSuperview()
-        callViewController?.remoteVideoViewReference.removeFromSuperview()
+        callViewController?.localVideoViewReference.applyChangesToCallMemberViewAndVideoView { view in
+            view.removeFromSuperview()
+        }
+        callViewController?.remoteVideoViewReference.applyChangesToCallMemberViewAndVideoView { view in
+            view.removeFromSuperview()
+        }
         callViewController = nil
     }
 
@@ -144,13 +152,15 @@ public class ReturnToCallViewController: UIViewController {
 
     private func updateLocalVideoFrame() {
         let localVideoSize = CGSize.scale(Self.inherentPipSize, factor: 0.3)
-        callViewController?.localVideoViewReference.frame = CGRect(
-            origin: CGPoint(
-                x: Self.inherentPipSize.width - 6 - localVideoSize.width,
-                y: Self.inherentPipSize.height - 6 - localVideoSize.height
-            ),
-            size: localVideoSize
-        )
+        callViewController?.localVideoViewReference.applyChangesToCallMemberViewAndVideoView { view in
+            view.frame = CGRect(
+                origin: CGPoint(
+                    x: Self.inherentPipSize.width - 6 - localVideoSize.width,
+                    y: Self.inherentPipSize.height - 6 - localVideoSize.height
+                ),
+                size: localVideoSize
+            )
+        }
     }
 
     private var isAnimating = false
