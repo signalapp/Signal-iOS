@@ -21,7 +21,7 @@ extension Sounds {
         guard let soundUrl = sound.soundUrl(quiet: false) else {
             return nil
         }
-        let player = AudioPlayer(decryptedFileUrl: soundUrl, audioBehavior: audioBehavior)
+        let player = AudioPlayer(mediaUrl: soundUrl, audioBehavior: audioBehavior)
         if shouldAudioPlayerLoop(forSound: sound) {
             player.isLooping = true
         }
