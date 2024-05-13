@@ -230,7 +230,7 @@ private class TSConstantsStaging: TSConstantsProtocol {
     public let updatesURL = "https://updates.signal.org"
     public let updates2URL = "https://updates2.signal.org"
 
-    public let censorshipReflectorHost = "europe-west1-signal-cdn-reflector.cloudfunctions.net"
+    public let censorshipReflectorHost = "reflector-nrgwuv7kwq-uc.a.run.app"
 
     public let serviceCensorshipPrefix = "service-staging"
     public let cdn0CensorshipPrefix = "cdn-staging"
