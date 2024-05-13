@@ -7,66 +7,173 @@ import LibSignalClient
 import SignalRingRTC
 import SignalServiceKit
 import SignalUI
+import Combine
+
+// MARK: - GroupCallMemberSheet
 
 class GroupCallMemberSheet: InteractiveSheetViewController {
+
+    // MARK: Properties
+
     override var interactiveScrollViews: [UIScrollView] { [tableView] }
 
-    let tableView = UITableView(frame: .zero, style: .grouped)
-    let call: SignalCall
+    private let tableView = UITableView(frame: .zero, style: .insetGrouped)
+    private let call: SignalCall
 
     override var sheetBackgroundColor: UIColor {
-        UIAccessibility.isReduceTransparencyEnabled ? .ows_blackAlpha80 : .ows_blackAlpha40
+        self.tableView.backgroundColor ?? .systemGroupedBackground
     }
 
     init(call: SignalCall) {
         self.call = call
+        super.init(blurEffect: nil)
 
-        let blurEffect: UIBlurEffect?
-        if UIAccessibility.isReduceTransparencyEnabled {
-            blurEffect = nil
-        } else {
-            blurEffect = .init(style: .dark)
-        }
-
-        super.init(blurEffect: blurEffect)
+        self.overrideUserInterfaceStyle = .dark
         call.addObserverAndSyncState(observer: self)
     }
 
     deinit { call.removeObserver(self) }
 
-    // MARK: -
+    // MARK: - Table setup
+
+    private typealias DiffableDataSource = UITableViewDiffableDataSource<Section, RowID>
+    private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, RowID>
+
+    private enum Section: Hashable {
+        case raisedHands
+        case inCall
+    }
+
+    private struct RowID: Hashable {
+        var section: Section
+        var memberID: JoinedMember.ID
+    }
+
+    private lazy var dataSource = DiffableDataSource(
+        tableView: tableView
+    ) { [weak self] tableView, indexPath, id -> UITableViewCell? in
+        guard let cell = tableView.dequeueReusableCell(GroupCallMemberCell.self, for: indexPath) else { return nil }
+
+        guard let viewModel = self?.viewModelsByID[id.memberID] else {
+            owsFailDebug("missing view model")
+            return cell
+        }
+
+        cell.configure(with: viewModel, isHandRaised: id.section == .raisedHands)
+
+        return cell
+    }
+
+    private class HeaderView: UIView {
+        private let section: Section
+        var memberCount: Int = 0 {
+            didSet {
+                self.updateText()
+            }
+        }
+
+        private let label = UILabel()
+
+        init(section: Section) {
+            self.section = section
+            super.init(frame: .zero)
+
+            self.addSubview(self.label)
+            self.label.autoPinEdgesToSuperviewMargins()
+            self.updateText()
+        }
+
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
+        private func updateText() {
+            let titleText: String = switch section {
+            case .raisedHands:
+                OWSLocalizedString(
+                    "GROUP_CALL_MEMBER_LIST_RAISED_HANDS_SECTION_HEADER",
+                    comment: "Title for the section of the group call member list which displays the list of members with their hand raised."
+                )
+            case .inCall:
+                OWSLocalizedString(
+                    "GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER",
+                    comment: "Title for the section of the group call member list which displays the list of all members in the call."
+                )
+            }
+
+            label.attributedText = .composed(of: [
+                titleText.styled(with: .font(.dynamicTypeHeadline)),
+                " ",
+                String(
+                    format: OWSLocalizedString(
+                        "GROUP_CALL_MEMBER_LIST_SECTION_HEADER_MEMBER_COUNT",
+                        comment: "A count of members in a given group call member list section, displayed after the header."
+                    ),
+                    self.memberCount
+                )
+            ]).styled(
+                with: .font(.dynamicTypeBody),
+                .color(Theme.darkThemePrimaryColor)
+            )
+        }
+    }
+
+    private let raisedHandsHeader = HeaderView(section: .raisedHands)
+    private let inCallHeader = HeaderView(section: .inCall)
 
     override public func viewDidLoad() {
         super.viewDidLoad()
 
-        tableView.dataSource = self
         tableView.delegate = self
-        tableView.backgroundColor = .clear
-        tableView.separatorStyle = .none
         tableView.tableHeaderView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 0, height: CGFloat.leastNormalMagnitude)))
         contentView.addSubview(tableView)
         tableView.autoPinEdgesToSuperviewEdges()
 
         tableView.register(GroupCallMemberCell.self, forCellReuseIdentifier: GroupCallMemberCell.reuseIdentifier)
-        tableView.register(GroupCallEmptyCell.self, forCellReuseIdentifier: GroupCallEmptyCell.reuseIdentifier)
+
+        tableView.dataSource = self.dataSource
 
         updateMembers()
     }
 
-    // MARK: -
+    // MARK: - Table contents
 
-    struct JoinedMember {
+    fileprivate struct JoinedMember {
+        enum ID: Hashable {
+            case aci(Aci)
+            case demuxID(DemuxId)
+        }
+
+        let id: ID
+
         let aci: Aci
         let displayName: String
         let comparableName: DisplayName.ComparableValue
-        let lastResortSortKey: Int
+        let demuxID: DemuxId?
         let isAudioMuted: Bool?
         let isVideoMuted: Bool?
         let isPresenting: Bool?
     }
 
-    private var sortedMembers = [JoinedMember]()
-    func updateMembers() {
+    private var viewModelsByID: [JoinedMember.ID: GroupCallMemberCell.ViewModel] = [:]
+    private var sortedMembers = [JoinedMember]() {
+        didSet {
+            let oldMemberIDs = viewModelsByID.keys
+            let newMemberIDs = sortedMembers.map(\.id)
+            let viewModelsToRemove = Set(oldMemberIDs).subtracting(newMemberIDs)
+            viewModelsToRemove.forEach { viewModelsByID.removeValue(forKey: $0) }
+
+            viewModelsByID = sortedMembers.reduce(into: viewModelsByID) { partialResult, member in
+                if let existingViewModel = partialResult[member.id] {
+                    existingViewModel.update(using: member)
+                } else {
+                    partialResult[member.id] = .init(member: member)
+                }
+            }
+        }
+    }
+
+    private func updateMembers() {
         let unsortedMembers: [JoinedMember] = databaseStorage.read { transaction in
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
             guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
@@ -92,10 +199,11 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
                     }
 
                     return JoinedMember(
+                        id: .demuxID(member.demuxId),
                         aci: member.aci,
                         displayName: resolvedName,
                         comparableName: comparableName,
-                        lastResortSortKey: Int(member.demuxId),
+                        demuxID: member.demuxId,
                         isAudioMuted: member.audioMuted,
                         isVideoMuted: member.videoMuted,
                         isPresenting: member.presenting
@@ -106,10 +214,11 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
                 let comparableName: DisplayName.ComparableValue = .nameValue(displayName)
 
                 members.append(JoinedMember(
+                    id: .aci(localIdentifiers.aci),
                     aci: localIdentifiers.aci,
                     displayName: displayName,
                     comparableName: comparableName,
-                    lastResortSortKey: 0,
+                    demuxID: nil,
                     isAudioMuted: self.call.groupCall.isOutgoingAudioMuted,
                     isVideoMuted: self.call.groupCall.isOutgoingVideoMuted,
                     isPresenting: false
@@ -122,10 +231,11 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
                     let address = SignalServiceAddress(aci)
                     let displayName = self.contactsManager.displayName(for: address, tx: transaction)
                     return JoinedMember(
+                        id: .aci(aci),
                         aci: aci,
                         displayName: displayName.resolvedValue(config: config.displayNameConfig),
                         comparableName: displayName.comparableValue(config: config),
-                        lastResortSortKey: 0,
+                        demuxID: nil,
                         isAudioMuted: nil,
                         isVideoMuted: nil,
                         isPresenting: nil
@@ -144,60 +254,47 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
             if $0.aci != $1.aci {
                 return $0.aci < $1.aci
             }
-            return $0.lastResortSortKey < $1.lastResortSortKey
+            return $0.demuxID ?? 0 < $1.demuxID ?? 0
         }
 
-        tableView.reloadData()
+        self.updateSnapshotAndHeaders()
     }
+
+    private func updateSnapshotAndHeaders() {
+        var snapshot = Snapshot()
+
+        if !call.raisedHands.isEmpty {
+            snapshot.appendSections([.raisedHands])
+            snapshot.appendItems(
+                call.raisedHands.map { RowID(section: .raisedHands, memberID: .demuxID($0.demuxId)) },
+                toSection: .raisedHands
+            )
+
+            raisedHandsHeader.memberCount = call.raisedHands.count
+        }
+
+        snapshot.appendSections([.inCall])
+        snapshot.appendItems(
+            sortedMembers.map { RowID(section: .inCall, memberID: $0.id) },
+            toSection: .inCall
+        )
+
+        inCallHeader.memberCount = sortedMembers.count
+
+        dataSource.apply(snapshot, animatingDifferences: true)
+    }
+
 }
 
-extension GroupCallMemberSheet: UITableViewDataSource, UITableViewDelegate {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return sortedMembers.count > 0 ? sortedMembers.count : 1
-    }
+// MARK: UITableViewDelegate
 
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard !sortedMembers.isEmpty else {
-            return tableView.dequeueReusableCell(withIdentifier: GroupCallEmptyCell.reuseIdentifier, for: indexPath)
-        }
-
-        let cell = tableView.dequeueReusableCell(withIdentifier: GroupCallMemberCell.reuseIdentifier, for: indexPath)
-
-        guard let memberCell = cell as? GroupCallMemberCell else {
-            owsFailDebug("unexpected cell type")
-            return cell
-        }
-
-        guard let member = sortedMembers[safe: indexPath.row] else {
-            owsFailDebug("missing member")
-            return cell
-        }
-
-        memberCell.configure(item: member)
-
-        return memberCell
-    }
-
+extension GroupCallMemberSheet: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let label = UILabel()
-        label.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
-        label.textColor = Theme.darkThemePrimaryColor
-
-        if sortedMembers.count > 0 {
-            let formatString = OWSLocalizedString(
-                "GROUP_CALL_IN_THIS_CALL_%d", tableName: "PluralAware",
-                comment: "String indicating how many people are current in the call"
-            )
-            label.text = String.localizedStringWithFormat(formatString, sortedMembers.count)
+        if section == 0, !call.raisedHands.isEmpty {
+            return raisedHandsHeader
         } else {
-            label.text = nil
+            return inCallHeader
         }
-
-        let labelContainer = UIView()
-        labelContainer.layoutMargins = UIEdgeInsets(top: 13, left: 16, bottom: 13, right: 16)
-        labelContainer.addSubview(label)
-        label.autoPinEdgesToSuperviewMargins()
-        return labelContainer
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -209,7 +306,7 @@ extension GroupCallMemberSheet: UITableViewDataSource, UITableViewDelegate {
     }
 }
 
-// MARK: -
+// MARK: CallObserver
 
 extension GroupCallMemberSheet: CallObserver {
     func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
@@ -239,64 +336,90 @@ extension GroupCallMemberSheet: CallObserver {
 
         updateMembers()
     }
+
+    func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [UInt32]) {
+        AssertIsOnMainThread()
+        updateSnapshotAndHeaders()
+    }
 }
 
-private class GroupCallMemberCell: UITableViewCell {
+// MARK: - GroupCallMemberCell
+
+private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
+
+    // MARK: ViewModel
+
+    class ViewModel {
+        typealias Member = GroupCallMemberSheet.JoinedMember
+
+        let aci: Aci
+        let name: String
+
+        @Published var shouldShowAudioMutedIcon = false
+        @Published var shouldShowVideoMutedIcon = false
+        @Published var shouldShowPresentingIcon = false
+
+        init(member: Member) {
+            self.aci = member.aci
+            self.name = member.displayName
+            self.update(using: member)
+        }
+
+        func update(using member: Member) {
+            owsAssertDebug(aci == member.aci)
+            self.shouldShowAudioMutedIcon = member.isAudioMuted ?? false
+            self.shouldShowVideoMutedIcon = member.isVideoMuted == true && member.isPresenting != true
+            self.shouldShowPresentingIcon = member.isPresenting ?? false
+        }
+    }
+
+    // MARK: Properties
+
     static let reuseIdentifier = "GroupCallMemberCell"
 
     let avatarView = ConversationAvatarView(
         sizeClass: .thirtySix,
         localUserDisplayMode: .asUser,
-        badged: false)
+        badged: false
+    )
     let nameLabel = UILabel()
     let videoMutedIndicator = UIImageView()
     let audioMutedIndicator = UIImageView()
     let presentingIndicator = UIImageView()
+    let raisedHandIndicator = UIImageView()
+
+    private var subscriptions = Set<AnyCancellable>()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        backgroundColor = .clear
         selectionStyle = .none
-        layoutMargins = UIEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
 
+        nameLabel.textColor = Theme.darkThemePrimaryColor
         nameLabel.font = .dynamicTypeBody
 
-        audioMutedIndicator.contentMode = .scaleAspectFit
-        audioMutedIndicator.setTemplateImageName("mic-slash-fill-compact", tintColor: .ows_white)
-        audioMutedIndicator.autoSetDimensions(to: CGSize(square: 16))
-        audioMutedIndicator.setContentHuggingHorizontalHigh()
-        let audioMutedWrapper = UIView()
-        audioMutedWrapper.addSubview(audioMutedIndicator)
-        audioMutedIndicator.autoPinEdgesToSuperviewEdges()
+        func setup(iconView: UIImageView, withImageNamed imageName: String, in wrapper: UIView) {
+            iconView.setTemplateImageName(imageName, tintColor: Theme.darkThemeSecondaryTextAndIconColor)
+            wrapper.addSubview(iconView)
+            iconView.autoPinEdgesToSuperviewEdges()
+        }
 
-        videoMutedIndicator.contentMode = .scaleAspectFit
-        videoMutedIndicator.setTemplateImageName("video-slash-fill-compact", tintColor: .ows_white)
-        videoMutedIndicator.autoSetDimensions(to: CGSize(square: 16))
-        videoMutedIndicator.setContentHuggingHorizontalHigh()
+        let trailingWrapper = UIView()
+        setup(iconView: audioMutedIndicator, withImageNamed: "mic-slash", in: trailingWrapper)
+        setup(iconView: raisedHandIndicator, withImageNamed: "raise_hand", in: trailingWrapper)
 
-        presentingIndicator.contentMode = .scaleAspectFit
-        presentingIndicator.setTemplateImageName("share_screen-fill-compact", tintColor: .ows_white)
-        presentingIndicator.autoSetDimensions(to: CGSize(square: 16))
-        presentingIndicator.setContentHuggingHorizontalHigh()
-
-        // We share a wrapper for video muted and presenting states
-        // as they render in the same column.
-        let videoMutedAndPresentingWrapper = UIView()
-        videoMutedAndPresentingWrapper.addSubview(videoMutedIndicator)
-        videoMutedIndicator.autoPinEdgesToSuperviewEdges()
-
-        videoMutedAndPresentingWrapper.addSubview(presentingIndicator)
-        presentingIndicator.autoPinEdgesToSuperviewEdges()
+        let leadingWrapper = UIView()
+        setup(iconView: videoMutedIndicator, withImageNamed: "video-slash", in: leadingWrapper)
+        setup(iconView: presentingIndicator, withImageNamed: "share_screen", in: leadingWrapper)
 
         let stackView = UIStackView(arrangedSubviews: [
             avatarView,
-            UIView.spacer(withWidth: 8),
+            UIView.spacer(withWidth: 12),
             nameLabel,
             UIView.spacer(withWidth: 16),
-            videoMutedAndPresentingWrapper,
+            leadingWrapper,
             UIView.spacer(withWidth: 16),
-            audioMutedWrapper
+            trailingWrapper
         ])
         stackView.axis = .horizontal
         stackView.alignment = .center
@@ -308,53 +431,38 @@ private class GroupCallMemberCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(item: GroupCallMemberSheet.JoinedMember) {
-        nameLabel.textColor = Theme.darkThemePrimaryColor
+    // MARK: Configuration
 
-        videoMutedIndicator.isHidden = item.isVideoMuted != true || item.isPresenting == true
-        audioMutedIndicator.isHidden = item.isAudioMuted != true
-        presentingIndicator.isHidden = item.isPresenting != true
+    // isHandRaised isn't part of ViewModel because the same view model is used
+    // for any given member in both the members and raised hand sections.
+    func configure(with viewModel: ViewModel, isHandRaised: Bool) {
+        self.subscriptions.removeAll()
 
-        nameLabel.text = item.displayName
-        avatarView.updateWithSneakyTransactionIfNecessary { config in
-            config.dataSource = .address(SignalServiceAddress(item.aci))
+        if isHandRaised {
+            self.raisedHandIndicator.isHidden = false
+            self.audioMutedIndicator.isHidden = true
+            self.videoMutedIndicator.isHidden = true
+            self.presentingIndicator.isHidden = true
+        } else {
+            self.raisedHandIndicator.isHidden = true
+            self.subscribe(to: viewModel.$shouldShowAudioMutedIcon, showing: self.audioMutedIndicator)
+            self.subscribe(to: viewModel.$shouldShowVideoMutedIcon, showing: self.videoMutedIndicator)
+            self.subscribe(to: viewModel.$shouldShowPresentingIcon, showing: self.presentingIndicator)
+        }
+
+        self.nameLabel.text = viewModel.name
+        self.avatarView.updateWithSneakyTransactionIfNecessary { config in
+            config.dataSource = .address(SignalServiceAddress(viewModel.aci))
         }
     }
-}
 
-private class GroupCallEmptyCell: UITableViewCell {
-    static let reuseIdentifier = "GroupCallEmptyCell"
-
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-
-        backgroundColor = .clear
-        selectionStyle = .none
-
-        layoutMargins = UIEdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
-
-        let imageView = UIImageView(image: #imageLiteral(resourceName: "sad-cat"))
-        imageView.contentMode = .scaleAspectFit
-        contentView.addSubview(imageView)
-        imageView.autoSetDimensions(to: CGSize(square: 160))
-        imageView.autoHCenterInSuperview()
-        imageView.autoPinTopToSuperviewMargin(withInset: 32)
-
-        let label = UILabel()
-        label.font = .dynamicTypeSubheadlineClamped
-        label.textColor = Theme.darkThemePrimaryColor
-        label.text = OWSLocalizedString("GROUP_CALL_NOBODY_IS_IN_YET",
-                                       comment: "Text explaining to the user that nobody has joined this call yet.")
-        label.numberOfLines = 0
-        label.lineBreakMode = .byWordWrapping
-        label.textAlignment = .center
-        contentView.addSubview(label)
-        label.autoPinWidthToSuperviewMargins()
-        label.autoPinBottomToSuperviewMargin()
-        label.autoPinEdge(.top, to: .bottom, of: imageView, withOffset: 16)
+    private func subscribe(to publisher: Published<Bool>.Publisher, showing view: UIView) {
+        publisher
+            .removeDuplicates()
+            .sink { [weak view] shouldShow in
+                view?.isHidden = !shouldShow
+            }
+            .store(in: &self.subscriptions)
     }
 
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
 }

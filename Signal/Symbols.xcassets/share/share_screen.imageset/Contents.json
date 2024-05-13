@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "share_screen-fill-compact.pdf",
+      "filename" : "share_screen.pdf",
       "idiom" : "universal"
     }
   ],
@@ -10,6 +10,7 @@
     "version" : 1
   },
   "properties" : {
+    "preserves-vector-representation" : true,
     "template-rendering-intent" : "template"
   }
 }

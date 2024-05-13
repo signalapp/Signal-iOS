@@ -57,7 +57,7 @@ public class SignalCall: CallManagerCallReference {
     private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
     private var tsAccountManager: any TSAccountManager { DependenciesBridge.shared.tsAccountManager }
 
-    private(set) var raisedHands: Set<RemoteDeviceState> = []
+    private(set) var raisedHands: [RemoteDeviceState] = []
 
     public let mode: Mode
     public enum Mode {
@@ -498,9 +498,12 @@ extension SignalCall: GroupCallDelegate {
     }
 
     public func groupCall(onRaisedHands groupCall: SignalRingRTC.GroupCall, raisedHands: [UInt32]) {
-        guard FeatureFlags.callRaiseHandReceiveSupport else { return }
+        guard
+            FeatureFlags.callRaiseHandReceiveSupport,
+            FeatureFlags.useCallMemberComposableViewsForRemoteUsersInGroupCalls
+        else { return }
 
-        self.raisedHands = Set(raisedHands.compactMap { groupCall.remoteDeviceStates[$0] })
+        self.raisedHands = raisedHands.compactMap { groupCall.remoteDeviceStates[$0] }
 
         observers.elements.forEach {
             $0.groupCallReceivedRaisedHands(
