@@ -103,6 +103,10 @@ struct CallStarter {
             self.whitelistThread(thread)
             context.callService.initiateCall(thread: thread, isVideo: withVideo)
         case let .group(thread):
+            if thread.uniqueId == context.callService.currentCall?.thread.uniqueId {
+                WindowManager.shared.returnToCallView()
+                return .callStarted
+            }
             guard !thread.isBlockedByAnnouncementOnly else {
                 Self.showBlockedByAnnouncementOnlySheet(from: viewController)
                 return .callNotStarted
