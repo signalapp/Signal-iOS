@@ -140,6 +140,11 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
             layer.shadowOpacity = 0.25
             layer.shadowRadius = 4
             layer.cornerRadius = isFullScreen ? 0 : Constants.defaultPipCornerRadius
+            if isFullScreen {
+                // If the local user is fullscreen, they're the only one in the call,
+                // so taps should pass through to the call view controller.
+                self.isUserInteractionEnabled = false
+            }
         case .remoteInGroup(_):
             owsAssertDebug(remoteGroupMemberDeviceState != nil, "RemoteDeviceState must be given for remote members in group calls!")
             self.isUserInteractionEnabled = false
