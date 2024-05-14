@@ -14,6 +14,7 @@ extension RegistrationCoordinatorImpl {
         public typealias ContactsManager = _RegistrationCoordinator_ContactsManagerShim
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreShim
         public typealias ExperienceManager = _RegistrationCoordinator_ExperienceManagerShim
+        public typealias FeatureFlags = _RegistrationCoordinator_FeatureFlagsShim
         public typealias MessagePipelineSupervisor = _RegistrationCoordinator_MessagePipelineSupervisorShim
         public typealias MessageProcessor = _RegistrationCoordinator_MessageProcessorShim
         public typealias OWS2FAManager = _RegistrationCoordinator_OWS2FAManagerShim
@@ -27,6 +28,7 @@ extension RegistrationCoordinatorImpl {
         public typealias ContactsManager = _RegistrationCoordinator_ContactsManagerWrapper
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreWrapper
         public typealias ExperienceManager = _RegistrationCoordinator_ExperienceManagerWrapper
+        public typealias FeatureFlags = _RegistrationCoordinator_FeatureFlagsWrapper
         public typealias MessagePipelineSupervisor = _RegistrationCoordinator_MessagePipelineSupervisorWrapper
         public typealias MessageProcessor = _RegistrationCoordinator_MessageProcessorWrapper
         public typealias OWS2FAManager = _RegistrationCoordinator_OWS2FAManagerWrapper
@@ -108,6 +110,20 @@ public class _RegistrationCoordinator_ExperienceManagerWrapper: _RegistrationCoo
     public func enableAllGetStartedCards(_ tx: DBWriteTransaction) {
         GetStartedBannerViewController.enableAllCards(writeTx: SDSDB.shimOnlyBridge(tx))
     }
+}
+
+// MARK: - FeatureFlags
+
+public protocol _RegistrationCoordinator_FeatureFlagsShim {
+
+    var messageBackupFileAlphaRegistrationFlow: Bool { get }
+}
+
+public class _RegistrationCoordinator_FeatureFlagsWrapper: _RegistrationCoordinator_FeatureFlagsShim {
+
+    public init() {}
+
+    public var messageBackupFileAlphaRegistrationFlow: Bool { FeatureFlags.messageBackupFileAlphaRegistrationFlow }
 }
 
 // MARK: - MessagePipelineSupervisor

@@ -14,6 +14,7 @@ public struct RegistrationCoordinatorDependencies {
     public let dateProvider: DateProvider
     public let db: DB
     public let experienceManager: RegistrationCoordinatorImpl.Shims.ExperienceManager
+    public let featureFlags: RegistrationCoordinatorImpl.Shims.FeatureFlags
     public let keyValueStoreFactory: KeyValueStoreFactory
     public let localUsernameManager: LocalUsernameManager
     public let messageBackupManager: MessageBackupManager
@@ -46,6 +47,7 @@ public struct RegistrationCoordinatorDependencies {
             dateProvider: { Date() },
             db: DependenciesBridge.shared.db,
             experienceManager: RegistrationCoordinatorImpl.Wrappers.ExperienceManager(),
+            featureFlags: RegistrationCoordinatorImpl.Wrappers.FeatureFlags(),
             keyValueStoreFactory: DependenciesBridge.shared.keyValueStoreFactory,
             localUsernameManager: DependenciesBridge.shared.localUsernameManager,
             messageBackupManager: DependenciesBridge.shared.messageBackupManager,

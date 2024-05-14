@@ -4012,7 +4012,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         switch mode {
         case .registering:
             return
-                FeatureFlags.messageBackupFileAlphaRegistrationFlow
+                deps.featureFlags.messageBackupFileAlphaRegistrationFlow
                 && inMemoryState.hasBackedUpToSVR
                 && !inMemoryState.hasRestoredFromLocalMessageBackup
                 && !inMemoryState.hasSkippedRestoreFromMessageBackup

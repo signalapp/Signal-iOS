@@ -35,6 +35,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
     private var changeNumberPniManager: ChangePhoneNumberPniManagerMock!
     private var contactsStore: RegistrationCoordinatorImpl.TestMocks.ContactsStore!
     private var experienceManager: RegistrationCoordinatorImpl.TestMocks.ExperienceManager!
+    private var featureFlags: RegistrationCoordinatorImpl.TestMocks.FeatureFlags!
     private var localUsernameManagerMock: MockLocalUsernameManager!
     private var mockMessagePipelineSupervisor: RegistrationCoordinatorImpl.TestMocks.MessagePipelineSupervisor!
     private var mockMessageProcessor: RegistrationCoordinatorImpl.TestMocks.MessageProcessor!
@@ -68,6 +69,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
         )
         contactsStore = RegistrationCoordinatorImpl.TestMocks.ContactsStore()
         experienceManager = RegistrationCoordinatorImpl.TestMocks.ExperienceManager()
+        featureFlags = RegistrationCoordinatorImpl.TestMocks.FeatureFlags()
         localUsernameManagerMock = {
             let mock = MockLocalUsernameManager()
             // This should result in no username reclamation. Tests that want to
@@ -109,6 +111,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             dateProvider: { self.dateProvider() },
             db: db,
             experienceManager: experienceManager,
+            featureFlags: featureFlags,
             keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
             localUsernameManager: localUsernameManagerMock,
             messageBackupManager: MessageBackupManagerMock(),

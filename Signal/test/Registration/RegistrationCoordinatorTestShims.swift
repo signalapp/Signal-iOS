@@ -15,6 +15,7 @@ extension RegistrationCoordinatorImpl {
         public typealias ContactsManager = _RegistrationCoordinator_ContactsManagerMock
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreMock
         public typealias ExperienceManager = _RegistrationCoordinator_ExperienceManagerMock
+        public typealias FeatureFlags = _RegistrationCoordinator_FeatureFlagsMock
         public typealias MessagePipelineSupervisor = _RegistrationCoordinator_MessagePipelineSupervisorMock
         public typealias MessageProcessor = _RegistrationCoordinator_MessageProcessorMock
         public typealias OWS2FAManager = _RegistrationCoordinator_OWS2FAManagerMock
@@ -78,6 +79,13 @@ public class _RegistrationCoordinator_ExperienceManagerMock: _RegistrationCoordi
         didEnableAllGetStartedCards = true
         enableAllGetStartedCardsMock?()
     }
+}
+
+public class _RegistrationCoordinator_FeatureFlagsMock: _RegistrationCoordinator_FeatureFlagsShim {
+
+    public init() {}
+
+    public var messageBackupFileAlphaRegistrationFlow: Bool { false }
 }
 
 // MARK: - MessagePipelineSupervisor
