@@ -1062,7 +1062,8 @@ public final class MessageReceiver: Dependencies {
             hasLinkPreview: linkPreviewBuilder != nil,
             hasQuotedReply: quotedMessageBuilder != nil,
             hasContactShare: contactBuilder != nil,
-            hasSticker: messageStickerBuilder != nil
+            hasSticker: messageStickerBuilder != nil,
+            hasPayment: paymentModels != nil
         )
         guard hasRenderableContent else {
             Logger.warn("Ignoring empty: \(messageDescription)")
