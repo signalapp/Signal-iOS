@@ -178,6 +178,7 @@ extension EmojiPickerSheet: EmojiPickerSectionToolbarDelegate {
 
 extension EmojiPickerSheet: EmojiPickerCollectionViewDelegate {
     func emojiPicker(_ emojiPicker: EmojiPickerCollectionView, didSelectEmoji emoji: EmojiWithSkinTones) {
+        ImpactHapticFeedback.impactOccurred(style: .light)
         completionHandler(emoji)
         dismiss(animated: true)
     }

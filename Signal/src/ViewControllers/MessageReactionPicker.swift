@@ -157,6 +157,7 @@ class MessageReactionPicker: UIStackView {
             button.setPressedBlock { [weak self] in
                 // current title of button may have changed in the meantime
                 if let currentEmoji = button.button.title(for: .normal) {
+                    ImpactHapticFeedback.impactOccurred(style: .light)
                     self?.delegate?.didSelectReaction(reaction: currentEmoji, isRemoving: currentEmoji == self?.selectedEmoji?.rawValue, inPosition: index)
                 }
             }
