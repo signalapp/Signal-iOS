@@ -78,7 +78,6 @@ class CallControlsOverflowView: UIView {
         }
         isAnimating = true
 
-        self.reactionPicker.isHidden = true
         self.reactionPicker.playDismissalAnimation(
             duration: 0.2,
             completion: { [weak self] in
