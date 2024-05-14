@@ -103,7 +103,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
     private lazy var callStatusLabel = UILabel()
     private lazy var backButton = UIButton()
 
-    // MARK: - Incoming Audio Call Controls
+    // MARK: - Incoming Voice Call Controls
 
     private lazy var incomingAudioCallControls = UIStackView(
         arrangedSubviews: [

@@ -122,8 +122,8 @@ extension ConversationSettingsViewController {
                 switch callRecord.callType {
                 case .audioCall:
                     OWSLocalizedString(
-                        "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL",
-                        comment: "A label indicating that a call was an outgoing audio call"
+                        "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VOICE_CALL",
+                        comment: "A label indicating that a call was an outgoing voice call"
                     )
                 case .videoCall, .groupCall:
                     OWSLocalizedString(
@@ -135,8 +135,8 @@ extension ConversationSettingsViewController {
                 switch callRecord.callType {
                 case .audioCall:
                     OWSLocalizedString(
-                        "CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL",
-                        comment: "A label indicating that a call was an incoming audio call"
+                        "CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VOICE_CALL",
+                        comment: "A label indicating that a call was an incoming voice call"
                     )
                 case .videoCall, .groupCall:
                     OWSLocalizedString(
@@ -148,8 +148,8 @@ extension ConversationSettingsViewController {
                 switch callRecord.callType {
                 case .audioCall:
                     OWSLocalizedString(
-                        "CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL",
-                        comment: "A label indicating that a call was an missed audio call"
+                        "CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VOICE_CALL",
+                        comment: "A label indicating that a call was an missed voice call"
                     )
                 case .videoCall, .groupCall:
                     OWSLocalizedString(

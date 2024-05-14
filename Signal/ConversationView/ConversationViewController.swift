@@ -25,7 +25,7 @@ public enum ConversationUIMode: UInt {
 public enum ConversationViewAction {
     case none
     case compose
-    case audioCall
+    case voiceCall
     case videoCall
     case groupCallLobby
     case newGroupActionSheet
@@ -428,7 +428,7 @@ public final class ConversationViewController: OWSViewController {
             if nil == requestView {
                 self.popKeyBoard()
             }
-        case .audioCall:
+        case .voiceCall:
             self.startIndividualAudioCall()
         case .videoCall:
             self.startIndividualVideoCall()

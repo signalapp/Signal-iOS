@@ -77,9 +77,9 @@ extension CallsListViewController {
             comment: "Title for an action, either long-press context menu or swipe, offering to take the user to the chat associated with a call in the Calls Tab."
         ) }
 
-        static var joinAudioCallActionTitle: String { OWSLocalizedString(
-            "CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE",
-            comment: "Title for a long-press context menu action to join an audio call, triggered from a call in the Calls Tab."
+        static var joinVoiceCallActionTitle: String { OWSLocalizedString(
+            "CALLS_TAB_JOIN_VOICE_CALL_ACTION_TITLE",
+            comment: "Title for a long-press context menu action to join a voice call, triggered from a call in the Calls Tab."
         ) }
 
         static var joinVideoCallActionTitle: String { OWSLocalizedString(
@@ -92,9 +92,9 @@ extension CallsListViewController {
             comment: "Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab."
         ) }
 
-        static var startAudioCallActionTitle: String { OWSLocalizedString(
-            "CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE",
-            comment: "Title for a long-press context menu action to start an audio call, triggered from a call in the Calls Tab."
+        static var startVoiceCallActionTitle: String { OWSLocalizedString(
+            "CALLS_TAB_START_VOICE_CALL_ACTION_TITLE",
+            comment: "Title for a long-press context menu action to start a voice call, triggered from a call in the Calls Tab."
         ) }
 
         static var startVideoCallActionTitle: String { OWSLocalizedString(

@@ -86,8 +86,8 @@ extension NewCallViewController: RecipientContextMenuHelperDelegate {
     private func startVoiceCallAction(thread: TSContactThread) -> UIAction {
         UIAction(
             title: OWSLocalizedString(
-                "NEW_CALL_AUDIO_CALL_ACTION_TITLE",
-                comment: "Title for a long-press context menu action to start an audio call, triggered from a recipient in the New Call contact picker"
+                "NEW_CALL_VOICE_CALL_ACTION_TITLE",
+                comment: "Title for a long-press context menu action to start a voice call, triggered from a recipient in the New Call contact picker"
             ),
             image: Theme.iconImage(.contextMenuVoiceCall)
         ) { [weak self] _ in

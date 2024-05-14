@@ -150,8 +150,8 @@ extension ConversationViewController {
                     )
                     audioCallButton.isEnabled = !CurrentAppContext().hasActiveOrPendingCall
                     audioCallButton.accessibilityLabel = OWSLocalizedString(
-                        "AUDIO_CALL_LABEL",
-                        comment: "Accessibility label for placing an audio call"
+                        "VOICE_CALL_LABEL",
+                        comment: "Accessibility label for placing a voice call"
                     )
                     barButtons.append(audioCallButton)
 

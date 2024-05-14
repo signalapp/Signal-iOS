@@ -152,8 +152,8 @@ class ContactViewController: OWSTableViewController2 {
             )
             let buttonAudioCall = SettingsHeaderButton(
                 text: OWSLocalizedString(
-                    "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON",
-                    comment: "Button to start a audio call"
+                    "CONVERSATION_SETTINGS_VOICE_CALL_BUTTON",
+                    comment: "Button to start a voice call"
                 ),
                 icon: .buttonVoiceCall,
                 backgroundColor: Theme.tableCell2BackgroundColor,
@@ -382,17 +382,17 @@ extension ContactViewController {
                 addAction(title: CommonStrings.sendMessage, action: .compose)
                 addAction(
                     title: OWSLocalizedString(
-                        "ACTION_AUDIO_CALL",
+                        "ACTION_VOICE_CALL",
                         comment: "Label for 'voice call' button in contact view."
                     ),
-                    action: .audioCall
+                    action: .voiceCall
                 )
                 addAction(
                     title: OWSLocalizedString(
                         "ACTION_VIDEO_CALL",
                         comment: "Label for 'video call' button in contact view."
                     ),
-                    action: .audioCall
+                    action: .voiceCall
                 )
             } else {
                 // TODO: We could offer callPhoneNumberWithSystemCall.

@@ -157,7 +157,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
         case RPRecentCallTypeIncomingAnsweredElsewhere: {
             switch (_offerType) {
                 case TSRecentCallOfferTypeAudio:
-                    return OWSLocalizedString(@"INCOMING_AUDIO_CALL", @"info message text in conversation view");
+                    return OWSLocalizedString(@"INCOMING_VOICE_CALL", @"info message text in conversation view");
                 case TSRecentCallOfferTypeVideo:
                     return OWSLocalizedString(@"INCOMING_VIDEO_CALL", @"info message text in conversation view");
             }
@@ -166,7 +166,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
         case RPRecentCallTypeOutgoingIncomplete: {
             switch (_offerType) {
                 case TSRecentCallOfferTypeAudio:
-                    return OWSLocalizedString(@"OUTGOING_AUDIO_CALL", @"info message text in conversation view");
+                    return OWSLocalizedString(@"OUTGOING_VOICE_CALL", @"info message text in conversation view");
                 case TSRecentCallOfferTypeVideo:
                     return OWSLocalizedString(@"OUTGOING_VIDEO_CALL", @"info message text in conversation view");
             }
@@ -174,7 +174,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
         case RPRecentCallTypeOutgoingMissed: {
             switch (_offerType) {
                 case TSRecentCallOfferTypeAudio:
-                    return OWSLocalizedString(@"OUTGOING_MISSED_AUDIO_CALL", @"info message text in conversation view");
+                    return OWSLocalizedString(@"OUTGOING_MISSED_VOICE_CALL", @"info message text in conversation view");
                 case TSRecentCallOfferTypeVideo:
                     return OWSLocalizedString(@"OUTGOING_MISSED_VIDEO_CALL", @"info message text in conversation view");
             }
@@ -184,7 +184,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
         case RPRecentCallTypeIncomingBusyElsewhere: {
             switch (_offerType) {
                 case TSRecentCallOfferTypeAudio:
-                    return OWSLocalizedString(@"MISSED_AUDIO_CALL", @"info message text in conversation view");
+                    return OWSLocalizedString(@"MISSED_VOICE_CALL", @"info message text in conversation view");
                 case TSRecentCallOfferTypeVideo:
                     return OWSLocalizedString(@"MISSED_VIDEO_CALL", @"info message text in conversation view");
             }
@@ -193,7 +193,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
         case RPRecentCallTypeIncomingDeclinedElsewhere: {
             switch (_offerType) {
                 case TSRecentCallOfferTypeAudio:
-                    return OWSLocalizedString(@"DECLINED_AUDIO_CALL", @"info message text in conversation view");
+                    return OWSLocalizedString(@"DECLINED_VOICE_CALL", @"info message text in conversation view");
                 case TSRecentCallOfferTypeVideo:
                     return OWSLocalizedString(@"DECLINED_VIDEO_CALL", @"info message text in conversation view");
             }

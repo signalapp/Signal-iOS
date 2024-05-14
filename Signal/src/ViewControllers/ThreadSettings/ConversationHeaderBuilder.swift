@@ -249,8 +249,8 @@ struct ConversationHeaderBuilder: Dependencies {
                 buttons.append(buildIconButton(
                     icon: .buttonVoiceCall,
                     text: OWSLocalizedString(
-                        "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON",
-                        comment: "Button to start a audio call"
+                        "CONVERSATION_SETTINGS_VOICE_CALL_BUTTON",
+                        comment: "Button to start a voice call"
                     ),
                     isEnabled: isCurrentCallForThread || !hasCurrentCall,
                     action: { [weak delegate] in

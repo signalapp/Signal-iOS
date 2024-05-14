@@ -1402,7 +1402,7 @@ extension CallsListViewController: UITableViewDelegate {
             let joinCallIconName: String
             switch viewModel.callType {
             case .audio:
-                joinCallTitle = Strings.joinAudioCallActionTitle
+                joinCallTitle = Strings.joinVoiceCallActionTitle
                 joinCallIconName = Theme.iconName(.contextMenuVoiceCall)
             case .video:
                 joinCallTitle = Strings.joinVideoCallActionTitle
@@ -1436,11 +1436,11 @@ extension CallsListViewController: UITableViewDelegate {
             switch viewModel.recipientType {
             case .individual:
                 let audioCallAction = UIAction(
-                    title: Strings.startAudioCallActionTitle,
+                    title: Strings.startVoiceCallActionTitle,
                     image: Theme.iconImage(.contextMenuVoiceCall),
                     attributes: []
                 ) { [weak self] _ in
-                    self?.startAudioCall(from: viewModel)
+                    self?.startVoiceCall(from: viewModel)
                 }
                 actions.append(audioCallAction)
             case .group:
@@ -1509,7 +1509,7 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
     private func callBack(from viewModel: CallViewModel) {
         switch viewModel.callType {
         case .audio:
-            startAudioCall(from: viewModel)
+            startVoiceCall(from: viewModel)
         case .video:
             startVideoCall(from: viewModel)
         }
@@ -1523,7 +1523,7 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
         )
     }
 
-    private func startAudioCall(from viewModel: CallViewModel) {
+    private func startVoiceCall(from viewModel: CallViewModel) {
         switch viewModel.recipientType {
         case let .individual(_, contactThread):
             CallStarter(
@@ -1532,7 +1532,7 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
                 context: self.callStarterContext
             ).startCall(from: self)
         case .group:
-            owsFail("Shouldn't be able to start audio call from group")
+            owsFail("Shouldn't be able to start voice call from group")
         }
     }
 

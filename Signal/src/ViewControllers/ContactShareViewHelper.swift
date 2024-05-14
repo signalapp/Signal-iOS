@@ -35,7 +35,7 @@ class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
     func audioCall(to phoneNumbers: [String], from viewController: UIViewController) {
         Logger.info("")
 
-        presentThread(performAction: .audioCall, to: phoneNumbers, from: viewController)
+        presentThread(performAction: .voiceCall, to: phoneNumbers, from: viewController)
     }
 
     func videoCall(to phoneNumbers: [String], from viewController: UIViewController) {
