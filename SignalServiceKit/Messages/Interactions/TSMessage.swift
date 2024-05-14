@@ -705,6 +705,11 @@ extension TSMessage {
             return attachments
         }
 
+        var isPaymentMessage = false
+        if self is OWSPaymentMessage {
+            isPaymentMessage = true
+        }
+
         return TSMessageBuilder.hasRenderableContent(
             hasNonemptyBody: body?.nilIfEmpty != nil,
             hasBodyAttachmentsOrOversizeText: fetchAttachments().isEmpty.negated,
@@ -714,6 +719,7 @@ extension TSMessage {
             hasSticker: messageSticker != nil,
             hasGiftBadge: giftBadge != nil,
             isStoryReply: isStoryReply,
+            isPaymentMessage: isPaymentMessage,
             storyReactionEmoji: storyReactionEmoji
         )
     }
@@ -726,7 +732,8 @@ extension TSMessageBuilder {
         hasLinkPreview: Bool,
         hasQuotedReply: Bool,
         hasContactShare: Bool,
-        hasSticker: Bool
+        hasSticker: Bool,
+        hasPayment: Bool
     ) -> Bool {
         return Self.hasRenderableContent(
             hasNonemptyBody: messageBody?.nilIfEmpty != nil,
@@ -737,6 +744,7 @@ extension TSMessageBuilder {
             hasSticker: hasSticker,
             hasGiftBadge: giftBadge != nil,
             isStoryReply: storyAuthorAci != nil && storyTimestamp != nil,
+            isPaymentMessage: hasPayment,
             storyReactionEmoji: storyReactionEmoji
         )
     }
@@ -750,8 +758,14 @@ extension TSMessageBuilder {
         hasSticker: Bool,
         hasGiftBadge: Bool,
         isStoryReply: Bool,
+        isPaymentMessage: Bool,
         storyReactionEmoji: String?
     ) -> Bool {
+        if isPaymentMessage {
+            // Android doesn't include any body or other content in payments.
+            return true
+        }
+
         // Story replies currently only support a subset of message features, so may not
         // be renderable in some circumstances where a normal message would be.
         if isStoryReply {

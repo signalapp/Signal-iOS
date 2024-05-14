@@ -176,7 +176,9 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             hasLinkPreview: messageParams.linkPreviewBuilder != nil,
             hasQuotedReply: messageParams.quotedMessageBuilder != nil,
             hasContactShare: messageParams.contactBuilder != nil,
-            hasSticker: messageParams.messageStickerBuilder != nil
+            hasSticker: messageParams.messageStickerBuilder != nil,
+            // Payment notifications go through a different path.
+            hasPayment: false
         )
         if !hasRenderableContent && !outgoingMessage.isViewOnceMessage {
             switch messageParams.target {
