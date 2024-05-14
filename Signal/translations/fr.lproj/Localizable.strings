@@ -4550,13 +4550,13 @@
 "NOTIFICATIONS_ERROR_TITLE" = "Impossible d’afficher les notifications";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Les actions sont « Marquer comme lu », « Répondre » et « Rappeler ».";
+"NOTIFICATIONS_FOOTER_WARNING" = "Les actions possibles sont « Marquer comme lu », « Répondre » et « Rappeler ».";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "Ni nom ni contenu";
+"NOTIFICATIONS_NONE" = "Ni nom, ni contenu";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "Jouer pendant que l’appli est ouverte";
+"NOTIFICATIONS_SECTION_INAPP" = "Émettre des sons lorsque l’appli est ouverte";
 
 /* Label for settings UI that allows user to add a new notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Ajouter un son personnalisé…";
@@ -6401,7 +6401,7 @@
 "SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Couleur et fond d’écran des conversations";
 
 /* Label for settings view that allows user to change the notification sound. */
-"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Son de message";
+"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Son des messages";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
 "SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Les conversations mises en sourdine restent archivées, même lorsque vous recevez un nouveau message.";
@@ -6449,16 +6449,16 @@
 "SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Inclure les messages en sourdine";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Pastille de comptage";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Pastille de notification";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Les notifications d’appels et de messages peuvent apparaître alors que votre téléphone est verrouillé.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Les notifications d’appel et de message peuvent s’afficher lorsque le téléphone est verrouillé.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Contenu des notifications";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact rejoint Signal";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Un contact rejoint Signal";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Me prévenir quand…";

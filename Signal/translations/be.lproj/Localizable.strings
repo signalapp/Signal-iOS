@@ -149,7 +149,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "Вы не маеце агульных удзельнікаў з гэтай групай. Перш чым прыняць запыт, уважліва праглядайце яго, каб пазбегнуць непажаданых паведамленняў.";
 
 /* Label for button to learn more about message requests. */
-"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Аб запытах на адпраўку паведамленняў";
+"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Аб запытах на перапіску";
 
 /* Audio file type in All Meda file type picker. */
 "ALL_MEDIA_FILE_TYPE_AUDIO" = "Аўдыё";
@@ -785,7 +785,7 @@
 "CALL_VIEW_MUTE_LABEL" = "Апавяшч. адкл.";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%1$@ атрымае ад вас запыт на паведамленне. Вы зможаце пазваніць, калі ваш запыт на паведамленне будзе прыняты.";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%1$@ атрымае ад вас запыт на перапіску. Вы зможаце пазваніць, калі ваш запыт на перапіску будзе прыняты.";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Змяніць напрамак камеры";
@@ -1112,7 +1112,7 @@
 "CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "Не было абмену паведамленнямі з %1$@";
 
 /* Indicates that the user has a pending request with the other account. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Запыты паведамлення ў чаканні разгляду";
+"CONTACT_ABOUT_SHEET_PENDING_REQUEST" = "Запыт на перапіску ў чаканні разгляду";
 
 /* Message for a tooltip that appears above a parenthesized name for another user, indicating that that name is the name the other user set for themself. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_SECONDARY_NAME_TOOLTIP_MESSAGE" = "«%1$@» — назва профілю, якая гэтая асоба ўсталявала для сябе ў Signal.";
@@ -1790,7 +1790,7 @@
 "DELETE_CONTACT_ACTION_SHEET_BUTTON" = "Выдаліць";
 
 /* An explanation of what happens in Signal when you remove a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Гэтая асоба будзе выдалена з вашых тэлефонных кантактаў. Вы не ўбачыце гэтую асобу падчас пошуку. Калі яна напіша вам, вы атрымаеце запыт на абмен паведамленнямі.";
+"DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "Гэтая асоба будзе выдалена з вашых тэлефонных кантактаў. Вы не ўбачыце гэтую асобу падчас пошуку. Калі яна напіша вам, вы атрымаеце запыт на перапіску.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
 "DELETE_CONTACT_ACTION_SHEET_TITLE" = "Выдаліць кантакт і прыбраць яго з вашага спісу?";
@@ -3470,7 +3470,7 @@
 "HIDE_RECIPIENT_ACTION_SHEET_TITLE_FORMAT" = "Выдаліць %1$@?";
 
 /* An explanation of the consequences of removing a user. */
-"HIDE_RECIPIENT_BEHAVIOR_EXPLANATION" = "Вы не ўбачыце гэтую асобу падчас пошуку. Калі яна напіша вам, вы атрымаеце запыт на абмен паведамленнямі.";
+"HIDE_RECIPIENT_BEHAVIOR_EXPLANATION" = "Вы не ўбачыце гэтую асобу падчас пошуку. Калі яна напіша вам, вы атрымаеце запыт на перапіску.";
 
 /* Button label for the 'remove' button */
 "HIDE_RECIPIENT_BUTTON" = "Выдаліць";
@@ -3521,7 +3521,7 @@
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%1$@ дадаў(-ла) вас у групу";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
-"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Запыт паведамлення";
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Запыт на перапіску";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Няма вынікаў для «%1$@»";
@@ -4511,7 +4511,7 @@
 "NOTE_TO_SELF" = "Нататка для сябе";
 
 /* Body for a notification representing a message request. */
-"NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "Запыт паведамлення";
+"NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST" = "Запыт на перапіску";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Магчыма, вы атрымалі паведамленні падчас перазапуску вашага %1$@.";
@@ -5012,10 +5012,10 @@
 "PAYMENTS_PREVIEW_TEXT_UNKNOWN" = "Невядомы плацеж";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have sent messages to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "Каб адправіць плацеж гэтаму карыстальніку, яму трэба прыняць ад вас запыт на адпраўку паведамленняў.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_W_MESSAGES" = "Каб адправіць плацеж гэтаму карыстальніку, яму трэба прыняць ад вас запыт на перапіску.";
 
 /* Message for error alert indicating that a given user cannot receive payments because of a pending message request for a recipient that they have not sent message to. */
-"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "Каб адправіць плацеж гэтаму карыстальніку, яму трэба прыняць ад вас запыт на адпраўку паведамленняў. Адпраўце яму паведамленне, каб стварыць запыт на адпраўку паведамленняў.";
+"PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_MESSAGE_WO_MESSAGES" = "Каб адправіць плацеж гэтаму карыстальніку, яму трэба прыняць ад вас запыт на перапіску. Адпраўце яму паведамленне, каб стварыць запыт на перапіску.";
 
 /* Title for error alert indicating that a given user cannot receive payments because of a pending message request. */
 "PAYMENTS_RECIPIENT_MISSING_PROFILE_KEY_TITLE" = "Немагчыма адправіць плацеж";
@@ -5936,7 +5936,7 @@
 "SAFETY_TIPS_HEADER_TITLE" = "Парады па бяспецы";
 
 /* Message describing safety tips for 1:1 conversations. */
-"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "Будзьце пільнымі, калі прымаеце запыты на паведамленні ад незнаёмых людзей. Сцеражыцеся наступнага:";
+"SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE" = "Будзьце пільнымі, калі прымаеце запыты на перапіску ад незнаёмых людзей. Сцеражыцеся наступнага:";
 
 /* Message contents for the unknown links in messages safety tip. */
 "SAFETY_TIPS_MESSAGE_LINKS_BODY" = "Будзьце пільнымі, калі атрымліваеце ад незнаёмых людзей паведамленні са спасылкамі на вэб-сайты. Ніколі не адкрывайце спасылкі ад людзей, да якіх няма даверу.";
@@ -6440,7 +6440,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "Відэа";
 
 /* Explanation for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING_FOOTER" = "Даведвацца і абагульваць інфармацыю аб паведамленнях, што чытаюцца і пішуцца. Калі гэта функцыя адключана, вы не ўбачыце апавяшчэнняў аб тым, што іншыя карыстальнікі чытаюць або ўводзяць тэкст.";
+"SETTINGS_MESSAGING_FOOTER" = "Даведвацца і абагульваць інфармацыю аб паведамленнях, што чытаюцца і пішуцца. Калі гэта функцыя адключана, вы не ўбачыце апавяшчэнняў аб чытанні паведамленняў і індыкатараў набору тэксту.";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Налады";
@@ -7481,7 +7481,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Пачынаючы размову";
 
 /* Second bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Калі вы прынялі запыт на паведамленні";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Калі вы прынялі запыт на перапіску";
 
 /* Third bullet point for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Ужо ёсць у вашых тэлефонных кантактах";

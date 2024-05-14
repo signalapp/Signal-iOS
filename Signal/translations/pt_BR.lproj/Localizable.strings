@@ -5894,7 +5894,7 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Enviar assim mesmo";
 
 /* Message for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "As seguintes pessoas podem ter reinstalado Signal ou mudado de aparelho. Verifique o seu número de segurança com elas para garantir a sua privacidade e a delas.";
+"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "As seguintes pessoas podem ter reinstalado Signal ou mudado de aparelho. Verifique o seu número de segurança com elas para garantir privacidade.";
 
 /* Text explaining that the given contact previously had their safety number verified. */
 "SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Já verificado";
@@ -6032,7 +6032,7 @@
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Versão incompatível";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "O seu outro aparelho está rodando uma versão antiga do Signal, não compatível com o escaneamento de códigos QR do iPad. Por favor, instale a versão mais recente e tente de novo.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Seu outro aparelho está executando uma versão antiga do Signal que não suporta a leitura de códigos QR do iPad. Por favor, instale a versão mais recente do Signal e tente novamente.";
 
 /* alert title for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Atualize seu aparelho que está escaneando";
@@ -6059,7 +6059,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Eu não tenho Signal no meu telefone…";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Vá à App Store no seu telefone, instale o Signal e complete o processo de registro. Em seguida, você poderá vincular o seu iPad à mesma conta.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Vá até a App Store no seu telefone, instale o Signal, complete o processo de registro e então você poderá vincular seu iPad à mesma conta.";
 
 /* alert title */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Instalar o Signal no seu telefone";
@@ -6638,7 +6638,7 @@
 "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE" = "Continuar sem salvar?";
 
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Seu saldo será restaurado automaticamente quando você reinstalar o Signal e confirmar o seu PIN no Signal. Você também pode restaurar o seu saldo usando uma senha de recuperação, que é uma senha de 24 palavras exclusiva para você. Anote-a e guarde-a em um local seguro.";
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Seu saldo será restaurado automaticamente quando você reinstalar o Signal e confirmar o seu PIN. Você também pode restaurar o seu saldo usando uma frase de recuperação, que é uma frase única de 24 palavras para você. Anote-a e guarde em um lugar seguro.";
 
 /* Explanation of the 'payments passphrase' when there is a balance. */
 "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "Você tem um saldo! Salve sua frase de recuperação — uma chave de 24 palavras que você pode usar para restaurar seu saldo.";
@@ -6980,7 +6980,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Lembretes de PIN";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "O PIN mantém criptografadas as informações armazenadas no Signal, de modo que apenas você possa acessá-las. Seu PIN não pode ser recuperado se você esquecê-lo. Seu perfil, configurações e contatos serão restaurados quando você reinstalar o Signal.";
+"SETTINGS_PINS_FOOTER" = "O PIN mantêm as informações armazenadas com o Signal criptografadas para que apenas você possa acessá-las. Seu PIN não pode ser recuperado. Seu perfil, configurações e contatos serão restaurados quando você reinstalar o Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Mude o seu PIN";
@@ -7148,7 +7148,7 @@
 "SHOW_THREAD_BUTTON_TITLE" = "Mostrar chat";
 
 /* body sent to contacts when inviting to Install Signal */
-"SMS_INVITE_BODY" = "Estou convidando você a instalar Signal. Aqui está o link:";
+"SMS_INVITE_BODY" = "Estou te convidando a instalar Signal! Aqui está o link:";
 
 /* An error message generically indicating that something went wrong. */
 "SOMETHING_WENT_WRONG_ERROR" = "Algo deu errado.";
@@ -7856,7 +7856,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "Seu aparelho é incompatível com esta funcionalidade.";
 
 /* Description for the unverified safety number change. Embeds {name of contact with identity change} */
-"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Seu número de segurança com %1$@ mudou, provavelmente porque ela/ele reinstalou o Signal ou mudou de aparelho. Toque em Verificar para confirmar o novo número de segurança. Isso é opcional.";
+"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "O número de segurança associado a {0} mudou, possivelmente devido à reinstalação do Signal ou à mudança de aparelho. Toque em Verificar para confirmar o novo número de segurança. Esta etapa é opcional.";
 
 /* Action to verify a safety number after it has changed */
 "UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "Verificar";
