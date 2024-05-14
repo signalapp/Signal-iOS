@@ -103,12 +103,6 @@ class VolumeButtons {
         stopObservation()
     }
 
-    func removeAllObservers() {
-        AssertIsOnMainThread()
-        observers = []
-        stopObservation()
-    }
-
     private func startObservation() {
         guard !VolumeButtons.isRegisteredForEvents else { return }
         VolumeButtons.isRegisteredForEvents = true

@@ -538,7 +538,7 @@ class CallAudioService: CallObserver {
     }
 }
 
-extension CallAudioService: CallServiceObserver {
+extension CallAudioService: CallServiceStateObserver {
     func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
         if currentPlayer?.isLooping == true {
             stopPlayingAnySounds()

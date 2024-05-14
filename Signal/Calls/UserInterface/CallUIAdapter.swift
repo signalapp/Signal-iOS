@@ -94,7 +94,7 @@ extension CallUIAdaptee {
  * Notify the user of call related activities.
  * Driven by either a CallKit or System notifications adaptee
  */
-public class CallUIAdapter: NSObject, CallServiceObserver {
+public class CallUIAdapter: NSObject {
 
     private var callService: CallService { AppEnvironment.shared.callService }
 
@@ -161,7 +161,7 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
                 if call.isGroupCall {
                     // Wait to start ringing until all observers have recognized this as the current call.
                     DispatchQueue.main.async {
-                        guard call === self.callService.currentCall else {
+                        guard call === self.callService.callServiceState.currentCall else {
                             // Assume that the call failed before we got a chance to start ringing.
                             return
                         }
@@ -211,7 +211,7 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
     public func answerCall(localId: UUID) {
         AssertIsOnMainThread()
 
-        guard let call = self.callService.currentCall else {
+        guard let call = self.callService.callServiceState.currentCall else {
             owsFailDebug("No current call.")
             return
         }
@@ -269,7 +269,7 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
     internal func localHangupCall(localId: UUID) {
         AssertIsOnMainThread()
 
-        guard let call = self.callService.currentCall else {
+        guard let call = self.callService.callServiceState.currentCall else {
             owsFailDebug("No current call.")
             return
         }
@@ -317,15 +317,5 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
         AssertIsOnMainThread()
 
         callService.updateCameraSource(call: call, isUsingFrontCamera: isUsingFrontCamera)
-    }
-
-    // MARK: - CallServiceObserver
-
-    internal func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
-        AssertIsOnMainThread()
-
-        guard let call = newValue else { return }
-
-        callService.audioService.handleRinging = adaptee(for: call).hasManualRinger
     }
 }

@@ -227,8 +227,9 @@ struct ConversationHeaderBuilder: Dependencies {
 
         if ConversationViewController.canCall(threadViewModel: delegate.threadViewModel) {
             let callService = AppEnvironment.shared.callService!
-            let isCurrentCallForThread = callService.currentCall?.thread.uniqueId == delegate.thread.uniqueId
-            let hasCurrentCall = callService.currentCall != nil
+            let currentCall = callService.callServiceState.currentCall
+            let isCurrentCallForThread = currentCall?.thread.uniqueId == delegate.thread.uniqueId
+            let hasCurrentCall = currentCall != nil
 
             if options.contains(.videoCall) {
                 buttons.append(buildIconButton(
@@ -583,7 +584,7 @@ extension ConversationHeaderDelegate {
         }
 
         let callService = AppEnvironment.shared.callService!
-        if let currentCall = callService.currentCall {
+        if let currentCall = callService.callServiceState.currentCall {
             if currentCall.thread.uniqueId == thread.uniqueId {
                 WindowManager.shared.returnToCallView()
             } else {

@@ -110,13 +110,19 @@ extension ConversationViewController {
 
                     if conversationViewModel.groupCallInProgress {
                         let pill = JoinGroupCallPill()
-                        pill.addTarget(self,
-                                       action: #selector(showGroupLobbyOrActiveCall),
-                                       for: .touchUpInside)
-                        let returnString = OWSLocalizedString("RETURN_CALL_PILL_BUTTON",
-                                                             comment: "Button to return to current group call")
-                        let joinString = OWSLocalizedString("JOIN_CALL_PILL_BUTTON",
-                                                           comment: "Button to join an active group call")
+                        pill.addTarget(
+                            self,
+                            action: #selector(showGroupLobbyOrActiveCall),
+                            for: .touchUpInside
+                        )
+                        let returnString = OWSLocalizedString(
+                            "RETURN_CALL_PILL_BUTTON",
+                            comment: "Button to return to current group call"
+                        )
+                        let joinString = OWSLocalizedString(
+                            "JOIN_CALL_PILL_BUTTON",
+                            comment: "Button to join an active group call"
+                        )
                         pill.buttonText = self.isCurrentCallForThread ? returnString : joinString
                         videoCallButton.customView = pill
                     } else {
@@ -126,7 +132,7 @@ extension ConversationViewController {
                     }
 
                     videoCallButton.isEnabled = (
-                        AppEnvironment.shared.callService.currentCall == nil
+                        AppEnvironment.shared.callService.callServiceState.currentCall == nil
                         || self.isCurrentCallForThread
                     )
                     videoCallButton.accessibilityLabel = OWSLocalizedString(
@@ -142,9 +148,11 @@ extension ConversationViewController {
                         target: self,
                         action: #selector(startIndividualAudioCall)
                     )
-                    audioCallButton.isEnabled = !CurrentAppContext().hasActiveCall
-                    audioCallButton.accessibilityLabel = OWSLocalizedString("AUDIO_CALL_LABEL",
-                                                                           comment: "Accessibility label for placing an audio call")
+                    audioCallButton.isEnabled = !CurrentAppContext().hasActiveOrPendingCall
+                    audioCallButton.accessibilityLabel = OWSLocalizedString(
+                        "AUDIO_CALL_LABEL",
+                        comment: "Accessibility label for placing an audio call"
+                    )
                     barButtons.append(audioCallButton)
 
                     let videoCallButton = UIBarButtonItem(
@@ -153,9 +161,11 @@ extension ConversationViewController {
                         target: self,
                         action: #selector(startIndividualVideoCall)
                     )
-                    videoCallButton.isEnabled = !CurrentAppContext().hasActiveCall
-                    videoCallButton.accessibilityLabel = OWSLocalizedString("VIDEO_CALL_LABEL",
-                                                                           comment: "Accessibility label for placing a video call")
+                    videoCallButton.isEnabled = !CurrentAppContext().hasActiveOrPendingCall
+                    videoCallButton.accessibilityLabel = OWSLocalizedString(
+                        "VIDEO_CALL_LABEL",
+                        comment: "Accessibility label for placing a video call"
+                    )
                     barButtons.append(videoCallButton)
                 }
             }

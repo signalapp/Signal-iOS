@@ -170,7 +170,7 @@ public class CVLoadCoordinator: NSObject {
                                                selector: #selector(didLearnRecipientAssociation(notification:)),
                                                name: .didLearnRecipientAssociation,
                                                object: nil)
-        callService.addObserver(observer: self, syncStateImmediately: false)
+        callService.callServiceState.addObserver(self, syncStateImmediately: false)
     }
 
     @objc
@@ -816,16 +816,20 @@ extension CVLoadCoordinator: UIScrollViewDelegate {
 
 // MARK: -
 
-extension CVLoadCoordinator: CallServiceObserver {
+extension CVLoadCoordinator: CallServiceStateObserver {
     public func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
         guard thread.isGroupV2Thread else {
             return
         }
-        guard oldValue?.thread.uniqueId == thread.uniqueId ||
-                newValue?.thread.uniqueId == thread.uniqueId else {
+        guard
+            oldValue?.thread.uniqueId == thread.uniqueId
+            || newValue?.thread.uniqueId == thread.uniqueId
+        else {
             return
         }
-        enqueueReload(canReuseInteractionModels: true,
-                      canReuseComponentStates: false)
+        enqueueReload(
+            canReuseInteractionModels: true,
+            canReuseComponentStates: false
+        )
     }
 }

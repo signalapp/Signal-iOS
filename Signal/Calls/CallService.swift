@@ -10,20 +10,12 @@ import SignalRingRTC
 import SignalUI
 import WebRTC
 
-// All Observer methods will be invoked from the main thread.
-protocol CallServiceObserver: AnyObject {
-    /**
-     * Fired whenever the call changes.
-     */
-    func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?)
-}
-
 /// Manages events related to both 1:1 and group calls, while the main app is
 /// running.
 ///
 /// Responsible for the 1:1 or group call this device is currently active in, if
 /// any, as well as any other updates to other calls that we learn about.
-final class CallService {
+final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     public typealias CallManagerType = CallManager<SignalCall, CallService>
 
     public let callManager: CallManagerType
@@ -62,102 +54,13 @@ final class CallService {
 
     private(set) lazy var audioService: CallAudioService = {
         let result = CallAudioService(audioSession: self.audioSession)
-        self.addObserverAndSyncState(observer: result)
+        callServiceState.addObserver(result, syncStateImmediately: true)
         return result
     }()
 
     public var earlyRingNextIncomingCall = false
 
-    /// Current call *must* be set on the main thread. It may be read off the
-    /// main thread if the current call state must be consulted, but other call
-    /// state may race (observer state, sleep state, etc.)
-    private let mutableCurrentCall: AtomicValue<SignalCall?>
-
-    /// Represents the call currently occuring on this device.
-    public private(set) var currentCall: SignalCall? {
-        get { mutableCurrentCall.get() }
-        set {
-            AssertIsOnMainThread()
-
-            let oldValue = mutableCurrentCall.swap(newValue)
-
-            oldValue?.removeObserver(self)
-            newValue?.addObserverAndSyncState(observer: self)
-
-            updateIsVideoEnabled()
-
-            // Prevent device from sleeping while we have an active call.
-            if oldValue !== newValue {
-                if let oldValue {
-                    self.deviceSleepManager.removeBlock(blockObject: oldValue)
-                    if !UIDevice.current.isIPad {
-                        UIDevice.current.endGeneratingDeviceOrientationNotifications()
-                    }
-                }
-
-                if let newValue {
-                    assert(calls.contains(where: { $0 === newValue }))
-                    self.deviceSleepManager.addBlock(blockObject: newValue)
-
-                    if newValue.isIndividualCall {
-
-                        // By default, individual calls should start out with speakerphone disabled.
-                        self.audioService.requestSpeakerphone(isEnabled: false)
-
-                        individualCallService.startCallTimer()
-                    }
-
-                    if !UIDevice.current.isIPad {
-                        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
-                    }
-                } else {
-                    individualCallService.stopAnyCallTimer()
-                }
-            }
-
-            // To be safe, we reset the early ring on any call change so it's not left set from an unexpected state change
-            earlyRingNextIncomingCall = false
-
-            let observers = self.observers
-            DispatchQueue.main.async {
-                for observer in observers.elements {
-                    observer.didUpdateCall(from: oldValue, to: newValue)
-                }
-            }
-        }
-    }
-
-    /// True whenever CallService has any call in progress.
-    /// The call may not yet be visible to the user if we are still in the middle of signaling.
-    public var hasCallInProgress: Bool {
-        calls.count > 0
-    }
-
-    /// Track all calls that are currently "in play". Usually this is 1 or 0, but when dealing
-    /// with a rapid succession of calls, it's possible to have multiple.
-    ///
-    /// For example, if the client receives two call offers, we hand them both off to RingRTC,
-    /// which will let us know which one, if any, should become the "current call". But in the
-    /// meanwhile, we still want to track that calls are in-play so we can prevent the user from
-    /// placing an outgoing call.
-    private let _calls = AtomicValue<[SignalCall]>([], lock: .sharedGlobal)
-    private var calls: [SignalCall] { _calls.get() }
-
-    private func addCall(_ call: SignalCall) {
-        _calls.update { $0.append(call) }
-        postActiveCallsDidChange()
-    }
-
-    private func removeCall(_ call: SignalCall) {
-        _calls.update { $0.removeAll(where: { $0 === call }) }
-        postActiveCallsDidChange()
-    }
-
-    public static let activeCallsDidChange = Notification.Name("activeCallsDidChange")
-
-    private func postActiveCallsDidChange() {
-        NotificationCenter.default.postNotificationNameAsync(Self.activeCallsDidChange, object: nil)
-    }
+    let callServiceState: CallServiceState
 
     public init(
         appContext: any AppContext,
@@ -170,12 +73,17 @@ final class CallService {
         )
         let callUIAdapter = CallUIAdapter()
         self.callUIAdapter = callUIAdapter
-        self.individualCallService = IndividualCallService()
-        self.groupCallRemoteVideoManager = GroupCallRemoteVideoManager()
-        self.mutableCurrentCall = mutableCurrentCall
+        self.callServiceState = CallServiceState(currentCall: mutableCurrentCall)
+        self.individualCallService = IndividualCallService(
+            callManager: self.callManager,
+            callServiceState: self.callServiceState
+        )
+        self.groupCallRemoteVideoManager = GroupCallRemoteVideoManager(
+            callServiceState: self.callServiceState
+        )
         self.callManager.delegate = self
         SwiftSingletons.register(self)
-        self.registerCallUIAdapter(callUIAdapter)
+        self.callServiceState.addObserver(self)
 
         NotificationCenter.default.addObserver(
             self,
@@ -229,8 +137,8 @@ final class CallService {
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             SDSDatabaseStorage.shared.appendDatabaseChangeDelegate(self)
 
-            self.addObserverAndSyncState(observer: self.groupCallAccessoryMessageDelegate)
-            self.addObserverAndSyncState(observer: self.groupCallRemoteVideoManager)
+            self.callServiceState.addObserver(self.groupCallAccessoryMessageDelegate, syncStateImmediately: true)
+            self.callServiceState.addObserver(self.groupCallRemoteVideoManager, syncStateImmediately: true)
         }
     }
 
@@ -240,57 +148,72 @@ final class CallService {
     public func rebuildCallUIAdapter() {
         AssertIsOnMainThread()
 
-        if let call = currentCall {
+        if let currentCall = callServiceState.currentCall {
             Logger.warn("ending current call in. Did user toggle callkit preference while in a call?")
-            terminate(call: call)
+            callServiceState.terminateCall(currentCall)
         }
 
-        let callUIAdapter = CallUIAdapter()
-        self.callUIAdapter = callUIAdapter
-        self.registerCallUIAdapter(callUIAdapter)
+        self.callUIAdapter = CallUIAdapter()
     }
 
-    private func registerCallUIAdapter(_ callUIAdapter: CallUIAdapter) {
-        AssertIsOnMainThread()
+    func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
+        oldValue?.removeObserver(self)
+        newValue?.addObserverAndSyncState(observer: self)
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-            guard self.callUIAdapter === callUIAdapter else {
+        updateIsVideoEnabled()
+
+        // Prevent device from sleeping while we have an active call.
+        if let oldValue {
+            self.deviceSleepManager.removeBlock(blockObject: oldValue)
+        }
+        if let newValue {
+            self.deviceSleepManager.addBlock(blockObject: newValue)
+        }
+
+        if !UIDevice.current.isIPad {
+            if oldValue != nil {
+                UIDevice.current.endGeneratingDeviceOrientationNotifications()
+            }
+            if newValue != nil {
+                UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+            }
+        }
+
+        // By default, individual calls should start out with speakerphone disabled.
+        if let newValue, newValue.isIndividualCall {
+            self.audioService.requestSpeakerphone(isEnabled: false)
+        }
+
+        if let newValue {
+            self.audioService.handleRinging = callUIAdapter.adaptee(for: newValue).hasManualRinger
+        }
+
+        // To be safe, we reset the early ring on any call change so it's not left set from an unexpected state change.
+        earlyRingNextIncomingCall = false
+    }
+
+    func callServiceState(_ callServiceState: CallServiceState, didTerminateCall call: SignalCall) {
+        if !callServiceState.hasActiveOrPendingCall {
+            audioSession.isRTCAudioEnabled = false
+        }
+        audioSession.endAudioActivity(call.audioActivity)
+
+        switch call.mode {
+        case .individual:
+            break
+        case .group:
+            // Kick off a peek now that we've disconnected to get an updated participant state.
+            guard let thread = call.thread as? TSGroupThread else {
+                owsFailDebug("Invalid thread type")
                 return
             }
-            self.addObserverAndSyncState(observer: callUIAdapter)
+            Task {
+                await self.groupCallManager.peekGroupCallAndUpdateThread(
+                    thread,
+                    peekTrigger: .localEvent()
+                )
+            }
         }
-    }
-
-    // MARK: - Observers
-
-    private var observers = WeakArray<CallServiceObserver>()
-
-    func addObserverAndSyncState(observer: CallServiceObserver) {
-        addObserver(observer: observer, syncStateImmediately: true)
-    }
-
-    func addObserver(observer: CallServiceObserver, syncStateImmediately: Bool) {
-        AssertIsOnMainThread()
-
-        observers.append(observer)
-
-        if syncStateImmediately {
-            // Synchronize observer with current call state
-            observer.didUpdateCall(from: nil, to: currentCall)
-        }
-    }
-
-    // The observer-related methods should be invoked on the main thread.
-    func removeObserver(_ observer: CallServiceObserver) {
-        AssertIsOnMainThread()
-        observers.removeAll { $0 === observer }
-    }
-
-    // The observer-related methods should be invoked on the main thread.
-    func removeAllObservers() {
-        AssertIsOnMainThread()
-
-        observers = []
     }
 
     // MARK: -
@@ -302,7 +225,7 @@ final class CallService {
         AssertIsOnMainThread()
 
         // Keep a reference to the call before permissions were requested...
-        guard let call = currentCall else {
+        guard let currentCall = callServiceState.currentCall else {
             owsFailDebug("missing currentCall")
             return
         }
@@ -310,7 +233,7 @@ final class CallService {
         // If we're disabling the microphone, we don't need permission. Only need
         // permission to *enable* the microphone.
         guard !isLocalAudioMuted else {
-            return updateIsLocalAudioMutedWithMicrophonePermission(call: call, isLocalAudioMuted: isLocalAudioMuted)
+            return updateIsLocalAudioMutedWithMicrophonePermission(call: currentCall, isLocalAudioMuted: isLocalAudioMuted)
         }
 
         // This method can be initiated either from the CallViewController.videoButton or via CallKit
@@ -324,7 +247,7 @@ final class CallService {
 
         frontmostViewController.ows_askForMicrophonePermissions { granted in
             // Make sure the call is still valid (the one we asked permissions for).
-            guard self.currentCall === call else {
+            guard self.callServiceState.currentCall === currentCall else {
                 Logger.info("ignoring microphone permissions for obsolete call")
                 return
             }
@@ -334,17 +257,13 @@ final class CallService {
             }
 
             let mutedAfterAskingForPermission = !granted
-            self.updateIsLocalAudioMutedWithMicrophonePermission(call: call, isLocalAudioMuted: mutedAfterAskingForPermission)
+            self.updateIsLocalAudioMutedWithMicrophonePermission(call: currentCall, isLocalAudioMuted: mutedAfterAskingForPermission)
         }
     }
 
     private func updateIsLocalAudioMutedWithMicrophonePermission(call: SignalCall, isLocalAudioMuted: Bool) {
         AssertIsOnMainThread()
-
-        guard call === self.currentCall else {
-            cleanupStaleCall(call)
-            return
-        }
+        owsAssert(call === callServiceState.currentCall)
 
         switch call.mode {
         case .group(let groupCall):
@@ -363,7 +282,7 @@ final class CallService {
         AssertIsOnMainThread()
 
         // Keep a reference to the call before permissions were requested...
-        guard let call = currentCall else {
+        guard let currentCall = callServiceState.currentCall else {
             owsFailDebug("missing currentCall")
             return
         }
@@ -371,37 +290,35 @@ final class CallService {
         // If we're disabling local video, we don't need permission. Only need
         // permission to *enable* video.
         guard !isLocalVideoMuted else {
-            return updateIsLocalVideoMutedWithCameraPermissions(call: call, isLocalVideoMuted: isLocalVideoMuted)
+            return updateIsLocalVideoMutedWithCameraPermissions(call: currentCall, isLocalVideoMuted: isLocalVideoMuted)
         }
 
         // This method can be initiated either from the CallViewController.videoButton or via CallKit
         // in either case we want to show the alert on the callViewWindow.
-        guard let frontmostViewController =
-                UIApplication.shared.findFrontmostViewController(ignoringAlerts: true,
-                                                                 window: WindowManager.shared.callViewWindow) else {
+        let frontmostViewController = UIApplication.shared.findFrontmostViewController(
+            ignoringAlerts: true,
+            window: WindowManager.shared.callViewWindow
+        )
+        guard let frontmostViewController else {
             owsFailDebug("could not identify frontmostViewController")
             return
         }
 
         frontmostViewController.ows_askForCameraPermissions { granted in
             // Make sure the call is still valid (the one we asked permissions for).
-            guard self.currentCall === call else {
+            guard self.callServiceState.currentCall === currentCall else {
                 Logger.info("ignoring camera permissions for obsolete call")
                 return
             }
 
             let mutedAfterAskingForPermission = !granted
-            self.updateIsLocalVideoMutedWithCameraPermissions(call: call, isLocalVideoMuted: mutedAfterAskingForPermission)
+            self.updateIsLocalVideoMutedWithCameraPermissions(call: currentCall, isLocalVideoMuted: mutedAfterAskingForPermission)
         }
     }
 
     private func updateIsLocalVideoMutedWithCameraPermissions(call: SignalCall, isLocalVideoMuted: Bool) {
         AssertIsOnMainThread()
-
-        guard call === self.currentCall else {
-            cleanupStaleCall(call)
-            return
-        }
+        owsAssert(call === callServiceState.currentCall)
 
         switch call.mode {
         case .group(let groupCall):
@@ -420,20 +337,10 @@ final class CallService {
         call.videoCaptureController.switchCamera(isUsingFrontCamera: isUsingFrontCamera)
     }
 
-    func cleanupStaleCall(_ staleCall: SignalCall, function: StaticString = #function, line: UInt = #line) {
-        assert(staleCall !== currentCall)
-        if let currentCall = currentCall {
-            let error = OWSAssertionError("trying \(function):\(line) for call: \(staleCall) which is not currentCall: \(currentCall as Optional)")
-            handleFailedCall(failedCall: staleCall, error: error)
-        } else {
-            Logger.info("ignoring \(function):\(line) for call: \(staleCall) since currentCall has ended.")
-        }
-    }
-
     @objc
     private func configureDataMode() {
         guard AppReadiness.isAppReady else { return }
-        guard let currentCall = currentCall else { return }
+        guard let currentCall = callServiceState.currentCall else { return }
 
         switch currentCall.mode {
         case let .group(call):
@@ -472,23 +379,27 @@ final class CallService {
     // * IFF that call is the current call, we want to terminate it.
     public func handleFailedCall(failedCall: SignalCall, error: Error) {
         AssertIsOnMainThread()
-        Logger.debug("")
-
-        let callError: SignalCall.CallError = {
-            switch error {
-            case let callError as SignalCall.CallError:
-                return callError
-            default:
-                return SignalCall.CallError.externalError(underlyingError: error)
-            }
-        }()
-
-        failedCall.error = callError
 
         if failedCall.isIndividualCall {
-            individualCallService.handleFailedCall(failedCall: failedCall, error: callError, shouldResetUI: false, shouldResetRingRTC: true)
+            individualCallService.handleFailedCall(
+                failedCall: failedCall,
+                error: error,
+                shouldResetUI: false,
+                shouldResetRingRTC: true
+            )
         } else {
-            terminate(call: failedCall)
+            let callError: SignalCall.CallError = {
+                switch error {
+                case let callError as SignalCall.CallError:
+                    return callError
+                default:
+                    return SignalCall.CallError.externalError(underlyingError: error)
+                }
+            }()
+
+            failedCall.error = callError
+
+            callServiceState.terminateCall(failedCall)
         }
     }
 
@@ -518,45 +429,7 @@ final class CallService {
                     owsFailDebug("RingRTC failed to cancel group ring \(ringId): \(error)")
                 }
             }
-            terminate(call: call)
-        }
-    }
-
-    /**
-     * Clean up any existing call state and get ready to receive a new call.
-     */
-    func terminate(call: SignalCall) {
-        AssertIsOnMainThread()
-        Logger.info("call: \(call as Optional)")
-
-        // If call is for the current call, clear it out first.
-        if call === currentCall { currentCall = nil }
-
-        removeCall(call)
-
-        if !hasCallInProgress {
-            audioSession.isRTCAudioEnabled = false
-        }
-        audioSession.endAudioActivity(call.audioActivity)
-
-        switch call.mode {
-        case .individual:
-            break
-        case .group(let groupCall):
-            groupCall.leave()
-            groupCall.disconnect()
-
-            // Kick off a peek now that we've disconnected to get an updated participant state.
-            if let thread = call.thread as? TSGroupThread {
-                Task {
-                    await self.groupCallManager.peekGroupCallAndUpdateThread(
-                        thread,
-                        peekTrigger: .localEvent()
-                    )
-                }
-            } else {
-                owsFailDebug("Invalid thread type")
-            }
+            callServiceState.terminateCall(call)
         }
     }
 
@@ -565,7 +438,7 @@ final class CallService {
     var shouldHaveLocalVideoTrack: Bool {
         AssertIsOnMainThread()
 
-        guard let call = self.currentCall else {
+        guard let call = self.callServiceState.currentCall else {
             return false
         }
 
@@ -586,7 +459,7 @@ final class CallService {
     func updateIsVideoEnabled() {
         AssertIsOnMainThread()
 
-        guard let call = self.currentCall else { return }
+        guard let call = self.callServiceState.currentCall else { return }
 
         switch call.mode {
         case .individual(let individualCall):
@@ -614,10 +487,10 @@ final class CallService {
 
     func buildAndConnectGroupCallIfPossible(thread: TSGroupThread, videoMuted: Bool) -> SignalCall? {
         AssertIsOnMainThread()
-        guard !hasCallInProgress else { return nil }
+        guard !callServiceState.hasActiveOrPendingCall else { return nil }
 
         guard let call = buildGroupCall(for: thread) else { return nil }
-        addCall(call)
+        callServiceState.addCall(call)
 
         // By default, group calls should start out with speakerphone enabled.
         self.audioService.requestSpeakerphone(isEnabled: true)
@@ -625,10 +498,10 @@ final class CallService {
         call.groupCall.isOutgoingAudioMuted = false
         call.groupCall.isOutgoingVideoMuted = videoMuted
 
-        currentCall = call
+        callServiceState.setCurrentCall(call)
 
         guard call.groupCall.connect() else {
-            terminate(call: call)
+            callServiceState.terminateCall(call)
             return nil
         }
 
@@ -662,9 +535,9 @@ final class CallService {
     func joinGroupCallIfNecessary(_ call: SignalCall) {
         owsAssertDebug(call.isGroupCall)
 
-        let currentCall = self.currentCall
+        let currentCall = self.callServiceState.currentCall
         if currentCall === nil {
-            self.currentCall = call
+            callServiceState.setCurrentCall(call)
         } else if currentCall !== call {
             return owsFailDebug("A call is already in progress")
         }
@@ -673,7 +546,7 @@ final class CallService {
         // example, the call ended unexpectedly.
         if call.groupCall.localDeviceState.connectionState == .notConnected {
             guard call.groupCall.connect() else {
-                terminate(call: call)
+                callServiceState.terminateCall(call)
                 return
             }
         }
@@ -758,40 +631,14 @@ final class CallService {
 
     func buildOutgoingIndividualCallIfPossible(thread: TSContactThread, hasVideo: Bool) -> SignalCall? {
         AssertIsOnMainThread()
-        guard !hasCallInProgress else { return nil }
+        guard !callServiceState.hasActiveOrPendingCall else { return nil }
 
         let call = SignalCall.outgoingIndividualCall(thread: thread)
         call.individualCall.offerMediaType = hasVideo ? .video : .audio
 
-        addCall(call)
+        callServiceState.addCall(call)
 
         return call
-    }
-
-    func prepareIncomingIndividualCall(
-        thread: TSContactThread,
-        sentAtTimestamp: UInt64,
-        callType: SSKProtoCallMessageOfferType
-    ) -> SignalCall {
-        AssertIsOnMainThread()
-
-        let offerMediaType: TSRecentCallOfferType
-        switch callType {
-        case .offerAudioCall:
-            offerMediaType = .audio
-        case .offerVideoCall:
-            offerMediaType = .video
-        }
-
-        let newCall = SignalCall.incomingIndividualCall(
-            thread: thread,
-            sentAtTimestamp: sentAtTimestamp,
-            offerMediaType: offerMediaType
-        )
-
-        addCall(newCall)
-
-        return newCall
     }
 
     // MARK: - Notifications
@@ -821,7 +668,7 @@ final class CallService {
 
     @objc
     private func phoneOrientationDidChange() {
-        guard currentCall != nil else {
+        guard callServiceState.currentCall != nil else {
             return
         }
         sendPhoneOrientationNotification()
@@ -846,7 +693,7 @@ final class CallService {
         owsAssertDebug(!UIDevice.current.isIPad, "iPad has full UIKit rotation support")
 
         let rotationAngle: CGFloat
-        if let call = currentCall, !shouldReorientUI(for: call) {
+        if let call = callServiceState.currentCall, !shouldReorientUI(for: call) {
             // We still send the notification in case we *previously* rotated the UI and now we need to revert back.
             // Example:
             // 1. In a 1:1 call, either the user or their contact (but not both) has video on
@@ -882,8 +729,13 @@ final class CallService {
 
     private func updateGroupMembersForCurrentCallIfNecessary() {
         DispatchQueue.main.async {
-            guard let call = self.currentCall, call.isGroupCall,
-                  let groupThread = call.thread as? TSGroupThread else { return }
+            guard
+                let call = self.callServiceState.currentCall,
+                call.isGroupCall,
+                let groupThread = call.thread as? TSGroupThread
+            else {
+                return
+            }
 
             let membershipInfo: [GroupMemberInfo]
             do {
@@ -1027,7 +879,12 @@ extension CallService: CallObserver {
         owsAssertDebug(call.isGroupCall)
         Logger.info("groupCallUpdateGroupMembershipProof")
 
-        guard call === currentCall else { return cleanupStaleCall(call) }
+        guard call === callServiceState.currentCall else {
+            if callServiceState.currentCall != nil {
+                handleFailedCall(failedCall: call, error: OWSAssertionError("can't fetch membership proof for stale call"))
+            }
+            return
+        }
 
         guard let groupThread = call.thread as? TSGroupThread else {
             return owsFailDebug("unexpectedly missing thread")
@@ -1053,7 +910,12 @@ extension CallService: CallObserver {
         owsAssertDebug(call.isGroupCall)
         Logger.info("groupCallUpdateGroupMembers")
 
-        guard call === currentCall else { return cleanupStaleCall(call) }
+        guard call === callServiceState.currentCall else {
+            if callServiceState.currentCall != nil {
+                handleFailedCall(failedCall: call, error: OWSAssertionError("can't fetch group members for stale call"))
+            }
+            return
+        }
 
         updateGroupMembersForCurrentCallIfNecessary()
     }
@@ -1090,9 +952,13 @@ extension CallService: DatabaseChangeDelegate {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
 
-        guard let thread = currentCall?.thread,
-              thread.isGroupThread,
-              databaseChanges.didUpdate(thread: thread) else { return }
+        guard
+            let thread = callServiceState.currentCall?.thread,
+            thread.isGroupThread,
+            databaseChanges.didUpdate(thread: thread)
+        else {
+            return
+        }
 
         updateGroupMembersForCurrentCallIfNecessary()
     }
@@ -1134,7 +1000,7 @@ extension CallService: CallManagerDelegate {
         // It's unlikely that this would ever have more than one call. But technically
         // we don't know which call this message is on behalf of. So we assume it's every
         // call with a participant with recipientUuid
-        let relevantCalls = calls.filter { (call: SignalCall) -> Bool in
+        let relevantCalls = callServiceState.activeOrPendingCalls.filter { (call: SignalCall) -> Bool in
             call.participantAddresses.contains(where: { $0.serviceId == recipientAci })
         }
 
@@ -1262,12 +1128,12 @@ extension CallService: CallManagerDelegate {
         AssertIsOnMainThread()
         owsAssertDebug(call.isIndividualCall)
 
-        guard currentCall == nil else {
+        guard callServiceState.currentCall == nil else {
             handleFailedCall(failedCall: call, error: OWSAssertionError("a current call is already set"))
             return
         }
 
-        owsAssertDebug(calls.contains(where: { $0 === call }), "unknown call: \(call)")
+        owsAssertDebug(callServiceState.activeOrPendingCalls.contains(where: { $0 === call }), "unknown call: \(call)")
 
         call.individualCall.callId = callId
 
@@ -1276,7 +1142,7 @@ extension CallService: CallManagerDelegate {
         earlyRingNextIncomingCall = false
 
         // The call to be started is provided by the event.
-        currentCall = call
+        callServiceState.setCurrentCall(call)
 
         individualCallService.callManager(
             callManager,
@@ -1489,10 +1355,11 @@ extension CallService: CallManagerDelegate {
         }
 
         guard update == .requested else {
-            if let currentCall = self.currentCall,
-               currentCall.isGroupCall,
-               case .incomingRing(_, ringId) = currentCall.groupCallRingState {
-
+            if
+                let currentCall = self.callServiceState.currentCall,
+                currentCall.isGroupCall,
+                case .incomingRing(_, ringId) = currentCall.groupCallRingState
+            {
                 switch update {
                 case .requested:
                     owsFail("checked above")
@@ -1511,7 +1378,7 @@ extension CallService: CallManagerDelegate {
                     self.callUIAdapter.remoteDidHangupCall(currentCall)
                 }
 
-                self.terminate(call: currentCall)
+                self.callServiceState.terminateCall(currentCall)
                 currentCall.groupCallRingState = .incomingRingCancelled
             }
 
@@ -1574,7 +1441,7 @@ extension CallService: CallManagerDelegate {
                 owsFailDebug("RingRTC failed to cancel group ring \(ringId): \(error)")
             }
         case .ring(let thread):
-            let currentCall = self.currentCall
+            let currentCall = self.callServiceState.currentCall
             if currentCall?.thread.uniqueId == thread.uniqueId {
                 // We're already ringing or connected, or at the very least already in the lobby.
                 return

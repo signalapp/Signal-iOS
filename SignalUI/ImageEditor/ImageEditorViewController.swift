@@ -289,7 +289,7 @@ class ImageEditorViewController: OWSViewController {
     }
 
     override var prefersStatusBarHidden: Bool {
-        !UIDevice.current.hasIPhoneXNotch && !UIDevice.current.isIPad && !CurrentAppContext().hasActiveCall
+        !UIDevice.current.hasIPhoneXNotch && !UIDevice.current.isIPad && !CurrentAppContext().hasActiveOrPendingCall
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {

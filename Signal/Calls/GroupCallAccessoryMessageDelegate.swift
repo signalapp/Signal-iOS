@@ -19,7 +19,7 @@ import SignalRingRTC
 /// For example, we send "group call update messages" when we join or leave a
 /// group, and send "call event sync messages" when we join a call or decline a
 /// group ring.
-protocol GroupCallAccessoryMessageDelegate: AnyObject, CallServiceObserver {
+protocol GroupCallAccessoryMessageDelegate: AnyObject, CallServiceStateObserver {
     /// Tells the delegate that the local device may have joined a group call.
     ///
     /// This method should be called from any RingRTC callback in which either
@@ -98,7 +98,7 @@ class GroupCallAccessoryMessageHandler: GroupCallAccessoryMessageDelegate {
         self.messageSenderJobQueue = messageSenderJobQueue
     }
 
-    // MARK: - CallServiceObserver
+    // MARK: - CallServiceStateObserver
 
     func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
         guard let (oldGroupThread, oldGroupCall) = oldValue.flatMap({ $0.unpackGroupCall() }) else {

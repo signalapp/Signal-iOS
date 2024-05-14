@@ -16,7 +16,7 @@ extension ConversationViewController {
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(activeCallsDidChange),
-                                               name: CallService.activeCallsDidChange,
+                                               name: CallServiceState.activeCallsDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(identityStateDidChange),
@@ -46,7 +46,7 @@ extension ConversationViewController {
                                                selector: #selector(profileWhitelistDidChange),
                                                name: UserProfileNotifications.profileWhitelistDidChange,
                                                object: nil)
-        AppEnvironment.shared.callService.addObserver(observer: self, syncStateImmediately: false)
+        AppEnvironment.shared.callService.callServiceState.addObserver(self, syncStateImmediately: false)
     }
 
     @objc
@@ -159,10 +159,9 @@ extension ConversationViewController {
 
 // MARK: -
 
-extension ConversationViewController: CallServiceObserver {
+extension ConversationViewController: CallServiceStateObserver {
     func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
         AssertIsOnMainThread()
-        guard oldValue !== newValue else { return }
         updateBarButtonItems()
     }
 }

@@ -192,7 +192,7 @@ extension ShareAppExtensionContext: AppContext {
 
     var debugLogsDirPath: String { DebugLogger.shareExtensionDebugLogsDirPath }
 
-    var hasActiveCall: Bool { false }
+    var hasActiveOrPendingCall: Bool { false }
 
     func resetAppDataAndExit() -> Never {
         owsFail("Not main app.")

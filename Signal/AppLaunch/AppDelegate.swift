@@ -1110,7 +1110,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         // The call-banner window is only suitable for portrait display on iPhone
-        if CurrentAppContext().hasActiveCall, !UIDevice.current.isIPad {
+        if CurrentAppContext().hasActiveOrPendingCall, !UIDevice.current.isIPad {
             return .portrait
         }
 
@@ -1303,10 +1303,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 //   contacts app.  If so, the correct response is to try to initiate a new call
                 //   to that user - unless there already is another call in progress.
                 let callService = AppEnvironment.shared.callService!
-                if let currentCall = callService.currentCall {
+                if let currentCall = callService.callServiceState.currentCall {
                     if currentCall.isIndividualCall, thread.uniqueId == currentCall.thread.uniqueId {
                         Logger.info("Upgrading existing call to video")
-                        callService.individualCallService.handleCallKitStartVideo()
+                        callService.updateIsLocalVideoMuted(isLocalVideoMuted: false)
                     } else {
                         Logger.warn("Ignoring user activity; on another call.")
                     }
@@ -1336,7 +1336,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                     return
                 }
                 let callService = AppEnvironment.shared.callService!
-                if callService.currentCall != nil {
+                if callService.callServiceState.currentCall != nil {
                     Logger.warn("Ignoring user activity; on another call.")
                     return
                 }
@@ -1365,7 +1365,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                     return
                 }
                 let callService = AppEnvironment.shared.callService!
-                if callService.currentCall != nil {
+                if callService.callServiceState.currentCall != nil {
                     Logger.warn("Ignoring user activity; on another call.")
                     return
                 }

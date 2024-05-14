@@ -191,7 +191,7 @@ public class QRCodeScanViewController: OWSViewController {
     }
 
     public override var prefersStatusBarHidden: Bool {
-        guard !CurrentAppContext().hasActiveCall else {
+        guard !CurrentAppContext().hasActiveOrPendingCall else {
             return false
         }
 

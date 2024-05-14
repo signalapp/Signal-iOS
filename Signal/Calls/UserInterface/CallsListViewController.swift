@@ -17,7 +17,7 @@ private protocol CallCellDelegate: AnyObject {
 
 // MARK: - CallsListViewController
 
-class CallsListViewController: OWSViewController, HomeTabViewController, CallServiceObserver {
+class CallsListViewController: OWSViewController, HomeTabViewController, CallServiceStateObserver {
     private typealias DiffableDataSource = UITableViewDiffableDataSource<Section, CallViewModel.Reference>
     private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, CallViewModel.Reference>
 
@@ -422,10 +422,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         )
 
         // No need to sync state since we're still setting up the view.
-        deps.callService.addObserver(
-            observer: self,
-            syncStateImmediately: false
-        )
+        deps.callService.callServiceState.addObserver(self, syncStateImmediately: false)
     }
 
     /// A significant time change has occurred, according to the system. We
@@ -542,7 +539,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         reloadRows(callRecordIds: [callRecordId])
     }
 
-    // MARK: CallServiceObserver
+    // MARK: CallServiceStateObserver
 
     /// When we learn that this device has joined or left a call, we'll reload
     /// any rows related to that call so that we show the latest state in this
@@ -848,7 +845,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         /// The call state may be different between the primary and the
         /// coalesced calls. For the view model's state, we use the primary.
         let callState: CallViewModel.State = {
-            let currentCallId: UInt64? = deps.callService.currentCall?.callId
+            let currentCallId: UInt64? = deps.callService.callServiceState.currentCall?.callId
 
             switch primaryCallRecord.callStatus {
             case .individual:

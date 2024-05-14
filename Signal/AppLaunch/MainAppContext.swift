@@ -196,9 +196,9 @@ class MainAppContext: NSObject, AppContext {
 
     let hasUI: Bool = true
 
-    var hasActiveCall: Bool {
+    var hasActiveOrPendingCall: Bool {
         if AppReadiness.isAppReady {
-            return AppEnvironment.shared.callService.hasCallInProgress
+            return AppEnvironment.shared.callService.callServiceState.hasActiveOrPendingCall
         } else {
             return false
         }

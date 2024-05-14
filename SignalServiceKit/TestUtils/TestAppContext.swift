@@ -78,7 +78,7 @@ public class TestAppContext: NSObject, AppContext {
     public func canPresentNotifications() -> Bool { false }
     public let shouldProcessIncomingMessages: Bool = true
     public let hasUI: Bool = true
-    public let hasActiveCall: Bool = false
+    public let hasActiveOrPendingCall: Bool = false
     public let debugLogsDirPath: String = testDebugLogsDirPath
     public func resetAppDataAndExit() -> Never {
         owsFail("resetAppDataAndExit called during tests")

@@ -411,12 +411,6 @@ public class SignalCall: CallManagerCallReference {
         observers.removeAll { $0 === observer }
     }
 
-    public func removeAllObservers() {
-        AssertIsOnMainThread()
-
-        observers = []
-    }
-
     public func publishSendFailureUntrustedParticipantIdentity() {
         observers.elements.forEach { $0.callMessageSendFailedUntrustedIdentity(self) }
     }

@@ -293,7 +293,7 @@ public class NotificationActionHandler: Dependencies {
             self.notificationMessage(forUserInfo: userInfo)
         }.done(on: DispatchQueue.main) { notificationMessage in
             let thread = notificationMessage.thread
-            let currentCall = Self.callService.currentCall
+            let currentCall = Self.callService.callServiceState.currentCall
 
             if currentCall?.thread.uniqueId == thread.uniqueId {
                 WindowManager.shared.returnToCallView()

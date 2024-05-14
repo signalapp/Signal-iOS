@@ -58,7 +58,7 @@ struct CVViewStateSnapshot: Dependencies {
             previousUIMode: previousViewStateSnapshot?.uiMode ?? .normal,
             searchText: viewState.lastSearchedText,
             oldestUnreadMessageSortId: oldestUnreadMessageSortId,
-            currentCallThreadId: callService.currentCall?.thread.uniqueId
+            currentCallThreadId: callService.callServiceState.currentCall?.thread.uniqueId
         )
     }
 

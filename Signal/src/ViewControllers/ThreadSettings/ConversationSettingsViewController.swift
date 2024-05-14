@@ -79,7 +79,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
         super.init()
 
-        AppEnvironment.shared.callService.addObserver(observer: self, syncStateImmediately: false)
+        AppEnvironment.shared.callService.callServiceState.addObserver(self, syncStateImmediately: false)
         databaseStorage.appendDatabaseChangeDelegate(self)
         contactsViewHelper.addObserver(self)
         groupViewHelper.delegate = self
@@ -1152,7 +1152,7 @@ extension ConversationSettingsViewController: DatabaseChangeDelegate {
     }
 }
 
-extension ConversationSettingsViewController: CallServiceObserver {
+extension ConversationSettingsViewController: CallServiceStateObserver {
     func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
         updateTableContents()
     }

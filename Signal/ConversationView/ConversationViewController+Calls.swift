@@ -9,7 +9,7 @@ import SignalUI
 public extension ConversationViewController {
 
     var isCurrentCallForThread: Bool {
-        thread.uniqueId == AppEnvironment.shared.callService.currentCall?.thread.uniqueId
+        thread.uniqueId == AppEnvironment.shared.callService.callServiceState.currentCall?.thread.uniqueId
     }
 
     var isCallingSupported: Bool {
