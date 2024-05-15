@@ -397,6 +397,42 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         return nextStep()
     }
 
+    public func skipAndCreateNewPINCode() -> Guarantee<RegistrationStep> {
+        Logger.info("")
+        switch getPathway() {
+        case
+                .opening,
+                .registrationRecoveryPassword,
+                .svrAuthCredential,
+                .svrAuthCredentialCandidates,
+                .session:
+            Logger.error("Invalid state from which to skip!")
+            return nextStep()
+        case .profileSetup:
+            break
+        }
+        db.write { tx in
+            updatePersistedState(tx) {
+                // We are NOT skipping PIN entry; just restoring, which
+                // means we will create a new PIN.
+                $0.hasSkippedPinEntry = false
+                $0.hasGivenUpTryingToRestoreWithSVR = true
+            }
+            switch self.mode {
+            case .changingNumber:
+                break
+            case .registering, .reRegistering:
+                // Whenever we do this, wipe the keys we've got.
+                // We don't want to have them and use them implicitly later.
+                deps.svr.clearKeys(transaction: tx)
+                deps.ows2FAManager.clearLocalPinCode(tx)
+            }
+        }
+        inMemoryState.pinFromUser = nil
+        self.wipeInMemoryStateToPreventSVRPathAttempts()
+        return nextStep()
+    }
+
     public func skipDeviceTransfer() -> Guarantee<RegistrationStep> {
         Logger.info("")
         db.write { tx in
@@ -2814,7 +2850,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
                 if isRestoringPinBackup {
                     return .value(.pinEntry(RegistrationPinState(
                         operation: .enteringExistingPin(
-                            skippability: .canSkip,
+                            skippability: .canSkipAndCreateNew,
                             remainingAttempts: nil
                         ),
                         error: nil,

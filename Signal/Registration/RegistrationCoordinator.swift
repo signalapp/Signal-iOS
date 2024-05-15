@@ -103,6 +103,12 @@ public protocol RegistrationCoordinator {
     /// If not allowed, an error step may be returned.
     func skipPINCode() -> Guarantee<RegistrationStep>
 
+    /// Skip entering the existing PIN code when registering for an existing account, and instead
+    /// create a new PIN (losing any backed up information).
+    /// This is only possible if reglock is disabled, and if done will wipe any KBS backups.
+    /// If not allowed, an error step may be returned.
+    func skipAndCreateNewPINCode() -> Guarantee<RegistrationStep>
+
     /// When registering, the server will inform us (via an error code) if device transfer is
     /// possible from an existing device. In this case, the user must either transfer or explicitly
     /// decline transferring; this method informs the flow of the latter choice.

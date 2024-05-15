@@ -84,6 +84,7 @@ protocol RegistrationPinPresenter: AnyObject {
 
     func submitPinCode(_ code: String)
     func submitWithSkippedPin()
+    func submitWithCreateNewPinInstead()
 
     func exitRegistration()
 }
@@ -654,7 +655,6 @@ class RegistrationPinViewController: OWSViewController {
     @objc
     private func showExistingPinEntryHelpUi() {
         let message: String
-        let skipButtonTitle: String?
         switch state.operation {
         case .creatingNewPin, .confirmingNewPin:
             owsFail("Invalid state. This method should not be called")
@@ -665,24 +665,15 @@ class RegistrationPinViewController: OWSViewController {
                     "REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE",
                     comment: "Alert body for a forgotten SVR (V2) PIN"
                 )
-                skipButtonTitle = nil
             case .canSkip:
                 message = OWSLocalizedString(
                     "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE",
                     comment: "Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they cannot necessarily create a new PIN"
                 )
-                skipButtonTitle = OWSLocalizedString(
-                    "PIN_ENTER_EXISTING_SKIP",
-                    comment: "If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this."
-                )
             case .canSkipAndCreateNew:
                 message = OWSLocalizedString(
                     "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_AND_CAN_CREATE_NEW_PIN_ALERT_MESSAGE",
                     comment: "Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock and they can create a new PIN"
-                )
-                skipButtonTitle = OWSLocalizedString(
-                    "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN",
-                    comment: "Label for the 'skip and create new pin' button when reglock is disabled during onboarding."
                 )
             }
         }
@@ -695,10 +686,30 @@ class RegistrationPinViewController: OWSViewController {
             message: message
         )
 
-        if let skipButtonTitle {
-            actionSheet.addAction(.init(title: skipButtonTitle, style: .destructive) { [weak self] _ in
-                self?.presenter?.submitWithSkippedPin()
-            })
+        switch state.operation {
+        case .creatingNewPin, .confirmingNewPin:
+            owsFail("Invalid state. This method should not be called")
+        case let .enteringExistingPin(skippability, _):
+            switch skippability {
+            case .unskippable:
+                break
+            case .canSkip:
+                let skipButtonTitle = OWSLocalizedString(
+                    "PIN_ENTER_EXISTING_SKIP",
+                    comment: "If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this."
+                )
+                actionSheet.addAction(.init(title: skipButtonTitle, style: .destructive) { [weak self] _ in
+                    self?.presenter?.submitWithSkippedPin()
+                })
+            case .canSkipAndCreateNew:
+                let skipButtonTitle = OWSLocalizedString(
+                    "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN",
+                    comment: "Label for the 'skip and create new pin' button when reglock is disabled during onboarding."
+                )
+                actionSheet.addAction(.init(title: skipButtonTitle, style: .destructive) { [weak self] _ in
+                    self?.presenter?.submitWithCreateNewPinInstead()
+                })
+            }
         }
 
         actionSheet.addAction(.init(title: CommonStrings.contactSupport) { [weak self] _ in

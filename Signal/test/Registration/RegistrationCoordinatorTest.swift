@@ -3429,6 +3429,187 @@ public class RegistrationCoordinatorTest: XCTestCase {
         }
     }
 
+    public func testSessionPath_skipPINRestore_createNewPIN() {
+        executeTest {
+            switch self.mode {
+            case .registering:
+                break
+            case .reRegistering, .changingNumber:
+                // Test only applies to registering scenarios.
+                return
+            }
+
+            createSessionAndRequestFirstCode()
+
+            scheduler.tick()
+
+            var nextStep: Guarantee<RegistrationStep>!
+
+            // Submit a code at t=5.
+            scheduler.run(atTime: 5) {
+                nextStep = self.coordinator.submitVerificationCode(Stubs.pinCode)
+            }
+
+            // At t=7, give back a verified session.
+            self.sessionManager.submitCodeResponse = self.scheduler.guarantee(
+                resolvingWith: .success(RegistrationSession(
+                    id: Stubs.sessionId,
+                    e164: Stubs.e164,
+                    receivedDate: date,
+                    nextSMS: 0,
+                    nextCall: 0,
+                    nextVerificationAttempt: nil,
+                    allowedToRequestCode: true,
+                    requestedInformation: [],
+                    hasUnknownChallengeRequiringAppUpdate: false,
+                    verified: true
+                )),
+                atTime: 7
+            )
+
+            // Previously used SVR so we first ask to restore.
+            let accountIdentityResponse = Stubs.accountIdentityResponse(hasPreviouslyUsedSVR: true)
+            var authPassword: String!
+
+            // That means at t=7 it should try and register with the verified
+            // session; be ready for that starting at t=6 (but not before).
+
+            // Before registering at t=7, it should ask for push tokens to give the registration.
+            pushRegistrationManagerMock.requestPushTokenMock = {
+                XCTAssertEqual(self.scheduler.currentTime, 7)
+                return self.scheduler.guarantee(resolvingWith: .success(Stubs.apnsRegistrationId), atTime: 8)
+            }
+
+            // It should also fetch the prekeys for account creation
+            preKeyManagerMock.createPreKeysMock = {
+                XCTAssertEqual(self.scheduler.currentTime, 8)
+                return self.scheduler.promise(resolvingWith: Stubs.prekeyBundles(), atTime: 9)
+            }
+
+            scheduler.run(atTime: 8) {
+                let expectedRequest = RegistrationRequestFactory.createAccountRequest(
+                    verificationMethod: .sessionId(Stubs.sessionId),
+                    e164: Stubs.e164,
+                    authPassword: "", // Doesn't matter for request generation.
+                    accountAttributes: Stubs.accountAttributes(),
+                    skipDeviceTransfer: true,
+                    apnRegistrationId: Stubs.apnsRegistrationId,
+                    prekeyBundles: Stubs.prekeyBundles()
+                )
+                // Resolve it at t=10
+                self.mockURLSession.addResponse(
+                    TSRequestOWSURLSessionMock.Response(
+                        matcher: { request in
+                            authPassword = request.authPassword
+                            return request.url == expectedRequest.url
+                        },
+                        statusCode: 200,
+                        bodyJson: accountIdentityResponse
+                    ),
+                    atTime: 10,
+                    on: self.scheduler
+                )
+            }
+
+            func expectedAuthedAccount() -> AuthedAccount {
+                return .explicit(
+                    aci: accountIdentityResponse.aci,
+                    pni: accountIdentityResponse.pni,
+                    e164: Stubs.e164,
+                    deviceId: .primary,
+                    authPassword: authPassword
+                )
+            }
+
+            // Once we are registered at t=10, we should finalize prekeys.
+            preKeyManagerMock.finalizePreKeysMock = { didSucceed in
+                XCTAssertEqual(self.scheduler.currentTime, 10)
+                XCTAssert(didSucceed)
+                return self.scheduler.promise(resolvingWith: (), atTime: 11)
+            }
+
+            // Then we should try and create one time pre-keys
+            // with the credentials we got in the identity response.
+            preKeyManagerMock.rotateOneTimePreKeysMock = { auth in
+                XCTAssertEqual(self.scheduler.currentTime, 11)
+                XCTAssertEqual(auth, expectedAuthedAccount().chatServiceAuth)
+                return self.scheduler.promise(resolvingWith: (), atTime: 12)
+            }
+
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 12)
+
+            // Now we should ask to restore the PIN.
+            XCTAssertEqual(nextStep.value, .pinEntry(
+                Stubs.pinEntryStateForPostRegRestore(mode: self.mode)
+            ))
+
+            scheduler.adjustTime(to: 0)
+
+            // Skip the PIN code and create a new one instead.
+            nextStep = coordinator.skipAndCreateNewPINCode()
+
+            scheduler.runUntilIdle()
+
+            // When we skip, we should be asked to _create_ the PIN.
+            XCTAssertEqual(nextStep.value, .pinEntry(
+                Stubs.pinEntryStateForPostRegCreate(mode: self.mode, exitConfigOverride: .noExitAllowed)
+            ))
+
+            // Skip this PIN code, too.
+            nextStep = coordinator.skipPINCode()
+
+            // When we skip the pin, it should skip any SVR backups.
+            svr.generateAndBackupKeysMock = { _, _ in
+                XCTFail("Shouldn't talk to SVR with skipped PIN!")
+                return .value(())
+
+            }
+            storageServiceManagerMock.restoreOrCreateManifestIfNecessaryMock = { _ in
+                return .value(())
+            }
+
+            // When registered, we should create pre-keys.
+            preKeyManagerMock.rotateOneTimePreKeysMock = { auth in
+                XCTAssertEqual(auth, expectedAuthedAccount())
+                return .value(())
+            }
+
+            // And at t=0 once we skip the storage service restore,
+            // we will sync account attributes and then we are finished!
+            let expectedAttributesRequest = RegistrationRequestFactory.updatePrimaryDeviceAccountAttributesRequest(
+                Stubs.accountAttributes(),
+                auth: .implicit() // doesn't matter for url matching
+            )
+            self.mockURLSession.addResponse(
+                matcher: { request in
+                    XCTAssertEqual(self.scheduler.currentTime, 0)
+                    return request.url == expectedAttributesRequest.url
+                },
+                statusCode: 200
+            )
+
+            // At this point we should have no master key.
+            XCTAssertFalse(svr.hasMasterKey)
+
+            var didSetLocalMasterKey = false
+            svr.useDeviceLocalMasterKeyMock = { [weak self] _ in
+                XCTAssertFalse(self?.svr.hasMasterKey ?? true)
+                didSetLocalMasterKey = true
+            }
+
+            scheduler.runUntilIdle()
+            XCTAssertEqual(scheduler.currentTime, 0)
+
+            XCTAssertEqual(nextStep.value, .done)
+
+            XCTAssertTrue(didSetLocalMasterKey)
+
+            // Since we set profile info, we should have scheduled a reupload.
+            XCTAssertTrue(profileManagerMock.didScheduleReuploadLocalProfile)
+        }
+    }
+
     // MARK: - Profile Setup Path
 
     // TODO[Registration]: test the profile setup steps.
@@ -3665,13 +3846,15 @@ public class RegistrationCoordinatorTest: XCTestCase {
             )
         }
 
-        static func accountIdentityResponse() -> RegistrationServiceResponses.AccountIdentityResponse {
+        static func accountIdentityResponse(
+            hasPreviouslyUsedSVR: Bool = false
+        ) -> RegistrationServiceResponses.AccountIdentityResponse {
             return RegistrationServiceResponses.AccountIdentityResponse(
                 aci: aci,
                 pni: Pni.randomForTesting(),
                 e164: e164,
                 username: nil,
-                hasPreviouslyUsedSVR: false
+                hasPreviouslyUsedSVR: hasPreviouslyUsedSVR
             )
         }
 
@@ -3869,6 +4052,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
 
         static func pinEntryStateForPostRegRestore(
             mode: RegistrationMode,
+            exitConfigOverride: RegistrationPinState.ExitConfiguration? = nil,
             error: RegistrationPinValidationError? = nil
         ) -> RegistrationPinState {
             return RegistrationPinState(
@@ -3878,7 +4062,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
                 ),
                 error: error,
                 contactSupportMode: .v2NoReglock,
-                exitConfiguration: mode.pinExitConfig
+                exitConfiguration: exitConfigOverride ?? mode.pinExitConfig
             )
         }
 

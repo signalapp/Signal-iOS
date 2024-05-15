@@ -499,6 +499,10 @@ extension RegistrationNavigationController: RegistrationPinPresenter {
     func submitWithSkippedPin() {
         pushNextController(coordinator.skipPINCode())
     }
+
+    func submitWithCreateNewPinInstead() {
+        pushNextController(coordinator.skipAndCreateNewPINCode())
+    }
 }
 
 extension RegistrationNavigationController: RegistrationPinAttemptsExhaustedAndMustCreateNewPinPresenter {
