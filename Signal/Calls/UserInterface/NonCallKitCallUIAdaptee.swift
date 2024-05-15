@@ -89,8 +89,8 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
                 switch call.mode {
                 case .individual(let individualCall):
                     return individualCall.state == .localRinging_ReadyToAnswer
-                case .groupThread(let groupCall):
-                    return groupCall.localDeviceState.joinState == .notJoined
+                case .groupThread(let groupThreadCall):
+                    return groupThreadCall.ringRtcCall.localDeviceState.joinState == .notJoined
                 }
             }()
             guard shouldContinue else {
@@ -133,10 +133,10 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         switch call.mode {
         case .individual:
             self.callService.individualCallService.handleAcceptCall(call)
-        case .groupThread(let groupCall):
+        case .groupThread(let groupThreadCall):
             // Explicitly unmute to request permissions.
             self.callService.updateIsLocalAudioMuted(isLocalAudioMuted: false)
-            self.callService.joinGroupCallIfNecessary(call, groupCall: groupCall)
+            self.callService.joinGroupCallIfNecessary(call, groupCall: groupThreadCall.ringRtcCall)
         }
 
         // Enable audio for locally accepted calls after the session is configured.

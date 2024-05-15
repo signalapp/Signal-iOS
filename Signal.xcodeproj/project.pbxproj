@@ -563,6 +563,7 @@
 		5008672F2B91432F00E34B5F /* SearchableNameIndexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5008672E2B91432F00E34B5F /* SearchableNameIndexer.swift */; };
 		50086B9E29DF606E00F9C072 /* TSGroupThread+ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50086B9D29DF606E00F9C072 /* TSGroupThread+ViewModel.swift */; };
 		5008FEBC2B1811A0004E73FD /* JobQueueRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5008FEBB2B1811A0004E73FD /* JobQueueRunner.swift */; };
+		500978432BF3F69F00941B1E /* GroupThreadCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500978422BF3F69F00941B1E /* GroupThreadCall.swift */; };
 		500AEE052A4B68E200371F05 /* WallpaperStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500AEE042A4B68E200371F05 /* WallpaperStore.swift */; };
 		500AEE072A4DF48700371F05 /* ChatColorSettingStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500AEE062A4DF48700371F05 /* ChatColorSettingStore.swift */; };
 		500AEE092A4E09AD00371F05 /* AuthorMergeObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500AEE082A4E09AD00371F05 /* AuthorMergeObserver.swift */; };
@@ -3442,6 +3443,7 @@
 		50086B9B29DF5CB100F9C072 /* NameResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameResolver.swift; sourceTree = "<group>"; };
 		50086B9D29DF606E00F9C072 /* TSGroupThread+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSGroupThread+ViewModel.swift"; sourceTree = "<group>"; };
 		5008FEBB2B1811A0004E73FD /* JobQueueRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobQueueRunner.swift; sourceTree = "<group>"; };
+		500978422BF3F69F00941B1E /* GroupThreadCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupThreadCall.swift; sourceTree = "<group>"; };
 		500AEE042A4B68E200371F05 /* WallpaperStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperStore.swift; sourceTree = "<group>"; };
 		500AEE062A4DF48700371F05 /* ChatColorSettingStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatColorSettingStore.swift; sourceTree = "<group>"; };
 		500AEE082A4E09AD00371F05 /* AuthorMergeObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorMergeObserver.swift; sourceTree = "<group>"; };
@@ -8846,6 +8848,7 @@
 				32AC5CF0255F875C00829BD8 /* GroupCallAccessoryMessageDelegate.swift */,
 				D95777BD2B472AA100CFE3AE /* GroupCallRecordRingingCleanupManager.swift */,
 				8814D9652564A33E00A472E3 /* GroupCallRemoteVideoManager.swift */,
+				500978422BF3F69F00941B1E /* GroupThreadCall.swift */,
 				D9E7C8782B9B9072005BD3B9 /* IdentifierIndexedArray.swift */,
 				88D23D0D23CEBF6000B0E74B /* IndividualCall.swift */,
 				88D23D1423CEC0C700B0E74B /* IndividualCallService.swift */,
@@ -13039,6 +13042,7 @@
 				889DFA10264EE76F00D03921 /* GroupNameViewController.swift in Sources */,
 				88BE44A82615451A00AE8E33 /* GroupPermissionsSettingsViewController.swift in Sources */,
 				880FB40428CC251A00FA1C10 /* GroupStorySettingsViewController.swift in Sources */,
+				500978432BF3F69F00941B1E /* GroupThreadCall.swift in Sources */,
 				347B83F724367EC10019A52C /* GroupViewHelper+MemberActionSheet.swift in Sources */,
 				347B83F92436820C0019A52C /* GroupViewHelper.swift in Sources */,
 				32ECD08824BFBF8000EDDED0 /* HelpViewController.swift in Sources */,

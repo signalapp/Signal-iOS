@@ -102,9 +102,9 @@ class CallServiceState {
         switch call.mode {
         case .individual:
             break
-        case .groupThread(let groupCall):
-            groupCall.leave()
-            groupCall.disconnect()
+        case .groupThread(let groupThreadCall):
+            groupThreadCall.ringRtcCall.leave()
+            groupThreadCall.ringRtcCall.disconnect()
         }
 
         delegate?.callServiceState(self, didTerminateCall: call)

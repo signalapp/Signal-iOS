@@ -62,7 +62,7 @@ class SignalCall: CallManagerCallReference {
     let mode: Mode
     enum Mode {
         case individual(IndividualCall)
-        case groupThread(GroupCall)
+        case groupThread(GroupThreadCall)
     }
 
     public let audioActivity: AudioActivity
@@ -90,14 +90,14 @@ class SignalCall: CallManagerCallReference {
     public var isOutgoingAudioMuted: Bool {
         switch mode {
         case .individual(let call): return call.isMuted
-        case .groupThread(let call): return call.isOutgoingAudioMuted
+        case .groupThread(let call): return call.ringRtcCall.isOutgoingAudioMuted
         }
     }
 
     public var isOutgoingVideoMuted: Bool {
         switch mode {
         case .individual(let call): return !call.hasLocalVideo
-        case .groupThread(let call): return call.isOutgoingVideoMuted
+        case .groupThread(let call): return call.ringRtcCall.isOutgoingVideoMuted
         }
     }
 
@@ -129,14 +129,14 @@ class SignalCall: CallManagerCallReference {
                  .dialing:
                 return .joined
             }
-        case .groupThread(let call): return call.localDeviceState.joinState
+        case .groupThread(let call): return call.ringRtcCall.localDeviceState.joinState
         }
     }
 
     public var canJoin: Bool {
         switch mode {
         case .individual(_): return true
-        case .groupThread(let call): return !call.isFull
+        case .groupThread(let call): return !call.ringRtcCall.isFull
         }
     }
 
@@ -169,8 +169,6 @@ class SignalCall: CallManagerCallReference {
     // Distinguishes between calls locally, e.g. in CallKit
     public let localId: UUID = UUID()
 
-    public let thread: TSThread
-
     internal struct RingRestrictions: OptionSet {
         var rawValue: UInt8
 
@@ -188,14 +186,14 @@ class SignalCall: CallManagerCallReference {
             switch mode {
             case .individual:
                 break
-            case .groupThread(let groupCall):
+            case .groupThread(let call):
                 if ringRestrictions != oldValue, joinState == .notJoined {
                     // Use a fake local state change to refresh the call controls.
                     //
                     // If we ever introduce ringing restrictions for 1:1 calls,
                     // a similar affordance will be needed to refresh the call
                     // controls.
-                    self.groupCall(onLocalDeviceStateChanged: groupCall)
+                    self.groupCall(onLocalDeviceStateChanged: call.ringRtcCall)
                 }
             }
         }
@@ -255,19 +253,18 @@ class SignalCall: CallManagerCallReference {
     var participantAddresses: [SignalServiceAddress] {
         switch mode {
         case .groupThread(let call):
-            return call.remoteDeviceStates.values.map { $0.address }
+            return call.ringRtcCall.remoteDeviceStates.values.map { $0.address }
         case .individual(let call):
             return [call.remoteAddress]
         }
     }
 
     init(groupCall: GroupCall, groupThread: TSGroupThread, videoCaptureController: VideoCaptureController) {
-        self.mode = .groupThread(groupCall)
+        self.mode = .groupThread(GroupThreadCall(ringRtcCall: groupCall, groupThread: groupThread))
         self.audioActivity = AudioActivity(
             audioDescription: "[SignalCall] with group \(groupThread.groupModel.groupId)",
             behavior: .call
         )
-        self.thread = groupThread
         self.ringRestrictions = []
         self.videoCaptureController = videoCaptureController
 
@@ -303,7 +300,6 @@ class SignalCall: CallManagerCallReference {
             audioDescription: "[SignalCall] with individual \(individualCall.remoteAddress)",
             behavior: .call
         )
-        self.thread = individualCall.thread
         self.ringRestrictions = .notApplicable
         individualCall.delegate = self
     }
@@ -343,18 +339,23 @@ class SignalCall: CallManagerCallReference {
     private func groupMembershipDidChange(_ notification: Notification) {
         // NotificationCenter dispatches by object identity rather than equality,
         // so we filter based on the thread ID here.
-        guard !ringRestrictions.contains(.notApplicable),
-              self.thread.uniqueId == notification.object as? String else {
+        if ringRestrictions.contains(.notApplicable) {
+            return
+        }
+        let call: GroupThreadCall
+        switch self.mode {
+        case .individual:
+            return
+        case .groupThread(let groupThreadCall):
+            call = groupThreadCall
+        }
+        guard call.groupThread.uniqueId == notification.object as? String else {
             return
         }
         self.databaseStorage.read { transaction in
-            self.thread.anyReload(transaction: transaction)
+            call.groupThread.anyReload(transaction: transaction)
         }
-        guard let groupModel = self.thread.groupModelIfGroupThread else {
-            owsFailDebug("should not observe membership for a non-group thread")
-            return
-        }
-
+        let groupModel = call.groupThread.groupModel
         let isGroupTooLarge = groupModel.groupMembers.count > RemoteConfig.maxGroupCallRingSize
         ringRestrictions.update(.groupTooLarge, present: isGroupTooLarge)
     }
@@ -551,7 +552,14 @@ extension SignalCall: IndividualCallDelegate {
 }
 
 extension SignalCall: CallNotificationInfo {
-    public var offerMediaType: TSRecentCallOfferType {
+    var thread: TSThread {
+        switch mode {
+        case .individual(let call): return call.thread
+        case .groupThread(let call): return call.groupThread
+        }
+    }
+
+    var offerMediaType: TSRecentCallOfferType {
         switch mode {
         case .individual(let call): return call.offerMediaType
         case .groupThread: return .video

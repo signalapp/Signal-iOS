@@ -116,11 +116,11 @@ final class CallKitCallManager {
         switch call.mode {
         case .individual(let individualCall):
             startCallAction.isVideo = individualCall.offerMediaType == .video
-        case .groupThread(let groupCall):
+        case .groupThread(let groupThreadCall):
             // All group calls are video calls even if the local video is off,
             // but what we set here is how the call shows up in the system call log,
             // which controls what happens if the user starts another call from the system call log.
-            startCallAction.isVideo = !groupCall.isOutgoingVideoMuted
+            startCallAction.isVideo = !groupThreadCall.ringRtcCall.isOutgoingVideoMuted
         }
 
         let transaction = CXTransaction()

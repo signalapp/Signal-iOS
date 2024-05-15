@@ -20,8 +20,8 @@ class GroupCallRemoteVideoManager {
             return nil
         case .individual:
             return nil
-        case .groupThread(let groupCall):
-            return groupCall
+        case .groupThread(let groupThreadCall):
+            return groupThreadCall.ringRtcCall
         }
     }
 
@@ -121,8 +121,8 @@ extension GroupCallRemoteVideoManager: CallObserver {
         switch call.mode {
         case .individual:
             owsFail("Can't update remote devices for individual call.")
-        case .groupThread(let groupCallBoundValue):
-            groupCall = groupCallBoundValue
+        case .groupThread(let groupThreadCall):
+            groupCall = groupThreadCall.ringRtcCall
         }
         for (demuxId, videoViews) in videoViews {
             guard let device = groupCall.remoteDeviceStates[demuxId] else {

@@ -60,8 +60,8 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
             switch call.mode {
             case .individual:
                 owsFail("Can't configure remoteInGroup for individual call.")
-            case .groupThread(let groupCallBoundValue):
-                groupCall = groupCallBoundValue
+            case .groupThread(let groupThreadCall):
+                groupCall = groupThreadCall.ringRtcCall
             }
 
             let isRemoteDeviceBlocked = databaseStorage.read { tx in

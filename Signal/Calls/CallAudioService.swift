@@ -137,8 +137,8 @@ class CallAudioService: CallObserver {
         switch call.mode {
         case .individual(let individualCall):
             requestSpeakerphone(call: individualCall, isEnabled: isEnabled)
-        case .groupThread(let groupCall):
-            requestSpeakerphone(call: groupCall, isEnabled: isEnabled)
+        case .groupThread(let groupThreadCall):
+            requestSpeakerphone(call: groupThreadCall.ringRtcCall, isEnabled: isEnabled)
         }
     }
 
@@ -158,7 +158,7 @@ class CallAudioService: CallObserver {
         case .individual(let call):
             ensureProperAudioSession(call: call)
         case .groupThread(let call):
-            ensureProperAudioSession(call: call)
+            ensureProperAudioSession(call: call.ringRtcCall)
         }
     }
 

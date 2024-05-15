@@ -417,14 +417,14 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         }
 
         switch call.mode {
-        case .groupThread(let groupCall):
+        case .groupThread(let groupThreadCall):
             // Explicitly unmute to request permissions, if needed.
             callService.updateIsLocalAudioMuted(isLocalAudioMuted: call.isOutgoingAudioMuted)
             // Explicitly start video to request permissions, if needed.
             // This has the added effect of putting the video mute button in the correct state
             // if the user has disabled camera permissions for the app.
-            callService.updateIsLocalVideoMuted(isLocalVideoMuted: groupCall.isOutgoingVideoMuted)
-            callService.joinGroupCallIfNecessary(call, groupCall: groupCall)
+            callService.updateIsLocalVideoMuted(isLocalVideoMuted: groupThreadCall.ringRtcCall.isOutgoingVideoMuted)
+            callService.joinGroupCallIfNecessary(call, groupCall: groupThreadCall.ringRtcCall)
             action.fulfill()
         case .individual(let individualCall):
             // Explicitly start video to request permissions, if needed.

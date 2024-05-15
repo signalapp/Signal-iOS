@@ -367,7 +367,7 @@ private class CallControlsViewModel {
             // TODO: Implement the future designs for this. In the meantime, Design
             // wants us to omit the flip camera button from Call Controls when in
             // joined fullscreen.
-            return call.localDeviceState.joinState == .joined
+            return call.ringRtcCall.localDeviceState.joinState == .joined
         }
     }
 
@@ -377,7 +377,7 @@ private class CallControlsViewModel {
             // TODO: Introduce lobby for starting 1:1 video calls.
             return true
         case .groupThread(let call):
-            return call.localDeviceState.joinState == .joined
+            return call.ringRtcCall.localDeviceState.joinState == .joined
         }
     }
 
@@ -487,7 +487,7 @@ private class CallControlsViewModel {
         case .individual(_):
             return true
         case .groupThread(let call):
-            return call.localDeviceState.joinState != .joined
+            return call.ringRtcCall.localDeviceState.joinState != .joined
         }
     }
 

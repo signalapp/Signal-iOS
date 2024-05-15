@@ -240,8 +240,8 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
                     switch call.mode {
                     case .individual:
                         return
-                    case .groupThread(let groupCall):
-                        let updatedState = groupCall.remoteDeviceStates.values
+                    case .groupThread(let groupThreadCall):
+                        let updatedState = groupThreadCall.ringRtcCall.remoteDeviceStates.values
                             .first(where: { $0.demuxId == configuredDemuxId })
                         guard let updatedState else { return }
                         self.configure(call: call, device: updatedState)

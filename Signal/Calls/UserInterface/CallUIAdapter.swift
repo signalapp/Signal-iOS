@@ -50,8 +50,8 @@ extension CallUIAdaptee {
         switch call.mode {
         case .individual(let individualCall):
             callViewController = IndividualCallViewController(call: call, individualCall: individualCall)
-        case .groupThread(let groupCall):
-            callViewController = GroupCallViewController(call: call, groupCall: groupCall)
+        case .groupThread(let groupThreadCall):
+            callViewController = GroupCallViewController(call: call, groupCall: groupThreadCall.ringRtcCall)
         }
 
         callViewController.modalTransitionStyle = .crossDissolve
