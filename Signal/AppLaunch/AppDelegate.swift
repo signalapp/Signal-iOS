@@ -1310,7 +1310,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                         callService.updateIsLocalVideoMuted(isLocalVideoMuted: false)
                     case .individual:
                         Logger.warn("Ignoring user activity; on another call.")
-                    case .group:
+                    case .groupThread:
                         // TODO: It seems like this should be implemented.
                         Logger.warn("Ignoring user activity; on another call.")
                     }

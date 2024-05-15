@@ -20,7 +20,7 @@ class GroupCallRemoteVideoManager {
             return nil
         case .individual:
             return nil
-        case .group(let groupCall):
+        case .groupThread(let groupCall):
             return groupCall
         }
     }
@@ -121,7 +121,7 @@ extension GroupCallRemoteVideoManager: CallObserver {
         switch call.mode {
         case .individual:
             owsFail("Can't update remote devices for individual call.")
-        case .group(let groupCallBoundValue):
+        case .groupThread(let groupCallBoundValue):
             groupCall = groupCallBoundValue
         }
         for (demuxId, videoViews) in videoViews {

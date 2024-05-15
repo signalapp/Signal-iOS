@@ -183,7 +183,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         case .individual:
             // By default, individual calls should start out with speakerphone disabled.
             self.audioService.requestSpeakerphone(isEnabled: false)
-        case .group, nil:
+        case .groupThread, nil:
             break
         }
 
@@ -204,7 +204,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         switch call.mode {
         case .individual:
             break
-        case .group:
+        case .groupThread:
             // Kick off a peek now that we've disconnected to get an updated participant state.
             guard let thread = call.thread as? TSGroupThread else {
                 owsFailDebug("Invalid thread type")
@@ -269,7 +269,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         owsAssert(call === callServiceState.currentCall)
 
         switch call.mode {
-        case .group(let groupCall):
+        case .groupThread(let groupCall):
             groupCall.isOutgoingAudioMuted = isLocalAudioMuted
             call.groupCall(onLocalDeviceStateChanged: groupCall)
         case .individual(let individualCall):
@@ -324,7 +324,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         owsAssert(call === callServiceState.currentCall)
 
         switch call.mode {
-        case .group(let groupCall):
+        case .groupThread(let groupCall):
             groupCall.isOutgoingVideoMuted = isLocalVideoMuted
             call.groupCall(onLocalDeviceStateChanged: groupCall)
         case .individual(let individualCall):
@@ -346,7 +346,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         guard let currentCall = callServiceState.currentCall else { return }
 
         switch currentCall.mode {
-        case let .group(call):
+        case let .groupThread(call):
             let useLowData = shouldUseLowDataWithSneakyTransaction(for: call.localDeviceState.networkRoute)
             Logger.info("Configuring call for \(useLowData ? "low" : "standard") data")
             call.updateDataMode(dataMode: useLowData ? .low : .normal)
@@ -391,7 +391,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
                 shouldResetUI: false,
                 shouldResetRingRTC: true
             )
-        case .group:
+        case .groupThread:
             let callError: SignalCall.CallError = {
                 switch error {
                 case let callError as SignalCall.CallError:
@@ -413,7 +413,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         switch call.mode {
         case .individual:
             individualCallService.handleLocalHangupCall(call)
-        case .group:
+        case .groupThread:
             if case .incomingRing(_, let ringId) = call.groupCallRingState {
                 guard let (groupThread, _) = call.unpackGroupCall() else {
                     return
@@ -456,7 +456,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         switch call.mode {
         case .individual(let individualCall):
             return individualCall.state == .connected && individualCall.hasLocalVideo
-        case .group(let groupCall):
+        case .groupThread(let groupCall):
             return !groupCall.isOutgoingVideoMuted
         }
     }
@@ -479,7 +479,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
                     call.videoCaptureController.stopCapture()
                 }
             }
-        case .group:
+        case .groupThread:
             if shouldHaveLocalVideoTrack {
                 call.videoCaptureController.startCapture()
             } else {
@@ -689,7 +689,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             // If we're in an audio-only 1:1 call, the user isn't going to be looking at the screen.
             // Don't distract them with rotating icons.
             return individualCall.hasLocalVideo || individualCall.isRemoteVideoEnabled
-        case .group:
+        case .groupThread:
             // If we're in a group call, we don't want to use rotating icons,
             // because we don't rotate user video at the same time,
             // and that's very obvious for grid view or any non-speaker tile in speaker view.
@@ -879,7 +879,7 @@ extension CallService: CallObserver {
         switch call.mode {
         case .individual:
             owsFail("Can't update remote devices for individual call.")
-        case .group(let groupCall):
+        case .groupThread(let groupCall):
             if !groupCall.remoteDeviceStates.isEmpty {
                 // The first time someone joins after a ring, we need to mark the call accepted.
                 // (But if we didn't ring, the call will have already been marked accepted.)
@@ -938,9 +938,9 @@ extension SignalCall {
         switch (mode, thread) {
         case (.individual, _):
             return nil
-        case (.group(let groupCall), let groupThread as TSGroupThread):
+        case (.groupThread(let groupCall), let groupThread as TSGroupThread):
             return (groupThread, groupCall)
-        case (.group, _):
+        case (.groupThread, _):
             return nil
         }
     }
@@ -1148,7 +1148,7 @@ extension CallService: CallManagerDelegate {
         switch call.mode {
         case .individual(let individualCall):
             individualCall.callId = callId
-        case .group:
+        case .groupThread:
             owsFail("Can't start a group call using this method.")
         }
 
@@ -1197,7 +1197,7 @@ extension CallService: CallManagerDelegate {
         case .individual(let individualCall):
             individualCall.networkRoute = networkRoute
             configureDataMode()
-        case .group:
+        case .groupThread:
             owsFail("Can't set the network route for a group call.")
         }
     }
@@ -1369,7 +1369,7 @@ extension CallService: CallManagerDelegate {
         guard update == .requested else {
             if
                 let currentCall = self.callServiceState.currentCall,
-                case .group = currentCall.mode,
+                case .groupThread = currentCall.mode,
                 case .incomingRing(_, ringId) = currentCall.groupCallRingState
             {
                 switch update {

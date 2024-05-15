@@ -334,7 +334,7 @@ private class CallControlsViewModel {
         switch call.mode {
         case .individual(_):
             return false
-        case .group(_):
+        case .groupThread(_):
             return call.joinState != .joined
         }
     }
@@ -355,7 +355,7 @@ private class CallControlsViewModel {
         switch call.mode {
         case .individual(let call):
             return ![.idle, .dialing, .remoteRinging, .localRinging_Anticipatory, .localRinging_ReadyToAnswer].contains(call.state)
-        case .group(let call):
+        case .groupThread(let call):
             // Because joined group calls include the `moreButton`, we're out of
             // space for the `flipCameraButton`.
             //
@@ -376,7 +376,7 @@ private class CallControlsViewModel {
         case .individual(_):
             // TODO: Introduce lobby for starting 1:1 video calls.
             return true
-        case .group(let call):
+        case .groupThread(let call):
             return call.localDeviceState.joinState == .joined
         }
     }
@@ -420,7 +420,7 @@ private class CallControlsViewModel {
                 // TODO: The work of adding the lobby for 1:1 calls in the unified call view
                 // controller (currently GroupCallViewController) is not yet complete.
                 label = startCallText
-            case .group(_):
+            case .groupThread(_):
                 let joinCallText = OWSLocalizedString(
                     "GROUP_CALL_JOIN_BUTTON",
                     comment: "Button to join an ongoing group call"
@@ -444,7 +444,7 @@ private class CallControlsViewModel {
         switch call.mode {
         case .individual(_):
             return true
-        case .group(_):
+        case .groupThread(_):
             return call.joinState == .joined || call.ringRestrictions.intersects([.notApplicable, .callInProgress])
         }
     }
@@ -460,7 +460,7 @@ private class CallControlsViewModel {
         case .individual(_):
             // We never show the ring button for 1:1 calls.
             return nil
-        case .group(_):
+        case .groupThread(_):
             // Leave the button visible but locked if joining, like the "join call" button.
             let isUserInteractionEnabled = call.joinState == .notJoined
             let isSelected: Bool
@@ -486,7 +486,7 @@ private class CallControlsViewModel {
         switch call.mode {
         case .individual(_):
             return true
-        case .group(let call):
+        case .groupThread(let call):
             return call.localDeviceState.joinState != .joined
         }
     }
@@ -669,7 +669,7 @@ extension CallControlsViewModel {
                 "CALL_VIEW_HANGUP_LABEL",
                 comment: "Accessibility label for hang up call"
             )
-        case .group(_):
+        case .groupThread(_):
             return OWSLocalizedString(
                 "CALL_VIEW_LEAVE_CALL_LABEL",
                 comment: "Accessibility label for leaving a call"

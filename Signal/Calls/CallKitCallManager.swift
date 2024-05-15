@@ -59,7 +59,7 @@ final class CallKitCallManager {
                     type = .generic
                     value = individualCall.remoteAddress.serviceIdUppercaseString!
                 }
-            case .group:
+            case .groupThread:
                 type = .generic
                 value = Self.kGroupCallHandlePrefix + call.thread.groupModelIfGroupThread!.groupId.asBase64Url
             }
@@ -116,7 +116,7 @@ final class CallKitCallManager {
         switch call.mode {
         case .individual(let individualCall):
             startCallAction.isVideo = individualCall.offerMediaType == .video
-        case .group(let groupCall):
+        case .groupThread(let groupCall):
             // All group calls are video calls even if the local video is off,
             // but what we set here is how the call shows up in the system call log,
             // which controls what happens if the user starts another call from the system call log.

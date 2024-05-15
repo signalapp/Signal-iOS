@@ -62,7 +62,7 @@ class SignalCall: CallManagerCallReference {
     let mode: Mode
     enum Mode {
         case individual(IndividualCall)
-        case group(GroupCall)
+        case groupThread(GroupCall)
     }
 
     public let audioActivity: AudioActivity
@@ -77,7 +77,7 @@ class SignalCall: CallManagerCallReference {
 
     public var hasTerminated: Bool {
         switch mode {
-        case .group:
+        case .groupThread:
             if case .incomingRingCancelled = groupCallRingState {
                 return true
             }
@@ -90,14 +90,14 @@ class SignalCall: CallManagerCallReference {
     public var isOutgoingAudioMuted: Bool {
         switch mode {
         case .individual(let call): return call.isMuted
-        case .group(let call): return call.isOutgoingAudioMuted
+        case .groupThread(let call): return call.isOutgoingAudioMuted
         }
     }
 
     public var isOutgoingVideoMuted: Bool {
         switch mode {
         case .individual(let call): return !call.hasLocalVideo
-        case .group(let call): return call.isOutgoingVideoMuted
+        case .groupThread(let call): return call.isOutgoingVideoMuted
         }
     }
 
@@ -129,14 +129,14 @@ class SignalCall: CallManagerCallReference {
                  .dialing:
                 return .joined
             }
-        case .group(let call): return call.localDeviceState.joinState
+        case .groupThread(let call): return call.localDeviceState.joinState
         }
     }
 
     public var canJoin: Bool {
         switch mode {
         case .individual(_): return true
-        case .group(let call): return !call.isFull
+        case .groupThread(let call): return !call.isFull
         }
     }
 
@@ -151,7 +151,7 @@ class SignalCall: CallManagerCallReference {
                 return nil
             }
             return call.remoteAddress
-        case .group:
+        case .groupThread:
             guard case .incomingRing(let caller, _) = groupCallRingState else {
                 return nil
             }
@@ -188,7 +188,7 @@ class SignalCall: CallManagerCallReference {
             switch mode {
             case .individual:
                 break
-            case .group(let groupCall):
+            case .groupThread(let groupCall):
                 if ringRestrictions != oldValue, joinState == .notJoined {
                     // Use a fake local state change to refresh the call controls.
                     //
@@ -226,7 +226,7 @@ class SignalCall: CallManagerCallReference {
             case .individual:
                 // If we ever support non-ringing 1:1 calls, we might want to reuse this.
                 owsFailDebug("must be group call")
-            case .group:
+            case .groupThread:
                 break
             }
         }
@@ -254,7 +254,7 @@ class SignalCall: CallManagerCallReference {
 
     var participantAddresses: [SignalServiceAddress] {
         switch mode {
-        case .group(let call):
+        case .groupThread(let call):
             return call.remoteDeviceStates.values.map { $0.address }
         case .individual(let call):
             return [call.remoteAddress]
@@ -262,7 +262,7 @@ class SignalCall: CallManagerCallReference {
     }
 
     init(groupCall: GroupCall, groupThread: TSGroupThread, videoCaptureController: VideoCaptureController) {
-        self.mode = .group(groupCall)
+        self.mode = .groupThread(groupCall)
         self.audioActivity = AudioActivity(
             audioDescription: "[SignalCall] with group \(groupThread.groupModel.groupId)",
             behavior: .call
@@ -372,7 +372,7 @@ class SignalCall: CallManagerCallReference {
         switch mode {
         case .individual(let individualCall):
             observer.individualCallStateDidChange(self, state: individualCall.state)
-        case .group:
+        case .groupThread:
             observer.groupCallLocalDeviceStateChanged(self)
             observer.groupCallRemoteDeviceStatesChanged(self)
         }
@@ -554,7 +554,7 @@ extension SignalCall: CallNotificationInfo {
     public var offerMediaType: TSRecentCallOfferType {
         switch mode {
         case .individual(let call): return call.offerMediaType
-        case .group: return .video
+        case .groupThread: return .video
         }
     }
 }

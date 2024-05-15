@@ -33,7 +33,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         switch call.mode {
         case .individual:
             self.callService.individualCallService.handleOutgoingCall(call)
-        case .group:
+        case .groupThread:
             switch call.groupCallRingState {
             case .shouldRing where call.ringRestrictions.isEmpty, .ringing:
                 // Let CallService call recipientAcceptedCall when someone joins.
@@ -89,7 +89,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
                 switch call.mode {
                 case .individual(let individualCall):
                     return individualCall.state == .localRinging_ReadyToAnswer
-                case .group(let groupCall):
+                case .groupThread(let groupCall):
                     return groupCall.localDeviceState.joinState == .notJoined
                 }
             }()
@@ -133,7 +133,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         switch call.mode {
         case .individual:
             self.callService.individualCallService.handleAcceptCall(call)
-        case .group(let groupCall):
+        case .groupThread(let groupCall):
             // Explicitly unmute to request permissions.
             self.callService.updateIsLocalAudioMuted(isLocalAudioMuted: false)
             self.callService.joinGroupCallIfNecessary(call, groupCall: groupCall)

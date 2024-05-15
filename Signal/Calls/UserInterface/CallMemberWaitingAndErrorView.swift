@@ -60,7 +60,7 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
             switch call.mode {
             case .individual:
                 owsFail("Can't configure remoteInGroup for individual call.")
-            case .group(let groupCallBoundValue):
+            case .groupThread(let groupCallBoundValue):
                 groupCall = groupCallBoundValue
             }
 

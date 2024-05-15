@@ -1234,7 +1234,7 @@ private extension SignalCall {
         switch mode {
         case .individual(let individualCall):
             return individualCall.callId
-        case .group(let groupCall):
+        case .groupThread(let groupCall):
             return groupCall.peekInfo?.eraId.map { callIdFromEra($0) }
         }
     }

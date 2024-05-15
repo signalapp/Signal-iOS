@@ -102,7 +102,7 @@ class CallServiceState {
         switch call.mode {
         case .individual:
             break
-        case .group(let groupCall):
+        case .groupThread(let groupCall):
             groupCall.leave()
             groupCall.disconnect()
         }

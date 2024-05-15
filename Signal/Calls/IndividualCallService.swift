@@ -48,7 +48,7 @@ final class IndividualCallService: CallServiceStateObserver {
             switch newValue.mode {
             case .individual:
                 startCallTimer(for: newValue)
-            case .group:
+            case .groupThread:
                 break
             }
         }
@@ -1430,7 +1430,7 @@ private extension SignalCall {
         switch self.mode {
         case .individual(let individualCall):
             return individualCall
-        case .group:
+        case .groupThread:
             owsFail("Must have individual call.")
         }
     }

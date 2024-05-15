@@ -50,7 +50,7 @@ extension CallUIAdaptee {
         switch call.mode {
         case .individual(let individualCall):
             callViewController = IndividualCallViewController(call: call, individualCall: individualCall)
-        case .group(let groupCall):
+        case .groupThread(let groupCall):
             callViewController = GroupCallViewController(call: call, groupCall: groupCall)
         }
 
@@ -130,7 +130,7 @@ public class CallUIAdapter: NSObject {
         switch call.mode {
         case .individual(let individualCall) where individualCall.callAdapterType == .nonCallKit:
             return nonCallKitAdaptee
-        case .individual, .group:
+        case .individual, .groupThread:
             return defaultAdaptee
         }
     }
@@ -164,7 +164,7 @@ public class CallUIAdapter: NSObject {
                 case .individual:
                     // Individual calls ring on their state transitions, but group calls ring immediately.
                     break
-                case .group:
+                case .groupThread:
                     // Wait to start ringing until all observers have recognized this as the current call.
                     DispatchQueue.main.async {
                         guard call === self.callService.callServiceState.currentCall else {

@@ -67,7 +67,7 @@ class CallAudioService: CallObserver {
         switch call.mode {
         case .individual(let individualCall):
             handleState(call: call, individualCall: individualCall)
-        case .group:
+        case .groupThread:
             owsFail("Can't handle state change for group call.")
         }
     }
@@ -137,7 +137,7 @@ class CallAudioService: CallObserver {
         switch call.mode {
         case .individual(let individualCall):
             requestSpeakerphone(call: individualCall, isEnabled: isEnabled)
-        case .group(let groupCall):
+        case .groupThread(let groupCall):
             requestSpeakerphone(call: groupCall, isEnabled: isEnabled)
         }
     }
@@ -157,7 +157,7 @@ class CallAudioService: CallObserver {
         switch call.mode {
         case .individual(let call):
             ensureProperAudioSession(call: call)
-        case .group(let call):
+        case .groupThread(let call):
             ensureProperAudioSession(call: call)
         }
     }
@@ -400,7 +400,7 @@ class CallAudioService: CallObserver {
         switch call.mode {
         case .individual(let individualCall):
             owsAssertDebug(individualCall.state == .localRinging_ReadyToAnswer)
-        case .group:
+        case .groupThread:
             break
         }
 

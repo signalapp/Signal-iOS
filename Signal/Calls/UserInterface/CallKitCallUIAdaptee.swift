@@ -115,7 +115,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
                 "CALLKIT_ANONYMOUS_CONTACT_NAME",
                 comment: "The generic name used for calls if CallKit privacy is enabled"
             )
-        case .group:
+        case .groupThread:
             return OWSLocalizedString(
                 "CALLKIT_ANONYMOUS_GROUP_NAME",
                 comment: "The generic name used for group calls if CallKit privacy is enabled"
@@ -193,7 +193,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             switch call.mode {
             case .individual(let individualCall):
                 return individualCall.offerMediaType == .video
-            case .group:
+            case .groupThread:
                 return true
             }
         }()
@@ -373,7 +373,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         switch call.mode {
         case .individual:
             self.callService.individualCallService.handleOutgoingCall(call)
-        case .group:
+        case .groupThread:
             break
         }
 
@@ -387,7 +387,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         switch call.mode {
         case .individual:
             break
-        case .group:
+        case .groupThread:
             switch call.groupCallRingState {
             case .shouldRing where call.ringRestrictions.isEmpty, .ringing:
                 // Let CallService call recipientAcceptedCall when someone joins.
@@ -417,7 +417,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         }
 
         switch call.mode {
-        case .group(let groupCall):
+        case .groupThread(let groupCall):
             // Explicitly unmute to request permissions, if needed.
             callService.updateIsLocalAudioMuted(isLocalAudioMuted: call.isOutgoingAudioMuted)
             // Explicitly start video to request permissions, if needed.
@@ -550,7 +550,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         case .individual(let individualCall) where individualCall.direction == .incoming:
             // Only enable audio upon activation for locally accepted calls.
             self.audioSession.isRTCAudioEnabled = true
-        case .individual, .group:
+        case .individual, .groupThread:
             break
         }
     }

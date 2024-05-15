@@ -240,7 +240,7 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
                     switch call.mode {
                     case .individual:
                         return
-                    case .group(let groupCall):
+                    case .groupThread(let groupCall):
                         let updatedState = groupCall.remoteDeviceStates.values
                             .first(where: { $0.demuxId == configuredDemuxId })
                         guard let updatedState else { return }
