@@ -179,9 +179,12 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             }
         }
 
-        // By default, individual calls should start out with speakerphone disabled.
-        if let newValue, newValue.isIndividualCall {
+        switch newValue?.mode {
+        case .individual:
+            // By default, individual calls should start out with speakerphone disabled.
             self.audioService.requestSpeakerphone(isEnabled: false)
+        case .group, nil:
+            break
         }
 
         if let newValue {
@@ -380,14 +383,15 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     public func handleFailedCall(failedCall: SignalCall, error: Error) {
         AssertIsOnMainThread()
 
-        if failedCall.isIndividualCall {
+        switch failedCall.mode {
+        case .individual:
             individualCallService.handleFailedCall(
                 failedCall: failedCall,
                 error: error,
                 shouldResetUI: false,
                 shouldResetRingRTC: true
             )
-        } else {
+        case .group:
             let callError: SignalCall.CallError = {
                 switch error {
                 case let callError as SignalCall.CallError:
@@ -406,9 +410,10 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     func handleLocalHangupCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        if call.isIndividualCall {
+        switch call.mode {
+        case .individual:
             individualCallService.handleLocalHangupCall(call)
-        } else {
+        case .group:
             if case .incomingRing(_, let ringId) = call.groupCallRingState {
                 guard let (groupThread, _) = call.unpackGroupCall() else {
                     return
@@ -485,30 +490,30 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     // MARK: -
 
-    func buildAndConnectGroupCallIfPossible(thread: TSGroupThread, videoMuted: Bool) -> SignalCall? {
+    func buildAndConnectGroupCallIfPossible(thread: TSGroupThread, videoMuted: Bool) -> (SignalCall, GroupCall)? {
         AssertIsOnMainThread()
         guard !callServiceState.hasActiveOrPendingCall else { return nil }
 
-        guard let call = buildGroupCall(for: thread) else { return nil }
+        guard let (call, groupCall) = buildGroupCall(for: thread) else { return nil }
         callServiceState.addCall(call)
 
         // By default, group calls should start out with speakerphone enabled.
         self.audioService.requestSpeakerphone(isEnabled: true)
 
-        call.groupCall.isOutgoingAudioMuted = false
-        call.groupCall.isOutgoingVideoMuted = videoMuted
+        groupCall.isOutgoingAudioMuted = false
+        groupCall.isOutgoingVideoMuted = videoMuted
 
         callServiceState.setCurrentCall(call)
 
-        guard call.groupCall.connect() else {
+        guard groupCall.connect() else {
             callServiceState.terminateCall(call)
             return nil
         }
 
-        return call
+        return (call, groupCall)
     }
 
-    private func buildGroupCall(for thread: TSGroupThread) -> SignalCall? {
+    private func buildGroupCall(for thread: TSGroupThread) -> (SignalCall, GroupCall)? {
         owsAssertDebug(thread.groupModel.groupsVersion == .V2)
 
         let videoCaptureController = VideoCaptureController()
@@ -525,16 +530,16 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             return nil
         }
 
-        return SignalCall(
+        let signalCall = SignalCall(
             groupCall: groupCall,
             groupThread: thread,
             videoCaptureController: videoCaptureController
         )
+
+        return (signalCall, groupCall)
     }
 
-    func joinGroupCallIfNecessary(_ call: SignalCall) {
-        owsAssertDebug(call.isGroupCall)
-
+    func joinGroupCallIfNecessary(_ call: SignalCall, groupCall: GroupCall) {
         let currentCall = self.callServiceState.currentCall
         if currentCall === nil {
             callServiceState.setCurrentCall(call)
@@ -544,8 +549,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
         // If we're not yet connected, connect now. This may happen if, for
         // example, the call ended unexpectedly.
-        if call.groupCall.localDeviceState.connectionState == .notConnected {
-            guard call.groupCall.connect() else {
+        if groupCall.localDeviceState.connectionState == .notConnected {
+            guard groupCall.connect() else {
                 callServiceState.terminateCall(call)
                 return
             }
@@ -554,8 +559,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         // If we're not yet joined, join now. In general, it's unexpected that
         // this method would be called when you're already joined, but it is
         // safe to do so.
-        if call.groupCall.localDeviceState.joinState == .notJoined {
-            call.groupCall.join()
+        if groupCall.localDeviceState.joinState == .notJoined {
+            groupCall.join()
             // Group calls can get disconnected, but we don't count that as ending the call.
             // So this call may have already been reported.
             if call.systemState == .notReported && !call.groupCallRingState.isIncomingRing {
@@ -629,16 +634,18 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         return true
     }
 
-    func buildOutgoingIndividualCallIfPossible(thread: TSContactThread, hasVideo: Bool) -> SignalCall? {
+    func buildOutgoingIndividualCallIfPossible(thread: TSContactThread, hasVideo: Bool) -> (SignalCall, IndividualCall)? {
         AssertIsOnMainThread()
         guard !callServiceState.hasActiveOrPendingCall else { return nil }
 
-        let call = SignalCall.outgoingIndividualCall(thread: thread)
-        call.individualCall.offerMediaType = hasVideo ? .video : .audio
+        let individualCall = SignalCall.outgoingIndividualCall(thread: thread)
+        individualCall.offerMediaType = hasVideo ? .video : .audio
+
+        let call = SignalCall(individualCall: individualCall)
 
         callServiceState.addCall(call)
 
-        return call
+        return (call, individualCall)
     }
 
     // MARK: - Notifications
@@ -677,16 +684,17 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     private func shouldReorientUI(for call: SignalCall) -> Bool {
         owsAssertDebug(!UIDevice.current.isIPad, "iPad has full UIKit rotation support")
 
-        guard call.isIndividualCall else {
+        switch call.mode {
+        case .individual(let individualCall):
+            // If we're in an audio-only 1:1 call, the user isn't going to be looking at the screen.
+            // Don't distract them with rotating icons.
+            return individualCall.hasLocalVideo || individualCall.isRemoteVideoEnabled
+        case .group:
             // If we're in a group call, we don't want to use rotating icons,
             // because we don't rotate user video at the same time,
             // and that's very obvious for grid view or any non-speaker tile in speaker view.
             return false
         }
-
-        // If we're in an audio-only 1:1 call, the user isn't going to be looking at the screen.
-        // Don't distract them with rotating icons.
-        return call.individualCall.hasLocalVideo || call.individualCall.isRemoteVideoEnabled
     }
 
     private func sendPhoneOrientationNotification() {
@@ -729,11 +737,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     private func updateGroupMembersForCurrentCallIfNecessary() {
         DispatchQueue.main.async {
-            guard
-                let call = self.callServiceState.currentCall,
-                call.isGroupCall,
-                let groupThread = call.thread as? TSGroupThread
-            else {
+            let currentCall = self.callServiceState.currentCall
+            guard let (groupThread, groupCall) = currentCall?.unpackGroupCall() else {
                 return
             }
 
@@ -748,7 +753,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
                 owsFailDebug("Failed to fetch membership info: \(error)")
                 return
             }
-            call.groupCall.updateGroupMembers(members: membershipInfo)
+            groupCall.updateGroupMembers(members: membershipInfo)
         }
     }
 
@@ -805,11 +810,11 @@ extension CallService: CallObserver {
             if
                 case .shouldRing = call.groupCallRingState,
                 call.ringRestrictions.isEmpty,
-                call.groupCall.remoteDeviceStates.isEmpty
+                groupCall.remoteDeviceStates.isEmpty
             {
                 // Don't start ringing until we join the call successfully.
                 call.groupCallRingState = .ringing
-                call.groupCall.ringAll()
+                groupCall.ringAll()
                 audioService.playOutboundRing()
             }
 
@@ -835,7 +840,7 @@ extension CallService: CallObserver {
             return
         }
 
-        guard let peekInfo = call.groupCall.peekInfo else {
+        guard let peekInfo = groupCall.peekInfo else {
             GroupCallPeekLogger.shared.warn("No peek info for call: \(call)")
             return
         }
@@ -868,15 +873,22 @@ extension CallService: CallObserver {
     }
 
     public func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
-        if case .ringing = call.groupCallRingState, !call.groupCall.remoteDeviceStates.isEmpty {
-            // The first time someone joins after a ring, we need to mark the call accepted.
-            // (But if we didn't ring, the call will have already been marked accepted.)
-            callUIAdapter.recipientAcceptedCall(call)
+        guard case .ringing = call.groupCallRingState else {
+            return
+        }
+        switch call.mode {
+        case .individual:
+            owsFail("Can't update remote devices for individual call.")
+        case .group(let groupCall):
+            if !groupCall.remoteDeviceStates.isEmpty {
+                // The first time someone joins after a ring, we need to mark the call accepted.
+                // (But if we didn't ring, the call will have already been marked accepted.)
+                callUIAdapter.recipientAcceptedCall(call)
+            }
         }
     }
 
     public func groupCallRequestMembershipProof(_ call: SignalCall) {
-        owsAssertDebug(call.isGroupCall)
         Logger.info("groupCallUpdateGroupMembershipProof")
 
         guard call === callServiceState.currentCall else {
@@ -886,15 +898,16 @@ extension CallService: CallObserver {
             return
         }
 
-        guard let groupThread = call.thread as? TSGroupThread else {
-            return owsFailDebug("unexpectedly missing thread")
+        guard let (groupThread, groupCall) = call.unpackGroupCall() else {
+            owsFailDebug("must be a group call")
+            return
         }
 
         Task { [groupCallManager] in
             do {
                 let proof = try await groupCallManager.groupCallPeekClient.fetchGroupMembershipProof(groupThread: groupThread)
                 await MainActor.run {
-                    call.groupCall.updateMembershipProof(proof: proof)
+                    groupCall.updateMembershipProof(proof: proof)
                 }
             } catch {
                 if error.isNetworkFailureOrTimeout {
@@ -907,7 +920,6 @@ extension CallService: CallObserver {
     }
 
     public func groupCallRequestGroupMembers(_ call: SignalCall) {
-        owsAssertDebug(call.isGroupCall)
         Logger.info("groupCallUpdateGroupMembers")
 
         guard call === callServiceState.currentCall else {
@@ -923,15 +935,14 @@ extension CallService: CallObserver {
 
 extension SignalCall {
     func unpackGroupCall() -> (TSGroupThread, GroupCall)? {
-        guard
-            isGroupCall,
-            let groupCall = groupCall,
-            let groupThread = thread as? TSGroupThread
-        else {
+        switch (mode, thread) {
+        case (.individual, _):
+            return nil
+        case (.group(let groupCall), let groupThread as TSGroupThread):
+            return (groupThread, groupCall)
+        case (.group, _):
             return nil
         }
-
-        return (groupThread, groupCall)
     }
 }
 
@@ -1126,7 +1137,6 @@ extension CallService: CallManagerDelegate {
         callMediaType: CallMediaType
     ) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isIndividualCall)
 
         guard callServiceState.currentCall == nil else {
             handleFailedCall(failedCall: call, error: OWSAssertionError("a current call is already set"))
@@ -1135,7 +1145,12 @@ extension CallService: CallManagerDelegate {
 
         owsAssertDebug(callServiceState.activeOrPendingCalls.contains(where: { $0 === call }), "unknown call: \(call)")
 
-        call.individualCall.callId = callId
+        switch call.mode {
+        case .individual(let individualCall):
+            individualCall.callId = callId
+        case .group:
+            owsFail("Can't start a group call using this method.")
+        }
 
         // We grab this before updating the currentCall since it will unset it by default as a precaution.
         let shouldEarlyRing = earlyRingNextIncomingCall && !isOutgoing
@@ -1160,7 +1175,6 @@ extension CallService: CallManagerDelegate {
         event: CallManagerEvent
     ) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isIndividualCall)
 
         individualCallService.callManager(
             callManager,
@@ -1179,8 +1193,13 @@ extension CallService: CallManagerDelegate {
         networkRoute: NetworkRoute
     ) {
         Logger.info("Network route changed for call: \(call): \(networkRoute.localAdapterType.rawValue)")
-        call.individualCall.networkRoute = networkRoute
-        configureDataMode()
+        switch call.mode {
+        case .individual(let individualCall):
+            individualCall.networkRoute = networkRoute
+            configureDataMode()
+        case .group:
+            owsFail("Can't set the network route for a group call.")
+        }
     }
 
     public func callManager(
@@ -1209,7 +1228,6 @@ extension CallService: CallManagerDelegate {
         callMediaType: CallMediaType
     ) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isIndividualCall)
 
         individualCallService.callManager(
             callManager,
@@ -1229,7 +1247,6 @@ extension CallService: CallManagerDelegate {
         opaque: Data
     ) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isIndividualCall)
 
         individualCallService.callManager(
             callManager,
@@ -1248,7 +1265,6 @@ extension CallService: CallManagerDelegate {
         candidates: [Data]
     ) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isIndividualCall)
 
         individualCallService.callManager(
             callManager,
@@ -1268,7 +1284,6 @@ extension CallService: CallManagerDelegate {
         deviceId: UInt32
     ) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isIndividualCall)
 
         individualCallService.callManager(
             callManager,
@@ -1287,7 +1302,6 @@ extension CallService: CallManagerDelegate {
         destinationDeviceId: UInt32?
     ) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isIndividualCall)
 
         individualCallService.callManager(
             callManager,
@@ -1303,7 +1317,6 @@ extension CallService: CallManagerDelegate {
         session: AVCaptureSession?
     ) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isIndividualCall)
 
         individualCallService.callManager(
             callManager,
@@ -1318,7 +1331,6 @@ extension CallService: CallManagerDelegate {
         track: RTCVideoTrack
     ) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isIndividualCall)
 
         individualCallService.callManager(
             callManager,
@@ -1357,7 +1369,7 @@ extension CallService: CallManagerDelegate {
         guard update == .requested else {
             if
                 let currentCall = self.callServiceState.currentCall,
-                currentCall.isGroupCall,
+                case .group = currentCall.mode,
                 case .incomingRing(_, ringId) = currentCall.groupCallRingState
             {
                 switch update {
@@ -1458,16 +1470,16 @@ extension CallService: CallManagerDelegate {
             // Mute video by default unless the user has already approved it.
             // This keeps us from popping the "give permission to use your camera" alert before the user answers.
             let videoMuted = AVCaptureDevice.authorizationStatus(for: .video) != .authorized
-            guard let groupCall = buildAndConnectGroupCallIfPossible(
+            guard let (call, _) = buildAndConnectGroupCallIfPossible(
                 thread: thread,
                 videoMuted: videoMuted
             ) else {
                 return owsFailDebug("Failed to build group call")
             }
 
-            groupCall.groupCallRingState = .incomingRing(caller: caller, ringId: ringId)
+            call.groupCallRingState = .incomingRing(caller: caller, ringId: ringId)
 
-            self.callUIAdapter.reportIncomingCall(groupCall)
+            self.callUIAdapter.reportIncomingCall(call)
         }
     }
 }

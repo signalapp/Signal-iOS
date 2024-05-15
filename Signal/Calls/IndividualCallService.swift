@@ -44,8 +44,13 @@ final class IndividualCallService: CallServiceStateObserver {
 
     func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
         stopAnyCallTimer()
-        if let newValue, newValue.isIndividualCall {
-            startCallTimer(for: newValue)
+        if let newValue {
+            switch newValue.mode {
+            case .individual:
+                startCallTimer(for: newValue)
+            case .group:
+                break
+            }
         }
     }
 
@@ -478,7 +483,6 @@ final class IndividualCallService: CallServiceStateObserver {
 
     public func callManager(_ callManager: CallService.CallManagerType, shouldStartCall call: SignalCall, callId: UInt64, isOutgoing: Bool, callMediaType: CallMediaType, shouldEarlyRing: Bool) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isIndividualCall)
         Logger.info("call: \(call)")
 
         if shouldEarlyRing {
@@ -533,7 +537,6 @@ final class IndividualCallService: CallServiceStateObserver {
 
     public func callManager(_ callManager: CallService.CallManagerType, onEvent call: SignalCall, event: CallManagerEvent) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isIndividualCall)
         Logger.info("call: \(call), onEvent: \(event)")
 
         switch event {
@@ -695,20 +698,20 @@ final class IndividualCallService: CallServiceStateObserver {
                     break
                 case .incomingIncomplete, .incoming:
                     call.individualCall.createOrUpdateCallInteractionAsync(callType: .incomingMissed)
-                    callUIAdapter.reportMissedCall(call)
+                    callUIAdapter.reportMissedCall(call, individualCall: call.individualCall)
                 case .outgoingIncomplete:
                     call.individualCall.createOrUpdateCallInteractionAsync(callType: .outgoingMissed)
                     callUIAdapter.remoteBusy(call)
                 case .outgoing:
                     call.individualCall.createOrUpdateCallInteractionAsync(callType: .outgoingMissed)
-                    callUIAdapter.reportMissedCall(call)
+                    callUIAdapter.reportMissedCall(call, individualCall: call.individualCall)
                 @unknown default:
                     owsFailDebug("unknown RPRecentCallType: \(callType)")
                 }
             } else {
                 assert(call.individualCall.direction == .incoming)
                 call.individualCall.createOrUpdateCallInteractionAsync(callType: .incomingMissed)
-                callUIAdapter.reportMissedCall(call)
+                callUIAdapter.reportMissedCall(call, individualCall: call.individualCall)
             }
             call.individualCall.state = .localHangup
             callServiceState.terminateCall(call)
@@ -801,7 +804,6 @@ final class IndividualCallService: CallServiceStateObserver {
 
     public func callManager(_ callManager: CallService.CallManagerType, onUpdateLocalVideoSession call: SignalCall, session: AVCaptureSession?) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isIndividualCall)
         Logger.info("onUpdateLocalVideoSession")
 
         guard call === callServiceState.currentCall else {
@@ -812,7 +814,6 @@ final class IndividualCallService: CallServiceStateObserver {
 
     public func callManager(_ callManager: CallService.CallManagerType, onAddRemoteVideoTrack call: SignalCall, track: RTCVideoTrack) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isIndividualCall)
         Logger.info("onAddRemoteVideoTrack")
 
         guard call === callServiceState.currentCall else {
@@ -827,7 +828,6 @@ final class IndividualCallService: CallServiceStateObserver {
 
     public func callManager(_ callManager: CallService.CallManagerType, shouldSendOffer callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, opaque: Data, callMediaType: CallMediaType) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isIndividualCall)
 
         Logger.info("shouldSendOffer")
 
@@ -868,7 +868,6 @@ final class IndividualCallService: CallServiceStateObserver {
 
     public func callManager(_ callManager: CallService.CallManagerType, shouldSendAnswer callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, opaque: Data) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isIndividualCall)
         Logger.info("shouldSendAnswer")
 
         Task { @MainActor in
@@ -904,7 +903,6 @@ final class IndividualCallService: CallServiceStateObserver {
 
     public func callManager(_ callManager: CallService.CallManagerType, shouldSendIceCandidates callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, candidates: [Data]) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isIndividualCall)
         Logger.info("shouldSendIceCandidates")
 
         Task { @MainActor in
@@ -953,7 +951,6 @@ final class IndividualCallService: CallServiceStateObserver {
 
     public func callManager(_ callManager: CallService.CallManagerType, shouldSendHangup callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, hangupType: HangupType, deviceId: UInt32) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isIndividualCall)
         Logger.info("shouldSendHangup")
 
         Task { @MainActor in
@@ -1003,7 +1000,6 @@ final class IndividualCallService: CallServiceStateObserver {
 
     public func callManager(_ callManager: CallService.CallManagerType, shouldSendBusy callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isIndividualCall)
         Logger.info("shouldSendBusy")
 
         Task { @MainActor in
@@ -1065,9 +1061,9 @@ final class IndividualCallService: CallServiceStateObserver {
 
         switch oldCallType {
         case .incomingMissed, .none:
-            callUIAdapter.reportMissedCall(call)
+            callUIAdapter.reportMissedCall(call, individualCall: call.individualCall)
         case .incomingIncomplete, .incoming:
-            callUIAdapter.reportMissedCall(call)
+            callUIAdapter.reportMissedCall(call, individualCall: call.individualCall)
         case .outgoingIncomplete, .incomingDeclined, .incomingDeclinedElsewhere, .incomingAnsweredElsewhere:
             break
         case .incomingMissedBecauseOfChangedIdentity, .outgoingMissed, .outgoing, .incomingBusyElsewhere, .incomingMissedBecauseOfDoNotDisturb, .incomingMissedBecauseBlockedSystemContact:
@@ -1335,7 +1331,6 @@ final class IndividualCallService: CallServiceStateObserver {
     }
 
     func ensureAudioState(call: SignalCall) {
-        owsAssertDebug(call.isIndividualCall)
         let isLocalAudioMuted = call.individualCall.state != .connected || call.individualCall.isMuted || call.individualCall.isOnHold
         callManager.setLocalAudioEnabled(enabled: !isLocalAudioMuted)
     }
@@ -1426,6 +1421,17 @@ extension TSRecentCallOfferType {
         switch self {
         case .audio: return .audioCall
         case .video: return .videoCall
+        }
+    }
+}
+
+private extension SignalCall {
+    var individualCall: IndividualCall! {
+        switch self.mode {
+        case .individual(let individualCall):
+            return individualCall
+        case .group:
+            owsFail("Must have individual call.")
         }
     }
 }

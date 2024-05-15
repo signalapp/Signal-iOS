@@ -55,17 +55,15 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
     private func createOptionalViews(type: CallMemberView.MemberType, call: SignalCall) {
         switch type {
         case .local:
-            if call.isIndividualCall {
+            switch call.mode {
+            case .individual:
                 self.avatarView = ConversationAvatarView(localUserDisplayMode: .asUser, badged: false)
-            } else if call.isGroupCall {
+            case .group:
                 self.detailedNoVideoIndicatorView = self.createDetailedVideoOffIndicatorView()
                 self.noVideoIndicatorImageView = self.createVideoOffIndicatorImageView()
             }
-        case .remoteInGroup(_), .remoteInIndividual:
-            self.avatarView = ConversationAvatarView(
-                localUserDisplayMode: .asUser,
-                badged: false
-            )
+        case .remoteInGroup, .remoteInIndividual:
+            self.avatarView = ConversationAvatarView(localUserDisplayMode: .asUser, badged: false)
         }
     }
 
@@ -101,9 +99,9 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
         switch type {
         case .local:
             self.isHidden = !call.isOutgoingVideoMuted
-        case .remoteInIndividual:
-            self.isHidden = call.individualCall.isRemoteVideoEnabled
-        case .remoteInGroup(_):
+        case .remoteInIndividual(let individualCall):
+            self.isHidden = individualCall.isRemoteVideoEnabled
+        case .remoteInGroup:
             if let videoMuted = remoteGroupMemberDeviceState?.videoMuted {
                 self.isHidden = !videoMuted
             } else {
@@ -137,13 +135,13 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
                 backgroundColor = AvatarTheme.forAddress(localAddress).backgroundColor
             }
             backgroundAvatarImage = profileManager.localProfileAvatarImage()
-        case .remoteInGroup(_):
+        case .remoteInGroup:
             guard let remoteGroupMemberDeviceState else { return }
             let (image, color) = avatarImageAndBackgroundColorWithSneakyTransaction(for: remoteGroupMemberDeviceState.address)
             backgroundAvatarImage = image
             backgroundColor = color
-        case .remoteInIndividual:
-            let (image, color) = avatarImageAndBackgroundColorWithSneakyTransaction(for: call.individualCall.remoteAddress)
+        case .remoteInIndividual(let individualCall):
+            let (image, color) = avatarImageAndBackgroundColorWithSneakyTransaction(for: individualCall.remoteAddress)
             backgroundAvatarImage = image
             backgroundColor = color
         }

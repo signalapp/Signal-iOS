@@ -108,12 +108,18 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     private func localizedCallerNameWithSneakyTransaction(for call: SignalCall) -> String {
         if showNamesOnCallScreen {
             return databaseStorage.read { tx in contactsManager.displayName(for: call.thread, transaction: tx) }
-        } else if call.isIndividualCall {
-            return OWSLocalizedString("CALLKIT_ANONYMOUS_CONTACT_NAME",
-                                     comment: "The generic name used for calls if CallKit privacy is enabled")
-        } else {
-            return OWSLocalizedString("CALLKIT_ANONYMOUS_GROUP_NAME",
-                                     comment: "The generic name used for group calls if CallKit privacy is enabled")
+        }
+        switch call.mode {
+        case .individual:
+            return OWSLocalizedString(
+                "CALLKIT_ANONYMOUS_CONTACT_NAME",
+                comment: "The generic name used for calls if CallKit privacy is enabled"
+            )
+        case .group:
+            return OWSLocalizedString(
+                "CALLKIT_ANONYMOUS_GROUP_NAME",
+                comment: "The generic name used for group calls if CallKit privacy is enabled"
+            )
         }
     }
 
@@ -183,7 +189,14 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         let update = CXCallUpdate()
         update.localizedCallerName = localizedCallerNameWithSneakyTransaction(for: call)
         update.remoteHandle = callManager.createCallHandleWithSneakyTransaction(for: call)
-        update.hasVideo = call.isGroupCall || call.individualCall.offerMediaType == .video
+        update.hasVideo = { () -> Bool in
+            switch call.mode {
+            case .individual(let individualCall):
+                return individualCall.offerMediaType == .video
+            case .group:
+                return true
+            }
+        }()
 
         disableUnsupportedFeatures(callUpdate: update)
 
@@ -357,8 +370,11 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         // We can't wait for long before fulfilling the CXAction, else CallKit will show a "Failed Call". We don't 
         // actually need to wait for the outcome of the handleOutgoingCall promise, because it handles any errors by 
         // manually failing the call.
-        if call.isIndividualCall {
+        switch call.mode {
+        case .individual:
             self.callService.individualCallService.handleOutgoingCall(call)
+        case .group:
+            break
         }
 
         action.fulfill()
@@ -368,7 +384,10 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         update.localizedCallerName = localizedCallerNameWithSneakyTransaction(for: call)
         provider.reportCall(with: call.localId, updated: update)
 
-        if call.isGroupCall {
+        switch call.mode {
+        case .individual:
+            break
+        case .group:
             switch call.groupCallRingState {
             case .shouldRing where call.ringRestrictions.isEmpty, .ringing:
                 // Let CallService call recipientAcceptedCall when someone joins.
@@ -397,28 +416,29 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             return
         }
 
-        if call.isGroupCall {
+        switch call.mode {
+        case .group(let groupCall):
             // Explicitly unmute to request permissions, if needed.
             callService.updateIsLocalAudioMuted(isLocalAudioMuted: call.isOutgoingAudioMuted)
             // Explicitly start video to request permissions, if needed.
             // This has the added effect of putting the video mute button in the correct state
             // if the user has disabled camera permissions for the app.
-            callService.updateIsLocalVideoMuted(isLocalVideoMuted: call.groupCall.isOutgoingVideoMuted)
-            callService.joinGroupCallIfNecessary(call)
+            callService.updateIsLocalVideoMuted(isLocalVideoMuted: groupCall.isOutgoingVideoMuted)
+            callService.joinGroupCallIfNecessary(call, groupCall: groupCall)
             action.fulfill()
-        } else {
+        case .individual(let individualCall):
             // Explicitly start video to request permissions, if needed.
             // This has the added effect of putting the video mute button in the correct state
             // if the user has disabled camera permissions for the app.
-            callService.updateIsLocalVideoMuted(isLocalVideoMuted: !call.individualCall.hasLocalVideo)
-            if call.individualCall.state == .localRinging_Anticipatory {
+            callService.updateIsLocalVideoMuted(isLocalVideoMuted: !individualCall.hasLocalVideo)
+            if individualCall.state == .localRinging_Anticipatory {
                 // We can't answer the call until RingRTC is ready
-                call.individualCall.state = .accepting
-                call.individualCall.deferredAnswerCompletion = {
+                individualCall.state = .accepting
+                individualCall.deferredAnswerCompletion = {
                     action.fulfill()
                 }
             } else {
-                owsAssertDebug(call.individualCall.state == .localRinging_ReadyToAnswer)
+                owsAssertDebug(individualCall.state == .localRinging_ReadyToAnswer)
                 callService.individualCallService.handleAcceptCall(call)
                 action.fulfill()
             }
@@ -526,9 +546,12 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             return
         }
 
-        if call.isIndividualCall && call.individualCall.direction == .incoming {
+        switch call.mode {
+        case .individual(let individualCall) where individualCall.direction == .incoming:
             // Only enable audio upon activation for locally accepted calls.
             self.audioSession.isRTCAudioEnabled = true
+        case .individual, .group:
+            break
         }
     }
 

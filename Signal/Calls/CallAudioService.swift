@@ -64,7 +64,12 @@ class CallAudioService: CallObserver {
 
     internal func individualCallStateDidChange(_ call: SignalCall, state: CallState) {
         AssertIsOnMainThread()
-        handleState(call: call)
+        switch call.mode {
+        case .individual(let individualCall):
+            handleState(call: call, individualCall: individualCall)
+        case .group:
+            owsFail("Can't handle state change for group call.")
+        }
     }
 
     internal func individualCallLocalAudioMuteDidChange(_ call: SignalCall, isAudioMuted: Bool) {
@@ -129,10 +134,11 @@ class CallAudioService: CallObserver {
     }
 
     public func requestSpeakerphone(call: SignalCall, isEnabled: Bool) {
-        if call.isGroupCall {
-            requestSpeakerphone(call: call.groupCall, isEnabled: isEnabled)
-        } else if call.isIndividualCall {
-            requestSpeakerphone(call: call.individualCall, isEnabled: isEnabled)
+        switch call.mode {
+        case .individual(let individualCall):
+            requestSpeakerphone(call: individualCall, isEnabled: isEnabled)
+        case .group(let groupCall):
+            requestSpeakerphone(call: groupCall, isEnabled: isEnabled)
         }
     }
 
@@ -212,18 +218,17 @@ class CallAudioService: CallObserver {
 
     // MARK: - Service action handlers
 
-    private func handleState(call: SignalCall) {
+    private func handleState(call: SignalCall, individualCall: IndividualCall) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isIndividualCall)
 
-        Logger.verbose("new state: \(call.individualCall.state)")
+        Logger.verbose("new state: \(individualCall.state)")
 
         // Stop playing sounds while switching audio session so we don't 
         // get any blips across a temporary unintended route.
         stopPlayingAnySounds()
-        self.ensureProperAudioSession(call: call)
+        self.ensureProperAudioSession(call: individualCall)
 
-        switch call.individualCall.state {
+        switch individualCall.state {
         case .idle: handleIdle(call: call)
         case .dialing: handleDialing(call: call)
         case .answering: handleAnswering(call: call)
@@ -392,7 +397,12 @@ class CallAudioService: CallObserver {
         }
 
         // Only CallKit calls should be in the transitory ringing states
-        owsAssertDebug(call.isGroupCall || call.individualCall.state == .localRinging_ReadyToAnswer)
+        switch call.mode {
+        case .individual(let individualCall):
+            owsAssertDebug(individualCall.state == .localRinging_ReadyToAnswer)
+        case .group:
+            break
+        }
 
         vibrateTimer?.invalidate()
         vibrateTimer = .scheduledTimer(withTimeInterval: vibrateRepeatDuration, repeats: true) { [weak self] _ in

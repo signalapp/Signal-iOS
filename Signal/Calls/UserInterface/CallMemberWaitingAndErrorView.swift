@@ -51,10 +51,19 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
         switch type {
         case .local, .remoteInIndividual:
             owsFailDebug("CallMemberWaitingAndErrorView should not be in the view hierarchy!")
-        case .remoteInGroup(_):
+        case .remoteInGroup:
             deferredReconfigTimer?.invalidate()
 
             guard let remoteGroupMemberDeviceState else { return }
+
+            let groupCall: GroupCall
+            switch call.mode {
+            case .individual:
+                owsFail("Can't configure remoteInGroup for individual call.")
+            case .group(let groupCallBoundValue):
+                groupCall = groupCallBoundValue
+            }
+
             let isRemoteDeviceBlocked = databaseStorage.read { tx in
                 return blockingManager.isAddressBlocked(remoteGroupMemberDeviceState.address, transaction: tx)
             }
@@ -75,12 +84,12 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
                     withTimeInterval: scheduledInterval,
                     repeats: false,
                     block: { [weak self] _ in
-                    guard let self = self else { return }
-                    guard call.isGroupCall, let groupCall = call.groupCall else { return }
-                    guard let updatedState = groupCall.remoteDeviceStates.values
+                        guard let self = self else { return }
+                        guard let updatedState = groupCall.remoteDeviceStates.values
                             .first(where: { $0.demuxId == configuredDemuxId }) else { return }
-                    self.configure(call: call, remoteGroupMemberDeviceState: updatedState)
-                })
+                        self.configure(call: call, remoteGroupMemberDeviceState: updatedState)
+                    }
+                )
             } else if !remoteGroupMemberDeviceState.mediaKeysReceived {
                 // No media keys. Display error view
                 errorView.isHidden = false

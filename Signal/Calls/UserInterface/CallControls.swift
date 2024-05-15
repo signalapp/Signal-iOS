@@ -534,7 +534,6 @@ private class CallControlsViewModel {
 
 extension CallControlsViewModel: CallObserver {
     func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
-        owsAssertDebug(call.isGroupCall)
         refreshView?()
     }
 

@@ -9,6 +9,7 @@ import SignalServiceKit
 
 class GroupCallNotificationView: UIView {
     private let call: SignalCall
+    private let groupCall: GroupCall
     private var callService: CallService { AppEnvironment.shared.callService }
 
     private struct ActiveMember: Hashable {
@@ -20,8 +21,9 @@ class GroupCallNotificationView: UIView {
     private var membersPendingJoinNotification = Set<ActiveMember>()
     private var membersPendingLeaveNotification = Set<ActiveMember>()
 
-    init(call: SignalCall) {
+    init(call: SignalCall, groupCall: GroupCall) {
         self.call = call
+        self.groupCall = groupCall
         super.init(frame: .zero)
 
         call.addObserverAndSyncState(observer: self)
@@ -37,7 +39,7 @@ class GroupCallNotificationView: UIView {
 
     private var hasJoined = false
     private func updateActiveMembers() {
-        let newActiveMembers = Set(call.groupCall.remoteDeviceStates.values.map {
+        let newActiveMembers = Set(groupCall.remoteDeviceStates.values.map {
             ActiveMember(demuxId: $0.demuxId, aci: Aci(fromUUID: $0.userId))
         })
 
@@ -51,7 +53,7 @@ class GroupCallNotificationView: UIView {
             membersPendingLeaveNotification.subtract(joinedMembers)
             membersPendingLeaveNotification.formUnion(leftMembers)
         } else {
-            hasJoined = call.groupCall.localDeviceState.joinState == .joined
+            hasJoined = groupCall.localDeviceState.joinState == .joined
         }
 
         activeMembers = newActiveMembers
@@ -129,21 +131,16 @@ class GroupCallNotificationView: UIView {
 extension GroupCallNotificationView: CallObserver {
     func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isGroupCall)
-
         updateActiveMembers()
     }
 
     func groupCallPeekChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isGroupCall)
-
         updateActiveMembers()
     }
 
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isGroupCall)
 
         hasJoined = false
         activeMembers.removeAll()

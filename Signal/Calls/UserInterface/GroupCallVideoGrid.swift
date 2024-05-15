@@ -10,8 +10,11 @@ class GroupCallVideoGrid: UICollectionView {
     weak var memberViewErrorPresenter: CallMemberErrorPresenter?
     let layout: GroupCallVideoGridLayout
     let call: SignalCall
-    init(call: SignalCall) {
+    let groupCall: GroupCall
+
+    init(call: SignalCall, groupCall: GroupCall) {
         self.call = call
+        self.groupCall = groupCall
         self.layout = GroupCallVideoGridLayout()
 
         super.init(frame: .zero, collectionViewLayout: layout)
@@ -49,8 +52,8 @@ extension GroupCallVideoGrid: UICollectionViewDelegate {
 
 extension GroupCallVideoGrid: UICollectionViewDataSource {
     var gridRemoteDeviceStates: [RemoteDeviceState] {
-        let remoteDeviceStates = call.groupCall.remoteDeviceStates.sortedBySpeakerTime
-        return Array(remoteDeviceStates[0..<min(maxItems, call.groupCall.remoteDeviceStates.count)]).sortedByAddedTime
+        let remoteDeviceStates = groupCall.remoteDeviceStates.sortedBySpeakerTime
+        return Array(remoteDeviceStates.prefix(maxItems)).sortedByAddedTime
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -77,22 +80,16 @@ extension GroupCallVideoGrid: UICollectionViewDataSource {
 extension GroupCallVideoGrid: CallObserver {
     func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isGroupCall)
-
         reloadData()
     }
 
     func groupCallPeekChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isGroupCall)
-
         reloadData()
     }
 
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isGroupCall)
-
         reloadData()
     }
 

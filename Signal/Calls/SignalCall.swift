@@ -9,7 +9,7 @@ import SignalUI
 
 /// Represents an observer who will receive updates about a call happening on
 /// this device. See ``SignalCall``.
-public protocol CallObserver: AnyObject {
+protocol CallObserver: AnyObject {
     func individualCallStateDidChange(_ call: SignalCall, state: CallState)
     func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool)
     func individualCallLocalAudioMuteDidChange(_ call: SignalCall, isAudioMuted: Bool)
@@ -31,7 +31,7 @@ public protocol CallObserver: AnyObject {
     func callMessageSendFailedUntrustedIdentity(_ call: SignalCall)
 }
 
-public extension CallObserver {
+extension CallObserver {
     func individualCallStateDidChange(_ call: SignalCall, state: CallState) {}
     func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {}
     func individualCallLocalAudioMuteDidChange(_ call: SignalCall, isAudioMuted: Bool) {}
@@ -52,15 +52,15 @@ public extension CallObserver {
 }
 
 /// Represents a call happening on this device.
-public class SignalCall: CallManagerCallReference {
+class SignalCall: CallManagerCallReference {
     private var audioSession: AudioSession { NSObject.audioSession }
     private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
     private var tsAccountManager: any TSAccountManager { DependenciesBridge.shared.tsAccountManager }
 
     private(set) var raisedHands: [RemoteDeviceState] = []
 
-    public let mode: Mode
-    public enum Mode {
+    let mode: Mode
+    enum Mode {
         case individual(IndividualCall)
         case group(GroupCall)
     }
@@ -73,38 +73,6 @@ public class SignalCall: CallManagerCallReference {
         case pending
         case reported
         case removed
-    }
-
-    var isGroupCall: Bool {
-        switch mode {
-        case .group: return true
-        case .individual: return false
-        }
-    }
-
-    var groupCall: GroupCall! {
-        owsAssertDebug(isGroupCall)
-        guard case .group(let call) = mode else {
-            owsFailDebug("Missing group call")
-            return nil
-        }
-        return call
-    }
-
-    var isIndividualCall: Bool {
-        switch mode {
-        case .group: return false
-        case .individual: return true
-        }
-    }
-
-    var individualCall: IndividualCall! {
-        owsAssertDebug(isIndividualCall)
-        guard case .individual(let call) = mode else {
-            owsFailDebug("Missing individual call")
-            return nil
-        }
-        return call
     }
 
     public var hasTerminated: Bool {
@@ -217,17 +185,18 @@ public class SignalCall: CallManagerCallReference {
     internal var ringRestrictions: RingRestrictions {
         didSet {
             AssertIsOnMainThread()
-            if
-                isGroupCall,
-                ringRestrictions != oldValue,
-                joinState == .notJoined
-            {
-                // Use a fake local state change to refresh the call controls.
-                //
-                // If we ever introduce ringing restrictions for 1:1 calls,
-                // a similar affordance will be needed to refresh the call
-                // controls.
-                self.groupCall(onLocalDeviceStateChanged: groupCall)
+            switch mode {
+            case .individual:
+                break
+            case .group(let groupCall):
+                if ringRestrictions != oldValue, joinState == .notJoined {
+                    // Use a fake local state change to refresh the call controls.
+                    //
+                    // If we ever introduce ringing restrictions for 1:1 calls,
+                    // a similar affordance will be needed to refresh the call
+                    // controls.
+                    self.groupCall(onLocalDeviceStateChanged: groupCall)
+                }
             }
         }
     }
@@ -253,8 +222,13 @@ public class SignalCall: CallManagerCallReference {
     internal var groupCallRingState: GroupCallRingState = .shouldRing {
         didSet {
             AssertIsOnMainThread()
-            // If we ever support non-ringing 1:1 calls, we might want to reuse this.
-            owsAssertDebug(isGroupCall)
+            switch mode {
+            case .individual:
+                // If we ever support non-ringing 1:1 calls, we might want to reuse this.
+                owsFailDebug("must be group call")
+            case .group:
+                break
+            }
         }
     }
 
@@ -338,15 +312,14 @@ public class SignalCall: CallManagerCallReference {
         owsAssertDebug(systemState != .reported, "call \(localId) was reported to system but never removed")
     }
 
-    public class func outgoingIndividualCall(thread: TSContactThread) -> SignalCall {
-        let individualCall = IndividualCall(
+    public class func outgoingIndividualCall(thread: TSContactThread) -> IndividualCall {
+        return IndividualCall(
             direction: .outgoing,
             state: .dialing,
             thread: thread,
             sentAtTimestamp: Date.ows_millisecondTimestamp(),
             callAdapterType: .default
         )
-        return SignalCall(individualCall: individualCall)
     }
 
     public class func incomingIndividualCall(

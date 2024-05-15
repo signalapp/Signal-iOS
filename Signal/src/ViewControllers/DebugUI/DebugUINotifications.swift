@@ -28,9 +28,6 @@ class DebugUINotifications: DebugUIPage, Dependencies {
                 OWSTableItem(title: "Incoming Call") { [weak self] in
                     self?.notifyForIncomingCall(thread: contactThread)
                 },
-                OWSTableItem(title: "Call Missed") { [weak self] in
-                    self?.notifyForMissedCall(thread: contactThread)
-                },
                 OWSTableItem(title: "Call Rejected: New Safety Number") { [weak self] in
                     self?.notifyForMissedCallBecauseOfNewIdentity(thread: contactThread)
                 },
@@ -92,8 +89,6 @@ class DebugUINotifications: DebugUIPage, Dependencies {
         let taskIdentifier = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
 
         return self.notifyForIncomingCall(thread: contactThread).then {
-            self.notifyForMissedCall(thread: contactThread)
-        }.then {
             self.notifyForMissedCallBecauseOfNewIdentity(thread: contactThread)
         }.then {
             self.notifyForMissedCallBecauseOfNoLongerVerifiedIdentity(thread: contactThread)
@@ -108,18 +103,6 @@ class DebugUINotifications: DebugUIPage, Dependencies {
     func notifyForIncomingCall(thread: TSContactThread) -> Guarantee<Void> {
         return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
             self.notificationPresenterImpl.presentIncomingCall(call, caller: thread.contactAddress)
-        }
-    }
-
-    @discardableResult
-    func notifyForMissedCall(thread: TSContactThread) -> Guarantee<Void> {
-        return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
-            let sentAtTimestamp = Date(millisecondsSince1970: call.individualCall.sentAtTimestamp)
-            self.notificationPresenterImpl.presentMissedCall(
-                call,
-                caller: thread.contactAddress,
-                sentAt: sentAtTimestamp
-            )
         }
     }
 

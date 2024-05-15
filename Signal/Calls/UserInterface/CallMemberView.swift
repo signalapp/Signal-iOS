@@ -123,7 +123,7 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
     enum MemberType {
         case local
         case remoteInGroup(CallMemberVisualContext)
-        case remoteInIndividual
+        case remoteInIndividual(IndividualCall)
     }
 
     func configure(
@@ -143,7 +143,7 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
             // If the local user is fullscreen, they're the only one in the call,
             // so taps should pass through to the call view controller.
             self.isUserInteractionEnabled = !isFullScreen
-        case .remoteInGroup(_):
+        case .remoteInGroup:
             owsAssertDebug(remoteGroupMemberDeviceState != nil, "RemoteDeviceState must be given for remote members in group calls!")
             self.isUserInteractionEnabled = false
         case .remoteInIndividual:
@@ -384,8 +384,7 @@ extension CallMemberView: UIGestureRecognizerDelegate {
         switch self.type {
         case .local:
             animatePip(fromFrame: self.frame, isExpanding: !self.isPipExpanded)
-        case .remoteInGroup(_),
-             .remoteInIndividual:
+        case .remoteInGroup, .remoteInIndividual:
             return
         }
     }
@@ -558,7 +557,7 @@ extension CallMemberView: UIGestureRecognizerDelegate {
                 }
             }
             return nearestCorner
-        case .remoteInGroup(_), .remoteInIndividual:
+        case .remoteInGroup, .remoteInIndividual:
             // Pip in group calls is fixed in lower right corner.
             return .lowerRight
         }

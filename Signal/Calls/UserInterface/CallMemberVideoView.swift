@@ -28,7 +28,7 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
             self.addSubview(remoteVideoView)
             remoteVideoView.autoPinEdgesToSuperviewEdges()
             self.callViewWrapper = .remoteInIndividual(remoteVideoView)
-        case .remoteInGroup(_):
+        case .remoteInGroup:
             break
         }
     }
@@ -72,8 +72,8 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
             if !self.isHidden {
                 configureRemoteVideo(device: remoteGroupMemberDeviceState, context: context)
             }
-        case .remoteInIndividual:
-            self.isHidden = !call.individualCall.isRemoteVideoEnabled
+        case .remoteInIndividual(let individualCall):
+            self.isHidden = !individualCall.isRemoteVideoEnabled
         }
     }
 

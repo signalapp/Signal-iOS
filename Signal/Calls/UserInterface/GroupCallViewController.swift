@@ -14,7 +14,8 @@ import UIKit
 // and replace CallViewController
 class GroupCallViewController: UIViewController {
     private let call: SignalCall
-    private var groupCall: GroupCall { call.groupCall }
+    // TODO: Support Call Links.
+    private let groupCall: GroupCall
     private lazy var callControlsConfirmationToastManager = CallControlsConfirmationToastManager(
         presentingContainerView: callControlsConfirmationToastContainerView
     )
@@ -27,11 +28,11 @@ class GroupCallViewController: UIViewController {
     private lazy var callControlsConfirmationToastContainerView = UIView()
     private var callService: CallService { AppEnvironment.shared.callService }
     private lazy var incomingCallControls = IncomingCallControls(video: true, delegate: self)
-    private lazy var callHeader = CallHeader(call: call, delegate: self)
-    private lazy var notificationView = GroupCallNotificationView(call: call)
+    private lazy var callHeader = CallHeader(call: call, groupCall: groupCall, delegate: self)
+    private lazy var notificationView = GroupCallNotificationView(call: call, groupCall: groupCall)
 
-    private lazy var videoGrid = GroupCallVideoGrid(call: call)
-    private lazy var videoOverflow = GroupCallVideoOverflow(call: call, delegate: self)
+    private lazy var videoGrid = GroupCallVideoGrid(call: call, groupCall: groupCall)
+    private lazy var videoOverflow = GroupCallVideoOverflow(call: call, groupCall: groupCall, delegate: self)
 
     private let localMemberView: CallMemberView
     private let speakerView: CallMemberView_GroupBridge
@@ -118,9 +119,8 @@ class GroupCallViewController: UIViewController {
         )
     }()
 
-    init(call: SignalCall) {
+    init(call: SignalCall, groupCall: GroupCall) {
         // TODO: Eventually unify UI for group and individual calls
-        owsAssertDebug(call.isGroupCall)
 
         if FeatureFlags.useCallMemberComposableViewsForRemoteUsersInGroupCalls {
             let type = CallMemberView.MemberType.remoteInGroup(.speaker)
@@ -133,6 +133,7 @@ class GroupCallViewController: UIViewController {
         localMemberView = CallMemberView(type: type)
 
         self.call = call
+        self.groupCall = groupCall
 
         super.init(nibName: nil, bundle: nil)
 
@@ -190,7 +191,7 @@ class GroupCallViewController: UIViewController {
             }
 
             let callService = AppEnvironment.shared.callService!
-            guard let groupCall = callService.buildAndConnectGroupCallIfPossible(
+            guard let (call, groupCall) = callService.buildAndConnectGroupCallIfPossible(
                 thread: thread, videoMuted: videoMuted
             ) else {
                 return owsFailDebug("Failed to build group call")
@@ -200,7 +201,7 @@ class GroupCallViewController: UIViewController {
                 // Dismiss the group call tooltip
                 self.preferences.setWasGroupCallTooltipShown()
 
-                let vc = GroupCallViewController(call: groupCall)
+                let vc = GroupCallViewController(call: call, groupCall: groupCall)
                 vc.modalTransitionStyle = .crossDissolve
 
                 WindowManager.shared.startCall(viewController: vc)
@@ -1018,14 +1019,14 @@ extension GroupCallViewController: CallViewControllerWindowReference {
 extension GroupCallViewController: CallObserver {
     func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isGroupCall)
+        owsAssert(self.call === call)
 
         updateCallUI()
 
-        switch call.groupCall.localDeviceState.joinState {
+        switch groupCall.localDeviceState.joinState {
         case .joined:
             if membersAtJoin == nil {
-                membersAtJoin = Set(call.groupCall.remoteDeviceStates.lazy.map { $0.value.address })
+                membersAtJoin = Set(groupCall.remoteDeviceStates.lazy.map { $0.value.address })
             }
         case .pending, .joining, .notJoined:
             membersAtJoin = nil
@@ -1034,9 +1035,9 @@ extension GroupCallViewController: CallObserver {
 
     func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isGroupCall)
+        owsAssert(self.call === call)
 
-        isAnyRemoteDeviceScreenSharing = call.groupCall.remoteDeviceStates.values.first { $0.sharingScreen == true } != nil
+        isAnyRemoteDeviceScreenSharing = groupCall.remoteDeviceStates.values.first { $0.sharingScreen == true } != nil
 
         if groupCall.remoteDeviceStates.isEmpty {
             switch self.callControlsDisplayState {
@@ -1052,14 +1053,14 @@ extension GroupCallViewController: CallObserver {
 
     func groupCallPeekChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isGroupCall)
+        owsAssert(self.call === call)
 
         updateCallUI()
     }
 
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isGroupCall)
+        owsAssert(self.call === call)
 
         guard reason != .deviceExplicitlyDisconnected else {
             dismissCall(shouldHangUp: false)
@@ -1103,6 +1104,7 @@ extension GroupCallViewController: CallObserver {
     }
 
     func groupCallReceivedReactions(_ call: SignalCall, reactions: [SignalRingRTC.Reaction]) {
+        owsAssert(self.call === call)
         let localAci = databaseStorage.read { tx in
             return DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci
         }
@@ -1115,7 +1117,7 @@ extension GroupCallViewController: CallObserver {
                 let name: String
                 let aci: Aci
                 if
-                    let remoteDeviceState = call.groupCall.remoteDeviceStates[reaction.demuxId],
+                    let remoteDeviceState = groupCall.remoteDeviceStates[reaction.demuxId],
                     remoteDeviceState.aci != localAci
                 {
                     name = contactsManager.displayName(for: remoteDeviceState.address, tx: tx).resolvedValue()
@@ -1183,7 +1185,7 @@ extension GroupCallViewController: CallHeaderDelegate {
     }
 
     func didTapMembersButton() {
-        let sheet = GroupCallMemberSheet(call: call)
+        let sheet = GroupCallMemberSheet(call: call, groupCall: groupCall)
         present(sheet, animated: true)
     }
 }
@@ -1228,7 +1230,7 @@ extension GroupCallViewController: CallControlsDelegate {
     func didPressJoin() {
         guard call.canJoin else {
             let text: String
-            if let maxDevices = call.groupCall.maxDevices {
+            if let maxDevices = groupCall.maxDevices {
                 let formatString = OWSLocalizedString("GROUP_CALL_HAS_MAX_DEVICES_%d", tableName: "PluralAware",
                                                      comment: "An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}."
                 )
@@ -1254,7 +1256,7 @@ extension GroupCallViewController: CallControlsDelegate {
         presentSafetyNumberChangeSheetIfNecessary { [weak self] success in
             guard let self = self else { return }
             if success {
-                self.callService.joinGroupCallIfNecessary(self.call)
+                self.callService.joinGroupCallIfNecessary(self.call, groupCall: self.groupCall)
             }
         }
     }
@@ -1313,7 +1315,7 @@ extension GroupCallViewController: AnimatableLocalMemberViewDelegate {
     }
 
     var remoteDeviceCount: Int {
-        return call.groupCall.remoteDeviceStates.count
+        return groupCall.remoteDeviceStates.count
     }
 
     func animatableLocalMemberViewDidCompleteExpandAnimation(_ localMemberView: CallMemberView) {

@@ -1304,10 +1304,14 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 //   to that user - unless there already is another call in progress.
                 let callService = AppEnvironment.shared.callService!
                 if let currentCall = callService.callServiceState.currentCall {
-                    if currentCall.isIndividualCall, thread.uniqueId == currentCall.thread.uniqueId {
+                    switch currentCall.mode {
+                    case .individual(let call) where thread.uniqueId == call.thread.uniqueId:
                         Logger.info("Upgrading existing call to video")
                         callService.updateIsLocalVideoMuted(isLocalVideoMuted: false)
-                    } else {
+                    case .individual:
+                        Logger.warn("Ignoring user activity; on another call.")
+                    case .group:
+                        // TODO: It seems like this should be implemented.
                         Logger.warn("Ignoring user activity; on another call.")
                     }
                     return

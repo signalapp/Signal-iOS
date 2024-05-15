@@ -50,15 +50,18 @@ final class CallKitCallManager {
         if showNamesOnCallScreen {
             let type: CXHandle.HandleType
             let value: String
-            if call.isGroupCall {
+            switch call.mode {
+            case .individual(let individualCall):
+                if let phoneNumber = individualCall.remoteAddress.phoneNumber {
+                    type = .phoneNumber
+                    value = phoneNumber
+                } else {
+                    type = .generic
+                    value = individualCall.remoteAddress.serviceIdUppercaseString!
+                }
+            case .group:
                 type = .generic
                 value = Self.kGroupCallHandlePrefix + call.thread.groupModelIfGroupThread!.groupId.asBase64Url
-            } else if let phoneNumber = call.individualCall.remoteAddress.phoneNumber {
-                type = .phoneNumber
-                value = phoneNumber
-            } else {
-                type = .generic
-                value = call.individualCall.remoteAddress.serviceIdUppercaseString!
             }
             return CXHandle(type: type, value: value)
         } else {
@@ -110,13 +113,14 @@ final class CallKitCallManager {
         let handle = createCallHandleWithSneakyTransaction(for: call)
         let startCallAction = CXStartCallAction(call: call.localId, handle: handle)
 
-        if call.isIndividualCall {
-            startCallAction.isVideo = call.individualCall.offerMediaType == .video
-        } else {
+        switch call.mode {
+        case .individual(let individualCall):
+            startCallAction.isVideo = individualCall.offerMediaType == .video
+        case .group(let groupCall):
             // All group calls are video calls even if the local video is off,
             // but what we set here is how the call shows up in the system call log,
             // which controls what happens if the user starts another call from the system call log.
-            startCallAction.isVideo = !call.groupCall.isOutgoingVideoMuted
+            startCallAction.isVideo = !groupCall.isOutgoingVideoMuted
         }
 
         let transaction = CXTransaction()

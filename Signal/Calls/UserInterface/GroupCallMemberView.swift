@@ -236,12 +236,18 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
                 withTimeInterval: scheduledInterval,
                 repeats: false,
                 block: { [weak self] _ in
-                guard let self = self else { return }
-                guard call.isGroupCall, let groupCall = call.groupCall else { return }
-                guard let updatedState = groupCall.remoteDeviceStates.values
-                        .first(where: { $0.demuxId == configuredDemuxId }) else { return }
-                self.configure(call: call, device: updatedState)
-            })
+                    guard let self = self else { return }
+                    switch call.mode {
+                    case .individual:
+                        return
+                    case .group(let groupCall):
+                        let updatedState = groupCall.remoteDeviceStates.values
+                            .first(where: { $0.demuxId == configuredDemuxId })
+                        guard let updatedState else { return }
+                        self.configure(call: call, device: updatedState)
+                    }
+                }
+            )
 
         } else if !device.mediaKeysReceived {
             // No media keys. Display error view

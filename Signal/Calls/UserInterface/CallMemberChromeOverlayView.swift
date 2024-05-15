@@ -295,7 +295,7 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
         switch type {
         case .local:
             break
-        case .remoteInGroup(_), .remoteInIndividual:
+        case .remoteInGroup, .remoteInIndividual:
             // Flip camera is only for the local user.
             return
         }

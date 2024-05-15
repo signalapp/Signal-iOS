@@ -14,7 +14,9 @@ protocol GroupCallVideoOverflowDelegate: AnyObject {
 class GroupCallVideoOverflow: UICollectionView {
     weak var memberViewErrorPresenter: CallMemberErrorPresenter?
     weak var overflowDelegate: GroupCallVideoOverflowDelegate?
+
     let call: SignalCall
+    let groupCall: GroupCall
 
     class var itemHeight: CGFloat {
         return UIDevice.current.isIPad ? 96 : 72
@@ -29,8 +31,9 @@ class GroupCallVideoOverflow: UICollectionView {
         }
     }
 
-    init(call: SignalCall, delegate: GroupCallVideoOverflowDelegate) {
+    init(call: SignalCall, groupCall: GroupCall, delegate: GroupCallVideoOverflowDelegate) {
         self.call = call
+        self.groupCall = groupCall
         self.overflowDelegate = delegate
 
         let layout = UICollectionViewFlowLayout()
@@ -169,7 +172,7 @@ extension GroupCallVideoOverflow: UICollectionViewDataSource {
     var overflowedRemoteDeviceStates: [RemoteDeviceState] {
         guard let firstOverflowMemberIndex = overflowDelegate?.firstOverflowMemberIndex else { return [] }
 
-        let joinedRemoteDeviceStates = call.groupCall.remoteDeviceStates.sortedBySpeakerTime
+        let joinedRemoteDeviceStates = groupCall.remoteDeviceStates.sortedBySpeakerTime
 
         guard joinedRemoteDeviceStates.count > firstOverflowMemberIndex else { return [] }
 
@@ -201,24 +204,19 @@ extension GroupCallVideoOverflow: UICollectionViewDataSource {
 extension GroupCallVideoOverflow: CallObserver {
     func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isGroupCall)
 
-        isAnyRemoteDeviceScreenSharing = call.groupCall.remoteDeviceStates.values.first { $0.sharingScreen == true } != nil
+        isAnyRemoteDeviceScreenSharing = groupCall.remoteDeviceStates.values.first { $0.sharingScreen == true } != nil
 
         reloadData()
     }
 
     func groupCallPeekChanged(_ call: SignalCall) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isGroupCall)
-
         reloadData()
     }
 
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
         AssertIsOnMainThread()
-        owsAssertDebug(call.isGroupCall)
-
         reloadData()
     }
 

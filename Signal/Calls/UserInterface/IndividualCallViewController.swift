@@ -15,6 +15,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
 
     let thread: TSContactThread
     let call: SignalCall
+    let individualCall: IndividualCall
     var hasDismissed = false
 
     // MARK: - Views
@@ -161,14 +162,14 @@ class IndividualCallViewController: OWSViewController, CallObserver {
 
     // MARK: - Initializers
 
-    init(call: SignalCall) {
+    init(call: SignalCall, individualCall: IndividualCall) {
         // TODO: Eventually unify UI for group and individual calls
-        owsAssertDebug(call.isIndividualCall)
         self.call = call
-        self.thread = TSContactThread.getOrCreateThread(contactAddress: call.individualCall.remoteAddress)
+        self.individualCall = individualCall
+        self.thread = TSContactThread.getOrCreateThread(contactAddress: individualCall.remoteAddress)
 
         if FeatureFlags.useCallMemberComposableViewsForRemoteUserInIndividualCalls {
-            let type = CallMemberView.MemberType.remoteInIndividual
+            let type = CallMemberView.MemberType.remoteInIndividual(individualCall)
             remoteMemberView = CallMemberView(type: type)
         } else {
             remoteMemberView = RemoteVideoView()
@@ -554,7 +555,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
     }
 
     private var isRenderingLocalVanityVideo: Bool {
-        return [.idle, .dialing, .remoteRinging, .localRinging_Anticipatory, .localRinging_ReadyToAnswer].contains(call.individualCall.state) && !localVideoView.isHidden
+        return [.idle, .dialing, .remoteRinging, .localRinging_Anticipatory, .localRinging_ReadyToAnswer].contains(individualCall.state) && !localVideoView.isHidden
     }
 
     private var previousOrigin: CGPoint!
@@ -576,7 +577,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
 
         guard localVideoView.superview == view else { return }
 
-        guard !call.individualCall.isEnded else { return }
+        guard !individualCall.isEnded else { return }
 
         guard !isRenderingLocalVanityVideo else {
             view.bringSubviewToFront(topGradientView)
@@ -687,7 +688,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
     func localizedTextForCallState() -> String {
         assert(Thread.isMainThread)
 
-        switch call.individualCall.state {
+        switch individualCall.state {
         case .idle, .remoteHangup, .remoteHangupNeedPermission, .localHangup:
             return OWSLocalizedString("IN_CALL_TERMINATED", comment: "Call setup status label")
         case .dialing:
@@ -695,7 +696,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         case .remoteRinging:
             return OWSLocalizedString("IN_CALL_RINGING", comment: "Call setup status label")
         case .localRinging_Anticipatory, .localRinging_ReadyToAnswer:
-            switch call.individualCall.offerMediaType {
+            switch individualCall.offerMediaType {
             case .audio:
                 return OWSLocalizedString("IN_CALL_RINGING_AUDIO", comment: "Call setup status label")
             case .video:
@@ -727,7 +728,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
             if let error = call.error {
                 switch error {
                 case .timeout:
-                    if self.call.individualCall.direction == .outgoing {
+                    if self.individualCall.direction == .outgoing {
                         return OWSLocalizedString("CALL_SCREEN_STATUS_NO_ANSWER", comment: "Call setup status label after outgoing call times out")
                     }
                 default:
@@ -754,7 +755,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         self.callStatusLabel.text = text
 
         // Handle reconnecting blinking
-        if case .reconnecting = call.individualCall.state {
+        if case .reconnecting = individualCall.state {
             if !isBlinkingReconnectLabel {
                 isBlinkingReconnectLabel = true
                 UIView.animate(withDuration: 0.7, delay: 0, options: [.autoreverse, .repeat],
@@ -780,23 +781,23 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         updateCallStatusLabel()
 
         // Marquee scrolling is distracting during a video call, disable it.
-        contactNameLabel.labelize = call.individualCall.hasLocalVideo
+        contactNameLabel.labelize = individualCall.hasLocalVideo
 
         localVideoView.applyChangesToCallMemberViewAndVideoView { view in
             // In the context of `isCallInPip`, the "pip" refers to when the entire call is in a pip
             // (ie, minimized in the app). This is not to be confused with the local member view pip
             // (ie, when the call is full screen and the local user is displayed in a pip).
             // The following line disallows having a [local member] pip within a [call] pip.
-            view.isHidden = !call.individualCall.hasLocalVideo || WindowManager.shared.isCallInPip
+            view.isHidden = !individualCall.hasLocalVideo || WindowManager.shared.isCallInPip
         }
 
         updateRemoteVideoTrack(
-            remoteVideoTrack: call.individualCall.isRemoteVideoEnabled ? call.individualCall.remoteVideoTrack : nil
+            remoteVideoTrack: individualCall.isRemoteVideoEnabled ? individualCall.remoteVideoTrack : nil
         )
 
         // Show Incoming vs. Ongoing call controls
-        if [.localRinging_Anticipatory, .localRinging_ReadyToAnswer].contains(call.individualCall.state) {
-            let isVideoOffer = call.individualCall.offerMediaType == .video
+        if [.localRinging_Anticipatory, .localRinging_ReadyToAnswer].contains(individualCall.state) {
+            let isVideoOffer = individualCall.offerMediaType == .video
             incomingVideoCallControls.isHidden = !isVideoOffer
             incomingAudioCallControls.isHidden = isVideoOffer
             callControls.isHidden = true
@@ -809,7 +810,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         // Rework control state if remote video is available.
         let hasRemoteVideo = !remoteMemberView.isHidden
         remoteMemberView.isFullScreen = true
-        remoteMemberView.isScreenShare = call.individualCall.isRemoteSharingScreen
+        remoteMemberView.isScreenShare = individualCall.isRemoteSharingScreen
         contactAvatarView.isHidden = hasRemoteVideo || isRenderingLocalVanityVideo
 
         // Layout controls immediately to avoid spurious animation.
@@ -847,11 +848,11 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         )
 
         // Dismiss Handling
-        switch call.individualCall.state {
+        switch individualCall.state {
         case .remoteHangupNeedPermission:
             displayNeedPermissionErrorAndDismiss()
         case .remoteHangup, .remoteBusy, .localFailure, .answeredElsewhere, .declinedElsewhere, .busyElsewhere:
-            Logger.debug("dismissing after delay because new state is \(call.individualCall.state)")
+            Logger.debug("dismissing after delay because new state is \(individualCall.state)")
             dismissIfPossible(shouldDelay: true)
         case .localHangup:
             Logger.debug("dismissing immediately from local hangup")
@@ -859,14 +860,16 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         default: break
         }
 
-        if call.individualCall.state == .connected {
+        if individualCall.state == .connected {
             if callDurationTimer == nil {
                 let kDurationUpdateFrequencySeconds = 1 / 20.0
-                callDurationTimer = WeakTimer.scheduledTimer(timeInterval: TimeInterval(kDurationUpdateFrequencySeconds),
-                                                         target: self,
-                                                         userInfo: nil,
-                                                         repeats: true) {[weak self] _ in
-                                                            self?.updateCallDuration()
+                callDurationTimer = WeakTimer.scheduledTimer(
+                    timeInterval: TimeInterval(kDurationUpdateFrequencySeconds),
+                    target: self,
+                    userInfo: nil,
+                    repeats: true
+                ) { [weak self] _ in
+                    self?.updateCallDuration()
                 }
             }
         } else {
@@ -1044,7 +1047,8 @@ class IndividualCallViewController: OWSViewController, CallObserver {
 
     func individualCallRemoteVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {
         AssertIsOnMainThread()
-        updateRemoteVideoTrack(remoteVideoTrack: isVideoMuted ? nil : call.individualCall.remoteVideoTrack)
+        owsAssert(self.call === call)
+        updateRemoteVideoTrack(remoteVideoTrack: isVideoMuted ? nil : individualCall.remoteVideoTrack)
     }
 
     func individualCallRemoteSharingScreenDidChange(_ call: SignalCall, isRemoteSharingScreen: Bool) {
@@ -1130,7 +1134,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
 
 extension IndividualCallViewController: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        return !localVideoView.isHidden && localVideoView.superview == view && call.individualCall.state == .connected
+        return !localVideoView.isHidden && localVideoView.superview == view && individualCall.state == .connected
     }
 }
 

@@ -15,8 +15,14 @@ class GroupCallRemoteVideoManager {
     }
 
     private var currentGroupCall: GroupCall? {
-        guard let call = callServiceState.currentCall, call.isGroupCall else { return nil }
-        return call.groupCall
+        switch callServiceState.currentCall?.mode {
+        case nil:
+            return nil
+        case .individual:
+            return nil
+        case .group(let groupCall):
+            return groupCall
+        }
     }
 
     // MARK: - Remote Video Views
@@ -111,8 +117,15 @@ extension GroupCallRemoteVideoManager: CallServiceStateObserver {
 
 extension GroupCallRemoteVideoManager: CallObserver {
     func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
+        let groupCall: GroupCall
+        switch call.mode {
+        case .individual:
+            owsFail("Can't update remote devices for individual call.")
+        case .group(let groupCallBoundValue):
+            groupCall = groupCallBoundValue
+        }
         for (demuxId, videoViews) in videoViews {
-            guard let device = call.groupCall.remoteDeviceStates[demuxId] else {
+            guard let device = groupCall.remoteDeviceStates[demuxId] else {
                 destroyRemoteVideoView(for: demuxId)
                 continue
             }

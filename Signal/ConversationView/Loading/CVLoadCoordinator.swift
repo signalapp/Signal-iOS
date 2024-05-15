@@ -817,7 +817,7 @@ extension CVLoadCoordinator: UIScrollViewDelegate {
 // MARK: -
 
 extension CVLoadCoordinator: CallServiceStateObserver {
-    public func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
+    func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
         guard thread.isGroupV2Thread else {
             return
         }

@@ -10,7 +10,6 @@ import SignalServiceKit
  * Manage call related UI in a pre-CallKit world.
  */
 class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
-
     var callService: CallService { AppEnvironment.shared.callService }
 
     // Starting/Stopping incoming call ringing is our apps responsibility for the non CallKit interface.
@@ -31,9 +30,10 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         let success = self.audioSession.startAudioActivity(call.audioActivity)
         assert(success)
 
-        if call.isIndividualCall {
+        switch call.mode {
+        case .individual:
             self.callService.individualCallService.handleOutgoingCall(call)
-        } else {
+        case .group:
             switch call.groupCallRingState {
             case .shouldRing where call.ringRestrictions.isEmpty, .ringing:
                 // Let CallService call recipientAcceptedCall when someone joins.
@@ -52,8 +52,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         }
     }
 
-    func reportIncomingCall(_ call: SignalCall,
-                            completion: @escaping (Error?) -> Void) {
+    func reportIncomingCall(_ call: SignalCall, completion: @escaping (Error?) -> Void) {
         AssertIsOnMainThread()
 
         Logger.debug("")
@@ -83,14 +82,17 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
                 return
             }
 
-            let shouldContinue: Bool
-            if self.callService.callServiceState.currentCall !== call {
-                shouldContinue = false
-            } else if call.isGroupCall {
-                shouldContinue = call.groupCall.localDeviceState.joinState == .notJoined
-            } else {
-                shouldContinue = call.individualCall.state == .localRinging_ReadyToAnswer
-            }
+            let shouldContinue = { () -> Bool in
+                guard self.callService.callServiceState.currentCall === call else {
+                    return false
+                }
+                switch call.mode {
+                case .individual(let individualCall):
+                    return individualCall.state == .localRinging_ReadyToAnswer
+                case .group(let groupCall):
+                    return groupCall.localDeviceState.joinState == .notJoined
+                }
+            }()
             guard shouldContinue else {
                 self.incomingCallNotificationTimer?.invalidate()
                 self.incomingCallNotificationTimer = nil
@@ -128,12 +130,13 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
             return
         }
 
-        if call.isIndividualCall {
+        switch call.mode {
+        case .individual:
             self.callService.individualCallService.handleAcceptCall(call)
-        } else {
+        case .group(let groupCall):
             // Explicitly unmute to request permissions.
             self.callService.updateIsLocalAudioMuted(isLocalAudioMuted: false)
-            self.callService.joinGroupCallIfNecessary(call)
+            self.callService.joinGroupCallIfNecessary(call, groupCall: groupCall)
         }
 
         // Enable audio for locally accepted calls after the session is configured.

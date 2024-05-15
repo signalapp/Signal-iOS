@@ -16,7 +16,7 @@ protocol CallUIAdaptee: AnyObject {
 
     func startOutgoingCall(call: SignalCall)
     func reportIncomingCall(_ call: SignalCall, completion: @escaping (Error?) -> Void)
-    func reportMissedCall(_ call: SignalCall)
+    func reportMissedCall(_ call: SignalCall, individualCall: IndividualCall)
     func answerCall(localId: UUID)
     func answerCall(_ call: SignalCall)
     func recipientAcceptedCall(_ call: SignalCall)
@@ -47,23 +47,24 @@ extension CallUIAdaptee {
         Logger.info("\(call)")
 
         let callViewController: UIViewController & CallViewControllerWindowReference
-        if call.isGroupCall {
-            callViewController = GroupCallViewController(call: call)
-        } else {
-            callViewController = IndividualCallViewController(call: call)
+        switch call.mode {
+        case .individual(let individualCall):
+            callViewController = IndividualCallViewController(call: call, individualCall: individualCall)
+        case .group(let groupCall):
+            callViewController = GroupCallViewController(call: call, groupCall: groupCall)
         }
 
         callViewController.modalTransitionStyle = .crossDissolve
         WindowManager.shared.startCall(viewController: callViewController)
     }
 
-    internal func reportMissedCall(_ call: SignalCall) {
+    internal func reportMissedCall(_ call: SignalCall, individualCall: IndividualCall) {
         AssertIsOnMainThread()
 
-        let sentAtTimestamp = Date(millisecondsSince1970: call.individualCall.sentAtTimestamp)
+        let sentAtTimestamp = Date(millisecondsSince1970: individualCall.sentAtTimestamp)
         notificationPresenterImpl.presentMissedCall(
             call,
-            caller: call.individualCall.remoteAddress,
+            caller: individualCall.remoteAddress,
             sentAt: sentAtTimestamp
         )
     }
@@ -71,7 +72,7 @@ extension CallUIAdaptee {
     internal func startAndShowOutgoingCall(thread: TSContactThread, hasLocalVideo: Bool) {
         AssertIsOnMainThread()
 
-        guard let call = self.callService.buildOutgoingIndividualCallIfPossible(
+        guard let (call, individualCall) = self.callService.buildOutgoingIndividualCallIfPossible(
             thread: thread,
             hasVideo: hasLocalVideo
         ) else {
@@ -85,7 +86,7 @@ extension CallUIAdaptee {
         Logger.debug("")
 
         startOutgoingCall(call: call)
-        call.individualCall.hasLocalVideo = hasLocalVideo
+        individualCall.hasLocalVideo = hasLocalVideo
         self.showCall(call)
     }
 }
@@ -126,10 +127,12 @@ public class CallUIAdapter: NSObject {
     var defaultAdaptee: CallUIAdaptee { callKitAdaptee ?? nonCallKitAdaptee }
 
     func adaptee(for call: SignalCall) -> CallUIAdaptee {
-        if call.isIndividualCall, call.individualCall.callAdapterType == .nonCallKit {
+        switch call.mode {
+        case .individual(let individualCall) where individualCall.callAdapterType == .nonCallKit:
             return nonCallKitAdaptee
+        case .individual, .group:
+            return defaultAdaptee
         }
-        return defaultAdaptee
     }
 
     public override init() {
@@ -157,8 +160,11 @@ public class CallUIAdapter: NSObject {
             AssertIsOnMainThread()
 
             guard var error = error else {
-                // Individual calls ring on their state transitions, but group calls ring immediately.
-                if call.isGroupCall {
+                switch call.mode {
+                case .individual:
+                    // Individual calls ring on their state transitions, but group calls ring immediately.
+                    break
+                case .group:
                     // Wait to start ringing until all observers have recognized this as the current call.
                     DispatchQueue.main.async {
                         guard call === self.callService.callServiceState.currentCall else {
@@ -196,10 +202,10 @@ public class CallUIAdapter: NSObject {
         }
     }
 
-    internal func reportMissedCall(_ call: SignalCall) {
+    internal func reportMissedCall(_ call: SignalCall, individualCall: IndividualCall) {
         AssertIsOnMainThread()
 
-        adaptee(for: call).reportMissedCall(call)
+        adaptee(for: call).reportMissedCall(call, individualCall: individualCall)
     }
 
     internal func startOutgoingCall(call: SignalCall) {
