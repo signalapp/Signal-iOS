@@ -177,7 +177,7 @@ extension TSAttachmentStream: TSResourceStream {
         if isValidImageCached?.boolValue == false, MimeTypeUtil.isSupportedImageMimeType(mimeType) {
             return .invalid
         }
-        if isAnimatedCached?.boolValue == false, MimeTypeUtil.isSupportedMaybeAnimatedMimeType(mimeType) {
+        if isAnimatedCached?.boolValue == false, MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(mimeType) {
             return .invalid
         }
 
