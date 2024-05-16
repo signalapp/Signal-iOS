@@ -313,8 +313,7 @@ class SignalCall: CallManagerCallReference {
             direction: .outgoing,
             state: .dialing,
             thread: thread,
-            sentAtTimestamp: Date.ows_millisecondTimestamp(),
-            callAdapterType: .default
+            sentAtTimestamp: Date.ows_millisecondTimestamp()
         )
     }
 
@@ -323,13 +322,11 @@ class SignalCall: CallManagerCallReference {
         sentAtTimestamp: UInt64,
         offerMediaType: TSRecentCallOfferType
     ) -> SignalCall {
-        let callAdapterType: CallAdapterType = .default
         let individualCall = IndividualCall(
             direction: .incoming,
             state: .answering,
             thread: thread,
-            sentAtTimestamp: sentAtTimestamp,
-            callAdapterType: callAdapterType
+            sentAtTimestamp: sentAtTimestamp
         )
         individualCall.offerMediaType = offerMediaType
         return SignalCall(individualCall: individualCall)

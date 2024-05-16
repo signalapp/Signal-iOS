@@ -30,26 +30,12 @@ public class UserNotificationConfig {
 
     class func notificationAction(_ action: AppNotificationAction) -> UNNotificationAction? {
         switch action {
-        case .answerCall:
-            return notificationActionWithIdentifier(
-                action.identifier,
-                title: CallStrings.answerCallButtonTitle,
-                options: [.foreground],
-                systemImage: "phone"
-            )
         case .callBack:
             return notificationActionWithIdentifier(
                 action.identifier,
                 title: CallStrings.callBackButtonTitle,
                 options: [.foreground],
                 systemImage: "phone"
-            )
-        case .declineCall:
-            return notificationActionWithIdentifier(
-                action.identifier,
-                title: CallStrings.declineCallButtonTitle,
-                options: [],
-                systemImage: "phone.down"
             )
         case .markAsRead:
             return notificationActionWithIdentifier(
@@ -312,7 +298,6 @@ class UserNotificationPresenter: Dependencies {
     private func shouldPresentNotification(category: AppNotificationCategory, userInfo: [AnyHashable: Any]) -> Bool {
         switch category {
         case .incomingMessageFromNoLongerVerifiedIdentity,
-             .incomingCall,
              .missedCallWithActions,
              .missedCallWithoutActions,
              .missedCallFromNoLongerVerifiedIdentity,

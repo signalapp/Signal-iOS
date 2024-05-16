@@ -16,9 +16,6 @@ protocol CallAudioServiceDelegate: AnyObject {
 
 class CallAudioService: CallObserver {
 
-    private var vibrateTimer: Timer?
-
-    var handleRinging = false
     weak var delegate: CallAudioServiceDelegate? {
         willSet {
             assert(newValue == nil || delegate == nil)
@@ -27,13 +24,6 @@ class CallAudioService: CallObserver {
 
     // Track whether the speaker should be enabled or not.
     private(set) var isSpeakerEnabled = false
-
-    // MARK: Vibration config
-    private let vibrateRepeatDuration = 1.6
-
-    // Our ring buzz is a pair of vibrations.
-    // `pulseDuration` is the small pause between the two vibrations in the pair.
-    private let pulseDuration = 0.2
 
     private var observers = [NSObjectProtocol]()
 
@@ -278,8 +268,6 @@ class CallAudioService: CallObserver {
     private func handleLocalRinging(call: SignalCall) {
         AssertIsOnMainThread()
         Logger.debug("")
-
-        startRinging(call: call)
     }
 
     private func handleConnected(call: SignalCall) {
@@ -358,11 +346,10 @@ class CallAudioService: CallObserver {
 
     // MARK: Playing Sounds
 
-    var currentPlayer: AudioPlayer?
+    private var currentPlayer: AudioPlayer?
 
     private func stopPlayingAnySounds() {
         currentPlayer?.stop()
-        stopRinging()
     }
 
     private func prepareToPlay(sound: StandardSound) -> AudioPlayer? {
@@ -384,63 +371,6 @@ class CallAudioService: CallObserver {
     private func play(sound: StandardSound) {
         guard let newPlayer = prepareToPlay(sound: sound) else { return }
         newPlayer.play()
-    }
-
-    // MARK: - Ringing
-
-    private var ringerSwitchObserver: CallRingerSwitchObserver?
-
-    func startRinging(call: SignalCall) {
-        guard handleRinging else {
-            Logger.debug("ignoring \(#function) since CallKit handles it's own ringing state")
-            return
-        }
-
-        // Only CallKit calls should be in the transitory ringing states
-        switch call.mode {
-        case .individual(let individualCall):
-            owsAssertDebug(individualCall.state == .localRinging_ReadyToAnswer)
-        case .groupThread:
-            break
-        }
-
-        vibrateTimer?.invalidate()
-        vibrateTimer = .scheduledTimer(withTimeInterval: vibrateRepeatDuration, repeats: true) { [weak self] _ in
-            self?.ringVibration()
-        }
-
-        guard let player = prepareToPlay(sound: .defaultiOSIncomingRingtone) else {
-            return owsFailDebug("Failed to prepare player for ringing")
-        }
-
-        // Start observing (observes on init)
-        ringerSwitchObserver = CallRingerSwitchObserver(callService: self, player: player, call: call)
-    }
-
-    func stopRinging() {
-        guard handleRinging else {
-            Logger.debug("ignoring \(#function) since CallKit handles it's own ringing state")
-            return
-        }
-        Logger.debug("")
-
-        // Stop vibrating
-        vibrateTimer?.invalidate()
-        vibrateTimer = nil
-
-        // Stops observing on deinit.
-        ringerSwitchObserver = nil
-
-        currentPlayer?.stop()
-    }
-
-    private func ringVibration() {
-        // Since a call notification is more urgent than a message notification, we
-        // vibrate twice, like a pulse, to differentiate from a normal notification vibration.
-        vibrate()
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + pulseDuration) {
-            self.vibrate()
-        }
     }
 
     func vibrate() {
@@ -557,40 +487,5 @@ extension CallAudioService: CallServiceStateObserver {
         }
         oldValue?.removeObserver(self)
         newValue?.addObserverAndSyncState(observer: self)
-    }
-}
-
-private class CallRingerSwitchObserver: RingerSwitchObserver {
-
-    private let player: AudioPlayer
-    private let call: SignalCall
-    private weak var callService: CallAudioService?
-
-    init(callService: CallAudioService, player: AudioPlayer, call: SignalCall) {
-        self.callService = callService
-        self.player = player
-        self.call = call
-
-        // Immediately callback to maintain old behavior.
-        didToggleRingerSwitch(RingerSwitch.shared.addObserver(observer: self))
-    }
-
-    deinit {
-        RingerSwitch.shared.removeObserver(self)
-    }
-
-    func didToggleRingerSwitch(_ isSilenced: Bool) {
-        AssertIsOnMainThread()
-
-        // We must ensure the proper audio session before
-        // each time we play / pause, otherwise the category
-        // may have changed and no playback would occur.
-        callService?.ensureProperAudioSession(call: call)
-
-        if isSilenced {
-            player.pause()
-        } else {
-            player.play()
-        }
     }
 }

@@ -10,7 +10,7 @@ extension Sounds {
     private static func shouldAudioPlayerLoop(forSound sound: Sound) -> Bool {
         guard case .standard(let standardSound) = sound else { return false }
         switch standardSound {
-        case .callConnecting, .callOutboundRinging, .defaultiOSIncomingRingtone:
+        case .callConnecting, .callOutboundRinging:
             return true
         default:
             return false

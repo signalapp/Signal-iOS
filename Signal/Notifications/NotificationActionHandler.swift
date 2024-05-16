@@ -53,12 +53,8 @@ public class NotificationActionHandler: Dependencies {
         }
 
         switch action {
-        case .answerCall:
-            return try answerCall(userInfo: userInfo)
         case .callBack:
             return try callBack(userInfo: userInfo)
-        case .declineCall:
-            return try declineCall(userInfo: userInfo)
         case .markAsRead:
             return try markAsRead(userInfo: userInfo)
         case .reply:
@@ -87,19 +83,6 @@ public class NotificationActionHandler: Dependencies {
 
     // MARK: -
 
-    private class func answerCall(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
-        guard let localCallIdString = userInfo[AppNotificationUserInfoKey.localCallId] as? String else {
-            throw OWSAssertionError("localCallIdString was unexpectedly nil")
-        }
-
-        guard let localCallId = UUID(uuidString: localCallIdString) else {
-            throw OWSAssertionError("unable to build localCallId. localCallIdString: \(localCallIdString)")
-        }
-
-        callService.callUIAdapter.answerCall(localId: localCallId)
-        return Promise.value(())
-    }
-
     private class func callBack(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         let aciString = userInfo[AppNotificationUserInfoKey.callBackAciString] as? String
         let phoneNumber = userInfo[AppNotificationUserInfoKey.callBackPhoneNumber] as? String
@@ -110,19 +93,6 @@ public class NotificationActionHandler: Dependencies {
         let thread = TSContactThread.getOrCreateThread(contactAddress: address)
 
         callService.callUIAdapter.startAndShowOutgoingCall(thread: thread, hasLocalVideo: false)
-        return Promise.value(())
-    }
-
-    private class func declineCall(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
-        guard let localCallIdString = userInfo[AppNotificationUserInfoKey.localCallId] as? String else {
-            throw OWSAssertionError("localCallIdString was unexpectedly nil")
-        }
-
-        guard let localCallId = UUID(uuidString: localCallIdString) else {
-            throw OWSAssertionError("unable to build localCallId. localCallIdString: \(localCallIdString)")
-        }
-
-        callService.callUIAdapter.localHangupCall(localId: localCallId)
         return Promise.value(())
     }
 

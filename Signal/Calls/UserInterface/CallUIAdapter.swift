@@ -12,15 +12,13 @@ import UIKit
 protocol CallUIAdaptee: AnyObject {
     var notificationPresenterImpl: NotificationPresenterImpl { get }
     var callService: CallService { get }
-    var hasManualRinger: Bool { get }
+
+    init(showNamesOnCallScreen: Bool, useSystemCallLog: Bool)
 
     func startOutgoingCall(call: SignalCall)
     func reportIncomingCall(_ call: SignalCall, completion: @escaping (Error?) -> Void)
-    func reportMissedCall(_ call: SignalCall, individualCall: IndividualCall)
-    func answerCall(localId: UUID)
     func answerCall(_ call: SignalCall)
     func recipientAcceptedCall(_ call: SignalCall)
-    func localHangupCall(localId: UUID)
     func localHangupCall(_ call: SignalCall)
     func remoteDidHangupCall(_ call: SignalCall)
     func remoteBusy(_ call: SignalCall)
@@ -30,65 +28,6 @@ protocol CallUIAdaptee: AnyObject {
     func failCall(_ call: SignalCall, error: SignalCall.CallError)
     func setIsMuted(call: SignalCall, isMuted: Bool)
     func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool)
-    func startAndShowOutgoingCall(thread: TSContactThread, hasLocalVideo: Bool)
-}
-
-// Shared default implementations
-extension CallUIAdaptee {
-
-    internal func showCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
-
-        guard !call.hasTerminated else {
-            Logger.info("Not showing window for terminated call \(call)")
-            return
-        }
-
-        Logger.info("\(call)")
-
-        let callViewController: UIViewController & CallViewControllerWindowReference
-        switch call.mode {
-        case .individual(let individualCall):
-            callViewController = IndividualCallViewController(call: call, individualCall: individualCall)
-        case .groupThread(let groupThreadCall):
-            callViewController = GroupCallViewController(call: call, groupCall: groupThreadCall.ringRtcCall)
-        }
-
-        callViewController.modalTransitionStyle = .crossDissolve
-        WindowManager.shared.startCall(viewController: callViewController)
-    }
-
-    internal func reportMissedCall(_ call: SignalCall, individualCall: IndividualCall) {
-        AssertIsOnMainThread()
-
-        let sentAtTimestamp = Date(millisecondsSince1970: individualCall.sentAtTimestamp)
-        notificationPresenterImpl.presentMissedCall(
-            call,
-            caller: individualCall.remoteAddress,
-            sentAt: sentAtTimestamp
-        )
-    }
-
-    internal func startAndShowOutgoingCall(thread: TSContactThread, hasLocalVideo: Bool) {
-        AssertIsOnMainThread()
-
-        guard let (call, individualCall) = self.callService.buildOutgoingIndividualCallIfPossible(
-            thread: thread,
-            hasVideo: hasLocalVideo
-        ) else {
-            // @integration This is not unexpected, it could happen if Bob tries
-            // to start an outgoing call at the same moment Alice has already
-            // sent him an Offer that is being processed.
-            Logger.info("found an existing call when trying to start outgoing call: \(thread.contactAddress)")
-            return
-        }
-
-        Logger.debug("")
-
-        startOutgoingCall(call: call)
-        individualCall.hasLocalVideo = hasLocalVideo
-        self.showCall(call)
-    }
 }
 
 /**
@@ -99,41 +38,24 @@ public class CallUIAdapter: NSObject {
 
     private var callService: CallService { AppEnvironment.shared.callService }
 
-    lazy var nonCallKitAdaptee = NonCallKitCallUIAdaptee()
-
-    lazy var callKitAdaptee: CallKitCallUIAdaptee? = { () -> CallKitCallUIAdaptee? in
-        if Platform.isSimulator {
-            // CallKit doesn't seem entirely supported in simulator.
-            // e.g. you can't receive calls in the call screen.
-            // So we use the non-CallKit call UI.
-            Logger.info("not using callkit adaptee for simulator.")
-            return nil
-        } else {
-            Logger.info("using callkit adaptee for iOS11+")
-            let (showNames, useSystemCallLog) = databaseStorage.read { tx in
-                return (
-                    preferences.notificationPreviewType(tx: tx) != .noNameNoPreview,
-                    preferences.isSystemCallLogEnabled(tx: tx)
-                )
-            }
-
-            return CallKitCallUIAdaptee(
-                showNamesOnCallScreen: showNames,
-                useSystemCallLog: useSystemCallLog
+    private lazy var adaptee: any CallUIAdaptee = { () -> any CallUIAdaptee in
+        let callUIAdapteeType: CallUIAdaptee.Type
+#if targetEnvironment(simulator)
+        callUIAdapteeType = SimulatorCallUIAdaptee.self
+#else
+        callUIAdapteeType = CallKitCallUIAdaptee.self
+#endif
+        let (showNames, useSystemCallLog) = databaseStorage.read { tx in
+            return (
+                preferences.notificationPreviewType(tx: tx) != .noNameNoPreview,
+                preferences.isSystemCallLogEnabled(tx: tx)
             )
         }
+        return callUIAdapteeType.init(
+            showNamesOnCallScreen: showNames,
+            useSystemCallLog: useSystemCallLog
+        )
     }()
-
-    var defaultAdaptee: CallUIAdaptee { callKitAdaptee ?? nonCallKitAdaptee }
-
-    func adaptee(for call: SignalCall) -> CallUIAdaptee {
-        switch call.mode {
-        case .individual(let individualCall) where individualCall.callAdapterType == .nonCallKit:
-            return nonCallKitAdaptee
-        case .individual, .groupThread:
-            return defaultAdaptee
-        }
-    }
 
     public override init() {
         AssertIsOnMainThread()
@@ -156,24 +78,11 @@ public class CallUIAdapter: NSObject {
         // make sure we don't terminate audio session during call
         _ = audioSession.startAudioActivity(call.audioActivity)
 
-        adaptee(for: call).reportIncomingCall(call) { error in
+        adaptee.reportIncomingCall(call) { error in
             AssertIsOnMainThread()
 
             guard var error = error else {
-                switch call.mode {
-                case .individual:
-                    // Individual calls ring on their state transitions, but group calls ring immediately.
-                    break
-                case .groupThread:
-                    // Wait to start ringing until all observers have recognized this as the current call.
-                    DispatchQueue.main.async {
-                        guard call === self.callService.callServiceState.currentCall else {
-                            // Assume that the call failed before we got a chance to start ringing.
-                            return
-                        }
-                        self.callService.audioService.startRinging(call: call)
-                    }
-                }
+                self.showCall(call)
                 return
             }
 
@@ -205,118 +114,125 @@ public class CallUIAdapter: NSObject {
     internal func reportMissedCall(_ call: SignalCall, individualCall: IndividualCall) {
         AssertIsOnMainThread()
 
-        adaptee(for: call).reportMissedCall(call, individualCall: individualCall)
+        let sentAtTimestamp = Date(millisecondsSince1970: individualCall.sentAtTimestamp)
+        notificationPresenterImpl.presentMissedCall(
+            call,
+            caller: individualCall.remoteAddress,
+            sentAt: sentAtTimestamp
+        )
     }
 
     internal func startOutgoingCall(call: SignalCall) {
         AssertIsOnMainThread()
 
-        adaptee(for: call).startOutgoingCall(call: call)
-    }
+        // make sure we don't terminate audio session during call
+        _ = audioSession.startAudioActivity(call.audioActivity)
 
-    public func answerCall(localId: UUID) {
-        AssertIsOnMainThread()
-
-        guard let call = self.callService.callServiceState.currentCall else {
-            owsFailDebug("No current call.")
-            return
-        }
-
-        guard call.localId == localId else {
-            owsFailDebug("localId does not match current call")
-            return
-        }
-
-        adaptee(for: call).answerCall(localId: localId)
+        adaptee.startOutgoingCall(call: call)
     }
 
     internal func answerCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        adaptee(for: call).answerCall(call)
+        adaptee.answerCall(call)
     }
 
     public func startAndShowOutgoingCall(thread: TSContactThread, hasLocalVideo: Bool) {
         AssertIsOnMainThread()
 
-        defaultAdaptee.startAndShowOutgoingCall(thread: thread, hasLocalVideo: hasLocalVideo)
+        guard let (call, individualCall) = self.callService.buildOutgoingIndividualCallIfPossible(
+            thread: thread,
+            hasVideo: hasLocalVideo
+        ) else {
+            // @integration This is not unexpected, it could happen if Bob tries
+            // to start an outgoing call at the same moment Alice has already
+            // sent him an Offer that is being processed.
+            Logger.info("found an existing call when trying to start outgoing call: \(thread.contactAddress)")
+            return
+        }
+
+        Logger.debug("")
+
+        startOutgoingCall(call: call)
+        individualCall.hasLocalVideo = hasLocalVideo
+        self.showCall(call)
     }
 
     internal func recipientAcceptedCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        adaptee(for: call).recipientAcceptedCall(call)
+        adaptee.recipientAcceptedCall(call)
     }
 
     internal func remoteDidHangupCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        adaptee(for: call).remoteDidHangupCall(call)
+        adaptee.remoteDidHangupCall(call)
     }
 
     internal func remoteBusy(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        adaptee(for: call).remoteBusy(call)
+        adaptee.remoteBusy(call)
     }
 
     internal func didAnswerElsewhere(call: SignalCall) {
-        adaptee(for: call).didAnswerElsewhere(call: call)
+        adaptee.didAnswerElsewhere(call: call)
     }
 
     internal func didDeclineElsewhere(call: SignalCall) {
-        adaptee(for: call).didDeclineElsewhere(call: call)
+        adaptee.didDeclineElsewhere(call: call)
     }
 
     internal func wasBusyElsewhere(call: SignalCall) {
-        adaptee(for: call).wasBusyElsewhere(call: call)
-    }
-
-    internal func localHangupCall(localId: UUID) {
-        AssertIsOnMainThread()
-
-        guard let call = self.callService.callServiceState.currentCall else {
-            owsFailDebug("No current call.")
-            return
-        }
-
-        guard call.localId == localId else {
-            owsFailDebug("localId does not match current call")
-            return
-        }
-
-        adaptee(for: call).localHangupCall(localId: localId)
+        adaptee.wasBusyElsewhere(call: call)
     }
 
     internal func localHangupCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        adaptee(for: call).localHangupCall(call)
+        adaptee.localHangupCall(call)
     }
 
     internal func failCall(_ call: SignalCall, error: SignalCall.CallError) {
         AssertIsOnMainThread()
 
-        adaptee(for: call).failCall(call, error: error)
+        adaptee.failCall(call, error: error)
     }
 
     private func showCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        adaptee(for: call).showCall(call)
+        guard !call.hasTerminated else {
+            Logger.info("Not showing window for terminated call \(call)")
+            return
+        }
+
+        Logger.info("\(call)")
+
+        let callViewController: UIViewController & CallViewControllerWindowReference
+        switch call.mode {
+        case .individual(let individualCall):
+            callViewController = IndividualCallViewController(call: call, individualCall: individualCall)
+        case .groupThread(let groupThreadCall):
+            callViewController = GroupCallViewController(call: call, groupCall: groupThreadCall.ringRtcCall)
+        }
+
+        callViewController.modalTransitionStyle = .crossDissolve
+        WindowManager.shared.startCall(viewController: callViewController)
     }
 
     internal func setIsMuted(call: SignalCall, isMuted: Bool) {
         AssertIsOnMainThread()
 
         // With CallKit, muting is handled by a CXAction, so it must go through the adaptee
-        adaptee(for: call).setIsMuted(call: call, isMuted: isMuted)
+        adaptee.setIsMuted(call: call, isMuted: isMuted)
     }
 
     internal func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool) {
         AssertIsOnMainThread()
 
-        adaptee(for: call).setHasLocalVideo(call: call, hasLocalVideo: hasLocalVideo)
+        adaptee.setHasLocalVideo(call: call, hasLocalVideo: hasLocalVideo)
     }
 
     internal func setCameraSource(call: SignalCall, isUsingFrontCamera: Bool) {

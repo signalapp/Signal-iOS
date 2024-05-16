@@ -25,9 +25,6 @@ class DebugUINotifications: DebugUIPage, Dependencies {
                 OWSTableItem(title: "All Notifications in Sequence") { [weak self] in
                     self?.notifyForEverythingInSequence(contactThread: contactThread)
                 },
-                OWSTableItem(title: "Incoming Call") { [weak self] in
-                    self?.notifyForIncomingCall(thread: contactThread)
-                },
                 OWSTableItem(title: "Call Rejected: New Safety Number") { [weak self] in
                     self?.notifyForMissedCallBecauseOfNewIdentity(thread: contactThread)
                 },
@@ -88,21 +85,12 @@ class DebugUINotifications: DebugUIPage, Dependencies {
     func notifyForEverythingInSequence(contactThread: TSContactThread) -> Guarantee<Void> {
         let taskIdentifier = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
 
-        return self.notifyForIncomingCall(thread: contactThread).then {
-            self.notifyForMissedCallBecauseOfNewIdentity(thread: contactThread)
-        }.then {
+        return self.notifyForMissedCallBecauseOfNewIdentity(thread: contactThread).then {
             self.notifyForMissedCallBecauseOfNoLongerVerifiedIdentity(thread: contactThread)
         }.then {
             self.notifyForIncomingMessage(thread: contactThread)
         }.done {
             UIApplication.shared.endBackgroundTask(taskIdentifier)
-        }
-    }
-
-    @discardableResult
-    func notifyForIncomingCall(thread: TSContactThread) -> Guarantee<Void> {
-        return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
-            self.notificationPresenterImpl.presentIncomingCall(call, caller: thread.contactAddress)
         }
     }
 

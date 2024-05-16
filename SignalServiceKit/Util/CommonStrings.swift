@@ -339,22 +339,6 @@ public class MessageStrings: NSObject {
 
 public class NotificationStrings: NSObject {
 
-    static public var incomingAudioCallBody: String {
-        OWSLocalizedString("CALL_AUDIO_INCOMING_NOTIFICATION_BODY", comment: "notification body")
-    }
-
-    static public var incomingVideoCallBody: String {
-        OWSLocalizedString("CALL_VIDEO_INCOMING_NOTIFICATION_BODY", comment: "notification body")
-    }
-
-    static public var incomingGroupCallBodyFormat: String {
-        OWSLocalizedString("CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT", comment: "Body for the repeating notification shown while an incoming group call is ringing. Embeds {{caller name}}")
-    }
-
-    static public var incomingGroupCallBodyAnonymous: String {
-        OWSLocalizedString("CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS", comment: "Body for the repeating notification shown while an incoming group call is ringing, if the user has chosen not to include contact names in notifications")
-    }
-
     static public var missedCallBecauseOfIdentityChangeBody: String {
         OWSLocalizedString("CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY",
                           comment: "notification body")
@@ -502,14 +486,6 @@ public class CallStrings: NSObject {
 
     static public var showThreadButtonTitle: String {
         OWSLocalizedString("SHOW_THREAD_BUTTON_TITLE", comment: "notification action")
-    }
-
-    static public var answerCallButtonTitle: String {
-        OWSLocalizedString("ANSWER_CALL_BUTTON_TITLE", comment: "notification action")
-    }
-
-    static public var declineCallButtonTitle: String {
-        OWSLocalizedString("REJECT_CALL_BUTTON_TITLE", comment: "notification action")
     }
 }
 

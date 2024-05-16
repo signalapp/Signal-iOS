@@ -26,7 +26,6 @@ public enum AppNotificationCategory: CaseIterable {
     case incomingReactionWithActions_CanReply
     case incomingReactionWithActions_CannotReply
     case infoOrErrorMessage
-    case incomingCall
     case missedCallWithActions
     case missedCallWithoutActions
     case missedCallFromNoLongerVerifiedIdentity
@@ -39,9 +38,7 @@ public enum AppNotificationCategory: CaseIterable {
 }
 
 public enum AppNotificationAction: String, CaseIterable {
-    case answerCall
     case callBack
-    case declineCall
     case markAsRead
     case reply
     case showThread
@@ -61,7 +58,6 @@ public struct AppNotificationUserInfoKey {
     public static let storyTimestamp = "Signal.AppNotificationsUserInfoKey.storyTimestamp"
     public static let callBackAciString = "Signal.AppNotificationsUserInfoKey.callBackUuid"
     public static let callBackPhoneNumber = "Signal.AppNotificationsUserInfoKey.callBackPhoneNumber"
-    public static let localCallId = "Signal.AppNotificationsUserInfoKey.localCallId"
     public static let isMissedCall = "Signal.AppNotificationsUserInfoKey.isMissedCall"
     public static let defaultAction = "Signal.AppNotificationsUserInfoKey.defaultAction"
 }
@@ -83,8 +79,6 @@ extension AppNotificationCategory {
             return "Signal.AppNotificationCategory.incomingReactionWithActionsNoReply"
         case .infoOrErrorMessage:
             return "Signal.AppNotificationCategory.infoOrErrorMessage"
-        case .incomingCall:
-            return "Signal.AppNotificationCategory.incomingCall"
         case .missedCallWithActions:
             return "Signal.AppNotificationCategory.missedCallWithActions"
         case .missedCallWithoutActions:
@@ -121,8 +115,6 @@ extension AppNotificationCategory {
             return []
         case .infoOrErrorMessage:
             return []
-        case .incomingCall:
-            return [.answerCall, .declineCall]
         case .missedCallWithActions:
             return [.callBack, .showThread]
         case .missedCallWithoutActions:
@@ -148,12 +140,8 @@ extension AppNotificationCategory {
 extension AppNotificationAction {
     var identifier: String {
         switch self {
-        case .answerCall:
-            return "Signal.AppNotifications.Action.answerCall"
         case .callBack:
             return "Signal.AppNotifications.Action.callBack"
-        case .declineCall:
-            return "Signal.AppNotifications.Action.declineCall"
         case .markAsRead:
             return "Signal.AppNotifications.Action.markAsRead"
         case .reply:
@@ -226,60 +214,6 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 notificationTitle: contactManager.displayName(for: thread, transaction: tx),
                 threadIdentifier: thread.uniqueId,
                 shouldShowActions: Self.shouldShowActions(for: previewType)
-            )
-        }
-    }
-
-    public func presentIncomingCall(_ call: CallNotificationInfo, caller: SignalServiceAddress) {
-        let thread = call.thread
-
-        let callPreview: CallPreview?
-        let callerNameForGroupCall: String?
-        (callPreview, callerNameForGroupCall) = databaseStorage.read { tx in
-            guard let callPreview = self.fetchCallPreview(thread: thread, tx: tx) else {
-                return (nil, nil)
-            }
-            return (
-                callPreview,
-                thread.isGroupThread ? contactManager.displayName(for: caller, tx: tx).resolvedValue() :  nil
-            )
-        }
-
-        let notificationBody: String
-        if let callerNameForGroupCall = callerNameForGroupCall {
-            notificationBody = String(format: NotificationStrings.incomingGroupCallBodyFormat, callerNameForGroupCall)
-        } else if thread.isGroupThread {
-            notificationBody = NotificationStrings.incomingGroupCallBodyAnonymous
-        } else {
-            switch call.offerMediaType {
-            case .audio: notificationBody = NotificationStrings.incomingAudioCallBody
-            case .video: notificationBody = NotificationStrings.incomingVideoCallBody
-            }
-        }
-
-        let userInfo = [
-            AppNotificationUserInfoKey.threadId: thread.uniqueId,
-            AppNotificationUserInfoKey.localCallId: call.localId.uuidString
-        ]
-
-        var interaction: INInteraction?
-        if callPreview != nil, let intent = thread.generateIncomingCallIntent(callerAddress: caller) {
-            let wrapper = INInteraction(intent: intent, response: nil)
-            wrapper.direction = .incoming
-            interaction = wrapper
-        }
-
-        performNotificationActionAsync { completion in
-            self.presenter.notify(
-                category: .incomingCall,
-                title: callPreview?.notificationTitle,
-                body: notificationBody,
-                threadIdentifier: callPreview?.threadIdentifier,
-                userInfo: userInfo,
-                interaction: interaction,
-                sound: nil,
-                replacingIdentifier: call.localId.uuidString,
-                completion: completion
             )
         }
     }

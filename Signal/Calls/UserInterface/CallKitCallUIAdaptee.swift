@@ -22,9 +22,6 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     private let provider: CXProvider
     private let audioActivity: AudioActivity
 
-    // CallKit handles incoming ringer stop/start for us. Yay!
-    let hasManualRinger = false
-
     // Instantiating more than one CXProvider can cause us to miss call transactions, so
     // we maintain the provider across Adaptees using a singleton pattern
     static private let providerReadyFlag: ReadyFlag = ReadyFlag(name: "CallKitCXProviderReady")
@@ -129,9 +126,6 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         AssertIsOnMainThread()
         Logger.info("")
 
-        // make sure we don't terminate audio session during call
-        _ = self.audioSession.startAudioActivity(call.audioActivity)
-
         // Add the new outgoing call to the app's list of calls.
         // So we can find it in the provider delegate callbacks.
         Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
@@ -219,17 +213,9 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
                 completion(nil)
 
-                self.showCall(call)
                 self.callManager.addCall(call)
             }
         }
-    }
-
-    func answerCall(localId: UUID) {
-        AssertIsOnMainThread()
-        Logger.info("")
-
-        owsFailDebug("CallKit should answer calls via system call screen, not via notifications.")
     }
 
     func answerCall(_ call: SignalCall) {
@@ -263,12 +249,6 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             // Enable audio for remotely accepted calls after the session is configured.
             self.audioSession.isRTCAudioEnabled = true
         }
-    }
-
-    func localHangupCall(localId: UUID) {
-        AssertIsOnMainThread()
-
-        owsFailDebug("CallKit should decline calls via system call screen, not via notifications.")
     }
 
     func localHangupCall(_ call: SignalCall) {

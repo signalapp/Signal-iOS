@@ -489,7 +489,6 @@ final class IndividualCallService: CallServiceStateObserver {
             if !isOutgoing {
                 // If we are using the NSE, we need to kick off a ring ASAP in case this incoming call
                 // has resulted in the NSE waking up the main app.
-                owsAssertDebug(callUIAdapter.adaptee(for: call) === callUIAdapter.callKitAdaptee)
                 Logger.info("Performing early ring")
                 handleRinging(call: call, isAnticipatory: true)
             } else {

@@ -86,9 +86,6 @@ public enum StandardSound: UInt {
     case synth = 12
     case signalClassic = 13
 
-    // Ringtone Sounds
-    case reflection = 14
-
     // Calls
     case callConnecting = 15
     case callOutboundRinging = 16
@@ -107,8 +104,6 @@ public enum StandardSound: UInt {
     // Audio Playback
     case beginNextTrack = 24
     case endLastTrack = 25
-
-    public static let defaultiOSIncomingRingtone: StandardSound = .reflection
 }
 
 public extension StandardSound {
@@ -134,9 +129,6 @@ public extension StandardSound {
         case .pulse: return "Pulse"
         case .synth: return "Synth"
         case .signalClassic: return "Signal Classic"
-
-            // Ringtone Sounds
-        case .reflection: return "Opening"
 
             // Calls
         case .callConnecting: return "Call Connecting"
@@ -197,9 +189,6 @@ public extension StandardSound {
             return quiet ? "synth-quiet.aifc" : "synth.aifc"
         case .signalClassic:
             return quiet ? "classic-quiet.aifc" : "classic.aifc"
-
-            // Ringtone Sounds
-        case .reflection: return "Reflection.m4r"
 
             // Calls
         case .callConnecting: return "ringback_tone_ansi.caf"

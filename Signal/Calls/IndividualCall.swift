@@ -33,10 +33,6 @@ public enum CallState: String {
     case busyElsewhere // terminal
 }
 
-public enum CallAdapterType {
-    case `default`, nonCallKit
-}
-
 public enum CallDirection {
     case outgoing, incoming
 }
@@ -86,8 +82,6 @@ public class IndividualCall: CustomDebugStringConvertible {
             }
         }
     }
-
-    let callAdapterType: CallAdapterType
 
     weak var remoteVideoTrack: RTCVideoTrack? {
         didSet {
@@ -238,12 +232,11 @@ public class IndividualCall: CustomDebugStringConvertible {
 
     // MARK: Initializers and Factory Methods
 
-    init(direction: CallDirection, state: CallState, thread: TSContactThread, sentAtTimestamp: UInt64, callAdapterType: CallAdapterType) {
+    init(direction: CallDirection, state: CallState, thread: TSContactThread, sentAtTimestamp: UInt64) {
         self.direction = direction
         self.state = state
         self.thread = thread
         self.sentAtTimestamp = sentAtTimestamp
-        self.callAdapterType = callAdapterType
     }
 
     deinit {

@@ -187,10 +187,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             break
         }
 
-        if let newValue {
-            self.audioService.handleRinging = callUIAdapter.adaptee(for: newValue).hasManualRinger
-        }
-
         // To be safe, we reset the early ring on any call change so it's not left set from an unexpected state change.
         earlyRingNextIncomingCall = false
     }
