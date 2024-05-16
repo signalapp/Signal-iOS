@@ -67,9 +67,6 @@
 /* Users can request a report of their account data. This is the title on the screen where they do this. */
 "ACCOUNT_DATA_REPORT_TITLE" = "您的账户数据";
 
-/* Label for 'voice call' button in contact view. */
-"ACTION_AUDIO_CALL" = "Signal 通话";
-
 /* Label for 'invite' button in contact view. */
 "ACTION_INVITE" = "邀请使用 Signal";
 
@@ -81,6 +78,9 @@
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "视频通话";
+
+/* Label for 'voice call' button in contact view. */
+"ACTION_VOICE_CALL" = "Signal Call";
 
 /* The title for the 'add group members' view. */
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "添加成员";
@@ -441,9 +441,6 @@
 
 /* A string indicating that an audio message is playing. */
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "语音消息";
-
-/* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "语音通话";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "扬声器";
@@ -847,14 +844,14 @@
 /* Title for an action, either long-press context menu or swipe, offering to take the user to the chat associated with a call in the Calls Tab. */
 "CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "前往聊天";
 
-/* Title for a long-press context menu action to join an audio call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE" = "加入音频通话";
-
 /* Title for a button offering to let the user join an ongoing call, associated with a call in the Calls Tab. */
 "CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "加入";
 
 /* Title for a long-press context menu action to join a video call, triggered from a call in the Calls Tab. */
 "CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "加入视频通话";
+
+/* Title for a long-press context menu action to join a voice call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_VOICE_CALL_ACTION_TITLE" = "Join Voice Call";
 
 /* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
 "CALLS_TAB_NO_MISSED_CALLS_LABEL" = "无未接来电";
@@ -880,11 +877,11 @@
 /* Title for a button allowing the user to select one or more calls, from the Calls Tab. */
 "CALLS_TAB_SELECT_CALLS_BUTTON_TITLE" = "选择";
 
-/* Title for a long-press context menu action to start an audio call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE" = "音频通话";
-
 /* Title for a long-press context menu action to start a video call, triggered from a call in the Calls Tab. */
 "CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "视频通话";
+
+/* Title for a long-press context menu action to start a voice call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_VOICE_CALL_ACTION_TITLE" = "Voice Call";
 
 /* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
 "CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "信息";
@@ -1381,9 +1378,6 @@
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "选择谁可以编辑群组名称、图片、描述和限时消息计时器。";
 
-/* Button to start a audio call */
-"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "语音";
-
 /* Footer string for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "支持 Signal，为您的个人资料添加徽章吧。点击徽章了解详情。";
 
@@ -1396,23 +1390,23 @@
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "屏蔽用户";
 
-/* A label indicating that a call was an incoming audio call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL" = "语音来电";
-
 /* A label indicating that a call was an incoming video call */
 "CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "视频来电";
 
-/* A label indicating that a call was an missed audio call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL" = "未接音频来电";
+/* A label indicating that a call was an incoming voice call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VOICE_CALL" = "Incoming voice call";
 
 /* A label indicating that a call was an missed video call */
 "CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "未接视频来电";
 
-/* A label indicating that a call was an outgoing audio call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL" = "拨出语音通话";
+/* A label indicating that a call was an missed voice call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VOICE_CALL" = "Missed voice call";
 
 /* A label indicating that a call was an outgoing video call */
 "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "拨出视频通话";
+
+/* A label indicating that a call was an outgoing voice call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VOICE_CALL" = "Outgoing voice call";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "编辑群组信息";
@@ -1554,6 +1548,9 @@
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "联系人详情";
+
+/* Button to start a voice call */
+"CONVERSATION_SETTINGS_VOICE_CALL_BUTTON" = "voice";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "添加到联系人";
@@ -1739,10 +1736,10 @@
 "DEBUG_LOG_INFO_BUTTON" = "关于调试日志";
 
 /* info message text in conversation view */
-"DECLINED_AUDIO_CALL" = "您拒接了语音通话";
+"DECLINED_VIDEO_CALL" = "您拒接了视频通话";
 
 /* info message text in conversation view */
-"DECLINED_VIDEO_CALL" = "您拒接了视频通话";
+"DECLINED_VOICE_CALL" = "You declined a voice call";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "删除账号";
@@ -2824,6 +2821,15 @@
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "离开通话";
 
+/* Title for the section of the group call member list which displays the list of all members in the call. */
+"GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "In Call";
+
+/* Title for the section of the group call member list which displays the list of members with their hand raised. */
+"GROUP_CALL_MEMBER_LIST_RAISED_HANDS_SECTION_HEADER" = "Raised Hands";
+
+/* A count of members in a given group call member list section, displayed after the header. */
+"GROUP_CALL_MEMBER_LIST_SECTION_HEADER_MEMBER_COUNT" = "(%1$d)";
+
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "无法接收来自 %1$@ 的音频和视频";
 
@@ -2835,9 +2841,6 @@
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "没有人在这里";
-
-/* Text explaining to the user that nobody has joined this call yet. */
-"GROUP_CALL_NOBODY_IS_IN_YET" = "还没有人加入此通话。";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
 "GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%1$@ 加入了通话";
@@ -3611,10 +3614,10 @@
 "INBOX_VIEW_EMPTY_INBOX" = "还没有聊天记录。\n开始使用，给朋友发个信息吧。";
 
 /* info message text in conversation view */
-"INCOMING_AUDIO_CALL" = "语音来电";
+"INCOMING_VIDEO_CALL" = "视频来电";
 
 /* info message text in conversation view */
-"INCOMING_VIDEO_CALL" = "视频来电";
+"INCOMING_VOICE_CALL" = "Incoming voice call";
 
 /* Indicates that a previously-removed recipient has been added back to the current user's contacts. */
 "INFO_MESSAGE_CONTACT_REINSTATED" = "此用户已重新添加到您的 Signal 联系人列表。";
@@ -4261,9 +4264,6 @@
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "新消息";
 
-/* info message text in conversation view */
-"MISSED_AUDIO_CALL" = "未接语音来电";
-
 /* info message text in conversation view for when a call was dropped because the contact is blocked in iOS settings */
 "MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "有一通未接来电来自手机设置中屏蔽的联系人";
 
@@ -4284,6 +4284,9 @@
 
 /* info message text in conversation view */
 "MISSED_VIDEO_CALL" = "未接视频来电";
+
+/* info message text in conversation view */
+"MISSED_VOICE_CALL" = "Missed voice call";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "在“iOS 设置”中启用摄像头权限后，即可进行 Signal 视频通话。";
@@ -4363,9 +4366,6 @@
 /* String representing both wifi and cellular interfaces */
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi 和手机网络";
 
-/* Title for a long-press context menu action to start an audio call, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "音频通话";
-
 /* Accessibility hint describing the action of the new call button on the Calls Tab */
 "NEW_CALL_HINT" = "选择一个联系人或群组来开始新通话。";
 
@@ -4380,6 +4380,9 @@
 
 /* Title for a long-press context menu action to start a video call, triggered from a recipient in the New Call contact picker */
 "NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "视频通话";
+
+/* Title for a long-press context menu action to start a voice call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_VOICE_CALL_ACTION_TITLE" = "Voice Call";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "通过手机号码寻找";
@@ -4736,13 +4739,10 @@
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "更新 Signal 以继续使用付款功能。您的余额可能未刷新。";
 
 /* info message text in conversation view */
-"OUTGOING_AUDIO_CALL" = "拨出语音通话";
-
-/* info message text in conversation view */
-"OUTGOING_MISSED_AUDIO_CALL" = "未接语音通话";
-
-/* info message text in conversation view */
 "OUTGOING_MISSED_VIDEO_CALL" = "未接视频通话";
+
+/* info message text in conversation view */
+"OUTGOING_MISSED_VOICE_CALL" = "Unanswered voice call";
 
 /* Button for action sheet shown when device transfer completes; quits the Signal app immediately (does not automatically relaunch, but the user may choose to relaunch). */
 "OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION" = "退出 Signal";
@@ -4755,6 +4755,9 @@
 
 /* info message text in conversation view */
 "OUTGOING_VIDEO_CALL" = "拨出视频通话";
+
+/* info message text in conversation view */
+"OUTGOING_VOICE_CALL" = "Outgoing voice call";
 
 /* Header title for bank payment details screen */
 "PAYMENT_DETAILS_BANK_TITLE" = "银行转账";
@@ -8073,6 +8076,9 @@
 
 /* View the story of a group or user */
 "VIEW_STORY" = "查看动态";
+
+/* Accessibility label for placing a voice call */
+"VOICE_CALL_LABEL" = "Voice Call";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "滑动取消";

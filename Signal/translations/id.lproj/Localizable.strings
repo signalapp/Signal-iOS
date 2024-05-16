@@ -67,9 +67,6 @@
 /* Users can request a report of their account data. This is the title on the screen where they do this. */
 "ACCOUNT_DATA_REPORT_TITLE" = "Data Akun Anda";
 
-/* Label for 'voice call' button in contact view. */
-"ACTION_AUDIO_CALL" = "Panggilan Signal";
-
 /* Label for 'invite' button in contact view. */
 "ACTION_INVITE" = "Undang gabung ke Signal";
 
@@ -81,6 +78,9 @@
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "Panggilan Video";
+
+/* Label for 'voice call' button in contact view. */
+"ACTION_VOICE_CALL" = "Signal Call";
 
 /* The title for the 'add group members' view. */
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "Tambahkan Anggota";
@@ -441,9 +441,6 @@
 
 /* A string indicating that an audio message is playing. */
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Pesan Audio";
-
-/* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Panggilan suara";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Pengeras Suara";
@@ -847,14 +844,14 @@
 /* Title for an action, either long-press context menu or swipe, offering to take the user to the chat associated with a call in the Calls Tab. */
 "CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "Buka Obrolan";
 
-/* Title for a long-press context menu action to join an audio call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE" = "Gabung Panggilan Audio";
-
 /* Title for a button offering to let the user join an ongoing call, associated with a call in the Calls Tab. */
 "CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "Bergabung";
 
 /* Title for a long-press context menu action to join a video call, triggered from a call in the Calls Tab. */
 "CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "Gabung Panggilan Video";
+
+/* Title for a long-press context menu action to join a voice call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_VOICE_CALL_ACTION_TITLE" = "Join Voice Call";
 
 /* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
 "CALLS_TAB_NO_MISSED_CALLS_LABEL" = "Tidak ada panggilan tidak terjawab";
@@ -880,11 +877,11 @@
 /* Title for a button allowing the user to select one or more calls, from the Calls Tab. */
 "CALLS_TAB_SELECT_CALLS_BUTTON_TITLE" = "Pilih";
 
-/* Title for a long-press context menu action to start an audio call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE" = "Panggilan Audio";
-
 /* Title for a long-press context menu action to start a video call, triggered from a call in the Calls Tab. */
 "CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "Panggilan Video";
+
+/* Title for a long-press context menu action to start a voice call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_VOICE_CALL_ACTION_TITLE" = "Voice Call";
 
 /* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
 "CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "Info";
@@ -1381,9 +1378,6 @@
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Pilih siapa yang dapat menyunting nama grup, foto, deskripsi, dan penghitung waktu penghilangan pesan.";
 
-/* Button to start a audio call */
-"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "suara";
-
 /* Footer string for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "Dapatkan lencana pada profil Anda dengan mendukung Signal. Ketuk pada lencana untuk mempelajari lebih lanjut.";
 
@@ -1396,23 +1390,23 @@
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "Blokir Pengguna";
 
-/* A label indicating that a call was an incoming audio call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL" = "Panggilan suara masuk";
-
 /* A label indicating that a call was an incoming video call */
 "CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "Panggilan video masuk";
 
-/* A label indicating that a call was an missed audio call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL" = "Panggilan suara tidak terjawab";
+/* A label indicating that a call was an incoming voice call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VOICE_CALL" = "Incoming voice call";
 
 /* A label indicating that a call was an missed video call */
 "CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "Panggilan video tidak terjawab";
 
-/* A label indicating that a call was an outgoing audio call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL" = "Panggilan suara keluar";
+/* A label indicating that a call was an missed voice call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VOICE_CALL" = "Missed voice call";
 
 /* A label indicating that a call was an outgoing video call */
 "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "Panggilan video keluar";
+
+/* A label indicating that a call was an outgoing voice call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VOICE_CALL" = "Outgoing voice call";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Sunting Informasi Grup";
@@ -1554,6 +1548,9 @@
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Detail Kontak";
+
+/* Button to start a voice call */
+"CONVERSATION_SETTINGS_VOICE_CALL_BUTTON" = "voice";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Tambah Kontak";
@@ -1739,10 +1736,10 @@
 "DEBUG_LOG_INFO_BUTTON" = "Informasi tentang catatan awakutu";
 
 /* info message text in conversation view */
-"DECLINED_AUDIO_CALL" = "Anda menolak panggilan suara";
+"DECLINED_VIDEO_CALL" = "Anda menolak panggilan video";
 
 /* info message text in conversation view */
-"DECLINED_VIDEO_CALL" = "Anda menolak panggilan video";
+"DECLINED_VOICE_CALL" = "You declined a voice call";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Hapus Akun";
@@ -2824,6 +2821,15 @@
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "Tinggalkan Panggilan";
 
+/* Title for the section of the group call member list which displays the list of all members in the call. */
+"GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "In Call";
+
+/* Title for the section of the group call member list which displays the list of members with their hand raised. */
+"GROUP_CALL_MEMBER_LIST_RAISED_HANDS_SECTION_HEADER" = "Raised Hands";
+
+/* A count of members in a given group call member list section, displayed after the header. */
+"GROUP_CALL_MEMBER_LIST_SECTION_HEADER_MEMBER_COUNT" = "(%1$d)";
+
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Tidak dapat menerima audio dan video dari %1$@";
 
@@ -2835,9 +2841,6 @@
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "Tidak ada orang lain di sini";
-
-/* Text explaining to the user that nobody has joined this call yet. */
-"GROUP_CALL_NOBODY_IS_IN_YET" = "Belum ada orang dalam panggilan ini.";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
 "GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%1$@ bergabung dalam panggilan";
@@ -3611,10 +3614,10 @@
 "INBOX_VIEW_EMPTY_INBOX" = "Belum ada obrolan.\nMulailah dengan mengirim pesan ke seorang teman.";
 
 /* info message text in conversation view */
-"INCOMING_AUDIO_CALL" = "Panggilan suara masuk";
+"INCOMING_VIDEO_CALL" = "Panggilan video masuk";
 
 /* info message text in conversation view */
-"INCOMING_VIDEO_CALL" = "Panggilan video masuk";
+"INCOMING_VOICE_CALL" = "Incoming voice call";
 
 /* Indicates that a previously-removed recipient has been added back to the current user's contacts. */
 "INFO_MESSAGE_CONTACT_REINSTATED" = "Orang ini telah ditambahkan kembali ke daftar kontak Signal.";
@@ -4261,9 +4264,6 @@
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Pesan baru";
 
-/* info message text in conversation view */
-"MISSED_AUDIO_CALL" = "Panggilan suara tidak terjawab";
-
 /* info message text in conversation view for when a call was dropped because the contact is blocked in iOS settings */
 "MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "Panggilan tak terjawab dari kontak yang diblokir di pengaturan telepon";
 
@@ -4284,6 +4284,9 @@
 
 /* info message text in conversation view */
 "MISSED_VIDEO_CALL" = "Panggilan video tidak terjawab";
+
+/* info message text in conversation view */
+"MISSED_VOICE_CALL" = "Missed voice call";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "Anda dapat mengaktifkan akses kamera pada Pengaturan iOS untuk melakukan panggilan video di Signal.";
@@ -4363,9 +4366,6 @@
 /* String representing both wifi and cellular interfaces */
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi dan Seluler";
 
-/* Title for a long-press context menu action to start an audio call, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "Panggilan Audio";
-
 /* Accessibility hint describing the action of the new call button on the Calls Tab */
 "NEW_CALL_HINT" = "Pilih kontak atau grup untuk memulai panggilan baru.";
 
@@ -4380,6 +4380,9 @@
 
 /* Title for a long-press context menu action to start a video call, triggered from a recipient in the New Call contact picker */
 "NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Panggilan Video";
+
+/* Title for a long-press context menu action to start a voice call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_VOICE_CALL_ACTION_TITLE" = "Voice Call";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Temukan lewat Nomor Telepon";
@@ -4736,13 +4739,10 @@
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Perbarui Signal untuk terus menggunakan pembayaran. Saldo Anda mungkin belum diperbarui.";
 
 /* info message text in conversation view */
-"OUTGOING_AUDIO_CALL" = "Panggilan suara keluar";
-
-/* info message text in conversation view */
-"OUTGOING_MISSED_AUDIO_CALL" = "Panggilan suara tidak terjawab";
-
-/* info message text in conversation view */
 "OUTGOING_MISSED_VIDEO_CALL" = "Panggilan video tidak terjawab";
+
+/* info message text in conversation view */
+"OUTGOING_MISSED_VOICE_CALL" = "Unanswered voice call";
 
 /* Button for action sheet shown when device transfer completes; quits the Signal app immediately (does not automatically relaunch, but the user may choose to relaunch). */
 "OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION" = "Keluar Signal";
@@ -4755,6 +4755,9 @@
 
 /* info message text in conversation view */
 "OUTGOING_VIDEO_CALL" = "Panggilan video keluar";
+
+/* info message text in conversation view */
+"OUTGOING_VOICE_CALL" = "Outgoing voice call";
 
 /* Header title for bank payment details screen */
 "PAYMENT_DETAILS_BANK_TITLE" = "Transfer Bank";
@@ -8073,6 +8076,9 @@
 
 /* View the story of a group or user */
 "VIEW_STORY" = "Lihat Cerita";
+
+/* Accessibility label for placing a voice call */
+"VOICE_CALL_LABEL" = "Voice Call";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Geser untuk membatalkan";

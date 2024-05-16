@@ -67,9 +67,6 @@
 /* Users can request a report of their account data. This is the title on the screen where they do this. */
 "ACCOUNT_DATA_REPORT_TITLE" = "તમારા એકાઉન્ટના ડેટા";
 
-/* Label for 'voice call' button in contact view. */
-"ACTION_AUDIO_CALL" = "Signal કૉલ";
-
 /* Label for 'invite' button in contact view. */
 "ACTION_INVITE" = "Signal માટે આમંત્રણ આપો";
 
@@ -81,6 +78,9 @@
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "વિડિયો કૉલ";
+
+/* Label for 'voice call' button in contact view. */
+"ACTION_VOICE_CALL" = "Signal Call";
 
 /* The title for the 'add group members' view. */
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "સભ્યો ઉમેરો";
@@ -441,9 +441,6 @@
 
 /* A string indicating that an audio message is playing. */
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "ઓડિયો મેસેજ";
-
-/* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "વૉઈસ કૉલ";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "સ્પીકર";
@@ -847,14 +844,14 @@
 /* Title for an action, either long-press context menu or swipe, offering to take the user to the chat associated with a call in the Calls Tab. */
 "CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "ચેટ પર જાઓ";
 
-/* Title for a long-press context menu action to join an audio call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE" = "ઓડિયો કૉલમાં જોડાઓ";
-
 /* Title for a button offering to let the user join an ongoing call, associated with a call in the Calls Tab. */
 "CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "જોડાઓ";
 
 /* Title for a long-press context menu action to join a video call, triggered from a call in the Calls Tab. */
 "CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "વીડિયો કૉલમાં જોડાઓ";
+
+/* Title for a long-press context menu action to join a voice call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_VOICE_CALL_ACTION_TITLE" = "Join Voice Call";
 
 /* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
 "CALLS_TAB_NO_MISSED_CALLS_LABEL" = "કોઈ મિસ્ડ કૉલ નથી";
@@ -880,11 +877,11 @@
 /* Title for a button allowing the user to select one or more calls, from the Calls Tab. */
 "CALLS_TAB_SELECT_CALLS_BUTTON_TITLE" = "પસંદ કરો";
 
-/* Title for a long-press context menu action to start an audio call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE" = "ઓડિયો કૉલ";
-
 /* Title for a long-press context menu action to start a video call, triggered from a call in the Calls Tab. */
 "CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "વિડિયો કૉલ";
+
+/* Title for a long-press context menu action to start a voice call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_VOICE_CALL_ACTION_TITLE" = "Voice Call";
 
 /* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
 "CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "માહિતી";
@@ -1381,9 +1378,6 @@
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "ગ્રુપનું નામ, ફોટો, ડિસ્ક્રિપ્શન, અને મેસેજ અદ્રશ્ય થવાના ટાઇમરને કોણ સંપાદિત કરી શકે તે પસંદ કરો.";
 
-/* Button to start a audio call */
-"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "ઓડિયો";
-
 /* Footer string for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "Signalને સમર્થન આપીને તમારી પ્રોફાઇલ માટે બૅજ મેળવો. વધુ જાણવા માટે બૅજ પર ટૅપ કરો.";
 
@@ -1396,23 +1390,23 @@
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "ઉપયોગકર્તાને બ્લૉક કરો";
 
-/* A label indicating that a call was an incoming audio call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL" = "ઈનકમિંગ ઓડિયો કૉલ";
-
 /* A label indicating that a call was an incoming video call */
 "CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "ઇનકમિંગ વિડિયો કૉલ";
 
-/* A label indicating that a call was an missed audio call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL" = "મિસ્ડ ઓડિયો કૉલ";
+/* A label indicating that a call was an incoming voice call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VOICE_CALL" = "Incoming voice call";
 
 /* A label indicating that a call was an missed video call */
 "CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "મિસ્ડ વિડિયો કૉલ";
 
-/* A label indicating that a call was an outgoing audio call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL" = "આઉટગોઇંગ ઓડિયો કૉલ";
+/* A label indicating that a call was an missed voice call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VOICE_CALL" = "Missed voice call";
 
 /* A label indicating that a call was an outgoing video call */
 "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "આઉટગોઇંગ વિડિયો કૉલ";
+
+/* A label indicating that a call was an outgoing voice call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VOICE_CALL" = "Outgoing voice call";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "ગ્રુપની માહિતીને સંપાદિત કરો";
@@ -1554,6 +1548,9 @@
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "સંપર્કની વિગતો";
+
+/* Button to start a voice call */
+"CONVERSATION_SETTINGS_VOICE_CALL_BUTTON" = "voice";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "સંપર્કોમાં ઉમેરો";
@@ -1739,10 +1736,10 @@
 "DEBUG_LOG_INFO_BUTTON" = "ડિબગ લૉગ વિશે માહિતી";
 
 /* info message text in conversation view */
-"DECLINED_AUDIO_CALL" = "તમે વૉઇસ કૉલ નકાર્યો";
+"DECLINED_VIDEO_CALL" = "તમે વિડિયો કૉલ નકાર્યો";
 
 /* info message text in conversation view */
-"DECLINED_VIDEO_CALL" = "તમે વિડિયો કૉલ નકાર્યો";
+"DECLINED_VOICE_CALL" = "You declined a voice call";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "એકાઉન્ટ ડિલીટ કરો";
@@ -2824,6 +2821,15 @@
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "કૉલ છોડી દો";
 
+/* Title for the section of the group call member list which displays the list of all members in the call. */
+"GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "In Call";
+
+/* Title for the section of the group call member list which displays the list of members with their hand raised. */
+"GROUP_CALL_MEMBER_LIST_RAISED_HANDS_SECTION_HEADER" = "Raised Hands";
+
+/* A count of members in a given group call member list section, displayed after the header. */
+"GROUP_CALL_MEMBER_LIST_SECTION_HEADER_MEMBER_COUNT" = "(%1$d)";
+
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "%1$@ તરફથી ઓડિયો અને વિડિયો પ્રાપ્ત કરી શકતા નથી";
 
@@ -2835,9 +2841,6 @@
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "બીજું કોઈ અહીં નથી";
-
-/* Text explaining to the user that nobody has joined this call yet. */
-"GROUP_CALL_NOBODY_IS_IN_YET" = "હજી સુધી કોઈ આ કૉલમાં નથી.";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
 "GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%1$@ કૉલમાં જોડાયા";
@@ -3611,10 +3614,10 @@
 "INBOX_VIEW_EMPTY_INBOX" = "હજી સુધી કોઈ ચેટ નથી.\nમિત્રને મેસેજ કરીને શરૂઆત કરો.";
 
 /* info message text in conversation view */
-"INCOMING_AUDIO_CALL" = "ઇનકમિંગ વૉઇસ કૉલ";
+"INCOMING_VIDEO_CALL" = "ઇનકમિંગ વિડિયો કૉલ";
 
 /* info message text in conversation view */
-"INCOMING_VIDEO_CALL" = "ઇનકમિંગ વિડિયો કૉલ";
+"INCOMING_VOICE_CALL" = "Incoming voice call";
 
 /* Indicates that a previously-removed recipient has been added back to the current user's contacts. */
 "INFO_MESSAGE_CONTACT_REINSTATED" = "આ વ્યક્તિ તમારી Signal સંપર્ક સૂચિમાં ફરીથી ઉમેરવામાં આવી છે.";
@@ -4261,9 +4264,6 @@
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "નવા મેસેજ";
 
-/* info message text in conversation view */
-"MISSED_AUDIO_CALL" = "મિસ્ડ વૉઇસ કૉલ";
-
 /* info message text in conversation view for when a call was dropped because the contact is blocked in iOS settings */
 "MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "ફોન સેટિંગ્સમાં બ્લૉક કરવામાં આવેલ સંપર્ક તરફથી મિસ્ડ કોલ";
 
@@ -4284,6 +4284,9 @@
 
 /* info message text in conversation view */
 "MISSED_VIDEO_CALL" = "મિસ્ડ વિડિયો કૉલ";
+
+/* info message text in conversation view */
+"MISSED_VOICE_CALL" = "Missed voice call";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "તમે Signal માં વીડિયો કૉલ કરવા માટે iOS સેટિંગ્સ ઍપમાં કૅમેરાના ઍક્સેસને સક્ષમ કરી શકો છો.";
@@ -4363,9 +4366,6 @@
 /* String representing both wifi and cellular interfaces */
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi અને સેલ્યુલર";
 
-/* Title for a long-press context menu action to start an audio call, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "ઓડિયો કૉલ";
-
 /* Accessibility hint describing the action of the new call button on the Calls Tab */
 "NEW_CALL_HINT" = "નવો કૉલ શરૂ કરવા માટે કોઈ સંપર્ક અથવા ગ્રૂપ પસંદ કરો.";
 
@@ -4380,6 +4380,9 @@
 
 /* Title for a long-press context menu action to start a video call, triggered from a recipient in the New Call contact picker */
 "NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "વિડિયો કૉલ";
+
+/* Title for a long-press context menu action to start a voice call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_VOICE_CALL_ACTION_TITLE" = "Voice Call";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "ફોન નંબર દ્વારા શોધો";
@@ -4736,13 +4739,10 @@
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "ચુકવણીઓનો ઉપયોગ કરતાં રહેવા માટે Signalને અપડેટ કરો. તમારું બેલેન્સ અપ-ટૂ-ડેટ ન પણ હોઈ શકે.";
 
 /* info message text in conversation view */
-"OUTGOING_AUDIO_CALL" = "આઉટગોઇંગ વૉઇસ કૉલ";
-
-/* info message text in conversation view */
-"OUTGOING_MISSED_AUDIO_CALL" = "ન ઉપાડેલો વૉઇસ કૉલ";
-
-/* info message text in conversation view */
 "OUTGOING_MISSED_VIDEO_CALL" = "ન ઉપાડેલો વિડિયો કૉલ";
+
+/* info message text in conversation view */
+"OUTGOING_MISSED_VOICE_CALL" = "Unanswered voice call";
 
 /* Button for action sheet shown when device transfer completes; quits the Signal app immediately (does not automatically relaunch, but the user may choose to relaunch). */
 "OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION" = "Signalમાંથી બહાર નીકળો";
@@ -4755,6 +4755,9 @@
 
 /* info message text in conversation view */
 "OUTGOING_VIDEO_CALL" = "આઉટગોઇંગ વિડિયો કૉલ";
+
+/* info message text in conversation view */
+"OUTGOING_VOICE_CALL" = "Outgoing voice call";
 
 /* Header title for bank payment details screen */
 "PAYMENT_DETAILS_BANK_TITLE" = "બેંક ટ્રાન્સફર";
@@ -8073,6 +8076,9 @@
 
 /* View the story of a group or user */
 "VIEW_STORY" = "સ્ટોરી જુઓ";
+
+/* Accessibility label for placing a voice call */
+"VOICE_CALL_LABEL" = "Voice Call";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "રદ કરવા માટે સ્લાઇડ કરો";

@@ -67,9 +67,6 @@
 /* Users can request a report of their account data. This is the title on the screen where they do this. */
 "ACCOUNT_DATA_REPORT_TITLE" = "Données du compte";
 
-/* Label for 'voice call' button in contact view. */
-"ACTION_AUDIO_CALL" = "Appel Signal";
-
 /* Label for 'invite' button in contact view. */
 "ACTION_INVITE" = "Inviter à Signal";
 
@@ -81,6 +78,9 @@
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "Appel vidéo";
+
+/* Label for 'voice call' button in contact view. */
+"ACTION_VOICE_CALL" = "Signal Call";
 
 /* The title for the 'add group members' view. */
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "Ajouter des membres";
@@ -441,9 +441,6 @@
 
 /* A string indicating that an audio message is playing. */
 "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Message vocal";
-
-/* Accessibility label for placing an audio call */
-"AUDIO_CALL_LABEL" = "Appel vocal";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Haut-parleur";
@@ -847,14 +844,14 @@
 /* Title for an action, either long-press context menu or swipe, offering to take the user to the chat associated with a call in the Calls Tab. */
 "CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "Afficher la conversation";
 
-/* Title for a long-press context menu action to join an audio call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_JOIN_AUDIO_CALL_ACTION_TITLE" = "Participer à l’appel vocal";
-
 /* Title for a button offering to let the user join an ongoing call, associated with a call in the Calls Tab. */
 "CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "Participer";
 
 /* Title for a long-press context menu action to join a video call, triggered from a call in the Calls Tab. */
 "CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "Participer à l’appel vidéo";
+
+/* Title for a long-press context menu action to join a voice call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_JOIN_VOICE_CALL_ACTION_TITLE" = "Join Voice Call";
 
 /* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
 "CALLS_TAB_NO_MISSED_CALLS_LABEL" = "Aucun appel manqué";
@@ -880,11 +877,11 @@
 /* Title for a button allowing the user to select one or more calls, from the Calls Tab. */
 "CALLS_TAB_SELECT_CALLS_BUTTON_TITLE" = "Sélectionner";
 
-/* Title for a long-press context menu action to start an audio call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_START_AUDIO_CALL_ACTION_TITLE" = "Appel vocal";
-
 /* Title for a long-press context menu action to start a video call, triggered from a call in the Calls Tab. */
 "CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "Appel vidéo";
+
+/* Title for a long-press context menu action to start a voice call, triggered from a call in the Calls Tab. */
+"CALLS_TAB_START_VOICE_CALL_ACTION_TITLE" = "Voice Call";
 
 /* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
 "CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "Info";
@@ -1381,9 +1378,6 @@
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choisissez qui peut modifier le nom, la photo et la description du groupe, ou encore le délai avant disparition des messages éphémères.";
 
-/* Button to start a audio call */
-"CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "audio";
-
 /* Footer string for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "Obtenez des macarons pour votre profil en soutenant Signal. Touchez un macaron pour en savoir plus.";
 
@@ -1396,23 +1390,23 @@
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "Bloquer l’utilisateur";
 
-/* A label indicating that a call was an incoming audio call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_AUDIO_CALL" = "Appel vocal entrant";
-
 /* A label indicating that a call was an incoming video call */
 "CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "Appel vidéo entrant";
 
-/* A label indicating that a call was an missed audio call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_AUDIO_CALL" = "Appel vocal manqué";
+/* A label indicating that a call was an incoming voice call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VOICE_CALL" = "Incoming voice call";
 
 /* A label indicating that a call was an missed video call */
 "CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "Appel vidéo manqué";
 
-/* A label indicating that a call was an outgoing audio call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_AUDIO_CALL" = "Appel vocal sortant";
+/* A label indicating that a call was an missed voice call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VOICE_CALL" = "Missed voice call";
 
 /* A label indicating that a call was an outgoing video call */
 "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "Appel vidéo sortant";
+
+/* A label indicating that a call was an outgoing voice call */
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VOICE_CALL" = "Outgoing voice call";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Modifier les informations du groupe";
@@ -1554,6 +1548,9 @@
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Détails du contact";
+
+/* Button to start a voice call */
+"CONVERSATION_SETTINGS_VOICE_CALL_BUTTON" = "voice";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Ajouter aux contacts";
@@ -1739,10 +1736,10 @@
 "DEBUG_LOG_INFO_BUTTON" = "Informations sur les journaux de débogage";
 
 /* info message text in conversation view */
-"DECLINED_AUDIO_CALL" = "Vous avez refusé un appel vocal";
+"DECLINED_VIDEO_CALL" = "Vous avez refusé un appel vidéo";
 
 /* info message text in conversation view */
-"DECLINED_VIDEO_CALL" = "Vous avez refusé un appel vidéo";
+"DECLINED_VOICE_CALL" = "You declined a voice call";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Supprimer le compte";
@@ -2824,6 +2821,15 @@
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "Quitter l’appel";
 
+/* Title for the section of the group call member list which displays the list of all members in the call. */
+"GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "In Call";
+
+/* Title for the section of the group call member list which displays the list of members with their hand raised. */
+"GROUP_CALL_MEMBER_LIST_RAISED_HANDS_SECTION_HEADER" = "Raised Hands";
+
+/* A count of members in a given group call member list section, displayed after the header. */
+"GROUP_CALL_MEMBER_LIST_SECTION_HEADER_MEMBER_COUNT" = "(%1$d)";
+
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Impossible de recevoir l’audio et la vidéo de %1$@";
 
@@ -2835,9 +2841,6 @@
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "Il n’y a personne d’autre ici";
-
-/* Text explaining to the user that nobody has joined this call yet. */
-"GROUP_CALL_NOBODY_IS_IN_YET" = "Il n’y a encore personne dans cet appel.";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
 "GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%1$@ s’est joint à l’appel";
@@ -3611,10 +3614,10 @@
 "INBOX_VIEW_EMPTY_INBOX" = "Aucune conversation pour le moment.\nPour commencer, envoyez un message à un ami.";
 
 /* info message text in conversation view */
-"INCOMING_AUDIO_CALL" = "Appel vocal entrant";
+"INCOMING_VIDEO_CALL" = "Appel vidéo entrant";
 
 /* info message text in conversation view */
-"INCOMING_VIDEO_CALL" = "Appel vidéo entrant";
+"INCOMING_VOICE_CALL" = "Incoming voice call";
 
 /* Indicates that a previously-removed recipient has been added back to the current user's contacts. */
 "INFO_MESSAGE_CONTACT_REINSTATED" = "Cette personne a été ajoutée de nouveau à votre liste de contacts.";
@@ -4261,9 +4264,6 @@
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Nouveaux messages";
 
-/* info message text in conversation view */
-"MISSED_AUDIO_CALL" = "Appel vocal manqué";
-
 /* info message text in conversation view for when a call was dropped because the contact is blocked in iOS settings */
 "MISSED_CALL_BLOCKED_SYSTEM_CONTACT" = "Appel manqué d’un contact bloqué dans les paramètres de votre téléphone";
 
@@ -4284,6 +4284,9 @@
 
 /* info message text in conversation view */
 "MISSED_VIDEO_CALL" = "Appel vidéo manqué";
+
+/* info message text in conversation view */
+"MISSED_VOICE_CALL" = "Missed voice call";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "Pour passer des appels vidéo avec Signal, accordez l’accès à l’appareil photo via l’appli Réglages d’iOS.";
@@ -4363,9 +4366,6 @@
 /* String representing both wifi and cellular interfaces */
 "NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi et cellulaire";
 
-/* Title for a long-press context menu action to start an audio call, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_AUDIO_CALL_ACTION_TITLE" = "Appel vocal";
-
 /* Accessibility hint describing the action of the new call button on the Calls Tab */
 "NEW_CALL_HINT" = "Sélectionnez un contact ou un groupe à appeler.";
 
@@ -4380,6 +4380,9 @@
 
 /* Title for a long-press context menu action to start a video call, triggered from a recipient in the New Call contact picker */
 "NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Appel vidéo";
+
+/* Title for a long-press context menu action to start a voice call, triggered from a recipient in the New Call contact picker */
+"NEW_CALL_VOICE_CALL_ACTION_TITLE" = "Voice Call";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Rechercher par numéro de téléphone";
@@ -4550,13 +4553,13 @@
 "NOTIFICATIONS_ERROR_TITLE" = "Impossible d’afficher les notifications";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Les actions sont « Marquer comme lu », « Répondre » et « Rappeler ».";
+"NOTIFICATIONS_FOOTER_WARNING" = "Les actions possibles sont « Marquer comme lu », « Répondre » et « Rappeler ».";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "Ni nom ni contenu";
+"NOTIFICATIONS_NONE" = "Ni nom, ni contenu";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "Jouer pendant que l’appli est ouverte";
+"NOTIFICATIONS_SECTION_INAPP" = "Émettre des sons lorsque l’appli est ouverte";
 
 /* Label for settings UI that allows user to add a new notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Ajouter un son personnalisé…";
@@ -4736,13 +4739,10 @@
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Mettez Signal à jour pour continuer à utiliser les paiements. Il se peut que votre solde ne soit pas à jour.";
 
 /* info message text in conversation view */
-"OUTGOING_AUDIO_CALL" = "Appel vocal sortant";
-
-/* info message text in conversation view */
-"OUTGOING_MISSED_AUDIO_CALL" = "Appel vocal sans réponse";
-
-/* info message text in conversation view */
 "OUTGOING_MISSED_VIDEO_CALL" = "Appel vidéo sans réponse";
+
+/* info message text in conversation view */
+"OUTGOING_MISSED_VOICE_CALL" = "Unanswered voice call";
 
 /* Button for action sheet shown when device transfer completes; quits the Signal app immediately (does not automatically relaunch, but the user may choose to relaunch). */
 "OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION" = "Se déconnecter de Signal";
@@ -4755,6 +4755,9 @@
 
 /* info message text in conversation view */
 "OUTGOING_VIDEO_CALL" = "Appel vidéo sortant";
+
+/* info message text in conversation view */
+"OUTGOING_VOICE_CALL" = "Outgoing voice call";
 
 /* Header title for bank payment details screen */
 "PAYMENT_DETAILS_BANK_TITLE" = "Virement bancaire";
@@ -6401,7 +6404,7 @@
 "SETTINGS_ITEM_COLOR_AND_WALLPAPER" = "Couleur et fond d’écran des conversations";
 
 /* Label for settings view that allows user to change the notification sound. */
-"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Son de message";
+"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Son des messages";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
 "SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Les conversations mises en sourdine restent archivées, même lorsque vous recevez un nouveau message.";
@@ -6449,16 +6452,16 @@
 "SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Inclure les messages en sourdine";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Pastille de comptage";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Pastille de notification";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Les notifications d’appels et de messages peuvent apparaître alors que votre téléphone est verrouillé.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Les notifications d’appel et de message peuvent s’afficher lorsque le téléphone est verrouillé.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Contenu des notifications";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact rejoint Signal";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Un contact rejoint Signal";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Me prévenir quand…";
@@ -8073,6 +8076,9 @@
 
 /* View the story of a group or user */
 "VIEW_STORY" = "Afficher la story";
+
+/* Accessibility label for placing a voice call */
+"VOICE_CALL_LABEL" = "Voice Call";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Faire glisser pour annuler";

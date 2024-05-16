@@ -349,22 +349,6 @@
 			<string>આ કૉલ માટે મહત્તમ સહભાગીઓની સંખ્યા %1$d થઈ ગઈ છે. પછીથી ફરીથી પ્રયાસ કરો.</string>
 		</dict>
 	</dict>
-	<key>GROUP_CALL_IN_THIS_CALL_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>આ કૉલમાં · %1$d વ્યક્તિ</string>
-			<key>other</key>
-			<string>આ કૉલમાં · %1$d લોકો</string>
-		</dict>
-	</dict>
 	<key>GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

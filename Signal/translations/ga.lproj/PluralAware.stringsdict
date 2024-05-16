@@ -481,28 +481,6 @@
 			<string>Tá uaslíon %1$d rannpháirtí bainte amach don ghlao seo. Triail arís ar ball.</string>
 		</dict>
 	</dict>
-	<key>GROUP_CALL_IN_THIS_CALL_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Sa ghlao seo · %1$d duine</string>
-			<key>two</key>
-			<string>Sa ghlao seo · %1$d dhuine</string>
-			<key>few</key>
-			<string>Sa ghlao seo · %1$d dhuine</string>
-			<key>many</key>
-			<string>Sa ghlao seo · %1$d nduine</string>
-			<key>other</key>
-			<string>Sa ghlao seo · %1$d duine</string>
-		</dict>
-	</dict>
 	<key>GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

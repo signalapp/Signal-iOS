@@ -349,22 +349,6 @@
 			<string>Έχει συμπληρωθεί ο μέγιστος αριθμός %1$d συμμετεχόντων για αυτήν την κλήση. Δοκίμασε ξανά αργότερα.</string>
 		</dict>
 	</dict>
-	<key>GROUP_CALL_IN_THIS_CALL_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Σε αυτή τη κλήση · %1$d άτομο</string>
-			<key>other</key>
-			<string>Σε αυτή τη κλήση · %1$d άτομα</string>
-		</dict>
-	</dict>
 	<key>GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

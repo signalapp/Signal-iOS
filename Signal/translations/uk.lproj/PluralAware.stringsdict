@@ -437,26 +437,6 @@
 			<string>Досягнута максимальна кількість учасників (%1$d) для цього виклику. Спробуйте пізніше.</string>
 		</dict>
 	</dict>
-	<key>GROUP_CALL_IN_THIS_CALL_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>У цьому виклику · %1$d людина</string>
-			<key>few</key>
-			<string>У цьому виклику · %1$d людини</string>
-			<key>many</key>
-			<string>У цьому виклику · %1$d людей</string>
-			<key>other</key>
-			<string>У цьому виклику · %1$d людини</string>
-		</dict>
-	</dict>
 	<key>GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

@@ -437,26 +437,6 @@
 			<string>Для гэтага званка дасягнута максімальная колькасць удзельнікаў: %1$d. Паўтарыце спробу пазней.</string>
 		</dict>
 	</dict>
-	<key>GROUP_CALL_IN_THIS_CALL_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>У гэтым званку · %1$d асоба</string>
-			<key>few</key>
-			<string>У гэтым званку · %1$d асобы</string>
-			<key>many</key>
-			<string>У гэтым званку · %1$d асоб</string>
-			<key>other</key>
-			<string>У гэтым званку · %1$d асоб</string>
-		</dict>
-	</dict>
 	<key>GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
