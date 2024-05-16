@@ -91,7 +91,7 @@ extension OWSDisappearingMessagesConfiguration {
     class func fromRecord(_ record: DisappearingMessagesConfigurationRecord) throws -> OWSDisappearingMessagesConfiguration {
 
         guard let recordId = record.id else {
-            throw SDSError.invalidValue
+            throw SDSError.invalidValue()
         }
 
         switch record.recordType {
@@ -108,7 +108,7 @@ extension OWSDisappearingMessagesConfiguration {
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
-            throw SDSError.invalidValue
+            throw SDSError.invalidValue()
         }
     }
 }

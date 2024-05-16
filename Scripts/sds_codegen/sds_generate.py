@@ -553,7 +553,7 @@ class TypeInfo:
                     initializer_param_type,
                     value_expr,
                 ),
-                "   throw SDSError.missingRequiredField",
+                "   throw SDSError.missingRequiredField()",
                 "}",
             ]
         elif is_optional and self._objc_type == "NSNumber *":
@@ -581,7 +581,7 @@ class TypeInfo:
                         interval_name,
                         value_expr,
                     ),
-                    "   throw SDSError.missingRequiredField",
+                    "   throw SDSError.missingRequiredField()",
                     "}",
                 ]
             elif is_optional:
@@ -1362,7 +1362,7 @@ extension %s {
         swift_body += """
 
         guard let recordId = record.id else {
-            throw SDSError.invalidValue
+            throw SDSError.invalidValue()
         }
 
         switch record.recordType {
@@ -1611,7 +1611,7 @@ extension %s {
 
         swift_body += """        default:
             owsFailDebug("Unexpected record type: \\(record.recordType)")
-            throw SDSError.invalidValue
+            throw SDSError.invalidValue()
 """
         swift_body += """        }
 """

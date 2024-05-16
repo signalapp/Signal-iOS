@@ -127,7 +127,7 @@ extension TSPaymentModel {
     class func fromRecord(_ record: PaymentModelRecord) throws -> TSPaymentModel {
 
         guard let recordId = record.id else {
-            throw SDSError.invalidValue
+            throw SDSError.invalidValue()
         }
 
         switch record.recordType {
@@ -170,7 +170,7 @@ extension TSPaymentModel {
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
-            throw SDSError.invalidValue
+            throw SDSError.invalidValue()
         }
     }
 }

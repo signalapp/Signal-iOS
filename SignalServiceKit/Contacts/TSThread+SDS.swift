@@ -154,7 +154,7 @@ extension TSThread {
     class func fromRecord(_ record: ThreadRecord) throws -> TSThread {
 
         guard let recordId = record.id else {
-            throw SDSError.invalidValue
+            throw SDSError.invalidValue()
         }
 
         switch record.recordType {
@@ -344,7 +344,7 @@ extension TSThread {
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
-            throw SDSError.invalidValue
+            throw SDSError.invalidValue()
         }
     }
 }

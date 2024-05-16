@@ -216,7 +216,7 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
         let decodedRecordType = try container.decode(UInt.self, forKey: .recordType)
         guard decodedRecordType == Self.recordType else {
             owsFailDebug("Unexpected record type: \(decodedRecordType)")
-            throw SDSError.invalidValue
+            throw SDSError.invalidValue()
         }
 
         id = try container.decodeIfPresent(RowId.self, forKey: .id)

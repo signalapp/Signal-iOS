@@ -25,10 +25,16 @@ public class SDSDeserialization {
 
     // MARK: - Data
 
-    public class func required<T>(_ value: T?, name: String) throws -> T {
+    public class func required<T>(
+        _ value: T?,
+        name: String,
+        _ file: StaticString = #file,
+        _ function: StaticString = #function,
+        _ line: UInt = #line
+    ) throws -> T {
         guard let value = value else {
             owsFailDebug("Missing required field: \(name).")
-            throw SDSError.missingRequiredField
+            throw SDSError.missingRequiredField(file, function, line)
         }
         return value
     }
@@ -76,17 +82,23 @@ public class SDSDeserialization {
         return result
     }
 
-    public class func unarchive<T: SDSSwiftSerializable>(_ encoded: Data?, name: String) throws -> T {
+    public class func unarchive<T: SDSSwiftSerializable>(
+        _ encoded: Data?,
+        name: String,
+        _ file: StaticString = #file,
+        _ function: StaticString = #function,
+        _ line: UInt = #line
+    ) throws -> T {
         guard let encoded = encoded else {
             owsFailDebug("Missing required field: \(name).")
-            throw SDSError.missingRequiredField
+            throw SDSError.missingRequiredField(file, function, line)
         }
 
         do {
             return try JSONDecoder().decode(T.self, from: encoded)
         } catch {
             owsFailDebug("Read failed[\(name)]: \(error).")
-            throw SDSError.invalidValue
+            throw SDSError.invalidValue(file, function, line)
         }
     }
 
@@ -97,21 +109,27 @@ public class SDSDeserialization {
         return try unarchive(encoded, name: name)
     }
 
-    public class func unarchive<T: Any>(_ encoded: Data?, name: String) throws -> T {
+    public class func unarchive<T: Any>(
+        _ encoded: Data?,
+        name: String,
+        _ file: StaticString = #file,
+        _ function: StaticString = #function,
+        _ line: UInt = #line
+    ) throws -> T {
         guard let encoded = encoded else {
             owsFailDebug("Missing required field: \(name).")
-            throw SDSError.missingRequiredField
+            throw SDSError.missingRequiredField(file, function, line)
         }
 
         do {
             guard let decoded = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(encoded) as? T else {
                 owsFailDebug("Invalid value: \(name).")
-                throw SDSError.invalidValue
+                throw SDSError.invalidValue(file, function, line)
             }
             return decoded
         } catch {
             owsFailDebug("Read failed[\(name)]: \(error).")
-            throw SDSError.invalidValue
+            throw SDSError.invalidValue(file, function, line)
         }
     }
 }

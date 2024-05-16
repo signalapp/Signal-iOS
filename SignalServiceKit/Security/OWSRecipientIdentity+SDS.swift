@@ -100,7 +100,7 @@ extension OWSRecipientIdentity {
     class func fromRecord(_ record: RecipientIdentityRecord) throws -> OWSRecipientIdentity {
 
         guard let recordId = record.id else {
-            throw SDSError.invalidValue
+            throw SDSError.invalidValue()
         }
 
         switch record.recordType {
@@ -124,7 +124,7 @@ extension OWSRecipientIdentity {
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
-            throw SDSError.invalidValue
+            throw SDSError.invalidValue()
         }
     }
 }

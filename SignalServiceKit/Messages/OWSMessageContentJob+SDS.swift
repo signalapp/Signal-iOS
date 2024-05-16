@@ -100,7 +100,7 @@ extension OWSMessageContentJob {
     class func fromRecord(_ record: MessageContentJobRecord) throws -> OWSMessageContentJob {
 
         guard let recordId = record.id else {
-            throw SDSError.invalidValue
+            throw SDSError.invalidValue()
         }
 
         switch record.recordType {
@@ -124,7 +124,7 @@ extension OWSMessageContentJob {
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
-            throw SDSError.invalidValue
+            throw SDSError.invalidValue()
         }
     }
 }

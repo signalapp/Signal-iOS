@@ -7,35 +7,62 @@ import Foundation
 import GRDB
 import SignalCoreKit
 
-// TODO: Perhaps we should replace all of these with assertionError.
-@objc
-public enum SDSError: Int, Error {
-    // TODO: We may want to add a description parameter to these errors.
-    case invalidResult
-    case missingRequiredField
-    case unexpectedType
-    case invalidValue
-    case invalidTransaction
-}
+public struct SDSError: Error, CustomStringConvertible {
+    private let descriptor: StaticString
+    private let file: StaticString
+    private let function: StaticString
+    private let line: UInt
 
-// MARK: -
+    private init(descriptor: StaticString, file: StaticString, function: StaticString, line: UInt) {
+        self.descriptor = descriptor
+        self.file = file
+        self.function = function
+        self.line = line
+    }
 
-extension SDSError: CustomStringConvertible {
     public var description: String {
-        switch self {
-        case .invalidResult:
-            return "SDSError.invalidResult"
-        case .missingRequiredField:
-            return "SDSError.missingRequiredField"
-        case .unexpectedType:
-            return "SDSError.unexpectedType"
-        case .invalidValue:
-            return "SDSError.invalidValue"
-        case .invalidTransaction:
-            return "SDSError.invalidTransaction"
-        @unknown default:
-            owsFailDebug("unexpected value: \(self.rawValue)")
-            return "SDSError.Unknown"
-        }
+        return "SDSError: \(descriptor) at \(file)#\(function):\(line)"
+    }
+
+    // MARK: -
+
+    public static func missingRequiredField(
+        _ file: StaticString = #file,
+        _ function: StaticString = #function,
+        _ line: UInt = #line
+    ) -> SDSError {
+        return SDSError(descriptor: #function, file: file, function: function, line: line)
+    }
+
+    public static func unexpectedType(
+        _ file: StaticString = #file,
+        _ function: StaticString = #function,
+        _ line: UInt = #line
+    ) -> SDSError {
+        return SDSError(descriptor: #function, file: file, function: function, line: line)
+    }
+
+    public static func invalidResult(
+        _ file: StaticString = #file,
+        _ function: StaticString = #function,
+        _ line: UInt = #line
+    ) -> SDSError {
+        return SDSError(descriptor: #function, file: file, function: function, line: line)
+    }
+
+    public static func invalidValue(
+        _ file: StaticString = #file,
+        _ function: StaticString = #function,
+        _ line: UInt = #line
+    ) -> SDSError {
+        return SDSError(descriptor: #function, file: file, function: function, line: line)
+    }
+
+    public static func invalidTransaction(
+        _ file: StaticString = #file,
+        _ function: StaticString = #function,
+        _ line: UInt = #line
+    ) -> SDSError {
+        return SDSError(descriptor: #function, file: file, function: function, line: line)
     }
 }

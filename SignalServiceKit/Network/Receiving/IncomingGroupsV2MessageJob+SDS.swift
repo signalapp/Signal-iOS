@@ -103,7 +103,7 @@ extension IncomingGroupsV2MessageJob {
     class func fromRecord(_ record: IncomingGroupsV2MessageJobRecord) throws -> IncomingGroupsV2MessageJob {
 
         guard let recordId = record.id else {
-            throw SDSError.invalidValue
+            throw SDSError.invalidValue()
         }
 
         switch record.recordType {
@@ -129,7 +129,7 @@ extension IncomingGroupsV2MessageJob {
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
-            throw SDSError.invalidValue
+            throw SDSError.invalidValue()
         }
     }
 }

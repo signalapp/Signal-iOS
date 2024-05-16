@@ -17,7 +17,6 @@
     "OWSAddToContactsOfferMessage": 25,
     "OWSAddToProfileWhitelistOfferMessage": 7,
     "OWSBackupFragment": 32,
-    "OWSBroadcastMediaMessageJobRecord": 58,
     "OWSContactOffersInteraction": 22,
     "OWSContactQuery": 57,
     "OWSDatabaseMigration": 46,
@@ -75,5 +74,6 @@
     "TSRecipientReadReceipt": 12,
     "TSThread": 2,
     "TSUnreadIndicatorInteraction": 4,
-    "TestModel": 59
+    "TestModel": 59,
+    "tsAttachmentMultisendJobRecord": 58
 }

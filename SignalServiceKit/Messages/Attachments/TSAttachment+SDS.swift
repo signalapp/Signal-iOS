@@ -169,7 +169,7 @@ extension TSAttachment {
     class func fromRecord(_ record: AttachmentRecord) throws -> TSAttachment {
 
         guard let recordId = record.id else {
-            throw SDSError.invalidValue
+            throw SDSError.invalidValue()
         }
 
         switch record.recordType {
@@ -231,7 +231,7 @@ extension TSAttachment {
             let mediaSize: CGSize = try SDSDeserialization.unarchive(mediaSizeSerialized, name: "mediaSize")
             let pointerType: UInt = try SDSDeserialization.required(record.pointerType, name: "pointerType")
             guard let state: TSAttachmentPointerState = record.state else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
 
             return TSAttachmentPointer(grdbId: recordId,
@@ -277,7 +277,7 @@ extension TSAttachment {
             let cachedImageHeight: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.cachedImageHeight, name: "cachedImageHeight", conversion: { NSNumber(value: $0) })
             let cachedImageWidth: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.cachedImageWidth, name: "cachedImageWidth", conversion: { NSNumber(value: $0) })
             guard let creationTimestampInterval: Double = record.creationTimestamp else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let creationTimestamp: Date = SDSDeserialization.requiredDoubleAsDate(creationTimestampInterval, name: "creationTimestamp")
             let digest: Data? = SDSDeserialization.optionalData(record.digest, name: "digest")
@@ -316,7 +316,7 @@ extension TSAttachment {
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
-            throw SDSError.invalidValue
+            throw SDSError.invalidValue()
         }
     }
 }

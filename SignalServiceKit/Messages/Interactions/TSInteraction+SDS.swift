@@ -295,7 +295,7 @@ extension TSInteraction {
     class func fromRecord(_ record: InteractionRecord) throws -> TSInteraction {
 
         guard let recordId = record.id else {
-            throw SDSError.invalidValue
+            throw SDSError.invalidValue()
         }
 
         switch record.recordType {
@@ -314,7 +314,7 @@ extension TSInteraction {
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
             guard let editState: TSEditState = record.editState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
@@ -339,7 +339,7 @@ extension TSInteraction {
             let infoMessageUserInfoSerialized: Data? = record.infoMessageUserInfo
             let infoMessageUserInfo: [InfoMessageUserInfoKey: AnyObject]? = try SDSDeserialization.optionalUnarchive(infoMessageUserInfoSerialized, name: "infoMessageUserInfo")
             guard let messageType: TSInfoMessageType = record.messageType else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let serverGuid: String? = record.serverGuid
@@ -394,7 +394,7 @@ extension TSInteraction {
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
             guard let editState: TSEditState = record.editState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
@@ -419,7 +419,7 @@ extension TSInteraction {
             let infoMessageUserInfoSerialized: Data? = record.infoMessageUserInfo
             let infoMessageUserInfo: [InfoMessageUserInfoKey: AnyObject]? = try SDSDeserialization.optionalUnarchive(infoMessageUserInfoSerialized, name: "infoMessageUserInfo")
             guard let messageType: TSInfoMessageType = record.messageType else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let serverGuid: String? = record.serverGuid
@@ -474,7 +474,7 @@ extension TSInteraction {
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
             guard let editState: TSEditState = record.editState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
@@ -499,7 +499,7 @@ extension TSInteraction {
             let infoMessageUserInfoSerialized: Data? = record.infoMessageUserInfo
             let infoMessageUserInfo: [InfoMessageUserInfoKey: AnyObject]? = try SDSDeserialization.optionalUnarchive(infoMessageUserInfoSerialized, name: "infoMessageUserInfo")
             guard let messageType: TSInfoMessageType = record.messageType else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let serverGuid: String? = record.serverGuid
@@ -588,7 +588,7 @@ extension TSInteraction {
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
             guard let editState: TSEditState = record.editState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
@@ -677,7 +677,7 @@ extension TSInteraction {
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
             guard let editState: TSEditState = record.editState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
@@ -700,20 +700,20 @@ extension TSInteraction {
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             let customMessage: String? = record.customMessage
             guard let groupMetaMessage: TSGroupMetaMessage = record.groupMetaMessage else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let hasLegacyMessageState: Bool = try SDSDeserialization.required(record.hasLegacyMessageState, name: "hasLegacyMessageState")
             let hasSyncedTranscript: Bool = try SDSDeserialization.required(record.hasSyncedTranscript, name: "hasSyncedTranscript")
             let isVoiceMessage: Bool = try SDSDeserialization.required(record.isVoiceMessage, name: "isVoiceMessage")
             guard let legacyMessageState: TSOutgoingMessageState = record.legacyMessageState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let legacyWasDelivered: Bool = try SDSDeserialization.required(record.legacyWasDelivered, name: "legacyWasDelivered")
             let mostRecentFailureText: String? = record.mostRecentFailureText
             let recipientAddressStatesSerialized: Data? = record.recipientAddressStates
             let recipientAddressStates: [SignalServiceAddress: TSOutgoingMessageRecipientState]? = try SDSDeserialization.optionalUnarchive(recipientAddressStatesSerialized, name: "recipientAddressStates")
             guard let storedMessageState: TSOutgoingMessageState = record.storedMessageState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let wasNotCreatedLocally: Bool = try SDSDeserialization.required(record.wasNotCreatedLocally, name: "wasNotCreatedLocally")
             let paymentCancellation: Data? = SDSDeserialization.optionalData(record.paymentCancellation, name: "paymentCancellation")
@@ -777,7 +777,7 @@ extension TSInteraction {
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
             guard let editState: TSEditState = record.editState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
@@ -800,20 +800,20 @@ extension TSInteraction {
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             let customMessage: String? = record.customMessage
             guard let groupMetaMessage: TSGroupMetaMessage = record.groupMetaMessage else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let hasLegacyMessageState: Bool = try SDSDeserialization.required(record.hasLegacyMessageState, name: "hasLegacyMessageState")
             let hasSyncedTranscript: Bool = try SDSDeserialization.required(record.hasSyncedTranscript, name: "hasSyncedTranscript")
             let isVoiceMessage: Bool = try SDSDeserialization.required(record.isVoiceMessage, name: "isVoiceMessage")
             guard let legacyMessageState: TSOutgoingMessageState = record.legacyMessageState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let legacyWasDelivered: Bool = try SDSDeserialization.required(record.legacyWasDelivered, name: "legacyWasDelivered")
             let mostRecentFailureText: String? = record.mostRecentFailureText
             let recipientAddressStatesSerialized: Data? = record.recipientAddressStates
             let recipientAddressStates: [SignalServiceAddress: TSOutgoingMessageRecipientState]? = try SDSDeserialization.optionalUnarchive(recipientAddressStatesSerialized, name: "recipientAddressStates")
             guard let storedMessageState: TSOutgoingMessageState = record.storedMessageState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let wasNotCreatedLocally: Bool = try SDSDeserialization.required(record.wasNotCreatedLocally, name: "wasNotCreatedLocally")
 
@@ -870,7 +870,7 @@ extension TSInteraction {
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
             guard let editState: TSEditState = record.editState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
@@ -893,20 +893,20 @@ extension TSInteraction {
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             let customMessage: String? = record.customMessage
             guard let groupMetaMessage: TSGroupMetaMessage = record.groupMetaMessage else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let hasLegacyMessageState: Bool = try SDSDeserialization.required(record.hasLegacyMessageState, name: "hasLegacyMessageState")
             let hasSyncedTranscript: Bool = try SDSDeserialization.required(record.hasSyncedTranscript, name: "hasSyncedTranscript")
             let isVoiceMessage: Bool = try SDSDeserialization.required(record.isVoiceMessage, name: "isVoiceMessage")
             guard let legacyMessageState: TSOutgoingMessageState = record.legacyMessageState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let legacyWasDelivered: Bool = try SDSDeserialization.required(record.legacyWasDelivered, name: "legacyWasDelivered")
             let mostRecentFailureText: String? = record.mostRecentFailureText
             let recipientAddressStatesSerialized: Data? = record.recipientAddressStates
             let recipientAddressStates: [SignalServiceAddress: TSOutgoingMessageRecipientState]? = try SDSDeserialization.optionalUnarchive(recipientAddressStatesSerialized, name: "recipientAddressStates")
             guard let storedMessageState: TSOutgoingMessageState = record.storedMessageState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let wasNotCreatedLocally: Bool = try SDSDeserialization.required(record.wasNotCreatedLocally, name: "wasNotCreatedLocally")
 
@@ -963,7 +963,7 @@ extension TSInteraction {
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
             guard let editState: TSEditState = record.editState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
@@ -985,7 +985,7 @@ extension TSInteraction {
             let storyTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.storyTimestamp, name: "storyTimestamp", conversion: { NSNumber(value: $0) })
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             guard let errorType: TSErrorMessageType = record.errorType else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let recipientAddressSerialized: Data? = record.recipientAddress
@@ -1041,7 +1041,7 @@ extension TSInteraction {
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
             guard let editState: TSEditState = record.editState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
@@ -1063,7 +1063,7 @@ extension TSInteraction {
             let storyTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.storyTimestamp, name: "storyTimestamp", conversion: { NSNumber(value: $0) })
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             guard let errorType: TSErrorMessageType = record.errorType else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let recipientAddressSerialized: Data? = record.recipientAddress
@@ -1119,7 +1119,7 @@ extension TSInteraction {
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
             guard let editState: TSEditState = record.editState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
@@ -1144,7 +1144,7 @@ extension TSInteraction {
             let infoMessageUserInfoSerialized: Data? = record.infoMessageUserInfo
             let infoMessageUserInfo: [InfoMessageUserInfoKey: AnyObject]? = try SDSDeserialization.optionalUnarchive(infoMessageUserInfoSerialized, name: "infoMessageUserInfo")
             guard let messageType: TSInfoMessageType = record.messageType else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let serverGuid: String? = record.serverGuid
@@ -1204,7 +1204,7 @@ extension TSInteraction {
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
             guard let editState: TSEditState = record.editState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
@@ -1229,7 +1229,7 @@ extension TSInteraction {
             let infoMessageUserInfoSerialized: Data? = record.infoMessageUserInfo
             let infoMessageUserInfo: [InfoMessageUserInfoKey: AnyObject]? = try SDSDeserialization.optionalUnarchive(infoMessageUserInfoSerialized, name: "infoMessageUserInfo")
             guard let messageType: TSInfoMessageType = record.messageType else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let serverGuid: String? = record.serverGuid
@@ -1239,7 +1239,7 @@ extension TSInteraction {
             let recipientAddressSerialized: Data? = record.recipientAddress
             let recipientAddress: SignalServiceAddress = try SDSDeserialization.unarchive(recipientAddressSerialized, name: "recipientAddress")
             guard let verificationState: OWSVerificationState = record.verificationState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
 
             return OWSVerificationStateChangeMessage(grdbId: recordId,
@@ -1286,10 +1286,10 @@ extension TSInteraction {
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             guard let callType: RPRecentCallType = record.callType else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             guard let offerType: TSRecentCallOfferType = record.offerType else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
 
@@ -1318,7 +1318,7 @@ extension TSInteraction {
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
             guard let editState: TSEditState = record.editState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
@@ -1340,7 +1340,7 @@ extension TSInteraction {
             let storyTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.storyTimestamp, name: "storyTimestamp", conversion: { NSNumber(value: $0) })
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             guard let errorType: TSErrorMessageType = record.errorType else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let recipientAddressSerialized: Data? = record.recipientAddress
@@ -1396,7 +1396,7 @@ extension TSInteraction {
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
             guard let editState: TSEditState = record.editState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
@@ -1478,7 +1478,7 @@ extension TSInteraction {
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
             guard let editState: TSEditState = record.editState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
@@ -1503,7 +1503,7 @@ extension TSInteraction {
             let infoMessageUserInfoSerialized: Data? = record.infoMessageUserInfo
             let infoMessageUserInfo: [InfoMessageUserInfoKey: AnyObject]? = try SDSDeserialization.optionalUnarchive(infoMessageUserInfoSerialized, name: "infoMessageUserInfo")
             guard let messageType: TSInfoMessageType = record.messageType else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let serverGuid: String? = record.serverGuid
@@ -1573,7 +1573,7 @@ extension TSInteraction {
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
             guard let editState: TSEditState = record.editState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
@@ -1595,7 +1595,7 @@ extension TSInteraction {
             let storyTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.storyTimestamp, name: "storyTimestamp", conversion: { NSNumber(value: $0) })
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             guard let errorType: TSErrorMessageType = record.errorType else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let recipientAddressSerialized: Data? = record.recipientAddress
@@ -1651,7 +1651,7 @@ extension TSInteraction {
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
             guard let editState: TSEditState = record.editState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
@@ -1673,7 +1673,7 @@ extension TSInteraction {
             let storyTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.storyTimestamp, name: "storyTimestamp", conversion: { NSNumber(value: $0) })
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             guard let errorType: TSErrorMessageType = record.errorType else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let recipientAddressSerialized: Data? = record.recipientAddress
@@ -1733,7 +1733,7 @@ extension TSInteraction {
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
             guard let editState: TSEditState = record.editState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
@@ -1755,7 +1755,7 @@ extension TSInteraction {
             let storyTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.storyTimestamp, name: "storyTimestamp", conversion: { NSNumber(value: $0) })
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             guard let errorType: TSErrorMessageType = record.errorType else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let recipientAddressSerialized: Data? = record.recipientAddress
@@ -1816,7 +1816,7 @@ extension TSInteraction {
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
             guard let editState: TSEditState = record.editState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
@@ -1880,7 +1880,7 @@ extension TSInteraction {
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
             guard let editState: TSEditState = record.editState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
@@ -1903,20 +1903,20 @@ extension TSInteraction {
             let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             let customMessage: String? = record.customMessage
             guard let groupMetaMessage: TSGroupMetaMessage = record.groupMetaMessage else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let hasLegacyMessageState: Bool = try SDSDeserialization.required(record.hasLegacyMessageState, name: "hasLegacyMessageState")
             let hasSyncedTranscript: Bool = try SDSDeserialization.required(record.hasSyncedTranscript, name: "hasSyncedTranscript")
             let isVoiceMessage: Bool = try SDSDeserialization.required(record.isVoiceMessage, name: "isVoiceMessage")
             guard let legacyMessageState: TSOutgoingMessageState = record.legacyMessageState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let legacyWasDelivered: Bool = try SDSDeserialization.required(record.legacyWasDelivered, name: "legacyWasDelivered")
             let mostRecentFailureText: String? = record.mostRecentFailureText
             let recipientAddressStatesSerialized: Data? = record.recipientAddressStates
             let recipientAddressStates: [SignalServiceAddress: TSOutgoingMessageRecipientState]? = try SDSDeserialization.optionalUnarchive(recipientAddressStatesSerialized, name: "recipientAddressStates")
             guard let storedMessageState: TSOutgoingMessageState = record.storedMessageState else {
-               throw SDSError.missingRequiredField
+               throw SDSError.missingRequiredField()
             }
             let wasNotCreatedLocally: Bool = try SDSDeserialization.required(record.wasNotCreatedLocally, name: "wasNotCreatedLocally")
 
@@ -1975,7 +1975,7 @@ extension TSInteraction {
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
-            throw SDSError.invalidValue
+            throw SDSError.invalidValue()
         }
     }
 }

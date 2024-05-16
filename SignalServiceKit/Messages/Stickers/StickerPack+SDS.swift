@@ -106,7 +106,7 @@ extension StickerPack {
     class func fromRecord(_ record: StickerPackRecord) throws -> StickerPack {
 
         guard let recordId = record.id else {
-            throw SDSError.invalidValue
+            throw SDSError.invalidValue()
         }
 
         switch record.recordType {
@@ -137,7 +137,7 @@ extension StickerPack {
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
-            throw SDSError.invalidValue
+            throw SDSError.invalidValue()
         }
     }
 }
