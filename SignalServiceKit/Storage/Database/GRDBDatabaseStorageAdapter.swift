@@ -81,7 +81,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         if
             OWSFileSystem.fileOrFolderExists(url: fileUrl),
             let primaryFolderName = try? String(contentsOfFile: fileUrl.path, encoding: .utf8),
-            // Should never be empty, but this is a precautionary measuere.
+            // Should never be empty, but this is a precautionary measure.
             !primaryFolderName.isEmpty
         {
             return primaryFolderName
@@ -89,7 +89,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         if let primaryFolderName = CurrentAppContext().appUserDefaults().string(forKey: DirectoryMode.primaryFolderNameKey) {
             // Make sure it's also written to the file.
             OWSFileSystem.ensureDirectoryExists(fileUrl.deletingLastPathComponent().path)
-            try? primaryFolderName.write(toFile: fileUrl.pathExtension, atomically: true, encoding: .utf8)
+            try? primaryFolderName.write(toFile: fileUrl.path, atomically: true, encoding: .utf8)
             return primaryFolderName
         }
         return nil
@@ -100,7 +100,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         // Make sure it's also written to the file.
         let fileUrl = storedPrimaryFolderNameFileUrl()
         OWSFileSystem.ensureDirectoryExists(fileUrl.deletingLastPathComponent().path)
-        try? newPrimaryFolderName.write(toFile: fileUrl.pathExtension, atomically: true, encoding: .utf8)
+        try? newPrimaryFolderName.write(toFile: fileUrl.path, atomically: true, encoding: .utf8)
 
         DarwinNotificationCenter.post(.primaryDBFolderNameDidChange)
     }
