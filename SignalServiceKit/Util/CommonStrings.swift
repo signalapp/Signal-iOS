@@ -15,6 +15,11 @@ public class CommonStrings: NSObject {
         OWSLocalizedString("ARCHIVE_ACTION", comment: "Label for the archive button for conversations list view")
     }
 
+    static public var acknowledgeButton: String {
+        OWSLocalizedString("ALERT_ACTION_ACKNOWLEDGE", comment:
+                            "generic button text to acknowledge that the corresponding text was read.")
+    }
+
     static public var backButton: String {
         OWSLocalizedString("BACK_BUTTON", comment: "return to the previous screen")
     }

@@ -318,6 +318,23 @@ public extension CVRootComponentHost {
                                                   renderItem: renderItem)
     }
 
+    func handleDoubleTap(sender: UITapGestureRecognizer, componentDelegate: any CVComponentDelegate) -> Bool {
+        guard let renderItem = renderItem else {
+            owsFailDebug("Missing renderItem.")
+            return false
+        }
+        guard let componentView = componentView else {
+            owsFailDebug("Missing componentView.")
+            return false
+        }
+
+        guard componentView.canHandleDoubleTapGesture?(sender) == true else {
+            return false
+        }
+
+        return renderItem.rootComponent.handleDoubleTap(sender: sender, componentDelegate: componentDelegate, renderItem: renderItem)
+    }
+
     func findLongPressHandler(sender: UIGestureRecognizer,
                               componentDelegate: CVComponentDelegate) -> CVLongPressHandler? {
         guard let renderItem = renderItem else {

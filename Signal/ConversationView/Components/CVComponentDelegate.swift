@@ -33,6 +33,10 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate {
 
     func didTapSystemMessageItem(_ item: CVTextLabel.Item)
 
+    // MARK: - Double-Tap
+
+    func didDoubleTapTextViewItem(_ itemViewModel: CVItemViewModelImpl)
+
     // MARK: - Long Press
 
     func didLongPressTextViewItem(_ cell: CVCell,

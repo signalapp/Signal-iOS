@@ -94,15 +94,7 @@ public class ProvisioningPrepViewController: ProvisioningBaseViewController {
         let title = OWSLocalizedString("SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE", comment: "alert title")
         let message = OWSLocalizedString("SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY", comment: "alert body")
         let alert = ActionSheetController(title: title, message: message)
-
-        let dismissTitle = OWSLocalizedString("ALERT_ACTION_ACKNOWLEDGE", comment: "generic button text to acknowledge that the corresponding text was read.")
-
-        alert.addAction(
-            ActionSheetAction(title: dismissTitle,
-                          accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "alert", name: "acknowledge"),
-                          style: .default)
-        )
-
+        alert.addAction(.acknowledge)
         presentActionSheet(alert)
     }
 

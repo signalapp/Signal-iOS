@@ -1686,6 +1686,17 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         return false
     }
 
+    public override func handleDoubleTap(sender: UITapGestureRecognizer, componentDelegate: any CVComponentDelegate, renderItem: CVRenderItem) -> Bool {
+        if isShowingSelectionUI {
+            return false
+        }
+
+        let viewModel = CVItemViewModelImpl(renderItem: renderItem)
+        guard viewModel.canEditMessage else { return false }
+        componentDelegate.didDoubleTapTextViewItem(viewModel)
+        return true
+    }
+
     public override func findLongPressHandler(sender: UIGestureRecognizer,
                                               componentDelegate: CVComponentDelegate,
                                               componentView: CVComponentView,
@@ -2098,6 +2109,11 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                     }
                 }
             }
+        }
+
+        public func canHandleDoubleTapGesture(_ sender: UITapGestureRecognizer) -> Bool {
+            guard let bodyTextView else { return false }
+            return bodyTextView.rootView.containsGestureLocation(sender)
         }
 
         public func contextMenuContentView() -> UIView? {

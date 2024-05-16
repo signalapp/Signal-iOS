@@ -11,6 +11,18 @@ public protocol SheetDismissalDelegate: AnyObject {
     func didDismissPresentedSheet()
 }
 
+private final class OnDismissHandler: SheetDismissalDelegate {
+    var handler: () -> Void
+
+    init(handler: @escaping () -> Void) {
+        self.handler = handler
+    }
+
+    func didDismissPresentedSheet() {
+        handler()
+    }
+}
+
 @objc
 open class ActionSheetController: OWSViewController {
     private enum Message {
@@ -23,7 +35,40 @@ open class ActionSheetController: OWSViewController {
     private let scrollView = UIScrollView()
     private var hasCompletedFirstLayout = false
 
-    public weak var dismissalDelegate: (any SheetDismissalDelegate)?
+    private var onDismissHandler: OnDismissHandler?
+
+    /// Set this property to register a closure to be run when the sheet is
+    /// dismissed.
+    ///
+    /// After dismissal, `ActionSheetController` sets the value of this property
+    /// to `nil`.
+    ///
+    /// - Note: Setting an `onDismiss` handler discards the previous value of
+    ///   the `dismissalDelegate` property.
+    public var onDismiss: (() -> Void)? {
+        get {
+            onDismissHandler?.handler
+        }
+        set {
+            onDismissHandler = newValue.map(OnDismissHandler.init)
+            dismissalDelegate = onDismissHandler
+        }
+    }
+
+    /// Set this property to register a delegate object to be notified when the
+    /// sheet is dismissed.
+    ///
+    /// After dismissal, `ActionSheetController` sets the value of this property
+    /// to `nil`.
+    ///
+    /// - Note: Setting `dismissalDelegate` causes `onDismiss` to be set to `nil`.
+    public weak var dismissalDelegate: (any SheetDismissalDelegate)? {
+        didSet {
+            if let dismissalDelegate, dismissalDelegate !== onDismissHandler {
+                onDismissHandler = nil
+            }
+        }
+    }
 
     private(set) public var actions = [ActionSheetAction]() {
         didSet {
@@ -225,6 +270,12 @@ open class ActionSheetController: OWSViewController {
         view.addGestureRecognizer(tapGestureRecognizer)
     }
 
+    open override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        actions.first?.button.isSingletonButton = actions.count == 1
+    }
+
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
@@ -246,6 +297,7 @@ open class ActionSheetController: OWSViewController {
     open override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         dismissalDelegate?.didDismissPresentedSheet()
+        onDismissHandler = nil
     }
 
     @objc
@@ -422,6 +474,14 @@ public class ActionSheetAction: NSObject {
             }
         }
 
+        // Indicates that this button is the only button in an action sheet
+        // and may update its display accordingly.
+        fileprivate var isSingletonButton = false {
+            didSet {
+                updateTitleStyle()
+            }
+        }
+
         private let leadingIconView = UIImageView()
         private let trailingIconView = UIImageView()
 
@@ -460,18 +520,7 @@ public class ActionSheetAction: NSObject {
             updateEdgeInsets()
 
             setTitle(action.title, for: .init())
-
-            switch action.style {
-            case .default:
-                titleLabel?.font = .dynamicTypeBodyClamped
-                setTitleColor(Theme.ActionSheet.default.buttonTextColor, for: .init())
-            case .cancel:
-                titleLabel?.font = UIFont.dynamicTypeBodyClamped.semibold()
-                setTitleColor(Theme.ActionSheet.default.buttonTextColor, for: .init())
-            case .destructive:
-                titleLabel?.font = .dynamicTypeBodyClamped
-                setTitleColor(Theme.ActionSheet.default.destructiveButtonTextColor, for: .init())
-            }
+            updateTitleStyle()
 
             autoSetDimension(.height, toSize: ActionSheetController.minimumRowHeight, relation: .greaterThanOrEqual)
 
@@ -482,6 +531,20 @@ public class ActionSheetAction: NSObject {
 
         required init?(coder aDecoder: NSCoder) {
             fatalError("init(coder:) has not been implemented")
+        }
+
+        private func updateTitleStyle() {
+            switch style {
+            case .default:
+                titleLabel?.font = isSingletonButton ? .dynamicTypeBodyClamped.semibold() : .dynamicTypeBodyClamped
+                setTitleColor(Theme.ActionSheet.default.buttonTextColor, for: .init())
+            case .cancel:
+                titleLabel?.font = .dynamicTypeBodyClamped.semibold()
+                setTitleColor(Theme.ActionSheet.default.buttonTextColor, for: .init())
+            case .destructive:
+                titleLabel?.font = isSingletonButton ? .dynamicTypeBodyClamped.semibold() : .dynamicTypeBodyClamped
+                setTitleColor(Theme.ActionSheet.default.destructiveButtonTextColor, for: .init())
+            }
         }
 
         public func applyActionSheetTheme(_ theme: Theme.ActionSheet) {
@@ -511,6 +574,18 @@ public class ActionSheetAction: NSObject {
         private func didTouchUpInside() {
             releaseAction?()
         }
+    }
+}
+
+// MARK: Common Actions
+
+extension ActionSheetAction {
+    public static var acknowledge: ActionSheetAction {
+        ActionSheetAction(
+            title: CommonStrings.acknowledgeButton,
+            accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "alert", name: "acknowledge"),
+            style: .default
+        )
     }
 }
 

@@ -27,6 +27,18 @@ extension ConversationViewController: CVComponentDelegate {
         self.loadCoordinator.enqueueReloadWithoutCaches()
     }
 
+    // MARK: - Double-Tap
+
+    public func didDoubleTapTextViewItem(_ viewModel: CVItemViewModelImpl) {
+        AssertIsOnMainThread()
+
+        let controller = DoubleTapToEditOnboardingController(presentationContext: self) {
+            self.messageActionsEditItem(viewModel)
+        }
+
+        controller.beginEditing(animated: true)
+    }
+
     // MARK: - Long Press
 
     public func didLongPressTextViewItem(_ cell: CVCell,

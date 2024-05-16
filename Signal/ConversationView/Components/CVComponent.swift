@@ -29,6 +29,10 @@ public protocol CVComponent: AnyObject {
                    componentView: CVComponentView,
                    renderItem: CVRenderItem) -> Bool
 
+    func handleDoubleTap(sender: UITapGestureRecognizer,
+                         componentDelegate: any CVComponentDelegate,
+                         renderItem: CVRenderItem) -> Bool
+
     func findLongPressHandler(sender: UIGestureRecognizer,
                               componentDelegate: CVComponentDelegate,
                               componentView: CVComponentView,
@@ -108,6 +112,12 @@ public class CVComponentBase: NSObject {
                           componentView: CVComponentView,
                           renderItem: CVRenderItem) -> Bool {
         return false
+    }
+
+    public func handleDoubleTap(sender: UITapGestureRecognizer,
+                                componentDelegate: any CVComponentDelegate,
+                                renderItem: CVRenderItem) -> Bool {
+        false
     }
 
     public func findLongPressHandler(sender: UIGestureRecognizer,
@@ -279,6 +289,9 @@ public protocol CVComponentView {
     func setIsCellVisible(_ isCellVisible: Bool)
 
     func reset()
+
+    @objc
+    optional func canHandleDoubleTapGesture(_ sender: UITapGestureRecognizer) -> Bool
 
     // Allows component opportunity to configure and return a subview for context menu previews
     @objc

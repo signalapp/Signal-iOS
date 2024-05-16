@@ -267,6 +267,8 @@ extension EditHistoryTableSheetViewController: CVComponentDelegate {
 
     func didTapSystemMessageItem(_ item: CVTextLabel.Item) {}
 
+    func didDoubleTapTextViewItem(_ itemViewModel: CVItemViewModelImpl) {}
+
     func didLongPressTextViewItem(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
