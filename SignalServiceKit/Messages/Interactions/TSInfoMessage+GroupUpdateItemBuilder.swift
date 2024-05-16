@@ -964,16 +964,18 @@ private struct NewGroupUpdateItemBuilder {
         items.append(contentsOf: groupInsertedUpdateItems)
 
         // Skip update items for things like name, avatar, current members. Do
-        // add update items for the current disappearing messages state. We can
-        // use unknown attribution here – either we created the group (so it was
+        // add update items for the current disappearing messages state if we have one.
+        // We can use unknown attribution here – either we created the group (so it was
         // us who set the time) or someone else did (so we don't know who set
         // the timer), and unknown attribution is always safe.
-        DiffingGroupUpdateItemBuilder.disappearingMessageUpdateItem(
-            groupUpdateSource: groupUpdateSource,
-            oldToken: nil,
-            newToken: newDisappearingMessageToken,
-            forceUnknownAttribution: true
-        ).map { items.append($0) }
+        if newDisappearingMessageToken?.isEnabled == true {
+            DiffingGroupUpdateItemBuilder.disappearingMessageUpdateItem(
+                groupUpdateSource: groupUpdateSource,
+                oldToken: nil,
+                newToken: newDisappearingMessageToken,
+                forceUnknownAttribution: true
+            ).map { items.append($0) }
+        }
 
         if items.contains(where: { if case .createdByLocalUser = $0 { return true } ; return false }) {
             // If we just created the group, add an update item to let users
@@ -1062,10 +1064,10 @@ private struct NewGroupUpdateItemBuilder {
             switch groupUpdateSource {
             case .localUser:
                 return .createdByLocalUser
-            case let .aci(updaterAci):
-                return .createdByOtherUser(updaterAci: updaterAci.codableUuid)
-            case .rejectedInviteToPni, .legacyE164, .unknown:
-                return .createdByUnknownUser
+            case .aci, .rejectedInviteToPni, .legacyE164, .unknown:
+                // Don't show when others created the group,
+                // just when the local user does.
+                return nil
             }
         }
         return nil
