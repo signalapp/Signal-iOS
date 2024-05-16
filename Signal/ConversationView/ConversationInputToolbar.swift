@@ -974,7 +974,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
                 case .attributedText(let string):
                     messageBody = MessageBody(text: string.string, ranges: ranges)
                 case .messageBody(let body):
-                    messageBody = body.asStyleOnlyBody().asMessageBody()
+                    messageBody = body.asMessageBodyForForwarding(preservingAllMentions: true)
                 case .text(let text):
                     messageBody = MessageBody(text: text, ranges: ranges)
                 case .none:
