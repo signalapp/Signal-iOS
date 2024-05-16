@@ -45,9 +45,9 @@ class PniDistributionParameterBuilderTest: XCTestCase {
             try self.pniKyberPreKeyStoreMock.generateLastResortKyberPreKey(signedBy: pniKeyPair, tx: tx)
         }
 
-        messageSenderMock.deviceMessageMocks = [
-            .valid(registrationId: 456)
-        ]
+        messageSenderMock.deviceMessageMocks.update {
+            $0[123] = .valid(registrationId: 456)
+        }
 
         let parameters = await build(
             localDeviceId: 1,
@@ -79,7 +79,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
         XCTAssertEqual(parameters.deviceMessages.first?.destinationDeviceId, 123)
         XCTAssertEqual(parameters.deviceMessages.first?.destinationRegistrationId, 456)
 
-        XCTAssertTrue(messageSenderMock.deviceMessageMocks.isEmpty)
+        XCTAssertTrue(messageSenderMock.deviceMessageMocks.get().isEmpty)
     }
 
     func testBuildParametersFailsBeforeMessageBuildingIfDeviceIdsMismatched() async {
@@ -90,9 +90,9 @@ class PniDistributionParameterBuilderTest: XCTestCase {
             try self.pniKyberPreKeyStoreMock.generateLastResortKyberPreKey(signedBy: pniKeyPair, tx: tx)
         }
 
-        messageSenderMock.deviceMessageMocks = [
-            .valid(registrationId: 456)
-        ]
+        messageSenderMock.deviceMessageMocks.update {
+            $0[123] = .valid(registrationId: 456)
+        }
 
         let isFailureResult = await build(
             localDeviceId: 1,
@@ -104,7 +104,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
         ).awaitable().isError
 
         XCTAssertTrue(isFailureResult)
-        XCTAssertEqual(messageSenderMock.deviceMessageMocks.count, 1)
+        XCTAssertEqual(messageSenderMock.deviceMessageMocks.get().count, 1)
     }
 
     /// If one of our linked devices is invalid, per the message sender, we
@@ -117,10 +117,10 @@ class PniDistributionParameterBuilderTest: XCTestCase {
             try self.pniKyberPreKeyStoreMock.generateLastResortKyberPreKey(signedBy: pniKeyPair, tx: tx)
         }
 
-        messageSenderMock.deviceMessageMocks = [
-            .valid(registrationId: 456),
-            .invalidDevice
-        ]
+        messageSenderMock.deviceMessageMocks.update {
+            $0[123] = .valid(registrationId: 456)
+            $0[1234] = .invalidDevice
+        }
 
         let parameters = await build(
             localDeviceId: 1,
@@ -145,7 +145,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
         XCTAssertEqual(parameters.deviceMessages.first?.destinationDeviceId, 123)
         XCTAssertEqual(parameters.deviceMessages.first?.destinationRegistrationId, 456)
 
-        XCTAssert(messageSenderMock.deviceMessageMocks.isEmpty)
+        XCTAssert(messageSenderMock.deviceMessageMocks.get().isEmpty)
     }
 
     func testBuildParametersWithError() async {
@@ -156,9 +156,9 @@ class PniDistributionParameterBuilderTest: XCTestCase {
             try self.pniKyberPreKeyStoreMock.generateLastResortKyberPreKey(signedBy: pniKeyPair, tx: tx)
         }
 
-        messageSenderMock.deviceMessageMocks = [
-            .error
-        ]
+        messageSenderMock.deviceMessageMocks.update {
+            $0[123] = .error
+        }
 
         let isFailureResult = await build(
             localDeviceId: 1,
@@ -172,7 +172,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
         XCTAssert(isFailureResult)
         XCTAssertEqual(pniSignedPreKeyStoreMock.generatedSignedPreKeys.count, 2)
         XCTAssertEqual(registrationIdGeneratorMock.generatedRegistrationIds.count, 2)
-        XCTAssert(messageSenderMock.deviceMessageMocks.isEmpty)
+        XCTAssert(messageSenderMock.deviceMessageMocks.get().isEmpty)
     }
 
     // MARK: Helpers
@@ -235,7 +235,7 @@ private class MessageSenderMock: PniDistributionParameterBuilderImpl.Shims.Messa
     private struct BuildDeviceMessageError: Error {}
 
     /// Populated with device messages to be returned by ``buildDeviceMessage``.
-    var deviceMessageMocks: [DeviceMessageMock] = []
+    let deviceMessageMocks: AtomicValue<[UInt32: DeviceMessageMock]> = .init([:], lock: .init())
 
     func buildDeviceMessage(
         forMessagePlaintextContent messagePlaintextContent: Data,
@@ -249,12 +249,9 @@ private class MessageSenderMock: PniDistributionParameterBuilderImpl.Shims.Messa
         isResendRequestMessage: Bool,
         sealedSenderParameters: SealedSenderParameters?
     ) throws -> DeviceMessage? {
-        guard let nextDeviceMessageMock = deviceMessageMocks.first else {
-            XCTFail("Missing mock!")
-            return nil
-        }
-
-        deviceMessageMocks = Array(deviceMessageMocks.dropFirst())
+        let nextDeviceMessageMock = deviceMessageMocks.update(block: {
+            return $0.removeValue(forKey: deviceId)
+        })!
 
         switch nextDeviceMessageMock {
         case let .valid(registrationId):
