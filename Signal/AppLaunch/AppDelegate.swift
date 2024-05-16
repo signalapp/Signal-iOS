@@ -178,6 +178,13 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         MessageFetchBGRefreshTask.register()
 
+        let keychainStorage = KeychainStorageImpl(isUsingProductionService: TSConstants.isUsingProductionService)
+        let deviceTransferService = DeviceTransferService(keychainStorage: keychainStorage)
+
+        AppEnvironment.setSharedEnvironment(AppEnvironment(
+            deviceTransferService: deviceTransferService
+        ))
+
         // This *must* happen before we try and access or verify the database,
         // since we may be in a state where the database has been partially
         // restored from transfer (e.g. the key was replaced, but the database
@@ -186,10 +193,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             title: "Slow device transfer service launch",
             logIfLongerThan: 0.01,
             logInProduction: true,
-            block: { DeviceTransferService.shared.launchCleanup() }
+            block: { deviceTransferService.launchCleanup() }
         )
 
-        let keychainStorage = KeychainStorageImpl(isUsingProductionService: TSConstants.isUsingProductionService)
         let databaseStorage: SDSDatabaseStorage
         do {
             databaseStorage = try SDSDatabaseStorage(
