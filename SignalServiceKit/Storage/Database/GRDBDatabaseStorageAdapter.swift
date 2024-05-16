@@ -87,7 +87,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             return primaryFolderName
         }
         if let primaryFolderName = CurrentAppContext().appUserDefaults().string(forKey: DirectoryMode.primaryFolderNameKey) {
-            // Make sure its also written to the file.
+            // Make sure it's also written to the file.
             OWSFileSystem.ensureDirectoryExists(fileUrl.deletingLastPathComponent().path)
             try? primaryFolderName.write(toFile: fileUrl.pathExtension, atomically: true, encoding: .utf8)
             return primaryFolderName
@@ -97,7 +97,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
     fileprivate static func writeStoredPrimaryFolderName(_ newPrimaryFolderName: String) {
         CurrentAppContext().appUserDefaults().set(newPrimaryFolderName, forKey: DirectoryMode.primaryFolderNameKey)
-        // Make sure its also written to the file.
+        // Make sure it's also written to the file.
         let fileUrl = storedPrimaryFolderNameFileUrl()
         OWSFileSystem.ensureDirectoryExists(fileUrl.deletingLastPathComponent().path)
         try? newPrimaryFolderName.write(toFile: fileUrl.pathExtension, atomically: true, encoding: .utf8)
@@ -139,9 +139,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         } catch {
             throw error
         }
-
-        super.init()
-        setUpDatabasePathKVO()
     }
 
     deinit {
@@ -207,7 +204,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
     private var darwinToken: Int32?
 
-    func setUpDatabasePathKVO() {
+    public func setUpDatabasePathKVO() {
         darwinToken = DarwinNotificationCenter.addObserver(
             for: .primaryDBFolderNameDidChange,
             queue: .main,
@@ -351,7 +348,7 @@ extension GRDBDatabaseStorageAdapter {
     }
 
     public static func promoteTransferDirectoryToPrimary() {
-        owsAssert(CurrentAppContext().isMainApp, "Only the main app can't swap databases")
+        owsAssert(CurrentAppContext().isMainApp, "Only the main app can swap databases")
 
         // Ordering matters here. We should be able to crash and recover without issue
         // A prior run may have already performed the swap but crashed, so we should not expect a transfer folder
@@ -863,7 +860,11 @@ public struct GRDBKeyFetcher {
         public static let kSQLCipherKeySpecLength: Int32 = 48
     }
 
-    let keychainStorage: any KeychainStorage
+    private let keychainStorage: any KeychainStorage
+
+    public init(keychainStorage: any KeychainStorage) {
+        self.keychainStorage = keychainStorage
+    }
 
     func fetchString() throws -> String {
         // Use a raw key spec, where the 96 hexadecimal digits are provided

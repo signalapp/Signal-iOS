@@ -131,6 +131,7 @@ class NSEEnvironment: Dependencies {
             databaseFileUrl: SDSDatabaseStorage.grdbDatabaseFileUrl,
             keychainStorage: keychainStorage
         )
+        databaseStorage.grdbStorage.setUpDatabasePathKVO()
 
         didFinishDatabaseSetup = true
 

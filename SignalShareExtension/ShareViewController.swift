@@ -79,6 +79,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             self.showNotRegisteredView()
             return
         }
+        databaseStorage.grdbStorage.setUpDatabasePathKVO()
 
         // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
         let databaseContinuation = AppSetup().start(

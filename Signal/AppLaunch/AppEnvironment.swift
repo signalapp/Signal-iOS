@@ -7,28 +7,21 @@ import SignalServiceKit
 
 public class AppEnvironment: NSObject {
 
-    private static var _shared: AppEnvironment = AppEnvironment()
+    private static var _shared: AppEnvironment?
 
-    @objc
-    public class var shared: AppEnvironment {
-        get {
-            return _shared
-        }
-        set {
-            guard CurrentAppContext().isRunningTests else {
-                owsFailDebug("Can only switch environments in tests.")
-                return
-            }
-
-            _shared = newValue
-        }
+    static func setSharedEnvironment(_ appEnvironment: AppEnvironment) {
+        owsAssert(self._shared == nil)
+        self._shared = appEnvironment
     }
 
-    public var pushRegistrationManagerRef: PushRegistrationManager
+    @objc
+    public class var shared: AppEnvironment { _shared! }
+
+    let pushRegistrationManagerRef: PushRegistrationManager
 
     var callService: CallService!
 
-    let deviceTransferServiceRef = DeviceTransferService()
+    let deviceTransferServiceRef: DeviceTransferService
 
     let avatarHistorManagerRef = AvatarHistoryManager()
 
@@ -42,7 +35,8 @@ public class AppEnvironment: NSObject {
     private(set) var badgeManager: BadgeManager!
     private var usernameValidationObserverRef: UsernameValidationObserver?
 
-    private override init() {
+    init(deviceTransferService: DeviceTransferService) {
+        self.deviceTransferServiceRef = deviceTransferService
         self.pushRegistrationManagerRef = PushRegistrationManager()
 
         super.init()

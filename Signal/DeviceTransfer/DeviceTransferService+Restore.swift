@@ -145,7 +145,7 @@ extension DeviceTransferService {
         }
 
         do {
-            try databaseStorage.keyFetcher.store(data: database.key)
+            try GRDBKeyFetcher(keychainStorage: keychainStorage).store(data: database.key)
         } catch {
             owsFailDebug("failed to restore database key")
             return false
@@ -547,7 +547,7 @@ extension DeviceTransferService {
             throw OWSAssertionError("No manifest database available")
         }
 
-        try databaseStorage.keyFetcher.store(data: database.key)
+        try GRDBKeyFetcher(keychainStorage: keychainStorage).store(data: database.key)
         GRDBDatabaseStorageAdapter.promoteTransferDirectoryToPrimary()
     }
 

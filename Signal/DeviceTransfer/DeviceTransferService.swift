@@ -123,7 +123,11 @@ class DeviceTransferService: NSObject {
 
     // MARK: -
 
-    override init() {
+    let keychainStorage: any KeychainStorage
+
+    init(keychainStorage: any KeychainStorage) {
+        self.keychainStorage = keychainStorage
+
         super.init()
 
         SwiftSingletons.register(self)
