@@ -227,6 +227,7 @@ class IncomingReactionsView: UIView, ReactionReceiver {
             let label = UILabel()
             label.textColor = .ows_white
             label.translatesAutoresizingMaskIntoConstraints = false
+            label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
             NSLayoutConstraint.activate([
                 label.heightAnchor.constraint(equalToConstant: Constants.nameLabelDimension)
             ])
@@ -238,6 +239,7 @@ class IncomingReactionsView: UIView, ReactionReceiver {
             view.backgroundColor = .ows_blackAlpha80
             view.layer.cornerRadius =  Constants.nameCornerRadius
             view.translatesAutoresizingMaskIntoConstraints = false
+            view.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
             view.addSubview(nameLabel)
             NSLayoutConstraint.activate([
                 view.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor, constant: -Constants.nameViewHInset),
