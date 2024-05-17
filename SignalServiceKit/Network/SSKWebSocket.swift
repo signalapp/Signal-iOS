@@ -123,8 +123,6 @@ public struct WebSocketRequest {
 }
 
 public protocol WebSocketFactory {
-    var canBuildWebSocket: Bool { get }
-
     func buildSocket(request: WebSocketRequest, callbackScheduler: Scheduler) -> SSKWebSocket?
 }
 
@@ -134,9 +132,6 @@ public protocol WebSocketFactory {
 
 @objc
 public class WebSocketFactoryMock: NSObject, WebSocketFactory {
-
-    public var canBuildWebSocket: Bool { false }
-
     public func buildSocket(request: WebSocketRequest, callbackScheduler: Scheduler) -> SSKWebSocket? {
         owsFailDebug("Cannot build websocket.")
         return nil
@@ -149,10 +144,6 @@ public class WebSocketFactoryMock: NSObject, WebSocketFactory {
 
 @objc
 public class WebSocketFactoryNative: NSObject, WebSocketFactory {
-    public var canBuildWebSocket: Bool {
-        return true
-    }
-
     public func buildSocket(request: WebSocketRequest, callbackScheduler: Scheduler) -> SSKWebSocket? {
         return SSKWebSocketNative(request: request, signalService: signalService, callbackScheduler: callbackScheduler)
     }

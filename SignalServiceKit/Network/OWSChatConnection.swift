@@ -382,11 +382,6 @@ public class OWSChatConnection: NSObject {
             return .open(reason: "unsubmittedRequestTokens")
         }
 
-        guard GlobalDependencies.webSocketFactory.canBuildWebSocket else {
-            owsFailDebug("\(logPrefix) Could not build webSocket.")
-            return .closed(reason: "couldNotBuildWebSocket")
-        }
-
         if appIsActive.get() {
             // While app is active, keep web socket alive.
             return .open(reason: "appIsActive")
