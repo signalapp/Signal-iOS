@@ -91,7 +91,7 @@ public class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
     }
 
 #if TESTABLE_BUILD
-    @IBAction func didTapShareURL() {
+    @IBAction func didTapShareURL(_ sender: UIButton) {
         if let qrCodeURL = self.qrCodeURL {
             UIPasteboard.general.url = qrCodeURL
             // If we share the plain url and airdrop it to a mac, it will just open the url,
@@ -102,7 +102,7 @@ public class ProvisioningQRCodeViewController: ProvisioningBaseViewController {
                 activityItems: ["Provisioning URL: " + qrCodeURL.absoluteString],
                 applicationActivities: nil
             )
-            activityVC.popoverPresentationController?.sourceView = self.qrCodeView
+            activityVC.popoverPresentationController?.sourceView = sender
             self.present(activityVC, animated: true)
         } else {
             UIPasteboard.general.string = LocalizationNotNeeded("URL NOT READY YET")
