@@ -40,19 +40,10 @@ public protocol MessageBackupProtoOutputStream {
 
 internal class MessageBackupProtoOutputStreamImpl: MessageBackupProtoOutputStream {
 
-    private var outputStream: OutputStreamable
-    private var outputStreamDelegate: StreamDelegate
-    private var fileUrl: URL
-    private var uploadMetadata: Upload.BackupUploadMetadata?
+    private let outputStream: OutputStreamable
 
-    internal init(
-        outputStream: OutputStreamable,
-        outputStreamDelegate: StreamDelegate,
-        fileURL: URL
-    ) {
+    internal init(outputStream: OutputStreamable) {
         self.outputStream = outputStream
-        self.outputStreamDelegate = outputStreamDelegate
-        self.fileUrl = fileURL
     }
 
     internal func writeHeader(_ header: BackupProto.BackupInfo) -> MessageBackup.ProtoOutputStreamWriteResult {

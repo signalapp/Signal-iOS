@@ -101,7 +101,7 @@ public enum Upload {
         }
     }
 
-    public struct BackupUploadMetadata: UploadMetadata {
+    public struct EncryptedBackupUploadMetadata: UploadMetadata {
         /// File URL of the data consisting of "iv  + encrypted data + hmac"
         public let fileUrl: URL
 

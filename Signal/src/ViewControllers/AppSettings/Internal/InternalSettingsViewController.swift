@@ -213,7 +213,7 @@ private extension InternalSettingsViewController {
 
             Task {
                 do {
-                    let metadata = try await messageBackupManager.createBackup(localIdentifiers: localIdentifiers)
+                    let metadata = try await messageBackupManager.exportEncryptedBackup(localIdentifiers: localIdentifiers)
                     await MainActor.run {
                         let actionSheet = ActionSheetController(title: "Choose backup destination:")
 
@@ -233,7 +233,7 @@ private extension InternalSettingsViewController {
                             Task {
                                 let uploadError: Error?
                                 do {
-                                    _ = try await messageBackupManager.uploadBackup(
+                                    _ = try await messageBackupManager.uploadEncryptedBackup(
                                         metadata: metadata,
                                         localIdentifiers: localIdentifiers,
                                         auth: .implicit()

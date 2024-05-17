@@ -21,7 +21,7 @@ public class MetadataStreamTransform: StreamTransform, FinalizableStreamTransfor
     }
 
     private let calculateDigest: Bool
-    init(calculateDigest: Bool = false) {
+    init(calculateDigest: Bool) {
         self.calculateDigest = calculateDigest
         if calculateDigest {
             self.digestContext = SHA256DigestContext()

@@ -7,14 +7,39 @@ import Foundation
 
 public protocol MessageBackupManager {
 
-    func validateBackup(localIdentifiers: LocalIdentifiers, fileUrl: URL) async throws
+    // MARK: - Interact with remotes
 
-    /// Outputs file url the backup proto is located at.
-    func createBackup(localIdentifiers: LocalIdentifiers) async throws -> Upload.BackupUploadMetadata
+    /// Download the encrypted backup for the current user to a local file.
+    func downloadEncryptedBackup(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws -> URL
 
-    func uploadBackup(metadata: Upload.BackupUploadMetadata, localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws -> Upload.Result<Upload.BackupUploadMetadata>
+    /// Upload the local encrypted backup identified by the given metadata for
+    /// the current user.
+    func uploadEncryptedBackup(
+        metadata: Upload.EncryptedBackupUploadMetadata,
+        localIdentifiers: LocalIdentifiers,
+        auth: ChatServiceAuth
+    ) async throws -> Upload.Result<Upload.EncryptedBackupUploadMetadata>
 
-    func downloadBackup(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws -> URL
+    // MARK: - Export
 
-    func importBackup(localIdentifiers: LocalIdentifiers, fileUrl: URL) async throws
+    /// Export an encrypted backup binary to a local file.
+    /// - SeeAlso ``uploadEncryptedBackup(metadata:localIdentifiers:auth:)``
+    func exportEncryptedBackup(localIdentifiers: LocalIdentifiers) async throws -> Upload.EncryptedBackupUploadMetadata
+
+    /// Export a plaintext backup binary at the returned file URL.
+    func exportPlaintextBackup(localIdentifiers: LocalIdentifiers) async throws -> URL
+
+    // MARK: - Import
+
+    /// Import a backup from the encrypted binary file at the given local URL.
+    /// - SeeAlso ``downloadEncryptedBackup(localIdentifiers:auth:)``
+    func importEncryptedBackup(fileUrl: URL, localIdentifiers: LocalIdentifiers) async throws
+
+    /// Import a backup from the plaintext binary file at the given local URL.
+    func importPlaintextBackup(fileUrl: URL, localIdentifiers: LocalIdentifiers) async throws
+
+    // MARK: -
+
+    /// Validate the encrypted backup file located at the given local URL.
+    func validateEncryptedBackup(fileUrl: URL, localIdentifiers: LocalIdentifiers) async throws
 }

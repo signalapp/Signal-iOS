@@ -7,7 +7,7 @@ import Foundation
 
 public protocol AttachmentUploadManager {
     /// Upload a transient backup file that isn't an attachment (not saved to the database or sent).
-    func uploadBackup(localUploadMetadata: Upload.BackupUploadMetadata, form: Upload.Form) async throws -> Upload.Result<Upload.BackupUploadMetadata>
+    func uploadBackup(localUploadMetadata: Upload.EncryptedBackupUploadMetadata, form: Upload.Form) async throws -> Upload.Result<Upload.EncryptedBackupUploadMetadata>
 
     /// Upload a transient attachment that isn't saved to the database for sending.
     func uploadTransientAttachment(dataSource: DataSource) async throws -> Upload.Result<Upload.LocalUploadMetadata>
@@ -54,7 +54,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         self.storyStore = storyStore
     }
 
-    public func uploadBackup(localUploadMetadata: Upload.BackupUploadMetadata, form: Upload.Form) async throws -> Upload.Result<Upload.BackupUploadMetadata> {
+    public func uploadBackup(localUploadMetadata: Upload.EncryptedBackupUploadMetadata, form: Upload.Form) async throws -> Upload.Result<Upload.EncryptedBackupUploadMetadata> {
         let logger = PrefixedLogger(prefix: "[Upload]", suffix: "[backup]")
         do {
             let upload = AttachmentUpload(

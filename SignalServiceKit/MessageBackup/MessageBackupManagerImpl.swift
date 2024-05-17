@@ -3,11 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import LibSignalClient
-
-public class NotImplementedError: Error {}
-public class BackupError: Error {}
+import SignalCoreKit
 
 public enum BackupValidationError: Error {
     case unknownFields([String])
@@ -21,6 +18,9 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         static let keyValueStoreCollectionName = "MessageBackupManager"
         static let keyValueStoreHasReservedBackupKey = "HasReservedBackupKey"
     }
+
+    private class NotImplementedError: Error {}
+    private class BackupError: Error {}
 
     private let accountDataArchiver: MessageBackupAccountDataArchiver
     private let attachmentDownloadManager: AttachmentDownloadManager
@@ -59,13 +59,14 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.chatItemArchiver = chatItemArchiver
         self.dateProvider = dateProvider
         self.db = db
+        self.kvStore = kvStoreFactory.keyValueStore(collection: Constants.keyValueStoreCollectionName)
         self.localRecipientArchiver = localRecipientArchiver
         self.messageBackupKeyMaterial = messageBackupKeyMaterial
         self.recipientArchiver = recipientArchiver
         self.streamProvider = streamProvider
-
-        self.kvStore = kvStoreFactory.keyValueStore(collection: Constants.keyValueStoreCollectionName)
     }
+
+    // MARK: - Remote backups
 
     /// Initialize Message Backups by reserving a backup ID and registering a public key used to sign backup auth credentials.
     /// These registration calls are safe to call multiple times, but to avoid unecessary network calls, the app will remember if
@@ -92,7 +93,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         }
     }
 
-    public func downloadBackup(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws -> URL {
+    public func downloadEncryptedBackup(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws -> URL {
         let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(localAci: localIdentifiers.aci, auth: auth)
         let info = try await backupRequestManager.fetchBackupInfo(auth: backupAuth)
         let credentials = try await backupRequestManager.fetchCDNReadCredentials(cdn: info.cdn, auth: backupAuth)
@@ -107,11 +108,11 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         return tmpFileUrl
     }
 
-    public func uploadBackup(
-        metadata: Upload.BackupUploadMetadata,
+    public func uploadEncryptedBackup(
+        metadata: Upload.EncryptedBackupUploadMetadata,
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth
-    ) async throws -> Upload.Result<Upload.BackupUploadMetadata> {
+    ) async throws -> Upload.Result<Upload.EncryptedBackupUploadMetadata> {
         // This will return early if this device has already registered the backup ID.
         try await reserveAndRegister(localIdentifiers: localIdentifiers, auth: auth)
         let backupAuth = try await backupRequestManager.fetchBackupServiceAuth(localAci: localIdentifiers.aci, auth: auth)
@@ -119,52 +120,74 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         return try await attachmentUploadManager.uploadBackup(localUploadMetadata: metadata, form: form)
     }
 
-    public func createBackup(localIdentifiers: LocalIdentifiers) async throws -> Upload.BackupUploadMetadata {
+    // MARK: - Export
+
+    public func exportEncryptedBackup(
+        localIdentifiers: LocalIdentifiers
+    ) async throws -> Upload.EncryptedBackupUploadMetadata {
         guard FeatureFlags.messageBackupFileAlpha else {
             owsFailDebug("Should not be able to use backups!")
             throw NotImplementedError()
         }
+
         return try await db.awaitableWrite { tx in
-            // The mother of all write transactions. Eventually we want to use
-            // a read tx, and use explicit locking to prevent other things from
-            // happening in the meantime (e.g. message processing) but for now
-            // hold the single write lock and call it a day.
-            return try self._createBackup(localIdentifiers: localIdentifiers, tx: tx)
+            let outputStream: MessageBackupProtoOutputStream
+            let metadataProvider: MessageBackup.ProtoStream.EncryptionMetadataProvider
+            switch self.streamProvider.openEncryptedOutputFileStream(
+                localAci: localIdentifiers.aci,
+                tx: tx
+            ) {
+            case let .success(_outputStream, _metadataProvider):
+                outputStream = _outputStream
+                metadataProvider = _metadataProvider
+            case .unableToOpenFileStream:
+                throw OWSAssertionError("Unable to open output stream")
+            }
+
+            try self._exportBackup(
+                outputStream: outputStream,
+                localIdentifiers: localIdentifiers,
+                tx: tx
+            )
+
+            return try metadataProvider()
         }
     }
 
-    public func importBackup(localIdentifiers: LocalIdentifiers, fileUrl: URL) async throws {
+    public func exportPlaintextBackup(
+        localIdentifiers: LocalIdentifiers
+    ) async throws -> URL {
         guard FeatureFlags.messageBackupFileAlpha else {
             owsFailDebug("Should not be able to use backups!")
             throw NotImplementedError()
         }
-        try await db.awaitableWrite { tx in
-            // This has to open one big write transaction; the alternative is
-            // to chunk them into separate writes. Nothing else should be happening
-            // in the app anyway.
-            do {
-                try self._importBackup(localIdentifiers: localIdentifiers, fileUrl: fileUrl, tx: tx)
-            } catch let error {
-                owsFailDebug("Failed! \(error)")
-                throw error
+
+        return try await db.awaitableWrite { tx in
+            let outputStream: MessageBackupProtoOutputStream
+            let fileUrl: URL
+            switch self.streamProvider.openPlaintextOutputFileStream() {
+            case .success(let _outputStream, let _fileUrl):
+                outputStream = _outputStream
+                fileUrl = _fileUrl
+            case .unableToOpenFileStream:
+                throw OWSAssertionError("Unable to open output file stream!")
             }
+
+            try self._exportBackup(
+                outputStream: outputStream,
+                localIdentifiers: localIdentifiers,
+                tx: tx
+            )
+
+            return fileUrl
         }
     }
 
-    private func _createBackup(
+    private func _exportBackup(
+        outputStream stream: MessageBackupProtoOutputStream,
         localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
-    ) throws -> Upload.BackupUploadMetadata {
-        let stream: MessageBackupProtoOutputStream
-        let metadataProvider: MessageBackup.MetadataProvider
-        switch streamProvider.openOutputFileStream(localAci: localIdentifiers.aci, tx: tx) {
-        case let .success(streamResult, metadataProviderResult):
-            stream = streamResult
-            metadataProvider = metadataProviderResult
-        case .unableToOpenFileStream:
-            throw OWSAssertionError("Unable to open output stream")
-        }
-
+    ) throws {
         try writeHeader(stream: stream, tx: tx)
 
         let accountDataResult = accountDataArchiver.archiveAccountData(stream: stream, tx: tx)
@@ -223,6 +246,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         case .completeFailure(let error):
             try processFatalArchivingError(error: error)
         }
+
         let chatItemArchiveResult = chatItemArchiver.archiveInteractions(
             stream: stream,
             context: chatArchivingContext,
@@ -238,7 +262,6 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         }
 
         try stream.closeFileStream()
-        return try metadataProvider()
     }
 
     private func writeHeader(stream: MessageBackupProtoOutputStream, tx: DBWriteTransaction) throws {
@@ -271,27 +294,76 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         throw BackupError()
     }
 
-    private func _importBackup(
-        localIdentifiers: LocalIdentifiers,
+    // MARK: - Import
+
+    public func importEncryptedBackup(fileUrl: URL, localIdentifiers: LocalIdentifiers) async throws {
+        guard FeatureFlags.messageBackupFileAlpha else {
+            owsFailDebug("Should not be able to use backups!")
+            throw NotImplementedError()
+        }
+
+        try await db.awaitableWrite { tx in
+            let inputStream: MessageBackupProtoInputStream
+            switch self.streamProvider.openEncryptedInputFileStream(
+                fileUrl: fileUrl,
+                localAci: localIdentifiers.aci,
+                tx: tx
+            ) {
+            case .success(let protoStream, _):
+                inputStream = protoStream
+            case .fileNotFound:
+                throw OWSAssertionError("File not found!")
+            case .unableToOpenFileStream:
+                throw OWSAssertionError("Unable to open input stream!")
+            case .hmacValidationFailedOnEncryptedFile:
+                throw OWSAssertionError("HMAC validation failed on encrypted file!")
+            }
+
+            try self._importBackup(
+                inputStream: inputStream,
+                localIdentifiers: localIdentifiers,
+                tx: tx
+            )
+        }
+    }
+
+    public func importPlaintextBackup(
         fileUrl: URL,
+        localIdentifiers: LocalIdentifiers
+    ) async throws {
+        guard FeatureFlags.messageBackupFileAlpha else {
+            owsFailDebug("Should not be able to use backups!")
+            throw NotImplementedError()
+        }
+
+        try await db.awaitableWrite { tx in
+            let inputStream: MessageBackupProtoInputStream
+            switch self.streamProvider.openPlaintextInputFileStream(
+                fileUrl: fileUrl
+            ) {
+            case .success(let protoStream, _):
+                inputStream = protoStream
+            case .fileNotFound:
+                throw OWSAssertionError("File not found!")
+            case .unableToOpenFileStream:
+                throw OWSAssertionError("Unable to open input stream!")
+            case .hmacValidationFailedOnEncryptedFile:
+                throw OWSAssertionError("HMAC validation failed: how did this happen for a plaintext backup?")
+            }
+
+            try self._importBackup(
+                inputStream: inputStream,
+                localIdentifiers: localIdentifiers,
+                tx: tx
+            )
+        }
+    }
+
+    private func _importBackup(
+        inputStream stream: MessageBackupProtoInputStream,
+        localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
     ) throws {
-
-        let stream: MessageBackupProtoInputStream
-        switch streamProvider.openInputFileStream(localAci: localIdentifiers.aci, fileURL: fileUrl, tx: tx) {
-        case .success(let streamResult):
-            stream = streamResult
-        case .fileNotFound:
-            throw OWSAssertionError("file not found!")
-        case .unableToOpenFileStream:
-            throw OWSAssertionError("unable to open input stream")
-        case .unableToDecryptFile:
-            throw OWSAssertionError("encrypted file failed HMAC validation")
-        }
-
-        defer {
-            stream.closeFileStream()
-        }
 
         let backupInfo: BackupProto.BackupInfo
         var hasMoreFrames = false
@@ -404,10 +476,23 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             }
         }
 
-        return stream.closeFileStream()
+        stream.closeFileStream()
     }
 
-    public func validateBackup(localIdentifiers: LocalIdentifiers, fileUrl: URL) async throws {
+    private func processRestoreFrameErrors<IdType>(errors: [MessageBackup.RestoreFrameError<IdType>]) throws {
+        MessageBackup.log(errors)
+        // At time of writing, we want to fail for every single error.
+        if errors.isEmpty.negated {
+            throw BackupError()
+        }
+    }
+
+    // MARK: -
+
+    public func validateEncryptedBackup(
+        fileUrl: URL,
+        localIdentifiers: LocalIdentifiers
+    ) async throws {
         let key = try db.read { tx in
             return try messageBackupKeyMaterial.messageBackupKey(localAci: localIdentifiers.aci, tx: tx)
         }
@@ -432,16 +517,6 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             default:
                 throw BackupValidationError.unknownError
             }
-        }
-    }
-
-    private func processRestoreFrameErrors<IdType>(
-        errors: [MessageBackup.RestoreFrameError<IdType>]
-    ) throws {
-        MessageBackup.log(errors)
-        // At time of writing, we want to fail for every single error.
-        if errors.isEmpty.negated {
-            throw BackupError()
         }
     }
 }

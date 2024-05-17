@@ -460,14 +460,14 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             case .local(let localFileUrl):
                 fileUrl = localFileUrl
             case .remote:
-                fileUrl = try await self.deps.messageBackupManager.downloadBackup(
+                fileUrl = try await self.deps.messageBackupManager.downloadEncryptedBackup(
                     localIdentifiers: identity.localIdentifiers,
                     auth: identity.chatServiceAuth
                 )
             }
-            try await self.deps.messageBackupManager.importBackup(
-                localIdentifiers: identity.localIdentifiers,
-                fileUrl: fileUrl
+            try await self.deps.messageBackupManager.importEncryptedBackup(
+                fileUrl: fileUrl,
+                localIdentifiers: identity.localIdentifiers
             )
             self.inMemoryState.hasRestoredFromLocalMessageBackup = true
             Logger.info("Finished restore")

@@ -8,9 +8,18 @@ import Foundation
 #if TESTABLE_BUILD
 
 open class MessageBackupManagerMock: MessageBackupManager {
-    public func validateBackup(localIdentifiers: LocalIdentifiers, fileUrl: URL) async throws { }
+    public func downloadEncryptedBackup(
+        localIdentifiers: LocalIdentifiers,
+        auth: ChatServiceAuth
+    ) async throws -> URL {
+        return URL(string: "file://")!
+    }
 
-    public func uploadBackup(metadata: Upload.BackupUploadMetadata, localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws -> Upload.Result<Upload.BackupUploadMetadata> {
+    public func uploadEncryptedBackup(
+        metadata: Upload.EncryptedBackupUploadMetadata,
+        localIdentifiers: LocalIdentifiers,
+        auth: ChatServiceAuth
+    ) async throws -> Upload.Result<Upload.EncryptedBackupUploadMetadata> {
         return Upload.Result(
             cdnKey: "cdnKey",
             cdnNumber: 1,
@@ -24,12 +33,8 @@ open class MessageBackupManagerMock: MessageBackupManager {
         )
     }
 
-    public func downloadBackup(localIdentifiers: LocalIdentifiers, auth: ChatServiceAuth) async throws -> URL {
-        return URL(string: "file://")!
-    }
-
-    public func createBackup(localIdentifiers: LocalIdentifiers) async throws -> Upload.BackupUploadMetadata {
-        return .init(
+    public func exportEncryptedBackup(localIdentifiers: LocalIdentifiers) async throws -> Upload.EncryptedBackupUploadMetadata {
+        return Upload.EncryptedBackupUploadMetadata(
             fileUrl: URL(string: "file://")!,
             digest: Data(),
             encryptedDataLength: 0,
@@ -37,7 +42,13 @@ open class MessageBackupManagerMock: MessageBackupManager {
         )
     }
 
-    public func importBackup(localIdentifiers: LocalIdentifiers, fileUrl: URL) async throws { }
+    public func exportPlaintextBackup(localIdentifiers: LocalIdentifiers) async throws -> URL {
+        return URL(string: "file://")!
+    }
+
+    public func importEncryptedBackup(fileUrl: URL, localIdentifiers: LocalIdentifiers) async throws {}
+    public func importPlaintextBackup(fileUrl: URL, localIdentifiers: LocalIdentifiers) async throws {}
+    public func validateEncryptedBackup(fileUrl: URL, localIdentifiers: LocalIdentifiers) async throws {}
 }
 
 #endif
