@@ -641,9 +641,18 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
 
     private static func typedItemProviders(for itemProviders: [NSItemProvider]) throws -> [TypedItemProvider] {
+        // for some data types the OS is just awful and apparently says they conform to something else but then returns useless versions of the information
+        // - com.topografix.gpx
+        //     conforms to public.text, but when asking the OS for text it returns a file URL instead
+        let forcedDataTypeIdentifiers: [String] = ["com.topografix.gpx"]
         // due to UT conformance fallbacks the order these are checked is important; more specific types need to come earlier in the list than their fallbacks
         let itemTypeOrder: [TypedItemProvider.ItemType] = [.movie, .image, .contact, .text, .pdf, .pkPass, .fileUrl, .webUrl, .data]
         let candidates: [TypedItemProvider] = try itemProviders.map { itemProvider in
+            for typeIdentifier in forcedDataTypeIdentifiers {
+                if itemProvider.hasItemConformingToTypeIdentifier(typeIdentifier) {
+                    return TypedItemProvider(itemProvider: itemProvider, itemType: .data)
+                }
+            }
             for itemType in itemTypeOrder {
                 if itemProvider.hasItemConformingToTypeIdentifier(itemType.typeIdentifier) {
                     return TypedItemProvider(itemProvider: itemProvider, itemType: itemType)
