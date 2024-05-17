@@ -245,11 +245,6 @@ NS_ASSUME_NONNULL_BEGIN
     // Do nothing.
 }
 
-- (NSArray<SignalServiceAddress *> *)allWhitelistedRegisteredAddressesWithTx:(SDSAnyReadTransaction *)tx
-{
-    return @[];
-}
-
 - (void)rotateProfileKeyUponRecipientHideWithTx:(SDSAnyWriteTransaction *)tx
 {
     // Do nothing.

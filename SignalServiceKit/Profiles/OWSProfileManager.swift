@@ -10,8 +10,7 @@ import SignalCoreKit
 public class OWSProfileManagerSwiftValues {
     fileprivate let pendingUpdateRequests = AtomicValue<[OWSProfileManager.ProfileUpdateRequest]>([], lock: .init())
 
-    public init() {
-    }
+    public init() {}
 }
 
 extension OWSProfileManager: ProfileManager, Dependencies {
@@ -38,7 +37,11 @@ extension OWSProfileManager: ProfileManager, Dependencies {
     ) {
         AssertNotOnMainThread()
 
-        let userProfile = OWSUserProfile.getOrBuildUserProfile(for: address, tx: tx)
+        let userProfile = OWSUserProfile.getOrBuildUserProfile(
+            for: address,
+            userProfileWriter: userProfileWriter,
+            tx: tx
+        )
 
         var givenNameChange: OptionalChange<String> = .noChange
         var familyNameChange: OptionalChange<String?> = .noChange
@@ -164,9 +167,9 @@ extension OWSProfileManager: ProfileManager, Dependencies {
         )
     }
 
-    @objc
-    @available(swift, obsoleted: 1.0)
-    func objc_allWhitelistedRegisteredAddresses(tx: SDSAnyReadTransaction) -> [SignalServiceAddress] {
+    // MARK: -
+
+    public func allWhitelistedAddresses(tx: SDSAnyReadTransaction) -> [SignalServiceAddress] {
         var addresses = Set<SignalServiceAddress>()
         for serviceIdString in whitelistedServiceIdsStore.allKeys(transaction: tx) {
             addresses.insert(SignalServiceAddress(serviceIdString: serviceIdString))
@@ -175,11 +178,19 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             addresses.insert(SignalServiceAddress.legacyAddress(serviceId: nil, phoneNumber: phoneNumber))
         }
 
-        return Array(
-            SignalRecipientFinder().signalRecipients(for: Array(addresses), tx: tx)
-                .lazy.filter { $0.isRegistered }.map { $0.address }
-        )
+        return Array(addresses)
     }
+
+    public func allWhitelistedRegisteredAddresses(tx: SDSAnyReadTransaction) -> [SignalServiceAddress] {
+        return SignalRecipientFinder().signalRecipients(
+            for: allWhitelistedAddresses(tx: tx),
+            tx: tx
+        )
+        .lazy
+        .filter { $0.isRegistered }.map { $0.address }
+    }
+
+    // MARK: -
 
     @objc
     internal func rotateLocalProfileKeyIfNecessary() {
@@ -618,7 +629,11 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             return
         }
 
-        let userProfile = OWSUserProfile.getOrBuildUserProfile(for: address, tx: SDSDB.shimOnlyBridge(tx))
+        let userProfile = OWSUserProfile.getOrBuildUserProfile(
+            for: address,
+            userProfileWriter: userProfileWriter,
+            tx: SDSDB.shimOnlyBridge(tx)
+        )
 
         if onlyFillInIfMissing, userProfile.profileKey != nil {
             return
@@ -982,7 +997,11 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             await databaseStorage.awaitableWrite { tx in
                 self.tryToDequeueProfileChanges(profileChanges, tx: tx)
                 // Apply the changes to our local profile.
-                let userProfile = OWSUserProfile.getOrBuildUserProfile(for: .localUser, tx: tx)
+                let userProfile = OWSUserProfile.getOrBuildUserProfile(
+                    for: .localUser,
+                    userProfileWriter: .localUser,
+                    tx: tx
+                )
                 userProfile.update(
                     givenName: .setTo(newGivenName?.stringValue.rawValue),
                     familyName: .setTo(newFamilyName?.stringValue.rawValue),
@@ -1214,6 +1233,8 @@ extension OWSProfileManager: ProfileManager, Dependencies {
         localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
     ) {
+        let userProfileWriter: UserProfileWriter = .metadataUpdate
+
         let address = OWSUserProfile.insertableAddress(for: serviceId, localIdentifiers: localIdentifiers)
         switch address {
         case .localUser:
@@ -1221,7 +1242,11 @@ extension OWSProfileManager: ProfileManager, Dependencies {
         case .otherUser:
             break
         }
-        let userProfile = OWSUserProfile.getOrBuildUserProfile(for: address, tx: SDSDB.shimOnlyBridge(tx))
+        let userProfile = OWSUserProfile.getOrBuildUserProfile(
+            for: address,
+            userProfileWriter: userProfileWriter,
+            tx: SDSDB.shimOnlyBridge(tx)
+        )
 
         // lastMessagingDate is coarse; we don't need to track every single message
         // sent or received. It is sufficient to update it only when the value
@@ -1232,7 +1257,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
 
         userProfile.update(
             lastMessagingDate: .setTo(Date()),
-            userProfileWriter: .metadataUpdate,
+            userProfileWriter: userProfileWriter,
             transaction: SDSDB.shimOnlyBridge(tx),
             completion: nil
         )

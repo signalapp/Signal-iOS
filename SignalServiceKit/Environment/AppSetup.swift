@@ -10,28 +10,85 @@ import SignalCoreKit
 public class AppSetup {
     public init() {}
 
+    /// Injectable mocks for global singletons accessed by tests for components
+    /// that cannot be isolated in tests.
+    ///
+    /// For example, many legacy tests rely on the globally-available singletons
+    /// from ``Dependencies`` and its ``NSObject`` extension, and use this type
+    /// to inject mock versions of those singletons to the global state.
+    ///
+    /// Additionally, the integration tests for message backup access these
+    /// globals transitively through message backup's dependency on managers
+    /// that use the global state, and similarly use this type to inject a
+    /// limited set of mock singletons.
     public struct TestDependencies {
-        let accountServiceClient: AccountServiceClient
-        let contactManager: any ContactManager
-        let groupV2Updates: any GroupV2Updates
-        let groupsV2: any GroupsV2
-        let keyValueStoreFactory: any KeyValueStoreFactory
-        let messageSender: MessageSender
-        let modelReadCaches: ModelReadCaches
-        let networkManager: NetworkManager
-        let paymentsCurrencies: any PaymentsCurrenciesSwift
-        let paymentsHelper: any PaymentsHelperSwift
-        let pendingReceiptRecorder: any PendingReceiptRecorder
-        let profileManager: any ProfileManager
-        let reachabilityManager: any SSKReachabilityManager
-        let remoteConfigManager: any RemoteConfigManager
-        let signalService: any OWSSignalServiceProtocol
-        let storageServiceManager: any StorageServiceManager
-        let subscriptionManager: any SubscriptionManager
-        let syncManager: any SyncManagerProtocol
-        let systemStoryManager: any SystemStoryManagerProtocol
-        let versionedProfiles: any VersionedProfilesSwift
-        let webSocketFactory: any WebSocketFactory
+        let accountServiceClient: AccountServiceClient?
+        let contactManager: (any ContactManager)?
+        let groupV2Updates: (any GroupV2Updates)?
+        let groupsV2: (any GroupsV2)?
+        let keyValueStoreFactory: (any KeyValueStoreFactory)?
+        let messageSender: MessageSender?
+        let modelReadCaches: ModelReadCaches?
+        let networkManager: NetworkManager?
+        let paymentsCurrencies: (any PaymentsCurrenciesSwift)?
+        let paymentsHelper: (any PaymentsHelperSwift)?
+        let pendingReceiptRecorder: (any PendingReceiptRecorder)?
+        let profileManager: (any ProfileManager)?
+        let reachabilityManager: (any SSKReachabilityManager)?
+        let remoteConfigManager: (any RemoteConfigManager)?
+        let signalService: (any OWSSignalServiceProtocol)?
+        let storageServiceManager: (any StorageServiceManager)?
+        let subscriptionManager: (any SubscriptionManager)?
+        let syncManager: (any SyncManagerProtocol)?
+        let systemStoryManager: (any SystemStoryManagerProtocol)?
+        let versionedProfiles: (any VersionedProfilesSwift)?
+        let webSocketFactory: (any WebSocketFactory)?
+
+        public init(
+            accountServiceClient: AccountServiceClient? = nil,
+            contactManager: (any ContactManager)? = nil,
+            groupV2Updates: (any GroupV2Updates)? = nil,
+            groupsV2: (any GroupsV2)? = nil,
+            keyValueStoreFactory: (any KeyValueStoreFactory)? = nil,
+            messageSender: MessageSender? = nil,
+            modelReadCaches: ModelReadCaches? = nil,
+            networkManager: NetworkManager? = nil,
+            paymentsCurrencies: (any PaymentsCurrenciesSwift)? = nil,
+            paymentsHelper: (any PaymentsHelperSwift)? = nil,
+            pendingReceiptRecorder: (any PendingReceiptRecorder)? = nil,
+            profileManager: (any ProfileManager)? = nil,
+            reachabilityManager: (any SSKReachabilityManager)? = nil,
+            remoteConfigManager: (any RemoteConfigManager)? = nil,
+            signalService: (any OWSSignalServiceProtocol)? = nil,
+            storageServiceManager: (any StorageServiceManager)? = nil,
+            subscriptionManager: (any SubscriptionManager)? = nil,
+            syncManager: (any SyncManagerProtocol)? = nil,
+            systemStoryManager: (any SystemStoryManagerProtocol)? = nil,
+            versionedProfiles: (any VersionedProfilesSwift)? = nil,
+            webSocketFactory: (any WebSocketFactory)? = nil
+        ) {
+            self.accountServiceClient = accountServiceClient
+            self.contactManager = contactManager
+            self.groupV2Updates = groupV2Updates
+            self.groupsV2 = groupsV2
+            self.keyValueStoreFactory = keyValueStoreFactory
+            self.messageSender = messageSender
+            self.modelReadCaches = modelReadCaches
+            self.networkManager = networkManager
+            self.paymentsCurrencies = paymentsCurrencies
+            self.paymentsHelper = paymentsHelper
+            self.pendingReceiptRecorder = pendingReceiptRecorder
+            self.profileManager = profileManager
+            self.reachabilityManager = reachabilityManager
+            self.remoteConfigManager = remoteConfigManager
+            self.signalService = signalService
+            self.storageServiceManager = storageServiceManager
+            self.subscriptionManager = subscriptionManager
+            self.syncManager = syncManager
+            self.systemStoryManager = systemStoryManager
+            self.versionedProfiles = versionedProfiles
+            self.webSocketFactory = webSocketFactory
+        }
     }
 
     public func start(
@@ -42,7 +99,7 @@ public class AppSetup {
         callMessageHandler: CallMessageHandler,
         currentCallThreadProvider: any CurrentCallThreadProvider,
         notificationPresenter: any NotificationPresenter,
-        testDependencies: TestDependencies? = nil
+        testDependencies: TestDependencies = TestDependencies()
     ) -> AppSetup.DatabaseContinuation {
         configureUnsatisfiableConstraintLogging()
 
@@ -58,7 +115,7 @@ public class AppSetup {
         OWSBackgroundTaskManager.shared().observeNotifications()
 
         let appVersion = AppVersionImpl.shared
-        let webSocketFactory = testDependencies?.webSocketFactory ?? WebSocketFactoryNative()
+        let webSocketFactory = testDependencies.webSocketFactory ?? WebSocketFactoryNative()
 
         // AFNetworking (via CFNetworking) spools its attachments in
         // NSTemporaryDirectory(). If you receive a media message while the device
@@ -69,13 +126,13 @@ public class AppSetup {
         owsAssert(OWSFileSystem.protectFileOrFolder(atPath: temporaryDirectory, fileProtectionType: .completeUntilFirstUserAuthentication))
 
         let tsConstants = TSConstants.shared
-        let keyValueStoreFactory = testDependencies?.keyValueStoreFactory ?? SDSKeyValueStoreFactory()
+        let keyValueStoreFactory = testDependencies.keyValueStoreFactory ?? SDSKeyValueStoreFactory()
 
         let recipientDatabaseTable = RecipientDatabaseTableImpl()
         let recipientFetcher = RecipientFetcherImpl(recipientDatabaseTable: recipientDatabaseTable)
         let recipientIdFinder = RecipientIdFinder(recipientDatabaseTable: recipientDatabaseTable, recipientFetcher: recipientFetcher)
 
-        let accountServiceClient = testDependencies?.accountServiceClient ?? AccountServiceClient()
+        let accountServiceClient = testDependencies.accountServiceClient ?? AccountServiceClient()
         let aciSignalProtocolStore = SignalProtocolStoreImpl(
             for: .aci,
             keyValueStoreFactory: keyValueStoreFactory,
@@ -85,34 +142,34 @@ public class AppSetup {
         let dateProvider = Date.provider
         let earlyMessageManager = EarlyMessageManager()
         let messageProcessor = MessageProcessor()
-        let messageSender = testDependencies?.messageSender ?? MessageSender()
+        let messageSender = testDependencies.messageSender ?? MessageSender()
         let messageSenderJobQueue = MessageSenderJobQueue()
-        let modelReadCaches = testDependencies?.modelReadCaches ?? ModelReadCaches(factory: ModelReadCacheFactory())
-        let networkManager = testDependencies?.networkManager ?? NetworkManager()
+        let modelReadCaches = testDependencies.modelReadCaches ?? ModelReadCaches(factory: ModelReadCacheFactory())
+        let networkManager = testDependencies.networkManager ?? NetworkManager()
         let ows2FAManager = OWS2FAManager()
-        let paymentsHelper = testDependencies?.paymentsHelper ?? PaymentsHelperImpl()
+        let paymentsHelper = testDependencies.paymentsHelper ?? PaymentsHelperImpl()
         let pniSignalProtocolStore = SignalProtocolStoreImpl(
             for: .pni,
             keyValueStoreFactory: keyValueStoreFactory,
             recipientIdFinder: recipientIdFinder
         )
-        let profileManager = testDependencies?.profileManager ?? OWSProfileManager(
+        let profileManager = testDependencies.profileManager ?? OWSProfileManager(
             databaseStorage: databaseStorage,
             swiftValues: OWSProfileManagerSwiftValues()
         )
-        let reachabilityManager = testDependencies?.reachabilityManager ?? SSKReachabilityManagerImpl()
+        let reachabilityManager = testDependencies.reachabilityManager ?? SSKReachabilityManagerImpl()
         let receiptManager = OWSReceiptManager()
         let senderKeyStore = SenderKeyStore()
         let signalProtocolStoreManager = SignalProtocolStoreManagerImpl(
             aciProtocolStore: aciSignalProtocolStore,
             pniProtocolStore: pniSignalProtocolStore
         )
-        let signalService = testDependencies?.signalService ?? OWSSignalService()
+        let signalService = testDependencies.signalService ?? OWSSignalService()
         let signalServiceAddressCache = SignalServiceAddressCache()
-        let storageServiceManager = testDependencies?.storageServiceManager ?? StorageServiceManagerImpl.shared
-        let syncManager = testDependencies?.syncManager ?? OWSSyncManager(default: ())
+        let storageServiceManager = testDependencies.storageServiceManager ?? StorageServiceManagerImpl.shared
+        let syncManager = testDependencies.syncManager ?? OWSSyncManager(default: ())
         let udManager = OWSUDManagerImpl()
-        let versionedProfiles = testDependencies?.versionedProfiles ?? VersionedProfilesImpl()
+        let versionedProfiles = testDependencies.versionedProfiles ?? VersionedProfilesImpl()
 
         let signalAccountStore = SignalAccountStoreImpl()
         let threadStore = ThreadStoreImpl()
@@ -141,7 +198,7 @@ public class AppSetup {
             storageServiceManager: storageServiceManager,
             schedulers: schedulers
         )
-        let contactManager = testDependencies?.contactManager ?? OWSContactsManager(swiftValues: OWSContactsManagerSwiftValues(
+        let contactManager = testDependencies.contactManager ?? OWSContactsManager(swiftValues: OWSContactsManagerSwiftValues(
             usernameLookupManager: usernameLookupManager,
             recipientDatabaseTable: recipientDatabaseTable,
             nicknameManager: nicknameManager
@@ -158,7 +215,7 @@ public class AppSetup {
             db: db
         )
 
-        let groupsV2 = testDependencies?.groupsV2 ?? GroupsV2Impl(
+        let groupsV2 = testDependencies.groupsV2 ?? GroupsV2Impl(
             authCredentialStore: authCredentialStore,
             authCredentialManager: authCredentialManager
         )
@@ -664,8 +721,8 @@ public class AppSetup {
         let messageBackupKeyMaterial = MessageBackupKeyMaterialImpl(svr: svr)
         let preferences = Preferences()
         let storyStore = StoryStoreImpl()
-        let subscriptionManager = testDependencies?.subscriptionManager ?? SubscriptionManagerImpl()
-        let systemStoryManager = testDependencies?.systemStoryManager ?? SystemStoryManager()
+        let subscriptionManager = testDependencies.subscriptionManager ?? SubscriptionManagerImpl()
+        let systemStoryManager = testDependencies.systemStoryManager ?? SystemStoryManager()
         let typingIndicators = TypingIndicatorsImpl()
 
         let attachmentUploadManager = AttachmentUploadManagerImpl(
@@ -687,6 +744,7 @@ public class AppSetup {
                 localUsernameManager: localUsernameManager,
                 phoneNumberDiscoverabilityManager: phoneNumberDiscoverabilityManager,
                 preferences: MessageBackup.AccountData.Wrappers.Preferences(preferences: preferences),
+                profileManager: MessageBackup.Wrappers.ProfileManager(profileManager),
                 receiptManager: MessageBackup.AccountData.Wrappers.ReceiptManager(receiptManager: receiptManager),
                 reactionManager: MessageBackup.AccountData.Wrappers.ReactionManager(),
                 sskPreferences: MessageBackup.AccountData.Wrappers.SSKPreferences(),
@@ -695,8 +753,7 @@ public class AppSetup {
                 systemStoryManager: MessageBackup.AccountData.Wrappers.SystemStoryManager(systemStoryManager: systemStoryManager),
                 typingIndicators: MessageBackup.AccountData.Wrappers.TypingIndicators(typingIndicators: typingIndicators),
                 udManager: MessageBackup.AccountData.Wrappers.UDManager(udManager: udManager),
-                usernameEducationManager: usernameEducationManager,
-                userProfile: MessageBackup.AccountData.Wrappers.UserProfile()
+                usernameEducationManager: usernameEducationManager
             ),
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentUploadManager: attachmentUploadManager,
@@ -919,9 +976,9 @@ public class AppSetup {
             reachabilityManager: reachabilityManager
         )
 
-        let pendingReceiptRecorder = testDependencies?.pendingReceiptRecorder ?? MessageRequestPendingReceipts()
+        let pendingReceiptRecorder = testDependencies.pendingReceiptRecorder ?? MessageRequestPendingReceipts()
         let messageReceiver = MessageReceiver(callMessageHandler: callMessageHandler)
-        let remoteConfigManager = testDependencies?.remoteConfigManager ?? RemoteConfigManagerImpl(
+        let remoteConfigManager = testDependencies.remoteConfigManager ?? RemoteConfigManagerImpl(
             appExpiry: appExpiry,
             db: db,
             keyValueStoreFactory: keyValueStoreFactory,
@@ -937,7 +994,7 @@ public class AppSetup {
         )
         let stickerManager = StickerManager()
         let sskPreferences = SSKPreferences()
-        let groupV2Updates = testDependencies?.groupV2Updates ?? GroupV2UpdatesImpl()
+        let groupV2Updates = testDependencies.groupV2Updates ?? GroupV2UpdatesImpl()
         let messageFetcherJob = MessageFetcherJob()
         let profileFetcher = ProfileFetcherImpl(
             db: db,
@@ -953,7 +1010,7 @@ public class AppSetup {
             versionedProfiles: versionedProfiles
         )
         let messagePipelineSupervisor = MessagePipelineSupervisor()
-        let paymentsCurrencies = testDependencies?.paymentsCurrencies ?? PaymentsCurrenciesImpl()
+        let paymentsCurrencies = testDependencies.paymentsCurrencies ?? PaymentsCurrenciesImpl()
         let spamChallengeResolver = SpamChallengeResolver()
         let phoneNumberUtil = PhoneNumberUtil(swiftValues: PhoneNumberUtilSwiftValues())
         let legacyChangePhoneNumber = LegacyChangePhoneNumber()

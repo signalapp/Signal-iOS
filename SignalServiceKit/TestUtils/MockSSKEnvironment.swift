@@ -14,8 +14,11 @@ public class MockSSKEnvironment: NSObject {
     /// Set up a mock SSK environment as well as ``DependenciesBridge``.
     @objc
     public static func activate() {
+        let testAppContext = TestAppContext()
+        SetCurrentAppContext(testAppContext)
+
         let finalContinuation = AppSetup().start(
-            appContext: TestAppContext(),
+            appContext: testAppContext,
             databaseStorage: try! SDSDatabaseStorage(
                 databaseFileUrl: SDSDatabaseStorage.grdbDatabaseFileUrl,
                 keychainStorage: MockKeychainStorage()

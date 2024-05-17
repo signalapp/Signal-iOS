@@ -10,7 +10,6 @@ import CocoaLumberjack
 public class SSKBaseTest: XCTestCase {
     public override func setUp() {
         DDLog.add(DDTTYLogger.sharedInstance!)
-        SetCurrentAppContext(TestAppContext())
         MockSSKEnvironment.activate()
     }
 

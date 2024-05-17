@@ -92,6 +92,7 @@ class SignalRecipientTest: SSKBaseTest {
         write { transaction in
             let aciProfile = OWSUserProfile.getOrBuildUserProfile(
                 for: .otherUser(aci),
+                userProfileWriter: .tests,
                 tx: transaction
             )
             aciProfile.anyInsert(transaction: transaction)
@@ -154,7 +155,11 @@ class SignalRecipientTest: SSKBaseTest {
             let oldMessage = messageBuilder.build()
             oldMessage.anyInsert(transaction: transaction)
 
-            let oldPhoneNumberProfile = OWSUserProfile.getOrBuildUserProfile(for: .otherUser(aci), tx: transaction)
+            let oldPhoneNumberProfile = OWSUserProfile.getOrBuildUserProfile(
+                for: .otherUser(aci),
+                userProfileWriter: .tests,
+                tx: transaction
+            )
             oldPhoneNumberProfile.anyInsert(transaction: transaction)
             oldPhoneNumberProfile.update(
                 isPhoneNumberShared: .setTo(true),
@@ -183,7 +188,11 @@ class SignalRecipientTest: SSKBaseTest {
                 uniqueId: oldMessage.uniqueId,
                 transaction: transaction
             )!
-            let newProfile = OWSUserProfile.getOrBuildUserProfile(for: .otherUser(aci), tx: transaction)
+            let newProfile = OWSUserProfile.getOrBuildUserProfile(
+                for: .otherUser(aci),
+                userProfileWriter: .tests,
+                tx: transaction
+            )
             let newAccount = SignalAccount.anyFetch(
                 uniqueId: oldAccount.uniqueId,
                 transaction: transaction
@@ -259,7 +268,11 @@ class SignalRecipientTest: SSKBaseTest {
                 uniqueId: oldMessage.uniqueId,
                 transaction: transaction
             )!
-            let newProfile = OWSUserProfile.getOrBuildUserProfile(for: .otherUser(newAci), tx: transaction)
+            let newProfile = OWSUserProfile.getOrBuildUserProfile(
+                for: .otherUser(newAci),
+                userProfileWriter: .tests,
+                tx: transaction
+            )
             let newAccount = SignalAccount.anyFetch(
                 uniqueId: oldAccount.uniqueId,
                 transaction: transaction

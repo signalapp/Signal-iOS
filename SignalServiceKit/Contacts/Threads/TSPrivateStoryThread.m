@@ -138,8 +138,8 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
 {
     if ([self isMyStory]) {
         [StoryManager setHasSetMyStoriesPrivacy:YES
-                                    transaction:transaction
-                     shouldUpdateStorageService:updateStorageService];
+                     shouldUpdateStorageService:updateStorageService
+                                    transaction:transaction];
     }
     [self anyUpdatePrivateStoryThreadWithTransaction:transaction
                                                block:^(TSPrivateStoryThread *thread) {

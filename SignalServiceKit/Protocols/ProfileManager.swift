@@ -79,10 +79,22 @@ public enum OptionalAvatarChange<Wrapped: Equatable>: Equatable {
 }
 
 public protocol ProfileManager: ProfileManagerProtocol {
+
+    // MARK: -
+
     func fetchLocalUsersProfile(authedAccount: AuthedAccount) -> Promise<FetchedProfile>
     func fetchUserProfiles(for addresses: [SignalServiceAddress], tx: SDSAnyReadTransaction) -> [OWSUserProfile?]
 
+    func reuploadLocalProfile(
+        unsavedRotatedProfileKey: OWSAES256Key?,
+        mustReuploadAvatar: Bool,
+        authedAccount: AuthedAccount,
+        tx: DBWriteTransaction
+    ) -> Promise<Void>
+
     func downloadAndDecryptLocalUserAvatarIfNeeded(authedAccount: AuthedAccount) async throws
+
+    // MARK: -
 
     /// Downloads & decrypts the avatar at a particular URL.
     ///
@@ -119,13 +131,6 @@ public protocol ProfileManager: ProfileManagerProtocol {
         tx: SDSAnyWriteTransaction
     ) -> Promise<Void>
 
-    func reuploadLocalProfile(
-        unsavedRotatedProfileKey: OWSAES256Key?,
-        mustReuploadAvatar: Bool,
-        authedAccount: AuthedAccount,
-        tx: DBWriteTransaction
-    ) -> Promise<Void>
-
     func didSendOrReceiveMessage(
         serviceId: ServiceId,
         localIdentifiers: LocalIdentifiers,
@@ -150,4 +155,9 @@ public protocol ProfileManager: ProfileManagerProtocol {
         localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
     )
+
+    // MARK: -
+
+    func allWhitelistedAddresses(tx: SDSAnyReadTransaction) -> [SignalServiceAddress]
+    func allWhitelistedRegisteredAddresses(tx: SDSAnyReadTransaction) -> [SignalServiceAddress]
 }

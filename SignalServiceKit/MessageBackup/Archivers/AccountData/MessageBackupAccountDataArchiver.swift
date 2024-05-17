@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalCoreKit
+
 extension MessageBackup {
     /// An identifier for the ``BackupProto.AccountData`` backup frame.
     ///
@@ -48,6 +50,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
     private let localUsernameManager: LocalUsernameManager
     private let phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager
     private let preferences: MessageBackup.AccountData.Shims.Preferences
+    private let profileManager: MessageBackup.Shims.ProfileManager
     private let receiptManager: MessageBackup.AccountData.Shims.ReceiptManager
     private let reactionManager: MessageBackup.AccountData.Shims.ReactionManager
     private let sskPreferences: MessageBackup.AccountData.Shims.SSKPreferences
@@ -57,13 +60,13 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
     private let typingIndicators: MessageBackup.AccountData.Shims.TypingIndicators
     private let udManager: MessageBackup.AccountData.Shims.UDManager
     private let usernameEducationManager: UsernameEducationManager
-    private let userProfile: MessageBackup.AccountData.Shims.UserProfile
 
     public init(
         disappearingMessageConfigurationStore: DisappearingMessagesConfigurationStore,
         localUsernameManager: LocalUsernameManager,
         phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager,
         preferences: MessageBackup.AccountData.Shims.Preferences,
+        profileManager: MessageBackup.Shims.ProfileManager,
         receiptManager: MessageBackup.AccountData.Shims.ReceiptManager,
         reactionManager: MessageBackup.AccountData.Shims.ReactionManager,
         sskPreferences: MessageBackup.AccountData.Shims.SSKPreferences,
@@ -72,8 +75,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         systemStoryManager: MessageBackup.AccountData.Shims.SystemStoryManager,
         typingIndicators: MessageBackup.AccountData.Shims.TypingIndicators,
         udManager: MessageBackup.AccountData.Shims.UDManager,
-        usernameEducationManager: UsernameEducationManager,
-        userProfile: MessageBackup.AccountData.Shims.UserProfile
+        usernameEducationManager: UsernameEducationManager
     ) {
         self.disappearingMessageConfigurationStore = disappearingMessageConfigurationStore
         self.localUsernameManager = localUsernameManager
@@ -88,7 +90,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         self.typingIndicators = typingIndicators
         self.udManager = udManager
         self.usernameEducationManager = usernameEducationManager
-        self.userProfile = userProfile
+        self.profileManager = profileManager
     }
 
     public func archiveAccountData(
@@ -96,7 +98,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         tx: DBReadTransaction
     ) -> MessageBackup.ArchiveAccountDataResult {
 
-        guard let localProfile = userProfile.getLocalProfile(tx: tx) else {
+        guard let localProfile = profileManager.getUserProfileForLocalUser(tx: tx) else {
             return .failure(.archiveFrameError(.missingLocalProfile, .localUser))
         }
         guard let profileKeyData = localProfile.profileKey?.keyData else {
@@ -224,13 +226,22 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         _ accountData: BackupProto.AccountData,
         tx: DBWriteTransaction
     ) -> RestoreFrameResult {
-
         guard let profileKey = OWSAES256Key(data: accountData.profileKey) else {
             return .failure([.restoreFrameError(
                 .invalidProtoData(.invalidLocalProfileKey),
                 .localUser
             )])
         }
+
+        // Given name and profile key are required for the local profile. The
+        // rest are optional.
+        profileManager.insertLocalUserProfile(
+            givenName: accountData.givenName,
+            familyName: accountData.familyName.nilIfEmpty,
+            avatarUrlPath: accountData.avatarUrlPath.nilIfEmpty,
+            profileKey: profileKey,
+            tx: tx
+        )
 
         // Restore Subscription data, if nod a default value
         if accountData.subscriberId.count > 0, accountData.subscriberCurrencyCode.count > 0 {
@@ -287,16 +298,6 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
             }()
             udManager.setPhoneNumberSharingMode(phoneNumberSharingMode, tx: tx)
         }
-
-        // Restore Local Profile
-        // For familyName & avatarUrlPath, pass in `nil` if the value is empty.
-        userProfile.insertLocalProfile(
-            givenName: accountData.givenName,
-            familyName: accountData.familyName.nilIfEmpty,
-            avatarUrlPath: accountData.avatarUrlPath.nilIfEmpty,
-            profileKey: profileKey,
-            tx: tx
-        )
 
         // Restore username details (username, link, QR color)
         if let username = accountData.username, let usernameLink = accountData.usernameLink {

@@ -789,12 +789,20 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     }
 
     @objc
-    public class func getOrBuildUserProfileForLocalUser(tx: SDSAnyWriteTransaction) -> OWSUserProfile {
-        return getOrBuildUserProfile(for: .localUser, tx: tx)
+    public class func getOrBuildUserProfileForLocalUser(
+        userProfileWriter: UserProfileWriter,
+        tx: SDSAnyWriteTransaction
+    ) -> OWSUserProfile {
+        return getOrBuildUserProfile(
+            for: .localUser,
+            userProfileWriter: userProfileWriter,
+            tx: tx
+        )
     }
 
     public class func getOrBuildUserProfile(
         for insertableAddress: InsertableAddress,
+        userProfileWriter: UserProfileWriter,
         tx: SDSAnyWriteTransaction
     ) -> OWSUserProfile {
         // If we already have a profile for this address, return it.
@@ -815,7 +823,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         if case .localUser = address {
             userProfile.update(
                 profileKey: .setTo(OWSAES256Key.generateRandom()),
-                userProfileWriter: .localUser,
+                userProfileWriter: userProfileWriter,
                 transaction: tx,
                 completion: nil
             )

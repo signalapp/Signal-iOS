@@ -1,0 +1,42 @@
+[
+  {
+    "version": "1",
+    "backupTimeMs": "1715636551000"
+  },
+  {
+    "account": {
+      "profileKey": "YQKRq+3DQklInaOaMcmlzZnN0m/1hzLiaONX7gB12dg=",
+      "username": "boba_fett.66",
+      "usernameLink": {
+        "entropy": "ZWdcc9AOsBAF47t8SkfylstlVPeJgSOIFekV2CT9LpM=",
+        "serverId": "YcEBogDVQheJwgUY2El68A==",
+        "color": "OLIVE"
+      },
+      "givenName": "Boba",
+      "familyName": "Fett",
+      "avatarUrlPath": "",
+      "subscriberId": "7LtoxzQzGi6jM82nR8mMRVNlImFYK0/OWuDeqE3OZRk=",
+      "subscriberCurrencyCode": "USD",
+      "subscriptionManuallyCancelled": true,
+      "accountSettings": {
+        "readReceipts": true,
+        "sealedSenderIndicators": true,
+        "typingIndicators": true,
+        "linkPreviews": false,
+        "notDiscoverableByPhoneNumber": true,
+        "preferContactAvatars": true,
+        "universalExpireTimer": 3600,
+        "preferredReactionEmoji": ["🏎️"],
+        "displayBadgesOnProfile": true,
+        "keepMutedChatsArchived": true,
+        "hasSetMyStoriesPrivacy": true,
+        "hasViewedOnboardingStory": true,
+        "storiesDisabled": true,
+        "storyViewReceiptsEnabled": true,
+        "hasSeenGroupStoryEducationSheet": true,
+        "hasCompletedUsernameOnboarding": true,
+        "phoneNumberSharingMode": "NOBODY"
+      }
+    }
+  }
+]

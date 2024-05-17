@@ -11,8 +11,6 @@ open class SignalBaseTest: XCTestCase {
 
     public override func setUp() {
         super.setUp()
-
-        SetCurrentAppContext(TestAppContext())
         MockSSKEnvironment.activate()
     }
 

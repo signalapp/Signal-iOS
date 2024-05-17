@@ -446,7 +446,7 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
                 updateStorageService: false, /* storage service updated below */
                 transaction: transaction
             )
-            StoryManager.setHasSetMyStoriesPrivacy(false, transaction: transaction, shouldUpdateStorageService: true)
+            StoryManager.setHasSetMyStoriesPrivacy(false, shouldUpdateStorageService: true, transaction: transaction)
         }
     }
 

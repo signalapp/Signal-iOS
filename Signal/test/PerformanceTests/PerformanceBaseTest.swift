@@ -12,7 +12,6 @@ public class PerformanceBaseTest: XCTestCase {
     // MARK: Hooks
 
     func setUpIteration() {
-        SetCurrentAppContext(TestAppContext())
         MockSSKEnvironment.activate()
     }
 

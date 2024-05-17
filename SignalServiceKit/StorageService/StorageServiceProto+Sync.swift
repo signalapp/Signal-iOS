@@ -525,6 +525,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
                 )
                 let localUserProfile = OWSUserProfile.getOrBuildUserProfile(
                     for: profileAddress,
+                    userProfileWriter: .storageService,
                     tx: SDSDB.shimOnlyBridge(tx)
                 )
                 localUserProfile.update(
@@ -1351,7 +1352,10 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             || localUserProfile?.familyName != normalizedRemoteFamilyName
             || localAvatarUrl != record.avatarURL
         ) {
-            let localUserProfile = OWSUserProfile.getOrBuildUserProfileForLocalUser(tx: transaction)
+            let localUserProfile = OWSUserProfile.getOrBuildUserProfileForLocalUser(
+                userProfileWriter: .storageService,
+                tx: transaction
+            )
             localUserProfile.update(
                 givenName: .setTo(normalizedRemoteGivenName),
                 familyName: .setTo(normalizedRemoteFamilyName),
@@ -1555,7 +1559,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
 
         let localHasSetMyStoriesPrivacy = StoryManager.hasSetMyStoriesPrivacy(transaction: transaction)
         if !localHasSetMyStoriesPrivacy && record.myStoryPrivacyHasBeenSet {
-            StoryManager.setHasSetMyStoriesPrivacy(transaction: transaction, shouldUpdateStorageService: false)
+            StoryManager.setHasSetMyStoriesPrivacy(true, shouldUpdateStorageService: false, transaction: transaction)
         }
 
         let localHasReadOnboardingStory = systemStoryManager.isOnboardingStoryRead(transaction: transaction)

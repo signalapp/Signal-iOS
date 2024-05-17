@@ -213,9 +213,9 @@ public class StoryManager: NSObject {
 
     @objc
     public class func setHasSetMyStoriesPrivacy(
-        _ hasSet: Bool = true,
-        transaction: SDSAnyWriteTransaction,
-        shouldUpdateStorageService: Bool = true
+        _ hasSet: Bool,
+        shouldUpdateStorageService: Bool,
+        transaction: SDSAnyWriteTransaction
     ) {
         guard hasSet != hasSetMyStoriesPrivacy(transaction: transaction) else {
             // Don't trigger account record updates unneccesarily!

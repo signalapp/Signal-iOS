@@ -115,9 +115,6 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 
 - (nullable ModelReadCacheSizeLease *)leaseCacheSize:(NSInteger)size;
 
-- (NSArray<SignalServiceAddress *> *)allWhitelistedRegisteredAddressesWithTx:(SDSAnyReadTransaction *)tx
-    NS_SWIFT_NAME(allWhitelistedRegisteredAddresses(tx:));
-
 /**
  * Rotates the local profile key. Intended specifically for the
  * use case of recipient hiding.

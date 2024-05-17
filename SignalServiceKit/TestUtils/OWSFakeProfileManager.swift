@@ -90,6 +90,9 @@ extension OWSFakeProfileManager: ProfileManager {
         tx: DBWriteTransaction
     ) {
     }
+
+    public func allWhitelistedAddresses(tx: SDSAnyReadTransaction) -> [SignalServiceAddress] { [] }
+    public func allWhitelistedRegisteredAddresses(tx: SDSAnyReadTransaction) -> [SignalServiceAddress] { [] }
 }
 
 #endif

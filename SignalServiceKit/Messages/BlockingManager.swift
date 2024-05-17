@@ -9,16 +9,15 @@ import SignalCoreKit
 
 public enum BlockMode: UInt {
     case remote
+    case restoreFromBackup
     case localShouldLeaveGroups
     case localShouldNotLeaveGroups
 
     var locallyInitiated: Bool {
         switch self {
-        case .remote:
+        case .remote, .restoreFromBackup:
             return false
-        case .localShouldLeaveGroups:
-            return true
-        case .localShouldNotLeaveGroups:
+        case .localShouldLeaveGroups, .localShouldNotLeaveGroups:
             return true
         }
     }

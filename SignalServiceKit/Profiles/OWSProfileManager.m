@@ -177,7 +177,9 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     }
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        localUserProfile = [OWSUserProfile getOrBuildUserProfileForLocalUserWithTx:transaction];
+        localUserProfile =
+            [OWSUserProfile getOrBuildUserProfileForLocalUserWithUserProfileWriter:UserProfileWriter_LocalUser
+                                                                                tx:transaction];
         OWSAssertDebug(localUserProfile.profileKey);
     });
 
@@ -416,8 +418,9 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
             // by the time this method is called. If it's not, we've changed our caching
             // logic and should re-evaluate this method.
             OWSFailDebug(@"Missing local profile when setting key.");
-
-            localUserProfile = [OWSUserProfile getOrBuildUserProfileForLocalUserWithTx:transaction];
+            localUserProfile =
+                [OWSUserProfile getOrBuildUserProfileForLocalUserWithUserProfileWriter:UserProfileWriter_LocalUser
+                                                                                    tx:transaction];
 
             _localUserProfile = localUserProfile;
         } else {
@@ -929,11 +932,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     OWSUserProfile *_Nullable userProfile = [self getUserProfileForAddress:address transaction:transaction];
 
     return userProfile.avatarUrlPath;
-}
-
-- (NSArray<SignalServiceAddress *> *)allWhitelistedRegisteredAddressesWithTx:(SDSAnyReadTransaction *)tx
-{
-    return [self objc_allWhitelistedRegisteredAddressesWithTx:tx];
 }
 
 - (nullable NSString *)profileBioForDisplayForAddress:(SignalServiceAddress *)address

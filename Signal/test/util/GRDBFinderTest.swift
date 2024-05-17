@@ -185,7 +185,11 @@ class GRDBFinderTest: SignalBaseTest {
         var expectedAddresses = Set<OWSUserProfile.Address>()
         self.write { tx in
             let buildUserProfile = { () -> OWSUserProfile in
-                return OWSUserProfile.getOrBuildUserProfile(for: .otherUser(Aci.randomForTesting()), tx: tx)
+                return OWSUserProfile.getOrBuildUserProfile(
+                    for: .otherUser(Aci.randomForTesting()),
+                    userProfileWriter: .tests,
+                    tx: tx
+                )
             }
 
             func updateUserProfile(

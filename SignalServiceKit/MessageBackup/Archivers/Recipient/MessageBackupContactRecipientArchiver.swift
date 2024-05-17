@@ -51,7 +51,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         context: MessageBackup.RecipientArchivingContext,
         tx: DBReadTransaction
     ) -> ArchiveMultiFrameResult {
-        let whitelistedAddresses = Set(profileManager.allWhitelistedRegisteredAddresses(tx: tx))
+        let whitelistedAddresses = Set(profileManager.allWhitelistedAddresses(tx: tx))
         let blockedAddresses = blockingManager.blockedAddresses(tx: tx)
 
         var errors = [ArchiveMultiFrameResult.ArchiveFrameError]()
@@ -102,7 +102,10 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
             contact.registered = recipient.isRegistered ? .REGISTERED : .NOT_REGISTERED
             contact.aci = recipient.aci.map(\.rawUUID.data)
             contact.pni = recipient.pni.map(\.rawUUID.data)
-            contact.e164 = recipient.address.e164.map(\.uint64Value)
+            contact.e164 = { () -> UInt64? in
+                guard let phoneNumberString = recipient.phoneNumber?.stringValue else { return nil }
+                return E164(phoneNumberString)?.uint64Value
+            }()
 
             if let aci = recipient.aci {
                 contact.username = usernameLookupManager.fetchUsername(
@@ -272,7 +275,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         // We only need to active hide, since unhidden is the default.
         if contactProto.hideStory, let aci = address.aci {
             let storyContext = storyStore.getOrCreateStoryContextAssociatedData(for: aci, tx: tx)
-            storyStore.updateStoryContext(storyContext, isHidden: true, tx: tx)
+            storyStore.updateStoryContext(storyContext, updateStorageService: false, isHidden: true, tx: tx)
         }
 
         profileManager.insertOtherUserProfile(

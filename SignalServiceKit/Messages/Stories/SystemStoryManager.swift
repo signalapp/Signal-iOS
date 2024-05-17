@@ -162,16 +162,16 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
 
     public func isOnboardingOverlayViewed(transaction: SDSAnyReadTransaction) -> Bool {
         if overlayKvStore.getBool(Constants.kvStoreOnboardingOverlayViewedKey, defaultValue: false, transaction: transaction) {
-            return false
+            return true
         }
 
         if isOnboardingStoryViewed(transaction: transaction) {
             // We don't sync view state for the onboarding overlay. But we can use
             // viewing of the onboarding story as an imperfect proxy; if they viewed it
             // that means they also definitely saw the viewer overlay.
-            return false
+            return true
         }
-        return true
+        return false
     }
 
     public func setOnboardingOverlayViewed(value: Bool, transaction: SDSAnyWriteTransaction) {
