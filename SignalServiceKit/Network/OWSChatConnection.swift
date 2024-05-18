@@ -260,6 +260,11 @@ public class OWSChatConnection: NSObject {
     )
 
     fileprivate func notifyStatusChange(newState: OWSChatConnectionState) {
+        // Technically this would be safe to call from anywhere,
+        // but requiring it to be on the serial queue means it's less likely
+        // for a caller to check a condition that's immediately out of date (a race).
+        assertOnQueue(serialQueue)
+
         let (oldState, continuationsToResolve): (OWSChatConnectionState, [NSObject: CheckedContinuation<Void, Error>])
         (oldState, continuationsToResolve) = stateObservation.update {
             let oldState = $0.currentState
@@ -1626,7 +1631,18 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
 }
 
 internal class OWSChatConnectionUsingLibSignal: OWSChatConnection {
-    var chatService: ChatService
+    private let libsignalNet: Net
+    private var _chatService: ChatService
+    private var chatService: ChatService {
+        get {
+            assertOnQueue(serialQueue)
+            return _chatService
+        }
+        set {
+            assertOnQueue(serialQueue)
+            _chatService = newValue
+        }
+    }
 
     // Libsignal's ChatService expects callers to avoid racing connect() and disconnect() calls.
     // We track the completion of the most recent connect() and disconnect() to do so.
@@ -1650,9 +1666,30 @@ internal class OWSChatConnectionUsingLibSignal: OWSChatConnection {
         }
     }
 
-    internal init(chatService: ChatService, type: OWSChatConnectionType, appExpiry: AppExpiry, db: DB) {
-        self.chatService = chatService
+    internal init(libsignalNet: Net, type: OWSChatConnectionType, appExpiry: AppExpiry, db: DB) {
+        self.libsignalNet = libsignalNet
+        self._chatService = Self.makeChatService(libsignalNet: libsignalNet)
         super.init(type: type, appExpiry: appExpiry, db: db)
+    }
+
+    private static func makeChatService(libsignalNet: Net) -> ChatService {
+        return libsignalNet.createChatService(username: "", password: "")
+    }
+
+    fileprivate override func isSignalProxyReadyDidChange(_ notification: NSNotification) {
+        // We'd like to *immediately* switch over to the new proxy settings,
+        // but the new chat service will start closed,
+        // and we need to make sure there's not a window where we claim to be open but aren't.
+        // Similarly, we need to not race between marking ourselves closed
+        // and installing the new chat service, or the old one could get re-opened.
+        // Using the serialQueue to manage all this is consistent with the previous implementation.
+        self.serialQueue.async {
+            self.chatService = Self.makeChatService(libsignalNet: self.libsignalNet)
+            self.mostRecentTransition = nil
+            self.notifyStatusChange(newState: .closed)
+        }
+        // Note that this includes its own serialQueue.async, so we might as well do it here.
+        applyDesiredSocketState()
     }
 
     fileprivate override func ensureWebsocketExists() {
@@ -1670,25 +1707,32 @@ internal class OWSChatConnectionUsingLibSignal: OWSChatConnection {
             return
         }
 
-        // We have to do this *before* we actually start the connect Task,
-        // because otherwise there's a (tiny) chance the connect could finish immediately,
-        // and then we'd transition *back* from .open to .connecting.
-        // mostRecentTransition is protected by serialQueue, though,
-        // so anything done in response to the notification will still be sufficiently synchronized.
         notifyStatusChange(newState: .connecting)
 
-        mostRecentTransition = .connecting(Task {
+        mostRecentTransition = .connecting(Task { [chatService] in
             // Finish disconnecting before we try to reopen.
             await disconnectingTask?.value
+
+            func connectionAttemptCompleted(_ state: OWSChatConnectionState) {
+                self.serialQueue.async {
+                    if self.chatService === chatService && self.currentState == .connecting {
+                        self.notifyStatusChange(newState: state)
+                    } else {
+                        // We finished connecting, but either we've since been asked to disconnect,
+                        // or the chat config has changed (causing chatService to be recreated).
+                    }
+                }
+            }
+
             do {
                 owsAssertDebug(type == .unidentified, "identified connection not supported yet")
                 try await chatService.connectUnauthenticated()
-                notifyStatusChange(newState: .open)
+                connectionAttemptCompleted(.open)
                 outageDetection.reportConnectionSuccess()
                 return true
             } catch {
                 Logger.error("\(self.logPrefix): failed to connect: \(error)")
-                notifyStatusChange(newState: .closed)
+                connectionAttemptCompleted(.closed)
                 outageDetection.reportConnectionFailure()
                 return false
             }
@@ -1706,7 +1750,7 @@ internal class OWSChatConnectionUsingLibSignal: OWSChatConnection {
         }
 
         mostRecentTransition = .disconnecting(
-            Task {
+            Task { [chatService] in
                 do {
                     // Finish opening before disconnecting.
                     // (We can't use waitForOpen() here because that will wait forever if the connection fails.)
@@ -1786,16 +1830,16 @@ internal class OWSChatConnectionUsingLibSignal: OWSChatConnection {
         Logger.info("\(label) Making request")
 
         unsubmittedRequestTokenForEarlyExit = nil
-        _ = Promise.wrapAsync { [self] in
+        _ = Promise.wrapAsync { [self, chatService] in
             // LibSignalClient's ChatService doesn't keep track of outstanding requests,
             // so we keep the request token alive until we get the response instead.
             defer {
                 removeUnsubmittedRequestToken(unsubmittedRequestToken)
             }
-            return try await chatService.unauthenticatedSend(libsignalRequest)
-        }.done(on: self.serialQueue) { (response: ChatService.Response) in
-            if DebugFlags.internalLogging, !response.message.isEmpty {
-                Logger.info("\(label) received response, status: \(response.status), message: \(response.message)")
+            return try await chatService.unauthenticatedSendAndDebug(libsignalRequest)
+        }.done(on: self.serialQueue) { (response: ChatService.Response, debugInfo: ChatService.DebugInfo) in
+            if DebugFlags.internalLogging {
+                Logger.info("\(label) received response, status: \(response.status), message: \(response.message), route: \(debugInfo.connectionInfo)")
             } else {
                 Logger.info("\(label) received response, status: \(response.status)")
             }
