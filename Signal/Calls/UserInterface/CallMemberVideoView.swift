@@ -15,6 +15,7 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
         self.type = type
         super.init(frame: .zero)
         backgroundColor = .ows_gray90
+        isUserInteractionEnabled = false
         switch type {
         case .local:
             let localVideoView = LocalVideoView()
@@ -24,7 +25,6 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
         case .remoteInIndividual:
             let remoteVideoView = RemoteVideoView()
             remoteVideoView.isGroupCall = false
-            remoteVideoView.isUserInteractionEnabled = false
             self.addSubview(remoteVideoView)
             remoteVideoView.autoPinEdgesToSuperviewEdges()
             self.callViewWrapper = .remoteInIndividual(remoteVideoView)

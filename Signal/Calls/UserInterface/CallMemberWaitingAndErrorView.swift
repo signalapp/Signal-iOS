@@ -11,6 +11,8 @@ import SignalServiceKit
 class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
     weak var errorPresenter: CallMemberErrorPresenter?
 
+    private let blurredAvatarBackgroundView = BlurredAvatarBackgroundView()
+
     enum ErrorState {
         case blocked(SignalServiceAddress)
         case noMediaKeys(SignalServiceAddress)
@@ -25,20 +27,23 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
 
     var isCallMinimized: Bool = false {
         didSet {
-            // Currently only updated for the speaker view, since that's the only visible cell
-            // while minimized.
-            errorView.forceCompactAppearance = isCallMinimized
-            errorView.isUserInteractionEnabled = !isCallMinimized
+            self.errorView.callMinimizedStateDidChange(isCallMinimized: isCallMinimized)
         }
     }
 
     init(type: CallMemberView.MemberType) {
         self.type = type
         super.init(frame: .zero)
+
+        self.addSubview(blurredAvatarBackgroundView)
+        blurredAvatarBackgroundView.autoPinEdgesToSuperviewEdges()
+        blurredAvatarBackgroundView.isHidden = true
+
         self.addSubview(errorView)
-        self.addSubview(spinner)
         errorView.autoPinEdgesToSuperviewEdges()
         errorView.isHidden = true
+
+        self.addSubview(spinner)
         spinner.autoCenterInSuperview()
         spinner.isHidden = true
     }
@@ -76,6 +81,7 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
                 // No media keys, but that's expected since we just joined the call.
                 // Schedule a timer to re-check and show a spinner in the meantime
                 spinner.isHidden = false
+                blurredAvatarBackgroundView.isHidden = false
                 if !spinner.isAnimating { spinner.startAnimating() }
 
                 let configuredDemuxId = remoteGroupMemberDeviceState.demuxId
@@ -94,11 +100,18 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
                 // No media keys. Display error view
                 errorView.isHidden = false
                 configureErrorView(for: remoteGroupMemberDeviceState.address, isBlocked: isRemoteDeviceBlocked)
+                blurredAvatarBackgroundView.isHidden = false
             } else {
                 spinner.isHidden = true
                 errorView.isHidden = true
+                blurredAvatarBackgroundView.isHidden = true
             }
         }
+
+        self.blurredAvatarBackgroundView.update(
+            type: self.type,
+            remoteGroupMemberDeviceState: remoteGroupMemberDeviceState
+        )
     }
 
     private func configureErrorView(for address: SignalServiceAddress, isBlocked: Bool) {
@@ -147,6 +160,15 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
         deferredReconfigTimer?.invalidate()
         errorView.isHidden = true
         spinner.isHidden = true
+        blurredAvatarBackgroundView.isHidden = true
+    }
+
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        let view = super.hitTest(point, with: event)
+        if view == self.errorView.button {
+            return view
+        }
+        return nil
     }
 
     required init?(coder: NSCoder) {

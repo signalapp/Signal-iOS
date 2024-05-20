@@ -67,7 +67,7 @@ public class FeatureFlags: NSObject {
 
     public static let isPrerelease = build.includes(.beta)
 
-    public static let useCallMemberComposableViewsForRemoteUsersInGroupCalls = false
+    public static let useCallMemberComposableViewsForRemoteUsersInGroupCalls = build.includes(.production)
     public static let useCallMemberComposableViewsForRemoteUserInIndividualCalls = build.includes(.production)
 
     @objc

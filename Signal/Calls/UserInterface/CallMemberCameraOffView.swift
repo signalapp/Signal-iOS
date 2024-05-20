@@ -9,11 +9,8 @@ import SignalRingRTC
 import SignalServiceKit
 import SignalUI
 
-// TODO: Before enabling FeatureFlags.useCallMemberComposableViewsForRemoteUsersIn[Group|Individual]Calls,
-// show this view while waiting for remote video to be received and displayed.
 class CallMemberCameraOffView: UIView, CallMemberComposableView {
-    private let backgroundAvatarView = UIImageView()
-    private let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+    private let blurredAvatarBackgroundView = BlurredAvatarBackgroundView()
 
     // One of these three is shown depending on the circumstances.
     private var avatarView: ConversationAvatarView?
@@ -25,18 +22,15 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
     init(type: CallMemberView.MemberType) {
         self.type = type
         super.init(frame: .zero)
+        self.isUserInteractionEnabled = false
 
         let overlayView = UIView()
         overlayView.backgroundColor = .ows_blackAlpha40
         self.addSubview(overlayView)
         overlayView.autoPinEdgesToSuperviewEdges()
 
-        backgroundAvatarView.contentMode = .scaleAspectFill
-        self.addSubview(backgroundAvatarView)
-        backgroundAvatarView.autoPinEdgesToSuperviewEdges()
-
-        self.addSubview(blurView)
-        blurView.autoPinEdgesToSuperviewEdges()
+        self.addSubview(self.blurredAvatarBackgroundView)
+        self.blurredAvatarBackgroundView.autoPinEdgesToSuperviewEdges()
     }
 
     /// This method initializes the views that have the potential to be shown
@@ -105,7 +99,7 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
             if let videoMuted = remoteGroupMemberDeviceState?.videoMuted {
                 self.isHidden = !videoMuted
             } else {
-                self.isHidden = true
+                self.isHidden = false
             }
         }
         if self.isHidden {
@@ -119,8 +113,13 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
             noVideoIndicatorImageView.isHidden = isFullScreen
         }
 
-        let backgroundAvatarImage: UIImage?
-        var backgroundColor: UIColor?
+        // Update blurred avatar background
+        self.blurredAvatarBackgroundView.update(
+            type: self.type,
+            remoteGroupMemberDeviceState: remoteGroupMemberDeviceState
+        )
+
+        // Update circular avatar
         switch type {
         case .local:
             databaseStorage.read { tx in
@@ -132,41 +131,23 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
                     address: localAddress,
                     tx: tx
                 )
-                backgroundColor = AvatarTheme.forAddress(localAddress).backgroundColor
             }
-            backgroundAvatarImage = profileManager.localProfileAvatarImage()
         case .remoteInGroup:
             guard let remoteGroupMemberDeviceState else { return }
-            let (image, color) = avatarImageAndBackgroundColorWithSneakyTransaction(for: remoteGroupMemberDeviceState.address)
-            backgroundAvatarImage = image
-            backgroundColor = color
+            databaseStorage.read { tx in
+                updateCircularAvatarIfNecessary(
+                    address: remoteGroupMemberDeviceState.address,
+                    tx: tx
+                )
+            }
         case .remoteInIndividual(let individualCall):
-            let (image, color) = avatarImageAndBackgroundColorWithSneakyTransaction(for: individualCall.remoteAddress)
-            backgroundAvatarImage = image
-            backgroundColor = color
+            databaseStorage.read { tx in
+                updateCircularAvatarIfNecessary(
+                    address: individualCall.remoteAddress,
+                    tx: tx
+                )
+            }
         }
-        backgroundAvatarView.image = backgroundAvatarImage
-        self.backgroundColor = backgroundColor
-    }
-
-    private func avatarImageAndBackgroundColorWithSneakyTransaction(
-        for address: SignalServiceAddress
-    ) -> (UIImage?, UIColor?) {
-        let profileImage = databaseStorage.read { tx in
-            updateCircularAvatarIfNecessary(
-                address: address,
-                tx: tx
-            )
-            return self.contactsManagerImpl.avatarImage(
-                forAddress: address,
-                shouldValidate: true,
-                transaction: tx
-            )
-        }
-        return (
-            profileImage,
-            AvatarTheme.forAddress(address).backgroundColor
-        )
     }
 
     func updateDimensions() {
@@ -183,7 +164,7 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
 
     func clearConfiguration() {
         self.backgroundColor = .ows_black
-        backgroundAvatarView.image = nil
+        self.blurredAvatarBackgroundView.clear()
         avatarView?.reset()
     }
 
@@ -272,5 +253,77 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+class BlurredAvatarBackgroundView: UIView {
+    private let backgroundAvatarView = UIImageView()
+    private let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterial))
+
+    init() {
+        super.init(frame: .zero)
+
+        self.overrideUserInterfaceStyle = .dark
+
+        backgroundAvatarView.contentMode = .scaleAspectFill
+        self.addSubview(backgroundAvatarView)
+        backgroundAvatarView.autoPinEdgesToSuperviewEdges()
+
+        self.addSubview(blurView)
+        blurView.autoPinEdgesToSuperviewEdges()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func update(
+        type: CallMemberView.MemberType,
+        remoteGroupMemberDeviceState: RemoteDeviceState?
+    ) {
+        let backgroundAvatarImage: UIImage?
+        var backgroundColor: UIColor?
+        switch type {
+        case .local:
+            databaseStorage.read { tx in
+                guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aciAddress else {
+                    owsFailDebug("missing local address")
+                    return
+                }
+                backgroundColor = AvatarTheme.forAddress(localAddress).backgroundColor
+            }
+            backgroundAvatarImage = profileManager.localProfileAvatarImage()
+        case .remoteInGroup:
+            guard let remoteGroupMemberDeviceState else { return }
+            let (image, color) = avatarImageAndBackgroundColorWithSneakyTransaction(for: remoteGroupMemberDeviceState.address)
+            backgroundAvatarImage = image
+            backgroundColor = color
+        case .remoteInIndividual(let individualCall):
+            let (image, color) = avatarImageAndBackgroundColorWithSneakyTransaction(for: individualCall.remoteAddress)
+            backgroundAvatarImage = image
+            backgroundColor = color
+        }
+        backgroundAvatarView.image = backgroundAvatarImage
+        self.backgroundColor = backgroundColor
+    }
+
+    private func avatarImageAndBackgroundColorWithSneakyTransaction(
+        for address: SignalServiceAddress
+    ) -> (UIImage?, UIColor?) {
+        let profileImage = databaseStorage.read { tx in
+            return self.contactsManagerImpl.avatarImage(
+                forAddress: address,
+                shouldValidate: true,
+                transaction: tx
+            )
+        }
+        return (
+            profileImage,
+            AvatarTheme.forAddress(address).backgroundColor
+        )
+    }
+
+    func clear() {
+        backgroundAvatarView.image = nil
     }
 }

@@ -98,6 +98,22 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
         )
     }
 
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        let view = super.hitTest(point, with: event)
+        if view == self {
+            switch self.type {
+            case .remoteInGroup(_), .remoteInIndividual(_):
+                return nil
+            case .local:
+                if self.shouldAllowTapHandling == true {
+                    return view
+                }
+                return nil
+            }
+        }
+        return view
+    }
+
     override func layoutSubviews() {
         super.layoutSubviews()
         updateDimensions()
@@ -140,15 +156,10 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
             layer.shadowOpacity = 0.25
             layer.shadowRadius = 4
             layer.cornerRadius = isFullScreen ? 0 : Constants.defaultPipCornerRadius
-            // If the local user is fullscreen, they're the only one in the call,
-            // so taps should pass through to the call view controller.
-            self.isUserInteractionEnabled = !isFullScreen
         case .remoteInGroup:
             owsAssertDebug(remoteGroupMemberDeviceState != nil, "RemoteDeviceState must be given for remote members in group calls!")
-            self.isUserInteractionEnabled = false
         case .remoteInIndividual:
             owsAssertDebug(remoteGroupMemberDeviceState == nil, "RemoteDeviceStates are only applicable to group calls!")
-            self.isUserInteractionEnabled = false
         }
 
         self.composableViews.forEach { view in

@@ -16,10 +16,10 @@ class GroupCallErrorView: UIView {
         didSet {
             if let iconImage = iconImage {
                 iconView.setTemplateImage(iconImage, tintColor: .ows_white)
-                miniButton.setTemplateImage(iconImage, tintColor: .ows_white)
+                miniBlockIndicator.setTemplateImage(iconImage, tintColor: .ows_white)
             } else {
                 iconView.image = nil
-                miniButton.setImage(nil, for: .normal)
+                miniBlockIndicator.image = nil
             }
         }
     }
@@ -47,7 +47,7 @@ class GroupCallErrorView: UIView {
         return label
     }()
 
-    private lazy var button: UIButton = {
+    private(set) lazy var button: UIButton = {
         let buttonLabel = OWSLocalizedString(
             "GROUP_CALL_ERROR_DETAILS",
             comment: "A button to receive more info about not seeing a participant in group call grid")
@@ -67,14 +67,9 @@ class GroupCallErrorView: UIView {
         return button
     }()
 
-    private lazy var miniButton: UIButton = {
-        let button = UIButton()
-        button.contentVerticalAlignment = .fill
-        button.contentHorizontalAlignment = .fill
+    private lazy var miniBlockIndicator = UIImageView()
 
-        button.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
-        return button
-    }()
+    private var stackView: UIStackView?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -89,24 +84,25 @@ class GroupCallErrorView: UIView {
 
         stackView.setCustomSpacing(12, after: iconView)
         stackView.setCustomSpacing(16, after: label)
+        self.stackView = stackView
 
         insetsLayoutMarginsFromSafeArea = false
 
-        addSubview(miniButton)
+        addSubview(miniBlockIndicator)
         addSubview(stackView)
 
         stackView.autoPinWidthToSuperviewMargins()
         stackView.autoVCenterInSuperview()
         stackView.autoPinEdge(toSuperviewMargin: .top, relation: .greaterThanOrEqual)
         stackView.autoPinEdge(toSuperviewMargin: .bottom, relation: .greaterThanOrEqual)
-        miniButton.autoCenterInSuperview()
+        miniBlockIndicator.autoCenterInSuperview()
 
         iconView.setCompressionResistanceHigh()
         button.setCompressionResistanceHigh()
 
         iconView.autoSetDimensions(to: CGSize(width: 24, height: 24))
         button.autoSetDimension(.height, toSize: 24, relation: .greaterThanOrEqual)
-        miniButton.autoSetDimensions(to: CGSize(width: 24, height: 24))
+        miniBlockIndicator.autoSetDimensions(to: CGSize(width: 24, height: 24))
 
         configure()
     }
@@ -134,7 +130,7 @@ class GroupCallErrorView: UIView {
         iconView.isHidden = isCompact
         label.isHidden = isCompact
         button.isHidden = isCompact
-        miniButton.isHidden = !isCompact
+        miniBlockIndicator.isHidden = !isCompact
 
         layoutIfNeeded()
 
@@ -145,6 +141,10 @@ class GroupCallErrorView: UIView {
             let labelDesiredHeight = label.sizeThatFits(widthBox).height
             label.isHidden = (labelDesiredHeight > label.bounds.height)
         }
+    }
+
+    func callMinimizedStateDidChange(isCallMinimized: Bool) {
+        self.forceCompactAppearance = isCallMinimized
     }
 
     @objc

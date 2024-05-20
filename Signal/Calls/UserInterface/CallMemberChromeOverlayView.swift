@@ -73,6 +73,14 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
         }
     }
 
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        let view = super.hitTest(point, with: event)
+        if view == self.flipCameraButton {
+            return view
+        }
+        return nil
+    }
+
     func rotateForPhoneOrientation(_ rotationAngle: CGFloat) {
         /// TODO: Add support for rotating other elements too.
         self.muteIndicatorCircleView.transform = CGAffineTransform(rotationAngle: rotationAngle)
