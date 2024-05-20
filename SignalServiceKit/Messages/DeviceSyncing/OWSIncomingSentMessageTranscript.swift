@@ -223,19 +223,23 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
             bodyRanges = nil
         }
 
-        let contactBuilder = try dataMessage.contact.first.map {
-            try DependenciesBridge.shared.contactShareManager.validateAndBuild(
-                for: $0,
-                tx: tx
-            )
+        let makeContactBuilder = { [dataMessage] tx in
+            try dataMessage.contact.first.map {
+                try DependenciesBridge.shared.contactShareManager.validateAndBuild(
+                    for: $0,
+                    tx: tx
+                )
+            }
         }
 
-        let linkPreviewBuilder = try dataMessage.preview.first.map { linkPreview in
-            return try DependenciesBridge.shared.linkPreviewManager.validateAndBuildLinkPreview(
-                from: linkPreview,
-                dataMessage: dataMessage,
-                tx: tx
-            )
+        let makeLinkPreviewBuilder = { [dataMessage] tx in
+            try dataMessage.preview.first.map { linkPreview in
+                return try DependenciesBridge.shared.linkPreviewManager.validateAndBuildLinkPreview(
+                    from: linkPreview,
+                    dataMessage: dataMessage,
+                    tx: tx
+                )
+            }
         }
 
         let giftBadge = OWSGiftBadge.maybeBuild(from: dataMessage)
@@ -243,18 +247,31 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
             throw OWSAssertionError("Ignoring gift sent to group")
         }
 
-        let messageStickerBuilder = try dataMessage.sticker.map { stickerProto in
-            return try DependenciesBridge.shared.messageStickerManager.buildValidatedMessageSticker(
-                from: stickerProto,
+        let makeMessageStickerBuilder = { [dataMessage] tx in
+            try dataMessage.sticker.map { stickerProto in
+                return try DependenciesBridge.shared.messageStickerManager.buildValidatedMessageSticker(
+                    from: stickerProto,
+                    tx: tx
+                )
+            }
+        }
+
+        let threadUniqueId = target.thread.uniqueId
+        let makeQuotedMessageBuilder = { [dataMessage, threadUniqueId] (tx: DBWriteTransaction) in
+            guard
+                let thread = DependenciesBridge.shared.threadStore.fetchThread(
+                    uniqueId: threadUniqueId,
+                    tx: tx
+                )
+            else {
+                throw OWSAssertionError("Missing thread!")
+            }
+            return DependenciesBridge.shared.quotedReplyManager.quotedMessage(
+                for: dataMessage,
+                thread: thread,
                 tx: tx
             )
         }
-
-        let quotedMessageBuilder = DependenciesBridge.shared.quotedReplyManager.quotedMessage(
-            for: dataMessage,
-            thread: target.thread,
-            tx: tx
-        )
 
         let storyTimestamp: UInt64?
         let storyAuthorAci: Aci?
@@ -275,11 +292,11 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
             body: body,
             bodyRanges: bodyRanges,
             attachmentPointerProtos: dataMessage.attachments,
-            quotedMessageBuilder: quotedMessageBuilder,
-            contactBuilder: contactBuilder,
-            linkPreviewBuilder: linkPreviewBuilder,
+            makeQuotedMessageBuilder: makeQuotedMessageBuilder,
+            makeContactBuilder: makeContactBuilder,
+            makeLinkPreviewBuilder: makeLinkPreviewBuilder,
             giftBadge: giftBadge,
-            messageStickerBuilder: messageStickerBuilder,
+            makeMessageStickerBuilder: makeMessageStickerBuilder,
             isViewOnceMessage: isViewOnceMessage,
             expirationStartedAt: sentProto.expirationStartTimestamp,
             expirationDurationSeconds: dataMessage.expireTimer,

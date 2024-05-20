@@ -45,11 +45,13 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
         }
 
         // TODO: handle attachments in quotes
-        let quotedMessageBuilder = contents.quotedMessage.map {
-            return OwnedAttachmentBuilder<QuotedMessageInfo>.withoutFinalizer(.init(
-                quotedMessage: $0,
-                renderingFlag: .default
-            ))
+        let quotedMessageBuilder = { [contents] (_: DBWriteTransaction) in
+            contents.quotedMessage.map {
+                return OwnedAttachmentBuilder<QuotedMessageInfo>.withoutFinalizer(.init(
+                    quotedMessage: $0,
+                    renderingFlag: .default
+                ))
+            }
         }
 
         let messageParams = SentMessageTranscriptType.Message(
@@ -58,15 +60,15 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
             bodyRanges: contents.body?.ranges,
             // TODO: attachments
             attachmentPointerProtos: [],
-            quotedMessageBuilder: quotedMessageBuilder,
+            makeQuotedMessageBuilder: quotedMessageBuilder,
             // TODO: contact message
-            contactBuilder: nil,
+            makeContactBuilder: { _ in nil },
             // TODO: linkPreview message
-            linkPreviewBuilder: nil,
+            makeLinkPreviewBuilder: { _ in nil },
             // TODO: gift badge message
             giftBadge: nil,
             // TODO: sticker message
-            messageStickerBuilder: nil,
+            makeMessageStickerBuilder: { _ in nil },
             // TODO: isViewOnceMessage
             isViewOnceMessage: false,
             expirationStartedAt: chatItem.expireStartDate,

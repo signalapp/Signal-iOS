@@ -33,15 +33,23 @@ public enum SentMessageTranscriptType {
         // TODO: generalize to cover attachments from backups
         public let attachmentPointerProtos: [SSKProtoAttachmentPointer]
 
-        public let quotedMessageBuilder: OwnedAttachmentBuilder<QuotedMessageInfo>?
+        /// Construction of the builder itself deferred since the builder's constructor does database inserts.
+        /// Edit messages construct a transcript but don't use the attachment builders and instead make their own.
+        public let makeQuotedMessageBuilder: (DBWriteTransaction) throws -> OwnedAttachmentBuilder<QuotedMessageInfo>?
 
-        public let contactBuilder: OwnedAttachmentBuilder<OWSContact>?
+        /// Construction of the builder itself deferred since the builder's constructor does database inserts.
+        /// Edit messages construct a transcript but don't use the attachment builders and instead make their own.
+        public let makeContactBuilder: (DBWriteTransaction) throws -> OwnedAttachmentBuilder<OWSContact>?
 
-        public let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>?
+        /// Construction of the builder itself deferred since the builder's constructor does database inserts.
+        /// Edit messages construct a transcript but don't use the attachment builders and instead make their own.
+        public let makeLinkPreviewBuilder: (DBWriteTransaction) throws -> OwnedAttachmentBuilder<OWSLinkPreview>?
 
         public let giftBadge: OWSGiftBadge?
 
-        public let messageStickerBuilder: OwnedAttachmentBuilder<MessageSticker>?
+        /// Construction of the builder itself deferred since the builder's constructor does database inserts.
+        /// Edit messages construct a transcript but don't use the attachment builders and instead make their own.
+        public let makeMessageStickerBuilder: (DBWriteTransaction) throws -> OwnedAttachmentBuilder<MessageSticker>?
 
         public let isViewOnceMessage: Bool
 

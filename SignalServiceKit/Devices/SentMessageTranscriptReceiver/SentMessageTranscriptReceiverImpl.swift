@@ -171,12 +171,25 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         )
         var outgoingMessage = interactionStore.buildOutgoingMessage(builder: outgoingMessageBuilder, tx: tx)
 
+        let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>?
+        let quotedMessageBuilder: OwnedAttachmentBuilder<QuotedMessageInfo>?
+        let contactBuilder: OwnedAttachmentBuilder<OWSContact>?
+        let messageStickerBuilder: OwnedAttachmentBuilder<MessageSticker>?
+        do {
+            linkPreviewBuilder = try messageParams.makeLinkPreviewBuilder(tx)
+            quotedMessageBuilder = try messageParams.makeQuotedMessageBuilder(tx)
+            contactBuilder = try messageParams.makeContactBuilder(tx)
+            messageStickerBuilder = try messageParams.makeMessageStickerBuilder(tx)
+        } catch let error {
+            return .failure(error)
+        }
+
         let hasRenderableContent = outgoingMessageBuilder.hasRenderableContent(
             hasBodyAttachments: messageParams.attachmentPointerProtos.isEmpty.negated,
-            hasLinkPreview: messageParams.linkPreviewBuilder != nil,
-            hasQuotedReply: messageParams.quotedMessageBuilder != nil,
-            hasContactShare: messageParams.contactBuilder != nil,
-            hasSticker: messageParams.messageStickerBuilder != nil,
+            hasLinkPreview: linkPreviewBuilder != nil,
+            hasQuotedReply: quotedMessageBuilder != nil,
+            hasContactShare: contactBuilder != nil,
+            hasSticker: messageStickerBuilder != nil,
             // Payment notifications go through a different path.
             hasPayment: false
         )
@@ -208,10 +221,10 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         } else {
 
             // Update attachment fields before inserting.
-            messageParams.quotedMessageBuilder.map { interactionStore.update(outgoingMessage, with: $0.info.quotedMessage, tx: tx) }
-            messageParams.contactBuilder.map { interactionStore.update(outgoingMessage, with: $0.info, tx: tx) }
-            messageParams.linkPreviewBuilder.map { interactionStore.update(outgoingMessage, with: $0.info, tx: tx) }
-            messageParams.messageStickerBuilder.map { interactionStore.update(outgoingMessage, with: $0.info, tx: tx) }
+            quotedMessageBuilder.map { interactionStore.update(outgoingMessage, with: $0.info.quotedMessage, tx: tx) }
+            contactBuilder.map { interactionStore.update(outgoingMessage, with: $0.info, tx: tx) }
+            linkPreviewBuilder.map { interactionStore.update(outgoingMessage, with: $0.info, tx: tx) }
+            messageStickerBuilder.map { interactionStore.update(outgoingMessage, with: $0.info, tx: tx) }
 
             // Check for any placeholders inserted because of a previously undecryptable message
             // The sender may have resent the message. If so, we should swap it in place of the placeholder
@@ -224,20 +237,20 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                     tx: tx
                 )
 
-                try messageParams.quotedMessageBuilder?.finalize(
+                try quotedMessageBuilder?.finalize(
                     owner: .quotedReplyAttachment(.init(
                         messageRowId: outgoingMessage.sqliteRowId!,
-                        renderingFlag: messageParams.quotedMessageBuilder?.info.renderingFlag ?? .default
+                        renderingFlag: quotedMessageBuilder?.info.renderingFlag ?? .default
                     )),
                     tx: tx
                 )
 
-                try messageParams.linkPreviewBuilder?.finalize(
+                try linkPreviewBuilder?.finalize(
                     owner: .messageLinkPreview(messageRowId: outgoingMessage.sqliteRowId!),
                     tx: tx
                 )
 
-                try messageParams.messageStickerBuilder.map {
+                try messageStickerBuilder.map {
                     try $0.finalize(
                         owner: .messageSticker(.init(
                             messageRowId: outgoingMessage.sqliteRowId!,
@@ -247,7 +260,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                         tx: tx
                     )
                 }
-                try messageParams.contactBuilder?.finalize(
+                try contactBuilder?.finalize(
                     owner: .messageContactAvatar(messageRowId: outgoingMessage.sqliteRowId!),
                     tx: tx
                 )
