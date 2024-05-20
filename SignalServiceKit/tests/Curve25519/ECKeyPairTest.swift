@@ -9,6 +9,16 @@ import XCTest
 @testable import SignalServiceKit
 
 final class ECKeyPairTest: XCTestCase {
+    func testInvalidPublicSerializationLibsignalExtensions() throws {
+        let keyPair = ECKeyPair.generateKeyPair()
+
+        let serializedPublic = keyPair.publicKey
+        let deserializedPublic = try PublicKey(keyData: serializedPublic)
+        XCTAssertEqual(deserializedPublic, keyPair.identityKeyPair.publicKey)
+        XCTAssertThrowsError(try PublicKey(keyData: serializedPublic.dropFirst()))
+        XCTAssertThrowsError(try PublicKey(keyData: serializedPublic + [0x41]))
+    }
+
     func testEncodeDecode() throws {
         let privateKey = try PrivateKey(Array(repeating: 0, count: 31) + [0x41])
         let keyPair = ECKeyPair(IdentityKeyPair(publicKey: privateKey.publicKey, privateKey: privateKey))
