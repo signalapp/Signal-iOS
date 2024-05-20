@@ -1594,6 +1594,11 @@ public final class MessageReceiver: Dependencies {
         transaction tx: SDSAnyWriteTransaction
     ) -> EditProcessingResult {
 
+        guard SDS.fitsInInt64(editMessage.targetSentTimestamp) else {
+            Logger.error("Edit message target was invalid timestamp!")
+            return .invalidEdit
+        }
+
         guard let transcript = OWSIncomingSentMessageTranscript.from(
             sentProto: sentMessage,
             serverTimestamp: decryptedEnvelope.serverTimestamp,
@@ -1648,12 +1653,17 @@ public final class MessageReceiver: Dependencies {
         editMessage: SSKProtoEditMessage,
         tx: SDSAnyWriteTransaction
     ) -> EditProcessingResult {
-        let decryptedEnvelope = request.decryptedEnvelope
+        guard SDS.fitsInInt64(editMessage.targetSentTimestamp) else {
+            Logger.error("Edit message target was invalid timestamp!")
+            return .invalidEdit
+        }
 
         guard let dataMessage = editMessage.dataMessage else {
             Logger.warn("Missing edit message data.")
             return .invalidEdit
         }
+
+        let decryptedEnvelope = request.decryptedEnvelope
 
         guard let thread = preprocessDataMessage(dataMessage, envelope: decryptedEnvelope, tx: tx) else {
             Logger.warn("Missing edit message thread.")

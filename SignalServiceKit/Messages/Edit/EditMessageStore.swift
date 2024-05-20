@@ -76,6 +76,11 @@ public class EditMessageStoreImpl: EditMessageStore {
         authorAci: Aci?,
         tx: DBReadTransaction
     ) -> EditMessageTarget? {
+        guard SDS.fitsInInt64(timestamp) else {
+            owsFailDebug("Received invalid timestamp!")
+            return nil
+        }
+
         let transaction = SDSDB.shimOnlyBridge(tx)
 
         let sql = """
