@@ -48,7 +48,8 @@ class StoryContextOnboardingOverlayView: UIView, Dependencies {
 
     func checkIfShouldDisplay() {
         Self.shouldDisplay = Self.databaseStorage.read { transaction in
-            Self.systemStoryManager.isOnboardingOverlayViewed(transaction: transaction)
+            let isOverlayViewed = Self.systemStoryManager.isOnboardingOverlayViewed(transaction: transaction)
+            return !isOverlayViewed
         }
     }
 
