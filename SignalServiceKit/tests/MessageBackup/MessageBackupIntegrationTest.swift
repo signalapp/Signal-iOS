@@ -11,17 +11,10 @@ import XCTest
 
 private extension MessageBackupIntegrationTestCase {
     var depBridge: DependenciesBridge { .shared }
-
-    func skipTestForNow() throws {
-        // [Backup] TODO: unwind this once we've codified shared integration test cases.
-        throw XCTSkip("Skipped while we codify shared integration test cases.")
-    }
 }
 
 final class MessageBackupAccountDataTest: MessageBackupIntegrationTestCase {
     func testAccountData() async throws {
-        try skipTestForNow()
-
         try await runTest(backupName: "account-data") { sdsTx, tx in
             XCTAssertNotNil(profileManager.localProfileKey())
 
@@ -100,8 +93,6 @@ final class MessageBackupContactTest: MessageBackupIntegrationTestCase {
     }
 
     func testRegisteredBlockedContact() async throws {
-        try skipTestForNow()
-
         try await runTest(backupName: "registered-blocked-contact") { sdsTx, tx in
             let allRecipients = depBridge.recipientDatabaseTable.allRecipients(tx: tx)
             XCTAssertEqual(allRecipients.count, 1)
@@ -120,8 +111,6 @@ final class MessageBackupContactTest: MessageBackupIntegrationTestCase {
     }
 
     func testUnregisteredContact() async throws {
-        try skipTestForNow()
-
         try await runTest(backupName: "unregistered-contact") { sdsTx, tx in
             let allRecipients = depBridge.recipientDatabaseTable.allRecipients(tx: tx)
             XCTAssertEqual(allRecipients.count, 1)
