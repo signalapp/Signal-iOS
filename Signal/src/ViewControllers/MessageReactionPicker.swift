@@ -40,6 +40,8 @@ class MessageReactionPicker: UIStackView {
     private var selectedEmoji: EmojiWithSkinTones?
     private var backgroundView: UIView?
 
+    private let style: Style
+
     /// The individual emoji buttons and the Any button from `buttonForEmoji`
     private var buttons: [OWSFlatButton] {
         return buttonForEmoji.map(\.button)
@@ -58,6 +60,7 @@ class MessageReactionPicker: UIStackView {
             self.selectedEmoji = nil
         }
         self.delegate = delegate
+        self.style = style
 
         super.init(frame: .zero)
 
@@ -93,49 +96,16 @@ class MessageReactionPicker: UIStackView {
             trailing: style.isInline ? 4 : pickerPadding
         )
 
-        var emojiSet: [EmojiWithSkinTones] = SDSDatabaseStorage.shared.read { transaction in
-            let customSetStrings = ReactionManager.customEmojiSet(transaction: transaction) ?? []
-            let customSet = customSetStrings.lazy.map { EmojiWithSkinTones(rawValue: $0) }
-
-            // Any holes or invalid choices are filled in with the default reactions.
-            // This could happen if another platform supports an emoji that we don't yet (say, because there's a newer
-            // version of Unicode), or if a bug results in a string that's not valid at all, or fewer entries than the
-            // default.
-            let savedReactions = ReactionManager.defaultEmojiSet.enumerated().map { (i, defaultEmoji) -> EmojiWithSkinTones in
-                // Treat "out-of-bounds index" and "in-bounds but not valid" the same way.
-                if let customReaction = customSet[safe: i] ?? nil {
-                    return customReaction
-                } else {
-                    return EmojiWithSkinTones(rawValue: defaultEmoji)!
-                }
-            }
-
-            var recentReactions = [EmojiWithSkinTones]()
-
-            // Add recent emoji to inline picker
-            if style.isInline {
-                let savedReactionSet = Set(savedReactions)
-
-                recentReactions = EmojiPickerCollectionView
-                    .getRecentEmoji(tx: transaction)
-                    .filter { !savedReactionSet.contains($0) }
-            }
-
-            return savedReactions + recentReactions
-        }
+        let emojiSet = currentEmojiSetOnDisk(style: style)
 
         var addAnyButton = !style.isConfigure
 
-        if !style.isConfigure, let selectedEmoji = self.selectedEmoji {
-            // If the local user reacted with any of the default emoji set,
-            // we should show it in the normal place in the picker bar.
-            // NOTE: This used to match independent of skin tone, but we decided to drop that behavior.
-            if let index = emojiSet.firstIndex(of: selectedEmoji) {
-                emojiSet[index] = selectedEmoji
-            } else {
-                emojiSet.append(selectedEmoji)
-                addAnyButton = false
-            }
+        if
+            !style.isConfigure,
+            let selectedEmoji = self.selectedEmoji,
+            nil == emojiSet.firstIndex(of: selectedEmoji)
+        {
+            addAnyButton = false
         }
 
         switch style {
@@ -186,6 +156,61 @@ class MessageReactionPicker: UIStackView {
             }
             buttonForEmoji.append((MessageReactionPicker.anyEmojiName, button))
             self.addArrangedSubview(button)
+        }
+    }
+
+    private func currentEmojiSetOnDisk(style: Style) -> [EmojiWithSkinTones] {
+        var emojiSet = SDSDatabaseStorage.shared.read { transaction in
+            let customSetStrings = ReactionManager.customEmojiSet(transaction: transaction) ?? []
+            let customSet = customSetStrings.lazy.map { EmojiWithSkinTones(rawValue: $0) }
+
+            // Any holes or invalid choices are filled in with the default reactions.
+            // This could happen if another platform supports an emoji that we don't yet (say, because there's a newer
+            // version of Unicode), or if a bug results in a string that's not valid at all, or fewer entries than the
+            // default.
+            let savedReactions = ReactionManager.defaultEmojiSet.enumerated().map { (i, defaultEmoji) -> EmojiWithSkinTones in
+                // Treat "out-of-bounds index" and "in-bounds but not valid" the same way.
+                if let customReaction = customSet[safe: i] ?? nil {
+                    return customReaction
+                } else {
+                    return EmojiWithSkinTones(rawValue: defaultEmoji)!
+                }
+            }
+
+            var recentReactions = [EmojiWithSkinTones]()
+
+            // Add recent emoji to inline picker
+            if style.isInline {
+                let savedReactionSet = Set(savedReactions)
+
+                recentReactions = EmojiPickerCollectionView
+                    .getRecentEmoji(tx: transaction)
+                    .filter { !savedReactionSet.contains($0) }
+            }
+
+            return savedReactions + recentReactions
+        }
+
+        if !style.isConfigure, let selectedEmoji = self.selectedEmoji {
+            // If the local user reacted with any of the default emoji set,
+            // we should show it in the normal place in the picker bar.
+            // NOTE: This used to match independent of skin tone, but we decided to drop that behavior.
+            if let index = emojiSet.firstIndex(of: selectedEmoji) {
+                emojiSet[index] = selectedEmoji
+            } else {
+                emojiSet.append(selectedEmoji)
+            }
+        }
+
+        return emojiSet
+    }
+
+    func updateReactionPickerEmojis() {
+        let currentEmojis = currentEmojiSetOnDisk(style: self.style)
+        for (index, emoji) in self.currentEmojiSet().enumerated() {
+            if let newEmoji = currentEmojis[safe: index]?.rawValue {
+                self.replaceEmojiReaction(emoji, newEmoji: newEmoji, inPosition: index)
+            }
         }
     }
 

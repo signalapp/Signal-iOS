@@ -39,6 +39,8 @@ class EmojiPickerSheet: InteractiveSheetViewController {
 
     private let forceDarkTheme: Bool
 
+    private let reactionPickerConfigurationListener: ReactionPickerConfigurationListener?
+
     override var sheetBackgroundColor: UIColor {
         (Theme.isDarkThemeEnabled || forceDarkTheme) ? .ows_gray80 : .ows_white
     }
@@ -47,10 +49,12 @@ class EmojiPickerSheet: InteractiveSheetViewController {
         message: TSMessage?,
         allowReactionConfiguration: Bool = true,
         forceDarkTheme: Bool = false,
+        reactionPickerConfigurationListener: ReactionPickerConfigurationListener? = nil,
         completionHandler: @escaping (EmojiWithSkinTones?) -> Void
     ) {
         self.allowReactionConfiguration = allowReactionConfiguration
         self.forceDarkTheme = forceDarkTheme
+        self.reactionPickerConfigurationListener = reactionPickerConfigurationListener
         self.completionHandler = completionHandler
         self.collectionView = EmojiPickerCollectionView(
             message: message,
@@ -137,7 +141,10 @@ class EmojiPickerSheet: InteractiveSheetViewController {
 
     @objc
     private func didSelectConfigureButton(sender: UIButton) {
-        let configVC = EmojiReactionPickerConfigViewController()
+        let configVC = EmojiReactionPickerConfigViewController(
+            forceDarkTheme: self.forceDarkTheme,
+            reactionPickerConfigurationListener: self.reactionPickerConfigurationListener
+        )
         let navController = UINavigationController(rootViewController: configVC)
         self.present(navController, animated: true)
     }

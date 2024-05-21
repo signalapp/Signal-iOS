@@ -9,21 +9,47 @@ import SignalUI
 public class EmojiReactionPickerConfigViewController: UIViewController {
 
     private lazy var reactionPicker: MessageReactionPicker = {
-        return MessageReactionPicker(selectedEmoji: nil, delegate: nil, style: .configure)
+        return MessageReactionPicker(
+            selectedEmoji: nil,
+            delegate: nil,
+            style: .configure,
+            forceDarkTheme: self.forceDarkTheme
+        )
     }()
 
     private lazy var instructionLabel: UILabel = {
         let label = UILabel()
         label.text = OWSLocalizedString("TAP_REPLACE_EMOJI", comment: "Tap to Replace Emoji string for reaction configuration")
         label.font = UIFont.dynamicTypeBody2
-        label.textColor = Theme.secondaryTextAndIconColor
+        label.textColor = self.forceDarkTheme ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor
         return label
     }()
+
+    private let forceDarkTheme: Bool
+
+    private let reactionPickerConfigurationListener: ReactionPickerConfigurationListener?
+
+    init(
+        forceDarkTheme: Bool = false,
+        reactionPickerConfigurationListener: ReactionPickerConfigurationListener? = nil
+    ) {
+        self.forceDarkTheme = forceDarkTheme
+        self.reactionPickerConfigurationListener = reactionPickerConfigurationListener
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     public override func viewDidLoad() {
         super.viewDidLoad()
         title = OWSLocalizedString("CONFIGURE_REACTIONS", comment: "Configure reactions title text")
-        view.backgroundColor = Theme.isDarkThemeEnabled ? Theme.actionSheetBackgroundColor : UIColor.color(rgbHex: 0xF0F0F0)
+        if self.forceDarkTheme || Theme.isDarkThemeEnabled {
+            view.backgroundColor = .ows_gray75
+        } else {
+            view.backgroundColor = UIColor.color(rgbHex: 0xF0F0F0)
+        }
 
         navigationItem.rightBarButtonItem = .doneButton { [weak self] in
             self?.doneButtonTapped()
@@ -39,6 +65,11 @@ public class EmojiReactionPickerConfigViewController: UIViewController {
                 self?.resetButtonTapped()
             }
         )
+        if self.forceDarkTheme {
+            navigationController?.navigationBar.tintColor = .white
+            let textAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
+            navigationController?.navigationBar.titleTextAttributes = textAttributes
+        }
 
         // Reaction picker
         reactionPicker.delegate = self
@@ -66,6 +97,7 @@ public class EmojiReactionPickerConfigViewController: UIViewController {
         SDSDatabaseStorage.shared.write { transaction in
             ReactionManager.setCustomEmojiSet(currentEmojiSet, transaction: transaction)
         }
+        self.reactionPickerConfigurationListener?.didCompleteReactionPickerConfiguration()
         Self.storageServiceManager.recordPendingLocalAccountUpdates()
         dismiss(animated: true, completion: nil)
     }
@@ -101,4 +133,8 @@ extension EmojiReactionPickerConfigViewController: MessageReactionPickerDelegate
     func didSelectAnyEmoji() {
         // No-op for configuration
     }
+}
+
+protocol ReactionPickerConfigurationListener {
+    func didCompleteReactionPickerConfiguration()
 }

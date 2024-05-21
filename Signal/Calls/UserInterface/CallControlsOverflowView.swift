@@ -105,8 +105,8 @@ extension CallControlsOverflowView: MessageReactionPickerDelegate {
     func didSelectAnyEmoji() {
         let sheet = EmojiPickerSheet(
             message: nil,
-            allowReactionConfiguration: false,
-            forceDarkTheme: true
+            forceDarkTheme: true,
+            reactionPickerConfigurationListener: self
         ) { [weak self] selectedEmoji in
             guard let selectedEmoji else { return }
             self?.react(with: selectedEmoji.rawValue)
@@ -138,6 +138,14 @@ extension CallControlsOverflowView: MessageReactionPickerDelegate {
                 )
             ]
         )
+    }
+}
+
+// Reaction Configuration Updates
+
+extension CallControlsOverflowView: ReactionPickerConfigurationListener {
+    func didCompleteReactionPickerConfiguration() {
+        self.reactionPicker.updateReactionPickerEmojis()
     }
 }
 
