@@ -41,13 +41,13 @@ public class AttachmentReference {
     // MARK: - Init
 
     private init?(
-        ownerTypeRaw: OwnerTypeRaw,
+        messageOwnerTypeRaw: MessageOwnerTypeRaw,
         attachmentRowId: Int64,
-        ownerRowId: Int64,
+        messageRowId: Int64,
         orderInOwner: UInt32?,
         receivedAtTimestamp: UInt64,
         renderingFlag: RenderingFlag,
-        threadRowId: UInt64?,
+        threadRowId: UInt64,
         caption: String?,
         captionBodyRanges: MessageBodyRanges,
         sourceFileName: String?,
@@ -58,12 +58,13 @@ public class AttachmentReference {
         stickerId: UInt32?,
         contentType: ContentType?
     ) {
-        let ownerId = ownerTypeRaw.with(ownerId: ownerRowId)
+        let ownerId = messageOwnerTypeRaw.with(messageRowId: messageRowId)
 
         // Do source validation
         guard
             Owner.validateAndBuild(
-                ownerId: ownerId,
+                messageRowId: messageRowId,
+                messageOwnerType: messageOwnerTypeRaw,
                 orderInOwner: orderInOwner,
                 renderingFlag: renderingFlag,
                 threadRowId: threadRowId,
@@ -73,6 +74,54 @@ public class AttachmentReference {
                 stickerId: stickerId,
                 contentType: contentType
             ) != nil
+        else {
+            return nil
+        }
+
+        fatalError("No instances should exist yet!")
+    }
+
+    private init?(
+        storyMessageOwnerTypeRaw: StoryMessageOwnerTypeRaw,
+        attachmentRowId: Int64,
+        storyMessageRowId: Int64,
+        receivedAtTimestamp: UInt64,
+        shouldLoop: Bool,
+        caption: String?,
+        captionBodyRanges: MessageBodyRanges,
+        sourceFileName: String?,
+        sourceUnencryptedByteCount: UInt32,
+        sourceMediaHeightPixels: UInt32,
+        sourceMediaWidthPixels: UInt32
+    ) {
+        let ownerId = storyMessageOwnerTypeRaw.with(storyMessageRowId: storyMessageRowId)
+
+        // Do source validation
+        guard
+            Owner.validateAndBuild(
+                storyMessageRowId: storyMessageRowId,
+                storyMessageOwnerType: storyMessageOwnerTypeRaw,
+                shouldLoop: shouldLoop,
+                caption: caption,
+                captionBodyRanges: captionBodyRanges
+            ) != nil
+        else {
+            return nil
+        }
+
+        fatalError("No instances should exist yet!")
+    }
+
+    private init?(
+        attachmentRowId: Int64,
+        threadOwnerRowId: Int64,
+        creationTimestamp: UInt64
+    ) {
+        let ownerId = OwnerId.threadWallpaperImage(threadRowId: threadOwnerRowId)
+
+        // Do source validation
+        guard
+            Owner.validateAndBuild(threadRowId: threadOwnerRowId) != nil
         else {
             return nil
         }

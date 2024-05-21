@@ -48,8 +48,8 @@ public class TSResourceStoreImpl: TSResourceStore {
             }
             v2References = attachmentStore
                 .fetchReferences(
-                    owners: AttachmentReference.OwnerTypeRaw.allMessageCases.map {
-                        $0.with(ownerId: messageRowId)
+                    owners: AttachmentReference.MessageOwnerTypeRaw.allCases.map {
+                        $0.with(messageRowId: messageRowId)
                     },
                     tx: tx
                 )

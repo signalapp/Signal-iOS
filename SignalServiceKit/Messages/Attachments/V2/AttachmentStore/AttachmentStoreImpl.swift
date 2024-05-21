@@ -36,7 +36,35 @@ public class AttachmentStoreImpl: AttachmentStore {
         tx: DBWriteTransaction
     ) throws{
         // New reference should have the same root type, just a different id.
-        guard ownerReference.owner.id.raw == newOwner.raw else {
+        let hasMatchingType: Bool = {
+            switch (ownerReference.owner.id, newOwner) {
+            case
+                (.messageBodyAttachment, .messageBodyAttachment),
+                (.messageLinkPreview, .messageLinkPreview),
+                (.messageSticker, .messageSticker),
+                (.messageOversizeText, .messageOversizeText),
+                (.messageContactAvatar, .messageContactAvatar),
+                (.quotedReplyAttachment, .quotedReplyAttachment),
+                (.storyMessageMedia, .storyMessageMedia),
+                (.storyMessageLinkPreview, .storyMessageLinkPreview),
+                (.threadWallpaperImage, .threadWallpaperImage),
+                (.globalThreadWallpaperImage, .globalThreadWallpaperImage):
+                return true
+            case
+                (.messageBodyAttachment, _),
+                (.messageLinkPreview, _),
+                (.messageSticker, _),
+                (.messageOversizeText, _),
+                (.messageContactAvatar, _),
+                (.quotedReplyAttachment, _),
+                (.storyMessageMedia, _),
+                (.storyMessageLinkPreview, _),
+                (.threadWallpaperImage, _),
+                (.globalThreadWallpaperImage, _):
+                return false
+            }
+        }()
+        guard hasMatchingType else {
             throw OWSAssertionError("Owner reference types don't match!")
         }
         fatalError("Unimplemented")

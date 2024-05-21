@@ -276,7 +276,7 @@ public class TSResourceManagerImpl: TSResourceManager {
     ) {
         message.anyReload(transaction: SDSDB.shimOnlyBridge(tx), ignoreMissing: true)
 
-        var v2Owners = [AttachmentReference.OwnerTypeRaw]()
+        var v2Owners = [AttachmentReference.MessageOwnerTypeRaw]()
 
         if types.contains(.bodyAttachment) || types.contains(.oversizeText) {
             if message.attachmentIds.count > 0 {
@@ -288,17 +288,17 @@ public class TSResourceManagerImpl: TSResourceManager {
                 )
             } else {
                 if types.contains(.bodyAttachment) {
-                    v2Owners.append(.messageBodyAttachment)
+                    v2Owners.append(.bodyAttachment)
                 }
                 if types.contains(.oversizeText) {
-                    v2Owners.append(.messageOversizeText)
+                    v2Owners.append(.oversizeText)
                 }
             }
         }
 
         if types.contains(.linkPreview), let linkPreview = message.linkPreview {
             if linkPreview.usesV2AttachmentReference {
-                v2Owners.append(.messageLinkPreview)
+                v2Owners.append(.linkPreview)
             } else if let attachmentId = linkPreview.legacyImageAttachmentId?.nilIfEmpty {
                 tsAttachmentManager.removeAttachment(
                     attachmentId: attachmentId,
@@ -311,7 +311,7 @@ public class TSResourceManagerImpl: TSResourceManager {
             if let legacyAttachmentId = messageSticker.legacyAttachmentId {
                 tsAttachmentManager.removeAttachment(attachmentId: legacyAttachmentId, tx: SDSDB.shimOnlyBridge(tx))
             } else {
-                v2Owners.append(.messageSticker)
+                v2Owners.append(.sticker)
             }
         }
 
@@ -336,7 +336,7 @@ public class TSResourceManagerImpl: TSResourceManager {
                     tx: SDSDB.shimOnlyBridge(tx)
                 )
             } else {
-                v2Owners.append(.messageContactAvatar)
+                v2Owners.append(.contactAvatar)
             }
         }
 
@@ -346,7 +346,7 @@ public class TSResourceManagerImpl: TSResourceManager {
                 return
             }
             attachmentManager.removeAllAttachments(
-                from: v2Owners.map { $0.with(ownerId: messageRowId) },
+                from: v2Owners.map { $0.with(messageRowId: messageRowId) },
                 tx: tx
             )
         }
