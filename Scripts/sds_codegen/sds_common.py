@@ -59,10 +59,10 @@ def pretty_module_path(path):
 
 def write_text_file_if_changed(file_path, text):
     if os.path.exists(file_path):
-        with open(file_path, "rt") as f:
+        with open(file_path, "r") as f:
             oldText = f.read()
             if oldText == text:
                 return
 
-    with open(file_path, "wt") as f:
+    with open(file_path, "w") as f:
         f.write(text)

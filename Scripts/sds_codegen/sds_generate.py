@@ -46,7 +46,7 @@ def update_generated_snippet(file_path, marker, snippet):
     start_index = text.find(marker)
     end_index = text.rfind(marker)
     if start_index < 0 or end_index < 0 or start_index >= end_index:
-        fail("Could not find markers:", file_path)
+        fail(f"Could not find markers ('{marker}'): {file_path}")
 
     text = (
         text[:start_index].strip()
@@ -2526,9 +2526,6 @@ public extension %(model_name)s {
     print(f"Writing {swift_filename}")
 
     swift_body = sds_common.clean_up_generated_swift(swift_body)
-
-    # Add some random whitespace to trigger the auto-formatter.
-    swift_body = swift_body + (" " * random.randint(1, 100))
 
     sds_common.write_text_file_if_changed(swift_filepath, swift_body)
 

@@ -16,3 +16,6 @@ Scripts/sds_codegen/sds_parse_swift_bridging.py --src-path  . --swift-bridging-p
 Scripts/sds_codegen/sds_parse_objc.py --src-path SignalServiceKit/ --swift-bridging-path Scripts/sds_codegen/sds-includes
 
 Scripts/sds_codegen/sds_regenerate.sh
+
+# lint & reformat generated sources
+find SignalServiceKit -type f -exec grep --quiet --fixed-strings '// --- CODE GENERATION MARKER' {} \; -print0 | xargs -0 Scripts/precommit.py
