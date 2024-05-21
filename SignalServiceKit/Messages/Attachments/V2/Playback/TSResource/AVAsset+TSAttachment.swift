@@ -5,37 +5,25 @@
 
 import AVFoundation
 import Foundation
-import SignalCoreKit
 
 extension AVAsset {
 
     public static func from(
-        _ attachment: AttachmentStream
+        _ attachment: TSAttachmentStream
     ) throws -> AVAsset {
-        return try .fromEncryptedFile(
-            at: attachment.fileURL,
-            encryptionKey: attachment.info.encryptionKey,
-            plaintextLength: attachment.info.unencryptedByteCount,
-            mimeType: attachment.mimeType
-        )
-    }
+        guard let filePath = attachment.originalFilePath else {
+            throw OWSAssertionError("Missing local file")
+        }
+        let fileURL = URL(fileURLWithPath: filePath)
 
-    public static func fromEncryptedFile(
-        at fileURL: URL,
-        encryptionKey: Data,
-        plaintextLength: UInt32,
-        mimeType: String
-    ) throws -> AVAsset {
         func createAsset(mimeTypeOverride: String? = nil) throws -> AVAsset {
-            return try AVAsset._fromEncryptedFile(
+            return try AVAsset._fromDecryptedFile(
                 at: fileURL,
-                encryptionKey: encryptionKey,
-                plaintextLength: plaintextLength,
-                mimeType: mimeTypeOverride ?? mimeType
+                mimeType: mimeTypeOverride ?? attachment.mimeType
             )
         }
 
-        guard let mimeTypeOverride = MimeTypeUtil.alternativeAudioMimeType(mimeType: mimeType) else {
+        guard let mimeTypeOverride = MimeTypeUtil.alternativeAudioMimeType(mimeType: attachment.mimeType) else {
             // If we have no override just return the first thing we get.
             return try createAsset()
         }
@@ -48,25 +36,22 @@ extension AVAsset {
         return try createAsset(mimeTypeOverride: mimeTypeOverride)
     }
 
-    private static func _fromEncryptedFile(
+    private static func _fromDecryptedFile(
         at fileURL: URL,
-        encryptionKey: Data,
-        plaintextLength: UInt32,
         mimeType: String
     ) throws -> AVAsset {
-        let fileHandle = try Cryptography.encryptedAttachmentFileHandle(
-            at: fileURL,
-            plaintextLength: plaintextLength,
-            encryptionKey: encryptionKey
-        )
+        let fileHandle = try FileHandle(forReadingFrom: fileURL)
+
+        let fileLength = OWSFileSystem.fileSize(of: fileURL)?.int64Value ?? 0
 
         guard let utiType = MimeTypeUtil.utiTypeForMimeType(mimeType) else {
             throw OWSAssertionError("Invalid mime type")
         }
 
-        let resourceLoader = EncryptedFileResourceLoader(
+        let resourceLoader = DecryptedFileResourceLoader(
             utiType: utiType,
-            fileHandle: fileHandle
+            fileHandle: fileHandle,
+            fileLength: fileLength
         )
 
         guard let redirectURL = fileURL.convertToAVAssetRedirectURL(prefix: Self.customScheme) else {
@@ -94,16 +79,18 @@ extension AVAsset {
     /// In order to get AVAsset to use the custom resource loader, we have to give it a URL scheme it doesn't
     /// understand how to load by itself. To do that, we prefix the url scheme with this string before handing
     /// it to AVAsset, and then strip the prefix in our own code.
-    private static let customScheme = "signal"
+    private static let customScheme = "signalTSAttachment"
 
-    private class EncryptedFileResourceLoader: NSObject, AVAssetResourceLoaderDelegate {
+    private class DecryptedFileResourceLoader: NSObject, AVAssetResourceLoaderDelegate {
 
         private let utiType: String
-        private let fileHandle: EncryptedFileHandle
+        private let fileHandle: FileHandle
+        private let fileLength: Int64
 
-        init(utiType: String, fileHandle: EncryptedFileHandle) {
+        init(utiType: String, fileHandle: FileHandle, fileLength: Int64) {
             self.utiType = utiType
             self.fileHandle = fileHandle
+            self.fileLength = fileLength
         }
 
         func resourceLoader(
@@ -123,7 +110,7 @@ extension AVAsset {
             guard let infoRequest = loadingRequest.contentInformationRequest else { return false }
 
             infoRequest.contentType = utiType
-            infoRequest.contentLength = Int64(exactly: fileHandle.plaintextLength) ?? 0
+            infoRequest.contentLength = fileLength
             infoRequest.isByteRangeAccessSupported = true
             loadingRequest.finishLoading()
             return true
@@ -136,18 +123,19 @@ extension AVAsset {
                 return false
             }
 
-            let requestedOffset = UInt32(dataRequest.requestedOffset)
-            var requestedLength = UInt32(dataRequest.requestedLength)
+            let requestedOffset = dataRequest.requestedOffset
+            var requestedLength = dataRequest.requestedLength
             if dataRequest.requestsAllDataToEndOfResource {
-                requestedLength = fileHandle.plaintextLength - requestedOffset
+                requestedLength = Int(exactly: fileLength - requestedOffset) ?? 0
             }
 
             let data: Data
             do {
-                if requestedOffset != fileHandle.offset() {
-                    try fileHandle.seek(toOffset: requestedOffset)
+                let currentOffset = try fileHandle.offset()
+                if requestedOffset != currentOffset {
+                    try fileHandle.seek(toOffset: UInt64(exactly: requestedOffset) ?? 0)
                 }
-                data = try fileHandle.read(upToCount: requestedLength)
+                data = try fileHandle.read(upToCount: requestedLength) ?? Data()
             } catch let error {
                 loadingRequest.finishLoading(with: error)
                 return true

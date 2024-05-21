@@ -2328,6 +2328,55 @@ public class MimeTypeUtil: NSObject {
     ]
 }
 
+// MARK: - Audio file handling
+
+extension MimeTypeUtil {
+
+    public static func alternativeAudioFileExtension(fileExtension: String) -> String? {
+        // In some cases, Android sends audio messages with the "audio/mpeg" mime type. This
+        // makes our choice of file extension ambiguous—`.mp3` or `.m4a`? AVFoundation uses the
+        // extension to read the file, and if the extension is wrong, it won't be readable.
+        //
+        // We "lie" about the extension to generate the waveform so that AVFoundation may read
+        // it. This is brittle but necessary to work around the buggy marriage of Android's
+        // content type and AVFoundation's behavior.
+        //
+        // Note that we probably still want this code even if Android updates theirs, because
+        // iOS users might have existing attachments.
+        //
+        // See:
+        // <https://github.com/signalapp/Signal-iOS/issues/3590>.
+        switch fileExtension {
+        case "m4a": return "aac"
+        case "mp3": return "m4a"
+        default: return nil
+        }
+    }
+
+    public static func alternativeAudioMimeType(mimeType: String) -> String? {
+        // In some cases, Android sends audio messages with the "audio/mpeg" mime type. This
+        // makes our choice of file extension ambiguous—`.mp3` or `.m4a`? AVFoundation uses the
+        // extension to read the file, and if the extension is wrong, it won't be readable.
+        //
+        // We "lie" about the extension to generate the waveform so that AVFoundation may read
+        // it. This is brittle but necessary to work around the buggy marriage of Android's
+        // content type and AVFoundation's behavior.
+        //
+        // Note that we probably still want this code even if Android updates theirs, because
+        // iOS users might have existing attachments.
+        //
+        // See:
+        // <https://github.com/signalapp/Signal-iOS/issues/3590>.
+        if mimeType == "audio/mpeg" {
+            return genericExtensionTypesToMimeTypes["m4a"]
+        }
+        if mimeType == "audio/aac" {
+            return genericExtensionTypesToMimeTypes["mp3"]
+        }
+        return nil
+    }
+}
+
 // MARK: - TSAttachmentStream Extension Migrated from MIMETypeUtil.h/m
 // TODO: Move this to TSAttachmentStream once it is converted to Swift
 extension TSAttachmentStream {

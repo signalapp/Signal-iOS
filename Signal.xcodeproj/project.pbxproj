@@ -879,6 +879,7 @@
 		665C0D622AE0552900539A37 /* MessageBackupProtoStreamProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C0D612AE0552900539A37 /* MessageBackupProtoStreamProvider.swift */; };
 		665CBD052BADC87A0059EA4F /* DraftQuotedReplyModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665CBD042BADC87A0059EA4F /* DraftQuotedReplyModel.swift */; };
 		665CBD072BAE259A0059EA4F /* StoryMessageTSAttachmentReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665CBD062BAE259A0059EA4F /* StoryMessageTSAttachmentReference.swift */; };
+		665CC7C52BF2BF8100E3A00B /* AVAsset+TSAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665CC7C42BF2BF8100E3A00B /* AVAsset+TSAttachment.swift */; };
 		665EF86D290C385B00F490D2 /* OWSNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665EF86C290C385B00F490D2 /* OWSNavigationController.swift */; };
 		665FAE8C2A02C0D400FA298D /* SpoilerRevealState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665FAE8B2A02C0D400FA298D /* SpoilerRevealState.swift */; };
 		6660725E2BAB36960084B3D2 /* AttachmentDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6660725D2BAB36960084B3D2 /* AttachmentDataSource.swift */; };
@@ -3781,6 +3782,7 @@
 		665C0D612AE0552900539A37 /* MessageBackupProtoStreamProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupProtoStreamProvider.swift; sourceTree = "<group>"; };
 		665CBD042BADC87A0059EA4F /* DraftQuotedReplyModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraftQuotedReplyModel.swift; sourceTree = "<group>"; };
 		665CBD062BAE259A0059EA4F /* StoryMessageTSAttachmentReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryMessageTSAttachmentReference.swift; sourceTree = "<group>"; };
+		665CC7C42BF2BF8100E3A00B /* AVAsset+TSAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVAsset+TSAttachment.swift"; sourceTree = "<group>"; };
 		665EF86C290C385B00F490D2 /* OWSNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSNavigationController.swift; sourceTree = "<group>"; };
 		665FAE8B2A02C0D400FA298D /* SpoilerRevealState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRevealState.swift; sourceTree = "<group>"; };
 		6660725D2BAB36960084B3D2 /* AttachmentDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDataSource.swift; sourceTree = "<group>"; };
@@ -7426,6 +7428,7 @@
 		6649651A2BDC6E8D00E2DE98 /* Playback */ = {
 			isa = PBXGroup;
 			children = (
+				665CC7C32BF2BF7400E3A00B /* TSResource */,
 				6649651B2BDC6EAD00E2DE98 /* AVAsset+Attachment.swift */,
 				6649651D2BDF169F00E2DE98 /* UIImage+Attachment.swift */,
 				668E403B2BE43752004B6730 /* YYImage+Attachment.swift */,
@@ -7542,6 +7545,14 @@
 				C17310A62BD9D45400B7A151 /* MessageBackupServiceAuth.swift */,
 			);
 			path = MessageBackup;
+			sourceTree = "<group>";
+		};
+		665CC7C32BF2BF7400E3A00B /* TSResource */ = {
+			isa = PBXGroup;
+			children = (
+				665CC7C42BF2BF8100E3A00B /* AVAsset+TSAttachment.swift */,
+			);
+			path = TSResource;
 			sourceTree = "<group>";
 		};
 		6660725C2BAB36860084B3D2 /* DataSource */ = {
@@ -13528,6 +13539,7 @@
 				50D2FC7D2AEB134C002E4589 /* AuthorMergeHelper.swift in Sources */,
 				500AEE092A4E09AD00371F05 /* AuthorMergeObserver.swift in Sources */,
 				6649651C2BDC6EAD00E2DE98 /* AVAsset+Attachment.swift in Sources */,
+				665CC7C52BF2BF8100E3A00B /* AVAsset+TSAttachment.swift in Sources */,
 				7254651E2BA012BD00EABFD2 /* AvatarBuilder.swift in Sources */,
 				720547F22B9C8F9900E2CF2F /* AvatarModel.swift in Sources */,
 				502C69722B06F07900012867 /* AwaitableAsyncBlockOperation.swift in Sources */,

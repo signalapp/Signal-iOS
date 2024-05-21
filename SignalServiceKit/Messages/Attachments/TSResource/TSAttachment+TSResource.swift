@@ -122,11 +122,7 @@ extension TSAttachmentStream: TSResourceStream {
     }
 
     public func decryptedAVAsset() throws -> AVAsset {
-        guard let filePath = self.originalFilePath else {
-            throw OWSAssertionError("Missing file")
-        }
-        let fileUrl = URL(fileURLWithPath: filePath)
-        return AVURLAsset(url: fileUrl)
+        return try AVAsset.from(self)
     }
 
     public var concreteStreamType: ConcreteTSResourceStream {
