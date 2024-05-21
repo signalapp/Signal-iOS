@@ -60,6 +60,9 @@ class ThreadRemoverImpl: ThreadRemover {
         threadStore.removeThread(thread, tx: tx)
         threadReadCache.didRemove(thread: thread, tx: tx)
         try? wallpaperStore.reset(for: thread, tx: tx)
+        // Legacy wallpapers must be manually deleted.
+        // V2 wallpaper references use foreign key cascading deletes.
+        try? LegacyWallpaperImageStore.setPhoto(nil, for: thread)
         sdsThreadRemover.didRemove(thread: thread, tx: tx)
     }
 }

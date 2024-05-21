@@ -243,6 +243,11 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
             do {
                 let wallpaperStore = DependenciesBridge.shared.wallpaperStore
                 try wallpaperStore.reset(for: thread, tx: tx.asV2Write)
+                if let thread {
+                    try DependenciesBridge.shared.wallpaperImageStore.setWallpaperImage(nil, for: thread, tx: tx.asV2Write)
+                } else {
+                    try DependenciesBridge.shared.wallpaperImageStore.setGlobalThreadWallpaperImage(nil, tx: tx.asV2Write)
+                }
             } catch {
                 owsFailDebug("Failed to clear wallpaper with error: \(error)")
                 DispatchQueue.main.async {
@@ -263,6 +268,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
             do {
                 let wallpaperStore = DependenciesBridge.shared.wallpaperStore
                 try wallpaperStore.resetAll(tx: tx.asV2Write)
+                try DependenciesBridge.shared.wallpaperImageStore.resetAllWallpaperImages(tx: tx.asV2Write)
             } catch {
                 owsFailDebug("Failed to reset all wallpapers with error: \(error)")
                 DispatchQueue.main.async {

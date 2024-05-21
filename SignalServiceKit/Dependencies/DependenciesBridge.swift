@@ -129,6 +129,7 @@ public class DependenciesBridge {
     public let usernameLookupManager: UsernameLookupManager
     public let usernameValidationManager: UsernameValidationManager
     public let videoDurationHelper: VideoDurationHelper
+    public let wallpaperImageStore: WallpaperImageStore
     public let wallpaperStore: WallpaperStore
 
     init(
@@ -222,6 +223,7 @@ public class DependenciesBridge {
         usernameLookupManager: UsernameLookupManager,
         usernameValidationManager: UsernameValidationManager,
         videoDurationHelper: VideoDurationHelper,
+        wallpaperImageStore: WallpaperImageStore,
         wallpaperStore: WallpaperStore
     ) {
         self.accountAttributesUpdater = accountAttributesUpdater
@@ -314,6 +316,7 @@ public class DependenciesBridge {
         self.usernameLookupManager = usernameLookupManager
         self.usernameValidationManager = usernameValidationManager
         self.videoDurationHelper = videoDurationHelper
+        self.wallpaperImageStore = wallpaperImageStore
         self.wallpaperStore = wallpaperStore
     }
 }

@@ -78,6 +78,7 @@ final class ThreadMergerTest: XCTestCase {
             threadRemover: threadRemover,
             threadReplyInfoStore: threadReplyInfoStore,
             threadStore: threadStore,
+            wallpaperImageStore: MockWallpaperImageStore(),
             wallpaperStore: wallpaperStore
         )
 

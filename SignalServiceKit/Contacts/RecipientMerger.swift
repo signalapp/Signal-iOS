@@ -147,6 +147,7 @@ class RecipientMergerImpl: RecipientMerger {
         threadReplyInfoStore: ThreadReplyInfoStore,
         threadStore: ThreadStore,
         userProfileStore: UserProfileStore,
+        wallpaperImageStore: WallpaperImageStore,
         wallpaperStore: WallpaperStore
     ) -> Observers {
         // PNI TODO: Merge ReceiptForLinkedDevice if needed.
@@ -172,6 +173,7 @@ class RecipientMergerImpl: RecipientMerger {
                 threadRemover: threadRemover,
                 threadReplyInfoStore: threadReplyInfoStore,
                 threadStore: threadStore,
+                wallpaperImageStore: wallpaperImageStore,
                 wallpaperStore: wallpaperStore
             ),
             postThreadMerger: [

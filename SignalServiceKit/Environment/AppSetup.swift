@@ -410,6 +410,10 @@ public class AppSetup {
         let groupMemberStore = GroupMemberStoreImpl()
         let threadAssociatedDataStore = ThreadAssociatedDataStoreImpl()
         let threadReplyInfoStore = ThreadReplyInfoStore(keyValueStoreFactory: keyValueStoreFactory)
+
+        let wallpaperImageStore = BridgingWallpaperImageStore(
+            wallpaperStore: WallpaperImageStoreImpl()
+        )
         let wallpaperStore = WallpaperStore(
             keyValueStoreFactory: keyValueStoreFactory,
             notificationScheduler: schedulers.main
@@ -540,6 +544,7 @@ public class AppSetup {
                 threadReplyInfoStore: threadReplyInfoStore,
                 threadStore: threadStore,
                 userProfileStore: userProfileStore,
+                wallpaperImageStore: wallpaperImageStore,
                 wallpaperStore: wallpaperStore
             ),
             recipientDatabaseTable: recipientDatabaseTable,
@@ -966,6 +971,7 @@ public class AppSetup {
             usernameLookupManager: usernameLookupManager,
             usernameValidationManager: usernameValidationManager,
             videoDurationHelper: videoDurationHelper,
+            wallpaperImageStore: wallpaperImageStore,
             wallpaperStore: wallpaperStore
         )
         DependenciesBridge.setShared(dependenciesBridge)

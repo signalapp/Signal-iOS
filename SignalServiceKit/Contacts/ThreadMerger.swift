@@ -21,6 +21,7 @@ final class ThreadMerger {
     private let threadRemover: ThreadRemover
     private let threadReplyInfoStore: ThreadReplyInfoStore
     private let threadStore: ThreadStore
+    private let wallpaperImageStore: WallpaperImageStore
     private let wallpaperStore: WallpaperStore
 
     init(
@@ -37,6 +38,7 @@ final class ThreadMerger {
         threadRemover: ThreadRemover,
         threadReplyInfoStore: ThreadReplyInfoStore,
         threadStore: ThreadStore,
+        wallpaperImageStore: WallpaperImageStore,
         wallpaperStore: WallpaperStore
     ) {
         self.callRecordStore = callRecordStore
@@ -52,6 +54,7 @@ final class ThreadMerger {
         self.threadRemover = threadRemover
         self.threadReplyInfoStore = threadReplyInfoStore
         self.threadStore = threadStore
+        self.wallpaperImageStore = wallpaperImageStore
         self.wallpaperStore = wallpaperStore
     }
 
@@ -189,8 +192,7 @@ final class ThreadMerger {
                 wallpaperStore.setDimInDarkMode(fromDimInDarkMode, for: threadPair.intoValue.uniqueId, tx: tx)
             }
             do {
-                let photoUrlPair = try threadPair.map { try wallpaperStore.customPhotoUrl(for: $0.uniqueId) }
-                try FileManager.default.copyItem(at: photoUrlPair.fromValue, to: photoUrlPair.intoValue)
+                try self.wallpaperImageStore.copyWallpaperImage(from: threadPair.fromValue, to: threadPair.intoValue, tx: tx)
             } catch CocoaError.fileReadNoSuchFile, CocoaError.fileNoSuchFile, POSIXError.ENOENT {
                 // not an error
             } catch {
@@ -479,6 +481,7 @@ extension ThreadMerger {
             threadRemover: threadRemover,
             threadReplyInfoStore: threadReplyInfoStore,
             threadStore: threadStore,
+            wallpaperImageStore: MockWallpaperImageStore(),
             wallpaperStore: wallpaperStore
         )
     }

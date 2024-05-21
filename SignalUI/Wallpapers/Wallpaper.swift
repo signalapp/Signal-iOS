@@ -56,7 +56,7 @@ public enum Wallpaper: String, CaseIterable {
         let wallpaperStore = DependenciesBridge.shared.wallpaperStore
         return fetchResolvedValue(
             for: thread,
-            fetchBlock: { wallpaperStore.fetchDimInDarkMode(for: $0, tx: tx.asV2Read) }
+            fetchBlock: { wallpaperStore.fetchDimInDarkMode(for: $0?.uniqueId, tx: tx.asV2Read) }
         ) ?? true
     }
 
@@ -65,7 +65,7 @@ public enum Wallpaper: String, CaseIterable {
     }
 
     public static func wallpaperForRendering(for thread: TSThread?, transaction tx: SDSAnyReadTransaction) -> Wallpaper? {
-        return fetchResolvedValue(for: thread, fetchBlock: { get(for: $0, transaction: tx) })
+        return fetchResolvedValue(for: thread, fetchBlock: { get(for: $0?.uniqueId, transaction: tx) })
     }
 
     public static func viewBuilder(for thread: TSThread? = nil, tx: SDSAnyReadTransaction) -> WallpaperViewBuilder? {
@@ -77,7 +77,17 @@ public enum Wallpaper: String, CaseIterable {
 
         return viewBuilder(
             for: resolvedWallpaper,
-            customPhoto: { fetchResolvedValue(for: thread, fetchBlock: { self.loadPhoto(for: $0) }) },
+            customPhoto: {
+                fetchResolvedValue(
+                    for: thread,
+                    fetchBlock: {
+                        if let thread = $0 {
+                            DependenciesBridge.shared.wallpaperImageStore.loadWallpaperImage(for: thread, tx: tx.asV2Read)
+                        } else {
+                            DependenciesBridge.shared.wallpaperImageStore.loadGlobalThreadWallpaper(tx: tx.asV2Read)
+                        }
+                    })
+            },
             shouldDimInDarkTheme: dimInDarkMode(for: thread, transaction: tx)
         )
     }
@@ -100,8 +110,8 @@ public enum Wallpaper: String, CaseIterable {
     }
 
     /// Fetches a thread-specific value (if set) or the global value.
-    private static func fetchResolvedValue<T>(for thread: TSThread?, fetchBlock: (String?) -> T?) -> T? {
-        if let thread, let threadValue = fetchBlock(thread.uniqueId) { return threadValue }
+    private static func fetchResolvedValue<T>(for thread: TSThread?, fetchBlock: (TSThread?) -> T?) -> T? {
+        if let thread, let threadValue = fetchBlock(thread) { return threadValue }
         return fetchBlock(nil)
     }
 }
@@ -113,9 +123,12 @@ private extension Wallpaper {
         owsAssertDebug(photo == nil || wallpaper == .photo)
 
         let wallpaperStore = DependenciesBridge.shared.wallpaperStore
-        try wallpaperStore.removeCustomPhoto(for: thread?.uniqueId)
-        if let photo {
-            try setPhoto(photo, for: thread)
+        let wallpaperImageStore = DependenciesBridge.shared.wallpaperImageStore
+
+        if let thread {
+            try wallpaperImageStore.setWallpaperImage(photo, for: thread, tx: tx.asV2Write)
+        } else {
+            try wallpaperImageStore.setGlobalThreadWallpaperImage(photo, tx: tx.asV2Write)
         }
         wallpaperStore.setWallpaper(wallpaper?.rawValue, for: thread?.uniqueId, tx: tx.asV2Write)
     }
@@ -130,58 +143,6 @@ private extension Wallpaper {
             return nil
         }
         return wallpaper
-    }
-
-    static func allUniqueThreadIdsWithCustomPhotos(tx: DBReadTransaction) -> [String?] {
-        let wallpaperStore = DependenciesBridge.shared.wallpaperStore
-        let uniqueThreadIds = wallpaperStore.fetchUniqueThreadIdsWithWallpaper(tx: tx)
-        return uniqueThreadIds.filter { get(for: $0, transaction: SDSDB.shimOnlyBridge(tx)) == .photo }
-    }
-}
-
-// MARK: - Photo management
-
-extension Wallpaper {
-    public static func allCustomPhotoRelativePaths(tx: DBReadTransaction) -> Set<String> {
-        Set(allUniqueThreadIdsWithCustomPhotos(tx: tx).compactMap { try? WallpaperStore.customPhotoFilename(for: $0) })
-    }
-}
-
-private extension Wallpaper {
-    static func ensureWallpaperDirectory() throws {
-        let wallpaperStore = DependenciesBridge.shared.wallpaperStore
-        guard OWSFileSystem.ensureDirectoryExists(wallpaperStore.customPhotoDirectory.path) else {
-            throw OWSAssertionError("Failed to create ensure wallpaper directory")
-        }
-    }
-
-    static func setPhoto(_ photo: UIImage, for thread: TSThread?) throws {
-        owsAssertDebug(!Thread.isMainThread)
-        guard let data = photo.jpegData(compressionQuality: 0.8) else {
-            throw OWSAssertionError("Failed to get jpg data for wallpaper photo")
-        }
-        try ensureWallpaperDirectory()
-        let wallpaperStore = DependenciesBridge.shared.wallpaperStore
-        try data.write(to: wallpaperStore.customPhotoUrl(for: thread?.uniqueId), options: .atomic)
-    }
-
-    static func loadPhoto(for threadUniqueId: String?) -> UIImage? {
-        do {
-            let wallpaperStore = DependenciesBridge.shared.wallpaperStore
-            let customPhotoUrl = try wallpaperStore.customPhotoUrl(for: threadUniqueId)
-            let customPhotoData = try Data(contentsOf: customPhotoUrl)
-            guard let customPhoto = UIImage(data: customPhotoData) else {
-                try wallpaperStore.removeCustomPhoto(for: threadUniqueId)
-                throw OWSGenericError("Couldn't initialize wallpaper photo from data.")
-            }
-            return customPhoto
-        } catch CocoaError.fileReadNoSuchFile, CocoaError.fileNoSuchFile, POSIXError.ENOENT {
-            // the file doesn't exist -- this is fine
-            return nil
-        } catch {
-            Logger.warn("Couldn't load wallpaper photo.")
-            return nil
-        }
     }
 }
 

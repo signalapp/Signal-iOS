@@ -774,6 +774,11 @@
 		661396AB28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AA28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift */; };
 		661396AD28BE74DC00E0C4DF /* ChainedPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */; };
 		661396AF28BE881E00E0C4DF /* ChainedPromiseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */; };
+		66144B2F2BF7FB5200E2C9CD /* WallpaperImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66144B2E2BF7FB5200E2C9CD /* WallpaperImageStore.swift */; };
+		66144B312BF7FB7B00E2C9CD /* WallpaperImageStoreImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66144B302BF7FB7B00E2C9CD /* WallpaperImageStoreImpl.swift */; };
+		66144B342BF7FB9F00E2C9CD /* LegacyWallpaperImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66144B332BF7FB9F00E2C9CD /* LegacyWallpaperImageStore.swift */; };
+		66144B362BF7FBC900E2C9CD /* BridgingWallpaperImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66144B352BF7FBC900E2C9CD /* BridgingWallpaperImageStore.swift */; };
+		66144B382BF8155F00E2C9CD /* MockWallpaperImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66144B372BF8155F00E2C9CD /* MockWallpaperImageStore.swift */; };
 		6615553F2ABA5A7500AA302B /* TSRegistrationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6615553E2ABA5A7500AA302B /* TSRegistrationState.swift */; };
 		661566722BCEDD58003F1647 /* AttachmentMultisend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661566712BCEDD58003F1647 /* AttachmentMultisend.swift */; };
 		661566742BD05D00003F1647 /* SharingThreadPickerProgressSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661566732BD05D00003F1647 /* SharingThreadPickerProgressSheet.swift */; };
@@ -3676,6 +3681,11 @@
 		661396AA28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddenStoryHeaderCell.swift; sourceTree = "<group>"; };
 		661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromise.swift; sourceTree = "<group>"; };
 		661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromiseTest.swift; sourceTree = "<group>"; };
+		66144B2E2BF7FB5200E2C9CD /* WallpaperImageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperImageStore.swift; sourceTree = "<group>"; };
+		66144B302BF7FB7B00E2C9CD /* WallpaperImageStoreImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperImageStoreImpl.swift; sourceTree = "<group>"; };
+		66144B332BF7FB9F00E2C9CD /* LegacyWallpaperImageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyWallpaperImageStore.swift; sourceTree = "<group>"; };
+		66144B352BF7FBC900E2C9CD /* BridgingWallpaperImageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BridgingWallpaperImageStore.swift; sourceTree = "<group>"; };
+		66144B372BF8155F00E2C9CD /* MockWallpaperImageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockWallpaperImageStore.swift; sourceTree = "<group>"; };
 		6615553E2ABA5A7500AA302B /* TSRegistrationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSRegistrationState.swift; sourceTree = "<group>"; };
 		661566712BCEDD58003F1647 /* AttachmentMultisend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentMultisend.swift; sourceTree = "<group>"; };
 		661566732BD05D00003F1647 /* SharingThreadPickerProgressSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingThreadPickerProgressSheet.swift; sourceTree = "<group>"; };
@@ -6818,7 +6828,11 @@
 		500AEE032A4B68D200371F05 /* UISupport */ = {
 			isa = PBXGroup;
 			children = (
+				66144B322BF7FB8B00E2C9CD /* TSResource */,
 				500AEE062A4DF48700371F05 /* ChatColorSettingStore.swift */,
+				66144B372BF8155F00E2C9CD /* MockWallpaperImageStore.swift */,
+				66144B2E2BF7FB5200E2C9CD /* WallpaperImageStore.swift */,
+				66144B302BF7FB7B00E2C9CD /* WallpaperImageStoreImpl.swift */,
 				500AEE042A4B68E200371F05 /* WallpaperStore.swift */,
 			);
 			path = UISupport;
@@ -7305,6 +7319,15 @@
 				66AE577E2984AB8700E40CFA /* ToyExample.swift */,
 			);
 			path = V2;
+			sourceTree = "<group>";
+		};
+		66144B322BF7FB8B00E2C9CD /* TSResource */ = {
+			isa = PBXGroup;
+			children = (
+				66144B352BF7FBC900E2C9CD /* BridgingWallpaperImageStore.swift */,
+				66144B332BF7FB9F00E2C9CD /* LegacyWallpaperImageStore.swift */,
+			);
+			path = TSResource;
 			sourceTree = "<group>";
 		};
 		6619A1932B27C7A1004B38FE /* SignalRecipient */ = {
@@ -13555,6 +13578,7 @@
 				F9C5CC31289453B300548EEE /* BlockingManager.swift in Sources */,
 				F9C5CC74289453B300548EEE /* BlurHash.swift in Sources */,
 				668FE09B28B923A4008B9071 /* Bool+SSK.swift in Sources */,
+				66144B362BF7FBC900E2C9CD /* BridgingWallpaperImageStore.swift in Sources */,
 				E7D7C93F28B580AC003F043B /* Bundle+OWS.swift in Sources */,
 				7254653F2BA01FCC00EABFD2 /* CachedBadge.swift in Sources */,
 				F9C5CD32289453B300548EEE /* CallKitIdStore.m in Sources */,
@@ -13803,6 +13827,7 @@
 				F9C5CD49289453B300548EEE /* LegacySendingChain.m in Sources */,
 				F9C5CD4C289453B300548EEE /* LegacySessionRecord.m in Sources */,
 				F9C5CD4E289453B300548EEE /* LegacySessionState.m in Sources */,
+				66144B342BF7FB9F00E2C9CD /* LegacyWallpaperImageStore.swift in Sources */,
 				D9F399B22A96D65D001599EC /* LinkedDevicePniKeyManager.swift in Sources */,
 				66076B4E2BC056980043D547 /* LinkPreviewAttachmentBuilder.swift in Sources */,
 				66076B4C2BC053290043D547 /* LinkPreviewBuilder.swift in Sources */,
@@ -13933,6 +13958,7 @@
 				D990CAC72B4CCB34000A99A2 /* MockUsernameApiClient.swift in Sources */,
 				D990CACA2B4CCB9D000A99A2 /* MockUsernameLinkManager.swift in Sources */,
 				D990CAC82B4CCB8F000A99A2 /* MockUsernameLookupManager.swift in Sources */,
+				66144B382BF8155F00E2C9CD /* MockWallpaperImageStore.swift in Sources */,
 				F9C5CE29289453B400548EEE /* ModelReadCache.swift in Sources */,
 				50311B8B2BC0C2A100AE5A5F /* MonotonicDate.swift in Sources */,
 				725465162BA00BE400EABFD2 /* NameResolver.swift in Sources */,
@@ -14574,6 +14600,8 @@
 				F9C5CDD5289453B400548EEE /* ViewOnceMessages.swift in Sources */,
 				7255A4C92B98DF5500E95368 /* VoiceMessageConstants.swift in Sources */,
 				7255A4CA2B98DF5500E95368 /* VoiceMessageInterruptedDraftStore.swift in Sources */,
+				66144B2F2BF7FB5200E2C9CD /* WallpaperImageStore.swift in Sources */,
+				66144B312BF7FB7B00E2C9CD /* WallpaperImageStoreImpl.swift in Sources */,
 				500AEE052A4B68E200371F05 /* WallpaperStore.swift in Sources */,
 				F9C5CE50289453B400548EEE /* Weak.swift in Sources */,
 				F9C5CDFB289453B400548EEE /* WeakTimer.swift in Sources */,

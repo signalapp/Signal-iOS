@@ -641,8 +641,8 @@ enum OWSOrphanDataCleaner {
 
     private static func findOrphanedWallpaperPaths() -> Set<String> {
         findOrphanedPaths(
-            baseUrl: DependenciesBridge.shared.wallpaperStore.customPhotoDirectory,
-            fetchExpectedRelativePaths: { Wallpaper.allCustomPhotoRelativePaths(tx: $0.asV2Read) }
+            baseUrl: LegacyWallpaperImageStore.customPhotoDirectory,
+            fetchExpectedRelativePaths: { LegacyWallpaperImageStore.allCustomPhotoRelativePaths(tx: $0.asV2Read) }
         )
     }
 

@@ -17,12 +17,6 @@ public class WallpaperStore {
     private let dimmingStore: KeyValueStore
     private let notificationScheduler: Scheduler
 
-    public let customPhotoDirectory = URL(
-        fileURLWithPath: "Wallpapers",
-        isDirectory: true,
-        relativeTo: URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
-    )
-
     init(keyValueStoreFactory: KeyValueStoreFactory, notificationScheduler: Scheduler) {
         self.enumStore = keyValueStoreFactory.keyValueStore(collection: "Wallpaper+Enum")
         self.dimmingStore = keyValueStoreFactory.keyValueStore(collection: "Wallpaper+Dimming")
@@ -40,19 +34,6 @@ public class WallpaperStore {
             return nil
         }
         return persistenceKey
-    }
-
-    public static func customPhotoFilename(for threadUniqueId: String?) throws -> String {
-        let persistenceKey = Self.persistenceKey(for: threadUniqueId)
-        guard let filename = persistenceKey.addingPercentEncoding(withAllowedCharacters: .alphanumerics) else {
-            throw OWSAssertionError("Failed to percent encode filename")
-        }
-        return filename
-    }
-
-    public func customPhotoUrl(for threadUniqueId: String?) throws -> URL {
-        let filename = try Self.customPhotoFilename(for: threadUniqueId)
-        return URL(fileURLWithPath: filename, isDirectory: false, relativeTo: customPhotoDirectory)
     }
 
     // MARK: - Getters & Setters
@@ -81,22 +62,16 @@ public class WallpaperStore {
 
     // MARK: - Resetting Values
 
-    public func removeCustomPhoto(for threadUniqueId: String?) throws {
-        try OWSFileSystem.deleteFileIfExists(url: customPhotoUrl(for: threadUniqueId))
-    }
-
     public func reset(for thread: TSThread?, tx: DBWriteTransaction) throws {
         let threadUniqueId = thread?.uniqueId
         enumStore.removeValue(forKey: Self.persistenceKey(for: threadUniqueId), transaction: tx)
         dimmingStore.removeValue(forKey: Self.persistenceKey(for: threadUniqueId), transaction: tx)
-        try removeCustomPhoto(for: threadUniqueId)
         postWallpaperDidChangeNotification(for: threadUniqueId, tx: tx)
     }
 
     public func resetAll(tx: DBWriteTransaction) throws {
         enumStore.removeAll(transaction: tx)
         dimmingStore.removeAll(transaction: tx)
-        try OWSFileSystem.deleteFileIfExists(url: customPhotoDirectory)
         postWallpaperDidChangeNotification(for: nil, tx: tx)
     }
 
