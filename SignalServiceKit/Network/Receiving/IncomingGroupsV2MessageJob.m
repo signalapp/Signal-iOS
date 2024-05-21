@@ -23,7 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(envelopeData);
 
-    self = [super init];
+    NSString *uniqueId = [[self class] generateUniqueId];
+    self = [super initWithUniqueId:uniqueId];
     if (!self) {
         return self;
     }

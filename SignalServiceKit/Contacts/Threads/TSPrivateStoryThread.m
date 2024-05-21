@@ -43,7 +43,8 @@
                    addresses:(NSArray<SignalServiceAddress *> *)addresses
                     viewMode:(TSThreadStoryViewMode)viewMode
 {
-    self = [super init];
+    NSString *uniqueId = [[self class] generateUniqueId];
+    self = [super initWithUniqueId:uniqueId];
     if (self) {
         self.name = name;
         self.allowsReplies = allowsReplies;

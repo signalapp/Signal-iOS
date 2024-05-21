@@ -22,7 +22,6 @@ NSUInteger NSUIntegerMaxValue(void);
 @property (nonatomic, nullable) NSDate *dateValue;
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 

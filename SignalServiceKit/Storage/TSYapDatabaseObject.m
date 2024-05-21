@@ -19,9 +19,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TSYapDatabaseObject
 
++ (NSString *)generateUniqueId
+{
+    return [[NSUUID UUID] UUIDString];
+}
+
 - (instancetype)init
 {
-    return [self initWithUniqueId:[[NSUUID UUID] UUIDString]];
+    return [self initWithUniqueId:[[self class] generateUniqueId]];
 }
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
@@ -35,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
         _uniqueId = uniqueId;
     } else {
         OWSFailDebug(@"Invalid uniqueId.");
-        _uniqueId = [[NSUUID UUID] UUIDString];
+        _uniqueId = [[self class] generateUniqueId];
     }
 
     return self;
@@ -52,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
         _uniqueId = uniqueId;
     } else {
         OWSFailDebug(@"Invalid uniqueId.");
-        _uniqueId = [[NSUUID UUID] UUIDString];
+        _uniqueId = [[self class] generateUniqueId];
     }
 
     _grdbId = @(grdbId);
@@ -60,9 +65,13 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wobjc-designated-initializers"
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
+#pragma clang diagnostic pop
+
     if (!self) {
         return self;
     }

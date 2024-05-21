@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0517B9782BFCFF12002CDE7D /* TSThreadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0517B9772BFCFF12002CDE7D /* TSThreadTests.swift */; };
 		05572BC42BFC0094006A72F1 /* DoubleTapToEditOnboardingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05572BC32BFC0094006A72F1 /* DoubleTapToEditOnboardingController.swift */; };
 		0CE014267EDFBD2538E940A0 /* Pods_Signal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FF88FB580BC19B240EEB86A /* Pods_Signal.framework */; };
 		1404D8B3276A353B0068E2F6 /* ChatListViewController+Multiselect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1404D8B2276A353A0068E2F6 /* ChatListViewController+Multiselect.swift */; };
@@ -2817,6 +2818,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0517B9772BFCFF12002CDE7D /* TSThreadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSThreadTests.swift; sourceTree = "<group>"; };
 		05572BC32BFC0094006A72F1 /* DoubleTapToEditOnboardingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoubleTapToEditOnboardingController.swift; sourceTree = "<group>"; };
 		05E3A4DD8B4442530268AFC1 /* Pods-SignalShareExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.app store release.xcconfig"; path = "Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.app store release.xcconfig"; sourceTree = "<group>"; };
 		0BADD293DAFC82BF3274F0F6 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -10341,6 +10343,7 @@
 				F94261E4289B1B5400460798 /* Util */,
 				724D47B12B97BE73001BE973 /* ZkParams */,
 				F942623A289B1B5500460798 /* SSKBaseTest.swift */,
+				0517B9772BFCFF12002CDE7D /* TSThreadTests.swift */,
 				D9C964072BE44D510058F143 /* XCTest+Thenable.swift */,
 			);
 			path = tests;
@@ -14858,6 +14861,7 @@
 				D9C964102BE451CE0058F143 /* TSMessageStorageTest.swift in Sources */,
 				F942628A289B1B5600460798 /* TSMessageTest.swift in Sources */,
 				F9426289289B1B5600460798 /* TSOutgoingMessageTest.swift in Sources */,
+				0517B9782BFCFF12002CDE7D /* TSThreadTests.swift in Sources */,
 				F942628F289B1B5600460798 /* TypingIndicatorMessageTest.swift in Sources */,
 				F9426255289B1B5500460798 /* UnfairLockTest.swift in Sources */,
 				6600F34F298C823C00B1EDB7 /* UnknownEnumCodableTest.swift in Sources */,
@@ -16112,6 +16116,7 @@
 					"-Werror=incompatible-pointer-types",
 					"-Werror=protocol",
 					"-Werror=incomplete-implementation",
+					"-Werror=objc-designated-initializers",
 					"-Werror=objc-literal-conversion",
 					"-Werror=objc-property-synthesis",
 					"-Werror=objc-protocol-property-synthesis",
@@ -16566,6 +16571,7 @@
 					"-Werror=incompatible-pointer-types",
 					"-Werror=protocol",
 					"-Werror=incomplete-implementation",
+					"-Werror=objc-designated-initializers",
 					"-Werror=objc-literal-conversion",
 					"-Werror=objc-property-synthesis",
 					"-Werror=objc-protocol-property-synthesis",
@@ -16896,6 +16902,7 @@
 					"-Werror=incompatible-pointer-types",
 					"-Werror=protocol",
 					"-Werror=incomplete-implementation",
+					"-Werror=objc-designated-initializers",
 					"-Werror=objc-literal-conversion",
 					"-Werror=objc-property-synthesis",
 					"-Werror=objc-protocol-property-synthesis",
@@ -16982,6 +16989,7 @@
 					"-Werror=incompatible-pointer-types",
 					"-Werror=protocol",
 					"-Werror=incomplete-implementation",
+					"-Werror=objc-designated-initializers",
 					"-Werror=objc-literal-conversion",
 					"-Werror=objc-property-synthesis",
 					"-Werror=objc-protocol-property-synthesis",

@@ -111,7 +111,9 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
 - (instancetype)initWithContactUUID:(nullable NSString *)contactUUID
                  contactPhoneNumber:(nullable NSString *)contactPhoneNumber
 {
-    if (self = [super init]) {
+    NSString *uniqueId = [[self class] generateUniqueId];
+
+    if (self = [super initWithUniqueId:uniqueId]) {
         _contactUUID = [contactUUID copy];
         _contactPhoneNumber = [contactPhoneNumber copy];
         _contactThreadSchemaVersion = TSContactThreadSchemaVersion;

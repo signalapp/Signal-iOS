@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 // TODO: Rename and/or merge with BaseModel.
 @interface TSYapDatabaseObject : MTLModel <SDSRecordDelegate>
 
++ (NSString *)generateUniqueId;
+
 /**
  *  The unique identifier of the stored object
  */

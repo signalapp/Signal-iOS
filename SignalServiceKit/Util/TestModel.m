@@ -14,17 +14,6 @@ NSUInteger NSUIntegerMaxValue(void)
 
 @implementation TestModel
 
-- (instancetype)init
-{
-    self = [super init];
-
-    if (!self) {
-        return self;
-    }
-
-    return self;
-}
-
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];

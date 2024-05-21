@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(recipientAddress.isValid);
 
-    self = [super initWithThread:thread messageType:TSInfoMessageVerificationStateChange];
+    self = [super initWithThread:thread timestamp:0 serverGuid:nil messageType:TSInfoMessageVerificationStateChange];
     if (!self) {
         return self;
     }

@@ -53,17 +53,6 @@ NS_ASSUME_NONNULL_BEGIN
     return @"TSThread";
 }
 
-- (instancetype)init
-{
-    self = [super init];
-
-    if (self) {
-        _conversationColorNameObsolete = @"Obsolete";
-    }
-
-    return self;
-}
-
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
 {
     self = [super initWithUniqueId:uniqueId];

@@ -38,21 +38,25 @@ NSString *NSStringForAttachmentThumbnailQuality(TSAttachmentThumbnailQuality val
                      contentType:(NSString *)contentType
                   sourceFilename:(nullable NSString *)sourceFilename
                          caption:(nullable NSString *)caption
+                  attachmentType:(TSAttachmentType)attachmentType
                   albumMessageId:(nullable NSString *)albumMessageId
                         blurHash:(nullable NSString *)blurHash
                  uploadTimestamp:(unsigned long long)uploadTimestamp
                    videoDuration:(nullable NSNumber *)videoDuration NS_UNAVAILABLE;
+
 - (instancetype)initForRestoreWithUniqueId:(NSString *)uniqueId
                                contentType:(NSString *)contentType
                             sourceFilename:(nullable NSString *)sourceFilename
                                    caption:(nullable NSString *)caption
                             albumMessageId:(nullable NSString *)albumMessageId NS_UNAVAILABLE;
+
 - (instancetype)initAttachmentWithContentType:(NSString *)contentType
                                     byteCount:(UInt32)byteCount
                                sourceFilename:(nullable NSString *)sourceFilename
                                       caption:(nullable NSString *)caption
                                attachmentType:(TSAttachmentType)attachmentType
                                albumMessageId:(nullable NSString *)albumMessageId NS_UNAVAILABLE;
+
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
                 albumMessageId:(nullable NSString *)albumMessageId

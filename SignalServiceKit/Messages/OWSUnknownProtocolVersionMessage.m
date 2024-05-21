@@ -27,7 +27,7 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
                         sender:(nullable SignalServiceAddress *)sender
                protocolVersion:(NSUInteger)protocolVersion
 {
-    self = [super initWithThread:thread messageType:TSInfoMessageUnknownProtocolVersion];
+    self = [super initWithThread:thread timestamp:0 serverGuid:nil messageType:TSInfoMessageUnknownProtocolVersion];
 
     if (self) {
         OWSAssertDebug(sender.isValid);

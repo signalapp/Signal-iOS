@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
                                    transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
+
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                         uniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
@@ -41,14 +42,14 @@ NS_ASSUME_NONNULL_BEGIN
                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
            hasLegacyMessageState:(BOOL)hasLegacyMessageState
              hasSyncedTranscript:(BOOL)hasSyncedTranscript
-            wasNotCreatedLocally:(BOOL)wasNotCreatedLocally
                   isVoiceMessage:(BOOL)isVoiceMessage
               legacyMessageState:(TSOutgoingMessageState)legacyMessageState
               legacyWasDelivered:(BOOL)legacyWasDelivered
            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
           recipientAddressStates:
               (nullable NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *)recipientAddressStates
-              storedMessageState:(TSOutgoingMessageState)storedMessageState NS_UNAVAILABLE;
+              storedMessageState:(TSOutgoingMessageState)storedMessageState
+            wasNotCreatedLocally:(BOOL)wasNotCreatedLocally NS_UNAVAILABLE;
 
 - (instancetype)initWithThread:(TSThread *)thread
                    transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;

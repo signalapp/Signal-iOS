@@ -66,9 +66,12 @@ NSUInteger const TSGroupModelSchemaVersion = 2;
     return self;
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wobjc-designated-initializers"
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
+#pragma clang diagnostic pop
     if (!self) {
         return self;
     }
