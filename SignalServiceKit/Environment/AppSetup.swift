@@ -353,7 +353,6 @@ public class AppSetup {
                 ),
                 editMessageStore: editMessageStore,
                 groupsShim: EditManagerImpl.Wrappers.Groups(groupsV2: groupsV2),
-                keyValueStoreFactory: keyValueStoreFactory,
                 receiptManagerShim: EditManagerImpl.Wrappers.ReceiptManager(receiptManager: receiptManager),
                 tsResourceStore: tsResourceStore
             )

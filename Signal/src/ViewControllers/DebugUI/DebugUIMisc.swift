@@ -168,9 +168,6 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
                 DebugUIMisc.showSpoilerAnimationTestController()
             }),
 
-            OWSTableItem(title: "Enable edit send education prompt", actionBlock: {
-                DebugUIMisc.enableEditMessagePromptMessage()
-            }),
             OWSTableItem(title: "Mark flip cam button tooltip as unread", actionBlock: {
                 let flipCamTooltipManager = FlipCameraTooltipManager(db: DependenciesBridge.shared.db)
                 flipCamTooltipManager.markTooltipAsUnread()
@@ -482,15 +479,6 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
     private static func showSpoilerAnimationTestController() {
         let viewController = SpoilerAnimationTestController()
         UIApplication.shared.frontmostViewController!.present(viewController, animated: true)
-    }
-
-    private static func enableEditMessagePromptMessage() {
-        databaseStorage.write { tx in
-            DependenciesBridge.shared.editManager.setShouldShowEditSendConfirmation(
-                true,
-                tx: tx.asV2Write
-            )
-        }
     }
 }
 

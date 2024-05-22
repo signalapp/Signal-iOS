@@ -27,11 +27,6 @@ public class EditManagerImpl: EditManager {
 
         // Message can only be edited 10 times
         static let maxSendEdits: UInt = UInt(10)
-
-        // EDUCATION
-
-        static let collectionName: String = "EditManager"
-        static let shouldShowEditSendWarning: String = "shouldShowEditSendWarning"
     }
 
     public struct Context {
@@ -39,7 +34,6 @@ public class EditManagerImpl: EditManager {
         let editManagerAttachments: EditManagerTSResources
         let editMessageStore: EditMessageStore
         let groupsShim: EditManagerImpl.Shims.Groups
-        let keyValueStoreFactory: KeyValueStoreFactory
         let receiptManagerShim: EditManagerImpl.Shims.ReceiptManager
         let tsResourceStore: TSResourceStore
 
@@ -48,7 +42,6 @@ public class EditManagerImpl: EditManager {
             editManagerAttachments: EditManagerTSResources,
             editMessageStore: EditMessageStore,
             groupsShim: EditManagerImpl.Shims.Groups,
-            keyValueStoreFactory: KeyValueStoreFactory,
             receiptManagerShim: EditManagerImpl.Shims.ReceiptManager,
             tsResourceStore: TSResourceStore
         ) {
@@ -56,18 +49,15 @@ public class EditManagerImpl: EditManager {
             self.editManagerAttachments = editManagerAttachments
             self.editMessageStore = editMessageStore
             self.groupsShim = groupsShim
-            self.keyValueStoreFactory = keyValueStoreFactory
             self.receiptManagerShim = receiptManagerShim
             self.tsResourceStore = tsResourceStore
         }
     }
 
     private let context: Context
-    private let keyValueStore: KeyValueStore
 
     public init(context: Context) {
         self.context = context
-        self.keyValueStore = context.keyValueStoreFactory.keyValueStore(collection: Constants.collectionName)
     }
 
     // MARK: - Incoming Edit Processing
@@ -198,22 +188,6 @@ public class EditManagerImpl: EditManager {
         }
 
         return nil
-    }
-
-    public func shouldShowEditSendConfirmation(tx: DBReadTransaction) -> Bool {
-        return keyValueStore.getBool(
-            Constants.shouldShowEditSendWarning,
-            defaultValue: true,
-            transaction: tx
-        )
-    }
-
-    public func setShouldShowEditSendConfirmation(_ shouldShow: Bool, tx: DBWriteTransaction) {
-        keyValueStore.setBool(
-            shouldShow,
-            key: Constants.shouldShowEditSendWarning,
-            transaction: tx
-        )
     }
 
     // MARK: - Outgoing Edit Send

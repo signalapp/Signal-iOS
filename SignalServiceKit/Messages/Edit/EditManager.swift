@@ -68,10 +68,6 @@ public protocol EditManager {
         tx: DBReadTransaction
     ) -> EditSendValidationError?
 
-    func shouldShowEditSendConfirmation(tx: DBReadTransaction) -> Bool
-
-    func setShouldShowEditSendConfirmation(_ shouldShow: Bool, tx: DBWriteTransaction)
-
     // MARK: - Outgoing Edit Send
 
     /// Fetches a fresh version of the `targetMessage`, creates and inserts

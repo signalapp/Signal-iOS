@@ -36,7 +36,6 @@ class EditManagerTests: SSKBaseTest {
                 editManagerAttachments: MockEditManagerTSResources(),
                 editMessageStore: editMessageStoreMock,
                 groupsShim: GroupsMock(),
-                keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
                 receiptManagerShim: ReceiptManagerMock(),
                 tsResourceStore: TSResourceStoreMock()
             )
@@ -83,7 +82,6 @@ class EditManagerTests: SSKBaseTest {
                 editManagerAttachments: MockEditManagerTSResources(),
                 editMessageStore: editMessageStoreMock,
                 groupsShim: GroupsMock(),
-                keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
                 receiptManagerShim: ReceiptManagerMock(),
                 tsResourceStore: TSResourceStoreMock()
             )
@@ -127,7 +125,6 @@ class EditManagerTests: SSKBaseTest {
                 editManagerAttachments: MockEditManagerTSResources(),
                 editMessageStore: editMessageStoreMock,
                 groupsShim: GroupsMock(),
-                keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
                 receiptManagerShim: ReceiptManagerMock(),
                 tsResourceStore: TSResourceStoreMock()
             )
@@ -173,7 +170,6 @@ class EditManagerTests: SSKBaseTest {
                 editManagerAttachments: MockEditManagerTSResources(),
                 editMessageStore: editMessageStoreMock,
                 groupsShim: GroupsMock(),
-                keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
                 receiptManagerShim: ReceiptManagerMock(),
                 tsResourceStore: TSResourceStoreMock()
             )
@@ -221,7 +217,6 @@ class EditManagerTests: SSKBaseTest {
                 editManagerAttachments: MockEditManagerTSResources(),
                 editMessageStore: editMessageStoreMock,
                 groupsShim: GroupsMock(),
-                keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
                 receiptManagerShim: ReceiptManagerMock(),
                 tsResourceStore: TSResourceStoreMock()
             )
