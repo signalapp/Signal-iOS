@@ -182,23 +182,11 @@ NS_ASSUME_NONNULL_BEGIN
     return nil;
 }
 
-+ (BOOL)moveFilePath:(NSString *)oldFilePath toFilePath:(NSString *)newFilePath
++ (BOOL)moveFilePath:(NSString *)oldFilePath toFilePath:(NSString *)newFilePath error:(NSError **)error
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    if (![fileManager fileExistsAtPath:oldFilePath]) {
-        OWSFailDebug(@"Can't move file or directory; source missing.");
-        return NO;
-    }
 
-    if ([fileManager fileExistsAtPath:newFilePath]) {
-        OWSFailDebug(@"Can't move file or directory; destination already exists.");
-        return NO;
-    }
-
-    NSError *_Nullable error;
-    BOOL success = [fileManager moveItemAtPath:oldFilePath toPath:newFilePath error:&error];
-    if (!success || error) {
-        OWSFailDebug(@"Could not move file or directory with error: %@", error.shortDescription);
+    if (![fileManager moveItemAtPath:oldFilePath toPath:newFilePath error:error]) {
         return NO;
     }
 

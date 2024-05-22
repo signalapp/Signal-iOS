@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 public class TSResourceViewOnceManagerImpl: TSResourceViewOnceManager {
 
@@ -120,14 +121,11 @@ public class TSResourceViewOnceManagerImpl: TSResourceViewOnceManager {
                 return
             }
             let tempFilePath = OWSFileSystem.temporaryFilePath(fileExtension: fileExtension)
-            guard !OWSFileSystem.fileOrFolderExists(atPath: tempFilePath) else {
-                owsFailDebug("Temp file unexpectedly already exists.")
-                return
-            }
             // Move the attachment to the temp file.
-            // A copy would be much more expensive.
-            guard OWSFileSystem.moveFilePath(originalFilePath, toFilePath: tempFilePath) else {
-                owsFailDebug("Couldn't move file.")
+            do {
+                try OWSFileSystem.moveFilePath(originalFilePath, toFilePath: tempFilePath)
+            } catch {
+                owsFailDebug("Couldn't move file: \(error.shortDescription)")
                 return
             }
             guard OWSFileSystem.fileOrFolderExists(atPath: tempFilePath) else {

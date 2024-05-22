@@ -306,13 +306,16 @@ extension DeviceTransferService: MCSessionDelegate {
                     return
                 }
 
-                guard OWSFileSystem.moveFilePath(
-                    localURL.path,
-                    toFilePath: URL(
-                        fileURLWithPath: file.identifier,
-                        relativeTo: DeviceTransferService.pendingTransferFilesDirectory
-                    ).path
-                ) else {
+                do {
+                    try OWSFileSystem.moveFilePath(
+                        localURL.path,
+                        toFilePath: URL(
+                            fileURLWithPath: file.identifier,
+                            relativeTo: DeviceTransferService.pendingTransferFilesDirectory
+                        ).path
+                    )
+                } catch {
+                    Logger.warn("Couldn't move file: \(error.shortDescription)")
                     return failTransfer(.assertion, "Failed to move file into place \(file.identifier)")
                 }
 

@@ -188,28 +188,31 @@ extension DeviceTransferService {
                 hotswapFilePath = GRDBDatabaseStorageAdapter.databaseWalUrl(directoryMode: .hotswapLegacy).path
             }
 
-            let fileIsAwaitingRestoration = OWSFileSystem.fileOrFolderExists(atPath: pendingFilePath)
-            let fileWasAlreadyRestoredToHotSwapPath: Bool = {
-                guard let hotswapFilePath = hotswapFilePath else { return false }
-                return OWSFileSystem.fileOrFolderExists(atPath: hotswapFilePath)
-            }()
-            let fileWasAlreadyRestored = fileWasAlreadyRestoredToHotSwapPath || OWSFileSystem.fileOrFolderExists(atPath: newFilePath)
-
-            if fileIsAwaitingRestoration {
-                guard move(pendingFilePath: pendingFilePath, to: newFilePath) else {
-                    owsFailDebug("Failed to move file \(file.identifier)")
+            if OWSFileSystem.fileOrFolderExists(atPath: pendingFilePath) {
+                guard OWSFileSystem.deleteFileIfExists(newFilePath) else {
+                    owsFailDebug("Failed to delete existing file.")
                     return false
                 }
-            } else if fileWasAlreadyRestored {
-                if fileWasAlreadyRestoredToHotSwapPath, let hotswapFilePath = hotswapFilePath {
-                    Logger.info("No longer hot swapping, promoting hotswap database to primary database: \(file.identifier)")
-                    guard move(pendingFilePath: hotswapFilePath, to: newFilePath) else {
-                        owsFailDebug("Failed to promote hotswap database \(file.identifier)")
-                        return false
-                    }
-                } else {
-                    Logger.info("Skipping restoration of file that was already restored: \(file.identifier)")
+                do {
+                    try move(pendingFilePath: pendingFilePath, to: newFilePath)
+                } catch {
+                    owsFailDebug("Failed to move file \(file.identifier); \(error.shortDescription)")
+                    return false
                 }
+            } else if let hotswapFilePath, OWSFileSystem.fileOrFolderExists(atPath: hotswapFilePath) {
+                Logger.info("No longer hot swapping, promoting hotswap database to primary database: \(file.identifier)")
+                guard OWSFileSystem.deleteFileIfExists(newFilePath) else {
+                    owsFailDebug("Failed to delete existing file.")
+                    return false
+                }
+                do {
+                    try move(pendingFilePath: hotswapFilePath, to: newFilePath)
+                } catch {
+                    owsFailDebug("Failed to promote hotswap database \(file.identifier); \(error.shortDescription)")
+                    return false
+                }
+            } else if OWSFileSystem.fileOrFolderExists(atPath: newFilePath) {
+                Logger.info("Skipping restoration of file that was already restored: \(file.identifier)")
             } else if [
                 DeviceTransferService.databaseIdentifier,
                 DeviceTransferService.databaseWALIdentifier
@@ -256,36 +259,9 @@ extension DeviceTransferService {
         LegacyRestorationFlags.hasPendingRestore = false
     }
 
-    private func move(pendingFilePath: String, to newFilePath: String) -> Bool {
-        guard OWSFileSystem.deleteFileIfExists(newFilePath) else {
-            owsFailDebug("Failed to delete existing file.")
-            return false
-        }
-
-        let relativeNewPath = newFilePath.replacingOccurrences(
-            of: DeviceTransferService.appSharedDataDirectory.path,
-            with: ""
-        )
-
-        let pathComponents = relativeNewPath.components(separatedBy: "/")
-        var path = ""
-        for component in pathComponents where !component.isEmpty {
-            guard component != pathComponents.last else { break }
-            path += component + "/"
-            OWSFileSystem.ensureDirectoryExists(
-                URL(
-                    fileURLWithPath: path,
-                    relativeTo: DeviceTransferService.appSharedDataDirectory
-                ).path
-            )
-        }
-
-        guard OWSFileSystem.moveFilePath(pendingFilePath, toFilePath: newFilePath) else {
-            owsFailDebug("Failed to restore file.")
-            return false
-        }
-
-        return true
+    private func move(pendingFilePath: String, to newFilePath: String) throws {
+        OWSFileSystem.ensureDirectoryExists((newFilePath as NSString).deletingLastPathComponent)
+        try OWSFileSystem.moveFilePath(pendingFilePath, toFilePath: newFilePath)
     }
 
     private func promoteTransferDatabaseToPrimaryDatabase() -> Bool {
@@ -295,8 +271,14 @@ extension DeviceTransferService {
         let hotswapDatabaseDirectoryPath = GRDBDatabaseStorageAdapter.databaseDirUrl(directoryMode: .hotswapLegacy).path
 
         if OWSFileSystem.fileOrFolderExists(atPath: hotswapDatabaseDirectoryPath) {
-            guard move(pendingFilePath: hotswapDatabaseDirectoryPath, to: primaryDatabaseDirectoryPath) else {
-                owsFailDebug("Failed to promote hotswap database to primary database.")
+            guard OWSFileSystem.deleteFileIfExists(primaryDatabaseDirectoryPath) else {
+                owsFailDebug("Failed to delete existing file.")
+                return false
+            }
+            do {
+                try move(pendingFilePath: hotswapDatabaseDirectoryPath, to: primaryDatabaseDirectoryPath)
+            } catch {
+                owsFailDebug("Failed to promote hotswap database to primary database: \(error.shortDescription)")
                 return false
             }
         } else {
@@ -463,20 +445,19 @@ extension DeviceTransferService {
             let sourceUrl = URL(fileURLWithPath: file.identifier, relativeTo: sourceDir)
             let destUrl = URL(fileURLWithPath: file.relativePath, relativeTo: destDir)
 
-            if OWSFileSystem.fileOrFolderExists(url: destUrl) {
+            do {
+                try move(pendingFilePath: sourceUrl.path, to: destUrl.path)
+            } catch CocoaError.fileWriteFileExists {
                 Logger.info("Skipping restoration of file that was already restored: \(file.identifier)")
-            } else if OWSFileSystem.fileOrFolderExists(url: sourceUrl) {
-                let didSucceed = move(pendingFilePath: sourceUrl.path, to: destUrl.path)
-                if !didSucceed {
-                    throw OWSAssertionError("Failed to move file \(file.identifier)")
-                }
-            } else {
+            } catch CocoaError.fileNoSuchFile, CocoaError.fileReadNoSuchFile, POSIXError.ENOENT {
                 // We sometimes don't receive a file because it goes missing on the old
                 // device between when we generate the manifest and when we perform the
                 // restoration. Our verification process ensures that the only files that
                 // could be missing in this way are non-essential files. It's better to
                 // let the user continue than to lock them out of the app in this state.
                 Logger.info("Skipping restoration of missing file: \(file.identifier)")
+            } catch {
+                throw OWSAssertionError("Failed to move file \(file.identifier)")
             }
         }
     }
@@ -505,15 +486,12 @@ extension DeviceTransferService {
                 throw OWSAssertionError("Unknown file identifier")
             }
 
-            if OWSFileSystem.fileOrFolderExists(url: destUrl) {
+            do {
+                try move(pendingFilePath: sourceUrl.path, to: destUrl.path)
+            } catch CocoaError.fileWriteFileExists {
                 Logger.info("Skipping restoration of database file that was already restored: \(file.identifier)")
-            } else if OWSFileSystem.fileOrFolderExists(url: sourceUrl) {
-                let didSucceed = move(pendingFilePath: sourceUrl.path, to: destUrl.path)
-                if !didSucceed {
-                    throw OWSAssertionError("Failed to move database file \(file.identifier)")
-                }
-            } else {
-                throw OWSAssertionError("Unable to restore missing database file: \(file.identifier)")
+            } catch {
+                throw OWSAssertionError("Failed to move file \(file.identifier); \(error.shortDescription)")
             }
         }
     }

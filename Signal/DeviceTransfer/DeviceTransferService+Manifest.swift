@@ -176,14 +176,17 @@ extension DeviceTransferService {
 
         resetTransferDirectory(createNewTransferDirectory: true)
 
-        guard OWSFileSystem.moveFilePath(
-            localURL.path,
-            toFilePath: URL(
-                fileURLWithPath: DeviceTransferService.manifestIdentifier,
-                relativeTo: DeviceTransferService.pendingTransferDirectory
-            ).path
-        ) else {
-            return owsFailDebug("Failed to move manifest into place")
+        do {
+            try OWSFileSystem.moveFilePath(
+                localURL.path,
+                toFilePath: URL(
+                    fileURLWithPath: DeviceTransferService.manifestIdentifier,
+                    relativeTo: DeviceTransferService.pendingTransferDirectory
+                ).path
+            )
+        } catch {
+            owsFailDebug("Failed to move manifest into place: \(error.shortDescription)")
+            return
         }
 
         let progress = Progress(totalUnitCount: Int64(manifest.estimatedTotalSize))
