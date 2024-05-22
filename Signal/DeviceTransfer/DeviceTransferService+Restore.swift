@@ -122,11 +122,7 @@ extension DeviceTransferService {
         return true
     }
 
-    func restoreTransferredDataLegacy(hotswapDatabase: Bool) -> Bool {
-        // Hotswapping databases is deprecated. Future transfers should use
-        // `restoreTransferredData()`
-        owsAssertDebug(hotswapDatabase == false)
-
+    func restoreTransferredDataLegacy() -> Bool {
         Logger.info("Attempting to restore transferred data.")
 
         guard LegacyRestorationFlags.hasPendingRestore else {
@@ -200,17 +196,12 @@ extension DeviceTransferService {
             let fileWasAlreadyRestored = fileWasAlreadyRestoredToHotSwapPath || OWSFileSystem.fileOrFolderExists(atPath: newFilePath)
 
             if fileIsAwaitingRestoration {
-                let restorationPath: String = {
-                    if hotswapDatabase, let hotswapFilePath = hotswapFilePath { return hotswapFilePath }
-                    return newFilePath
-                }()
-
-                guard move(pendingFilePath: pendingFilePath, to: restorationPath) else {
+                guard move(pendingFilePath: pendingFilePath, to: newFilePath) else {
                     owsFailDebug("Failed to move file \(file.identifier)")
                     return false
                 }
             } else if fileWasAlreadyRestored {
-                if !hotswapDatabase, fileWasAlreadyRestoredToHotSwapPath, let hotswapFilePath = hotswapFilePath {
+                if fileWasAlreadyRestoredToHotSwapPath, let hotswapFilePath = hotswapFilePath {
                     Logger.info("No longer hot swapping, promoting hotswap database to primary database: \(file.identifier)")
                     guard move(pendingFilePath: hotswapFilePath, to: newFilePath) else {
                         owsFailDebug("Failed to promote hotswap database \(file.identifier)")
@@ -237,25 +228,10 @@ extension DeviceTransferService {
         }
 
         LegacyRestorationFlags.pendingWasTransferredClear = true
-        LegacyRestorationFlags.pendingPromotionFromHotSwapToPrimaryDatabase = hotswapDatabase
+        LegacyRestorationFlags.pendingPromotionFromHotSwapToPrimaryDatabase = false
         hasBeenRestored = true
 
         resetTransferDirectory(createNewTransferDirectory: true)
-
-        if hotswapDatabase {
-            owsFail("Hotswapping databases is no longer supported")
-            // Kept for future reference
-//            DispatchMainThreadSafe {
-//                self.databaseStorage.reload(directoryMode: .hotswapLegacy)
-//                self.tsAccountManager.wasTransferred = false
-//                LegacyRestorationFlags.pendingWasTransferredClear = false
-//                self.tsAccountManager.isTransferInProgress = false
-//                SignalApp.shared.showConversationSplitView()
-//
-//                // After transfer our push token has changed, update it.
-//                SyncPushTokensJob.run()
-//            }
-        }
 
         return true
     }
@@ -349,7 +325,7 @@ extension DeviceTransferService {
                 success = false
             }
         } else if LegacyRestorationFlags.hasPendingRestore {
-            success = restoreTransferredDataLegacy(hotswapDatabase: false)
+            success = restoreTransferredDataLegacy()
         } else if LegacyRestorationFlags.pendingPromotionFromHotSwapToPrimaryDatabase {
             success = promoteTransferDatabaseToPrimaryDatabase()
         } else {
