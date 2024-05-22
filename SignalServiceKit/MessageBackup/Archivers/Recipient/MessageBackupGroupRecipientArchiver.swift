@@ -381,7 +381,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
             storyStore.updateStoryContext(storyContext, isHidden: true, tx: tx)
         }
 
-        if let avatarUrlPath = groupModel.avatarUrlPath {
+        if groupModel.avatarUrlPath != nil {
             // [Backups] TODO: Enqueue download of the group avatar.
         }
 

@@ -22,10 +22,12 @@ public class MobileCoinHelperMinimal: MobileCoinHelper {
     }
 
     public func isValidMobileCoinPublicAddress(_ addressData: Data) -> Bool {
-        guard let proto = try? External_PublicAddress(serializedData: addressData) else {
-            Logger.warn("Couldn't decode MobileCoin public address")
+        do {
+            _ = try External_PublicAddress(serializedData: addressData)
+            return true
+        } catch {
+            Logger.warn("Couldn't decode MobileCoin public address: \(error)")
             return false
         }
-        return true
     }
 }

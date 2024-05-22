@@ -19,6 +19,7 @@ open class OWSDevicesService: NSObject {
     @objc
     public static let deviceListUpdateModifiedDeviceList = Notification.Name("deviceListUpdateModifiedDeviceList")
 
+    @discardableResult
     public static func refreshDevices() -> Promise<Void> {
         return firstly {
             Self.getDevices()

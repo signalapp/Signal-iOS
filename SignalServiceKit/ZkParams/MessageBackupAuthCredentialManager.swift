@@ -45,22 +45,22 @@ public struct MessageBackupAuthCredentialManagerImpl: MessageBackupAuthCredentia
 
     public func fetchBackupCredential(localAci: Aci, auth: ChatServiceAuth) async throws -> BackupAuthCredential {
 
-        let authCredential = db.read { tx in
+        let authCredential = db.read { tx -> BackupAuthCredential? in
             let lastCredentialFetchTime = kvStore.getDate(
                 Constants.keyValueStoreLastCredentialFetchTimeKey,
                 transaction: tx
             ) ?? .distantPast
 
-            do {
-                // every 3 days fetch 7 days worth
-                if abs(lastCredentialFetchTime.timeIntervalSinceNow) < Constants.numberOfDaysFetchIntervalInSeconds {
-                    let redemptionTime = self.dateProvider().startOfTodayUTCTimestamp()
-                    return try self.authCredentialStore.backupAuthCredential(for: redemptionTime, tx: tx)
+            // every 3 days fetch 7 days worth
+            if abs(lastCredentialFetchTime.timeIntervalSinceNow) < Constants.numberOfDaysFetchIntervalInSeconds {
+                let redemptionTime = self.dateProvider().startOfTodayUTCTimestamp()
+                if let backupAuthCredential = self.authCredentialStore.backupAuthCredential(for: redemptionTime, tx: tx) {
+                    return backupAuthCredential
+                } else {
+                    owsFailDebug("Error retrieving cached auth credential")
                 }
-            } catch {
-                owsFailDebug("Error retrieving cached auth credential: \(error)")
-                // fall through to fetch a new one…
             }
+
             return nil
         }
 

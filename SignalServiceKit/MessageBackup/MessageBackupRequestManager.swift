@@ -59,7 +59,7 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
         }
         let base64RequestContext = Data(backupRequestContext.getRequest().serialize()).base64EncodedString()
         let request = try OWSRequestFactory.reserveBackupId(backupId: base64RequestContext, auth: auth)
-        let response = try await networkManager.makePromise(
+        _ = try await networkManager.makePromise(
             request: request,
             canUseWebSocket: false // TODO[Backups]: Switch this back to true when reg supports websockets
         ).awaitable()
@@ -86,7 +86,7 @@ public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {
 
     /// Onetime request to register the backup public key.
     public func registerBackupKeys(auth: MessageBackupServiceAuth) async throws {
-        let response = try await executeBackupServiceRequest(
+        _ = try await executeBackupServiceRequest(
             auth: auth,
             requestFactory: OWSRequestFactory.backupSetPublicKeyRequest(auth:)
         )

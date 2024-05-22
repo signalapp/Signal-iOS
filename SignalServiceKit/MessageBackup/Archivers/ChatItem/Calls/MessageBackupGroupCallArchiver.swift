@@ -50,7 +50,7 @@ final class MessageBackupGroupCallArchiver: MessageBackupInteractionArchiver {
                 }
             case .group(.ringingDeclined): groupCallState = .DECLINED
             case .group(.ringingMissed): groupCallState = .MISSED
-            case .individual(let individualCallStatus):
+            case .individual:
                 return .messageFailure([.archiveFrameError(
                     .groupCallRecordHadIndividualCallStatus,
                     MessageBackup.InteractionUniqueId(interaction: groupCallInteraction)
