@@ -58,13 +58,13 @@ public class DisplayableText: NSObject {
         return truncatedContent != nil
     }
 
-    private static let maxInlineText = 1024 * 8
+    private static let maxInlineRenderingSizeEstimate = 1024 * 8
 
     public var canRenderTruncatedTextInline: Bool {
-        return isTextTruncated && fullLengthWithNewLineScalar <= Self.maxInlineText
+        return isTextTruncated && renderingSizeEstimate <= Self.maxInlineRenderingSizeEstimate
     }
 
-    public let fullLengthWithNewLineScalar: Int
+    public let renderingSizeEstimate: Int
 
     public let jumbomojiCount: UInt
 
@@ -80,13 +80,13 @@ public class DisplayableText: NSObject {
         switch fullContent.textValue {
         case .text(let text):
             self.jumbomojiCount = DisplayableText.jumbomojiCount(in: text)
-            self.fullLengthWithNewLineScalar = DisplayableText.fullLengthWithNewLineScalar(in: text)
+            self.renderingSizeEstimate = DisplayableText.renderingSizeEstimate(of: text)
         case .attributedText(let attributedText):
             self.jumbomojiCount = DisplayableText.jumbomojiCount(in: attributedText.string)
-            self.fullLengthWithNewLineScalar = DisplayableText.fullLengthWithNewLineScalar(in: attributedText.string)
+            self.renderingSizeEstimate = DisplayableText.renderingSizeEstimate(of: attributedText.string)
         case .messageBody(let messageBody):
             self.jumbomojiCount = messageBody.jumbomojiCount(DisplayableText.jumbomojiCount(in:))
-            self.fullLengthWithNewLineScalar = messageBody.fullLengthWithNewLineScalar(DisplayableText.fullLengthWithNewLineScalar(in:))
+            self.renderingSizeEstimate = messageBody.renderingSizeEstimate(DisplayableText.renderingSizeEstimate(of:))
         }
 
         super.init()
@@ -202,16 +202,11 @@ public class DisplayableText: NSObject {
 
     // MARK: Filter Methods
 
-    private static let newLineRegex = try! NSRegularExpression(pattern: "\n", options: [])
     private static let newLineScalar = 16
 
-    private class func fullLengthWithNewLineScalar(in string: String) -> Int {
-        let numberOfNewLines = newLineRegex.numberOfMatches(
-            in: string,
-            options: [],
-            range: string.entireRange
-        )
-        return string.utf16.count + numberOfNewLines * newLineScalar
+    private class func renderingSizeEstimate(of text: String) -> Int {
+        let newlineByte = UInt8(ascii: "\n")
+        return text.utf8.lazy.map { $0 == newlineByte ? newLineScalar : 1 }.reduce(0, +)
     }
 
     public class var empty: DisplayableText {
@@ -219,6 +214,22 @@ public class DisplayableText: NSObject {
             fullContent: .init(textValue: .text(""), naturalAlignment: .natural),
             truncatedContent: nil
         )
+    }
+
+    private static func limitNewLines(in text: String, to maxNewLines: Int) -> String {
+        var textSuffix = text[...]
+        var remainingCount = maxNewLines
+        while remainingCount > 0 {
+            guard let newLineRange = textSuffix.range(of: "\n") else {
+                return text
+            }
+            textSuffix = textSuffix[newLineRange.upperBound...]
+            remainingCount -= 1
+        }
+        guard let newLineRange = textSuffix.range(of: "\n") else {
+            return text
+        }
+        return String(text[..<newLineRange.lowerBound])
     }
 
     public class func displayableText(
@@ -250,16 +261,7 @@ public class DisplayableText: NSObject {
             }
             // Message bubbles by default should be short. We don't ever
             // want to show more than X new lines in the truncated text.
-            let newLineMatches = newLineRegex.matches(
-                in: truncatedText,
-                options: [],
-                range: truncatedText.entireRange
-            )
-            guard newLineMatches.count <= kMaxSnippetNewLines else {
-                let matchRange = Range(newLineMatches[kMaxSnippetNewLines].range, in: truncatedText)!
-                return String(truncatedText[..<matchRange.lowerBound])
-            }
-            return truncatedText
+            return limitNewLines(in: truncatedText, to: kMaxSnippetNewLines)
         }
 
         let truncatedContent = { () -> Content? in

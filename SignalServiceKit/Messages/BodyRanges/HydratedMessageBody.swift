@@ -849,7 +849,7 @@ public class HydratedMessageBody: Equatable, Hashable {
         return jumbomojiCounter(hydratedText)
     }
 
-    public func fullLengthWithNewLineScalar(_ parser: (String) -> Int) -> Int {
+    public func renderingSizeEstimate(_ parser: (String) -> Int) -> Int {
         return parser(hydratedText)
     }
 
