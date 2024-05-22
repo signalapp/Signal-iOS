@@ -80,7 +80,7 @@
 "ACTION_VIDEO_CALL" = "視像通話";
 
 /* Label for 'voice call' button in contact view. */
-"ACTION_VOICE_CALL" = "Signal Call";
+"ACTION_VOICE_CALL" = "Signal 通話";
 
 /* The title for the 'add group members' view. */
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "加成員";
@@ -186,9 +186,6 @@
 
 /* Title for the view of all your signal connections */
 "ALL_SIGNAL_CONNECTIONS_TITLE" = "所有人脈";
-
-/* notification action */
-"ANSWER_CALL_BUTTON_TITLE" = "接聽";
 
 /* notification body */
 "APN_Message" = "你可能有新訊息";
@@ -682,9 +679,6 @@
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "再打一次";
 
-/* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 語音通話來電…";
-
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 未接語音通話 (%1$@)";
 
@@ -712,12 +706,6 @@
 /* label for button shown when an incoming call rings */
 "CALL_CONTROLS_INCOMING_DECLINE" = "拒絕";
 
-/* Body for the repeating notification shown while an incoming group call is ringing, if the user has chosen not to include contact names in notifications */
-"CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS" = "📹 群組通話來電…";
-
-/* Body for the repeating notification shown while an incoming group call is ringing. Embeds {{caller name}} */
-"CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ 打緊電話俾群組…";
-
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ 未接聽通話，因為來電者嘅安全碼已經郁動過。";
 
@@ -741,9 +729,6 @@
 
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "係咪要打畀佢？";
-
-/* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 有人視像通話搵您…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ 嘅時候有未接視像通話";
@@ -851,7 +836,7 @@
 "CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "加入視像通話";
 
 /* Title for a long-press context menu action to join a voice call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_JOIN_VOICE_CALL_ACTION_TITLE" = "Join Voice Call";
+"CALLS_TAB_JOIN_VOICE_CALL_ACTION_TITLE" = "加入語音通話";
 
 /* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
 "CALLS_TAB_NO_MISSED_CALLS_LABEL" = "冇未接來電";
@@ -881,7 +866,7 @@
 "CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "視像通話";
 
 /* Title for a long-press context menu action to start a voice call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_START_VOICE_CALL_ACTION_TITLE" = "Voice Call";
+"CALLS_TAB_START_VOICE_CALL_ACTION_TITLE" = "語音通話";
 
 /* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
 "CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "詳細";
@@ -1394,19 +1379,19 @@
 "CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "打入嚟嘅視像通話";
 
 /* A label indicating that a call was an incoming voice call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VOICE_CALL" = "Incoming voice call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VOICE_CALL" = "語音通話來電";
 
 /* A label indicating that a call was an missed video call */
 "CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "未接嘅視像通話";
 
 /* A label indicating that a call was an missed voice call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VOICE_CALL" = "Missed voice call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VOICE_CALL" = "未接嘅語音通話";
 
 /* A label indicating that a call was an outgoing video call */
 "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "打出去嘅視像通話";
 
 /* A label indicating that a call was an outgoing voice call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VOICE_CALL" = "Outgoing voice call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VOICE_CALL" = "打出嘅語音通話";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "編輯個谷嘅資訊";
@@ -1550,7 +1535,7 @@
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "聯絡人詳情";
 
 /* Button to start a voice call */
-"CONVERSATION_SETTINGS_VOICE_CALL_BUTTON" = "voice";
+"CONVERSATION_SETTINGS_VOICE_CALL_BUTTON" = "語音";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "加入去聯絡人";
@@ -1739,7 +1724,7 @@
 "DECLINED_VIDEO_CALL" = "你拒絕咗一個視像通話";
 
 /* info message text in conversation view */
-"DECLINED_VOICE_CALL" = "You declined a voice call";
+"DECLINED_VOICE_CALL" = "你拒絕咗一個語音通話";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "刪除帳戶";
@@ -2371,6 +2356,12 @@
 /* Label for the currency picker button in donation views */
 "DONATIONS_CURRENCY_PICKER_LABEL" = "貨幣";
 
+/* Message for Double Tap to Edit sheet show on first interaction */
+"DOUBLE_TAP_TO_EDIT_ALERT_MESSAGE" = "Quickly tap twice on your messages to edit them. You can edit your messages up to 24 hours after they’ve been sent.";
+
+/* Title for Double Tap to Edit sheet show on first interaction */
+"DOUBLE_TAP_TO_EDIT_ALERT_TITLE" = "Double Tap to Edit";
+
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "您可以喺 iOS 設定 app 度啟用存取。";
 
@@ -2822,10 +2813,10 @@
 "GROUP_CALL_LEAVE_BUTTON" = "退出通話";
 
 /* Title for the section of the group call member list which displays the list of all members in the call. */
-"GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "In Call";
+"GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "通話中";
 
 /* Title for the section of the group call member list which displays the list of members with their hand raised. */
-"GROUP_CALL_MEMBER_LIST_RAISED_HANDS_SECTION_HEADER" = "Raised Hands";
+"GROUP_CALL_MEMBER_LIST_RAISED_HANDS_SECTION_HEADER" = "舉咗手";
 
 /* A count of members in a given group call member list section, displayed after the header. */
 "GROUP_CALL_MEMBER_LIST_SECTION_HEADER_MEMBER_COUNT" = "(%1$d)";
@@ -3122,7 +3113,7 @@
 "GROUP_LINK_VIEW_TITLE" = "谷拎";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ 加咗您入嚟。";
+"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ added you to the group.";
 
 /* Message indicating that the local user was granted administrator role. */
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "您而家已經係話事人。";
@@ -3617,7 +3608,7 @@
 "INCOMING_VIDEO_CALL" = "打入嚟嘅視像通話";
 
 /* info message text in conversation view */
-"INCOMING_VOICE_CALL" = "Incoming voice call";
+"INCOMING_VOICE_CALL" = "語音通話來電";
 
 /* Indicates that a previously-removed recipient has been added back to the current user's contacts. */
 "INFO_MESSAGE_CONTACT_REINSTATED" = "呢個人已經加返入你嘅 Signal 聯絡人清單喇。";
@@ -4286,7 +4277,7 @@
 "MISSED_VIDEO_CALL" = "未接嘅視像通話";
 
 /* info message text in conversation view */
-"MISSED_VOICE_CALL" = "Missed voice call";
+"MISSED_VOICE_CALL" = "未接嘅語音通話";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "您可以喺 iOS 設定 app 度啟用相機存取，以便喺 Signal 入面進行視像通話。";
@@ -4382,7 +4373,7 @@
 "NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "視像通話";
 
 /* Title for a long-press context menu action to start a voice call, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_VOICE_CALL_ACTION_TITLE" = "Voice Call";
+"NEW_CALL_VOICE_CALL_ACTION_TITLE" = "語音通話";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "用電話冧把嚟搵";
@@ -4742,7 +4733,7 @@
 "OUTGOING_MISSED_VIDEO_CALL" = "未接嘅視像通話";
 
 /* info message text in conversation view */
-"OUTGOING_MISSED_VOICE_CALL" = "Unanswered voice call";
+"OUTGOING_MISSED_VOICE_CALL" = "未接嘅語音通話";
 
 /* Button for action sheet shown when device transfer completes; quits the Signal app immediately (does not automatically relaunch, but the user may choose to relaunch). */
 "OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION" = "退出 Signal";
@@ -4757,7 +4748,7 @@
 "OUTGOING_VIDEO_CALL" = "打出去嘅視像通話";
 
 /* info message text in conversation view */
-"OUTGOING_VOICE_CALL" = "Outgoing voice call";
+"OUTGOING_VOICE_CALL" = "打出嘅語音通話";
 
 /* Header title for bank payment details screen */
 "PAYMENT_DETAILS_BANK_TITLE" = "銀行轉賬";
@@ -5838,9 +5829,6 @@
 
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
 "REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "我哋冇辦法透過語音通話傳送驗證碼俾你。試吓改用短訊接收驗證碼啦。";
-
-/* notification action */
-"REJECT_CALL_BUTTON_TITLE" = "拒絕接聽";
 
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "你嘗試註冊嘅電話號碼已經喺另一個伺服器度註冊咗喇。請先喺嗰度取消註冊，然後再試一次。";
@@ -8078,7 +8066,7 @@
 "VIEW_STORY" = "View Story";
 
 /* Accessibility label for placing a voice call */
-"VOICE_CALL_LABEL" = "Voice Call";
+"VOICE_CALL_LABEL" = "語音通話";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "滑走以取消";

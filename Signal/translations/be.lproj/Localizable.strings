@@ -80,7 +80,7 @@
 "ACTION_VIDEO_CALL" = "Відэазванок";
 
 /* Label for 'voice call' button in contact view. */
-"ACTION_VOICE_CALL" = "Signal Call";
+"ACTION_VOICE_CALL" = "Званок Signal";
 
 /* The title for the 'add group members' view. */
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "Дадаць удзельнікаў";
@@ -186,9 +186,6 @@
 
 /* Title for the view of all your signal connections */
 "ALL_SIGNAL_CONNECTIONS_TITLE" = "Усе кантакты";
-
-/* notification action */
-"ANSWER_CALL_BUTTON_TITLE" = "Адказаць";
 
 /* notification body */
 "APN_Message" = "У вас, мажліва, ёсць новыя паведамленні";
@@ -682,9 +679,6 @@
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "Тэлефанаваць яшчэ раз";
 
-/* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Уваходны галасавы званок…";
-
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Прапушчаны галасавы званок у %1$@";
 
@@ -712,12 +706,6 @@
 /* label for button shown when an incoming call rings */
 "CALL_CONTROLS_INCOMING_DECLINE" = "адхіліць";
 
-/* Body for the repeating notification shown while an incoming group call is ringing, if the user has chosen not to include contact names in notifications */
-"CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS" = "📹 Уваходны групавы званок…";
-
-/* Body for the repeating notification shown while an incoming group call is ringing. Embeds {{caller name}} */
-"CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 Званок у групе ад %1$@…";
-
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Прапушчаны званок, бо змяніўся код бяспекі таго, хто званіць.";
 
@@ -741,9 +729,6 @@
 
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "Пазваніць?";
-
-/* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Уваходны відэазванок…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Прапушчаны відэазванок у %1$@";
@@ -851,7 +836,7 @@
 "CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "Далучыцца да відэазванка";
 
 /* Title for a long-press context menu action to join a voice call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_JOIN_VOICE_CALL_ACTION_TITLE" = "Join Voice Call";
+"CALLS_TAB_JOIN_VOICE_CALL_ACTION_TITLE" = "Далучыцца да галасавога званка";
 
 /* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
 "CALLS_TAB_NO_MISSED_CALLS_LABEL" = "Няма прапушчаных званкоў";
@@ -881,7 +866,7 @@
 "CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "Відэазванок";
 
 /* Title for a long-press context menu action to start a voice call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_START_VOICE_CALL_ACTION_TITLE" = "Voice Call";
+"CALLS_TAB_START_VOICE_CALL_ACTION_TITLE" = "Галасавы званок";
 
 /* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
 "CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "Інфармацыя";
@@ -1394,19 +1379,19 @@
 "CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "Уваходны відэазванок";
 
 /* A label indicating that a call was an incoming voice call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VOICE_CALL" = "Incoming voice call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VOICE_CALL" = "Уваходны галасавы званок";
 
 /* A label indicating that a call was an missed video call */
 "CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "Прапушчаны відэазванок";
 
 /* A label indicating that a call was an missed voice call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VOICE_CALL" = "Missed voice call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VOICE_CALL" = "Прапушчаны галасавы званок";
 
 /* A label indicating that a call was an outgoing video call */
 "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "Выходны відэазванок";
 
 /* A label indicating that a call was an outgoing voice call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VOICE_CALL" = "Outgoing voice call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VOICE_CALL" = "Выходны галасавы званок";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Рэдагаваць інфармацыю аб групе";
@@ -1550,7 +1535,7 @@
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Звесткі аб кантакту";
 
 /* Button to start a voice call */
-"CONVERSATION_SETTINGS_VOICE_CALL_BUTTON" = "voice";
+"CONVERSATION_SETTINGS_VOICE_CALL_BUTTON" = "галасавы званок";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Дадаць у кантакты";
@@ -1739,7 +1724,7 @@
 "DECLINED_VIDEO_CALL" = "Вы адхілілі відэазванок";
 
 /* info message text in conversation view */
-"DECLINED_VOICE_CALL" = "You declined a voice call";
+"DECLINED_VOICE_CALL" = "Вы адхілілі галасавы званок";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Выдаліць уліковы запіс";
@@ -2371,6 +2356,12 @@
 /* Label for the currency picker button in donation views */
 "DONATIONS_CURRENCY_PICKER_LABEL" = "Валюта";
 
+/* Message for Double Tap to Edit sheet show on first interaction */
+"DOUBLE_TAP_TO_EDIT_ALERT_MESSAGE" = "Quickly tap twice on your messages to edit them. You can edit your messages up to 24 hours after they’ve been sent.";
+
+/* Title for Double Tap to Edit sheet show on first interaction */
+"DOUBLE_TAP_TO_EDIT_ALERT_TITLE" = "Double Tap to Edit";
+
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Вы можаце ўключыць доступ у наладах iOS.";
 
@@ -2822,10 +2813,10 @@
 "GROUP_CALL_LEAVE_BUTTON" = "Пакінуць званок";
 
 /* Title for the section of the group call member list which displays the list of all members in the call. */
-"GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "In Call";
+"GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "Хто ў званку";
 
 /* Title for the section of the group call member list which displays the list of members with their hand raised. */
-"GROUP_CALL_MEMBER_LIST_RAISED_HANDS_SECTION_HEADER" = "Raised Hands";
+"GROUP_CALL_MEMBER_LIST_RAISED_HANDS_SECTION_HEADER" = "Паднятыя рукі";
 
 /* A count of members in a given group call member list section, displayed after the header. */
 "GROUP_CALL_MEMBER_LIST_SECTION_HEADER_MEMBER_COUNT" = "(%1$d)";
@@ -3122,7 +3113,7 @@
 "GROUP_LINK_VIEW_TITLE" = "Спасылка на групу";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ дадаў(-ла) вас.";
+"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ added you to the group.";
 
 /* Message indicating that the local user was granted administrator role. */
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "Цяпер вы адміністратар.";
@@ -3617,7 +3608,7 @@
 "INCOMING_VIDEO_CALL" = "Уваходны відэазванок";
 
 /* info message text in conversation view */
-"INCOMING_VOICE_CALL" = "Incoming voice call";
+"INCOMING_VOICE_CALL" = "Уваходны галасавы званок";
 
 /* Indicates that a previously-removed recipient has been added back to the current user's contacts. */
 "INFO_MESSAGE_CONTACT_REINSTATED" = "Гэтая асоба была нанова дададзена ў ваш спіс кантактаў Signal.";
@@ -4286,7 +4277,7 @@
 "MISSED_VIDEO_CALL" = "Прапушчаны відэазванок";
 
 /* info message text in conversation view */
-"MISSED_VOICE_CALL" = "Missed voice call";
+"MISSED_VOICE_CALL" = "Прапушчаны галасавы званок";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "Уключыце доступ да камеры ў наладах iOS, каб рабіць відэазванкі ў Signal.";
@@ -4382,7 +4373,7 @@
 "NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Відэазванок";
 
 /* Title for a long-press context menu action to start a voice call, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_VOICE_CALL_ACTION_TITLE" = "Voice Call";
+"NEW_CALL_VOICE_CALL_ACTION_TITLE" = "Галасавы званок";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Знайсці па нумары тэлефона";
@@ -4742,7 +4733,7 @@
 "OUTGOING_MISSED_VIDEO_CALL" = "Неадказаны відэазванок";
 
 /* info message text in conversation view */
-"OUTGOING_MISSED_VOICE_CALL" = "Unanswered voice call";
+"OUTGOING_MISSED_VOICE_CALL" = "Неадказаны галасавы званок";
 
 /* Button for action sheet shown when device transfer completes; quits the Signal app immediately (does not automatically relaunch, but the user may choose to relaunch). */
 "OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION" = "Пакінуць Signal";
@@ -4757,7 +4748,7 @@
 "OUTGOING_VIDEO_CALL" = "Выходны відэазванок";
 
 /* info message text in conversation view */
-"OUTGOING_VOICE_CALL" = "Outgoing voice call";
+"OUTGOING_VOICE_CALL" = "Выходны галасавы званок";
 
 /* Header title for bank payment details screen */
 "PAYMENT_DETAILS_BANK_TITLE" = "Банкаўскі перавод";
@@ -5129,13 +5120,13 @@
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Усе";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Усякі, хто мае ваш нумар тэлефона, убачыць, што вы на Signal, і зможа распачаць з вамі чат.";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Усякі, хто мае ваш нумар тэлефона, убачыць, што вы ў Signal, і зможа распачаць з вамі чат.";
 
 /* A user friendly name for the 'nobody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Ніхто";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Ніхто не ўбачыць, што вы на Signal, пакуль вы не адправіце яму паведамленне або не распачняце з ім чат.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Ніхто не ўбачыць, што вы ў Signal, пакуль вы не адправіце яму паведамленне або не распачняце з ім чат.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Прыклад: %1$@";
@@ -5838,9 +5829,6 @@
 
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
 "REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "Мы не змаглі адправіць вам праверачны код праз галасавы званок. Паспрабуйце тады атрымаць код праз sms.";
-
-/* notification action */
-"REJECT_CALL_BUTTON_TITLE" = "Адхіліць";
 
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Тэлефонны нумар, што вы спрабуеце зарэгістраваць, ужо зарэгістраваны на іншым серверы: адмяніце там рэгістрацыю і потым паўтарыце спробу.";
@@ -8078,7 +8066,7 @@
 "VIEW_STORY" = "Прагледзець гісторыю";
 
 /* Accessibility label for placing a voice call */
-"VOICE_CALL_LABEL" = "Voice Call";
+"VOICE_CALL_LABEL" = "Галасавы званок";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Прагартаць, каб адмяніць";
@@ -8090,7 +8078,7 @@
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Каб запісаць, націснуць і ўтрымліваць.";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
-"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Завяршыць канфігурацыю на Signal Desktop.";
+"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Завяршыць канфігурацыю ў Signal Desktop.";
 
 /* Accessibility label for gradient wallpaper swatch, naming the two colors in the gradient. {{ Embeds the names of the two colors in the gradient }} */
 "WALLPAPER_GRADIENT_COLORS_ACCESSIBILITY_LABEL" = "Градыент з %1$@ і %2$@";

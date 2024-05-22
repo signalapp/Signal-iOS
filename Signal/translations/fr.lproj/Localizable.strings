@@ -80,7 +80,7 @@
 "ACTION_VIDEO_CALL" = "Appel vidéo";
 
 /* Label for 'voice call' button in contact view. */
-"ACTION_VOICE_CALL" = "Signal Call";
+"ACTION_VOICE_CALL" = "Appel Signal";
 
 /* The title for the 'add group members' view. */
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "Ajouter des membres";
@@ -186,9 +186,6 @@
 
 /* Title for the view of all your signal connections */
 "ALL_SIGNAL_CONNECTIONS_TITLE" = "Toutes les connexions";
-
-/* notification action */
-"ANSWER_CALL_BUTTON_TITLE" = "Répondre";
 
 /* notification body */
 "APN_Message" = "Vous pourriez avoir de nouveaux messages";
@@ -356,7 +353,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Impossible de redimensionner l’image.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Le fichier joint est trop volumineux.";
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Pièce jointe trop volumineuse.";
 
 /* Attachment error message for attachments with invalid data */
 "ATTACHMENT_ERROR_INVALID_DATA" = "Le fichier joint comporte du contenu non valide.";
@@ -578,7 +575,7 @@
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Les membres actuels pourront vous rajouter au groupe.";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Les membres du groupe pourront vous rajouter à ce groupe.";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Les membres pourront de nouveau vous ajouter à ce groupe.";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Débloquer ce groupe ?";
@@ -611,7 +608,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Les membres actuels peuvent désormais vous rajouter au groupe.";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Les utilisateurs bloqués ne pourront ni vous appeler ni vous envoyer des messages.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Les utilisateurs bloqués ne pourront ni vous appeler, ni vous envoyer des messages.";
 
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "Nouveau : Rendez les visages flous ou dessinez n’importe où pour les rendre flous.";
@@ -682,9 +679,6 @@
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "Rappeler";
 
-/* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Appel vocal entrant…";
-
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Appel vocal manqué à %1$@";
 
@@ -712,12 +706,6 @@
 /* label for button shown when an incoming call rings */
 "CALL_CONTROLS_INCOMING_DECLINE" = "refuser";
 
-/* Body for the repeating notification shown while an incoming group call is ringing, if the user has chosen not to include contact names in notifications */
-"CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS" = "📹 Appel de groupe entrant…";
-
-/* Body for the repeating notification shown while an incoming group call is ringing. Embeds {{caller name}} */
-"CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ appelle le groupe…";
-
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Vous avez manqué un appel, car le numéro de sécurité de l’appelant a changé.";
 
@@ -741,9 +729,6 @@
 
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "Appeler ?";
-
-/* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Appel vidéo entrant…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Appel vidéo manqué à %1$@";
@@ -851,7 +836,7 @@
 "CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "Participer à l’appel vidéo";
 
 /* Title for a long-press context menu action to join a voice call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_JOIN_VOICE_CALL_ACTION_TITLE" = "Join Voice Call";
+"CALLS_TAB_JOIN_VOICE_CALL_ACTION_TITLE" = "Rejoindre l’appel vocal";
 
 /* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
 "CALLS_TAB_NO_MISSED_CALLS_LABEL" = "Aucun appel manqué";
@@ -881,7 +866,7 @@
 "CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "Appel vidéo";
 
 /* Title for a long-press context menu action to start a voice call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_START_VOICE_CALL_ACTION_TITLE" = "Voice Call";
+"CALLS_TAB_START_VOICE_CALL_ACTION_TITLE" = "Appel vocal";
 
 /* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
 "CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "Info";
@@ -1394,19 +1379,19 @@
 "CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "Appel vidéo entrant";
 
 /* A label indicating that a call was an incoming voice call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VOICE_CALL" = "Incoming voice call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VOICE_CALL" = "Appel vocal entrant";
 
 /* A label indicating that a call was an missed video call */
 "CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "Appel vidéo manqué";
 
 /* A label indicating that a call was an missed voice call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VOICE_CALL" = "Missed voice call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VOICE_CALL" = "Appel vocal manqué";
 
 /* A label indicating that a call was an outgoing video call */
 "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "Appel vidéo sortant";
 
 /* A label indicating that a call was an outgoing voice call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VOICE_CALL" = "Outgoing voice call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VOICE_CALL" = "Appel vocal sortant";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Modifier les informations du groupe";
@@ -1550,7 +1535,7 @@
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Détails du contact";
 
 /* Button to start a voice call */
-"CONVERSATION_SETTINGS_VOICE_CALL_BUTTON" = "voice";
+"CONVERSATION_SETTINGS_VOICE_CALL_BUTTON" = "audio";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Ajouter aux contacts";
@@ -1739,7 +1724,7 @@
 "DECLINED_VIDEO_CALL" = "Vous avez refusé un appel vidéo";
 
 /* info message text in conversation view */
-"DECLINED_VOICE_CALL" = "You declined a voice call";
+"DECLINED_VOICE_CALL" = "Vous avez refusé un appel vocal";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Supprimer le compte";
@@ -2371,6 +2356,12 @@
 /* Label for the currency picker button in donation views */
 "DONATIONS_CURRENCY_PICKER_LABEL" = "Devise";
 
+/* Message for Double Tap to Edit sheet show on first interaction */
+"DOUBLE_TAP_TO_EDIT_ALERT_MESSAGE" = "Quickly tap twice on your messages to edit them. You can edit your messages up to 24 hours after they’ve been sent.";
+
+/* Title for Double Tap to Edit sheet show on first interaction */
+"DOUBLE_TAP_TO_EDIT_ALERT_TITLE" = "Double Tap to Edit";
+
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Vous pouvez accorder l’accès dans l’appli Réglages d’iOS.";
 
@@ -2579,7 +2570,7 @@
 "ERROR_NOTIFICATION_TITLE" = "Signal Bêta : une erreur est survenue";
 
 /* Error indicating a send failure due to a delinked application. */
-"ERROR_SENDING_DELINKED" = "Votre appareil n’est plus relié. Veuillez rétablir le lien pour continuer à envoyer des messages.";
+"ERROR_SENDING_DELINKED" = "Votre appareil n’est plus associé. Veuillez l’associer de nouveau pour continuer à envoyer des messages.";
 
 /* Error indicating a send failure due to a deregistered application. */
 "ERROR_SENDING_DEREGISTERED" = "Votre appareil n’est plus inscrit. Veuillez le réinscrire pour continuer à envoyer des messages.";
@@ -2822,10 +2813,10 @@
 "GROUP_CALL_LEAVE_BUTTON" = "Quitter l’appel";
 
 /* Title for the section of the group call member list which displays the list of all members in the call. */
-"GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "In Call";
+"GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "Participants";
 
 /* Title for the section of the group call member list which displays the list of members with their hand raised. */
-"GROUP_CALL_MEMBER_LIST_RAISED_HANDS_SECTION_HEADER" = "Raised Hands";
+"GROUP_CALL_MEMBER_LIST_RAISED_HANDS_SECTION_HEADER" = "Mains levées";
 
 /* A count of members in a given group call member list section, displayed after the header. */
 "GROUP_CALL_MEMBER_LIST_SECTION_HEADER_MEMBER_COUNT" = "(%1$d)";
@@ -2888,7 +2879,7 @@
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%1$@ a lancé un appel de groupe";
 
 /* Text displayed when trying to turn on ringing when calling a large group. */
-"GROUP_CALL_TOO_LARGE_TO_RING" = "Le groupe est trop grand pour appeler tous les participants.";
+"GROUP_CALL_TOO_LARGE_TO_RING" = "Appel impossible : le groupe compte un trop grand nombre de participants.";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ et %2$@ font partie de cet appel";
@@ -3053,7 +3044,7 @@
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Lien invalide";
 
 /* Error message indicating that the local user does not support groups v2. */
-"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Mettez Signal à jour sur cet appareil pour vous joindre à ce groupe.";
+"GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Pour rejoindre ce groupe, installez la dernière version de Signal.";
 
 /* Explanation of the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Exiger qu’un administrateur approuve les nouveaux membres qui se joignent grâce au lien du groupe.";
@@ -3122,7 +3113,7 @@
 "GROUP_LINK_VIEW_TITLE" = "Lien de groupe";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ vous a ajouté.";
+"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ added you to the group.";
 
 /* Message indicating that the local user was granted administrator role. */
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "Vous êtes désormais administrateur.";
@@ -3617,7 +3608,7 @@
 "INCOMING_VIDEO_CALL" = "Appel vidéo entrant";
 
 /* info message text in conversation view */
-"INCOMING_VOICE_CALL" = "Incoming voice call";
+"INCOMING_VOICE_CALL" = "Appel vocal entrant";
 
 /* Indicates that a previously-removed recipient has been added back to the current user's contacts. */
 "INFO_MESSAGE_CONTACT_REINSTATED" = "Cette personne a été ajoutée de nouveau à votre liste de contacts.";
@@ -3779,7 +3770,7 @@
 "LINK_DEVICE_INVALID_CODE_BODY" = "Ce code QR est incorrect. Veuillez scanner le code QR affiché sur l’appareil à associer.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_TITLE" = "Échec de liaison de l’appareil";
+"LINK_DEVICE_INVALID_CODE_TITLE" = "Impossible d’associer l’appareil.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "Cet appareil pourra voir vos groupes et contacts, accéder à vos conversations et envoyer des messages en votre nom.";
@@ -3824,7 +3815,7 @@
 "LINKED_ONBOARDING_PERMISSIONS_TITLE" = "Autoriser les notifications";
 
 /* Alert Title */
-"LINKING_DEVICE_FAILED_TITLE" = "Échec de liaison de l’appareil";
+"LINKING_DEVICE_FAILED_TITLE" = "Impossible d’associer l’appareil.";
 
 /* Body for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Afin de transférer votre compte Signal, vous devez activer l’accès au réseau local sur les deux appareils.";
@@ -4286,7 +4277,7 @@
 "MISSED_VIDEO_CALL" = "Appel vidéo manqué";
 
 /* info message text in conversation view */
-"MISSED_VOICE_CALL" = "Missed voice call";
+"MISSED_VOICE_CALL" = "Appel vocal manqué";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "Pour passer des appels vidéo avec Signal, accordez l’accès à l’appareil photo via l’appli Réglages d’iOS.";
@@ -4382,7 +4373,7 @@
 "NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Appel vidéo";
 
 /* Title for a long-press context menu action to start a voice call, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_VOICE_CALL_ACTION_TITLE" = "Voice Call";
+"NEW_CALL_VOICE_CALL_ACTION_TITLE" = "Appel vocal";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Rechercher par numéro de téléphone";
@@ -4736,13 +4727,13 @@
 "OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "Mettre Signal à jour maintenant";
 
 /* Label warning the user that they should update Signal to continue using payments. */
-"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Mettez Signal à jour pour continuer à utiliser les paiements. Il se peut que votre solde ne soit pas à jour.";
+"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Pour continuer à utiliser les paiements, installez la dernière version de Signal. Il est possible que le solde affiché ne soit pas à jour.";
 
 /* info message text in conversation view */
 "OUTGOING_MISSED_VIDEO_CALL" = "Appel vidéo sans réponse";
 
 /* info message text in conversation view */
-"OUTGOING_MISSED_VOICE_CALL" = "Unanswered voice call";
+"OUTGOING_MISSED_VOICE_CALL" = "Appel vocal sans réponse";
 
 /* Button for action sheet shown when device transfer completes; quits the Signal app immediately (does not automatically relaunch, but the user may choose to relaunch). */
 "OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION" = "Se déconnecter de Signal";
@@ -4757,7 +4748,7 @@
 "OUTGOING_VIDEO_CALL" = "Appel vidéo sortant";
 
 /* info message text in conversation view */
-"OUTGOING_VOICE_CALL" = "Outgoing voice call";
+"OUTGOING_VOICE_CALL" = "Appel vocal sortant";
 
 /* Header title for bank payment details screen */
 "PAYMENT_DETAILS_BANK_TITLE" = "Virement bancaire";
@@ -4886,7 +4877,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "La transaction est invalide";
 
 /* Indicates that a payment failed due to an outdated client. */
-"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Mettez Signal à jour pour utiliser les paiements.";
+"PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT" = "Pour utiliser les paiements, installez la dernière version de Signal.";
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Le paiement n’est pas encore confirmé.";
@@ -5839,9 +5830,6 @@
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
 "REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "Nous n’avons pas pu vous envoyer un code de vérification par appel vocal. Demandez plutôt à recevoir votre code par SMS.";
 
-/* notification action */
-"REJECT_CALL_BUTTON_TITLE" = "Refuser";
-
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Le numéro de téléphone que vous essayez d’inscrire l’a déjà été sur un autre serveur. Veuillez le désinscrire de ce serveur et réessayer.";
 
@@ -6017,7 +6005,7 @@
 "SEARCH_SECTION_MESSAGES" = "Messages";
 
 /* alert title */
-"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Impossible de récupérer le code de liaison";
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Impossible de récupérer le code d’association.";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Pour associer cet appareil à un autre compte, vous devez d’abord le réinitialiser. Voulez-vous vraiment effacer tout l’historique de cet appareil : messages, fichiers joints, appels, etc. ? Cette action est irréversible.";
@@ -6029,7 +6017,7 @@
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "Le compte ne correspond pas";
 
 /* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
-"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Mettez Signal à jour sur cet appareil pour le relier à votre téléphone.";
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Pour associer cet appareil à votre téléphone, installez la mise à jour de Signal.";
 
 /* Title for error alert indicating that a linked device must be upgraded before it can be linked. */
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Version non prise en charge";
@@ -6041,7 +6029,7 @@
 "SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Mettre à jour l’appareil de lecture";
 
 /* alert title */
-"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Échec de liaison de votre appareil";
+"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Impossible d’associer l’appareil.";
 
 /* header text when this device is being added as a secondary */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Choisir un nom pour cet appareil";
@@ -6053,7 +6041,7 @@
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Choisissez un nom";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Terminer la liaison";
+"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Finaliser l’association";
 
 /* header text before the user can link this device */
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Lancer Signal sur votre téléphone pour relier cet iPad à votre compte";
@@ -6326,7 +6314,7 @@
 "SETTINGS_CLEAR_HISTORY" = "Effacer l’historique des conversations";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Tous droits réservés Signal Messenger\nSous licence AGPLv3";
+"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nSous licence AGPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Utilisations des données";
@@ -6737,7 +6725,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_TOUCHID" = "Contribuez à empêcher une personne en possession de votre téléphone d’accéder à vos fonds en activant Touch ID. Vous pouvez désactiver cette option dans les paramètres.";
 
 /* Button for payments outdated sheet. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Mettre Signal à jour";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Installer la dernière version de Signal";
 
 /* Message for payments outdated sheet. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "Une mise à jour est nécessaire pour continuer à envoyer et à recevoir des paiements, et pour actualiser le solde de vos paiements.";
@@ -7799,7 +7787,7 @@
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "Vous avez reçu un message qui ne peut être ni traité ni affiché, car il utilise une nouvelle fonction de Signal.";
 
 /* Label for button that lets users upgrade the app. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Mettre Signal à jour maintenant";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Installer la mise à jour de Signal";
 
 /* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "La mise à jour vers la version la plus récente de Signal a été effectuée. Vous pouvez désormais recevoir ce type de message sur votre appareil.";
@@ -7826,13 +7814,13 @@
 "UNLINK_ACTION" = "Annuler le lien";
 
 /* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "Cet appareil ne pourra plus envoyer ni recevoir de messages s’il n’est plus relié.";
+"UNLINK_CONFIRMATION_ALERT_BODY" = "Si vous dissociez cet appareil, il ne pourra plus envoyer ni recevoir de messages.";
 
 /* Alert title for confirming device deletion */
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Annuler le lien avec « %1$@ » ?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "Cet appareil n’est plus relié. Relier Signal à votre téléphone pour continuer d’utiliser l'appli.";
+"UNLINKED_WARNING" = "Cet appareil n’est plus associé. Associez-le de nouveau pour continuer à utiliser Signal.";
 
 /* If this device has become unlinked from their primary device, they'll see a warning. This is the call to action on that warning. */
 "UNLINKED_WARNING_ACTION_TITLE" = "Relier l’appareil";
@@ -8078,7 +8066,7 @@
 "VIEW_STORY" = "Afficher la story";
 
 /* Accessibility label for placing a voice call */
-"VOICE_CALL_LABEL" = "Voice Call";
+"VOICE_CALL_LABEL" = "Appel vocal";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Faire glisser pour annuler";

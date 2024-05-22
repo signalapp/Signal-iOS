@@ -80,7 +80,7 @@
 "ACTION_VIDEO_CALL" = "Відеовиклик";
 
 /* Label for 'voice call' button in contact view. */
-"ACTION_VOICE_CALL" = "Signal Call";
+"ACTION_VOICE_CALL" = "Виклик у Signal";
 
 /* The title for the 'add group members' view. */
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "Додати учасників";
@@ -186,9 +186,6 @@
 
 /* Title for the view of all your signal connections */
 "ALL_SIGNAL_CONNECTIONS_TITLE" = "Усі контакти";
-
-/* notification action */
-"ANSWER_CALL_BUTTON_TITLE" = "Відповісти";
 
 /* notification body */
 "APN_Message" = "Можливо, у вас є нові повідомлення";
@@ -461,7 +458,7 @@
 "AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "фото";
 
 /* Title for the previously used and preset avatar section. */
-"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Обрати фото профілю";
+"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Оберіть аватар";
 
 /* Text indicating the user can create a new avatar with text */
 "AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "текст";
@@ -650,7 +647,7 @@
 "BUTTON_NOT_NOW" = "Не зараз";
 
 /* Label for the 'okay' button. */
-"BUTTON_OKAY" = "Гаразд";
+"BUTTON_OKAY" = "Зрозуміло";
 
 /* Label for the 'previous' button. */
 "BUTTON_PREVIOUS" = "Назад";
@@ -682,9 +679,6 @@
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "Перетелефонувати";
 
-/* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Вхідний аудіовиклик…";
-
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Пропущений аудіовиклик: %1$@";
 
@@ -712,12 +706,6 @@
 /* label for button shown when an incoming call rings */
 "CALL_CONTROLS_INCOMING_DECLINE" = "відхилити";
 
-/* Body for the repeating notification shown while an incoming group call is ringing, if the user has chosen not to include contact names in notifications */
-"CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS" = "📹 Вхідний груповий виклик…";
-
-/* Body for the repeating notification shown while an incoming group call is ringing. Embeds {{caller name}} */
-"CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ дзвонить групі…";
-
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "Виклик пропущено, оскільки код безпеки особи, що телефонує, змінився.";
 
@@ -741,9 +729,6 @@
 
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "Зателефонувати?";
-
-/* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Вхідний відеовиклик…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Пропущений відеовиклик о %1$@";
@@ -851,7 +836,7 @@
 "CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "Приєднатися до відеовиклику";
 
 /* Title for a long-press context menu action to join a voice call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_JOIN_VOICE_CALL_ACTION_TITLE" = "Join Voice Call";
+"CALLS_TAB_JOIN_VOICE_CALL_ACTION_TITLE" = "Приєднатися до аудіовиклику";
 
 /* Label explaining that the user has no missed calls, so their Calls Tab is empty. */
 "CALLS_TAB_NO_MISSED_CALLS_LABEL" = "Немає пропущених викликів";
@@ -881,7 +866,7 @@
 "CALLS_TAB_START_VIDEO_CALL_ACTION_TITLE" = "Відеовиклик";
 
 /* Title for a long-press context menu action to start a voice call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_START_VOICE_CALL_ACTION_TITLE" = "Voice Call";
+"CALLS_TAB_START_VOICE_CALL_ACTION_TITLE" = "Аудіовиклик";
 
 /* Title for a long-press context menu action to view info about a call, triggered from a call in the Calls Tab. */
 "CALLS_TAB_VIEW_CALL_INFO_ACTION_TITLE" = "Інформація";
@@ -1331,7 +1316,7 @@
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 день";
 
 /* 1 hour */
-"CONVERSATION_MUTE_CONFIRMATION_OPTION_1H" = "1 година";
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1H" = "1 год";
 
 /* 1 week */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1W" = "1 тиждень";
@@ -1394,19 +1379,19 @@
 "CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VIDEO_CALL" = "Вхідний відеовиклик";
 
 /* A label indicating that a call was an incoming voice call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VOICE_CALL" = "Incoming voice call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_INCOMING_VOICE_CALL" = "Вхідний аудіовиклик";
 
 /* A label indicating that a call was an missed video call */
 "CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VIDEO_CALL" = "Пропущений відеовиклик";
 
 /* A label indicating that a call was an missed voice call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VOICE_CALL" = "Missed voice call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_MISSED_VOICE_CALL" = "Пропущений аудіовиклик";
 
 /* A label indicating that a call was an outgoing video call */
 "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VIDEO_CALL" = "Вихідний відеовиклик";
 
 /* A label indicating that a call was an outgoing voice call */
-"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VOICE_CALL" = "Outgoing voice call";
+"CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VOICE_CALL" = "Вихідний аудіовиклик";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Редагувати інформацію про групу";
@@ -1472,7 +1457,7 @@
 "CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "1 день";
 
 /* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "1 година";
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "1 год";
 
 /* Label for button to mute a thread for a minute. */
 "CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "1 хвилина";
@@ -1550,7 +1535,7 @@
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Деталі контакту";
 
 /* Button to start a voice call */
-"CONVERSATION_SETTINGS_VOICE_CALL_BUTTON" = "voice";
+"CONVERSATION_SETTINGS_VOICE_CALL_BUTTON" = "аудіо";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Додати до контактів";
@@ -1739,7 +1724,7 @@
 "DECLINED_VIDEO_CALL" = "Ви відхилили відеодзвінок";
 
 /* info message text in conversation view */
-"DECLINED_VOICE_CALL" = "You declined a voice call";
+"DECLINED_VOICE_CALL" = "Ви відхилили аудіовиклик";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Видалити акаунт";
@@ -2371,6 +2356,12 @@
 /* Label for the currency picker button in donation views */
 "DONATIONS_CURRENCY_PICKER_LABEL" = "Валюта";
 
+/* Message for Double Tap to Edit sheet show on first interaction */
+"DOUBLE_TAP_TO_EDIT_ALERT_MESSAGE" = "Quickly tap twice on your messages to edit them. You can edit your messages up to 24 hours after they’ve been sent.";
+
+/* Title for Double Tap to Edit sheet show on first interaction */
+"DOUBLE_TAP_TO_EDIT_ALERT_TITLE" = "Double Tap to Edit";
+
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Ви можете надати доступ у налаштуваннях iOS.";
 
@@ -2822,10 +2813,10 @@
 "GROUP_CALL_LEAVE_BUTTON" = "Покинути дзвінок";
 
 /* Title for the section of the group call member list which displays the list of all members in the call. */
-"GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "In Call";
+"GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "Учасники виклику";
 
 /* Title for the section of the group call member list which displays the list of members with their hand raised. */
-"GROUP_CALL_MEMBER_LIST_RAISED_HANDS_SECTION_HEADER" = "Raised Hands";
+"GROUP_CALL_MEMBER_LIST_RAISED_HANDS_SECTION_HEADER" = "Підняті руки";
 
 /* A count of members in a given group call member list section, displayed after the header. */
 "GROUP_CALL_MEMBER_LIST_SECTION_HEADER_MEMBER_COUNT" = "(%1$d)";
@@ -3122,7 +3113,7 @@
 "GROUP_LINK_VIEW_TITLE" = "Посилання групи";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ додав вас.";
+"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ added you to the group.";
 
 /* Message indicating that the local user was granted administrator role. */
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "Ви тепер адміністратор.";
@@ -3611,13 +3602,13 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Заархівовані чати переміщатимуться до вхідних після отримання нового повідомлення.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "Чатів ще немає.\nНадішліть повідомлення комусь із друзів.";
+"INBOX_VIEW_EMPTY_INBOX" = "Чатів поки що немає.\n Напишіть щось друзям.";
 
 /* info message text in conversation view */
 "INCOMING_VIDEO_CALL" = "Вхідний відеодзвінок";
 
 /* info message text in conversation view */
-"INCOMING_VOICE_CALL" = "Incoming voice call";
+"INCOMING_VOICE_CALL" = "Вхідний аудіовиклик";
 
 /* Indicates that a previously-removed recipient has been added back to the current user's contacts. */
 "INFO_MESSAGE_CONTACT_REINSTATED" = "Цю людину знову додано до вашого списку контактів Signal.";
@@ -3707,7 +3698,7 @@
 "JOINED_WITH_DOT" = "%1$@ · %2$@";
 
 /* A keyboard command to open the current conversation's all media view. */
-"KEY_COMMAND_ALL_MEDIA" = "Переглянути усі медіафайли";
+"KEY_COMMAND_ALL_MEDIA" = "Переглянути всі медіафайли";
 
 /* A keyboard command to archive the current conversation. */
 "KEY_COMMAND_ARCHIVE" = "Заархівувати чат";
@@ -4286,7 +4277,7 @@
 "MISSED_VIDEO_CALL" = "Пропущений відеодзвінок";
 
 /* info message text in conversation view */
-"MISSED_VOICE_CALL" = "Missed voice call";
+"MISSED_VOICE_CALL" = "Пропущений аудіовиклик";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "Щоб робити відеовиклики в Signal, надайте програмі доступ до камери в налаштуваннях iOS.";
@@ -4382,7 +4373,7 @@
 "NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Відеовиклик";
 
 /* Title for a long-press context menu action to start a voice call, triggered from a recipient in the New Call contact picker */
-"NEW_CALL_VOICE_CALL_ACTION_TITLE" = "Voice Call";
+"NEW_CALL_VOICE_CALL_ACTION_TITLE" = "Аудіовиклик";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Пошук за номером телефону";
@@ -4640,7 +4631,7 @@
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Оберіть, хто зможе знайти вас у Signal за номером телефону %1$@";
 
 /* Title of the 'onboarding phone number discoverability' view. */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Хто може шукати вас за номером телефону?";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Хто може знайти вас за номером телефону?";
 
 /* Placeholder string for phone number field during registration */
 "ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "Ваш номер телефону";
@@ -4649,7 +4640,7 @@
 "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "Будь ласка, зачекайте декілька хвилин перед наступною спробою. (%1$@)";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Хибний номер телефону. Будь ласка, введіть дійсний номер телефону щоб зареєструватись.";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Такого номера не існує. Введіть дійсний номер телефону, щоб зареєструватися.";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Ви використали всі спроби введення PIN-коду, але все одно можете отримати доступ до свого акаунту Signal, якщо створите новий PIN-код. З міркувань конфіденційності та безпеки ваш акаунт буде відновлено без збереженої інформації профілю й налаштувань.";
@@ -4670,13 +4661,13 @@
 "ONBOARDING_SPLASH_TITLE" = "Візьміть конфіденційність з собою.\nБудьте собою в кожному повідомленні.";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
-"ONBOARDING_VERIFICATION_BACK_LINK" = "Невірний номер?";
+"ONBOARDING_VERIFICATION_BACK_LINK" = "Неправильний номер?";
 
 /* Label for button to perform verification with a phone call. */
 "ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "Подзвони мені";
 
 /* Format string for button counting down time until phone call verification can be performed. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Зателефонуйте мені за %1$@";
+"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Подзвоніть мені через %1$@";
 
 /* Label for a progress spinner currently validating code */
 "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Підтвердження коду…";
@@ -4694,10 +4685,10 @@
 "ONBOARDING_VERIFICATION_HELP_LINK" = "Виникли проблеми з реєстрацією?";
 
 /* Label for button to resend SMS verification code. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON" = "Надіслати код знову";
+"ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON" = "Надішліть код ще раз";
 
 /* Format string for button counting down time until SMS code can be resent. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "Повторно надіслати код за %1$@";
+"ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "Надішліть код ще раз через %1$@";
 
 /* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
 "ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Введіть код, який ми відправили на %1$@";
@@ -4742,7 +4733,7 @@
 "OUTGOING_MISSED_VIDEO_CALL" = "Відеодзвінок без відповіді";
 
 /* info message text in conversation view */
-"OUTGOING_MISSED_VOICE_CALL" = "Unanswered voice call";
+"OUTGOING_MISSED_VOICE_CALL" = "Аудіовиклик без відповіді";
 
 /* Button for action sheet shown when device transfer completes; quits the Signal app immediately (does not automatically relaunch, but the user may choose to relaunch). */
 "OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION" = "Вийти із Signal";
@@ -4757,7 +4748,7 @@
 "OUTGOING_VIDEO_CALL" = "Вихідний відеодзвінок";
 
 /* info message text in conversation view */
-"OUTGOING_VOICE_CALL" = "Outgoing voice call";
+"OUTGOING_VOICE_CALL" = "Вихідний аудіовиклик";
 
 /* Header title for bank payment details screen */
 "PAYMENT_DETAILS_BANK_TITLE" = "Банківський переказ";
@@ -5135,7 +5126,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY" = "Ніхто";
 
 /* A user friendly description of the 'nobody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Ніхто не бачитиме, що ви використовуєте Signal, окрім людей, з якими ви вже маєте чат або яким напишете повідомлення.";
+"PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Крім людей, яким ви напишете самі й з якими ви вже маєте спільний чат, ніхто не побачить, що ви зареєстровані в Signal.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Зразок: %1$@";
@@ -5219,19 +5210,19 @@
 "PIN_CHANGE_ERROR_TITLE" = "Не вдалось змінити PIN";
 
 /* Label indicating the user must use at least 4 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN-код повинен бути не коротшим 4-х символів";
+"PIN_CREATION_ALPHANUMERIC_HINT" = "Мінімальна довжина PIN-коду — 4 символи";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Змінити PIN-код";
 
 /* Title of the 'pin creation' confirmation view. */
-"PIN_CREATION_CONFIRM_TITLE" = "Підтвердьте свій PIN-код";
+"PIN_CREATION_CONFIRM_TITLE" = "Підтвердьте PIN-код";
 
 /* The explanation of confirmation in the 'pin creation' view. */
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "Введіть PIN-код, який ви тільки що створили.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
-"PIN_CREATION_CREATE_ALPHANUMERIC" = "Створити Буквенно-Цифровий PIN-код";
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "Створити буквено-цифровий PIN-код";
 
 /* Button asking if the user would like to create an numeric PIN */
 "PIN_CREATION_CREATE_NUMERIC" = "Створити цифровий PIN-код";
@@ -5267,7 +5258,7 @@
 "PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "Немає інтернет-з'єднання";
 
 /* Label indicating the user must use at least 4 digits */
-"PIN_CREATION_NUMERIC_HINT" = "PIN-код повинен бути не коротшим 4-х цифр";
+"PIN_CREATION_NUMERIC_HINT" = "Мінімальна довжина PIN-коду — 4 цифри";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Введіть PIN-код ще раз";
@@ -5459,7 +5450,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_WORKING_ON_SOMETHING_NEW" = "Працюю над чимось новим";
 
 /* Title for the profile bio view. */
-"PROFILE_BIO_VIEW_TITLE" = "Про себе";
+"PROFILE_BIO_VIEW_TITLE" = "Про контакт";
 
 /* Title for the profile bio view. Embeds {{ the number of characters that can be added to the profile bio without hitting the length limit }}. */
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "Про (%1$@)";
@@ -5756,16 +5747,16 @@
 "REGISTRATION_PIN_CONFIRM_SUBTITLE" = "Введіть створений PIN-код ще раз.";
 
 /* During registration, users are asked to create a PIN code. They'll be taken to a screen to confirm their PIN, much like confirming a password. This is the title on the screen where this happens. */
-"REGISTRATION_PIN_CONFIRM_TITLE" = "Підтвердьте свій PIN-код";
+"REGISTRATION_PIN_CONFIRM_TITLE" = "Підтвердьте PIN-код";
 
 /* During registration, users are asked to create a PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
-"REGISTRATION_PIN_CREATE_SUBTITLE" = "PIN-код допоможе відновити акаунт і зберігати вашу інформацію зашифрованою в Signal.";
+"REGISTRATION_PIN_CREATE_SUBTITLE" = "PIN-код потрібен для відновлення акаунту й шифрування інформації, яку ви зберігаєте в Signal.";
 
 /* During registration, users are asked to create a PIN code. This is the title on the screen where this happens. */
 "REGISTRATION_PIN_CREATE_TITLE" = "Створіть PIN-код";
 
 /* During re-registration, users may be asked to re-enter their PIN code. This is the subtitle on the screen where this happens. A \"learn more\" link will be added to the end of this string. */
-"REGISTRATION_PIN_ENTER_EXISTING_SUBTITLE" = "PIN-код допоможе відновити акаунт і зберігати вашу інформацію зашифрованою в Signal.";
+"REGISTRATION_PIN_ENTER_EXISTING_SUBTITLE" = "PIN-код потрібен для відновлення акаунту й шифрування інформації, яку ви зберігаєте в Signal.";
 
 /* During re-registration, users may be asked to re-enter their PIN code. This is the title on the screen where this happens. */
 "REGISTRATION_PIN_ENTER_EXISTING_TITLE" = "Введіть свій PIN-код";
@@ -5780,16 +5771,16 @@
 "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER" = "Ім'я";
 
 /* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the message on a sheet that appears when they do that. */
-"REGISTRATION_PROFILE_SETUP_MORE_INFO_DETAILS" = "Ваші контакти і люди, з якими ви розпочинаєте нові чати, зможуть бачити ваше ім'я, фото і внесені зміни.";
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_DETAILS" = "Ваше ім'я, фото й відповідні зміни буде видно вашим контактам і користувачам, з якими у вас почався новий чат.";
 
 /* During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the title on a sheet that appears when they do that. */
-"REGISTRATION_PROFILE_SETUP_MORE_INFO_TITLE" = "Про конфіденційність профілю";
+"REGISTRATION_PROFILE_SETUP_MORE_INFO_TITLE" = "Конфіденційність профілю";
 
 /* During registration, users set up their profile. This is the subtitle on the screen where this is done. It tells users about the privacy of their profile. A \"learn more\" link will be added to the end of this string. */
-"REGISTRATION_PROFILE_SETUP_SUBTITLE" = "Профілі можуть бачити ваші співрозмовники, контакти і групи.";
+"REGISTRATION_PROFILE_SETUP_SUBTITLE" = "Профіль бачать ваші співрозмовники, контакти й групи.";
 
 /* During registration, users set up their profile. This is the title on the screen where this is done. */
-"REGISTRATION_PROFILE_SETUP_TITLE" = "Налаштуйте свій профіль";
+"REGISTRATION_PROFILE_SETUP_TITLE" = "Створіть профіль";
 
 /* Error shown if an SMS/call service provider is permanently unable to send a verification code to the provided number. */
 "REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "Через зовнішній збій Signal не може надіслати SMS-код на ваш номер.";
@@ -5816,19 +5807,19 @@
 "REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "Введений код недійсний. Запитайте код ще раз і спробуйте знову.";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Щоб зареєструватися, уведіть дійсний номер телефону.";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Щоб зареєструватися, введіть дійсний номер телефону.";
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Хибний номер телефону";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Такого номера не існує";
 
 /* Message for confirmation alert during phone number registration. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "Код підтвердження буде надіслано на цей номер телефону. Ви вірно його вказали вище?";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "На цей номер телефону буде надіслано код для підтвердження. Ви правильно його зазначили?";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Підтвердження номеру: %1$@";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Підтвердження номера: %1$@";
 
 /* A button allowing user to cancel registration and edit a phone number */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "Редагувати";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "Змінити";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
 "REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Перевірка %1$@…";
@@ -5838,9 +5829,6 @@
 
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
 "REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "Нам не вдалося надіслати код підтвердження за допомогою голосового виклику. Спробуйте отримати код через SMS.";
-
-/* notification action */
-"REJECT_CALL_BUTTON_TITLE" = "Відхилити";
 
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Номер телефону, який ви намагаєтеся зареєструвати, вже зареєстровано на іншому сервері, вилучіть реєстрацію звідти та спробуйте знову.";
@@ -6590,7 +6578,7 @@
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "Оновити PIN-код";
 
 /* Description for the 'Update PIN' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "Якщо ви маєте високий баланс, пропонуємо створити літерно-цифровий PIN-код для більшої безпеки вашого акаунту.";
+"SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_DESCRIPTION" = "Якщо ви маєте високий баланс, пропонуємо створити буквено-цифровий PIN-код для більшої безпеки вашого акаунту.";
 
 /* Title for the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Оновити ваш PIN-код";
@@ -6977,7 +6965,7 @@
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "PIN-код необхідно запам’ятати або надійно зберегти, оскільки його неможливо відновити. Якщо ви забудете свій PIN-код, то можете втратити дані при повторній реєстрації свого акаунту Signal.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Підтвердьте свій PIN-код Signal";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Підтвердьте PIN-код Signal";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Нагадування PIN-коду";
@@ -7751,7 +7739,7 @@
 "TIME_AMOUNT_SINGLE_DAY" = "%1$@ день";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_HOUR" = "%1$@ година";
+"TIME_AMOUNT_SINGLE_HOUR" = "%1$@ год";
 
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SINGLE_MINUTE" = "%1$@ хвилина";
@@ -8078,7 +8066,7 @@
 "VIEW_STORY" = "Переглянути історію";
 
 /* Accessibility label for placing a voice call */
-"VOICE_CALL_LABEL" = "Voice Call";
+"VOICE_CALL_LABEL" = "Аудіовиклик";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Проведіть для скасування";
