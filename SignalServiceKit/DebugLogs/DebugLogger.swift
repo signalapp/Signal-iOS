@@ -5,6 +5,8 @@
 
 import AudioToolbox
 import CocoaLumberjack
+import LibSignalClient
+import SignalCoreKit
 
 private final class DebugLogFileManager: DDLogFileManagerDefault {
     private static func deleteLogFiles(inDirectory logsDirPath: String, olderThanDate cutoffDate: Date) {
@@ -183,5 +185,53 @@ public final class DebugLogger {
         ttyLogger.logFormatter = LogFormatter()
         DDLog.add(ttyLogger)
         #endif
+    }
+
+    // MARK: - Handlers
+
+    public static func registerLibsignal() {
+        LibsignalLoggerImpl().setUpLibsignalLogging(level: { () -> LibsignalLogLevel in
+            if ShouldLogVerbose() {
+                return .trace
+            }
+            if ShouldLogDebug() {
+                return .debug
+            }
+            if ShouldLogInfo() {
+                return .info
+            }
+            if ShouldLogWarning() {
+                return .warn
+            }
+            return .error
+        }())
+    }
+}
+
+private extension LibsignalLogLevel {
+    var logFlag: DDLogFlag {
+        switch self {
+        case .error: return .error
+        case .warn: return .warning
+        case .info: return .info
+        case .debug: return .debug
+        case .trace: return .verbose
+        }
+    }
+}
+
+final class LibsignalLoggerImpl: LibsignalLogger {
+    func log(level: LibsignalLogLevel, file: UnsafePointer<CChar>?, line: UInt32, message: UnsafePointer<CChar>) {
+        Logger.log(
+            String(cString: message),
+            flag: level.logFlag,
+            file: file.map(String.init(cString:)) ?? "",
+            function: "",
+            line: Int(line)
+        )
+    }
+
+    func flush() {
+        Logger.flush()
     }
 }

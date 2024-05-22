@@ -155,6 +155,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         let debugLogger = DebugLogger.shared
         debugLogger.enableTTYLoggingIfNeeded()
+        DebugLogger.registerLibsignal()
 
         if mainAppContext.isRunningTests {
             _ = initializeWindow(mainAppContext: mainAppContext, rootViewController: UIViewController())

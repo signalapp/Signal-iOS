@@ -53,6 +53,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         let debugLogger = DebugLogger.shared
         debugLogger.enableTTYLoggingIfNeeded()
+        DebugLogger.registerLibsignal()
         debugLogger.setUpFileLoggingIfNeeded(appContext: appContext, canLaunchInBackground: false)
 
         Logger.info("")
