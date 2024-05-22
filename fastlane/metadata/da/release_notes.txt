@@ -1,2 +1,1 @@
-• Nu kan du bruge enhver emoji under et signalopkald. Smil, selvom dit kamera er slukket, del et hjerte, hvis du elsker det, du hører, eller stem på sushi i stedet for pizza – helt uden at åbne munden. Du vil også se en animation af emojionale udbrud, hvis nok mennesker i opkaldet reagerer med den samme emoji på én gang.
-
+• We added a shortcut to edit sent messages by double tapping on the message bubble. Double taps aren't just for likes, unless you really like editing typos.

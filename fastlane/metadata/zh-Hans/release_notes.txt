@@ -1,1 +1,1 @@
-• 现在您可以在 Signal 通话过程中使用任何表情符号进行回应了。
+• We added a shortcut to edit sent messages by double tapping on the message bubble. Double taps aren't just for likes, unless you really like editing typos.

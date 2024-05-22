@@ -1,1 +1,1 @@
-• อัปความสามารถเพื่อให้คุณได้สนุกกับการใช้อีโมจิแสดงความรู้สึกในระหว่างที่โทรผ่าน Signal
+• We added a shortcut to edit sent messages by double tapping on the message bubble. Double taps aren't just for likes, unless you really like editing typos.

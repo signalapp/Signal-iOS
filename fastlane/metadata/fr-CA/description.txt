@@ -1,4 +1,4 @@
-L’application de messagerie Signal est conçue pour protéger votre vie privée. Gratuite et facile à utiliser, l’application assure un véritable chiffrement de bout en bout pour des communications vraiment confidentielles.
+L’application de messagerie Signal est conçue pour protéger votre vie privée. Gratuite et facile à utiliser, elle assure un véritable chiffrement de bout en bout pour des communications vraiment confidentielles.
 
 • Envoyez des messages textes ou vocaux, partagez des photos, des vidéos, des GIF et des fichiers gratuitement. Signal utilise la connexion de données de votre téléphone, vous évitant ainsi les coûts liés à l’envoi de SMS et de MMS.
 

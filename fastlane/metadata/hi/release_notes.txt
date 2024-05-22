@@ -1,1 +1,1 @@
-• अब आप Signal कॉल के दौरान किसी भी इमोजी के साथ प्रतिक्रिया दे सकते हैं। यदि आपका कैमरा बंद भी हो तो भी मुस्कुराइए, यदि आप जो सुन रहे हैं वह आपको पसंद है तो दिल से अपनी बात साझा कीजिए। और अगर कॉल में पर्याप्त लोग एक ही इमोजी के साथ एक ही बार में प्रतिक्रिया देते हैं, तो आपको हर किसी के भावनात्मक प्रकोप का एनीमेशन भी दिखाई देगा।
+• We added a shortcut to edit sent messages by double tapping on the message bubble. Double taps aren't just for likes, unless you really like editing typos.

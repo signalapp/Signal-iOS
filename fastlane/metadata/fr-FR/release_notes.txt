@@ -1,1 +1,1 @@
-• Lorsque vous passez un appel sur Signal, vous pouvez maintenant réagir avec n’importe quel émoji. Sourires, petits cœurs, sushis ou pizza, à vous de choisir. Et si une majorité de participants utilise le même émoji, une animation s’affiche pour exprimer l’émotion du groupe.
+• We added a shortcut to edit sent messages by double tapping on the message bubble. Double taps aren't just for likes, unless you really like editing typos.

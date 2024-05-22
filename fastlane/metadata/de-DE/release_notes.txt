@@ -1,1 +1,1 @@
-• Jetzt kannst du bei einem Signal-Anruf mit einem beliebigen Emoji reagieren. Lächle, auch wenn deine Kamera ausgeschaltet ist, sende ein Herz, wenn dir gefällt, was du hörst, oder stimme für Sushi statt Pizza, ohne ein Wort zu sagen. Und du siehst sogar eine Animation der Emoji-Antworten aller Teilnehmer, wenn genug Leute gleichzeitig mit demselben Emoji reagieren.
+• We added a shortcut to edit sent messages by double tapping on the message bubble. Double taps aren't just for likes, unless you really like editing typos.

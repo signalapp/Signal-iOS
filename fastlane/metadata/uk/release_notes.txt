@@ -1,1 +1,1 @@
-• Тепер під час виклику можна реагувати за допомогою емоджі. Усміхайтеся навіть з вимкненою камерою, шліть серця, коли сказане вражає в саме серденько, чи голосуйте за суші замість піци, не сказавши й слова. А якщо кілька учасників надішлють однакову реакцію одночасно, ви побачите справжній емоджійний спалах.
+• We added a shortcut to edit sent messages by double tapping on the message bubble. Double taps aren't just for likes, unless you really like editing typos.

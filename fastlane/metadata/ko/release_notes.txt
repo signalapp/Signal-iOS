@@ -1,1 +1,1 @@
-• 이제 Signal 통화 중에 모든 이모지를 사용하여 반응할 수 있습니다.
+• We added a shortcut to edit sent messages by double tapping on the message bubble. Double taps aren't just for likes, unless you really like editing typos.

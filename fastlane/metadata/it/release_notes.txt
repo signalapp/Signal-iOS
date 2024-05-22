@@ -1,1 +1,1 @@
-• Da ora puoi reagire con qualsiasi emoji che vuoi durante una chiamata su Signal. Sorridi con uno smile anche se la fotocamera è spenta, invia un cuore a chi se lo merita, vota per sushi o pizza scegliendo l'emoji giusta (o per una bella spaghettata, se preferisci). E vedrai anche un'animazione speciale se più persone reagiscono contemporaneamente nella chiamata usando la stessa emoji.
+• We added a shortcut to edit sent messages by double tapping on the message bubble. Double taps aren't just for likes, unless you really like editing typos.

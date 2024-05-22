@@ -1,1 +1,1 @@
-• Je kunt nu tijdens een Signal-oproep reageren met elke emoji. Glimlach, ook met je camera uit, deel een hartje als je blij wordt van wat iemand zegt, of stem op sushi in plaats van pizza zonder een woord te zeggen. Je ziet zelfs een animatie van emojitionele uitbarstingen als genoeg mensen in het gesprek tegelijk met dezelfde emoji reageren.
+• We added a shortcut to edit sent messages by double tapping on the message bubble. Double taps aren't just for likes, unless you really like editing typos.

@@ -1,1 +1,1 @@
-• Τώρα μπορείς να αντιδράσεις με οποιοδήποτε emoji κατά τη διάρκεια μιας κλήσης Signal. Χαμογέλα ακόμα και αν η κάμερά σου είναι κλειστή, στείλε μια καρδιά αν σου αρέσει αυτό που ακούς ή ψήφισε για σούσι αντί για πίτσα χωρίς να πεις λέξη.
+• We added a shortcut to edit sent messages by double tapping on the message bubble. Double taps aren't just for likes, unless you really like editing typos.

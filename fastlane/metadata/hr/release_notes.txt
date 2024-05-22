@@ -1,1 +1,1 @@
-• Sada možete reagirati bilo kojim emotikonom tijekom poziva na Signalu.
+• We added a shortcut to edit sent messages by double tapping on the message bubble. Double taps aren't just for likes, unless you really like editing typos.

@@ -1,1 +1,1 @@
-• Acum poți reacționa cu orice emoji în timpul unui apel Signal. Zâmbește chiar dacă aparatul de fotografiat este oprit, împărtășește o inimă dacă îți place ceea ce auzi sau votează pentru sushi în loc de pizza fără să spui un cuvânt. Și vei vedea chiar și un emoji al izbucnirii emoționale a tuturor, dacă un număr suficient de mare de persoane din apel reacționează cu același emoji deodată.
+• We added a shortcut to edit sent messages by double tapping on the message bubble. Double taps aren't just for likes, unless you really like editing typos.

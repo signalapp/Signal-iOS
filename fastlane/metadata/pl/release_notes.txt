@@ -1,1 +1,1 @@
-• Od teraz podczas połączeń Signal możesz wysyłać reakcje w postaci dowolnego emoji. Porozumiewaj się bez słów — uśmiechaj się nawet przy wyłączonej kamerze, ślij serduszka tym, z którymi się zgadzasz, lub głosuj za pizzą na lunch. A jeśli wystarczająca liczba osób naraz zareaguje tym samym emoji, na Waszych ekranach pojawi się pasująca animacja. Prawdziwa feeria emocji!
+• We added a shortcut to edit sent messages by double tapping on the message bubble. Double taps aren't just for likes, unless you really like editing typos.

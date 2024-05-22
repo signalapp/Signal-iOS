@@ -1,1 +1,1 @@
-• Artık Signal araması sırasında bir emoji ile tepki verebilirsin. Kameran kapalıysa bile gülümse, duyduğun şeyi seviyorsan bir kalp paylaş ya da tek kelime bile etmeden pizza yerine döneri oyla. Hatta aramada yeterli sayıda kişi aynı anda aynı emojiyle tepki verirse herkesin emoji patlamasının bir animasyonunu bile görürsün.
+• We added a shortcut to edit sent messages by double tapping on the message bubble. Double taps aren't just for likes, unless you really like editing typos.
