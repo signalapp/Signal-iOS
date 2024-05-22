@@ -333,7 +333,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
 
     @objc
     private func didTouchRootView(sender: UIGestureRecognizer) {
-        if !remoteMemberView.isHidden {
+        if self.individualCall.isRemoteVideoEnabled {
             shouldRemoteVideoControlsBeHidden = !shouldRemoteVideoControlsBeHidden
         }
     }
@@ -808,10 +808,9 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         }
 
         // Rework control state if remote video is available.
-        let hasRemoteVideo = !remoteMemberView.isHidden
         remoteMemberView.isFullScreen = true
         remoteMemberView.isScreenShare = individualCall.isRemoteSharingScreen
-        contactAvatarView.isHidden = hasRemoteVideo || isRenderingLocalVanityVideo
+        contactAvatarView.isHidden = self.individualCall.isRemoteVideoEnabled || isRenderingLocalVanityVideo
 
         // Layout controls immediately to avoid spurious animation.
         for controls in [incomingVideoCallControls, incomingAudioCallControls, callControls] {
@@ -819,7 +818,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         }
 
         // Also hide other controls if user has tapped to hide them.
-        let hideRemoteControls = shouldRemoteVideoControlsBeHidden && !remoteMemberView.isHidden
+        let hideRemoteControls = shouldRemoteVideoControlsBeHidden && self.individualCall.isRemoteVideoEnabled
         let remoteControlsAreHidden = bottomContainerView.isHidden && topGradientView.isHidden
         if hideRemoteControls != remoteControlsAreHidden {
             self.bottomContainerView.isHidden = false
@@ -968,7 +967,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
 
     private var controlTimeoutTimer: Timer?
     private func scheduleControlTimeoutIfNecessary() {
-        if remoteMemberView.isHidden || shouldRemoteVideoControlsBeHidden {
+        if !self.individualCall.isRemoteVideoEnabled || shouldRemoteVideoControlsBeHidden {
             controlTimeoutTimer?.invalidate()
             controlTimeoutTimer = nil
         }
@@ -983,7 +982,8 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         controlTimeoutTimer?.invalidate()
         controlTimeoutTimer = nil
 
-        guard !remoteMemberView.isHidden && !shouldRemoteVideoControlsBeHidden else { return }
+        guard self.individualCall.isRemoteVideoEnabled else { return }
+        guard !shouldRemoteVideoControlsBeHidden else { return }
         shouldRemoteVideoControlsBeHidden = true
     }
 
