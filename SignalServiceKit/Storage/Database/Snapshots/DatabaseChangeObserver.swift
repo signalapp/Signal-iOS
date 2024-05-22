@@ -460,7 +460,7 @@ extension DatabaseChangeObserver: TransactionObserver {
             }
         }
 
-        publishUpdates(shouldPublishIfEmpty: false)
+        publishUpdates()
     }
 
     private var targetPublishingOfUpdatesInterval: Double {
@@ -525,17 +525,9 @@ extension DatabaseChangeObserver: TransactionObserver {
         return targetPublishingOfUpdatesInterval
     }
 
-    // NOTE: This should only be used in exceptional circumstances,
-    // e.g. after reloading the database due to a device transfer.
-    func publishUpdatesImmediately() {
-        AssertIsOnMainThread()
-
-        publishUpdates(shouldPublishIfEmpty: true)
-    }
-
     // "Updating" entails publishing pending database changes to database change observers.
     // See comment on databaseDidChange.
-    private func publishUpdates(shouldPublishIfEmpty: Bool) {
+    private func publishUpdates() {
         AssertIsOnMainThread()
 
         let committedChanges = Self.committedChangesLock.withLock { () -> DatabaseChangesSnapshot in
@@ -546,8 +538,7 @@ extension DatabaseChangeObserver: TransactionObserver {
             self.committedChanges = ObservedDatabaseChanges(concurrencyMode: .unfairLock)
             return committedChanges.snapshot()
         }
-        guard !committedChanges.isEmpty ||
-                shouldPublishIfEmpty else {
+        guard !committedChanges.isEmpty else {
             // If there's no new database changes, we don't need to publish updates.
             return
         }

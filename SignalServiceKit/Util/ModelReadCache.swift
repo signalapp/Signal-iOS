@@ -964,13 +964,6 @@ public class ModelReadCaches: NSObject {
         interactionReadCache = InteractionReadCache(factory)
         attachmentReadCache = AttachmentReadCache(factory)
         installedStickerCache = InstalledStickerCache(factory)
-
-        super.init()
-
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(evacuateAllCaches),
-                                               name: SDSDatabaseStorage.storageDidReload,
-                                               object: nil)
     }
 
     @objc

@@ -223,7 +223,7 @@ public class SSKEnvironment: NSObject {
 
     public static let warmCachesNotification = Notification.Name("WarmCachesNotification")
 
-    public func warmCaches() {
+    func warmCaches() {
         SignalProxy.warmCaches()
         DependenciesBridge.shared.tsAccountManager.warmCaches()
         fixLocalRecipientIfNeeded()

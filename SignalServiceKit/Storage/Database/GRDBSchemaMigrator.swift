@@ -23,7 +23,7 @@ public class GRDBSchemaMigrator: NSObject {
     /// - Parameter runDataMigrations: A boolean indicating whether to include data migrations. Typically, you want to omit this value or set it to `true`, but we want to skip them when recovering a corrupted database.
     /// - Returns: `true` if incremental migrations were performed, and `false` otherwise.
     @discardableResult
-    public static func migrateDatabase(
+    static func migrateDatabase(
         databaseStorage: SDSDatabaseStorage,
         isMainDatabase: Bool,
         runDataMigrations: Bool = true

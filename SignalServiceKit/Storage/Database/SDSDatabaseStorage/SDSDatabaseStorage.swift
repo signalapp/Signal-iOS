@@ -72,9 +72,6 @@ public class SDSDatabaseStorage: NSObject {
         return GRDBDatabaseStorageAdapter.databaseFileUrl()
     }
 
-    @objc
-    public static let storageDidReload = Notification.Name("storageDidReload")
-
     func runGrdbSchemaMigrationsOnMainDatabase(completionScheduler: Scheduler, completion: @escaping () -> Void) {
         let didPerformIncrementalMigrations: Bool = {
             do {
@@ -123,84 +120,6 @@ public class SDSDatabaseStorage: NSObject {
 
             completion()
         }
-    }
-
-    public enum TransferredDbReloadResult {
-        /// Doesn't ever actually happen, but one can hope I guess?
-        /// Should just relaunch the app anyway.
-        case success
-        /// DB did its thing, but crashed when reading, due to SQLCipher
-        /// key caching. Should be counted as a "successful" transfer, as
-        /// closing and relaunching the app should resolve issues.
-        ///
-        /// Some context on this: this is resolvable in that we can make it not crash with
-        /// some more investigation/effort. The root issue is the old DB (that we set up before
-        /// transferring) and the new DB (from the source device) don't use the same SQLCipher
-        /// keys, and we need to tell GRDB and SQLCipher to wipe their in memory caches and
-        /// use the new keys. But even if that's done, a ton of in memory caches everywhere,
-        /// from the SQLite level up to our own classes, keep stale information and cause all
-        /// kinds of downstream chaos.
-        /// The real fix here is to not set up the full database prior
-        /// to transfer and/or registration; we should have a limited DB (just a key value store, really)
-        /// for that flow, so we have no state to reset when transferring the "real" DB.
-        case relaunchRequired
-
-        /// Fatal errors; do not count as a success. Likely due to
-        /// developer error.
-        case failedMigration(error: Error)
-        case unknownError(error: Error)
-    }
-
-    public func reloadTransferredDatabase() -> Guarantee<TransferredDbReloadResult> {
-        AssertIsOnMainThread()
-
-        Logger.info("")
-
-        let wasRegistered = DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
-
-        let (promise, future) = Guarantee<TransferredDbReloadResult>.pending()
-        let completion: () -> Void = {
-            do {
-                try GRDBSchemaMigrator.migrateDatabase(
-                    databaseStorage: self,
-                    isMainDatabase: true
-                )
-            } catch {
-                owsFailDebug("Database migration failed. Error: \(error.grdbErrorForLogging)")
-                future.resolve(.failedMigration(error: error))
-            }
-
-            self.grdbStorage.publishUpdatesImmediately()
-
-            // We need to do this _before_ warmCaches().
-            NotificationCenter.default.post(name: Self.storageDidReload, object: nil, userInfo: nil)
-
-            SSKEnvironment.shared.warmCaches()
-
-            if wasRegistered != DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
-                NotificationCenter.default.post(name: .registrationStateDidChange, object: nil, userInfo: nil)
-            }
-            future.resolve(.success)
-        }
-        do {
-            try reopenGRDBStorage(completionScheduler: DispatchQueue.main, completion: completion)
-            try grdbStorage.setupDatabaseChangeObserver()
-        } catch {
-            // A SQL logic error when reading the master table
-            // is probably (but not necessarily! this is a hack!)
-            // due to SQLCipher key cache mismatch, which should
-            // resolve on relaunch.
-            if
-                let grdbError = error as? GRDB.DatabaseError,
-                grdbError.resultCode == .SQLITE_ERROR,
-                grdbError.sql == "SELECT * FROM sqlite_master LIMIT 1"
-            {
-                future.resolve(.relaunchRequired)
-            } else {
-                future.resolve(.unknownError(error: error))
-            }
-        }
-        return promise
     }
 
     @objc

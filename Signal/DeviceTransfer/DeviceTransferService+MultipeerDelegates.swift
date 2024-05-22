@@ -171,34 +171,13 @@ extension DeviceTransferService: MCSessionDelegate {
                 owsFail("Restore failed. Will try again on next launch. Error: \(error)")
             }
 
-            firstly(on: DispatchQueue.main) { () -> Guarantee<SDSDatabaseStorage.TransferredDbReloadResult> in
-                // A successful restoration means we've updated our database path.
-                // Extensions will learn of this through NSUserDefaults KVO and exit ASAP
-                self.databaseStorage.reloadTransferredDatabase()
-            }.then(on: DispatchQueue.main) { (dbResult) -> Guarantee<Bool> in
-                switch dbResult {
-                case .success:
-                    Logger.info("Somehow succeeded reloading db? Crashing anyway.")
-                    fallthrough
-                case .relaunchRequired:
-                    Logger.info("Transfer complete but db cache failed, relaunching.")
-                    self.notifyObservers { $0.deviceTransferServiceDidRequestAppRelaunch() }
-                    return Guarantee.value(false)
-                case .failedMigration(let error), .unknownError(let error):
-                    // Just crash, something horrible has gone wrong.
-                    owsFail("Hard failure reloading db: \(error.grdbErrorForLogging)")
-                }
-                return self.finalizeRestorationIfNecessary().map { true }
-            }.done(on: DispatchQueue.main) { success in
-                guard success else {
-                    return
-                }
-                // After transfer our push token has changed, update it.
-                SyncPushTokensJob.run(mode: .forceUpload)
-                SignalApp.shared.showConversationSplitView()
-            }
-
             stopTransfer(notifyRegState: false)
+
+            Logger.info("Transfer complete")
+
+            DispatchQueue.main.async {
+                self.notifyObservers { $0.deviceTransferServiceDidRequestAppRelaunch() }
+            }
         }
     }
 
