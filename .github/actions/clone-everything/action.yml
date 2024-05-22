@@ -24,17 +24,31 @@ runs:
       name: Compute Private Pods Ref
       if: ${{ steps.checkout_repo.outcome == 'failure' }}
       shell: bash
-      run: echo "ref=$(git submodule status --cached Pods | awk '{print $1}' | sed -e 's/^[-+]//')" >> "$GITHUB_OUTPUT"
+      run: echo "ref=$(git ls-tree --object-only HEAD Pods)" >> "$GITHUB_OUTPUT"
 
     # Checkout private pods repo iff we have an access token to read private repos
     - name: Checkout Private Pods
       uses: actions/checkout@v4
       if: ${{ steps.checkout_repo.outcome == 'failure' }}
       with:
-        repository: signalapp/signal-pods-private
+        repository: signalapp/Signal-Pods-Private
         token: ${{ inputs.access-token }}
         path: Pods
         ref: ${{ steps.private_pods_ref.outputs.ref }}
+
+    - id: message_backup_tests_ref
+      name: Compute Signal-Message-Backup-Tests Ref
+      if: ${{ steps.checkout_repo.outcome == 'failure' }}
+      shell: bash
+      run: echo "ref=$(git ls-tree --object-only HEAD SignalServiceKit/tests/MessageBackup/Signal-Message-Backup-Tests)" >> "$GITHUB_OUTPUT"
+
+    - name: Checkout Signal-Message-Backup-Tests
+      uses: actions/checkout@v4
+      if: ${{ steps.checkout_repo.outcome == 'failure' }}
+      with:
+        repository: signalapp/Signal-Message-Backup-Tests
+        path: SignalServiceKit/tests/MessageBackup/Signal-Message-Backup-Tests
+        ref: ${{ steps.message_backup_tests_ref.outputs.ref }}
 
     - name: Fetch RingRTC
       shell: bash
