@@ -241,6 +241,12 @@ class IncomingReactionsView: UIView, ReactionReceiver {
             view.translatesAutoresizingMaskIntoConstraints = false
             view.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
             view.addSubview(nameLabel)
+
+            view.layer.shadowColor = UIColor.darkGray.cgColor
+            view.layer.shadowOpacity = 0.5
+            view.layer.shadowOffset = .zero
+            view.layer.shadowRadius = 0
+
             NSLayoutConstraint.activate([
                 view.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor, constant: -Constants.nameViewHInset),
                 view.trailingAnchor.constraint(equalTo: nameLabel.trailingAnchor, constant: Constants.nameViewHInset),
