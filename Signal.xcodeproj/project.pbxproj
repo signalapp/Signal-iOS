@@ -9516,6 +9516,7 @@
 		D9668B30291B033800665298 /* Jobs */ = {
 			isa = PBXGroup;
 			children = (
+				F9C5CA85289453B100548EEE /* JobRecords */,
 				D9DB37F82B72A770007B16C8 /* CallRecordDeleteAllJobQueue.swift */,
 				4C9D347E23689E06006A4307 /* IncomingContactSyncJobQueue.swift */,
 				F9C5CB19289453B200548EEE /* JobQueue.swift */,
@@ -10870,7 +10871,6 @@
 			children = (
 				F9C5CA52289453B100548EEE /* AxolotlStore */,
 				F9C5CA31289453B100548EEE /* Database */,
-				F9C5CA85289453B100548EEE /* JobRecords */,
 				667DEE562BC7148E00EFF32D /* MediaGallery */,
 				F9C5CA9B289453B100548EEE /* BaseModel.h */,
 				F9C5CA7B289453B100548EEE /* BaseModel.m */,
