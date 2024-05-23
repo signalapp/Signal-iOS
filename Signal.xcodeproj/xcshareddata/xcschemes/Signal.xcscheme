@@ -138,6 +138,10 @@
             argument = "-UseLibsignalForUnidentifiedWebsocket YES"
             isEnabled = "NO">
          </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-UseLibsignalForIdentifiedWebsocket YES"
+            isEnabled = "NO">
+         </CommandLineArgument>
       </CommandLineArguments>
       <EnvironmentVariables>
          <EnvironmentVariable

@@ -506,6 +506,7 @@ private enum IsEnabledFlag: String, FlagType {
     case enableGifSearch = "global.gifSearch"
     case serviceExtensionFailureKillSwitch = "ios.serviceExtensionFailureKillSwitch"
     case experimentalTransportUseLibsignal = "ios.experimentalTransportEnabled.libsignal"
+    case experimentalTransportUseLibsignalAuth = "ios.experimentalTransportEnabled.libsignalAuth"
     case experimentalTransportShadowingHigh = "ios.experimentalTransportEnabled.shadowingHigh"
     case experimentalTransportShadowingEnabled = "ios.experimentalTransportEnabled.shadowing"
     case cdsiLookupWithLibsignal = "ios.cdsiLookup.libsignal"
@@ -531,6 +532,7 @@ private enum IsEnabledFlag: String, FlagType {
         case .enableGifSearch: fallthrough
         case .serviceExtensionFailureKillSwitch: fallthrough
         case .experimentalTransportUseLibsignal: fallthrough
+        case .experimentalTransportUseLibsignalAuth: fallthrough
         case .experimentalTransportShadowingHigh: fallthrough
         case .experimentalTransportShadowingEnabled: fallthrough
         case .cdsiLookupWithLibsignal: fallthrough
@@ -561,6 +563,7 @@ private enum IsEnabledFlag: String, FlagType {
         case .ringrtcNwPathMonitorTrialKillSwitch: fallthrough
         case .enableGifSearch: fallthrough
         case .experimentalTransportUseLibsignal: fallthrough
+        case .experimentalTransportUseLibsignalAuth: fallthrough
         case .experimentalTransportShadowingHigh: fallthrough
         case .experimentalTransportShadowingEnabled: fallthrough
         case .deleteForMeSyncMessageSending:
@@ -948,13 +951,16 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
                 in: CurrentAppContext().appUserDefaults()
             )
             // Similarly, persist the choice of libsignal for the chat websockets.
+            let shouldUseLibsignalForIdentifiedWebsocket = isEnabledFlags[IsEnabledFlag.experimentalTransportUseLibsignalAuth.rawValue] ?? false
+            ChatConnectionManagerImpl.saveShouldUseLibsignalForIdentifiedWebsocket(
+                shouldUseLibsignalForIdentifiedWebsocket,
+                in: CurrentAppContext().appUserDefaults()
+            )
             let shouldUseLibsignalForUnidentifiedWebsocket = isEnabledFlags[IsEnabledFlag.experimentalTransportUseLibsignal.rawValue] ?? false
             ChatConnectionManagerImpl.saveShouldUseLibsignalForUnidentifiedWebsocket(
                 shouldUseLibsignalForUnidentifiedWebsocket,
                 in: CurrentAppContext().appUserDefaults()
             )
-
-            // Similarly, persist the configuration to use for the chat websockets.
             let enableShadowingForUnidentifiedWebsocket = isEnabledFlags[IsEnabledFlag.experimentalTransportShadowingEnabled.rawValue] ?? true
             ChatConnectionManagerImpl.saveEnableShadowingForUnidentifiedWebsocket(
                 enableShadowingForUnidentifiedWebsocket,
