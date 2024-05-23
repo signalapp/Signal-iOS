@@ -259,6 +259,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addNicknamesToSearchableName
         case addAttachmentMetadataColumnsToIncomingContactSyncJobRecord
         case removeRedundantPhoneNumbers3
+        case addV2AttachmentTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -320,7 +321,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 69
+    public static let grdbSchemaVersionLatest: UInt = 70
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -2802,6 +2803,10 @@ public class GRDBSchemaMigrator: NSObject {
             return .success(())
         }
 
+        migrator.registerMigration(.addV2AttachmentTable) { tx in
+            return try Self.createV2AttachmentTables(tx)
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -3470,6 +3475,376 @@ public class GRDBSchemaMigrator: NSObject {
             AND "\(phoneNumberColumn)" = "signalRecipientPhoneNumber"
             AND "signalRecipientAciString" IS NOT NULL;
         """)
+    }
+
+    static func createV2AttachmentTables(_ tx: GRDBWriteTransaction) throws -> Result<Void, Error> {
+
+        // MARK: Attachment table
+
+        try tx.database.create(table: "Attachment") { table in
+            table.autoIncrementedPrimaryKey("id").notNull()
+            table.column("blurHash", .text)
+            // Sha256 hash of the plaintext contents.
+            // Non-null for downloaded attachments.
+            table.column("sha256ContentHash", .blob).unique(onConflict: .abort)
+            // Used for addressing in the media tier.
+            // Non-null for downloaded attachments even if media tier unavailable.
+            table.column("mediaName", .text).unique(onConflict: .abort)
+            // Byte count of the encrypted file on disk, including cryptography overhead and padding.
+            // Non-null for downloaded attachments.
+            table.column("encryptedByteCount", .integer)
+            // Byte count of the decrypted plaintext contents, excluding padding.
+            // Non-null for downloaded attachments.
+            table.column("unencryptedByteCount", .integer)
+            // MIME type for the attachment, from the sender.
+            table.column("mimeType", .text).notNull()
+            // Key used to encrypt the file on disk. Composed of { AES encryption key | HMAC key }
+            table.column("encryptionKey", .blob).notNull()
+            // Sha256 digest of the encrypted ciphertext on disk, including iv prefix and hmac suffix.
+            // Non-null for downloaded attachments.
+            table.column("digestSHA256Ciphertext", .blob)
+            // Path to the encrypted fullsize file on disk, if downloaded.
+            table.column("localRelativeFilePath", .text)
+            // Validated type of attachment.
+            // null - undownloaded
+            // 0 - invalid (failed validation for the MIME type)
+            // 1 - arbitrary file
+            // 2 - image (from known image MIME types)
+            // 3 - video (from known video MIME types)
+            // 4 - animated image (from known animated image MIME types)
+            // 5 - audio (from known audio MIME types)
+            table.column("contentType", .integer)
+            // "Transit tier" CDN info used for sending/receiving attachments.
+            // Non-null if uploaded.
+            table.column("transitCdnNumber", .integer)
+            table.column("transitCdnKey", .text)
+            table.column("transitUploadTimestamp", .integer)
+            // Key used for the encrypted blob uploaded to transit tier CDN and used for sending.
+            // May or may not be the same as `encryptionKey`.
+            table.column("transitEncryptionKey", .blob)
+            table.column("transitEncryptedByteCount", .integer)
+            table.column("transitDigestSHA256Ciphertext", .blob)
+            // Local timestamp when we last failed a download from transit tier CDN.
+            // Set _after_ the download fails; nil if downloaded or if no attempt has been made.
+            table.column("lastTransitDownloadAttemptTimestamp", .integer)
+            // "Media tier" CDN info used for backing up full size attachments.
+            // Non-null if uploaded to the media tier.
+            table.column("mediaTierCdnNumber", .integer)
+            table.column("mediaTierUploadEra", .text)
+            // Local timestamp when we last failed a download from media tier CDN.
+            // Set _after_ the download fails; nil if downloaded or if no attempt has been made.
+            table.column("lastMediaTierDownloadAttemptTimestamp", .integer)
+            // "Media tier" CDN info used for backing up attachment _thumbnails_.
+            // Thumbnails are only used for visual media content types.
+            // Non-null if uploaded to the media tier.
+            table.column("thumbnailCdnNumber", .integer)
+            table.column("thumbnailUploadEra", .text)
+            // Local timestamp when we last failed a thumbnail download from media tier CDN.
+            // Set _after_ the download fails; nil if downloaded or if no attempt has been made.
+            table.column("lastThumbnailDownloadAttemptTimestamp", .integer)
+            // Path to the encrypted thumbnail file on disk, if downloaded.
+            // Encrypted using the `encryptionKey` column.
+            table.column("localRelativeFilePathThumbnail", .text)
+            // Cached pre-computed attributes set for downloaded media on a per-type basis.
+            // Non-null for rows with respective contentTypes.
+            table.column("cachedAudioDurationSeconds", .double)
+            table.column("cachedMediaHeightPixels", .integer)
+            table.column("cachedMediaWidthPixels", .integer)
+            table.column("cachedVideoDurationSeconds", .double)
+            // Path to the encrypted serialized audio waveform representation on disk.
+            // Nullable even for audio attachments.
+            // Encrypted using the `encryptionKey` column.
+            table.column("audioWaveformRelativeFilePath", .text)
+            // Path to the encrypted video still frame on disk.
+            // Nullable even for video attachments.
+            // Encrypted using the `encryptionKey` column.
+            table.column("videoStillFrameRelativeFilePath", .text)
+        }
+
+        // MARK: Attachment indexes
+
+        // Note: sha256ContentHash, mediaName indexes implicit from UNIQUE constraint.
+
+        // For finding attachments by type.
+        try tx.database.create(
+            index: "index_attachment_on_contentType_and_mimeType",
+            on: "Attachment",
+            columns: [
+                "contentType",
+                "mimeType"
+            ]
+        )
+
+        // MARK: MessageAttachmentReference table
+
+        try tx.database.create(table: "MessageAttachmentReference") { table in
+            // The type of message owner reference represented by this row.
+            // 0 - message attachment
+            // 1 - Long message body (text)
+            // 2 - message link preview
+            // 3 - quoted reply attachment
+            // 4 - message sticker
+            table.column("ownerType", .integer).notNull()
+            // Row id of the owning message.
+            table.column("ownerRowId", .integer)
+                .references("model_TSInteraction", column: "id", onDelete: .cascade)
+                .notNull()
+            // Row id of the associated Attachment.
+            table.column("attachmentRowId", .integer)
+                .references("Attachment", column: "id", onDelete: .cascade)
+                .notNull()
+            // Local timestamp the message was received, or created if outgoing.
+            table.column("receivedAtTimestamp", .integer).notNull()
+            // Mirrored from `Attachment` table's `contentType`.
+            table.column("contentType", .integer)
+            // Rendering hint from the sender.
+            // 0 - default
+            // 1 - voice message
+            // 2 - borderless image
+            // 3 - looping video
+            table.column("renderingFlag", .integer).notNull()
+            // Uniquely identifies the attachment among other attachments on the same owning TSMessage.
+            // Optional for message attachment owner type, null for other types.
+            table.column("idInMessage", .text)
+            // Ordering of the attachment on the same owning TSMessage.
+            // Non-null for message attachment owner type, null for other types.
+            table.column("orderInMessage", .integer)
+            // Row id of the TSThread the owning message belongs to.
+            table.column("threadRowId", .integer)
+                .references("model_TSThread", column: "id", onDelete: .cascade)
+                .notNull()
+            // Unused for contemporary messages but may be non-null for legacy instances.
+            table.column("caption", .text)
+            // File name from sender for display purposes only.
+            table.column("sourceFilename", .text)
+            // Byte count of the decrypted plaintext contents excluding padding, according to the sender.
+            // Will match `Attachment.unencryptedByteCount` once downloaded for well-behaving senders;
+            // a mismatch results in a rejected download.
+            table.column("sourceUnencryptedByteCount", .integer)
+            // Pixel height/width of visual media according to the sender.
+            table.column("sourceMediaHeightPixels", .integer)
+            table.column("sourceMediaWidthPixels", .integer)
+            // Non-null for message sticker owners, null for other types.
+            table.column("stickerPackId", .blob)
+            table.column("stickerId", .integer)
+        }
+
+        // MARK: MessageAttachmentReference indexes
+
+        // For finding attachments associated with a given message owner.
+        try tx.database.create(
+            index: "index_message_attachment_reference_on_ownerRowId_and_ownerType",
+            on: "MessageAttachmentReference",
+            columns: [
+                "ownerRowId",
+                "ownerType"
+            ]
+        )
+
+        // For getting all owners of a given attachment.
+        try tx.database.create(
+            index: "index_message_attachment_reference_on_attachmentRowId",
+            on: "MessageAttachmentReference",
+            columns: [
+                "attachmentRowId"
+            ]
+        )
+
+        // For finding specific attachments on a given message.
+        try tx.database.create(
+            index: "index_message_attachment_reference_on_ownerRowId_and_idInMessage",
+            on: "MessageAttachmentReference",
+            columns: [
+                "ownerRowId",
+                "idInMessage"
+            ]
+        )
+
+        // For finding attachments associated with a given sticker.
+        // Sticker messages attach the sticker image source itself. We might later acquire the actual
+        // sticker data from its source pack; in this case we might want to find existing references
+        // to the sticker and replace them with the new canonical reference.
+        try tx.database.create(
+            index: "index_message_attachment_reference_on_stickerPackId_and_stickerId",
+            on: "MessageAttachmentReference",
+            columns: [
+                "stickerPackId",
+                "stickerId"
+            ]
+        )
+
+        // For the all media view; it shows message body media for a given thread,
+        // filtered by content type + rendering flag, sorted by the timestamp and then
+        // rowId of the owning message, and finally sorted by orderInOwner on that message.
+        try tx.database.create(
+            index:
+                "index_message_attachment_reference_on"
+                + "_threadRowId"
+                + "_and_ownerType"
+                + "_and_contentType"
+                + "_and_renderingFlag"
+                + "_and_receivedAtTimestamp"
+                + "_and_ownerRowId"
+                + "_and_orderInMessage",
+            on: "MessageAttachmentReference",
+            columns: [
+                "threadRowId",
+                "ownerType",
+                "contentType",
+                "renderingFlag",
+                "receivedAtTimestamp",
+                "ownerRowId",
+                "orderInMessage"
+            ]
+        )
+
+        // MARK: StoryMessageAttachmentReference table
+
+        try tx.database.create(table: "StoryMessageAttachmentReference") { table in
+            // The type of owner reference represented by this row.
+            // 0 - media story message
+            // 1 - text story link preview
+            table.column("ownerType", .integer).notNull()
+            // Row id of the owning story message.
+            table.column("ownerRowId", .integer)
+                .references("model_StoryMessage", column: "id", onDelete: .cascade)
+                .notNull()
+            // Row id of the associated Attachment.
+            table.column("attachmentRowId", .integer)
+                .references("Attachment", column: "id", onDelete: .cascade)
+                .notNull()
+            // Rendering hint from the sender.
+            // Equivalent to `loop` or `gif` rendering flag.
+            table.column("shouldLoop", .boolean).notNull()
+            // Optional for media owner types. Null for text story owner types.
+            table.column("caption", .text)
+            // Serialized `Array<NSRangedValue<MessageBodyRanges.CollapsedStyle>>`
+            // Optional for media owner types. Null for text story owner types.
+            table.column("captionBodyRanges", .blob)
+            // File name from sender for display purposes only.
+            table.column("sourceFilename", .text)
+            // Byte count of the decrypted plaintext contents excluding padding, according to the sender.
+            // Will match `Attachment`'s `unencryptedByteCount` once downloaded for
+            // well-behaving senders, a mismatch results in a rejected download.
+            table.column("sourceUnencryptedByteCount", .integer)
+            // Pixel height/width of visual media according to the sender.
+            table.column("sourceMediaHeightPixels", .integer)
+            table.column("sourceMediaWidthPixels", .integer)
+        }
+
+        // MARK: StoryMessageAttachmentReference indexes
+
+        // For finding attachments associated with a given story message owner.
+        try tx.database.create(
+            index: "index_story_message_attachment_reference_on_ownerRowId_and_ownerType",
+            on: "StoryMessageAttachmentReference",
+            columns: [
+                "ownerRowId",
+                "ownerType"
+            ]
+        )
+
+        // For getting all owners of a given attachment.
+        try tx.database.create(
+            index: "index_story_message_attachment_reference_on_attachmentRowId",
+            on: "StoryMessageAttachmentReference",
+            columns: [
+                "attachmentRowId"
+            ]
+        )
+
+        // MARK: ThreadAttachmentReference table/index
+
+        try tx.database.create(table: "ThreadAttachmentReference") { table in
+            // Row id of the owning thread. Each thread has just one wallpaper attachment.
+            // If NULL, it's the global thread background image.
+            table.column("ownerRowId", .integer)
+                .references("model_TSThread", column: "id", onDelete: .cascade)
+                .unique()
+            // Row id of the associated Attachment.
+            table.column("attachmentRowId", .integer)
+                .references("Attachment", column: "id", onDelete: .cascade)
+                .notNull()
+            // Local timestamp this ownership reference was created.
+            table.column("creationTimestamp", .integer).notNull()
+        }
+
+        // Note: ownerRowId index implicit from UNIQUE constraint.
+
+        // For getting all owners of a given attachment.
+        try tx.database.create(
+            index: "index_thread_attachment_reference_on_attachmentRowId",
+            on: "ThreadAttachmentReference",
+            columns: [
+                "attachmentRowId"
+            ]
+        )
+
+        // MARK: OrphanedAttachment table
+
+        /// Double-commit the actual file on disk for deletion; we mark it for deletion
+        /// by inserting into this table, another job comes around and deletes for real.
+        try tx.database.create(table: "OrphanedAttachment") { table in
+            table.autoIncrementedPrimaryKey("id").notNull()
+            table.column("localRelativeFilePath", .text)
+            table.column("localRelativeFilePathThumbnail", .text)
+            table.column("localRelativeFilePathAudioWaveform", .text)
+            table.column("localRelativeFilePathVideoStillFrame", .text)
+        }
+
+        // MARK: Triggers
+
+        /// Make sure the contentType column is mirrored on MessageAttachmentReference.
+        try tx.database.execute(sql: """
+            CREATE TRIGGER __Attachment_contentType_au AFTER UPDATE OF contentType ON Attachment
+              BEGIN
+                UPDATE MessageAttachmentReference
+                  SET contentType = NEW.contentType
+                  WHERE attachmentRowId = OLD.id;
+              END;
+        """)
+
+        /// When we delete any owners (on all three tables), check if the associated attachment has any owners left.
+        /// If it has no owners remaining, delete it.
+        /// Note that application layer is responsible for ensuring we never insert unowned attachments to begin with,
+        /// and that we always insert an attachment and at least one owner in the same transaction.
+        /// This is unenforceable in SQL.
+        for referenceTableName in [
+            "MessageAttachmentReference",
+            "StoryMessageAttachmentReference",
+            "ThreadAttachmentReference"
+        ] {
+            try tx.database.execute(sql: """
+                CREATE TRIGGER "__\(referenceTableName)_ad" AFTER DELETE ON "\(referenceTableName)"
+                  BEGIN
+                    DELETE FROM Attachment WHERE id = OLD.attachmentRowId
+                      AND NOT EXISTS (SELECT 1 FROM MessageAttachmentReference WHERE attachmentRowId = OLD.attachmentRowId)
+                      AND NOT EXISTS (SELECT 1 FROM StoryMessageAttachmentReference WHERE attachmentRowId = OLD.attachmentRowId)
+                      AND NOT EXISTS (SELECT 1 FROM ThreadAttachmentReference WHERE attachmentRowId = OLD.attachmentRowId);
+                  END;
+            """)
+        }
+
+        /// When we delete an attachment row in the database, insert into the orphan table
+        /// so we can clean up the files on disk.
+        try tx.database.execute(sql: """
+            CREATE TRIGGER "__Attachment_ad" AFTER DELETE ON "Attachment"
+              BEGIN
+                INSERT INTO OrphanedAttachment (
+                  localRelativeFilePath
+                  ,localRelativeFilePathThumbnail
+                  ,localRelativeFilePathAudioWaveform
+                  ,localRelativeFilePathVideoStillFrame
+                ) VALUES (
+                  OLD.localRelativeFilePath
+                  ,OLD.localRelativeFilePathThumbnail
+                  ,OLD.audioWaveformRelativeFilePath
+                  ,OLD.videoStillFrameRelativeFilePath
+                );
+              END;
+        """)
+
+        return .success(())
     }
 }
 

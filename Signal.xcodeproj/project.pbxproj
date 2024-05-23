@@ -929,6 +929,7 @@
 		668444822A3292AB00DBED7C /* MessageBodyStyleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668444812A3292AB00DBED7C /* MessageBodyStyleTests.swift */; };
 		66883A3A29D7630A00E898CF /* MessageBodyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66883A3829D7630300E898CF /* MessageBodyTests.swift */; };
 		6688E602298232A4004467C8 /* PaymentActionSheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6688E601298232A4004467C8 /* PaymentActionSheets.swift */; };
+		668A28AF2BF703E100BB29B3 /* CreateV2AttachmentTablesMigrationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A28AE2BF703E100BB29B3 /* CreateV2AttachmentTablesMigrationTest.swift */; };
 		668B24182BBB663400EB60C4 /* MockAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668B24172BBB663400EB60C4 /* MockAttachment.swift */; };
 		668B30092BBDD9A20001FD25 /* EditManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668B30082BBDD9A20001FD25 /* EditManagerImpl.swift */; };
 		668CAB3E289983520085A2C3 /* AudioMessagePlaybackRateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668CAB3D289983520085A2C3 /* AudioMessagePlaybackRateView.swift */; };
@@ -3840,6 +3841,7 @@
 		668444812A3292AB00DBED7C /* MessageBodyStyleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBodyStyleTests.swift; sourceTree = "<group>"; };
 		66883A3829D7630300E898CF /* MessageBodyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBodyTests.swift; sourceTree = "<group>"; };
 		6688E601298232A4004467C8 /* PaymentActionSheets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentActionSheets.swift; sourceTree = "<group>"; };
+		668A28AE2BF703E100BB29B3 /* CreateV2AttachmentTablesMigrationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateV2AttachmentTablesMigrationTest.swift; sourceTree = "<group>"; };
 		668AB0CB28AD610600B31984 /* StoryUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryUtil.swift; sourceTree = "<group>"; };
 		668B24172BBB663400EB60C4 /* MockAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAttachment.swift; sourceTree = "<group>"; };
 		668B30082BBDD9A20001FD25 /* EditManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerImpl.swift; sourceTree = "<group>"; };
@@ -10143,6 +10145,7 @@
 			children = (
 				D9F6554529DA4216002A330A /* SDSCodableModel */,
 				66138FAC2982F4A7002E0CFE /* SDSDatabaseStorage */,
+				668A28AE2BF703E100BB29B3 /* CreateV2AttachmentTablesMigrationTest.swift */,
 				F97217FA28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift */,
 				F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */,
 				F908179528EF107800D31AD5 /* GRDBDatabaseStorageAdapterTest.swift */,
@@ -14652,6 +14655,7 @@
 				500824D0292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift in Sources */,
 				5077B5B82BBC7FE600EF399E /* ContactTest.swift in Sources */,
 				F962B38C293F9F9F00765BD8 /* CRC32Test.swift in Sources */,
+				668A28AF2BF703E100BB29B3 /* CreateV2AttachmentTablesMigrationTest.swift in Sources */,
 				509BBF7A28CA556700F4D8A0 /* Data+SSKTest.swift in Sources */,
 				F97217FB28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift in Sources */,
 				F94D130628C1667600B2C478 /* DatabaseRecoveryTest.swift in Sources */,

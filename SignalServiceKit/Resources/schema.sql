@@ -1681,3 +1681,327 @@ CREATE
                 ,"note" TEXT
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "Attachment" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"blurHash" TEXT
+            ,"sha256ContentHash" BLOB UNIQUE
+            ,"mediaName" TEXT UNIQUE
+            ,"encryptedByteCount" INTEGER
+            ,"unencryptedByteCount" INTEGER
+            ,"mimeType" TEXT NOT NULL
+            ,"encryptionKey" BLOB NOT NULL
+            ,"digestSHA256Ciphertext" BLOB
+            ,"localRelativeFilePath" TEXT
+            ,"contentType" INTEGER
+            ,"transitCdnNumber" INTEGER
+            ,"transitCdnKey" TEXT
+            ,"transitUploadTimestamp" INTEGER
+            ,"transitEncryptionKey" BLOB
+            ,"transitEncryptedByteCount" INTEGER
+            ,"transitDigestSHA256Ciphertext" BLOB
+            ,"lastTransitDownloadAttemptTimestamp" INTEGER
+            ,"mediaTierCdnNumber" INTEGER
+            ,"mediaTierUploadEra" TEXT
+            ,"lastMediaTierDownloadAttemptTimestamp" INTEGER
+            ,"thumbnailCdnNumber" INTEGER
+            ,"thumbnailUploadEra" TEXT
+            ,"lastThumbnailDownloadAttemptTimestamp" INTEGER
+            ,"localRelativeFilePathThumbnail" TEXT
+            ,"cachedAudioDurationSeconds" DOUBLE
+            ,"cachedMediaHeightPixels" INTEGER
+            ,"cachedMediaWidthPixels" INTEGER
+            ,"cachedVideoDurationSeconds" DOUBLE
+            ,"audioWaveformRelativeFilePath" TEXT
+            ,"videoStillFrameRelativeFilePath" TEXT
+        )
+;
+
+CREATE
+    INDEX "index_attachment_on_contentType_and_mimeType"
+        ON "Attachment"("contentType"
+    ,"mimeType"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "MessageAttachmentReference" (
+            "ownerType" INTEGER NOT NULL
+            ,"ownerRowId" INTEGER NOT NULL REFERENCES "model_TSInteraction"("id"
+        )
+            ON DELETE
+                CASCADE
+                ,"attachmentRowId" INTEGER NOT NULL REFERENCES "Attachment"("id"
+)
+    ON DELETE
+        CASCADE
+        ,"receivedAtTimestamp" INTEGER NOT NULL
+        ,"contentType" INTEGER
+        ,"renderingFlag" INTEGER NOT NULL
+        ,"idInMessage" TEXT
+        ,"orderInMessage" INTEGER
+        ,"threadRowId" INTEGER NOT NULL REFERENCES "model_TSThread"("id"
+)
+    ON DELETE
+        CASCADE
+        ,"caption" TEXT
+        ,"sourceFilename" TEXT
+        ,"sourceUnencryptedByteCount" INTEGER
+        ,"sourceMediaHeightPixels" INTEGER
+        ,"sourceMediaWidthPixels" INTEGER
+        ,"stickerPackId" BLOB
+        ,"stickerId" INTEGER
+)
+;
+
+CREATE
+    INDEX "index_message_attachment_reference_on_ownerRowId_and_ownerType"
+        ON "MessageAttachmentReference"("ownerRowId"
+    ,"ownerType"
+)
+;
+
+CREATE
+    INDEX "index_message_attachment_reference_on_attachmentRowId"
+        ON "MessageAttachmentReference"("attachmentRowId"
+)
+;
+
+CREATE
+    INDEX "index_message_attachment_reference_on_ownerRowId_and_idInMessage"
+        ON "MessageAttachmentReference"("ownerRowId"
+    ,"idInMessage"
+)
+;
+
+CREATE
+    INDEX "index_message_attachment_reference_on_stickerPackId_and_stickerId"
+        ON "MessageAttachmentReference"("stickerPackId"
+    ,"stickerId"
+)
+;
+
+CREATE
+    INDEX "index_message_attachment_reference_on_threadRowId_and_ownerType_and_contentType_and_renderingFlag_and_receivedAtTimestamp_and_ownerRowId_and_orderInMessage"
+        ON "MessageAttachmentReference"("threadRowId"
+    ,"ownerType"
+    ,"contentType"
+    ,"renderingFlag"
+    ,"receivedAtTimestamp"
+    ,"ownerRowId"
+    ,"orderInMessage"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "StoryMessageAttachmentReference" (
+            "ownerType" INTEGER NOT NULL
+            ,"ownerRowId" INTEGER NOT NULL REFERENCES "model_StoryMessage"("id"
+        )
+            ON DELETE
+                CASCADE
+                ,"attachmentRowId" INTEGER NOT NULL REFERENCES "Attachment"("id"
+)
+    ON DELETE
+        CASCADE
+        ,"shouldLoop" BOOLEAN NOT NULL
+        ,"caption" TEXT
+        ,"captionBodyRanges" BLOB
+        ,"sourceFilename" TEXT
+        ,"sourceUnencryptedByteCount" INTEGER
+        ,"sourceMediaHeightPixels" INTEGER
+        ,"sourceMediaWidthPixels" INTEGER
+)
+;
+
+CREATE
+    INDEX "index_story_message_attachment_reference_on_ownerRowId_and_ownerType"
+        ON "StoryMessageAttachmentReference"("ownerRowId"
+    ,"ownerType"
+)
+;
+
+CREATE
+    INDEX "index_story_message_attachment_reference_on_attachmentRowId"
+        ON "StoryMessageAttachmentReference"("attachmentRowId"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "ThreadAttachmentReference" (
+            "ownerRowId" INTEGER UNIQUE REFERENCES "model_TSThread"("id"
+        )
+            ON DELETE
+                CASCADE
+                ,"attachmentRowId" INTEGER NOT NULL REFERENCES "Attachment"("id"
+)
+    ON DELETE
+        CASCADE
+        ,"creationTimestamp" INTEGER NOT NULL
+)
+;
+
+CREATE
+    INDEX "index_thread_attachment_reference_on_attachmentRowId"
+        ON "ThreadAttachmentReference"("attachmentRowId"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "OrphanedAttachment" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"localRelativeFilePath" TEXT
+            ,"localRelativeFilePathThumbnail" TEXT
+            ,"localRelativeFilePathAudioWaveform" TEXT
+            ,"localRelativeFilePathVideoStillFrame" TEXT
+        )
+;
+
+CREATE
+    TRIGGER __Attachment_contentType_au AFTER UPDATE
+            OF contentType
+                ON Attachment BEGIN UPDATE
+                    MessageAttachmentReference
+                SET
+                    contentType = NEW.contentType
+                WHERE
+                    attachmentRowId = OLD.id
+;
+
+END
+;
+
+CREATE
+    TRIGGER "__MessageAttachmentReference_ad" AFTER DELETE
+                ON "MessageAttachmentReference" BEGIN DELETE
+                FROM
+                    Attachment
+                WHERE
+                    id = OLD.attachmentRowId
+                    AND NOT EXISTS (
+                        SELECT
+                                1
+                            FROM
+                                MessageAttachmentReference
+                            WHERE
+                                attachmentRowId = OLD.attachmentRowId
+                    )
+                    AND NOT EXISTS (
+                        SELECT
+                                1
+                            FROM
+                                StoryMessageAttachmentReference
+                            WHERE
+                                attachmentRowId = OLD.attachmentRowId
+                    )
+                    AND NOT EXISTS (
+                        SELECT
+                                1
+                            FROM
+                                ThreadAttachmentReference
+                            WHERE
+                                attachmentRowId = OLD.attachmentRowId
+                    )
+;
+
+END
+;
+
+CREATE
+    TRIGGER "__StoryMessageAttachmentReference_ad" AFTER DELETE
+                ON "StoryMessageAttachmentReference" BEGIN DELETE
+                FROM
+                    Attachment
+                WHERE
+                    id = OLD.attachmentRowId
+                    AND NOT EXISTS (
+                        SELECT
+                                1
+                            FROM
+                                MessageAttachmentReference
+                            WHERE
+                                attachmentRowId = OLD.attachmentRowId
+                    )
+                    AND NOT EXISTS (
+                        SELECT
+                                1
+                            FROM
+                                StoryMessageAttachmentReference
+                            WHERE
+                                attachmentRowId = OLD.attachmentRowId
+                    )
+                    AND NOT EXISTS (
+                        SELECT
+                                1
+                            FROM
+                                ThreadAttachmentReference
+                            WHERE
+                                attachmentRowId = OLD.attachmentRowId
+                    )
+;
+
+END
+;
+
+CREATE
+    TRIGGER "__ThreadAttachmentReference_ad" AFTER DELETE
+                ON "ThreadAttachmentReference" BEGIN DELETE
+                FROM
+                    Attachment
+                WHERE
+                    id = OLD.attachmentRowId
+                    AND NOT EXISTS (
+                        SELECT
+                                1
+                            FROM
+                                MessageAttachmentReference
+                            WHERE
+                                attachmentRowId = OLD.attachmentRowId
+                    )
+                    AND NOT EXISTS (
+                        SELECT
+                                1
+                            FROM
+                                StoryMessageAttachmentReference
+                            WHERE
+                                attachmentRowId = OLD.attachmentRowId
+                    )
+                    AND NOT EXISTS (
+                        SELECT
+                                1
+                            FROM
+                                ThreadAttachmentReference
+                            WHERE
+                                attachmentRowId = OLD.attachmentRowId
+                    )
+;
+
+END
+;
+
+CREATE
+    TRIGGER "__Attachment_ad" AFTER DELETE
+                ON "Attachment" BEGIN INSERT
+                INTO
+                    OrphanedAttachment (
+                        localRelativeFilePath
+                        ,localRelativeFilePathThumbnail
+                        ,localRelativeFilePathAudioWaveform
+                        ,localRelativeFilePathVideoStillFrame
+                    )
+                VALUES (
+                    OLD.localRelativeFilePath
+                    ,OLD.localRelativeFilePathThumbnail
+                    ,OLD.audioWaveformRelativeFilePath
+                    ,OLD.videoStillFrameRelativeFilePath
+                )
+;
+
+END
+;

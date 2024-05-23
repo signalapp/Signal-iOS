@@ -273,6 +273,11 @@ public extension DatabaseRecovery {
             CallRecord.databaseTableName,
             DeletedCallRecord.databaseTableName,
             NicknameRecord.databaseTableName,
+            "Attachment",
+            "MessageAttachmentReference",
+            "StoryMessageAttachmentReference",
+            "ThreadAttachmentReference",
+            "OrphanedAttachment"
         ]
 
         private static func prepareToCopyTablesWithBestEffort(
