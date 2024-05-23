@@ -153,7 +153,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
     // MARK: - Events
 
     public override func handleTap(
-        sender: UITapGestureRecognizer,
+        sender: UIGestureRecognizer,
         componentDelegate: CVComponentDelegate,
         componentView: CVComponentView,
         renderItem: CVRenderItem

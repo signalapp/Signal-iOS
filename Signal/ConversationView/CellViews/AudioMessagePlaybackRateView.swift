@@ -201,7 +201,7 @@ class AudioMessagePlaybackRateView: ManualLayoutViewWithLayer {
     // MARK: - Tapping
 
     public func handleTap(
-        sender: UITapGestureRecognizer,
+        sender: UIGestureRecognizer,
         itemModel: CVItemModel,
         audioMessageViewDelegate: AudioMessageViewDelegate?
     ) -> Bool {

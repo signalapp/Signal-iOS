@@ -1593,7 +1593,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
     // MARK: - Events
 
-    public override func handleTap(sender: UITapGestureRecognizer,
+    public override func handleTap(sender: UIGestureRecognizer,
                                    componentDelegate: CVComponentDelegate,
                                    componentView: CVComponentView,
                                    renderItem: CVRenderItem) -> Bool {
@@ -1686,13 +1686,25 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         return false
     }
 
-    public override func handleDoubleTap(sender: UITapGestureRecognizer, componentDelegate: any CVComponentDelegate, renderItem: CVRenderItem) -> Bool {
+    public override func canHandleDoubleTap(
+        sender: UIGestureRecognizer,
+        componentDelegate: any CVComponentDelegate,
+        renderItem: CVRenderItem
+    ) -> Bool {
         if isShowingSelectionUI {
             return false
         }
 
         let viewModel = CVItemViewModelImpl(renderItem: renderItem)
-        guard viewModel.canEditMessage else { return false }
+        return viewModel.canEditMessage
+    }
+
+    public override func handleDoubleTap(sender: UIGestureRecognizer, componentDelegate: any CVComponentDelegate, renderItem: CVRenderItem) -> Bool {
+        guard canHandleDoubleTap(sender: sender, componentDelegate: componentDelegate, renderItem: renderItem) else {
+            return false
+        }
+
+        let viewModel = CVItemViewModelImpl(renderItem: renderItem)
         componentDelegate.didDoubleTapTextViewItem(viewModel)
         return true
     }
@@ -2111,9 +2123,9 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             }
         }
 
-        public func canHandleDoubleTapGesture(_ sender: UITapGestureRecognizer) -> Bool {
-            guard let bodyTextView else { return false }
-            return bodyTextView.rootView.containsGestureLocation(sender)
+        public func canHandleDoubleTapGesture(_ sender: UIGestureRecognizer) -> Bool {
+            // If we have a body text view, allow taps anywhere (incl. adjacent whitespace).
+            return bodyTextView != nil
         }
 
         public func contextMenuContentView() -> UIView? {

@@ -52,7 +52,7 @@ public class CVComponentReactions: CVComponentBase, CVComponent, CVAccessibility
 
     // MARK: - Events
 
-    public override func handleTap(sender: UITapGestureRecognizer,
+    public override func handleTap(sender: UIGestureRecognizer,
                                    componentDelegate: CVComponentDelegate,
                                    componentView: CVComponentView,
                                    renderItem: CVRenderItem) -> Bool {
