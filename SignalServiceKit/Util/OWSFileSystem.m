@@ -43,19 +43,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)protectFileOrFolderAtPath:(NSString *)path fileProtectionType:(NSFileProtectionType)fileProtectionType
 {
-    if (![NSFileManager.defaultManager fileExistsAtPath:path]) {
-        return NO;
-    }
-
     NSError *_Nullable error;
     NSDictionary *fileProtection = @{ NSFileProtectionKey : fileProtectionType };
     BOOL success = [[NSFileManager defaultManager] setAttributes:fileProtection ofItemAtPath:path error:&error];
-    if (error || !success) {
+    if (!success) {
         if (error != nil && [error.domain isEqualToString:NSCocoaErrorDomain]
             && (error.code == NSFileReadNoSuchFileError || error.code == NSFileNoSuchFileError)) {
-            // We sometimes protect files async, so races around short-lived
-            // temporarily files can cause these errors.
-            OWSLogWarn(@"Could not protect file or folder: %@", error.shortDescription);
             return NO;
         }
         OWSFailDebug(@"Could not protect file or folder: %@", error.shortDescription);
@@ -67,12 +60,9 @@ NS_ASSUME_NONNULL_BEGIN
     NSURL *resourceURL = [NSURL fileURLWithPath:path];
     success = [resourceURL setResourceValues:resourcesAttrs error:&error];
 
-    if (error || !success) {
+    if (!success) {
         if (error != nil && [error.domain isEqualToString:NSCocoaErrorDomain]
             && (error.code == NSFileReadNoSuchFileError || error.code == NSFileNoSuchFileError)) {
-            // We sometimes protect files async, so races around short-lived
-            // temporarily files can cause these errors.
-            OWSLogWarn(@"Could not protect file or folder: %@", error.shortDescription);
             return NO;
         }
         OWSFailDebug(@"Could not protect file or folder: %@", error.shortDescription);
@@ -206,26 +196,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)ensureDirectoryExists:(NSString *)dirPath fileProtectionType:(NSFileProtectionType)fileProtectionType
 {
-    BOOL isDirectory;
-    BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:dirPath isDirectory:&isDirectory];
-    if (exists) {
-        OWSAssertDebug(isDirectory);
-
-        return [self protectFileOrFolderAtPath:dirPath fileProtectionType:fileProtectionType];
-    } else {
-        OWSLogInfo(@"Creating directory at: %@", dirPath);
-
-        NSError *error = nil;
-        [[NSFileManager defaultManager] createDirectoryAtPath:dirPath
-                                  withIntermediateDirectories:YES
-                                                   attributes:nil
-                                                        error:&error];
-        if (error) {
-            OWSFailDebug(@"Failed to create directory: %@, error: %@", dirPath, error);
-            return NO;
-        }
-        return [self protectFileOrFolderAtPath:dirPath fileProtectionType:fileProtectionType];
+    NSError *error = nil;
+    BOOL success = [[NSFileManager defaultManager] createDirectoryAtPath:dirPath
+                                             withIntermediateDirectories:YES
+                                                              attributes:nil
+                                                                   error:&error];
+    if (!success) {
+        OWSFailDebug(@"Failed to create directory: %@, error: %@", dirPath, [error shortDescription]);
+        return NO;
     }
+
+    return [self protectFileOrFolderAtPath:dirPath fileProtectionType:fileProtectionType];
 }
 
 + (BOOL)ensureFileExists:(NSString *)filePath
