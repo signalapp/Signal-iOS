@@ -1212,45 +1212,6 @@ public final class MessageReceiver: Dependencies {
             setProfileKeyIfValid(profileKey, for: envelope.sourceAci, localIdentifiers: localIdentifiers, tx: tx)
         }
 
-        // Any call message which will result in the posting a new incoming call to CallKit
-        // must be handled sync if we're already on the main thread.  This includes "offer"
-        // and "urgent opaque" call messages.  Otherwise we violate this constraint:
-        //
-        // (PushKit) Apps receiving VoIP pushes must post an incoming call via CallKit in the same run loop as
-        // pushRegistry:didReceiveIncomingPushWithPayload:forType:[withCompletionHandler:] without delay.
-        //
-        // Which can result in the main app being terminated with 0xBAADCA11:
-        //
-        // The exception code "0xbaadca11" indicates that your app was killed for failing to
-        // report a CallKit call in response to a PushKit notification.
-        //
-        // Or this form of crash:
-        //
-        // [PKPushRegistry _terminateAppIfThereAreUnhandledVoIPPushes].
-        if Thread.isMainThread, let offer = callMessage.offer {
-            Logger.info("Handling 'offer' call message synchronously")
-            callMessageHandler.receivedOffer(
-                offer,
-                from: (envelope.sourceAci, envelope.sourceDeviceId),
-                sentAtTimestamp: envelope.timestamp,
-                serverReceivedTimestamp: envelope.serverTimestamp,
-                serverDeliveryTimestamp: request.serverDeliveryTimestamp,
-                tx: tx
-            )
-            return
-        }
-        if Thread.isMainThread, let opaque = callMessage.opaque, opaque.urgency == .handleImmediately {
-            Logger.info("Handling 'opaque' call message synchronously")
-            callMessageHandler.receivedOpaque(
-                opaque,
-                from: (envelope.sourceAci, envelope.sourceDeviceId),
-                serverReceivedTimestamp: envelope.serverTimestamp,
-                serverDeliveryTimestamp: request.serverDeliveryTimestamp,
-                tx: tx
-            )
-            return
-        }
-
         // By dispatching async, we introduce the possibility that these messages might be lost
         // if the app exits before this block is executed.  This is fine, since the call by
         // definition will end if the app exits.

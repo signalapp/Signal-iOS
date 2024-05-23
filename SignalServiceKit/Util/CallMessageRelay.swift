@@ -56,7 +56,6 @@ public class CallMessageRelay: Dependencies {
             }
 
             Logger.info("Processing \(pendingPayloads.count) call messages relayed from the NSE.")
-            owsAssertDebug(pendingPayloads.count == 1, "Unexpectedly processing multiple messages from the NSE at once")
 
             for payload in pendingPayloads {
                 // Pretend we are just receiving the message now.

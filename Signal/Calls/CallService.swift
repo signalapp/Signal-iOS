@@ -58,7 +58,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         return result
     }()
 
-    public var earlyRingNextIncomingCall = false
+    public let earlyRingNextIncomingCall = AtomicBool(false, lock: .init())
 
     let callServiceState: CallServiceState
 
@@ -202,7 +202,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
 
         // To be safe, we reset the early ring on any call change so it's not left set from an unexpected state change.
-        earlyRingNextIncomingCall = false
+        earlyRingNextIncomingCall.set(false)
     }
 
     func callServiceState(_ callServiceState: CallServiceState, didTerminateCall call: SignalCall) {
@@ -1141,8 +1141,7 @@ extension CallService: CallManagerDelegate {
         }
 
         // We grab this before updating the currentCall since it will unset it by default as a precaution.
-        let shouldEarlyRing = earlyRingNextIncomingCall && !isOutgoing
-        earlyRingNextIncomingCall = false
+        let shouldEarlyRing = earlyRingNextIncomingCall.swap(false) && !isOutgoing
 
         // The call to be started is provided by the event.
         callServiceState.setCurrentCall(call)
