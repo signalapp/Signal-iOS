@@ -92,48 +92,19 @@ public class MockAttachment: Attachment {
         transitTierInfo: Attachment.TransitTierInfo? = nil,
         mediaTierInfo: Attachment.MediaTierInfo? = nil,
         thumbnailInfo: Attachment.ThumbnailMediaTierInfo? = nil,
-        localRelativeFilePath: String? = nil,
-        localRelativeFilePathThumbnail: String? = nil,
-        cachedAudioDurationSeconds: Double? = nil,
-        cachedMediaHeightPixels: UInt32? = nil,
-        cachedMediaWidthPixels: UInt32? = nil,
-        cachedVideoDurationSeconds: Double? = nil,
-        audioWaveformRelativeFilePath: String? = nil,
-        videoStillFrameRelativeFilePath: String? = nil
+        localRelativeFilePathThumbnail: String? = nil
     ) -> MockAttachment {
         let record = Attachment.Record(
            sqliteId: .random(in: 0..<(.max)),
            blurHash: blurHash,
-           sha256ContentHash: streamInfo?.sha256ContentHash,
-           encryptedByteCount: streamInfo?.encryptedByteCount,
-           unencryptedByteCount: streamInfo?.unencryptedByteCount,
            mimeType: mimeType ?? MimeType.applicationOctetStream.rawValue,
            encryptionKey: encryptionKey ?? UInt64.random(in: 0..<(.max)).bigEndianData,
-           digestSHA256Ciphertext: streamInfo?.digestSHA256Ciphertext,
-           contentType: (streamInfo?.contentType.raw.rawValue).map { UInt32(exactly: $0) } ?? nil,
-           transitCdnNumber: transitTierInfo?.cdnNumber,
-           transitCdnKey: transitTierInfo?.cdnKey,
-           transitUploadTimestamp: transitTierInfo?.uploadTimestamp,
-           transitEncryptionKey: transitTierInfo?.encryptionKey,
-           transitEncryptedByteCount: transitTierInfo?.encryptedByteCount,
-           transitDigestSHA256Ciphertext: transitTierInfo?.digestSHA256Ciphertext,
-           lastTransitDownloadAttemptTimestamp: transitTierInfo?.lastDownloadAttemptTimestamp,
            mediaName: mediaName ?? "\(UInt64.random(in: 0..<(.max)))",
-           mediaTierCdnNumber: mediaTierInfo?.cdnNumber,
-           mediaTierUploadEra: mediaTierInfo?.uploadEra,
-           lastMediaTierDownloadAttemptTimestamp: mediaTierInfo?.lastDownloadAttemptTimestamp,
-           thumbnailCdnNumber: thumbnailInfo?.cdnNumber,
-           thumbnailUploadEra: thumbnailInfo?.uploadEra,
-           lastThumbnailDownloadAttemptTimestamp: thumbnailInfo?.lastDownloadAttemptTimestamp,
-           localRelativeFilePath: localRelativeFilePath,
            localRelativeFilePathThumbnail: localRelativeFilePathThumbnail,
-           /// Always set these values so we never fail validation.
-           cachedAudioDurationSeconds: cachedAudioDurationSeconds ?? 10,
-           cachedMediaHeightPixels: cachedMediaHeightPixels ?? 100,
-           cachedMediaWidthPixels: cachedMediaWidthPixels ?? 100,
-           cachedVideoDurationSeconds: cachedVideoDurationSeconds ?? 10,
-           audioWaveformRelativeFilePath: nil,
-           videoStillFrameRelativeFilePath: nil
+           streamInfo: streamInfo,
+           transitTierInfo: transitTierInfo,
+           mediaTierInfo: mediaTierInfo,
+           thumbnailMediaTierInfo: thumbnailInfo
        )
 
         return try! MockAttachment(record: record)
@@ -154,7 +125,6 @@ public class MockAttachmentStream: AttachmentStream {
         transitTierInfo: Attachment.TransitTierInfo? = nil,
         mediaTierInfo: Attachment.MediaTierInfo? = nil,
         thumbnailInfo: Attachment.ThumbnailMediaTierInfo? = nil,
-        localRelativeFilePath: String = "/some/file/path",
         localRelativeFilePathThumbnail: String? = nil
     ) -> MockAttachmentStream {
         let attachment = MockAttachment.mock(
@@ -165,7 +135,6 @@ public class MockAttachmentStream: AttachmentStream {
             transitTierInfo: transitTierInfo,
             mediaTierInfo: mediaTierInfo,
             thumbnailInfo: thumbnailInfo,
-            localRelativeFilePath: localRelativeFilePath,
             localRelativeFilePathThumbnail: localRelativeFilePathThumbnail
         )
         return MockAttachmentStream(attachment: attachment)!

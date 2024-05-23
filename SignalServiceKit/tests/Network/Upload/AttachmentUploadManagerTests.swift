@@ -163,8 +163,7 @@ class AttachmentUploadManagerTests: XCTestCase {
                 streamInfo: nil,
                 transitTierInfo: .mock(
                     uploadTimestamp: uploadTimestamp.ows_millisecondsSince1970
-                ),
-                localRelativeFilePath: nil
+                )
             )
         }
 

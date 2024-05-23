@@ -168,18 +168,6 @@ extension AttachmentReference {
                 /// when we want to e.g. get all files sent on messages in a thread.
                 internal let threadRowId: Int64
 
-                fileprivate init(
-                    messageRowId: Int64,
-                    receivedAtTimestamp: UInt64,
-                    threadRowId: Int64
-                ) {
-                    self.messageRowId = messageRowId
-                    self.receivedAtTimestamp = receivedAtTimestamp
-                    self.threadRowId = threadRowId
-                }
-            }
-
-            public class BodyAttachmentMetadata: MessageSource.Metadata {
                 /// Validated type of the actual file content on disk, if we have it.
                 /// Mirrors `Attachment.contentType`.
                 ///
@@ -193,6 +181,20 @@ extension AttachmentReference {
                 /// you must fetch the full attachment object and use its mimeType.
                 public let contentType: ContentType?
 
+                fileprivate init(
+                    messageRowId: Int64,
+                    receivedAtTimestamp: UInt64,
+                    threadRowId: Int64,
+                    contentType: ContentType?
+                ) {
+                    self.messageRowId = messageRowId
+                    self.receivedAtTimestamp = receivedAtTimestamp
+                    self.threadRowId = threadRowId
+                    self.contentType = contentType
+                }
+            }
+
+            public class BodyAttachmentMetadata: MessageSource.Metadata {
                 /// Read-only in practice; we never set this for new message body attachments but
                 /// it may be set for older messages.
                 public let caption: String?
@@ -216,7 +218,6 @@ extension AttachmentReference {
                     orderInOwner: UInt32,
                     idInOwner: String?
                 ) {
-                    self.contentType = contentType
                     self.caption = caption
                     self.renderingFlag = renderingFlag
                     self.orderInOwner = orderInOwner
@@ -224,25 +225,13 @@ extension AttachmentReference {
                     super.init(
                         messageRowId: messageRowId,
                         receivedAtTimestamp: receivedAtTimestamp,
-                        threadRowId: threadRowId
+                        threadRowId: threadRowId,
+                        contentType: contentType
                     )
                 }
             }
 
             public class QuotedReplyMetadata: MessageSource.Metadata {
-                /// Validated type of the actual file content on disk, if we have it.
-                /// Mirrors `Attachment.contentType`.
-                ///
-                /// We _write_ and keep this value if available for all attachments,
-                /// but only _read_ it for:
-                /// * message body attachments
-                /// * quoted reply attachment (note some types are disallowed)
-                ///
-                /// Note: if you want to know if an attachment is, say, a video,
-                /// even if you are ok using the mimeType for that if undownloaded,
-                /// you must fetch the full attachment object and use its mimeType.
-                public let contentType: ContentType?
-
                 /// Flag from the sender giving us a hint for how it should be rendered.
                 public let renderingFlag: RenderingFlag
 
@@ -253,12 +242,12 @@ extension AttachmentReference {
                     contentType: ContentType?,
                     renderingFlag: RenderingFlag
                 ) {
-                    self.contentType = contentType
                     self.renderingFlag = renderingFlag
                     super.init(
                         messageRowId: messageRowId,
                         receivedAtTimestamp: receivedAtTimestamp,
-                        threadRowId: threadRowId
+                        threadRowId: threadRowId,
+                        contentType: contentType
                     )
                 }
             }
@@ -272,6 +261,7 @@ extension AttachmentReference {
                     messageRowId: Int64,
                     receivedAtTimestamp: UInt64,
                     threadRowId: Int64,
+                    contentType: ContentType?,
                     stickerPackId: Data,
                     stickerId: UInt32
                 ) {
@@ -280,7 +270,8 @@ extension AttachmentReference {
                     super.init(
                         messageRowId: messageRowId,
                         receivedAtTimestamp: receivedAtTimestamp,
-                        threadRowId: threadRowId
+                        threadRowId: threadRowId,
+                        contentType: contentType
                     )
                 }
             }
@@ -402,13 +393,15 @@ extension AttachmentReference.Owner {
             return .message(.oversizeText(.init(
                 messageRowId: record.ownerRowId,
                 receivedAtTimestamp: record.receivedAtTimestamp,
-                threadRowId: record.threadRowId
+                threadRowId: record.threadRowId,
+                contentType: try record.contentType.map { try .init(rawValue: $0) }
             )))
         case .linkPreview:
             return .message(.linkPreview(.init(
                 messageRowId: record.ownerRowId,
                 receivedAtTimestamp: record.receivedAtTimestamp,
-                threadRowId: record.threadRowId
+                threadRowId: record.threadRowId,
+                contentType: try record.contentType.map { try .init(rawValue: $0) }
             )))
         case .quotedReplyAttachment:
             return .message(.quotedReply(.init(
@@ -429,6 +422,7 @@ extension AttachmentReference.Owner {
                 messageRowId: record.ownerRowId,
                 receivedAtTimestamp: record.receivedAtTimestamp,
                 threadRowId: record.threadRowId,
+                contentType: try record.contentType.map { try .init(rawValue: $0) },
                 stickerPackId: stickerPackId,
                 stickerId: stickerId
             )))
@@ -436,7 +430,8 @@ extension AttachmentReference.Owner {
             return .message(.contactAvatar(.init(
                 messageRowId: record.ownerRowId,
                 receivedAtTimestamp: record.receivedAtTimestamp,
-                threadRowId: record.threadRowId
+                threadRowId: record.threadRowId,
+                contentType: try record.contentType.map { try .init(rawValue: $0) }
             )))
         }
     }
@@ -538,42 +533,33 @@ extension AttachmentReference.OwnerBuilder {
     }
 }
 
-extension AttachmentReference.OwnerId {
+extension AttachmentReference.Owner.MessageSource {
 
-    internal var rawMessageOwnerType: AttachmentReference.MessageOwnerTypeRaw? {
+    internal var rawMessageOwnerType: AttachmentReference.MessageOwnerTypeRaw {
         switch self {
-        case .messageBodyAttachment:
+        case .bodyAttachment:
             return .bodyAttachment
-        case .messageOversizeText:
+        case .oversizeText:
             return .oversizeText
-        case .messageLinkPreview:
+        case .linkPreview:
             return .linkPreview
-        case .quotedReplyAttachment:
+        case .quotedReply:
             return .quotedReplyAttachment
-        case .messageSticker:
+        case .sticker:
             return .sticker
-        case .messageContactAvatar:
+        case .contactAvatar:
             return .contactAvatar
-        case .storyMessageMedia, .storyMessageLinkPreview, .threadWallpaperImage, .globalThreadWallpaperImage:
-            return nil
         }
     }
+}
 
-    internal var rawStoryMessageOwnerType: AttachmentReference.StoryMessageOwnerTypeRaw? {
+extension AttachmentReference.Owner.StoryMessageSource {
+
+    internal var rawStoryMessageOwnerType: AttachmentReference.StoryMessageOwnerTypeRaw {
         switch self {
-        case
-                .messageBodyAttachment,
-                .messageOversizeText,
-                .messageLinkPreview,
-                .quotedReplyAttachment,
-                .messageSticker,
-                .messageContactAvatar,
-                .threadWallpaperImage,
-                .globalThreadWallpaperImage:
-            return nil
-        case .storyMessageMedia:
+        case .media:
             return .media
-        case .storyMessageLinkPreview:
+        case .textStoryLinkPreview:
             return .linkPreview
         }
     }
