@@ -10,6 +10,7 @@ import SignalServiceKit
 class GroupCallNotificationView: UIView {
     private let call: SignalCall
     private let groupCall: GroupCall
+    private let groupThreadCall: GroupThreadCall
     private var callService: CallService { AppEnvironment.shared.callService }
 
     private struct ActiveMember: Hashable {
@@ -21,17 +22,16 @@ class GroupCallNotificationView: UIView {
     private var membersPendingJoinNotification = Set<ActiveMember>()
     private var membersPendingLeaveNotification = Set<ActiveMember>()
 
-    init(call: SignalCall, groupCall: GroupCall) {
+    init(call: SignalCall, groupThreadCall: GroupThreadCall) {
         self.call = call
-        self.groupCall = groupCall
+        self.groupCall = groupThreadCall.ringRtcCall
+        self.groupThreadCall = groupThreadCall
         super.init(frame: .zero)
 
-        call.addObserverAndSyncState(observer: self)
+        groupThreadCall.addObserverAndSyncState(self)
 
         isUserInteractionEnabled = false
     }
-
-    deinit { call.removeObserver(self) }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -128,18 +128,18 @@ class GroupCallNotificationView: UIView {
     }
 }
 
-extension GroupCallNotificationView: CallObserver {
-    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
+extension GroupCallNotificationView: GroupThreadCallObserver {
+    func groupCallRemoteDeviceStatesChanged(_ call: GroupThreadCall) {
         AssertIsOnMainThread()
         updateActiveMembers()
     }
 
-    func groupCallPeekChanged(_ call: SignalCall) {
+    func groupCallPeekChanged(_ call: GroupThreadCall) {
         AssertIsOnMainThread()
         updateActiveMembers()
     }
 
-    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
+    func groupCallEnded(_ call: GroupThreadCall, reason: GroupCallEndReason) {
         AssertIsOnMainThread()
 
         hasJoined = false

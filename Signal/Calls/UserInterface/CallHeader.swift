@@ -51,11 +51,13 @@ class CallHeader: UIView {
 
     private let call: SignalCall
     private let groupCall: GroupCall
+    private let groupThreadCall: GroupThreadCall
     private weak var delegate: CallHeaderDelegate!
 
-    init(call: SignalCall, groupCall: GroupCall, delegate: CallHeaderDelegate) {
+    init(call: SignalCall, groupThreadCall: GroupThreadCall, delegate: CallHeaderDelegate) {
         self.call = call
-        self.groupCall = groupCall
+        self.groupCall = groupThreadCall.ringRtcCall
+        self.groupThreadCall = groupThreadCall
         self.delegate = delegate
         super.init(frame: .zero)
 
@@ -158,10 +160,8 @@ class CallHeader: UIView {
 
         vStack.addArrangedSubview(callStatusLabel)
 
-        call.addObserverAndSyncState(observer: self)
+        groupThreadCall.addObserverAndSyncState(self)
     }
-
-    deinit { call.removeObserver(self) }
 
     override func didMoveToSuperview() {
         guard let superview = self.superview else {
@@ -225,7 +225,7 @@ class CallHeader: UIView {
         let callStatusText: String
         switch groupCall.localDeviceState.joinState {
         case .notJoined, .joining, .pending:
-            if case .incomingRing(let caller, _) = call.groupCallRingState {
+            if case .incomingRing(let caller, _) = groupThreadCall.groupCallRingState {
                 let callerName = databaseStorage.read { transaction in
                     contactsManager.displayName(for: caller, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
                 }
@@ -255,12 +255,12 @@ class CallHeader: UIView {
                         tableName: "PluralAware",
                         comment: "Text explaining that there are three or more people in the group call. Embeds {{ %1$@ participantCount-2, %2$@ participant1, %3$@ participant2 }}"))
 
-            } else if groupCall.peekInfo == nil && call.ringRestrictions.contains(.callInProgress) {
+            } else if groupCall.peekInfo == nil && groupThreadCall.ringRestrictions.contains(.callInProgress) {
                 // If we think there might already be a call, don't show anything until we have proper peek info.
                 callStatusText = ""
             } else {
                 let (memberCount, firstTwoNames) = fetchGroupSizeAndMemberNamesWithSneakyTransaction()
-                if call.ringRestrictions.isEmpty, case .shouldRing = call.groupCallRingState {
+                if groupThreadCall.ringRestrictions.isEmpty, case .shouldRing = groupThreadCall.groupCallRingState {
                     callStatusText = describeMembers(
                         count: memberCount,
                         names: firstTwoNames,
@@ -299,7 +299,7 @@ class CallHeader: UIView {
                     comment: "Text indicating that the user has lost their connection to the call and we are reconnecting.")
 
             } else if groupCall.remoteDeviceStates.isEmpty {
-                if case .ringing = call.groupCallRingState {
+                if case .ringing = groupThreadCall.groupCallRingState {
                     let (memberCount, firstTwoNames) = fetchGroupSizeAndMemberNamesWithSneakyTransaction()
                     callStatusText = describeMembers(
                         count: memberCount,
@@ -323,7 +323,7 @@ class CallHeader: UIView {
                 }
 
             } else {
-                let callDuration = call.connectionDuration()
+                let callDuration = groupThreadCall.commonState.connectionDuration()
                 let callDurationDate = Date(timeIntervalSinceReferenceDate: callDuration)
                 var formattedDate = dateFormatter.string(from: callDurationDate)
                 if formattedDate.hasPrefix("00:") {
@@ -385,8 +385,8 @@ class CallHeader: UIView {
     }
 }
 
-extension CallHeader: CallObserver {
-    func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
+extension CallHeader: GroupThreadCallObserver {
+    func groupCallLocalDeviceStateChanged(_ call: GroupThreadCall) {
         if groupCall.localDeviceState.joinState == .joined {
             gradientView.isHidden = false
             avatarView.superview!.isHidden = true // hide the container
@@ -412,18 +412,18 @@ extension CallHeader: CallObserver {
         updateGroupMembersButton()
     }
 
-    func groupCallPeekChanged(_ call: SignalCall) {
+    func groupCallPeekChanged(_ call: GroupThreadCall) {
         updateCallStatusLabel()
         updateGroupMembersButton()
     }
 
-    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
+    func groupCallRemoteDeviceStatesChanged(_ call: GroupThreadCall) {
         updateCallTitleLabel()
         updateCallStatusLabel()
         updateGroupMembersButton()
     }
 
-    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
+    func groupCallEnded(_ call: GroupThreadCall, reason: GroupCallEndReason) {
         callDurationTimer?.invalidate()
         callDurationTimer = nil
 

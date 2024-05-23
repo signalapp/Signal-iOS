@@ -566,6 +566,7 @@
 		500876142BF7B32A00D6F615 /* Preconditions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A76F522AF565AC00FCF02D /* Preconditions.swift */; };
 		5008FEBC2B1811A0004E73FD /* JobQueueRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5008FEBB2B1811A0004E73FD /* JobQueueRunner.swift */; };
 		500978432BF3F69F00941B1E /* GroupThreadCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500978422BF3F69F00941B1E /* GroupThreadCall.swift */; };
+		500978452BF41D6800941B1E /* CommonCallState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500978442BF41D6800941B1E /* CommonCallState.swift */; };
 		500AEE052A4B68E200371F05 /* WallpaperStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500AEE042A4B68E200371F05 /* WallpaperStore.swift */; };
 		500AEE072A4DF48700371F05 /* ChatColorSettingStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500AEE062A4DF48700371F05 /* ChatColorSettingStore.swift */; };
 		500AEE092A4E09AD00371F05 /* AuthorMergeObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500AEE082A4E09AD00371F05 /* AuthorMergeObserver.swift */; };
@@ -3459,6 +3460,7 @@
 		50086B9D29DF606E00F9C072 /* TSGroupThread+ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSGroupThread+ViewModel.swift"; sourceTree = "<group>"; };
 		5008FEBB2B1811A0004E73FD /* JobQueueRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobQueueRunner.swift; sourceTree = "<group>"; };
 		500978422BF3F69F00941B1E /* GroupThreadCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupThreadCall.swift; sourceTree = "<group>"; };
+		500978442BF41D6800941B1E /* CommonCallState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonCallState.swift; sourceTree = "<group>"; };
 		500AEE042A4B68E200371F05 /* WallpaperStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WallpaperStore.swift; sourceTree = "<group>"; };
 		500AEE062A4DF48700371F05 /* ChatColorSettingStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatColorSettingStore.swift; sourceTree = "<group>"; };
 		500AEE082A4E09AD00371F05 /* AuthorMergeObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorMergeObserver.swift; sourceTree = "<group>"; };
@@ -8885,6 +8887,7 @@
 				88588D25252E59CE00405414 /* CallService.swift */,
 				50DC0D9A2BE56EF0003C57D3 /* CallServiceState.swift */,
 				B98D24692B8D2A2A00B1A8CC /* CallStarter.swift */,
+				500978442BF41D6800941B1E /* CommonCallState.swift */,
 				5077B5B32BBC687C00EF399E /* CurrentCall.swift */,
 				32AC5CF0255F875C00829BD8 /* GroupCallAccessoryMessageDelegate.swift */,
 				D95777BD2B472AA100CFE3AE /* GroupCallRecordRingingCleanupManager.swift */,
@@ -12864,6 +12867,7 @@
 				34E95C25269F4F4F004807EC /* CLVTableDataSource.swift in Sources */,
 				34E95C24269F4F4F004807EC /* CLVViewState.swift in Sources */,
 				886BB3D425BA0CA900079781 /* ColorAndWallpaperSettingsViewController.swift in Sources */,
+				500978452BF41D6800941B1E /* CommonCallState.swift in Sources */,
 				32B3286524C6957B00E4F974 /* ComposeSupportEmailOperation.swift in Sources */,
 				8835DE01230DBF7E00DC6B66 /* ComposeViewController.swift in Sources */,
 				B9291BFC2B6058AE006BC25F /* ContactAboutSheet.swift in Sources */,

@@ -110,22 +110,25 @@ extension GroupCallRemoteVideoManager: GroupCallRemoteVideoViewSizeDelegate {
 extension GroupCallRemoteVideoManager: CallServiceStateObserver {
     func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
         videoViews.forEach { self.destroyRemoteVideoView(for: $0.key) }
-        oldValue?.removeObserver(self)
-        newValue?.addObserverAndSyncState(observer: self)
+        switch oldValue?.mode {
+        case nil, .individual:
+            break
+        case .groupThread(let call):
+            call.removeObserver(self)
+        }
+        switch newValue?.mode {
+        case nil, .individual:
+            break
+        case .groupThread(let call):
+            call.addObserverAndSyncState(self)
+        }
     }
 }
 
-extension GroupCallRemoteVideoManager: CallObserver {
-    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
-        let groupCall: GroupCall
-        switch call.mode {
-        case .individual:
-            owsFail("Can't update remote devices for individual call.")
-        case .groupThread(let groupThreadCall):
-            groupCall = groupThreadCall.ringRtcCall
-        }
+extension GroupCallRemoteVideoManager: GroupThreadCallObserver {
+    func groupCallRemoteDeviceStatesChanged(_ call: GroupThreadCall) {
         for (demuxId, videoViews) in videoViews {
-            guard let device = groupCall.remoteDeviceStates[demuxId] else {
+            guard let device = call.ringRtcCall.remoteDeviceStates[demuxId] else {
                 destroyRemoteVideoView(for: demuxId)
                 continue
             }
@@ -133,7 +136,7 @@ extension GroupCallRemoteVideoManager: CallObserver {
         }
     }
 
-    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
+    func groupCallEnded(_ call: GroupThreadCall, reason: GroupCallEndReason) {
         videoViews.keys.forEach { destroyRemoteVideoView(for: $0) }
     }
 }

@@ -37,7 +37,7 @@ protocol GroupCallAccessoryMessageDelegate: AnyObject, CallServiceStateObserver 
     func localDeviceMaybeJoinedGroupCall(
         eraId: String,
         groupThread: TSGroupThread,
-        groupCallRingState: SignalCall.GroupCallRingState
+        groupCallRingState: GroupThreadCall.GroupCallRingState
     )
 
     /// Tells the delegate that the local device may have left a group call.
@@ -118,7 +118,7 @@ class GroupCallAccessoryMessageHandler: GroupCallAccessoryMessageDelegate {
     func localDeviceMaybeJoinedGroupCall(
         eraId: String,
         groupThread: TSGroupThread,
-        groupCallRingState: SignalCall.GroupCallRingState
+        groupCallRingState: GroupThreadCall.GroupCallRingState
     ) {
         AssertIsOnMainThread()
 
@@ -225,7 +225,7 @@ private extension GroupCallRecordManager {
     func createOrUpdateCallRecordForJoin(
         eraId: String,
         groupThread: TSGroupThread,
-        groupCallRingState: SignalCall.GroupCallRingState,
+        groupCallRingState: GroupThreadCall.GroupCallRingState,
         joinTimestamp: UInt64,
         tx: SDSAnyWriteTransaction
     ) {

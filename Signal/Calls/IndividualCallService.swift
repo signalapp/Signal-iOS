@@ -216,11 +216,13 @@ final class IndividualCallService: CallServiceStateObserver {
             offerMediaType = .video
         }
 
-        let newCall = SignalCall.incomingIndividualCall(
+        let individualCall = IndividualCall.incomingIndividualCall(
             thread: thread,
             sentAtTimestamp: sentAtTimestamp,
             offerMediaType: offerMediaType
         )
+
+        let newCall = SignalCall(individualCall: individualCall)
 
         callServiceState.addCall(newCall)
 
@@ -351,7 +353,7 @@ final class IndividualCallService: CallServiceStateObserver {
                 return
             }
 
-            let error = SignalCall.CallError.timeout(description: "background task time ran out before call connected")
+            let error = CallError.timeout(description: "background task time ran out before call connected")
             self.handleFailedCall(failedCall: newCall, error: error, shouldResetUI: true, shouldResetRingRTC: true)
         })
 
@@ -553,7 +555,7 @@ final class IndividualCallService: CallServiceStateObserver {
             // Set the audio session configuration before audio is enabled in WebRTC
             // via recipientAcceptedCall().
             handleConnected(call: call)
-            callUIAdapter.recipientAcceptedCall(call)
+            callUIAdapter.recipientAcceptedCall(call.mode)
 
         case .endedLocalHangup:
             Logger.debug("")
@@ -724,16 +726,16 @@ final class IndividualCallService: CallServiceStateObserver {
                 description = "timeout for incoming call"
             }
 
-            handleFailedCall(failedCall: call, error: SignalCall.CallError.timeout(description: description), shouldResetUI: true, shouldResetRingRTC: false)
+            handleFailedCall(failedCall: call, error: CallError.timeout(description: description), shouldResetUI: true, shouldResetRingRTC: false)
 
         case .endedSignalingFailure, .endedGlareHandlingFailure:
-            handleFailedCall(failedCall: call, error: SignalCall.CallError.signaling, shouldResetUI: true, shouldResetRingRTC: false)
+            handleFailedCall(failedCall: call, error: CallError.signaling, shouldResetUI: true, shouldResetRingRTC: false)
 
         case .endedInternalFailure:
             handleFailedCall(failedCall: call, error: OWSAssertionError("call manager internal error"), shouldResetUI: true, shouldResetRingRTC: false)
 
         case .endedConnectionFailure:
-            handleFailedCall(failedCall: call, error: SignalCall.CallError.disconnected, shouldResetUI: true, shouldResetRingRTC: false)
+            handleFailedCall(failedCall: call, error: CallError.disconnected, shouldResetUI: true, shouldResetRingRTC: false)
 
         case .endedDropped:
             Logger.debug("")
@@ -1037,7 +1039,7 @@ final class IndividualCallService: CallServiceStateObserver {
     /**
      * User didn't answer incoming call
      */
-    public func handleMissedCall(_ call: SignalCall, error: SignalCall.CallError? = nil) {
+    public func handleMissedCall(_ call: SignalCall, error: CallError? = nil) {
         AssertIsOnMainThread()
         Logger.info("call: \(call)")
 
@@ -1264,7 +1266,7 @@ final class IndividualCallService: CallServiceStateObserver {
 
         // Return to a known good state by ending the current call, if any.
         if let call = callServiceState.currentCall {
-            handleFailedCall(failedCall: call, error: SignalCall.CallError.providerReset, shouldResetUI: false, shouldResetRingRTC: true)
+            handleFailedCall(failedCall: call, error: CallError.providerReset, shouldResetUI: false, shouldResetRingRTC: true)
         }
     }
 
@@ -1288,14 +1290,7 @@ final class IndividualCallService: CallServiceStateObserver {
         AssertIsOnMainThread()
         Logger.debug("")
 
-        let callError: SignalCall.CallError = {
-            switch error {
-            case let callError as SignalCall.CallError:
-                return callError
-            default:
-                return SignalCall.CallError.externalError(underlyingError: error)
-            }
-        }()
+        let callError = CallError.wrapErrorIfNeeded(error)
 
         switch failedCall.individualCall.state {
         case .answering, .localRinging_Anticipatory, .localRinging_ReadyToAnswer, .accepting:
@@ -1311,7 +1306,7 @@ final class IndividualCallService: CallServiceStateObserver {
             return
         }
 
-        failedCall.error = callError
+        failedCall.individualCall.error = callError
         failedCall.individualCall.state = .localFailure
 
         if shouldResetUI {
@@ -1354,13 +1349,13 @@ final class IndividualCallService: CallServiceStateObserver {
     }
 
     private func ensureCallScreenPresented(call: SignalCall, hasUsedUpTimerSlop: inout Bool) {
-        guard let connectedDate = call.connectedDate else {
+        guard let connectedDate = call.commonState.connectedDate else {
             // Ignore; call hasn't connected yet.
             return
         }
 
-        let kMaxViewPresentationDelay: Double = 5
-        guard fabs(connectedDate.timeIntervalSinceNow) > kMaxViewPresentationDelay else {
+        let kMaxViewPresentationDelay: UInt64 = 5
+        guard MonotonicDate() - connectedDate > kMaxViewPresentationDelay*NSEC_PER_SEC else {
             // Ignore; call connected recently.
             return
         }

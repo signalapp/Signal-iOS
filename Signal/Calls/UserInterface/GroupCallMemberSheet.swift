@@ -20,22 +20,22 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
     private let tableView = UITableView(frame: .zero, style: .insetGrouped)
     private let call: SignalCall
     private let groupCall: GroupCall
+    private let groupThreadCall: GroupThreadCall
 
     override var sheetBackgroundColor: UIColor {
         self.tableView.backgroundColor ?? .systemGroupedBackground
     }
 
-    init(call: SignalCall, groupCall: GroupCall) {
+    init(call: SignalCall, groupThreadCall: GroupThreadCall) {
         self.call = call
-        self.groupCall = groupCall
+        self.groupCall = groupThreadCall.ringRtcCall
+        self.groupThreadCall = groupThreadCall
 
         super.init(blurEffect: nil)
 
         self.overrideUserInterfaceStyle = .dark
-        call.addObserverAndSyncState(observer: self)
+        groupThreadCall.addObserverAndSyncState(self)
     }
-
-    deinit { call.removeObserver(self) }
 
     // MARK: - Table setup
 
@@ -266,14 +266,14 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
     private func updateSnapshotAndHeaders() {
         var snapshot = Snapshot()
 
-        if !call.raisedHands.isEmpty {
+        if !groupThreadCall.raisedHands.isEmpty {
             snapshot.appendSections([.raisedHands])
             snapshot.appendItems(
-                call.raisedHands.map { RowID(section: .raisedHands, memberID: .demuxID($0.demuxId)) },
+                groupThreadCall.raisedHands.map { RowID(section: .raisedHands, memberID: .demuxID($0.demuxId)) },
                 toSection: .raisedHands
             )
 
-            raisedHandsHeader.memberCount = call.raisedHands.count
+            raisedHandsHeader.memberCount = groupThreadCall.raisedHands.count
         }
 
         snapshot.appendSections([.inCall])
@@ -293,7 +293,7 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
 
 extension GroupCallMemberSheet: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        if section == 0, !call.raisedHands.isEmpty {
+        if section == 0, !groupThreadCall.raisedHands.isEmpty {
             return raisedHandsHeader
         } else {
             return inCallHeader
@@ -311,28 +311,28 @@ extension GroupCallMemberSheet: UITableViewDelegate {
 
 // MARK: CallObserver
 
-extension GroupCallMemberSheet: CallObserver {
-    func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
+extension GroupCallMemberSheet: GroupThreadCallObserver {
+    func groupCallLocalDeviceStateChanged(_ call: GroupThreadCall) {
         AssertIsOnMainThread()
         updateMembers()
     }
 
-    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
+    func groupCallRemoteDeviceStatesChanged(_ call: GroupThreadCall) {
         AssertIsOnMainThread()
         updateMembers()
     }
 
-    func groupCallPeekChanged(_ call: SignalCall) {
+    func groupCallPeekChanged(_ call: GroupThreadCall) {
         AssertIsOnMainThread()
         updateMembers()
     }
 
-    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
+    func groupCallEnded(_ call: GroupThreadCall, reason: GroupCallEndReason) {
         AssertIsOnMainThread()
         updateMembers()
     }
 
-    func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [UInt32]) {
+    func groupCallReceivedRaisedHands(_ call: GroupThreadCall, raisedHands: [UInt32]) {
         AssertIsOnMainThread()
         updateSnapshotAndHeaders()
     }

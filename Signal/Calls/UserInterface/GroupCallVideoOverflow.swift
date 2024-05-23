@@ -17,6 +17,7 @@ class GroupCallVideoOverflow: UICollectionView {
 
     let call: SignalCall
     let groupCall: GroupCall
+    let groupThreadCall: GroupThreadCall
 
     class var itemHeight: CGFloat {
         return UIDevice.current.isIPad ? 96 : 72
@@ -31,9 +32,10 @@ class GroupCallVideoOverflow: UICollectionView {
         }
     }
 
-    init(call: SignalCall, groupCall: GroupCall, delegate: GroupCallVideoOverflowDelegate) {
+    init(call: SignalCall, groupThreadCall: GroupThreadCall, delegate: GroupCallVideoOverflowDelegate) {
         self.call = call
-        self.groupCall = groupCall
+        self.groupCall = groupThreadCall.ringRtcCall
+        self.groupThreadCall = groupThreadCall
         self.overflowDelegate = delegate
 
         let layout = UICollectionViewFlowLayout()
@@ -60,7 +62,7 @@ class GroupCallVideoOverflow: UICollectionView {
         dataSource = self
         self.delegate = self
 
-        call.addObserverAndSyncState(observer: self)
+        groupThreadCall.addObserverAndSyncState(self)
         hasInitialized = true
 
         NotificationCenter.default.addObserver(
@@ -74,8 +76,6 @@ class GroupCallVideoOverflow: UICollectionView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    deinit { call.removeObserver(self) }
 
     private enum OrientationOverride {
         case landscapeLeft
@@ -201,26 +201,26 @@ extension GroupCallVideoOverflow: UICollectionViewDataSource {
     }
 }
 
-extension GroupCallVideoOverflow: CallObserver {
-    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
+extension GroupCallVideoOverflow: GroupThreadCallObserver {
+    func groupCallRemoteDeviceStatesChanged(_ call: GroupThreadCall) {
         AssertIsOnMainThread()
 
-        isAnyRemoteDeviceScreenSharing = groupCall.remoteDeviceStates.values.first { $0.sharingScreen == true } != nil
+        isAnyRemoteDeviceScreenSharing = call.ringRtcCall.remoteDeviceStates.values.first { $0.sharingScreen == true } != nil
 
         reloadData()
     }
 
-    func groupCallPeekChanged(_ call: SignalCall) {
+    func groupCallPeekChanged(_ call: GroupThreadCall) {
         AssertIsOnMainThread()
         reloadData()
     }
 
-    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
+    func groupCallEnded(_ call: GroupThreadCall, reason: GroupCallEndReason) {
         AssertIsOnMainThread()
         reloadData()
     }
 
-    func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [UInt32]) {
+    func groupCallReceivedRaisedHands(_ call: GroupThreadCall, raisedHands: [UInt32]) {
         AssertIsOnMainThread()
         reloadData()
     }

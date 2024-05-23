@@ -22,9 +22,9 @@ class SimulatorCallUIAdaptee: NSObject, CallUIAdaptee {
         switch call.mode {
         case .individual:
             self.callService.individualCallService.handleOutgoingCall(call)
-        case .groupThread:
-            switch call.groupCallRingState {
-            case .shouldRing where call.ringRestrictions.isEmpty, .ringing:
+        case .groupThread(let groupThreadCall):
+            switch groupThreadCall.groupCallRingState {
+            case .shouldRing where groupThreadCall.ringRestrictions.isEmpty, .ringing:
                 // Let CallService call recipientAcceptedCall when someone joins.
                 break
             case .ringingEnded:
@@ -32,11 +32,11 @@ class SimulatorCallUIAdaptee: NSObject, CallUIAdaptee {
                 fallthrough
             case .doNotRing, .shouldRing:
                 // Immediately consider ourselves connected.
-                recipientAcceptedCall(call)
+                recipientAcceptedCall(call.mode)
             case .incomingRing, .incomingRingCancelled:
                 owsFailDebug("should not happen for an outgoing call")
                 // Recover by considering ourselves connected
-                recipientAcceptedCall(call)
+                recipientAcceptedCall(call.mode)
             }
         }
     }
@@ -60,14 +60,14 @@ class SimulatorCallUIAdaptee: NSObject, CallUIAdaptee {
         case .groupThread(let groupThreadCall):
             // Explicitly unmute to request permissions.
             self.callService.updateIsLocalAudioMuted(isLocalAudioMuted: false)
-            self.callService.joinGroupCallIfNecessary(call, groupCall: groupThreadCall.ringRtcCall)
+            self.callService.joinGroupCallIfNecessary(call, groupThreadCall: groupThreadCall)
         }
 
         // Enable audio for locally accepted calls after the session is configured.
         self.audioSession.isRTCAudioEnabled = true
     }
 
-    func recipientAcceptedCall(_ call: SignalCall) {
+    func recipientAcceptedCall(_ call: CallMode) {
         AssertIsOnMainThread()
 
         // Enable audio for remotely accepted calls after the session is configured.
@@ -96,7 +96,7 @@ class SimulatorCallUIAdaptee: NSObject, CallUIAdaptee {
     func wasBusyElsewhere(call: SignalCall) {
     }
 
-    func failCall(_ call: SignalCall, error: SignalCall.CallError) {
+    func failCall(_ call: SignalCall, error: CallError) {
     }
 
     func setIsMuted(call: SignalCall, isMuted: Bool) {

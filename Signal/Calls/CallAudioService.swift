@@ -14,7 +14,7 @@ protocol CallAudioServiceDelegate: AnyObject {
     func callAudioServiceDidChangeAudioSource(_ callAudioService: CallAudioService, audioSource: AudioSource?)
 }
 
-class CallAudioService: CallObserver {
+class CallAudioService: IndividualCallObserver, GroupThreadCallObserver {
 
     weak var delegate: CallAudioServiceDelegate? {
         willSet {
@@ -52,39 +52,34 @@ class CallAudioService: CallObserver {
 
     // MARK: - CallObserver
 
-    internal func individualCallStateDidChange(_ call: SignalCall, state: CallState) {
+    func individualCallStateDidChange(_ call: IndividualCall, state: CallState) {
         AssertIsOnMainThread()
-        switch call.mode {
-        case .individual(let individualCall):
-            handleState(call: call, individualCall: individualCall)
-        case .groupThread:
-            owsFail("Can't handle state change for group call.")
-        }
+        handleState(call: call)
     }
 
-    internal func individualCallLocalAudioMuteDidChange(_ call: SignalCall, isAudioMuted: Bool) {
+    func individualCallLocalVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool) {
         AssertIsOnMainThread()
 
         ensureProperAudioSession(call: call)
     }
 
-    internal func individualCallHoldDidChange(_ call: SignalCall, isOnHold: Bool) {
+    func individualCallLocalAudioMuteDidChange(_ call: IndividualCall, isAudioMuted: Bool) {
         AssertIsOnMainThread()
 
         ensureProperAudioSession(call: call)
     }
 
-    internal func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {
+    func individualCallHoldDidChange(_ call: IndividualCall, isOnHold: Bool) {
         AssertIsOnMainThread()
 
         ensureProperAudioSession(call: call)
     }
 
-    func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
+    func groupCallLocalDeviceStateChanged(_ call: GroupThreadCall) {
         ensureProperAudioSession(call: call)
     }
 
-    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
+    func groupCallEnded(_ call: GroupThreadCall, reason: GroupCallEndReason) {
         stopPlayingAnySounds()
         ensureProperAudioSession(call: call)
     }
@@ -109,7 +104,7 @@ class CallAudioService: CallObserver {
         self.isSpeakerEnabled = isEnabled
     }
 
-    private func requestSpeakerphone(call: GroupCall, isEnabled: Bool) {
+    private func requestSpeakerphone(call: GroupThreadCall, isEnabled: Bool) {
         // If toggled for an group call, save the enablement state and
         // update the AudioSession.
         self.isSpeakerEnabled = isEnabled
@@ -128,7 +123,7 @@ class CallAudioService: CallObserver {
         case .individual(let individualCall):
             requestSpeakerphone(call: individualCall, isEnabled: isEnabled)
         case .groupThread(let groupThreadCall):
-            requestSpeakerphone(call: groupThreadCall.ringRtcCall, isEnabled: isEnabled)
+            requestSpeakerphone(call: groupThreadCall, isEnabled: isEnabled)
         }
     }
 
@@ -143,23 +138,23 @@ class CallAudioService: CallObserver {
         }
     }
 
-    fileprivate func ensureProperAudioSession(call: SignalCall) {
+    private func ensureProperAudioSession(call: SignalCall) {
         switch call.mode {
         case .individual(let call):
             ensureProperAudioSession(call: call)
         case .groupThread(let call):
-            ensureProperAudioSession(call: call.ringRtcCall)
+            ensureProperAudioSession(call: call)
         }
     }
 
-    private func ensureProperAudioSession(call: GroupCall) {
-        guard call.localDeviceState.joinState != .notJoined else {
+    private func ensureProperAudioSession(call: GroupThreadCall) {
+        guard call.ringRtcCall.localDeviceState.joinState != .notJoined else {
             // Revert to ambient audio.
             setAudioSession(category: .ambient, mode: .default)
             return
         }
 
-        if !call.isOutgoingVideoMuted || self.isSpeakerEnabled {
+        if !call.ringRtcCall.isOutgoingVideoMuted || self.isSpeakerEnabled {
             // The user is capturing video or wants to use the speaker for an
             // audio call, so choose the VideoChat mode, which enables the speaker
             // with the proximity sensor disabled.
@@ -208,43 +203,43 @@ class CallAudioService: CallObserver {
 
     // MARK: - Service action handlers
 
-    private func handleState(call: SignalCall, individualCall: IndividualCall) {
+    private func handleState(call: IndividualCall) {
         AssertIsOnMainThread()
 
-        Logger.verbose("new state: \(individualCall.state)")
+        Logger.verbose("new state: \(call.state)")
 
         // Stop playing sounds while switching audio session so we don't 
         // get any blips across a temporary unintended route.
         stopPlayingAnySounds()
-        self.ensureProperAudioSession(call: individualCall)
+        self.ensureProperAudioSession(call: call)
 
-        switch individualCall.state {
-        case .idle: handleIdle(call: call)
-        case .dialing: handleDialing(call: call)
-        case .answering: handleAnswering(call: call)
-        case .remoteRinging: handleRemoteRinging(call: call)
-        case .localRinging_Anticipatory, .localRinging_ReadyToAnswer, .accepting:
-            handleLocalRinging(call: call)
-        case .connected: handleConnected(call: call)
-        case .reconnecting: handleReconnecting(call: call)
-        case .localFailure: handleLocalFailure(call: call)
-        case .localHangup: handleLocalHangup(call: call)
-        case .remoteHangup: handleRemoteHangup(call: call)
-        case .remoteHangupNeedPermission: handleRemoteHangup(call: call)
-        case .remoteBusy: handleBusy(call: call)
-        case .answeredElsewhere: handleAnsweredElsewhere(call: call)
-        case .declinedElsewhere: handleAnsweredElsewhere(call: call)
-        case .busyElsewhere: handleAnsweredElsewhere(call: call)
+        switch call.state {
+        case .dialing:
+            handleDialing(call: call)
+
+        case .remoteRinging:
+            handleRemoteRinging(call: call)
+
+        case .remoteHangup, .remoteHangupNeedPermission:
+            vibrate()
+            fallthrough
+        case .localFailure, .localHangup:
+            play(sound: .callEnded)
+            handleCallEnded(call: call)
+
+        case .remoteBusy:
+            handleBusy(call: call)
+
+        case .answeredElsewhere, .declinedElsewhere, .busyElsewhere:
+            handleAnsweredElsewhere(call: call)
+
+        case .idle, .answering, .connected, .reconnecting, .localRinging_Anticipatory, .localRinging_ReadyToAnswer, .accepting:
+            break
         }
     }
 
-    private func handleIdle(call: SignalCall) {
-        Logger.debug("")
-    }
-
-    private func handleDialing(call: SignalCall) {
+    private func handleDialing(call: IndividualCall) {
         AssertIsOnMainThread()
-        Logger.debug("")
 
         // HACK: Without this async, dialing sound only plays once. I don't really understand why. Does the audioSession
         // need some time to settle? Is something else interrupting our session?
@@ -253,62 +248,14 @@ class CallAudioService: CallObserver {
         }
     }
 
-    private func handleAnswering(call: SignalCall) {
+    private func handleRemoteRinging(call: IndividualCall) {
         AssertIsOnMainThread()
-        Logger.debug("")
-    }
-
-    private func handleRemoteRinging(call: SignalCall) {
-        AssertIsOnMainThread()
-        Logger.debug("")
 
         self.play(sound: .callOutboundRinging)
     }
 
-    private func handleLocalRinging(call: SignalCall) {
+    private func handleBusy(call: IndividualCall) {
         AssertIsOnMainThread()
-        Logger.debug("")
-    }
-
-    private func handleConnected(call: SignalCall) {
-        AssertIsOnMainThread()
-        Logger.debug("")
-    }
-
-    private func handleReconnecting(call: SignalCall) {
-        AssertIsOnMainThread()
-        Logger.debug("")
-    }
-
-    private func handleLocalFailure(call: SignalCall) {
-        AssertIsOnMainThread()
-        Logger.debug("")
-
-        play(sound: .callEnded)
-        handleCallEnded(call: call)
-    }
-
-    private func handleLocalHangup(call: SignalCall) {
-        AssertIsOnMainThread()
-        Logger.debug("")
-
-        play(sound: .callEnded)
-        handleCallEnded(call: call)
-    }
-
-    private func handleRemoteHangup(call: SignalCall) {
-        AssertIsOnMainThread()
-        Logger.debug("")
-
-        vibrate()
-
-        play(sound: .callEnded)
-        handleCallEnded(call: call)
-    }
-
-    private func handleBusy(call: SignalCall) {
-        AssertIsOnMainThread()
-        Logger.debug("")
 
         play(sound: .callBusy)
 
@@ -318,17 +265,15 @@ class CallAudioService: CallObserver {
         }
     }
 
-    private func handleAnsweredElsewhere(call: SignalCall) {
+    private func handleAnsweredElsewhere(call: IndividualCall) {
         AssertIsOnMainThread()
-        Logger.debug("")
 
         play(sound: .callEnded)
         handleCallEnded(call: call)
     }
 
-    private func handleCallEnded(call: SignalCall) {
+    private func handleCallEnded(call: IndividualCall) {
         AssertIsOnMainThread()
-        Logger.debug("")
 
         // Sometimes (usually but not always) upon ending a call, the currentPlayer does not get
         // played to completion. This is necessary in order for the players
@@ -485,7 +430,21 @@ extension CallAudioService: CallServiceStateObserver {
         } else {
             // Let non-looping sounds play to completion.
         }
-        oldValue?.removeObserver(self)
-        newValue?.addObserverAndSyncState(observer: self)
+        switch oldValue?.mode {
+        case nil:
+            break
+        case .individual(let call):
+            call.removeObserver(self)
+        case .groupThread(let call):
+            call.removeObserver(self)
+        }
+        switch newValue?.mode {
+        case nil:
+            break
+        case .individual(let call):
+            call.addObserverAndSyncState(self)
+        case .groupThread(let call):
+            call.addObserverAndSyncState(self)
+        }
     }
 }

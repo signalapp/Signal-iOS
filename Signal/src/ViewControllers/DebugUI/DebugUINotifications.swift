@@ -68,11 +68,13 @@ class DebugUINotifications: DebugUIPage, Dependencies {
     }
 
     func delayedNotificationDispatchWithFakeCall(thread: TSContactThread, callBlock: @escaping (SignalCall) -> Void) -> Guarantee<Void> {
-        let call = SignalCall.incomingIndividualCall(
+        let individualCall = IndividualCall.incomingIndividualCall(
             thread: thread,
             sentAtTimestamp: Date.ows_millisecondTimestamp(),
             offerMediaType: .audio
         )
+
+        let call = SignalCall(individualCall: individualCall)
 
         return delayedNotificationDispatch {
             callBlock(call)

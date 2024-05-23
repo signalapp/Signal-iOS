@@ -11,15 +11,17 @@ class GroupCallVideoGrid: UICollectionView {
     let layout: GroupCallVideoGridLayout
     let call: SignalCall
     let groupCall: GroupCall
+    let groupThreadCall: GroupThreadCall
 
-    init(call: SignalCall, groupCall: GroupCall) {
+    init(call: SignalCall, groupThreadCall: GroupThreadCall) {
         self.call = call
-        self.groupCall = groupCall
+        self.groupCall = groupThreadCall.ringRtcCall
+        self.groupThreadCall = groupThreadCall
         self.layout = GroupCallVideoGridLayout()
 
         super.init(frame: .zero, collectionViewLayout: layout)
 
-        call.addObserverAndSyncState(observer: self)
+        groupThreadCall.addObserverAndSyncState(self)
         layout.delegate = self
         backgroundColor = .clear
 
@@ -31,8 +33,6 @@ class GroupCallVideoGrid: UICollectionView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    deinit { call.removeObserver(self) }
 }
 
 extension GroupCallVideoGrid: UICollectionViewDelegate {
@@ -77,23 +77,23 @@ extension GroupCallVideoGrid: UICollectionViewDataSource {
     }
 }
 
-extension GroupCallVideoGrid: CallObserver {
-    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
+extension GroupCallVideoGrid: GroupThreadCallObserver {
+    func groupCallRemoteDeviceStatesChanged(_ call: GroupThreadCall) {
         AssertIsOnMainThread()
         reloadData()
     }
 
-    func groupCallPeekChanged(_ call: SignalCall) {
+    func groupCallPeekChanged(_ call: GroupThreadCall) {
         AssertIsOnMainThread()
         reloadData()
     }
 
-    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
+    func groupCallEnded(_ call: GroupThreadCall, reason: GroupCallEndReason) {
         AssertIsOnMainThread()
         reloadData()
     }
 
-    func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [UInt32]) {
+    func groupCallReceivedRaisedHands(_ call: GroupThreadCall, raisedHands: [UInt32]) {
         AssertIsOnMainThread()
         reloadData()
     }

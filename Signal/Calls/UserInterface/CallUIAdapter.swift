@@ -18,14 +18,14 @@ protocol CallUIAdaptee: AnyObject {
     func startOutgoingCall(call: SignalCall)
     func reportIncomingCall(_ call: SignalCall, completion: @escaping (Error?) -> Void)
     func answerCall(_ call: SignalCall)
-    func recipientAcceptedCall(_ call: SignalCall)
+    func recipientAcceptedCall(_ call: CallMode)
     func localHangupCall(_ call: SignalCall)
     func remoteDidHangupCall(_ call: SignalCall)
     func remoteBusy(_ call: SignalCall)
     func didAnswerElsewhere(call: SignalCall)
     func didDeclineElsewhere(call: SignalCall)
     func wasBusyElsewhere(call: SignalCall)
-    func failCall(_ call: SignalCall, error: SignalCall.CallError)
+    func failCall(_ call: SignalCall, error: CallError)
     func setIsMuted(call: SignalCall, isMuted: Bool)
     func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool)
 }
@@ -76,7 +76,7 @@ public class CallUIAdapter: NSObject {
         Logger.info("remoteAddress: \(caller)")
 
         // make sure we don't terminate audio session during call
-        _ = audioSession.startAudioActivity(call.audioActivity)
+        _ = audioSession.startAudioActivity(call.commonState.audioActivity)
 
         adaptee.reportIncomingCall(call) { error in
             AssertIsOnMainThread()
@@ -98,10 +98,10 @@ public class CallUIAdapter: NSObject {
                     Logger.warn("callUUIDAlreadyExists")
                 case CXErrorCodeIncomingCallError.filteredByDoNotDisturb.rawValue:
                     Logger.warn("filteredByDoNotDisturb")
-                    error = SignalCall.CallError.doNotDisturbEnabled
+                    error = CallError.doNotDisturbEnabled
                 case CXErrorCodeIncomingCallError.filteredByBlockList.rawValue:
                     Logger.warn("filteredByBlockList")
-                    error = SignalCall.CallError.contactIsBlocked
+                    error = CallError.contactIsBlocked
                 default:
                     Logger.warn("Unknown CXErrorCodeIncomingCallError")
                 }
@@ -126,7 +126,7 @@ public class CallUIAdapter: NSObject {
         AssertIsOnMainThread()
 
         // make sure we don't terminate audio session during call
-        _ = audioSession.startAudioActivity(call.audioActivity)
+        _ = audioSession.startAudioActivity(call.commonState.audioActivity)
 
         adaptee.startOutgoingCall(call: call)
     }
@@ -158,7 +158,7 @@ public class CallUIAdapter: NSObject {
         self.showCall(call)
     }
 
-    internal func recipientAcceptedCall(_ call: SignalCall) {
+    internal func recipientAcceptedCall(_ call: CallMode) {
         AssertIsOnMainThread()
 
         adaptee.recipientAcceptedCall(call)
@@ -194,7 +194,7 @@ public class CallUIAdapter: NSObject {
         adaptee.localHangupCall(call)
     }
 
-    internal func failCall(_ call: SignalCall, error: SignalCall.CallError) {
+    internal func failCall(_ call: SignalCall, error: CallError) {
         AssertIsOnMainThread()
 
         adaptee.failCall(call, error: error)
@@ -215,7 +215,7 @@ public class CallUIAdapter: NSObject {
         case .individual(let individualCall):
             callViewController = IndividualCallViewController(call: call, individualCall: individualCall)
         case .groupThread(let groupThreadCall):
-            callViewController = GroupCallViewController(call: call, groupCall: groupThreadCall.ringRtcCall)
+            callViewController = GroupCallViewController(call: call, groupThreadCall: groupThreadCall)
         }
 
         callViewController.modalTransitionStyle = .crossDissolve

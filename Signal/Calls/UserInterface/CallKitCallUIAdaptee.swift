@@ -136,7 +136,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
     private func endCallOnceReported(_ call: SignalCall, reason: CXCallEndedReason) {
         Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
-            switch call.systemState {
+            switch call.commonState.systemState {
             case .notReported:
                 // Do nothing. This call was never reported to CallKit, so we don't need to report it ending.
                 // This happens for calls missed while offline.
@@ -161,7 +161,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     }
 
     // Called from CallService after call has ended to clean up any remaining CallKit call state.
-    func failCall(_ call: SignalCall, error: SignalCall.CallError) {
+    func failCall(_ call: SignalCall, error: CallError) {
         AssertIsOnMainThread()
         Logger.info("")
 
@@ -195,7 +195,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         disableUnsupportedFeatures(callUpdate: update)
 
         Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
-            call.markPendingReportToSystem()
+            call.commonState.markPendingReportToSystem()
 
             // Report the incoming call to the system
             self.provider.reportNewIncomingCall(with: call.localId, update: update) { error in
@@ -228,17 +228,17 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     }
 
     private var ignoreFirstUnmuteAfterRemoteAnswer = false
-    func recipientAcceptedCall(_ call: SignalCall) {
+    func recipientAcceptedCall(_ call: CallMode) {
         AssertIsOnMainThread()
         Logger.info("")
 
         Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
-            self.provider.reportOutgoingCall(with: call.localId, connectedAt: nil)
+            self.provider.reportOutgoingCall(with: call.commonState.localId, connectedAt: nil)
 
             let update = CXCallUpdate()
             self.disableUnsupportedFeatures(callUpdate: update)
 
-            self.provider.reportCall(with: call.localId, updated: update)
+            self.provider.reportCall(with: call.commonState.localId, updated: update)
 
             // When we tell CallKit about the call, it tries
             // to unmute the call. We can work around this
@@ -255,7 +255,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         AssertIsOnMainThread()
         Logger.info("")
 
-        guard call.systemState == .reported else {
+        guard call.commonState.systemState == .reported else {
             callService.handleLocalHangupCall(call)
             return
         }
@@ -367,9 +367,9 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         switch call.mode {
         case .individual:
             break
-        case .groupThread:
-            switch call.groupCallRingState {
-            case .shouldRing where call.ringRestrictions.isEmpty, .ringing:
+        case .groupThread(let groupThreadCall):
+            switch groupThreadCall.groupCallRingState {
+            case .shouldRing where groupThreadCall.ringRestrictions.isEmpty, .ringing:
                 // Let CallService call recipientAcceptedCall when someone joins.
                 break
             case .ringingEnded:
@@ -377,11 +377,11 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
                 fallthrough
             case .doNotRing, .shouldRing:
                 // Immediately consider ourselves connected.
-                recipientAcceptedCall(call)
+                recipientAcceptedCall(call.mode)
             case .incomingRing, .incomingRingCancelled:
                 owsFailDebug("should not happen for an outgoing call")
                 // Recover by considering ourselves connected
-                recipientAcceptedCall(call)
+                recipientAcceptedCall(call.mode)
             }
         }
     }
@@ -404,7 +404,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             // This has the added effect of putting the video mute button in the correct state
             // if the user has disabled camera permissions for the app.
             callService.updateIsLocalVideoMuted(isLocalVideoMuted: groupThreadCall.ringRtcCall.isOutgoingVideoMuted)
-            callService.joinGroupCallIfNecessary(call, groupCall: groupThreadCall.ringRtcCall)
+            callService.joinGroupCallIfNecessary(call, groupThreadCall: groupThreadCall)
             action.fulfill()
         case .individual(let individualCall):
             // Explicitly start video to request permissions, if needed.

@@ -183,12 +183,12 @@ final class CallKitCallManager {
     }
 
     func addCall(_ call: SignalCall) {
-        call.markReportedToSystem()
+        call.commonState.markReportedToSystem()
         calls.append(call)
     }
 
     func removeCall(_ call: SignalCall) {
-        call.markRemovedFromSystem()
+        call.commonState.markRemovedFromSystem()
         guard calls.removeFirst(where: { $0 === call }) != nil else {
             Logger.warn("no call matching: \(call) to remove")
             return
@@ -196,7 +196,7 @@ final class CallKitCallManager {
     }
 
     func removeAllCalls() {
-        calls.forEach { $0.markRemovedFromSystem() }
+        calls.forEach { $0.commonState.markRemovedFromSystem() }
         calls.removeAll()
     }
 }

@@ -156,6 +156,8 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
         guard let raisedHandView else { return }
         guard
             let deviceState = remoteGroupMemberDeviceState,
+            case .groupThread(let groupThreadCall) = call.mode,
+            groupThreadCall.raisedHands.contains(deviceState),
             !WindowManager.shared.isCallInPip
         else {
             raisedHandView.isHidden = true
@@ -171,7 +173,7 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
             }
         }
 
-        raisedHandView.isHidden = !call.raisedHands.contains(deviceState)
+        raisedHandView.isHidden = false
     }
 
     private class RaisedHandView: UIStackView {

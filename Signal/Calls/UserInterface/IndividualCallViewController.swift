@@ -10,7 +10,8 @@ import WebRTC
 
 // TODO: Add category so that button handlers can be defined where button is created.
 // TODO: Ensure buttons enabled & disabled as necessary.
-class IndividualCallViewController: OWSViewController, CallObserver {
+class IndividualCallViewController: OWSViewController, IndividualCallObserver {
+
     // MARK: - Properties
 
     let thread: TSContactThread
@@ -264,7 +265,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         )
 
         // Subscribe for future call updates
-        call.addObserverAndSyncState(observer: self)
+        individualCall.addObserverAndSyncState(self)
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didBecomeActive),
@@ -705,7 +706,7 @@ class IndividualCallViewController: OWSViewController, CallObserver {
         case .answering, .accepting:
             return OWSLocalizedString("IN_CALL_SECURING", comment: "Call setup status label")
         case .connected:
-            let callDuration = call.connectionDuration()
+            let callDuration = individualCall.commonState.connectionDuration()
             let callDurationDate = Date(timeIntervalSinceReferenceDate: callDuration)
             var formattedDate = dateFormatter.string(from: callDurationDate)
             if formattedDate.hasPrefix("00:") {
@@ -724,18 +725,14 @@ class IndividualCallViewController: OWSViewController, CallObserver {
             return OWSLocalizedString("IN_CALL_RECONNECTING", comment: "Call setup status label")
         case .remoteBusy:
             return OWSLocalizedString("END_CALL_RESPONDER_IS_BUSY", comment: "Call setup status label")
-        case .localFailure:
-            if let error = call.error {
-                switch error {
-                case .timeout:
-                    if self.individualCall.direction == .outgoing {
-                        return OWSLocalizedString("CALL_SCREEN_STATUS_NO_ANSWER", comment: "Call setup status label after outgoing call times out")
-                    }
-                default:
-                    break
-                }
+        case .localFailure where individualCall.direction == .outgoing && { () -> Bool in
+            if case .timeout = individualCall.error {
+                return true
             }
-
+            return false
+        }():
+            return OWSLocalizedString("CALL_SCREEN_STATUS_NO_ANSWER", comment: "Call setup status label after outgoing call times out")
+        case .localFailure:
             return OWSLocalizedString("END_CALL_UNCATEGORIZED_FAILURE", comment: "Call setup status label")
         case .answeredElsewhere:
             return OWSLocalizedString("IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE", comment: "Call screen label when call was canceled on this device because the call recipient answered on another device.")
@@ -1023,35 +1020,34 @@ class IndividualCallViewController: OWSViewController, CallObserver {
 
     // MARK: - CallObserver
 
-    internal func individualCallStateDidChange(_ call: SignalCall, state: CallState) {
+    internal func individualCallStateDidChange(_ call: IndividualCall, state: CallState) {
         AssertIsOnMainThread()
         Logger.info("new call status: \(state)")
 
         self.updateCallUI()
     }
 
-    internal func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {
+    internal func individualCallLocalVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool) {
         AssertIsOnMainThread()
         self.updateCallUI()
     }
 
-    internal func individualCallLocalAudioMuteDidChange(_ call: SignalCall, isAudioMuted: Bool) {
+    internal func individualCallLocalAudioMuteDidChange(_ call: IndividualCall, isAudioMuted: Bool) {
         AssertIsOnMainThread()
         self.updateCallUI()
     }
 
-    func individualCallHoldDidChange(_ call: SignalCall, isOnHold: Bool) {
+    func individualCallHoldDidChange(_ call: IndividualCall, isOnHold: Bool) {
         AssertIsOnMainThread()
         self.updateCallUI()
     }
 
-    func individualCallRemoteVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {
+    func individualCallRemoteVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool) {
         AssertIsOnMainThread()
-        owsAssert(self.call === call)
-        updateRemoteVideoTrack(remoteVideoTrack: isVideoMuted ? nil : individualCall.remoteVideoTrack)
+        updateRemoteVideoTrack(remoteVideoTrack: isVideoMuted ? nil : call.remoteVideoTrack)
     }
 
-    func individualCallRemoteSharingScreenDidChange(_ call: SignalCall, isRemoteSharingScreen: Bool) {
+    func individualCallRemoteSharingScreenDidChange(_ call: IndividualCall, isRemoteSharingScreen: Bool) {
         AssertIsOnMainThread()
         self.updateCallUI()
     }

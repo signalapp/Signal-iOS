@@ -6,9 +6,10 @@
 import AVFoundation
 import SignalServiceKit
 import SignalRingRTC
+import SignalUI
 import WebRTC
 
-public enum CallState: String {
+enum CallState: String {
     case idle
     case dialing
     case answering
@@ -33,17 +34,25 @@ public enum CallState: String {
     case busyElsewhere // terminal
 }
 
-public enum CallDirection {
+enum CallDirection {
     case outgoing, incoming
 }
 
-public protocol IndividualCallDelegate: AnyObject {
+protocol IndividualCallObserver: AnyObject {
     func individualCallStateDidChange(_ call: IndividualCall, state: CallState)
     func individualCallLocalVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool)
     func individualCallLocalAudioMuteDidChange(_ call: IndividualCall, isAudioMuted: Bool)
     func individualCallHoldDidChange(_ call: IndividualCall, isOnHold: Bool)
     func individualCallRemoteVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool)
     func individualCallRemoteSharingScreenDidChange(_ call: IndividualCall, isRemoteSharingScreen: Bool)
+}
+
+extension IndividualCallObserver {
+    func individualCallLocalVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool) {}
+    func individualCallLocalAudioMuteDidChange(_ call: IndividualCall, isAudioMuted: Bool) {}
+    func individualCallHoldDidChange(_ call: IndividualCall, isOnHold: Bool) {}
+    func individualCallRemoteVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool) {}
+    func individualCallRemoteSharingScreenDidChange(_ call: IndividualCall, isRemoteSharingScreen: Bool) {}
 }
 
 /**
@@ -88,7 +97,10 @@ public class IndividualCall: CustomDebugStringConvertible {
             AssertIsOnMainThread()
 
             Logger.info("")
-            delegate?.individualCallRemoteVideoMuteDidChange(self, isVideoMuted: !isRemoteVideoEnabled)
+
+            observers.elements.forEach {
+                $0.individualCallRemoteVideoMuteDidChange(self, isVideoMuted: !isRemoteVideoEnabled)
+            }
         }
     }
 
@@ -97,7 +109,9 @@ public class IndividualCall: CustomDebugStringConvertible {
             AssertIsOnMainThread()
 
             Logger.info("\(isRemoteVideoEnabled)")
-            delegate?.individualCallRemoteVideoMuteDidChange(self, isVideoMuted: !isRemoteVideoEnabled)
+            observers.elements.forEach {
+                $0.individualCallRemoteVideoMuteDidChange(self, isVideoMuted: !isRemoteVideoEnabled)
+            }
         }
     }
 
@@ -106,7 +120,9 @@ public class IndividualCall: CustomDebugStringConvertible {
             AssertIsOnMainThread()
 
             Logger.info("\(isRemoteSharingScreen)")
-            delegate?.individualCallRemoteSharingScreenDidChange(self, isRemoteSharingScreen: isRemoteSharingScreen)
+            observers.elements.forEach {
+                $0.individualCallRemoteSharingScreenDidChange(self, isRemoteSharingScreen: isRemoteSharingScreen)
+            }
         }
     }
 
@@ -114,9 +130,9 @@ public class IndividualCall: CustomDebugStringConvertible {
 
     // MARK: -
 
-    public var remoteAddress: SignalServiceAddress { thread.contactAddress }
+    var remoteAddress: SignalServiceAddress { thread.contactAddress }
 
-    public var isEnded: Bool {
+    var isEnded: Bool {
         switch state {
         case .localFailure, .localHangup, .remoteHangup, .remoteHangupNeedPermission, .remoteBusy, .answeredElsewhere, .declinedElsewhere, .busyElsewhere:
             return true
@@ -125,17 +141,19 @@ public class IndividualCall: CustomDebugStringConvertible {
         }
     }
 
-    public let direction: CallDirection
+    let commonState: CommonCallState
 
-    public let thread: TSContactThread
+    let direction: CallDirection
 
-    public let sentAtTimestamp: UInt64
+    let thread: TSContactThread
+
+    let sentAtTimestamp: UInt64
 
     /// Used by IndividualCallService to make decisions about what actions to take.
     /// Not guaranteed to be up-to-date with what is in the database, but
     /// is up to date with CallKit callbacks on the main thread.
     /// Can be accessed from the main thread.
-    public private(set) var callType: RPRecentCallType?
+    private(set) var callType: RPRecentCallType?
 
     /// Used internally for caching only.
     /// Can be accessed only within write transactions.
@@ -153,11 +171,13 @@ public class IndividualCall: CustomDebugStringConvertible {
         }
     }
 
-    public lazy var hasLocalVideo = offerMediaType == .video {
+    lazy var hasLocalVideo = offerMediaType == .video {
         didSet {
             AssertIsOnMainThread()
 
-            delegate?.individualCallLocalVideoMuteDidChange(self, isVideoMuted: !hasLocalVideo)
+            observers.elements.forEach {
+                $0.individualCallLocalVideoMuteDidChange(self, isVideoMuted: !hasLocalVideo)
+            }
         }
     }
 
@@ -167,7 +187,7 @@ public class IndividualCall: CustomDebugStringConvertible {
         }
     }
 
-    public var state: CallState {
+    var state: CallState {
         didSet {
             AssertIsOnMainThread()
             Logger.debug("state changed: \(oldValue) -> \(self.state) for call: \(self)")
@@ -188,11 +208,20 @@ public class IndividualCall: CustomDebugStringConvertible {
                     }
                 }
             }
-            delegate?.individualCallStateDidChange(self, state: state)
+
+            if case .connected = state {
+                commonState.setConnectedDateIfNeeded()
+            }
+
+            observers.elements.forEach {
+                $0.individualCallStateDidChange(self, state: state)
+            }
         }
     }
 
-    public var offerMediaType: TSRecentCallOfferType = .audio
+    var error: CallError?
+
+    public let offerMediaType: TSRecentCallOfferType
 
     // We start out muted if the record permission isn't granted. This should generally
     // only happen for incoming calls, because we proactively ask about it before you
@@ -203,7 +232,9 @@ public class IndividualCall: CustomDebugStringConvertible {
 
             Logger.debug("muted changed: \(oldValue) -> \(self.isMuted)")
 
-            delegate?.individualCallLocalAudioMuteDidChange(self, isAudioMuted: isMuted)
+            observers.elements.forEach {
+                $0.individualCallLocalAudioMuteDidChange(self, isAudioMuted: isMuted)
+            }
         }
     }
 
@@ -212,7 +243,9 @@ public class IndividualCall: CustomDebugStringConvertible {
             AssertIsOnMainThread()
             Logger.debug("isOnHold changed: \(oldValue) -> \(self.isOnHold)")
 
-            delegate?.individualCallHoldDidChange(self, isOnHold: isOnHold)
+            observers.elements.forEach {
+                $0.individualCallHoldDidChange(self, isOnHold: isOnHold)
+            }
         }
     }
 
@@ -228,12 +261,52 @@ public class IndividualCall: CustomDebugStringConvertible {
         }
     }
 
-    public weak var delegate: IndividualCallDelegate?
+    private(set) lazy var videoCaptureController = VideoCaptureController()
 
     // MARK: Initializers and Factory Methods
 
-    init(direction: CallDirection, state: CallState, thread: TSContactThread, sentAtTimestamp: UInt64) {
+    static func outgoingIndividualCall(
+        thread: TSContactThread,
+        offerMediaType: TSRecentCallOfferType
+    ) -> IndividualCall {
+        return IndividualCall(
+            direction: .outgoing,
+            offerMediaType: offerMediaType,
+            state: .dialing,
+            thread: thread,
+            sentAtTimestamp: Date.ows_millisecondTimestamp()
+        )
+    }
+
+    static func incomingIndividualCall(
+        thread: TSContactThread,
+        sentAtTimestamp: UInt64,
+        offerMediaType: TSRecentCallOfferType
+    ) -> IndividualCall {
+        return IndividualCall(
+            direction: .incoming,
+            offerMediaType: offerMediaType,
+            state: .answering,
+            thread: thread,
+            sentAtTimestamp: sentAtTimestamp
+        )
+    }
+
+    init(
+        direction: CallDirection,
+        offerMediaType: TSRecentCallOfferType,
+        state: CallState,
+        thread: TSContactThread,
+        sentAtTimestamp: UInt64
+    ) {
+        self.commonState = CommonCallState(
+            audioActivity: AudioActivity(
+                audioDescription: "[SignalCall] with individual \(thread.contactAddress)",
+                behavior: .call
+            )
+        )
         self.direction = direction
+        self.offerMediaType = offerMediaType
         self.state = state
         self.thread = thread
         self.sentAtTimestamp = sentAtTimestamp
@@ -246,6 +319,23 @@ public class IndividualCall: CustomDebugStringConvertible {
 
     public var debugDescription: String {
         return "IndividualCall: {\(remoteAddress), signalingId: \(callId as Optional)))}"
+    }
+
+    // MARK: - Observers
+
+    private var observers: WeakArray<any IndividualCallObserver> = []
+
+    func addObserverAndSyncState(_ observer: any IndividualCallObserver) {
+        AssertIsOnMainThread()
+
+        observers.append(observer)
+
+        // Synchronize observer with current call state
+        observer.individualCallStateDidChange(self, state: state)
+    }
+
+    func removeObserver(_ observer: any IndividualCallObserver) {
+        observers.removeAll(where: { $0 === observer })
     }
 
     // MARK: - Fetching and updating db objects

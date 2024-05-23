@@ -275,12 +275,16 @@ private class CallControlsViewModel {
         self.callService = callService
         self.confirmationToastManager = confirmationToastManager
         self.delegate = delegate
-        call.addObserverAndSyncState(observer: self)
+        switch call.mode {
+        case .individual(let call):
+            call.addObserverAndSyncState(self)
+        case .groupThread(let call):
+            call.addObserverAndSyncState(self)
+        }
         callService.audioService.delegate = self
     }
 
     deinit {
-        call.removeObserver(self)
         callService.audioService.delegate = nil
     }
 
@@ -334,7 +338,7 @@ private class CallControlsViewModel {
         switch call.mode {
         case .individual(_):
             return false
-        case .groupThread(_):
+        case .groupThread(let call):
             return call.joinState != .joined
         }
     }
@@ -420,7 +424,7 @@ private class CallControlsViewModel {
                 // TODO: The work of adding the lobby for 1:1 calls in the unified call view
                 // controller (currently GroupCallViewController) is not yet complete.
                 label = startCallText
-            case .groupThread(_):
+            case .groupThread(let call):
                 let joinCallText = OWSLocalizedString(
                     "GROUP_CALL_JOIN_BUTTON",
                     comment: "Button to join an ongoing group call"
@@ -444,8 +448,8 @@ private class CallControlsViewModel {
         switch call.mode {
         case .individual(_):
             return true
-        case .groupThread(_):
-            return call.joinState == .joined || call.ringRestrictions.intersects([.notApplicable, .callInProgress])
+        case .groupThread(let call):
+            return call.joinState == .joined || call.ringRestrictions.contains(.callInProgress)
         }
     }
 
@@ -460,7 +464,7 @@ private class CallControlsViewModel {
         case .individual(_):
             // We never show the ring button for 1:1 calls.
             return nil
-        case .groupThread(_):
+        case .groupThread(let call):
             // Leave the button visible but locked if joining, like the "join call" button.
             let isUserInteractionEnabled = call.joinState == .notJoined
             let isSelected: Bool
@@ -532,44 +536,46 @@ private class CallControlsViewModel {
     }
 }
 
-extension CallControlsViewModel: CallObserver {
-    func groupCallLocalDeviceStateChanged(_ call: SignalCall) {
+extension CallControlsViewModel: GroupThreadCallObserver {
+    func groupCallLocalDeviceStateChanged(_ call: GroupThreadCall) {
         refreshView?()
     }
 
-    func groupCallPeekChanged(_ call: SignalCall) {
+    func groupCallPeekChanged(_ call: GroupThreadCall) {
         refreshView?()
     }
 
-    func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
+    func groupCallRemoteDeviceStatesChanged(_ call: GroupThreadCall) {
         refreshView?()
     }
 
-    func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
+    func groupCallEnded(_ call: GroupThreadCall, reason: GroupCallEndReason) {
+        refreshView?()
+    }
+}
+
+extension CallControlsViewModel: IndividualCallObserver {
+    func individualCallStateDidChange(_ call: IndividualCall, state: CallState) {
         refreshView?()
     }
 
-    func individualCallStateDidChange(_ call: SignalCall, state: CallState) {
+    func individualCallLocalVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool) {
         refreshView?()
     }
 
-    func individualCallLocalVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {
+    func individualCallLocalAudioMuteDidChange(_ call: IndividualCall, isAudioMuted: Bool) {
         refreshView?()
     }
 
-    func individualCallLocalAudioMuteDidChange(_ call: SignalCall, isAudioMuted: Bool) {
+    func individualCallHoldDidChange(_ call: IndividualCall, isOnHold: Bool) {
         refreshView?()
     }
 
-    func individualCallHoldDidChange(_ call: SignalCall, isOnHold: Bool) {
+    func individualCallRemoteVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool) {
         refreshView?()
     }
 
-    func individualCallRemoteVideoMuteDidChange(_ call: SignalCall, isVideoMuted: Bool) {
-        refreshView?()
-    }
-
-    func individualCallRemoteSharingScreenDidChange(_ call: SignalCall, isRemoteSharingScreen: Bool) {
+    func individualCallRemoteSharingScreenDidChange(_ call: IndividualCall, isRemoteSharingScreen: Bool) {
         refreshView?()
     }
 }
@@ -624,20 +630,25 @@ extension CallControlsViewModel {
 
     @objc
     func didPressRing() {
-        if call.ringRestrictions.isEmpty {
-            switch call.groupCallRingState {
-            case .shouldRing:
-                call.groupCallRingState = .doNotRing
-                confirmationToastManager.toastInducingCallControlChangeDidOccur(state: .ring(isOn: false))
-            case .doNotRing:
-                call.groupCallRingState = .shouldRing
-                confirmationToastManager.toastInducingCallControlChangeDidOccur(state: .ring(isOn: true))
-            default:
-                owsFailBeta("Ring button should not have been available to press!")
+        switch call.mode {
+        case .individual:
+            owsFailDebug("Can't control ringing for an individual call.")
+        case .groupThread(let call):
+            if call.ringRestrictions.isEmpty {
+                switch call.groupCallRingState {
+                case .shouldRing:
+                    call.groupCallRingState = .doNotRing
+                    confirmationToastManager.toastInducingCallControlChangeDidOccur(state: .ring(isOn: false))
+                case .doNotRing:
+                    call.groupCallRingState = .shouldRing
+                    confirmationToastManager.toastInducingCallControlChangeDidOccur(state: .ring(isOn: true))
+                default:
+                    owsFailBeta("Ring button should not have been available to press!")
+                }
+                refreshView?()
             }
-            refreshView?()
+            delegate?.didPressRing()
         }
-        delegate?.didPressRing()
     }
 
     @objc
