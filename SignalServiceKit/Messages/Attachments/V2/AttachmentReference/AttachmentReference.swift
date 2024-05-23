@@ -5,7 +5,6 @@
 
 import Foundation
 
-// TODO: actually define this class; just a placeholder for now.
 /// Represents an edge between some owner (a message, a story, a thread, etc) and an attachment.
 public class AttachmentReference {
 
@@ -20,10 +19,6 @@ public class AttachmentReference {
 
     /// We compute/validate this once, when we read from disk (or instantate an instance in memory).
     public let owner: Owner
-
-    /// For message owners, the local receivedAtTimestamp of the owning message.
-    /// For thread owners, the local timestamp when we created the ownership reference.
-    public let receivedAtTimestamp: UInt64
 
     /// Filename from the sender, used for rendering as a file attachment.
     /// NOT the same as the file name on disk.
@@ -40,92 +35,57 @@ public class AttachmentReference {
 
     // MARK: - Init
 
-    private init?(
-        messageOwnerTypeRaw: MessageOwnerTypeRaw,
-        attachmentRowId: Int64,
-        messageRowId: Int64,
-        orderInOwner: UInt32?,
-        receivedAtTimestamp: UInt64,
-        renderingFlag: RenderingFlag,
-        threadRowId: UInt64,
-        caption: String?,
-        captionBodyRanges: MessageBodyRanges,
-        sourceFileName: String?,
-        sourceUnencryptedByteCount: UInt32,
-        sourceMediaHeightPixels: UInt32,
-        sourceMediaWidthPixels: UInt32,
-        stickerPackId: Data?,
-        stickerId: UInt32?,
-        contentType: ContentType?
-    ) {
-        let ownerId = messageOwnerTypeRaw.with(messageRowId: messageRowId)
-
-        // Do source validation
-        guard
-            Owner.validateAndBuild(
-                messageRowId: messageRowId,
-                messageOwnerType: messageOwnerTypeRaw,
-                orderInOwner: orderInOwner,
-                renderingFlag: renderingFlag,
-                threadRowId: threadRowId,
-                caption: caption,
-                captionBodyRanges: captionBodyRanges,
-                stickerPackId: stickerPackId,
-                stickerId: stickerId,
-                contentType: contentType
-            ) != nil
-        else {
-            return nil
-        }
-
-        fatalError("No instances should exist yet!")
+    internal init(record: MessageAttachmentReferenceRecord) throws {
+        self.owner = try Owner.validateAndBuild(record: record)
+        self.attachmentRowId = record.attachmentRowId
+        self.sourceFilename = record.sourceFilename
+        self.sourceUnencryptedByteCount = record.sourceUnencryptedByteCount
+        self.sourceMediaSizePixels = try Self.buildSourceMediaSizePixels(
+            sourceMediaWidthPixels: record.sourceMediaWidthPixels,
+            sourceMediaHeightPixels: record.sourceMediaHeightPixels
+        )
     }
 
-    private init?(
-        storyMessageOwnerTypeRaw: StoryMessageOwnerTypeRaw,
-        attachmentRowId: Int64,
-        storyMessageRowId: Int64,
-        receivedAtTimestamp: UInt64,
-        shouldLoop: Bool,
-        caption: String?,
-        captionBodyRanges: MessageBodyRanges,
-        sourceFileName: String?,
-        sourceUnencryptedByteCount: UInt32,
-        sourceMediaHeightPixels: UInt32,
-        sourceMediaWidthPixels: UInt32
-    ) {
-        let ownerId = storyMessageOwnerTypeRaw.with(storyMessageRowId: storyMessageRowId)
-
-        // Do source validation
-        guard
-            Owner.validateAndBuild(
-                storyMessageRowId: storyMessageRowId,
-                storyMessageOwnerType: storyMessageOwnerTypeRaw,
-                shouldLoop: shouldLoop,
-                caption: caption,
-                captionBodyRanges: captionBodyRanges
-            ) != nil
-        else {
-            return nil
-        }
-
-        fatalError("No instances should exist yet!")
+    internal init(record: StoryMessageAttachmentReferenceRecord) throws {
+        self.owner = try Owner.validateAndBuild(record: record)
+        self.attachmentRowId = record.attachmentRowId
+        self.sourceFilename = record.sourceFilename
+        self.sourceUnencryptedByteCount = record.sourceUnencryptedByteCount
+        self.sourceMediaSizePixels = try Self.buildSourceMediaSizePixels(
+            sourceMediaWidthPixels: record.sourceMediaWidthPixels,
+            sourceMediaHeightPixels: record.sourceMediaHeightPixels
+        )
     }
 
-    private init?(
-        attachmentRowId: Int64,
-        threadOwnerRowId: Int64,
-        creationTimestamp: UInt64
-    ) {
-        let ownerId = OwnerId.threadWallpaperImage(threadRowId: threadOwnerRowId)
+    internal init(record: ThreadAttachmentReferenceRecord) throws {
+        self.owner = try Owner.validateAndBuild(record: record)
+        self.attachmentRowId = record.attachmentRowId
+        self.sourceFilename = nil
+        self.sourceUnencryptedByteCount = nil
+        self.sourceMediaSizePixels = nil
+    }
 
-        // Do source validation
+    private static func buildSourceMediaSizePixels(
+        sourceMediaWidthPixels: UInt32?,
+        sourceMediaHeightPixels: UInt32?
+    ) throws -> CGSize? {
         guard
-            Owner.validateAndBuild(threadRowId: threadOwnerRowId) != nil
+            let sourceMediaWidthPixels,
+            let sourceMediaHeightPixels
         else {
+            owsAssertDebug(
+                sourceMediaWidthPixels == nil
+                && sourceMediaHeightPixels == nil,
+                "Got partial source media size"
+            )
             return nil
         }
-
-        fatalError("No instances should exist yet!")
+        guard
+            let sourceMediaWidthPixels = Int(exactly: sourceMediaWidthPixels),
+            let sourceMediaHeightPixels = Int(exactly: sourceMediaHeightPixels)
+        else {
+            throw OWSAssertionError("Invalid pixel size")
+        }
+        return CGSize(width: sourceMediaWidthPixels, height: sourceMediaHeightPixels)
     }
 }

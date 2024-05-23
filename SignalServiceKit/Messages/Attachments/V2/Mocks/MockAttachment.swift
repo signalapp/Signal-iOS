@@ -11,20 +11,20 @@ import Foundation
 
 extension Attachment.StreamInfo {
     public static func mock(
-        contentHash: String? = nil,
+        sha256ContentHash: Data? = nil,
         encryptedByteCount: UInt32? = nil,
         unencryptedByteCount: UInt32? = nil,
         contentType: Attachment.ContentType? = nil,
-        encryptionKey: Data? = nil,
-        encryptedFileSha256Digest: Data? = nil
+        digestSHA256Ciphertext: Data? = nil,
+        localRelativeFilePath: String? = nil
     ) -> Attachment.StreamInfo {
         return Attachment.StreamInfo(
-            contentHash: contentHash ?? "\(UInt64.random(in: 0..<(.max)))",
+            sha256ContentHash: sha256ContentHash ?? UInt64.random(in: 0..<(.max)).bigEndianData,
             encryptedByteCount: encryptedByteCount ?? UInt32.random(in: 0..<(UInt32(OWSMediaUtils.kMaxFileSizeGeneric))),
             unencryptedByteCount: unencryptedByteCount ?? UInt32.random(in: 0..<(UInt32(OWSMediaUtils.kMaxFileSizeGeneric))),
             contentType: contentType ?? .file,
-            encryptionKey: encryptionKey ?? UInt64.random(in: 0..<(.max)).bigEndianData,
-            encryptedFileSha256Digest: encryptedFileSha256Digest ?? UInt64.random(in: 0..<(.max)).bigEndianData
+            digestSHA256Ciphertext: digestSHA256Ciphertext ?? UInt64.random(in: 0..<(.max)).bigEndianData,
+            localRelativeFilePath: localRelativeFilePath ?? UUID().uuidString
         )
     }
 }
@@ -36,7 +36,7 @@ extension Attachment.TransitTierInfo {
         uploadTimestamp: UInt64? = nil,
         encryptionKey: Data? = nil,
         encryptedByteCount: UInt32? = nil,
-        encryptedFileSha256Digest: Data? = nil,
+        digestSHA256Ciphertext: Data? = nil,
         lastDownloadAttemptTimestamp: UInt64? = nil
     ) -> Attachment.TransitTierInfo {
         return Attachment.TransitTierInfo(
@@ -45,7 +45,7 @@ extension Attachment.TransitTierInfo {
             uploadTimestamp: uploadTimestamp ?? Date().ows_millisecondsSince1970,
             encryptionKey: encryptionKey ?? UInt64.random(in: 0..<(.max)).bigEndianData,
             encryptedByteCount: encryptedByteCount ?? UInt32.random(in: 0..<(UInt32(OWSMediaUtils.kMaxFileSizeGeneric))),
-            encryptedFileSha256Digest: encryptedFileSha256Digest ?? UInt64.random(in: 0..<(.max)).bigEndianData,
+            digestSHA256Ciphertext: digestSHA256Ciphertext ?? UInt64.random(in: 0..<(.max)).bigEndianData,
             lastDownloadAttemptTimestamp: lastDownloadAttemptTimestamp
         )
     }
@@ -54,12 +54,12 @@ extension Attachment.TransitTierInfo {
 extension Attachment.MediaTierInfo {
     public static func mock(
         cdnNumber: UInt32? = nil,
-        uploadEra: UInt64? = nil,
+        uploadEra: String? = nil,
         lastDownloadAttemptTimestamp: UInt64? = nil
     ) -> Attachment.MediaTierInfo {
         return Attachment.MediaTierInfo(
             cdnNumber: cdnNumber ?? 3,
-            uploadEra: uploadEra ?? 1,
+            uploadEra: uploadEra ?? "1",
             lastDownloadAttemptTimestamp: lastDownloadAttemptTimestamp
         )
     }
@@ -68,12 +68,12 @@ extension Attachment.MediaTierInfo {
 extension Attachment.ThumbnailMediaTierInfo {
     public static func mock(
         cdnNumber: UInt32? = nil,
-        uploadEra: UInt64? = nil,
+        uploadEra: String? = nil,
         lastDownloadAttemptTimestamp: UInt64? = nil
     ) -> Attachment.ThumbnailMediaTierInfo {
         return Attachment.ThumbnailMediaTierInfo(
             cdnNumber: cdnNumber ?? 3,
-            uploadEra: uploadEra ?? 1,
+            uploadEra: uploadEra ?? "1",
             lastDownloadAttemptTimestamp: lastDownloadAttemptTimestamp
         )
     }
@@ -86,41 +86,57 @@ public class MockAttachment: Attachment {
     public static func mock(
         blurHash: String? = nil,
         mimeType: String? = nil,
+        encryptionKey: Data? = nil,
         mediaName: String? = nil,
         streamInfo: Attachment.StreamInfo? = nil,
         transitTierInfo: Attachment.TransitTierInfo? = nil,
         mediaTierInfo: Attachment.MediaTierInfo? = nil,
         thumbnailInfo: Attachment.ThumbnailMediaTierInfo? = nil,
         localRelativeFilePath: String? = nil,
-        localRelativeFilePathThumbnail: String? = nil
+        localRelativeFilePathThumbnail: String? = nil,
+        cachedAudioDurationSeconds: Double? = nil,
+        cachedMediaHeightPixels: UInt32? = nil,
+        cachedMediaWidthPixels: UInt32? = nil,
+        cachedVideoDurationSeconds: Double? = nil,
+        audioWaveformRelativeFilePath: String? = nil,
+        videoStillFrameRelativeFilePath: String? = nil
     ) -> MockAttachment {
-        return MockAttachment(
-            id: .random(in: 0..<(.max)),
-            blurHash: blurHash,
-            contentHash: streamInfo?.contentHash,
-            encryptedByteCount: streamInfo?.encryptedByteCount,
-            unencryptedByteCount: streamInfo?.unencryptedByteCount,
-            mimeType: mimeType ?? MimeType.applicationOctetStream.rawValue,
-            contentType: streamInfo?.contentType,
-            encryptionKey: streamInfo?.encryptionKey,
-            encryptedFileSha256Digest: streamInfo?.encryptedFileSha256Digest,
-            transitCdnNumber: transitTierInfo?.cdnNumber,
-            transitCdnKey: transitTierInfo?.cdnKey,
-            transitUploadTimestamp: transitTierInfo?.uploadTimestamp,
-            transitEncryptionKey: transitTierInfo?.encryptionKey,
-            transitEncryptedByteCount: transitTierInfo?.encryptedByteCount,
-            transitEncryptedFileSha256Digest: transitTierInfo?.encryptedFileSha256Digest,
-            lastTransitDownloadAttemptTimestamp: transitTierInfo?.lastDownloadAttemptTimestamp,
-            mediaName: mediaName ?? "\(UInt64.random(in: 0..<(.max)))",
-            mediaCdnNumber: mediaTierInfo?.cdnNumber,
-            mediaTierUploadEra: mediaTierInfo?.uploadEra,
-            lastMediaDownloadAttemptTimestamp: mediaTierInfo?.lastDownloadAttemptTimestamp,
-            thumbnailCdnNumber: thumbnailInfo?.cdnNumber,
-            thumbnailUploadEra: thumbnailInfo?.uploadEra,
-            lastThumbnailDownloadAttemptTimestamp: thumbnailInfo?.lastDownloadAttemptTimestamp,
-            localRelativeFilePath: localRelativeFilePath,
-            localRelativeFilePathThumbnail: localRelativeFilePathThumbnail
-        )
+        let record = Attachment.Record(
+           sqliteId: .random(in: 0..<(.max)),
+           blurHash: blurHash,
+           sha256ContentHash: streamInfo?.sha256ContentHash,
+           encryptedByteCount: streamInfo?.encryptedByteCount,
+           unencryptedByteCount: streamInfo?.unencryptedByteCount,
+           mimeType: mimeType ?? MimeType.applicationOctetStream.rawValue,
+           encryptionKey: encryptionKey ?? UInt64.random(in: 0..<(.max)).bigEndianData,
+           digestSHA256Ciphertext: streamInfo?.digestSHA256Ciphertext,
+           contentType: (streamInfo?.contentType.raw.rawValue).map { UInt32(exactly: $0) } ?? nil,
+           transitCdnNumber: transitTierInfo?.cdnNumber,
+           transitCdnKey: transitTierInfo?.cdnKey,
+           transitUploadTimestamp: transitTierInfo?.uploadTimestamp,
+           transitEncryptionKey: transitTierInfo?.encryptionKey,
+           transitEncryptedByteCount: transitTierInfo?.encryptedByteCount,
+           transitDigestSHA256Ciphertext: transitTierInfo?.digestSHA256Ciphertext,
+           lastTransitDownloadAttemptTimestamp: transitTierInfo?.lastDownloadAttemptTimestamp,
+           mediaName: mediaName ?? "\(UInt64.random(in: 0..<(.max)))",
+           mediaTierCdnNumber: mediaTierInfo?.cdnNumber,
+           mediaTierUploadEra: mediaTierInfo?.uploadEra,
+           lastMediaTierDownloadAttemptTimestamp: mediaTierInfo?.lastDownloadAttemptTimestamp,
+           thumbnailCdnNumber: thumbnailInfo?.cdnNumber,
+           thumbnailUploadEra: thumbnailInfo?.uploadEra,
+           lastThumbnailDownloadAttemptTimestamp: thumbnailInfo?.lastDownloadAttemptTimestamp,
+           localRelativeFilePath: localRelativeFilePath,
+           localRelativeFilePathThumbnail: localRelativeFilePathThumbnail,
+           /// Always set these values so we never fail validation.
+           cachedAudioDurationSeconds: cachedAudioDurationSeconds ?? 10,
+           cachedMediaHeightPixels: cachedMediaHeightPixels ?? 100,
+           cachedMediaWidthPixels: cachedMediaWidthPixels ?? 100,
+           cachedVideoDurationSeconds: cachedVideoDurationSeconds ?? 10,
+           audioWaveformRelativeFilePath: nil,
+           videoStillFrameRelativeFilePath: nil
+       )
+
+        return try! MockAttachment(record: record)
     }
 
     public override func asStream() -> AttachmentStream? {

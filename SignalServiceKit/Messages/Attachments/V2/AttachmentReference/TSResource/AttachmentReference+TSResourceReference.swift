@@ -37,7 +37,7 @@ extension AttachmentReference: TSResourceReference {
     public var legacyMessageCaption: String? {
         switch owner {
         case .message(.bodyAttachment(let metadata)):
-            return metadata.caption?.text
+            return metadata.caption
         default:
             return nil
         }
@@ -59,10 +59,10 @@ extension AttachmentReference: TSResourceReference {
         }
     }
 
-    public func indexInOwningMessage(_ message: TSMessage) -> UInt32? {
+    public func orderInOwningMessage(_ message: TSMessage) -> UInt32? {
         switch owner {
         case .message(.bodyAttachment(let metadata)):
-            return metadata.index
+            return metadata.orderInOwner
         default:
             return nil
         }

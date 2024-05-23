@@ -13,7 +13,7 @@ extension UIImage {
     ) throws -> UIImage {
         return try .fromEncryptedFile(
             at: attachment.fileURL,
-            encryptionKey: attachment.info.encryptionKey,
+            encryptionKey: attachment.attachment.encryptionKey,
             plaintextLength: attachment.info.unencryptedByteCount,
             mimeType: attachment.mimeType
         )

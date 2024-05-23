@@ -24,7 +24,7 @@ extension AttachmentReference {
         let orderInOwner: UInt32?
         switch owner {
         case .message(.bodyAttachment(let metadata)):
-            orderInOwner = metadata.index
+            orderInOwner = metadata.orderInOwner
         default:
             orderInOwner = nil
         }

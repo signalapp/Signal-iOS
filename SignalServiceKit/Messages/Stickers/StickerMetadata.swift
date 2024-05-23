@@ -198,7 +198,7 @@ extension EncryptedStickerMetadata {
             stickerType: stickerType,
             emojiString: emojiString,
             encryptedStickerDataUrl: attachment.fileURL,
-            encryptionKey: attachment.info.encryptionKey,
+            encryptionKey: attachment.attachment.encryptionKey,
             plaintextLength: attachment.info.unencryptedByteCount
         )
     }

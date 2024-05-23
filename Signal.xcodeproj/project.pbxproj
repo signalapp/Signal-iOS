@@ -781,6 +781,8 @@
 		66144B342BF7FB9F00E2C9CD /* LegacyWallpaperImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66144B332BF7FB9F00E2C9CD /* LegacyWallpaperImageStore.swift */; };
 		66144B362BF7FBC900E2C9CD /* BridgingWallpaperImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66144B352BF7FBC900E2C9CD /* BridgingWallpaperImageStore.swift */; };
 		66144B382BF8155F00E2C9CD /* MockWallpaperImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66144B372BF8155F00E2C9CD /* MockWallpaperImageStore.swift */; };
+		66144B3D2BFD22FA00E2C9CD /* AttachmentRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66144B3C2BFD22FA00E2C9CD /* AttachmentRecord.swift */; };
+		66144B3F2BFD3AA700E2C9CD /* AttachmentReferenceRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66144B3E2BFD3AA700E2C9CD /* AttachmentReferenceRecord.swift */; };
 		6615553F2ABA5A7500AA302B /* TSRegistrationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6615553E2ABA5A7500AA302B /* TSRegistrationState.swift */; };
 		661566722BCEDD58003F1647 /* AttachmentMultisend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661566712BCEDD58003F1647 /* AttachmentMultisend.swift */; };
 		661566742BD05D00003F1647 /* SharingThreadPickerProgressSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661566732BD05D00003F1647 /* SharingThreadPickerProgressSheet.swift */; };
@@ -3691,6 +3693,8 @@
 		66144B332BF7FB9F00E2C9CD /* LegacyWallpaperImageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyWallpaperImageStore.swift; sourceTree = "<group>"; };
 		66144B352BF7FBC900E2C9CD /* BridgingWallpaperImageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BridgingWallpaperImageStore.swift; sourceTree = "<group>"; };
 		66144B372BF8155F00E2C9CD /* MockWallpaperImageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockWallpaperImageStore.swift; sourceTree = "<group>"; };
+		66144B3C2BFD22FA00E2C9CD /* AttachmentRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentRecord.swift; sourceTree = "<group>"; };
+		66144B3E2BFD3AA700E2C9CD /* AttachmentReferenceRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentReferenceRecord.swift; sourceTree = "<group>"; };
 		6615553E2ABA5A7500AA302B /* TSRegistrationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSRegistrationState.swift; sourceTree = "<group>"; };
 		661566712BCEDD58003F1647 /* AttachmentMultisend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentMultisend.swift; sourceTree = "<group>"; };
 		661566732BD05D00003F1647 /* SharingThreadPickerProgressSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingThreadPickerProgressSheet.swift; sourceTree = "<group>"; };
@@ -7337,6 +7341,15 @@
 			path = TSResource;
 			sourceTree = "<group>";
 		};
+		66144B3B2BFD22EE00E2C9CD /* Records */ = {
+			isa = PBXGroup;
+			children = (
+				66144B3C2BFD22FA00E2C9CD /* AttachmentRecord.swift */,
+				66144B3E2BFD3AA700E2C9CD /* AttachmentReferenceRecord.swift */,
+			);
+			path = Records;
+			sourceTree = "<group>";
+		};
 		6619A1932B27C7A1004B38FE /* SignalRecipient */ = {
 			isa = PBXGroup;
 			children = (
@@ -7900,6 +7913,7 @@
 				664165112BA4A26000C34F6A /* OwnedAttachmentBuilder */,
 				6649651A2BDC6E8D00E2DE98 /* Playback */,
 				66D7B90C2B9798770005C98B /* QuotedMessageAttachment */,
+				66144B3B2BFD22EE00E2C9CD /* Records */,
 				66E1AD8C2B912A3000C56B7B /* TSResource */,
 				664E8D8D2BD72FF900C4968A /* VideoDuration */,
 				66B78E042BE5AACB0022580E /* ViewOnce */,
@@ -13544,11 +13558,13 @@
 				66D7B8FF2B9287F00005C98B /* AttachmentManager.swift in Sources */,
 				66D7B9012B92889E0005C98B /* AttachmentManagerImpl.swift in Sources */,
 				66D7B9032B928AE10005C98B /* AttachmentManagerMock.swift in Sources */,
+				66144B3D2BFD22FA00E2C9CD /* AttachmentRecord.swift in Sources */,
 				66E1AD832B8FDE2D00C56B7B /* AttachmentReference+Owner.swift in Sources */,
 				66CA4CE62B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift in Sources */,
 				66E1AD892B8FEE2400C56B7B /* AttachmentReference+TSResourceReference.swift in Sources */,
 				66E1AD812B8FDA6900C56B7B /* AttachmentReference.swift in Sources */,
 				667DEE672BC7342900EFF32D /* AttachmentReferenceId.swift in Sources */,
+				66144B3F2BFD3AA700E2C9CD /* AttachmentReferenceRecord.swift in Sources */,
 				66D7B9192B97A02F0005C98B /* AttachmentStore+QuotedMessage.swift in Sources */,
 				66E1ADA02B9155C200C56B7B /* AttachmentStore.swift in Sources */,
 				66583EFF2B9246C400821D05 /* AttachmentStoreImpl.swift in Sources */,

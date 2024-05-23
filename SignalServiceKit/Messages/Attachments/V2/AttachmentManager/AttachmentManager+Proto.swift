@@ -26,7 +26,9 @@ extension AttachmentManager {
         var flags: SSKProtoAttachmentPointerFlags?
         switch reference.owner {
         case .message(.bodyAttachment(let metadata)):
-            (metadata.caption?.text).map(builder.setCaption(_:))
+            if let caption = metadata.caption {
+                builder.setCaption(caption)
+            }
             flags = metadata.renderingFlag.toProto()
         case .message(.quotedReply(let metadata)):
             flags = metadata.renderingFlag.toProto()
@@ -64,7 +66,7 @@ extension AttachmentManager {
             reference.sourceMediaSizePixels.map(setMediaSizePixels(_:))
         }
         builder.setKey(pointer.info.encryptionKey)
-        builder.setDigest(pointer.info.encryptedFileSha256Digest)
+        builder.setDigest(pointer.info.digestSHA256Ciphertext)
 
         pointer.attachment.blurHash.map(builder.setBlurHash(_:))
 

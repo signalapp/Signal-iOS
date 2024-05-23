@@ -85,7 +85,7 @@ public class TSAttachmentReference: TSResourceReference {
         return attachment?.fetchAlbumMessage(transaction: tx)
     }
 
-    public func indexInOwningMessage(_ message: TSMessage) -> UInt32? {
+    public func orderInOwningMessage(_ message: TSMessage) -> UInt32? {
         return message.attachmentIds.firstIndex(of: uniqueId).map(UInt32.init(_:))
     }
 }

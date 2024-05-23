@@ -79,7 +79,7 @@ public final class MediaGalleryRecordManager: NSObject {
         }
 
         let legacyAttachmentRowId: Int64
-        let originalAlbumIndex: Int
+        let originalAlbumOrder: Int
 
         switch attachmentStream.reference.concreteType {
         case .legacy(let tsAttachmentRef):
@@ -94,11 +94,11 @@ public final class MediaGalleryRecordManager: NSObject {
                 owsFailDebug("originalAlbumIndex was unexpectedly nil")
                 return nil
             }
-            originalAlbumIndex = index
+            originalAlbumOrder = index
         case .v2(let attachmentReference):
             switch attachmentReference.owner {
             case .message(.bodyAttachment(let metadata)):
-                originalAlbumIndex = Int(metadata.index)
+                originalAlbumOrder = Int(metadata.orderInOwner)
             default:
                 // Only index body attachments
                 return nil
@@ -125,7 +125,7 @@ public final class MediaGalleryRecordManager: NSObject {
             attachmentId: legacyAttachmentRowId,
             albumMessageId: messageRowId,
             threadId: threadId,
-            originalAlbumOrder: originalAlbumIndex
+            originalAlbumOrder: originalAlbumOrder
         )
 
         try galleryRecord.insert(transaction.database)

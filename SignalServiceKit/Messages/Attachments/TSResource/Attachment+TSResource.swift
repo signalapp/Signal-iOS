@@ -13,10 +13,10 @@ extension Attachment: TSResource {
         blurHash
     }
 
-    public var resourceEncryptionKey: Data? { streamInfo?.encryptionKey }
+    public var resourceEncryptionKey: Data? { self.encryptionKey }
     public var unencryptedResourceByteCount: UInt32? { streamInfo?.unencryptedByteCount }
     public var encryptedResourceByteCount: UInt32? { streamInfo?.encryptedByteCount }
-    public var encryptedResourceSha256Digest: Data? { streamInfo?.encryptedFileSha256Digest }
+    public var encryptedResourceSha256Digest: Data? { streamInfo?.digestSHA256Ciphertext }
     public var transitCdnKey: String? { transitTierInfo?.cdnKey }
     public var transitCdnNumber: UInt32? { transitTierInfo?.cdnNumber }
     public var transitUploadTimestamp: UInt64? { transitTierInfo?.uploadTimestamp }

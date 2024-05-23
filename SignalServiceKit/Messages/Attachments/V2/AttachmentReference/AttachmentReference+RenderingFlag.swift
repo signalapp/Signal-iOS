@@ -34,6 +34,16 @@ extension AttachmentReference {
         /// (Originally named ``SSKProtoAttachmentPointerFlags``.gif, but that's somewhat
         /// of a misnomer; it is orthogonal to whether the file type is gif.)
         case shouldLoop = 3
+
+        init(rawValue: UInt32) throws {
+            guard
+                let rawValue = Int(exactly: rawValue),
+                let value = AttachmentReference.RenderingFlag(rawValue: rawValue)
+            else {
+                throw OWSAssertionError("Invalid rendering flag")
+            }
+            self = value
+        }
     }
 }
 

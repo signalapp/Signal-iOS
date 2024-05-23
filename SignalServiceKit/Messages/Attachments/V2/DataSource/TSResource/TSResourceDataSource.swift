@@ -91,7 +91,7 @@ public struct TSResourceDataSource {
             let renderingFlag: AttachmentReference.RenderingFlag
             switch reference.owner {
             case .message(.bodyAttachment(let metadata)):
-                caption = metadata.caption
+                caption = metadata.caption.map { .init(text: $0, ranges: .empty) }
                 renderingFlag = metadata.renderingFlag
             case .message(.quotedReply(let metadata)):
                 caption = nil

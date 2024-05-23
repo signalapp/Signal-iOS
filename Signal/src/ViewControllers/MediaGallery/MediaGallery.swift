@@ -540,19 +540,26 @@ class MediaGallery: Dependencies {
             return nil
         }()
 
-        let numItemsInAlbum = DependenciesBridge.shared.tsResourceStore.bodyMediaAttachments(
+        let itemsInAlbum = DependenciesBridge.shared.tsResourceStore.bodyMediaAttachments(
             for: message,
             tx: transaction.asV2Read
-        ).count
-
-        let albumIndex = attachment.reference.indexInOwningMessage(message) ?? 0
+        )
+        // Re-normalize the index in the album; albumOrder may have gaps but MediaGalleryItem.albumIndex
+        // needs to have no gaps as its used to index _into_ the ordered attachments.
+        let albumOrder = attachment.reference.orderInOwningMessage(message)
+        let albumIndex: Int
+        if let albumOrder {
+            albumIndex = itemsInAlbum.firstIndex(where: { $0.orderInOwningMessage(message) == albumOrder }) ?? 0
+        } else {
+            albumIndex = 0
+        }
 
         return MediaGalleryItem(
             message: message,
             sender: sender,
             attachmentStream: .init(reference: attachment.reference, attachmentStream: attachmentStream),
             albumIndex: Int(albumIndex),
-            numItemsInAlbum: numItemsInAlbum,
+            numItemsInAlbum: itemsInAlbum.count,
             spoilerState: spoilerState,
             transaction: transaction
         )

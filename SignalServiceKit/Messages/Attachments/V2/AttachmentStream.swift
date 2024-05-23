@@ -19,8 +19,8 @@ public class AttachmentStream {
 
     // MARK: - Convenience
 
-    public var contentHash: String { info.contentHash }
-    public var encryptedFileSha256Digest: Data { info.encryptedFileSha256Digest }
+    public var contentHash: Data { info.sha256ContentHash }
+    public var encryptedFileSha256Digest: Data { info.digestSHA256Ciphertext }
     public var encryptedByteCount: UInt32 { info.encryptedByteCount }
     public var unencryptedByteCount: UInt32 { info.unencryptedByteCount }
     public var contentType: Attachment.ContentType { info.contentType }
@@ -29,25 +29,22 @@ public class AttachmentStream {
 
     private init(
         attachment: Attachment,
-        info: Attachment.StreamInfo,
-        localRelativeFilePath: String
+        info: Attachment.StreamInfo
     ) {
         self.attachment = attachment
         self.info = info
-        self.localRelativeFilePath = localRelativeFilePath
+        self.localRelativeFilePath = info.localRelativeFilePath
     }
 
     public convenience init?(attachment: Attachment) {
         guard
-            let info = attachment.streamInfo,
-            let localRelativeFilePath = attachment.localRelativeFilePath
+            let info = attachment.streamInfo
         else {
             return nil
         }
         self.init(
             attachment: attachment,
-            info: info,
-            localRelativeFilePath: localRelativeFilePath
+            info: info
         )
     }
 
@@ -65,8 +62,8 @@ public class AttachmentStream {
         try Cryptography.decryptAttachment(
             at: fileURL,
             metadata: EncryptionMetadata(
-                key: info.encryptionKey,
-                digest: info.encryptedFileSha256Digest,
+                key: attachment.encryptionKey,
+                digest: info.digestSHA256Ciphertext,
                 plaintextLength: Int(info.unencryptedByteCount)
             ),
             output: tmpURL
@@ -80,7 +77,7 @@ public class AttachmentStream {
         return try Cryptography.decryptFile(
             at: fileURL,
             metadata: .init(
-                key: info.encryptionKey,
+                key: attachment.encryptionKey,
                 length: Int(info.encryptedByteCount),
                 plaintextLength: Int(info.unencryptedByteCount)
             )
@@ -108,7 +105,7 @@ public class AttachmentStream {
             }
             return try UIImage.fromEncryptedFile(
                 at: URL(fileURLWithPath: stillImageFilePath),
-                encryptionKey: info.encryptionKey,
+                encryptionKey: attachment.encryptionKey,
                 plaintextLength: info.unencryptedByteCount,
                 mimeType: OWSMediaUtils.videoStillFrameMimeType.rawValue
             )

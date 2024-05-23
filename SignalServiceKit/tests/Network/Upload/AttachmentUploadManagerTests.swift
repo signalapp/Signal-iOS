@@ -243,19 +243,20 @@ class AttachmentUploadManagerTests: XCTestCase {
             encryptedByteCount: encryptedSize + 2
         )
 
+        let attachment = MockAttachmentStream.mock(
+            streamInfo: streamInfo,
+            transitTierInfo: transitTierInfo,
+            mediaTierInfo: nil
+        ).attachment
         helper.setup(
             encryptedUploadSize: encryptedSize,
-            mockAttachment: MockAttachmentStream.mock(
-                streamInfo: streamInfo,
-                transitTierInfo: transitTierInfo,
-                mediaTierInfo: nil
-            ).attachment
+            mockAttachment: attachment
         )
 
         var didDecrypt = false
         helper.mockAttachmentEncrypter.decryptAttachmentBlock = { _, encryptionMetadata, _ in
             didDecrypt = true
-            XCTAssertEqual(encryptionMetadata.key, streamInfo.encryptionKey)
+            XCTAssertEqual(encryptionMetadata.key, attachment.encryptionKey)
         }
         var didEncrypt = false
         helper.mockAttachmentEncrypter.encryptAttachmentBlock = { _, _ in
@@ -302,20 +303,20 @@ class AttachmentUploadManagerTests: XCTestCase {
         // We should use fresh encryption, so set these to intentionally
         // non matching sizes.
         let streamInfo = Attachment.StreamInfo.mock(encryptedByteCount: encryptedSize + 1)
-
+        let attachment = MockAttachmentStream.mock(
+            streamInfo: streamInfo,
+            transitTierInfo: nil,
+            mediaTierInfo: .mock()
+        ).attachment
         helper.setup(
             encryptedUploadSize: encryptedSize,
-            mockAttachment: MockAttachmentStream.mock(
-                streamInfo: streamInfo,
-                transitTierInfo: nil,
-                mediaTierInfo: .mock()
-            ).attachment
+            mockAttachment: attachment
         )
 
         var didDecrypt = false
         helper.mockAttachmentEncrypter.decryptAttachmentBlock = { _, encryptionMetadata, _ in
             didDecrypt = true
-            XCTAssertEqual(encryptionMetadata.key, streamInfo.encryptionKey)
+            XCTAssertEqual(encryptionMetadata.key, attachment.encryptionKey)
         }
         var didEncrypt = false
         helper.mockAttachmentEncrypter.encryptAttachmentBlock = { _, _ in

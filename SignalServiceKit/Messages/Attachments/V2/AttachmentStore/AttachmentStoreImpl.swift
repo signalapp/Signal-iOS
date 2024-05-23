@@ -113,7 +113,7 @@ extension AttachmentStoreImpl: AttachmentUploadStore {
             uploadTimestamp: uploadTimestamp,
             encryptionKey: encryptionKey,
             encryptedByteCount: encryptedByteLength,
-            encryptedFileSha256Digest: digest,
+            digestSHA256Ciphertext: digest,
             lastDownloadAttemptTimestamp: nil
         )
         fatalError("Unimplemented")

@@ -17,6 +17,16 @@ extension Attachment {
         case video = 3
         case animatedImage = 4
         case audio = 5
+
+        public init(rawValue: UInt32) throws {
+            guard
+                let rawValue = Int(exactly: rawValue),
+                let value = ContentTypeRaw(rawValue: rawValue)
+            else {
+                throw OWSAssertionError("Invalid raw content type")
+            }
+            self = value
+        }
     }
 
     public enum ContentType {
@@ -28,14 +38,75 @@ extension Attachment {
         case file
 
         case image(pixelSize: CGSize)
-        /// `stillFrameFilePath` points at an image file encrypted with the ``Attachment``'s `encryptionKey`.
+        /// `stillFrameRelativeFilePath` points at an image file encrypted with the ``Attachment``'s `encryptionKey`.
         /// If nil, no still frame is available and no attempt should be made to generate a new one.
-        case video(duration: TimeInterval, pixelSize: CGSize, stillFrameFilePath: String?)
+        case video(duration: TimeInterval, pixelSize: CGSize, stillFrameRelativeFilePath: String?)
         case animatedImage(pixelSize: CGSize)
-        /// `waveformFilePath` points at the ``AudioWaveform`` file encrypted
+        /// `waveformRelativeFilePath` points at the ``AudioWaveform`` file encrypted
         /// with the ``Attachment``'s `encryptionKey`. If nil, no waveform is available
         /// and no attempt should be made to generate a new one.
-        case audio(duration: TimeInterval, waveformFilePath: String?)
+        case audio(duration: TimeInterval, waveformRelativeFilePath: String?)
+
+        public init?(
+            raw: UInt32?,
+            cachedAudioDurationSeconds: Double?,
+            cachedMediaHeightPixels: UInt32?,
+            cachedMediaWidthPixels: UInt32?,
+            cachedVideoDurationSeconds: Double?,
+            audioWaveformRelativeFilePath: String?,
+            videoStillFrameRelativeFilePath: String?
+        ) throws {
+            guard let raw else {
+                return nil
+            }
+            let rawEnum = try ContentTypeRaw(rawValue: raw)
+
+            func requirePixelSize() throws -> CGSize {
+                guard
+                    let cachedMediaWidthPixels,
+                    let cachedMediaWidthPixels = Int(exactly: cachedMediaWidthPixels),
+                    let cachedMediaHeightPixels,
+                    let cachedMediaHeightPixels = Int(exactly: cachedMediaHeightPixels)
+                else {
+                    throw OWSAssertionError("Missing pixel size")
+                }
+                return CGSize(width: cachedMediaWidthPixels, height: cachedMediaHeightPixels)
+            }
+
+            switch rawEnum {
+            case .invalid:
+                self = .invalid
+            case .file:
+                self = .file
+            case .image:
+                self = .image(pixelSize: try requirePixelSize())
+            case .video:
+                guard
+                    let cachedVideoDurationSeconds,
+                    let cachedVideoDurationSeconds = Int(exactly: cachedVideoDurationSeconds)
+                else {
+                    throw OWSAssertionError("Missing video duration")
+                }
+                self = .video(
+                    duration: TimeInterval(cachedVideoDurationSeconds),
+                    pixelSize: try requirePixelSize(),
+                    stillFrameRelativeFilePath: videoStillFrameRelativeFilePath
+                )
+            case .animatedImage:
+                self = .animatedImage(pixelSize: try requirePixelSize())
+            case .audio:
+                guard
+                    let cachedAudioDurationSeconds,
+                    let cachedAudioDurationSeconds = Int(exactly: cachedAudioDurationSeconds)
+                else {
+                    throw OWSAssertionError("Missing audio duration")
+                }
+                self = .audio(
+                    duration: TimeInterval(cachedAudioDurationSeconds),
+                    waveformRelativeFilePath: audioWaveformRelativeFilePath
+                )
+            }
+        }
     }
 }
 

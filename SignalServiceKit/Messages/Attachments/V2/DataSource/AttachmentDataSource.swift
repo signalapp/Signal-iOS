@@ -11,7 +11,7 @@ public struct AttachmentDataSource {
     let mimeType: String
     /// If we have it, the precomputed content hash.
     /// Otherwise will be computed at insertion time.
-    let contentHash: String?
+    let contentHash: Data?
     let sourceFilename: String?
 
     let dataSource: Source
@@ -26,7 +26,7 @@ public struct AttachmentDataSource {
     internal init(
         mimeType: String,
         // TODO: we can precompute this in more cases.
-        contentHash: String?,
+        contentHash: Data?,
         sourceFilename: String?,
         dataSource: Source
     ) {
@@ -80,7 +80,7 @@ public struct OwnedAttachmentDataSource {
     public let owner: AttachmentReference.OwnerBuilder
 
     public var mimeType: String { source.mimeType }
-    public var contentHash: String? { source.contentHash }
+    public var contentHash: Data? { source.contentHash }
     public var dataSource: AttachmentDataSource.Source { source.dataSource }
 
     public init(dataSource: AttachmentDataSource, owner: AttachmentReference.OwnerBuilder) {

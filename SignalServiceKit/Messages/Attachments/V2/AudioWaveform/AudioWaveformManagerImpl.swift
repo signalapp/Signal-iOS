@@ -41,7 +41,7 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
                         throw AudioWaveformError.invalidAudioFile
                     }
                 }
-                let encryptionKey = attachmentStream.info.encryptionKey
+                let encryptionKey = attachmentStream.attachment.encryptionKey
                 return Task {
                     let fileURL = URL(fileURLWithPath: waveformFilePath)
                     let data = try Cryptography.decryptFile(

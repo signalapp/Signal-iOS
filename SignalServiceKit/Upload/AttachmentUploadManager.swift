@@ -267,8 +267,8 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         // First we need to decrypt, so we can re-encrypt for upload.
         let tmpDecryptedFile = fileSystem.temporaryFileUrl()
         let decryptionMedatata = EncryptionMetadata(
-            key: attachmentStream.info.encryptionKey,
-            digest: attachmentStream.info.encryptedFileSha256Digest,
+            key: attachmentStream.attachment.encryptionKey,
+            digest: attachmentStream.info.digestSHA256Ciphertext,
             length: Int(clamping: attachmentStream.info.encryptedByteCount),
             plaintextLength: Int(clamping: attachmentStream.info.unencryptedByteCount)
         )
