@@ -303,7 +303,7 @@ public extension CVRootComponentHost {
         #endif
     }
 
-    func handleTap(sender: UITapGestureRecognizer, componentDelegate: CVComponentDelegate) -> Bool {
+    func handleTap(sender: UIGestureRecognizer, componentDelegate: CVComponentDelegate) -> Bool {
         guard let renderItem = renderItem else {
             owsFailDebug("Missing renderItem.")
             return false
@@ -318,20 +318,33 @@ public extension CVRootComponentHost {
                                                   renderItem: renderItem)
     }
 
-    func handleDoubleTap(sender: UITapGestureRecognizer, componentDelegate: any CVComponentDelegate) -> Bool {
-        guard let renderItem = renderItem else {
-            owsFailDebug("Missing renderItem.")
-            return false
-        }
+    func canHandleDoubleTap(sender: UIGestureRecognizer, componentDelegate: any CVComponentDelegate) -> Bool {
         guard let componentView = componentView else {
             owsFailDebug("Missing componentView.")
             return false
         }
 
+        // Can the _view_ handle the double tap?
         guard componentView.canHandleDoubleTapGesture?(sender) == true else {
             return false
         }
 
+        guard let renderItem = renderItem else {
+            owsFailDebug("Missing renderItem.")
+            return false
+        }
+        // Can the _contents_ handle the double tap?
+        return renderItem.rootComponent.canHandleDoubleTap(sender: sender, componentDelegate: componentDelegate, renderItem: renderItem)
+    }
+
+    func handleDoubleTap(sender: UIGestureRecognizer, componentDelegate: any CVComponentDelegate) -> Bool {
+        guard canHandleDoubleTap(sender: sender, componentDelegate: componentDelegate) else {
+            return false
+        }
+        guard let renderItem = renderItem else {
+            owsFailDebug("Missing renderItem.")
+            return false
+        }
         return renderItem.rootComponent.handleDoubleTap(sender: sender, componentDelegate: componentDelegate, renderItem: renderItem)
     }
 

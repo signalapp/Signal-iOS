@@ -24,12 +24,16 @@ public protocol CVComponent: AnyObject {
     func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize
 
     // return true IFF the tap was handled.
-    func handleTap(sender: UITapGestureRecognizer,
+    func handleTap(sender: UIGestureRecognizer,
                    componentDelegate: CVComponentDelegate,
                    componentView: CVComponentView,
                    renderItem: CVRenderItem) -> Bool
 
-    func handleDoubleTap(sender: UITapGestureRecognizer,
+    func canHandleDoubleTap(sender: UIGestureRecognizer,
+                            componentDelegate: any CVComponentDelegate,
+                            renderItem: CVRenderItem) -> Bool
+
+    func handleDoubleTap(sender: UIGestureRecognizer,
                          componentDelegate: any CVComponentDelegate,
                          renderItem: CVRenderItem) -> Bool
 
@@ -107,14 +111,20 @@ public class CVComponentBase: NSObject {
         self.itemModel = itemModel
     }
 
-    public func handleTap(sender: UITapGestureRecognizer,
+    public func handleTap(sender: UIGestureRecognizer,
                           componentDelegate: CVComponentDelegate,
                           componentView: CVComponentView,
                           renderItem: CVRenderItem) -> Bool {
         return false
     }
 
-    public func handleDoubleTap(sender: UITapGestureRecognizer,
+    public func canHandleDoubleTap(sender: UIGestureRecognizer,
+                                   componentDelegate: any CVComponentDelegate,
+                                   renderItem: CVRenderItem) -> Bool {
+        return false
+    }
+
+    public func handleDoubleTap(sender: UIGestureRecognizer,
                                 componentDelegate: any CVComponentDelegate,
                                 renderItem: CVRenderItem) -> Bool {
         false
@@ -291,7 +301,7 @@ public protocol CVComponentView {
     func reset()
 
     @objc
-    optional func canHandleDoubleTapGesture(_ sender: UITapGestureRecognizer) -> Bool
+    optional func canHandleDoubleTapGesture(_ sender: UIGestureRecognizer) -> Bool
 
     // Allows component opportunity to configure and return a subview for context menu previews
     @objc

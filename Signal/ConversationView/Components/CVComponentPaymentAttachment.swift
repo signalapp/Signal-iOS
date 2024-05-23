@@ -370,7 +370,7 @@ public class CVComponentPaymentAttachment: CVComponentBase, CVComponent {
     }
 
     public override func handleTap(
-        sender: UITapGestureRecognizer,
+        sender: UIGestureRecognizer,
         componentDelegate: CVComponentDelegate,
         componentView: CVComponentView,
         renderItem: CVRenderItem

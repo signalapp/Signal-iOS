@@ -280,7 +280,7 @@ class AudioMessageView: ManualStackView {
 
     // MARK: - Tapping
 
-    public func handleTap(sender: UITapGestureRecognizer, itemModel: CVItemModel) -> Bool {
+    public func handleTap(sender: UIGestureRecognizer, itemModel: CVItemModel) -> Bool {
         presentation.playbackRateView.handleTap(
             sender: sender,
             itemModel: itemModel,

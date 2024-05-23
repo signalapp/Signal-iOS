@@ -12,14 +12,9 @@ public class CVAccessibilityCustomAction: UIAccessibilityCustomAction {
 
 extension ConversationViewController: UIGestureRecognizerDelegate {
     func createGestureRecognizers() {
-        collectionViewTapGestureRecognizer.addTarget(self, action: #selector(handleTapGesture))
+        collectionViewTapGestureRecognizer.setTapDelegate(self)
         collectionViewTapGestureRecognizer.delegate = self
         collectionView.addGestureRecognizer(collectionViewTapGestureRecognizer)
-
-        collectionViewDoubleTapGestureRecognizer.addTarget(self, action: #selector(handleDoubleTapGesture))
-        collectionViewDoubleTapGestureRecognizer.delegate = self
-        collectionViewDoubleTapGestureRecognizer.numberOfTapsRequired = 2
-        collectionView.addGestureRecognizer(collectionViewDoubleTapGestureRecognizer)
 
         collectionViewLongPressGestureRecognizer.addTarget(self, action: #selector(handleLongPressGesture))
         collectionViewLongPressGestureRecognizer.delegate = self
@@ -123,42 +118,46 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
         }
         return nil
     }
+}
+
+extension ConversationViewController: SingleOrDoubleTapGestureDelegate {
 
     // MARK: - Tap
 
-    @objc
-    func handleTapGesture(_ sender: UITapGestureRecognizer) {
-        guard sender.state == .recognized else {
-            return
-        }
-
+    public func handleSingleTap(_ sender: SingleOrDoubleTapGestureRecognizer) -> Bool {
         // Stop any recording voice memos.
         finishRecordingVoiceMessage(sendImmediately: false)
 
         guard let cell = findCell(forGesture: sender) else {
-            return
+            return false
         }
 
         if let interaction = collectionViewActiveContextMenuInteraction, interaction.contextMenuVisible {
-            return
+            return false
         }
 
-        let wasHandled = cell.handleTap(sender: sender, componentDelegate: componentDelegate)
+        return cell.handleTap(sender: sender, componentDelegate: componentDelegate)
+    }
+
+    public func handleDoubleTap(_ sender: SingleOrDoubleTapGestureRecognizer) -> Bool {
+        guard let cell = findCell(forGesture: sender) else {
+            return false
+        }
+        guard cell.canHandleDoubleTap(sender: sender, componentDelegate: self) else {
+            return false
+        }
+
+        return cell.handleDoubleTap(sender: sender, componentDelegate: self)
+    }
+
+    public func didEndGesture(_ sender: SingleOrDoubleTapGestureRecognizer, wasHandled: Bool) {
         if !wasHandled {
             dismissKeyBoard()
         }
     }
+}
 
-    // MARK: - Double Tap
-
-    @objc
-    func handleDoubleTapGesture(_ sender: UITapGestureRecognizer) {
-        guard sender.state == .recognized,
-            let cell = findCell(forGesture: sender)
-        else { return }
-
-        _ = cell.handleDoubleTap(sender: sender, componentDelegate: self)
-    }
+extension ConversationViewController {
 
     // MARK: - Long Press
 

@@ -333,7 +333,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
     // MARK: - Events
 
-    public override func handleTap(sender: UITapGestureRecognizer,
+    public override func handleTap(sender: UIGestureRecognizer,
                                    componentDelegate: CVComponentDelegate,
                                    componentView: CVComponentView,
                                    renderItem: CVRenderItem) -> Bool {

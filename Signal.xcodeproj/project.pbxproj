@@ -820,6 +820,7 @@
 		663BA3182A4B8595004B9A43 /* SpoilerRenderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663BA3172A4B8595004B9A43 /* SpoilerRenderState.swift */; };
 		663BA3202A4CF96B004B9A43 /* MessageBodyDisplayConfigurations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663BA31F2A4CF96B004B9A43 /* MessageBodyDisplayConfigurations.swift */; };
 		663D6A7C292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */; };
+		6640132A2BFEB9C700F10FC4 /* SingleOrDoubleTapGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664013292BFEB9C700F10FC4 /* SingleOrDoubleTapGestureRecognizer.swift */; };
 		6640639E294D20A900997E0B /* OutgoingCallEventSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640639D294D20A900997E0B /* OutgoingCallEventSyncMessage.swift */; };
 		6640DD602ACDBEC500CE9A8C /* IncomingPniChangeNumberProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640DD5F2ACDBEC500CE9A8C /* IncomingPniChangeNumberProcessor.swift */; };
 		6640DD632ACDD5DE00CE9A8C /* SVRLocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640DD622ACDD5DE00CE9A8C /* SVRLocalStorage.swift */; };
@@ -3729,6 +3730,7 @@
 		663BA3172A4B8595004B9A43 /* SpoilerRenderState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRenderState.swift; sourceTree = "<group>"; };
 		663BA31F2A4CF96B004B9A43 /* MessageBodyDisplayConfigurations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBodyDisplayConfigurations.swift; sourceTree = "<group>"; };
 		663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPickerFailedRecipientsSheet.swift; sourceTree = "<group>"; };
+		664013292BFEB9C700F10FC4 /* SingleOrDoubleTapGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleOrDoubleTapGestureRecognizer.swift; sourceTree = "<group>"; };
 		6640639D294D20A900997E0B /* OutgoingCallEventSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingCallEventSyncMessage.swift; sourceTree = "<group>"; };
 		6640DD5F2ACDBEC500CE9A8C /* IncomingPniChangeNumberProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingPniChangeNumberProcessor.swift; sourceTree = "<group>"; };
 		6640DD622ACDD5DE00CE9A8C /* SVRLocalStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRLocalStorage.swift; sourceTree = "<group>"; };
@@ -6010,6 +6012,7 @@
 			children = (
 				34D1F0951F867BFC0066283D /* CellViews */,
 				347C3839252CE6C900F3D941 /* Components */,
+				664013282BFEB9AF00F10FC4 /* DoubleTapToEdit */,
 				50E7E1CF2BACC1A500A94861 /* DynamicInteractions */,
 				50E7E1D02BACC21900A94861 /* Loading */,
 				50E7E1D12BACC3DB00A94861 /* Reactions */,
@@ -6061,7 +6064,6 @@
 				348815C5255346A500D4F4C4 /* CVNode.swift */,
 				D9170EE9290C57BF00CD813A /* CVViewState+Banners.swift */,
 				341D392825472F3B00996E7B /* CVViewState.swift */,
-				05572BC32BFC0094006A72F1 /* DoubleTapToEditOnboardingController.swift */,
 				346EAA13250199A300E8AB6F /* MemberRequestView.swift */,
 				4CB5F26820F7D060004D1B42 /* MessageActions.swift */,
 				88D1D40122EBB5A100F472C5 /* MessageRequestView.swift */,
@@ -7391,6 +7393,15 @@
 				66290FEC2BCDE5ED0062605F /* TSResourceMultisend.swift */,
 			);
 			path = TSResource;
+			sourceTree = "<group>";
+		};
+		664013282BFEB9AF00F10FC4 /* DoubleTapToEdit */ = {
+			isa = PBXGroup;
+			children = (
+				05572BC32BFC0094006A72F1 /* DoubleTapToEditOnboardingController.swift */,
+				664013292BFEB9C700F10FC4 /* SingleOrDoubleTapGestureRecognizer.swift */,
+			);
+			path = DoubleTapToEdit;
 			sourceTree = "<group>";
 		};
 		6640DD612ACDD5CD00CE9A8C /* LocalStorage */ = {
@@ -13336,6 +13347,7 @@
 				8841584C252F9F1C0078903D /* SignalCall.swift in Sources */,
 				8822558D26B9D1D7001A33C4 /* SignalDotMePhoneNumberLink.swift in Sources */,
 				88D23D2323CEC0C700B0E74B /* SimulatorCallUIAdaptee.swift in Sources */,
+				6640132A2BFEB9C700F10FC4 /* SingleOrDoubleTapGestureRecognizer.swift in Sources */,
 				88BE44A626153E7B00AE8E33 /* SoundAndNotificationsSettingsViewController.swift in Sources */,
 				F94D12FF28BD0DD900B2C478 /* SpeechManager.swift in Sources */,
 				34B3F87B1E8DF1700035BE1A /* SplashViewController.swift in Sources */,
