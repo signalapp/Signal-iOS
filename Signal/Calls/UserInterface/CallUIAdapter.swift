@@ -114,12 +114,24 @@ public class CallUIAdapter: NSObject {
     internal func reportMissedCall(_ call: SignalCall, individualCall: IndividualCall) {
         AssertIsOnMainThread()
 
+        guard let callerAci = individualCall.thread.contactAddress.aci else {
+            owsFailDebug("Can't receive a call without an ACI.")
+            return
+        }
+
         let sentAtTimestamp = Date(millisecondsSince1970: individualCall.sentAtTimestamp)
-        notificationPresenterImpl.presentMissedCall(
-            call,
-            caller: individualCall.remoteAddress,
-            sentAt: sentAtTimestamp
-        )
+        databaseStorage.read { tx in
+            notificationPresenterImpl.presentMissedCall(
+                notificationInfo: NotificationPresenterImpl.CallNotificationInfo(
+                    groupingId: individualCall.commonState.localId,
+                    thread: individualCall.thread,
+                    caller: callerAci
+                ),
+                offerMediaType: individualCall.offerMediaType,
+                sentAt: sentAtTimestamp,
+                tx: tx
+            )
+        }
     }
 
     internal func startOutgoingCall(call: SignalCall) {

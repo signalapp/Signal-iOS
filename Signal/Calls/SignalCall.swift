@@ -163,9 +163,7 @@ class SignalCall: CallManagerCallReference {
     init(individualCall: IndividualCall) {
         self.mode = .individual(individualCall)
     }
-}
 
-extension SignalCall: CallNotificationInfo {
     var localId: UUID {
         return self.mode.commonState.localId
     }

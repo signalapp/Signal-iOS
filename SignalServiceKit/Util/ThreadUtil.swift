@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
+
 // MARK: - Enqueue messages
 
 public final class ThreadUtil: Dependencies {
@@ -383,27 +385,29 @@ extension TSThread {
         return sendMessageIntent
     }
 
-    public func generateIncomingCallIntent(callerAddress: SignalServiceAddress) -> INIntent? {
-        databaseStorage.read { transaction in
-            guard !self.isGroupThread else {
-                // Fall back to a "send message" intent for group calls,
-                // because the "start call" intent makes the notification look too much like a 1:1 call.
-                return self.generateSendMessageIntent(context: .senderAddress(callerAddress),
-                                                      transaction: transaction)
-            }
-
-            guard SSKPreferences.areIntentDonationsEnabled(transaction: transaction) else { return nil }
-
-            let caller = inPersonForRecipient(callerAddress, transaction: transaction)
-
-            let startCallIntent = INStartCallIntent(audioRoute: .unknown,
-                                                    destinationType: .normal,
-                                                    contacts: [caller],
-                                                    recordTypeForRedialing: .unknown,
-                                                    callCapability: .unknown)
-
-            return startCallIntent
+    public func generateIncomingCallIntent(callerAci: Aci, tx: SDSAnyReadTransaction) -> INIntent? {
+        guard !self.isGroupThread else {
+            // Fall back to a "send message" intent for group calls,
+            // because the "start call" intent makes the notification look too much like a 1:1 call.
+            return self.generateSendMessageIntent(
+                context: .senderAddress(SignalServiceAddress(callerAci)),
+                transaction: tx
+            )
         }
+
+        guard SSKPreferences.areIntentDonationsEnabled(transaction: tx) else {
+            return nil
+        }
+
+        let caller = inPersonForRecipient(SignalServiceAddress(callerAci), transaction: tx)
+
+        return INStartCallIntent(
+            audioRoute: .unknown,
+            destinationType: .normal,
+            contacts: [caller],
+            recordTypeForRedialing: .unknown,
+            callCapability: .unknown
+        )
     }
 
     private func inPersonForRecipient(

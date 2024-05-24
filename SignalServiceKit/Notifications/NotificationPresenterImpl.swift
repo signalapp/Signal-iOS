@@ -5,6 +5,7 @@
 
 import Foundation
 import Intents
+import LibSignalClient
 import SignalCoreKit
 
 /// There are two primary components in our system notification integration:
@@ -198,6 +199,25 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
     // MARK: - Calls
 
+    public struct CallNotificationInfo {
+        /// Basically a per-call unique identifier. When posting multiple
+        /// notifications with the same `groupingId`, only the latest notification
+        /// will be shown.
+        let groupingId: UUID
+
+        /// The thread that was called.
+        let thread: TSContactThread
+
+        /// The user who called the thread.
+        let caller: Aci
+
+        public init(groupingId: UUID, thread: TSContactThread, caller: Aci) {
+            self.groupingId = groupingId
+            self.thread = thread
+            self.caller = caller
+        }
+    }
+
     private struct CallPreview {
         let notificationTitle: String
         let threadIdentifier: String
@@ -247,14 +267,13 @@ public class NotificationPresenterImpl: NotificationPresenter {
     }
 
     public func presentMissedCall(
-        _ call: CallNotificationInfo,
-        caller: SignalServiceAddress,
-        sentAt timestamp: Date
+        notificationInfo: CallNotificationInfo,
+        offerMediaType: TSRecentCallOfferType,
+        sentAt timestamp: Date,
+        tx: SDSAnyReadTransaction
     ) {
-        let thread = call.thread
-        let callPreview = databaseStorage.read { tx in
-            return self.fetchCallPreview(thread: thread, tx: tx)
-        }
+        let thread = notificationInfo.thread
+        let callPreview = fetchCallPreview(thread: thread, tx: tx)
 
         let timestampClassification = TimestampClassification(timestamp)
         let timestampArgument: String
@@ -273,7 +292,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         // We could build these localized string keys by interpolating the two pieces,
         // but then genstrings wouldn't pick them up.
         let notificationBodyFormat: String
-        switch (call.offerMediaType, timestampClassification) {
+        switch (offerMediaType, timestampClassification) {
         case (.audio, .lastFewMinutes):
             notificationBodyFormat = OWSLocalizedString(
                 "CALL_AUDIO_MISSED_NOTIFICATION_BODY",
@@ -309,7 +328,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         }
         let notificationBody = String(format: notificationBodyFormat, timestampArgument)
 
-        let userInfo = userInfoForMissedCall(thread: thread, remoteAddress: caller)
+        let userInfo = userInfoForMissedCall(thread: thread, remoteAci: notificationInfo.caller)
 
         let category: AppNotificationCategory = (
             callPreview?.shouldShowActions == true
@@ -318,7 +337,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         )
 
         var interaction: INInteraction?
-        if callPreview != nil, let intent = thread.generateIncomingCallIntent(callerAddress: caller) {
+        if callPreview != nil, let intent = thread.generateIncomingCallIntent(callerAci: notificationInfo.caller, tx: tx) {
             let wrapper = INInteraction(intent: intent, response: nil)
             wrapper.direction = .incoming
             interaction = wrapper
@@ -334,20 +353,18 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 userInfo: userInfo,
                 interaction: interaction,
                 sound: sound,
-                replacingIdentifier: call.localId.uuidString,
+                replacingIdentifier: notificationInfo.groupingId.uuidString,
                 completion: completion
             )
         }
     }
 
     public func presentMissedCallBecauseOfNoLongerVerifiedIdentity(
-        call: CallNotificationInfo,
-        caller: SignalServiceAddress
+        notificationInfo: CallNotificationInfo,
+        tx: SDSAnyReadTransaction
     ) {
-        let thread = call.thread
-        let callPreview = databaseStorage.read { tx in
-            return self.fetchCallPreview(thread: thread, tx: tx)
-        }
+        let thread = notificationInfo.thread
+        let callPreview = fetchCallPreview(thread: thread, tx: tx)
 
         let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
         let userInfo = [
@@ -364,23 +381,21 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 userInfo: userInfo,
                 interaction: nil,
                 sound: sound,
-                replacingIdentifier: call.localId.uuidString,
+                replacingIdentifier: notificationInfo.groupingId.uuidString,
                 completion: completion
             )
         }
     }
 
     public func presentMissedCallBecauseOfNewIdentity(
-        call: CallNotificationInfo,
-        caller: SignalServiceAddress
+        notificationInfo: CallNotificationInfo,
+        tx: SDSAnyReadTransaction
     ) {
-        let thread = call.thread
-        let callPreview = databaseStorage.read { tx in
-            return self.fetchCallPreview(thread: thread, tx: tx)
-        }
+        let thread = notificationInfo.thread
+        let callPreview = fetchCallPreview(thread: thread, tx: tx)
 
         let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
-        let userInfo = userInfoForMissedCall(thread: thread, remoteAddress: caller)
+        let userInfo = userInfoForMissedCall(thread: thread, remoteAci: notificationInfo.caller)
 
         let category: AppNotificationCategory = (
             callPreview?.shouldShowActions == true
@@ -397,23 +412,18 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 userInfo: userInfo,
                 interaction: nil,
                 sound: sound,
-                replacingIdentifier: call.localId.uuidString,
+                replacingIdentifier: notificationInfo.groupingId.uuidString,
                 completion: completion
             )
         }
     }
 
-    private func userInfoForMissedCall(thread: TSThread, remoteAddress: SignalServiceAddress) -> [String: Any] {
-        var userInfo: [String: Any] = [
-            AppNotificationUserInfoKey.threadId: thread.uniqueId
+    private func userInfoForMissedCall(thread: TSThread, remoteAci: Aci) -> [String: Any] {
+        let userInfo: [String: Any] = [
+            AppNotificationUserInfoKey.threadId: thread.uniqueId,
+            AppNotificationUserInfoKey.callBackAciString: remoteAci.serviceIdUppercaseString,
+            AppNotificationUserInfoKey.isMissedCall: true,
         ]
-        if let aci = remoteAddress.aci {
-            userInfo[AppNotificationUserInfoKey.callBackAciString] = aci.serviceIdUppercaseString
-        }
-        if let phoneNumber = remoteAddress.phoneNumber {
-            userInfo[AppNotificationUserInfoKey.callBackPhoneNumber] = phoneNumber
-        }
-        userInfo[AppNotificationUserInfoKey.isMissedCall] = true
         return userInfo
     }
 
@@ -1336,10 +1346,4 @@ extension TruncatedList: Collection {
     func index(after i: Index) -> Index {
         return contents.index(after: i)
     }
-}
-
-public protocol CallNotificationInfo {
-    var thread: TSThread { get }
-    var localId: UUID { get }
-    var offerMediaType: TSRecentCallOfferType { get }
 }

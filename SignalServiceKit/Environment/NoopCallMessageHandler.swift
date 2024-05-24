@@ -30,7 +30,8 @@ public class NoopCallMessageHandler: CallMessageHandler {
 
     public func receivedAnswer(
         _ answer: SSKProtoCallMessageAnswer,
-        from caller: (aci: Aci, deviceId: UInt32)
+        from caller: (aci: Aci, deviceId: UInt32),
+        tx: SDSAnyReadTransaction
     ) {
         owsFailDebug("")
     }

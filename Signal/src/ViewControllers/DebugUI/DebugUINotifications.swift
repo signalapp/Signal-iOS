@@ -67,18 +67,15 @@ class DebugUINotifications: DebugUIPage, Dependencies {
         }
     }
 
-    func delayedNotificationDispatchWithFakeCall(thread: TSContactThread, callBlock: @escaping (SignalCall) -> Void) -> Guarantee<Void> {
-        let individualCall = IndividualCall.incomingIndividualCall(
-            callId: UInt64.random(in: UInt64.min...UInt64.max),
+    func delayedNotificationDispatchWithFakeCallNotificationInfo(thread: TSContactThread, callBlock: @escaping (NotificationPresenterImpl.CallNotificationInfo) -> Void) -> Guarantee<Void> {
+        let notificationInfo = NotificationPresenterImpl.CallNotificationInfo(
+            groupingId: UUID(),
             thread: thread,
-            sentAtTimestamp: Date.ows_millisecondTimestamp(),
-            offerMediaType: .audio
+            caller: thread.contactAddress.aci!
         )
 
-        let call = SignalCall(individualCall: individualCall)
-
         return delayedNotificationDispatch {
-            callBlock(call)
+            callBlock(notificationInfo)
         }
     }
 
@@ -99,18 +96,19 @@ class DebugUINotifications: DebugUIPage, Dependencies {
 
     @discardableResult
     func notifyForMissedCallBecauseOfNewIdentity(thread: TSContactThread) -> Guarantee<Void> {
-        return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
-            self.notificationPresenterImpl.presentMissedCallBecauseOfNewIdentity(call: call, caller: thread.contactAddress)
+        return delayedNotificationDispatchWithFakeCallNotificationInfo(thread: thread) { notificationInfo in
+            self.databaseStorage.read { tx in
+                self.notificationPresenterImpl.presentMissedCallBecauseOfNewIdentity(notificationInfo: notificationInfo, tx: tx)
+            }
         }
     }
 
     @discardableResult
     func notifyForMissedCallBecauseOfNoLongerVerifiedIdentity(thread: TSContactThread) -> Guarantee<Void> {
-        return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
-            self.notificationPresenterImpl.presentMissedCallBecauseOfNoLongerVerifiedIdentity(
-                call: call,
-                caller: thread.contactAddress
-            )
+        return delayedNotificationDispatchWithFakeCallNotificationInfo(thread: thread) { notificationInfo in
+            self.databaseStorage.read { tx in
+                self.notificationPresenterImpl.presentMissedCallBecauseOfNoLongerVerifiedIdentity(notificationInfo: notificationInfo, tx: tx)
+            }
         }
     }
 

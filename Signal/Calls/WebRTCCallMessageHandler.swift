@@ -37,45 +37,30 @@ class WebRTCCallMessageHandler: CallMessageHandler {
         serverDeliveryTimestamp: UInt64,
         tx: SDSAnyWriteTransaction
     ) {
-        AssertIsOnMainThread()
-
-        let callType: SSKProtoCallMessageOfferType
-        if offer.hasType {
-            callType = offer.unwrappedType
-        } else {
-            // The type is not defined so assume the default, audio.
-            callType = .offerAudioCall
-        }
-
-        let thread = TSContactThread.getOrCreateThread(
-            withContactAddress: SignalServiceAddress(caller.aci),
-            transaction: tx
-        )
         self.callService.individualCallService.handleReceivedOffer(
-            thread: thread,
+            caller: caller.aci,
             callId: offer.id,
             sourceDevice: caller.deviceId,
             opaque: offer.opaque,
             sentAtTimestamp: sentAtTimestamp,
             serverReceivedTimestamp: serverReceivedTimestamp,
             serverDeliveryTimestamp: serverDeliveryTimestamp,
-            callType: callType,
-            transaction: tx
+            callType: offer.type ?? .offerAudioCall,
+            tx: tx
         )
     }
 
     func receivedAnswer(
         _ answer: SSKProtoCallMessageAnswer,
-        from caller: (aci: Aci, deviceId: UInt32)
+        from caller: (aci: Aci, deviceId: UInt32),
+        tx: SDSAnyReadTransaction
     ) {
-        AssertIsOnMainThread()
-
-        let thread = TSContactThread.getOrCreateThread(contactAddress: SignalServiceAddress(caller.aci))
         self.callService.individualCallService.handleReceivedAnswer(
-            thread: thread,
+            caller: caller.aci,
             callId: answer.id,
             sourceDevice: caller.deviceId,
-            opaque: answer.opaque
+            opaque: answer.opaque,
+            tx: tx
         )
     }
 
@@ -83,11 +68,8 @@ class WebRTCCallMessageHandler: CallMessageHandler {
         _ iceUpdate: [SSKProtoCallMessageIceUpdate],
         from caller: (aci: Aci, deviceId: UInt32)
     ) {
-        AssertIsOnMainThread()
-
-        let thread = TSContactThread.getOrCreateThread(contactAddress: SignalServiceAddress(caller.aci))
         self.callService.individualCallService.handleReceivedIceCandidates(
-            thread: thread,
+            caller: caller.aci,
             callId: iceUpdate[0].id,
             sourceDevice: caller.deviceId,
             candidates: iceUpdate
@@ -98,8 +80,6 @@ class WebRTCCallMessageHandler: CallMessageHandler {
         _ hangup: SSKProtoCallMessageHangup,
         from caller: (aci: Aci, deviceId: UInt32)
     ) {
-        AssertIsOnMainThread()
-
         // deviceId is optional and defaults to 0.
         var deviceId: UInt32 = 0
 
@@ -115,9 +95,8 @@ class WebRTCCallMessageHandler: CallMessageHandler {
             type = .hangupNormal
         }
 
-        let thread = TSContactThread.getOrCreateThread(contactAddress: SignalServiceAddress(caller.aci))
         self.callService.individualCallService.handleReceivedHangup(
-            thread: thread,
+            caller: caller.aci,
             callId: hangup.id,
             sourceDevice: caller.deviceId,
             type: type,
@@ -129,11 +108,8 @@ class WebRTCCallMessageHandler: CallMessageHandler {
         _ busy: SSKProtoCallMessageBusy,
         from caller: (aci: Aci, deviceId: UInt32)
     ) {
-        AssertIsOnMainThread()
-
-        let thread = TSContactThread.getOrCreateThread(contactAddress: SignalServiceAddress(caller.aci))
         self.callService.individualCallService.handleReceivedBusy(
-            thread: thread,
+            caller: caller.aci,
             callId: busy.id,
             sourceDevice: caller.deviceId
         )
@@ -146,7 +122,6 @@ class WebRTCCallMessageHandler: CallMessageHandler {
         serverDeliveryTimestamp: UInt64,
         tx: SDSAnyReadTransaction
     ) {
-        AssertIsOnMainThread()
         Logger.info("Received opaque call message from \(caller.aci).\(caller.deviceId)")
 
         guard let message = opaque.data else {
@@ -161,13 +136,15 @@ class WebRTCCallMessageHandler: CallMessageHandler {
 
         let localDeviceId = tsAccountManager.storedDeviceId(tx: tx.asV2Read)
 
-        self.callService.callManager.receivedCallMessage(
-            senderUuid: caller.aci.rawUUID,
-            senderDeviceId: caller.deviceId,
-            localDeviceId: localDeviceId,
-            message: message,
-            messageAgeSec: messageAgeSec
-        )
+        DispatchQueue.main.async {
+            self.callService.callManager.receivedCallMessage(
+                senderUuid: caller.aci.rawUUID,
+                senderDeviceId: caller.deviceId,
+                localDeviceId: localDeviceId,
+                message: message,
+                messageAgeSec: messageAgeSec
+            )
+        }
     }
 
     func receivedGroupCallUpdateMessage(

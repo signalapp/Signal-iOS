@@ -140,7 +140,7 @@ private enum CrashyMocks {
     final class MockCallMessageHandler: CallMessageHandler {
         func action(for envelope: SSKProtoEnvelope, callMessage: SSKProtoCallMessage, serverDeliveryTimestamp: UInt64) -> CallMessageAction { failTest(Self.self) }
         func receivedOffer(_ offer: SSKProtoCallMessageOffer, from caller: (aci: Aci, deviceId: UInt32), sentAtTimestamp: UInt64, serverReceivedTimestamp: UInt64, serverDeliveryTimestamp: UInt64, tx: SDSAnyWriteTransaction) { failTest(Self.self) }
-        func receivedAnswer(_ answer: SSKProtoCallMessageAnswer, from caller: (aci: Aci, deviceId: UInt32)) { failTest(Self.self) }
+        func receivedAnswer(_ answer: SSKProtoCallMessageAnswer, from caller: (aci: Aci, deviceId: UInt32), tx: SDSAnyReadTransaction) { failTest(Self.self) }
         func receivedIceUpdate(_ iceUpdate: [SSKProtoCallMessageIceUpdate], from caller: (aci: Aci, deviceId: UInt32)) { failTest(Self.self) }
         func receivedHangup(_ hangup: SSKProtoCallMessageHangup, from caller: (aci: Aci, deviceId: UInt32)) { failTest(Self.self) }
         func receivedBusy(_ busy: SSKProtoCallMessageBusy, from caller: (aci: Aci, deviceId: UInt32)) { failTest(Self.self) }

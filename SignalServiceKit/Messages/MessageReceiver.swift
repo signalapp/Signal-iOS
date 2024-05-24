@@ -1212,65 +1212,57 @@ public final class MessageReceiver: Dependencies {
             setProfileKeyIfValid(profileKey, for: envelope.sourceAci, localIdentifiers: localIdentifiers, tx: tx)
         }
 
-        // By dispatching async, we introduce the possibility that these messages might be lost
-        // if the app exits before this block is executed.  This is fine, since the call by
-        // definition will end if the app exits.
-        DispatchQueue.main.async { [databaseStorage, callMessageHandler] in
-            if let offer = callMessage.offer {
-                databaseStorage.write { tx in
-                    callMessageHandler.receivedOffer(
-                        offer,
-                        from: (envelope.sourceAci, envelope.sourceDeviceId),
-                        sentAtTimestamp: envelope.timestamp,
-                        serverReceivedTimestamp: envelope.serverTimestamp,
-                        serverDeliveryTimestamp: request.serverDeliveryTimestamp,
-                        tx: tx
-                    )
-                }
-                return
-            }
-            if let answer = callMessage.answer {
-                callMessageHandler.receivedAnswer(
-                    answer,
-                    from: (envelope.sourceAci, envelope.sourceDeviceId)
-                )
-                return
-            }
-            if !callMessage.iceUpdate.isEmpty {
-                callMessageHandler.receivedIceUpdate(
-                    callMessage.iceUpdate,
-                    from: (envelope.sourceAci, envelope.sourceDeviceId)
-                )
-                return
-            }
-            if let hangup = callMessage.hangup {
-                callMessageHandler.receivedHangup(
-                    hangup,
-                    from: (envelope.sourceAci, envelope.sourceDeviceId)
-                )
-                return
-            }
-            if let busy = callMessage.busy {
-                callMessageHandler.receivedBusy(
-                    busy,
-                    from: (envelope.sourceAci, envelope.sourceDeviceId)
-                )
-                return
-            }
-            if let opaque = callMessage.opaque {
-                databaseStorage.read { tx in
-                    callMessageHandler.receivedOpaque(
-                        opaque,
-                        from: (envelope.sourceAci, envelope.sourceDeviceId),
-                        serverReceivedTimestamp: envelope.serverTimestamp,
-                        serverDeliveryTimestamp: request.serverDeliveryTimestamp,
-                        tx: tx
-                    )
-                }
-                return
-            }
-            Logger.warn("Call message with no actionable payload.")
+        if let offer = callMessage.offer {
+            callMessageHandler.receivedOffer(
+                offer,
+                from: (envelope.sourceAci, envelope.sourceDeviceId),
+                sentAtTimestamp: envelope.timestamp,
+                serverReceivedTimestamp: envelope.serverTimestamp,
+                serverDeliveryTimestamp: request.serverDeliveryTimestamp,
+                tx: tx
+            )
+            return
         }
+        if let answer = callMessage.answer {
+            callMessageHandler.receivedAnswer(
+                answer,
+                from: (envelope.sourceAci, envelope.sourceDeviceId),
+                tx: tx
+            )
+            return
+        }
+        if !callMessage.iceUpdate.isEmpty {
+            callMessageHandler.receivedIceUpdate(
+                callMessage.iceUpdate,
+                from: (envelope.sourceAci, envelope.sourceDeviceId)
+            )
+            return
+        }
+        if let hangup = callMessage.hangup {
+            callMessageHandler.receivedHangup(
+                hangup,
+                from: (envelope.sourceAci, envelope.sourceDeviceId)
+            )
+            return
+        }
+        if let busy = callMessage.busy {
+            callMessageHandler.receivedBusy(
+                busy,
+                from: (envelope.sourceAci, envelope.sourceDeviceId)
+            )
+            return
+        }
+        if let opaque = callMessage.opaque {
+            callMessageHandler.receivedOpaque(
+                opaque,
+                from: (envelope.sourceAci, envelope.sourceDeviceId),
+                serverReceivedTimestamp: envelope.serverTimestamp,
+                serverDeliveryTimestamp: request.serverDeliveryTimestamp,
+                tx: tx
+            )
+            return
+        }
+        Logger.warn("Call message with no actionable payload.")
     }
 
     private func handleIncomingEnvelope(

@@ -153,7 +153,8 @@ class NSECallMessageHandler: CallMessageHandler {
 
     func receivedAnswer(
         _ answer: SSKProtoCallMessageAnswer,
-        from caller: (aci: Aci, deviceId: UInt32)
+        from caller: (aci: Aci, deviceId: UInt32),
+        tx: SDSAnyReadTransaction
     ) {
         owsFailDebug("This should never be called, calls are handled externally")
     }
