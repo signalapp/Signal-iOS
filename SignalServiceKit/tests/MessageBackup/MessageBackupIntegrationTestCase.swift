@@ -150,6 +150,7 @@ private enum CrashyMocks {
     }
 
     final class MockCurrentCallThreadProvider: CurrentCallProvider {
+        var hasCurrentCall: Bool { failTest(Self.self) }
         var currentCallThread: TSThread? { failTest(Self.self) }
     }
 

@@ -206,7 +206,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     }
 
     func callServiceState(_ callServiceState: CallServiceState, didTerminateCall call: SignalCall) {
-        if !callServiceState.hasActiveOrPendingCall {
+        if callServiceState.currentCall == nil {
             audioSession.isRTCAudioEnabled = false
         }
         audioSession.endAudioActivity(call.commonState.audioActivity)
@@ -492,10 +492,9 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     func buildAndConnectGroupCallIfPossible(thread: TSGroupThread, videoMuted: Bool) -> (SignalCall, GroupThreadCall)? {
         AssertIsOnMainThread()
-        guard !callServiceState.hasActiveOrPendingCall else { return nil }
+        guard callServiceState.currentCall == nil else { return nil }
 
         guard let (call, groupThreadCall) = buildGroupCall(for: thread) else { return nil }
-        callServiceState.addCall(call)
 
         // By default, group calls should start out with speakerphone enabled.
         self.audioService.requestSpeakerphone(isEnabled: true)
@@ -637,7 +636,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     func buildOutgoingIndividualCallIfPossible(thread: TSContactThread, hasVideo: Bool) -> (SignalCall, IndividualCall)? {
         AssertIsOnMainThread()
-        guard !callServiceState.hasActiveOrPendingCall else { return nil }
+        guard callServiceState.currentCall == nil else { return nil }
 
         let individualCall = IndividualCall.outgoingIndividualCall(
             thread: thread,
@@ -645,8 +644,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         )
 
         let call = SignalCall(individualCall: individualCall)
-
-        callServiceState.addCall(call)
 
         return (call, individualCall)
     }
@@ -988,12 +985,7 @@ extension CallService: CallManagerDelegate {
 
         let recipientAci = Aci(fromUUID: recipientUuid)
 
-        // It's unlikely that this would ever have more than one call. But technically
-        // we don't know which call this message is on behalf of. So we assume it's every
-        // call with a participant with recipientUuid
-        let relevantCalls = callServiceState.activeOrPendingCalls.filter { (call: SignalCall) -> Bool in
-            call.participantAddresses.contains(where: { $0.serviceId == recipientAci })
-        }
+        let currentCall = self.callServiceState.currentCall
 
         databaseStorage.write(.promise) { transaction in
             TSContactThread.getOrCreateThread(
@@ -1029,14 +1021,13 @@ extension CallService: CallManagerDelegate {
             if error.isNetworkFailureOrTimeout {
                 Logger.warn("Failed to send opaque message \(error)")
             } else if error is UntrustedIdentityError {
-                relevantCalls.forEach {
-                    switch $0.mode {
-                    case .individual:
-                        // TODO: Handle this case for 1:1 calls as well.
-                        break
-                    case .groupThread(let call):
-                        call.publishSendFailureUntrustedParticipantIdentity()
-                    }
+                switch currentCall?.mode {
+                case nil:
+                    owsFailDebug("We can't send messages to inactive group calls.")
+                case .individual:
+                    owsFailDebug("We don't send messages for 1:1 calls.")
+                case .groupThread(let call):
+                    call.publishSendFailureUntrustedParticipantIdentity()
                 }
             } else {
                 Logger.error("Failed to send opaque message \(error)")
@@ -1130,8 +1121,6 @@ extension CallService: CallManagerDelegate {
             handleFailedCall(failedCall: call, error: OWSAssertionError("a current call is already set"))
             return
         }
-
-        owsAssertDebug(callServiceState.activeOrPendingCalls.contains(where: { $0 === call }), "unknown call: \(call)")
 
         switch call.mode {
         case .individual(let individualCall) where isOutgoing:

@@ -426,7 +426,7 @@ public class TSAttachmentDownloadManager: NSObject {
             return false
         }
 
-        return CurrentAppContext().hasActiveOrPendingCall
+        return DependenciesBridge.shared.currentCallProvider.hasCurrentCall
     }
 
     private func isDownloadBlockedByPendingMessageRequest(

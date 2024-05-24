@@ -191,11 +191,7 @@ public class QRCodeScanViewController: OWSViewController {
     }
 
     public override var prefersStatusBarHidden: Bool {
-        guard !CurrentAppContext().hasActiveOrPendingCall else {
-            return false
-        }
-
-        return true
+        return !DependenciesBridge.shared.currentCallProvider.hasCurrentCall
     }
 
     public override var prefersHomeIndicatorAutoHidden: Bool {

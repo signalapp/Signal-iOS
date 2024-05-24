@@ -148,7 +148,7 @@ extension UIViewController {
         // We want to avoid asking for audio permission while the app is in the background,
         // as WebRTC can ask at some strange times. However, if we're currently in a call
         // it's important we allow you to request audio permission regardless of app state.
-        guard CurrentAppContext().reportedApplicationState != .background || CurrentAppContext().hasActiveOrPendingCall else {
+        guard CurrentAppContext().reportedApplicationState != .background || DependenciesBridge.shared.currentCallProvider.hasCurrentCall else {
             Logger.error("Skipping microphone permissions request when app is in background.")
             threadSafeCallback(false)
             return

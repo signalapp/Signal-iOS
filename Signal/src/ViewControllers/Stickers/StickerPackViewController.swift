@@ -269,9 +269,7 @@ public class StickerPackViewController: OWSViewController {
     private func updateInsets() {
         UIView.setAnimationsEnabled(false)
 
-        if !CurrentAppContext().isMainApp {
-            self.additionalSafeAreaInsets = .zero
-        } else if CurrentAppContext().hasActiveOrPendingCall {
+        if AppEnvironment.shared.callService.callServiceState.currentCall != nil {
             self.additionalSafeAreaInsets = UIEdgeInsets(top: 20, leading: 0, bottom: 0, trailing: 0)
         } else {
             self.additionalSafeAreaInsets = .zero

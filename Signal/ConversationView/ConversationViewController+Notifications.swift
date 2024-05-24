@@ -15,10 +15,6 @@ extension ConversationViewController {
                                                name: BlockingManager.blockListDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(activeCallsDidChange),
-                                               name: CallServiceState.activeCallsDidChange,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
                                                selector: #selector(identityStateDidChange),
                                                name: .identityStateDidChange,
                                                object: nil)
@@ -106,13 +102,6 @@ extension ConversationViewController {
 
         enqueueReload()
         ensureBannerState()
-    }
-
-    @objc
-    private func activeCallsDidChange(_ notification: NSNotification) {
-        AssertIsOnMainThread()
-
-        updateBarButtonItems()
     }
 
     @objc

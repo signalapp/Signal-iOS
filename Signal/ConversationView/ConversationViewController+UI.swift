@@ -148,7 +148,7 @@ extension ConversationViewController {
                         target: self,
                         action: #selector(startIndividualAudioCall)
                     )
-                    audioCallButton.isEnabled = !CurrentAppContext().hasActiveOrPendingCall
+                    audioCallButton.isEnabled = AppEnvironment.shared.callService.callServiceState.currentCall == nil
                     audioCallButton.accessibilityLabel = OWSLocalizedString(
                         "VOICE_CALL_LABEL",
                         comment: "Accessibility label for placing a voice call"
@@ -161,7 +161,7 @@ extension ConversationViewController {
                         target: self,
                         action: #selector(startIndividualVideoCall)
                     )
-                    videoCallButton.isEnabled = !CurrentAppContext().hasActiveOrPendingCall
+                    videoCallButton.isEnabled = AppEnvironment.shared.callService.callServiceState.currentCall == nil
                     videoCallButton.accessibilityLabel = OWSLocalizedString(
                         "VIDEO_CALL_LABEL",
                         comment: "Accessibility label for placing a video call"

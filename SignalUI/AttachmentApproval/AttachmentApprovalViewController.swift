@@ -203,7 +203,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     // MARK: - View Lifecycle
 
     public override var prefersStatusBarHidden: Bool {
-        !UIDevice.current.hasIPhoneXNotch && !UIDevice.current.isIPad && !CurrentAppContext().hasActiveOrPendingCall
+        !UIDevice.current.hasIPhoneXNotch && !UIDevice.current.isIPad && !DependenciesBridge.shared.currentCallProvider.hasCurrentCall
     }
 
     public override var preferredStatusBarStyle: UIStatusBarStyle {

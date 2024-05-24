@@ -39,10 +39,6 @@ class CallServiceState {
                 return
             }
 
-            if let newValue {
-                assert(activeOrPendingCalls.contains(where: { $0 === newValue }))
-            }
-
             for observer in self.observers.elements {
                 observer.didUpdateCall(from: oldValue, to: newValue)
             }
@@ -51,40 +47,6 @@ class CallServiceState {
 
     func setCurrentCall(_ currentCall: SignalCall) {
         self.currentCall = currentCall
-    }
-
-    /// True whenever CallService has any call in progress.
-    /// The call may not yet be visible to the user if we are still in the middle of signaling.
-    public var hasActiveOrPendingCall: Bool {
-        return !activeOrPendingCalls.isEmpty
-    }
-
-    /// Track all calls that are currently "in play". Usually this is 1 or 0, but when dealing
-    /// with a rapid succession of calls, it's possible to have multiple.
-    ///
-    /// For example, if the client receives two call offers, we hand them both off to RingRTC,
-    /// which will let us know which one, if any, should become the "current call". But in the
-    /// meanwhile, we still want to track that calls are in-play so we can prevent the user from
-    /// placing an outgoing call.
-    private let _activeOrPendingCalls = AtomicValue<[SignalCall]>([], lock: .init())
-    var activeOrPendingCalls: [SignalCall] { _activeOrPendingCalls.get() }
-
-    func addCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
-        _activeOrPendingCalls.update { $0.append(call) }
-        postActiveCallsDidChange()
-    }
-
-    func removeCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
-        _activeOrPendingCalls.update { $0.removeAll(where: { $0 === call }) }
-        postActiveCallsDidChange()
-    }
-
-    public static let activeCallsDidChange = Notification.Name("activeCallsDidChange")
-
-    private func postActiveCallsDidChange() {
-        NotificationCenter.default.postNotificationNameAsync(Self.activeCallsDidChange, object: self)
     }
 
     /**
@@ -96,8 +58,6 @@ class CallServiceState {
 
         // If call is for the current call, clear it out first.
         if call === currentCall { currentCall = nil }
-
-        removeCall(call)
 
         switch call.mode {
         case .individual:

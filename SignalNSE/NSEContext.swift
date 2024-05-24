@@ -17,7 +17,6 @@ class NSEContext: NSObject, AppContext {
     var shouldProcessIncomingMessages: Bool { true }
     var hasUI: Bool { false }
     func canPresentNotifications() -> Bool { true }
-    var hasActiveOrPendingCall: Bool { false }
 
     let appLaunchTime = Date()
     // In NSE foreground and launch are the same.

@@ -328,8 +328,6 @@ final class IndividualCallService: CallServiceStateObserver {
         let newCall = SignalCall(individualCall: individualCall)
 
         DispatchQueue.main.async {
-            self.callServiceState.addCall(newCall)
-
             let backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)", completionBlock: { status in
                 AssertIsOnMainThread()
 

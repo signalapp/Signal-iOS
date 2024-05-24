@@ -17,5 +17,6 @@ struct CurrentCall {
 }
 
 extension CurrentCall: CurrentCallProvider {
+    var hasCurrentCall: Bool { self.get() != nil }
     var currentCallThread: TSThread? { self.get()?.thread }
 }

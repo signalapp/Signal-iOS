@@ -57,6 +57,7 @@ public class DependenciesBridge {
     public let changePhoneNumberPniManager: ChangePhoneNumberPniManager
     public let chatColorSettingStore: ChatColorSettingStore
     public let contactShareManager: ContactShareManager
+    public let currentCallProvider: any CurrentCallProvider
     public let db: DB
     public let deletedCallRecordCleanupManager: DeletedCallRecordCleanupManager
     let deletedCallRecordStore: DeletedCallRecordStore
@@ -152,6 +153,7 @@ public class DependenciesBridge {
         chatColorSettingStore: ChatColorSettingStore,
         chatConnectionManager: ChatConnectionManager,
         contactShareManager: ContactShareManager,
+        currentCallProvider: any CurrentCallProvider,
         db: DB,
         deletedCallRecordCleanupManager: DeletedCallRecordCleanupManager,
         deletedCallRecordStore: DeletedCallRecordStore,
@@ -244,6 +246,7 @@ public class DependenciesBridge {
         self.changePhoneNumberPniManager = changePhoneNumberPniManager
         self.chatColorSettingStore = chatColorSettingStore
         self.contactShareManager = contactShareManager
+        self.currentCallProvider = currentCallProvider
         self.db = db
         self.deletedCallRecordCleanupManager = deletedCallRecordCleanupManager
         self.deletedCallRecordStore = deletedCallRecordStore

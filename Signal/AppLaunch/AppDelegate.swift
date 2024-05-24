@@ -1117,7 +1117,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         // The call-banner window is only suitable for portrait display on iPhone
-        if CurrentAppContext().hasActiveOrPendingCall, !UIDevice.current.isIPad {
+        if AppReadiness.isAppReady, AppEnvironment.shared.callService.callServiceState.currentCall != nil, !UIDevice.current.isIPad {
             return .portrait
         }
 

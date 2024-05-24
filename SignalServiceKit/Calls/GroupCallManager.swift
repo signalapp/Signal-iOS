@@ -7,11 +7,13 @@ import LibSignalClient
 import SignalRingRTC
 
 public protocol CurrentCallProvider {
+    var hasCurrentCall: Bool { get }
     var currentCallThread: TSThread? { get }
 }
 
 public class CurrentCallNoOpProvider: CurrentCallProvider {
     public init() {}
+    public var hasCurrentCall: Bool { false }
     public var currentCallThread: TSThread? { nil }
 }
 

@@ -899,6 +899,7 @@ public class AppSetup {
             chatColorSettingStore: chatColorSettingStore,
             chatConnectionManager: chatConnectionManager,
             contactShareManager: contactShareManager,
+            currentCallProvider: currentCallProvider,
             db: db,
             deletedCallRecordCleanupManager: deletedCallRecordCleanupManager,
             deletedCallRecordStore: deletedCallRecordStore,

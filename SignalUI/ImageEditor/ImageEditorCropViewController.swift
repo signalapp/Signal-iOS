@@ -215,7 +215,7 @@ class ImageEditorCropViewController: OWSViewController {
     }
 
     public override var prefersStatusBarHidden: Bool {
-        !UIDevice.current.hasIPhoneXNotch && !UIDevice.current.isIPad && !CurrentAppContext().hasActiveOrPendingCall
+        !UIDevice.current.hasIPhoneXNotch && !UIDevice.current.isIPad && !DependenciesBridge.shared.currentCallProvider.hasCurrentCall
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }

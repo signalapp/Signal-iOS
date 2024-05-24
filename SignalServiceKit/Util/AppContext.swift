@@ -94,7 +94,6 @@ public protocol AppContext: NSObjectProtocol {
     var shouldProcessIncomingMessages: Bool { get }
     var hasUI: Bool { get }
     var debugLogsDirPath: String { get }
-    var hasActiveOrPendingCall: Bool { get }
 
     /// WARNING: Resets all persisted app data. (main app only).
     ///

@@ -196,14 +196,6 @@ class MainAppContext: NSObject, AppContext {
 
     let hasUI: Bool = true
 
-    var hasActiveOrPendingCall: Bool {
-        if AppReadiness.isAppReady {
-            return AppEnvironment.shared.callService.callServiceState.hasActiveOrPendingCall
-        } else {
-            return false
-        }
-    }
-
     var debugLogsDirPath: String { DebugLogger.mainAppDebugLogsDirPath }
 
     func resetAppDataAndExit() -> Never {
