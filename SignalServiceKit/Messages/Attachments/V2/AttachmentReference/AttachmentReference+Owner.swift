@@ -41,89 +41,6 @@ extension AttachmentReference {
         case globalThreadWallpaperImage
     }
 
-    /// A builder for the "owner" metadata of the attachment, with per-type
-    /// metadata required for construction.
-    ///
-    /// Note: some metadata is generically available on the source (proto or in-memory draft);
-    /// this enum contains only type-specific fields.
-    public enum OwnerBuilder: Equatable {
-        case messageBodyAttachment(MessageBodyAttachmentBuilder)
-
-        case messageOversizeText(messageRowId: Int64)
-        case messageLinkPreview(messageRowId: Int64)
-        /// Note that the row id is for the parent message containing the quoted reply,
-        /// not the original message being quoted.
-        case quotedReplyAttachment(MessageQuotedReplyAttachmentBuilder)
-        case messageSticker(MessageStickerBuilder)
-        case messageContactAvatar(messageRowId: Int64)
-        case storyMessageMedia(StoryMediaBuilder)
-        case storyMessageLinkPreview(storyMessageRowId: Int64)
-        case threadWallpaperImage(threadRowId: Int64)
-        case globalThreadWallpaperImage
-
-        public struct MessageBodyAttachmentBuilder: Equatable {
-            public let messageRowId: Int64
-            public let renderingFlag: AttachmentReference.RenderingFlag
-
-            /// Note: index/orderInOwner is inferred from the order of the provided array at creation time.
-
-            /// Note: at time of writing message captions are unused; not taken as input here.
-
-            public init(
-                messageRowId: Int64,
-                renderingFlag: AttachmentReference.RenderingFlag
-            ) {
-                self.messageRowId = messageRowId
-                self.renderingFlag = renderingFlag
-            }
-        }
-
-        public struct MessageQuotedReplyAttachmentBuilder: Equatable {
-            public let messageRowId: Int64
-            public let renderingFlag: AttachmentReference.RenderingFlag
-
-            public init(
-                messageRowId: Int64,
-                renderingFlag: AttachmentReference.RenderingFlag
-            ) {
-                self.messageRowId = messageRowId
-                self.renderingFlag = renderingFlag
-            }
-        }
-
-        public struct MessageStickerBuilder: Equatable {
-            public let messageRowId: Int64
-            public let stickerPackId: Data
-            public let stickerId: UInt32
-
-            public init(
-                messageRowId: Int64,
-                stickerPackId: Data,
-                stickerId: UInt32
-            ) {
-                self.messageRowId = messageRowId
-                self.stickerPackId = stickerPackId
-                self.stickerId = stickerId
-            }
-        }
-
-        public struct StoryMediaBuilder: Equatable {
-            public let storyMessageRowId: Int64
-            public let caption: StyleOnlyMessageBody?
-            public let shouldLoop: Bool
-
-            public init(
-                storyMessageRowId: Int64,
-                caption: StyleOnlyMessageBody?,
-                shouldLoop: Bool
-            ) {
-                self.storyMessageRowId = storyMessageRowId
-                self.caption = caption
-                self.shouldLoop = shouldLoop
-            }
-        }
-    }
-
     /// A more friendly in-memory representation of the "owner" of the attachment
     /// with any associated metadata.
     public enum Owner {
@@ -181,7 +98,7 @@ extension AttachmentReference {
                 /// you must fetch the full attachment object and use its mimeType.
                 public let contentType: ContentType?
 
-                fileprivate init(
+                internal init(
                     messageRowId: Int64,
                     receivedAtTimestamp: UInt64,
                     threadRowId: Int64,
@@ -208,7 +125,7 @@ extension AttachmentReference {
                 /// Uniquely identifies this attachment in the owning message's body attachments.
                 public let idInOwner: String?
 
-                fileprivate init(
+                internal init(
                     messageRowId: Int64,
                     receivedAtTimestamp: UInt64,
                     threadRowId: Int64,
@@ -235,7 +152,7 @@ extension AttachmentReference {
                 /// Flag from the sender giving us a hint for how it should be rendered.
                 public let renderingFlag: RenderingFlag
 
-                fileprivate init(
+                internal init(
                     messageRowId: Int64,
                     receivedAtTimestamp: UInt64,
                     threadRowId: Int64,
@@ -257,7 +174,7 @@ extension AttachmentReference {
                 public let stickerPackId: Data
                 public let stickerId: UInt32
 
-                fileprivate init(
+                internal init(
                     messageRowId: Int64,
                     receivedAtTimestamp: UInt64,
                     threadRowId: Int64,
@@ -306,7 +223,7 @@ extension AttachmentReference {
                 /// The sqlite row id of the story message owner.
                 public let storyMessageRowId: Int64
 
-                fileprivate init(storyMessageRowId: Int64) {
+                internal init(storyMessageRowId: Int64) {
                     self.storyMessageRowId = storyMessageRowId
                 }
             }
@@ -317,7 +234,7 @@ extension AttachmentReference {
                 /// Equivalent to RenderingFlag.shouldLoop; the only allowed flag for stories.
                 public var shouldLoop: Bool
 
-                fileprivate init(
+                internal init(
                     storyMessageRowId: Int64,
                     caption: StyleOnlyMessageBody?,
                     shouldLoop: Bool
@@ -353,7 +270,7 @@ extension AttachmentReference {
                 /// (in other words, when the user set this wallpaper).
                 public let creationTimestamp: UInt64
 
-                fileprivate init(threadRowId: Int64, creationTimestamp: UInt64) {
+                internal init(threadRowId: Int64, creationTimestamp: UInt64) {
                     self.threadRowId = threadRowId
                     self.creationTimestamp = creationTimestamp
                 }
@@ -500,34 +417,6 @@ extension AttachmentReference.Owner {
         case .thread(.threadWallpaperImage(let metadata)):
             return .threadWallpaperImage(threadRowId: metadata.threadRowId)
         case .thread(.globalThreadWallpaperImage):
-            return .globalThreadWallpaperImage
-        }
-    }
-}
-
-extension AttachmentReference.OwnerBuilder {
-
-    internal var id: AttachmentReference.OwnerId {
-        switch self {
-        case .messageBodyAttachment(let bodyOwnerBuilder):
-            return .messageBodyAttachment(messageRowId: bodyOwnerBuilder.messageRowId)
-        case .messageOversizeText(let messageRowId):
-            return .messageOversizeText(messageRowId: messageRowId)
-        case .messageLinkPreview(let messageRowId):
-            return .messageLinkPreview(messageRowId: messageRowId)
-        case .quotedReplyAttachment(let builder):
-            return .quotedReplyAttachment(messageRowId: builder.messageRowId)
-        case .messageSticker(let stickerOwnerBuilder):
-            return .messageSticker(messageRowId: stickerOwnerBuilder.messageRowId)
-        case .messageContactAvatar(let messageRowId):
-            return .messageContactAvatar(messageRowId: messageRowId)
-        case .storyMessageMedia(let mediaOwnerBuilder):
-            return .storyMessageMedia(storyMessageRowId: mediaOwnerBuilder.storyMessageRowId)
-        case .storyMessageLinkPreview(let storyMessageRowId):
-            return .storyMessageLinkPreview(storyMessageRowId: storyMessageRowId)
-        case .threadWallpaperImage(let threadRowId):
-            return .threadWallpaperImage(threadRowId: threadRowId)
-        case .globalThreadWallpaperImage:
             return .globalThreadWallpaperImage
         }
     }
