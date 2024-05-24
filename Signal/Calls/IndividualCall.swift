@@ -77,17 +77,23 @@ public class IndividualCall: CustomDebugStringConvertible {
         }
     }
 
-    var callId: UInt64? {
-        didSet {
-            AssertIsOnMainThread()
+    private(set) var callId: UInt64?
 
-            Logger.info("CallId added for call")
-            self.databaseStorage.asyncWrite { transaction in
-                if let callInteraction = self.callInteraction {
-                    self.createOrUpdateCallRecordIfNeeded(for: callInteraction, transaction: transaction)
-                } else {
-                    Logger.info("Unable to create call record with id; no interaction yet")
-                }
+    /// Can be accessed only within write transactions.
+    private var callIdForCallRecordOperations: UInt64?
+
+    func setOutgoingCallIdAndUpdateCallRecord(_ callId: UInt64) {
+        AssertIsOnMainThread()
+        owsAssert(self.direction == .outgoing)
+        Logger.info("")
+
+        self.callId = callId
+        self.databaseStorage.asyncWrite { tx in
+            self.callIdForCallRecordOperations = callId
+            if let callInteraction = self.callInteraction {
+                self.createOrUpdateCallRecordIfNeeded(for: callInteraction, transaction: tx)
+            } else {
+                Logger.info("Unable to create call record with id; no interaction yet")
             }
         }
     }
@@ -255,6 +261,7 @@ public class IndividualCall: CustomDebugStringConvertible {
         offerMediaType: TSRecentCallOfferType
     ) -> IndividualCall {
         return IndividualCall(
+            callId: nil,
             direction: .outgoing,
             offerMediaType: offerMediaType,
             state: .dialing,
@@ -264,11 +271,13 @@ public class IndividualCall: CustomDebugStringConvertible {
     }
 
     static func incomingIndividualCall(
+        callId: UInt64,
         thread: TSContactThread,
         sentAtTimestamp: UInt64,
         offerMediaType: TSRecentCallOfferType
     ) -> IndividualCall {
         return IndividualCall(
+            callId: callId,
             direction: .incoming,
             offerMediaType: offerMediaType,
             state: .answering,
@@ -277,13 +286,16 @@ public class IndividualCall: CustomDebugStringConvertible {
         )
     }
 
-    init(
+    private init(
+        callId: UInt64?,
         direction: CallDirection,
         offerMediaType: TSRecentCallOfferType,
         state: CallState,
         thread: TSContactThread,
         sentAtTimestamp: UInt64
     ) {
+        self.callId = callId
+        self.callIdForCallRecordOperations = callId
         self.commonState = CommonCallState(
             audioActivity: AudioActivity(
                 audioDescription: "[SignalCall] with individual \(thread.contactAddress)",
@@ -447,7 +459,7 @@ public class IndividualCall: CustomDebugStringConvertible {
             return callRecord
         }
 
-        guard let callId else {
+        guard let callIdForCallRecordOperations else {
             // Without a callId we can't look up a record.
             return nil
         }
@@ -459,7 +471,7 @@ public class IndividualCall: CustomDebugStringConvertible {
 
         let callRecord: CallRecord? = {
             switch self.callRecordStore.fetch(
-                callId: callId, threadRowId: threadRowId, tx: transaction.asV2Read
+                callId: callIdForCallRecordOperations, threadRowId: threadRowId, tx: transaction.asV2Read
             ) {
             case .matchFound(let callRecord):
                 return callRecord
@@ -522,7 +534,7 @@ public class IndividualCall: CustomDebugStringConvertible {
         for callInteraction: TSCall,
         transaction: SDSAnyWriteTransaction
     ) {
-        guard let callId = self.callId else {
+        guard let callIdForCallRecordOperations else {
             Logger.info("No call id; unable to create call record.")
             return
         }
@@ -541,7 +553,7 @@ public class IndividualCall: CustomDebugStringConvertible {
             individualCallInteractionRowId: callInteractionRowId,
             contactThread: thread,
             contactThreadRowId: threadRowId,
-            callId: callId,
+            callId: callIdForCallRecordOperations,
             tx: transaction.asV2Write
         )
     }

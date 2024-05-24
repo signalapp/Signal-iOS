@@ -205,6 +205,7 @@ final class IndividualCallService: CallServiceStateObserver {
     }
 
     private func prepareIncomingIndividualCall(
+        callId: UInt64,
         thread: TSContactThread,
         sentAtTimestamp: UInt64,
         callType: SSKProtoCallMessageOfferType
@@ -220,6 +221,7 @@ final class IndividualCallService: CallServiceStateObserver {
         }
 
         let individualCall = IndividualCall.incomingIndividualCall(
+            callId: callId,
             thread: thread,
             sentAtTimestamp: sentAtTimestamp,
             offerMediaType: offerMediaType
@@ -255,11 +257,11 @@ final class IndividualCallService: CallServiceStateObserver {
         }
 
         let newCall = prepareIncomingIndividualCall(
+            callId: callId,
             thread: thread,
             sentAtTimestamp: sentAtTimestamp,
             callType: callType
         )
-        newCall.individualCall.callId = callId
 
         guard tsAccountManager.registrationState(tx: transaction.asV2Read).isRegistered else {
             Logger.warn("user is not registered, skipping call.")

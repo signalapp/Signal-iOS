@@ -1134,8 +1134,10 @@ extension CallService: CallManagerDelegate {
         owsAssertDebug(callServiceState.activeOrPendingCalls.contains(where: { $0 === call }), "unknown call: \(call)")
 
         switch call.mode {
-        case .individual(let individualCall):
-            individualCall.callId = callId
+        case .individual(let individualCall) where isOutgoing:
+            individualCall.setOutgoingCallIdAndUpdateCallRecord(callId)
+        case .individual:
+            break
         case .groupThread:
             owsFail("Can't start a group call using this method.")
         }
