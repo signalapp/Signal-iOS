@@ -12,7 +12,7 @@ public class LegacyAttachmentMigrator {
     public static func createQuotedReplyMessageThumbnail(
         migratingLegacyAttachment attachment: TSAttachment,
         quotedReplyMessageId: Int64
-    ) throws -> (Attachment.ConstructionParams, AttachmentReference) {
+    ) throws -> (Attachment.ConstructionParams, AttachmentReference.ConstructionParams) {
         fatalError("Unimplemented!")
     }
 }

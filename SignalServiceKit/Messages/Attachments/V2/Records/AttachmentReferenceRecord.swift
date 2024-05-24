@@ -94,11 +94,27 @@ extension AttachmentReference {
             attachmentReference: AttachmentReference,
             messageSource: AttachmentReference.Owner.MessageSource
         ) {
+            self.init(
+                attachmentRowId: attachmentReference.attachmentRowId,
+                sourceFilename: attachmentReference.sourceFilename,
+                sourceUnencryptedByteCount: attachmentReference.sourceUnencryptedByteCount,
+                sourceMediaSizePixels: attachmentReference.sourceMediaSizePixels,
+                messageSource: messageSource
+            )
+        }
+
+        internal init(
+            attachmentRowId: Attachment.IDType,
+            sourceFilename: String?,
+            sourceUnencryptedByteCount: UInt32?,
+            sourceMediaSizePixels: CGSize?,
+            messageSource: AttachmentReference.Owner.MessageSource
+        ) {
             self.ownerType = UInt32(messageSource.rawMessageOwnerType.rawValue)
-            self.attachmentRowId = attachmentReference.attachmentRowId
-            self.sourceFilename = attachmentReference.sourceFilename
-            self.sourceUnencryptedByteCount = attachmentReference.sourceUnencryptedByteCount
-            if let sourceMediaSizePixels = attachmentReference.sourceMediaSizePixels {
+            self.attachmentRowId = attachmentRowId
+            self.sourceFilename = sourceFilename
+            self.sourceUnencryptedByteCount = sourceUnencryptedByteCount
+            if let sourceMediaSizePixels = sourceMediaSizePixels {
                 self.sourceMediaHeightPixels = UInt32(exactly: sourceMediaSizePixels.height.rounded())
                 self.sourceMediaWidthPixels = UInt32(exactly: sourceMediaSizePixels.width.rounded())
             } else {
@@ -240,11 +256,27 @@ extension AttachmentReference {
             attachmentReference: AttachmentReference,
             storyMessageSource: AttachmentReference.Owner.StoryMessageSource
         ) throws {
+            try self.init(
+                attachmentRowId: attachmentReference.attachmentRowId,
+                sourceFilename: attachmentReference.sourceFilename,
+                sourceUnencryptedByteCount: attachmentReference.sourceUnencryptedByteCount,
+                sourceMediaSizePixels: attachmentReference.sourceMediaSizePixels,
+                storyMessageSource: storyMessageSource
+            )
+        }
+
+        internal init(
+            attachmentRowId: Attachment.IDType,
+            sourceFilename: String?,
+            sourceUnencryptedByteCount: UInt32?,
+            sourceMediaSizePixels: CGSize?,
+            storyMessageSource: AttachmentReference.Owner.StoryMessageSource
+        ) throws {
             self.ownerType = UInt32(storyMessageSource.rawStoryMessageOwnerType.rawValue)
-            self.attachmentRowId = attachmentReference.attachmentRowId
-            self.sourceFilename = attachmentReference.sourceFilename
-            self.sourceUnencryptedByteCount = attachmentReference.sourceUnencryptedByteCount
-            if let sourceMediaSizePixels = attachmentReference.sourceMediaSizePixels {
+            self.attachmentRowId = attachmentRowId
+            self.sourceFilename = sourceFilename
+            self.sourceUnencryptedByteCount = sourceUnencryptedByteCount
+            if let sourceMediaSizePixels = sourceMediaSizePixels {
                 self.sourceMediaHeightPixels = UInt32(exactly: sourceMediaSizePixels.height.rounded())
                 self.sourceMediaWidthPixels = UInt32(exactly: sourceMediaSizePixels.width.rounded())
             } else {
@@ -308,7 +340,17 @@ extension AttachmentReference {
             attachmentReference: AttachmentReference,
             threadSource: AttachmentReference.Owner.ThreadSource
         ) {
-            self.attachmentRowId = attachmentReference.attachmentRowId
+            self.init(
+                attachmentRowId: attachmentReference.attachmentRowId,
+                threadSource: threadSource
+            )
+        }
+
+        internal init(
+            attachmentRowId: Attachment.IDType,
+            threadSource: AttachmentReference.Owner.ThreadSource
+        ) {
+            self.attachmentRowId = attachmentRowId
             switch threadSource {
             case .threadWallpaperImage(let metadata):
                 self.ownerRowId = metadata.threadRowId

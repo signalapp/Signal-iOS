@@ -478,11 +478,11 @@ public class TSResourceManagerImpl: TSResourceManager {
                             owsFailDebug("Invalid owner sent to quoted reply builder!")
                             return
                         }
-                        let (attachmentBuider, reference) = try LegacyAttachmentMigrator.createQuotedReplyMessageThumbnail(
+                        let (attachmentBuider, referenceBuilder) = try LegacyAttachmentMigrator.createQuotedReplyMessageThumbnail(
                             migratingLegacyAttachment: attachment,
                             quotedReplyMessageId: quotedReplyMessageId
                         )
-                        try attachmentStore.insert(attachmentBuider, reference: reference, tx: tx)
+                        try attachmentStore.insert(attachmentBuider, reference: referenceBuilder, tx: tx)
                     }
                 )
             } else {
