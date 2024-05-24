@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import GRDB
 
 public class AttachmentStoreImpl: AttachmentStore {
 
@@ -13,19 +14,28 @@ public class AttachmentStoreImpl: AttachmentStore {
         owners: [AttachmentReference.OwnerId],
         tx: DBReadTransaction
     ) -> [AttachmentReference] {
-        fatalError("Unimplemented")
+        fetchReferences(
+            owners: owners,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
+            tx: tx
+        )
     }
 
     public func fetch(ids: [Attachment.IDType], tx: DBReadTransaction) -> [Attachment] {
-        fatalError("Unimplemented")
+        fetch(ids: ids, db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database, tx: tx)
     }
 
     public func enumerateAllReferences(
-        toAttachmentId: Attachment.IDType,
+        toAttachmentId attachmentId: Attachment.IDType,
         tx: DBReadTransaction,
         block: (AttachmentReference) -> Void
     ) {
-        fatalError("Unimplemented")
+        enumerateAllReferences(
+            toAttachmentId: attachmentId,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
+            tx: tx,
+            block: block
+        )
     }
 
     // MARK: - Writes
@@ -33,6 +43,88 @@ public class AttachmentStoreImpl: AttachmentStore {
     public func addOwner(
         duplicating ownerReference: AttachmentReference,
         withNewOwner newOwner: AttachmentReference.OwnerId,
+        tx: DBWriteTransaction
+    ) throws{
+        try addOwner(
+            duplicating: ownerReference,
+            withNewOwner: newOwner,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
+            tx: tx
+        )
+    }
+
+    public func update(
+        _ reference: AttachmentReference,
+        withReceivedAtTimestamp receivedAtTimestamp: UInt64,
+        tx: DBWriteTransaction
+    ) throws {
+        try update(
+            reference,
+            withReceivedAtTimestamp: receivedAtTimestamp,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
+            tx: tx
+        )
+    }
+
+    public func removeOwner(
+        _ owner: AttachmentReference.OwnerId,
+        for attachmentId: Attachment.IDType,
+        tx: DBWriteTransaction
+    ) throws {
+        try removeOwner(
+            owner,
+            for: attachmentId,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
+            tx: tx
+        )
+    }
+
+    public func insert(
+        _ attachment: Attachment.ConstructionParams,
+        reference: AttachmentReference.ConstructionParams,
+        tx: DBWriteTransaction
+    ) throws {
+        try insert(
+            attachment,
+            reference: reference,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
+            tx: tx
+        )
+    }
+
+    // MARK: - Implementation
+
+    func fetchReferences(
+        owners: [AttachmentReference.OwnerId],
+        db: GRDB.Database,
+        tx: DBReadTransaction
+    ) -> [AttachmentReference] {
+        fatalError("Unimplemented")
+    }
+
+    func fetch(
+        ids: [Attachment.IDType],
+        db: GRDB.Database,
+        tx: DBReadTransaction
+    ) -> [Attachment] {
+        fatalError("Unimplemented")
+    }
+
+    func enumerateAllReferences(
+        toAttachmentId: Attachment.IDType,
+        db: GRDB.Database,
+        tx: DBReadTransaction,
+        block: (AttachmentReference) -> Void
+    ) {
+        fatalError("Unimplemented")
+    }
+
+    // MARK: Writes
+
+    func addOwner(
+        duplicating ownerReference: AttachmentReference,
+        withNewOwner newOwner: AttachmentReference.OwnerId,
+        db: GRDB.Database,
         tx: DBWriteTransaction
     ) throws{
         // New reference should have the same root type, just a different id.
@@ -70,25 +162,28 @@ public class AttachmentStoreImpl: AttachmentStore {
         fatalError("Unimplemented")
     }
 
-    public func update(
+    func update(
         _ reference: AttachmentReference,
         withReceivedAtTimestamp: UInt64,
+        db: GRDB.Database,
         tx: DBWriteTransaction
     ) throws {
         fatalError("Unimplemented")
     }
 
-    public func removeOwner(
+    func removeOwner(
         _ owner: AttachmentReference.OwnerId,
         for attachmentId: Attachment.IDType,
+        db: GRDB.Database,
         tx: DBWriteTransaction
     ) throws {
         fatalError("Unimplemented")
     }
 
-    public func insert(
+    func insert(
         _ attachment: Attachment.ConstructionParams,
         reference: AttachmentReference.ConstructionParams,
+        db: GRDB.Database,
         tx: DBWriteTransaction
     ) throws {
         fatalError("Unimplemented")
