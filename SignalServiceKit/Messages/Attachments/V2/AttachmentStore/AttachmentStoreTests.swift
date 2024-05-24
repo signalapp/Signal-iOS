@@ -21,15 +21,15 @@ class AttachmentStoreTests: XCTestCase {
     // MARK: - Inserts
 
     func testInsert() throws {
-        let attachmentBuilder = randomAttachmentBuilder()
-        let referenceBuilder = randomAttachmentReferenceBuilder(
+        let attachmentParams = randomAttachmentParams()
+        let referenceParams = randomAttachmentReferenceParams(
             owner: .thread(.globalThreadWallpaperImage(creationTimestamp: Date().ows_millisecondsSince1970))
         )
 
         try db.write { tx in
             try attachmentStore.insert(
-                attachmentBuilder,
-                reference: referenceBuilder,
+                attachmentParams,
+                reference: referenceParams,
                 db: InMemoryDB.shimOnlyBridge(tx).db,
                 tx: tx
             )
@@ -57,8 +57,8 @@ class AttachmentStoreTests: XCTestCase {
 
         XCTAssertEqual(reference.attachmentRowId, attachment.id)
 
-        assertEqual(attachmentBuilder, attachment)
-        try assertEqual(referenceBuilder, reference)
+        assertEqual(attachmentParams, attachment)
+        try assertEqual(referenceParams, reference)
     }
 
     func testMultipleInserts() throws {
@@ -70,8 +70,8 @@ class AttachmentStoreTests: XCTestCase {
         let message2AttachmentIds: [UUID] = [.init(), .init()]
         let message3AttachmentIds: [UUID] = [.init(), .init(), .init()]
 
-        var attachmentIdToAttachmentBuilder = [String: Attachment.ConstructionParams]()
-        var attachmentIdToAttachmentReferenceBuilder = [String: AttachmentReference.ConstructionParams]()
+        var attachmentIdToAttachmentParams = [String: Attachment.ConstructionParams]()
+        var attachmentIdToAttachmentReferenceParams = [String: AttachmentReference.ConstructionParams]()
 
         try db.write { tx in
             for (messageId, threadId, attachmentIds) in [
@@ -80,21 +80,21 @@ class AttachmentStoreTests: XCTestCase {
                 (messageId3, threadId3, message3AttachmentIds),
             ] {
                 try attachmentIds.enumerated().forEach { (index, id) in
-                    let attachmentBuilder = randomAttachmentBuilder()
-                    let attachmentReferenceBuilder = randomMessageBodyAttachmentReferenceBuilder(
+                    let attachmentParams = randomAttachmentParams()
+                    let attachmentReferenceParams = randomMessageBodyAttachmentReferenceParams(
                         messageRowId: messageId,
                         threadRowId: threadId,
                         orderInOwner: UInt32(index),
                         idInOwner: id.uuidString
                     )
                     try attachmentStore.insert(
-                        attachmentBuilder,
-                        reference: attachmentReferenceBuilder,
+                        attachmentParams,
+                        reference: attachmentReferenceParams,
                         db: InMemoryDB.shimOnlyBridge(tx).db,
                         tx: tx
                     )
-                    attachmentIdToAttachmentBuilder[id.uuidString] = attachmentBuilder
-                    attachmentIdToAttachmentReferenceBuilder[id.uuidString] = attachmentReferenceBuilder
+                    attachmentIdToAttachmentParams[id.uuidString] = attachmentParams
+                    attachmentIdToAttachmentReferenceParams[id.uuidString] = attachmentReferenceParams
                 }
             }
         }
@@ -134,15 +134,15 @@ class AttachmentStoreTests: XCTestCase {
                 }
 
                 guard
-                    let attachmentBuilder = attachmentIdToAttachmentBuilder[attachmentId],
-                    let referenceBuilder = attachmentIdToAttachmentReferenceBuilder[attachmentId]
+                    let attachmentParams = attachmentIdToAttachmentParams[attachmentId],
+                    let referenceParams = attachmentIdToAttachmentReferenceParams[attachmentId]
                 else {
                     XCTFail("Unexpected attachment id")
                     continue
                 }
 
-                assertEqual(attachmentBuilder, attachment)
-                try assertEqual(referenceBuilder, reference)
+                assertEqual(attachmentParams, attachment)
+                try assertEqual(referenceParams, reference)
             }
         }
     }
@@ -154,27 +154,27 @@ class AttachmentStoreTests: XCTestCase {
         // Same content hash for 2 attachments.
         let sha256ContentHash = UUID().data
 
-        let attachmentBuilder1 = randomAttachmentStreamBuilder(sha256ContentHash: sha256ContentHash)
-        let attachmentBuilder2 = randomAttachmentStreamBuilder(sha256ContentHash: sha256ContentHash)
+        let attachmentParams1 = randomAttachmentStreamParams(sha256ContentHash: sha256ContentHash)
+        let attachmentParams2 = randomAttachmentStreamParams(sha256ContentHash: sha256ContentHash)
 
         try db.write { tx in
-            let attachmentReferenceBuilder1 = randomMessageBodyAttachmentReferenceBuilder(
+            let attachmentReferenceParams1 = randomMessageBodyAttachmentReferenceParams(
                 messageRowId: messageId1,
                 threadRowId: threadId1
             )
-            let attachmentReferenceBuilder2 = randomMessageBodyAttachmentReferenceBuilder(
+            let attachmentReferenceParams2 = randomMessageBodyAttachmentReferenceParams(
                 messageRowId: messageId2,
                 threadRowId: threadId2
             )
             try attachmentStore.insert(
-                attachmentBuilder1,
-                reference: attachmentReferenceBuilder1,
+                attachmentParams1,
+                reference: attachmentReferenceParams1,
                 db: InMemoryDB.shimOnlyBridge(tx).db,
                 tx: tx
             )
             try attachmentStore.insert(
-                attachmentBuilder2,
-                reference: attachmentReferenceBuilder2,
+                attachmentParams2,
+                reference: attachmentReferenceParams2,
                 db: InMemoryDB.shimOnlyBridge(tx).db,
                 tx: tx
             )
@@ -219,32 +219,32 @@ class AttachmentStoreTests: XCTestCase {
         XCTAssertEqual(message1Attachments[0].id, message2Attachments[0].id)
 
         // And it should have used the first attachment inserted.
-        XCTAssertEqual(message1Attachments[0].encryptionKey, attachmentBuilder1.encryptionKey)
+        XCTAssertEqual(message1Attachments[0].encryptionKey, attachmentParams1.encryptionKey)
     }
 
     func testReinsertGlobalThreadAttachment() throws {
-        let attachmentBuilder1 = randomAttachmentBuilder()
+        let attachmentParams1 = randomAttachmentParams()
         let date1 = Date()
-        let referenceBuilder1 = randomAttachmentReferenceBuilder(
+        let referenceParams1 = randomAttachmentReferenceParams(
             owner: .thread(.globalThreadWallpaperImage(creationTimestamp: date1.ows_millisecondsSince1970))
         )
-        let attachmentBuilder2 = randomAttachmentBuilder()
+        let attachmentParams2 = randomAttachmentParams()
         let date2 = date1.addingTimeInterval(100)
-        let referenceBuilder2 = randomAttachmentReferenceBuilder(
+        let referenceParams2 = randomAttachmentReferenceParams(
             owner: .thread(.globalThreadWallpaperImage(creationTimestamp: date2.ows_millisecondsSince1970))
         )
 
         try db.write { tx in
             try attachmentStore.insert(
-                attachmentBuilder1,
-                reference: referenceBuilder1,
+                attachmentParams1,
+                reference: referenceParams1,
                 db: InMemoryDB.shimOnlyBridge(tx).db,
                 tx: tx
             )
             // Insert which should overwrite the existing row.
             try attachmentStore.insert(
-                attachmentBuilder2,
-                reference: referenceBuilder2,
+                attachmentParams2,
+                reference: referenceParams2,
                 db: InMemoryDB.shimOnlyBridge(tx).db,
                 tx: tx
             )
@@ -272,8 +272,8 @@ class AttachmentStoreTests: XCTestCase {
 
         XCTAssertEqual(reference.attachmentRowId, attachment.id)
 
-        assertEqual(attachmentBuilder2, attachment)
-        try assertEqual(referenceBuilder2, reference)
+        assertEqual(attachmentParams2, attachment)
+        try assertEqual(referenceParams2, reference)
     }
 
     func testInsertOverflowTimestamp() throws {
@@ -287,15 +287,15 @@ class AttachmentStoreTests: XCTestCase {
 
         do {
             try db.write { tx in
-                let attachmentBuilder = randomAttachmentBuilder()
-                let attachmentReferenceBuilder = randomMessageBodyAttachmentReferenceBuilder(
+                let attachmentParams = randomAttachmentParams()
+                let attachmentReferenceParams = randomMessageBodyAttachmentReferenceParams(
                     messageRowId: messageId,
                     threadRowId: threadId,
                     receivedAtTimestamp: receivedAtTimestamp
                 )
                 try attachmentStore.insert(
-                    attachmentBuilder,
-                    reference: attachmentReferenceBuilder,
+                    attachmentParams,
+                    reference: attachmentReferenceParams,
                     db: InMemoryDB.shimOnlyBridge(tx).db,
                     tx: tx
                 )
@@ -308,13 +308,13 @@ class AttachmentStoreTests: XCTestCase {
 
         do {
             try db.write { tx in
-                let attachmentBuilder = randomAttachmentBuilder()
-                let attachmentReferenceBuilder = randomAttachmentReferenceBuilder(
+                let attachmentParams = randomAttachmentParams()
+                let attachmentReferenceParams = randomAttachmentReferenceParams(
                     owner: .thread(.globalThreadWallpaperImage(creationTimestamp: receivedAtTimestamp))
                 )
                 try attachmentStore.insert(
-                    attachmentBuilder,
-                    reference: attachmentReferenceBuilder,
+                    attachmentParams,
+                    reference: attachmentReferenceParams,
                     db: InMemoryDB.shimOnlyBridge(tx).db,
                     tx: tx
                 )
@@ -333,22 +333,22 @@ class AttachmentStoreTests: XCTestCase {
             insertThreadAndInteraction()
         }
 
-        // Insert many references to the same builder over and over.
-        let attachmentBuilder = randomAttachmentBuilder()
+        // Insert many references to the same Params over and over.
+        let attachmentParams = randomAttachmentParams()
 
         let attachmentIdsInOwner: [String] = try db.write { tx in
             return try threadIdAndMessageIds.flatMap { threadId, messageId in
                 return try (0..<5).map { index in
                     let attachmentIdInOwner = UUID().uuidString
-                    let attachmentReferenceBuilder = randomMessageBodyAttachmentReferenceBuilder(
+                    let attachmentReferenceParams = randomMessageBodyAttachmentReferenceParams(
                         messageRowId: messageId,
                         threadRowId: threadId,
                         orderInOwner: UInt32(index),
                         idInOwner: attachmentIdInOwner
                     )
                     try attachmentStore.insert(
-                        attachmentBuilder,
-                        reference: attachmentReferenceBuilder,
+                        attachmentParams,
+                        reference: attachmentReferenceParams,
                         db: InMemoryDB.shimOnlyBridge(tx).db,
                         tx: tx
                     )
@@ -376,14 +376,14 @@ class AttachmentStoreTests: XCTestCase {
         try db.write { tx in
             try threadIdAndMessageIds.forEach { threadId, messageId in
                 try (0..<5).forEach { index in
-                    let attachmentReferenceBuilder = randomMessageBodyAttachmentReferenceBuilder(
+                    let attachmentReferenceParams = randomMessageBodyAttachmentReferenceParams(
                         messageRowId: messageId,
                         threadRowId: threadId,
                         orderInOwner: UInt32(index)
                     )
                     try attachmentStore.insert(
-                        randomAttachmentBuilder(),
-                        reference: attachmentReferenceBuilder,
+                        randomAttachmentParams(),
+                        reference: attachmentReferenceParams,
                         db: InMemoryDB.shimOnlyBridge(tx).db,
                         tx: tx
                     )
@@ -424,15 +424,15 @@ class AttachmentStoreTests: XCTestCase {
         let initialReceivedAtTimestamp: UInt64 = 1000
 
         try db.write { tx in
-            let attachmentBuilder = randomAttachmentBuilder()
-            let attachmentReferenceBuilder = randomMessageBodyAttachmentReferenceBuilder(
+            let attachmentParams = randomAttachmentParams()
+            let attachmentReferenceParams = randomMessageBodyAttachmentReferenceParams(
                 messageRowId: messageId,
                 threadRowId: threadId,
                 receivedAtTimestamp: initialReceivedAtTimestamp
             )
             try attachmentStore.insert(
-                attachmentBuilder,
-                reference: attachmentReferenceBuilder,
+                attachmentParams,
+                reference: attachmentReferenceParams,
                 db: InMemoryDB.shimOnlyBridge(tx).db,
                 tx: tx
             )
@@ -486,12 +486,12 @@ class AttachmentStoreTests: XCTestCase {
         let (threadId2, messageId2) = insertThreadAndInteraction()
 
         // Create two references to the same attachment.
-        let attachmentBuilder = randomAttachmentBuilder()
+        let attachmentParams = randomAttachmentParams()
 
         try db.write { tx in
             try attachmentStore.insert(
-                attachmentBuilder,
-                reference: randomMessageBodyAttachmentReferenceBuilder(
+                attachmentParams,
+                reference: randomMessageBodyAttachmentReferenceParams(
                     messageRowId: messageId1,
                     threadRowId: threadId1
                 ),
@@ -499,8 +499,8 @@ class AttachmentStoreTests: XCTestCase {
                 tx: tx
             )
             try attachmentStore.insert(
-                attachmentBuilder,
-                reference: randomMessageBodyAttachmentReferenceBuilder(
+                attachmentParams,
+                reference: randomMessageBodyAttachmentReferenceParams(
                     messageRowId: messageId2,
                     threadRowId: threadId2
                 ),
@@ -570,16 +570,16 @@ class AttachmentStoreTests: XCTestCase {
             )
         }
 
-        let originalReferenceBuilder = randomMessageBodyAttachmentReferenceBuilder(
+        let originalReferenceParams = randomMessageBodyAttachmentReferenceParams(
             messageRowId: messageId1,
             threadRowId: threadId
         )
 
         try db.write { tx in
-            let attachmentBuilder = randomAttachmentBuilder()
+            let attachmentParams = randomAttachmentParams()
             try attachmentStore.insert(
-                attachmentBuilder,
-                reference: originalReferenceBuilder,
+                attachmentParams,
+                reference: originalReferenceParams,
                 db: InMemoryDB.shimOnlyBridge(tx).db,
                 tx: tx
             )
@@ -620,16 +620,16 @@ class AttachmentStoreTests: XCTestCase {
         let (threadId1, messageId1) = insertThreadAndInteraction()
         let (_, messageId2) = insertThreadAndInteraction()
 
-        let originalReferenceBuilder = randomMessageBodyAttachmentReferenceBuilder(
+        let originalReferenceParams = randomMessageBodyAttachmentReferenceParams(
             messageRowId: messageId1,
             threadRowId: threadId1
         )
 
         try db.write { tx in
-            let attachmentBuilder = randomAttachmentBuilder()
+            let attachmentParams = randomAttachmentParams()
             try attachmentStore.insert(
-                attachmentBuilder,
-                reference: originalReferenceBuilder,
+                attachmentParams,
+                reference: originalReferenceParams,
                 db: InMemoryDB.shimOnlyBridge(tx).db,
                 tx: tx
             )
@@ -702,7 +702,7 @@ class AttachmentStoreTests: XCTestCase {
         return interaction.sqliteRowId!
     }
 
-    private func randomAttachmentBuilder() -> Attachment.ConstructionParams {
+    private func randomAttachmentParams() -> Attachment.ConstructionParams {
         return Attachment.ConstructionParams.fromPointer(
             blurHash: UUID().uuidString,
             mimeType: "image/png",
@@ -719,7 +719,7 @@ class AttachmentStoreTests: XCTestCase {
         )
     }
 
-    private func randomAttachmentStreamBuilder(
+    private func randomAttachmentStreamParams(
         sha256ContentHash: Data = UUID().data
     ) -> Attachment.ConstructionParams {
         return Attachment.ConstructionParams.fromStream(
@@ -738,7 +738,7 @@ class AttachmentStoreTests: XCTestCase {
         )
     }
 
-    private func randomAttachmentReferenceBuilder(owner: AttachmentReference.Owner) -> AttachmentReference.ConstructionParams {
+    private func randomAttachmentReferenceParams(owner: AttachmentReference.Owner) -> AttachmentReference.ConstructionParams {
         return AttachmentReference.ConstructionParams(
             owner: owner,
             sourceFilename: nil,
@@ -747,7 +747,7 @@ class AttachmentStoreTests: XCTestCase {
         )
     }
 
-    private func randomMessageBodyAttachmentReferenceBuilder(
+    private func randomMessageBodyAttachmentReferenceParams(
         messageRowId: Int64,
         threadRowId: Int64,
         receivedAtTimestamp: UInt64? = nil,
@@ -771,23 +771,23 @@ class AttachmentStoreTests: XCTestCase {
         )
     }
 
-    private func assertEqual(_ builder: Attachment.ConstructionParams, _ attachment: Attachment) {
-        var record = Attachment.Record(attachmentBuilder: builder)
+    private func assertEqual(_ params: Attachment.ConstructionParams, _ attachment: Attachment) {
+        var record = Attachment.Record(params: params)
         record.sqliteId = attachment.id
         XCTAssertEqual(record, .init(attachment: attachment))
     }
 
-    private func assertEqual(_ builder: AttachmentReference.ConstructionParams, _ reference: AttachmentReference) throws {
-        switch (builder.owner, reference.owner) {
+    private func assertEqual(_ params: AttachmentReference.ConstructionParams, _ reference: AttachmentReference) throws {
+        switch (params.owner, reference.owner) {
         case (.message, .message(let messageSource)):
             XCTAssertEqual(
-                try builder.buildRecord(attachmentRowId: reference.attachmentRowId)
+                try params.buildRecord(attachmentRowId: reference.attachmentRowId)
                     as! AttachmentReference.MessageAttachmentReferenceRecord,
                 AttachmentReference.MessageAttachmentReferenceRecord(attachmentReference: reference, messageSource: messageSource)
             )
         case (.storyMessage, .storyMessage(let storyMessageSource)):
             XCTAssertEqual(
-                try builder.buildRecord(attachmentRowId: reference.attachmentRowId)
+                try params.buildRecord(attachmentRowId: reference.attachmentRowId)
                     as! AttachmentReference.StoryMessageAttachmentReferenceRecord,
                 try AttachmentReference.StoryMessageAttachmentReferenceRecord(
                     attachmentReference: reference,
@@ -796,7 +796,7 @@ class AttachmentStoreTests: XCTestCase {
             )
         case (.thread, .thread(let threadSource)):
             XCTAssertEqual(
-                try builder.buildRecord(attachmentRowId: reference.attachmentRowId)
+                try params.buildRecord(attachmentRowId: reference.attachmentRowId)
                     as! AttachmentReference.ThreadAttachmentReferenceRecord,
                 AttachmentReference.ThreadAttachmentReferenceRecord(attachmentReference: reference, threadSource: threadSource)
             )

@@ -168,18 +168,18 @@ extension Attachment {
             )
         }
 
-        internal init(attachmentBuilder attachment: Attachment.ConstructionParams) {
+        internal init(params: Attachment.ConstructionParams) {
             self.init(
                 optionalSqliteId: nil,
-                blurHash: attachment.blurHash,
-                mimeType: attachment.mimeType,
-                encryptionKey: attachment.encryptionKey,
-                mediaName: attachment.mediaName,
-                localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
-                streamInfo: attachment.streamInfo,
-                transitTierInfo: attachment.transitTierInfo,
-                mediaTierInfo: attachment.mediaTierInfo,
-                thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo
+                blurHash: params.blurHash,
+                mimeType: params.mimeType,
+                encryptionKey: params.encryptionKey,
+                mediaName: params.mediaName,
+                localRelativeFilePathThumbnail: params.localRelativeFilePathThumbnail,
+                streamInfo: params.streamInfo,
+                transitTierInfo: params.transitTierInfo,
+                mediaTierInfo: params.mediaTierInfo,
+                thumbnailMediaTierInfo: params.thumbnailMediaTierInfo
             )
         }
 
