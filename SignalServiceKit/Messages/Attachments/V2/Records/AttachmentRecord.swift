@@ -7,9 +7,9 @@ import Foundation
 import GRDB
 
 extension Attachment {
-    public struct Record: Codable, MutablePersistableRecord, FetchableRecord {
+    public struct Record: Codable, MutablePersistableRecord, FetchableRecord, Equatable {
 
-        private(set) var sqliteId: Int64?
+        var sqliteId: Int64?
         let blurHash: String?
         let sha256ContentHash: Data?
         let encryptedByteCount: UInt32?

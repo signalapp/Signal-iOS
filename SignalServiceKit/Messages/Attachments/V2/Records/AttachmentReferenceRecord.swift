@@ -8,7 +8,7 @@ import GRDB
 
 extension AttachmentReference {
 
-    public struct MessageAttachmentReferenceRecord: Codable, PersistableRecord, FetchableRecord {
+    public struct MessageAttachmentReferenceRecord: Codable, PersistableRecord, FetchableRecord, Equatable {
 
         let ownerType: UInt32
         let ownerRowId: Int64
@@ -194,7 +194,7 @@ extension AttachmentReference {
         }
     }
 
-    public struct StoryMessageAttachmentReferenceRecord: Codable, PersistableRecord, FetchableRecord {
+    public struct StoryMessageAttachmentReferenceRecord: Codable, PersistableRecord, FetchableRecord, Equatable {
 
         let ownerType: UInt32
         let ownerRowId: Int64
@@ -306,7 +306,7 @@ extension AttachmentReference {
         }
     }
 
-    public struct ThreadAttachmentReferenceRecord: Codable, PersistableRecord, FetchableRecord {
+    public struct ThreadAttachmentReferenceRecord: Codable, PersistableRecord, FetchableRecord, Equatable {
 
         let ownerRowId: Int64?
         let attachmentRowId: Int64

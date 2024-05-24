@@ -827,6 +827,7 @@
 		6640132A2BFEB9C700F10FC4 /* SingleOrDoubleTapGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664013292BFEB9C700F10FC4 /* SingleOrDoubleTapGestureRecognizer.swift */; };
 		6640132C2BFFB8F500F10FC4 /* Attachment+ConstructionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640132B2BFFB8F500F10FC4 /* Attachment+ConstructionParams.swift */; };
 		6640132E2BFFDC2700F10FC4 /* AttachmentReference+ConstructionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640132D2BFFDC2700F10FC4 /* AttachmentReference+ConstructionParams.swift */; };
+		664013302C00155E00F10FC4 /* AttachmentStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640132F2C00155E00F10FC4 /* AttachmentStoreTests.swift */; };
 		6640639E294D20A900997E0B /* OutgoingCallEventSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640639D294D20A900997E0B /* OutgoingCallEventSyncMessage.swift */; };
 		6640DD602ACDBEC500CE9A8C /* IncomingPniChangeNumberProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640DD5F2ACDBEC500CE9A8C /* IncomingPniChangeNumberProcessor.swift */; };
 		6640DD632ACDD5DE00CE9A8C /* SVRLocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640DD622ACDD5DE00CE9A8C /* SVRLocalStorage.swift */; };
@@ -3744,6 +3745,7 @@
 		664013292BFEB9C700F10FC4 /* SingleOrDoubleTapGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleOrDoubleTapGestureRecognizer.swift; sourceTree = "<group>"; };
 		6640132B2BFFB8F500F10FC4 /* Attachment+ConstructionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Attachment+ConstructionParams.swift"; sourceTree = "<group>"; };
 		6640132D2BFFDC2700F10FC4 /* AttachmentReference+ConstructionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentReference+ConstructionParams.swift"; sourceTree = "<group>"; };
+		6640132F2C00155E00F10FC4 /* AttachmentStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentStoreTests.swift; sourceTree = "<group>"; };
 		6640639D294D20A900997E0B /* OutgoingCallEventSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingCallEventSyncMessage.swift; sourceTree = "<group>"; };
 		6640DD5F2ACDBEC500CE9A8C /* IncomingPniChangeNumberProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingPniChangeNumberProcessor.swift; sourceTree = "<group>"; };
 		6640DD622ACDD5DE00CE9A8C /* SVRLocalStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRLocalStorage.swift; sourceTree = "<group>"; };
@@ -8183,6 +8185,7 @@
 				66E1AD9F2B9155C200C56B7B /* AttachmentStore.swift */,
 				66583EFE2B9246C400821D05 /* AttachmentStoreImpl.swift */,
 				66D7B8FC2B9285EB0005C98B /* AttachmentStoreMock.swift */,
+				6640132F2C00155E00F10FC4 /* AttachmentStoreTests.swift */,
 				66D7B9082B9291BD0005C98B /* AttachmentUploadStore.swift */,
 			);
 			path = AttachmentStore;
@@ -14673,6 +14676,7 @@
 				50E51A3B2AE989C4004F9069 /* AccountAttributesTest.swift in Sources */,
 				F915A77229CB6F6F00EB6F68 /* AccountDataReportTest.swift in Sources */,
 				F908C67B29F08E4E00C3EFC4 /* AppExpiryTest.swift in Sources */,
+				664013302C00155E00F10FC4 /* AttachmentStoreTests.swift in Sources */,
 				66C1A8852BB77EE00076C65A /* AttachmentUploadManagerTestHelper.swift in Sources */,
 				66C1A8862BB77EE30076C65A /* AttachmentUploadManagerTestMocks.swift in Sources */,
 				66C1A8802BB77EA50076C65A /* AttachmentUploadManagerTests.swift in Sources */,
