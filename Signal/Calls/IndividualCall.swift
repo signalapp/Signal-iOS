@@ -193,21 +193,6 @@ public class IndividualCall: CustomDebugStringConvertible {
             Logger.debug("state changed: \(oldValue) -> \(self.state) for call: \(self)")
 
             let state = self.state
-            if let callType = self.callType {
-                self.databaseStorage.asyncWrite {
-                    if
-                        let callInteraction = self.callInteraction,
-                        let newCallType = self.validateCallType(
-                            callType,
-                            state: state,
-                            for: callInteraction,
-                            transaction: $0
-                        )
-                    {
-                        self.createOrUpdateCallInteraction(callType: newCallType, transaction: $0)
-                    }
-                }
-            }
 
             if case .connected = state {
                 commonState.setConnectedDateIfNeeded()
@@ -354,12 +339,9 @@ public class IndividualCall: CustomDebugStringConvertible {
         // written later. A sync write is used only for the initial call offer handling, as that
         // is always the first write for any given call, anyway.
         self.callType = callType
-        // Snapshot the state at the time we enqueued the write.
-        let state = self.state
         self.databaseStorage.asyncWrite {
             self._createOrUpdateCallInteraction(
                 callType: callType,
-                state: state,
                 transaction: $0
             )
         }
@@ -373,7 +355,6 @@ public class IndividualCall: CustomDebugStringConvertible {
         self.callType = callType
         _createOrUpdateCallInteraction(
             callType: callType,
-            state: self.state,
             transaction: transaction
         )
     }
@@ -389,16 +370,12 @@ public class IndividualCall: CustomDebugStringConvertible {
     /// that triggered the TSCall to be created and are therefore canonical.
     private func _createOrUpdateCallInteraction(
         callType: RPRecentCallType,
-        state: CallState,
         transaction: SDSAnyWriteTransaction
     ) {
         func updateCallType(existingCall: TSCall) {
-            guard let newCallType = self.validateCallType(
-                callType,
-                state: state,
-                for: existingCall,
-                transaction: transaction
-            ) else { return }
+            guard shouldUpdateCallType(callType, for: existingCall, tx: transaction) else {
+                return
+            }
 
             guard let existingCallRowId = existingCall.sqliteRowId else {
                 owsFailDebug("Missing SQLite row ID for call!")
@@ -409,7 +386,7 @@ public class IndividualCall: CustomDebugStringConvertible {
                 individualCallInteraction: existingCall,
                 individualCallInteractionRowId: existingCallRowId,
                 contactThread: thread,
-                newCallInteractionType: newCallType,
+                newCallInteractionType: callType,
                 tx: transaction.asV2Write
             )
         }
@@ -438,10 +415,6 @@ public class IndividualCall: CustomDebugStringConvertible {
 
         Logger.info("No existing call interaction found; creating")
 
-        // Validation might modify the call type, but ignore if it tries to say we
-        // shouldn't update and fall back to the original value since we are creating,
-        // not updating.
-        let callType = self.validateCallType(callType, state: state, for: nil, transaction: transaction) ?? callType
         // If we found nothing, create a new interaction.
         let callInteraction = TSCall(
             callType: callType,
@@ -499,37 +472,26 @@ public class IndividualCall: CustomDebugStringConvertible {
         return callRecord
     }
 
-    /// Takes a call type to apply to a TSCall, and returns nil if the update is illegal (should not be applied)
-    /// or the call type that should actually be applied, which can be the same or different.
-    /// Pass nil for the TSCall if creating a new one.
+    /// Takes a call type to apply to a TSCall, and returns whether or not the
+    /// update should be applied. Pass nil for the TSCall if creating a new one.
     ///
     /// We can't blindly update the TSCall's status based on CallKit callbacks.
     /// The status might be set by a linked device via call event syncs, so we should
     /// check that the transition is valid and only update if so.
     /// (e.g. if a linked device picks up as we decline, we should leave it as accepted)
-    private func validateCallType(
+    private func shouldUpdateCallType(
         _ callType: RPRecentCallType,
-        state: CallState,
         for callInteraction: TSCall?,
-        transaction: SDSAnyReadTransaction
-    ) -> RPRecentCallType? {
-        var callType = callType
-        // Mark incomplete calls as completed if call has connected.
-        if state == .connected, callType == .outgoingIncomplete {
-            callType = .outgoing
-        }
-        if state == .connected, callType == .incomingIncomplete {
-            callType = .incoming
-        }
-
+        tx transaction: SDSAnyReadTransaction
+    ) -> Bool {
         guard let callInteraction = callInteraction else {
             // No further checks if we are creating a new one.
-            return callType
+            return true
         }
         // Otherwise we are updated and need to check if transition
         // is valid.
         guard callInteraction.callType != callType else {
-            return nil
+            return false
         }
         guard
             let callRecord = fetchCallRecord(transaction: transaction),
@@ -538,7 +500,7 @@ public class IndividualCall: CustomDebugStringConvertible {
                 individualCallInteractionType: callType
             )
         else {
-            return callType
+            return true
         }
         // Multiple RPRecentCallTypes can map to the same CallRecord status,
         // but transitioning from a CallRecord status to itself is invalid.
@@ -551,9 +513,9 @@ public class IndividualCall: CustomDebugStringConvertible {
                 toIndividualCallStatus: newIndividualCallStatus
             )
          else {
-            return nil
+            return false
         }
-        return callType
+        return true
     }
 
     private func createOrUpdateCallRecordIfNeeded(

@@ -122,6 +122,9 @@ final class IndividualCallService: CallServiceStateObserver {
         // via CallManager.accept().
         handleConnected(call: call)
 
+        // Update the interaction now that we've accepted.
+        call.individualCall.createOrUpdateCallInteractionAsync(callType: .incoming)
+
         do {
             try callManager.accept(callId: callId)
         } catch {
@@ -552,10 +555,21 @@ final class IndividualCallService: CallServiceStateObserver {
             // nothing further to do - already handled in handleAcceptCall().
 
         case .connectedRemote:
+            defer {
+                callUIAdapter.recipientAcceptedCall(call.mode)
+            }
+
+            guard call === callServiceState.currentCall else {
+                cleanUpStaleCall(call)
+                return
+            }
+
             // Set the audio session configuration before audio is enabled in WebRTC
             // via recipientAcceptedCall().
             handleConnected(call: call)
-            callUIAdapter.recipientAcceptedCall(call.mode)
+
+            // Update the call interaction now that we've connected.
+            call.individualCall.createOrUpdateCallInteractionAsync(callType: .outgoing)
 
         case .endedLocalHangup:
             Logger.debug("")
@@ -1194,12 +1208,8 @@ final class IndividualCallService: CallServiceStateObserver {
      */
     private func handleConnected(call: SignalCall) {
         AssertIsOnMainThread()
+        owsAssert(call === callServiceState.currentCall)
         Logger.info("call: \(call)")
-
-        guard call === callServiceState.currentCall else {
-            cleanUpStaleCall(call)
-            return
-        }
 
         // End the background task.
         call.individualCall.backgroundTask = nil
