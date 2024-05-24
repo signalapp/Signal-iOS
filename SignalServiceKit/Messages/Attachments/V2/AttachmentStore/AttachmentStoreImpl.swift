@@ -92,6 +92,10 @@ public class AttachmentStoreImpl: AttachmentStore {
         )
     }
 
+    public func removeAllThreadOwners(tx: DBWriteTransaction) throws {
+        try removeAllThreadOwners(db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database, tx: tx)
+    }
+
     // MARK: - Implementation
 
     func fetchReferences(
@@ -186,6 +190,10 @@ public class AttachmentStoreImpl: AttachmentStore {
         db: GRDB.Database,
         tx: DBWriteTransaction
     ) throws {
+        fatalError("Unimplemented")
+    }
+
+    func removeAllThreadOwners(db: GRDB.Database, tx: DBWriteTransaction) throws {
         fatalError("Unimplemented")
     }
 }

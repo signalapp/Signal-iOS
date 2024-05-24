@@ -66,6 +66,10 @@ open class AttachmentStoreMock: AttachmentStore {
     ) throws {
         // do nothing
     }
+
+    open func removeAllThreadOwners(tx: DBWriteTransaction) throws {
+        // do nothing
+    }
 }
 
 #endif

@@ -63,6 +63,10 @@ public protocol AttachmentStore {
         reference: AttachmentReference.ConstructionParams,
         tx: DBWriteTransaction
     ) throws
+
+    /// Remove all owners of thread types (wallpaper and global wallpaper owners).
+    /// Will also delete any attachments that become unowned, like any other deletion.
+    func removeAllThreadOwners(tx: DBWriteTransaction) throws
 }
 
 // MARK: - Convenience

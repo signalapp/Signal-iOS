@@ -411,7 +411,10 @@ public class AppSetup {
         let threadReplyInfoStore = ThreadReplyInfoStore(keyValueStoreFactory: keyValueStoreFactory)
 
         let wallpaperImageStore = BridgingWallpaperImageStore(
-            wallpaperStore: WallpaperImageStoreImpl()
+            wallpaperStore: WallpaperImageStoreImpl(
+                attachmentManager: attachmentManager,
+                attachmentStore: attachmentStore
+            )
         )
         let wallpaperStore = WallpaperStore(
             keyValueStoreFactory: keyValueStoreFactory,
