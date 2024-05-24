@@ -262,6 +262,7 @@ extension SignalApp {
             OWSUserProfile.resetProfileStorage()
             preferences.removeAllValues()
             NSObject.notificationPresenter.clearAllNotifications()
+            UIApplication.shared.applicationIconBadgeNumber = 0
             OWSFileSystem.deleteContents(ofDirectory: OWSFileSystem.appSharedDataDirectoryPath())
             OWSFileSystem.deleteContents(ofDirectory: OWSFileSystem.appDocumentDirectoryPath())
             OWSFileSystem.deleteContents(ofDirectory: OWSFileSystem.cachesDirectoryPath())
