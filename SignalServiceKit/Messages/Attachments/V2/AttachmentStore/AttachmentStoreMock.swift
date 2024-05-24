@@ -47,7 +47,7 @@ open class AttachmentStoreMock: AttachmentStore {
         _ reference: AttachmentReference,
         withReceivedAtTimestamp: UInt64,
         tx: DBWriteTransaction
-    ) {
+    ) throws {
         // do nothings
     }
 
@@ -55,7 +55,7 @@ open class AttachmentStoreMock: AttachmentStore {
         _ owner: AttachmentReference.OwnerId,
         for attachmentId: Attachment.IDType,
         tx: DBWriteTransaction
-    ) {
+    ) throws {
         // do nothing
     }
 
@@ -63,7 +63,7 @@ open class AttachmentStoreMock: AttachmentStore {
         _ attachment: Attachment,
         reference: AttachmentReference,
         tx: DBWriteTransaction
-    ) {
+    ) throws {
         // do nothing
     }
 }

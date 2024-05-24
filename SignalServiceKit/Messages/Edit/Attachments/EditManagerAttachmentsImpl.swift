@@ -124,7 +124,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             if let attachmentReferencePriorToEdit {
                 // The latest revision message is already an owner because it maintained the original's row id.
                 // Just update the timestamp.
-                attachmentStore.update(
+                try attachmentStore.update(
                     attachmentReferencePriorToEdit,
                     withReceivedAtTimestamp: latestRevision.receivedAtTimestamp,
                     tx: tx
@@ -134,7 +134,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             // Drop the quoted reply on the latest revision.
             if let attachmentReferencePriorToEdit {
                 // Break the owner edge from the latest revision.
-                attachmentStore.removeOwner(
+                try attachmentStore.removeOwner(
                     .quotedReplyAttachment(messageRowId: latestRevisionRowId),
                     for: attachmentReferencePriorToEdit.attachmentRowId,
                     tx: tx
@@ -179,7 +179,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
 
             // Break the owner edge from the latest revision since we always
             // either drop the link preview or create a new one.
-            attachmentStore.removeOwner(
+            try attachmentStore.removeOwner(
                 .messageLinkPreview(messageRowId: latestRevisionRowId),
                 for: attachmentReferencePriorToEdit.attachmentRowId,
                 tx: tx
@@ -247,7 +247,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
 
             // Break the owner edge from the latest revision since we always
             // either drop the oversize text or create a new one.
-            attachmentStore.removeOwner(
+            try attachmentStore.removeOwner(
                 .messageOversizeText(messageRowId: latestRevisionRowId),
                 for: oversizeTextReferencePriorToEdit.attachmentRowId,
                 tx: tx
@@ -306,7 +306,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             )
 
             // The latest revision stays an owner; just update the timestamp.
-            attachmentStore.update(
+            try attachmentStore.update(
                 attachmentReference,
                 withReceivedAtTimestamp: latestRevision.receivedAtTimestamp,
                 tx: tx

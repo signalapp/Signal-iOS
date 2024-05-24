@@ -50,19 +50,19 @@ public protocol AttachmentStore {
         _ reference: AttachmentReference,
         withReceivedAtTimestamp: UInt64,
         tx: DBWriteTransaction
-    )
+    ) throws
 
     func removeOwner(
         _ owner: AttachmentReference.OwnerId,
         for attachmentId: Attachment.IDType,
         tx: DBWriteTransaction
-    )
+    ) throws
 
     func insert(
         _ attachment: Attachment,
         reference: AttachmentReference,
         tx: DBWriteTransaction
-    )
+    ) throws
 }
 
 // MARK: - Convenience
@@ -225,7 +225,7 @@ extension AttachmentStore {
     public func insert(
         _ attachment: ReferencedAttachment,
         tx: DBWriteTransaction
-    ) {
-        self.insert(attachment.attachment, reference: attachment.reference, tx: tx)
+    ) throws {
+        try self.insert(attachment.attachment, reference: attachment.reference, tx: tx)
     }
 }

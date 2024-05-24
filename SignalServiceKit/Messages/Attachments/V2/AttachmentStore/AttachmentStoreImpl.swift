@@ -74,7 +74,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         _ reference: AttachmentReference,
         withReceivedAtTimestamp: UInt64,
         tx: DBWriteTransaction
-    ) {
+    ) throws {
         fatalError("Unimplemented")
     }
 
@@ -82,7 +82,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         _ owner: AttachmentReference.OwnerId,
         for attachmentId: Attachment.IDType,
         tx: DBWriteTransaction
-    ) {
+    ) throws {
         fatalError("Unimplemented")
     }
 
@@ -90,7 +90,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         _ attachment: Attachment,
         reference: AttachmentReference,
         tx: DBWriteTransaction
-    ) {
+    ) throws {
         fatalError("Unimplemented")
     }
 }

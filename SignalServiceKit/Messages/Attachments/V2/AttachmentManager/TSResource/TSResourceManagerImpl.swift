@@ -482,7 +482,7 @@ public class TSResourceManagerImpl: TSResourceManager {
                             migratingLegacyAttachment: attachment,
                             quotedReplyMessageId: quotedReplyMessageId
                         )
-                        attachmentStore.insert(attachment, tx: tx)
+                        try attachmentStore.insert(attachment, tx: tx)
                     }
                 )
             } else {
