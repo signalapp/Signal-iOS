@@ -87,7 +87,7 @@ public class AttachmentStoreImpl: AttachmentStore {
     }
 
     public func insert(
-        _ attachment: Attachment,
+        _ attachment: Attachment.ConstructionParams,
         reference: AttachmentReference,
         tx: DBWriteTransaction
     ) throws {

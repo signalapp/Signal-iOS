@@ -60,7 +60,7 @@ open class AttachmentStoreMock: AttachmentStore {
     }
 
     open func insert(
-        _ attachment: Attachment,
+        _ attachment: Attachment.ConstructionParams,
         reference: AttachmentReference,
         tx: DBWriteTransaction
     ) throws {

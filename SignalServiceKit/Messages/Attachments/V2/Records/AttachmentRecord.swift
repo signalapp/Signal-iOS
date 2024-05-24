@@ -168,6 +168,21 @@ extension Attachment {
             )
         }
 
+        internal init(attachmentBuilder attachment: Attachment.ConstructionParams) {
+            self.init(
+                optionalSqliteId: nil,
+                blurHash: attachment.blurHash,
+                mimeType: attachment.mimeType,
+                encryptionKey: attachment.encryptionKey,
+                mediaName: attachment.mediaName,
+                localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
+                streamInfo: attachment.streamInfo,
+                transitTierInfo: attachment.transitTierInfo,
+                mediaTierInfo: attachment.mediaTierInfo,
+                thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo
+            )
+        }
+
         internal init(
             sqliteId: Int64,
             blurHash: String?,
@@ -180,7 +195,34 @@ extension Attachment {
             mediaTierInfo: Attachment.MediaTierInfo?,
             thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo?
         ) {
-            self.sqliteId = sqliteId
+            self.init(
+                optionalSqliteId: sqliteId,
+                blurHash: blurHash,
+                mimeType: mimeType,
+                encryptionKey: encryptionKey,
+                mediaName: mediaName,
+                localRelativeFilePathThumbnail: localRelativeFilePathThumbnail,
+                streamInfo: streamInfo,
+                transitTierInfo: transitTierInfo,
+                mediaTierInfo: mediaTierInfo,
+                thumbnailMediaTierInfo: thumbnailMediaTierInfo
+            )
+        }
+
+        // Private as we want to be deliberate around when sqlite id is not provided.
+        private init(
+            optionalSqliteId: Int64?,
+            blurHash: String?,
+            mimeType: String,
+            encryptionKey: Data,
+            mediaName: String?,
+            localRelativeFilePathThumbnail: String?,
+            streamInfo: Attachment.StreamInfo?,
+            transitTierInfo: Attachment.TransitTierInfo?,
+            mediaTierInfo: Attachment.MediaTierInfo?,
+            thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo?
+        ) {
+            self.sqliteId = optionalSqliteId
             self.blurHash = blurHash
             self.sha256ContentHash = streamInfo?.sha256ContentHash
             self.encryptedByteCount = streamInfo?.encryptedByteCount

@@ -59,7 +59,7 @@ public protocol AttachmentStore {
     ) throws
 
     func insert(
-        _ attachment: Attachment,
+        _ attachment: Attachment.ConstructionParams,
         reference: AttachmentReference,
         tx: DBWriteTransaction
     ) throws
@@ -218,14 +218,5 @@ extension AttachmentStore {
             }
             return ReferencedAttachment(reference: reference, attachment: attachment)
         }
-    }
-
-    // MARK: - Writes
-
-    public func insert(
-        _ attachment: ReferencedAttachment,
-        tx: DBWriteTransaction
-    ) throws {
-        try self.insert(attachment.attachment, reference: attachment.reference, tx: tx)
     }
 }
