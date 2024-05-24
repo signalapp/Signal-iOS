@@ -16,6 +16,6 @@ struct CurrentCall {
     func get() -> SignalCall? { rawValue.get() }
 }
 
-extension CurrentCall: CurrentCallThreadProvider {
+extension CurrentCall: CurrentCallProvider {
     var currentCallThread: TSThread? { self.get()?.thread }
 }

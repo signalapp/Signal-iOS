@@ -97,7 +97,7 @@ public class AppSetup {
         paymentsEvents: PaymentsEvents,
         mobileCoinHelper: MobileCoinHelper,
         callMessageHandler: CallMessageHandler,
-        currentCallThreadProvider: any CurrentCallThreadProvider,
+        currentCallProvider: any CurrentCallProvider,
         notificationPresenter: any NotificationPresenter,
         testDependencies: TestDependencies = TestDependencies()
     ) -> AppSetup.DatabaseContinuation {
@@ -1042,7 +1042,7 @@ public class AppSetup {
 
         let groupCallPeekClient = GroupCallPeekClient(db: db, groupsV2: groupsV2)
         let groupCallManager = GroupCallManager(
-            currentCallThreadProvider: currentCallThreadProvider,
+            currentCallProvider: currentCallProvider,
             groupCallPeekClient: groupCallPeekClient
         )
 

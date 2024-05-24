@@ -337,7 +337,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             paymentsEvents: PaymentsEventsMainApp(),
             mobileCoinHelper: MobileCoinHelperSDK(),
             callMessageHandler: WebRTCCallMessageHandler(),
-            currentCallThreadProvider: currentCall,
+            currentCallProvider: currentCall,
             notificationPresenter: NotificationPresenterImpl()
         )
         setupNSEInteroperation()

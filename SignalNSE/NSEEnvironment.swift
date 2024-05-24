@@ -142,7 +142,7 @@ class NSEEnvironment: Dependencies {
             paymentsEvents: PaymentsEventsAppExtension(),
             mobileCoinHelper: MobileCoinHelperMinimal(),
             callMessageHandler: NSECallMessageHandler(),
-            currentCallThreadProvider: CurrentCallNoOpThreadProvider(),
+            currentCallProvider: CurrentCallNoOpProvider(),
             notificationPresenter: NotificationPresenterImpl()
         )
 

@@ -89,7 +89,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             paymentsEvents: PaymentsEventsAppExtension(),
             mobileCoinHelper: MobileCoinHelperMinimal(),
             callMessageHandler: NoopCallMessageHandler(),
-            currentCallThreadProvider: CurrentCallNoOpThreadProvider(),
+            currentCallProvider: CurrentCallNoOpProvider(),
             notificationPresenter: NoopNotificationPresenterImpl()
         )
 

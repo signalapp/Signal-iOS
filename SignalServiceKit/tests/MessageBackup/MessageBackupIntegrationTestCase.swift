@@ -100,7 +100,7 @@ class MessageBackupIntegrationTestCase: XCTestCase {
             paymentsEvents: PaymentsEventsNoop(),
             mobileCoinHelper: MobileCoinHelperMock(),
             callMessageHandler: CrashyMocks.MockCallMessageHandler(),
-            currentCallThreadProvider: CrashyMocks.MockCurrentCallThreadProvider(),
+            currentCallProvider: CrashyMocks.MockCurrentCallThreadProvider(),
             notificationPresenter: CrashyMocks.MockNotificationPresenter(),
             testDependencies: AppSetup.TestDependencies(
                 networkManager: CrashyMocks.MockNetworkManager(libsignalNet: nil),
@@ -149,7 +149,7 @@ private enum CrashyMocks {
         func externallyHandleCallMessage(envelope: SSKProtoEnvelope, plaintextData: Data, wasReceivedByUD: Bool, serverDeliveryTimestamp: UInt64, tx: SDSAnyWriteTransaction) { failTest(Self.self) }
     }
 
-    final class MockCurrentCallThreadProvider: CurrentCallThreadProvider {
+    final class MockCurrentCallThreadProvider: CurrentCallProvider {
         var currentCallThread: TSThread? { failTest(Self.self) }
     }
 
