@@ -265,7 +265,7 @@ final class IndividualCallService: CallServiceStateObserver {
 
         guard tsAccountManager.registrationState(tx: transaction.asV2Read).isRegistered else {
             Logger.warn("user is not registered, skipping call.")
-            newCall.individualCall.createOrUpdateCallInteraction(callType: .incomingMissed, transaction: transaction)
+            newCall.individualCall.callEventInserter.createOrUpdate(callType: .incomingMissed, tx: transaction)
 
             newCall.individualCall.state = .localFailure
             callServiceState.terminateCall(newCall)
@@ -301,7 +301,7 @@ final class IndividualCallService: CallServiceStateObserver {
                 )
             }
 
-            newCall.individualCall.createOrUpdateCallInteraction(callType: .incomingMissedBecauseOfChangedIdentity, transaction: transaction)
+            newCall.individualCall.callEventInserter.createOrUpdate(callType: .incomingMissedBecauseOfChangedIdentity, tx: transaction)
 
             newCall.individualCall.state = .localFailure
             callServiceState.terminateCall(newCall)
@@ -311,7 +311,7 @@ final class IndividualCallService: CallServiceStateObserver {
 
         guard let identityKeys = getIdentityKeys(thread: thread, transaction: transaction) else {
             owsFailDebug("missing identity keys, skipping call.")
-            newCall.individualCall.createOrUpdateCallInteraction(callType: .incomingMissed, transaction: transaction)
+            newCall.individualCall.callEventInserter.createOrUpdate(callType: .incomingMissed, tx: transaction)
 
             newCall.individualCall.state = .localFailure
             callServiceState.terminateCall(newCall)
@@ -336,7 +336,7 @@ final class IndividualCallService: CallServiceStateObserver {
             // Store the call as a missed call for the local user. They will see it in the conversation
             // along with the message request dialog. When they accept the dialog, they can call back
             // or the caller can try again.
-            newCall.individualCall.createOrUpdateCallInteraction(callType: .incomingMissed, transaction: transaction)
+            newCall.individualCall.callEventInserter.createOrUpdate(callType: .incomingMissed, tx: transaction)
 
             newCall.individualCall.state = .localFailure
             callServiceState.terminateCall(newCall)
