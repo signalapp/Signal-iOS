@@ -165,7 +165,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             }
 
             // Update the attachment and associated messages with the success
-            await update(
+            try await update(
                 attachmentId: attachmentId,
                 with: result,
                 logger: logger
@@ -205,8 +205,8 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         attachmentId: Attachment.IDType,
         with result: Upload.Result<Upload.LocalUploadMetadata>,
         logger: PrefixedLogger
-    ) async {
-        await db.awaitableWrite { tx in
+    ) async throws {
+        try await db.awaitableWrite { tx in
 
             // Read the attachment fresh from the DB
             guard let attachmentStream = try? self.fetchAttachment(
@@ -228,7 +228,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 lastDownloadAttemptTimestamp: nil
             )
 
-            self.attachmentStore.markUploadedToTransitTier(
+            try self.attachmentStore.markUploadedToTransitTier(
                 attachmentStream: attachmentStream,
                 info: transitTierInfo,
                 tx: tx

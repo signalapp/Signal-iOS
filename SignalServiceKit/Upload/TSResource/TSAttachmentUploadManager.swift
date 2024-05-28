@@ -162,7 +162,7 @@ public actor TSAttachmentUploadManagerImpl: TSAttachmentUploadManager {
                 digestSHA256Ciphertext: result.localUploadMetadata.digest,
                 lastDownloadAttemptTimestamp: nil
             )
-            self.tsResourceStore.updateAsUploaded(
+            try self.tsResourceStore.updateAsUploaded(
                 attachmentStream: attachmentStream,
                 info: transitTierInfo,
                 tx: tx

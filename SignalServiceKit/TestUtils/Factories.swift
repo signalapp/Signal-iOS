@@ -416,7 +416,7 @@ public class ConversationFactory: NSObject {
                     digestSHA256Ciphertext: Randomness.generateRandomBytes(16),
                     lastDownloadAttemptTimestamp: nil
                 )
-                (DependenciesBridge.shared.tsResourceStore as? TSResourceUploadStore)?.updateAsUploaded(
+                try! (DependenciesBridge.shared.tsResourceStore as? TSResourceUploadStore)?.updateAsUploaded(
                     attachmentStream: stream,
                     info: transitTierInfo,
                     tx: asyncTransaction.asV2Write

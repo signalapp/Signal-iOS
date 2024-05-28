@@ -476,7 +476,7 @@ extension AttachmentStoreImpl: AttachmentUploadStore {
         attachmentStream: AttachmentStream,
         info transitTierInfo: Attachment.TransitTierInfo,
         tx: DBWriteTransaction
-    ) {
+    ) throws {
         fatalError("Unimplemented")
     }
 }

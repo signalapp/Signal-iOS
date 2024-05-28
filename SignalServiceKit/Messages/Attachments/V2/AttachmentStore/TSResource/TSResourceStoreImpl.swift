@@ -294,7 +294,7 @@ extension TSResourceStoreImpl: TSResourceUploadStore {
         attachmentStream: TSResourceStream,
         info: Attachment.TransitTierInfo,
         tx: DBWriteTransaction
-    ) {
+    ) throws {
         switch attachmentStream.concreteStreamType {
         case .legacy(let tSAttachment):
             tSAttachment.updateAsUploaded(
@@ -307,7 +307,7 @@ extension TSResourceStoreImpl: TSResourceUploadStore {
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
         case .v2(let attachment):
-            attachmentStore.markUploadedToTransitTier(
+            try attachmentStore.markUploadedToTransitTier(
                 attachmentStream: attachment,
                 info: info,
                 tx: tx

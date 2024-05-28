@@ -13,5 +13,5 @@ public protocol AttachmentUploadStore: AttachmentStore {
         attachmentStream: AttachmentStream,
         info: Attachment.TransitTierInfo,
         tx: DBWriteTransaction
-    )
+    ) throws
 }

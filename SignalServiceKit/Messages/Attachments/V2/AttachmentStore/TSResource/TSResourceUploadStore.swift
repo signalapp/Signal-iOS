@@ -12,5 +12,5 @@ public protocol TSResourceUploadStore: TSResourceStore {
         attachmentStream: TSResourceStream,
         info: Attachment.TransitTierInfo,
         tx: DBWriteTransaction
-    )
+    ) throws
 }

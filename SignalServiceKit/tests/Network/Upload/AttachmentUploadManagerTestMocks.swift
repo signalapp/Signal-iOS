@@ -99,7 +99,7 @@ class AttachmentUploadStoreMock: AttachmentStoreMock, AttachmentUploadStore {
         attachmentStream: AttachmentStream,
         info: Attachment.TransitTierInfo,
         tx: SignalServiceKit.DBWriteTransaction
-    ) {
+    ) throws {
         uploadedAttachments.append(attachmentStream)
     }
 }
