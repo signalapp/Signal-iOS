@@ -20,7 +20,7 @@ extension AttachmentReference {
     }
 }
 
-internal protocol FetchableAttachmentReferenceRecord: Codable, PersistableRecord, FetchableRecord, Equatable {
+internal protocol FetchableAttachmentReferenceRecord: Codable, PersistableRecord, FetchableRecord, Equatable, UInt64SafeRecord {
 
     static var ownerRowIdColumn: Column { get }
 
@@ -76,6 +76,12 @@ extension AttachmentReference {
         // MARK: - PersistableRecord
 
         public static let databaseTableName: String = "MessageAttachmentReference"
+
+        // MARK: - UInt64SafeRecord
+
+        public static var uint64Fields: [KeyPath<Self, UInt64>] { [\.receivedAtTimestamp] }
+
+        public static var uint64OptionalFields: [KeyPath<Self, UInt64?>] { [] }
 
         // MARK: FetchableAttachmentReferenceRecord
 
@@ -286,6 +292,12 @@ extension AttachmentReference {
 
         public static let databaseTableName: String = "StoryMessageAttachmentReference"
 
+        // MARK: - UInt64SafeRecord
+
+        public static var uint64Fields: [KeyPath<Self, UInt64>] { [] }
+
+        public static var uint64OptionalFields: [KeyPath<Self, UInt64?>] { [] }
+
         // MARK: FetchableAttachmentReferenceRecord
 
         static var ownerRowIdColumn: Column { Column(CodingKeys.ownerRowId) }
@@ -414,6 +426,12 @@ extension AttachmentReference {
         // MARK: - PersistableRecord
 
         public static let databaseTableName: String = "ThreadAttachmentReference"
+
+        // MARK: - UInt64SafeRecord
+
+        public static var uint64Fields: [KeyPath<Self, UInt64>] { [\.creationTimestamp] }
+
+        public static var uint64OptionalFields: [KeyPath<Self, UInt64?>] { [] }
 
         // MARK: FetchableAttachmentReferenceRecord
 

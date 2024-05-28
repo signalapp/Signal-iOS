@@ -143,9 +143,6 @@
                   Identifier = "AttachmentStoreTests/testEnumerateAttachmentReferences()">
                </Test>
                <Test
-                  Identifier = "AttachmentStoreTests/testInsertOverflowTimestamp()">
-               </Test>
-               <Test
                   Identifier = "AttachmentStoreTests/testRemoveOwner()">
                </Test>
                <Test

@@ -290,6 +290,7 @@ public class AttachmentStoreImpl: AttachmentStore {
             attachmentRowId = existingRecord.sqliteId
         } else {
             var attachmentRecord = Attachment.Record(params: attachmentParams)
+            try attachmentRecord.checkAllUInt64FieldsFitInInt64()
 
             // Note that this will fail if we have collisions in medianame (unique constraint)
             // but thats a hash so we just ignore that possibility.
@@ -311,7 +312,9 @@ public class AttachmentStoreImpl: AttachmentStore {
                 tx: tx
             )
         default:
-            try referenceParams.buildRecord(attachmentRowId: attachmentRowId).insert(db)
+            let referenceRecord = try referenceParams.buildRecord(attachmentRowId: attachmentRowId)
+            try referenceRecord.checkAllUInt64FieldsFitInInt64()
+            try referenceRecord.insert(db)
         }
     }
 
@@ -336,6 +339,7 @@ public class AttachmentStoreImpl: AttachmentStore {
             .fetchOne(db)
 
         let newRecord = try referenceParams.buildRecord(attachmentRowId: attachmentRowId)
+        try newRecord.checkAllUInt64FieldsFitInInt64()
 
         if let oldRecord, oldRecord == (newRecord as? ThreadAttachmentReferenceRecord) {
             // They're the same, no need to do anything.

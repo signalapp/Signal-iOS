@@ -7,7 +7,7 @@ import Foundation
 import GRDB
 
 extension Attachment {
-    public struct Record: Codable, MutablePersistableRecord, FetchableRecord, Equatable {
+    public struct Record: Codable, MutablePersistableRecord, FetchableRecord, Equatable, UInt64SafeRecord {
 
         var sqliteId: Int64?
         let blurHash: String?
@@ -75,6 +75,19 @@ extension Attachment {
             case cachedVideoDurationSeconds
             case audioWaveformRelativeFilePath
             case videoStillFrameRelativeFilePath
+        }
+
+        // MARK: - UInt64SafeRecord
+
+        public static var uint64Fields: [KeyPath<Attachment.Record, UInt64>] { [] }
+
+        public static var uint64OptionalFields: [KeyPath<Self, UInt64?>] {
+            return [
+                \.transitUploadTimestamp,
+                \.lastTransitDownloadAttemptTimestamp,
+                \.lastMediaTierDownloadAttemptTimestamp,
+                \.lastThumbnailDownloadAttemptTimestamp
+            ]
         }
 
         // MARK: - MutablePersistableRecord

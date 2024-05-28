@@ -123,7 +123,7 @@ extension AttachmentReference {
             self.sourceMediaSizePixels = sourceMediaSizePixels
         }
 
-        internal func buildRecord(attachmentRowId: Attachment.IDType) throws -> any PersistableRecord {
+        internal func buildRecord(attachmentRowId: Attachment.IDType) throws -> any FetchableAttachmentReferenceRecord {
             switch owner {
             case .message(let messageSource):
                 return MessageAttachmentReferenceRecord(
