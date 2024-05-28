@@ -477,6 +477,28 @@ extension AttachmentStoreImpl: AttachmentUploadStore {
         info transitTierInfo: Attachment.TransitTierInfo,
         tx: DBWriteTransaction
     ) throws {
-        fatalError("Unimplemented")
+        try markUploadedToTransitTier(
+            attachmentStream: attachmentStream,
+            info: transitTierInfo,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
+            tx: tx
+        )
+    }
+
+    func markUploadedToTransitTier(
+        attachmentStream: AttachmentStream,
+        info transitTierInfo: Attachment.TransitTierInfo,
+        db: GRDB.Database,
+        tx: DBWriteTransaction
+    ) throws {
+        var record = Attachment.Record(attachment: attachmentStream.attachment)
+        record.transitCdnKey = transitTierInfo.cdnKey
+        record.transitCdnNumber = transitTierInfo.cdnNumber
+        record.transitEncryptionKey = transitTierInfo.encryptionKey
+        record.transitUploadTimestamp = transitTierInfo.uploadTimestamp
+        record.transitEncryptedByteCount = transitTierInfo.encryptedByteCount
+        record.transitDigestSHA256Ciphertext = transitTierInfo.digestSHA256Ciphertext
+        record.lastTransitDownloadAttemptTimestamp = transitTierInfo.lastDownloadAttemptTimestamp
+        try record.update(db)
     }
 }

@@ -479,6 +479,72 @@ class AttachmentStoreTests: XCTestCase {
         }
     }
 
+    func testMarkAsUploaded() throws {
+        let (threadId, messageId) = insertThreadAndInteraction()
+
+        try db.write { tx in
+            let attachmentParams = randomAttachmentStreamParams()
+            let attachmentReferenceParams = randomMessageBodyAttachmentReferenceParams(
+                messageRowId: messageId,
+                threadRowId: threadId
+            )
+            try attachmentStore.insert(
+                attachmentParams,
+                reference: attachmentReferenceParams,
+                db: InMemoryDB.shimOnlyBridge(tx).db,
+                tx: tx
+            )
+        }
+
+        func fetchAttachment() -> Attachment {
+            return db.read { tx in
+                let references = attachmentStore.fetchReferences(
+                    owners: [.messageBodyAttachment(messageRowId: messageId)],
+                    db: InMemoryDB.shimOnlyBridge(tx).db,
+                    tx: tx
+                )
+                return attachmentStore.fetch(
+                    ids: references.map(\.attachmentRowId),
+                    db: InMemoryDB.shimOnlyBridge(tx).db,
+                    tx: tx
+                ).first!
+            }
+        }
+
+        var attachment = fetchAttachment()
+
+        guard let stream = attachment.asStream() else {
+            XCTFail("Expected attachment stream!")
+            return
+        }
+        XCTAssertNil(attachment.transitTierInfo)
+
+        let transitTierInfo = Attachment.TransitTierInfo(
+            cdnNumber: 3,
+            cdnKey: UUID().uuidString,
+            uploadTimestamp: Date().ows_millisecondsSince1970,
+            encryptionKey: UUID().data,
+            encryptedByteCount: 100,
+            digestSHA256Ciphertext: UUID().data,
+            lastDownloadAttemptTimestamp: nil
+        )
+
+        // Mark it as uploaded.
+        try db.write { tx in
+            try attachmentStore.markUploadedToTransitTier(
+                attachmentStream: stream,
+                info: transitTierInfo,
+                db: InMemoryDB.shimOnlyBridge(tx).db,
+                tx: tx
+            )
+        }
+
+        // Refetch and check that it is appropriately marked.
+        attachment = fetchAttachment()
+
+        XCTAssertEqual(attachment.transitTierInfo, transitTierInfo)
+    }
+
     // MARK: - Remove Owner
 
     func testRemoveOwner() throws {

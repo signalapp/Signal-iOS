@@ -59,7 +59,7 @@ public class Attachment {
 
     public let streamInfo: StreamInfo?
 
-    public struct TransitTierInfo {
+    public struct TransitTierInfo: Equatable {
         /// CDN number for the upload in the transit tier (or nil if not uploaded).
         public let cdnNumber: UInt32
 

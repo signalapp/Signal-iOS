@@ -18,13 +18,13 @@ extension Attachment {
         let encryptionKey: Data
         let digestSHA256Ciphertext: Data?
         let contentType: UInt32?
-        let transitCdnNumber: UInt32?
-        let transitCdnKey: String?
-        let transitUploadTimestamp: UInt64?
-        let transitEncryptionKey: Data?
-        let transitEncryptedByteCount: UInt32?
-        let transitDigestSHA256Ciphertext: Data?
-        let lastTransitDownloadAttemptTimestamp: UInt64?
+        var transitCdnNumber: UInt32?
+        var transitCdnKey: String?
+        var transitUploadTimestamp: UInt64?
+        var transitEncryptionKey: Data?
+        var transitEncryptedByteCount: UInt32?
+        var transitDigestSHA256Ciphertext: Data?
+        var lastTransitDownloadAttemptTimestamp: UInt64?
         let mediaName: String?
         let mediaTierCdnNumber: UInt32?
         let mediaTierUploadEra: String?
