@@ -301,7 +301,62 @@ public class AttachmentStoreImpl: AttachmentStore {
             throw OWSAssertionError("No sqlite id assigned to inserted attachment")
         }
 
-        try referenceParams.buildRecord(attachmentRowId: attachmentRowId).insert(db)
+        switch referenceParams.owner {
+        case .thread(.globalThreadWallpaperImage):
+            // This is a special case; see comment on method.
+            try insertGlobalThreadAttachmentReference(
+                referenceParams: referenceParams,
+                attachmentRowId: attachmentRowId,
+                db: db,
+                tx: tx
+            )
+        default:
+            try referenceParams.buildRecord(attachmentRowId: attachmentRowId).insert(db)
+        }
+    }
+
+    /// The "global wallpaper" reference is a special case.
+    ///
+    /// All other reference types have UNIQUE constraints on ownerRowId preventing duplicate owners,
+    /// but UNIQUE doesn't apply to NULL values.
+    /// So for this one only we overwrite the existing row if it exists.
+    private func insertGlobalThreadAttachmentReference(
+        referenceParams: AttachmentReference.ConstructionParams,
+        attachmentRowId: Attachment.IDType,
+        db: GRDB.Database,
+        tx: DBWriteTransaction
+    ) throws {
+
+        let ownerRowIdColumn = Column(ThreadAttachmentReferenceRecord.CodingKeys.ownerRowId)
+        let timestampColumn = Column(ThreadAttachmentReferenceRecord.CodingKeys.creationTimestamp)
+        let attachmentRowIdColumn = Column(ThreadAttachmentReferenceRecord.CodingKeys.attachmentRowId)
+
+        let oldRecord = try AttachmentReference.ThreadAttachmentReferenceRecord
+            .filter(ownerRowIdColumn == nil)
+            .fetchOne(db)
+
+        let newRecord = try referenceParams.buildRecord(attachmentRowId: attachmentRowId)
+
+        if let oldRecord, oldRecord == (newRecord as? ThreadAttachmentReferenceRecord) {
+            // They're the same, no need to do anything.
+            return
+        }
+
+        // First we insert the new row and then we delete the old one, so that the deletion
+        // of the old one doesn't trigger any unecessary zero-refcount attachment deletions.
+        try newRecord.insert(db)
+        if let oldRecord {
+            // Delete the old row. Match the timestamp and attachment so we are sure its the old one.
+            let deleteCount = try AttachmentReference.ThreadAttachmentReferenceRecord
+                .filter(ownerRowIdColumn == nil)
+                .filter(timestampColumn == oldRecord.creationTimestamp)
+                .filter(attachmentRowIdColumn == oldRecord.attachmentRowId)
+                .deleteAll(db)
+
+            // It should have deleted only the single previous row; if this matched
+            // both the equality check above should have exited early.
+            owsAssertDebug(deleteCount == 1)
+        }
     }
 
     func removeAllThreadOwners(db: GRDB.Database, tx: DBWriteTransaction) throws {

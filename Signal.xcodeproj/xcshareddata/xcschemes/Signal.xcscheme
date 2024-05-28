@@ -146,9 +146,6 @@
                   Identifier = "AttachmentStoreTests/testInsertOverflowTimestamp()">
                </Test>
                <Test
-                  Identifier = "AttachmentStoreTests/testReinsertGlobalThreadAttachment()">
-               </Test>
-               <Test
                   Identifier = "AttachmentStoreTests/testRemoveOwner()">
                </Test>
                <Test
