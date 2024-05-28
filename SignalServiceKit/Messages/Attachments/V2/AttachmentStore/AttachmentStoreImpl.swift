@@ -256,23 +256,40 @@ public class AttachmentStoreImpl: AttachmentStore {
 
     func duplicateExistingMessageOwner(
         _ existingOwnerSource: AttachmentReference.Owner.MessageSource,
-        with reference: AttachmentReference,
+        with existingReference: AttachmentReference,
         newOwnerMessageRowId: Int64,
-        newOwnerThreadRowId threadRowId: Int64,
-        db: GRDB.Database,
-        tx: DBWriteTransaction
-    ) throws {
-        fatalError("Unimplemented")
-    }
-
-    func duplicateExistingThreadOwner(
-        _ existingOwnerSource: AttachmentReference.Owner.ThreadSource,
-        with reference: AttachmentReference,
         newOwnerThreadRowId: Int64,
         db: GRDB.Database,
         tx: DBWriteTransaction
     ) throws {
-        fatalError("Unimplemented")
+        var newRecord = MessageAttachmentReferenceRecord(
+            attachmentReference: existingReference,
+            messageSource: existingOwnerSource
+        )
+        // Check that the thread id on the record we just duplicated
+        // (the thread id of the original owner) matches the new thread id.
+        guard newRecord.threadRowId == newOwnerThreadRowId else {
+            // We could easily update the thread id to the new one, but this is
+            // a canary to tell us when this method is being used not as intended.
+            throw OWSAssertionError("Copying reference to a message on another thread!")
+        }
+        newRecord.ownerRowId = newOwnerMessageRowId
+        try newRecord.insert(db)
+    }
+
+    func duplicateExistingThreadOwner(
+        _ existingOwnerSource: AttachmentReference.Owner.ThreadSource,
+        with existingReference: AttachmentReference,
+        newOwnerThreadRowId: Int64,
+        db: GRDB.Database,
+        tx: DBWriteTransaction
+    ) throws {
+        var newRecord = ThreadAttachmentReferenceRecord(
+            attachmentReference: existingReference,
+            threadSource: existingOwnerSource
+        )
+        newRecord.ownerRowId = newOwnerThreadRowId
+        try newRecord.insert(db)
     }
 
     func update(

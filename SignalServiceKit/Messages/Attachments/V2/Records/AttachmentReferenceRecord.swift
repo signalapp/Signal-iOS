@@ -46,7 +46,7 @@ extension AttachmentReference {
     public struct MessageAttachmentReferenceRecord: FetchableAttachmentReferenceRecord {
 
         let ownerType: UInt32
-        let ownerRowId: Int64
+        var ownerRowId: Int64
         let attachmentRowId: Int64
         let receivedAtTimestamp: UInt64
         let contentType: UInt32?
@@ -425,7 +425,7 @@ extension AttachmentReference {
 
     public struct ThreadAttachmentReferenceRecord: FetchableAttachmentReferenceRecord {
 
-        let ownerRowId: Int64?
+        var ownerRowId: Int64?
         let attachmentRowId: Int64
         let creationTimestamp: UInt64
 

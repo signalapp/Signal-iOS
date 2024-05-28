@@ -134,12 +134,6 @@
             </BuildableReference>
             <SkippedTests>
                <Test
-                  Identifier = "AttachmentStoreTests/testDuplicateOwner()">
-               </Test>
-               <Test
-                  Identifier = "AttachmentStoreTests/testDuplicateOwnersInvalid()">
-               </Test>
-               <Test
                   Identifier = "MessageSendLogTests/testPlaintextMismatchFails()">
                </Test>
             </SkippedTests>
