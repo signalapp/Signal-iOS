@@ -8,7 +8,32 @@ import GRDB
 
 extension AttachmentReference {
 
-    public struct MessageAttachmentReferenceRecord: Codable, PersistableRecord, FetchableRecord, Equatable {
+    enum FetchableRecordColumnFilter {
+        /// The provided owner did not match the record type; don't fetch from this record's table.
+        case nonMatchingOwnerType
+        /// Filter to rows where `ownerRowIdColumn` is NULL.
+        case nullOwnerRowId
+        /// Filter to rows where `ownerRowIdColumn` equals the provided value.
+        case ownerRowId(Int64)
+        /// Filter to rows where `ownerRowIdColumn` equals the provided value AND typeColumn equals the provided value.
+        case ownerTypeAndRowId(rowId: Int64, type: Int, typeColumn: Column)
+    }
+}
+
+internal protocol FetchableAttachmentReferenceRecord: Codable, PersistableRecord, FetchableRecord, Equatable {
+
+    static var ownerRowIdColumn: Column { get }
+
+    /// Filters to apply when querying the table for rows matching the provided row id.
+    /// If returns `nonMatchingOwnerType`, the record's table should not be queried at all.
+    static func columnFilters(for ownerId: AttachmentReference.OwnerId) -> AttachmentReference.FetchableRecordColumnFilter
+
+    func asReference() throws -> AttachmentReference
+}
+
+extension AttachmentReference {
+
+    public struct MessageAttachmentReferenceRecord: FetchableAttachmentReferenceRecord {
 
         let ownerType: UInt32
         let ownerRowId: Int64
@@ -51,6 +76,41 @@ extension AttachmentReference {
         // MARK: - PersistableRecord
 
         public static let databaseTableName: String = "MessageAttachmentReference"
+
+        // MARK: FetchableAttachmentReferenceRecord
+
+        static var ownerRowIdColumn: Column { Column(CodingKeys.ownerRowId) }
+
+        static func columnFilters(for ownerId: AttachmentReference.OwnerId) -> FetchableRecordColumnFilter {
+            func ownerTypeAndRowId(_ messageRowId: Int64, _ ownerType: MessageOwnerTypeRaw) -> FetchableRecordColumnFilter {
+                return .ownerTypeAndRowId(rowId: messageRowId, type: ownerType.rawValue, typeColumn: Column(CodingKeys.ownerType))
+            }
+
+            switch ownerId {
+            case .messageBodyAttachment(let messageRowId):
+                return ownerTypeAndRowId(messageRowId, .bodyAttachment)
+            case .messageOversizeText(let messageRowId):
+                return ownerTypeAndRowId(messageRowId, .oversizeText)
+            case .messageLinkPreview(let messageRowId):
+                return ownerTypeAndRowId(messageRowId, .linkPreview)
+            case .quotedReplyAttachment(let messageRowId):
+                return ownerTypeAndRowId(messageRowId, .quotedReplyAttachment)
+            case .messageSticker(let messageRowId):
+                return ownerTypeAndRowId(messageRowId, .sticker)
+            case .messageContactAvatar(let messageRowId):
+                return ownerTypeAndRowId(messageRowId, .contactAvatar)
+            case
+                    .storyMessageMedia,
+                    .storyMessageLinkPreview,
+                    .threadWallpaperImage,
+                    .globalThreadWallpaperImage:
+                return .nonMatchingOwnerType
+            }
+        }
+
+        func asReference() throws -> AttachmentReference {
+            return try AttachmentReference(record: self)
+        }
 
         // MARK: - Initializers
 
@@ -194,7 +254,7 @@ extension AttachmentReference {
         }
     }
 
-    public struct StoryMessageAttachmentReferenceRecord: Codable, PersistableRecord, FetchableRecord, Equatable {
+    public struct StoryMessageAttachmentReferenceRecord: FetchableAttachmentReferenceRecord {
 
         let ownerType: UInt32
         let ownerRowId: Int64
@@ -225,6 +285,37 @@ extension AttachmentReference {
         // MARK: - PersistableRecord
 
         public static let databaseTableName: String = "StoryMessageAttachmentReference"
+
+        // MARK: FetchableAttachmentReferenceRecord
+
+        static var ownerRowIdColumn: Column { Column(CodingKeys.ownerRowId) }
+
+        static func columnFilters(for ownerId: AttachmentReference.OwnerId) -> FetchableRecordColumnFilter {
+            func ownerTypeAndRowId(_ storyMessageRowId: Int64, _ ownerType: StoryMessageOwnerTypeRaw) -> FetchableRecordColumnFilter {
+                return .ownerTypeAndRowId(rowId: storyMessageRowId, type: ownerType.rawValue, typeColumn: Column(CodingKeys.ownerType))
+            }
+
+            switch ownerId {
+            case .storyMessageMedia(let storyMessageRowId):
+                return ownerTypeAndRowId(storyMessageRowId, .media)
+            case .storyMessageLinkPreview(let storyMessageRowId):
+                return ownerTypeAndRowId(storyMessageRowId, .linkPreview)
+            case
+                    .messageBodyAttachment,
+                    .messageOversizeText,
+                    .messageLinkPreview,
+                    .quotedReplyAttachment,
+                    .messageSticker,
+                    .messageContactAvatar,
+                    .threadWallpaperImage,
+                    .globalThreadWallpaperImage:
+                return .nonMatchingOwnerType
+            }
+        }
+
+        func asReference() throws -> AttachmentReference {
+            return try AttachmentReference(record: self)
+        }
 
         // MARK: - Initializers
 
@@ -306,7 +397,7 @@ extension AttachmentReference {
         }
     }
 
-    public struct ThreadAttachmentReferenceRecord: Codable, PersistableRecord, FetchableRecord, Equatable {
+    public struct ThreadAttachmentReferenceRecord: FetchableAttachmentReferenceRecord {
 
         let ownerRowId: Int64?
         let attachmentRowId: Int64
@@ -323,6 +414,34 @@ extension AttachmentReference {
         // MARK: - PersistableRecord
 
         public static let databaseTableName: String = "ThreadAttachmentReference"
+
+        // MARK: FetchableAttachmentReferenceRecord
+
+        static var ownerRowIdColumn: Column { Column(CodingKeys.ownerRowId) }
+
+        static func columnFilters(for ownerId: AttachmentReference.OwnerId) -> FetchableRecordColumnFilter {
+
+            switch ownerId {
+            case .threadWallpaperImage(let threadRowId):
+                return .ownerRowId(threadRowId)
+            case .globalThreadWallpaperImage:
+                return .nullOwnerRowId
+            case
+                    .messageBodyAttachment,
+                    .messageOversizeText,
+                    .messageLinkPreview,
+                    .quotedReplyAttachment,
+                    .messageSticker,
+                    .messageContactAvatar,
+                    .storyMessageMedia,
+                    .storyMessageLinkPreview:
+                return .nonMatchingOwnerType
+            }
+        }
+
+        func asReference() throws -> AttachmentReference {
+            return try AttachmentReference(record: self)
+        }
 
         // MARK: - Initializers
 

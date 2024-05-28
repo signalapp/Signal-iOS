@@ -98,12 +98,85 @@ public class AttachmentStoreImpl: AttachmentStore {
 
     // MARK: - Implementation
 
+    typealias MessageAttachmentReferenceRecord = AttachmentReference.MessageAttachmentReferenceRecord
+    typealias MessageOwnerTypeRaw = AttachmentReference.MessageOwnerTypeRaw
+    typealias StoryMessageAttachmentReferenceRecord = AttachmentReference.StoryMessageAttachmentReferenceRecord
+    typealias StoryMessageOwnerTypeRaw = AttachmentReference.StoryMessageOwnerTypeRaw
+    typealias ThreadAttachmentReferenceRecord = AttachmentReference.ThreadAttachmentReferenceRecord
+
     func fetchReferences(
         owners: [AttachmentReference.OwnerId],
         db: GRDB.Database,
         tx: DBReadTransaction
     ) -> [AttachmentReference] {
-        fatalError("Unimplemented")
+        let messageReferences = fetchReferences(
+            owners: owners,
+            recordType: MessageAttachmentReferenceRecord.self,
+            db: db,
+            tx: tx
+        )
+
+        let storyMessageReferences = fetchReferences(
+            owners: owners,
+            recordType: StoryMessageAttachmentReferenceRecord.self,
+            db: db,
+            tx: tx
+        )
+
+        let threadReferences = fetchReferences(
+            owners: owners,
+            recordType: ThreadAttachmentReferenceRecord.self,
+            db: db,
+            tx: tx
+        )
+
+        return messageReferences + storyMessageReferences + threadReferences
+    }
+
+    private func fetchReferences<RecordType: FetchableAttachmentReferenceRecord>(
+        owners: [AttachmentReference.OwnerId],
+        recordType: RecordType.Type,
+        db: GRDB.Database,
+        tx: DBReadTransaction
+    ) -> [AttachmentReference] {
+        var filterClauses = [String]()
+        var arguments = StatementArguments()
+        var numMatchingOwners = 0
+        for owner in owners {
+            switch recordType.columnFilters(for: owner) {
+            case .nonMatchingOwnerType:
+                continue
+            case .nullOwnerRowId:
+                filterClauses.append("\(recordType.ownerRowIdColumn.name) IS NULL")
+            case .ownerRowId(let ownerRowId):
+                filterClauses.append("\(recordType.ownerRowIdColumn.name) = ?")
+                _ = arguments.append(contentsOf: [ownerRowId])
+            case let .ownerTypeAndRowId(ownerRowId, ownerType, ownerTypeColumn):
+                filterClauses.append("(\(ownerTypeColumn.name) = ? AND \(recordType.ownerRowIdColumn.name) = ?)")
+                _ = arguments.append(contentsOf: [ownerType, ownerRowId])
+            }
+            numMatchingOwners += 1
+        }
+        guard numMatchingOwners > 0 else {
+            return []
+        }
+        let sql = "SELECT * FROM \(recordType.databaseTableName) WHERE \(filterClauses.joined(separator: " OR "));"
+        do {
+            return try RecordType
+                .fetchAll(db, sql: sql, arguments: arguments)
+                .compactMap {
+                    do {
+                        return try $0.asReference()
+                    } catch {
+                        // Fail the individual row, not all of them.
+                        owsFailDebug("Failed to parse attachment reference: \(error)")
+                        return nil
+                    }
+                }
+        } catch {
+            owsFailDebug("Failed to fetch attachment references \(error)")
+            return []
+        }
     }
 
     func fetch(
