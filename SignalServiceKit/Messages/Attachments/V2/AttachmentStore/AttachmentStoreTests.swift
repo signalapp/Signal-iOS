@@ -334,7 +334,7 @@ class AttachmentStoreTests: XCTestCase {
         }
 
         // Insert many references to the same Params over and over.
-        let attachmentParams = randomAttachmentParams()
+        let attachmentParams = randomAttachmentStreamParams()
 
         let attachmentIdsInOwner: [String] = try db.write { tx in
             return try threadIdAndMessageIds.flatMap { threadId, messageId in

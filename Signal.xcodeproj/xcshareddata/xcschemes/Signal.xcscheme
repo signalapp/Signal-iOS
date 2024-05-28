@@ -140,9 +140,6 @@
                   Identifier = "AttachmentStoreTests/testDuplicateOwnersInvalid()">
                </Test>
                <Test
-                  Identifier = "AttachmentStoreTests/testEnumerateAttachmentReferences()">
-               </Test>
-               <Test
                   Identifier = "AttachmentStoreTests/testRemoveOwner()">
                </Test>
                <Test

@@ -24,6 +24,8 @@ internal protocol FetchableAttachmentReferenceRecord: Codable, PersistableRecord
 
     static var ownerRowIdColumn: Column { get }
 
+    static var attachmentRowIdColumn: Column { get }
+
     /// Filters to apply when querying the table for rows matching the provided row id.
     /// If returns `nonMatchingOwnerType`, the record's table should not be queried at all.
     static func columnFilters(for ownerId: AttachmentReference.OwnerId) -> AttachmentReference.FetchableRecordColumnFilter
@@ -86,6 +88,8 @@ extension AttachmentReference {
         // MARK: FetchableAttachmentReferenceRecord
 
         static var ownerRowIdColumn: Column { Column(CodingKeys.ownerRowId) }
+
+        static var attachmentRowIdColumn: Column { Column(CodingKeys.attachmentRowId) }
 
         static func columnFilters(for ownerId: AttachmentReference.OwnerId) -> FetchableRecordColumnFilter {
             func ownerTypeAndRowId(_ messageRowId: Int64, _ ownerType: MessageOwnerTypeRaw) -> FetchableRecordColumnFilter {
@@ -302,6 +306,8 @@ extension AttachmentReference {
 
         static var ownerRowIdColumn: Column { Column(CodingKeys.ownerRowId) }
 
+        static var attachmentRowIdColumn: Column { Column(CodingKeys.attachmentRowId) }
+
         static func columnFilters(for ownerId: AttachmentReference.OwnerId) -> FetchableRecordColumnFilter {
             func ownerTypeAndRowId(_ storyMessageRowId: Int64, _ ownerType: StoryMessageOwnerTypeRaw) -> FetchableRecordColumnFilter {
                 return .ownerTypeAndRowId(rowId: storyMessageRowId, type: ownerType.rawValue, typeColumn: Column(CodingKeys.ownerType))
@@ -436,6 +442,8 @@ extension AttachmentReference {
         // MARK: FetchableAttachmentReferenceRecord
 
         static var ownerRowIdColumn: Column { Column(CodingKeys.ownerRowId) }
+
+        static var attachmentRowIdColumn: Column { Column(CodingKeys.attachmentRowId) }
 
         static func columnFilters(for ownerId: AttachmentReference.OwnerId) -> FetchableRecordColumnFilter {
 

@@ -203,12 +203,53 @@ public class AttachmentStoreImpl: AttachmentStore {
     }
 
     func enumerateAllReferences(
-        toAttachmentId: Attachment.IDType,
+        toAttachmentId attachmentId: Attachment.IDType,
         db: GRDB.Database,
         tx: DBReadTransaction,
         block: (AttachmentReference) -> Void
     ) {
-        fatalError("Unimplemented")
+        let recordTypes: [any FetchableAttachmentReferenceRecord.Type] = [
+            MessageAttachmentReferenceRecord.self,
+            StoryMessageAttachmentReferenceRecord.self,
+            ThreadAttachmentReferenceRecord.self
+        ]
+        recordTypes.forEach { recordType in
+            enumerateReferences(
+                attachmentId: attachmentId,
+                recordType: recordType,
+                db: db,
+                tx: tx,
+                block: block
+            )
+        }
+    }
+
+    private func enumerateReferences<RecordType: FetchableAttachmentReferenceRecord>(
+        attachmentId: Attachment.IDType,
+        recordType: RecordType.Type,
+        db: GRDB.Database,
+        tx: DBReadTransaction,
+        block: (AttachmentReference) -> Void
+    ) {
+        do {
+            let cursor = try recordType
+                .filter(recordType.attachmentRowIdColumn == attachmentId)
+                .fetchCursor(db)
+
+            while let record = try cursor.next() {
+                do {
+                    let reference = try record.asReference()
+                    block(reference)
+                } catch {
+                    // Fail the individual row, not all of them.
+                    owsFailDebug("Failed to parse attachment reference: \(error)")
+                    continue
+                }
+            }
+        } catch {
+            owsFailDebug("Failed to enumerate attachment references \(error)")
+            return
+        }
     }
 
     // MARK: Writes
