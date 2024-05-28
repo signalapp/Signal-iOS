@@ -97,15 +97,6 @@ enum CallMode {
         }
     }
 
-    var participantAddresses: [SignalServiceAddress] {
-        switch self {
-        case .groupThread(let call):
-            return call.ringRtcCall.remoteDeviceStates.values.map { $0.address }
-        case .individual(let call):
-            return [call.remoteAddress]
-        }
-    }
-
     var videoCaptureController: VideoCaptureController {
         switch self {
         case .individual(let call): return call.videoCaptureController
@@ -153,7 +144,6 @@ class SignalCall: CallManagerCallReference {
     var joinState: JoinState { mode.joinState }
     var canJoin: Bool { mode.canJoin }
     var caller: SignalServiceAddress? { mode.caller }
-    var participantAddresses: [SignalServiceAddress] { mode.participantAddresses }
     var videoCaptureController: VideoCaptureController { mode.videoCaptureController }
 
     init(groupThreadCall: GroupThreadCall) {
