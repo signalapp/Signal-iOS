@@ -35,13 +35,20 @@ open class AttachmentStoreMock: AttachmentStore {
             .forEach(block)
     }
 
-    open func addOwner(
-        duplicating ownerReference: AttachmentReference,
-        withNewOwner: AttachmentReference.OwnerId,
+    open func duplicateExistingMessageOwner(
+        _ existingOwnerSource: AttachmentReference.Owner.MessageSource,
+        with reference: AttachmentReference,
+        newOwnerMessageRowId: Int64,
+        newOwnerThreadRowId: Int64,
         tx: DBWriteTransaction
-    ) throws {
-        // do nothing
-    }
+    ) throws {}
+
+    open func duplicateExistingThreadOwner(
+        _ existingOwnerSource: AttachmentReference.Owner.ThreadSource,
+        with reference: AttachmentReference,
+        newOwnerThreadRowId: Int64,
+        tx: DBWriteTransaction
+    ) throws {}
 
     open func update(
         _ reference: AttachmentReference,

@@ -36,6 +36,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         latestRevisionRowId: Int64,
         priorRevision: TSMessage,
         priorRevisionRowId: Int64,
+        threadRowId: Int64,
         newOversizeText: MessageEdits.OversizeTextSource?,
         newLinkPreview: MessageEdits.LinkPreviewSource?,
         quotedReplyEdit: MessageEdits.Edit<Void>,
@@ -47,6 +48,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             latestRevisionRowId: latestRevisionRowId,
             priorRevision: priorRevision,
             priorRevisionRowId: priorRevisionRowId,
+            threadRowId: threadRowId,
             quotedReplyEdit: quotedReplyEdit,
             tx: tx
         )
@@ -56,6 +58,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             latestRevisionRowId: latestRevisionRowId,
             priorRevision: priorRevision,
             priorRevisionRowId: priorRevisionRowId,
+            threadRowId: threadRowId,
             newLinkPreview: newLinkPreview,
             tx: tx
         )
@@ -65,6 +68,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             latestRevisionRowId: latestRevisionRowId,
             priorRevision: priorRevision,
             priorRevisionRowId: priorRevisionRowId,
+            threadRowId: threadRowId,
             newOversizeText: newOversizeText,
             tx: tx
         )
@@ -74,6 +78,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             latestRevisionRowId: latestRevisionRowId,
             priorRevision: priorRevision,
             priorRevisionRowId: priorRevisionRowId,
+            threadRowId: threadRowId,
             tx: tx
         )
     }
@@ -86,6 +91,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         latestRevisionRowId: Int64,
         priorRevision: TSMessage,
         priorRevisionRowId: Int64,
+        threadRowId: Int64,
         quotedReplyEdit: MessageEdits.Edit<Void>,
         tx: DBWriteTransaction
     ) throws {
@@ -106,12 +112,19 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             // the new revision as owner; otherwise the removal could delete the attachment
             // before we get the chance to reassign!
 
-            // Always assign the prior revision as an owner of the existing attachment.
-            try attachmentStore.addOwner(
-                duplicating: attachmentReferencePriorToEdit,
-                withNewOwner: .quotedReplyAttachment(messageRowId: priorRevisionRowId),
-                tx: tx
-            )
+            switch attachmentReferencePriorToEdit.owner {
+            case .message(let messageSource):
+                // Always assign the prior revision as an owner of the existing attachment.
+                try attachmentStore.duplicateExistingMessageOwner(
+                    messageSource,
+                    with: attachmentReferencePriorToEdit,
+                    newOwnerMessageRowId: priorRevisionRowId,
+                    newOwnerThreadRowId: threadRowId,
+                    tx: tx
+                )
+            default:
+                throw OWSAssertionError("Invalid attachment reference type!")
+            }
         }
 
         switch quotedReplyEdit {
@@ -150,6 +163,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         latestRevisionRowId: Int64,
         priorRevision: TSMessage,
         priorRevisionRowId: Int64,
+        threadRowId: Int64,
         newLinkPreview: MessageEdits.LinkPreviewSource?,
         tx: DBWriteTransaction
     ) throws {
@@ -170,12 +184,19 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             // the new revision as owner; otherwise the removal could delete the attachment
             // before we get the chance to reassign!
 
-            // Always assign the prior revision as an owner of the existing attachment.
-            try attachmentStore.addOwner(
-                duplicating: attachmentReferencePriorToEdit,
-                withNewOwner: .messageLinkPreview(messageRowId: priorRevisionRowId),
-                tx: tx
-            )
+            switch attachmentReferencePriorToEdit.owner {
+            case .message(let messageSource):
+                // Always assign the prior revision as an owner of the existing attachment.
+                try attachmentStore.duplicateExistingMessageOwner(
+                    messageSource,
+                    with: attachmentReferencePriorToEdit,
+                    newOwnerMessageRowId: priorRevisionRowId,
+                    newOwnerThreadRowId: threadRowId,
+                    tx: tx
+                )
+            default:
+                throw OWSAssertionError("Invalid attachment reference type!")
+            }
 
             // Break the owner edge from the latest revision since we always
             // either drop the link preview or create a new one.
@@ -223,6 +244,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         latestRevisionRowId: Int64,
         priorRevision: TSMessage,
         priorRevisionRowId: Int64,
+        threadRowId: Int64,
         newOversizeText: MessageEdits.OversizeTextSource?,
         tx: DBWriteTransaction
     ) throws {
@@ -238,12 +260,19 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             // the new revision as owner; otherwise the removal could delete the attachment
             // before we get the chance to reassign!
 
-            // If we had oversize text, always keep it on the prior revision.
-            try attachmentStore.addOwner(
-                duplicating: oversizeTextReferencePriorToEdit,
-                withNewOwner: .messageOversizeText(messageRowId: priorRevisionRowId),
-                tx: tx
-            )
+            switch oversizeTextReferencePriorToEdit.owner {
+            case .message(let messageSource):
+                // If we had oversize text, always keep it on the prior revision.
+                try attachmentStore.duplicateExistingMessageOwner(
+                    messageSource,
+                    with: oversizeTextReferencePriorToEdit,
+                    newOwnerMessageRowId: priorRevisionRowId,
+                    newOwnerThreadRowId: threadRowId,
+                    tx: tx
+                )
+            default:
+                throw OWSAssertionError("Invalid attachment reference type!")
+            }
 
             // Break the owner edge from the latest revision since we always
             // either drop the oversize text or create a new one.
@@ -288,6 +317,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         latestRevisionRowId: Int64,
         priorRevision: TSMessage,
         priorRevisionRowId: Int64,
+        threadRowId: Int64,
         tx: DBWriteTransaction
     ) throws {
         // The editTarget's copy of the message has no edits applied;
@@ -298,12 +328,19 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         )
 
         for attachmentReference in attachmentReferencesPriorToEdit {
-            // Always assign the prior revision as a new owner of the existing attachment.
-            try attachmentStore.addOwner(
-                duplicating: attachmentReference,
-                withNewOwner: .messageBodyAttachment(messageRowId: priorRevisionRowId),
-                tx: tx
-            )
+            switch attachmentReference.owner {
+            case .message(let messageSource):
+                // Always assign the prior revision as a new owner of the existing attachment.
+                try attachmentStore.duplicateExistingMessageOwner(
+                    messageSource,
+                    with: attachmentReference,
+                    newOwnerMessageRowId: priorRevisionRowId,
+                    newOwnerThreadRowId: threadRowId,
+                    tx: tx
+                )
+            default:
+                throw OWSAssertionError("Invalid attachment reference type!")
+            }
 
             // The latest revision stays an owner; just update the timestamp.
             try attachmentStore.update(

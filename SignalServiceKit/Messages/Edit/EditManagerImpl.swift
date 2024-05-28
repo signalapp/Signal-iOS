@@ -120,9 +120,14 @@ public class EditManagerImpl: EditManager {
             tx: tx
         )
 
+        guard let threadRowId = thread.sqliteRowId else {
+            throw OWSAssertionError("Can't apply edit in uninserted thread")
+        }
+
         try insertEditCopies(
             editedMessage: editedMessage,
             editTarget: targetMessageWrapper,
+            threadRowId: threadRowId,
             newOversizeText: oversizeText,
             quotedReplyEdit: quotedReplyEdit,
             newLinkPreview: linkPreview,
@@ -231,9 +236,14 @@ public class EditManagerImpl: EditManager {
             throw OWSAssertionError("Failed to find target message")
         }
 
+        guard let threadRowId = thread.sqliteRowId else {
+            throw OWSAssertionError("Can't apply edit in uninserted thread")
+        }
+
         try insertEditCopies(
             editedMessage: outgoingEditMessage.editedMessage,
             editTarget: editTarget.wrapper,
+            threadRowId: threadRowId,
             newOversizeText: oversizeText.map { .dataSource($0) },
             quotedReplyEdit: quotedReplyEdit,
             newLinkPreview: linkPreview.map { .draft($0) },
@@ -250,6 +260,7 @@ public class EditManagerImpl: EditManager {
     private func insertEditCopies<EditTarget: EditMessageWrapper> (
         editedMessage: TSMessage,
         editTarget: EditTarget,
+        threadRowId: Int64,
         newOversizeText: MessageEdits.OversizeTextSource?,
         quotedReplyEdit: MessageEdits.Edit<Void>,
         newLinkPreview: MessageEdits.LinkPreviewSource?,
@@ -286,6 +297,7 @@ public class EditManagerImpl: EditManager {
             latestRevisionRowId: editedMessage.sqliteRowId!,
             priorRevision: newMessage,
             priorRevisionRowId: newMessage.sqliteRowId!,
+            threadRowId: threadRowId,
             newOversizeText: newOversizeText,
             newLinkPreview: newLinkPreview,
             quotedReplyEdit: quotedReplyEdit,

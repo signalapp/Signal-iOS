@@ -40,14 +40,33 @@ public class AttachmentStoreImpl: AttachmentStore {
 
     // MARK: - Writes
 
-    public func addOwner(
-        duplicating ownerReference: AttachmentReference,
-        withNewOwner newOwner: AttachmentReference.OwnerId,
+    public func duplicateExistingMessageOwner(
+        _ existingOwnerSource: AttachmentReference.Owner.MessageSource,
+        with reference: AttachmentReference,
+        newOwnerMessageRowId: Int64,
+        newOwnerThreadRowId: Int64,
         tx: DBWriteTransaction
-    ) throws{
-        try addOwner(
-            duplicating: ownerReference,
-            withNewOwner: newOwner,
+    ) throws {
+        try duplicateExistingMessageOwner(
+            existingOwnerSource,
+            with: reference,
+            newOwnerMessageRowId: newOwnerMessageRowId,
+            newOwnerThreadRowId: newOwnerThreadRowId,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
+            tx: tx
+        )
+    }
+
+    public func duplicateExistingThreadOwner(
+        _ existingOwnerSource: AttachmentReference.Owner.ThreadSource,
+        with reference: AttachmentReference,
+        newOwnerThreadRowId: Int64,
+        tx: DBWriteTransaction
+    ) throws {
+        try duplicateExistingThreadOwner(
+            existingOwnerSource,
+            with: reference,
+            newOwnerThreadRowId: newOwnerThreadRowId,
             db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
             tx: tx
         )
@@ -235,44 +254,24 @@ public class AttachmentStoreImpl: AttachmentStore {
 
     // MARK: Writes
 
-    func addOwner(
-        duplicating ownerReference: AttachmentReference,
-        withNewOwner newOwner: AttachmentReference.OwnerId,
+    func duplicateExistingMessageOwner(
+        _ existingOwnerSource: AttachmentReference.Owner.MessageSource,
+        with reference: AttachmentReference,
+        newOwnerMessageRowId: Int64,
+        newOwnerThreadRowId threadRowId: Int64,
         db: GRDB.Database,
         tx: DBWriteTransaction
-    ) throws{
-        // New reference should have the same root type, just a different id.
-        let hasMatchingType: Bool = {
-            switch (ownerReference.owner.id, newOwner) {
-            case
-                (.messageBodyAttachment, .messageBodyAttachment),
-                (.messageLinkPreview, .messageLinkPreview),
-                (.messageSticker, .messageSticker),
-                (.messageOversizeText, .messageOversizeText),
-                (.messageContactAvatar, .messageContactAvatar),
-                (.quotedReplyAttachment, .quotedReplyAttachment),
-                (.storyMessageMedia, .storyMessageMedia),
-                (.storyMessageLinkPreview, .storyMessageLinkPreview),
-                (.threadWallpaperImage, .threadWallpaperImage),
-                (.globalThreadWallpaperImage, .globalThreadWallpaperImage):
-                return true
-            case
-                (.messageBodyAttachment, _),
-                (.messageLinkPreview, _),
-                (.messageSticker, _),
-                (.messageOversizeText, _),
-                (.messageContactAvatar, _),
-                (.quotedReplyAttachment, _),
-                (.storyMessageMedia, _),
-                (.storyMessageLinkPreview, _),
-                (.threadWallpaperImage, _),
-                (.globalThreadWallpaperImage, _):
-                return false
-            }
-        }()
-        guard hasMatchingType else {
-            throw OWSAssertionError("Owner reference types don't match!")
-        }
+    ) throws {
+        fatalError("Unimplemented")
+    }
+
+    func duplicateExistingThreadOwner(
+        _ existingOwnerSource: AttachmentReference.Owner.ThreadSource,
+        with reference: AttachmentReference,
+        newOwnerThreadRowId: Int64,
+        db: GRDB.Database,
+        tx: DBWriteTransaction
+    ) throws {
         fatalError("Unimplemented")
     }
 

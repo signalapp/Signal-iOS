@@ -55,11 +55,17 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
             try attachmentStore.removeOwner(.threadWallpaperImage(threadRowId: toRowId), for: toReference.attachmentRowId, tx: tx)
         }
 
-        try attachmentStore.addOwner(
-            duplicating: fromReference,
-            withNewOwner: .threadWallpaperImage(threadRowId: toRowId),
-            tx: tx
-        )
+        switch fromReference.owner {
+        case .thread(let threadSource):
+            try attachmentStore.duplicateExistingThreadOwner(
+                threadSource,
+                with: fromReference,
+                newOwnerThreadRowId: toRowId,
+                tx: tx
+            )
+        default:
+            throw OWSAssertionError("Unexpected attachment reference type")
+        }
     }
 
     public func resetAllWallpaperImages(tx: DBWriteTransaction) throws {

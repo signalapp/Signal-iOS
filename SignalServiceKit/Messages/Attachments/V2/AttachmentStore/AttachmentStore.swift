@@ -33,14 +33,28 @@ public protocol AttachmentStore {
     /// Create a new ownership reference, copying properties of an existing reference.
     ///
     /// Copies the database row directly, only modifying the owner column.
+    /// IMPORTANT: also copies the receivedAtTimestamp!
     ///
     /// Fails if the provided new owner isn't of the same type as the original
-    /// reference; e.g. trying to duplicate a story owner on a message, or
-    /// a message link preview as a message sticker. Those operations require
-    /// the explicit creation of a new owner.
-    func addOwner(
-        duplicating ownerReference: AttachmentReference,
-        withNewOwner: AttachmentReference.OwnerId,
+    /// reference; e.g. trying to duplicate a link preview as a sticker, or if the new
+    /// owner is not in the same thread as the prior owner.
+    /// Those operations require the explicit creation of a new owner.
+    func duplicateExistingMessageOwner(
+        _ existingOwnerSource: AttachmentReference.Owner.MessageSource,
+        with reference: AttachmentReference,
+        newOwnerMessageRowId: Int64,
+        newOwnerThreadRowId: Int64,
+        tx: DBWriteTransaction
+    ) throws
+
+    /// Create a new ownership reference, copying properties of an existing reference.
+    ///
+    /// Copies the database row directly, only modifying the owner column.
+    /// IMPORTANT: also copies the createdTimestamp!
+    func duplicateExistingThreadOwner(
+        _ existingOwnerSource: AttachmentReference.Owner.ThreadSource,
+        with reference: AttachmentReference,
+        newOwnerThreadRowId: Int64,
         tx: DBWriteTransaction
     ) throws
 

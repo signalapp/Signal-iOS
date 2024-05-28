@@ -659,12 +659,19 @@ class AttachmentStoreTests: XCTestCase {
 
         // Create a copy reference.
         try db.write { tx in
-            try attachmentStore.addOwner(
-                duplicating: reference1,
-                withNewOwner: .messageBodyAttachment(messageRowId: messageId2),
-                db: InMemoryDB.shimOnlyBridge(tx).db,
-                tx: tx
-            )
+            switch reference1.owner {
+            case .message(let reference1MessageSource):
+                try attachmentStore.duplicateExistingMessageOwner(
+                    reference1MessageSource,
+                    with: reference1,
+                    newOwnerMessageRowId: messageId2,
+                    newOwnerThreadRowId: threadId,
+                    db: InMemoryDB.shimOnlyBridge(tx).db,
+                    tx: tx
+                )
+            default:
+                XCTFail("Unexpected reference owner type")
+            }
         }
 
         // Check that the copy was created correctly.
@@ -681,7 +688,7 @@ class AttachmentStoreTests: XCTestCase {
 
     func testDuplicateOwnersInvalid() throws {
         let (threadId1, messageId1) = insertThreadAndInteraction()
-        let (_, messageId2) = insertThreadAndInteraction()
+        let (threadId2, messageId2) = insertThreadAndInteraction()
 
         let originalReferenceParams = randomMessageBodyAttachmentReferenceParams(
             messageRowId: messageId1,
@@ -713,28 +720,19 @@ class AttachmentStoreTests: XCTestCase {
         // If we try and duplicate to an owner on another thread, that should fail.
         do {
             try db.write { tx in
-                try attachmentStore.addOwner(
-                    duplicating: reference1,
-                    withNewOwner: .messageBodyAttachment(messageRowId: messageId2),
-                    db: InMemoryDB.shimOnlyBridge(tx).db,
-                    tx: tx
-                )
-            }
-            // We should have failed!
-            XCTFail("Should have failed inserting invalid reference")
-        } catch {
-            // Good, we threw an error
-        }
-
-        // If we try and duplicate to an owner of a different type (thread), that should fail.
-        do {
-            try db.write { tx in
-                try attachmentStore.addOwner(
-                    duplicating: reference1,
-                    withNewOwner: .threadWallpaperImage(threadRowId: threadId1),
-                    db: InMemoryDB.shimOnlyBridge(tx).db,
-                    tx: tx
-                )
+                switch reference1.owner {
+                case .message(let reference1MessageSource):
+                    try attachmentStore.duplicateExistingMessageOwner(
+                        reference1MessageSource,
+                        with: reference1,
+                        newOwnerMessageRowId: messageId2,
+                        newOwnerThreadRowId: threadId2,
+                        db: InMemoryDB.shimOnlyBridge(tx).db,
+                        tx: tx
+                    )
+                default:
+                    XCTFail("Unexpected reference owner type")
+                }
             }
             // We should have failed!
             XCTFail("Should have failed inserting invalid reference")

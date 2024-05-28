@@ -17,7 +17,26 @@ class EditManagerTests: SSKBaseTest {
         super.setUp()
         db = MockDB()
         authorAci = Aci.constantForTesting("00000000-0000-4000-8000-000000000000")
-        thread = TSThread(uniqueId: "1")
+        thread = TSThread.init(
+            grdbId: 1,
+            uniqueId: "1",
+            conversationColorNameObsolete: "Obsolete",
+            creationDate: nil,
+            editTargetTimestamp: nil,
+            isArchivedObsolete: false,
+            isMarkedUnreadObsolete: false,
+            lastInteractionRowId: 0,
+            lastSentStoryTimestamp: nil,
+            lastVisibleSortIdObsolete: 0,
+            lastVisibleSortIdOnScreenPercentageObsolete: 0,
+            mentionNotificationMode: .always,
+            messageDraft: nil,
+            messageDraftBodyRanges: nil,
+            mutedUntilDateObsolete: nil,
+            mutedUntilTimestampObsolete: 0,
+            shouldThreadBeVisible: true,
+            storyViewMode: .default
+        )
     }
 
     func testBasicValidation() throws {

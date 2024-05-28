@@ -13,6 +13,7 @@ public protocol EditManagerTSResources {
         latestRevisionRowId: Int64,
         priorRevision: TSMessage,
         priorRevisionRowId: Int64,
+        threadRowId: Int64,
         newOversizeText: MessageEdits.OversizeTextSource?,
         newLinkPreview: MessageEdits.LinkPreviewSource?,
         quotedReplyEdit: MessageEdits.Edit<Void>,
