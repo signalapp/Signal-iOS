@@ -91,18 +91,19 @@ NS_ASSUME_NONNULL_BEGIN
         // Use SecTrust's default set of anchor certificates.
     }
 
-    if (!AFServerTrustIsValid(serverTrust)) {
-        return NO;
-    }
-
-    return YES;
+    return AFServerTrustIsValid(serverTrust);
 }
 
 static BOOL AFServerTrustIsValid(SecTrustRef serverTrust)
 {
     BOOL isValid = NO;
     SecTrustResultType result;
-    __Require_noErr_Quiet(SecTrustEvaluate(serverTrust, &result), _out);
+
+    __Require_Quiet(SecTrustEvaluateWithError(serverTrust, nil), _out);
+
+    // Assert in debug if SecTrustGetTrustResult() somehow fails after
+    // SecTrustEvaluateWithError() succeeds.
+    __Require_noErr(SecTrustGetTrustResult(serverTrust, &result), _out);
 
     isValid = (result == kSecTrustResultUnspecified || result == kSecTrustResultProceed);
 
