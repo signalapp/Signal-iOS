@@ -111,7 +111,22 @@ public class AttachmentStoreImpl: AttachmentStore {
         db: GRDB.Database,
         tx: DBReadTransaction
     ) -> [Attachment] {
-        fatalError("Unimplemented")
+        do {
+            return try Attachment.Record
+                .fetchAll(
+                    db,
+                    keys: ids
+                )
+                .compactMap { record in
+                    // Errors will be logged by the initializer.
+                    // Drop only _this_ attachment by returning nil,
+                    // instead of throwing and failing all of them.
+                    return try? Attachment(record: record)
+                }
+        } catch {
+            owsFailDebug("Failed to read attachment records from disk \(error)")
+            return []
+        }
     }
 
     func enumerateAllReferences(
