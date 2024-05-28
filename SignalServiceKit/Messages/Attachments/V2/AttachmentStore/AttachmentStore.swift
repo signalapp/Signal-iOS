@@ -27,6 +27,12 @@ public protocol AttachmentStore {
         tx: DBReadTransaction
     ) -> [Attachment]
 
+    /// Fetch attachment by plaintext hash. There can be only one match.
+    func fetchAttachment(
+        sha256ContentHash: Data,
+        tx: DBReadTransaction
+    ) -> Attachment?
+
     /// Enumerate all references to a given attachment id, calling the block for each one.
     /// Blocks until all references have been enumerated.
     func enumerateAllReferences(

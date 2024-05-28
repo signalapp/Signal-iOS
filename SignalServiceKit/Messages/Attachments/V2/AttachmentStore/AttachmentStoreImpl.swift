@@ -25,6 +25,14 @@ public class AttachmentStoreImpl: AttachmentStore {
         fetch(ids: ids, db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database, tx: tx)
     }
 
+    public func fetchAttachment(sha256ContentHash: Data, tx: DBReadTransaction) -> Attachment? {
+        try? fetchAttachment(
+            sha256ContentHash: sha256ContentHash,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
+            tx: tx
+        )
+    }
+
     public func enumerateAllReferences(
         toAttachmentId attachmentId: Attachment.IDType,
         tx: DBReadTransaction,
@@ -218,6 +226,17 @@ public class AttachmentStoreImpl: AttachmentStore {
             owsFailDebug("Failed to read attachment records from disk \(error)")
             return []
         }
+    }
+
+    func fetchAttachment(
+        sha256ContentHash: Data,
+        db: GRDB.Database,
+        tx: DBReadTransaction
+    ) throws -> Attachment? {
+        return try Attachment.Record
+            .filter(Column(Attachment.Record.CodingKeys.sha256ContentHash) == sha256ContentHash)
+            .fetchOne(db)
+            .map(Attachment.init(record:))
     }
 
     func enumerateAllReferences(
@@ -417,9 +436,11 @@ public class AttachmentStoreImpl: AttachmentStore {
     ) throws {
         // Find if there is already an attachment with the same plaintext hash.
         let existingRecord = try attachmentParams.streamInfo.map { streamInfo in
-            return try Attachment.Record
-                .filter(Column(Attachment.Record.CodingKeys.sha256ContentHash) == streamInfo.sha256ContentHash)
-                .fetchOne(db)
+            return try fetchAttachment(
+                sha256ContentHash: streamInfo.sha256ContentHash,
+                db: db,
+                tx: tx
+            ).map(Attachment.Record.init(attachment:))
         } ?? nil
 
         if let existingRecord {

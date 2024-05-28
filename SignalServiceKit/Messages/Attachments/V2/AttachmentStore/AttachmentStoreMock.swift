@@ -24,6 +24,13 @@ open class AttachmentStoreMock: AttachmentStore {
         }
     }
 
+    open func fetchAttachment(
+        sha256ContentHash: Data,
+        tx: DBReadTransaction
+    ) -> Attachment? {
+        return nil
+    }
+
     open func enumerateAllReferences(
         toAttachmentId: Attachment.IDType,
         tx: DBReadTransaction,
