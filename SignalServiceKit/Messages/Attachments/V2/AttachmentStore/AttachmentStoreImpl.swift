@@ -109,28 +109,14 @@ public class AttachmentStoreImpl: AttachmentStore {
         db: GRDB.Database,
         tx: DBReadTransaction
     ) -> [AttachmentReference] {
-        let messageReferences = fetchReferences(
-            owners: owners,
-            recordType: MessageAttachmentReferenceRecord.self,
-            db: db,
-            tx: tx
-        )
-
-        let storyMessageReferences = fetchReferences(
-            owners: owners,
-            recordType: StoryMessageAttachmentReferenceRecord.self,
-            db: db,
-            tx: tx
-        )
-
-        let threadReferences = fetchReferences(
-            owners: owners,
-            recordType: ThreadAttachmentReferenceRecord.self,
-            db: db,
-            tx: tx
-        )
-
-        return messageReferences + storyMessageReferences + threadReferences
+        return AttachmentReference.recordTypes.flatMap { recordType in
+            return fetchReferences(
+                owners: owners,
+                recordType: recordType,
+                db: db,
+                tx: tx
+            )
+        }
     }
 
     private func fetchReferences<RecordType: FetchableAttachmentReferenceRecord>(
@@ -208,12 +194,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         tx: DBReadTransaction,
         block: (AttachmentReference) -> Void
     ) {
-        let recordTypes: [any FetchableAttachmentReferenceRecord.Type] = [
-            MessageAttachmentReferenceRecord.self,
-            StoryMessageAttachmentReferenceRecord.self,
-            ThreadAttachmentReferenceRecord.self
-        ]
-        recordTypes.forEach { recordType in
+        AttachmentReference.recordTypes.forEach { recordType in
             enumerateReferences(
                 attachmentId: attachmentId,
                 recordType: recordType,
@@ -336,7 +317,45 @@ public class AttachmentStoreImpl: AttachmentStore {
         db: GRDB.Database,
         tx: DBWriteTransaction
     ) throws {
-        fatalError("Unimplemented")
+        try AttachmentReference.recordTypes.forEach { recordType in
+            try removeOwner(
+                owner,
+                for: attachmentId,
+                recordType: recordType,
+                db: db,
+                tx: tx
+            )
+        }
+    }
+
+    private func removeOwner<RecordType: FetchableAttachmentReferenceRecord>(
+        _ owner: AttachmentReference.OwnerId,
+        for attachmentId: Attachment.IDType,
+        recordType: RecordType.Type,
+        db: GRDB.Database,
+        tx: DBWriteTransaction
+    ) throws {
+        // GRDB's swift query API can't help us here because the AttachmentReference tables
+        // lack a primary id column. Just use manual SQL.
+        var sql = "DELETE FROM \(recordType.databaseTableName) WHERE "
+        var arguments = StatementArguments()
+        switch recordType.columnFilters(for: owner) {
+        case .nonMatchingOwnerType:
+            return
+        case .nullOwnerRowId:
+            sql += "\(recordType.ownerRowIdColumn.name) IS NULL"
+        case .ownerRowId(let ownerRowId):
+            sql += "\(recordType.ownerRowIdColumn.name) = ?"
+            _ = arguments.append(contentsOf: [ownerRowId])
+        case let .ownerTypeAndRowId(ownerRowId, ownerType, typeColumn):
+            sql += "(\(typeColumn.name) = ? AND \(recordType.ownerRowIdColumn.name) = ?)"
+            _ = arguments.append(contentsOf: [ownerType, ownerRowId])
+        }
+        sql += ";"
+        try db.execute(
+            sql: sql,
+            arguments: arguments
+        )
     }
 
     func insert(

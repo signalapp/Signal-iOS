@@ -140,9 +140,6 @@
                   Identifier = "AttachmentStoreTests/testDuplicateOwnersInvalid()">
                </Test>
                <Test
-                  Identifier = "AttachmentStoreTests/testRemoveOwner()">
-               </Test>
-               <Test
                   Identifier = "MessageSendLogTests/testPlaintextMismatchFails()">
                </Test>
             </SkippedTests>

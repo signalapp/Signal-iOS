@@ -486,7 +486,7 @@ class AttachmentStoreTests: XCTestCase {
         let (threadId2, messageId2) = insertThreadAndInteraction()
 
         // Create two references to the same attachment.
-        let attachmentParams = randomAttachmentParams()
+        let attachmentParams = randomAttachmentStreamParams()
 
         try db.write { tx in
             try attachmentStore.insert(

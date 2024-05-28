@@ -35,6 +35,14 @@ internal protocol FetchableAttachmentReferenceRecord: Codable, PersistableRecord
 
 extension AttachmentReference {
 
+    static var recordTypes: [any FetchableAttachmentReferenceRecord.Type] {
+        return [
+            MessageAttachmentReferenceRecord.self,
+            StoryMessageAttachmentReferenceRecord.self,
+            ThreadAttachmentReferenceRecord.self
+        ]
+    }
+
     public struct MessageAttachmentReferenceRecord: FetchableAttachmentReferenceRecord {
 
         let ownerType: UInt32
