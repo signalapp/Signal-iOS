@@ -31,12 +31,7 @@ class TSResourceUploadStoreMock: TSResourceStoreMock, TSResourceUploadStore {
 
     func updateAsUploaded(
         attachmentStream: TSResourceStream,
-        encryptionKey: Data,
-        encryptedByteLength: UInt32,
-        digest: Data,
-        cdnKey: String,
-        cdnNumber: UInt32,
-        uploadTimestamp: UInt64,
+        info: Attachment.TransitTierInfo,
         tx: DBWriteTransaction
     ) {
         uploadedAttachments.append(attachmentStream)

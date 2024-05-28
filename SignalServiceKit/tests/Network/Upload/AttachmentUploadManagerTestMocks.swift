@@ -97,12 +97,7 @@ class AttachmentUploadStoreMock: AttachmentStoreMock, AttachmentUploadStore {
 
     func markUploadedToTransitTier(
         attachmentStream: AttachmentStream,
-        encryptionKey: Data,
-        encryptedByteLength: UInt32,
-        digest: Data,
-        cdnKey: String,
-        cdnNumber: UInt32,
-        uploadTimestamp: UInt64,
+        info: Attachment.TransitTierInfo,
         tx: SignalServiceKit.DBWriteTransaction
     ) {
         uploadedAttachments.append(attachmentStream)

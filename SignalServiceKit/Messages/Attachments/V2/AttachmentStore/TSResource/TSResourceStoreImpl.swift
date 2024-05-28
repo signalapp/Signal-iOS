@@ -292,34 +292,24 @@ extension TSResourceStoreImpl: TSResourceUploadStore {
 
     public func updateAsUploaded(
         attachmentStream: TSResourceStream,
-        encryptionKey: Data,
-        encryptedByteLength: UInt32,
-        digest: Data,
-        cdnKey: String,
-        cdnNumber: UInt32,
-        uploadTimestamp: UInt64,
+        info: Attachment.TransitTierInfo,
         tx: DBWriteTransaction
     ) {
         switch attachmentStream.concreteStreamType {
         case .legacy(let tSAttachment):
             tSAttachment.updateAsUploaded(
-                withEncryptionKey: encryptionKey,
-                digest: digest,
+                withEncryptionKey: info.encryptionKey,
+                digest: info.digestSHA256Ciphertext,
                 serverId: 0, // Only used in cdn0 uploads, which aren't supported here.
-                cdnKey: cdnKey,
-                cdnNumber: cdnNumber,
-                uploadTimestamp: uploadTimestamp,
+                cdnKey: info.cdnKey,
+                cdnNumber: info.cdnNumber,
+                uploadTimestamp: info.uploadTimestamp,
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
         case .v2(let attachment):
             attachmentStore.markUploadedToTransitTier(
                 attachmentStream: attachment,
-                encryptionKey: encryptionKey,
-                encryptedByteLength: encryptedByteLength,
-                digest: digest,
-                cdnKey: cdnKey,
-                cdnNumber: cdnNumber,
-                uploadTimestamp: uploadTimestamp,
+                info: info,
                 tx: tx
             )
         }

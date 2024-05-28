@@ -407,14 +407,18 @@ public class ConversationFactory: NSObject {
                 guard let stream = attachment.asResourceStream() else {
                     continue
                 }
+                let transitTierInfo = Attachment.TransitTierInfo(
+                    cdnNumber: 3,
+                    cdnKey: "1234",
+                    uploadTimestamp: 1,
+                    encryptionKey: Randomness.generateRandomBytes(16),
+                    encryptedByteCount: 16,
+                    digestSHA256Ciphertext: Randomness.generateRandomBytes(16),
+                    lastDownloadAttemptTimestamp: nil
+                )
                 (DependenciesBridge.shared.tsResourceStore as? TSResourceUploadStore)?.updateAsUploaded(
                     attachmentStream: stream,
-                    encryptionKey: Randomness.generateRandomBytes(16),
-                    encryptedByteLength: 16,
-                    digest: Randomness.generateRandomBytes(16),
-                    cdnKey: "1234",
-                    cdnNumber: 3,
-                    uploadTimestamp: 1,
+                    info: transitTierInfo,
                     tx: asyncTransaction.asV2Write
                 )
             }

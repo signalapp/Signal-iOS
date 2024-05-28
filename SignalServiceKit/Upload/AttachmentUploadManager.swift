@@ -218,14 +218,19 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 return
             }
 
+            let transitTierInfo = Attachment.TransitTierInfo(
+                cdnNumber: result.cdnNumber,
+                cdnKey: result.cdnKey,
+                uploadTimestamp: result.beginTimestamp,
+                encryptionKey: result.localUploadMetadata.key,
+                encryptedByteCount: result.localUploadMetadata.encryptedDataLength,
+                digestSHA256Ciphertext: result.localUploadMetadata.digest,
+                lastDownloadAttemptTimestamp: nil
+            )
+
             self.attachmentStore.markUploadedToTransitTier(
                 attachmentStream: attachmentStream,
-                encryptionKey: result.localUploadMetadata.key,
-                encryptedByteLength: result.localUploadMetadata.encryptedDataLength,
-                digest: result.localUploadMetadata.digest,
-                cdnKey: result.cdnKey,
-                cdnNumber: result.cdnNumber,
-                uploadTimestamp: result.beginTimestamp,
+                info: transitTierInfo,
                 tx: tx
             )
 
