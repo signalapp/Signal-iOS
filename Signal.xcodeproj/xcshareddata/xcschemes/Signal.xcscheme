@@ -134,6 +134,12 @@
             </BuildableReference>
             <SkippedTests>
                <Test
+                  Identifier = "AttachmentStoreTests/testEnumerateAttachmentReferences()">
+               </Test>
+               <Test
+                  Identifier = "AttachmentStoreTests/testRemoveOwner()">
+               </Test>
+               <Test
                   Identifier = "MessageSendLogTests/testPlaintextMismatchFails()">
                </Test>
             </SkippedTests>

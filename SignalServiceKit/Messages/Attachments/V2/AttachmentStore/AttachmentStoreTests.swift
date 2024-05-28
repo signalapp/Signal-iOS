@@ -162,64 +162,48 @@ class AttachmentStoreTests: XCTestCase {
                 messageRowId: messageId1,
                 threadRowId: threadId1
             )
-            let attachmentReferenceParams2 = randomMessageBodyAttachmentReferenceParams(
-                messageRowId: messageId2,
-                threadRowId: threadId2
-            )
             try attachmentStore.insert(
                 attachmentParams1,
                 reference: attachmentReferenceParams1,
                 db: InMemoryDB.shimOnlyBridge(tx).db,
                 tx: tx
             )
-            try attachmentStore.insert(
-                attachmentParams2,
-                reference: attachmentReferenceParams2,
-                db: InMemoryDB.shimOnlyBridge(tx).db,
-                tx: tx
-            )
-        }
 
-        let (
-            message1References,
-            message1Attachments,
-            message2References,
-            message2Attachments
-        ) = db.read { tx in
             let message1References = attachmentStore.fetchReferences(
                 owners: [.messageBodyAttachment(messageRowId: messageId1)],
                 db: InMemoryDB.shimOnlyBridge(tx).db,
                 tx: tx
             )
-            let message1Attachments = attachmentStore.fetch(
+            let message1Attachment = attachmentStore.fetch(
                 ids: message1References.map(\.attachmentRowId),
                 db: InMemoryDB.shimOnlyBridge(tx).db,
                 tx: tx
+            ).first!
+
+            let attachmentReferenceParams2 = randomMessageBodyAttachmentReferenceParams(
+                messageRowId: messageId2,
+                threadRowId: threadId2
             )
-            let message2References = attachmentStore.fetchReferences(
-                owners: [.messageBodyAttachment(messageRowId: messageId2)],
-                db: InMemoryDB.shimOnlyBridge(tx).db,
-                tx: tx
-            )
-            let message2Attachments = attachmentStore.fetch(
-                ids: message1References.map(\.attachmentRowId),
-                db: InMemoryDB.shimOnlyBridge(tx).db,
-                tx: tx
-            )
-            return (message1References, message1Attachments, message2References, message2Attachments)
+            do {
+                try attachmentStore.insert(
+                    attachmentParams2,
+                    reference: attachmentReferenceParams2,
+                    db: InMemoryDB.shimOnlyBridge(tx).db,
+                    tx: tx
+                )
+                XCTFail("Should have thrown error!")
+            } catch let error {
+                switch error {
+                case is AttachmentInsertError:
+                    switch error as! AttachmentInsertError {
+                    case .duplicatePlaintextHash(let existingAttachmentId):
+                        XCTAssertEqual(existingAttachmentId, message1Attachment.id)
+                    }
+                default:
+                    XCTFail("Unexpected error")
+                }
+            }
         }
-
-        // Both messages should have one reference, to one attachment.
-        XCTAssertEqual(message1References.count, 1)
-        XCTAssertEqual(message1Attachments.count, 1)
-        XCTAssertEqual(message2References.count, 1)
-        XCTAssertEqual(message2Attachments.count, 1)
-
-        // But the attachments should be the same!
-        XCTAssertEqual(message1Attachments[0].id, message2Attachments[0].id)
-
-        // And it should have used the first attachment inserted.
-        XCTAssertEqual(message1Attachments[0].encryptionKey, attachmentParams1.encryptionKey)
     }
 
     func testReinsertGlobalThreadAttachment() throws {

@@ -5,6 +5,13 @@
 
 import Foundation
 
+public enum AttachmentInsertError: Error {
+    /// An existing attachment was found with the same plaintext hash, making the new
+    /// attachment a duplicate. Callers should instead create a new owner reference to
+    /// the same existing attachment.
+    case duplicatePlaintextHash(existingAttachmentId: Attachment.IDType)
+}
+
 public protocol AttachmentStore {
 
     /// Fetch all references for the provided owners.
@@ -72,6 +79,9 @@ public protocol AttachmentStore {
         tx: DBWriteTransaction
     ) throws
 
+    /// Throws ``AttachmentInsertError.duplicatePlaintextHash`` if an existing
+    /// attachment is found with the same plaintext hash.
+    /// May throw other errors with less strict typing if database operations fail.
     func insert(
         _ attachment: Attachment.ConstructionParams,
         reference: AttachmentReference.ConstructionParams,

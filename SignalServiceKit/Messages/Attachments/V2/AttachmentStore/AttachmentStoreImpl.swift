@@ -380,27 +380,25 @@ public class AttachmentStoreImpl: AttachmentStore {
         db: GRDB.Database,
         tx: DBWriteTransaction
     ) throws {
-        // If there is already an attachment with the same plaintext hash, reuse it.
+        // Find if there is already an attachment with the same plaintext hash.
         let existingRecord = try attachmentParams.streamInfo.map { streamInfo in
             return try Attachment.Record
                 .filter(Column(Attachment.Record.CodingKeys.sha256ContentHash) == streamInfo.sha256ContentHash)
                 .fetchOne(db)
         } ?? nil
 
-        let attachmentRowId: Attachment.IDType?
         if let existingRecord {
-            attachmentRowId = existingRecord.sqliteId
-        } else {
-            var attachmentRecord = Attachment.Record(params: attachmentParams)
-            try attachmentRecord.checkAllUInt64FieldsFitInInt64()
-
-            // Note that this will fail if we have collisions in medianame (unique constraint)
-            // but thats a hash so we just ignore that possibility.
-            try attachmentRecord.insert(db)
-            attachmentRowId = attachmentRecord.sqliteId
+            throw AttachmentInsertError.duplicatePlaintextHash(existingAttachmentId: existingRecord.sqliteId!)
         }
 
-        guard let attachmentRowId else {
+        var attachmentRecord = Attachment.Record(params: attachmentParams)
+        try attachmentRecord.checkAllUInt64FieldsFitInInt64()
+
+        // Note that this will fail if we have collisions in medianame (unique constraint)
+        // but thats a hash so we just ignore that possibility.
+        try attachmentRecord.insert(db)
+
+        guard let attachmentRowId = attachmentRecord.sqliteId else {
             throw OWSAssertionError("No sqlite id assigned to inserted attachment")
         }
 
