@@ -185,12 +185,35 @@ public class AttachmentStoreImpl: AttachmentStore {
     }
 
     func insert(
-        _ attachment: Attachment.ConstructionParams,
-        reference: AttachmentReference.ConstructionParams,
+        _ attachmentParams: Attachment.ConstructionParams,
+        reference referenceParams: AttachmentReference.ConstructionParams,
         db: GRDB.Database,
         tx: DBWriteTransaction
     ) throws {
-        fatalError("Unimplemented")
+        // If there is already an attachment with the same plaintext hash, reuse it.
+        let existingRecord = try attachmentParams.streamInfo.map { streamInfo in
+            return try Attachment.Record
+                .filter(Column(Attachment.Record.CodingKeys.sha256ContentHash) == streamInfo.sha256ContentHash)
+                .fetchOne(db)
+        } ?? nil
+
+        let attachmentRowId: Attachment.IDType?
+        if let existingRecord {
+            attachmentRowId = existingRecord.sqliteId
+        } else {
+            var attachmentRecord = Attachment.Record(params: attachmentParams)
+
+            // Note that this will fail if we have collisions in medianame (unique constraint)
+            // but thats a hash so we just ignore that possibility.
+            try attachmentRecord.insert(db)
+            attachmentRowId = attachmentRecord.sqliteId
+        }
+
+        guard let attachmentRowId else {
+            throw OWSAssertionError("No sqlite id assigned to inserted attachment")
+        }
+
+        try referenceParams.buildRecord(attachmentRowId: attachmentRowId).insert(db)
     }
 
     func removeAllThreadOwners(db: GRDB.Database, tx: DBWriteTransaction) throws {
