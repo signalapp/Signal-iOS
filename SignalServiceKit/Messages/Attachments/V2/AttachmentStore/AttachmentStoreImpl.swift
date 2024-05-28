@@ -85,6 +85,19 @@ public class AttachmentStoreImpl: AttachmentStore {
         )
     }
 
+    public func addOwner(
+        _ reference: AttachmentReference.ConstructionParams,
+        for attachmentId: Attachment.IDType,
+        tx: DBWriteTransaction
+    ) throws {
+        try addOwner(
+            reference,
+            for: attachmentId,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
+            tx: tx
+        )
+    }
+
     public func removeOwner(
         _ owner: AttachmentReference.OwnerId,
         for attachmentId: Attachment.IDType,
@@ -327,6 +340,28 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
     }
 
+    func addOwner(
+        _ referenceParams: AttachmentReference.ConstructionParams,
+        for attachmentRowId: Attachment.IDType,
+        db: GRDB.Database,
+        tx: DBWriteTransaction
+    ) throws {
+        switch referenceParams.owner {
+        case .thread(.globalThreadWallpaperImage):
+            // This is a special case; see comment on method.
+            try insertGlobalThreadAttachmentReference(
+                referenceParams: referenceParams,
+                attachmentRowId: attachmentRowId,
+                db: db,
+                tx: tx
+            )
+        default:
+            let referenceRecord = try referenceParams.buildRecord(attachmentRowId: attachmentRowId)
+            try referenceRecord.checkAllUInt64FieldsFitInInt64()
+            try referenceRecord.insert(db)
+        }
+    }
+
     func removeOwner(
         _ owner: AttachmentReference.OwnerId,
         for attachmentId: Attachment.IDType,
@@ -402,20 +437,12 @@ public class AttachmentStoreImpl: AttachmentStore {
             throw OWSAssertionError("No sqlite id assigned to inserted attachment")
         }
 
-        switch referenceParams.owner {
-        case .thread(.globalThreadWallpaperImage):
-            // This is a special case; see comment on method.
-            try insertGlobalThreadAttachmentReference(
-                referenceParams: referenceParams,
-                attachmentRowId: attachmentRowId,
-                db: db,
-                tx: tx
-            )
-        default:
-            let referenceRecord = try referenceParams.buildRecord(attachmentRowId: attachmentRowId)
-            try referenceRecord.checkAllUInt64FieldsFitInInt64()
-            try referenceRecord.insert(db)
-        }
+        try addOwner(
+            referenceParams,
+            for: attachmentRowId,
+            db: db,
+            tx: tx
+        )
     }
 
     /// The "global wallpaper" reference is a special case.

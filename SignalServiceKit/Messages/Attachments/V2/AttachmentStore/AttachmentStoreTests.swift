@@ -203,7 +203,56 @@ class AttachmentStoreTests: XCTestCase {
                     XCTFail("Unexpected error")
                 }
             }
+
+            // Try again but insert using explicit owner adding.
+            try attachmentStore.addOwner(
+                attachmentReferenceParams2,
+                for: message1Attachment.id,
+                db: InMemoryDB.shimOnlyBridge(tx).db,
+                tx: tx
+            )
         }
+
+        let (
+            message1References,
+            message1Attachments,
+            message2References,
+            message2Attachments
+        ) = db.read { tx in
+            let message1References = attachmentStore.fetchReferences(
+                owners: [.messageBodyAttachment(messageRowId: messageId1)],
+                db: InMemoryDB.shimOnlyBridge(tx).db,
+                tx: tx
+            )
+            let message1Attachments = attachmentStore.fetch(
+                ids: message1References.map(\.attachmentRowId),
+                db: InMemoryDB.shimOnlyBridge(tx).db,
+                tx: tx
+            )
+            let message2References = attachmentStore.fetchReferences(
+                owners: [.messageBodyAttachment(messageRowId: messageId2)],
+                db: InMemoryDB.shimOnlyBridge(tx).db,
+                tx: tx
+            )
+            let message2Attachments = attachmentStore.fetch(
+                ids: message1References.map(\.attachmentRowId),
+                db: InMemoryDB.shimOnlyBridge(tx).db,
+                tx: tx
+            )
+            return (message1References, message1Attachments, message2References, message2Attachments)
+        }
+
+        // Both messages should have one reference, to one attachment.
+        XCTAssertEqual(message1References.count, 1)
+        XCTAssertEqual(message1Attachments.count, 1)
+        XCTAssertEqual(message2References.count, 1)
+        XCTAssertEqual(message2Attachments.count, 1)
+
+        // But the attachments should be the same!
+        XCTAssertEqual(message1Attachments[0].id, message2Attachments[0].id)
+
+        // And it should have used the first attachment inserted.
+        XCTAssertEqual(message2Attachments[0].encryptionKey, attachmentParams1.encryptionKey)
     }
 
     func testReinsertGlobalThreadAttachment() throws {
@@ -321,6 +370,7 @@ class AttachmentStoreTests: XCTestCase {
         let attachmentParams = randomAttachmentStreamParams()
 
         let attachmentIdsInOwner: [String] = try db.write { tx in
+            var attachmentRowId: Attachment.IDType?
             return try threadIdAndMessageIds.flatMap { threadId, messageId in
                 return try (0..<5).map { index in
                     let attachmentIdInOwner = UUID().uuidString
@@ -330,12 +380,22 @@ class AttachmentStoreTests: XCTestCase {
                         orderInOwner: UInt32(index),
                         idInOwner: attachmentIdInOwner
                     )
-                    try attachmentStore.insert(
-                        attachmentParams,
-                        reference: attachmentReferenceParams,
-                        db: InMemoryDB.shimOnlyBridge(tx).db,
-                        tx: tx
-                    )
+                    if let attachmentRowId {
+                        try attachmentStore.addOwner(
+                            attachmentReferenceParams,
+                            for: attachmentRowId,
+                            db: InMemoryDB.shimOnlyBridge(tx).db,
+                            tx: tx
+                        )
+                    } else {
+                        try attachmentStore.insert(
+                            attachmentParams,
+                            reference: attachmentReferenceParams,
+                            db: InMemoryDB.shimOnlyBridge(tx).db,
+                            tx: tx
+                        )
+                        attachmentRowId = InMemoryDB.shimOnlyBridge(tx).db.lastInsertedRowID
+                    }
                     return attachmentIdInOwner
                 }
             }
@@ -548,12 +608,13 @@ class AttachmentStoreTests: XCTestCase {
                 db: InMemoryDB.shimOnlyBridge(tx).db,
                 tx: tx
             )
-            try attachmentStore.insert(
-                attachmentParams,
-                reference: randomMessageBodyAttachmentReferenceParams(
+            let attachmentId = InMemoryDB.shimOnlyBridge(tx).db.lastInsertedRowID
+            try attachmentStore.addOwner(
+                randomMessageBodyAttachmentReferenceParams(
                     messageRowId: messageId2,
                     threadRowId: threadId2
                 ),
+                for: attachmentId,
                 db: InMemoryDB.shimOnlyBridge(tx).db,
                 tx: tx
             )

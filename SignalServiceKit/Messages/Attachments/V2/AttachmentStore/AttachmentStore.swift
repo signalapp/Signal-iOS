@@ -73,6 +73,12 @@ public protocol AttachmentStore {
         tx: DBWriteTransaction
     ) throws
 
+    func addOwner(
+        _ reference: AttachmentReference.ConstructionParams,
+        for attachmentId: Attachment.IDType,
+        tx: DBWriteTransaction
+    ) throws
+
     func removeOwner(
         _ owner: AttachmentReference.OwnerId,
         for attachmentId: Attachment.IDType,
