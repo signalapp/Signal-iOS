@@ -146,9 +146,6 @@
                   Identifier = "AttachmentStoreTests/testRemoveOwner()">
                </Test>
                <Test
-                  Identifier = "AttachmentStoreTests/testUpdateReceivedAtTimestamp()">
-               </Test>
-               <Test
                   Identifier = "MessageSendLogTests/testPlaintextMismatchFails()">
                </Test>
             </SkippedTests>

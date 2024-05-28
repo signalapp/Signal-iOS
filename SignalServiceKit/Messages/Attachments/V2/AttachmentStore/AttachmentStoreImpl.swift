@@ -256,11 +256,37 @@ public class AttachmentStoreImpl: AttachmentStore {
 
     func update(
         _ reference: AttachmentReference,
-        withReceivedAtTimestamp: UInt64,
+        withReceivedAtTimestamp receivedAtTimestamp: UInt64,
         db: GRDB.Database,
         tx: DBWriteTransaction
     ) throws {
-        fatalError("Unimplemented")
+        guard SDS.fitsInInt64(receivedAtTimestamp) else {
+            throw OWSAssertionError("UInt64 doesn't fit in Int64")
+        }
+
+        switch reference.owner {
+        case .message(let messageSource):
+            // GRDB's swift query API can't help us here because MessageAttachmentReferenceRecord
+            // lacks a primary id column. Just update the single column with manual SQL.
+            let receivedAtTimestampColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.receivedAtTimestamp)
+            let ownerTypeColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.ownerType)
+            let ownerRowIdColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.ownerRowId)
+            try db.execute(
+                sql:
+                    "UPDATE \(MessageAttachmentReferenceRecord.databaseTableName) "
+                    + "SET \(receivedAtTimestampColumn.name) = ? "
+                    + "WHERE \(ownerTypeColumn.name) = ? AND \(ownerRowIdColumn.name) = ?;",
+                arguments: [
+                    receivedAtTimestamp,
+                    messageSource.rawMessageOwnerType.rawValue,
+                    messageSource.messageRowId
+                ]
+            )
+        case .storyMessage:
+            throw OWSAssertionError("Cannot update timestamp on story attachment reference")
+        case .thread:
+            throw OWSAssertionError("Cannot update timestamp on thread attachment reference")
+        }
     }
 
     func removeOwner(
