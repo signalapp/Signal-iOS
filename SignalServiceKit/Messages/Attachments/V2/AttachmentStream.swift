@@ -48,10 +48,16 @@ public class AttachmentStream {
         )
     }
 
+    /// Given a relative "attachment file" path, returns the absolute path.
+    /// "Attachment files" include fullsize files (localRelativeFilePath), thumbnails, audio waveforms, video still frames.
+    /// All files related to attachments are in the same root directory, with subdirectories only based off the first few characters of their filename.
+    public static func absoluteAttachmentFileURL(relativeFilePath: String) -> URL {
+        let directory = OWSFileSystem.appSharedDataDirectoryURL().appendingPathComponent("attachment_files")
+        return directory.appendingPathComponent(relativeFilePath)
+    }
+
     public var fileURL: URL {
-        // Need to solidify the directory scheme in order to
-        // properly use `localRelativeFilePath`
-        fatalError("Unimplemented!")
+        return Self.absoluteAttachmentFileURL(relativeFilePath: self.localRelativeFilePath)
     }
 
     public func makeDecryptedCopy() throws -> URL {
@@ -98,13 +104,12 @@ public class AttachmentStream {
             throw OWSAssertionError("Requesting image from non-visual attachment")
         case .image, .animatedImage:
             return try UIImage.from(self)
-        case .video(_, _, let stillImageFilePath):
-            // TODO: convert relative file path to absolute
-            guard let stillImageFilePath else {
+        case .video(_, _, let stillImageRelativeFilePath):
+            guard let stillImageRelativeFilePath else {
                 throw OWSAssertionError("Still image unavailable for video")
             }
             return try UIImage.fromEncryptedFile(
-                at: URL(fileURLWithPath: stillImageFilePath),
+                at: Self.absoluteAttachmentFileURL(relativeFilePath: stillImageRelativeFilePath),
                 encryptionKey: attachment.encryptionKey,
                 plaintextLength: info.unencryptedByteCount,
                 mimeType: OWSMediaUtils.videoStillFrameMimeType.rawValue

@@ -33,9 +33,8 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
                 return Task {
                     throw OWSAssertionError("Invalid attachment type!")
                 }
-            case .audio(_, let waveformFilePath):
-                // TODO: convert relative file path to absolute
-                guard let waveformFilePath else {
+            case .audio(_, let relativeWaveformFilePath):
+                guard let relativeWaveformFilePath else {
                     return Task {
                         // We could not generate a waveform at write time; don't retry now.
                         throw AudioWaveformError.invalidAudioFile
@@ -43,7 +42,9 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
                 }
                 let encryptionKey = attachmentStream.attachment.encryptionKey
                 return Task {
-                    let fileURL = URL(fileURLWithPath: waveformFilePath)
+                    let fileURL = AttachmentStream.absoluteAttachmentFileURL(
+                        relativeFilePath: relativeWaveformFilePath
+                    )
                     let data = try Cryptography.decryptFile(
                         at: fileURL,
                         metadata: .init(
