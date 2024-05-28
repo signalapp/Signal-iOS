@@ -225,10 +225,6 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
 
             // No need to set any state, as we wipe the whole app anyway.
             appContext.resetAppDataAndExit()
-
-            schedulers.main.async {
-                self.postRegistrationStateDidChangeNotification()
-            }
         } catch {
             owsFailDebugUnlessNetworkFailure(error)
             throw error
