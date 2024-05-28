@@ -558,6 +558,69 @@ class AttachmentStoreTests: XCTestCase {
         }
     }
 
+    // MARK: Remove all thread owners
+
+    func testRemoveAllThreadOwners() throws {
+        var threadRowIds: [Int64?] = [nil]
+        db.write { tx in
+            for _ in 0..<5 {
+                threadRowIds.append(self.insertThread(tx: tx).sqliteRowId!)
+            }
+        }
+
+        try db.write { tx in
+            try threadRowIds.forEach { threadRowId in
+                let attachmentParams = randomAttachmentParams()
+                let timestamp = Date().ows_millisecondsSince1970
+                let referenceParams = randomAttachmentReferenceParams(
+                    owner: .thread(threadRowId.map {
+                        .threadWallpaperImage(.init(threadRowId: $0, creationTimestamp: timestamp))
+                    } ?? .globalThreadWallpaperImage(creationTimestamp: timestamp))
+                )
+                try attachmentStore.insert(
+                    attachmentParams,
+                    reference: referenceParams,
+                    db: InMemoryDB.shimOnlyBridge(tx).db,
+                    tx: tx
+                )
+            }
+        }
+
+        func assertAttachmentCount(_ expectedCount: Int) {
+            db.read { tx in
+                let references = attachmentStore.fetchReferences(
+                    owners: threadRowIds.map { threadRowId in
+                        threadRowId.map {
+                            .threadWallpaperImage(threadRowId: $0)
+                        } ?? .globalThreadWallpaperImage
+                    },
+                    db: InMemoryDB.shimOnlyBridge(tx).db,
+                    tx: tx
+                )
+                let attachments = attachmentStore.fetch(
+                    ids: references.map(\.attachmentRowId),
+                    db: InMemoryDB.shimOnlyBridge(tx).db,
+                    tx: tx
+                )
+                XCTAssertEqual(references.count, expectedCount)
+                XCTAssertEqual(attachments.count, expectedCount)
+            }
+        }
+
+        assertAttachmentCount(threadRowIds.count)
+
+        // Remove all and count should be 0.
+
+        try db.write { tx in
+            try attachmentStore.removeAllThreadOwners(
+                db: InMemoryDB.shimOnlyBridge(tx).db,
+                tx: tx
+            )
+        }
+
+        assertAttachmentCount(0)
+    }
+
     // MARK: - Duplication
 
     func testDuplicateOwner() throws {

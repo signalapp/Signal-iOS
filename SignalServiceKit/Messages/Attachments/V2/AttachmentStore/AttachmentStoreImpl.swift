@@ -450,7 +450,7 @@ public class AttachmentStoreImpl: AttachmentStore {
     }
 
     func removeAllThreadOwners(db: GRDB.Database, tx: DBWriteTransaction) throws {
-        fatalError("Unimplemented")
+        try ThreadAttachmentReferenceRecord.deleteAll(db)
     }
 }
 
