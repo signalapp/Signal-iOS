@@ -758,6 +758,8 @@ class GroupCallViewController: UIViewController {
         }
         hasDismissed = true
 
+        self.callControlsDisplayState = .callControlsOnly
+
         guard
             let splitViewSnapshot = SignalApp.shared.snapshotSplitViewController(afterScreenUpdates: false),
             view.superview?.insertSubview(splitViewSnapshot, belowSubview: view) != nil
