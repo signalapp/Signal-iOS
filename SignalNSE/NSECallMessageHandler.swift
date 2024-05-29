@@ -19,7 +19,11 @@ class NSECallMessageHandler: CallMessageHandler {
 
     private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
     private var groupCallManager: GroupCallManager { NSObject.groupCallManager }
+    private var identityManager: any OWSIdentityManager { DependenciesBridge.shared.identityManager }
     private var messagePipelineSupervisor: MessagePipelineSupervisor { NSObject.messagePipelineSupervisor }
+    private var notificationPresenter: NotificationPresenterImpl { NSObject.notificationPresenter as! NotificationPresenterImpl }
+    private var profileManager: any ProfileManager { NSObject.profileManager }
+    private var tsAccountManager: any TSAccountManager { DependenciesBridge.shared.tsAccountManager }
 
     // MARK: - Call Handlers
 
@@ -40,28 +44,42 @@ class NSECallMessageHandler: CallMessageHandler {
         let approxMessageAge = (serverDeliveryTimestamp - serverReceivedTimestamp)
         let messageAgeForRingRtc = approxMessageAge / kSecondInMs + bufferSecondsForMainAppToAnswerRing
 
-        let shouldHandleExternally: Bool
-
         switch callEnvelope {
         case .offer(let offer):
+            guard let opaque = offer.opaque else {
+                return
+            }
+            let callOfferHandler = CallOfferHandlerImpl(
+                identityManager: identityManager,
+                notificationPresenter: notificationPresenter,
+                profileManager: profileManager,
+                tsAccountManager: tsAccountManager
+            )
+            let partialResult = callOfferHandler.startHandlingOffer(
+                caller: caller.aci,
+                sourceDevice: caller.deviceId,
+                callId: offer.id,
+                callType: offer.type ?? .offerAudioCall,
+                sentAtTimestamp: sentAtTimestamp,
+                tx: tx
+            )
+            guard partialResult != nil else {
+                return
+            }
+
             let callType: CallMediaType
             switch offer.type ?? .offerAudioCall {
             case .offerAudioCall: callType = .audioCall
             case .offerVideoCall: callType = .videoCall
             }
-
-            shouldHandleExternally = { () -> Bool in
-                guard let offerData = offer.opaque else {
-                    return false
-                }
-                return isValidOfferMessage(
-                    opaque: offerData,
-                    messageAgeSec: messageAgeForRingRtc,
-                    callMediaType: callType
-                )
-            }()
-            if !shouldHandleExternally {
+            let isValid = isValidOfferMessage(
+                opaque: opaque,
+                messageAgeSec: messageAgeForRingRtc,
+                callMediaType: callType
+            )
+            guard isValid else {
                 NSELogger.uncorrelated.warn("Dropping offer message; invalid according to RingRTC (likely expired).")
+                return
             }
 
         case .opaque(let opaque):
@@ -97,7 +115,7 @@ class NSECallMessageHandler: CallMessageHandler {
                 }
             }
 
-            shouldHandleExternally = { () -> Bool in
+            let shouldHandleExternally = { () -> Bool in
                 guard opaque.urgency == .handleImmediately else {
                     return false
                 }
@@ -110,16 +128,13 @@ class NSECallMessageHandler: CallMessageHandler {
                     validateGroupRing: validateGroupRing
                 )
             }()
-            if !shouldHandleExternally {
+            guard shouldHandleExternally else {
                 NSELogger.uncorrelated.info("Ignoring opaque message; not a valid ring according to RingRTC.")
+                return
             }
 
         case .answer, .iceUpdate, .hangup, .busy:
-            shouldHandleExternally = false
             NSELogger.uncorrelated.warn("Dropping call message; the main app should be connected")
-        }
-
-        guard shouldHandleExternally else {
             return
         }
 
