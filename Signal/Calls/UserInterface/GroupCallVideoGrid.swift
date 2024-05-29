@@ -10,18 +10,18 @@ class GroupCallVideoGrid: UICollectionView {
     weak var memberViewErrorPresenter: CallMemberErrorPresenter?
     let layout: GroupCallVideoGridLayout
     let call: SignalCall
+    let groupCall: GroupCall
     let ringRtcCall: SignalRingRTC.GroupCall
-    let groupThreadCall: GroupThreadCall
 
-    init(call: SignalCall, groupThreadCall: GroupThreadCall) {
+    init(call: SignalCall, groupCall: GroupCall) {
         self.call = call
-        self.ringRtcCall = groupThreadCall.ringRtcCall
-        self.groupThreadCall = groupThreadCall
+        self.groupCall = groupCall
+        self.ringRtcCall = groupCall.ringRtcCall
         self.layout = GroupCallVideoGridLayout()
 
         super.init(frame: .zero, collectionViewLayout: layout)
 
-        groupThreadCall.addObserverAndSyncState(self)
+        groupCall.addObserverAndSyncState(self)
         layout.delegate = self
         backgroundColor = .clear
 
@@ -121,7 +121,7 @@ extension GroupCallVideoGrid: GroupCallVideoGridLayoutDelegate {
     var maxItems: Int { maxColumns * maxRows }
 }
 
-class GroupCallVideoGridCell: UICollectionViewCell {
+private class GroupCallVideoGridCell: UICollectionViewCell {
     static let reuseIdentifier = "GroupCallVideoGridCell"
     private let memberView: CallMemberView_GroupBridge
 

@@ -32,7 +32,7 @@ class GroupCallViewController: UIViewController {
     private lazy var callHeader = CallHeader(call: call, groupThreadCall: groupThreadCall, delegate: self)
     private lazy var notificationView = GroupCallNotificationView(call: call, groupThreadCall: groupThreadCall)
 
-    private lazy var videoGrid = GroupCallVideoGrid(call: call, groupThreadCall: groupThreadCall)
+    private lazy var videoGrid = GroupCallVideoGrid(call: call, groupCall: groupThreadCall)
     private lazy var videoOverflow = GroupCallVideoOverflow(call: call, groupThreadCall: groupThreadCall, delegate: self)
 
     private let localMemberView: CallMemberView
