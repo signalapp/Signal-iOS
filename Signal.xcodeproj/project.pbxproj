@@ -589,6 +589,7 @@
 		5018B9DD2ADF4157001DFB12 /* AuthedDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5018B9DC2ADF4157001DFB12 /* AuthedDevice.swift */; };
 		501AD1C42AF17A16001B796A /* ECKeyPairTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501AD1C32AF17A16001B796A /* ECKeyPairTest.swift */; };
 		5020EFA22BA8A5390038C2D5 /* CanonicalPhoneNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5020EFA12BA8A5390038C2D5 /* CanonicalPhoneNumber.swift */; };
+		5021B0332C0106470028AC87 /* CallOfferHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5021B0322C0106470028AC87 /* CallOfferHandler.swift */; };
 		502B1B55297B28AF00FDB3AE /* ErrorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502B1B54297B28AF00FDB3AE /* ErrorTest.swift */; };
 		502C69702B06CE9C00012867 /* OutgoingAttachmentInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502C696F2B06CE9C00012867 /* OutgoingAttachmentInfo.swift */; };
 		502C69722B06F07900012867 /* AwaitableAsyncBlockOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502C69712B06F07900012867 /* AwaitableAsyncBlockOperation.swift */; };
@@ -3497,6 +3498,7 @@
 		501AD1C32AF17A16001B796A /* ECKeyPairTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ECKeyPairTest.swift; sourceTree = "<group>"; };
 		501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSPaymentsLock.swift; sourceTree = "<group>"; };
 		5020EFA12BA8A5390038C2D5 /* CanonicalPhoneNumber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanonicalPhoneNumber.swift; sourceTree = "<group>"; };
+		5021B0322C0106470028AC87 /* CallOfferHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallOfferHandler.swift; sourceTree = "<group>"; };
 		5027A6AB2AFC48D000D5AB95 /* LogFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogFormatter.swift; sourceTree = "<group>"; };
 		502B1B54297B28AF00FDB3AE /* ErrorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorTest.swift; sourceTree = "<group>"; };
 		502C696F2B06CE9C00012867 /* OutgoingAttachmentInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingAttachmentInfo.swift; sourceTree = "<group>"; };
@@ -9684,6 +9686,7 @@
 			isa = PBXGroup;
 			children = (
 				50D3136E2BFFE9370023EDCC /* CallEventInserter.swift */,
+				5021B0322C0106470028AC87 /* CallOfferHandler.swift */,
 				F9C5C96E289453B100548EEE /* TSCall+SDS.swift */,
 				F9C5C8D3289453B100548EEE /* TSCall.h */,
 				F9C5C96F289453B100548EEE /* TSCall.m */,
@@ -13647,6 +13650,7 @@
 				F9C5CD32289453B300548EEE /* CallKitIdStore.m in Sources */,
 				50C831762BAA3A8000BEBF25 /* CallMessageHandler.swift in Sources */,
 				72C9058E2B9AC8E600E586B8 /* CallMessageRelay.swift in Sources */,
+				5021B0332C0106470028AC87 /* CallOfferHandler.swift in Sources */,
 				D9C544292B8578B50036F274 /* CallRecord+CallStatus.swift in Sources */,
 				D9E7C8772B9A4A9C005BD3B9 /* CallRecord+Sorting.swift in Sources */,
 				D99A2A852AAB9AB9003388D1 /* CallRecord.swift in Sources */,

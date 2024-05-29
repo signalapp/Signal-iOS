@@ -176,29 +176,6 @@ final class IndividualCallService: CallServiceStateObserver {
 
     // MARK: - Signaling Functions
 
-    private func allowsInboundCalls(from caller: Aci, tx: SDSAnyReadTransaction) -> Bool {
-        // If the thread is in our whitelist, then we've either trusted it manually
-        // or it's a chat with someone in our system contacts.
-        return profileManager.isUser(inProfileWhitelist: SignalServiceAddress(caller), transaction: tx)
-    }
-
-    private struct CallIdentityKeys {
-        let localIdentityKey: IdentityKey
-        let contactIdentityKey: IdentityKey
-    }
-
-    private func getIdentityKeys(remoteAci: Aci, tx: SDSAnyReadTransaction) -> CallIdentityKeys? {
-        guard let localIdentityKey = identityManager.identityKeyPair(for: .aci, tx: tx.asV2Read)?.keyPair.identityKey else {
-            owsFailDebug("missing localIdentityKey")
-            return nil
-        }
-        guard let contactIdentityKey = try? identityManager.identityKey(for: remoteAci, tx: tx.asV2Read) else {
-            owsFailDebug("missing contactIdentityKey")
-            return nil
-        }
-        return CallIdentityKeys(localIdentityKey: localIdentityKey, contactIdentityKey: contactIdentityKey)
-    }
-
     /**
      * Received an incoming call Offer from call initiator.
      */
@@ -219,106 +196,30 @@ final class IndividualCallService: CallServiceStateObserver {
             return
         }
 
-        let thread = TSContactThread.getOrCreateThread(
-            withContactAddress: SignalServiceAddress(caller),
-            transaction: tx
+        let callOfferHandler = CallOfferHandlerImpl(
+            identityManager: identityManager,
+            notificationPresenter: notificationPresenter,
+            profileManager: profileManager,
+            tsAccountManager: tsAccountManager
         )
 
-        let offerMediaType: TSRecentCallOfferType
-        switch callType {
-        case .offerAudioCall:
-            offerMediaType = .audio
-        case .offerVideoCall:
-            offerMediaType = .video
-        }
-
-        func insertMissedCallInteraction(outcome: RPRecentCallType, tx: SDSAnyWriteTransaction) {
-            let callEventInserter = CallEventInserter(
-                thread: thread,
-                callId: callId,
-                offerMediaType: offerMediaType,
-                sentAtTimestamp: sentAtTimestamp
-            )
-            callEventInserter.createOrUpdate(callType: outcome, tx: tx)
-        }
-
-        guard tsAccountManager.registrationState(tx: tx.asV2Read).isRegistered else {
-            Logger.warn("user is not registered, skipping call.")
-            insertMissedCallInteraction(outcome: .incomingMissed, tx: tx)
-            return
-        }
-
-        let untrustedIdentity = identityManager.untrustedIdentityForSending(
-            to: SignalServiceAddress(caller),
-            untrustedThreshold: nil,
-            tx: tx.asV2Read
+        let partialResult = callOfferHandler.startHandlingOffer(
+            caller: caller,
+            sourceDevice: sourceDevice,
+            callId: callId,
+            callType: callType,
+            sentAtTimestamp: sentAtTimestamp,
+            tx: tx
         )
-        if let untrustedIdentity {
-            Logger.warn("missed a call due to untrusted identity")
-
-            let notificationInfo = NotificationPresenterImpl.CallNotificationInfo(
-                groupingId: UUID(),
-                thread: thread,
-                caller: caller
-            )
-
-            switch untrustedIdentity.verificationState {
-            case .verified, .defaultAcknowledged:
-                owsFailDebug("shouldn't have missed a call due to untrusted identity if the identity is verified")
-                let sentAtTimestamp = Date(millisecondsSince1970: sentAtTimestamp)
-                self.notificationPresenter.presentMissedCall(
-                    notificationInfo: notificationInfo,
-                    offerMediaType: offerMediaType,
-                    sentAt: sentAtTimestamp,
-                    tx: tx
-                )
-            case .default:
-                self.notificationPresenter.presentMissedCallBecauseOfNewIdentity(
-                    notificationInfo: notificationInfo,
-                    tx: tx
-                )
-            case .noLongerVerified:
-                self.notificationPresenter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(
-                    notificationInfo: notificationInfo,
-                    tx: tx
-                )
-            }
-
-            insertMissedCallInteraction(outcome: .incomingMissedBecauseOfChangedIdentity, tx: tx)
-            return
-        }
-
-        guard let identityKeys = getIdentityKeys(remoteAci: caller, tx: tx) else {
-            Logger.warn("missing identity keys, skipping call.")
-            insertMissedCallInteraction(outcome: .incomingMissed, tx: tx)
-            return
-        }
-
-        guard allowsInboundCalls(from: caller, tx: tx) else {
-            Logger.info("Ignoring call offer from \(caller) due to insufficient permissions.")
-
-            // Send the need permission message to the caller, so they know why we rejected their call.
-            _ = sendHangup(
-                thread: thread,
-                callId: callId,
-                hangupType: .needPermission,
-                localDeviceId: tsAccountManager.storedDeviceId(tx: tx.asV2Read),
-                remoteDeviceId: sourceDevice,
-                tx: tx
-            )
-
-            // Store the call as a missed call for the local user. They will see it in the conversation
-            // along with the message request dialog. When they accept the dialog, they can call back
-            // or the caller can try again.
-            insertMissedCallInteraction(outcome: .incomingMissed, tx: tx)
+        guard let partialResult else {
             return
         }
 
         let individualCall = IndividualCall.incomingIndividualCall(
             callId: callId,
-            thread: thread,
+            thread: partialResult.thread,
             sentAtTimestamp: sentAtTimestamp,
-            offerMediaType: offerMediaType
+            offerMediaType: partialResult.offerMediaType
         )
 
         // Get the current local device Id, must be valid for lifetime of the call.
@@ -362,8 +263,8 @@ final class IndividualCallService: CallServiceStateObserver {
                     callMediaType: newCall.individualCall.offerMediaType.asCallMediaType,
                     localDevice: localDeviceId,
                     isLocalDevicePrimary: isPrimaryDevice,
-                    senderIdentityKey: identityKeys.contactIdentityKey.publicKey.keyBytes.asData,
-                    receiverIdentityKey: identityKeys.localIdentityKey.publicKey.keyBytes.asData
+                    senderIdentityKey: partialResult.identityKeys.contactIdentityKey.publicKey.keyBytes.asData,
+                    receiverIdentityKey: partialResult.identityKeys.localIdentityKey.publicKey.keyBytes.asData
                 )
             } catch {
                 self.handleFailedCall(failedCall: newCall, error: error, shouldResetUI: true, shouldResetRingRTC: true)
@@ -387,7 +288,7 @@ final class IndividualCallService: CallServiceStateObserver {
             return
         }
 
-        let identityKeys = getIdentityKeys(remoteAci: caller, tx: tx)
+        let identityKeys = identityManager.getCallIdentityKeys(remoteAci: caller, tx: tx)
 
         DispatchQueue.main.async {
             self._handleReceivedAnswer(callId: callId, sourceDevice: sourceDevice, opaque: opaque, identityKeys: identityKeys)
@@ -998,10 +899,18 @@ final class IndividualCallService: CallServiceStateObserver {
         Task { @MainActor in
             do {
                 let sendPromise = await self.databaseStorage.awaitableWrite { tx in
-                    return self.sendHangup(
+                    return CallHangupSender.sendHangup(
                         thread: call.individualCall.thread,
                         callId: callId,
-                        hangupType: hangupType,
+                        hangupType: { () -> SSKProtoCallMessageHangupType in
+                            switch hangupType {
+                            case .normal: return .hangupNormal
+                            case .accepted: return .hangupAccepted
+                            case .declined: return .hangupDeclined
+                            case .busy: return .hangupBusy
+                            case .needPermission: return .hangupNeedPermission
+                            }
+                        }(),
                         localDeviceId: deviceId,
                         remoteDeviceId: destinationDeviceId,
                         tx: tx
@@ -1015,55 +924,6 @@ final class IndividualCallService: CallServiceStateObserver {
                 self.callManager.signalingMessageDidFail(callId: callId)
             }
         }
-    }
-
-    private func sendHangup(
-        thread: TSContactThread,
-        callId: UInt64,
-        hangupType: HangupType,
-        localDeviceId: UInt32,
-        remoteDeviceId: UInt32?,
-        tx: SDSAnyWriteTransaction
-    ) -> Promise<Void> {
-        let hangupBuilder = SSKProtoCallMessageHangup.builder(id: callId)
-
-        switch hangupType {
-        case .normal: hangupBuilder.setType(.hangupNormal)
-        case .accepted: hangupBuilder.setType(.hangupAccepted)
-        case .declined: hangupBuilder.setType(.hangupDeclined)
-        case .busy: hangupBuilder.setType(.hangupBusy)
-        case .needPermission: hangupBuilder.setType(.hangupNeedPermission)
-        }
-
-        if hangupType != .normal {
-            // deviceId is optional and only used when indicated by a hangup due to
-            // a call being accepted elsewhere.
-            hangupBuilder.setDeviceID(localDeviceId)
-        }
-
-        let hangupMessage: SSKProtoCallMessageHangup
-        do {
-            hangupMessage = try hangupBuilder.build()
-        } catch {
-            owsFailDebug("Couldn't build hangup message.")
-            return Promise(error: error)
-        }
-
-        let callMessage = OWSOutgoingCallMessage(
-            thread: thread,
-            hangupMessage: hangupMessage,
-            destinationDeviceId: NSNumber(value: remoteDeviceId),
-            transaction: tx
-        )
-        let preparedMessage = PreparedOutgoingMessage.preprepared(
-            transientMessageWithoutAttachments: callMessage
-        )
-        return ThreadUtil.enqueueMessagePromise(
-            message: preparedMessage,
-            limitToCurrentProcessLifetime: true,
-            isHighPriority: true,
-            transaction: tx
-        )
     }
 
     public func callManager(_ callManager: CallService.CallManagerType, shouldSendBusy callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?) {
