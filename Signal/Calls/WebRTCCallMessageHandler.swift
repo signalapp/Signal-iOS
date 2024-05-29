@@ -21,129 +21,98 @@ class WebRTCCallMessageHandler: CallMessageHandler {
 
     // MARK: - Call Handlers
 
-    public func action(
-        for envelope: SSKProtoEnvelope,
-        callMessage: SSKProtoCallMessage,
-        serverDeliveryTimestamp: UInt64
-    ) -> CallMessageAction {
-        return .process
-    }
-
-    func receivedOffer(
-        _ offer: SSKProtoCallMessageOffer,
+    func receivedEnvelope(
+        _ envelope: SSKProtoEnvelope,
+        callEnvelope: CallEnvelopeType,
         from caller: (aci: Aci, deviceId: UInt32),
+        plaintextData: Data,
+        wasReceivedByUD: Bool,
         sentAtTimestamp: UInt64,
         serverReceivedTimestamp: UInt64,
         serverDeliveryTimestamp: UInt64,
         tx: SDSAnyWriteTransaction
     ) {
-        self.callService.individualCallService.handleReceivedOffer(
-            caller: caller.aci,
-            callId: offer.id,
-            sourceDevice: caller.deviceId,
-            opaque: offer.opaque,
-            sentAtTimestamp: sentAtTimestamp,
-            serverReceivedTimestamp: serverReceivedTimestamp,
-            serverDeliveryTimestamp: serverDeliveryTimestamp,
-            callType: offer.type ?? .offerAudioCall,
-            tx: tx
-        )
-    }
-
-    func receivedAnswer(
-        _ answer: SSKProtoCallMessageAnswer,
-        from caller: (aci: Aci, deviceId: UInt32),
-        tx: SDSAnyReadTransaction
-    ) {
-        self.callService.individualCallService.handleReceivedAnswer(
-            caller: caller.aci,
-            callId: answer.id,
-            sourceDevice: caller.deviceId,
-            opaque: answer.opaque,
-            tx: tx
-        )
-    }
-
-    func receivedIceUpdate(
-        _ iceUpdate: [SSKProtoCallMessageIceUpdate],
-        from caller: (aci: Aci, deviceId: UInt32)
-    ) {
-        self.callService.individualCallService.handleReceivedIceCandidates(
-            caller: caller.aci,
-            callId: iceUpdate[0].id,
-            sourceDevice: caller.deviceId,
-            candidates: iceUpdate
-        )
-    }
-
-    func receivedHangup(
-        _ hangup: SSKProtoCallMessageHangup,
-        from caller: (aci: Aci, deviceId: UInt32)
-    ) {
-        // deviceId is optional and defaults to 0.
-        var deviceId: UInt32 = 0
-
-        let type: SSKProtoCallMessageHangupType
-        if hangup.hasType {
-            type = hangup.unwrappedType
-
-            if hangup.hasDeviceID {
-                deviceId = hangup.deviceID
-            }
-        } else {
-            // The type is not defined so assume the default, normal.
-            type = .hangupNormal
-        }
-
-        self.callService.individualCallService.handleReceivedHangup(
-            caller: caller.aci,
-            callId: hangup.id,
-            sourceDevice: caller.deviceId,
-            type: type,
-            deviceId: deviceId
-        )
-    }
-
-    func receivedBusy(
-        _ busy: SSKProtoCallMessageBusy,
-        from caller: (aci: Aci, deviceId: UInt32)
-    ) {
-        self.callService.individualCallService.handleReceivedBusy(
-            caller: caller.aci,
-            callId: busy.id,
-            sourceDevice: caller.deviceId
-        )
-    }
-
-    func receivedOpaque(
-        _ opaque: SSKProtoCallMessageOpaque,
-        from caller: (aci: Aci, deviceId: UInt32),
-        serverReceivedTimestamp: UInt64,
-        serverDeliveryTimestamp: UInt64,
-        tx: SDSAnyReadTransaction
-    ) {
-        Logger.info("Received opaque call message from \(caller.aci).\(caller.deviceId)")
-
-        guard let message = opaque.data else {
-            owsFailDebug("Received opaque call message without data")
-            return
-        }
-
-        var messageAgeSec: UInt64 = 0
-        if serverReceivedTimestamp > 0 && serverDeliveryTimestamp >= serverReceivedTimestamp {
-            messageAgeSec = (serverDeliveryTimestamp - serverReceivedTimestamp) / 1000
-        }
-
-        let localDeviceId = tsAccountManager.storedDeviceId(tx: tx.asV2Read)
-
-        DispatchQueue.main.async {
-            self.callService.callManager.receivedCallMessage(
-                senderUuid: caller.aci.rawUUID,
-                senderDeviceId: caller.deviceId,
-                localDeviceId: localDeviceId,
-                message: message,
-                messageAgeSec: messageAgeSec
+        switch callEnvelope {
+        case .offer(let offer):
+            self.callService.individualCallService.handleReceivedOffer(
+                caller: caller.aci,
+                callId: offer.id,
+                sourceDevice: caller.deviceId,
+                opaque: offer.opaque,
+                sentAtTimestamp: sentAtTimestamp,
+                serverReceivedTimestamp: serverReceivedTimestamp,
+                serverDeliveryTimestamp: serverDeliveryTimestamp,
+                callType: offer.type ?? .offerAudioCall,
+                tx: tx
             )
+        case .answer(let answer):
+            self.callService.individualCallService.handleReceivedAnswer(
+                caller: caller.aci,
+                callId: answer.id,
+                sourceDevice: caller.deviceId,
+                opaque: answer.opaque,
+                tx: tx
+            )
+        case .iceUpdate(let iceUpdate):
+            self.callService.individualCallService.handleReceivedIceCandidates(
+                caller: caller.aci,
+                callId: iceUpdate[0].id,
+                sourceDevice: caller.deviceId,
+                candidates: iceUpdate
+            )
+        case .hangup(let hangup):
+            // deviceId is optional and defaults to 0.
+            var deviceId: UInt32 = 0
+
+            let type: SSKProtoCallMessageHangupType
+            if hangup.hasType {
+                type = hangup.unwrappedType
+
+                if hangup.hasDeviceID {
+                    deviceId = hangup.deviceID
+                }
+            } else {
+                // The type is not defined so assume the default, normal.
+                type = .hangupNormal
+            }
+
+            self.callService.individualCallService.handleReceivedHangup(
+                caller: caller.aci,
+                callId: hangup.id,
+                sourceDevice: caller.deviceId,
+                type: type,
+                deviceId: deviceId
+            )
+        case .busy(let busy):
+            self.callService.individualCallService.handleReceivedBusy(
+                caller: caller.aci,
+                callId: busy.id,
+                sourceDevice: caller.deviceId
+            )
+        case .opaque(let opaque):
+            Logger.info("Received opaque call message from \(caller.aci).\(caller.deviceId)")
+
+            guard let message = opaque.data else {
+                owsFailDebug("Received opaque call message without data")
+                return
+            }
+
+            var messageAgeSec: UInt64 = 0
+            if serverReceivedTimestamp > 0 && serverDeliveryTimestamp >= serverReceivedTimestamp {
+                messageAgeSec = (serverDeliveryTimestamp - serverReceivedTimestamp) / 1000
+            }
+
+            let localDeviceId = tsAccountManager.storedDeviceId(tx: tx.asV2Read)
+
+            DispatchQueue.main.async {
+                self.callService.callManager.receivedCallMessage(
+                    senderUuid: caller.aci.rawUUID,
+                    senderDeviceId: caller.deviceId,
+                    localDeviceId: localDeviceId,
+                    message: message,
+                    messageAgeSec: messageAgeSec
+                )
+            }
         }
     }
 
@@ -159,15 +128,5 @@ class WebRTCCallMessageHandler: CallMessageHandler {
                 messageTimestamp: serverReceivedTimestamp
             )
         )
-    }
-
-    func externallyHandleCallMessage(
-        envelope: SSKProtoEnvelope,
-        plaintextData: Data,
-        wasReceivedByUD: Bool,
-        serverDeliveryTimestamp: UInt64,
-        tx: SDSAnyWriteTransaction
-    ) {
-        owsFailDebug("Can't handle externally. We're already the main app.")
     }
 }

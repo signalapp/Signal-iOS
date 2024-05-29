@@ -198,25 +198,7 @@ public final class MessageReceiver: Dependencies {
             handleIncomingEnvelope(request: request, dataMessage: dataMessage, localIdentifiers: localIdentifiers, tx: tx)
         case .callMessage(let callMessage):
             owsAssertDebug(!request.shouldDiscardVisibleMessages)
-            let action = callMessageHandler.action(
-                for: request.envelope,
-                callMessage: callMessage,
-                serverDeliveryTimestamp: request.serverDeliveryTimestamp
-            )
-            switch action {
-            case .process:
-                handleIncomingEnvelope(request: request, callMessage: callMessage, localIdentifiers: localIdentifiers, tx: tx)
-            case .handOff:
-                callMessageHandler.externallyHandleCallMessage(
-                    envelope: request.decryptedEnvelope.envelope,
-                    plaintextData: request.plaintextData,
-                    wasReceivedByUD: request.wasReceivedByUD,
-                    serverDeliveryTimestamp: request.serverDeliveryTimestamp,
-                    tx: tx
-                )
-            case .ignore:
-                Logger.info("Ignoring call message w/ts \(request.decryptedEnvelope.timestamp)")
-            }
+            handleIncomingEnvelope(request: request, callMessage: callMessage, localIdentifiers: localIdentifiers, tx: tx)
         case .typingMessage(let typingMessage):
             handleIncomingEnvelope(request: request, typingMessage: typingMessage, tx: tx)
         case .nullMessage:
@@ -1212,57 +1194,35 @@ public final class MessageReceiver: Dependencies {
             setProfileKeyIfValid(profileKey, for: envelope.sourceAci, localIdentifiers: localIdentifiers, tx: tx)
         }
 
+        let callEnvelope: CallEnvelopeType
+
         if let offer = callMessage.offer {
-            callMessageHandler.receivedOffer(
-                offer,
-                from: (envelope.sourceAci, envelope.sourceDeviceId),
-                sentAtTimestamp: envelope.timestamp,
-                serverReceivedTimestamp: envelope.serverTimestamp,
-                serverDeliveryTimestamp: request.serverDeliveryTimestamp,
-                tx: tx
-            )
+            callEnvelope = .offer(offer)
+        } else if let answer = callMessage.answer {
+            callEnvelope = .answer(answer)
+        } else if !callMessage.iceUpdate.isEmpty {
+            callEnvelope = .iceUpdate(callMessage.iceUpdate)
+        } else if let hangup = callMessage.hangup {
+            callEnvelope = .hangup(hangup)
+        } else if let busy = callMessage.busy {
+            callEnvelope = .busy(busy)
+        } else if let opaque = callMessage.opaque {
+            callEnvelope = .opaque(opaque)
+        } else {
+            Logger.warn("Dropping call message with no actionable payload.")
             return
         }
-        if let answer = callMessage.answer {
-            callMessageHandler.receivedAnswer(
-                answer,
-                from: (envelope.sourceAci, envelope.sourceDeviceId),
-                tx: tx
-            )
-            return
-        }
-        if !callMessage.iceUpdate.isEmpty {
-            callMessageHandler.receivedIceUpdate(
-                callMessage.iceUpdate,
-                from: (envelope.sourceAci, envelope.sourceDeviceId)
-            )
-            return
-        }
-        if let hangup = callMessage.hangup {
-            callMessageHandler.receivedHangup(
-                hangup,
-                from: (envelope.sourceAci, envelope.sourceDeviceId)
-            )
-            return
-        }
-        if let busy = callMessage.busy {
-            callMessageHandler.receivedBusy(
-                busy,
-                from: (envelope.sourceAci, envelope.sourceDeviceId)
-            )
-            return
-        }
-        if let opaque = callMessage.opaque {
-            callMessageHandler.receivedOpaque(
-                opaque,
-                from: (envelope.sourceAci, envelope.sourceDeviceId),
-                serverReceivedTimestamp: envelope.serverTimestamp,
-                serverDeliveryTimestamp: request.serverDeliveryTimestamp,
-                tx: tx
-            )
-            return
-        }
-        Logger.warn("Call message with no actionable payload.")
+        callMessageHandler.receivedEnvelope(
+            envelope.envelope,
+            callEnvelope: callEnvelope,
+            from: (envelope.sourceAci, envelope.sourceDeviceId),
+            plaintextData: envelope.plaintextData,
+            wasReceivedByUD: envelope.wasReceivedByUD,
+            sentAtTimestamp: envelope.timestamp,
+            serverReceivedTimestamp: envelope.serverTimestamp,
+            serverDeliveryTimestamp: request.serverDeliveryTimestamp,
+            tx: tx
+        )
     }
 
     private func handleIncomingEnvelope(
