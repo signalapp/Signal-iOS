@@ -18,5 +18,12 @@ struct CurrentCall {
 
 extension CurrentCall: CurrentCallProvider {
     var hasCurrentCall: Bool { self.get() != nil }
-    var currentCallThread: TSThread? { self.get()?.thread }
+    var currentGroupCallThread: TSGroupThread? {
+        switch self.get()?.mode {
+        case nil, .individual:
+            return nil
+        case .groupThread(let call):
+            return call.groupThread
+        }
+    }
 }

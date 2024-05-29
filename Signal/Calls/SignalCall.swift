@@ -158,13 +158,6 @@ class SignalCall: CallManagerCallReference {
         return self.mode.commonState.localId
     }
 
-    var thread: TSThread {
-        switch mode {
-        case .individual(let call): return call.thread
-        case .groupThread(let call): return call.groupThread
-        }
-    }
-
     var offerMediaType: TSRecentCallOfferType {
         switch mode {
         case .individual(let call): return call.offerMediaType

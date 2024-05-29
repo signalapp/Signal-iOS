@@ -47,28 +47,34 @@ final class CallKitCallManager {
     }
 
     func createCallHandleWithSneakyTransaction(for call: SignalCall) -> CXHandle {
-        if showNamesOnCallScreen {
-            let type: CXHandle.HandleType
-            let value: String
-            switch call.mode {
-            case .individual(let individualCall):
-                if let phoneNumber = individualCall.remoteAddress.phoneNumber {
-                    type = .phoneNumber
-                    value = phoneNumber
-                } else {
-                    type = .generic
-                    value = individualCall.remoteAddress.serviceIdUppercaseString!
-                }
-            case .groupThread:
+        let type: CXHandle.HandleType
+        let value: String
+        switch call.mode {
+        case .individual(let individualCall):
+            if !showNamesOnCallScreen {
+                let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
+                CallKitIdStore.setThread(individualCall.thread, forCallKitId: callKitId)
                 type = .generic
-                value = Self.kGroupCallHandlePrefix + call.thread.groupModelIfGroupThread!.groupId.asBase64Url
+                value = callKitId
+            } else if let phoneNumber = individualCall.remoteAddress.phoneNumber {
+                type = .phoneNumber
+                value = phoneNumber
+            } else {
+                type = .generic
+                value = individualCall.remoteAddress.serviceIdUppercaseString!
             }
-            return CXHandle(type: type, value: value)
-        } else {
-            let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
-            CallKitIdStore.setThread(call.thread, forCallKitId: callKitId)
-            return CXHandle(type: .generic, value: callKitId)
+        case .groupThread(let groupThreadCall):
+            if !showNamesOnCallScreen {
+                let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
+                CallKitIdStore.setThread(groupThreadCall.groupThread, forCallKitId: callKitId)
+                type = .generic
+                value = callKitId
+            } else {
+                type = .generic
+                value = Self.kGroupCallHandlePrefix + groupThreadCall.groupThread.groupModel.groupId.asBase64Url
+            }
         }
+        return CXHandle(type: type, value: value)
     }
 
     @objc

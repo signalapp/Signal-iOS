@@ -1245,11 +1245,12 @@ private extension SignalCall {
     }
 
     private var threadRowId: Int64 {
-        guard let threadRowId = thread.sqliteRowId else {
-            owsFail("How did we get a call whose thread does not exist in the DB?")
+        switch mode {
+        case .individual(let call):
+            return call.thread.sqliteRowId!
+        case .groupThread(let call):
+            return call.groupThread.sqliteRowId!
         }
-
-        return threadRowId
     }
 }
 

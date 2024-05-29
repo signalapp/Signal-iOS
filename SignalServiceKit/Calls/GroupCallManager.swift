@@ -8,13 +8,13 @@ import SignalRingRTC
 
 public protocol CurrentCallProvider {
     var hasCurrentCall: Bool { get }
-    var currentCallThread: TSThread? { get }
+    var currentGroupCallThread: TSGroupThread? { get }
 }
 
 public class CurrentCallNoOpProvider: CurrentCallProvider {
     public init() {}
     public var hasCurrentCall: Bool { false }
-    public var currentCallThread: TSThread? { nil }
+    public var currentGroupCallThread: TSGroupThread? { nil }
 }
 
 /// Fetches & updates group call state.
@@ -77,7 +77,7 @@ public class GroupCallManager {
         // If the currentCall is for the provided thread, we don't need to
         // perform an explicit peek. Connected calls will receive automatic
         // updates from RingRTC.
-        guard currentCallProvider.currentCallThread != thread else {
+        guard currentCallProvider.currentGroupCallThread != thread else {
             logger.info("Ignoring peek request for the current call.")
             return
         }
@@ -460,7 +460,7 @@ public class GroupCallManager {
         AssertNotOnMainThread()
 
         // The message can't be for the current call
-        guard currentCallProvider.currentCallThread != groupThread else {
+        guard currentCallProvider.currentGroupCallThread != groupThread else {
             return
         }
 

@@ -105,7 +105,7 @@ class CallHeader: UIView {
         // Avatar
         let avatarPaddingView = UIView()
         avatarView.updateWithSneakyTransactionIfNecessary {
-            $0.dataSource = .thread(call.thread)
+            $0.dataSource = .thread(groupThreadCall.groupThread)
         }
         avatarPaddingView.addSubview(avatarView)
         avatarView.autoPinEdges(toSuperviewMarginsExcludingEdge: .top)
@@ -199,9 +199,7 @@ class CallHeader: UIView {
     }
 
     private func fetchGroupSizeAndMemberNamesWithSneakyTransaction() -> (Int, [String]) {
-        guard let groupThread = call.thread as? TSGroupThread else {
-            return (0, [])
-        }
+        let groupThread = groupThreadCall.groupThread
         return databaseStorage.read { transaction in
             // FIXME: Register for notifications so we can update if someone leaves the group while the screen is up?
             let firstTwoNames = groupThread.sortedMemberNames(
@@ -361,7 +359,7 @@ class CallHeader: UIView {
         } else {
             // FIXME: This should auto-update if the group name changes.
             callTitleText = databaseStorage.read { transaction in
-                contactsManager.displayName(for: call.thread, transaction: transaction)
+                contactsManager.displayName(for: groupThreadCall.groupThread, transaction: transaction)
             }
         }
 

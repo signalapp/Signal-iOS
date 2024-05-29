@@ -103,16 +103,19 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     }
 
     private func localizedCallerNameWithSneakyTransaction(for call: SignalCall) -> String {
-        if showNamesOnCallScreen {
-            return databaseStorage.read { tx in contactsManager.displayName(for: call.thread, transaction: tx) }
-        }
         switch call.mode {
-        case .individual:
+        case .individual(let call):
+            if showNamesOnCallScreen {
+                return databaseStorage.read { tx in contactsManager.displayName(for: call.thread, transaction: tx) }
+            }
             return OWSLocalizedString(
                 "CALLKIT_ANONYMOUS_CONTACT_NAME",
                 comment: "The generic name used for calls if CallKit privacy is enabled"
             )
-        case .groupThread:
+        case .groupThread(let call):
+            if showNamesOnCallScreen {
+                return databaseStorage.read { tx in contactsManager.displayName(for: call.groupThread, transaction: tx) }
+            }
             return OWSLocalizedString(
                 "CALLKIT_ANONYMOUS_GROUP_NAME",
                 comment: "The generic name used for group calls if CallKit privacy is enabled"

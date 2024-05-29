@@ -214,15 +214,11 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         switch call.mode {
         case .individual:
             break
-        case .groupThread:
+        case .groupThread(let call):
             // Kick off a peek now that we've disconnected to get an updated participant state.
-            guard let thread = call.thread as? TSGroupThread else {
-                owsFailDebug("Invalid thread type")
-                return
-            }
             Task {
                 await self.groupCallManager.peekGroupCallAndUpdateThread(
-                    thread,
+                    call.groupThread,
                     peekTrigger: .localEvent()
                 )
             }
@@ -414,9 +410,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             individualCallService.handleLocalHangupCall(call)
         case .groupThread(let groupThreadCall):
             if case .incomingRing(_, let ringId) = groupThreadCall.groupCallRingState {
-                guard let groupThreadCall = call.unpackGroupCall() else {
-                    return
-                }
                 let groupThread = groupThreadCall.groupThread
 
                 groupCallAccessoryMessageDelegate.localDeviceDeclinedGroupRing(
@@ -940,15 +933,14 @@ extension CallService: DatabaseChangeDelegate {
         AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
 
-        guard
-            let thread = callServiceState.currentCall?.thread,
-            thread.isGroupThread,
-            databaseChanges.didUpdate(thread: thread)
-        else {
-            return
+        switch callServiceState.currentCall?.mode {
+        case nil, .individual:
+            break
+        case .groupThread(let groupThreadCall):
+            if databaseChanges.didUpdate(thread: groupThreadCall.groupThread) {
+                updateGroupMembersForCurrentCallIfNecessary()
+            }
         }
-
-        updateGroupMembersForCurrentCallIfNecessary()
     }
 
     public func databaseChangesDidUpdateExternally() {
@@ -1103,6 +1095,14 @@ extension CallService: CallManagerDelegate {
         call2: SignalCall
     ) -> Bool {
         Logger.info("shouldCompareCalls")
+        guard case .individual(let call1) = call1.mode else {
+            owsFailDebug("Can't compare multi-participant calls.")
+            return false
+        }
+        guard case .individual(let call2) = call2.mode else {
+            owsFailDebug("Can't compare multi-participant calls.")
+            return false
+        }
         return call1.thread.uniqueId == call2.thread.uniqueId
     }
 
@@ -1432,7 +1432,7 @@ extension CallService: CallManagerDelegate {
             }
         case .ring(let thread):
             let currentCall = self.callServiceState.currentCall
-            if currentCall?.thread.uniqueId == thread.uniqueId {
+            if case .groupThread(let call) = currentCall?.mode, call.groupThread.uniqueId == thread.uniqueId {
                 // We're already ringing or connected, or at the very least already in the lobby.
                 return
             }

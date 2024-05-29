@@ -38,9 +38,10 @@ struct CVViewStateSnapshot: Dependencies {
 
     let oldestUnreadMessageSortId: UInt64?
 
-    let currentCallThreadId: String?
+    let hasActiveCall: Bool
+    let currentGroupCallThreadUniqueId: String?
 
-    private static var callService: CallService { AppEnvironment.shared.callService }
+    private static var currentCallProvider: any CurrentCallProvider { DependenciesBridge.shared.currentCallProvider }
 
     static func snapshot(
         viewState: CVViewState,
@@ -58,7 +59,8 @@ struct CVViewStateSnapshot: Dependencies {
             previousUIMode: previousViewStateSnapshot?.uiMode ?? .normal,
             searchText: viewState.lastSearchedText,
             oldestUnreadMessageSortId: oldestUnreadMessageSortId,
-            currentCallThreadId: callService.callServiceState.currentCall?.thread.uniqueId
+            hasActiveCall: currentCallProvider.hasCurrentCall,
+            currentGroupCallThreadUniqueId: currentCallProvider.currentGroupCallThread?.uniqueId
         )
     }
 
@@ -76,7 +78,8 @@ struct CVViewStateSnapshot: Dependencies {
             previousUIMode: .normal,
             searchText: nil,
             oldestUnreadMessageSortId: nil,
-            currentCallThreadId: nil
+            hasActiveCall: false,
+            currentGroupCallThreadUniqueId: nil
         )
     }
 }

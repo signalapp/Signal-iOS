@@ -920,7 +920,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
             let addressesToCheck: [SignalServiceAddress]
             if groupCall.localDeviceState.joinState == .notJoined {
                 // If we haven't joined the call yet, we want to alert for all members of the group
-                addressesToCheck = call.thread.recipientAddresses(with: transaction)
+                addressesToCheck = groupThreadCall.groupThread.recipientAddresses(with: transaction)
             } else {
                 // If we are in the call, we only care about safety numbers for the active call participants
                 addressesToCheck = groupCall.remoteDeviceStates.map { $0.value.address }
@@ -965,7 +965,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
             // It's not worth trying to track this more precisely.
             let atLeastOneUnresolvedPresentAtJoin = unresolvedAddresses.contains { membersAtJoin?.contains($0) ?? false }
             Self.notificationPresenterImpl.notifyForGroupCallSafetyNumberChange(
-                inThread: call.thread,
+                inThread: groupThreadCall.groupThread,
                 presentAtJoin: atLeastOneUnresolvedPresentAtJoin
             )
         }

@@ -265,7 +265,18 @@ public class NotificationActionHandler: Dependencies {
             let thread = notificationMessage.thread
             let currentCall = Self.callService.callServiceState.currentCall
 
-            if currentCall?.thread.uniqueId == thread.uniqueId {
+            let isCurrentCallForNotificationThread = { () -> Bool in
+                switch currentCall?.mode {
+                case .individual(let call) where call.thread.uniqueId == thread.uniqueId:
+                    return true
+                case .groupThread(let call) where call.groupThread.uniqueId == thread.uniqueId:
+                    return true
+                case nil, .individual, .groupThread:
+                    return false
+                }
+            }()
+
+            if isCurrentCallForNotificationThread {
                 WindowManager.shared.returnToCallView()
             } else if let thread = thread as? TSGroupThread, currentCall == nil {
                 GroupCallViewController.presentLobby(thread: thread)

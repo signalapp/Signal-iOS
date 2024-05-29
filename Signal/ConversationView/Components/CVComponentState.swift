@@ -839,10 +839,10 @@ fileprivate extension CVComponentState.Builder {
                                                    avatarDataSource: avatarDataSource)
             return build()
         case .info, .error, .call:
-            let currentCallThreadId = viewStateSnapshot.currentCallThreadId
+            let currentGroupCallThreadUniqueId = viewStateSnapshot.currentGroupCallThreadUniqueId
             self.systemMessage = CVComponentSystemMessage.buildComponentState(interaction: interaction,
                                                                               threadViewModel: threadViewModel,
-                                                                              currentCallThreadId: currentCallThreadId,
+                                                                              currentGroupCallThreadUniqueId: currentGroupCallThreadUniqueId,
                                                                               transaction: transaction)
             return build()
         case .unreadIndicator:

@@ -228,8 +228,14 @@ struct ConversationHeaderBuilder: Dependencies {
         if ConversationViewController.canCall(threadViewModel: delegate.threadViewModel) {
             let callService = AppEnvironment.shared.callService!
             let currentCall = callService.callServiceState.currentCall
-            let isCurrentCallForThread = currentCall?.thread.uniqueId == delegate.thread.uniqueId
             let hasCurrentCall = currentCall != nil
+            let isCurrentCallForThread = { () -> Bool in
+                switch currentCall?.mode {
+                case nil: return false
+                case .individual(let call): return call.thread.uniqueId == delegate.thread.uniqueId
+                case .groupThread(let call): return call.groupThread.uniqueId == delegate.thread.uniqueId
+                }
+            }()
 
             if options.contains(.videoCall) {
                 buttons.append(buildIconButton(
@@ -584,16 +590,17 @@ extension ConversationHeaderDelegate {
         }
 
         let callService = AppEnvironment.shared.callService!
-        if let currentCall = callService.callServiceState.currentCall {
-            if currentCall.thread.uniqueId == thread.uniqueId {
-                WindowManager.shared.returnToCallView()
-            } else {
-                owsFailDebug("Tried to start call while call was ongoing")
-            }
-        } else {
+        switch callService.callServiceState.currentCall?.mode {
+        case nil:
             // We initiated a call, so if there was a pending message request we should accept it.
             ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
             callService.initiateCall(thread: thread, isVideo: withVideo)
+        case .individual(let call) where call.thread.uniqueId == thread.uniqueId:
+            WindowManager.shared.returnToCallView()
+        case .groupThread(let call) where call.groupThread.uniqueId == thread.uniqueId:
+            WindowManager.shared.returnToCallView()
+        case .individual, .groupThread:
+            owsFailDebug("Tried to start call while call was ongoing")
         }
     }
 }

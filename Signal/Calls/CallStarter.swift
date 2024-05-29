@@ -91,7 +91,13 @@ struct CallStarter {
 
         switch recipient {
         case let .contact(thread, withVideo):
-            if thread.uniqueId == context.callService.callServiceState.currentCall?.thread.uniqueId {
+            let isCurrentCall = { () -> Bool in
+                if case .individual(let call) = context.callService.callServiceState.currentCall?.mode {
+                    return call.thread.uniqueId == thread.uniqueId
+                }
+                return false
+            }()
+            if isCurrentCall {
                 WindowManager.shared.returnToCallView()
                 return .callStarted
             }
@@ -103,7 +109,13 @@ struct CallStarter {
             self.whitelistThread(thread)
             context.callService.initiateCall(thread: thread, isVideo: withVideo)
         case let .group(thread):
-            if thread.uniqueId == context.callService.callServiceState.currentCall?.thread.uniqueId {
+            let isCurrentCall = { () -> Bool in
+                if case .groupThread(let call) = context.callService.callServiceState.currentCall?.mode {
+                    return call.groupThread.uniqueId == thread.uniqueId
+                }
+                return false
+            }()
+            if isCurrentCall {
                 WindowManager.shared.returnToCallView()
                 return .callStarted
             }
