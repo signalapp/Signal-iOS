@@ -8,9 +8,8 @@ import SignalRingRTC
 import SignalServiceKit
 
 class GroupCallNotificationView: UIView {
-    private let call: SignalCall
+    private let groupCall: GroupCall
     private let ringRtcCall: SignalRingRTC.GroupCall
-    private let groupThreadCall: GroupThreadCall
     private var callService: CallService { AppEnvironment.shared.callService }
 
     private struct ActiveMember: Hashable {
@@ -22,13 +21,12 @@ class GroupCallNotificationView: UIView {
     private var membersPendingJoinNotification = Set<ActiveMember>()
     private var membersPendingLeaveNotification = Set<ActiveMember>()
 
-    init(call: SignalCall, groupThreadCall: GroupThreadCall) {
-        self.call = call
-        self.ringRtcCall = groupThreadCall.ringRtcCall
-        self.groupThreadCall = groupThreadCall
+    init(groupCall: GroupCall) {
+        self.groupCall = groupCall
+        self.ringRtcCall = groupCall.ringRtcCall
         super.init(frame: .zero)
 
-        groupThreadCall.addObserverAndSyncState(self)
+        groupCall.addObserverAndSyncState(self)
 
         isUserInteractionEnabled = false
     }
