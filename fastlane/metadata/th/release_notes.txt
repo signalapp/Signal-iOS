@@ -1,1 +1,1 @@
-• We added a shortcut to edit sent messages by double tapping on the message bubble. Double taps aren't just for likes, unless you really like editing typos.
+• เราเพิ่มทางลัดเพื่อให้คุณแก้ไขข้อความที่ส่งแล้วได้สะดวกยิ่งขึ้นอีก แค่แตะสองครั้งที่กล่องคำพูดเท่านั้น!

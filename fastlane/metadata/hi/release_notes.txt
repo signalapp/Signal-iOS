@@ -1,1 +1,1 @@
-• We added a shortcut to edit sent messages by double tapping on the message bubble. Double taps aren't just for likes, unless you really like editing typos.
+• हमने संदेश बबल पर डबल टैप करके भेजे गए संदेशों को संपादित करने के लिए एक शॉर्टकट भी जोड़ा है। डबल टैप केवल लाइक के लिए नहीं होते।

@@ -1,1 +1,1 @@
-• We added a shortcut to edit sent messages by double tapping on the message bubble. Double taps aren't just for likes, unless you really like editing typos.
+• 메시지 말풍선을 두 번 탭하여 전송한 메시지를 수정하는 바로 가기를 추가했습니다.

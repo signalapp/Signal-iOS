@@ -1,1 +1,1 @@
-• We added a shortcut to edit sent messages by double tapping on the message bubble. Double taps aren't just for likes, unless you really like editing typos.
+• Мы добавили ярлык для изменения отправленных сообщений двойным нажатием на их облачко. Двойные нажатия нужны не только для лайков, если только вы не любите редактировать опечатки.

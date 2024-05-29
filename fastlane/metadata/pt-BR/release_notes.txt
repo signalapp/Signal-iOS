@@ -1,1 +1,1 @@
-• We added a shortcut to edit sent messages by double tapping on the message bubble. Double taps aren't just for likes, unless you really like editing typos.
+• Adicionamos um atalho onde você poderá editar mensagens enviadas. Para isso, basta tocar duas vezes na mensagem.

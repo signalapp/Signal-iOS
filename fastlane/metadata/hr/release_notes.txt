@@ -1,1 +1,1 @@
-• We added a shortcut to edit sent messages by double tapping on the message bubble. Double taps aren't just for likes, unless you really like editing typos.
+• Dodali smo prečac pomoću kojeg možete uređivati poslane poruke tako da dvaput dodirnete oblačić poruke.

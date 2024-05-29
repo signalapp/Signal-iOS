@@ -437,7 +437,7 @@
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Spraakbericht";
 
 /* A string indicating that an audio message is playing. */
-"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Audiobericht";
+"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Audiobestand";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Luidspreker";
@@ -713,7 +713,7 @@
 "CALL_RETURN_BUTTON" = "Naar de oproep terugkeren";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "Niet beantwoord";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "niet beantwoord";
 
 /* Button to start a call */
 "CALL_START_BUTTON" = "Oproep beginnen";
@@ -2357,10 +2357,10 @@
 "DONATIONS_CURRENCY_PICKER_LABEL" = "Valuta";
 
 /* Message for Double Tap to Edit sheet show on first interaction */
-"DOUBLE_TAP_TO_EDIT_ALERT_MESSAGE" = "Quickly tap twice on your messages to edit them. You can edit your messages up to 24 hours after they’ve been sent.";
+"DOUBLE_TAP_TO_EDIT_ALERT_MESSAGE" = "Tik snel twee keer op je berichten om ze te bewerken. Je kunt je berichten bewerken tot 24 uur nadat ze zijn verzonden.";
 
 /* Title for Double Tap to Edit sheet show on first interaction */
-"DOUBLE_TAP_TO_EDIT_ALERT_TITLE" = "Double Tap to Edit";
+"DOUBLE_TAP_TO_EDIT_ALERT_TITLE" = "Dubbeltik om te bewerken";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Je kunt toegang inschakelen via de iOS-instellingenapp.";
@@ -2456,10 +2456,10 @@
 "EMPTY_CONTACTS_LABEL_LINE2" = "Waarom nodig je niet iemand uit?";
 
 /* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "Bezet";
+"END_CALL_RESPONDER_IS_BUSY" = "bezet";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Oproep mislukt.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "mislukt.";
 
 /* Error indicating that a message could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Kan een bericht niet doorsturen";
@@ -3113,7 +3113,7 @@
 "GROUP_LINK_VIEW_TITLE" = "Groepslink";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ added you to the group.";
+"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ heeft jou aan de groep toegevoegd.";
 
 /* Message indicating that the local user was granted administrator role. */
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "Je bent nu een beheerder.";
@@ -3557,7 +3557,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Bijlage selecteren mislukt.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Verbinden…";
+"IN_CALL_CONNECTING" = "verbinden…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Op ander apparaat beantwoord.";
@@ -3569,7 +3569,7 @@
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Geweigerd vanaf een ander apparaat.";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Opnieuw verbinden…";
+"IN_CALL_RECONNECTING" = "opnieuw verbinden…";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "gaat over…";
@@ -3581,10 +3581,10 @@
 "IN_CALL_RINGING_VIDEO" = "Video-oproep…";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "Beantwoord. Aan het beveiligen…";
+"IN_CALL_SECURING" = "beantwoord. Aan het beveiligen…";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Oproep beëindigd.";
+"IN_CALL_TERMINATED" = "beëindigd.";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user doesn't want to be reminded. */
 "INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "Herinnering is niet nodig";
@@ -5078,7 +5078,7 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Groepsuitnodiging voor ‘%1$@’ intrekken?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Profielinformatie van personen die zijn uitgenodigd voor de groep wordt niet weergegeven. Als een genodigde er voor kiest de uitnodiging te accepteren, dan zullen op dat moment diens profielnaam, -foto en -omschrijving zichtbaar worden voor de groep. Deze personen zullen nog geen groepsberichten ontvangen, totdat ze de uitnodiging hebben geaccepteerd.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Profielinformatie van personen die door andere groepsleden zijn uitgenodigd wordt pas weergegeven zodra ze de uitnodiging accepteren. Zolang deze personen de uitnodiging niet hebben geaccepteerd zullen ze nog geen groepsberichten ontvangen.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Personen in deze lijst proberen via de groepslink lid te worden van ‘%1$@’.";
@@ -6263,7 +6263,7 @@
 "SETTINGS_BLOCK_LIST_TITLE" = "Geblokkeerd";
 
 /* Table cell label */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Oproepen altijd omleiden";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Alle oproepen omleiden";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Leid alle oproepen om via de Signal-servers zodat je contacten je IP-adres niet kunnen achterhalen. Als je dit inschakelt, zal de gesprekskwaliteit verminderen.";

@@ -1967,7 +1967,7 @@
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "Afficher les macarons sur le profil";
 
 /* Title for the proxy confirmation */
-"DO_YOU_WANT_TO_USE_PROXY" = "Voulez-vous utiliser cette adresse de mandataire ?";
+"DO_YOU_WANT_TO_USE_PROXY" = "Voulez-vous utiliser cette adresse de proxy ?";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Lieu pour le contournement de la censure";
@@ -2357,10 +2357,10 @@
 "DONATIONS_CURRENCY_PICKER_LABEL" = "Devise";
 
 /* Message for Double Tap to Edit sheet show on first interaction */
-"DOUBLE_TAP_TO_EDIT_ALERT_MESSAGE" = "Quickly tap twice on your messages to edit them. You can edit your messages up to 24 hours after they’ve been sent.";
+"DOUBLE_TAP_TO_EDIT_ALERT_MESSAGE" = "Pour modifier vos messages, touchez-les rapidement deux fois. Une fois envoyés, vous pouvez les modifier pendant 24 heures.";
 
 /* Title for Double Tap to Edit sheet show on first interaction */
-"DOUBLE_TAP_TO_EDIT_ALERT_TITLE" = "Double Tap to Edit";
+"DOUBLE_TAP_TO_EDIT_ALERT_TITLE" = "Toucher deux fois pour modifier";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Vous pouvez accorder l’accès dans l’appli Réglages d’iOS.";
@@ -2834,7 +2834,7 @@
 "GROUP_CALL_NO_ONE_HERE" = "Il n’y a personne d’autre ici";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%1$@ s’est joint à l’appel";
+"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%1$@ a rejoint l’appel";
 
 /* Copy explaining that a user has left the group call. Embeds {member name} */
 "GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%1$@ a quitté l’appel";
@@ -3113,7 +3113,7 @@
 "GROUP_LINK_VIEW_TITLE" = "Lien de groupe";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ added you to the group.";
+"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ vous a ajouté au groupe.";
 
 /* Message indicating that the local user was granted administrator role. */
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "Vous êtes désormais administrateur.";
@@ -4655,7 +4655,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "Vous avez atteint le nombre maximal de tentatives autorisées, mais vous pouvez toujours tenter d’accéder à votre compte Signal en procédant à une vérification de votre numéro de téléphone. Afin de protéger vos données personnelles et votre sécurité, votre compte sera restauré sans informations de profil enregistrées ni préférences.";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Conditions générales d’utilisation et politique de confidentialité";
+"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Conditions générales d’utilisation et règles de confidentialité";
 
 /* Title of the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TITLE" = "La confidentialité dans votre poche.\nPour que chaque message reflète qui vous êtes.";
@@ -5525,19 +5525,19 @@
 "PROFILE_VIEW_USERNAME_UNSET_DESCRIPTION" = "Vos amis peuvent désormais vous contacter grâce à votre nom d’utilisateur facultatif, ce qui vous évite de partager votre numéro de téléphone.";
 
 /* The title for the address of the signal proxy */
-"PROXY_ADDRESS" = "Adresse du mandataire";
+"PROXY_ADDRESS" = "Adresse du proxy";
 
 /* The provided proxy connected successfully */
-"PROXY_CONNECTED_SUCCESSFULLY" = "Signal est connectée au mandataire. Vous pouvez désactiver le mandataire n’importe quand dans les paramètres.";
+"PROXY_CONNECTED_SUCCESSFULLY" = "Vous êtes connecté au proxy. Vous pouvez désactiver le proxy à tout moment depuis les paramètres.";
 
 /* The provided proxy couldn't connect */
 "PROXY_FAILED_TO_CONNECT" = "Impossible de se connecter au proxy. Veuillez vérifier l’adresse proxy et réessayer.";
 
 /* Placeholder text for signal proxy host */
-"PROXY_PLACEHOLDER" = "Saisissez l’adresse du mandataire";
+"PROXY_PLACEHOLDER" = "Saisissez l’adresse du proxy";
 
 /* Title for the signal proxy settings */
-"PROXY_SETTINGS_TITLE" = "Mandataire";
+"PROXY_SETTINGS_TITLE" = "Proxy";
 
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Marquer comme lu";
@@ -6323,7 +6323,7 @@
 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Utiliser moins de données";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Utiliser moins de données peut améliorer les appels sur de mauvais réseaux.";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Utiliser moins de données peut améliorer la qualité des appels en cas de mauvaise couverture réseau.";
 
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Appels";
@@ -6401,7 +6401,7 @@
 "SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Ne pas désarchiver les conversations mises en sourdine";
 
 /* No comment provided by engineer. */
-"SETTINGS_LEGAL_TERMS_CELL" = "Conditions générales et politique de confidentialité";
+"SETTINGS_LEGAL_TERMS_CELL" = "Conditions générales et règles de confidentialité";
 
 /* Setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS" = "Générer des aperçus de liens";
@@ -7862,10 +7862,10 @@
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Le groupe n’a pas pu être mis à jour. Vérifiez votre connexion à Internet et réessayez.";
 
 /* Button to activate the signal proxy */
-"USE_PROXY_BUTTON" = "Utiliser un mandataire";
+"USE_PROXY_BUTTON" = "Utiliser un proxy";
 
 /* Explanation of when you should use a signal proxy */
-"USE_PROXY_EXPLANATION" = "N’utilisez un proxy que si vous n’arrivez pas à vous connecter à Signal par les données mobiles ou par Wi-Fi.";
+"USE_PROXY_EXPLANATION" = "N’utilisez un proxy que s’il vous est impossible de vous connecter à Signal via les données mobiles ou via le Wi-Fi.";
 
 /* Description of username links and QR codes on the username education sheet */
 "USERNAME_EDUCATION_LINK_DESCRIPTION" = "Les noms d’utilisateur sont associés à des codes QR uniques et des liens que vous pouvez envoyer à vos amis afin de démarrer rapidement une conversation.";

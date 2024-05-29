@@ -65,7 +65,7 @@
 "ACCOUNT_DATA_REPORT_SUBTITLE" = "Завантажте й експортуйте звіт даних свого акаунту Signal. Звіт не містить повідомлень і медіафайлів.";
 
 /* Users can request a report of their account data. This is the title on the screen where they do this. */
-"ACCOUNT_DATA_REPORT_TITLE" = "Дані вашого акаунту";
+"ACCOUNT_DATA_REPORT_TITLE" = "Облікові дані";
 
 /* Label for 'invite' button in contact view. */
 "ACTION_INVITE" = "Запросити до Signal";
@@ -458,7 +458,7 @@
 "AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "фото";
 
 /* Title for the previously used and preset avatar section. */
-"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Оберіть аватар";
+"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Оберіть зображення";
 
 /* Text indicating the user can create a new avatar with text */
 "AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "текст";
@@ -719,7 +719,7 @@
 "CALL_START_BUTTON" = "Почати дзвінок";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
-"CALL_STATUS_FORMAT" = "Signal %1$@";
+"CALL_STATUS_FORMAT" = "Виклик у Signal: %1$@";
 
 /* Label for call button for alert offering to call a user. */
 "CALL_USER_ALERT_CALL_BUTTON" = "Виклик";
@@ -1196,13 +1196,13 @@
 "CONTACT_SUPPORT" = "Звернутися в службу підтримки";
 
 /* The localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Внески та відзнаки";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Донати і значки";
 
 /* A brief localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Внески та відзнаки";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Донати і значки";
 
 /* The localized representation of the 'feature request' support filter. */
-"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "Бажаю запитати про нову функцію";
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "Хочу запропонувати нову функцію";
 
 /* A brief localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "Бракує функції";
@@ -1214,7 +1214,7 @@
 "CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "Відгук про застосунок";
 
 /* The localized representation of the 'other' support filter. */
-"CONTACT_SUPPORT_FILTER_OTHER" = "Щось інше";
+"CONTACT_SUPPORT_FILTER_OTHER" = "Інше";
 
 /* A brief localized representation of the 'other' support filter. */
 "CONTACT_SUPPORT_FILTER_OTHER_SHORT" = "Інша причина";
@@ -1226,10 +1226,10 @@
 "CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT" = "Платежі";
 
 /* Prompt telling the user to select a filter for their support request. */
-"CONTACT_SUPPORT_FILTER_PROMPT" = "Чим ми можемо вам допомогти?";
+"CONTACT_SUPPORT_FILTER_PROMPT" = "Яка допомога потрібна?";
 
 /* The localized representation of the 'question' support filter. */
-"CONTACT_SUPPORT_FILTER_QUESTION" = "У мене є запитання";
+"CONTACT_SUPPORT_FILTER_QUESTION" = "Маю запитання";
 
 /* A brief localized representation of the 'question' support filter. */
 "CONTACT_SUPPORT_FILTER_QUESTION_SHORT" = "Запитання";
@@ -1253,7 +1253,7 @@
 "CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Надіслати журнал налагодження?";
 
 /* Placeholder telling user they must select a filter. */
-"CONTACT_SUPPORT_SELECT_A_FILTER" = "Оберіть причину";
+"CONTACT_SUPPORT_SELECT_A_FILTER" = "Оберіть причину звернення";
 
 /* Button text */
 "CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Відправити з журналом налагодження";
@@ -1733,7 +1733,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Ваш акаунт Signal буде видалено, а налаштування застосунку скинуто. Після завершення цього процесу застосунок закриється.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Ви дійсно хочете видалити акаунт?";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Ви справді хочете видалити акаунт?";
 
 /* Title for the 'country code' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Код країни";
@@ -1742,7 +1742,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Не вдалося видалити акаунт. Перевірте, чи увімкнено Wi-Fi або стільникові дані та повторіть спробу.";
 
 /* Description for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Буде видалено інформацію вашого акаунту, ваш профіль та всі повідомлення.";
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Буде видалено інформацію про ваш акаунт, профіль і всі ваші повідомлення.";
 
 /* Indicates the work we are doing while deleting the account */
 "DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Видаляємо акаунт…";
@@ -1754,7 +1754,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_PHONE_NUMBER_TITLE" = "Номер телефону";
 
 /* Section header */
-"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Підтвердження вашого номеру Signal";
+"DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Підтвердьте свій номер у Signal";
 
 /* Title for the 'delete account' confirmation view. */
 "DELETE_ACCOUNT_CONFIRMATION_TITLE" = "Видалити акаунт";
@@ -1826,7 +1826,7 @@
 "DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Якщо ви використовували Signal на зв'язаному iPad, то можете безпечно перенести свій акаунт і повідомлення на цей пристрій.";
 
 /* The body for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Продовжити без перенесення акаунту і повідомлень";
+"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Продовжити без перенесення акаунту й повідомлень";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Додати цей iPad як новий прив'язаний пристрій без перенесення історії повідомлень";
@@ -1838,7 +1838,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "Зареєструватися без перенесення";
 
 /* The title for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_TITLE" = "Перенесення акаунту і повідомлень";
+"DEVICE_TRANSFER_CHOICE_TITLE" = "Перенесення акаунту й повідомлень";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Перенести акаунт і історію повідомлень з вашого старого пристрою на iOS";
@@ -1976,7 +1976,7 @@
 "DONATE_BUTTON" = "Задонатити %1$@";
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\". */
-"DONATE_BUTTON_MONTHLY" = "Задонатити %1$@/місяць";
+"DONATE_BUTTON_MONTHLY" = "Донатити %1$@/місяць";
 
 /* When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with bank transfer. */
 "DONATE_CHOOSE_BANK_TRANSFER_AS_PAYMENT_METHOD" = "Банківський переказ";
@@ -2033,7 +2033,7 @@
 "DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Ваш донат все ще обробляється. Обробка може зайняти кілька хвилин в залежності від вашого з'єднання. Будь ласка, зачекайте на проведення платежу, перш ніж оновлювати передплату.";
 
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
-"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Оберіть розмір внеску.";
+"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Оберіть суму донату.";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. Embeds {{currency string}}, such as \"$5\". */
 "DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT" = "Мінімальна сума донату: %1$@.";
@@ -2153,7 +2153,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_OUTGOING" = "✨ Ви задонатили від імені користувача %1$@";
 
 /* You received a donation from a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_RECEIVED_TITLE_FORMAT" = "%1$@ підтримує Signal донатом від вашого імені";
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECEIVED_TITLE_FORMAT" = "Користувач %1$@ підтримав Signal донатом від вашого імені";
 
 /* Users can donate on a friend's behalf. This is the error message that appears if the try to do this, but the recipient is blocked. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY" = "Ви не можете задонатити за цього користувача, тому що ви його заблокували.";
@@ -2246,10 +2246,10 @@
 "DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "Платіж відхилено. Будь ласка, спробуйте ще раз.";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
-"DONATION_SCREEN_DONATE_BUTTON" = "Задонатити";
+"DONATION_SCREEN_DONATE_BUTTON" = "Підтримати";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
-"DONATION_SCREENS_HEADER_DESCRIPTION" = "Конфіденційний обмін повідомленнями можливий — завдяки вашим коштам. Без реклами, відстежування й поступок. Підтримайте Signal донатом.";
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "Конфіденційний обмін повідомленнями можливий — завдяки вашим коштам. Без реклами, відстежування й поступок. Підтримайте Signal донатом.";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
 "DONATION_SCREENS_HEADER_READ_MORE" = "Дізнатися більше";
@@ -2348,7 +2348,7 @@
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "Моя підтримка";
 
 /* Title for the \"other ways to donate\" section on the donation view. */
-"DONATION_VIEW_OTHER_WAYS_TO_DONATE_TITLE" = "Інші способи зробити внесок";
+"DONATION_VIEW_OTHER_WAYS_TO_DONATE_TITLE" = "Інші способи підтримки";
 
 /* Title on the 'Donate to Signal' screen */
 "DONATION_VIEW_TITLE" = "Підтримати Signal";
@@ -2357,16 +2357,16 @@
 "DONATIONS_CURRENCY_PICKER_LABEL" = "Валюта";
 
 /* Message for Double Tap to Edit sheet show on first interaction */
-"DOUBLE_TAP_TO_EDIT_ALERT_MESSAGE" = "Quickly tap twice on your messages to edit them. You can edit your messages up to 24 hours after they’ve been sent.";
+"DOUBLE_TAP_TO_EDIT_ALERT_MESSAGE" = "Щоб відредагувати повідомлення, швидко торкніться його двічі. Редагувати повідомлення можна протягом 24 годин з моменту надсилання.";
 
 /* Title for Double Tap to Edit sheet show on first interaction */
-"DOUBLE_TAP_TO_EDIT_ALERT_TITLE" = "Double Tap to Edit";
+"DOUBLE_TAP_TO_EDIT_ALERT_TITLE" = "Редагування подвійним дотиком";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Ви можете надати доступ у налаштуваннях iOS.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal потребує доступу до контактів, щоб редагувати інформацію контактів.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal потребує доступу до контактів, щоб редагувати інформацію про контакти.";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "Редагувати групу";
@@ -2450,13 +2450,13 @@
 "EMOJI_CATEGORY_TRAVEL_NAME" = "Подорожі & Місця";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Жоден з ваших контактів не користується Signal";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Ніхто з ваших контактів не користується Signal.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Чому би вам не запросити когось?";
+"EMPTY_CONTACTS_LABEL_LINE2" = "Може, запросите когось?";
 
 /* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "Зайнято";
+"END_CALL_RESPONDER_IS_BUSY" = "зайнято";
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Збій виклику.";
@@ -3113,7 +3113,7 @@
 "GROUP_LINK_VIEW_TITLE" = "Посилання групи";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ added you to the group.";
+"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ додав вас до групи.";
 
 /* Message indicating that the local user was granted administrator role. */
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "Ви тепер адміністратор.";
@@ -3455,7 +3455,7 @@
 "GROUPS_VIEW_REQUESTS_BUTTON" = "Переглянути запити";
 
 /* Help item allowing the user to file a support request */
-"HELP_CONTACT_US" = "Зв’язатися з нами";
+"HELP_CONTACT_US" = "Зв'яжіться з нами";
 
 /* Help item that takes the user to the Signal support website */
 "HELP_SUPPORT_CENTER" = "Центр підтримки";
@@ -3557,7 +3557,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Не вдалося обрати додаток.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Підключення…";
+"IN_CALL_CONNECTING" = "триває з'єднання…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Розмову прийнято на іншому пристрої.";
@@ -3569,10 +3569,10 @@
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Відхилений на іншому пристрої.";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Повторне з’єднання…";
+"IN_CALL_RECONNECTING" = "відновлюємо з'єднання…";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Виклик…";
+"IN_CALL_RINGING" = "дзвонимо…";
 
 /* Call setup status label */
 "IN_CALL_RINGING_AUDIO" = "Аудіовиклик…";
@@ -3581,10 +3581,10 @@
 "IN_CALL_RINGING_VIDEO" = "Відеовиклик";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "Є відповідь. Захищаємо…";
+"IN_CALL_SECURING" = "є відповідь. Забезпечуємо захист…";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Виклик завершено.";
+"IN_CALL_TERMINATED" = "завершено";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user doesn't want to be reminded. */
 "INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "Не нагадувати";
@@ -3617,7 +3617,7 @@
 "INFO_MESSAGE_CONTACT_REMOVED" = "Ви видалили цю людину зі свого списку контактів Signal. Якщо написати їй повідомлення, її буде додано знову.";
 
 /* Shown when a user activates payments from a chat */
-"INFO_MESSAGE_PAYMENTS_ACTIVATED" = "Ви активували Платежі.";
+"INFO_MESSAGE_PAYMENTS_ACTIVATED" = "Ви ввімкнули платежі.";
 
 /* Shown when a user activates payments from a chat. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_FINISHED" = "%1$@ тепер може приймати Платежі.";
@@ -3692,7 +3692,7 @@
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Якщо запросити кілька користувачів одночасно, то створиться група й одержувачі зможуть побачити одне одного.";
 
 /* Button to join an active group call */
-"JOIN_CALL_PILL_BUTTON" = "Приєднатись";
+"JOIN_CALL_PILL_BUTTON" = "Приєднатися";
 
 /* Two strings, joined by a dot. Embeds {first} and {second}, which are on opposite sides of the dot */
 "JOINED_WITH_DOT" = "%1$@ · %2$@";
@@ -3818,7 +3818,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Не вдалося прив’язати пристрій";
 
 /* Body for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Для перенесення акаунту Signal на обох пристроях необхідно ввімкнути доступ до локальної мережі.";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Для перенесення акаунту Signal обом пристроям необхідно надати доступ до локальної мережі.";
 
 /* A button asking the user if they need further help getting their transfer working. */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "Потрібна Допомога?";
@@ -4172,7 +4172,7 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Продовжувати спілкуватися з цією групою та ділитися своїм ім’ям та фото з її учасниками?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Дозволити %1$@ писати вам та ділитись з ним своїм ім'ям та фото? Користувач не знатиме, що ви бачили його повідомлення, допоки ви не схвалите запит.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Ви хочете, щоб користувач %1$@ писав вам повідомлення й бачив ваше ім'я та фото? Користувач не знатиме, що ви побачили його повідомлення, поки ви не приймете запит.";
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Приєднатися до цієї групи та поділитися своїм ім’ям та фото з її учасниками? Вони не знатимуть, що ви бачили їхні повідомлення, поки ви не приймете.";
@@ -4283,19 +4283,19 @@
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "Щоб робити відеовиклики в Signal, надайте програмі доступ до камери в налаштуваннях iOS.";
 
 /* Alert title */
-"MISSING_CAMERA_PERMISSION_TITLE" = "Signal потребує доступу до вашої камери.";
+"MISSING_CAMERA_PERMISSION_TITLE" = "Signal потребує доступу до камери.";
 
 /* Alert body indicating the user has denied location permissions */
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "Ви можете надати доступ у налаштуваннях iOS.";
 
 /* Alert title indicating the user has denied location permissions */
-"MISSING_LOCATION_PERMISSION_TITLE" = "Для цієї функції Signal потребує доступу до вашої локації.";
+"MISSING_LOCATION_PERMISSION_TITLE" = "Для використання цієї функції Signal потребує доступу до розташування.";
 
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Ви можете надати доступ у налаштуваннях iOS.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Для цієї функції Signal потребує доступу до ваших фото.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Для використання цієї функції Signal потребує доступу до ваших фото.";
 
 /* An error shown as the title of an alert when try to link a new device & the user is already at the limit. */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Ви не можете під’єднати більше пристроїв.";
@@ -4340,7 +4340,7 @@
 "MY_STORY_TAP_TO_ADD" = "Торкніться, щоб додати";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current name, which may be a profile name or an address book name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }} */
-"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "%1$@ змінює своє ім'я профілю з %2$@ на %3$@";
+"NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Користувач %1$@ недавно змінив ім'я профілю з %2$@ на %3$@";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Пропустити";
@@ -4367,7 +4367,7 @@
 "NEW_CALL_MESSAGE_ACTION_TITLE" = "Написати";
 
 /* Title for the contact picker that allows new calls to be started */
-"NEW_CALL_TITLE" = "Новий дзвінок";
+"NEW_CALL_TITLE" = "Новий виклик";
 
 /* Title for a long-press context menu action to start a video call, triggered from a recipient in the New Call contact picker */
 "NEW_CALL_VIDEO_CALL_ACTION_TITLE" = "Відеовиклик";
@@ -4490,10 +4490,10 @@
 "NICKNAME_EDITOR_TITLE" = "Умовне ім'я";
 
 /* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Знайти контакти за номером телефону";
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Пошук за номером телефону";
 
 /* Label for a button that lets users search for contacts by username */
-"NO_CONTACTS_SEARCH_BY_USERNAME" = "Знайти контакти за іменем користувача";
+"NO_CONTACTS_SEARCH_BY_USERNAME" = "Пошук за іменем користувача";
 
 /* A string describing that the user has no groups in common with another user */
 "NO_GROUPS_IN_COMMON" = "Спільних груп немає";
@@ -4655,7 +4655,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "У вас закінчилися спроби введення PIN-коду, але ви все одно можете отримати доступ до свого акаунту Signal, підтвердивши номер телефону. Для вашої конфіденційності та безпеки акаунт буде відновлено без збереженої інформації профілю і налаштувань.";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Умови використання та політика конфіденційності";
+"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Умови надання послуг і Політика конфіденційності";
 
 /* Title of the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TITLE" = "Візьміть конфіденційність з собою.\nБудьте собою в кожному повідомленні.";
@@ -5228,10 +5228,10 @@
 "PIN_CREATION_CREATE_NUMERIC" = "Створити цифровий PIN-код";
 
 /* Action of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Вимкнути PIN";
+"PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Вимкнути PIN-код";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Якщо ви вимкнете PIN-код — ви втратите усі дані під час нової реєстрації у Signal, окрім як скористаєтесь функцією переносу даних з іншого пристрою на iOS. Ви не зможете увімкнути функцію блокування реєстрації поки ваш PIN-код вимкнено.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Якщо ви вимкнете PIN-код, то в разі повторної реєстрації в Signal усі ваші дані буде втрачено. Щоб цього уникнути, їх необхідно перенести зі старого пристрою з iOS. З вимкненим PIN-кодом неможливо ввімкнути блокування реєстрації.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Попередження";
@@ -5276,16 +5276,16 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "Щоб вимкнути PIN-код, спочатку потрібно вимкнути блокування реєстрації.";
 
 /* Title of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Відключити Блокування Реєстрації?";
+"PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Вимкнути блокування реєстрації?";
 
 /* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN успішно створено, але блокування реєстрації не вдалось активувати. Перевірте з'єднання та спробуйте ще.";
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "PIN-код створено, але блокування реєстрації не вдалося ввімкнути. Перевірте з'єднання з мережею та повторіть спробу.";
 
 /* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Не вдалось активувати блокування реєстрації";
+"PIN_CREATION_REGLOCK_ERROR_TITLE" = "Не вдалося ввімкнути блокування реєстрації";
 
 /* Skip action on the pin creation view */
-"PIN_CREATION_SKIP" = "Вимкнути PIN";
+"PIN_CREATION_SKIP" = "Вимкнути PIN-код";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Створити PIN-код";
@@ -5297,7 +5297,7 @@
 "PIN_CREATION_WEAK_ERROR_MESSAGE" = "Завдяки PIN-коду ваші дані зберігаються в Signal зашифрованими, щоб тільки ви мали до них доступ. Для максимального захисту створіть надійний PIN-код.";
 
 /* Error body indicating that the attempt to disable a PIN failed. */
-"PIN_DISABLE_ERROR_MESSAGE" = "Не вдалось вимкнути PIN-код. Ми нагадаємо про це пізніше.";
+"PIN_DISABLE_ERROR_MESSAGE" = "Не вдалося вимкнути PIN-код. Ми нагадаємо про це пізніше.";
 
 /* Error title indicating that the attempt to disable a PIN failed. */
 "PIN_DISABLE_ERROR_TITLE" = "Помилка вимкнення PIN";
@@ -5321,13 +5321,13 @@
 "PIN_REMINDER_MEGAPHONE_ACTION" = "Підтвердити PIN-код";
 
 /* Body for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_BODY" = "Іноді ми будемо просити вас підтвердити ваш PIN-код, щоб ви його не забували.";
+"PIN_REMINDER_MEGAPHONE_BODY" = "Періодично ми проситимемо вас підтверджувати PIN-код, щоб ви його не забували.";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
 "PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Через кілька днів ми нагадаємо знов.";
 
 /* Title for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_TITLE" = "Підтвердіть свій PIN-код Signal";
+"PIN_REMINDER_MEGAPHONE_TITLE" = "Підтвердьте свій PIN-код Signal";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Ми нагадаємо знову завтра.";
@@ -5456,10 +5456,10 @@
 "PROFILE_BIO_VIEW_TITLE_FORMAT" = "Про (%1$@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ змінює своє ім'я профілю з %2$@ на %3$@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "Користувач %1$@ змінив ім'я профілю з %2$@ на %3$@.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ змінює своє ім'я профілю на %2$@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "Користувач %1$@ змінив ім'я профілю на %2$@.";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "Ваше ім'я";
@@ -5504,7 +5504,7 @@
 "PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Ваше ім'я задовге.";
 
 /* Default text for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "Прізвище (за бажанням)";
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "Прізвище (необов'язково)";
 
 /* Default text for the given name field of the profile view. */
 "PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "Ім'я (обов'язково)";
@@ -5705,7 +5705,7 @@
 "REGISTRATION_DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Продовжуючи, ви відключите Signal для інших пристроїв, де він зареєстрований на цей же номер телефону.";
 
 /* If a user is installing Signal on a new phone, they may be asked whether they want to transfer their account from their old device. This is the title on the screen that asks them this question. */
-"REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Перенесення акаунту і повідомлень";
+"REGISTRATION_DEVICE_TRANSFER_CHOICE_TITLE" = "Перенесення акаунту й повідомлень";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Уведіть номер";
@@ -6173,7 +6173,7 @@
 "SETTINGS_ACCOUNT" = "Акаунт";
 
 /* Label for button in settings to get your account data report */
-"SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "Дані вашого акаунту";
+"SETTINGS_ACCOUNT_DATA_REPORT_BUTTON" = "Облікові дані";
 
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Заблокувати";
@@ -6203,13 +6203,13 @@
 "SETTINGS_ADVANCED_DEBUGLOG" = "Вести журнал налагодження";
 
 /* Label for the 'advanced pin settings' button. */
-"SETTINGS_ADVANCED_PIN_SETTINGS" = "Розширені налаштування PIN";
+"SETTINGS_ADVANCED_PIN_SETTINGS" = "Керування PIN-кодом";
 
 /* The title for the advanced pin settings. */
-"SETTINGS_ADVANCED_PIN_TITLE" = "Розширені налаштування PIN";
+"SETTINGS_ADVANCED_PIN_TITLE" = "Керування PIN-кодом";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Вимкнути PIN";
+"SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION" = "Вимкнути PIN-код";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION" = "Ввімкнути PIN";
@@ -6299,10 +6299,10 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Номер телефону";
 
 /* Description text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Використовуйте це для зміни поточного номера телефону на новий номер телефону. Зміну неможливо скасувати.\n\nПеред продовженням упевніться, що ваш новий номер може приймати SMS чи виклики.";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Тут можна змінити поточний номер телефону на новий. Така зміна буде незворотна.\n\nПеревірте, чи можете ви отримувати SMS або дзвінки на новий номер, і продовжуйте.";
 
 /* Title text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Змінити номер телефону";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Зміна номера телефону";
 
 /* Title for the 'change phone number' views in settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "Змінити номер";
@@ -6314,7 +6314,7 @@
 "SETTINGS_CLEAR_HISTORY" = "Очистити історію чату";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Захищено авторським правом Signal Messenger\nЛіцензія: AGPLv3";
+"SETTINGS_COPYRIGHT" = "Авторські права належать Signal Messenger\nЛіцензія: AGPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Споживання даних";
@@ -6401,7 +6401,7 @@
 "SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Залишати стишені чати заархівованими";
 
 /* No comment provided by engineer. */
-"SETTINGS_LEGAL_TERMS_CELL" = "Умови використання та політика конфіденційності";
+"SETTINGS_LEGAL_TERMS_CELL" = "Умови надання послуг і Політика конфіденційності";
 
 /* Setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS" = "Генерувати попередній вигляд вебсторінок";
@@ -6518,7 +6518,7 @@
 "SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "Ви не зможете відправляти або отримувати Mobilecoin у Signal, якщо вимкнете платежі.";
 
 /* Title for the 'deactivate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Вимкнути платежі";
+"SETTINGS_PAYMENTS_DEACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Вимкнути платежі?";
 
 /* Label for the 'de-activate payments' view of the app settings. */
 "SETTINGS_PAYMENTS_DEACTIVATE_TITLE" = "Вимкнути платежі";
@@ -6596,7 +6596,7 @@
 "SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_MESSAGE" = "Бажаєте увімкнути платежі?";
 
 /* Title for the 'payments not enabled' alert. */
-"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Платежі не увімкнені";
+"SETTINGS_PAYMENTS_NOT_ENABLED_ALERT_TITLE" = "Платежі не ввімкнено";
 
 /* Message for the 'payments not registered' alert. */
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_MESSAGE" = "Перереєструватися для надіслання платежів.";
@@ -6605,10 +6605,10 @@
 "SETTINGS_PAYMENTS_NOT_REGISTERED_ALERT_TITLE" = "Не зареєстровано";
 
 /* Label for 'activate' button in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Активувати платежі";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATE_BUTTON" = "Увімкнути платежі";
 
 /* Message shown when payments are activated in the 'payments opt-in' view in the app settings. */
-"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Платежі активовано.";
+"SETTINGS_PAYMENTS_OPT_IN_ACTIVATED_TOAST" = "Платежі ввімкнено.";
 
 /* Message for the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_MESSAGE" = "Використовуйте Signal для переказу та отримання MobileCoin — нової цифрової валюти, націленої на безпеку. Увімкніть, щоб почати.";
@@ -6746,7 +6746,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_OUTGOING" = "Надіслано";
 
 /* Label for the 'recent payments' section in the payment settings. */
-"SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "Останні платежі";
+"SETTINGS_PAYMENTS_RECENT_PAYMENTS" = "Недавні платежі";
 
 /* Description for the 'record payments passphrase to disable pin' UI in the app settings. */
 "SETTINGS_PAYMENTS_RECORD_PASSPHRASE_DISABLE_PIN_DESCRIPTION" = "Перед вимкненням PIN-коду ви маєте створити кодову фразу, щоб упевнитись, що ви зможете відновити ваш платіжний обліковий запис.";
@@ -6959,16 +6959,16 @@
 "SETTINGS_PHONE_NUMBER_SHARING_TITLE" = "Хто може бачити мій номер";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Відключити Нагадування";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Вимкнути нагадування";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "PIN-код необхідно запам’ятати або надійно зберегти, оскільки його неможливо відновити. Якщо ви забудете свій PIN-код, то можете втратити дані при повторній реєстрації свого акаунту Signal.";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "PIN-код необхідно запам’ятати або надійно зберегти, оскільки його неможливо відновити. Якщо ви забудете свій PIN-код, то можете втратити дані при повторній реєстрації акаунту в Signal.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Підтвердьте PIN-код Signal";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
-"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Нагадування PIN-коду";
+"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Нагадувати PIN-код";
 
 /* Footer for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_FOOTER" = "PIN-коди забезпечують шифрування інформації, що зберігається в Signal, щоб отримати до неї доступ могли тільки ви. Ваш PIN-код неможливо відновити. Ваш акаунт, налаштування та контакти відновляться, коли ви знову встановите Signal.";
@@ -6980,7 +6980,7 @@
 "SETTINGS_PINS_ITEM_CREATE" = "Створіть PIN-код";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "PIN Signal";
+"SETTINGS_PINS_TITLE" = "PIN-код Signal";
 
 /* Footer for table section */
 "SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Налаштування обходу цензури, проксі-сервера, викликів-ретрансляторів і захищеної відправки.";
@@ -7001,16 +7001,16 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Відключити";
 
 /* Title for the alert confirming that the user wants to turn off registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Відключити Блокування Реєстрації?";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Вимкнути блокування реєстрації?";
 
 /* Action to turn on registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Увімкнути";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Якщо ви забудете свій PIN-код після повторної реєстрації в Signal, то втратите доступ до свого акаунту на 7 днів.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Якщо під час повторної реєстрації в Signal ви забудете PIN-код, то втратите доступ до свого акаунту на 7 днів.";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Включити Блокування Реєстрації?";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Увімкнути блокування реєстрації?";
 
 /* Label for re-link button. */
 "SETTINGS_RELINK_BUTTON" = "Повторно прив'язати";
@@ -7067,7 +7067,7 @@
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Дозволити iOS доступ до контактів та чатів Signal для таких функцій, як пропозиції поділитись та сповіщення.";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Блокування реєстрації";
+"SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Блокувати реєстрацію";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
 "SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Потребує вашого PIN-коду Signal задля повторної реєстрації цього номеру телефону у Signal.";
@@ -7523,7 +7523,7 @@
 "SUCCESSFUL_VERIFICATION_TITLE" = "Коди безпеки збіглись!";
 
 /* Header of support description field */
-"SUPPORT_CONTACT_US_HEADER" = "Зв’язатися з нами";
+"SUPPORT_CONTACT_US_HEADER" = "Зв'яжіться з нами";
 
 /* Placeholder string for support description */
 "SUPPORT_DESCRIPTION_PLACEHOLDER" = "Поясніть, що сталося";
@@ -7562,7 +7562,7 @@
 "SUPPORT_EMAIL_SUBJECT" = "Запит на підтримку Signal на iOS";
 
 /* Header for emoji mood selection */
-"SUPPORT_EMOJI_PROMPT" = "Який у вас настрій? (За бажанням)";
+"SUPPORT_EMOJI_PROMPT" = "Який у вас настрій? (необов'язково)";
 
 /* Label in support request informing user about Signal FAQ */
 "SUPPORT_FAQ_PROMPT" = "Відповіді на поширені запитання.";
