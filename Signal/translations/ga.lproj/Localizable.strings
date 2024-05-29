@@ -2357,10 +2357,10 @@
 "DONATIONS_CURRENCY_PICKER_LABEL" = "Airgeadra";
 
 /* Message for Double Tap to Edit sheet show on first interaction */
-"DOUBLE_TAP_TO_EDIT_ALERT_MESSAGE" = "Quickly tap twice on your messages to edit them. You can edit your messages up to 24 hours after they’ve been sent.";
+"DOUBLE_TAP_TO_EDIT_ALERT_MESSAGE" = "Tapáil faoi dhó go tapa ar do theachtaireachtaí lena gcur in eagar. Is féidir leat do theachtaireachtaí a chur in eagar suas le 24 uair an chloig tar éis a seolta.";
 
 /* Title for Double Tap to Edit sheet show on first interaction */
-"DOUBLE_TAP_TO_EDIT_ALERT_TITLE" = "Double Tap to Edit";
+"DOUBLE_TAP_TO_EDIT_ALERT_TITLE" = "Déthapáil lena chur in eagar";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Is féidir leat cead a thabhairt do Signal sna Socruithe iOS.";
@@ -2391,15 +2391,6 @@
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "Cóipeáil";
-
-/* Edit Send Beta prompt body */
-"EDIT_MESSAGE_SEND_MESSAGE_BODY" = "Má chuirfidh tú teachtaireacht in eagar, ní fheicfidh ach na daoine a bhfuil na leaganacha is déanaí de Signal acu í. Feicfidh siad gur chuir tú teachtaireacht in eagar.";
-
-/* Label to confirm sending an edit */
-"EDIT_MESSAGE_SEND_MESSAGE_CONFIRM" = "Seol";
-
-/* Edit Send Beta prompt title */
-"EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "Cuir Teachtaireacht in Eagar";
 
 /* Error message to display to user when a message is too old to edit */
 "EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "Ní féidir eagarthóireacht a chur i bhfeidhm ach amháin laistigh de 24 uair an chloig ón uair a sheol tú an teachtaireacht seo.";
@@ -3113,7 +3104,7 @@
 "GROUP_LINK_VIEW_TITLE" = "Group Link";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ added you to the group.";
+"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "Chuir %1$@ leis an ngrúpa thú.";
 
 /* Message indicating that the local user was granted administrator role. */
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "Tá tú i do riarthóir anois.";

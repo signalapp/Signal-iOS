@@ -2357,10 +2357,10 @@
 "DONATIONS_CURRENCY_PICKER_LABEL" = "Pénznem";
 
 /* Message for Double Tap to Edit sheet show on first interaction */
-"DOUBLE_TAP_TO_EDIT_ALERT_MESSAGE" = "Quickly tap twice on your messages to edit them. You can edit your messages up to 24 hours after they’ve been sent.";
+"DOUBLE_TAP_TO_EDIT_ALERT_MESSAGE" = "Üzenet szerkesztéséhez koppints gyorsan kétszer az üzenetre. Az üzeneteidet az elküldésük után 24 óráig szerkesztheted.";
 
 /* Title for Double Tap to Edit sheet show on first interaction */
-"DOUBLE_TAP_TO_EDIT_ALERT_TITLE" = "Double Tap to Edit";
+"DOUBLE_TAP_TO_EDIT_ALERT_TITLE" = "Szerkesztéshez koppints duplán";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Hozzáférés az iOS Beállításokban adható.";
@@ -2391,15 +2391,6 @@
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "Másolás";
-
-/* Edit Send Beta prompt body */
-"EDIT_MESSAGE_SEND_MESSAGE_BODY" = "Ha szerkesztesz egy üzenetet, azt csak azok láthatják, akik a Signal béta legújabb verzióját használják. Ők látni fogják, hogy szerkesztettél egy üzenetet.";
-
-/* Label to confirm sending an edit */
-"EDIT_MESSAGE_SEND_MESSAGE_CONFIRM" = "Küldés";
-
-/* Edit Send Beta prompt title */
-"EDIT_MESSAGE_SEND_MESSAGE_TITLE" = "Üzenet szerkesztése";
 
 /* Error message to display to user when a message is too old to edit */
 "EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR" = "A módosításokat csak az üzenet elküldésétől számított 24 órán belül lehet alkalmazni.";
@@ -3113,7 +3104,7 @@
 "GROUP_LINK_VIEW_TITLE" = "Csoporthivatkozás";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ added you to the group.";
+"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ hozzáadott a csoporthoz.";
 
 /* Message indicating that the local user was granted administrator role. */
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "Admin jogosultságot kaptál.";
