@@ -94,16 +94,6 @@
             </BuildableReference>
          </TestableReference>
          <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "5C9F6BA9ADC4724B2612C9F20FBE2076"
-               BuildableName = "SignalCoreKit-Unit-Tests.xctest"
-               BlueprintName = "SignalCoreKit-Unit-Tests"
-               ReferencedContainer = "container:Pods/Pods.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
             skipped = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
