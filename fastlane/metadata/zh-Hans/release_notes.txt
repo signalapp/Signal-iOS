@@ -1,1 +1,1 @@
-• We added a shortcut to edit sent messages by double tapping on the message bubble. Double taps aren't just for likes, unless you really like editing typos.
+• 我们增加了一个快捷键，用户可以双击消息气泡来编辑已发送的消息。

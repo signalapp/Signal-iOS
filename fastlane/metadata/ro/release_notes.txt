@@ -1,1 +1,1 @@
-• We added a shortcut to edit sent messages by double tapping on the message bubble. Double taps aren't just for likes, unless you really like editing typos.
+• Am adăugat o comandă rapidă de editare a mesajelor trimise, prin atingerea de două ori a mesajului. Să apeși de 2 ori nu e doar pentru aprecieri.
