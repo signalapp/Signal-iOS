@@ -72,10 +72,6 @@ target 'Signal' do
   target 'SignalTests' do
     inherit! :search_paths
   end
-
-  target 'SignalPerformanceTests' do
-    inherit! :search_paths
-  end
 end
 
 # These extensions inherit all of the common pods
