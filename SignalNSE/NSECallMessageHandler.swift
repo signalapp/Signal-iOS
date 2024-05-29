@@ -63,7 +63,7 @@ class NSECallMessageHandler: CallMessageHandler {
                 sentAtTimestamp: sentAtTimestamp,
                 tx: tx
             )
-            guard partialResult != nil else {
+            guard let partialResult else {
                 return
             }
 
@@ -78,7 +78,15 @@ class NSECallMessageHandler: CallMessageHandler {
                 callMediaType: callType
             )
             guard isValid else {
-                NSELogger.uncorrelated.warn("Dropping offer message; invalid according to RingRTC (likely expired).")
+                NSELogger.uncorrelated.warn("missed a call because it's not valid (according to RingRTC)")
+                callOfferHandler.insertMissedCallInteraction(
+                    for: offer.id,
+                    in: partialResult.thread,
+                    outcome: .incomingMissed,
+                    callType: partialResult.offerMediaType,
+                    sentAtTimestamp: sentAtTimestamp,
+                    tx: tx
+                )
                 return
             }
 

@@ -31,6 +31,23 @@ public class CallOfferHandlerImpl {
         public let thread: TSContactThread
     }
 
+    public func insertMissedCallInteraction(
+        for callId: UInt64,
+        in thread: TSContactThread,
+        outcome: RPRecentCallType,
+        callType: TSRecentCallOfferType,
+        sentAtTimestamp: UInt64,
+        tx: SDSAnyWriteTransaction
+    ) {
+        let callEventInserter = CallEventInserter(
+            thread: thread,
+            callId: callId,
+            offerMediaType: callType,
+            sentAtTimestamp: sentAtTimestamp
+        )
+        callEventInserter.createOrUpdate(callType: outcome, tx: tx)
+    }
+
     public func startHandlingOffer(
         caller: Aci,
         sourceDevice: UInt32,
@@ -53,13 +70,14 @@ public class CallOfferHandlerImpl {
         }
 
         func insertMissedCallInteraction(outcome: RPRecentCallType, tx: SDSAnyWriteTransaction) {
-            let callEventInserter = CallEventInserter(
-                thread: thread,
-                callId: callId,
-                offerMediaType: offerMediaType,
-                sentAtTimestamp: sentAtTimestamp
+            return self.insertMissedCallInteraction(
+                for: callId,
+                in: thread,
+                outcome: outcome,
+                callType: offerMediaType,
+                sentAtTimestamp: sentAtTimestamp,
+                tx: tx
             )
-            callEventInserter.createOrUpdate(callType: outcome, tx: tx)
         }
 
         guard tsAccountManager.registrationState(tx: tx.asV2Read).isRegistered else {
