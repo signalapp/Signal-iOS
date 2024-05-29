@@ -16,8 +16,8 @@ class GroupCallVideoOverflow: UICollectionView {
     weak var overflowDelegate: GroupCallVideoOverflowDelegate?
 
     let call: SignalCall
+    let groupCall: GroupCall
     let ringRtcCall: SignalRingRTC.GroupCall
-    let groupThreadCall: GroupThreadCall
 
     class var itemHeight: CGFloat {
         return UIDevice.current.isIPad ? 96 : 72
@@ -32,10 +32,10 @@ class GroupCallVideoOverflow: UICollectionView {
         }
     }
 
-    init(call: SignalCall, groupThreadCall: GroupThreadCall, delegate: GroupCallVideoOverflowDelegate) {
+    init(call: SignalCall, groupCall: GroupCall, delegate: GroupCallVideoOverflowDelegate) {
         self.call = call
-        self.ringRtcCall = groupThreadCall.ringRtcCall
-        self.groupThreadCall = groupThreadCall
+        self.groupCall = groupCall
+        self.ringRtcCall = groupCall.ringRtcCall
         self.overflowDelegate = delegate
 
         let layout = UICollectionViewFlowLayout()
@@ -62,7 +62,7 @@ class GroupCallVideoOverflow: UICollectionView {
         dataSource = self
         self.delegate = self
 
-        groupThreadCall.addObserverAndSyncState(self)
+        groupCall.addObserverAndSyncState(self)
         hasInitialized = true
 
         NotificationCenter.default.addObserver(
