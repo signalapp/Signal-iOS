@@ -21,8 +21,8 @@ class AttachmentStoreTests: XCTestCase {
     // MARK: - Inserts
 
     func testInsert() throws {
-        let attachmentParams = randomAttachmentParams()
-        let referenceParams = randomAttachmentReferenceParams(
+        let attachmentParams = Attachment.ConstructionParams.mockPointer()
+        let referenceParams = AttachmentReference.ConstructionParams.mock(
             owner: .thread(.globalThreadWallpaperImage(creationTimestamp: Date().ows_millisecondsSince1970))
         )
 
@@ -80,8 +80,8 @@ class AttachmentStoreTests: XCTestCase {
                 (messageId3, threadId3, message3AttachmentIds),
             ] {
                 try attachmentIds.enumerated().forEach { (index, id) in
-                    let attachmentParams = randomAttachmentParams()
-                    let attachmentReferenceParams = randomMessageBodyAttachmentReferenceParams(
+                    let attachmentParams = Attachment.ConstructionParams.mockPointer()
+                    let attachmentReferenceParams = AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
                         messageRowId: messageId,
                         threadRowId: threadId,
                         orderInOwner: UInt32(index),
@@ -154,11 +154,11 @@ class AttachmentStoreTests: XCTestCase {
         // Same content hash for 2 attachments.
         let sha256ContentHash = UUID().data
 
-        let attachmentParams1 = randomAttachmentStreamParams(sha256ContentHash: sha256ContentHash)
-        let attachmentParams2 = randomAttachmentStreamParams(sha256ContentHash: sha256ContentHash)
+        let attachmentParams1 = Attachment.ConstructionParams.mockStream(streamInfo: .mock(sha256ContentHash: sha256ContentHash))
+        let attachmentParams2 = Attachment.ConstructionParams.mockStream(streamInfo: .mock(sha256ContentHash: sha256ContentHash))
 
         try db.write { tx in
-            let attachmentReferenceParams1 = randomMessageBodyAttachmentReferenceParams(
+            let attachmentReferenceParams1 = AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
                 messageRowId: messageId1,
                 threadRowId: threadId1
             )
@@ -180,7 +180,7 @@ class AttachmentStoreTests: XCTestCase {
                 tx: tx
             ).first!
 
-            let attachmentReferenceParams2 = randomMessageBodyAttachmentReferenceParams(
+            let attachmentReferenceParams2 = AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
                 messageRowId: messageId2,
                 threadRowId: threadId2
             )
@@ -256,14 +256,14 @@ class AttachmentStoreTests: XCTestCase {
     }
 
     func testReinsertGlobalThreadAttachment() throws {
-        let attachmentParams1 = randomAttachmentParams()
+        let attachmentParams1 = Attachment.ConstructionParams.mockPointer()
         let date1 = Date()
-        let referenceParams1 = randomAttachmentReferenceParams(
+        let referenceParams1 = AttachmentReference.ConstructionParams.mock(
             owner: .thread(.globalThreadWallpaperImage(creationTimestamp: date1.ows_millisecondsSince1970))
         )
-        let attachmentParams2 = randomAttachmentParams()
+        let attachmentParams2 = Attachment.ConstructionParams.mockPointer()
         let date2 = date1.addingTimeInterval(100)
-        let referenceParams2 = randomAttachmentReferenceParams(
+        let referenceParams2 = AttachmentReference.ConstructionParams.mock(
             owner: .thread(.globalThreadWallpaperImage(creationTimestamp: date2.ows_millisecondsSince1970))
         )
 
@@ -320,8 +320,8 @@ class AttachmentStoreTests: XCTestCase {
 
         do {
             try db.write { tx in
-                let attachmentParams = randomAttachmentParams()
-                let attachmentReferenceParams = randomMessageBodyAttachmentReferenceParams(
+                let attachmentParams = Attachment.ConstructionParams.mockPointer()
+                let attachmentReferenceParams = AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
                     messageRowId: messageId,
                     threadRowId: threadId,
                     receivedAtTimestamp: receivedAtTimestamp
@@ -341,8 +341,8 @@ class AttachmentStoreTests: XCTestCase {
 
         do {
             try db.write { tx in
-                let attachmentParams = randomAttachmentParams()
-                let attachmentReferenceParams = randomAttachmentReferenceParams(
+                let attachmentParams = Attachment.ConstructionParams.mockPointer()
+                let attachmentReferenceParams = AttachmentReference.ConstructionParams.mock(
                     owner: .thread(.globalThreadWallpaperImage(creationTimestamp: receivedAtTimestamp))
                 )
                 try attachmentStore.insert(
@@ -367,14 +367,14 @@ class AttachmentStoreTests: XCTestCase {
         }
 
         // Insert many references to the same Params over and over.
-        let attachmentParams = randomAttachmentStreamParams()
+        let attachmentParams = Attachment.ConstructionParams.mockStream()
 
         let attachmentIdsInOwner: [String] = try db.write { tx in
             var attachmentRowId: Attachment.IDType?
             return try threadIdAndMessageIds.flatMap { threadId, messageId in
                 return try (0..<5).map { index in
                     let attachmentIdInOwner = UUID().uuidString
-                    let attachmentReferenceParams = randomMessageBodyAttachmentReferenceParams(
+                    let attachmentReferenceParams = AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
                         messageRowId: messageId,
                         threadRowId: threadId,
                         orderInOwner: UInt32(index),
@@ -420,13 +420,13 @@ class AttachmentStoreTests: XCTestCase {
         try db.write { tx in
             try threadIdAndMessageIds.forEach { threadId, messageId in
                 try (0..<5).forEach { index in
-                    let attachmentReferenceParams = randomMessageBodyAttachmentReferenceParams(
+                    let attachmentReferenceParams = AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
                         messageRowId: messageId,
                         threadRowId: threadId,
                         orderInOwner: UInt32(index)
                     )
                     try attachmentStore.insert(
-                        randomAttachmentParams(),
+                        Attachment.ConstructionParams.mockPointer(),
                         reference: attachmentReferenceParams,
                         db: InMemoryDB.shimOnlyBridge(tx).db,
                         tx: tx
@@ -468,8 +468,8 @@ class AttachmentStoreTests: XCTestCase {
         let initialReceivedAtTimestamp: UInt64 = 1000
 
         try db.write { tx in
-            let attachmentParams = randomAttachmentParams()
-            let attachmentReferenceParams = randomMessageBodyAttachmentReferenceParams(
+            let attachmentParams = Attachment.ConstructionParams.mockPointer()
+            let attachmentReferenceParams = AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
                 messageRowId: messageId,
                 threadRowId: threadId,
                 receivedAtTimestamp: initialReceivedAtTimestamp
@@ -527,8 +527,8 @@ class AttachmentStoreTests: XCTestCase {
         let (threadId, messageId) = insertThreadAndInteraction()
 
         try db.write { tx in
-            let attachmentParams = randomAttachmentStreamParams()
-            let attachmentReferenceParams = randomMessageBodyAttachmentReferenceParams(
+            let attachmentParams = Attachment.ConstructionParams.mockStream()
+            let attachmentReferenceParams = AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
                 messageRowId: messageId,
                 threadRowId: threadId
             )
@@ -596,12 +596,12 @@ class AttachmentStoreTests: XCTestCase {
         let (threadId2, messageId2) = insertThreadAndInteraction()
 
         // Create two references to the same attachment.
-        let attachmentParams = randomAttachmentStreamParams()
+        let attachmentParams = Attachment.ConstructionParams.mockStream()
 
         try db.write { tx in
             try attachmentStore.insert(
                 attachmentParams,
-                reference: randomMessageBodyAttachmentReferenceParams(
+                reference: AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
                     messageRowId: messageId1,
                     threadRowId: threadId1
                 ),
@@ -610,7 +610,7 @@ class AttachmentStoreTests: XCTestCase {
             )
             let attachmentId = InMemoryDB.shimOnlyBridge(tx).db.lastInsertedRowID
             try attachmentStore.addOwner(
-                randomMessageBodyAttachmentReferenceParams(
+                AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
                     messageRowId: messageId2,
                     threadRowId: threadId2
                 ),
@@ -681,9 +681,9 @@ class AttachmentStoreTests: XCTestCase {
 
         try db.write { tx in
             try threadRowIds.forEach { threadRowId in
-                let attachmentParams = randomAttachmentParams()
+                let attachmentParams = Attachment.ConstructionParams.mockPointer()
                 let timestamp = Date().ows_millisecondsSince1970
-                let referenceParams = randomAttachmentReferenceParams(
+                let referenceParams = AttachmentReference.ConstructionParams.mock(
                     owner: .thread(threadRowId.map {
                         .threadWallpaperImage(.init(threadRowId: $0, creationTimestamp: timestamp))
                     } ?? .globalThreadWallpaperImage(creationTimestamp: timestamp))
@@ -744,13 +744,13 @@ class AttachmentStoreTests: XCTestCase {
             )
         }
 
-        let originalReferenceParams = randomMessageBodyAttachmentReferenceParams(
+        let originalReferenceParams = AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
             messageRowId: messageId1,
             threadRowId: threadId
         )
 
         try db.write { tx in
-            let attachmentParams = randomAttachmentParams()
+            let attachmentParams = Attachment.ConstructionParams.mockPointer()
             try attachmentStore.insert(
                 attachmentParams,
                 reference: originalReferenceParams,
@@ -801,13 +801,13 @@ class AttachmentStoreTests: XCTestCase {
         let (threadId1, messageId1) = insertThreadAndInteraction()
         let (threadId2, messageId2) = insertThreadAndInteraction()
 
-        let originalReferenceParams = randomMessageBodyAttachmentReferenceParams(
+        let originalReferenceParams = AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
             messageRowId: messageId1,
             threadRowId: threadId1
         )
 
         try db.write { tx in
-            let attachmentParams = randomAttachmentParams()
+            let attachmentParams = Attachment.ConstructionParams.mockPointer()
             try attachmentStore.insert(
                 attachmentParams,
                 reference: originalReferenceParams,
@@ -856,7 +856,7 @@ class AttachmentStoreTests: XCTestCase {
 
     func testUInt64RecordFields_Attachment() {
         testUInt64FieldPresence(
-            sampleInstance: Attachment.Record(params: randomAttachmentParams()),
+            sampleInstance: Attachment.Record(params: Attachment.ConstructionParams.mockPointer()),
             keyPathNames: [
                 \.transitUploadTimestamp: "transitUploadTimestamp",
                 \.lastTransitDownloadAttemptTimestamp: "lastTransitDownloadAttemptTimestamp",
@@ -943,75 +943,6 @@ class AttachmentStoreTests: XCTestCase {
         let interaction = TSInteraction(uniqueId: UUID().uuidString, thread: thread)
         try! interaction.asRecord().insert(InMemoryDB.shimOnlyBridge(tx).db)
         return interaction.sqliteRowId!
-    }
-
-    private func randomAttachmentParams() -> Attachment.ConstructionParams {
-        return Attachment.ConstructionParams.fromPointer(
-            blurHash: UUID().uuidString,
-            mimeType: "image/png",
-            encryptionKey: UUID().data,
-            transitTierInfo: .init(
-                cdnNumber: 3,
-                cdnKey: UUID().uuidString,
-                uploadTimestamp: Date().ows_millisecondsSince1970,
-                encryptionKey: UUID().data,
-                encryptedByteCount: 10,
-                digestSHA256Ciphertext: UUID().data,
-                lastDownloadAttemptTimestamp: nil
-            )
-        )
-    }
-
-    private func randomAttachmentStreamParams(
-        sha256ContentHash: Data = UUID().data
-    ) -> Attachment.ConstructionParams {
-        return Attachment.ConstructionParams.fromStream(
-            blurHash: UUID().uuidString,
-            mimeType: "image/png",
-            encryptionKey: UUID().data,
-            streamInfo: .init(
-                sha256ContentHash: sha256ContentHash,
-                encryptedByteCount: 110,
-                unencryptedByteCount: 100,
-                contentType: .file,
-                digestSHA256Ciphertext: UUID().data,
-                localRelativeFilePath: UUID().uuidString
-            ),
-            mediaName: UUID().uuidString
-        )
-    }
-
-    private func randomAttachmentReferenceParams(owner: AttachmentReference.Owner) -> AttachmentReference.ConstructionParams {
-        return AttachmentReference.ConstructionParams(
-            owner: owner,
-            sourceFilename: nil,
-            sourceUnencryptedByteCount: 12,
-            sourceMediaSizePixels: CGSize(width: 100, height: 100)
-        )
-    }
-
-    private func randomMessageBodyAttachmentReferenceParams(
-        messageRowId: Int64,
-        threadRowId: Int64,
-        receivedAtTimestamp: UInt64? = nil,
-        orderInOwner: UInt32 = 0,
-        idInOwner: String? = nil
-    ) -> AttachmentReference.ConstructionParams {
-        return AttachmentReference.ConstructionParams(
-            owner: .message(.bodyAttachment(.init(
-                messageRowId: messageRowId,
-                receivedAtTimestamp: receivedAtTimestamp ?? Date().ows_millisecondsSince1970,
-                threadRowId: threadRowId,
-                contentType: .image,
-                caption: nil,
-                renderingFlag: .default,
-                orderInOwner: orderInOwner,
-                idInOwner: idInOwner
-            ))),
-            sourceFilename: nil,
-            sourceUnencryptedByteCount: 12,
-            sourceMediaSizePixels: CGSize(width: 100, height: 100)
-        )
     }
 
     private func assertEqual(_ params: Attachment.ConstructionParams, _ attachment: Attachment) {

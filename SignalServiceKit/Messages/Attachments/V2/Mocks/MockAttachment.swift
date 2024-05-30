@@ -79,6 +79,41 @@ extension Attachment.ThumbnailMediaTierInfo {
     }
 }
 
+// MARK: - Params
+
+extension Attachment.ConstructionParams {
+
+    public static func mockPointer(
+        blurHash: String? = UUID().uuidString,
+        mimeType: String = MimeType.imageJpeg.rawValue,
+        encryptionKey: Data = UUID().data,
+        transitTierInfo: Attachment.TransitTierInfo = .mock()
+    ) -> Attachment.ConstructionParams {
+        return Attachment.ConstructionParams.fromPointer(
+            blurHash: blurHash,
+            mimeType: mimeType,
+            encryptionKey: encryptionKey,
+            transitTierInfo: transitTierInfo
+        )
+    }
+
+    public static func mockStream(
+        blurHash: String? = UUID().uuidString,
+        mimeType: String = MimeType.imageJpeg.rawValue,
+        encryptionKey: Data = UUID().data,
+        mediaName: String = UUID().uuidString,
+        streamInfo: Attachment.StreamInfo = .mock()
+    ) -> Attachment.ConstructionParams {
+        return Attachment.ConstructionParams.fromStream(
+            blurHash: blurHash,
+            mimeType: mimeType,
+            encryptionKey: encryptionKey,
+            streamInfo: streamInfo,
+            mediaName: mediaName
+        )
+    }
+}
+
 // MARK: - Attachment
 
 public class MockAttachment: Attachment {
