@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import AVFoundation
 import Foundation
 
 public class AttachmentContentValidatorImpl: AttachmentContentValidator {
@@ -87,7 +88,54 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
     // Includes static and animated image validation.
     private func validateImageType(_ input: Input, mimeType: String) throws -> Attachment.ContentType {
-        fatalError("Unimplemented")
+        let imageSource: OWSImageSource = try {
+            switch input {
+            case .inMemory(let data):
+                return data
+            case .unencryptedFile(let fileUrl):
+                return try FileHandleImageSource(fileUrl: fileUrl)
+            case let .encryptedFile(fileUrl, encryptionKey, plaintextLength):
+                return try EncryptedFileHandleImageSource(
+                    encryptedFileUrl: fileUrl,
+                    encryptionKey: encryptionKey,
+                    plaintextLength: plaintextLength
+                )
+            }
+        }()
+
+        let imageMetadataResult = imageSource.imageMetadata(
+            mimeTypeForValidation: mimeType
+        )
+
+        let imageMetadata: ImageMetadata
+        switch imageMetadataResult {
+        case .genericSizeLimitExceeded:
+            throw OWSAssertionError("Attachment size should have been validated before reching this point!")
+        case .imageTypeSizeLimitExceeded:
+            throw OWSAssertionError("Image size too large")
+        case .invalid:
+            return .invalid
+        case .valid(let metadata):
+            imageMetadata = metadata
+        case .mimeTypeMismatch(let metadata), .fileExtensionMismatch(let metadata):
+            // Ignore these types of errors for now; we did so historically
+            // and introducing a new failure mode should be done carefully
+            // as it may cause us to blow up for attachments we previously "handled"
+            // even if the contents didn't match the mime type.
+            owsFailDebug("MIME type mismatch")
+            imageMetadata = metadata
+        }
+
+        guard imageMetadata.isValid else {
+            return .invalid
+        }
+
+        let pixelSize = imageMetadata.pixelSize
+        if imageMetadata.isAnimated {
+            return .animatedImage(pixelSize: pixelSize)
+        } else {
+            return .image(pixelSize: pixelSize)
+        }
     }
 
     // MARK: Video
