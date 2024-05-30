@@ -88,6 +88,14 @@ public class SharingThreadPickerProgressSheet: ActionSheetController {
     // MARK: - Updating UI
 
     private func renderProgress() {
+        guard attachmentIds.isEmpty.negated else {
+            progressLabel.text = OWSLocalizedString(
+                "MESSAGE_STATUS_SENDING",
+                comment: "message status while message is sending."
+            )
+            return
+        }
+
         let progressValues = attachmentIds.map { progressPerAttachment[$0] ?? 0 }
 
         // Attachments can upload in parallel, so we show the progress
