@@ -15,7 +15,7 @@ import UIKit
 class GroupCallViewController: UIViewController {
     private let call: SignalCall
     // TODO: Support Call Links.
-    private let groupCall: GroupCall
+    private let groupCall: SignalRingRTC.GroupCall
     private let groupThreadCall: GroupThreadCall
     private lazy var callControlsConfirmationToastManager = CallControlsConfirmationToastManager(
         presentingContainerView: callControlsConfirmationToastContainerView

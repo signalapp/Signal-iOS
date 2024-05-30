@@ -14,7 +14,7 @@ class GroupCallRemoteVideoManager {
         self.callServiceState = callServiceState
     }
 
-    private var currentGroupCall: GroupCall? {
+    private var currentGroupCall: SignalRingRTC.GroupCall? {
         switch callServiceState.currentCall?.mode {
         case nil:
             return nil

@@ -50,7 +50,7 @@ class CallHeader: UIView {
     private let groupMembersButton = GroupMembersButton()
 
     private let call: SignalCall
-    private let groupCall: GroupCall
+    private let groupCall: SignalRingRTC.GroupCall
     private let groupThreadCall: GroupThreadCall
     private weak var delegate: CallHeaderDelegate!
 

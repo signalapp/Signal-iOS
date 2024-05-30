@@ -19,7 +19,7 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
 
     private let tableView = UITableView(frame: .zero, style: .insetGrouped)
     private let call: SignalCall
-    private let groupCall: GroupCall
+    private let groupCall: SignalRingRTC.GroupCall
     private let groupThreadCall: GroupThreadCall
 
     override var sheetBackgroundColor: UIColor {

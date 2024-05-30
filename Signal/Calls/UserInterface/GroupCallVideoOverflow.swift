@@ -16,7 +16,7 @@ class GroupCallVideoOverflow: UICollectionView {
     weak var overflowDelegate: GroupCallVideoOverflowDelegate?
 
     let call: SignalCall
-    let groupCall: GroupCall
+    let groupCall: SignalRingRTC.GroupCall
     let groupThreadCall: GroupThreadCall
 
     class var itemHeight: CGFloat {

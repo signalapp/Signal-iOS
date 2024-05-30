@@ -10,7 +10,7 @@ class GroupCallVideoGrid: UICollectionView {
     weak var memberViewErrorPresenter: CallMemberErrorPresenter?
     let layout: GroupCallVideoGridLayout
     let call: SignalCall
-    let groupCall: GroupCall
+    let groupCall: SignalRingRTC.GroupCall
     let groupThreadCall: GroupThreadCall
 
     init(call: SignalCall, groupThreadCall: GroupThreadCall) {

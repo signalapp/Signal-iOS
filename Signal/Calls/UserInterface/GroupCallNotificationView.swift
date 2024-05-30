@@ -9,7 +9,7 @@ import SignalServiceKit
 
 class GroupCallNotificationView: UIView {
     private let call: SignalCall
-    private let groupCall: GroupCall
+    private let groupCall: SignalRingRTC.GroupCall
     private let groupThreadCall: GroupThreadCall
     private var callService: CallService { AppEnvironment.shared.callService }
 

@@ -35,31 +35,21 @@ extension GroupThreadCallObserver {
     func callMessageSendFailedUntrustedIdentity(_ call: GroupThreadCall) {}
 }
 
-class GroupThreadCall {
-    let commonState: CommonCallState
-    let ringRtcCall: SignalRingRTC.GroupCall
+final class GroupThreadCall: Signal.GroupCall {
     let groupThread: TSGroupThread
-    let videoCaptureController: VideoCaptureController
-
-    private(set) var raisedHands: [RemoteDeviceState] = []
 
     init(
         ringRtcCall: SignalRingRTC.GroupCall,
         groupThread: TSGroupThread,
         videoCaptureController: VideoCaptureController
     ) {
-        self.commonState = CommonCallState(
-            audioActivity: AudioActivity(
-                audioDescription: "[SignalCall] with group \(groupThread.groupModel.groupId)",
-                behavior: .call
-            )
-        )
-        self.ringRestrictions = []
-        self.ringRtcCall = ringRtcCall
         self.groupThread = groupThread
-        self.videoCaptureController = videoCaptureController
 
-        self.ringRtcCall.delegate = self
+        super.init(
+            audioDescription: "[SignalCall] with group \(groupThread.groupModel.groupId)",
+            ringRtcCall: ringRtcCall,
+            videoCaptureController: videoCaptureController
+        )
 
         if groupThread.groupModel.groupMembers.count > RemoteConfig.maxGroupCallRingSize {
             self.ringRestrictions.insert(.groupTooLarge)
@@ -84,10 +74,6 @@ class GroupThreadCall {
             name: TSGroupThread.membershipDidChange,
             object: nil
         )
-    }
-
-    var joinState: JoinState {
-        return self.ringRtcCall.localDeviceState.joinState
     }
 
     var hasTerminated: Bool {
@@ -132,7 +118,7 @@ class GroupThreadCall {
         static let groupTooLarge = Self(rawValue: 1 << 2)
     }
 
-    var ringRestrictions: RingRestrictions {
+    var ringRestrictions: RingRestrictions = [] {
         didSet {
             AssertIsOnMainThread()
             if ringRestrictions != oldValue, joinState == .notJoined {
@@ -181,27 +167,24 @@ class GroupThreadCall {
             AssertIsOnMainThread()
         }
     }
-}
 
-// MARK: - GroupCallDelegate
+    // MARK: - GroupCallDelegate
 
-extension GroupThreadCall: GroupCallDelegate {
-    public func groupCall(onLocalDeviceStateChanged groupCall: SignalRingRTC.GroupCall) {
-        if groupCall.localDeviceState.joinState == .joined, commonState.setConnectedDateIfNeeded() {
-            if groupCallRingState.isIncomingRing {
-                groupCallRingState = .ringingEnded
-            }
-
-            // make sure we don't terminate audio session during call
-            NSObject.audioSession.isRTCAudioEnabled = true
-            owsAssertDebug(NSObject.audioSession.startAudioActivity(commonState.audioActivity))
+    override func groupCall(onLocalDeviceStateChanged groupCall: SignalRingRTC.GroupCall) {
+        if groupCallRingState.isIncomingRing, groupCall.localDeviceState.joinState == .joined {
+            groupCallRingState = .ringingEnded
         }
+
+        super.groupCall(onLocalDeviceStateChanged: groupCall)
 
         observers.elements.forEach { $0.groupCallLocalDeviceStateChanged(self) }
     }
 
-    public func groupCall(onRemoteDeviceStatesChanged groupCall: SignalRingRTC.GroupCall) {
+    override func groupCall(onRemoteDeviceStatesChanged groupCall: SignalRingRTC.GroupCall) {
+        super.groupCall(onRemoteDeviceStatesChanged: groupCall)
+
         observers.elements.forEach { $0.groupCallRemoteDeviceStatesChanged(self) }
+
         // Change this after notifying observers so that they can see when the ring has concluded.
         if case .ringing = groupCallRingState, !groupCall.remoteDeviceStates.isEmpty {
             groupCallRingState = .ringingEnded
@@ -210,34 +193,28 @@ extension GroupThreadCall: GroupCallDelegate {
         }
     }
 
-    public func groupCall(onAudioLevels groupCall: SignalRingRTC.GroupCall) {
-        // TODO: Implement audio level handling for group calls.
-    }
+    override func groupCall(onReactions groupCall: SignalRingRTC.GroupCall, reactions: [SignalRingRTC.Reaction]) {
+        super.groupCall(onReactions: groupCall, reactions: reactions)
 
-    public func groupCall(onLowBandwidthForVideo groupCall: SignalRingRTC.GroupCall, recovered: Bool) {
-        // TODO: Implement handling of the "low outgoing bandwidth for video" notification.
-    }
-
-    public func groupCall(onReactions groupCall: SignalRingRTC.GroupCall, reactions: [SignalRingRTC.Reaction]) {
         observers.elements.forEach {
             $0.groupCallReceivedReactions(self, reactions: reactions)
         }
     }
 
-    public func groupCall(onRaisedHands groupCall: SignalRingRTC.GroupCall, raisedHands: [UInt32]) {
+    override func groupCall(onRaisedHands groupCall: SignalRingRTC.GroupCall, raisedHands: [UInt32]) {
+        super.groupCall(onRaisedHands: groupCall, raisedHands: raisedHands)
+
         guard
             FeatureFlags.callRaiseHandReceiveSupport,
             FeatureFlags.useCallMemberComposableViewsForRemoteUsersInGroupCalls
         else { return }
-
-        self.raisedHands = raisedHands.compactMap { groupCall.remoteDeviceStates[$0] }
 
         observers.elements.forEach {
             $0.groupCallReceivedRaisedHands(self, raisedHands: raisedHands)
         }
     }
 
-    public func groupCall(onPeekChanged groupCall: SignalRingRTC.GroupCall) {
+    override func groupCall(onPeekChanged groupCall: SignalRingRTC.GroupCall) {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         guard let localAci = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
             owsFailDebug("Peek changed for a group call, but we're not registered?")
@@ -264,25 +241,33 @@ extension GroupThreadCall: GroupCallDelegate {
             )
         }
 
+        super.groupCall(onPeekChanged: groupCall)
+
         observers.elements.forEach { $0.groupCallPeekChanged(self) }
     }
 
-    public func groupCall(requestMembershipProof groupCall: SignalRingRTC.GroupCall) {
+    override func groupCall(requestMembershipProof groupCall: SignalRingRTC.GroupCall) {
+        super.groupCall(requestMembershipProof: groupCall)
+
         observers.elements.forEach { $0.groupCallRequestMembershipProof(self) }
     }
 
-    public func groupCall(requestGroupMembers groupCall: SignalRingRTC.GroupCall) {
+    override func groupCall(requestGroupMembers groupCall: SignalRingRTC.GroupCall) {
+        super.groupCall(requestGroupMembers: groupCall)
+
         observers.elements.forEach { $0.groupCallRequestGroupMembers(self) }
     }
 
-    public func groupCall(onEnded groupCall: SignalRingRTC.GroupCall, reason: GroupCallEndReason) {
+    override func groupCall(onEnded groupCall: SignalRingRTC.GroupCall, reason: GroupCallEndReason) {
+        super.groupCall(onEnded: groupCall, reason: reason)
+
         observers.elements.forEach { $0.groupCallEnded(self, reason: reason) }
     }
 }
 
 // MARK: - GroupCall
 
-extension GroupCall {
+extension SignalRingRTC.GroupCall {
     var isFull: Bool {
         guard let peekInfo = peekInfo, let maxDevices = peekInfo.maxDevices else {
             return false

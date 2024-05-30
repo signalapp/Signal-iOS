@@ -51,7 +51,7 @@ protocol GroupCallAccessoryMessageDelegate: AnyObject, CallServiceStateObserver 
     /// This method must be called on the main thread.
     func localDeviceMaybeLeftGroupCall(
         groupThread: TSGroupThread,
-        groupCall: GroupCall
+        groupCall: SignalRingRTC.GroupCall
     )
 
     /// Tells the delegate that any group call the local device was joined to
@@ -151,7 +151,7 @@ class GroupCallAccessoryMessageHandler: GroupCallAccessoryMessageDelegate {
 
     func localDeviceMaybeLeftGroupCall(
         groupThread: TSGroupThread,
-        groupCall: GroupCall
+        groupCall: SignalRingRTC.GroupCall
     ) {
         AssertIsOnMainThread()
 

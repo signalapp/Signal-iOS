@@ -645,6 +645,8 @@
 		50A5AA9D2A7475A900CF2ECC /* OutgoingReactionMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A5AA9C2A7475A900CF2ECC /* OutgoingReactionMessage.swift */; };
 		50A76F562AF573CE00FCF02D /* AppActivePrecondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A76F552AF573CE00FCF02D /* AppActivePrecondition.swift */; };
 		50A76F582AF5765000FCF02D /* FullTextSearchOptimizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F0B53E2982D7800012C590 /* FullTextSearchOptimizer.swift */; };
+		50A7830E2C0128D70008030E /* CallLinkCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A7830D2C0128D70008030E /* CallLinkCall.swift */; };
+		50A783102C012FEF0008030E /* GroupCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A7830F2C012FEF0008030E /* GroupCall.swift */; };
 		50AA3EC329F1C4B900EC50A3 /* RecipientFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50AA3EC229F1C4B900EC50A3 /* RecipientFetcher.swift */; };
 		50B0E9482AC73C3B005D46AB /* RecipientStateMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B0E9472AC73C3B005D46AB /* RecipientStateMerger.swift */; };
 		50B0E94A2AC747B3005D46AB /* RecipientStateMergerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B0E9492AC747B3005D46AB /* RecipientStateMergerTest.swift */; };
@@ -3544,6 +3546,8 @@
 		50A5AA9C2A7475A900CF2ECC /* OutgoingReactionMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingReactionMessage.swift; sourceTree = "<group>"; };
 		50A76F522AF565AC00FCF02D /* Preconditions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preconditions.swift; sourceTree = "<group>"; };
 		50A76F552AF573CE00FCF02D /* AppActivePrecondition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppActivePrecondition.swift; sourceTree = "<group>"; };
+		50A7830D2C0128D70008030E /* CallLinkCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkCall.swift; sourceTree = "<group>"; };
+		50A7830F2C012FEF0008030E /* GroupCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCall.swift; sourceTree = "<group>"; };
 		50AA3EC229F1C4B900EC50A3 /* RecipientFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientFetcher.swift; sourceTree = "<group>"; };
 		50B0E9472AC73C3B005D46AB /* RecipientStateMerger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientStateMerger.swift; sourceTree = "<group>"; };
 		50B0E9492AC747B3005D46AB /* RecipientStateMergerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientStateMergerTest.swift; sourceTree = "<group>"; };
@@ -8864,12 +8868,14 @@
 				88D23D2B23CEC17400B0E74B /* CallAudioService.swift */,
 				88D23D1A23CEC0C700B0E74B /* CallKitCallManager.swift */,
 				50552C2D2BAC066A00815474 /* CallLink.swift */,
+				50A7830D2C0128D70008030E /* CallLinkCall.swift */,
 				D93108082B337A23006A034E /* CallRecordLoader.swift */,
 				88588D25252E59CE00405414 /* CallService.swift */,
 				50DC0D9A2BE56EF0003C57D3 /* CallServiceState.swift */,
 				B98D24692B8D2A2A00B1A8CC /* CallStarter.swift */,
 				500978442BF41D6800941B1E /* CommonCallState.swift */,
 				5077B5B32BBC687C00EF399E /* CurrentCall.swift */,
+				50A7830F2C012FEF0008030E /* GroupCall.swift */,
 				32AC5CF0255F875C00829BD8 /* GroupCallAccessoryMessageDelegate.swift */,
 				D95777BD2B472AA100CFE3AE /* GroupCallRecordRingingCleanupManager.swift */,
 				8814D9652564A33E00A472E3 /* GroupCallRemoteVideoManager.swift */,
@@ -12691,6 +12697,7 @@
 				88D23D2423CEC0C700B0E74B /* CallKitCallManager.swift in Sources */,
 				88D23D2523CEC0C700B0E74B /* CallKitCallUIAdaptee.swift in Sources */,
 				50552C2E2BAC066A00815474 /* CallLink.swift in Sources */,
+				50A7830E2C0128D70008030E /* CallLinkCall.swift in Sources */,
 				E1E78CAF2B573BD100B6FC2D /* CallMemberCameraOffView.swift in Sources */,
 				E1E78CAD2B573B5800B6FC2D /* CallMemberChromeOverlayView.swift in Sources */,
 				E1E78CB42B575C2700B6FC2D /* CallMemberVideoView.swift in Sources */,
@@ -12953,6 +12960,7 @@
 				503614CF282AF657008128B4 /* GiftBadgeView.swift in Sources */,
 				346594822434D5E000E5C510 /* GroupAttributesEditorHelper.swift in Sources */,
 				34EA0A002423C7F80059B75F /* GroupAttributesViewController.swift in Sources */,
+				50A783102C012FEF0008030E /* GroupCall.swift in Sources */,
 				32AC5CF1255F875C00829BD8 /* GroupCallAccessoryMessageDelegate.swift in Sources */,
 				32B2A434256CDC42001D66C7 /* GroupCallErrorView.swift in Sources */,
 				88ABB8BD25352B8300229EAA /* GroupCallMemberSheet.swift in Sources */,

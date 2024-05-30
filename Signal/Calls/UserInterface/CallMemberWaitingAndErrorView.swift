@@ -61,7 +61,7 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
 
             guard let remoteGroupMemberDeviceState else { return }
 
-            let groupCall: GroupCall
+            let groupCall: SignalRingRTC.GroupCall
             switch call.mode {
             case .individual:
                 owsFail("Can't configure remoteInGroup for individual call.")

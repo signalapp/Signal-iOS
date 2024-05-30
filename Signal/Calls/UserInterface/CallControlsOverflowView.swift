@@ -155,7 +155,7 @@ protocol ReactionSender {
     func react(value: String)
 }
 
-extension GroupCall: ReactionSender {}
+extension SignalRingRTC.GroupCall: ReactionSender {}
 
 // MARK: - EmojiPickerSheetPresenter
 
