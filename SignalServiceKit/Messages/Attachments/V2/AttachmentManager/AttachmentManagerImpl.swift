@@ -111,12 +111,16 @@ public class AttachmentManagerImpl: AttachmentManager {
         _ inputArray: [T],
         mimeType: (T) -> String?,
         owner: (T) -> OwnerBuilder,
-        createFn: (T, Int?, DBWriteTransaction) throws -> Void,
+        createFn: (T, UInt32?, DBWriteTransaction) throws -> Void,
         tx: DBWriteTransaction
     ) throws {
-        var indexOffset = 0
+        guard inputArray.count < UInt32.max else {
+            throw OWSAssertionError("Input array too large")
+        }
+
+        var indexOffset: Int = 0
         for (i, input) in inputArray.enumerated() {
-            let sourceOrder: Int?
+            let sourceOrder: UInt32?
             var ownerForInput = owner(input)
             switch ownerForInput {
             case .messageBodyAttachment(let metadata):
@@ -124,8 +128,10 @@ public class AttachmentManagerImpl: AttachmentManager {
                 if mimeType(input) == MimeType.textXSignalPlain.rawValue {
                     ownerForInput = .messageOversizeText(metadata)
                     indexOffset = -1
+                    sourceOrder = nil
+                } else {
+                    sourceOrder = UInt32(i + indexOffset)
                 }
-                sourceOrder = i + indexOffset
             default:
                 sourceOrder = nil
                 if inputArray.count > 0 {
@@ -141,7 +147,7 @@ public class AttachmentManagerImpl: AttachmentManager {
     private func _createAttachmentPointer(
         from protoAndOwner: OwnedAttachmentPointerProto,
         // Nil if no order is to be applied.
-        sourceOrder: Int?,
+        sourceOrder: UInt32?,
         tx: DBWriteTransaction
     ) throws {
         let proto = protoAndOwner.proto
@@ -152,6 +158,9 @@ public class AttachmentManagerImpl: AttachmentManager {
         }
         guard let encryptionKey = proto.key?.nilIfEmpty else {
             throw OWSAssertionError("Invalid encryption key")
+        }
+        guard let digestSHA256Ciphertext = proto.digest?.nilIfEmpty else {
+            throw OWSAssertionError("Missing digest")
         }
 
         let mimeType: String
@@ -172,22 +181,59 @@ public class AttachmentManagerImpl: AttachmentManager {
             }
         }
 
-        let sourceFilename =  proto.fileName
+        let sourceFilename = proto.fileName
 
-        let attachment: Attachment = {
-            // TODO: Create and insert Attachment for the provided proto.
-            fatalError("Unimplemented")
-        }()
-        let attachmentReference: AttachmentReference = {
-            // TODO: Create and insert AttachmentReference from the provided message to the new Attachment
-            fatalError("Unimplemented")
-        }()
+        let attachmentParams = Attachment.ConstructionParams.fromPointer(
+            blurHash: proto.blurHash,
+            mimeType: mimeType,
+            encryptionKey: encryptionKey,
+            transitTierInfo: .init(
+                cdnNumber: cdnNumber,
+                cdnKey: cdnKey,
+                uploadTimestamp: proto.uploadTimestamp,
+                encryptionKey: encryptionKey,
+                encryptedByteCount: nil,
+                digestSHA256Ciphertext: digestSHA256Ciphertext,
+                lastDownloadAttemptTimestamp: nil
+            )
+        )
+        let sourceMediaSizePixels: CGSize?
+        if
+            proto.width > 0,
+            let width = CGFloat(exactly: proto.width),
+            proto.height > 0,
+            let height = CGFloat(exactly: proto.height)
+        {
+            sourceMediaSizePixels = CGSize(width: width, height: height)
+        } else {
+            sourceMediaSizePixels = nil
+        }
+
+        let referenceParams = AttachmentReference.ConstructionParams(
+            owner: try owner.build(
+                orderInOwner: sourceOrder,
+                // TODO: [Delete Syncs] pull id off the pointer proto.
+                idInOwner: nil,
+                renderingFlag: .fromProto(proto),
+                // Not downloaded so we don't know the content type.
+                contentType: nil
+            ),
+            sourceFilename: sourceFilename,
+            sourceUnencryptedByteCount: proto.size,
+            sourceMediaSizePixels: sourceMediaSizePixels
+        )
+
+        try attachmentStore.insert(
+            attachmentParams,
+            reference: referenceParams,
+            tx: tx
+        )
     }
 
     private func _createAttachmentStream(
         consuming dataSource: OwnedAttachmentDataSource,
         // Nil if no order is to be applied.
-        sourceOrder: Int?,
+        sourceOrder: UInt32?,
         tx: DBWriteTransaction
     ) throws {
         guard let fileExtension = MimeTypeUtil.fileExtensionForMimeType(dataSource.mimeType) else {
