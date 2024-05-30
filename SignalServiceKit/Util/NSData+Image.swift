@@ -454,32 +454,80 @@ extension Data {
     /// If maxImageDimension is supplied we enforce the _smaller_ of
     /// that value and the per-format max dimension
     public func imageMetadata(withPath filePath: String?, mimeType declaredMimeType: String?, ignoreFileSize: Bool = false) -> ImageMetadata {
+        let fileExtension = (filePath as? NSString)?.pathExtension.lowercased().nilIfEmpty
+        let result = _imageMetadata(
+            mimeTypeForValidation: declaredMimeType?.nilIfEmpty,
+            fileExtensionForValidation: fileExtension,
+            ignorePerTypeFileSizeLimits: ignoreFileSize
+        )
+        switch result {
+        case .invalid:
+            return .invalid()
+        case .valid(let imageMetadata):
+            return imageMetadata
+        case .mimeTypeMismatch(let imageMetadata), .fileExtensionMismatch(let imageMetadata):
+            // Do not fail in production.
+            return imageMetadata
+        case .genericSizeLimitExceeded:
+            return .invalid()
+        case .imageTypeSizeLimitExceeded:
+            return .invalid()
+        }
+    }
+
+    public enum ImageMetadataResult {
+        /// Source data exceeded size limit for all attachments;
+        /// as a precaution no validation was performed.
+        case genericSizeLimitExceeded
+
+        /// Exceeded the file size limit for the inferred type of image.
+        /// Smaller than the generic size limit.
+        case imageTypeSizeLimitExceeded
+
+        case invalid
+
+        case valid(ImageMetadata)
+
+        /// A mime type was provided, and it did not match the contents.
+        /// Metadata is still valid and the error can be safely ignored.
+        case mimeTypeMismatch(ImageMetadata)
+
+        /// A file extension was provided, and it did not match the contents.
+        /// Metadata is still valid and the error can be safely ignored.
+        case fileExtensionMismatch(ImageMetadata)
+    }
+
+    /// Load image metadata about the current Data object.
+    /// Returns nil if metadata could not be determined.
+    public func imageMetadata(
+        mimeTypeForValidation declaredMimeType: String?,
+        fileExtensionForValidation: String? = nil
+    ) -> ImageMetadataResult {
+        return _imageMetadata(
+            mimeTypeForValidation: declaredMimeType,
+            fileExtensionForValidation: fileExtensionForValidation,
+            ignorePerTypeFileSizeLimits: false
+        )
+    }
+
+    private func _imageMetadata(
+        mimeTypeForValidation declaredMimeType: String?,
+        fileExtensionForValidation: String?,
+        ignorePerTypeFileSizeLimits: Bool
+    ) -> ImageMetadataResult {
+        guard count < OWSMediaUtils.kMaxFileSizeGeneric else {
+            return .genericSizeLimitExceeded
+        }
+
         let imageFormat = ows_guessImageFormat()
         guard imageFormat.isValid(data: self) else {
             Logger.warn("Image does not have valid format.")
-            return .invalid()
+            return .invalid
         }
 
         guard let mimeType = imageFormat.mimeType else {
             Logger.warn("Image does not have MIME type.")
-            return .invalid()
-        }
-
-        if let declaredMimeType, !declaredMimeType.isEmpty, !imageFormat.isValid(mimeType: declaredMimeType) {
-            Logger.info("Mimetypes do not match: \(mimeType), \(declaredMimeType)")
-            // Do not fail in production.
-        }
-
-        if let filePath, !filePath.isEmpty {
-            let fileExtension = (filePath as NSString).pathExtension.lowercased()
-            if !fileExtension.isEmpty {
-                let mimeTypeForFileExtension = MimeTypeUtil.mimeTypeForFileExtension(fileExtension)
-                if let mimeTypeForFileExtension, !mimeTypeForFileExtension.isEmpty,
-                   mimeType.rawValue.caseInsensitiveCompare(mimeTypeForFileExtension) != .orderedSame {
-                    Logger.info("fileExtension does not match: \(fileExtension), \(mimeType), \(mimeTypeForFileExtension)")
-                    // Do not fail in production.
-                }
-            }
+            return .invalid
         }
 
         let isAnimated: Bool
@@ -491,13 +539,13 @@ extension Data {
             let webpMetadata = metadataForWebp
             guard webpMetadata.isValid else {
                 Logger.warn("Image does not have valid webpMetadata.")
-                return .invalid()
+                return .invalid
             }
             isAnimated = webpMetadata.frameCount > 1
         case .png:
             guard let isAnimatedPng = isAnimatedPngData() else {
                 Logger.warn("Could not determine if png is animated.")
-                return .invalid()
+                return .invalid
             }
             isAnimated = isAnimatedPng.boolValue
         default:
@@ -506,23 +554,41 @@ extension Data {
 
         guard imageFormat.isValid(data: self) else {
             Logger.warn("Image does not have valid format.")
-            return .invalid()
+            return .invalid
         }
 
-        let targetFileSize = if ignoreFileSize {
-            OWSMediaUtils.kMaxFileSizeGeneric
-        } else if isAnimated {
-            OWSMediaUtils.kMaxFileSizeAnimatedImage
-        } else {
-            OWSMediaUtils.kMaxFileSizeImage
-        }
-        let fileSize = count
-        if fileSize > targetFileSize {
-            Logger.warn("Oversize image.")
-            return .invalid()
+        if !ignorePerTypeFileSizeLimits {
+            if isAnimated, count > OWSMediaUtils.kMaxFileSizeAnimatedImage {
+                Logger.warn("Oversize image.")
+                return .imageTypeSizeLimitExceeded
+            } else if count > OWSMediaUtils.kMaxFileSizeImage {
+                Logger.warn("Oversize image.")
+                return .imageTypeSizeLimitExceeded
+            }
         }
 
-        return imageMetadata(withIsAnimated: isAnimated, imageFormat: imageFormat)
+        let metadata = imageMetadata(withIsAnimated: isAnimated, imageFormat: imageFormat)
+
+        guard metadata.isValid else {
+            return .invalid
+        }
+
+        if let declaredMimeType, !imageFormat.isValid(mimeType: declaredMimeType) {
+            Logger.info("Mimetypes do not match: \(mimeType), \(declaredMimeType)")
+            return .mimeTypeMismatch(metadata)
+        }
+
+        if
+            let fileExtensionForValidation,
+            let mimeTypeForFileExtension = MimeTypeUtil.mimeTypeForFileExtension(fileExtensionForValidation),
+            !mimeTypeForFileExtension.isEmpty,
+            mimeType.rawValue.caseInsensitiveCompare(mimeTypeForFileExtension) != .orderedSame
+        {
+            Logger.info("fileExtension does not match: \(fileExtensionForValidation), \(mimeType), \(mimeTypeForFileExtension)")
+            return .fileExtensionMismatch(metadata)
+        }
+
+        return .valid(metadata)
     }
 
     fileprivate func imageMetadata(withIsAnimated isAnimated: Bool, imageFormat: ImageFormat) -> ImageMetadata {
