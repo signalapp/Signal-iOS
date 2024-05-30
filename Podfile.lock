@@ -6,7 +6,7 @@ PODS:
   - CocoaLumberjack/Core (3.7.4)
   - GRDB.swift/SQLCipher (5.26.0):
     - SQLCipher (>= 3.4.0)
-  - LibMobileCoin/CoreHTTP (6.0.0-pre1):
+  - LibMobileCoin/CoreHTTP (6.0.0):
     - SwiftProtobuf (~> 1.5)
   - libPhoneNumber-iOS (0.9.15)
   - LibSignalClient (0.48.0)
@@ -59,7 +59,7 @@ DEPENDENCIES:
   - BonMot
   - CocoaLumberjack
   - GRDB.swift/SQLCipher
-  - LibMobileCoin/CoreHTTP (from `https://github.com/signalapp/libmobilecoin-ios-artifacts`, commit `345c49113e5d92e152517f17b605c9b8aef06dca`)
+  - LibMobileCoin/CoreHTTP (from `https://github.com/signalapp/libmobilecoin-ios-artifacts`, tag `signal/6.0.0v2`)
   - libPhoneNumber-iOS (from `https://github.com/signalapp/libPhoneNumber-iOS`, branch `signal-master`)
   - LibSignalClient (from `https://github.com/signalapp/libsignal.git`, tag `v0.48.0`)
   - LibSignalClient/Tests (from `https://github.com/signalapp/libsignal.git`, tag `v0.48.0`)
@@ -95,9 +95,9 @@ EXTERNAL SOURCES:
   blurhash:
     :podspec: "./ThirdParty/blurhash.podspec"
   LibMobileCoin:
-    :commit: 345c49113e5d92e152517f17b605c9b8aef06dca
     :git: https://github.com/signalapp/libmobilecoin-ios-artifacts
     :submodules: true
+    :tag: signal/6.0.0v2
   libPhoneNumber-iOS:
     :branch: signal-master
     :git: https://github.com/signalapp/libPhoneNumber-iOS
@@ -130,9 +130,9 @@ CHECKOUT OPTIONS:
     :commit: 890ffdab14207154819415da7e6c969e9dfff0e9
     :git: https://github.com/signalapp/blurhash
   LibMobileCoin:
-    :commit: 345c49113e5d92e152517f17b605c9b8aef06dca
     :git: https://github.com/signalapp/libmobilecoin-ios-artifacts
     :submodules: true
+    :tag: signal/6.0.0v2
   libPhoneNumber-iOS:
     :commit: 8b6f552682be0e66cf25cd0f0db5e1732a1e9f15
     :git: https://github.com/signalapp/libPhoneNumber-iOS
@@ -163,7 +163,7 @@ SPEC CHECKSUMS:
   BonMot: fb2b6a2209cb3149aca37b7131d49c051c04ae86
   CocoaLumberjack: 543c79c114dadc3b1aba95641d8738b06b05b646
   GRDB.swift: 1395cb3556df6b16ed69dfc74c3886abc75d2825
-  LibMobileCoin: ae9535bb6a125123550fb16ab2533f2b53b91118
+  LibMobileCoin: 78903fc89d06bb827dcc6526d3370a1d1c1fa285
   libPhoneNumber-iOS: 2d26d0a38933eee2702962a4dbdec2fc20e5ef9f
   LibSignalClient: f3c015cb278adc4279df2244ef46fda73c1e6478
   libwebp: 1b5562124e3ca3336fb7506e76501bed7758963a
@@ -181,6 +181,6 @@ SPEC CHECKSUMS:
   Wire: f5fe13fcad476bfd248f23a45a2004167c0ebae2
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: 95c4f99525deee15843974ec3317b5066cbe424e
+PODFILE CHECKSUM: 38351a101862cea339a72148e847f4ec2c4f3caf
 
 COCOAPODS: 1.15.2
