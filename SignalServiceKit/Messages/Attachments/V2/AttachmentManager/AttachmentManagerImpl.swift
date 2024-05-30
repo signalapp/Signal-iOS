@@ -90,7 +90,14 @@ public class AttachmentManagerImpl: AttachmentManager {
         from owners: [AttachmentReference.OwnerId],
         tx: DBWriteTransaction
     ) throws {
-        fatalError("Unimplemented")
+        try attachmentStore.fetchReferences(owners: owners, tx: tx)
+            .forEach { reference in
+                try attachmentStore.removeOwner(
+                    reference.owner.id,
+                    for: reference.attachmentRowId,
+                    tx: tx
+                )
+            }
     }
 
     // MARK: - Helpers
