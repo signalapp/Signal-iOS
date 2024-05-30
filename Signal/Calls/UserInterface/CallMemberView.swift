@@ -414,12 +414,12 @@ extension CallMemberView: UIGestureRecognizerDelegate {
 
     private var enlargedPipSize: CGSize {
         if UIDevice.current.isIPad {
-            if UIDevice.current.orientation.isLandscape {
+            if self.frame.width > self.frame.height {
                 return CGSize(
                     width: Constants.enlargedPipWidthIpadLandscape,
                     height: Constants.enlargedPipHeightIpadLandscape
                 )
-            } else { // includes portrait and flat
+            } else {
                 return CGSize(
                     width: Constants.enlargedPipWidthIpadPortrait,
                     height: Constants.enlargedPipHeightIpadPortrait
