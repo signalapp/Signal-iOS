@@ -22,4 +22,14 @@ public protocol AttachmentContentValidator {
         fileUrl: URL,
         mimeType: String
     ) throws -> Attachment.ContentType
+
+    /// Validate a fullsize attachment's encrypted file contents, based on the provided mimetype.
+    /// Returns the validated content type, or `file` if validation fails.
+    /// Errors are thrown if file I/O or cryptography operations fail.
+    func validateContents(
+        encryptedFileAt fileUrl: URL,
+        encryptionKey: Data,
+        plaintextLength: UInt32,
+        mimeType: String
+    ) throws -> Attachment.ContentType
 }

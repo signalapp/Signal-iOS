@@ -24,6 +24,15 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
     ) throws -> Attachment.ContentType {
         return .file
     }
+
+    open func validateContents(
+        encryptedFileAt fileUrl: URL,
+        encryptionKey: Data,
+        plaintextLength: UInt32,
+        mimeType: String
+    ) throws -> Attachment.ContentType {
+        return .file
+    }
 }
 
 #endif
