@@ -87,11 +87,17 @@ extension CGDataProvider {
         plaintextLength: UInt32,
         block: (CGDataProvider) throws -> T
     ) throws -> T {
-        let fileHandle = EncryptedFileHandleWrapper(try Cryptography.encryptedAttachmentFileHandle(
+        let fileHandle = try Cryptography.encryptedAttachmentFileHandle(
             at: fileURL,
             plaintextLength: plaintextLength,
             encryptionKey: encryptionKey
-        ))
+        )
+        let dataProvider = try CGDataProvider.from(fileHandle: fileHandle)
+        return try block(dataProvider)
+    }
+
+    public static func from(fileHandle: EncryptedFileHandle) throws -> CGDataProvider {
+        let fileHandle = EncryptedFileHandleWrapper(fileHandle)
 
         var callbacks = CGDataProviderDirectCallbacks(
             version: 0,
@@ -135,12 +141,12 @@ extension CGDataProvider {
 
         guard let dataProvider = CGDataProvider(
             directInfo: &unmanagedFileHandle,
-            size: Int64(plaintextLength),
+            size: Int64(fileHandle.fileHandle.plaintextLength),
             callbacks: &callbacks
         ) else {
             throw OWSAssertionError("Failed to create data provider")
         }
-        return try block(dataProvider)
+        return dataProvider
     }
 }
 

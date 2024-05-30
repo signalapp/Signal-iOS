@@ -780,6 +780,8 @@
 		661BFE042C07C68F0065435B /* AttachmentContentValidatorMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661BFE032C07C68F0065435B /* AttachmentContentValidatorMock.swift */; };
 		661BFE0A2C07FB950065435B /* ImageMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661BFE092C07FB950065435B /* ImageMetadata.swift */; };
 		661BFE0C2C07FC880065435B /* OWSImageSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661BFE0B2C07FC880065435B /* OWSImageSource.swift */; };
+		661BFE0E2C0806150065435B /* OWSImageSource+FileHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661BFE0D2C0806150065435B /* OWSImageSource+FileHandle.swift */; };
+		661BFE102C0808CA0065435B /* OWSImageSource+EncryptedFileHandle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661BFE0F2C0808CA0065435B /* OWSImageSource+EncryptedFileHandle.swift */; };
 		662590BB2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590BA2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift */; };
 		662590BF2B56ECA8001FDCDD /* MessageBackupGroupUpdateMessageArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590BE2B56ECA8001FDCDD /* MessageBackupGroupUpdateMessageArchiver.swift */; };
 		662590CB2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590CA2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift */; };
@@ -3681,6 +3683,8 @@
 		661BFE032C07C68F0065435B /* AttachmentContentValidatorMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentContentValidatorMock.swift; sourceTree = "<group>"; };
 		661BFE092C07FB950065435B /* ImageMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageMetadata.swift; sourceTree = "<group>"; };
 		661BFE0B2C07FC880065435B /* OWSImageSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSImageSource.swift; sourceTree = "<group>"; };
+		661BFE0D2C0806150065435B /* OWSImageSource+FileHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSImageSource+FileHandle.swift"; sourceTree = "<group>"; };
+		661BFE0F2C0808CA0065435B /* OWSImageSource+EncryptedFileHandle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSImageSource+EncryptedFileHandle.swift"; sourceTree = "<group>"; };
 		662590BA2B50922D001FDCDD /* GroupUpdateInfoMessageInserterBackupHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupUpdateInfoMessageInserterBackupHelper.swift; sourceTree = "<group>"; };
 		662590BE2B56ECA8001FDCDD /* MessageBackupGroupUpdateMessageArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupGroupUpdateMessageArchiver.swift; sourceTree = "<group>"; };
 		662590CA2B5994D2001FDCDD /* MessageBackupGroupUpdateProtoToSwiftConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupGroupUpdateProtoToSwiftConverter.swift; sourceTree = "<group>"; };
@@ -7319,6 +7323,8 @@
 			children = (
 				661BFE092C07FB950065435B /* ImageMetadata.swift */,
 				F9C5CB37289453B200548EEE /* NSData+Image.swift */,
+				661BFE0F2C0808CA0065435B /* OWSImageSource+EncryptedFileHandle.swift */,
+				661BFE0D2C0806150065435B /* OWSImageSource+FileHandle.swift */,
 				661BFE0B2C07FC880065435B /* OWSImageSource.swift */,
 				F908AA7928CB89CC00472E68 /* PngChunker.swift */,
 			);
@@ -13945,6 +13951,8 @@
 				F9C5CDC5289453B400548EEE /* OWSHttpHeaders.swift in Sources */,
 				F9C5CE69289453B400548EEE /* OWSHTTPSecurityPolicy.m in Sources */,
 				F9C5CC2C289453B300548EEE /* OWSIdentityManager.swift in Sources */,
+				661BFE102C0808CA0065435B /* OWSImageSource+EncryptedFileHandle.swift in Sources */,
+				661BFE0E2C0806150065435B /* OWSImageSource+FileHandle.swift in Sources */,
 				661BFE0C2C07FC880065435B /* OWSImageSource.swift in Sources */,
 				6605D4FB2A85ACEA004DC345 /* OWSIncomingPaymentMessage+SDS.swift in Sources */,
 				6605D4F82A85A504004DC345 /* OWSIncomingPaymentMessage.m in Sources */,
