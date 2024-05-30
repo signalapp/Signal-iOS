@@ -228,8 +228,12 @@ public class AppSetup {
         let aciProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .aci)
         let pniProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .pni)
 
+        let attachmentContentValidator = AttachmentContentValidatorImpl()
         let attachmentStore = AttachmentStoreImpl()
-        let attachmentManager = AttachmentManagerImpl(attachmentStore: attachmentStore)
+        let attachmentManager = AttachmentManagerImpl(
+            attachmentStore: attachmentStore,
+            contentValidator: attachmentContentValidator
+        )
 
         let mediaBandwidthPreferenceStore = MediaBandwidthPreferenceStoreImpl(
             keyValueStoreFactory: keyValueStoreFactory,

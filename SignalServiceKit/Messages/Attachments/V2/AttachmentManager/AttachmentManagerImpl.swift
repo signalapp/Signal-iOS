@@ -8,9 +8,14 @@ import Foundation
 public class AttachmentManagerImpl: AttachmentManager {
 
     private let attachmentStore: AttachmentStore
+    private let contentValidator: AttachmentContentValidator
 
-    public init(attachmentStore: AttachmentStore) {
+    public init(
+        attachmentStore: AttachmentStore,
+        contentValidator: AttachmentContentValidator
+    ) {
         self.attachmentStore = attachmentStore
+        self.contentValidator = contentValidator
     }
 
     // MARK: - Public
@@ -240,19 +245,29 @@ public class AttachmentManagerImpl: AttachmentManager {
             throw OWSAssertionError("Invalid mime type!")
         }
 
+        let validatedContentType: Attachment.ContentType
         switch dataSource.dataSource {
         case .dataSource(let fileDataSource, _):
             guard fileDataSource.dataLength > 0 else {
                 throw OWSAssertionError("Invalid file size for data.")
             }
+            guard let fileUrl = fileDataSource.dataUrl else {
+                throw OWSAssertionError("Missing file!")
+            }
+            validatedContentType = try contentValidator.validateContents(fileUrl: fileUrl, mimeType: dataSource.mimeType)
         case .data(let data):
             guard data.count > 0 else {
                 throw OWSAssertionError("Invalid size for data.")
             }
+            validatedContentType = try contentValidator.validateContents(data: data, mimeType: dataSource.mimeType)
         case .existingAttachment(let id):
             guard let existingAttachment = attachmentStore.fetch(id: id, tx: tx) else {
                 throw OWSAssertionError("Missing existing attachment!")
             }
+            guard let streamInfo = existingAttachment.streamInfo else {
+                throw OWSAssertionError("Copying from non-stream attachment!")
+            }
+            validatedContentType = streamInfo.contentType
         }
 
         let attachment: Attachment = {
