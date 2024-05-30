@@ -24,7 +24,7 @@ class SignalAttachmentTest: SignalBaseTest {
     }
 
     private func pngChunks(data: Data) throws -> [PngChunker.Chunk] {
-        let chunker = try PngChunker(data: data)
+        let chunker = try PngChunker(source: data)
         var result = [PngChunker.Chunk]()
         while let chunk = try chunker.next() {
             result.append(chunk)

@@ -38,23 +38,24 @@ public class PngChunker {
     /// = 67 bytes.
     private static let smallestPossiblePngSize = 67
 
-    private let pngData: Data
+    private let pngSource: OWSImageSource
 
     /// The current index we're looking at. If nil, we're done looking at the data.
     private var cursor: Int?
 
     /// Initialize a PNG chunker.
-    /// - Parameter data: All the data for a PNG.
+    /// - Parameter imageSource: Source for a PNG.
     /// - Throws: `PngChunkerError.tooSmall` if the data is too small to possibly be a PNG.
     /// - Throws: `PngChunkerError.fileDoesNotStartWithPngSignature` if the first 8 bytes aren't the PNG signature.
-    public init(data: Data) throws {
-        guard data.count >= Self.smallestPossiblePngSize else {
+    public init(source: OWSImageSource) throws {
+        guard source.byteLength >= Self.smallestPossiblePngSize else {
             throw PngChunkerError.tooSmall
         }
-        guard data.starts(with: Self.pngSignature) else {
+        let prefix = try? source.readData(byteOffset: 0, byteLength: Self.pngSignature.count)
+        guard prefix == Self.pngSignature else {
             throw PngChunkerError.fileDoesNotStartWithPngSignature
         }
-        pngData = data
+        pngSource = source
         cursor = Self.pngSignature.count
     }
 
@@ -64,23 +65,23 @@ public class PngChunker {
     /// - Throws: `PngChunkerError.invalidChunkChecksum` if a chunk's checksum is invalid.
     /// - Throws: `PngChunkerError.endedUnexpectedly` if a chunk's length is longer than the remaining data available, or if the first chunk's length is too short.
     public func next() throws -> Chunk? {
-        guard var cursor = cursor, cursor < pngData.count else {
+        guard var cursor = cursor, cursor < pngSource.byteLength else {
             return nil
         }
 
         // Checks that there's enough space for the length (4 bytes) and the type (4 bytes).
-        guard cursor + 8 <= pngData.count else {
+        guard cursor + 8 <= pngSource.byteLength else {
             self.cursor = nil
             throw PngChunkerError.endedUnexpectedly
         }
 
-        let lengthBytes = pngData[cursor..<(cursor + 4)]
+        let lengthBytes = try pngSource.readData(byteOffset: cursor, byteLength: 4)
         let length = try lengthBytes.asPngUInt32()
         cursor += 4
 
         var expectedCrc = CRC32()
 
-        let type = pngData[cursor..<(cursor + 4)]
+        let type = try pngSource.readData(byteOffset: cursor, byteLength: 4)
         guard type.isValidPngType else {
             self.cursor = nil
             throw PngChunkerError.invalidChunkType
@@ -90,15 +91,15 @@ public class PngChunker {
 
         // Checks that there's enough space for the data (N bytes) and the CRC (4 bytes).
         let lengthAsInt = Int(length)
-        guard cursor + lengthAsInt + 4 <= pngData.count else {
+        guard cursor + lengthAsInt + 4 <= pngSource.byteLength else {
             self.cursor = nil
             throw PngChunkerError.endedUnexpectedly
         }
-        let data = pngData[cursor..<(cursor + lengthAsInt)]
+        let data = try pngSource.readData(byteOffset: cursor, byteLength: lengthAsInt)
         expectedCrc = expectedCrc.update(with: data)
         cursor += lengthAsInt
 
-        let crcBytes = pngData[cursor..<(cursor + 4)]
+        let crcBytes = try pngSource.readData(byteOffset: cursor, byteLength: 4)
         let actualCrc = try crcBytes.asPngUInt32()
         cursor += 4
 

@@ -1037,7 +1037,7 @@ public class SignalAttachment: NSObject {
     /// - Throws: `SignalAttachmentError.couldNotRemoveMetadata` if the PNG parser fails.
     private static func removeMetadata(fromPng pngData: Data) throws -> Data {
         do {
-            let chunker = try PngChunker(data: pngData)
+            let chunker = try PngChunker(source: pngData)
             var result = PngChunker.pngSignature
             while let chunk = try chunker.next() {
                 if pngChunkTypesToKeep.contains(chunk.type) {

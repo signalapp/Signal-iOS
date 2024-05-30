@@ -1,5 +1,5 @@
 //
-// Copyright 2020 Signal Messenger, LLC
+// Copyright 2024 Signal Messenger, LLC
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
@@ -8,205 +8,36 @@ import Foundation
 import libwebp
 import YYImage
 
-enum ImageFormat: CustomStringConvertible {
-    case unknown
-    case png
-    case gif
-    case tiff
-    case jpeg
-    case bmp
-    case webp
-    case heic
-    case heif
+public protocol OWSImageSource {
 
-    var description: String {
-        switch self {
-        case .unknown:
-            "ImageFormat_Unknown"
-        case .png:
-            "ImageFormat_Png"
-        case .gif:
-            "ImageFormat_Gif"
-        case .tiff:
-            "ImageFormat_Tiff"
-        case .jpeg:
-            "ImageFormat_Jpeg"
-        case .bmp:
-            "ImageFormat_Bmp"
-        case .webp:
-            "ImageFormat_Webp"
-        case .heic:
-            "ImageFormat_Heic"
-        case .heif:
-            "ImageFormat_Heif"
-        }
+    var byteLength: Int { get }
+
+    func readData(byteOffset: Int, byteLength: Int) throws -> Data
+
+    func cgImageSource() throws -> CGImageSource?
+
+    /// Potentially expensive, should be avoided if possible.
+    func readIntoMemory() throws -> Data
+}
+
+extension Data: OWSImageSource {
+
+    public var byteLength: Int { count }
+
+    public func readData(byteOffset: Int, byteLength: Int) throws -> Data {
+        return self[byteOffset..<(byteOffset + byteLength)]
     }
 
-    fileprivate var mimeType: MimeType? {
-        switch self {
-        case .png:
-            return MimeType.imagePng
-        case .gif:
-            return MimeType.imageGif
-        case .tiff:
-            return MimeType.imageTiff
-        case .jpeg:
-            return MimeType.imageJpeg
-        case .bmp:
-            return MimeType.imageBmp
-        case .webp:
-            return MimeType.imageWebp
-        case .heic:
-            return MimeType.imageHeic
-        case .heif:
-            return MimeType.imageHeif
-        case .unknown:
-            return nil
-        }
+    public func cgImageSource() throws -> CGImageSource? {
+        return CGImageSourceCreateWithData(self as CFData, nil)
     }
 
-    fileprivate func isValid(data: Data) -> Bool {
-        switch self {
-        case .unknown:
-            return false
-        case .png, .tiff, .jpeg, .bmp, .webp, .heic, .heif:
-            return true
-        case .gif:
-            return data.ows_hasValidGifSize
-        }
-    }
-
-    fileprivate func isValid(mimeType: String?) -> Bool {
-        owsAssertDebug(!(mimeType?.isEmpty ?? true))
-
-        switch self {
-        case .unknown:
-            return false
-        case .png:
-            guard let mimeType else { return true }
-            return (mimeType.caseInsensitiveCompare(MimeType.imagePng.rawValue) == .orderedSame ||
-                    mimeType.caseInsensitiveCompare(MimeType.imageApng.rawValue) == .orderedSame ||
-                    mimeType.caseInsensitiveCompare(MimeType.imageVndMozillaApng.rawValue) == .orderedSame)
-        case .gif:
-            guard let mimeType else { return true }
-            return mimeType.caseInsensitiveCompare(MimeType.imageGif.rawValue) == .orderedSame
-        case .tiff:
-            guard let mimeType else { return true }
-            return (mimeType.caseInsensitiveCompare(MimeType.imageTiff.rawValue) == .orderedSame ||
-                    mimeType.caseInsensitiveCompare(MimeType.imageXTiff.rawValue) == .orderedSame)
-        case .jpeg:
-            guard let mimeType else { return true }
-            return mimeType.caseInsensitiveCompare(MimeType.imageJpeg.rawValue) == .orderedSame
-        case .bmp:
-            guard let mimeType else { return true }
-            return (mimeType.caseInsensitiveCompare(MimeType.imageBmp.rawValue) == .orderedSame ||
-                    mimeType.caseInsensitiveCompare(MimeType.imageXWindowsBmp.rawValue) == .orderedSame)
-        case .webp:
-            guard let mimeType else { return true }
-            return mimeType.caseInsensitiveCompare(MimeType.imageWebp.rawValue) == .orderedSame
-        case .heic:
-            guard let mimeType else { return true }
-            return mimeType.caseInsensitiveCompare(MimeType.imageHeic.rawValue) == .orderedSame
-        case .heif:
-            guard let mimeType else { return true }
-            return mimeType.caseInsensitiveCompare(MimeType.imageHeif.rawValue) == .orderedSame
-        }
+    public func readIntoMemory() throws -> Data {
+        return self
     }
 }
 
-// TODO: Convert to struct once all users of this type are swift.
-@objc
-public class ImageMetadata: NSObject {
-    @objc
-    public let isValid: Bool
-    let imageFormat: ImageFormat
-    @objc
-    public let pixelSize: CGSize
-    let hasAlpha: Bool
-    let isAnimated: Bool
-
-    fileprivate init(isValid: Bool, imageFormat: ImageFormat, pixelSize: CGSize, hasAlpha: Bool, isAnimated: Bool) {
-        self.isValid = isValid
-        self.imageFormat = imageFormat
-        self.pixelSize = pixelSize
-        self.hasAlpha = hasAlpha
-        self.isAnimated = isAnimated
-    }
-
-    fileprivate static func invalid() -> ImageMetadata {
-        .init(isValid: false, imageFormat: .unknown, pixelSize: .zero, hasAlpha: false, isAnimated: false)
-    }
-
-    public var mimeType: String? {
-        imageFormat.mimeType?.rawValue
-    }
-    public var fileExtension: String? {
-        guard let mimeType else {
-            return nil
-        }
-        return MimeTypeUtil.fileExtensionForMimeType(mimeType)
-    }
-}
-
-extension NSData {
-    @objc
-    @available(swift, obsoleted: 1)
-    public static func imageSize(forFilePath filePath: String, mimeType: String?) -> CGSize {
-        Data.imageSize(forFilePath: filePath, mimeType: mimeType)
-    }
-
-    @objc
-    @available(swift, obsoleted: 1)
-    public func imageMetadata(withPath filePath: String?, mimeType: String?) -> ImageMetadata {
-        (self as Data).imageMetadata(withPath: filePath, mimeType: mimeType)
-    }
-
-    @objc
-    @available(swift, obsoleted: 1)
-    public func imageMetadata(withPath filePath: String?, mimeType: String?, ignoreFileSize: Bool) -> ImageMetadata {
-        (self as Data).imageMetadata(withPath: filePath, mimeType: mimeType, ignoreFileSize: ignoreFileSize)
-    }
-
-    @objc
-    @available(swift, obsoleted: 1)
-    public static func imageMetadata(withPath filePath: String, mimeType: String?, ignoreFileSize: Bool) -> ImageMetadata {
-        Data.imageMetadata(withPath: filePath, mimeType: mimeType, ignoreFileSize: ignoreFileSize)
-    }
-
-    @objc
-    @available(swift, obsoleted: 1)
-    public var ows_isValidImage: Bool {
-        (self as Data).ows_isValidImage
-    }
-
-    @objc(ows_isValidImageAtUrl:mimeType:)
-    @available(swift, obsoleted: 1)
-    public static func ows_isValidImage(at fileUrl: URL, mimeType: String?) -> Bool {
-        Data.ows_isValidImage(at: fileUrl, mimeType: mimeType)
-    }
-
-    @objc
-    @available(swift, obsoleted: 1)
-    public static func ows_isValidImage(atPath filePath: String, mimeType: String?) -> Bool {
-        Data.ows_isValidImage(atPath: filePath, mimeType: mimeType)
-    }
-
-    @objc
-    @available(swift, obsoleted: 1)
-    public var ows_hasStickerLikeProperties: Bool {
-        (self as Data).ows_hasStickerLikeProperties()
-    }
-
-    @objc
-    @available(swift, obsoleted: 1)
-    public static func ows_hasStickerLikeProperties(withPath filePath: String) -> Bool {
-        Data.ows_hasStickerLikeProperties(withPath: filePath)
-    }
-}
-
- // MARK: -
-
-extension Data {
+extension OWSImageSource {
     public var ows_isValidImage: Bool {
         ows_isValidImage()
     }
@@ -260,7 +91,7 @@ extension Data {
     // This behavior was ported over from objective-c and ends up effectively just checking for GIF headers and then that the size isn't zero.
     // It appears to be a somewhat broken attempt to workaround the above CVE which was fixed so long ago we don't ship to iOS builds with the
     // problem anymore.
-    fileprivate var ows_hasValidGifSize: Bool {
+    internal var ows_hasValidGifSize: Bool {
         let signatureLength = 3
         let versionLength = 3
         let widthLength = 2
@@ -268,16 +99,20 @@ extension Data {
         let prefixLength = signatureLength + versionLength
         let bufferLength = signatureLength + versionLength + widthLength + heightLength
 
-        guard count >= bufferLength else {
+        guard byteLength >= bufferLength else {
             return false
         }
 
         let gif87aPrefix = Data([0x47, 0x49, 0x46, 0x38, 0x37, 0x61])
         let gif89aPrefix = Data([0x47, 0x49, 0x46, 0x38, 0x39, 0x61])
-        guard prefix(prefixLength) == gif87aPrefix || prefix(prefixLength) == gif89aPrefix else {
+        let prefix = try? self.readData(byteOffset: 0, byteLength: prefixLength)
+        guard prefix == gif87aPrefix || prefix == gif89aPrefix else {
             return false
         }
-        return dropFirst(prefixLength).prefix(4) != Data(count: 4)
+        guard let subRange = try? self.readData(byteOffset: prefixLength, byteLength: 4) else {
+            return false
+        }
+        return subRange != Data(count: 4)
     }
 
     fileprivate func ows_guessHighEfficiencyImageFormat() -> ImageFormat {
@@ -292,7 +127,7 @@ extension Data {
         // from being considered valid.
         let heifSupportedBrandLength = 5
         let totalHeaderLength = heifBrandStartsAt - heifHeaderStartsAt + heifSupportedBrandLength
-        guard count >= heifBrandStartsAt + heifSupportedBrandLength else {
+        guard byteLength >= heifBrandStartsAt + heifSupportedBrandLength else {
             return .unknown
         }
 
@@ -302,7 +137,7 @@ extension Data {
         let heifBrandHeaderHeifStream = Data("ftypmsf1\0".utf8)
 
         // Pull the string from the header and compare it with the supported formats
-        let header = dropFirst(heifHeaderStartsAt).prefix(totalHeaderLength)
+        let header = try? readData(byteOffset: heifBrandStartsAt, byteLength: totalHeaderLength)
 
         if header == heifBrandHeaderHeic {
             return .heic
@@ -314,11 +149,11 @@ extension Data {
     }
 
     fileprivate func ows_guessImageFormat() -> ImageFormat {
-        guard count >= 2 else {
+        guard byteLength >= 2 else {
             return .unknown
         }
 
-        switch prefix(2) {
+        switch try? readData(byteOffset: 0, byteLength: 2) {
         case Data([0x47, 0x49]):
             return .gif
         case Data([0x89, 0x50]):
@@ -392,7 +227,7 @@ extension Data {
         let idat = "IDAT".data(using: .ascii)
 
         do {
-            let chunker = try PngChunker(data: self as Data)
+            let chunker = try PngChunker(source: self)
             while let chunk = try chunker.next() {
                 if chunk.type == actl {
                     return NSNumber(value: true)
@@ -475,28 +310,6 @@ extension Data {
         }
     }
 
-    public enum ImageMetadataResult {
-        /// Source data exceeded size limit for all attachments;
-        /// as a precaution no validation was performed.
-        case genericSizeLimitExceeded
-
-        /// Exceeded the file size limit for the inferred type of image.
-        /// Smaller than the generic size limit.
-        case imageTypeSizeLimitExceeded
-
-        case invalid
-
-        case valid(ImageMetadata)
-
-        /// A mime type was provided, and it did not match the contents.
-        /// Metadata is still valid and the error can be safely ignored.
-        case mimeTypeMismatch(ImageMetadata)
-
-        /// A file extension was provided, and it did not match the contents.
-        /// Metadata is still valid and the error can be safely ignored.
-        case fileExtensionMismatch(ImageMetadata)
-    }
-
     /// Load image metadata about the current Data object.
     /// Returns nil if metadata could not be determined.
     public func imageMetadata(
@@ -515,12 +328,12 @@ extension Data {
         fileExtensionForValidation: String?,
         ignorePerTypeFileSizeLimits: Bool
     ) -> ImageMetadataResult {
-        guard count < OWSMediaUtils.kMaxFileSizeGeneric else {
+        guard byteLength < OWSMediaUtils.kMaxFileSizeGeneric else {
             return .genericSizeLimitExceeded
         }
 
         let imageFormat = ows_guessImageFormat()
-        guard imageFormat.isValid(data: self) else {
+        guard imageFormat.isValid(source: self) else {
             Logger.warn("Image does not have valid format.")
             return .invalid
         }
@@ -552,16 +365,16 @@ extension Data {
             isAnimated = false
         }
 
-        guard imageFormat.isValid(data: self) else {
+        guard imageFormat.isValid(source: self) else {
             Logger.warn("Image does not have valid format.")
             return .invalid
         }
 
         if !ignorePerTypeFileSizeLimits {
-            if isAnimated, count > OWSMediaUtils.kMaxFileSizeAnimatedImage {
+            if isAnimated, byteLength > OWSMediaUtils.kMaxFileSizeAnimatedImage {
                 Logger.warn("Oversize image.")
                 return .imageTypeSizeLimitExceeded
-            } else if count > OWSMediaUtils.kMaxFileSizeImage {
+            } else if byteLength > OWSMediaUtils.kMaxFileSizeImage {
                 Logger.warn("Oversize image.")
                 return .imageTypeSizeLimitExceeded
             }
@@ -601,7 +414,7 @@ extension Data {
             return .init(isValid: true, imageFormat: imageFormat, pixelSize: imageSize, hasAlpha: true, isAnimated: isAnimated)
         }
 
-        guard let imageSource = CGImageSourceCreateWithData(self as CFData, nil) else {
+        guard let imageSource = try? self.cgImageSource() else {
             Logger.warn("Could not build imageSource.")
             return .invalid()
         }
@@ -670,7 +483,10 @@ extension Data {
             return nil
         }
 
-        guard let cgImage = YYCGImageCreateWithWebPData(self as CFData, false, false, false, false) else {
+        guard let data = try? self.readIntoMemory() else {
+            return nil
+        }
+        guard let cgImage = YYCGImageCreateWithWebPData(data as CFData, false, false, false, false) else {
             owsFailDebug("Could not generate still for webp image.")
             return nil
         }
@@ -683,13 +499,6 @@ extension Data {
         return "webp" == fileExtension
     }
 
-    fileprivate struct WebpMetadata {
-        let isValid: Bool
-        let canvasWidth: UInt32
-        let canvasHeight: UInt32
-        let frameCount: UInt32
-    }
-
     fileprivate var sizeForWebpData: CGSize {
         let webpMetadata = metadataForWebp
         guard webpMetadata.isValid else {
@@ -699,7 +508,10 @@ extension Data {
     }
 
     fileprivate var metadataForWebp: WebpMetadata {
-        withUnsafeBytes {
+        guard let data = try? self.readIntoMemory() else {
+            return WebpMetadata(isValid: false, canvasWidth: 0, canvasHeight: 0, frameCount: 0)
+        }
+        return data.withUnsafeBytes {
             $0.withMemoryRebound(to: UInt8.self) { buffer in
                 var webPData = WebPData(bytes: buffer.baseAddress, size: buffer.count)
                 guard let demuxer = WebPDemux(&webPData) else {
