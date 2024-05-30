@@ -1082,18 +1082,25 @@ public final class MessageReceiver: Dependencies {
             try quotedMessageBuilder?.finalize(
                 owner: .quotedReplyAttachment(.init(
                     messageRowId: message.sqliteRowId!,
-                    renderingFlag: quotedMessageBuilder?.info.renderingFlag ?? .default
+                    receivedAtTimestamp: message.receivedAtTimestamp,
+                    threadRowId: thread.sqliteRowId!
                 )),
                 tx: tx.asV2Write
             )
             try linkPreviewBuilder?.finalize(
-                owner: .messageLinkPreview(messageRowId: message.sqliteRowId!),
+                owner: .messageLinkPreview(.init(
+                    messageRowId: message.sqliteRowId!,
+                    receivedAtTimestamp: message.receivedAtTimestamp,
+                    threadRowId: thread.sqliteRowId!
+                )),
                 tx: tx.asV2Write
             )
             try messageStickerBuilder.map {
                 try $0.finalize(
                     owner: .messageSticker(.init(
                         messageRowId: message.sqliteRowId!,
+                        receivedAtTimestamp: message.receivedAtTimestamp,
+                        threadRowId: thread.sqliteRowId!,
                         stickerPackId: $0.info.packId,
                         stickerId: $0.info.stickerId
                     )),
@@ -1101,7 +1108,11 @@ public final class MessageReceiver: Dependencies {
                 )
             }
             try contactBuilder?.finalize(
-                owner: .messageContactAvatar(messageRowId: message.sqliteRowId!),
+                owner: .messageContactAvatar(.init(
+                    messageRowId: message.sqliteRowId!,
+                    receivedAtTimestamp: message.receivedAtTimestamp,
+                    threadRowId: thread.sqliteRowId!
+                )),
                 tx: tx.asV2Write
             )
         } catch {

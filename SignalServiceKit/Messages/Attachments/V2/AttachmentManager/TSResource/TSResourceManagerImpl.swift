@@ -10,16 +10,19 @@ public class TSResourceManagerImpl: TSResourceManager {
 
     private let attachmentManager: AttachmentManagerImpl
     private let attachmentStore: AttachmentStore
+    private let threadStore: ThreadStore
     private let tsAttachmentManager: TSAttachmentManager
     private let tsResourceStore: TSResourceStore
 
     public init(
         attachmentManager: AttachmentManagerImpl,
         attachmentStore: AttachmentStore,
+        threadStore: ThreadStore,
         tsResourceStore: TSResourceStore
     ) {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
+        self.threadStore = threadStore
         self.tsAttachmentManager = TSAttachmentManager()
         self.tsResourceStore = tsResourceStore
     }
@@ -45,10 +48,18 @@ public class TSResourceManagerImpl: TSResourceManager {
                 owsFailDebug("Adding attachments to an uninserted message!")
                 return
             }
+            guard let threadRowId = threadStore.fetchThread(uniqueId: message.uniqueThreadId, tx: tx)?.sqliteRowId else {
+                owsFailDebug("Adding attachments to an message without a thread")
+                return
+            }
             try attachmentManager.createAttachmentPointer(
                 from: .init(
                     proto: proto,
-                    owner: .messageOversizeText(messageRowId: messageRowId)
+                    owner: .messageOversizeText(.init(
+                        messageRowId: messageRowId,
+                        receivedAtTimestamp: message.receivedAtTimestamp,
+                        threadRowId: threadRowId
+                    ))
                 ),
                 tx: tx
             )
@@ -71,13 +82,18 @@ public class TSResourceManagerImpl: TSResourceManager {
                 owsFailDebug("Adding attachments to an uninserted message!")
                 return
             }
+            guard let threadRowId = threadStore.fetchThread(uniqueId: message.uniqueThreadId, tx: tx)?.sqliteRowId else {
+                owsFailDebug("Adding attachments to an message without a thread")
+                return
+            }
             try attachmentManager.createAttachmentPointers(
                 from: protos.map { proto in
                     return .init(
                         proto: proto,
                         owner: .messageBodyAttachment(.init(
                             messageRowId: messageRowId,
-                            renderingFlag: .fromProto(proto)
+                            receivedAtTimestamp: message.receivedAtTimestamp,
+                            threadRowId: threadRowId
                         ))
                     )
                 },
@@ -115,10 +131,18 @@ public class TSResourceManagerImpl: TSResourceManager {
                 owsFailDebug("Adding attachments to an uninserted message!")
                 return
             }
+            guard let threadRowId = threadStore.fetchThread(uniqueId: message.uniqueThreadId, tx: tx)?.sqliteRowId else {
+                owsFailDebug("Adding attachments to an message without a thread")
+                return
+            }
             try attachmentManager.createAttachmentStream(
                 consuming: .init(
                     dataSource: attachmentDataSource,
-                    owner: .messageOversizeText(messageRowId: messageRowId)
+                    owner: .messageOversizeText(.init(
+                        messageRowId: messageRowId,
+                        receivedAtTimestamp: message.receivedAtTimestamp,
+                        threadRowId: threadRowId
+                    ))
                 ),
                 tx: tx
             )
@@ -145,13 +169,18 @@ public class TSResourceManagerImpl: TSResourceManager {
                 owsFailDebug("Adding attachments to an uninserted message!")
                 return
             }
+            guard let threadRowId = threadStore.fetchThread(uniqueId: message.uniqueThreadId, tx: tx)?.sqliteRowId else {
+                owsFailDebug("Adding attachments to an message without a thread")
+                return
+            }
             try attachmentManager.createAttachmentStreams(
                 consuming: v2DataSources.map { dataSource in
                     return .init(
                         dataSource: dataSource.0,
                         owner: .messageBodyAttachment(.init(
                             messageRowId: messageRowId,
-                            renderingFlag: dataSource.1
+                            receivedAtTimestamp: message.receivedAtTimestamp,
+                            threadRowId: threadRowId
                         ))
                     )
                 },

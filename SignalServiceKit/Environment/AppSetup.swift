@@ -241,6 +241,7 @@ public class AppSetup {
         let tsResourceManager = TSResourceManagerImpl(
             attachmentManager: attachmentManager,
             attachmentStore: attachmentStore,
+            threadStore: threadStore,
             tsResourceStore: tsResourceStore
         )
         let videoDurationHelper = VideoDurationHelperImpl()

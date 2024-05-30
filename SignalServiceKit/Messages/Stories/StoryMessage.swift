@@ -188,8 +188,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         case .file, .foreignReferenceAttachment:
             ownerId = .storyMessageMedia(.init(
                 storyMessageRowId: id,
-                caption: mediaCaption,
-                shouldLoop: shouldLoop
+                caption: mediaCaption
             ))
         case .text:
             ownerId = .storyMessageLinkPreview(storyMessageRowId: id)
@@ -314,8 +313,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         try mediaAttachmentBuilder?.finalize(
             owner: .storyMessageMedia(.init(
                 storyMessageRowId: record.id!,
-                caption: caption,
-                shouldLoop: shouldLoop
+                caption: caption
             )),
             tx: transaction.asV2Write
         )
@@ -363,7 +361,6 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         let caption = storyMessage.fileAttachment?.caption.map { caption in
             return StyleOnlyMessageBody(text: caption, protos: storyMessage.bodyRanges)
         }
-        let shouldLoop: Bool
 
         let attachment: StoryMessageAttachment
         let mediaAttachmentBuilder: OwnedAttachmentBuilder<TSResourceRetrievalInfo>?
@@ -385,7 +382,6 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             }
             mediaAttachmentBuilder = attachmentBuilder
             linkPreviewBuilder = nil
-            shouldLoop = fileAttachment.shouldLoop
         } else if let textAttachmentProto = storyMessage.textAttachment {
             linkPreviewBuilder = textAttachmentProto.preview.flatMap {
                 do {
@@ -405,7 +401,6 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
                 linkPreview: linkPreviewBuilder?.info,
                 transaction: transaction
             ))
-            shouldLoop = false
         } else {
             throw OWSAssertionError("Missing attachment for StoryMessage.")
         }
@@ -447,8 +442,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         try mediaAttachmentBuilder?.finalize(
             owner: .storyMessageMedia(.init(
                 storyMessageRowId: record.id!,
-                caption: caption,
-                shouldLoop: shouldLoop
+                caption: caption
             )),
             tx: transaction.asV2Write
         )
@@ -514,8 +508,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         try attachmentBuilder.finalize(
             owner: .storyMessageMedia(.init(
                 storyMessageRowId: record.id!,
-                caption: caption,
-                shouldLoop: shouldLoop
+                caption: caption
             )),
             tx: transaction.asV2Write
         )

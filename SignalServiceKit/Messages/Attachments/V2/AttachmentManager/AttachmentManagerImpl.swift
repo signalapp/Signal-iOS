@@ -119,10 +119,10 @@ public class AttachmentManagerImpl: AttachmentManager {
             let sourceOrder: Int?
             var ownerForInput = owner(input)
             switch ownerForInput {
-            case .messageBodyAttachment(let bodyOwnerBuilder):
+            case .messageBodyAttachment(let metadata):
                 // Convert text mime type attachments in the first spot to oversize text.
                 if mimeType(input) == MimeType.textXSignalPlain.rawValue {
-                    ownerForInput = .messageOversizeText(messageRowId: bodyOwnerBuilder.messageRowId)
+                    ownerForInput = .messageOversizeText(metadata)
                     indexOffset = -1
                 }
                 sourceOrder = i + indexOffset

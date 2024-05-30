@@ -83,6 +83,7 @@ public class EditManagerTSResourcesImpl: EditManagerTSResources {
                 latestRevisionRowId: latestRevisionRowId,
                 priorRevision: priorRevision,
                 priorRevisionRowId: priorRevisionRowId,
+                threadRowId: threadRowId,
                 newLinkPreview: newLinkPreview,
                 tx: tx
             )
@@ -133,6 +134,7 @@ public class EditManagerTSResourcesImpl: EditManagerTSResources {
         latestRevisionRowId: Int64,
         priorRevision: TSMessage,
         priorRevisionRowId: Int64,
+        threadRowId: Int64,
         newLinkPreview: MessageEdits.LinkPreviewSource?,
         tx: DBWriteTransaction
     ) throws {
@@ -157,7 +159,11 @@ public class EditManagerTSResourcesImpl: EditManagerTSResources {
             )
             tsMessageStore.update(latestRevision, with: builder.info, tx: tx)
             try builder.finalize(
-                owner: .messageLinkPreview(messageRowId: latestRevisionRowId),
+                owner: .messageLinkPreview(.init(
+                    messageRowId: latestRevisionRowId,
+                    receivedAtTimestamp: latestRevision.receivedAtTimestamp,
+                    threadRowId: threadRowId
+                )),
                 tx: tx
             )
         case .proto(let preview, let dataMessage):
@@ -169,7 +175,11 @@ public class EditManagerTSResourcesImpl: EditManagerTSResources {
             )
             tsMessageStore.update(latestRevision, with: linkPreviewBuilder.info, tx: tx)
             try linkPreviewBuilder.finalize(
-                owner: .messageLinkPreview(messageRowId: latestRevisionRowId),
+                owner: .messageLinkPreview(.init(
+                    messageRowId: latestRevisionRowId,
+                    receivedAtTimestamp: latestRevision.receivedAtTimestamp,
+                    threadRowId: threadRowId
+                )),
                 tx: tx
             )
         }

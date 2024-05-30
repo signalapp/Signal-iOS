@@ -220,7 +220,11 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             )
             tsMessageStore.update(latestRevision, with: builder.info, tx: tx)
             try builder.finalize(
-                owner: .messageLinkPreview(messageRowId: latestRevisionRowId),
+                owner: .messageLinkPreview(.init(
+                    messageRowId: latestRevisionRowId,
+                    receivedAtTimestamp: latestRevision.receivedAtTimestamp,
+                    threadRowId: threadRowId
+                )),
                 tx: tx
             )
         case .proto(let preview, let dataMessage):
@@ -232,7 +236,11 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             )
             tsMessageStore.update(latestRevision, with: builder.info, tx: tx)
             try builder.finalize(
-                owner: .messageLinkPreview(messageRowId: latestRevisionRowId),
+                owner: .messageLinkPreview(.init(
+                    messageRowId: latestRevisionRowId,
+                    receivedAtTimestamp: latestRevision.receivedAtTimestamp,
+                    threadRowId: threadRowId
+                )),
                 tx: tx
             )
         }
@@ -296,7 +304,11 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
                         sourceFilename: nil,
                         dataSource: .dataSource(dataSource, shouldCopy: false)
                     ),
-                    owner: .messageOversizeText(messageRowId: latestRevisionRowId)
+                    owner: .messageOversizeText(.init(
+                        messageRowId: latestRevisionRowId,
+                        receivedAtTimestamp: latestRevision.receivedAtTimestamp,
+                        threadRowId: threadRowId
+                    ))
                 ),
                 tx: tx
             )
@@ -304,7 +316,11 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             try attachmentManager.createAttachmentPointer(
                 from: .init(
                     proto: protoPointer,
-                    owner: .messageOversizeText(messageRowId: latestRevisionRowId)
+                    owner: .messageOversizeText(.init(
+                        messageRowId: latestRevisionRowId,
+                        receivedAtTimestamp: latestRevision.receivedAtTimestamp,
+                        threadRowId: threadRowId
+                    ))
                 ),
                 tx: tx
             )

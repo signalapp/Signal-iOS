@@ -62,7 +62,14 @@ class OWSLinkPreviewTest: SSKBaseTest {
                 tx: tx
             )
             XCTAssertNotNil(linkPreviewBuilder)
-            try! linkPreviewBuilder.finalize(owner: .messageLinkPreview(messageRowId: 0), tx: tx)
+            try! linkPreviewBuilder.finalize(
+                owner: .messageLinkPreview(.init(
+                    messageRowId: 0,
+                    receivedAtTimestamp: 1000,
+                    threadRowId: 0
+                )),
+                tx: tx
+            )
         }
     }
 
@@ -83,7 +90,14 @@ class OWSLinkPreviewTest: SSKBaseTest {
                 tx: tx
             )
             XCTAssertNotNil(linkPreviewBuilder)
-            try! linkPreviewBuilder.finalize(owner: .messageLinkPreview(messageRowId: 0), tx: tx)
+            try! linkPreviewBuilder.finalize(
+                owner: .messageLinkPreview(.init(
+                    messageRowId: 0,
+                    receivedAtTimestamp: 100,
+                    threadRowId: 0
+                )),
+                tx: tx
+            )
         }
     }
 
@@ -108,7 +122,14 @@ class OWSLinkPreviewTest: SSKBaseTest {
                 tx: tx
             )
             XCTAssertNotNil(linkPreviewBuilder)
-            try! linkPreviewBuilder.finalize(owner: .messageLinkPreview(messageRowId: 0), tx: tx)
+            try! linkPreviewBuilder.finalize(
+                owner: .messageLinkPreview(.init(
+                    messageRowId: 0,
+                    receivedAtTimestamp: 300,
+                    threadRowId: 1
+                )),
+                tx: tx
+            )
         }
     }
 }

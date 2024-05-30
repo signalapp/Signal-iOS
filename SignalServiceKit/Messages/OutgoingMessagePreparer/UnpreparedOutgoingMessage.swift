@@ -199,7 +199,10 @@ public class UnpreparedOutgoingMessage {
         _ message: MessageType.Persistable,
         tx: SDSAnyWriteTransaction
     ) throws -> PreparedOutgoingMessage.MessageType {
-        guard let thread = message.message.thread(tx: tx) else {
+        guard
+            let thread = message.message.thread(tx: tx),
+            let threadRowId = thread.sqliteRowId
+        else {
             throw OWSAssertionError("Outgoing message missing thread.")
         }
 
@@ -274,13 +277,18 @@ public class UnpreparedOutgoingMessage {
         }
 
         try linkPreviewBuilder?.finalize(
-            owner: .messageLinkPreview(messageRowId: messageRowId),
+            owner: .messageLinkPreview(.init(
+                messageRowId: messageRowId,
+                receivedAtTimestamp: message.message.receivedAtTimestamp,
+                threadRowId: threadRowId
+            )),
             tx: tx.asV2Write
         )
         try quotedReplyBuilder?.finalize(
             owner: .quotedReplyAttachment(.init(
                 messageRowId: messageRowId,
-                renderingFlag: quotedReplyBuilder?.info.renderingFlag ?? .default
+                receivedAtTimestamp: message.message.receivedAtTimestamp,
+                threadRowId: threadRowId
             )),
             tx: tx.asV2Write
         )
@@ -289,6 +297,8 @@ public class UnpreparedOutgoingMessage {
             try $0.finalize(
                 owner: .messageSticker(.init(
                     messageRowId: messageRowId,
+                    receivedAtTimestamp: message.message.receivedAtTimestamp,
+                    threadRowId: threadRowId,
                     stickerPackId: $0.info.packId,
                     stickerId: $0.info.stickerId
                 )),
@@ -298,7 +308,11 @@ public class UnpreparedOutgoingMessage {
         }
 
         try? contactShareBuilder?.finalize(
-            owner: .messageContactAvatar(messageRowId: messageRowId),
+            owner: .messageContactAvatar(.init(
+                messageRowId: messageRowId,
+                receivedAtTimestamp: message.message.receivedAtTimestamp,
+                threadRowId: threadRowId
+            )),
             tx: tx.asV2Write
         )
 

@@ -19,61 +19,131 @@ extension AttachmentReference {
     /// This type is just those fields that would not be on the source proto (or stream, or whatever)
     /// but must instead be uniquely specified per type.
     public enum OwnerBuilder: Equatable {
-        case messageBodyAttachment(MessageBodyAttachmentBuilder)
-
-        case messageOversizeText(messageRowId: Int64)
-        case messageLinkPreview(messageRowId: Int64)
+        case messageBodyAttachment(MessageAttachmentBuilder)
+        case messageOversizeText(MessageAttachmentBuilder)
+        case messageLinkPreview(MessageAttachmentBuilder)
         /// Note that the row id is for the parent message containing the quoted reply,
         /// not the original message being quoted.
-        case quotedReplyAttachment(MessageQuotedReplyAttachmentBuilder)
+        case quotedReplyAttachment(MessageAttachmentBuilder)
         case messageSticker(MessageStickerBuilder)
-        case messageContactAvatar(messageRowId: Int64)
+        case messageContactAvatar(MessageAttachmentBuilder)
         case storyMessageMedia(StoryMediaBuilder)
         case storyMessageLinkPreview(storyMessageRowId: Int64)
         case threadWallpaperImage(threadRowId: Int64)
         case globalThreadWallpaperImage
 
-        public struct MessageBodyAttachmentBuilder: Equatable {
-            public let messageRowId: Int64
-            public let renderingFlag: AttachmentReference.RenderingFlag
-
-            /// Note: index/orderInOwner is inferred from the order of the provided array at creation time.
-
-            /// Note: at time of writing message captions are unused; not taken as input here.
-
-            public init(
-                messageRowId: Int64,
-                renderingFlag: AttachmentReference.RenderingFlag
-            ) {
-                self.messageRowId = messageRowId
-                self.renderingFlag = renderingFlag
+        public func build(
+            orderInOwner: UInt32?,
+            idInOwner: String?,
+            renderingFlag: AttachmentReference.RenderingFlag,
+            contentType: AttachmentReference.ContentType?
+        ) throws -> AttachmentReference.Owner {
+            switch self {
+            case .messageBodyAttachment(let metadata):
+                // idInOwner is optional; old clients may not send it.
+                guard let orderInOwner else {
+                    throw OWSAssertionError("OrderInOwner must be provided for body attachments.")
+                }
+                return .message(.bodyAttachment(.init(
+                    messageRowId: metadata.messageRowId,
+                    receivedAtTimestamp: metadata.receivedAtTimestamp,
+                    threadRowId: metadata.threadRowId,
+                    contentType: contentType,
+                    // We ignore captions in modern instances.
+                    caption: nil,
+                    renderingFlag: renderingFlag,
+                    orderInOwner: orderInOwner,
+                    idInOwner: idInOwner
+                )))
+            case .messageOversizeText(let metadata):
+                return .message(.oversizeText(.init(
+                    messageRowId: metadata.messageRowId,
+                    receivedAtTimestamp: metadata.receivedAtTimestamp,
+                    threadRowId: metadata.threadRowId,
+                    contentType: contentType
+                )))
+            case .messageLinkPreview(let metadata):
+                return .message(.linkPreview(.init(
+                    messageRowId: metadata.messageRowId,
+                    receivedAtTimestamp: metadata.receivedAtTimestamp,
+                    threadRowId: metadata.threadRowId,
+                    contentType: contentType
+                )))
+            case .quotedReplyAttachment(let metadata):
+                return .message(.quotedReply(.init(
+                    messageRowId: metadata.messageRowId,
+                    receivedAtTimestamp: metadata.receivedAtTimestamp,
+                    threadRowId: metadata.threadRowId,
+                    contentType: contentType,
+                    renderingFlag: renderingFlag
+                )))
+            case .messageSticker(let metadata):
+                return .message(.sticker(.init(
+                    messageRowId: metadata.messageRowId,
+                    receivedAtTimestamp: metadata.receivedAtTimestamp,
+                    threadRowId: metadata.threadRowId,
+                    contentType: contentType,
+                    stickerPackId: metadata.stickerPackId,
+                    stickerId: metadata.stickerId
+                )))
+            case .messageContactAvatar(let metadata):
+                return .message(.contactAvatar(.init(
+                    messageRowId: metadata.messageRowId,
+                    receivedAtTimestamp: metadata.receivedAtTimestamp,
+                    threadRowId: metadata.threadRowId,
+                    contentType: contentType
+                )))
+            case .storyMessageMedia(let metadata):
+                return .storyMessage(.media(.init(
+                    storyMessageRowId: metadata.storyMessageRowId,
+                    caption: metadata.caption,
+                    shouldLoop: renderingFlag == .shouldLoop
+                )))
+            case .storyMessageLinkPreview(let storyMessageRowId):
+                return .storyMessage(.textStoryLinkPreview(.init(storyMessageRowId: storyMessageRowId)))
+            case .threadWallpaperImage(let threadRowId):
+                return .thread(.threadWallpaperImage(.init(
+                    threadRowId: threadRowId,
+                    creationTimestamp: Date().ows_millisecondsSince1970
+                )))
+            case .globalThreadWallpaperImage:
+                return .thread(.globalThreadWallpaperImage(creationTimestamp: Date().ows_millisecondsSince1970))
             }
         }
 
-        public struct MessageQuotedReplyAttachmentBuilder: Equatable {
+        public struct MessageAttachmentBuilder: Equatable {
             public let messageRowId: Int64
-            public let renderingFlag: AttachmentReference.RenderingFlag
+            public let receivedAtTimestamp: UInt64
+            public let threadRowId: Int64
 
             public init(
                 messageRowId: Int64,
-                renderingFlag: AttachmentReference.RenderingFlag
+                receivedAtTimestamp: UInt64,
+                threadRowId: Int64
             ) {
                 self.messageRowId = messageRowId
-                self.renderingFlag = renderingFlag
+                self.receivedAtTimestamp = receivedAtTimestamp
+                self.threadRowId = threadRowId
             }
         }
 
         public struct MessageStickerBuilder: Equatable {
             public let messageRowId: Int64
+            public let receivedAtTimestamp: UInt64
+            public let threadRowId: Int64
             public let stickerPackId: Data
             public let stickerId: UInt32
 
             public init(
                 messageRowId: Int64,
+                receivedAtTimestamp: UInt64,
+                threadRowId: Int64,
                 stickerPackId: Data,
                 stickerId: UInt32
             ) {
                 self.messageRowId = messageRowId
+                self.receivedAtTimestamp = receivedAtTimestamp
+                self.threadRowId = threadRowId
                 self.stickerPackId = stickerPackId
                 self.stickerId = stickerId
             }
@@ -82,16 +152,13 @@ extension AttachmentReference {
         public struct StoryMediaBuilder: Equatable {
             public let storyMessageRowId: Int64
             public let caption: StyleOnlyMessageBody?
-            public let shouldLoop: Bool
 
             public init(
                 storyMessageRowId: Int64,
-                caption: StyleOnlyMessageBody?,
-                shouldLoop: Bool
+                caption: StyleOnlyMessageBody?
             ) {
                 self.storyMessageRowId = storyMessageRowId
                 self.caption = caption
-                self.shouldLoop = shouldLoop
             }
         }
     }
@@ -157,16 +224,16 @@ extension AttachmentReference.OwnerBuilder {
         switch self {
         case .messageBodyAttachment(let bodyOwnerBuilder):
             return .messageBodyAttachment(messageRowId: bodyOwnerBuilder.messageRowId)
-        case .messageOversizeText(let messageRowId):
-            return .messageOversizeText(messageRowId: messageRowId)
-        case .messageLinkPreview(let messageRowId):
-            return .messageLinkPreview(messageRowId: messageRowId)
+        case .messageOversizeText(let builder):
+            return .messageOversizeText(messageRowId: builder.messageRowId)
+        case .messageLinkPreview(let builder):
+            return .messageLinkPreview(messageRowId: builder.messageRowId)
         case .quotedReplyAttachment(let builder):
             return .quotedReplyAttachment(messageRowId: builder.messageRowId)
         case .messageSticker(let stickerOwnerBuilder):
             return .messageSticker(messageRowId: stickerOwnerBuilder.messageRowId)
-        case .messageContactAvatar(let messageRowId):
-            return .messageContactAvatar(messageRowId: messageRowId)
+        case .messageContactAvatar(let builder):
+            return .messageContactAvatar(messageRowId: builder.messageRowId)
         case .storyMessageMedia(let mediaOwnerBuilder):
             return .storyMessageMedia(storyMessageRowId: mediaOwnerBuilder.storyMessageRowId)
         case .storyMessageLinkPreview(let storyMessageRowId):

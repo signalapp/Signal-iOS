@@ -2578,7 +2578,11 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                     }
                     message.update(withContactShare: contact, transaction: transaction)
                     try! avatarBuilder.finalize(
-                        owner: .messageContactAvatar(messageRowId: message.sqliteRowId!),
+                        owner: .messageContactAvatar(.init(
+                            messageRowId: message.sqliteRowId!,
+                            receivedAtTimestamp: message.receivedAtTimestamp,
+                            threadRowId: thread.sqliteRowId!
+                        )),
                         tx: transaction.asV2Write
                     )
                 }
@@ -3916,7 +3920,8 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         try? quotedMessageBuilder?.finalize(
             owner: .quotedReplyAttachment(.init(
                 messageRowId: message.sqliteRowId!,
-                renderingFlag: quotedMessageBuilder?.info.renderingFlag ?? .default
+                receivedAtTimestamp: message.receivedAtTimestamp,
+                threadRowId: thread.sqliteRowId!
             )),
             tx: transaction.asV2Write
         )
@@ -4125,7 +4130,8 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         try? quotedMessageBuilder?.finalize(
             owner: .quotedReplyAttachment(.init(
                 messageRowId: message.sqliteRowId!,
-                renderingFlag: quotedMessageBuilder?.info.renderingFlag ?? .default
+                receivedAtTimestamp: message.receivedAtTimestamp,
+                threadRowId: thread.sqliteRowId!
             )),
             tx: transaction.asV2Write
         )

@@ -220,6 +220,10 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             outgoingMessage = existingFailedMessage
         } else {
 
+            guard let threadRowId = messageParams.target.thread.sqliteRowId else {
+                return .failure(OWSAssertionError("Uninserted thread"))
+            }
+
             // Update attachment fields before inserting.
             quotedMessageBuilder.map { interactionStore.update(outgoingMessage, with: $0.info.quotedMessage, tx: tx) }
             contactBuilder.map { interactionStore.update(outgoingMessage, with: $0.info, tx: tx) }
@@ -240,13 +244,18 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                 try quotedMessageBuilder?.finalize(
                     owner: .quotedReplyAttachment(.init(
                         messageRowId: outgoingMessage.sqliteRowId!,
-                        renderingFlag: quotedMessageBuilder?.info.renderingFlag ?? .default
+                        receivedAtTimestamp: outgoingMessage.receivedAtTimestamp,
+                        threadRowId: threadRowId
                     )),
                     tx: tx
                 )
 
                 try linkPreviewBuilder?.finalize(
-                    owner: .messageLinkPreview(messageRowId: outgoingMessage.sqliteRowId!),
+                    owner: .messageLinkPreview(.init(
+                        messageRowId: outgoingMessage.sqliteRowId!,
+                        receivedAtTimestamp: outgoingMessage.receivedAtTimestamp,
+                        threadRowId: threadRowId
+                    )),
                     tx: tx
                 )
 
@@ -254,6 +263,8 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                     try $0.finalize(
                         owner: .messageSticker(.init(
                             messageRowId: outgoingMessage.sqliteRowId!,
+                            receivedAtTimestamp: outgoingMessage.receivedAtTimestamp,
+                            threadRowId: threadRowId,
                             stickerPackId: $0.info.packId,
                             stickerId: $0.info.stickerId
                         )),
@@ -261,7 +272,11 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                     )
                 }
                 try contactBuilder?.finalize(
-                    owner: .messageContactAvatar(messageRowId: outgoingMessage.sqliteRowId!),
+                    owner: .messageContactAvatar(.init(
+                        messageRowId: outgoingMessage.sqliteRowId!,
+                        receivedAtTimestamp: outgoingMessage.receivedAtTimestamp,
+                        threadRowId: threadRowId
+                    )),
                     tx: tx
                 )
             } catch let error {
