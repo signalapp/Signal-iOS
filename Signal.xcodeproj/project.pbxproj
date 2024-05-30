@@ -797,6 +797,7 @@
 		663BA3202A4CF96B004B9A43 /* MessageBodyDisplayConfigurations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663BA31F2A4CF96B004B9A43 /* MessageBodyDisplayConfigurations.swift */; };
 		663D02DD2C06717900350632 /* UInt64SafeRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663D02DC2C06717900350632 /* UInt64SafeRecord.swift */; };
 		663D02E12C06E2F400350632 /* MockAttachmentReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663D02E02C06E2F400350632 /* MockAttachmentReference.swift */; };
+		663D02DF2C069AB600350632 /* OrphanedAttachmentCleanerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663D02DE2C069AB600350632 /* OrphanedAttachmentCleanerTest.swift */; };
 		663D6A7C292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */; };
 		6640132A2BFEB9C700F10FC4 /* SingleOrDoubleTapGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664013292BFEB9C700F10FC4 /* SingleOrDoubleTapGestureRecognizer.swift */; };
 		6640132C2BFFB8F500F10FC4 /* Attachment+ConstructionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640132B2BFFB8F500F10FC4 /* Attachment+ConstructionParams.swift */; };
@@ -3692,6 +3693,7 @@
 		663BA31F2A4CF96B004B9A43 /* MessageBodyDisplayConfigurations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBodyDisplayConfigurations.swift; sourceTree = "<group>"; };
 		663D02DC2C06717900350632 /* UInt64SafeRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UInt64SafeRecord.swift; sourceTree = "<group>"; };
 		663D02E02C06E2F400350632 /* MockAttachmentReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAttachmentReference.swift; sourceTree = "<group>"; };
+		663D02DE2C069AB600350632 /* OrphanedAttachmentCleanerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrphanedAttachmentCleanerTest.swift; sourceTree = "<group>"; };
 		663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPickerFailedRecipientsSheet.swift; sourceTree = "<group>"; };
 		664013292BFEB9C700F10FC4 /* SingleOrDoubleTapGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleOrDoubleTapGestureRecognizer.swift; sourceTree = "<group>"; };
 		6640132B2BFFB8F500F10FC4 /* Attachment+ConstructionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Attachment+ConstructionParams.swift"; sourceTree = "<group>"; };
@@ -7647,6 +7649,7 @@
 			isa = PBXGroup;
 			children = (
 				6689B23C2C064E82003D5B2F /* OrphanedAttachmentCleaner.swift */,
+				663D02DE2C069AB600350632 /* OrphanedAttachmentCleanerTest.swift */,
 			);
 			path = OrphanedAttachments;
 			sourceTree = "<group>";
@@ -14556,6 +14559,7 @@
 				F942624C289B1B5500460798 /* ModelReadCacheTest.swift in Sources */,
 				F9426256289B1B5500460798 /* NSData+ImageTest.swift in Sources */,
 				D979CC3A2AD3964E006AAC49 /* Numbers+Random.swift in Sources */,
+				663D02DF2C069AB600350632 /* OrphanedAttachmentCleanerTest.swift in Sources */,
 				D9AA37A02A86E0910088EFFB /* OutgoingCallEventSyncMessageTest.swift in Sources */,
 				D925C7BB2B7BEC0F00AC73B0 /* OutgoingCallLogEventSyncMessageTest.swift in Sources */,
 				D9D3216A2A8AC9B0004FC110 /* OutgoingGroupCallUpdateMessageTest.swift in Sources */,

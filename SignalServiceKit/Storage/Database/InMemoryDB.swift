@@ -37,7 +37,7 @@ final class InMemoryDB: DB {
 
     // MARK: - State
 
-    private let databaseQueue: DatabaseQueue = {
+    public let databaseQueue: DatabaseQueue = {
         let result = DatabaseQueue()
         let schemaUrl = Bundle(for: GRDBSchemaMigrator.self).url(forResource: "schema", withExtension: "sql")!
         try! result.write { try $0.execute(sql: try String(contentsOf: schemaUrl)) }
