@@ -252,7 +252,7 @@ public class TSResourceManagerImpl: TSResourceManager {
         _ attachment: TSResource,
         from message: TSMessage,
         tx: DBWriteTransaction
-    ) {
+    ) throws {
         switch attachment.concreteType {
         case .legacy(let legacyAttachment):
             tsAttachmentManager.removeBodyAttachment(legacyAttachment, from: message, tx: SDSDB.shimOnlyBridge(tx))
@@ -261,7 +261,7 @@ public class TSResourceManagerImpl: TSResourceManager {
                 owsFailDebug("Removing attachment from uninserted message!")
                 return
             }
-            attachmentManager.removeAttachment(
+            try attachmentManager.removeAttachment(
                 attachment,
                 from: .messageBodyAttachment(messageRowId: messageRowId),
                 tx: tx

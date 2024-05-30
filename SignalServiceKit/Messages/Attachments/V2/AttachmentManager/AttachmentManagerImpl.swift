@@ -75,11 +75,15 @@ public class AttachmentManagerImpl: AttachmentManager {
     // MARK: Removing Attachments
 
     public func removeAttachment(
-        _ attachment: TSResource,
+        _ attachment: Attachment,
         from owner: AttachmentReference.OwnerId,
         tx: DBWriteTransaction
-    ) {
-        fatalError("Unimplemented")
+    ) throws {
+        try attachmentStore.removeOwner(
+            owner,
+            for: attachment.id,
+            tx: tx
+        )
     }
 
     public func removeAllAttachments(

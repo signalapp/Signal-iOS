@@ -819,7 +819,7 @@ class MediaGallery: Dependencies {
                 for item in items {
                     let message = item.message
                     let attachment = item.attachmentStream
-                    DependenciesBridge.shared.tsResourceManager.removeBodyAttachment(
+                    try DependenciesBridge.shared.tsResourceManager.removeBodyAttachment(
                         attachment.attachmentStream,
                         from: message,
                         tx: tx.asV2Write

@@ -39,10 +39,10 @@ open class AttachmentManagerMock: AttachmentManager {
     }
 
     open func removeAttachment(
-        _ attachment: TSResource,
+        _ attachment: Attachment,
         from owner: AttachmentReference.OwnerId,
         tx: DBWriteTransaction
-    ) {
+    ) throws {
         // Do nothing
     }
 

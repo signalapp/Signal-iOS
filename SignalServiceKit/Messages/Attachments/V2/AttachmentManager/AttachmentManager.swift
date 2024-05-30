@@ -65,10 +65,10 @@ public protocol AttachmentManager {
     /// Will only delete the attachment if this is the last owner.
     /// Typically because the owner has been deleted.
     func removeAttachment(
-        _ attachment: TSResource,
+        _ attachment: Attachment,
         from owner: AttachmentReference.OwnerId,
         tx: DBWriteTransaction
-    )
+    ) throws
 
     /// Removed all attachments of the provided types from the provided owners.
     /// Will only delete attachments if they are left without any owners.

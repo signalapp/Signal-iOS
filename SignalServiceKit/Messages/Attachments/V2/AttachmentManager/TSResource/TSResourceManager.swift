@@ -123,7 +123,7 @@ public protocol TSResourceManager {
         _ attachment: TSResource,
         from message: TSMessage,
         tx: DBWriteTransaction
-    )
+    ) throws
 
     /// Deletes references to the attachment(s) from the provided message, potentially
     /// deleting the attachment in the db and on disk if not referenced from anywhere else.

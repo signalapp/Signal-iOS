@@ -68,7 +68,7 @@ public class TSResourceManagerMock: TSResourceManager {
         return nil
     }
 
-    public func removeBodyAttachment(_ attachment: TSResource, from message: TSMessage, tx: DBWriteTransaction) {
+    public func removeBodyAttachment(_ attachment: TSResource, from message: TSMessage, tx: DBWriteTransaction) throws {
         // Do nothing
     }
 
