@@ -311,28 +311,28 @@ extension GroupCallMemberSheet: UITableViewDelegate {
 
 // MARK: CallObserver
 
-extension GroupCallMemberSheet: GroupThreadCallObserver {
-    func groupCallLocalDeviceStateChanged(_ call: GroupThreadCall) {
+extension GroupCallMemberSheet: GroupCallObserver {
+    func groupCallLocalDeviceStateChanged(_ call: GroupCall) {
         AssertIsOnMainThread()
         updateMembers()
     }
 
-    func groupCallRemoteDeviceStatesChanged(_ call: GroupThreadCall) {
+    func groupCallRemoteDeviceStatesChanged(_ call: GroupCall) {
         AssertIsOnMainThread()
         updateMembers()
     }
 
-    func groupCallPeekChanged(_ call: GroupThreadCall) {
+    func groupCallPeekChanged(_ call: GroupCall) {
         AssertIsOnMainThread()
         updateMembers()
     }
 
-    func groupCallEnded(_ call: GroupThreadCall, reason: GroupCallEndReason) {
+    func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason) {
         AssertIsOnMainThread()
         updateMembers()
     }
 
-    func groupCallReceivedRaisedHands(_ call: GroupThreadCall, raisedHands: [UInt32]) {
+    func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [UInt32]) {
         AssertIsOnMainThread()
         updateSnapshotAndHeaders()
     }

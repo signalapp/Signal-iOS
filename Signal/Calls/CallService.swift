@@ -523,6 +523,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
 
         let groupThreadCall = GroupThreadCall(
+            delegate: self,
             ringRtcCall: groupCall,
             groupThread: thread,
             videoCaptureController: videoCaptureController
@@ -788,96 +789,119 @@ extension CallService: IndividualCallObserver {
     }
 }
 
-extension CallService: GroupThreadCallObserver {
-    func groupCallLocalDeviceStateChanged(_ call: GroupThreadCall) {
+extension CallService: GroupCallObserver {
+    func groupCallLocalDeviceStateChanged(_ call: GroupCall) {
         AssertIsOnMainThread()
 
-        let groupCall = call.ringRtcCall
-        let groupThread = call.groupThread
+        let ringRtcCall = call.ringRtcCall
 
         Logger.info("")
         updateIsVideoEnabled()
-        updateGroupMembersForCurrentCallIfNecessary()
         configureDataMode()
 
-        if groupCall.localDeviceState.isJoined {
+        switch call.concreteType {
+        case .groupThread(let call):
+            updateGroupMembersForCurrentCallIfNecessary()
+
             if
+                ringRtcCall.localDeviceState.isJoined,
                 case .shouldRing = call.groupCallRingState,
                 call.ringRestrictions.isEmpty,
-                groupCall.remoteDeviceStates.isEmpty
+                ringRtcCall.remoteDeviceStates.isEmpty
             {
                 // Don't start ringing until we join the call successfully.
                 call.groupCallRingState = .ringing
-                groupCall.ringAll()
+                ringRtcCall.ringAll()
                 audioService.playOutboundRing()
             }
 
-            if let eraId = groupCall.peekInfo?.eraId {
+            let groupThread = call.groupThread
+            if ringRtcCall.localDeviceState.isJoined {
+                if let eraId = ringRtcCall.peekInfo?.eraId {
+                    groupCallAccessoryMessageDelegate.localDeviceMaybeJoinedGroupCall(
+                        eraId: eraId,
+                        groupThread: groupThread,
+                        groupCallRingState: call.groupCallRingState
+                    )
+                }
+            } else {
+                groupCallAccessoryMessageDelegate.localDeviceMaybeLeftGroupCall(
+                    groupThread: groupThread,
+                    groupCall: ringRtcCall
+                )
+            }
+
+        case .callLink:
+            // [CallLink] TODO: Bump the call record in the calls tab.
+            break
+        }
+    }
+
+    func groupCallPeekChanged(_ call: GroupCall) {
+        AssertIsOnMainThread()
+
+        let ringRtcCall = call.ringRtcCall
+        guard let peekInfo = ringRtcCall.peekInfo else {
+            Logger.warn("No peek info for call: \(call)")
+            return
+        }
+
+        switch call.concreteType {
+        case .groupThread(let call):
+            let groupThread = call.groupThread
+
+            if
+                ringRtcCall.localDeviceState.isJoined,
+                let eraId = peekInfo.eraId
+            {
                 groupCallAccessoryMessageDelegate.localDeviceMaybeJoinedGroupCall(
                     eraId: eraId,
                     groupThread: groupThread,
                     groupCallRingState: call.groupCallRingState
                 )
             }
-        } else {
-            groupCallAccessoryMessageDelegate.localDeviceMaybeLeftGroupCall(
-                groupThread: groupThread,
-                groupCall: groupCall
-            )
+
+            databaseStorage.asyncWrite { tx in
+                self.groupCallManager.updateGroupCallModelsForPeek(
+                    peekInfo: peekInfo,
+                    groupThread: groupThread,
+                    triggerEventTimestamp: Date.ows_millisecondTimestamp(),
+                    tx: tx
+                )
+            }
+
+        case .callLink:
+            // [CallLink] TODO: Bump the call record in the calls tab if needed.
+            break
         }
     }
 
-    func groupCallPeekChanged(_ call: GroupThreadCall) {
-        AssertIsOnMainThread()
-
-        let groupCall = call.ringRtcCall
-        let groupThread = call.groupThread
-
-        guard let peekInfo = groupCall.peekInfo else {
-            GroupCallPeekLogger.shared.warn("No peek info for call: \(call)")
-            return
-        }
-
-        if
-            groupCall.localDeviceState.isJoined,
-            let eraId = peekInfo.eraId
-        {
-            groupCallAccessoryMessageDelegate.localDeviceMaybeJoinedGroupCall(
-                eraId: eraId,
-                groupThread: groupThread,
-                groupCallRingState: call.groupCallRingState
-            )
-        }
-
-        databaseStorage.asyncWrite { tx in
-            self.groupCallManager.updateGroupCallModelsForPeek(
-                peekInfo: peekInfo,
-                groupThread: groupThread,
-                triggerEventTimestamp: Date.ows_millisecondTimestamp(),
-                tx: tx
-            )
-        }
-    }
-
-    func groupCallEnded(_ call: GroupThreadCall, reason: GroupCallEndReason) {
+    func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason) {
         AssertIsOnMainThread()
 
         groupCallAccessoryMessageDelegate.localDeviceGroupCallDidEnd()
     }
 
-    public func groupCallRemoteDeviceStatesChanged(_ call: GroupThreadCall) {
-        guard case .ringing = call.groupCallRingState else {
-            return
-        }
-        if !call.ringRtcCall.remoteDeviceStates.isEmpty {
-            // The first time someone joins after a ring, we need to mark the call accepted.
-            // (But if we didn't ring, the call will have already been marked accepted.)
-            callUIAdapter.recipientAcceptedCall(.groupThread(call))
+    public func groupCallRemoteDeviceStatesChanged(_ call: GroupCall) {
+        switch call.concreteType {
+        case .groupThread(let call):
+            if
+                case .ringing = call.groupCallRingState,
+                !call.ringRtcCall.remoteDeviceStates.isEmpty
+            {
+                // The first time someone joins after a ring, we need to mark the call accepted.
+                // (But if we didn't ring, the call will have already been marked accepted.)
+                callUIAdapter.recipientAcceptedCall(.groupThread(call))
+            }
+        case .callLink:
+            break
         }
     }
+}
 
-    func groupCallRequestMembershipProof(_ call: GroupThreadCall) {
-        Logger.info("groupCallUpdateGroupMembershipProof")
+extension CallService: GroupThreadCallDelegate {
+    func groupThreadCallRequestMembershipProof(_ call: GroupThreadCall) {
+        Logger.info("")
 
         let groupCall = call.ringRtcCall
         let groupThread = call.groupThread
@@ -898,8 +922,8 @@ extension CallService: GroupThreadCallObserver {
         }
     }
 
-    func groupCallRequestGroupMembers(_ call: GroupThreadCall) {
-        Logger.info("groupCallUpdateGroupMembers")
+    func groupThreadCallRequestGroupMembers(_ call: GroupThreadCall) {
+        Logger.info("")
 
         updateGroupMembersForCurrentCallIfNecessary()
     }
@@ -973,7 +997,7 @@ extension CallService: CallManagerDelegate {
         urgency: CallMessageUrgency
     ) {
         AssertIsOnMainThread()
-        Logger.info("shouldSendCallMessage")
+        Logger.info("")
 
         let recipientAci = Aci(fromUUID: recipientUuid)
 
@@ -1094,7 +1118,7 @@ extension CallService: CallManagerDelegate {
         shouldCompareCalls call1: SignalCall,
         call2: SignalCall
     ) -> Bool {
-        Logger.info("shouldCompareCalls")
+        Logger.info("")
         guard case .individual(let call1) = call1.mode else {
             owsFailDebug("Can't compare multi-participant calls.")
             return false

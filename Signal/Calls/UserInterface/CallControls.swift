@@ -536,20 +536,20 @@ private class CallControlsViewModel {
     }
 }
 
-extension CallControlsViewModel: GroupThreadCallObserver {
-    func groupCallLocalDeviceStateChanged(_ call: GroupThreadCall) {
+extension CallControlsViewModel: GroupCallObserver {
+    func groupCallLocalDeviceStateChanged(_ call: GroupCall) {
         refreshView?()
     }
 
-    func groupCallPeekChanged(_ call: GroupThreadCall) {
+    func groupCallPeekChanged(_ call: GroupCall) {
         refreshView?()
     }
 
-    func groupCallRemoteDeviceStatesChanged(_ call: GroupThreadCall) {
+    func groupCallRemoteDeviceStatesChanged(_ call: GroupCall) {
         refreshView?()
     }
 
-    func groupCallEnded(_ call: GroupThreadCall, reason: GroupCallEndReason) {
+    func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason) {
         refreshView?()
     }
 }

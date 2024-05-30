@@ -201,8 +201,8 @@ extension GroupCallVideoOverflow: UICollectionViewDataSource {
     }
 }
 
-extension GroupCallVideoOverflow: GroupThreadCallObserver {
-    func groupCallRemoteDeviceStatesChanged(_ call: GroupThreadCall) {
+extension GroupCallVideoOverflow: GroupCallObserver {
+    func groupCallRemoteDeviceStatesChanged(_ call: GroupCall) {
         AssertIsOnMainThread()
 
         isAnyRemoteDeviceScreenSharing = call.ringRtcCall.remoteDeviceStates.values.first { $0.sharingScreen == true } != nil
@@ -210,17 +210,17 @@ extension GroupCallVideoOverflow: GroupThreadCallObserver {
         reloadData()
     }
 
-    func groupCallPeekChanged(_ call: GroupThreadCall) {
+    func groupCallPeekChanged(_ call: GroupCall) {
         AssertIsOnMainThread()
         reloadData()
     }
 
-    func groupCallEnded(_ call: GroupThreadCall, reason: GroupCallEndReason) {
+    func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason) {
         AssertIsOnMainThread()
         reloadData()
     }
 
-    func groupCallReceivedRaisedHands(_ call: GroupThreadCall, raisedHands: [UInt32]) {
+    func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [UInt32]) {
         AssertIsOnMainThread()
         reloadData()
     }

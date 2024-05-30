@@ -8,41 +8,23 @@ import SignalRingRTC
 import SignalServiceKit
 import SignalUI
 
-protocol GroupThreadCallObserver: AnyObject {
-    func groupCallLocalDeviceStateChanged(_ call: GroupThreadCall)
-    func groupCallRemoteDeviceStatesChanged(_ call: GroupThreadCall)
-    func groupCallPeekChanged(_ call: GroupThreadCall)
-    func groupCallRequestMembershipProof(_ call: GroupThreadCall)
-    func groupCallRequestGroupMembers(_ call: GroupThreadCall)
-    func groupCallEnded(_ call: GroupThreadCall, reason: GroupCallEndReason)
-    func groupCallReceivedReactions(_ call: GroupThreadCall, reactions: [SignalRingRTC.Reaction])
-    func groupCallReceivedRaisedHands(_ call: GroupThreadCall, raisedHands: [UInt32])
-
-    /// Invoked if a call message failed to send because of a safety number change
-    /// UI observing call state may choose to alert the user (e.g. presenting a SafetyNumberConfirmationSheet)
-    func callMessageSendFailedUntrustedIdentity(_ call: GroupThreadCall)
-}
-
-extension GroupThreadCallObserver {
-    func groupCallLocalDeviceStateChanged(_ call: GroupThreadCall) {}
-    func groupCallRemoteDeviceStatesChanged(_ call: GroupThreadCall) {}
-    func groupCallPeekChanged(_ call: GroupThreadCall) {}
-    func groupCallRequestMembershipProof(_ call: GroupThreadCall) {}
-    func groupCallRequestGroupMembers(_ call: GroupThreadCall) {}
-    func groupCallEnded(_ call: GroupThreadCall, reason: GroupCallEndReason) {}
-    func groupCallReceivedReactions(_ call: GroupThreadCall, reactions: [SignalRingRTC.Reaction]) {}
-    func groupCallReceivedRaisedHands(_ call: GroupThreadCall, raisedHands: [UInt32]) {}
-    func callMessageSendFailedUntrustedIdentity(_ call: GroupThreadCall) {}
+protocol GroupThreadCallDelegate: AnyObject {
+    func groupThreadCallRequestMembershipProof(_ call: GroupThreadCall)
+    func groupThreadCallRequestGroupMembers(_ call: GroupThreadCall)
 }
 
 final class GroupThreadCall: Signal.GroupCall {
+    private weak var delegate: (any GroupThreadCallDelegate)?
+
     let groupThread: TSGroupThread
 
     init(
+        delegate: any GroupThreadCallDelegate,
         ringRtcCall: SignalRingRTC.GroupCall,
         groupThread: TSGroupThread,
         videoCaptureController: VideoCaptureController
     ) {
+        self.delegate = delegate
         self.groupThread = groupThread
 
         super.init(
@@ -83,28 +65,6 @@ final class GroupThreadCall: Signal.GroupCall {
         case .doNotRing, .shouldRing, .ringing, .ringingEnded, .incomingRing:
             return false
         }
-    }
-
-    // MARK: - Observers
-
-    private var observers: WeakArray<any GroupThreadCallObserver> = []
-
-    func addObserverAndSyncState(_ observer: any GroupThreadCallObserver) {
-        AssertIsOnMainThread()
-
-        observers.append(observer)
-
-        // Synchronize observer with current call state
-        observer.groupCallLocalDeviceStateChanged(self)
-        observer.groupCallRemoteDeviceStatesChanged(self)
-    }
-
-    func removeObserver(_ observer: any GroupThreadCallObserver) {
-        observers.removeAll(where: { $0 === observer })
-    }
-
-    func publishSendFailureUntrustedParticipantIdentity() {
-        observers.elements.forEach { $0.callMessageSendFailedUntrustedIdentity(self) }
     }
 
     // MARK: - Ringing
@@ -176,41 +136,16 @@ final class GroupThreadCall: Signal.GroupCall {
         }
 
         super.groupCall(onLocalDeviceStateChanged: groupCall)
-
-        observers.elements.forEach { $0.groupCallLocalDeviceStateChanged(self) }
     }
 
     override func groupCall(onRemoteDeviceStatesChanged groupCall: SignalRingRTC.GroupCall) {
         super.groupCall(onRemoteDeviceStatesChanged: groupCall)
-
-        observers.elements.forEach { $0.groupCallRemoteDeviceStatesChanged(self) }
 
         // Change this after notifying observers so that they can see when the ring has concluded.
         if case .ringing = groupCallRingState, !groupCall.remoteDeviceStates.isEmpty {
             groupCallRingState = .ringingEnded
             // Treat the end of ringing as a "local state change" for listeners that normally ignore remote changes.
             self.groupCall(onLocalDeviceStateChanged: groupCall)
-        }
-    }
-
-    override func groupCall(onReactions groupCall: SignalRingRTC.GroupCall, reactions: [SignalRingRTC.Reaction]) {
-        super.groupCall(onReactions: groupCall, reactions: reactions)
-
-        observers.elements.forEach {
-            $0.groupCallReceivedReactions(self, reactions: reactions)
-        }
-    }
-
-    override func groupCall(onRaisedHands groupCall: SignalRingRTC.GroupCall, raisedHands: [UInt32]) {
-        super.groupCall(onRaisedHands: groupCall, raisedHands: raisedHands)
-
-        guard
-            FeatureFlags.callRaiseHandReceiveSupport,
-            FeatureFlags.useCallMemberComposableViewsForRemoteUsersInGroupCalls
-        else { return }
-
-        observers.elements.forEach {
-            $0.groupCallReceivedRaisedHands(self, raisedHands: raisedHands)
         }
     }
 
@@ -242,26 +177,18 @@ final class GroupThreadCall: Signal.GroupCall {
         }
 
         super.groupCall(onPeekChanged: groupCall)
-
-        observers.elements.forEach { $0.groupCallPeekChanged(self) }
     }
 
     override func groupCall(requestMembershipProof groupCall: SignalRingRTC.GroupCall) {
         super.groupCall(requestMembershipProof: groupCall)
 
-        observers.elements.forEach { $0.groupCallRequestMembershipProof(self) }
+        delegate?.groupThreadCallRequestMembershipProof(self)
     }
 
     override func groupCall(requestGroupMembers groupCall: SignalRingRTC.GroupCall) {
         super.groupCall(requestGroupMembers: groupCall)
 
-        observers.elements.forEach { $0.groupCallRequestGroupMembers(self) }
-    }
-
-    override func groupCall(onEnded groupCall: SignalRingRTC.GroupCall, reason: GroupCallEndReason) {
-        super.groupCall(onEnded: groupCall, reason: reason)
-
-        observers.elements.forEach { $0.groupCallEnded(self, reason: reason) }
+        delegate?.groupThreadCallRequestGroupMembers(self)
     }
 }
 

@@ -125,8 +125,8 @@ extension GroupCallRemoteVideoManager: CallServiceStateObserver {
     }
 }
 
-extension GroupCallRemoteVideoManager: GroupThreadCallObserver {
-    func groupCallRemoteDeviceStatesChanged(_ call: GroupThreadCall) {
+extension GroupCallRemoteVideoManager: GroupCallObserver {
+    func groupCallRemoteDeviceStatesChanged(_ call: GroupCall) {
         for (demuxId, videoViews) in videoViews {
             guard let device = call.ringRtcCall.remoteDeviceStates[demuxId] else {
                 destroyRemoteVideoView(for: demuxId)
@@ -136,7 +136,7 @@ extension GroupCallRemoteVideoManager: GroupThreadCallObserver {
         }
     }
 
-    func groupCallEnded(_ call: GroupThreadCall, reason: GroupCallEndReason) {
+    func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason) {
         videoViews.keys.forEach { destroyRemoteVideoView(for: $0) }
     }
 }

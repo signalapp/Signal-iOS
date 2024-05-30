@@ -383,8 +383,8 @@ class CallHeader: UIView {
     }
 }
 
-extension CallHeader: GroupThreadCallObserver {
-    func groupCallLocalDeviceStateChanged(_ call: GroupThreadCall) {
+extension CallHeader: GroupCallObserver {
+    func groupCallLocalDeviceStateChanged(_ call: GroupCall) {
         if groupCall.localDeviceState.joinState == .joined {
             gradientView.isHidden = false
             avatarView.superview!.isHidden = true // hide the container
@@ -410,18 +410,18 @@ extension CallHeader: GroupThreadCallObserver {
         updateGroupMembersButton()
     }
 
-    func groupCallPeekChanged(_ call: GroupThreadCall) {
+    func groupCallPeekChanged(_ call: GroupCall) {
         updateCallStatusLabel()
         updateGroupMembersButton()
     }
 
-    func groupCallRemoteDeviceStatesChanged(_ call: GroupThreadCall) {
+    func groupCallRemoteDeviceStatesChanged(_ call: GroupCall) {
         updateCallTitleLabel()
         updateCallStatusLabel()
         updateGroupMembersButton()
     }
 
-    func groupCallEnded(_ call: GroupThreadCall, reason: GroupCallEndReason) {
+    func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason) {
         callDurationTimer?.invalidate()
         callDurationTimer = nil
 

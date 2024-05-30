@@ -1020,8 +1020,8 @@ extension GroupCallViewController: CallViewControllerWindowReference {
     }
 }
 
-extension GroupCallViewController: GroupThreadCallObserver {
-    func groupCallLocalDeviceStateChanged(_ call: GroupThreadCall) {
+extension GroupCallViewController: GroupCallObserver {
+    func groupCallLocalDeviceStateChanged(_ call: GroupCall) {
         AssertIsOnMainThread()
         owsAssert(self.groupThreadCall === call)
 
@@ -1037,7 +1037,7 @@ extension GroupCallViewController: GroupThreadCallObserver {
         }
     }
 
-    func groupCallRemoteDeviceStatesChanged(_ call: GroupThreadCall) {
+    func groupCallRemoteDeviceStatesChanged(_ call: GroupCall) {
         AssertIsOnMainThread()
         owsAssert(self.groupThreadCall === call)
 
@@ -1055,14 +1055,14 @@ extension GroupCallViewController: GroupThreadCallObserver {
         updateCallUI()
     }
 
-    func groupCallPeekChanged(_ call: GroupThreadCall) {
+    func groupCallPeekChanged(_ call: GroupCall) {
         AssertIsOnMainThread()
         owsAssert(self.groupThreadCall === call)
 
         updateCallUI()
     }
 
-    func groupCallEnded(_ call: GroupThreadCall, reason: GroupCallEndReason) {
+    func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason) {
         AssertIsOnMainThread()
         owsAssert(self.groupThreadCall === call)
 
@@ -1107,7 +1107,7 @@ extension GroupCallViewController: GroupThreadCallObserver {
         presentActionSheet(actionSheet)
     }
 
-    func groupCallReceivedReactions(_ call: GroupThreadCall, reactions: [SignalRingRTC.Reaction]) {
+    func groupCallReceivedReactions(_ call: GroupCall, reactions: [SignalRingRTC.Reaction]) {
         owsAssert(self.groupThreadCall === call)
         let localAci = databaseStorage.read { tx in
             return DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci
@@ -1141,11 +1141,11 @@ extension GroupCallViewController: GroupThreadCallObserver {
         self.reactionsSink.addReactions(reactions: mappedReactions)
     }
 
-    func groupCallReceivedRaisedHands(_ call: GroupThreadCall, raisedHands: [UInt32]) {
+    func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [UInt32]) {
         updateCallUI()
     }
 
-    func callMessageSendFailedUntrustedIdentity(_ call: GroupThreadCall) {
+    func callMessageSendFailedUntrustedIdentity(_ call: GroupCall) {
         AssertIsOnMainThread()
         owsAssert(self.groupThreadCall === call)
 

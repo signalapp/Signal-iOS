@@ -128,18 +128,18 @@ class GroupCallNotificationView: UIView {
     }
 }
 
-extension GroupCallNotificationView: GroupThreadCallObserver {
-    func groupCallRemoteDeviceStatesChanged(_ call: GroupThreadCall) {
+extension GroupCallNotificationView: GroupCallObserver {
+    func groupCallRemoteDeviceStatesChanged(_ call: GroupCall) {
         AssertIsOnMainThread()
         updateActiveMembers()
     }
 
-    func groupCallPeekChanged(_ call: GroupThreadCall) {
+    func groupCallPeekChanged(_ call: GroupCall) {
         AssertIsOnMainThread()
         updateActiveMembers()
     }
 
-    func groupCallEnded(_ call: GroupThreadCall, reason: GroupCallEndReason) {
+    func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason) {
         AssertIsOnMainThread()
 
         hasJoined = false

@@ -14,7 +14,7 @@ protocol CallAudioServiceDelegate: AnyObject {
     func callAudioServiceDidChangeAudioSource(_ callAudioService: CallAudioService, audioSource: AudioSource?)
 }
 
-class CallAudioService: IndividualCallObserver, GroupThreadCallObserver {
+class CallAudioService: IndividualCallObserver, GroupCallObserver {
 
     weak var delegate: CallAudioServiceDelegate? {
         willSet {
@@ -75,11 +75,11 @@ class CallAudioService: IndividualCallObserver, GroupThreadCallObserver {
         ensureProperAudioSession(call: call)
     }
 
-    func groupCallLocalDeviceStateChanged(_ call: GroupThreadCall) {
+    func groupCallLocalDeviceStateChanged(_ call: GroupCall) {
         ensureProperAudioSession(call: call)
     }
 
-    func groupCallEnded(_ call: GroupThreadCall, reason: GroupCallEndReason) {
+    func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason) {
         stopPlayingAnySounds()
         ensureProperAudioSession(call: call)
     }
@@ -104,7 +104,7 @@ class CallAudioService: IndividualCallObserver, GroupThreadCallObserver {
         self.isSpeakerEnabled = isEnabled
     }
 
-    private func requestSpeakerphone(call: GroupThreadCall, isEnabled: Bool) {
+    private func requestSpeakerphone(call: GroupCall, isEnabled: Bool) {
         // If toggled for an group call, save the enablement state and
         // update the AudioSession.
         self.isSpeakerEnabled = isEnabled
@@ -147,7 +147,7 @@ class CallAudioService: IndividualCallObserver, GroupThreadCallObserver {
         }
     }
 
-    private func ensureProperAudioSession(call: GroupThreadCall) {
+    private func ensureProperAudioSession(call: GroupCall) {
         guard call.ringRtcCall.localDeviceState.joinState != .notJoined else {
             // Revert to ambient audio.
             setAudioSession(category: .ambient, mode: .default)
