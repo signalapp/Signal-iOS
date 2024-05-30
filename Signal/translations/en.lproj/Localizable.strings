@@ -1960,6 +1960,12 @@
 /* The unit for a number of weeks */
 "DISAPPEARING_MESSAGES_WEEKS" = "weeks";
 
+/* Message/subtitle for confirmation prompt when discarding a draft before editing a message */
+"DISCARD_DRAFT_CONFIRMATION_MESSAGE" = "This action can’t be undone.";
+
+/* Title for confirmation prompt when discarding a draft before editing a message */
+"DISCARD_DRAFT_CONFIRMATION_TITLE" = "Discard Draft?";
+
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Dismiss";
 

@@ -8,9 +8,31 @@ import SignalServiceKit
 import SignalUI
 
 extension ConversationViewController: MessageActionsDelegate {
-
     func messageActionsEditItem(_ itemViewModel: CVItemViewModelImpl) {
-        populateMessageEdit(itemViewModel)
+        let hasUnsavedDraft: Bool
+
+        if let inputToolbar {
+            hasUnsavedDraft = inputToolbar.hasUnsavedDraft
+        } else {
+            owsFailDebug("Missing inputToolbar.")
+            hasUnsavedDraft = false
+        }
+
+        if hasUnsavedDraft {
+            let sheet = ActionSheetController(
+                title: OWSLocalizedString("DISCARD_DRAFT_CONFIRMATION_TITLE", comment: "Title for confirmation prompt when discarding a draft before editing a message"),
+                message: OWSLocalizedString("DISCARD_DRAFT_CONFIRMATION_MESSAGE", comment: "Message/subtitle for confirmation prompt when discarding a draft before editing a message")
+            )
+            sheet.addAction(
+                ActionSheetAction(title: CommonStrings.discardButton, style: .destructive) { [self] _ in
+                    populateMessageEdit(itemViewModel)
+                }
+            )
+            sheet.addAction(.cancel)
+            present(sheet, animated: true)
+        } else {
+            populateMessageEdit(itemViewModel)
+        }
     }
 
     func populateMessageEdit(_ itemViewModel: CVItemViewModelImpl) {

@@ -24,19 +24,21 @@ public class CommonStrings: NSObject {
         OWSLocalizedString("BACK_BUTTON", comment: "return to the previous screen")
     }
 
+    @objc
+    static public var cancelButton: String {
+        OWSLocalizedString("TXT_CANCEL_TITLE", comment: "Label for the cancel button in an alert or action sheet.")
+    }
+
     static public var continueButton: String {
         OWSLocalizedString("BUTTON_CONTINUE", comment: "Label for 'continue' button.")
     }
 
-    static public var dismissButton: String {
-        OWSLocalizedString("DISMISS_BUTTON_TEXT",
-                          comment: "Short text to dismiss current modal / actionsheet / screen")
+    static public var discardButton: String {
+        OWSLocalizedString("ALERT_DISCARD_BUTTON", comment: "The label for the 'discard' button in alerts and action sheets.")
     }
 
-    @objc
-    static public var cancelButton: String {
-        OWSLocalizedString("TXT_CANCEL_TITLE",
-                          comment: "Label for the cancel button in an alert or action sheet.")
+    static public var dismissButton: String {
+        OWSLocalizedString("DISMISS_BUTTON_TEXT", comment: "Short text to dismiss current modal / actionsheet / screen")
     }
 
     static public var selectButton: String {

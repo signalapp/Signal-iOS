@@ -904,6 +904,21 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     // MARK: Message Body
 
+    var hasUnsavedDraft: Bool {
+        let currentDraft = messageBodyForSending ?? .empty
+
+        if let editTarget {
+            let editTargetMessage = MessageBody(
+                text: editTarget.body ?? "",
+                ranges: editTarget.bodyRanges ?? .empty
+            )
+
+            return currentDraft != editTargetMessage
+        }
+
+        return !currentDraft.isEmpty
+    }
+
     var messageBodyForSending: MessageBody? { inputTextView.messageBodyForSending }
 
     func setMessageBody(_ messageBody: MessageBody?, animated: Bool, doLayout: Bool = true) {

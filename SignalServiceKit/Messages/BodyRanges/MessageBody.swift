@@ -9,19 +9,35 @@ import LibSignalClient
 /// MessageBody is a container for a message's body as well as the `MessageBodyRanges` that
 /// apply to it.
 /// Most of the work is done by `MessageBodyRanges`; this is just a container for the text too.
-@objcMembers
+@objc
 public class MessageBody: NSObject, NSCopying, NSSecureCoding {
-
     typealias Style = MessageBodyRanges.Style
     typealias CollapsedStyle = MessageBodyRanges.CollapsedStyle
+
+    public static var empty: MessageBody {
+        MessageBody(text: "", ranges: .empty)
+    }
 
     public static var supportsSecureCoding = true
     public static let mentionPlaceholder = "\u{FFFC}" // Object Replacement Character
 
+    @objc
     public let text: String
+
+    @objc
     public let ranges: MessageBodyRanges
-    public var hasRanges: Bool { ranges.hasRanges }
-    private var hasMentions: Bool { ranges.hasMentions }
+
+    public var hasRanges: Bool {
+        ranges.hasRanges
+    }
+
+    private var hasMentions: Bool {
+        ranges.hasMentions
+    }
+
+    public var isEmpty: Bool {
+        text.isEmpty
+    }
 
     public init(text: String, ranges: MessageBodyRanges) {
         self.text = text
@@ -123,7 +139,7 @@ public class MessageBody: NSObject, NSCopying, NSSecureCoding {
         )
     }
 
-    override public func isEqual(_ object: Any?) -> Bool {
+    public override func isEqual(_ object: Any?) -> Bool {
         guard let other = object as? MessageBody else {
             return false
         }
@@ -135,10 +151,16 @@ public class MessageBody: NSObject, NSCopying, NSSecureCoding {
         }
         return true
     }
+
+    public override var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(text)
+        hasher.combine(ranges)
+        return hasher.finalize()
+    }
 }
 
 extension MessageBody {
-
     /// Convenience method to hydrate a MessageBody for forwarding to a thread destination.
     public func forForwarding(
         to context: TSThread,
@@ -220,7 +242,6 @@ extension MessageBody {
 }
 
 public extension TSThread {
-
     var allowsMentionSend: Bool {
         guard let groupThread = self as? TSGroupThread else { return false }
         return groupThread.groupModel.groupsVersion == .V2

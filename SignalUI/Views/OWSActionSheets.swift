@@ -164,8 +164,7 @@ public enum OWSActionSheets {
         )
 
         let discardAction = ActionSheetAction(
-            title: OWSLocalizedString("ALERT_DISCARD_BUTTON",
-                                      comment: "The label for the 'discard' button in alerts and action sheets."),
+            title: CommonStrings.discardButton,
             accessibilityIdentifier: "OWSActionSheets.discard",
             style: .destructive
         ) { _ in discardAction() }

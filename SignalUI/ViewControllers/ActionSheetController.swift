@@ -587,6 +587,14 @@ extension ActionSheetAction {
             style: .default
         )
     }
+
+    public static var cancel: ActionSheetAction {
+        ActionSheetAction(
+            title: CommonStrings.cancelButton,
+            accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "alert", name: "cancel"),
+            style: .cancel
+        )
+    }
 }
 
 // MARK: -
