@@ -14,7 +14,7 @@ class GroupCallRemoteVideoManager {
         self.callServiceState = callServiceState
     }
 
-    private var currentGroupCall: SignalRingRTC.GroupCall? {
+    private var currentRingRtcCall: SignalRingRTC.GroupCall? {
         switch callServiceState.currentCall?.mode {
         case nil:
             return nil
@@ -60,7 +60,7 @@ class GroupCallRemoteVideoManager {
         updateVideoRequestsDebounceTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false, block: { [weak self] _ in
             AssertIsOnMainThread()
             guard let self = self else { return }
-            guard let groupCall = self.currentGroupCall else { return }
+            guard let groupCall = self.currentRingRtcCall else { return }
 
             var activeSpeakerHeight: UInt16 = 0
 
@@ -101,7 +101,7 @@ extension GroupCallRemoteVideoManager: GroupCallRemoteVideoViewSizeDelegate {
 
     func groupCallRemoteVideoViewDidChangeSuperview(remoteVideoView: GroupCallRemoteVideoView) {
         AssertIsOnMainThread()
-        guard let device = currentGroupCall?.remoteDeviceStates[remoteVideoView.demuxId] else { return }
+        guard let device = currentRingRtcCall?.remoteDeviceStates[remoteVideoView.demuxId] else { return }
         remoteVideoView.configure(for: device)
         updateVideoRequests()
     }

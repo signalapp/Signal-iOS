@@ -10,12 +10,12 @@ class GroupCallVideoGrid: UICollectionView {
     weak var memberViewErrorPresenter: CallMemberErrorPresenter?
     let layout: GroupCallVideoGridLayout
     let call: SignalCall
-    let groupCall: SignalRingRTC.GroupCall
+    let ringRtcCall: SignalRingRTC.GroupCall
     let groupThreadCall: GroupThreadCall
 
     init(call: SignalCall, groupThreadCall: GroupThreadCall) {
         self.call = call
-        self.groupCall = groupThreadCall.ringRtcCall
+        self.ringRtcCall = groupThreadCall.ringRtcCall
         self.groupThreadCall = groupThreadCall
         self.layout = GroupCallVideoGridLayout()
 
@@ -52,7 +52,7 @@ extension GroupCallVideoGrid: UICollectionViewDelegate {
 
 extension GroupCallVideoGrid: UICollectionViewDataSource {
     var gridRemoteDeviceStates: [RemoteDeviceState] {
-        let remoteDeviceStates = groupCall.remoteDeviceStates.sortedBySpeakerTime
+        let remoteDeviceStates = ringRtcCall.remoteDeviceStates.sortedBySpeakerTime
         return Array(remoteDeviceStates.prefix(maxItems)).sortedByAddedTime
     }
 

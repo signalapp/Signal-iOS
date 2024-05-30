@@ -61,12 +61,12 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
 
             guard let remoteGroupMemberDeviceState else { return }
 
-            let groupCall: SignalRingRTC.GroupCall
+            let ringRtcCall: SignalRingRTC.GroupCall
             switch call.mode {
             case .individual:
                 owsFail("Can't configure remoteInGroup for individual call.")
             case .groupThread(let groupThreadCall):
-                groupCall = groupThreadCall.ringRtcCall
+                ringRtcCall = groupThreadCall.ringRtcCall
             }
 
             let isRemoteDeviceBlocked = databaseStorage.read { tx in
@@ -91,7 +91,7 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
                     repeats: false,
                     block: { [weak self] _ in
                         guard let self = self else { return }
-                        guard let updatedState = groupCall.remoteDeviceStates.values
+                        guard let updatedState = ringRtcCall.remoteDeviceStates.values
                             .first(where: { $0.demuxId == configuredDemuxId }) else { return }
                         self.configure(call: call, remoteGroupMemberDeviceState: updatedState)
                     }

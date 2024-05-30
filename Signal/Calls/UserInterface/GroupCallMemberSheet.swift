@@ -19,7 +19,7 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
 
     private let tableView = UITableView(frame: .zero, style: .insetGrouped)
     private let call: SignalCall
-    private let groupCall: SignalRingRTC.GroupCall
+    private let ringRtcCall: SignalRingRTC.GroupCall
     private let groupThreadCall: GroupThreadCall
 
     override var sheetBackgroundColor: UIColor {
@@ -28,7 +28,7 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
 
     init(call: SignalCall, groupThreadCall: GroupThreadCall) {
         self.call = call
-        self.groupCall = groupThreadCall.ringRtcCall
+        self.ringRtcCall = groupThreadCall.ringRtcCall
         self.groupThreadCall = groupThreadCall
 
         super.init(blurEffect: nil)
@@ -185,8 +185,8 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
 
             var members = [JoinedMember]()
             let config: DisplayName.ComparableValue.Config = .current()
-            if self.groupCall.localDeviceState.joinState == .joined {
-                members += self.groupCall.remoteDeviceStates.values.map { member in
+            if self.ringRtcCall.localDeviceState.joinState == .joined {
+                members += self.ringRtcCall.remoteDeviceStates.values.map { member in
                     let resolvedName: String
                     let comparableName: DisplayName.ComparableValue
                     if member.aci == localIdentifiers.aci {
@@ -222,14 +222,14 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
                     displayName: displayName,
                     comparableName: comparableName,
                     demuxID: nil,
-                    isAudioMuted: self.groupCall.isOutgoingAudioMuted,
-                    isVideoMuted: self.groupCall.isOutgoingVideoMuted,
+                    isAudioMuted: self.ringRtcCall.isOutgoingAudioMuted,
+                    isVideoMuted: self.ringRtcCall.isOutgoingVideoMuted,
                     isPresenting: false
                 ))
             } else {
                 // If we're not yet in the call, `remoteDeviceStates` will not exist.
                 // We can get the list of joined members still, provided we are connected.
-                members += self.groupCall.peekInfo?.joinedMembers.map { aciUuid in
+                members += self.ringRtcCall.peekInfo?.joinedMembers.map { aciUuid in
                     let aci = Aci(fromUUID: aciUuid)
                     let address = SignalServiceAddress(aci)
                     let displayName = self.contactsManager.displayName(for: address, tx: transaction)

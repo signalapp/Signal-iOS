@@ -16,7 +16,7 @@ class GroupCallVideoOverflow: UICollectionView {
     weak var overflowDelegate: GroupCallVideoOverflowDelegate?
 
     let call: SignalCall
-    let groupCall: SignalRingRTC.GroupCall
+    let ringRtcCall: SignalRingRTC.GroupCall
     let groupThreadCall: GroupThreadCall
 
     class var itemHeight: CGFloat {
@@ -34,7 +34,7 @@ class GroupCallVideoOverflow: UICollectionView {
 
     init(call: SignalCall, groupThreadCall: GroupThreadCall, delegate: GroupCallVideoOverflowDelegate) {
         self.call = call
-        self.groupCall = groupThreadCall.ringRtcCall
+        self.ringRtcCall = groupThreadCall.ringRtcCall
         self.groupThreadCall = groupThreadCall
         self.overflowDelegate = delegate
 
@@ -172,7 +172,7 @@ extension GroupCallVideoOverflow: UICollectionViewDataSource {
     var overflowedRemoteDeviceStates: [RemoteDeviceState] {
         guard let firstOverflowMemberIndex = overflowDelegate?.firstOverflowMemberIndex else { return [] }
 
-        let joinedRemoteDeviceStates = groupCall.remoteDeviceStates.sortedBySpeakerTime
+        let joinedRemoteDeviceStates = ringRtcCall.remoteDeviceStates.sortedBySpeakerTime
 
         guard joinedRemoteDeviceStates.count > firstOverflowMemberIndex else { return [] }
 

@@ -9,7 +9,7 @@ import SignalServiceKit
 
 class GroupCallNotificationView: UIView {
     private let call: SignalCall
-    private let groupCall: SignalRingRTC.GroupCall
+    private let ringRtcCall: SignalRingRTC.GroupCall
     private let groupThreadCall: GroupThreadCall
     private var callService: CallService { AppEnvironment.shared.callService }
 
@@ -24,7 +24,7 @@ class GroupCallNotificationView: UIView {
 
     init(call: SignalCall, groupThreadCall: GroupThreadCall) {
         self.call = call
-        self.groupCall = groupThreadCall.ringRtcCall
+        self.ringRtcCall = groupThreadCall.ringRtcCall
         self.groupThreadCall = groupThreadCall
         super.init(frame: .zero)
 
@@ -39,7 +39,7 @@ class GroupCallNotificationView: UIView {
 
     private var hasJoined = false
     private func updateActiveMembers() {
-        let newActiveMembers = Set(groupCall.remoteDeviceStates.values.map {
+        let newActiveMembers = Set(ringRtcCall.remoteDeviceStates.values.map {
             ActiveMember(demuxId: $0.demuxId, aci: Aci(fromUUID: $0.userId))
         })
 
@@ -53,7 +53,7 @@ class GroupCallNotificationView: UIView {
             membersPendingLeaveNotification.subtract(joinedMembers)
             membersPendingLeaveNotification.formUnion(leftMembers)
         } else {
-            hasJoined = groupCall.localDeviceState.joinState == .joined
+            hasJoined = ringRtcCall.localDeviceState.joinState == .joined
         }
 
         activeMembers = newActiveMembers

@@ -50,13 +50,13 @@ class CallHeader: UIView {
     private let groupMembersButton = GroupMembersButton()
 
     private let call: SignalCall
-    private let groupCall: SignalRingRTC.GroupCall
+    private let ringRtcCall: SignalRingRTC.GroupCall
     private let groupThreadCall: GroupThreadCall
     private weak var delegate: CallHeaderDelegate!
 
     init(call: SignalCall, groupThreadCall: GroupThreadCall, delegate: CallHeaderDelegate) {
         self.call = call
-        self.groupCall = groupThreadCall.ringRtcCall
+        self.ringRtcCall = groupThreadCall.ringRtcCall
         self.groupThreadCall = groupThreadCall
         self.delegate = delegate
         super.init(frame: .zero)
@@ -221,7 +221,7 @@ class CallHeader: UIView {
 
     private func updateCallStatusLabel() {
         let callStatusText: String
-        switch groupCall.localDeviceState.joinState {
+        switch ringRtcCall.localDeviceState.joinState {
         case .notJoined, .joining, .pending:
             if case .incomingRing(let caller, _) = groupThreadCall.groupCallRingState {
                 let callerName = databaseStorage.read { transaction in
@@ -232,7 +232,7 @@ class CallHeader: UIView {
                     comment: "Text explaining that someone has sent a ring to the group. Embeds {ring sender name}")
                 callStatusText = String(format: formatString, callerName)
 
-            } else if let joinedMembers = groupCall.peekInfo?.joinedMembers, !joinedMembers.isEmpty {
+            } else if let joinedMembers = ringRtcCall.peekInfo?.joinedMembers, !joinedMembers.isEmpty {
                 let memberNames: [String] = databaseStorage.read { tx in
                     joinedMembers.prefix(2).map {
                         contactsManager.displayName(for: SignalServiceAddress(Aci(fromUUID: $0)), tx: tx).resolvedValue(useShortNameIfAvailable: true)
@@ -253,7 +253,7 @@ class CallHeader: UIView {
                         tableName: "PluralAware",
                         comment: "Text explaining that there are three or more people in the group call. Embeds {{ %1$@ participantCount-2, %2$@ participant1, %3$@ participant2 }}"))
 
-            } else if groupCall.peekInfo == nil && groupThreadCall.ringRestrictions.contains(.callInProgress) {
+            } else if ringRtcCall.peekInfo == nil && groupThreadCall.ringRestrictions.contains(.callInProgress) {
                 // If we think there might already be a call, don't show anything until we have proper peek info.
                 callStatusText = ""
             } else {
@@ -291,12 +291,12 @@ class CallHeader: UIView {
                 }
             }
         case .joined:
-            if groupCall.localDeviceState.connectionState == .reconnecting {
+            if ringRtcCall.localDeviceState.connectionState == .reconnecting {
                 callStatusText = OWSLocalizedString(
                     "GROUP_CALL_RECONNECTING",
                     comment: "Text indicating that the user has lost their connection to the call and we are reconnecting.")
 
-            } else if groupCall.remoteDeviceStates.isEmpty {
+            } else if ringRtcCall.remoteDeviceStates.isEmpty {
                 if case .ringing = groupThreadCall.groupCallRingState {
                     let (memberCount, firstTwoNames) = fetchGroupSizeAndMemberNamesWithSneakyTransaction()
                     callStatusText = describeMembers(
@@ -345,8 +345,8 @@ class CallHeader: UIView {
     private func updateCallTitleLabel() {
         let callTitleText: String
         if
-            groupCall.localDeviceState.joinState == .joined,
-            let firstMember = groupCall.remoteDeviceStates.sortedBySpeakerTime.first,
+            ringRtcCall.localDeviceState.joinState == .joined,
+            let firstMember = ringRtcCall.remoteDeviceStates.sortedBySpeakerTime.first,
             firstMember.presenting == true
         {
             let presentingName = databaseStorage.read { tx in
@@ -367,15 +367,15 @@ class CallHeader: UIView {
     }
 
     func updateGroupMembersButton() {
-        let isJoined = groupCall.localDeviceState.joinState == .joined
-        let remoteMemberCount = isJoined ? groupCall.remoteDeviceStates.count : Int(groupCall.peekInfo?.deviceCountExcludingPendingDevices ?? 0)
+        let isJoined = ringRtcCall.localDeviceState.joinState == .joined
+        let remoteMemberCount = isJoined ? ringRtcCall.remoteDeviceStates.count : Int(ringRtcCall.peekInfo?.deviceCountExcludingPendingDevices ?? 0)
         groupMembersButton.updateMemberCount(remoteMemberCount + (isJoined ? 1 : 0))
     }
 
     // For testing abnormal scenarios.
     @objc
     private func injectDisconnect() {
-        groupCall.disconnect()
+        ringRtcCall.disconnect()
     }
 
     required init?(coder: NSCoder) {
@@ -385,7 +385,7 @@ class CallHeader: UIView {
 
 extension CallHeader: GroupCallObserver {
     func groupCallLocalDeviceStateChanged(_ call: GroupCall) {
-        if groupCall.localDeviceState.joinState == .joined {
+        if ringRtcCall.localDeviceState.joinState == .joined {
             gradientView.isHidden = false
             avatarView.superview!.isHidden = true // hide the container
             if callDurationTimer == nil {

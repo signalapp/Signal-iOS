@@ -15,7 +15,7 @@ import UIKit
 class GroupCallViewController: UIViewController {
     private let call: SignalCall
     // TODO: Support Call Links.
-    private let groupCall: SignalRingRTC.GroupCall
+    private let ringRtcCall: SignalRingRTC.GroupCall
     private let groupThreadCall: GroupThreadCall
     private lazy var callControlsConfirmationToastManager = CallControlsConfirmationToastManager(
         presentingContainerView: callControlsConfirmationToastContainerView
@@ -113,7 +113,7 @@ class GroupCallViewController: UIViewController {
     }()
     private lazy var callControlsOverflowView: CallControlsOverflowView = {
         return CallControlsOverflowView(
-            reactionSender: self.groupCall,
+            reactionSender: self.ringRtcCall,
             reactionsSink: self.reactionsSink,
             emojiPickerSheetPresenter: self,
             callControlsOverflowPresenter: self
@@ -134,7 +134,7 @@ class GroupCallViewController: UIViewController {
         localMemberView = CallMemberView(type: type)
 
         self.call = call
-        self.groupCall = groupThreadCall.ringRtcCall
+        self.ringRtcCall = groupThreadCall.ringRtcCall
         self.groupThreadCall = groupThreadCall
 
         super.init(nibName: nil, bundle: nil)
@@ -350,14 +350,14 @@ class GroupCallViewController: UIViewController {
         }
     }
 
-    private var hasOverflowMembers: Bool { videoGrid.maxItems < groupCall.remoteDeviceStates.count }
+    private var hasOverflowMembers: Bool { videoGrid.maxItems < ringRtcCall.remoteDeviceStates.count }
 
     private func updateScrollViewFrames(size: CGSize? = nil, controlsAreHidden: Bool) {
         view.layoutIfNeeded()
 
         let size = size ?? view.frame.size
 
-        if groupCall.remoteDeviceStates.count < 2 || groupCall.localDeviceState.joinState != .joined {
+        if ringRtcCall.remoteDeviceStates.count < 2 || ringRtcCall.localDeviceState.joinState != .joined {
             videoGrid.frame = .zero
             videoGrid.isHidden = true
             speakerPage.frame = CGRect(
@@ -432,9 +432,9 @@ class GroupCallViewController: UIViewController {
         speakerView.applyChangesToCallMemberViewAndVideoView { view in
             view.removeFromSuperview()
         }
-        switch groupCall.localDeviceState.joinState {
+        switch ringRtcCall.localDeviceState.joinState {
         case .joined:
-            if groupCall.remoteDeviceStates.count > 0 {
+            if ringRtcCall.remoteDeviceStates.count > 0 {
                 speakerView.applyChangesToCallMemberViewAndVideoView { view in
                     speakerPage.addSubview(view)
                     view.autoPinEdgesToSuperviewEdges()
@@ -446,9 +446,9 @@ class GroupCallViewController: UIViewController {
 
                 let pipSize = CallMemberView.pipSize(
                     expandedPipFrame: self.expandedPipFrame,
-                    remoteDeviceCount: groupCall.remoteDeviceStates.count
+                    remoteDeviceCount: ringRtcCall.remoteDeviceStates.count
                 )
-                if groupCall.remoteDeviceStates.count > 1 {
+                if ringRtcCall.remoteDeviceStates.count > 1 {
                     let y: CGFloat
                     if nil != expandedPipFrame {
                         // Necessary because when the pip is expanded, the
@@ -505,7 +505,7 @@ class GroupCallViewController: UIViewController {
     }
 
     func updateSwipeToastView() {
-        let isSpeakerViewAvailable = groupCall.remoteDeviceStates.count >= 2 && groupCall.localDeviceState.joinState == .joined
+        let isSpeakerViewAvailable = ringRtcCall.remoteDeviceStates.count >= 2 && ringRtcCall.localDeviceState.joinState == .joined
         guard isSpeakerViewAvailable else {
             swipeToastView.isHidden = true
             return
@@ -564,9 +564,9 @@ class GroupCallViewController: UIViewController {
         // Force load the view if it hasn't been yet.
         _ = self.view
 
-        let localDevice = groupCall.localDeviceState
+        let localDevice = ringRtcCall.localDeviceState
 
-        let isFullScreen = localDevice.joinState != .joined || groupCall.remoteDeviceStates.isEmpty
+        let isFullScreen = localDevice.joinState != .joined || ringRtcCall.remoteDeviceStates.isEmpty
         localMemberView.configure(
             call: call,
             isFullScreen: isFullScreen
@@ -580,7 +580,7 @@ class GroupCallViewController: UIViewController {
             view.isHidden = WindowManager.shared.isCallInPip
         }
 
-        if let speakerState = groupCall.remoteDeviceStates.sortedBySpeakerTime.first {
+        if let speakerState = ringRtcCall.remoteDeviceStates.sortedBySpeakerTime.first {
             if let speakerView = speakerView as? CallMemberView {
                 speakerView.configure(
                     call: call,
@@ -688,7 +688,7 @@ class GroupCallViewController: UIViewController {
             case .none:
                 // This can happen if you tap the root view fast enough in succession.
                 animateCallControls(
-                    hideCallControls: !groupCall.remoteDeviceStates.isEmpty,
+                    hideCallControls: !ringRtcCall.remoteDeviceStates.isEmpty,
                     size: size
                 )
                 self.callControlsOverflowView.animateOut()
@@ -701,7 +701,7 @@ class GroupCallViewController: UIViewController {
                 updateFrames(controlsAreHidden: false)
             case .none:
                 animateCallControls(
-                    hideCallControls: !groupCall.remoteDeviceStates.isEmpty,
+                    hideCallControls: !ringRtcCall.remoteDeviceStates.isEmpty,
                     size: size
                 )
             }
@@ -812,7 +812,7 @@ class GroupCallViewController: UIViewController {
             break
         }
 
-        if groupCall.remoteDeviceStates.isEmpty {
+        if ringRtcCall.remoteDeviceStates.isEmpty {
             controlTimeoutTimer?.invalidate()
             controlTimeoutTimer = nil
             return
@@ -828,7 +828,7 @@ class GroupCallViewController: UIViewController {
         controlTimeoutTimer?.invalidate()
         controlTimeoutTimer = nil
 
-        guard !isCallMinimized && !groupCall.remoteDeviceStates.isEmpty else { return }
+        guard !isCallMinimized && !ringRtcCall.remoteDeviceStates.isEmpty else { return }
 
         switch self.callControlsDisplayState {
         case .callControlsAndOverflow,
@@ -845,7 +845,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
     var remoteVideoViewReference: CallMemberView_RemoteMemberBridge { speakerView }
 
     var remoteVideoAddress: SignalServiceAddress {
-        guard let firstMember = groupCall.remoteDeviceStates.sortedByAddedTime.first else {
+        guard let firstMember = ringRtcCall.remoteDeviceStates.sortedByAddedTime.first else {
             return DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.aciAddress
         }
         return firstMember.address
@@ -920,12 +920,12 @@ extension GroupCallViewController: CallViewControllerWindowReference {
     private func safetyNumberMismatchAddresses(untrustedThreshold: Date?) -> [SignalServiceAddress] {
         databaseStorage.read { transaction in
             let addressesToCheck: [SignalServiceAddress]
-            if groupCall.localDeviceState.joinState == .notJoined {
+            if ringRtcCall.localDeviceState.joinState == .notJoined {
                 // If we haven't joined the call yet, we want to alert for all members of the group
                 addressesToCheck = groupThreadCall.groupThread.recipientAddresses(with: transaction)
             } else {
                 // If we are in the call, we only care about safety numbers for the active call participants
-                addressesToCheck = groupCall.remoteDeviceStates.map { $0.value.address }
+                addressesToCheck = ringRtcCall.remoteDeviceStates.map { $0.value.address }
             }
 
             let identityManager = DependenciesBridge.shared.identityManager
@@ -941,7 +941,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
 
     fileprivate func resolveSafetyNumberMismatch() {
         let resendMediaKeysAndResetMismatch = { [unowned self] in
-            self.groupCall.resendMediaKeys()
+            self.ringRtcCall.resendMediaKeys()
             self.hasUnresolvedSafetyNumberMismatch = false
         }
 
@@ -974,7 +974,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
     }
 
     fileprivate func presentSafetyNumberChangeSheetIfNecessary(untrustedThreshold: Date? = nil, completion: @escaping (Bool) -> Void) {
-        let localDeviceHasNotJoined = groupCall.localDeviceState.joinState == .notJoined
+        let localDeviceHasNotJoined = ringRtcCall.localDeviceState.joinState == .notJoined
         let newUntrustedThreshold = Date()
         let addressesToAlert = safetyNumberMismatchAddresses(untrustedThreshold: untrustedThreshold)
 
@@ -1027,10 +1027,10 @@ extension GroupCallViewController: GroupCallObserver {
 
         updateCallUI()
 
-        switch groupCall.localDeviceState.joinState {
+        switch ringRtcCall.localDeviceState.joinState {
         case .joined:
             if membersAtJoin == nil {
-                membersAtJoin = Set(groupCall.remoteDeviceStates.lazy.map { $0.value.address })
+                membersAtJoin = Set(ringRtcCall.remoteDeviceStates.lazy.map { $0.value.address })
             }
         case .pending, .joining, .notJoined:
             membersAtJoin = nil
@@ -1041,9 +1041,9 @@ extension GroupCallViewController: GroupCallObserver {
         AssertIsOnMainThread()
         owsAssert(self.groupThreadCall === call)
 
-        isAnyRemoteDeviceScreenSharing = groupCall.remoteDeviceStates.values.first { $0.sharingScreen == true } != nil
+        isAnyRemoteDeviceScreenSharing = ringRtcCall.remoteDeviceStates.values.first { $0.sharingScreen == true } != nil
 
-        if groupCall.remoteDeviceStates.isEmpty {
+        if ringRtcCall.remoteDeviceStates.isEmpty {
             switch self.callControlsDisplayState {
             case .callControlsAndOverflow, .callControlsOnly:
                 break
@@ -1076,7 +1076,7 @@ extension GroupCallViewController: GroupCallObserver {
         let title: String
 
         if reason == .hasMaxDevices {
-            if let maxDevices = groupCall.maxDevices {
+            if let maxDevices = ringRtcCall.maxDevices {
                 let formatString = OWSLocalizedString("GROUP_CALL_HAS_MAX_DEVICES_%d", tableName: "PluralAware",
                                                      comment: "An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}."
                 )
@@ -1121,7 +1121,7 @@ extension GroupCallViewController: GroupCallObserver {
                 let name: String
                 let aci: Aci
                 if
-                    let remoteDeviceState = groupCall.remoteDeviceStates[reaction.demuxId],
+                    let remoteDeviceState = ringRtcCall.remoteDeviceStates[reaction.demuxId],
                     remoteDeviceState.aci != localAci
                 {
                     name = contactsManager.displayName(for: remoteDeviceState.address, tx: tx).resolvedValue()
@@ -1178,7 +1178,7 @@ extension GroupCallViewController: IncomingCallControlsDelegate {
 
 extension GroupCallViewController: CallHeaderDelegate {
     func didTapBackButton() {
-        if groupCall.localDeviceState.joinState == .joined {
+        if ringRtcCall.localDeviceState.joinState == .joined {
             isCallMinimized = true
             WindowManager.shared.leaveCallView()
             // This ensures raised hands are removed
@@ -1234,7 +1234,7 @@ extension GroupCallViewController: CallControlsDelegate {
     func didPressJoin() {
         guard call.canJoin else {
             let text: String
-            if let maxDevices = groupCall.maxDevices {
+            if let maxDevices = ringRtcCall.maxDevices {
                 let formatString = OWSLocalizedString("GROUP_CALL_HAS_MAX_DEVICES_%d", tableName: "PluralAware",
                                                      comment: "An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}."
                 )
@@ -1319,7 +1319,7 @@ extension GroupCallViewController: AnimatableLocalMemberViewDelegate {
     }
 
     var remoteDeviceCount: Int {
-        return groupCall.remoteDeviceStates.count
+        return ringRtcCall.remoteDeviceStates.count
     }
 
     func animatableLocalMemberViewDidCompleteExpandAnimation(_ localMemberView: CallMemberView) {
