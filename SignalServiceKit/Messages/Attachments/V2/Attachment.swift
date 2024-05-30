@@ -76,7 +76,8 @@ public class Attachment {
         public let encryptionKey: Data
 
         /// Byte count of the resource encrypted using the ``TransitTierInfo.encryptionKey``.
-        public let encryptedByteCount: UInt32
+        /// Not provided to us by senders of incoming attachments; only set for attachments we upload.
+        public let encryptedByteCount: UInt32?
 
         /// SHA256Hash(iv + cyphertext + hmac),
         /// (iv + cyphertext + hmac) is the thing we actually upload to the CDN server, which uses
