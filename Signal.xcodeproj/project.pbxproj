@@ -910,6 +910,7 @@
 		66883A3A29D7630A00E898CF /* MessageBodyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66883A3829D7630300E898CF /* MessageBodyTests.swift */; };
 		6688E602298232A4004467C8 /* PaymentActionSheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6688E601298232A4004467C8 /* PaymentActionSheets.swift */; };
 		6689B23A2C055F7C003D5B2F /* OrphanedAttachmentRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6689B2392C055F7C003D5B2F /* OrphanedAttachmentRecord.swift */; };
+		6689B23D2C064E82003D5B2F /* OrphanedAttachmentCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6689B23C2C064E82003D5B2F /* OrphanedAttachmentCleaner.swift */; };
 		668A28AF2BF703E100BB29B3 /* CreateV2AttachmentTablesMigrationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A28AE2BF703E100BB29B3 /* CreateV2AttachmentTablesMigrationTest.swift */; };
 		668B24182BBB663400EB60C4 /* MockAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668B24172BBB663400EB60C4 /* MockAttachment.swift */; };
 		668B30092BBDD9A20001FD25 /* EditManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668B30082BBDD9A20001FD25 /* EditManagerImpl.swift */; };
@@ -3804,6 +3805,7 @@
 		66883A3829D7630300E898CF /* MessageBodyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBodyTests.swift; sourceTree = "<group>"; };
 		6688E601298232A4004467C8 /* PaymentActionSheets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentActionSheets.swift; sourceTree = "<group>"; };
 		6689B2392C055F7C003D5B2F /* OrphanedAttachmentRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrphanedAttachmentRecord.swift; sourceTree = "<group>"; };
+		6689B23C2C064E82003D5B2F /* OrphanedAttachmentCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrphanedAttachmentCleaner.swift; sourceTree = "<group>"; };
 		668A28AE2BF703E100BB29B3 /* CreateV2AttachmentTablesMigrationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateV2AttachmentTablesMigrationTest.swift; sourceTree = "<group>"; };
 		668AB0CB28AD610600B31984 /* StoryUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryUtil.swift; sourceTree = "<group>"; };
 		668B24172BBB663400EB60C4 /* MockAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAttachment.swift; sourceTree = "<group>"; };
@@ -7639,6 +7641,14 @@
 			path = TSResource;
 			sourceTree = "<group>";
 		};
+		6689B23B2C064E6D003D5B2F /* OrphanedAttachments */ = {
+			isa = PBXGroup;
+			children = (
+				6689B23C2C064E82003D5B2F /* OrphanedAttachmentCleaner.swift */,
+			);
+			path = OrphanedAttachments;
+			sourceTree = "<group>";
+		};
 		668B24162BBB661B00EB60C4 /* Mocks */ = {
 			isa = PBXGroup;
 			children = (
@@ -7840,6 +7850,7 @@
 				66D7B93E2B9A67A20005C98B /* Downloads */,
 				66076B672BC0A05B0043D547 /* Migration */,
 				668B24162BBB661B00EB60C4 /* Mocks */,
+				6689B23B2C064E6D003D5B2F /* OrphanedAttachments */,
 				664165112BA4A26000C34F6A /* OwnedAttachmentBuilder */,
 				6649651A2BDC6E8D00E2DE98 /* Playback */,
 				66D7B90C2B9798770005C98B /* QuotedMessageAttachment */,
@@ -13825,6 +13836,7 @@
 				F9C5CE16289453B400548EEE /* OffMainThreadTimer.swift in Sources */,
 				F9C5CE43289453B400548EEE /* OrderedDictionary.swift in Sources */,
 				F9C5CE1E289453B400548EEE /* OrderedSet.swift in Sources */,
+				6689B23D2C064E82003D5B2F /* OrphanedAttachmentCleaner.swift in Sources */,
 				6689B23A2C055F7C003D5B2F /* OrphanedAttachmentRecord.swift in Sources */,
 				F9C5CD9F289453B400548EEE /* OutageDetection.swift in Sources */,
 				502C69702B06CE9C00012867 /* OutgoingAttachmentInfo.swift in Sources */,

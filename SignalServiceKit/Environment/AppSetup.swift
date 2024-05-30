@@ -882,6 +882,8 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
+        let orphanedAttachmentCleaner = OrphanedAttachmentCleanerImpl(db: databaseStorage)
+
         let dependenciesBridge = DependenciesBridge(
             accountAttributesUpdater: accountAttributesUpdater,
             appExpiry: appExpiry,
@@ -935,6 +937,7 @@ public class AppSetup {
             messageBackupManager: messageBackupManager,
             messageStickerManager: messageStickerManager,
             nicknameManager: nicknameManager,
+            orphanedAttachmentCleaner: orphanedAttachmentCleaner,
             phoneNumberDiscoverabilityManager: phoneNumberDiscoverabilityManager,
             phoneNumberVisibilityFetcher: phoneNumberVisibilityFetcher,
             pinnedThreadManager: pinnedThreadManager,
