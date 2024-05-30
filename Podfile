@@ -275,7 +275,6 @@ def copy_acknowledgements
   targets = [
     'Signal',
     'SignalNSE',
-    'SignalPerformanceTests',
     'SignalServiceKit',
     'SignalServiceKitTests',
     'SignalShareExtension',
