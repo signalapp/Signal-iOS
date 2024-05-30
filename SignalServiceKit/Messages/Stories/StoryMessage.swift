@@ -1001,7 +1001,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         }
 
         // Delete all attachments for the message.
-        DependenciesBridge.shared.tsResourceManager.removeAttachments(from: self, tx: transaction.asV2Write)
+        try? DependenciesBridge.shared.tsResourceManager.removeAttachments(from: self, tx: transaction.asV2Write)
 
         // Reload latest unexpired timestamp for the context.
         self.context.associatedData(transaction: transaction)?.recomputeLatestUnexpiredTimestamp(transaction: transaction)

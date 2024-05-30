@@ -89,7 +89,7 @@ public class AttachmentManagerImpl: AttachmentManager {
     public func removeAllAttachments(
         from owners: [AttachmentReference.OwnerId],
         tx: DBWriteTransaction
-    ) {
+    ) throws {
         fatalError("Unimplemented")
     }
 

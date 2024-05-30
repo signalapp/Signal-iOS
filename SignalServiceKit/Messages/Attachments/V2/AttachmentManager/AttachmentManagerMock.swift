@@ -49,7 +49,7 @@ open class AttachmentManagerMock: AttachmentManager {
     open func removeAllAttachments(
         from owners: [AttachmentReference.OwnerId],
         tx: DBWriteTransaction
-    ) {
+    ) throws {
         // Do nothing
     }
 }

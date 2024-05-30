@@ -140,7 +140,7 @@ public protocol TSResourceManager {
         from message: TSMessage,
         with types: TSMessageAttachmentReferenceType,
         tx: DBWriteTransaction
-    )
+    ) throws
 
     /// Deletes references to the attachment(s) from the provided StoryMessage, potentially
     /// deleting the attachment in the db and on disk if not referenced from anywhere else.
@@ -149,7 +149,7 @@ public protocol TSResourceManager {
     func removeAttachments(
         from storyMessage: StoryMessage,
         tx: DBWriteTransaction
-    )
+    ) throws
 
     // MARK: - Edits
 

@@ -75,7 +75,7 @@ public protocol AttachmentManager {
     func removeAllAttachments(
         from owners: [AttachmentReference.OwnerId],
         tx: DBWriteTransaction
-    )
+    ) throws
 }
 
 // MARK: - Array<->Single object convenience methods

@@ -273,7 +273,7 @@ public class TSResourceManagerImpl: TSResourceManager {
         from message: TSMessage,
         with types: TSMessageAttachmentReferenceType,
         tx: DBWriteTransaction
-    ) {
+    ) throws {
         message.anyReload(transaction: SDSDB.shimOnlyBridge(tx), ignoreMissing: true)
 
         var v2Owners = [AttachmentReference.MessageOwnerTypeRaw]()
@@ -345,14 +345,14 @@ public class TSResourceManagerImpl: TSResourceManager {
                 owsFailDebug("Removing attachments from un-inserted message.")
                 return
             }
-            attachmentManager.removeAllAttachments(
+            try attachmentManager.removeAllAttachments(
                 from: v2Owners.map { $0.with(messageRowId: messageRowId) },
                 tx: tx
             )
         }
     }
 
-    public func removeAttachments(from storyMessage: StoryMessage, tx: DBWriteTransaction) {
+    public func removeAttachments(from storyMessage: StoryMessage, tx: DBWriteTransaction) throws {
         switch storyMessage.attachment {
         case .file(let storyMessageFileAttachment):
             tsAttachmentManager.removeAttachment(
@@ -374,7 +374,7 @@ public class TSResourceManagerImpl: TSResourceManager {
                 owsFailDebug("Removing attachments from an un-inserted message")
                 return
             }
-            attachmentManager.removeAllAttachments(
+            try attachmentManager.removeAllAttachments(
                 from: [
                     .storyMessageMedia(storyMessageRowId: storyMessageRowId),
                     .storyMessageLinkPreview(storyMessageRowId: storyMessageRowId)

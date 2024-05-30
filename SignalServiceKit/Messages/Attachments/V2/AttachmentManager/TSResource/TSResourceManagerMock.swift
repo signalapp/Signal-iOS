@@ -76,11 +76,11 @@ public class TSResourceManagerMock: TSResourceManager {
         from message: TSMessage,
         with types: TSMessageAttachmentReferenceType,
         tx: DBWriteTransaction
-    ) {
+    ) throws {
         // Do nothing
     }
 
-    public func removeAttachments(from storyMessage: StoryMessage, tx: DBWriteTransaction) {
+    public func removeAttachments(from storyMessage: StoryMessage, tx: DBWriteTransaction) throws {
         // Do nothing
     }
 
