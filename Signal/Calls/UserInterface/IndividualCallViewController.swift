@@ -747,8 +747,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
     func updateCallStatusLabel() {
         assert(Thread.isMainThread)
 
-        let text = String(format: CallStrings.callStatusFormat,
-                          localizedTextForCallState())
+        let text = localizedTextForCallState()
         self.callStatusLabel.text = text
 
         // Handle reconnecting blinking

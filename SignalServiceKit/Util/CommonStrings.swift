@@ -457,12 +457,6 @@ public class NotificationStrings: NSObject {
 // MARK: -
 
 public class CallStrings: NSObject {
-
-    static public var callStatusFormat: String {
-        OWSLocalizedString("CALL_STATUS_FORMAT",
-                          comment: "embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call'")
-    }
-
     static public var confirmAndCallButtonTitle: String {
         OWSLocalizedString("SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION",
                           comment: "alert button text to confirm placing an outgoing call after the recipients Safety Number has changed.")

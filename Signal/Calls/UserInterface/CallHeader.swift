@@ -335,7 +335,7 @@ class CallHeader: UIView {
                         formattedDate = String(formattedDate[formattedDate.index(formattedDate.startIndex, offsetBy: 1)...])
                     }
                 }
-                callStatusText = String(format: CallStrings.callStatusFormat, formattedDate)
+                callStatusText = formattedDate
             }
         }
 
