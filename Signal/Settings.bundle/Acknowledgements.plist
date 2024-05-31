@@ -288,7 +288,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>adler 1.0.2, anyhow 1.0.80, anyhow 1.0.81, async-trait 0.1.77, dyn-clone 1.0.17, fastrand 2.0.1, fastrand 2.0.2, home 0.5.9, is-terminal 0.4.12, itoa 1.0.10, linkme 0.3.25, linkme-impl 0.3.25, linux-raw-sys 0.4.13, minimal-lexical 0.2.1, num_enum 0.6.1, num_enum 0.7.2, num_enum_derive 0.6.1, num_enum_derive 0.7.2, once_cell 1.19.0, paste 1.0.14, pin-project-lite 0.2.13, prettyplease 0.2.16, prettyplease 0.2.17, proc-macro-crate 1.3.1, proc-macro-crate 3.1.0, proc-macro2 1.0.78, proc-macro2 1.0.79, quote 1.0.35, rustc-hash 1.1.0, rustix 0.38.31, rustix 0.38.32, rustversion 1.0.14, semver 1.0.22, send_wrapper 0.6.0, serde 1.0.197, serde_derive 1.0.197, serde_json 1.0.114, syn 1.0.109, syn 2.0.52, syn 2.0.55, syn-mid 0.6.0, thiserror 1.0.57, thiserror 1.0.58, thiserror-impl 1.0.57, thiserror-impl 1.0.58, unicode-ident 1.0.12, utf-8 0.7.6</string>
+			<string>adler 1.0.2, anyhow 1.0.81, anyhow 1.0.86, async-trait 0.1.80, atomic-waker 1.1.2, dyn-clone 1.0.17, fastrand 2.0.2, fastrand 2.1.0, home 0.5.9, is-terminal 0.4.12, itoa 1.0.10, itoa 1.0.11, linkme 0.3.26, linkme-impl 0.3.26, linux-raw-sys 0.4.13, linux-raw-sys 0.4.14, minimal-lexical 0.2.1, num_enum 0.6.1, num_enum 0.7.2, num_enum_derive 0.6.1, num_enum_derive 0.7.2, once_cell 1.19.0, paste 1.0.15, pin-project-lite 0.2.13, pin-project-lite 0.2.14, prettyplease 0.2.17, prettyplease 0.2.20, proc-macro-crate 1.3.1, proc-macro-crate 3.1.0, proc-macro2 1.0.79, proc-macro2 1.0.83, quote 1.0.35, quote 1.0.36, rustc-hash 1.1.0, rustix 0.38.32, rustix 0.38.34, rustversion 1.0.17, semver 1.0.22, semver 1.0.23, send_wrapper 0.6.0, serde 1.0.197, serde 1.0.202, serde_derive 1.0.197, serde_derive 1.0.202, serde_json 1.0.114, serde_json 1.0.117, syn 1.0.109, syn 2.0.55, syn 2.0.66, syn-mid 0.6.0, thiserror 1.0.58, thiserror 1.0.61, thiserror-impl 1.0.58, thiserror-impl 1.0.61, unicode-ident 1.0.12, utf-8 0.7.6</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -425,7 +425,7 @@ THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>aho-corasick 1.1.2, aho-corasick 1.1.3, byteorder 1.5.0, memchr 2.7.1, termcolor 1.4.1, walkdir 2.5.0</string>
+			<string>aho-corasick 1.1.3, byteorder 1.5.0, memchr 2.7.1, memchr 2.7.2, termcolor 1.4.1, walkdir 2.5.0</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -515,7 +515,7 @@ SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>anstream 0.6.13, anstyle-query 1.0.2, clap 4.4.18, colorchoice 1.0.0, env_logger 0.10.2, toml_datetime 0.6.5, toml_edit 0.19.15, toml_edit 0.21.1</string>
+			<string>anstream 0.6.14, anstyle-query 1.0.3, clap 4.4.18, colorchoice 1.0.1, env_logger 0.10.2, is_terminal_polyfill 1.70.0, toml_datetime 0.6.5, toml_datetime 0.6.6, toml_edit 0.19.15, toml_edit 0.21.1</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -544,7 +544,7 @@ SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>anstyle 1.0.6</string>
+			<string>anstyle 1.0.7</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -579,7 +579,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>anstyle-parse 0.2.3</string>
+			<string>anstyle-parse 0.2.4</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -608,7 +608,7 @@ SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>anstyle-wincon 3.0.2</string>
+			<string>anstyle-wincon 3.0.3</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -817,7 +817,7 @@ SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>async-compression 0.4.6</string>
+			<string>async-compression 0.4.10</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -1099,7 +1099,7 @@ You should also get your employer (if you work as a programmer) or school, if an
 			<key>License</key>
 			<string>GNU Affero General Public License v3.0</string>
 			<key>Title</key>
-			<string>attest 0.1.0, device-transfer 0.1.0, libsignal-bridge 0.1.0, libsignal-bridge-macros 0.1.0, libsignal-core 0.1.0, libsignal-ffi 0.48.0, libsignal-jni 0.48.0, libsignal-message-backup 0.1.0, libsignal-message-backup-macros 0.1.0, libsignal-net 0.1.0, libsignal-node 0.48.0, libsignal-protocol 0.1.0, libsignal-svr3 0.1.0, partial-default-derive 0.1.0, poksho 0.7.0, regex-aot 0.1.0, ringrtc 2.42.0, signal-crypto 0.1.0, signal-media 0.1.0, signal-neon-futures 0.1.0, signal-neon-futures-tests 0.1.0, signal-pin 0.1.0, usernames 0.1.0, zkcredential 0.1.0, zkgroup 0.9.0</string>
+			<string>attest 0.1.0, device-transfer 0.1.0, libsignal-bridge 0.1.0, libsignal-bridge-macros 0.1.0, libsignal-core 0.1.0, libsignal-ffi 0.49.0, libsignal-jni 0.49.0, libsignal-message-backup 0.1.0, libsignal-message-backup-macros 0.1.0, libsignal-net 0.1.0, libsignal-node 0.49.0, libsignal-protocol 0.1.0, libsignal-svr3 0.1.0, partial-default-derive 0.1.0, poksho 0.7.0, regex-aot 0.1.0, ringrtc 2.42.0, signal-crypto 0.1.0, signal-media 0.1.0, signal-neon-futures 0.1.0, signal-neon-futures-tests 0.1.0, signal-pin 0.1.0, usernames 0.1.0, zkcredential 0.1.0, zkgroup 0.9.0</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -1134,7 +1134,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>autocfg 1.1.0</string>
+			<string>autocfg 1.1.0, autocfg 1.3.0</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -1169,7 +1169,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>backtrace 0.3.69, cc 1.0.90, cfg-if 1.0.0, cmake 0.1.48, flate2 1.0.28, openssl-probe 0.1.5, rustc-demangle 0.1.23, socket2 0.5.6</string>
+			<string>backtrace 0.3.71, cc 1.0.98, cfg-if 1.0.0, cmake 0.1.48, flate2 1.0.30, openssl-probe 0.1.5, rustc-demangle 0.1.24, socket2 0.5.7</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -1223,7 +1223,7 @@ THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>base64 0.21.7, base64 0.22.0</string>
+			<string>base64 0.21.7, base64 0.22.0, base64 0.22.1</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -1364,7 +1364,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>bitflags 1.3.2, bitflags 2.4.2, bitflags 2.5.0, glob 0.3.1, log 0.4.21, num-bigint 0.4.4, num-derive 0.4.2, num-integer 0.1.46, num-traits 0.2.18, range-map 0.2.0, regex 1.10.3, regex 1.10.4, regex-automata 0.4.6, regex-syntax 0.8.2</string>
+			<string>bitflags 2.5.0, glob 0.3.1, log 0.4.21, num-bigint 0.4.5, num-derive 0.4.2, num-integer 0.1.46, num-traits 0.2.19, range-map 0.2.0, regex 1.10.4, regex-automata 0.4.6, regex-syntax 0.8.2, regex-syntax 0.8.3</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -2004,7 +2004,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>bytemuck 1.14.3</string>
+			<string>bytemuck 1.16.0</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -2039,7 +2039,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>bytes 1.5.0, bytes 1.6.0</string>
+			<string>bytes 1.6.0</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -2125,7 +2125,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>cesu8 1.1.0, curve25519-dalek-derive 0.1.0, half 2.4.0, neon 1.0.0, pqcrypto-internals 0.2.5, pqcrypto-kyber 0.7.9, pqcrypto-kyber 0.8.1, pqcrypto-traits 0.3.5, rustls-platform-verifier 0.3.1, rustls-platform-verifier-android 0.1.0</string>
+			<string>cesu8 1.1.0, curve25519-dalek-derive 0.1.0, half 2.4.1, neon 1.0.0, pqcrypto-internals 0.2.5, pqcrypto-kyber 0.7.9, pqcrypto-kyber 0.8.1, pqcrypto-traits 0.3.5, rustls-platform-verifier 0.3.1, rustls-platform-verifier-android 0.1.0</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -2225,7 +2225,7 @@ THE SOFTWARE.</string>
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>chrono 0.4.35</string>
+			<string>chrono 0.4.38</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -2816,7 +2816,7 @@ THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>combine 4.6.6</string>
+			<string>combine 4.6.7</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -2978,7 +2978,7 @@ SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>crc32fast 1.4.0</string>
+			<string>crc32fast 1.4.2</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -3015,7 +3015,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>crossbeam-deque 0.8.5, crossbeam-epoch 0.9.18, crossbeam-utils 0.8.19</string>
+			<string>crossbeam-deque 0.8.5, crossbeam-epoch 0.9.18, crossbeam-utils 0.8.20</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -3091,6 +3091,42 @@ DEALINGS IN THE SOFTWARE.
 		</dict>
 		<dict>
 			<key>FooterText</key>
+			<string>Copyright (c) 2012 The Go Authors. All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+   * Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+   * Redistributions in binary form must reproduce the above
+copyright notice, this list of conditions and the following disclaimer
+in the documentation and/or other materials provided with the
+distribution.
+   * Neither the name of Google Inc. nor the names of its
+contributors may be used to endorse or promote products derived from
+this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</string>
+			<key>License</key>
+			<string>BSD 3-Clause "New" or "Revised" License</string>
+			<key>Title</key>
+			<string>curve25519-dalek 4.1.1</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
 			<string>Copyright (c) 2016-2021 isis agora lovecruft. All rights reserved.
 Copyright (c) 2016-2021 Henry de Valence. All rights reserved.
 
@@ -3116,42 +3152,6 @@ PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
 HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
 SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
 TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</string>
-			<key>License</key>
-			<string>BSD 3-Clause "New" or "Revised" License</string>
-			<key>Title</key>
-			<string>curve25519-dalek 4.1.1</string>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-		</dict>
-		<dict>
-			<key>FooterText</key>
-			<string>Copyright (c) 2012 The Go Authors. All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-   * Redistributions of source code must retain the above copyright
-notice, this list of conditions and the following disclaimer.
-   * Redistributions in binary form must reproduce the above
-copyright notice, this list of conditions and the following disclaimer
-in the documentation and/or other materials provided with the
-distribution.
-   * Neither the name of Google Inc. nor the names of its
-contributors may be used to endorse or promote products derived from
-this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
-IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
-TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
-PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
-OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
 PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
@@ -3222,7 +3222,7 @@ SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>data-encoding 2.5.0</string>
+			<string>data-encoding 2.6.0</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -3433,7 +3433,7 @@ limitations under the License.
 			<key>License</key>
 			<string>Apache License 2.0</string>
 			<key>Title</key>
-			<string>debugid 0.8.0, prost 0.12.3, prost-build 0.12.3, prost-derive 0.12.3, prost-types 0.12.3</string>
+			<string>debugid 0.8.0, prost 0.12.3, prost 0.12.6, prost-build 0.12.3, prost-build 0.12.6, prost-derive 0.12.3, prost-derive 0.12.6, prost-types 0.12.3, prost-types 0.12.6</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -3623,7 +3623,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>downcast-rs 1.2.0</string>
+			<string>downcast-rs 1.2.1</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -3821,7 +3821,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>either 1.10.0, itertools 0.11.0, itertools 0.12.1, petgraph 0.6.4, serde_with 3.7.0, serde_with_macros 3.7.0</string>
+			<string>either 1.10.0, either 1.12.0, itertools 0.11.0, itertools 0.12.1, petgraph 0.6.4, petgraph 0.6.5, serde_with 3.7.0, serde_with_macros 3.7.0</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -3857,7 +3857,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			<key>License</key>
 			<string>BSD 3-Clause "New" or "Revised" License</string>
 			<key>Title</key>
-			<string>encoding_rs 0.8.33</string>
+			<string>encoding_rs 0.8.34</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -3892,7 +3892,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>encoding_rs 0.8.33</string>
+			<string>encoding_rs 0.8.34</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -4342,7 +4342,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>getrandom 0.2.12</string>
+			<string>getrandom 0.2.12, getrandom 0.2.15</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -4464,7 +4464,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>h2 0.4.4</string>
+			<string>h2 0.4.5</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -4499,7 +4499,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>hashbrown 0.12.3, hashbrown 0.14.3</string>
+			<string>hashbrown 0.12.3, hashbrown 0.14.3, hashbrown 0.14.5</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -4831,7 +4831,7 @@ THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>hyper-util 0.1.3</string>
+			<string>hyper-util 0.1.4</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -4965,7 +4965,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>indexmap 1.9.3, indexmap 2.2.5, indexmap 2.2.6</string>
+			<string>indexmap 1.9.3, indexmap 2.2.6</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -5096,7 +5096,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>jobserver 0.1.28</string>
+			<string>jobserver 0.1.31</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -5139,7 +5139,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>lazy_static 1.4.0, rayon 1.9.0, rayon-core 1.12.1</string>
+			<string>lazy_static 1.4.0, rayon 1.10.0, rayon-core 1.12.1</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -5210,7 +5210,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>libc 0.2.153</string>
+			<string>libc 0.2.153, libc 0.2.155</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -8015,6 +8015,37 @@ SOFTWARE.
 		</dict>
 		<dict>
 			<key>FooterText</key>
+			<string>MIT License
+
+Copyright (c) 2019 Daniel Henry-Mantilla &lt;daniel.henry.mantilla@gmail.com&gt;
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+</string>
+			<key>License</key>
+			<string>MIT License</string>
+			<key>Title</key>
+			<string>macro_rules_attribute 0.2.0, macro_rules_attribute-proc_macro 0.2.0</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
 			<string>**Copyright (c) GitHub, Inc.**
 **All rights reserved.**
 
@@ -8136,7 +8167,7 @@ SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>miniz_oxide 0.7.2</string>
+			<string>miniz_oxide 0.7.3</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -8386,7 +8417,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>multimap 0.8.3</string>
+			<string>multimap 0.10.0, multimap 0.8.3</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -9698,7 +9729,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>platforms 3.3.0</string>
+			<string>platforms 3.3.0, platforms 3.4.0</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -9992,29 +10023,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 		</dict>
 		<dict>
 			<key>FooterText</key>
-			<string>/* Copyright (c) 2015, Google Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
- * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
-</string>
-			<key>License</key>
-			<string>ISC License</string>
-			<key>Title</key>
-			<string>ring 0.17.8</string>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-		</dict>
-		<dict>
-			<key>FooterText</key>
 			<string>Copyright (c) 2015-2016 the fiat-crypto authors (see
 https://github.com/mit-plv/fiat-crypto/blob/master/AUTHORS).
 
@@ -10038,6 +10046,29 @@ SOFTWARE.
 </string>
 			<key>License</key>
 			<string>MIT License</string>
+			<key>Title</key>
+			<string>ring 0.17.8</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>/* Copyright (c) 2015, Google Inc.
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+ * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
+ * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+ * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
+</string>
+			<key>License</key>
+			<string>ISC License</string>
 			<key>Title</key>
 			<string>ring 0.17.8</string>
 			<key>Type</key>
@@ -10149,7 +10180,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>rustls 0.23.4, rustls-native-certs 0.7.0, rustls-pemfile 2.1.2</string>
+			<string>rustls 0.23.8, rustls-native-certs 0.7.0, rustls-pemfile 2.1.2</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -10184,7 +10215,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>rustls-pki-types 1.4.1</string>
+			<string>rustls-pki-types 1.7.0</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -10213,7 +10244,7 @@ third-party/chromium/LICENSE.
 			<key>License</key>
 			<string>ISC License</string>
 			<key>Title</key>
-			<string>rustls-webpki 0.102.2</string>
+			<string>rustls-webpki 0.102.4</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -10399,7 +10430,7 @@ END OF TERMS AND CONDITIONS
 			<key>License</key>
 			<string>Apache License 2.0</string>
 			<key>Title</key>
-			<string>ryu 1.0.17</string>
+			<string>ryu 1.0.17, ryu 1.0.18</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -10430,7 +10461,7 @@ THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>same-file 1.0.6, winapi-util 0.1.6</string>
+			<string>same-file 1.0.6, winapi-util 0.1.8</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -10574,7 +10605,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>security-framework 2.10.0, security-framework-sys 2.10.0</string>
+			<string>security-framework 2.11.0, security-framework-sys 2.11.0</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -12084,7 +12115,7 @@ SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>time 0.3.34</string>
+			<string>time 0.3.36</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -12165,7 +12196,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>tokio 1.36.0, tokio-macros 2.2.0, tokio-stream 0.1.14, tokio-util 0.7.10</string>
+			<string>tokio 1.37.0, tokio-macros 2.2.0, tokio-stream 0.1.15, tokio-util 0.7.11</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -12617,7 +12648,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>uuid 1.7.0, uuid 1.8.0</string>
+			<string>uuid 1.8.0</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -12803,7 +12834,7 @@ SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>windows-core 0.52.0, windows-sys 0.45.0, windows-sys 0.48.0, windows-sys 0.52.0, windows-targets 0.42.2, windows-targets 0.48.5, windows-targets 0.52.4, windows_aarch64_msvc 0.42.2, windows_aarch64_msvc 0.48.5, windows_aarch64_msvc 0.52.4, windows_x86_64_gnu 0.48.5, windows_x86_64_gnu 0.52.4, windows_x86_64_msvc 0.42.2, windows_x86_64_msvc 0.48.5, windows_x86_64_msvc 0.52.4</string>
+			<string>windows-core 0.52.0, windows-sys 0.45.0, windows-sys 0.48.0, windows-sys 0.52.0, windows-targets 0.42.2, windows-targets 0.48.5, windows-targets 0.52.4, windows-targets 0.52.5, windows_aarch64_msvc 0.42.2, windows_aarch64_msvc 0.48.5, windows_aarch64_msvc 0.52.4, windows_aarch64_msvc 0.52.5, windows_x86_64_gnu 0.48.5, windows_x86_64_gnu 0.52.4, windows_x86_64_gnu 0.52.5, windows_x86_64_msvc 0.42.2, windows_x86_64_msvc 0.48.5, windows_x86_64_msvc 0.52.4, windows_x86_64_msvc 0.52.5</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
