@@ -667,6 +667,23 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             return false
         }
 
+        if
+            canTapTitle,
+            let contactThread = thread as? TSContactThread,
+            componentView.titleButton.bounds.contains(sender.location(in: componentView.titleButton))
+        {
+            componentDelegate.didTapContactName(thread: contactThread)
+            return true
+        }
+
+        if
+            shouldShowSafetyTip,
+            componentView.showTipsButton.bounds.contains(sender.location(in: componentView.showTipsButton))
+        {
+            didShowTips()
+            return true
+        }
+
         if threadDetails.isAvatarBlurred {
             guard let avatarView = componentView.avatarView else {
                 owsFailDebug("Missing avatarView.")
