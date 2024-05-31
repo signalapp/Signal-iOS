@@ -113,8 +113,10 @@ class GroupCallViewController: UIViewController {
     }()
     private lazy var callControlsOverflowView: CallControlsOverflowView = {
         return CallControlsOverflowView(
+            call: self.call,
             reactionSender: self.ringRtcCall,
             reactionsSink: self.reactionsSink,
+            raiseHandSender: self.ringRtcCall,
             emojiPickerSheetPresenter: self,
             callControlsOverflowPresenter: self
         )
@@ -1371,6 +1373,10 @@ extension GroupCallViewController: CallControlsOverflowPresenter {
     }
 
     func willSendReaction() {
+        self.callControlsDisplayState = .callControlsOnly
+    }
+
+    func didTapRaiseOrLowerHand() {
         self.callControlsDisplayState = .callControlsOnly
     }
 }

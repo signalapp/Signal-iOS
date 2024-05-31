@@ -157,7 +157,7 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
         guard
             let deviceState = remoteGroupMemberDeviceState,
             case .groupThread(let groupThreadCall) = call.mode,
-            groupThreadCall.raisedHands.contains(deviceState),
+            groupThreadCall.remoteRaisedHands.contains(deviceState),
             !WindowManager.shared.isCallInPip
         else {
             raisedHandView.isHidden = true

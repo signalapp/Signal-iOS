@@ -35,7 +35,7 @@ extension GroupCallObserver {
 class GroupCall: SignalRingRTC.GroupCallDelegate {
     let commonState: CommonCallState
     let ringRtcCall: SignalRingRTC.GroupCall
-    private(set) var raisedHands: [RemoteDeviceState] = []
+    private(set) var remoteRaisedHands: [RemoteDeviceState] = []
     let videoCaptureController: VideoCaptureController
 
     init(
@@ -129,7 +129,7 @@ class GroupCall: SignalRingRTC.GroupCallDelegate {
             FeatureFlags.useCallMemberComposableViewsForRemoteUsersInGroupCalls
         else { return }
 
-        self.raisedHands = raisedHands.compactMap { groupCall.remoteDeviceStates[$0] }
+        self.remoteRaisedHands = raisedHands.compactMap { groupCall.remoteDeviceStates[$0] }
 
         observers.elements.forEach {
             $0.groupCallReceivedRaisedHands(self, raisedHands: raisedHands)

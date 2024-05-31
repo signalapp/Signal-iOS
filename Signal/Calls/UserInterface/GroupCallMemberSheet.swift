@@ -266,14 +266,14 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
     private func updateSnapshotAndHeaders() {
         var snapshot = Snapshot()
 
-        if !groupThreadCall.raisedHands.isEmpty {
+        if !groupThreadCall.remoteRaisedHands.isEmpty {
             snapshot.appendSections([.raisedHands])
             snapshot.appendItems(
-                groupThreadCall.raisedHands.map { RowID(section: .raisedHands, memberID: .demuxID($0.demuxId)) },
+                groupThreadCall.remoteRaisedHands.map { RowID(section: .raisedHands, memberID: .demuxID($0.demuxId)) },
                 toSection: .raisedHands
             )
 
-            raisedHandsHeader.memberCount = groupThreadCall.raisedHands.count
+            raisedHandsHeader.memberCount = groupThreadCall.remoteRaisedHands.count
         }
 
         snapshot.appendSections([.inCall])
@@ -293,7 +293,7 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
 
 extension GroupCallMemberSheet: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        if section == 0, !groupThreadCall.raisedHands.isEmpty {
+        if section == 0, !groupThreadCall.remoteRaisedHands.isEmpty {
             return raisedHandsHeader
         } else {
             return inCallHeader
