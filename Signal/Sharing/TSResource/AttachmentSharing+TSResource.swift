@@ -84,7 +84,7 @@ public class ShareableTSAttachment: NSObject, UIActivityItemSource {
         self.attachmentStream = attachmentStream
         switch attachmentStream.computeContentType() {
         case .audio, .file:
-            return nil
+            break
         case .image, .animatedImage:
             break
         case .video:
