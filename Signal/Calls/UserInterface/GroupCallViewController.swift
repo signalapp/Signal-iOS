@@ -1143,7 +1143,7 @@ extension GroupCallViewController: GroupCallObserver {
         self.reactionsSink.addReactions(reactions: mappedReactions)
     }
 
-    func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [UInt32]) {
+    func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [DemuxId]) {
         updateCallUI()
     }
 

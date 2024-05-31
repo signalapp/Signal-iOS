@@ -15,7 +15,7 @@ protocol GroupCallObserver: AnyObject {
     func groupCallPeekChanged(_ call: GroupCall)
     func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason)
     func groupCallReceivedReactions(_ call: GroupCall, reactions: [SignalRingRTC.Reaction])
-    func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [UInt32])
+    func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [DemuxId])
 
     /// Invoked if a call message failed to send because of a safety number change
     /// UI observing call state may choose to alert the user (e.g. presenting a SafetyNumberConfirmationSheet)
@@ -28,14 +28,14 @@ extension GroupCallObserver {
     func groupCallPeekChanged(_ call: GroupCall) {}
     func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason) {}
     func groupCallReceivedReactions(_ call: GroupCall, reactions: [SignalRingRTC.Reaction]) {}
-    func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [UInt32]) {}
+    func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [DemuxId]) {}
     func callMessageSendFailedUntrustedIdentity(_ call: GroupCall) {}
 }
 
 class GroupCall: SignalRingRTC.GroupCallDelegate {
     let commonState: CommonCallState
     let ringRtcCall: SignalRingRTC.GroupCall
-    private(set) var remoteRaisedHands: [RemoteDeviceState] = []
+    private(set) var raisedHands: [DemuxId] = []
     let videoCaptureController: VideoCaptureController
 
     init(
@@ -123,13 +123,13 @@ class GroupCall: SignalRingRTC.GroupCallDelegate {
         observers.elements.forEach { $0.groupCallReceivedReactions(self, reactions: reactions) }
     }
 
-    func groupCall(onRaisedHands groupCall: SignalRingRTC.GroupCall, raisedHands: [UInt32]) {
+    func groupCall(onRaisedHands groupCall: SignalRingRTC.GroupCall, raisedHands: [DemuxId]) {
         guard
             FeatureFlags.callRaiseHandReceiveSupport,
             FeatureFlags.useCallMemberComposableViewsForRemoteUsersInGroupCalls
         else { return }
 
-        self.remoteRaisedHands = raisedHands.compactMap { groupCall.remoteDeviceStates[$0] }
+        self.raisedHands = raisedHands
 
         observers.elements.forEach {
             $0.groupCallReceivedRaisedHands(self, raisedHands: raisedHands)

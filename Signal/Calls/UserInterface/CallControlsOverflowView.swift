@@ -112,7 +112,6 @@ class CallControlsOverflowView: UIView {
 
     private var raiseHandSender: RaiseHandSender?
     private var call: SignalCall?
-    private var raisedHands: [UInt32] = [] // demuxIds
 
     private weak var emojiPickerSheetPresenter: EmojiPickerSheetPresenter?
 
@@ -157,8 +156,6 @@ class CallControlsOverflowView: UIView {
         self.raiseHandSender = raiseHandSender
         self.emojiPickerSheetPresenter = emojiPickerSheetPresenter
         self.callControlsOverflowPresenter = callControlsOverflowPresenter
-
-        call.unpackGroupCall()?.addObserverAndSyncState(self)
     }
 
     // MARK: - Constants
@@ -338,16 +335,13 @@ extension CallControlsOverflowView {
     }
 
     private var localHandIsRaised: Bool {
-        guard let localDemuxId = call?.unpackGroupCall()?.ringRtcCall.localDeviceState.demuxId else {
+        guard
+            let groupThreadCall = self.call?.unpackGroupCall(),
+            let localDemuxId = groupThreadCall.ringRtcCall.localDeviceState.demuxId
+        else {
             return false
         }
-        return self.raisedHands.contains { $0 == localDemuxId }
-    }
-}
-
-extension CallControlsOverflowView: GroupCallObserver {
-    func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [UInt32]) {
-        self.raisedHands = raisedHands
+        return groupThreadCall.raisedHands.contains(localDemuxId)
     }
 }
 

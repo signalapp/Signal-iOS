@@ -93,7 +93,7 @@ extension GroupCallVideoGrid: GroupCallObserver {
         reloadData()
     }
 
-    func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [UInt32]) {
+    func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [DemuxId]) {
         AssertIsOnMainThread()
         reloadData()
     }

@@ -215,13 +215,21 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
 
                 let displayName = CommonStrings.you
                 let comparableName: DisplayName.ComparableValue = .nameValue(displayName)
-
+                let id: JoinedMember.ID
+                let demuxId: UInt32?
+                if let localDemuxId = groupThreadCall.ringRtcCall.localDeviceState.demuxId {
+                    id = .demuxID(localDemuxId)
+                    demuxId = localDemuxId
+                } else {
+                    id = .aci(localIdentifiers.aci)
+                    demuxId = nil
+                }
                 members.append(JoinedMember(
-                    id: .aci(localIdentifiers.aci),
+                    id: id,
                     aci: localIdentifiers.aci,
                     displayName: displayName,
                     comparableName: comparableName,
-                    demuxID: nil,
+                    demuxID: demuxId,
                     isAudioMuted: self.ringRtcCall.isOutgoingAudioMuted,
                     isVideoMuted: self.ringRtcCall.isOutgoingVideoMuted,
                     isPresenting: false
@@ -266,14 +274,16 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
     private func updateSnapshotAndHeaders() {
         var snapshot = Snapshot()
 
-        if !groupThreadCall.remoteRaisedHands.isEmpty {
+        if !groupThreadCall.raisedHands.isEmpty {
             snapshot.appendSections([.raisedHands])
             snapshot.appendItems(
-                groupThreadCall.remoteRaisedHands.map { RowID(section: .raisedHands, memberID: .demuxID($0.demuxId)) },
+                groupThreadCall.raisedHands.map {
+                    RowID(section: .raisedHands, memberID: .demuxID($0))
+                },
                 toSection: .raisedHands
             )
 
-            raisedHandsHeader.memberCount = groupThreadCall.remoteRaisedHands.count
+            raisedHandsHeader.memberCount = groupThreadCall.raisedHands.count
         }
 
         snapshot.appendSections([.inCall])
@@ -293,7 +303,7 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
 
 extension GroupCallMemberSheet: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        if section == 0, !groupThreadCall.remoteRaisedHands.isEmpty {
+        if section == 0, !groupThreadCall.raisedHands.isEmpty {
             return raisedHandsHeader
         } else {
             return inCallHeader
@@ -332,7 +342,7 @@ extension GroupCallMemberSheet: GroupCallObserver {
         updateMembers()
     }
 
-    func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [UInt32]) {
+    func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [DemuxId]) {
         AssertIsOnMainThread()
         updateSnapshotAndHeaders()
     }
