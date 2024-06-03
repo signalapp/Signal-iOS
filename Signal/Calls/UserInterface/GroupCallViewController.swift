@@ -1068,19 +1068,19 @@ extension GroupCallViewController: GroupCallObserver {
         AssertIsOnMainThread()
         owsAssert(self.groupThreadCall === call)
 
-        guard reason != .deviceExplicitlyDisconnected else {
-            dismissCall(shouldHangUp: false)
-            return
-        }
-
-        defer { updateCallUI() }
-
         let title: String
 
-        if reason == .hasMaxDevices {
+        switch reason {
+        case .deviceExplicitlyDisconnected:
+            dismissCall(shouldHangUp: false)
+            return
+
+        case .hasMaxDevices:
             if let maxDevices = ringRtcCall.maxDevices {
-                let formatString = OWSLocalizedString("GROUP_CALL_HAS_MAX_DEVICES_%d", tableName: "PluralAware",
-                                                     comment: "An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}."
+                let formatString = OWSLocalizedString(
+                    "GROUP_CALL_HAS_MAX_DEVICES_%d",
+                    tableName: "PluralAware",
+                    comment: "An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}."
                 )
                 title = String.localizedStringWithFormat(formatString, maxDevices)
             } else {
@@ -1089,7 +1089,28 @@ extension GroupCallViewController: GroupCallObserver {
                     comment: "An error displayed to the user when the group call ends because it has exceeded the max devices."
                 )
             }
-        } else {
+
+        case .removedFromCall:
+            // [CallLink] TODO: .
+            fallthrough
+
+        case .deniedRequestToJoinCall:
+            // [CallLink] TODO: .
+            fallthrough
+
+        case
+                .serverExplicitlyDisconnected,
+                .callManagerIsBusy,
+                .sfuClientFailedToJoin,
+                .failedToCreatePeerConnectionFactory,
+                .failedToNegotiateSrtpKeys,
+                .failedToCreatePeerConnection,
+                .failedToStartPeerConnection,
+                .failedToUpdatePeerConnection,
+                .failedToSetMaxSendBitrate,
+                .iceFailedWhileConnecting,
+                .iceFailedAfterConnected,
+                .serverChangedDemuxId:
             owsFailDebug("Group call ended with reason \(reason)")
             title = OWSLocalizedString(
                 "GROUP_CALL_UNEXPECTEDLY_ENDED",
@@ -1107,6 +1128,8 @@ extension GroupCallViewController: GroupCallObserver {
             }
         ))
         presentActionSheet(actionSheet)
+
+        updateCallUI()
     }
 
     func groupCallReceivedReactions(_ call: GroupCall, reactions: [SignalRingRTC.Reaction]) {
