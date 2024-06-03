@@ -145,26 +145,6 @@ final class IndividualCallService: CallServiceStateObserver {
             return
         }
 
-        if let callType = call.individualCall.callType {
-            if callType == .outgoingIncomplete {
-                call.individualCall.createOrUpdateCallInteractionAsync(callType: .outgoingMissed)
-            }
-        } else if [.localRinging_Anticipatory, .localRinging_ReadyToAnswer, .accepting].contains(call.individualCall.state) {
-            call.individualCall.createOrUpdateCallInteractionAsync(callType: .incomingDeclined)
-        } else {
-            owsFailDebug("missing call record")
-        }
-
-        // Make RTC audio inactive early in the hangup process before the state
-        // change resulting in any change to the default AudioSession.
-        audioSession.isRTCAudioEnabled = false
-
-        call.individualCall.state = .localHangup
-
-        ensureAudioState(call: call)
-
-        callServiceState.terminateCall(call)
-
         do {
             try callManager.hangup()
         } catch {
@@ -500,8 +480,31 @@ final class IndividualCallService: CallServiceStateObserver {
             call.individualCall.createOrUpdateCallInteractionAsync(callType: .outgoing)
 
         case .endedLocalHangup:
-            Logger.debug("")
-            // nothing further to do - already handled in handleLocalHangupCall().
+            guard call === callServiceState.currentCall else {
+                cleanUpStaleCall(call)
+                return
+            }
+
+            switch call.individualCall.callType {
+            case .some(.outgoingIncomplete):
+                call.individualCall.createOrUpdateCallInteractionAsync(callType: .outgoingMissed)
+            case .some:
+                break
+            case .none where [.localRinging_Anticipatory, .localRinging_ReadyToAnswer, .accepting].contains(call.individualCall.state):
+                call.individualCall.createOrUpdateCallInteractionAsync(callType: .incomingDeclined)
+            case .none:
+                owsFailDebug("missing call record")
+            }
+
+            // Make RTC audio inactive early in the hangup process before the state
+            // change resulting in any change to the default AudioSession.
+            audioSession.isRTCAudioEnabled = false
+
+            call.individualCall.state = .localHangup
+
+            ensureAudioState(call: call)
+
+            callServiceState.terminateCall(call)
 
         case .endedRemoteHangup:
             guard call === callServiceState.currentCall else {

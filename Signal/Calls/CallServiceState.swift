@@ -57,14 +57,8 @@ class CallServiceState {
         Logger.info("call: \(call as Optional)")
 
         // If call is for the current call, clear it out first.
-        if call === currentCall { currentCall = nil }
-
-        switch call.mode {
-        case .individual:
-            break
-        case .groupThread(let groupThreadCall):
-            groupThreadCall.ringRtcCall.leave()
-            groupThreadCall.ringRtcCall.disconnect()
+        if call === currentCall {
+            currentCall = nil
         }
 
         delegate?.callServiceState(self, didTerminateCall: call)

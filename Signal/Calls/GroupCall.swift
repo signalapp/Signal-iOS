@@ -38,6 +38,14 @@ class GroupCall: SignalRingRTC.GroupCallDelegate {
     private(set) var raisedHands: [DemuxId] = []
     let videoCaptureController: VideoCaptureController
 
+    /// Tracks whether or not we've called connect().
+    ///
+    /// We can't use ringRtcCall.connectionState because it's updated asynchronously.
+    var hasInvokedConnectMethod = false
+
+    /// Tracks whether or not we should terminate the call when it ends.
+    var shouldTerminateOnEndEvent = false
+
     init(
         audioDescription: String,
         ringRtcCall: SignalRingRTC.GroupCall,
@@ -147,6 +155,8 @@ class GroupCall: SignalRingRTC.GroupCallDelegate {
     }
 
     func groupCall(onEnded groupCall: SignalRingRTC.GroupCall, reason: GroupCallEndReason) {
+        self.hasInvokedConnectMethod = false
+
         observers.elements.forEach { $0.groupCallEnded(self, reason: reason) }
     }
 }

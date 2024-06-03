@@ -397,8 +397,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
                 shouldResetUI: false,
                 shouldResetRingRTC: true
             )
-        case .groupThread:
-            callServiceState.terminateCall(failedCall)
+        case .groupThread(let groupThreadCall):
+            leaveAndTerminateGroupCall(failedCall, groupCall: groupThreadCall)
         }
     }
 
@@ -427,7 +427,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
                     owsFailDebug("RingRTC failed to cancel group ring \(ringId): \(error)")
                 }
             }
-            callServiceState.terminateCall(call)
+            leaveAndTerminateGroupCall(call, groupCall: groupThreadCall)
         }
     }
 
@@ -497,7 +497,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
         callServiceState.setCurrentCall(call)
 
-        guard groupThreadCall.ringRtcCall.connect() else {
+        // Connect (but don't join) to subscribe to live updates.
+        guard connectGroupCallIfNeeded(groupThreadCall) else {
             callServiceState.terminateCall(call)
             return nil
         }
@@ -533,26 +534,23 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     }
 
     func joinGroupCallIfNecessary(_ call: SignalCall, groupThreadCall: GroupThreadCall) {
-        let currentCall = self.callServiceState.currentCall
-        if currentCall === nil {
-            callServiceState.setCurrentCall(call)
-        } else if currentCall !== call {
-            return owsFailDebug("A call is already in progress")
+        guard call === self.callServiceState.currentCall else {
+            owsFailDebug("Can't join a group call if it's not the current call")
+            return
         }
-        let groupCall = groupThreadCall.ringRtcCall
 
-        // If we're not yet connected, connect now. This may happen if, for
-        // example, the call ended unexpectedly.
-        if groupCall.localDeviceState.connectionState == .notConnected {
-            guard groupCall.connect() else {
-                callServiceState.terminateCall(call)
-                return
-            }
+        // If we're disconnected, it means we hit an error with the first
+        // connection, so connect now. (Ex: You try to join a call that's full, and
+        // then you try to join again.)
+        guard connectGroupCallIfNeeded(groupThreadCall) else {
+            owsFailDebug("Can't join a group call if we can't connect()")
+            return
         }
 
         // If we're not yet joined, join now. In general, it's unexpected that
         // this method would be called when you're already joined, but it is
         // safe to do so.
+        let groupCall = groupThreadCall.ringRtcCall
         if groupCall.localDeviceState.joinState == .notJoined {
             groupCall.join()
             // Group calls can get disconnected, but we don't count that as ending the call.
@@ -560,6 +558,38 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             if groupThreadCall.commonState.systemState == .notReported && !groupThreadCall.groupCallRingState.isIncomingRing {
                 callUIAdapter.startOutgoingCall(call: call)
             }
+        }
+    }
+
+    private func connectGroupCallIfNeeded(_ groupCall: GroupCall) -> Bool {
+        if groupCall.hasInvokedConnectMethod {
+            return true
+        }
+
+        // If we haven't invoked the method, we shouldn't be connected. (Note: The
+        // converse is NOT true, and that's why we need `hasInvokedConnectMethod`.)
+        owsAssertDebug(groupCall.ringRtcCall.localDeviceState.connectionState == .notConnected)
+
+        let result = groupCall.ringRtcCall.connect()
+        if result {
+            groupCall.hasInvokedConnectMethod = true
+        }
+        return result
+    }
+
+    /// Leaves the group call & schedules it for termination.
+    ///
+    /// If the call has already "ended" (RingRTC term), perhaps because we
+    /// encountered an error, it will terminate the group call immediately.
+    ///
+    /// We wait for the call to end before terminating to ensure that observers
+    /// have an opportunity to handle the "call ended" event.
+    private func leaveAndTerminateGroupCall(_ call: SignalCall, groupCall: GroupCall) {
+        if groupCall.hasInvokedConnectMethod {
+            groupCall.ringRtcCall.disconnect()
+            groupCall.shouldTerminateOnEndEvent = true
+        } else {
+            callServiceState.terminateCall(call)
         }
     }
 
@@ -876,10 +906,21 @@ extension CallService: GroupCallObserver {
         }
     }
 
-    func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason) {
+    func groupCallEnded(_ groupCall: GroupCall, reason: GroupCallEndReason) {
         AssertIsOnMainThread()
 
         groupCallAccessoryMessageDelegate.localDeviceGroupCallDidEnd()
+
+        let call = callServiceState.currentCall
+        switch call?.mode {
+        case nil, .individual:
+            owsFail("Can't receive callback without an active group call")
+        case .groupThread(let groupThreadCall):
+            owsAssert(groupThreadCall === groupCall)
+            if groupThreadCall.shouldTerminateOnEndEvent {
+                callServiceState.terminateCall(call!)
+            }
+        }
     }
 
     public func groupCallRemoteDeviceStatesChanged(_ call: GroupCall) {
@@ -1142,7 +1183,7 @@ extension CallService: CallManagerDelegate {
         AssertIsOnMainThread()
 
         guard callServiceState.currentCall == nil else {
-            handleFailedCall(failedCall: call, error: OWSAssertionError("a current call is already set"))
+            handleFailedCall(failedCall: call, error: OWSGenericError("a current call is already set"))
             return
         }
 
@@ -1392,7 +1433,7 @@ extension CallService: CallManagerDelegate {
                     self.callUIAdapter.remoteDidHangupCall(currentCall)
                 }
 
-                self.callServiceState.terminateCall(currentCall)
+                self.leaveAndTerminateGroupCall(currentCall, groupCall: groupThreadCall)
                 groupThreadCall.groupCallRingState = .incomingRingCancelled
             }
 
