@@ -228,7 +228,10 @@ public class AppSetup {
         let aciProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .aci)
         let pniProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .pni)
 
-        let attachmentContentValidator = AttachmentContentValidatorImpl()
+        let audioWaveformManager = AudioWaveformManagerImpl()
+        let attachmentContentValidator = AttachmentContentValidatorImpl(
+            audioWaveformManager: audioWaveformManager
+        )
         let attachmentStore = AttachmentStoreImpl()
         let attachmentManager = AttachmentManagerImpl(
             attachmentStore: attachmentStore,
@@ -249,7 +252,6 @@ public class AppSetup {
             tsResourceStore: tsResourceStore
         )
         let videoDurationHelper = VideoDurationHelperImpl()
-        let audioWaveformManager = AudioWaveformManagerImpl()
         let attachmentDownloadManager = AttachmentDownloadManagerImpl(
             audioWaveformManager: audioWaveformManager,
             schedulers: schedulers,

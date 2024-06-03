@@ -8,7 +8,13 @@ import Foundation
 
 public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
-    public init() {}
+    private let audioWaveformManager: AudioWaveformManager
+
+    public init(
+        audioWaveformManager: AudioWaveformManager
+    ) {
+        self.audioWaveformManager = audioWaveformManager
+    }
 
     public func validateContents(
         dataSource: DataSource,
@@ -181,6 +187,90 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
     // MARK: Audio
 
     private func validateAudioContentType(_ input: Input, mimeType: String) async throws -> Attachment.ContentType {
-        fatalError("Unimplemented")
+        let duration: TimeInterval
+        do {
+            duration = try await computeAudioDuration(input, mimeType: mimeType)
+        } catch let error as NSError {
+            if
+                error.domain == NSOSStatusErrorDomain,
+                (error.code == kAudioFileInvalidFileError || error.code == kAudioFileStreamError_InvalidFile)
+            {
+                // These say the audio file is invalid.
+                // Eat them and return invalid instead of throwing
+                return .invalid
+            } else {
+                throw error
+            }
+        }
+
+        let waveformRelativeFilePath: String?
+        do {
+            _ = try await self.createAudioWaveform(input, mimeType: mimeType)
+            // TODO: deal with file copying to the final location
+            waveformRelativeFilePath = nil
+        } catch {
+            waveformRelativeFilePath = nil
+        }
+
+        return .audio(duration: duration, waveformRelativeFilePath: waveformRelativeFilePath)
+    }
+
+    // TODO someday: this loads an AVAsset (sometimes), and so does the audio waveform
+    // computation. We can combine them so we don't waste effort.
+    private func computeAudioDuration(_ input: Input, mimeType: String) async throws -> TimeInterval {
+        switch input {
+        case .inMemory(let data):
+            let player = try AVAudioPlayer(data: data)
+            player.prepareToPlay()
+            return player.duration
+        case .unencryptedFile(let fileUrl):
+            let player = try AVAudioPlayer(contentsOf: fileUrl)
+            player.prepareToPlay()
+            return player.duration
+        case let .encryptedFile(fileUrl, encryptionKey, plaintextLength):
+            // We can't load an AVAudioPlayer for encrypted files.
+            // Use AVAsset instead.
+            let asset = try AVAsset.fromEncryptedFile(
+                at: fileUrl,
+                encryptionKey: encryptionKey,
+                plaintextLength: plaintextLength,
+                mimeType: mimeType
+            )
+            return asset.duration.seconds
+        }
+    }
+
+    private enum AudioWaveformFile {
+        case unencrypted(URL)
+        case encrypted(URL, encryptionKey: Data)
+    }
+
+    private func createAudioWaveform(_ input: Input, mimeType: String) async throws -> AudioWaveformFile {
+        let outputWaveformFile = OWSFileSystem.temporaryFileUrl()
+        switch input {
+        case .inMemory(let data):
+            // We have to write the data to a temporary file.
+            // AVAsset needs a file on disk to read from.
+            let fileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: MimeTypeUtil.fileExtensionForMimeType(mimeType))
+            try data.write(to: fileUrl)
+            let waveformTask = audioWaveformManager.audioWaveform(forAudioPath: fileUrl.path, waveformPath: outputWaveformFile.path)
+            // We don't actually need the waveform now, it will be written to the output file.
+            _ = try await waveformTask.value
+            return .unencrypted(outputWaveformFile)
+        case .unencryptedFile(let fileUrl):
+            let waveformTask = audioWaveformManager.audioWaveform(forAudioPath: fileUrl.path, waveformPath: outputWaveformFile.path)
+            // We don't actually need the waveform now, it will be written to the output file.
+            _ = try await waveformTask.value
+            return .unencrypted(outputWaveformFile)
+        case let .encryptedFile(fileUrl, encryptionKey, plaintextLength):
+            try await audioWaveformManager.audioWaveform(
+                forEncryptedAudioFileAtPath: fileUrl.path,
+                encryptionKey: encryptionKey,
+                plaintextDataLength: plaintextLength,
+                mimeType: mimeType,
+                outputWaveformPath: outputWaveformFile.path
+            )
+            return .encrypted(outputWaveformFile, encryptionKey: encryptionKey)
+        }
     }
 }
