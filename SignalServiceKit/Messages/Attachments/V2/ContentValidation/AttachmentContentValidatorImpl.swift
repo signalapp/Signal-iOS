@@ -181,7 +181,63 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
     // MARK: Video
 
     private func validateVideoContentType(_ input: Input, mimeType: String) async throws -> Attachment.ContentType {
-        fatalError("Unimplemented")
+        let byteSize: Int = {
+            switch input {
+            case .inMemory(let data):
+                return data.count
+            case .unencryptedFile(let fileUrl):
+                return OWSFileSystem.fileSize(of: fileUrl)?.intValue ?? 0
+            case .encryptedFile(_, _, let plaintextLength):
+                return Int(plaintextLength)
+            }
+        }()
+        guard byteSize < SignalAttachment.kMaxFileSizeVideo else {
+            throw OWSAssertionError("Video too big!")
+        }
+
+        let asset: AVAsset = try {
+            switch input {
+            case .inMemory(let data):
+                // We have to write to disk to load an AVAsset.
+                let tmpFile = OWSFileSystem.temporaryFileUrl(fileExtension: MimeTypeUtil.fileExtensionForMimeType(mimeType))
+                try data.write(to: tmpFile)
+                return AVAsset(url: tmpFile)
+            case .unencryptedFile(let fileUrl):
+                return AVAsset(url: fileUrl)
+            case let .encryptedFile(fileUrl, encryptionKey, plaintextLength):
+                return try AVAsset.fromEncryptedFile(
+                    at: fileUrl,
+                    encryptionKey: encryptionKey,
+                    plaintextLength: plaintextLength,
+                    mimeType: mimeType
+                )
+            }
+        }()
+
+        guard OWSMediaUtils.isValidVideo(asset: asset) else {
+            return .invalid
+        }
+
+        let thumbnailImage = try? OWSMediaUtils.thumbnail(
+            forVideo: asset,
+            maxSizePixels: .square(AttachmentStream.thumbnailDimensionPoints(forThumbnailQuality: .large))
+        )
+        guard let thumbnailImage else {
+            return .invalid
+        }
+        // TODO: deal with file copying the thumbnail to the final file location
+        let stillFrameRelativeFilePath: String? = nil
+
+        let duration = asset.duration.seconds
+
+        // We have historically used the size of the still frame as the video size.
+        let pixelSize = thumbnailImage.pixelSize
+
+        return .video(
+            duration: duration,
+            pixelSize: pixelSize,
+            stillFrameRelativeFilePath: stillFrameRelativeFilePath
+        )
     }
 
     // MARK: Audio
