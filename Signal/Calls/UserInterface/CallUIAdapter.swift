@@ -86,25 +86,15 @@ public class CallUIAdapter: NSObject {
                 return
             }
 
-            let nsError: NSError = error as NSError
-            Logger.warn("Error: \(nsError.domain), \(nsError.code), error: \(error)")
-            if nsError.domain == CXErrorCodeIncomingCallError.errorDomain {
-                switch nsError.code {
-                case CXErrorCodeIncomingCallError.unknown.rawValue:
-                    Logger.warn("unknown")
-                case CXErrorCodeIncomingCallError.unentitled.rawValue:
-                    Logger.warn("unentitled")
-                case CXErrorCodeIncomingCallError.callUUIDAlreadyExists.rawValue:
-                    Logger.warn("callUUIDAlreadyExists")
-                case CXErrorCodeIncomingCallError.filteredByDoNotDisturb.rawValue:
-                    Logger.warn("filteredByDoNotDisturb")
-                    error = CallError.doNotDisturbEnabled
-                case CXErrorCodeIncomingCallError.filteredByBlockList.rawValue:
-                    Logger.warn("filteredByBlockList")
-                    error = CallError.contactIsBlocked
-                default:
-                    Logger.warn("Unknown CXErrorCodeIncomingCallError")
-                }
+            Logger.warn("error: \(error)")
+
+            switch error {
+            case CXErrorCodeIncomingCallError.filteredByDoNotDisturb:
+                error = CallError.doNotDisturbEnabled
+            case CXErrorCodeIncomingCallError.filteredByBlockList:
+                error = CallError.contactIsBlocked
+            default:
+                break
             }
 
             self.callService.handleFailedCall(failedCall: call, error: error)
