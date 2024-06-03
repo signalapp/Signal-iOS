@@ -45,13 +45,13 @@ public extension DatabaseRecovery {
     /// rebuilding the FTS index.
     static func rebuildExistingDatabase(databaseStorage: SDSDatabaseStorage) {
         Logger.info("Attempting to reindex the database...")
-        databaseStorage.write { transaction in
-            do {
-                try SqliteUtil.reindex(db: transaction.unwrapGrdbWrite.database)
-                Logger.info("Reindexed database")
-            } catch {
-                Logger.warn("Failed to reindex database")
+        do {
+            try databaseStorage.writeThrows { tx in
+                try SqliteUtil.reindex(db: tx.unwrapGrdbWrite.database)
             }
+            Logger.info("Reindexed database")
+        } catch {
+            Logger.warn("Failed to reindex database")
         }
     }
 }

@@ -362,13 +362,12 @@ public class SDSDatabaseStorage: NSObject {
         return value
     }
 
-    // NOTE: This method is not @objc. See SDSDatabaseStorage+Objc.h.
-    public func write(
+    public func writeThrows<T>(
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (SDSAnyWriteTransaction) -> Void
-    ) {
+        block: (SDSAnyWriteTransaction) throws -> T
+    ) throws -> T {
         #if DEBUG
         // When running in a Task, we should ensure that callers don't use
         // synchronous writes, as that could block forward progress for other
@@ -382,17 +381,29 @@ public class SDSDatabaseStorage: NSObject {
         let benchTitle = "Slow Write Transaction \(Self.owsFormatLogMessage(file: file, function: function, line: line))"
         let timeoutThreshold = DebugFlags.internalLogging ? 0.1 : 0.5
 
-        do {
-            try grdbStorage.write { transaction in
-                Bench(title: benchTitle, logIfLongerThan: timeoutThreshold, logInProduction: true) {
-                    block(transaction.asAnyWrite)
-                }
+        defer {
+            crossProcess.notifyChangedAsync()
+        }
+
+        return try grdbStorage.write { tx in
+            return try Bench(title: benchTitle, logIfLongerThan: timeoutThreshold, logInProduction: true) {
+                return try block(tx.asAnyWrite)
             }
+        }
+    }
+
+    // NOTE: This method is not @objc. See SDSDatabaseStorage+Objc.h.
+    public func write(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: (SDSAnyWriteTransaction) -> Void
+    ) {
+        do {
+            return try writeThrows(file: file, function: function, line: line, block: block)
         } catch {
             owsFail("error: \(error.grdbErrorForLogging)")
         }
-
-        crossProcess.notifyChangedAsync()
     }
 
     @discardableResult
