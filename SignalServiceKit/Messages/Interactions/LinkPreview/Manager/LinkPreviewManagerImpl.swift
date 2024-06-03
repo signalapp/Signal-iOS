@@ -82,7 +82,11 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
         builder: Builder,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
-        guard dataMessage.attachments.count < 1 else {
+        if dataMessage.attachments.count == 1, dataMessage.attachments[0].contentType != MimeType.textXSignalPlain.rawValue {
+            Logger.error("Discarding link preview; message has non-text attachment.")
+            throw LinkPreviewError.invalidPreview
+        }
+        if dataMessage.attachments.count > 1 {
             Logger.error("Discarding link preview; message has attachments.")
             throw LinkPreviewError.invalidPreview
         }
