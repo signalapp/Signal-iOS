@@ -11,44 +11,78 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
     public init() {}
 
     public func validateContents(
-        data: Data,
-        mimeType: String
-    ) throws -> Attachment.ContentType {
-        return try validateContents(input: .inMemory(data), mimeType: mimeType)
+        dataSource: DataSource,
+        mimeType: String,
+        sourceFilename: String?
+    ) async throws -> PendingAttachment {
+        let input: Input = {
+            if
+                let fileDataSource = dataSource as? DataSourcePath,
+                let fileUrl = fileDataSource.dataUrl
+            {
+                return .unencryptedFile(fileUrl)
+            } else {
+                return .inMemory(dataSource.data)
+            }
+        }()
+        return try await validateContents(
+            input: input,
+            mimeType: mimeType,
+            sourceFilename: sourceFilename
+        )
     }
 
     public func validateContents(
-        fileUrl: URL,
-        mimeType: String
-    ) throws -> Attachment.ContentType {
-        return try validateContents(input: .unencryptedFile(fileUrl), mimeType: mimeType)
-    }
-
-    public func validateContents(
-        encryptedFileAt fileUrl: URL,
+        ofEncryptedFileAt fileUrl: URL,
         encryptionKey: Data,
         plaintextLength: UInt32,
-        mimeType: String
-    ) throws -> Attachment.ContentType {
-        return try validateContents(
-            input: .encryptedFile(
-                fileUrl,
-                encryptionKey: encryptionKey,
-                plaintextLength: plaintextLength
-            ),
-            mimeType: mimeType
+        digestSHA256Ciphertext: Data,
+        mimeType: String,
+        sourceFilename: String?
+    ) async throws -> PendingAttachment {
+        let input = Input.encryptedFile(
+            fileUrl,
+            encryptionKey: encryptionKey,
+            plaintextLength: plaintextLength
+        )
+        return try await validateContents(
+            input: input,
+            mimeType: mimeType,
+            sourceFilename: sourceFilename
         )
     }
 
     // MARK: - Private
 
-    // MARK: Genericizing inputs
+    private struct PendingAttachmentImpl: PendingAttachment {
+        let blurHash: String?
+        let sha256ContentHash: Data
+        let encryptedByteCount: UInt32
+        let unencryptedByteCount: UInt32
+        let mimeType: String
+        let encryptionKey: Data
+        let digestSHA256Ciphertext: Data
+        let localRelativeFilePath: String
+        let sourceFilename: String?
+        let validatedContentType: Attachment.ContentType
+    }
 
     private enum Input {
         case inMemory(Data)
         case unencryptedFile(URL)
         case encryptedFile(URL, encryptionKey: Data, plaintextLength: UInt32)
     }
+
+    private func validateContents(
+        input: Input,
+        mimeType: String,
+        sourceFilename: String?
+    ) async throws -> PendingAttachment {
+        _ = try await validateContentType(input: input, mimeType: mimeType)
+        fatalError("Unimplemented")
+    }
+
+    // MARK: Content Type Validation
 
     private func rawContentType(mimeType: String) -> Attachment.ContentTypeRaw {
         if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
@@ -66,28 +100,28 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         }
     }
 
-    private func validateContents(
+    private func validateContentType(
         input: Input,
         mimeType: String
-    ) throws -> Attachment.ContentType {
+    ) async throws -> Attachment.ContentType {
         switch rawContentType(mimeType: mimeType) {
         case .invalid:
             return .invalid
         case .file:
             return .file
         case .image, .animatedImage:
-            return try validateImageType(input, mimeType: mimeType)
+            return try await validateImageContentType(input, mimeType: mimeType)
         case .video:
-            return try validateVideoType(input, mimeType: mimeType)
+            return try await validateVideoContentType(input, mimeType: mimeType)
         case .audio:
-            return try validateAudioType(input, mimeType: mimeType)
+            return try await validateAudioContentType(input, mimeType: mimeType)
         }
     }
 
     // MARK: Image/Animated
 
     // Includes static and animated image validation.
-    private func validateImageType(_ input: Input, mimeType: String) throws -> Attachment.ContentType {
+    private func validateImageContentType(_ input: Input, mimeType: String) async throws -> Attachment.ContentType {
         let imageSource: OWSImageSource = try {
             switch input {
             case .inMemory(let data):
@@ -140,13 +174,13 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
     // MARK: Video
 
-    private func validateVideoType(_ input: Input, mimeType: String) throws -> Attachment.ContentType {
+    private func validateVideoContentType(_ input: Input, mimeType: String) async throws -> Attachment.ContentType {
         fatalError("Unimplemented")
     }
 
     // MARK: Audio
 
-    private func validateAudioType(_ input: Input, mimeType: String) throws -> Attachment.ContentType {
+    private func validateAudioContentType(_ input: Input, mimeType: String) async throws -> Attachment.ContentType {
         fatalError("Unimplemented")
     }
 }

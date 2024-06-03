@@ -12,26 +12,22 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
     init() {}
 
     open func validateContents(
-        data: Data,
-        mimeType: String
-    ) throws -> Attachment.ContentType {
-        return .file
+        dataSource: DataSource,
+        mimeType: String,
+        sourceFilename: String?
+    ) async throws -> PendingAttachment {
+        throw OWSAssertionError("Unimplemented")
     }
 
     open func validateContents(
-        fileUrl: URL,
-        mimeType: String
-    ) throws -> Attachment.ContentType {
-        return .file
-    }
-
-    open func validateContents(
-        encryptedFileAt fileUrl: URL,
+        ofEncryptedFileAt fileUrl: URL,
         encryptionKey: Data,
         plaintextLength: UInt32,
-        mimeType: String
-    ) throws -> Attachment.ContentType {
-        return .file
+        digestSHA256Ciphertext: Data,
+        mimeType: String,
+        sourceFilename: String?
+    ) async throws -> PendingAttachment {
+        throw OWSAssertionError("Unimplemented")
     }
 }
 
