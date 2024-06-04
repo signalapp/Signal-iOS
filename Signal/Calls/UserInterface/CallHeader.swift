@@ -42,22 +42,19 @@ class CallHeader: UIView {
         return view
     }()
 
-    private let avatarView = ConversationAvatarView(sizeClass: .customDiameter(96),
-                                                    localUserDisplayMode: .asLocalUser,
-                                                    badged: false)
+    private var avatarView: UIView?
+
     private let callTitleLabel = MarqueeLabel()
     private let callStatusLabel = UILabel()
-    private let groupMembersButton = GroupMembersButton()
+    private lazy var groupMembersButton = GroupMembersButton()
 
-    private let call: SignalCall
+    private let groupCall: GroupCall
     private let ringRtcCall: SignalRingRTC.GroupCall
-    private let groupThreadCall: GroupThreadCall
     private weak var delegate: CallHeaderDelegate!
 
-    init(call: SignalCall, groupThreadCall: GroupThreadCall, delegate: CallHeaderDelegate) {
-        self.call = call
-        self.ringRtcCall = groupThreadCall.ringRtcCall
-        self.groupThreadCall = groupThreadCall
+    init(groupCall: GroupCall, delegate: CallHeaderDelegate) {
+        self.groupCall = groupCall
+        self.ringRtcCall = groupCall.ringRtcCall
         self.delegate = delegate
         super.init(frame: .zero)
 
@@ -79,16 +76,25 @@ class CallHeader: UIView {
 
         // Group members button
 
-        groupMembersButton.addTarget(
-            delegate,
-            action: #selector(CallHeaderDelegate.didTapMembersButton),
-            for: .touchUpInside
-        )
-        addShadow(to: groupMembersButton)
+        let topRightButton: UIButton
+        switch groupCall.concreteType {
+        case .groupThread:
+            groupMembersButton.addTarget(
+                delegate,
+                action: #selector(CallHeaderDelegate.didTapMembersButton),
+                for: .touchUpInside
+            )
+            topRightButton = groupMembersButton
+        case .callLink:
+            // [CallLink] TODO: Add support for the Info button.
+            topRightButton = UIButton(type: .infoLight)
+        }
 
-        addSubview(groupMembersButton)
-        groupMembersButton.autoPinTrailingToSuperviewMargin(withInset: 8)
-        groupMembersButton.autoPinTopToSuperviewMargin()
+        addShadow(to: topRightButton)
+
+        addSubview(topRightButton)
+        topRightButton.autoPinTrailingToSuperviewMargin(withInset: 8)
+        topRightButton.autoPinTopToSuperviewMargin()
 
         // vStack
 
@@ -103,15 +109,26 @@ class CallHeader: UIView {
         vStack.autoPinEdgesToSuperviewMargins()
 
         // Avatar
-        let avatarPaddingView = UIView()
-        avatarView.updateWithSneakyTransactionIfNecessary {
-            $0.dataSource = .thread(groupThreadCall.groupThread)
-        }
-        avatarPaddingView.addSubview(avatarView)
-        avatarView.autoPinEdges(toSuperviewMarginsExcludingEdge: .top)
+        switch groupCall.concreteType {
+        case .groupThread(let groupThreadCall):
+            let avatarView = ConversationAvatarView(
+                sizeClass: .customDiameter(96),
+                localUserDisplayMode: .asLocalUser,
+                badged: false
+            )
+            avatarView.updateWithSneakyTransactionIfNecessary {
+                $0.dataSource = .thread(groupThreadCall.groupThread)
+            }
+            let avatarPaddingView = UIView()
+            avatarPaddingView.addSubview(avatarView)
+            avatarView.autoPinEdges(toSuperviewMarginsExcludingEdge: .top)
 
-        vStack.addArrangedSubview(avatarPaddingView)
-        vStack.setCustomSpacing(16, after: avatarPaddingView)
+            vStack.addArrangedSubview(avatarPaddingView)
+            vStack.setCustomSpacing(16, after: avatarPaddingView)
+            self.avatarView = avatarView
+        case .callLink:
+            break
+        }
 
         // Name Label
 
@@ -131,8 +148,9 @@ class CallHeader: UIView {
 
 #if TESTABLE_BUILD
         // For debugging purposes, make it easy to force the call to disconnect.
-        callTitleLabel.addGestureRecognizer(UILongPressGestureRecognizer(target: self,
-                                                                         action: #selector(injectDisconnect)))
+        callTitleLabel.addGestureRecognizer(
+            UILongPressGestureRecognizer(target: self, action: #selector(injectDisconnect))
+        )
         callTitleLabel.isUserInteractionEnabled = true
 #endif
 
@@ -144,7 +162,7 @@ class CallHeader: UIView {
             callTitleLabel.autoPinWidthToSuperview()
         }
         callTitleLabel.autoPinEdge(.leading, to: .trailing, of: backButton, withOffset: 13, relation: .greaterThanOrEqual)
-        callTitleLabel.autoPinEdge(.trailing, to: .leading, of: groupMembersButton, withOffset: -13, relation: .lessThanOrEqual)
+        callTitleLabel.autoPinEdge(.trailing, to: .leading, of: topRightButton, withOffset: -13, relation: .lessThanOrEqual)
 
         // Status label
 
@@ -160,7 +178,7 @@ class CallHeader: UIView {
 
         vStack.addArrangedSubview(callStatusLabel)
 
-        groupThreadCall.addObserverAndSyncState(self)
+        groupCall.addObserverAndSyncState(self)
     }
 
     override func didMoveToSuperview() {
@@ -171,7 +189,7 @@ class CallHeader: UIView {
         // This constraint is on the avatar view container rather than the full view
         // because the label may change its number of lines,
         // and we don't want that to affect the vertical position.
-        avatarView.superview!.autoMatch(.height, to: .height, of: superview, withMultiplier: 0.25)
+        avatarView?.autoMatch(.height, to: .height, of: superview, withMultiplier: 0.25)
     }
 
     private func addShadow(to view: UIView) {
@@ -180,12 +198,14 @@ class CallHeader: UIView {
         view.layer.shadowRadius = 4
     }
 
-    private func describeMembers(count: Int,
-                                 names: [String],
-                                 zeroMemberString: @autoclosure () -> String,
-                                 oneMemberFormat: @autoclosure () -> String,
-                                 twoMemberFormat: @autoclosure () -> String,
-                                 manyMemberFormat: @autoclosure () -> String) -> String {
+    private func describeMembers(
+        count: Int,
+        names: [String],
+        zeroMemberString: @autoclosure () -> String,
+        oneMemberFormat: @autoclosure () -> String,
+        twoMemberFormat: @autoclosure () -> String,
+        manyMemberFormat: @autoclosure () -> String
+    ) -> String {
         switch count {
         case 0:
             return zeroMemberString()
@@ -198,7 +218,7 @@ class CallHeader: UIView {
         }
     }
 
-    private func fetchGroupSizeAndMemberNamesWithSneakyTransaction() -> (Int, [String]) {
+    private func fetchGroupSizeAndMemberNamesWithSneakyTransaction(groupThreadCall: GroupThreadCall) -> (Int, [String]) {
         let groupThread = groupThreadCall.groupThread
         return databaseStorage.read { transaction in
             // FIXME: Register for notifications so we can update if someone leaves the group while the screen is up?
@@ -220,130 +240,158 @@ class CallHeader: UIView {
     }
 
     private func updateCallStatusLabel() {
-        let callStatusText: String
+        callStatusLabel.text = self.callStatusLabelText()
+    }
+
+    private func callStatusLabelText() -> String {
         switch ringRtcCall.localDeviceState.joinState {
         case .notJoined, .joining, .pending:
-            if case .incomingRing(let caller, _) = groupThreadCall.groupCallRingState {
-                let callerName = databaseStorage.read { transaction in
-                    contactsManager.displayName(for: caller, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
-                }
-                let formatString = OWSLocalizedString(
-                    "GROUP_CALL_INCOMING_RING_FORMAT",
-                    comment: "Text explaining that someone has sent a ring to the group. Embeds {ring sender name}")
-                callStatusText = String(format: formatString, callerName)
-
-            } else if let joinedMembers = ringRtcCall.peekInfo?.joinedMembers, !joinedMembers.isEmpty {
-                let memberNames: [String] = databaseStorage.read { tx in
-                    joinedMembers.prefix(2).map {
-                        contactsManager.displayName(for: SignalServiceAddress(Aci(fromUUID: $0)), tx: tx).resolvedValue(useShortNameIfAvailable: true)
+            switch groupCall.concreteType {
+            case .groupThread(let groupThreadCall):
+                if case .incomingRing(let caller, _) = groupThreadCall.groupCallRingState {
+                    let callerName = databaseStorage.read { transaction in
+                        contactsManager.displayName(for: caller, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
                     }
+                    let formatString = OWSLocalizedString(
+                        "GROUP_CALL_INCOMING_RING_FORMAT",
+                        comment: "Text explaining that someone has sent a ring to the group. Embeds {ring sender name}"
+                    )
+                    return String(format: formatString, callerName)
                 }
-                callStatusText = describeMembers(
-                    count: joinedMembers.count,
-                    names: memberNames,
-                    zeroMemberString: "",
-                    oneMemberFormat: OWSLocalizedString(
-                        "GROUP_CALL_ONE_PERSON_HERE_FORMAT",
-                        comment: "Text explaining that there is one person in the group call. Embeds {member name}"),
-                    twoMemberFormat: OWSLocalizedString(
-                        "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT",
-                        comment: "Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }}"),
-                    manyMemberFormat: OWSLocalizedString(
-                        "GROUP_CALL_MANY_PEOPLE_HERE_%d",
-                        tableName: "PluralAware",
-                        comment: "Text explaining that there are three or more people in the group call. Embeds {{ %1$@ participantCount-2, %2$@ participant1, %3$@ participant2 }}"))
-
-            } else if ringRtcCall.peekInfo == nil && groupThreadCall.ringRestrictions.contains(.callInProgress) {
-                // If we think there might already be a call, don't show anything until we have proper peek info.
-                callStatusText = ""
-            } else {
-                let (memberCount, firstTwoNames) = fetchGroupSizeAndMemberNamesWithSneakyTransaction()
+                if let joinedMembers = ringRtcCall.peekInfo?.joinedMembers, !joinedMembers.isEmpty {
+                    let memberNames: [String] = databaseStorage.read { tx in
+                        joinedMembers.prefix(2).map {
+                            contactsManager.displayName(for: SignalServiceAddress(Aci(fromUUID: $0)), tx: tx).resolvedValue(useShortNameIfAvailable: true)
+                        }
+                    }
+                    return describeMembers(
+                        count: joinedMembers.count,
+                        names: memberNames,
+                        zeroMemberString: "",
+                        oneMemberFormat: OWSLocalizedString(
+                            "GROUP_CALL_ONE_PERSON_HERE_FORMAT",
+                            comment: "Text explaining that there is one person in the group call. Embeds {member name}"
+                        ),
+                        twoMemberFormat: OWSLocalizedString(
+                            "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT",
+                            comment: "Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }}"
+                        ),
+                        manyMemberFormat: OWSLocalizedString(
+                            "GROUP_CALL_MANY_PEOPLE_HERE_%d",
+                            tableName: "PluralAware",
+                            comment: "Text explaining that there are three or more people in the group call. Embeds {{ %1$@ participantCount-2, %2$@ participant1, %3$@ participant2 }}"
+                        )
+                    )
+                }
+                if ringRtcCall.peekInfo == nil, groupThreadCall.ringRestrictions.contains(.callInProgress) {
+                    // If we think there might already be a call, don't show anything until we have proper peek info.
+                    return ""
+                }
+                let (memberCount, firstTwoNames) = fetchGroupSizeAndMemberNamesWithSneakyTransaction(groupThreadCall: groupThreadCall)
                 if groupThreadCall.ringRestrictions.isEmpty, case .shouldRing = groupThreadCall.groupCallRingState {
-                    callStatusText = describeMembers(
+                    return describeMembers(
                         count: memberCount,
                         names: firstTwoNames,
                         zeroMemberString: "",
                         oneMemberFormat: OWSLocalizedString(
                             "GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT",
-                            comment: "Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name}"),
+                            comment: "Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name}"
+                        ),
                         twoMemberFormat: OWSLocalizedString(
                             "GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT",
-                            comment: "Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }}"),
+                            comment: "Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }}"
+                        ),
                         manyMemberFormat: OWSLocalizedString(
                             "GROUP_CALL_WILL_RING_MANY_PEOPLE_%d",
                             tableName: "PluralAware",
-                            comment: "Text shown before the user starts a group call if the user has enabled ringing and there are three or more other people in the group. Embeds {{ %1$@ participantCount-2, %2$@ participant1, %3$@ participant2 }}"))
+                            comment: "Text shown before the user starts a group call if the user has enabled ringing and there are three or more other people in the group. Embeds {{ %1$@ participantCount-2, %2$@ participant1, %3$@ participant2 }}"
+                        )
+                    )
                 } else {
-                    callStatusText = describeMembers(
+                    return describeMembers(
                         count: memberCount,
                         names: firstTwoNames,
                         zeroMemberString: "",
                         oneMemberFormat: OWSLocalizedString(
                             "GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT",
-                            comment: "Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name}"),
+                            comment: "Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name}"
+                        ),
                         twoMemberFormat: OWSLocalizedString(
                             "GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT",
-                            comment: "Text shown before the user starts a group call if the user has not enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }}"),
+                            comment: "Text shown before the user starts a group call if the user has not enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }}"
+                        ),
                         manyMemberFormat: OWSLocalizedString(
                             "GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d",
                             tableName: "PluralAware",
-                            comment: "Text shown before the user starts a group call if the user has not enabled ringing and there are three or more other people in the group. Embeds {{ %1$@ participantCount-2, %2$@ participant1, %3$@ participant2 }}"))
+                            comment: "Text shown before the user starts a group call if the user has not enabled ringing and there are three or more other people in the group. Embeds {{ %1$@ participantCount-2, %2$@ participant1, %3$@ participant2 }}"
+                        )
+                    )
                 }
+            case .callLink:
+                // [CallLink] TODO: Localize this value.
+                return "Signal Call Link"
             }
         case .joined:
             if ringRtcCall.localDeviceState.connectionState == .reconnecting {
-                callStatusText = OWSLocalizedString(
+                return OWSLocalizedString(
                     "GROUP_CALL_RECONNECTING",
-                    comment: "Text indicating that the user has lost their connection to the call and we are reconnecting.")
-
-            } else if ringRtcCall.remoteDeviceStates.isEmpty {
-                if case .ringing = groupThreadCall.groupCallRingState {
-                    let (memberCount, firstTwoNames) = fetchGroupSizeAndMemberNamesWithSneakyTransaction()
-                    callStatusText = describeMembers(
-                        count: memberCount,
-                        names: firstTwoNames,
-                        zeroMemberString: "",
-                        oneMemberFormat: OWSLocalizedString(
-                            "GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT",
-                            comment: "Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name}"),
-                        twoMemberFormat: OWSLocalizedString(
-                            "GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT",
-                            comment: "Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }}"),
-                        manyMemberFormat: OWSLocalizedString(
-                            "GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d",
-                            tableName: "PluralAware",
-                            comment: "Text shown before the user starts a group call if the user has enabled ringing and there are three or more other people in the group. Embeds {{ %1$@ participantCount-2, %2$@ participant1, %3$@ participant2 }}"))
-
-                } else {
-                    callStatusText = OWSLocalizedString(
-                        "GROUP_CALL_NO_ONE_HERE",
-                        comment: "Text explaining that you are the only person currently in the group call")
-                }
-
-            } else {
-                let callDuration = groupThreadCall.commonState.connectionDuration()
+                    comment: "Text indicating that the user has lost their connection to the call and we are reconnecting."
+                )
+            }
+            if !ringRtcCall.remoteDeviceStates.isEmpty {
+                let callDuration = groupCall.commonState.connectionDuration()
                 let callDurationDate = Date(timeIntervalSinceReferenceDate: callDuration)
                 var formattedDate = dateFormatter.string(from: callDurationDate)
                 if formattedDate.hasPrefix("00:") {
                     // Don't show the "hours" portion of the date format unless the
                     // call duration is at least 1 hour.
-                    formattedDate = String(formattedDate[formattedDate.index(formattedDate.startIndex, offsetBy: 3)...])
-                } else {
+                    formattedDate = String(formattedDate.dropFirst(3))
+                } else if formattedDate.hasPrefix("0") {
                     // If showing the "hours" portion of the date format, strip any leading
                     // zeroes.
-                    if formattedDate.hasPrefix("0") {
-                        formattedDate = String(formattedDate[formattedDate.index(formattedDate.startIndex, offsetBy: 1)...])
-                    }
+                    formattedDate = String(formattedDate.dropFirst(1))
                 }
-                callStatusText = formattedDate
+                return formattedDate
+            }
+            switch groupCall.concreteType {
+            case .groupThread(let groupThreadCall):
+                if case .ringing = groupThreadCall.groupCallRingState {
+                    let (memberCount, firstTwoNames) = fetchGroupSizeAndMemberNamesWithSneakyTransaction(groupThreadCall: groupThreadCall)
+                    return describeMembers(
+                        count: memberCount,
+                        names: firstTwoNames,
+                        zeroMemberString: "",
+                        oneMemberFormat: OWSLocalizedString(
+                            "GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT",
+                            comment: "Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name}"
+                        ),
+                        twoMemberFormat: OWSLocalizedString(
+                            "GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT",
+                            comment: "Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }}"
+                        ),
+                        manyMemberFormat: OWSLocalizedString(
+                            "GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d",
+                            tableName: "PluralAware",
+                            comment: "Text shown before the user starts a group call if the user has enabled ringing and there are three or more other people in the group. Embeds {{ %1$@ participantCount-2, %2$@ participant1, %3$@ participant2 }}"
+                        )
+                    )
+                }
+                return OWSLocalizedString(
+                    "GROUP_CALL_NO_ONE_HERE",
+                    comment: "Text explaining that you are the only person currently in the group call"
+                )
+            case .callLink:
+                // [CallLink] TODO: Show the right string for incoming/outgoing.
+                return "Waiting..."
             }
         }
-
-        callStatusLabel.text = callStatusText
     }
 
     private func updateCallTitleLabel() {
-        let callTitleText: String
+        callTitleLabel.text = self.callTitleLabelText()
+    }
+
+    private func callTitleLabelText() -> String {
         if
             ringRtcCall.localDeviceState.joinState == .joined,
             let firstMember = ringRtcCall.remoteDeviceStates.sortedBySpeakerTime.first,
@@ -354,19 +402,26 @@ class CallHeader: UIView {
             }
             let formatString = OWSLocalizedString(
                 "GROUP_CALL_PRESENTING_FORMAT",
-                comment: "Text explaining that a member is presenting. Embeds {member name}")
-            callTitleText = String(format: formatString, presentingName)
-        } else {
+                comment: "Text explaining that a member is presenting. Embeds {member name}"
+            )
+            return String(format: formatString, presentingName)
+        }
+        switch groupCall.concreteType {
+        case .groupThread(let groupThreadCall):
             // FIXME: This should auto-update if the group name changes.
-            callTitleText = databaseStorage.read { transaction in
+            return databaseStorage.read { transaction in
                 contactsManager.displayName(for: groupThreadCall.groupThread, transaction: transaction)
             }
+        case .callLink:
+            // [CallLink] TODO: Show the name here.
+            return "Call Link"
         }
-
-        callTitleLabel.text = callTitleText
     }
 
-    func updateGroupMembersButton() {
+    private func updateGroupMembersButton() {
+        guard case .groupThread = groupCall.concreteType else {
+            return
+        }
         let isJoined = ringRtcCall.localDeviceState.joinState == .joined
         let remoteMemberCount = isJoined ? ringRtcCall.remoteDeviceStates.count : Int(ringRtcCall.peekInfo?.deviceCountExcludingPendingDevices ?? 0)
         groupMembersButton.updateMemberCount(remoteMemberCount + (isJoined ? 1 : 0))
@@ -387,7 +442,7 @@ extension CallHeader: GroupCallObserver {
     func groupCallLocalDeviceStateChanged(_ call: GroupCall) {
         if ringRtcCall.localDeviceState.joinState == .joined {
             gradientView.isHidden = false
-            avatarView.superview!.isHidden = true // hide the container
+            avatarView?.isHidden = true // hide the container
             if callDurationTimer == nil {
                 let kDurationUpdateFrequencySeconds = 1 / 20.0
                 callDurationTimer = WeakTimer.scheduledTimer(
@@ -401,7 +456,7 @@ extension CallHeader: GroupCallObserver {
             }
         } else {
             gradientView.isHidden = true
-            avatarView.superview!.isHidden = false
+            avatarView?.isHidden = false
             callDurationTimer?.invalidate()
             callDurationTimer = nil
         }

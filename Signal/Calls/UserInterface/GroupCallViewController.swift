@@ -29,7 +29,7 @@ class GroupCallViewController: UIViewController {
     private lazy var callControlsConfirmationToastContainerView = UIView()
     private var callService: CallService { AppEnvironment.shared.callService }
     private lazy var incomingCallControls = IncomingCallControls(video: true, delegate: self)
-    private lazy var callHeader = CallHeader(call: call, groupThreadCall: groupThreadCall, delegate: self)
+    private lazy var callHeader = CallHeader(groupCall: groupThreadCall, delegate: self)
     private lazy var notificationView = GroupCallNotificationView(groupCall: groupThreadCall)
 
     private lazy var videoGrid = GroupCallVideoGrid(call: call, groupCall: groupThreadCall)
