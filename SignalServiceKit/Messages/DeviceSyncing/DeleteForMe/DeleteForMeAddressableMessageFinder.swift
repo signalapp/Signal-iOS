@@ -129,3 +129,23 @@ final class DeleteForMeAddressableMessageFinderImpl: DeleteForMeAddressableMessa
         return foundAddressableMessage
     }
 }
+
+// MARK: - Mock
+
+#if TESTABLE_BUILD
+
+open class MockDeleteForMeAddressableMessageFinder: DeleteForMeAddressableMessageFinder {
+    func findMostRecentAddressableMessages(threadUniqueId: String, maxCount: Int, localIdentifiers: LocalIdentifiers, tx: any DBReadTransaction) -> [Outgoing.AddressableMessage] {
+        return []
+    }
+
+    func findLocalMessage(threadUniqueId: String, addressableMessage: Incoming.AddressableMessage, tx: any DBReadTransaction) -> TSMessage? {
+        return nil
+    }
+
+    func threadContainsAnyAddressableMessages(threadUniqueId: String, tx: any DBReadTransaction) -> Bool {
+        return false
+    }
+}
+
+#endif

@@ -312,7 +312,7 @@ public class MockThreadStore: ThreadStore {
     }
 
     public func getOrCreateLocalThread(tx: DBWriteTransaction) -> TSContactThread? {
-        return nil
+        return TSContactThread(contactAddress: .isolatedRandomForTesting())
     }
 
     public func getOrCreateContactThread(with address: SignalServiceAddress, tx: DBWriteTransaction) -> TSContactThread {

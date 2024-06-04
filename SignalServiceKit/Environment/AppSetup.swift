@@ -494,8 +494,8 @@ public class AppSetup {
         )
         let deleteForMeOutgoingSyncMessageManager = DeleteForMeOutgoingSyncMessageManagerImpl(
             addressableMessageFinder: deleteForMeAddressableMessageFinder,
-            messageSenderJobQueue: messageSenderJobQueue,
             recipientDatabaseTable: recipientDatabaseTable,
+            syncMessageSender: DeleteForMeOutgoingSyncMessageManagerImpl.Wrappers.SyncMessageSender(messageSenderJobQueue),
             threadStore: threadStore,
             tsAccountManager: tsAccountManager
         )
