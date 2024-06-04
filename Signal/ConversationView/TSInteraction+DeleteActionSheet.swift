@@ -27,8 +27,21 @@ public extension TSInteraction {
                     uniqueId: self.uniqueId, transaction: tx
                 ) else { return }
 
-                DependenciesBridge.shared.interactionDeleteManager
-                    .delete(freshSelf, sideEffects: .default(), tx: tx.asV2Write)
+                if let thread = freshSelf.thread(tx: tx) {
+                    DependenciesBridge.shared.interactionDeleteManager.delete(
+                        interactions: [freshSelf],
+                        sideEffects: .custom(
+                            deleteForMeSyncMessage: .sendSyncMessage(interactionsThread: thread)
+                        ),
+                        tx: tx.asV2Write
+                    )
+                } else {
+                    DependenciesBridge.shared.interactionDeleteManager.delete(
+                        interactions: [freshSelf],
+                        sideEffects: .default(),
+                        tx: tx.asV2Write
+                    )
+                }
             }
         }
         actionSheetController.addAction(deleteForMeAction)

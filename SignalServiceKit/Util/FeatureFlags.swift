@@ -97,6 +97,8 @@ public class FeatureFlags: NSObject {
 
     public static let callRaiseHandReceiveSupport = build.includes(.dev)
     public static let callRaiseHandSendSupport = build.includes(.dev)
+
+    public static let shouldSendDeleteForMeSyncMessages = build.includes(.dev)
 }
 
 // MARK: -

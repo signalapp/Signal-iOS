@@ -120,9 +120,7 @@ extension ConversationViewController: MessageRequestDelegate {
                                              blockMode: .localShouldNotLeaveGroups,
                                              transaction: transaction)
         }
-        syncManager.sendMessageRequestResponseSyncMessage(thread: self.thread,
-                                                          responseType: .blockAndDelete)
-        leaveAndSoftDeleteThread()
+        leaveAndSoftDeleteThread(messageRequestResponseType: .blockAndDelete)
     }
 
     func blockThreadAndReportSpam(in thread: TSThread) {
@@ -164,8 +162,7 @@ extension ConversationViewController: MessageRequestDelegate {
                 transaction: transaction
             )
         }
-        syncManager.sendMessageRequestResponseSyncMessage(thread: self.thread, responseType: .delete)
-        leaveAndSoftDeleteThread()
+        leaveAndSoftDeleteThread(messageRequestResponseType: .delete)
     }
 
     private func blockUserAndGroupAndDelete(_ aci: Aci) {
@@ -188,8 +185,7 @@ extension ConversationViewController: MessageRequestDelegate {
                 transaction: transaction
             )
         }
-        syncManager.sendMessageRequestResponseSyncMessage(thread: self.thread, responseType: .blockAndDelete)
-        leaveAndSoftDeleteThread()
+        leaveAndSoftDeleteThread(messageRequestResponseType: .blockAndDelete)
     }
 
     func messageRequestViewDidTapDelete() {
@@ -198,13 +194,24 @@ extension ConversationViewController: MessageRequestDelegate {
         presentActionSheet(deleteSheet)
     }
 
-    func leaveAndSoftDeleteThread() {
+    private func leaveAndSoftDeleteThread(
+        messageRequestResponseType: OWSSyncMessageRequestResponseType
+    ) {
         AssertIsOnMainThread()
+
+        syncManager.sendMessageRequestResponseSyncMessage(
+            thread: self.thread,
+            responseType: messageRequestResponseType
+        )
 
         let completion = {
             ConversationViewController.databaseStorage.write { transaction in
-                DependenciesBridge.shared.threadSoftDeleteManager
-                    .softDelete(thread: self.thread, tx: transaction.asV2Write)
+                DependenciesBridge.shared.threadSoftDeleteManager.softDelete(
+                    threads: [self.thread],
+                    // We're already sending a sync message about this above!
+                    sendDeleteForMeSyncMessage: false,
+                    tx: transaction.asV2Write
+                )
             }
             self.conversationSplitViewController?.closeSelectedConversation(animated: true)
             NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
@@ -439,9 +446,7 @@ extension ConversationViewController {
 
         let actionSheet = ActionSheetController(title: actionSheetTitle, message: actionSheetMessage)
         actionSheet.addAction(ActionSheetAction(title: confirmationText, handler: { _ in
-            self.syncManager.sendMessageRequestResponseSyncMessage(thread: self.thread,
-                                                                   responseType: .delete)
-            self.leaveAndSoftDeleteThread()
+            self.leaveAndSoftDeleteThread(messageRequestResponseType: .delete)
         }))
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.cancelButton, style: .cancel))
         return actionSheet

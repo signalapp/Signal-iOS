@@ -841,8 +841,22 @@ class MediaGallery: Dependencies {
                         // them again. Also, this ensures we've fetched the latest message details
                         // within this transaction.
                         message.anyReload(transaction: tx)
-                        DependenciesBridge.shared.interactionDeleteManager
-                            .delete(message, sideEffects: .default(), tx: tx.asV2Write)
+
+                        if let thread = message.thread(tx: tx) {
+                            DependenciesBridge.shared.interactionDeleteManager.delete(
+                                message,
+                                sideEffects: .custom(
+                                    deleteForMeSyncMessage: .sendSyncMessage(interactionsThread: thread)
+                                ),
+                                tx: tx.asV2Write
+                            )
+                        } else {
+                            DependenciesBridge.shared.interactionDeleteManager.delete(
+                                message,
+                                sideEffects: .default(),
+                                tx: tx.asV2Write
+                            )
+                        }
                     }
                 }
             } catch {

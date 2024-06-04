@@ -489,10 +489,21 @@ public class AppSetup {
             threadStore: threadStore
         )
 
+        let deleteForMeAddressableMessageFinder = DeleteForMeAddressableMessageFinderImpl(
+            tsAccountManager: tsAccountManager
+        )
+        let deleteForMeOutgoingSyncMessageManager = DeleteForMeOutgoingSyncMessageManagerImpl(
+            addressableMessageFinder: deleteForMeAddressableMessageFinder,
+            messageSenderJobQueue: messageSenderJobQueue,
+            recipientDatabaseTable: recipientDatabaseTable,
+            threadStore: threadStore,
+            tsAccountManager: tsAccountManager
+        )
         let interactionDeleteManager = InteractionDeleteManagerImpl(
             callRecordStore: callRecordStore,
             callRecordDeleteManager: callRecordDeleteManager,
             databaseStorage: databaseStorage,
+            deleteForMeOutgoingSyncMessageManager: deleteForMeOutgoingSyncMessageManager,
             interactionReadCache: modelReadCaches.interactionReadCache,
             interactionStore: interactionStore,
             mediaGalleryResourceManager: mediaGalleryResourceManager,
@@ -528,6 +539,7 @@ public class AppSetup {
         )
 
         let threadSoftDeleteManager = ThreadSoftDeleteManagerImpl(
+            deleteForMeOutgoingSyncMessageManager: deleteForMeOutgoingSyncMessageManager,
             intentsManager: ThreadSoftDeleteManagerImpl.Wrappers.IntentsManager(),
             interactionDeleteManager: interactionDeleteManager,
             recipientDatabaseTable: recipientDatabaseTable,
@@ -535,6 +547,22 @@ public class AppSetup {
             threadReplyInfoStore: threadReplyInfoStore,
             tsAccountManager: tsAccountManager
         )
+
+        let bulkDeleteInteractionJobQueue = BulkDeleteInteractionJobQueue(
+            addressableMessageFinder: deleteForMeAddressableMessageFinder,
+            db: db,
+            interactionDeleteManager: interactionDeleteManager,
+            threadSoftDeleteManager: threadSoftDeleteManager,
+            threadStore: threadStore
+        )
+        let deleteForMeIncomingSyncMessageManager = DeleteForMeIncomingSyncMessageManagerImpl(
+            addressableMessageFinder: deleteForMeAddressableMessageFinder,
+            bulkDeleteInteractionJobQueue: bulkDeleteInteractionJobQueue,
+            interactionDeleteManager: interactionDeleteManager,
+            threadSoftDeleteManager: threadSoftDeleteManager,
+            tsAccountManager: tsAccountManager
+        )
+
         let threadRemover = ThreadRemoverImpl(
             chatColorSettingStore: chatColorSettingStore,
             databaseStorage: ThreadRemoverImpl.Wrappers.DatabaseStorage(databaseStorage),
@@ -915,23 +943,6 @@ public class AppSetup {
         )
 
         let orphanedAttachmentCleaner = OrphanedAttachmentCleanerImpl(db: databaseStorage)
-
-        let bulkDeleteInteractionJobQueue = BulkDeleteInteractionJobQueue(
-            db: db,
-            interactionDeleteManager: interactionDeleteManager,
-            recipientDatabaseTable: recipientDatabaseTable,
-            threadSoftDeleteManager: threadSoftDeleteManager,
-            threadStore: threadStore,
-            tsAccountManager: tsAccountManager
-        )
-        let deleteForMeIncomingSyncMessageManager = DeleteForMeIncomingSyncMessageManagerImpl(
-            bulkDeleteInteractionJobQueue: bulkDeleteInteractionJobQueue,
-            interactionDeleteManager: interactionDeleteManager,
-            recipientDatabaseTable: recipientDatabaseTable,
-            threadSoftDeleteManager: threadSoftDeleteManager,
-            threadStore: threadStore,
-            tsAccountManager: tsAccountManager
-        )
 
         let dependenciesBridge = DependenciesBridge(
             accountAttributesUpdater: accountAttributesUpdater,

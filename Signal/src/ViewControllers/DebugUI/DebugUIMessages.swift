@@ -29,7 +29,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 OWSTableItem(title: "Delete All Messages in Thread", actionBlock: {
                     self.databaseStorage.write { transaction in
                         DependenciesBridge.shared.threadSoftDeleteManager
-                            .removeAllInteractions(thread: thread, tx: transaction.asV2Write)
+                            .removeAllInteractions(thread: thread, sendDeleteForMeSyncMessage: false, tx: transaction.asV2Write)
                     }
                 })
             ]

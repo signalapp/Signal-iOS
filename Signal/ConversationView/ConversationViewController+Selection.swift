@@ -312,7 +312,10 @@ extension ConversationViewController {
                 guard let self = self else { return }
 
                 DispatchQueue.main.async {
-                    Self.deleteSelectedItems(selectionItems: selectionItems)
+                    Self.deleteSelectedItems(
+                        selectionItems: selectionItems,
+                        thread: self.thread
+                    )
                     modalActivityIndicator.dismiss {
                         self.uiMode = .normal
                     }
@@ -323,63 +326,79 @@ extension ConversationViewController {
         present(alert, animated: true)
     }
 
-    private static func deleteSelectedItems(selectionItems: [CVSelectionItem]) {
-        databaseStorage.write { transaction in
+    private static func deleteSelectedItems(
+        selectionItems: [CVSelectionItem],
+        thread: TSThread
+    ) {
+        databaseStorage.write { tx in
+            var interactionsToDelete = [TSInteraction]()
+
             for selectionItem in selectionItems {
-                Self.deleteSelectedItem(selectionItem: selectionItem, transaction: transaction)
+                guard let interaction = TSInteraction.anyFetch(
+                    uniqueId: selectionItem.interactionId,
+                    transaction: tx
+                ) else { continue }
+
+                let wasPartiallyDeleted = attemptPartialDelete(
+                    interaction,
+                    selectionType: selectionItem.selectionType,
+                    tx: tx
+                )
+
+                if !wasPartiallyDeleted {
+                    // If we didn't partial-delete, we should full-delete.
+                    interactionsToDelete.append(interaction)
+                }
             }
+
+            DependenciesBridge.shared.interactionDeleteManager.delete(
+                interactions: interactionsToDelete,
+                sideEffects: .custom(
+                    deleteForMeSyncMessage: .sendSyncMessage(interactionsThread: thread)
+                ),
+                tx: tx.asV2Write
+            )
         }
     }
 
-    private static func deleteSelectedItem(selectionItem: CVSelectionItem,
-                                           transaction: SDSAnyWriteTransaction) {
-        guard let interaction = TSInteraction.anyFetch(uniqueId: selectionItem.interactionId,
-                                                       transaction: transaction) else {
-            Logger.warn("Missing interaction.")
-            return
+    /// Attempt to partially-delete the message contents without actually
+    /// deleting the interaction.
+    /// - Returns
+    /// Whether the interaction was partially-deleted.
+    private static func attemptPartialDelete(
+        _ interaction: TSInteraction,
+        selectionType: CVSelectionType,
+        tx: SDSAnyWriteTransaction
+    ) -> Bool {
+        if selectionType == .allContent { return false }
+        owsAssertDebug(
+            selectionType == .primaryContent || selectionType == .secondaryContent,
+            "Unexpected selection type: \(selectionType.rawValue)!"
+        )
+
+        guard let message = interaction as? TSMessage else {
+            return false
         }
 
-        let selectionType = selectionItem.selectionType
-
-        func tryPartialDelete() -> Bool {
-            guard let message = interaction as? TSMessage else {
-                owsFailDebug("Invalid interaction: \(type(of: interaction)).")
-                return false
-            }
-            guard let componentState = CVLoader.buildStandaloneComponentState(
+        guard
+            let componentState = CVLoader.buildStandaloneComponentState(
                 interaction: interaction,
                 spoilerState: SpoilerRenderState(),
-                transaction: transaction
-            ) else {
-                owsFailDebug("Could not load componentState.")
-                return false
-            }
-            guard componentState.hasPrimaryAndSecondaryContentForSelection else {
-                owsFailDebug("Invalid componentState.")
-                return false
-            }
-            if selectionType == .primaryContent {
-                message.removeMediaAndShareAttachments(transaction: transaction)
-            } else {
-                message.removeBodyText(transaction: transaction)
-            }
-            return true
+                transaction: tx
+            ),
+            componentState.hasPrimaryAndSecondaryContentForSelection
+        else {
+            owsFailDebug("Failed to load or invalid component state!")
+            return false
         }
 
-        if selectionType == .allContent {
-            // Fall through to delete the entire interaction.
-        } else if selectionType == .primaryContent ||
-                    selectionType == .secondaryContent {
-            // Try to partially delete the interaction.
-            if tryPartialDelete() {
-                return
-            }
+        if selectionType == .primaryContent {
+            message.removeMediaAndShareAttachments(transaction: tx)
         } else {
-            owsFailDebug("Invalid selectionType: \(selectionType.rawValue).")
+            message.removeBodyText(transaction: tx)
         }
 
-        DependenciesBridge.shared.interactionDeleteManager
-            .delete(interaction, sideEffects: .default(), tx: transaction.asV2Write)
+        return true
     }
 
     func didTapForwardSelectedItems() {
@@ -453,7 +472,7 @@ extension ConversationViewController {
                 guard let self = self else { return }
                 self.databaseStorage.write {
                     DependenciesBridge.shared.threadSoftDeleteManager
-                        .removeAllInteractions(thread: thread, tx: $0.asV2Write)
+                        .removeAllInteractions(thread: thread, sendDeleteForMeSyncMessage: true, tx: $0.asV2Write)
                 }
                 DispatchQueue.main.async {
                     modalActivityIndicator.dismiss { [weak self] in

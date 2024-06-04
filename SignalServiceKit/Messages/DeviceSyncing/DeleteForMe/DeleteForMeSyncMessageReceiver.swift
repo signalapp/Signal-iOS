@@ -16,8 +16,8 @@ protocol DeleteForMeSyncMessageReceiver {
 /// Responsible for parsing an incoming `DeleteForMe` sync message and
 /// delegating the delete-actions it contains.
 final class DeleteForMeSyncMessageReceiverImpl: DeleteForMeSyncMessageReceiver {
-    private typealias Conversation = DeleteForMeSyncMessage.Conversation
-    private typealias AddressableMessage = DeleteForMeSyncMessage.AddressableMessage
+    private typealias Conversation = DeleteForMeSyncMessage.Incoming.Conversation
+    private typealias AddressableMessage = DeleteForMeSyncMessage.Incoming.AddressableMessage
 
     private let deleteForMeIncomingSyncMessageManager: DeleteForMeIncomingSyncMessageManager
     private let recipientDatabaseTable: RecipientDatabaseTable

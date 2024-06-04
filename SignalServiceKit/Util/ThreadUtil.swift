@@ -249,11 +249,12 @@ extension ThreadUtil {
         Logger.info("")
 
         databaseStorage.write { transaction in
-            TSThread.anyEnumerate(transaction: transaction, batched: true) { thread, _ in
-                DependenciesBridge.shared.threadSoftDeleteManager.softDelete(thread: thread, tx: transaction.asV2Write)
-            }
+            DependenciesBridge.shared.threadSoftDeleteManager.softDelete(
+                threads: TSThread.anyFetchAll(transaction: transaction),
+                sendDeleteForMeSyncMessage: true,
+                tx: transaction.asV2Write
+            )
 
-            DependenciesBridge.shared.interactionDeleteManager.deleteAll(tx: transaction.asV2Write)
             StoryMessage.anyRemoveAllWithInstantiation(transaction: transaction)
             TSAttachment.anyRemoveAllWithInstantiation(transaction: transaction)
 

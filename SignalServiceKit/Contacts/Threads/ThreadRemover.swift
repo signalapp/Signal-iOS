@@ -5,6 +5,14 @@
 
 import Foundation
 
+/// Responsible for hard-deleting a thread. This is an exceptional action:
+/// threads are typically "soft-deleted" by removing their contents and metadata
+/// without deleting the ``TSThread`` database record itself. Hard-deletion is
+/// only appropriate for scenarios in which we know a thread will be truly
+/// *gone forever*; for example, when two threads are merged.
+///
+/// If you're looking to colloquially "delete a thread", e.g. in response to a
+/// user action, you probably want ``ThreadSoftDeleteManager``.
 public protocol ThreadRemover {
     func remove(_ thread: TSContactThread, tx: DBWriteTransaction)
     func remove(_ thread: TSPrivateStoryThread, tx: DBWriteTransaction)
@@ -53,7 +61,8 @@ class ThreadRemoverImpl: ThreadRemover {
     private func removeAny(_ thread: TSThread, tx: DBWriteTransaction) {
         chatColorSettingStore.setRawSetting(nil, for: thread.uniqueId, tx: tx)
         databaseStorage.updateIdMapping(thread: thread, tx: tx)
-        threadSoftDeleteManager.removeAllInteractions(thread: thread, tx: tx)
+        // No sync message, since hard-delete is a local-only concept.
+        threadSoftDeleteManager.removeAllInteractions(thread: thread, sendDeleteForMeSyncMessage: false, tx: tx)
         disappearingMessagesConfigurationStore.remove(for: thread, tx: tx)
         threadAssociatedDataStore.remove(for: thread.uniqueId, tx: tx)
         threadReplyInfoStore.remove(for: thread.uniqueId, tx: tx)

@@ -120,6 +120,7 @@ extension ChatListViewController {
     private func done() {
         leaveMultiselectMode()
         updateBarButtonItems()
+        updateViewState()
         if self.chatListMode == .archive {
             navigationItem.rightBarButtonItem?.title = CommonStrings.selectButton
         }
@@ -221,24 +222,30 @@ extension ChatListViewController {
 
     @objc
     func performArchive() {
-        performOnAllSelectedEntries { thread in
-            archiveThread(threadViewModel: thread, closeConversationBlock: nil)
+        performOnAllSelectedEntries { threads in
+            for thread in threads {
+                archiveThread(threadViewModel: thread, closeConversationBlock: nil)
+            }
         }
         done()
     }
 
     @objc
     func performUnarchive() {
-        performOnAllSelectedEntries { thread in
-            archiveThread(threadViewModel: thread, closeConversationBlock: nil)
+        performOnAllSelectedEntries { threads in
+            for thread in threads {
+                archiveThread(threadViewModel: thread, closeConversationBlock: nil)
+            }
         }
         done()
     }
 
     @objc
     func performRead() {
-        performOnAllSelectedEntries { thread in
-            markThreadAsRead(threadViewModel: thread)
+        performOnAllSelectedEntries { threads in
+            for thread in threads {
+                markThreadAsRead(threadViewModel: thread)
+            }
         }
         done()
     }
@@ -255,8 +262,10 @@ extension ChatListViewController {
             }
         }
 
-        performOn(entries: entries) { thread in
-            markThreadAsRead(threadViewModel: thread)
+        performOn(entries: entries) { threads in
+            for thread in threads {
+                markThreadAsRead(threadViewModel: thread)
+            }
         }
         done()
     }
@@ -280,19 +289,42 @@ extension ChatListViewController {
         message = String.localizedStringWithFormat(messageFormat, count)
 
         let alert = ActionSheetController(title: title, message: message)
-        alert.addAction(ActionSheetAction(title: CommonStrings.deleteButton,
-                                          style: .destructive) { [weak self] _ in
-            self?.performOnAllSelectedEntries { thread in
-                self?.deleteThread(threadViewModel: thread, closeConversationBlock: nil)
+        alert.addAction(ActionSheetAction(
+            title: CommonStrings.deleteButton,
+            style: .destructive
+        ) { [weak self] _ in
+            guard let self else { return }
+
+            // This deletion can be quite intensive, so we'll wrap the whole
+            // thing in a UI-blocking modal.
+            ModalActivityIndicatorViewController.present(
+                fromViewController: self,
+                canCancel: false
+            ) { modal in
+                // We want to protect this whole operation with a single write
+                // transaction, to ensure the contents of the threads don't
+                // change as we're deleting them.
+                self.databaseStorage.write { transaction in
+                    self.performOnAllSelectedEntries { threadViewModels in
+                        DependenciesBridge.shared.threadSoftDeleteManager.softDelete(
+                            threads: threadViewModels.map { $0.threadRecord },
+                            sendDeleteForMeSyncMessage: true,
+                            tx: transaction.asV2Write
+                        )
+                    }
+                }
+
+                modal.dismiss()
             }
-            self?.done()
+
+            self.done()
         })
         alert.addAction(OWSActionSheets.cancelAction)
 
         presentActionSheet(alert)
     }
 
-    private func performOnAllSelectedEntries(action: ((ThreadViewModel) -> Void)) {
+    private func performOnAllSelectedEntries(action: ([ThreadViewModel]) -> Void) {
         var entries: [ThreadViewModel] = []
         for path in tableView.indexPathsForSelectedRows ?? [] {
             if let thread = tableDataSource.threadViewModel(forIndexPath: path, expectsSuccess: false) {
@@ -302,11 +334,12 @@ extension ChatListViewController {
         performOn(entries: entries, action: action)
     }
 
-    private func performOn(entries: [ThreadViewModel]?, action: ((ThreadViewModel) -> Void)) {
-        for thread in entries ?? [] {
+    private func performOn(entries: [ThreadViewModel], action: ([ThreadViewModel]) -> Void) {
+        if !entries.isEmpty {
             viewState.multiSelectState.actionPerformed = true
-            action(thread)
+            action(entries)
         }
+
         updateCaptions()
     }
 }

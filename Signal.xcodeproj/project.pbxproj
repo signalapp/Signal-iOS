@@ -1880,6 +1880,8 @@
 		D9F9A63B2BFFFCC400EF13EC /* BulkDeleteInteractionJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A63A2BFFFCC400EF13EC /* BulkDeleteInteractionJobQueue.swift */; };
 		D9F9A63D2C00FDA100EF13EC /* DeleteForMeAddressableMessageFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A63C2C00FDA100EF13EC /* DeleteForMeAddressableMessageFinder.swift */; };
 		D9F9A63F2C013EF100EF13EC /* ThreadSoftDeleteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A63E2C013EF100EF13EC /* ThreadSoftDeleteManager.swift */; };
+		D9F9A6412C06645F00EF13EC /* DeleteForMeOutgoingSyncMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A6402C06645F00EF13EC /* DeleteForMeOutgoingSyncMessageManager.swift */; };
+		D9F9A6452C07ADEB00EF13EC /* DeleteForMeOutgoingSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A6442C07ADEB00EF13EC /* DeleteForMeOutgoingSyncMessage.swift */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		E14592632B59A86E00536BF2 /* GroupCallMemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E14592622B59A86E00536BF2 /* GroupCallMemberView.swift */; };
 		E14EDF6E2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E14EDF6D2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift */; };
@@ -4816,6 +4818,8 @@
 		D9F9A63A2BFFFCC400EF13EC /* BulkDeleteInteractionJobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BulkDeleteInteractionJobQueue.swift; sourceTree = "<group>"; };
 		D9F9A63C2C00FDA100EF13EC /* DeleteForMeAddressableMessageFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeAddressableMessageFinder.swift; sourceTree = "<group>"; };
 		D9F9A63E2C013EF100EF13EC /* ThreadSoftDeleteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSoftDeleteManager.swift; sourceTree = "<group>"; };
+		D9F9A6402C06645F00EF13EC /* DeleteForMeOutgoingSyncMessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeOutgoingSyncMessageManager.swift; sourceTree = "<group>"; };
+		D9F9A6442C07ADEB00EF13EC /* DeleteForMeOutgoingSyncMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteForMeOutgoingSyncMessage.swift; sourceTree = "<group>"; };
 		E14592622B59A86E00536BF2 /* GroupCallMemberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallMemberView.swift; sourceTree = "<group>"; };
 		E14EDF6D2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientContextMenuHelper.swift; sourceTree = "<group>"; };
 		E16B440D2BBF242C00D2583E /* ReactionsModelTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReactionsModelTest.swift; sourceTree = "<group>"; };
@@ -9414,6 +9418,8 @@
 				D9F9A63C2C00FDA100EF13EC /* DeleteForMeAddressableMessageFinder.swift */,
 				D9247EA42BFBFFCA00DFEF6F /* DeleteForMeIncomingSyncMessageManager.swift */,
 				D962346C2C0E957800DAF6CB /* DeleteForMeMostRecentAddressableMessageCursor.swift */,
+				D9F9A6442C07ADEB00EF13EC /* DeleteForMeOutgoingSyncMessage.swift */,
+				D9F9A6402C06645F00EF13EC /* DeleteForMeOutgoingSyncMessageManager.swift */,
 				D9247EA72BFD28E800DFEF6F /* DeleteForMeSyncMessageReceiver.swift */,
 			);
 			path = DeleteForMe;
@@ -13611,6 +13617,8 @@
 				D9F9A63D2C00FDA100EF13EC /* DeleteForMeAddressableMessageFinder.swift in Sources */,
 				D9247EA62BFBFFCA00DFEF6F /* DeleteForMeIncomingSyncMessageManager.swift in Sources */,
 				D962346D2C0E957800DAF6CB /* DeleteForMeMostRecentAddressableMessageCursor.swift in Sources */,
+				D9F9A6452C07ADEB00EF13EC /* DeleteForMeOutgoingSyncMessage.swift in Sources */,
+				D9F9A6412C06645F00EF13EC /* DeleteForMeOutgoingSyncMessageManager.swift in Sources */,
 				D9247EA82BFD28E800DFEF6F /* DeleteForMeSyncMessageReceiver.swift in Sources */,
 				F9C5CC34289453B300548EEE /* DeliveryReceiptContext.swift in Sources */,
 				F9C5CDFD289453B400548EEE /* Dependencies+SSK.swift in Sources */,

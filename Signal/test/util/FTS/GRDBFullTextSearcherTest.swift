@@ -417,6 +417,8 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
 
     func testModelLifecycle2() {
 
+        var message1: TSOutgoingMessage!
+        var message2: TSOutgoingMessage!
         self.write { transaction in
             let thread = try! GroupManager.createGroupForTests(
                 members: [self.aliceRecipient.address, self.bobRecipient.address, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aciAddress],
@@ -425,8 +427,8 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
                 transaction: transaction
             )
 
-            let message1 = TSOutgoingMessage(in: thread, messageBody: "This world contains glory and despair.")
-            let message2 = TSOutgoingMessage(in: thread, messageBody: "This world contains hope and despair.")
+            message1 = TSOutgoingMessage(in: thread, messageBody: "This world contains glory and despair.")
+            message2 = TSOutgoingMessage(in: thread, messageBody: "This world contains hope and despair.")
 
             message1.anyInsert(transaction: transaction)
             message2.anyInsert(transaction: transaction)
@@ -438,7 +440,8 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
         XCTAssertEqual(0, getResultSet(searchText: "DEFEAT").messageResults.count)
 
         self.write { transaction in
-            DependenciesBridge.shared.interactionDeleteManager.deleteAll(tx: transaction.asV2Write)
+            DependenciesBridge.shared.interactionDeleteManager
+                .delete(interactions: [message1, message2], sideEffects: .default(), tx: transaction.asV2Write)
         }
 
         XCTAssertEqual(0, getResultSet(searchText: "GLORY").messageResults.count)

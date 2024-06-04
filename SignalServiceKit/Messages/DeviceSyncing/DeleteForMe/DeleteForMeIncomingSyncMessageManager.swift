@@ -5,40 +5,43 @@
 
 import LibSignalClient
 
-enum DeleteForMeSyncMessage {
-    enum Conversation {
-        case localUser(TSContactThread)
-        case contact(TSContactThread)
-        case group(TSGroupThread)
+/// A namespace for types related to "delete for me" sync messages.
+public enum DeleteForMeSyncMessage {
+    public enum Incoming {
+        public enum Conversation {
+            case localUser(TSContactThread)
+            case contact(TSContactThread)
+            case group(TSGroupThread)
 
-        var thread: TSThread {
-            switch self {
-            case .localUser(let contactThread): return contactThread
-            case .contact(let contactThread): return contactThread
-            case .group(let groupThread): return groupThread
-            }
-        }
-
-        var threadUniqueId: String {
-            return thread.uniqueId
-        }
-    }
-
-    struct AddressableMessage {
-        enum Author: CustomStringConvertible {
-            case localUser
-            case otherUser(SignalRecipient)
-
-            var description: String {
+            var thread: TSThread {
                 switch self {
-                case .localUser: return "localUser"
-                case .otherUser(let recipient): return "\(recipient.address)"
+                case .localUser(let contactThread): return contactThread
+                case .contact(let contactThread): return contactThread
+                case .group(let groupThread): return groupThread
                 }
             }
+
+            var threadUniqueId: String {
+                return thread.uniqueId
+            }
         }
 
-        let author: Author
-        let sentTimestamp: UInt64
+        public struct AddressableMessage {
+            enum Author: CustomStringConvertible {
+                case localUser
+                case otherUser(SignalRecipient)
+
+                var description: String {
+                    switch self {
+                    case .localUser: return "localUser"
+                    case .otherUser(let recipient): return "\(recipient.address)"
+                    }
+                }
+            }
+
+            let author: Author
+            let sentTimestamp: UInt64
+        }
     }
 }
 
@@ -49,9 +52,9 @@ enum DeleteForMeSyncMessage {
 /// This is contrasted with "delete for everyone" actions, which use a
 /// ``TSOutgoingDeleteMessage`` to ask the recipients of a "target message" to
 /// delete that message and replace it with a tombstone.
-protocol DeleteForMeIncomingSyncMessageManager {
-    typealias Conversation = DeleteForMeSyncMessage.Conversation
-    typealias AddressableMessage = DeleteForMeSyncMessage.AddressableMessage
+public protocol DeleteForMeIncomingSyncMessageManager {
+    typealias Conversation = DeleteForMeSyncMessage.Incoming.Conversation
+    typealias AddressableMessage = DeleteForMeSyncMessage.Incoming.AddressableMessage
 
     func handleMessageDelete(
         conversation: Conversation,
@@ -73,26 +76,21 @@ protocol DeleteForMeIncomingSyncMessageManager {
 }
 
 final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMessageManager {
-    private let addressableMessageFinder: DeleteForMeAddressableMessageFinder
+    private let addressableMessageFinder: any DeleteForMeAddressableMessageFinder
     private let bulkDeleteInteractionJobQueue: BulkDeleteInteractionJobQueue
     private let interactionDeleteManager: any InteractionDeleteManager
     private let threadSoftDeleteManager: any ThreadSoftDeleteManager
 
-    private let logger = PrefixedLogger(prefix: "[DFMSyncMsgMgr]")
+    private let logger = PrefixedLogger(prefix: "[DeleteForMe]")
 
     init(
+        addressableMessageFinder: any DeleteForMeAddressableMessageFinder,
         bulkDeleteInteractionJobQueue: BulkDeleteInteractionJobQueue,
         interactionDeleteManager: any InteractionDeleteManager,
-        recipientDatabaseTable: any RecipientDatabaseTable,
         threadSoftDeleteManager: any ThreadSoftDeleteManager,
-        threadStore: any ThreadStore,
         tsAccountManager: any TSAccountManager
     ) {
-        self.addressableMessageFinder = DeleteForMeAddressableMessageFinderImpl(
-            threadStore: threadStore,
-            recipientDatabaseTable: recipientDatabaseTable,
-            tsAccountManager: tsAccountManager
-        )
+        self.addressableMessageFinder = addressableMessageFinder
         self.bulkDeleteInteractionJobQueue = bulkDeleteInteractionJobQueue
         self.interactionDeleteManager = interactionDeleteManager
         self.threadSoftDeleteManager = threadSoftDeleteManager
@@ -104,7 +102,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
         tx: any DBWriteTransaction
     ) {
         guard let message = addressableMessageFinder.findLocalMessage(
-            conversation: conversation,
+            threadUniqueId: conversation.threadUniqueId,
             addressableMessage: addressableMessage,
             tx: tx
         ) else {
@@ -128,7 +126,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
         let potentialAnchorMessages: [TSMessage] = mostRecentAddressableMessages
             .compactMap { addressableMessage in
                 return addressableMessageFinder.findLocalMessage(
-                    conversation: conversation,
+                    threadUniqueId: conversation.threadUniqueId,
                     addressableMessage: addressableMessage,
                     tx: tx
                 )
@@ -195,8 +193,8 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
         /// doing asynchronous delete", since we have no "anchor" message before
         /// which we know it's safe to delete.
         threadSoftDeleteManager.softDelete(
-            thread: conversation.thread,
-            associatedCallDeleteBehavior: .localDeleteOnly,
+            threads: [conversation.thread],
+            sendDeleteForMeSyncMessage: false,
             tx: tx
         )
     }

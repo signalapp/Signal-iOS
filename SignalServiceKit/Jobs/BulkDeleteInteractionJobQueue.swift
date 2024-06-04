@@ -13,20 +13,18 @@ public final class BulkDeleteInteractionJobQueue {
     >
 
     init(
+        addressableMessageFinder: DeleteForMeAddressableMessageFinder,
         db: DB,
         interactionDeleteManager: InteractionDeleteManager,
-        recipientDatabaseTable: RecipientDatabaseTable,
         threadSoftDeleteManager: ThreadSoftDeleteManager,
-        threadStore: ThreadStore,
-        tsAccountManager: TSAccountManager
+        threadStore: ThreadStore
     ) {
         self.jobRunnerFactory = BulkDeleteInteractionJobRunnerFactory(
+            addressableMessageFinder: addressableMessageFinder,
             db: db,
             interactionDeleteManager: interactionDeleteManager,
-            recipientDatabaseTable: recipientDatabaseTable,
             threadSoftDeleteManager: threadSoftDeleteManager,
-            threadStore: threadStore,
-            tsAccountManager: tsAccountManager
+            threadStore: threadStore
         )
         self.jobQueueRunner = JobQueueRunner(
             canExecuteJobsConcurrently: false,
@@ -86,18 +84,13 @@ private class BulkDeleteInteractionJobRunner: JobRunner {
     private let logger = PrefixedLogger(prefix: "[DeleteForMe]")
 
     init(
+        addressableMessageFinder: DeleteForMeAddressableMessageFinder,
         db: DB,
         interactionDeleteManager: InteractionDeleteManager,
-        recipientDatabaseTable: RecipientDatabaseTable,
         threadSoftDeleteManager: ThreadSoftDeleteManager,
-        threadStore: ThreadStore,
-        tsAccountManager: TSAccountManager
+        threadStore: ThreadStore
     ) {
-        self.addressableMessageFinder = DeleteForMeAddressableMessageFinderImpl(
-            threadStore: threadStore,
-            recipientDatabaseTable: recipientDatabaseTable,
-            tsAccountManager: tsAccountManager
-        )
+        self.addressableMessageFinder = addressableMessageFinder
         self.db = db
         self.interactionDeleteManager = interactionDeleteManager
         self.threadSoftDeleteManager = threadSoftDeleteManager
@@ -188,8 +181,8 @@ private class BulkDeleteInteractionJobRunner: JobRunner {
                 self.logger.warn("Not doing thread soft-delete – most recent row ID was newer than when we started delete.")
             } else {
                 self.threadSoftDeleteManager.softDelete(
-                    thread: thread,
-                    associatedCallDeleteBehavior: .localDeleteOnly,
+                    threads: [thread],
+                    sendDeleteForMeSyncMessage: false,
                     tx: tx
                 )
             }
@@ -268,37 +261,33 @@ private extension InteractionFinder {
 private class BulkDeleteInteractionJobRunnerFactory: JobRunnerFactory {
     typealias JobRunnerType = BulkDeleteInteractionJobRunner
 
+    private let addressableMessageFinder: DeleteForMeAddressableMessageFinder
     private let db: DB
     private let interactionDeleteManager: InteractionDeleteManager
-    private let recipientDatabaseTable: RecipientDatabaseTable
     private let threadSoftDeleteManager: ThreadSoftDeleteManager
     private let threadStore: ThreadStore
-    private let tsAccountManager: TSAccountManager
 
     init(
+        addressableMessageFinder: DeleteForMeAddressableMessageFinder,
         db: DB,
         interactionDeleteManager: InteractionDeleteManager,
-        recipientDatabaseTable: RecipientDatabaseTable,
         threadSoftDeleteManager: ThreadSoftDeleteManager,
-        threadStore: ThreadStore,
-        tsAccountManager: TSAccountManager
+        threadStore: ThreadStore
     ) {
+        self.addressableMessageFinder = addressableMessageFinder
         self.db = db
         self.interactionDeleteManager = interactionDeleteManager
-        self.recipientDatabaseTable = recipientDatabaseTable
         self.threadSoftDeleteManager = threadSoftDeleteManager
         self.threadStore = threadStore
-        self.tsAccountManager = tsAccountManager
     }
 
     func buildRunner() -> BulkDeleteInteractionJobRunner {
         return BulkDeleteInteractionJobRunner(
+            addressableMessageFinder: addressableMessageFinder,
             db: db,
             interactionDeleteManager: interactionDeleteManager,
-            recipientDatabaseTable: recipientDatabaseTable,
             threadSoftDeleteManager: threadSoftDeleteManager,
-            threadStore: threadStore,
-            tsAccountManager: tsAccountManager
+            threadStore: threadStore
         )
     }
 }

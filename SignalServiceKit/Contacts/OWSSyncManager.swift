@@ -303,11 +303,19 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             }
             profileManager.addThread(toProfileWhitelist: thread, transaction: transaction)
         case .delete:
-            DependenciesBridge.shared.threadSoftDeleteManager.softDelete(thread: thread, tx: transaction.asV2Write)
+            DependenciesBridge.shared.threadSoftDeleteManager.softDelete(
+                threads: [thread],
+                sendDeleteForMeSyncMessage: false,
+                tx: transaction.asV2Write
+            )
         case .block:
             blockingManager.addBlockedThread(thread, blockMode: .remote, transaction: transaction)
         case .blockAndDelete:
-            DependenciesBridge.shared.threadSoftDeleteManager.softDelete(thread: thread, tx: transaction.asV2Write)
+            DependenciesBridge.shared.threadSoftDeleteManager.softDelete(
+                threads: [thread],
+                sendDeleteForMeSyncMessage: false,
+                tx: transaction.asV2Write
+            )
             blockingManager.addBlockedThread(thread, blockMode: .remote, transaction: transaction)
         case .spam:
             TSInfoMessage(thread: thread, messageType: .reportedSpam).anyInsert(transaction: transaction)

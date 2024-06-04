@@ -6,87 +6,65 @@
 import SignalCoreKit
 
 protocol DeleteForMeAddressableMessageFinder {
-    typealias Conversation = DeleteForMeSyncMessage.Conversation
-    typealias AddressableMessage = DeleteForMeSyncMessage.AddressableMessage
+    typealias Outgoing = DeleteForMeSyncMessage.Outgoing
+    typealias Incoming = DeleteForMeSyncMessage.Incoming
 
     func findMostRecentAddressableMessages(
         threadUniqueId: String,
         maxCount: Int,
+        localIdentifiers: LocalIdentifiers,
         tx: any DBReadTransaction
-    ) -> [AddressableMessage]
+    ) -> [Outgoing.AddressableMessage]
 
     func findLocalMessage(
-        conversation: Conversation,
-        addressableMessage: AddressableMessage,
+        threadUniqueId: String,
+        addressableMessage: Incoming.AddressableMessage,
         tx: any DBReadTransaction
     ) -> TSMessage?
-}
 
-extension DeleteForMeAddressableMessageFinder {
     func threadContainsAnyAddressableMessages(
         threadUniqueId: String,
         tx: any DBReadTransaction
-    ) -> Bool {
-        let mostRecentAddressableMessage = findMostRecentAddressableMessages(
-            threadUniqueId: threadUniqueId,
-            maxCount: 1,
-            tx: tx
-        ).first
-
-        return mostRecentAddressableMessage != nil
-    }
+    ) -> Bool
 }
 
 // MARK: -
 
 final class DeleteForMeAddressableMessageFinderImpl: DeleteForMeAddressableMessageFinder {
-    private let threadStore: ThreadStore
-    private let recipientDatabaseTable: RecipientDatabaseTable
     private let tsAccountManager: TSAccountManager
 
-    init(
-        threadStore: ThreadStore,
-        recipientDatabaseTable: RecipientDatabaseTable,
-        tsAccountManager: TSAccountManager
-    ) {
-        self.threadStore = threadStore
-        self.recipientDatabaseTable = recipientDatabaseTable
+    init(tsAccountManager: TSAccountManager) {
         self.tsAccountManager = tsAccountManager
     }
 
     func findMostRecentAddressableMessages(
         threadUniqueId: String,
-        maxCount: Int = 5,
+        maxCount: Int,
+        localIdentifiers: LocalIdentifiers,
         tx: any DBReadTransaction
-    ) -> [AddressableMessage] {
-        var addressableMessages = [AddressableMessage]()
+    ) -> [Outgoing.AddressableMessage] {
+        var addressableMessages = [Outgoing.AddressableMessage]()
 
         do {
             try DeleteForMeMostRecentAddressableMessageCursor(
                 threadUniqueId: threadUniqueId,
                 sdsTx: SDSDB.shimOnlyBridge(tx)
-            ).iterate { addressableMessage -> Bool in
-                if let incomingMessage = addressableMessage as? TSIncomingMessage {
-                    guard let signalRecipient = recipientDatabaseTable.fetchAuthorRecipient(
-                        incomingMessage: incomingMessage,
-                        tx: tx
-                    ) else {
-                        owsFailDebug("Failed to get recipient for message author!")
-                        // Continue iterating.
-                        return true
+            ).iterate { interaction -> Bool in
+                if let incomingMessage = interaction as? TSIncomingMessage {
+                    if let addressableMessage = Outgoing.AddressableMessage(
+                        incomingMessage: incomingMessage
+                    ) {
+                        addressableMessages.append(addressableMessage)
+                    } else {
+                        owsFailDebug("Failed to build addressable message for incoming message!")
                     }
-
-                    addressableMessages.append(AddressableMessage(
-                        author: .otherUser(signalRecipient),
-                        sentTimestamp: incomingMessage.timestamp
-                    ))
-                } else if let outgoingMessage = addressableMessage as? TSOutgoingMessage {
-                    addressableMessages.append(AddressableMessage(
-                        author: .localUser,
-                        sentTimestamp: outgoingMessage.timestamp
+                } else if let outgoingMessage = interaction as? TSOutgoingMessage {
+                    addressableMessages.append(Outgoing.AddressableMessage(
+                        outgoingMessage: outgoingMessage,
+                        localIdentifiers: localIdentifiers
                     ))
                 } else {
-                    owsFail("Unexpected interaction type!")
+                    owsFail("Unexpected interaction type! \(type(of: interaction))")
                 }
 
                 // Continue iterating until we have `maxCount` items.
@@ -101,8 +79,8 @@ final class DeleteForMeAddressableMessageFinderImpl: DeleteForMeAddressableMessa
     }
 
     func findLocalMessage(
-        conversation: Conversation,
-        addressableMessage: AddressableMessage,
+        threadUniqueId: String,
+        addressableMessage: Incoming.AddressableMessage,
         tx: any DBReadTransaction
     ) -> TSMessage? {
         let authorAddress: SignalServiceAddress
@@ -118,9 +96,36 @@ final class DeleteForMeAddressableMessageFinderImpl: DeleteForMeAddressableMessa
 
         return InteractionFinder.findMessage(
             withTimestamp: addressableMessage.sentTimestamp,
-            threadId: conversation.threadUniqueId,
+            threadId: threadUniqueId,
             author: authorAddress,
             transaction: SDSDB.shimOnlyBridge(tx)
         )
+    }
+
+    func threadContainsAnyAddressableMessages(
+        threadUniqueId: String,
+        tx: any DBReadTransaction
+    ) -> Bool {
+        var foundAddressableMessage = false
+
+        do {
+            try DeleteForMeMostRecentAddressableMessageCursor(
+                threadUniqueId: threadUniqueId,
+                sdsTx: SDSDB.shimOnlyBridge(tx)
+            ).iterate { interaction in
+                owsAssert(
+                    interaction is TSIncomingMessage || interaction is TSOutgoingMessage,
+                    "Unexpected interaction type! \(type(of: interaction))"
+                )
+
+                foundAddressableMessage = true
+                return false
+            }
+        } catch {
+            owsFailDebug("Failed to enumerate interactions!")
+            return false
+        }
+
+        return foundAddressableMessage
     }
 }

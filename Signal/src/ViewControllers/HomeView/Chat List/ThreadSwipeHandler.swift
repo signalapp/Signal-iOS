@@ -162,7 +162,8 @@ extension ThreadSwipeHandler where Self: UIViewController {
         closeConversationBlock?()
         databaseStorage.write { transaction in
             DependenciesBridge.shared.threadSoftDeleteManager.softDelete(
-                thread: threadViewModel.threadRecord,
+                threads: [threadViewModel.threadRecord],
+                sendDeleteForMeSyncMessage: true,
                 tx: transaction.asV2Write
             )
         }

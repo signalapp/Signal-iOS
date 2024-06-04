@@ -286,6 +286,10 @@ public class RemoteConfig: NSObject {
         )
     }
 
+    public static var shouldSendDeleteForMeSyncMessages: Bool {
+        return isEnabled(.deleteForMeSyncMessageSending)
+    }
+
     // MARK: UInt values
 
     private static func getUIntValue(
@@ -502,6 +506,7 @@ private enum IsEnabledFlag: String, FlagType {
     case experimentalTransportShadowingHigh = "ios.experimentalTransportEnabled.shadowingHigh"
     case experimentalTransportShadowingEnabled = "ios.experimentalTransportEnabled.shadowing"
     case cdsiLookupWithLibsignal = "ios.cdsiLookup.libsignal"
+    case deleteForMeSyncMessageSending = "ios.deleteForMeSyncMessage.sending"
 
     var isSticky: Bool {
         switch self {
@@ -524,7 +529,8 @@ private enum IsEnabledFlag: String, FlagType {
         case .experimentalTransportUseLibsignal: fallthrough
         case .experimentalTransportShadowingHigh: fallthrough
         case .experimentalTransportShadowingEnabled: fallthrough
-        case .cdsiLookupWithLibsignal:
+        case .cdsiLookupWithLibsignal: fallthrough
+        case .deleteForMeSyncMessageSending:
             return false
         }
     }
@@ -550,7 +556,8 @@ private enum IsEnabledFlag: String, FlagType {
         case .enableGifSearch: fallthrough
         case .experimentalTransportUseLibsignal: fallthrough
         case .experimentalTransportShadowingHigh: fallthrough
-        case .experimentalTransportShadowingEnabled:
+        case .experimentalTransportShadowingEnabled: fallthrough
+        case .deleteForMeSyncMessageSending:
             return false
         }
     }
