@@ -590,6 +590,13 @@ public final class MessageReceiver: Dependencies {
             paymentsHelper.processIncomingPaymentSyncMessage(
                 outgoingPayment, messageTimestamp: request.serverDeliveryTimestamp, transaction: tx
             )
+        } else if let pniChangeNumber = syncMessage.pniChangeNumber {
+            let pniProcessor = DependenciesBridge.shared.incomingPniChangeNumberProcessor
+            pniProcessor.processIncomingPniChangePhoneNumber(
+                proto: pniChangeNumber,
+                updatedPni: envelope.updatedPni,
+                tx: tx.asV2Write
+            )
         } else if let callEvent = syncMessage.callEvent {
             guard let incomingCallEvent = try? IncomingCallEventSyncMessageParams.parse(
                 callEventProto: callEvent
@@ -619,13 +626,8 @@ public final class MessageReceiver: Dependencies {
                     incomingSyncMessage: incomingCallLogEvent,
                     tx: tx.asV2Write
                 )
-        } else if let pniChangeNumber = syncMessage.pniChangeNumber {
-            let pniProcessor = DependenciesBridge.shared.incomingPniChangeNumberProcessor
-            pniProcessor.processIncomingPniChangePhoneNumber(
-                proto: pniChangeNumber,
-                updatedPni: envelope.updatedPni,
-                tx: tx.asV2Write
-            )
+        } else if let deleteForMe = syncMessage.deleteForMe {
+            // [DeleteForMe] TODO: Receive support
         } else {
             Logger.warn("Ignoring unsupported sync message.")
         }

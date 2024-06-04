@@ -2638,6 +2638,15 @@ struct SignalServiceProtos_SyncMessage {
   /// Clears the value of `callLogEvent`. Subsequent reads from it will return its default value.
   mutating func clearCallLogEvent() {_uniqueStorage()._callLogEvent = nil}
 
+  var deleteForMe: SignalServiceProtos_SyncMessage.DeleteForMe {
+    get {return _storage._deleteForMe ?? SignalServiceProtos_SyncMessage.DeleteForMe()}
+    set {_uniqueStorage()._deleteForMe = newValue}
+  }
+  /// Returns true if `deleteForMe` has been explicitly set.
+  var hasDeleteForMe: Bool {return _storage._deleteForMe != nil}
+  /// Clears the value of `deleteForMe`. Subsequent reads from it will return its default value.
+  mutating func clearDeleteForMe() {_uniqueStorage()._deleteForMe = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   struct Sent {
@@ -3416,6 +3425,70 @@ struct SignalServiceProtos_SyncMessage {
     fileprivate var _mobileCoin: SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin? = nil
   }
 
+  struct PniChangeNumber {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    /// Serialized libsignal-client IdentityKeyPair
+    var identityKeyPair: Data {
+      get {return _identityKeyPair ?? Data()}
+      set {_identityKeyPair = newValue}
+    }
+    /// Returns true if `identityKeyPair` has been explicitly set.
+    var hasIdentityKeyPair: Bool {return self._identityKeyPair != nil}
+    /// Clears the value of `identityKeyPair`. Subsequent reads from it will return its default value.
+    mutating func clearIdentityKeyPair() {self._identityKeyPair = nil}
+
+    /// Serialized libsignal-client SignedPreKeyRecord
+    var signedPreKey: Data {
+      get {return _signedPreKey ?? Data()}
+      set {_signedPreKey = newValue}
+    }
+    /// Returns true if `signedPreKey` has been explicitly set.
+    var hasSignedPreKey: Bool {return self._signedPreKey != nil}
+    /// Clears the value of `signedPreKey`. Subsequent reads from it will return its default value.
+    mutating func clearSignedPreKey() {self._signedPreKey = nil}
+
+    /// Serialized libsignal-client KyberPreKeyRecord
+    var lastResortKyberPreKey: Data {
+      get {return _lastResortKyberPreKey ?? Data()}
+      set {_lastResortKyberPreKey = newValue}
+    }
+    /// Returns true if `lastResortKyberPreKey` has been explicitly set.
+    var hasLastResortKyberPreKey: Bool {return self._lastResortKyberPreKey != nil}
+    /// Clears the value of `lastResortKyberPreKey`. Subsequent reads from it will return its default value.
+    mutating func clearLastResortKyberPreKey() {self._lastResortKyberPreKey = nil}
+
+    var registrationID: UInt32 {
+      get {return _registrationID ?? 0}
+      set {_registrationID = newValue}
+    }
+    /// Returns true if `registrationID` has been explicitly set.
+    var hasRegistrationID: Bool {return self._registrationID != nil}
+    /// Clears the value of `registrationID`. Subsequent reads from it will return its default value.
+    mutating func clearRegistrationID() {self._registrationID = nil}
+
+    var newE164: String {
+      get {return _newE164 ?? String()}
+      set {_newE164 = newValue}
+    }
+    /// Returns true if `newE164` has been explicitly set.
+    var hasNewE164: Bool {return self._newE164 != nil}
+    /// Clears the value of `newE164`. Subsequent reads from it will return its default value.
+    mutating func clearNewE164() {self._newE164 = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+
+    fileprivate var _identityKeyPair: Data? = nil
+    fileprivate var _signedPreKey: Data? = nil
+    fileprivate var _lastResortKyberPreKey: Data? = nil
+    fileprivate var _registrationID: UInt32? = nil
+    fileprivate var _newE164: String? = nil
+  }
+
   struct CallEvent {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -3670,68 +3743,183 @@ struct SignalServiceProtos_SyncMessage {
     fileprivate var _callID: UInt64? = nil
   }
 
-  struct PniChangeNumber {
+  struct DeleteForMe {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    /// Serialized libsignal-client IdentityKeyPair
-    var identityKeyPair: Data {
-      get {return _identityKeyPair ?? Data()}
-      set {_identityKeyPair = newValue}
-    }
-    /// Returns true if `identityKeyPair` has been explicitly set.
-    var hasIdentityKeyPair: Bool {return self._identityKeyPair != nil}
-    /// Clears the value of `identityKeyPair`. Subsequent reads from it will return its default value.
-    mutating func clearIdentityKeyPair() {self._identityKeyPair = nil}
+    var messageDeletes: [SignalServiceProtos_SyncMessage.DeleteForMe.MessageDeletes] = []
 
-    /// Serialized libsignal-client SignedPreKeyRecord
-    var signedPreKey: Data {
-      get {return _signedPreKey ?? Data()}
-      set {_signedPreKey = newValue}
-    }
-    /// Returns true if `signedPreKey` has been explicitly set.
-    var hasSignedPreKey: Bool {return self._signedPreKey != nil}
-    /// Clears the value of `signedPreKey`. Subsequent reads from it will return its default value.
-    mutating func clearSignedPreKey() {self._signedPreKey = nil}
+    var conversationDeletes: [SignalServiceProtos_SyncMessage.DeleteForMe.ConversationDelete] = []
 
-    /// Serialized libsignal-client KyberPreKeyRecord
-    var lastResortKyberPreKey: Data {
-      get {return _lastResortKyberPreKey ?? Data()}
-      set {_lastResortKyberPreKey = newValue}
-    }
-    /// Returns true if `lastResortKyberPreKey` has been explicitly set.
-    var hasLastResortKyberPreKey: Bool {return self._lastResortKyberPreKey != nil}
-    /// Clears the value of `lastResortKyberPreKey`. Subsequent reads from it will return its default value.
-    mutating func clearLastResortKyberPreKey() {self._lastResortKyberPreKey = nil}
-
-    var registrationID: UInt32 {
-      get {return _registrationID ?? 0}
-      set {_registrationID = newValue}
-    }
-    /// Returns true if `registrationID` has been explicitly set.
-    var hasRegistrationID: Bool {return self._registrationID != nil}
-    /// Clears the value of `registrationID`. Subsequent reads from it will return its default value.
-    mutating func clearRegistrationID() {self._registrationID = nil}
-
-    var newE164: String {
-      get {return _newE164 ?? String()}
-      set {_newE164 = newValue}
-    }
-    /// Returns true if `newE164` has been explicitly set.
-    var hasNewE164: Bool {return self._newE164 != nil}
-    /// Clears the value of `newE164`. Subsequent reads from it will return its default value.
-    mutating func clearNewE164() {self._newE164 = nil}
+    var localOnlyConversationDeletes: [SignalServiceProtos_SyncMessage.DeleteForMe.LocalOnlyConversationDelete] = []
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
-    init() {}
+    struct ConversationIdentifier {
+      // SwiftProtobuf.Message conformance is added in an extension below. See the
+      // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+      // methods supported on all messages.
 
-    fileprivate var _identityKeyPair: Data? = nil
-    fileprivate var _signedPreKey: Data? = nil
-    fileprivate var _lastResortKyberPreKey: Data? = nil
-    fileprivate var _registrationID: UInt32? = nil
-    fileprivate var _newE164: String? = nil
+      /// oneof identifier {
+      var threadAci: String {
+        get {return _threadAci ?? String()}
+        set {_threadAci = newValue}
+      }
+      /// Returns true if `threadAci` has been explicitly set.
+      var hasThreadAci: Bool {return self._threadAci != nil}
+      /// Clears the value of `threadAci`. Subsequent reads from it will return its default value.
+      mutating func clearThreadAci() {self._threadAci = nil}
+
+      var threadGroupID: Data {
+        get {return _threadGroupID ?? Data()}
+        set {_threadGroupID = newValue}
+      }
+      /// Returns true if `threadGroupID` has been explicitly set.
+      var hasThreadGroupID: Bool {return self._threadGroupID != nil}
+      /// Clears the value of `threadGroupID`. Subsequent reads from it will return its default value.
+      mutating func clearThreadGroupID() {self._threadGroupID = nil}
+
+      /// }
+      var threadE164: String {
+        get {return _threadE164 ?? String()}
+        set {_threadE164 = newValue}
+      }
+      /// Returns true if `threadE164` has been explicitly set.
+      var hasThreadE164: Bool {return self._threadE164 != nil}
+      /// Clears the value of `threadE164`. Subsequent reads from it will return its default value.
+      mutating func clearThreadE164() {self._threadE164 = nil}
+
+      var unknownFields = SwiftProtobuf.UnknownStorage()
+
+      init() {}
+
+      fileprivate var _threadAci: String? = nil
+      fileprivate var _threadGroupID: Data? = nil
+      fileprivate var _threadE164: String? = nil
+    }
+
+    struct AddressableMessage {
+      // SwiftProtobuf.Message conformance is added in an extension below. See the
+      // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+      // methods supported on all messages.
+
+      /// oneof author {
+      var authorAci: String {
+        get {return _authorAci ?? String()}
+        set {_authorAci = newValue}
+      }
+      /// Returns true if `authorAci` has been explicitly set.
+      var hasAuthorAci: Bool {return self._authorAci != nil}
+      /// Clears the value of `authorAci`. Subsequent reads from it will return its default value.
+      mutating func clearAuthorAci() {self._authorAci = nil}
+
+      var authorE164: String {
+        get {return _authorE164 ?? String()}
+        set {_authorE164 = newValue}
+      }
+      /// Returns true if `authorE164` has been explicitly set.
+      var hasAuthorE164: Bool {return self._authorE164 != nil}
+      /// Clears the value of `authorE164`. Subsequent reads from it will return its default value.
+      mutating func clearAuthorE164() {self._authorE164 = nil}
+
+      /// }
+      var sentTimestamp: UInt64 {
+        get {return _sentTimestamp ?? 0}
+        set {_sentTimestamp = newValue}
+      }
+      /// Returns true if `sentTimestamp` has been explicitly set.
+      var hasSentTimestamp: Bool {return self._sentTimestamp != nil}
+      /// Clears the value of `sentTimestamp`. Subsequent reads from it will return its default value.
+      mutating func clearSentTimestamp() {self._sentTimestamp = nil}
+
+      var unknownFields = SwiftProtobuf.UnknownStorage()
+
+      init() {}
+
+      fileprivate var _authorAci: String? = nil
+      fileprivate var _authorE164: String? = nil
+      fileprivate var _sentTimestamp: UInt64? = nil
+    }
+
+    struct MessageDeletes {
+      // SwiftProtobuf.Message conformance is added in an extension below. See the
+      // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+      // methods supported on all messages.
+
+      var conversation: SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier {
+        get {return _conversation ?? SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier()}
+        set {_conversation = newValue}
+      }
+      /// Returns true if `conversation` has been explicitly set.
+      var hasConversation: Bool {return self._conversation != nil}
+      /// Clears the value of `conversation`. Subsequent reads from it will return its default value.
+      mutating func clearConversation() {self._conversation = nil}
+
+      var messages: [SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage] = []
+
+      var unknownFields = SwiftProtobuf.UnknownStorage()
+
+      init() {}
+
+      fileprivate var _conversation: SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier? = nil
+    }
+
+    struct ConversationDelete {
+      // SwiftProtobuf.Message conformance is added in an extension below. See the
+      // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+      // methods supported on all messages.
+
+      var conversation: SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier {
+        get {return _conversation ?? SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier()}
+        set {_conversation = newValue}
+      }
+      /// Returns true if `conversation` has been explicitly set.
+      var hasConversation: Bool {return self._conversation != nil}
+      /// Clears the value of `conversation`. Subsequent reads from it will return its default value.
+      mutating func clearConversation() {self._conversation = nil}
+
+      var mostRecentMessages: [SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage] = []
+
+      var isFullDelete: Bool {
+        get {return _isFullDelete ?? false}
+        set {_isFullDelete = newValue}
+      }
+      /// Returns true if `isFullDelete` has been explicitly set.
+      var hasIsFullDelete: Bool {return self._isFullDelete != nil}
+      /// Clears the value of `isFullDelete`. Subsequent reads from it will return its default value.
+      mutating func clearIsFullDelete() {self._isFullDelete = nil}
+
+      var unknownFields = SwiftProtobuf.UnknownStorage()
+
+      init() {}
+
+      fileprivate var _conversation: SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier? = nil
+      fileprivate var _isFullDelete: Bool? = nil
+    }
+
+    struct LocalOnlyConversationDelete {
+      // SwiftProtobuf.Message conformance is added in an extension below. See the
+      // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+      // methods supported on all messages.
+
+      var conversation: SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier {
+        get {return _conversation ?? SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier()}
+        set {_conversation = newValue}
+      }
+      /// Returns true if `conversation` has been explicitly set.
+      var hasConversation: Bool {return self._conversation != nil}
+      /// Clears the value of `conversation`. Subsequent reads from it will return its default value.
+      mutating func clearConversation() {self._conversation = nil}
+
+      var unknownFields = SwiftProtobuf.UnknownStorage()
+
+      init() {}
+
+      fileprivate var _conversation: SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier? = nil
+    }
+
+    init() {}
   }
 
   init() {}
@@ -4546,13 +4734,19 @@ extension SignalServiceProtos_SyncMessage.MessageRequestResponse: @unchecked Sen
 extension SignalServiceProtos_SyncMessage.MessageRequestResponse.TypeEnum: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.OutgoingPayment: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.PniChangeNumber: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.CallEvent: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.CallEvent.TypeEnum: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.CallEvent.Direction: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.CallEvent.Event: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.CallLogEvent: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.CallLogEvent.TypeEnum: @unchecked Sendable {}
-extension SignalServiceProtos_SyncMessage.PniChangeNumber: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.DeleteForMe: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.DeleteForMe.MessageDeletes: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.DeleteForMe.ConversationDelete: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.DeleteForMe.LocalOnlyConversationDelete: @unchecked Sendable {}
 extension SignalServiceProtos_AttachmentPointer: @unchecked Sendable {}
 extension SignalServiceProtos_AttachmentPointer.Flags: @unchecked Sendable {}
 extension SignalServiceProtos_GroupContextV2: @unchecked Sendable {}
@@ -7180,6 +7374,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     18: .same(proto: "pniChangeNumber"),
     19: .same(proto: "callEvent"),
     21: .same(proto: "callLogEvent"),
+    22: .same(proto: "deleteForMe"),
   ]
 
   fileprivate class _StorageClass {
@@ -7201,6 +7396,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _pniChangeNumber: SignalServiceProtos_SyncMessage.PniChangeNumber? = nil
     var _callEvent: SignalServiceProtos_SyncMessage.CallEvent? = nil
     var _callLogEvent: SignalServiceProtos_SyncMessage.CallLogEvent? = nil
+    var _deleteForMe: SignalServiceProtos_SyncMessage.DeleteForMe? = nil
 
     #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
@@ -7233,6 +7429,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       _pniChangeNumber = source._pniChangeNumber
       _callEvent = source._callEvent
       _callLogEvent = source._callLogEvent
+      _deleteForMe = source._deleteForMe
     }
   }
 
@@ -7269,6 +7466,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 18: try { try decoder.decodeSingularMessageField(value: &_storage._pniChangeNumber) }()
         case 19: try { try decoder.decodeSingularMessageField(value: &_storage._callEvent) }()
         case 21: try { try decoder.decodeSingularMessageField(value: &_storage._callLogEvent) }()
+        case 22: try { try decoder.decodeSingularMessageField(value: &_storage._deleteForMe) }()
         default: break
         }
       }
@@ -7335,6 +7533,9 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       try { if let v = _storage._callLogEvent {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 21)
       } }()
+      try { if let v = _storage._deleteForMe {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 22)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -7362,6 +7563,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._pniChangeNumber != rhs_storage._pniChangeNumber {return false}
         if _storage._callEvent != rhs_storage._callEvent {return false}
         if _storage._callLogEvent != rhs_storage._callLogEvent {return false}
+        if _storage._deleteForMe != rhs_storage._deleteForMe {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -8197,6 +8399,66 @@ extension SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin: SwiftProto
   }
 }
 
+extension SignalServiceProtos_SyncMessage.PniChangeNumber: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".PniChangeNumber"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "identityKeyPair"),
+    2: .same(proto: "signedPreKey"),
+    5: .same(proto: "lastResortKyberPreKey"),
+    3: .same(proto: "registrationId"),
+    4: .same(proto: "newE164"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBytesField(value: &self._identityKeyPair) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self._signedPreKey) }()
+      case 3: try { try decoder.decodeSingularUInt32Field(value: &self._registrationID) }()
+      case 4: try { try decoder.decodeSingularStringField(value: &self._newE164) }()
+      case 5: try { try decoder.decodeSingularBytesField(value: &self._lastResortKyberPreKey) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._identityKeyPair {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._signedPreKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
+    } }()
+    try { if let v = self._registrationID {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 3)
+    } }()
+    try { if let v = self._newE164 {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 4)
+    } }()
+    try { if let v = self._lastResortKyberPreKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 5)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_SyncMessage.PniChangeNumber, rhs: SignalServiceProtos_SyncMessage.PniChangeNumber) -> Bool {
+    if lhs._identityKeyPair != rhs._identityKeyPair {return false}
+    if lhs._signedPreKey != rhs._signedPreKey {return false}
+    if lhs._lastResortKyberPreKey != rhs._lastResortKyberPreKey {return false}
+    if lhs._registrationID != rhs._registrationID {return false}
+    if lhs._newE164 != rhs._newE164 {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
 extension SignalServiceProtos_SyncMessage.CallEvent: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".CallEvent"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
@@ -8351,14 +8613,12 @@ extension SignalServiceProtos_SyncMessage.CallLogEvent.TypeEnum: SwiftProtobuf._
   ]
 }
 
-extension SignalServiceProtos_SyncMessage.PniChangeNumber: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".PniChangeNumber"
+extension SignalServiceProtos_SyncMessage.DeleteForMe: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".DeleteForMe"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "identityKeyPair"),
-    2: .same(proto: "signedPreKey"),
-    5: .same(proto: "lastResortKyberPreKey"),
-    3: .same(proto: "registrationId"),
-    4: .same(proto: "newE164"),
+    1: .same(proto: "messageDeletes"),
+    2: .same(proto: "conversationDeletes"),
+    3: .same(proto: "localOnlyConversationDeletes"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -8367,11 +8627,53 @@ extension SignalServiceProtos_SyncMessage.PniChangeNumber: SwiftProtobuf.Message
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularBytesField(value: &self._identityKeyPair) }()
-      case 2: try { try decoder.decodeSingularBytesField(value: &self._signedPreKey) }()
-      case 3: try { try decoder.decodeSingularUInt32Field(value: &self._registrationID) }()
-      case 4: try { try decoder.decodeSingularStringField(value: &self._newE164) }()
-      case 5: try { try decoder.decodeSingularBytesField(value: &self._lastResortKyberPreKey) }()
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.messageDeletes) }()
+      case 2: try { try decoder.decodeRepeatedMessageField(value: &self.conversationDeletes) }()
+      case 3: try { try decoder.decodeRepeatedMessageField(value: &self.localOnlyConversationDeletes) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.messageDeletes.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.messageDeletes, fieldNumber: 1)
+    }
+    if !self.conversationDeletes.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.conversationDeletes, fieldNumber: 2)
+    }
+    if !self.localOnlyConversationDeletes.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.localOnlyConversationDeletes, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_SyncMessage.DeleteForMe, rhs: SignalServiceProtos_SyncMessage.DeleteForMe) -> Bool {
+    if lhs.messageDeletes != rhs.messageDeletes {return false}
+    if lhs.conversationDeletes != rhs.conversationDeletes {return false}
+    if lhs.localOnlyConversationDeletes != rhs.localOnlyConversationDeletes {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_SyncMessage.DeleteForMe.protoMessageName + ".ConversationIdentifier"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "threadAci"),
+    2: .same(proto: "threadGroupId"),
+    3: .same(proto: "threadE164"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self._threadAci) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self._threadGroupID) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self._threadE164) }()
       default: break
       }
     }
@@ -8382,30 +8684,196 @@ extension SignalServiceProtos_SyncMessage.PniChangeNumber: SwiftProtobuf.Message
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
     // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._identityKeyPair {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
+    try { if let v = self._threadAci {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
     } }()
-    try { if let v = self._signedPreKey {
+    try { if let v = self._threadGroupID {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
     } }()
-    try { if let v = self._registrationID {
-      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 3)
-    } }()
-    try { if let v = self._newE164 {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 4)
-    } }()
-    try { if let v = self._lastResortKyberPreKey {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 5)
+    try { if let v = self._threadE164 {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
     } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: SignalServiceProtos_SyncMessage.PniChangeNumber, rhs: SignalServiceProtos_SyncMessage.PniChangeNumber) -> Bool {
-    if lhs._identityKeyPair != rhs._identityKeyPair {return false}
-    if lhs._signedPreKey != rhs._signedPreKey {return false}
-    if lhs._lastResortKyberPreKey != rhs._lastResortKyberPreKey {return false}
-    if lhs._registrationID != rhs._registrationID {return false}
-    if lhs._newE164 != rhs._newE164 {return false}
+  static func ==(lhs: SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier, rhs: SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier) -> Bool {
+    if lhs._threadAci != rhs._threadAci {return false}
+    if lhs._threadGroupID != rhs._threadGroupID {return false}
+    if lhs._threadE164 != rhs._threadE164 {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_SyncMessage.DeleteForMe.protoMessageName + ".AddressableMessage"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "authorAci"),
+    2: .same(proto: "authorE164"),
+    3: .same(proto: "sentTimestamp"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self._authorAci) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._authorE164) }()
+      case 3: try { try decoder.decodeSingularUInt64Field(value: &self._sentTimestamp) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._authorAci {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._authorE164 {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    } }()
+    try { if let v = self._sentTimestamp {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 3)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage, rhs: SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage) -> Bool {
+    if lhs._authorAci != rhs._authorAci {return false}
+    if lhs._authorE164 != rhs._authorE164 {return false}
+    if lhs._sentTimestamp != rhs._sentTimestamp {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_SyncMessage.DeleteForMe.MessageDeletes: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_SyncMessage.DeleteForMe.protoMessageName + ".MessageDeletes"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "conversation"),
+    2: .same(proto: "messages"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._conversation) }()
+      case 2: try { try decoder.decodeRepeatedMessageField(value: &self.messages) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._conversation {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    if !self.messages.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.messages, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_SyncMessage.DeleteForMe.MessageDeletes, rhs: SignalServiceProtos_SyncMessage.DeleteForMe.MessageDeletes) -> Bool {
+    if lhs._conversation != rhs._conversation {return false}
+    if lhs.messages != rhs.messages {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_SyncMessage.DeleteForMe.ConversationDelete: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_SyncMessage.DeleteForMe.protoMessageName + ".ConversationDelete"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "conversation"),
+    2: .same(proto: "mostRecentMessages"),
+    3: .same(proto: "isFullDelete"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._conversation) }()
+      case 2: try { try decoder.decodeRepeatedMessageField(value: &self.mostRecentMessages) }()
+      case 3: try { try decoder.decodeSingularBoolField(value: &self._isFullDelete) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._conversation {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    if !self.mostRecentMessages.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.mostRecentMessages, fieldNumber: 2)
+    }
+    try { if let v = self._isFullDelete {
+      try visitor.visitSingularBoolField(value: v, fieldNumber: 3)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_SyncMessage.DeleteForMe.ConversationDelete, rhs: SignalServiceProtos_SyncMessage.DeleteForMe.ConversationDelete) -> Bool {
+    if lhs._conversation != rhs._conversation {return false}
+    if lhs.mostRecentMessages != rhs.mostRecentMessages {return false}
+    if lhs._isFullDelete != rhs._isFullDelete {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_SyncMessage.DeleteForMe.LocalOnlyConversationDelete: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_SyncMessage.DeleteForMe.protoMessageName + ".LocalOnlyConversationDelete"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "conversation"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._conversation) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._conversation {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_SyncMessage.DeleteForMe.LocalOnlyConversationDelete, rhs: SignalServiceProtos_SyncMessage.DeleteForMe.LocalOnlyConversationDelete) -> Bool {
+    if lhs._conversation != rhs._conversation {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
