@@ -170,6 +170,11 @@ public extension TSMessage {
     }
 
     @objc
+    func removeAllMentions(transaction tx: SDSAnyWriteTransaction) {
+        MentionFinder.deleteAllMentions(for: self, transaction: tx.unwrapGrdbWrite)
+    }
+
+    @objc
     func allReactionIds(transaction: SDSAnyReadTransaction) -> [String]? {
         return reactionFinder.allUniqueIds(transaction: transaction.unwrapGrdbRead)
     }
@@ -254,7 +259,11 @@ public extension TSMessage {
     func removeEdits(transaction: SDSAnyWriteTransaction) {
         try! processEdits(transaction: transaction) { record, message in
             try record.delete(transaction.unwrapGrdbWrite.database)
-            message?.anyRemove(transaction: transaction)
+
+            if let message {
+                DependenciesBridge.shared.interactionDeleteManager
+                    .delete(message, tx: transaction.asV2Write)
+            }
         }
     }
 
@@ -672,15 +681,6 @@ public extension TSMessage {
     @objc
     internal func _anyDidUpdate(tx: SDSAnyWriteTransaction) {
         FullTextSearchIndexer.update(self, tx: tx)
-    }
-
-    @objc
-    internal func _anyDidRemove(tx: SDSAnyWriteTransaction) {
-        FullTextSearchIndexer.delete(self, tx: tx)
-
-        if !self.attachmentIds.isEmpty {
-            DependenciesBridge.shared.mediaGalleryResourceManager.didRemove(message: self, tx: tx.asV2Write)
-        }
     }
 }
 

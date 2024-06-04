@@ -5564,10 +5564,6 @@ public extension TSInteraction {
         sdsSave(saveMode: .update, transaction: transaction)
     }
 
-    func anyRemove(transaction: SDSAnyWriteTransaction) {
-        sdsRemove(transaction: transaction)
-    }
-
     func anyReload(transaction: SDSAnyReadTransaction) {
         anyReload(transaction: transaction, ignoreMissing: false)
     }
@@ -5775,22 +5771,6 @@ public extension TSInteraction {
         switch transaction.readTransaction {
         case .grdbRead(let grdbTransaction):
             return InteractionRecord.ows_fetchCount(grdbTransaction.database)
-        }
-    }
-
-    class func anyRemoveAllWithInstantiation(transaction: SDSAnyWriteTransaction) {
-        // To avoid mutationDuringEnumerationException, we need to remove the
-        // instances outside the enumeration.
-        let uniqueIds = anyAllUniqueIds(transaction: transaction)
-
-        for uniqueId in uniqueIds {
-            autoreleasepool {
-                guard let instance = anyFetch(uniqueId: uniqueId, transaction: transaction) else {
-                    owsFailDebug("Missing instance.")
-                    return
-                }
-                instance.anyRemove(transaction: transaction)
-            }
         }
     }
 

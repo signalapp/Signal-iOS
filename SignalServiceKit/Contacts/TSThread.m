@@ -218,7 +218,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
             OWSFailDebug(@"couldn't load thread's interaction for deletion.");
             continue;
         }
-        [interaction anyRemoveWithTransaction:transaction];
+        [InteractionDeleteManagerObjcBridge remove:interaction tx:transaction];
     }
 
     // As an optimization, we called `ignoreInteractionUpdatesForThreadUniqueId` so as not

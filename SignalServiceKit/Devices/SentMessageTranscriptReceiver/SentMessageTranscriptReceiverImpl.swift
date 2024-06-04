@@ -12,6 +12,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
     private let disappearingMessagesJob: Shims.DisappearingMessagesJob
     private let earlyMessageManager: Shims.EarlyMessageManager
     private let groupManager: Shims.GroupManager
+    private let interactionDeleteManager: InteractionDeleteManager
     private let interactionStore: InteractionStore
     private let messageStickerManager: MessageStickerManager
     private let paymentsHelper: Shims.PaymentsHelper
@@ -25,6 +26,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         disappearingMessagesJob: Shims.DisappearingMessagesJob,
         earlyMessageManager: Shims.EarlyMessageManager,
         groupManager: Shims.GroupManager,
+        interactionDeleteManager: InteractionDeleteManager,
         interactionStore: InteractionStore,
         messageStickerManager: MessageStickerManager,
         paymentsHelper: Shims.PaymentsHelper,
@@ -37,6 +39,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         self.disappearingMessagesJob = disappearingMessagesJob
         self.earlyMessageManager = earlyMessageManager
         self.groupManager = groupManager
+        self.interactionDeleteManager = interactionDeleteManager
         self.interactionStore = interactionStore
         self.messageStickerManager = messageStickerManager
         self.paymentsHelper = paymentsHelper
@@ -282,7 +285,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             } catch let error {
                 Logger.error("Attachment failure: \(error)")
                 // Roll back the message
-                interactionStore.deleteInteraction(outgoingMessage, tx: tx)
+                interactionDeleteManager.delete(outgoingMessage, tx: tx)
                 return .failure(error)
             }
         }

@@ -253,7 +253,7 @@ extension ThreadUtil {
                 thread.softDelete(with: transaction)
             }
 
-            TSInteraction.anyRemoveAllWithInstantiation(transaction: transaction)
+            DependenciesBridge.shared.interactionDeleteManager.deleteAll(tx: transaction.asV2Write)
             StoryMessage.anyRemoveAllWithInstantiation(transaction: transaction)
             TSAttachment.anyRemoveAllWithInstantiation(transaction: transaction)
 

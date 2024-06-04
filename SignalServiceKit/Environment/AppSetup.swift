@@ -449,6 +449,13 @@ public class AppSetup {
             signalServiceAddressCache: signalServiceAddressCache
         )
 
+        let mediaGalleryResourceManager = MediaGalleryResourceManagerImpl()
+
+        let messageSendLog = MessageSendLog(
+            db: db,
+            dateProvider: { Date() }
+        )
+
         let deletedCallRecordStore = DeletedCallRecordStoreImpl()
         let deletedCallRecordCleanupManager = DeletedCallRecordCleanupManagerImpl(
             dateProvider: dateProvider,
@@ -492,15 +499,24 @@ public class AppSetup {
             outgoingCallEventSyncMessageManager: outgoingCallEventSyncMessageManager,
             deletedCallRecordCleanupManager: deletedCallRecordCleanupManager,
             deletedCallRecordStore: deletedCallRecordStore,
-            interactionStore: interactionStore,
             threadStore: threadStore
         )
+
+        let interactionDeleteManager = InteractionDeleteManagerImpl(
+            callRecordStore: callRecordStore,
+            callRecordDeleteManager: callRecordDeleteManager,
+            databaseStorage: databaseStorage,
+            interactionReadCache: modelReadCaches.interactionReadCache,
+            interactionStore: interactionStore,
+            mediaGalleryResourceManager: mediaGalleryResourceManager,
+            messageSendLog: messageSendLog
+        )
+
         let callRecordDeleteAllJobQueue = CallRecordDeleteAllJobQueue(
             callRecordConversationIdAdapter: callRecordSyncMessageConversationIdAdapater,
-            callRecordDeleteManager: callRecordDeleteManager,
             callRecordQuerier: callRecordQuerier,
-            callRecordStore: callRecordStore,
             db: db,
+            interactionDeleteManager: interactionDeleteManager,
             messageSenderJobQueue: messageSenderJobQueue
         )
         let incomingCallEventSyncMessageManager = IncomingCallEventSyncMessageManagerImpl(
@@ -508,6 +524,7 @@ public class AppSetup {
             callRecordDeleteManager: callRecordDeleteManager,
             groupCallRecordManager: groupCallRecordManager,
             individualCallRecordManager: individualCallRecordManager,
+            interactionDeleteManager: interactionDeleteManager,
             interactionStore: interactionStore,
             markAsReadShims: IncomingCallEventSyncMessageManagerImpl.ShimsImpl.MarkAsRead(
                 notificationPresenter: notificationPresenter
@@ -724,6 +741,7 @@ public class AppSetup {
             disappearingMessagesJob: SentMessageTranscriptReceiverImpl.Wrappers.DisappearingMessagesJob(),
             earlyMessageManager: SentMessageTranscriptReceiverImpl.Wrappers.EarlyMessageManager(earlyMessageManager),
             groupManager: SentMessageTranscriptReceiverImpl.Wrappers.GroupManager(),
+            interactionDeleteManager: interactionDeleteManager,
             interactionStore: interactionStore,
             messageStickerManager: messageStickerManager,
             paymentsHelper: SentMessageTranscriptReceiverImpl.Wrappers.PaymentsHelper(paymentsHelper),
@@ -858,7 +876,6 @@ public class AppSetup {
             attachmentUploadManager: attachmentUploadManager,
             tsAttachmentUploadManager: tsAttachmentUploadManager
         )
-        let mediaGalleryResourceManager = MediaGalleryResourceManagerImpl()
 
         let attachmentCloner = SignalAttachmentClonerImpl()
         let tsResourceCloner = SignalTSResourceClonerImpl(attachmentCloner: attachmentCloner)
@@ -931,6 +948,7 @@ public class AppSetup {
             incomingCallLogEventSyncMessageManager: incomingCallLogEventSyncMessageManager,
             incomingPniChangeNumberProcessor: incomingPniChangeNumberProcessor,
             individualCallRecordManager: individualCallRecordManager,
+            interactionDeleteManager: interactionDeleteManager,
             interactionStore: interactionStore,
             keyValueStoreFactory: keyValueStoreFactory,
             learnMyOwnPniManager: learnMyOwnPniManager,
@@ -1044,10 +1062,6 @@ public class AppSetup {
             udManager: udManager,
             websocketFactory: webSocketFactory,
             libsignalNet: libsignalNet
-        )
-        let messageSendLog = MessageSendLog(
-            db: db,
-            dateProvider: { Date() }
         )
         let localUserLeaveGroupJobQueue = LocalUserLeaveGroupJobQueue(
             db: db,

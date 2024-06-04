@@ -13,6 +13,7 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
     private var mockCallRecordDeleteManager: MockCallRecordDeleteManager!
     private var mockGroupCallRecordManager: MockGroupCallRecordManager!
     private var mockIndividualCallRecordManager: MockIndividualCallRecordManager!
+    private var mockInteractionDeleteManager: MockInteractionDeleteManager!
     private var mockInteractionStore: MockInteractionStore!
     private var mockMarkAsReadShims: MockMarkAsReadShims!
     private var mockRecipientDatabaseTable: MockRecipientDatabaseTable!
@@ -26,15 +27,16 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
         mockCallRecordDeleteManager = MockCallRecordDeleteManager()
         mockGroupCallRecordManager = MockGroupCallRecordManager()
         mockIndividualCallRecordManager = MockIndividualCallRecordManager()
+        mockInteractionDeleteManager = MockInteractionDeleteManager()
         mockInteractionStore = MockInteractionStore()
         mockMarkAsReadShims = MockMarkAsReadShims()
         mockRecipientDatabaseTable = MockRecipientDatabaseTable()
         mockThreadStore = MockThreadStore()
 
-        mockCallRecordDeleteManager.deleteCallRecordsAndAssociatedInteractionsMock = { _, _ in
+        mockCallRecordDeleteManager.markCallAsDeletedMock = { _, _ in
             XCTFail("Shouldn't be deleting!")
         }
-        mockCallRecordDeleteManager.markCallAsDeletedMock = { _, _ in
+        mockInteractionDeleteManager.deleteAlongsideCallRecordsMock = { _, _ in
             XCTFail("Shouldn't be deleting!")
         }
 
@@ -43,6 +45,7 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
             callRecordDeleteManager: mockCallRecordDeleteManager,
             groupCallRecordManager: mockGroupCallRecordManager,
             individualCallRecordManager: mockIndividualCallRecordManager,
+            interactionDeleteManager: mockInteractionDeleteManager,
             interactionStore: mockInteractionStore,
             markAsReadShims: mockMarkAsReadShims,
             recipientDatabaseTable: mockRecipientDatabaseTable,
@@ -77,10 +80,10 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
 
         /// If the call record in question is present, it should be deleted.
         mockDB.write { tx in
-            var didCallMock = false
-            mockCallRecordDeleteManager.deleteCallRecordsAndAssociatedInteractionsMock = { _, sendSyncMessageOnDelete in
-                XCTAssertFalse(sendSyncMessageOnDelete)
-                didCallMock = true
+            var didDeleteModels = false
+            mockInteractionDeleteManager.deleteAlongsideCallRecordsMock = { _, behavior in
+                XCTAssertEqual(behavior, .localDeleteOnly)
+                didDeleteModels = true
             }
 
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
@@ -96,7 +99,7 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
                 tx: tx
             )
 
-            XCTAssertTrue(didCallMock)
+            XCTAssertTrue(didDeleteModels)
         }
 
         /// If the call record in question does not exist, we should mark it as
@@ -152,10 +155,10 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
 
         /// If the call record in question is present, it should be deleted.
         mockDB.write { tx in
-            var didCallMock = false
-            mockCallRecordDeleteManager.deleteCallRecordsAndAssociatedInteractionsMock = { _, sendSyncMessageOnDelete in
-                XCTAssertFalse(sendSyncMessageOnDelete)
-                didCallMock = true
+            var didDeleteModels = false
+            mockInteractionDeleteManager.deleteAlongsideCallRecordsMock = { _, behavior in
+                XCTAssertEqual(behavior, .localDeleteOnly)
+                didDeleteModels = true
             }
 
             incomingSyncMessageManager.createOrUpdateRecordForIncomingSyncMessage(
@@ -171,7 +174,7 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
                 tx: tx
             )
 
-            XCTAssertTrue(didCallMock)
+            XCTAssertTrue(didDeleteModels)
         }
 
         /// If the call record in question does not exist, we should mark it as

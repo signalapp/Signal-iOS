@@ -235,13 +235,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     // populated yet.
 }
 
-- (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    [SDSDatabaseStorage.shared updateIdMappingWithInteraction:self transaction:transaction];
-
-    [super anyWillRemoveWithTransaction:transaction];
-}
-
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidUpdateWithTransaction:transaction];
@@ -250,19 +243,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     [fetchedThread updateWithUpdatedMessage:self transaction:transaction];
 
     [self.modelReadCaches.interactionReadCache didUpdateInteraction:self transaction:transaction];
-}
-
-- (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    [super anyDidRemoveWithTransaction:transaction];
-
-    if (![transaction shouldIgnoreInteractionUpdatesForThreadUniqueId:self.uniqueThreadId]) {
-        TSThread *fetchedThread = [self threadWithTx:transaction];
-        [fetchedThread updateWithRemovedMessage:self transaction:transaction];
-    }
-
-    [MessageSendLogObjC deleteAllPayloadsForInteraction:self tx:transaction];
-    [self.modelReadCaches.interactionReadCache didRemoveInteraction:self transaction:transaction];
 }
 
 #pragma mark -

@@ -378,7 +378,8 @@ extension ConversationViewController {
             owsFailDebug("Invalid selectionType: \(selectionType.rawValue).")
         }
 
-        interaction.anyRemove(transaction: transaction)
+        DependenciesBridge.shared.interactionDeleteManager
+            .delete(interaction, tx: transaction.asV2Write)
     }
 
     func didTapForwardSelectedItems() {

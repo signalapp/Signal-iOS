@@ -6,28 +6,12 @@
 #if TESTABLE_BUILD
 
 final class MockCallRecordDeleteManager: CallRecordDeleteManager {
-    var deleteCallRecordByIndividualCallInteractionMock: ((
-        _ individualCallInteraction: TSCall,
+    var deleteCallRecordMock: ((
+        _ callRecord: CallRecord,
         _ sendSyncMessageOnDelete: Bool
     ) -> Void)?
-    func deleteCallRecord(associatedIndividualCallInteraction: TSCall, sendSyncMessageOnDelete: Bool, tx: DBWriteTransaction) {
-        deleteCallRecordByIndividualCallInteractionMock!(associatedIndividualCallInteraction, sendSyncMessageOnDelete)
-    }
-
-    var deleteCallRecordByGroupCallInteractionMock: ((
-        _ groupCallInteraction: OWSGroupCallMessage,
-        _ sendSyncMessageOnDelete: Bool
-    ) -> Void)?
-    func deleteCallRecord(associatedGroupCallInteraction: OWSGroupCallMessage, sendSyncMessageOnDelete: Bool, tx: DBWriteTransaction) {
-        deleteCallRecordByGroupCallInteractionMock!(associatedGroupCallInteraction, sendSyncMessageOnDelete)
-    }
-
-    var deleteCallRecordsAndAssociatedInteractionsMock: ((
-        _ callRecords: [CallRecord],
-        _ sendSyncMessageOnDelete: Bool
-    ) -> Void)?
-    func deleteCallRecordsAndAssociatedInteractions(callRecords: [CallRecord], sendSyncMessageOnDelete: Bool, tx: DBWriteTransaction) {
-        deleteCallRecordsAndAssociatedInteractionsMock!(callRecords, sendSyncMessageOnDelete)
+    func deleteCallRecord(_ callRecord: CallRecord, sendSyncMessageOnDelete: Bool, tx: DBWriteTransaction) {
+        deleteCallRecordMock!(callRecord, sendSyncMessageOnDelete)
     }
 
     var markCallAsDeletedMock: ((_ callId: UInt64, _ threadRowId: Int64) -> Void)?

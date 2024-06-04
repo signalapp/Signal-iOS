@@ -63,7 +63,12 @@ class ResendMessagePromptBuilder {
             style: .destructive,
             handler: { [databaseStorage] _ in
                 databaseStorage.write { tx in
-                    TSInteraction.anyFetch(uniqueId: message.uniqueId, transaction: tx)?.anyRemove(transaction: tx)
+                    guard let freshInstance = TSInteraction.anyFetch(
+                        uniqueId: message.uniqueId, transaction: tx
+                    ) else { return }
+
+                    DependenciesBridge.shared.interactionDeleteManager
+                        .delete(freshInstance, tx: tx.asV2Write)
                 }
             }
         ))

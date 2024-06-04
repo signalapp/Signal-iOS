@@ -3519,114 +3519,6 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         processDecryptedEnvelope(envelope, plaintextData: plaintextData)
     }
 
-    // MARK: -
-
-    private static func deleteRandomMessages(_ count: UInt, inThread thread: TSThread, transaction: SDSAnyWriteTransaction) {
-        Logger.info("deleteRandomMessages: \(count)")
-
-        let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
-        let uniqueIds = try! interactionFinder.fetchUniqueIds(
-            filter: .newest,
-            excludingPlaceholders: !DebugFlags.showFailedDecryptionPlaceholders.get(),
-            limit: 100_000,
-            tx: transaction
-        )
-        let interactions = InteractionFinder.interactions(
-            withInteractionIds: Set(uniqueIds.shuffled().prefix(Int(count))),
-            transaction: transaction
-        )
-        for interaction in interactions {
-            interaction.anyRemove(transaction: transaction)
-        }
-    }
-
-    private static func insertAndDeleteNewOutgoingMessages(_ count: UInt, inThread thread: TSThread, transaction: SDSAnyWriteTransaction) {
-        Logger.info("insertAndDeleteNewOutgoingMessages: \(count)")
-
-        let messages: [TSOutgoingMessage] = (1...count).map { _ in
-            let text = randomText()
-            let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-            let expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
-            let message = TSOutgoingMessage(in: thread, messageBody: text, expiresInSeconds: expiresInSeconds)
-            Logger.info("insertAndDeleteNewOutgoingMessages timestamp: \(message.timestamp)")
-            return message
-        }
-
-        for message in messages {
-            message.anyInsert(transaction: transaction)
-        }
-
-        for message in messages {
-            message.anyRemove(transaction: transaction)
-        }
-    }
-
-    private static func resurrectNewOutgoingMessages1(_ count: UInt, inThread thread: TSThread, transaction: SDSAnyWriteTransaction) {
-        Logger.info("resurrectNewOutgoingMessages1.1: \(count)")
-
-        let messages: [TSOutgoingMessage] = (1...count).map { _ in
-            let text = randomText()
-            let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-            let expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
-            let message = TSOutgoingMessage(in: thread, messageBody: text, expiresInSeconds: expiresInSeconds)
-            Logger.info("resurrectNewOutgoingMessages1 timestamp: \(message.timestamp)")
-            return message
-        }
-
-        for message in messages {
-            message.anyInsert(transaction: transaction)
-        }
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            Logger.info("resurrectNewOutgoingMessages1.2: \(count)")
-            databaseStorage.write { t in
-                for message in messages {
-                    message.anyRemove(transaction: t)
-                }
-                for message in messages {
-                    message.anyInsert(transaction: t)
-                }
-            }
-        }
-    }
-
-    private static func resurrectNewOutgoingMessages2(_ count: UInt, inThread thread: TSThread, transaction: SDSAnyWriteTransaction) {
-        Logger.info("resurrectNewOutgoingMessages2.1: \(count)")
-
-        let messages: [TSOutgoingMessage] = (1...count).map { _ in
-            let text = randomText()
-            let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-            let expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
-            let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: text)
-            messageBuilder.expiresInSeconds = expiresInSeconds
-            let message = messageBuilder.build(transaction: transaction)
-            Logger.info("resurrectNewOutgoingMessages2 timestamp: \(message.timestamp)")
-            return message
-        }
-
-        for message in messages {
-            message.update(withFakeMessageState: .sending, transaction: transaction)
-            message.anyInsert(transaction: transaction)
-        }
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            Logger.info("resurrectNewOutgoingMessages2.2: \(count)")
-            databaseStorage.write { t in
-                for message in messages {
-                    message.anyRemove(transaction: t)
-                }
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                Logger.info("resurrectNewOutgoingMessages2.3: \(count)")
-                databaseStorage.write { t in
-                    for message in messages {
-                        message.anyInsert(transaction: t)
-                    }
-                }
-            }
-        }
-    }
-
     // MARK: Disappearing Messages
 
     private static func createDisappearingMessagesWhichFailedToStartInThread(_ thread: TSThread) {
@@ -3846,18 +3738,6 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             }, { transaction in
                 let messageCount = UInt.random(in: 1...4)
                 createFakeMessages(messageCount, batchOffset: 0, inThread: thread, messageContentType: .normal, transaction: transaction)
-            }, { transaction in
-                let messageCount = UInt.random(in: 1...4)
-                deleteRandomMessages(messageCount, inThread: thread, transaction: transaction)
-            }, { transaction in
-                let messageCount = UInt.random(in: 1...4)
-                insertAndDeleteNewOutgoingMessages(messageCount, inThread: thread, transaction: transaction)
-            }, { transaction in
-                let messageCount = UInt.random(in: 1...4)
-                resurrectNewOutgoingMessages1(messageCount, inThread: thread, transaction: transaction)
-            }, { transaction in
-                let messageCount = UInt.random(in: 1...4)
-                resurrectNewOutgoingMessages2(messageCount, inThread: thread, transaction: transaction)
             }
         ]
 

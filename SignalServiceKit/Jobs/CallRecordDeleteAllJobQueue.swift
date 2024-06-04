@@ -30,18 +30,16 @@ public class CallRecordDeleteAllJobQueue {
 
     public init(
         callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter,
-        callRecordDeleteManager: CallRecordDeleteManager,
         callRecordQuerier: CallRecordQuerier,
-        callRecordStore: CallRecordStore,
         db: DB,
+        interactionDeleteManager: InteractionDeleteManager,
         messageSenderJobQueue: MessageSenderJobQueue
     ) {
         self.jobRunnerFactory = CallRecordDeleteAllJobRunnerFactory(
             callRecordConversationIdAdapter: callRecordConversationIdAdapter,
-            callRecordDeleteManager: callRecordDeleteManager,
             callRecordQuerier: callRecordQuerier,
-            callRecordStore: callRecordStore,
             db: db,
+            interactionDeleteManager: interactionDeleteManager,
             messageSenderJobQueue: messageSenderJobQueue
         )
         self.jobQueueRunner = JobQueueRunner(
@@ -115,25 +113,22 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
     private var logger: CallRecordLogger { .shared }
 
     private let callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter
-    private let callRecordDeleteManager: CallRecordDeleteManager
     private let callRecordQuerier: CallRecordQuerier
-    private let callRecordStore: CallRecordStore
     private let db: DB
+    private let interactionDeleteManager: InteractionDeleteManager
     private let messageSenderJobQueue: MessageSenderJobQueue
 
     init(
         callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter,
-        callRecordDeleteManager: CallRecordDeleteManager,
         callRecordQuerier: CallRecordQuerier,
-        callRecordStore: CallRecordStore,
         db: DB,
+        interactionDeleteManager: InteractionDeleteManager,
         messageSenderJobQueue: MessageSenderJobQueue
     ) {
         self.callRecordConversationIdAdapter = callRecordConversationIdAdapter
-        self.callRecordDeleteManager = callRecordDeleteManager
         self.callRecordQuerier = callRecordQuerier
-        self.callRecordStore = callRecordStore
         self.db = db
+        self.interactionDeleteManager = interactionDeleteManager
         self.messageSenderJobQueue = messageSenderJobQueue
     }
 
@@ -247,14 +242,13 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
             )
 
             if !callRecordsToDelete.isEmpty {
-                /// We disable the sync message here, since we're instead going
-                /// to send a different sync message when we're done deleting
-                /// all the records.
-                let sendSyncMessageOnDelete = false
-
-                callRecordDeleteManager.deleteCallRecordsAndAssociatedInteractions(
-                    callRecords: callRecordsToDelete,
-                    sendSyncMessageOnDelete: sendSyncMessageOnDelete,
+                /// Delete the call records and their associated interactions.
+                /// Disable sending a sync message here, since we're instead
+                /// going to send a different sync message when we're done
+                /// deleting all the records.
+                interactionDeleteManager.delete(
+                    alongsideAssociatedCallRecords: callRecordsToDelete,
+                    associatedCallDeleteBehavior: .localDeleteOnly,
                     tx: tx
                 )
 
@@ -303,35 +297,31 @@ private class CallRecordDeleteAllJobRunnerFactory: JobRunnerFactory {
     typealias JobRunnerType = CallRecordDeleteAllJobRunner
 
     private let callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter
-    private let callRecordDeleteManager: CallRecordDeleteManager
     private let callRecordQuerier: CallRecordQuerier
-    private let callRecordStore: CallRecordStore
     private let db: DB
+    private let interactionDeleteManager: InteractionDeleteManager
     private let messageSenderJobQueue: MessageSenderJobQueue
 
     init(
         callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter,
-        callRecordDeleteManager: CallRecordDeleteManager,
         callRecordQuerier: CallRecordQuerier,
-        callRecordStore: CallRecordStore,
         db: DB,
+        interactionDeleteManager: InteractionDeleteManager,
         messageSenderJobQueue: MessageSenderJobQueue
     ) {
         self.callRecordConversationIdAdapter = callRecordConversationIdAdapter
-        self.callRecordDeleteManager = callRecordDeleteManager
         self.callRecordQuerier = callRecordQuerier
-        self.callRecordStore = callRecordStore
         self.db = db
+        self.interactionDeleteManager = interactionDeleteManager
         self.messageSenderJobQueue = messageSenderJobQueue
     }
 
     func buildRunner() -> CallRecordDeleteAllJobRunner {
         return CallRecordDeleteAllJobRunner(
             callRecordConversationIdAdapter: callRecordConversationIdAdapter,
-            callRecordDeleteManager: callRecordDeleteManager,
             callRecordQuerier: callRecordQuerier,
-            callRecordStore: callRecordStore,
             db: db,
+            interactionDeleteManager: interactionDeleteManager,
             messageSenderJobQueue: messageSenderJobQueue
         )
     }

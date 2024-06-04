@@ -35,7 +35,6 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private struct Dependencies {
         let badgeManager: BadgeManager
         let blockingManager: BlockingManager
-        let callRecordDeleteManager: CallRecordDeleteManager
         let callRecordDeleteAllJobQueue: CallRecordDeleteAllJobQueue
         let callRecordMissedCallManager: CallRecordMissedCallManager
         let callRecordQuerier: CallRecordQuerier
@@ -43,6 +42,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         let callService: CallService
         let contactsManager: any ContactManager
         let db: SDSDatabaseStorage
+        let interactionDeleteManager: InteractionDeleteManager
         let interactionStore: InteractionStore
         let searchableNameFinder: SearchableNameFinder
         let threadStore: ThreadStore
@@ -52,7 +52,6 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private lazy var deps: Dependencies = Dependencies(
         badgeManager: AppEnvironment.shared.badgeManager,
         blockingManager: SSKEnvironment.shared.blockingManagerRef,
-        callRecordDeleteManager: DependenciesBridge.shared.callRecordDeleteManager,
         callRecordDeleteAllJobQueue: SSKEnvironment.shared.callRecordDeleteAllJobQueueRef,
         callRecordMissedCallManager: DependenciesBridge.shared.callRecordMissedCallManager,
         callRecordQuerier: DependenciesBridge.shared.callRecordQuerier,
@@ -60,6 +59,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         callService: AppEnvironment.shared.callService,
         contactsManager: NSObject.contactsManager,
         db: NSObject.databaseStorage,
+        interactionDeleteManager: DependenciesBridge.shared.interactionDeleteManager,
         interactionStore: DependenciesBridge.shared.interactionStore,
         searchableNameFinder: SearchableNameFinder(
             contactManager: NSObject.contactsManager,
@@ -1575,9 +1575,9 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
             ///
             /// We also want to send a sync message since this is a delete
             /// originating from this device.
-            self.deps.callRecordDeleteManager.deleteCallRecordsAndAssociatedInteractions(
-                callRecords: callRecordsToDelete,
-                sendSyncMessageOnDelete: true,
+            self.deps.interactionDeleteManager.delete(
+                alongsideAssociatedCallRecords: callRecordsToDelete,
+                associatedCallDeleteBehavior: .localDeleteAndSendSyncMessage,
                 tx: tx.asV2Write
             )
         }

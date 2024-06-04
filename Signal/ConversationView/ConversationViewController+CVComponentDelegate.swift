@@ -654,8 +654,9 @@ extension ConversationViewController: CVComponentDelegate {
         }.done(on: DispatchQueue.global()) {
             Logger.info("Group updated, removing group creation error.")
 
-            Self.databaseStorage.write { transaction in
-                message.anyRemove(transaction: transaction)
+            Self.databaseStorage.write { tx in
+                DependenciesBridge.shared.interactionDeleteManager
+                    .delete(message, tx: tx.asV2Write)
             }
         }.catch(on: DispatchQueue.global()) { error in
             owsFailDebug("Error: \(error)")

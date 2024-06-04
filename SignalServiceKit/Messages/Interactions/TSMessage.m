@@ -431,45 +431,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _storedShouldStartExpireTimer = [self shouldStartExpireTimer];
 }
 
-- (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    // Ensure any associated edits are deleted before removing the interaction
-    [self removeEditsWithTransaction:transaction];
-
-    [super anyWillRemoveWithTransaction:transaction];
-
-    // StickerManager does reference counting of "known" sticker packs.
-    if (self.messageSticker != nil) {
-        BOOL willDelete = (self.uniqueId.length > 0
-            && nil != [TSMessage anyFetchWithUniqueId:self.uniqueId transaction:transaction]);
-
-        // StickerManager does reference counting of "known" sticker packs.
-        if (willDelete) {
-            [StickerManager removeKnownStickerInfo:self.messageSticker.info transaction:transaction];
-        }
-    }
-}
-
-- (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    [super anyDidRemoveWithTransaction:transaction];
-
-    [self _anyDidRemoveWithTx:transaction];
-
-    [self removeAllAttachmentsWithTx:transaction];
-
-    [self removeAllReactionsWithTransaction:transaction];
-
-    [self removeAllMentionsWithTransaction:transaction];
-
-    [self touchStoryMessageIfNecessaryWithReplyCountIncrement:ReplyCountIncrementReplyDeleted transaction:transaction];
-}
-
-- (void)removeAllMentionsWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    [MentionFinder deleteAllMentionsFor:self transaction:transaction.unwrapGrdbWrite];
-}
-
 - (BOOL)hasPerConversationExpiration
 {
     return self.expiresInSeconds > 0;

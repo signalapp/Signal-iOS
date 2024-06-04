@@ -841,7 +841,8 @@ class MediaGallery: Dependencies {
                         // them again. Also, this ensures we've fetched the latest message details
                         // within this transaction.
                         message.anyReload(transaction: tx)
-                        message.anyRemove(transaction: tx)
+                        DependenciesBridge.shared.interactionDeleteManager
+                            .delete(message, tx: tx.asV2Write)
                     }
                 }
             } catch {

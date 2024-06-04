@@ -1128,7 +1128,7 @@ def generate_swift_extensions_for_model(clazz):
         return
 
     has_sds_superclass = clazz.has_sds_superclass()
-    has_remove_methods = clazz.name not in ("TSThread",)
+    has_remove_methods = clazz.name not in ("TSThread","TSInteraction")
 
     swift_filename = os.path.basename(clazz.filepath)
     swift_filename = swift_filename[: swift_filename.find(".")] + "+SDS.swift"

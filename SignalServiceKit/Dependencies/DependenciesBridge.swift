@@ -77,6 +77,7 @@ public class DependenciesBridge {
     let incomingCallLogEventSyncMessageManager: IncomingCallLogEventSyncMessageManager
     public let incomingPniChangeNumberProcessor: IncomingPniChangeNumberProcessor
     public let individualCallRecordManager: IndividualCallRecordManager
+    public let interactionDeleteManager: InteractionDeleteManager
     public let interactionStore: InteractionStore
     public let keyValueStoreFactory: KeyValueStoreFactory
     public let learnMyOwnPniManager: LearnMyOwnPniManager
@@ -174,6 +175,7 @@ public class DependenciesBridge {
         incomingCallLogEventSyncMessageManager: IncomingCallLogEventSyncMessageManager,
         incomingPniChangeNumberProcessor: IncomingPniChangeNumberProcessor,
         individualCallRecordManager: IndividualCallRecordManager,
+        interactionDeleteManager: InteractionDeleteManager,
         interactionStore: InteractionStore,
         keyValueStoreFactory: KeyValueStoreFactory,
         learnMyOwnPniManager: LearnMyOwnPniManager,
@@ -268,6 +270,7 @@ public class DependenciesBridge {
         self.incomingCallLogEventSyncMessageManager = incomingCallLogEventSyncMessageManager
         self.incomingPniChangeNumberProcessor = incomingPniChangeNumberProcessor
         self.individualCallRecordManager = individualCallRecordManager
+        self.interactionDeleteManager = interactionDeleteManager
         self.interactionStore = interactionStore
         self.keyValueStoreFactory = keyValueStoreFactory
         self.learnMyOwnPniManager = learnMyOwnPniManager

@@ -35,7 +35,12 @@ extension TSInvalidIdentityKeyReceivingErrorMessage {
                 //  1.) succeed and create a new successful message in the thread or...
                 //  2.) fail and create a new identical error message in the thread.
                 Self.databaseStorage.write { tx in
-                    TSInteraction.anyFetch(uniqueId: errorMessage.uniqueId, transaction: tx)?.anyRemove(transaction: tx)
+                    if let existingError = TSInteraction.anyFetch(
+                        uniqueId: errorMessage.uniqueId, transaction: tx
+                    ) {
+                        DependenciesBridge.shared.interactionDeleteManager
+                            .delete(existingError, tx: tx.asV2Write)
+                    }
                 }
             }
         }

@@ -397,7 +397,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
         XCTAssertEqual(1, getResultSet(searchText: "DEFEAT").messageResults.count)
 
         self.write { transaction in
-            message1.anyRemove(transaction: transaction)
+            DependenciesBridge.shared.interactionDeleteManager.delete(message1, tx: transaction.asV2Write)
         }
 
         XCTAssertEqual(0, getResultSet(searchText: "GLORY").messageResults.count)
@@ -406,7 +406,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
         XCTAssertEqual(0, getResultSet(searchText: "DEFEAT").messageResults.count)
 
         self.write { transaction in
-            message2.anyRemove(transaction: transaction)
+            DependenciesBridge.shared.interactionDeleteManager.delete(message2, tx: transaction.asV2Write)
         }
 
         XCTAssertEqual(0, getResultSet(searchText: "GLORY").messageResults.count)
@@ -438,7 +438,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
         XCTAssertEqual(0, getResultSet(searchText: "DEFEAT").messageResults.count)
 
         self.write { transaction in
-            TSInteraction.anyRemoveAllWithInstantiation(transaction: transaction)
+            DependenciesBridge.shared.interactionDeleteManager.deleteAll(tx: transaction.asV2Write)
         }
 
         XCTAssertEqual(0, getResultSet(searchText: "GLORY").messageResults.count)

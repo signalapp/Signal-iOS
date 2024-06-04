@@ -23,7 +23,12 @@ public extension TSInteraction {
             style: .destructive
         ) { _ in
             Self.databaseStorage.asyncWrite { tx in
-                TSInteraction.anyFetch(uniqueId: self.uniqueId, transaction: tx)?.anyRemove(transaction: tx)
+                guard let freshSelf = TSInteraction.anyFetch(
+                    uniqueId: self.uniqueId, transaction: tx
+                ) else { return }
+
+                DependenciesBridge.shared.interactionDeleteManager
+                    .delete(freshSelf, tx: tx.asV2Write)
             }
         }
         actionSheetController.addAction(deleteForMeAction)

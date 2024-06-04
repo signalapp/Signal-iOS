@@ -21,6 +21,7 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
     private let callRecordDeleteManager: CallRecordDeleteManager
     private let groupCallRecordManager: GroupCallRecordManager
     private let individualCallRecordManager: IndividualCallRecordManager
+    private let interactionDeleteManager: InteractionDeleteManager
     private let interactionStore: InteractionStore
     private let markAsReadShims: Shims.MarkAsRead
     private let recipientDatabaseTable: RecipientDatabaseTable
@@ -31,6 +32,7 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
         callRecordDeleteManager: CallRecordDeleteManager,
         groupCallRecordManager: GroupCallRecordManager,
         individualCallRecordManager: IndividualCallRecordManager,
+        interactionDeleteManager: InteractionDeleteManager,
         interactionStore: InteractionStore,
         markAsReadShims: Shims.MarkAsRead,
         recipientDatabaseTable: RecipientDatabaseTable,
@@ -40,6 +42,7 @@ final class IncomingCallEventSyncMessageManagerImpl: IncomingCallEventSyncMessag
         self.callRecordDeleteManager = callRecordDeleteManager
         self.groupCallRecordManager = groupCallRecordManager
         self.individualCallRecordManager = individualCallRecordManager
+        self.interactionDeleteManager = interactionDeleteManager
         self.interactionStore = interactionStore
         self.markAsReadShims = markAsReadShims
         self.recipientDatabaseTable = recipientDatabaseTable
@@ -305,10 +308,11 @@ private extension IncomingCallEventSyncMessageManagerImpl {
                 "Ignoring incoming delete call sync message: existing record was already deleted!"
             )
         case .matchFound(let existingCallRecord):
-            // Don't send a sync message, since we're reacting to one!
-            callRecordDeleteManager.deleteCallRecordsAndAssociatedInteractions(
-                callRecords: [existingCallRecord],
-                sendSyncMessageOnDelete: false,
+            // Don't send a sync message for the call delete: we're already
+            // reacting to one!
+            interactionDeleteManager.delete(
+                alongsideAssociatedCallRecords: [existingCallRecord],
+                associatedCallDeleteBehavior: .localDeleteOnly,
                 tx: tx
             )
         case .matchNotFound:

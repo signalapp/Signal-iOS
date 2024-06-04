@@ -990,7 +990,8 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
     public func anyDidRemove(transaction: SDSAnyWriteTransaction) {
         // Delete all group replies for the message.
         InteractionFinder.enumerateGroupReplies(for: self, transaction: transaction) { reply, _ in
-            reply.anyRemove(transaction: transaction)
+            DependenciesBridge.shared.interactionDeleteManager
+                .delete(reply, tx: transaction.asV2Write)
         }
 
         // Delete all attachments for the message.

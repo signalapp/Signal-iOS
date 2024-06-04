@@ -20,8 +20,6 @@ class DebugUIDiskUsage: DebugUIPage, Dependencies {
                          actionBlock: { OWSOrphanDataCleaner.auditAndCleanup(true) }),
             OWSTableItem(title: "Clear All Attachment Thumbnails",
                          actionBlock: { DebugUIDiskUsage.clearAllAttachmentThumbnails() }),
-            OWSTableItem(title: "Delete Messages older than 3 Months",
-                         actionBlock: { DebugUIDiskUsage.deleteOldMessages_3Months() })
         ])
     }
 
@@ -53,34 +51,6 @@ class DebugUIDiskUsage: DebugUIPage, Dependencies {
             }
         }
         Logger.info("Deleted \(removedCount) items.")
-    }
-
-    private static func deleteOldMessages_3Months() {
-        deleteOldMessages(maxAgeSeconds: kMonthInterval * 3)
-    }
-
-    private static func deleteOldMessages(maxAgeSeconds: TimeInterval) {
-        databaseStorage.write { transaction in
-            let threadIds = TSThread.anyAllUniqueIds(transaction: transaction)
-            var interactionsToDelete: [TSInteraction] = []
-            for threadId in threadIds {
-                let interactionFinder = InteractionFinder(threadUniqueId: threadId)
-                do {
-                    try interactionFinder.enumerateRecentInteractions(transaction: transaction) { interaction, stop in
-                        let ageSeconds = abs(interaction.receivedAtDate.timeIntervalSinceNow)
-                        if ageSeconds >= maxAgeSeconds {
-                            interactionsToDelete.append(interaction)
-                        }
-                    }
-                } catch { }
-            }
-
-            Logger.info("Deleting \(interactionsToDelete.count) interactions.")
-
-            for interation in interactionsToDelete {
-                interation.anyRemove(transaction: transaction)
-            }
-        }
     }
 }
 

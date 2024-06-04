@@ -13,47 +13,32 @@
 /// - SeeAlso ``DeletedCallRecordCleanupManager``
 /// - SeeAlso ``CallRecordStore/delete(callRecords:tx:)``
 public protocol CallRecordDeleteManager {
-    /// Delete the call record associated with the given interaction.
+    /// Delete the given call record.
+    ///
     /// - Important
-    /// Does not delete the given interaction!
+    /// Callers must ensure the ``TSInteraction`` associated with the given call
+    /// record is also deleted. If you're not sure if that's happening, you may
+    /// want ``InteractionDeleteManager/delete(alongsideAssociatedCallRecords:associatedCallDeleteBehavior:tx:)``.
+    ///
     /// - Parameter sendSyncMessageOnDelete
     /// Whether we should send an ``OutgoingCallEventSyncMessage`` if we delete
     /// a call record.
     func deleteCallRecord(
-        associatedIndividualCallInteraction: TSCall,
-        sendSyncMessageOnDelete: Bool,
-        tx: DBWriteTransaction
-    )
-
-    /// Delete the call record associated with the given interaction.
-    /// - Important
-    /// Does not delete the given interaction!
-    /// - Parameter sendSyncMessageOnDelete
-    /// Whether we should send an ``OutgoingCallEventSyncMessage`` if we delete
-    /// a call record.
-    func deleteCallRecord(
-        associatedGroupCallInteraction: OWSGroupCallMessage,
-        sendSyncMessageOnDelete: Bool,
-        tx: DBWriteTransaction
-    )
-
-    /// Delete the given call record, and its associated call interaction.
-    /// - Parameter sendSyncMessageOnDelete
-    /// Whether we should send an ``OutgoingCallEventSyncMessage`` if we delete
-    /// a call record.
-    func deleteCallRecordsAndAssociatedInteractions(
-        callRecords: [CallRecord],
+        _ callRecord: CallRecord,
         sendSyncMessageOnDelete: Bool,
         tx: DBWriteTransaction
     )
 
     /// Mark the call with the given identifiers, for which we do not have a
     /// local ``CallRecord``, as deleted.
+    ///
     /// - Important
     /// This method should only be used if the caller knows a ``CallRecord``
     /// does not exist for the given identifiers.
+    ///
     /// - Note
     /// Because there is no ``CallRecord``, there is no associated interaction.
+    ///
     /// - Note
     /// This API never sends an ``OutgoingCallEventSyncMessage`` about the
     /// delete, as it isn't actually deleting a call this device knows about.
@@ -64,12 +49,13 @@ public protocol CallRecordDeleteManager {
     )
 }
 
+// MARK: -
+
 final class CallRecordDeleteManagerImpl: CallRecordDeleteManager {
     private let callRecordStore: CallRecordStore
     private let outgoingCallEventSyncMessageManager: OutgoingCallEventSyncMessageManager
     private let deletedCallRecordCleanupManager: DeletedCallRecordCleanupManager
     private let deletedCallRecordStore: DeletedCallRecordStore
-    private let interactionStore: InteractionStore
     private let threadStore: ThreadStore
 
     init(
@@ -77,80 +63,27 @@ final class CallRecordDeleteManagerImpl: CallRecordDeleteManager {
         outgoingCallEventSyncMessageManager: OutgoingCallEventSyncMessageManager,
         deletedCallRecordCleanupManager: DeletedCallRecordCleanupManager,
         deletedCallRecordStore: DeletedCallRecordStore,
-        interactionStore: InteractionStore,
         threadStore: ThreadStore
     ) {
         self.callRecordStore = callRecordStore
         self.outgoingCallEventSyncMessageManager = outgoingCallEventSyncMessageManager
         self.deletedCallRecordCleanupManager = deletedCallRecordCleanupManager
         self.deletedCallRecordStore = deletedCallRecordStore
-        self.interactionStore = interactionStore
         self.threadStore = threadStore
     }
 
-    func deleteCallRecord(
-        associatedIndividualCallInteraction callInteraction: TSCall,
-        sendSyncMessageOnDelete: Bool,
-        tx: DBWriteTransaction
-    ) {
-        guard
-            let interactionRowId = callInteraction.sqliteRowId,
-            let callRecord = callRecordStore.fetch(
-                interactionRowId: interactionRowId, tx: tx
-            )
-        else { return }
-
-        deleteCallRecords(
-            callRecords: [callRecord],
-            shouldSendSyncMessage: sendSyncMessageOnDelete,
-            tx: tx
-        )
-    }
+    // MARK: -
 
     func deleteCallRecord(
-        associatedGroupCallInteraction callInteraction: OWSGroupCallMessage,
+        _ callRecord: CallRecord,
         sendSyncMessageOnDelete: Bool,
         tx: DBWriteTransaction
     ) {
-        guard
-            let interactionRowId = callInteraction.sqliteRowId,
-            let callRecord = callRecordStore.fetch(
-                interactionRowId: interactionRowId, tx: tx
-            )
-        else { return }
-
         deleteCallRecords(
             callRecords: [callRecord],
-            shouldSendSyncMessage: sendSyncMessageOnDelete,
+            sendSyncMessageOnDelete: sendSyncMessageOnDelete,
             tx: tx
         )
-    }
-
-    func deleteCallRecordsAndAssociatedInteractions(
-        callRecords: [CallRecord],
-        sendSyncMessageOnDelete: Bool,
-        tx: DBWriteTransaction
-    ) {
-        /// It's important that we delete the call records *before* we delete
-        /// the interactions, as ``TSCall`` and ``OWSGroupCallMessage`` override
-        /// hooks in their deletion to delete any associated call records. To
-        /// avoid a duplicate delete attempt, we'll ensure there's no call
-        /// records to delete by the time we get there.
-
-        deleteCallRecords(
-            callRecords: callRecords,
-            shouldSendSyncMessage: sendSyncMessageOnDelete,
-            tx: tx
-        )
-
-        for callRecord in callRecords {
-            if let associatedInteraction: TSInteraction = interactionStore
-                .fetchAssociatedInteraction(callRecord: callRecord, tx: tx)
-            {
-                CallRecord.assertDebugIsCallRecordInteraction(associatedInteraction)
-                interactionStore.deleteInteraction(associatedInteraction, tx: tx)
-            }
-        }
     }
 
     func markCallAsDeleted(
@@ -169,9 +102,11 @@ final class CallRecordDeleteManagerImpl: CallRecordDeleteManager {
         )
     }
 
+    // MARK: -
+
     private func deleteCallRecords(
         callRecords: [CallRecord],
-        shouldSendSyncMessage: Bool,
+        sendSyncMessageOnDelete: Bool,
         tx: DBWriteTransaction
     ) {
         callRecordStore.delete(callRecords: callRecords, tx: tx)
@@ -183,7 +118,7 @@ final class CallRecordDeleteManagerImpl: CallRecordDeleteManager {
             tx: tx
         )
 
-        if shouldSendSyncMessage {
+        if sendSyncMessageOnDelete {
             for callRecord in callRecords {
                 guard let thread = threadStore.fetchThread(
                     rowId: callRecord.threadRowId, tx: tx

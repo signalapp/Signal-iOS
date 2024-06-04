@@ -10,6 +10,12 @@ public protocol InteractionStore {
 
     // MARK: - 
 
+    /// Whether an interaction exists with the given unique ID.
+    func exists(uniqueId: String, tx: DBReadTransaction) -> Bool
+
+    /// Fetch the unique IDs of all interactions.
+    func fetchAllUniqueIds(tx: DBReadTransaction) -> [String]
+
     /// Fetch the interaction with the given SQLite row ID, if one exists.
     func fetchInteraction(
         rowId interactionRowId: Int64,
@@ -48,9 +54,6 @@ public protocol InteractionStore {
 
     /// Insert the given interaction to the databse.
     func insertInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction)
-
-    /// Deletes the given interaction from the database.
-    func deleteInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction)
 
     func update(
         _ message: TSMessage,
@@ -114,6 +117,14 @@ public class InteractionStoreImpl: InteractionStore {
     public init() {}
 
     // MARK: -
+
+    public func exists(uniqueId: String, tx: any DBReadTransaction) -> Bool {
+        return TSInteraction.anyExists(uniqueId: uniqueId, transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func fetchAllUniqueIds(tx: any DBReadTransaction) -> [String] {
+        return TSInteraction.anyAllUniqueIds(transaction: SDSDB.shimOnlyBridge(tx))
+    }
 
     public func fetchInteraction(
         rowId interactionRowId: Int64,
@@ -185,10 +196,6 @@ public class InteractionStoreImpl: InteractionStore {
 
     public func insertInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction) {
         interaction.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func deleteInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction) {
-        interaction.anyRemove(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func update(
@@ -283,6 +290,14 @@ open class MockInteractionStore: InteractionStore {
     var insertedInteractions = [TSInteraction]()
 
     // MARK: -
+
+    public func exists(uniqueId: String, tx: any DBReadTransaction) -> Bool {
+        return insertedInteractions.contains { $0.uniqueId == uniqueId }
+    }
+
+    public func fetchAllUniqueIds(tx: any DBReadTransaction) -> [String] {
+        return insertedInteractions.map { $0.uniqueId }
+    }
 
     open func fetchInteraction(
         rowId interactionRowId: Int64,

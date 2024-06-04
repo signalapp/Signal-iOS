@@ -1630,7 +1630,7 @@
 		C1E307422BA4D388009F015B /* TransformingOutputStreamTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E307412BA4D388009F015B /* TransformingOutputStreamTests.swift */; };
 		C1E5891B2A66D67C00ECAF66 /* PreKeyTaskTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E5891A2A66D67C00ECAF66 /* PreKeyTaskTests.swift */; };
 		C1E5891D2A69E77B00ECAF66 /* PreKeyTaskTestMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E5891C2A69E77B00ECAF66 /* PreKeyTaskTestMocks.swift */; };
-		C1EAECDF2A1EFC21008A3D58 /* OutgoingEditSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1EAECDE2A1EFC21008A3D58 /* OutgoingEditSyncMessage.swift */; };
+		C1EAECDF2A1EFC21008A3D58 /* OutgoingEditMessageSyncTranscript.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1EAECDE2A1EFC21008A3D58 /* OutgoingEditMessageSyncTranscript.swift */; };
 		C1EB623C2BADEE56006D99CB /* ChunkedInputStreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1EB623B2BADEE56006D99CB /* ChunkedInputStreamTransform.swift */; };
 		C1ED5CA12A72E3D5009AD3FC /* PreKeyTaskManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ED5CA02A72E3D5009AD3FC /* PreKeyTaskManager.swift */; };
 		C1F09B9F2BB307E100F9E7F5 /* TransformingInputStreamTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F09B9E2BB307E100F9E7F5 /* TransformingInputStreamTests.swift */; };
@@ -1677,6 +1677,7 @@
 		D9247EA12BFBED2A00DFEF6F /* account-data.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9247E9B2BFBED2A00DFEF6F /* account-data.binproto */; };
 		D9247EA22BFBED2A00DFEF6F /* unregistered-contact.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9247E9C2BFBED2A00DFEF6F /* unregistered-contact.binproto */; };
 		D9247EA32BFBED2A00DFEF6F /* registered-blocked-contact.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9247E9D2BFBED2A00DFEF6F /* registered-blocked-contact.binproto */; };
+		D9247EAA2BFD424800DFEF6F /* InteractionDeleteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9247EA92BFD424800DFEF6F /* InteractionDeleteManager.swift */; };
 		D925937A28B0497900D5D437 /* LocalUserLeaveGroupJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925937928B0497900D5D437 /* LocalUserLeaveGroupJob.swift */; };
 		D925C7BB2B7BEC0F00AC73B0 /* OutgoingCallLogEventSyncMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925C7BA2B7BEC0F00AC73B0 /* OutgoingCallLogEventSyncMessageTest.swift */; };
 		D925F5512983399D00158EE4 /* CircleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F5502983399D00158EE4 /* CircleButton.swift */; };
@@ -1739,7 +1740,7 @@
 		D979CC4C2AD4DECB006AAC49 /* IndividualCallRecordManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC472AD4DECA006AAC49 /* IndividualCallRecordManagerTest.swift */; };
 		D979CC4D2AD4DECB006AAC49 /* CallRecordStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC482AD4DECA006AAC49 /* CallRecordStoreTest.swift */; };
 		D979CC4E2AD4DECB006AAC49 /* CallRecordStatusTransitionManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC492AD4DECA006AAC49 /* CallRecordStatusTransitionManagerTest.swift */; };
-		D979CC4F2AD4DECB006AAC49 /* CallRecordIncomingSyncMessageManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC4A2AD4DECA006AAC49 /* CallRecordIncomingSyncMessageManagerTest.swift */; };
+		D979CC4F2AD4DECB006AAC49 /* IncomingCallEventSyncMessageManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC4A2AD4DECA006AAC49 /* IncomingCallEventSyncMessageManagerTest.swift */; };
 		D979CC572AD5E240006AAC49 /* CallRecordTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC562AD5E240006AAC49 /* CallRecordTest.swift */; };
 		D979CC592AD61641006AAC49 /* GroupCallInteractionFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC582AD61641006AAC49 /* GroupCallInteractionFinder.swift */; };
 		D979CC5B2AD61699006AAC49 /* GroupCallRecordManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979CC5A2AD61699006AAC49 /* GroupCallRecordManager.swift */; };
@@ -1871,6 +1872,7 @@
 		D9F6554229D67708002A330A /* SDSCodableModel+SDSSerialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554129D67708002A330A /* SDSCodableModel+SDSSerialization.swift */; };
 		D9F6554429D798CC002A330A /* FactoryInitialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554329D798CC002A330A /* FactoryInitialization.swift */; };
 		D9F6554829DA4277002A330A /* FactoryInitializationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554629DA4233002A330A /* FactoryInitializationTests.swift */; };
+		D9F9A6352BFEE2A600EF13EC /* MockInteractionDeleteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A6342BFEE2A600EF13EC /* MockInteractionDeleteManager.swift */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		E14592632B59A86E00536BF2 /* GroupCallMemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E14592622B59A86E00536BF2 /* GroupCallMemberView.swift */; };
 		E14EDF6E2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E14EDF6D2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift */; };
@@ -4536,7 +4538,7 @@
 		C1E307412BA4D388009F015B /* TransformingOutputStreamTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformingOutputStreamTests.swift; sourceTree = "<group>"; };
 		C1E5891A2A66D67C00ECAF66 /* PreKeyTaskTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyTaskTests.swift; sourceTree = "<group>"; };
 		C1E5891C2A69E77B00ECAF66 /* PreKeyTaskTestMocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyTaskTestMocks.swift; sourceTree = "<group>"; };
-		C1EAECDE2A1EFC21008A3D58 /* OutgoingEditSyncMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingEditSyncMessage.swift; sourceTree = "<group>"; };
+		C1EAECDE2A1EFC21008A3D58 /* OutgoingEditMessageSyncTranscript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingEditMessageSyncTranscript.swift; sourceTree = "<group>"; };
 		C1EB623B2BADEE56006D99CB /* ChunkedInputStreamTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChunkedInputStreamTransform.swift; sourceTree = "<group>"; };
 		C1ED5C9E2A72DFC9009AD3FC /* SignalProtocolStoreMocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalProtocolStoreMocks.swift; sourceTree = "<group>"; };
 		C1ED5CA02A72E3D5009AD3FC /* PreKeyTaskManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyTaskManager.swift; sourceTree = "<group>"; };
@@ -4582,6 +4584,7 @@
 		D9247E9B2BFBED2A00DFEF6F /* account-data.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = "account-data.binproto"; path = "Signal-Message-Backup-Tests/test-cases/account-data.binproto"; sourceTree = "<group>"; };
 		D9247E9C2BFBED2A00DFEF6F /* unregistered-contact.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = "unregistered-contact.binproto"; path = "Signal-Message-Backup-Tests/test-cases/unregistered-contact.binproto"; sourceTree = "<group>"; };
 		D9247E9D2BFBED2A00DFEF6F /* registered-blocked-contact.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = "registered-blocked-contact.binproto"; path = "Signal-Message-Backup-Tests/test-cases/registered-blocked-contact.binproto"; sourceTree = "<group>"; };
+		D9247EA92BFD424800DFEF6F /* InteractionDeleteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionDeleteManager.swift; sourceTree = "<group>"; };
 		D925937928B0497900D5D437 /* LocalUserLeaveGroupJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalUserLeaveGroupJob.swift; sourceTree = "<group>"; };
 		D925C7BA2B7BEC0F00AC73B0 /* OutgoingCallLogEventSyncMessageTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutgoingCallLogEventSyncMessageTest.swift; sourceTree = "<group>"; };
 		D925F5502983399D00158EE4 /* CircleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleButton.swift; sourceTree = "<group>"; };
@@ -4653,7 +4656,7 @@
 		D979CC472AD4DECA006AAC49 /* IndividualCallRecordManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndividualCallRecordManagerTest.swift; sourceTree = "<group>"; };
 		D979CC482AD4DECA006AAC49 /* CallRecordStoreTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallRecordStoreTest.swift; sourceTree = "<group>"; };
 		D979CC492AD4DECA006AAC49 /* CallRecordStatusTransitionManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallRecordStatusTransitionManagerTest.swift; sourceTree = "<group>"; };
-		D979CC4A2AD4DECA006AAC49 /* CallRecordIncomingSyncMessageManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallRecordIncomingSyncMessageManagerTest.swift; sourceTree = "<group>"; };
+		D979CC4A2AD4DECA006AAC49 /* IncomingCallEventSyncMessageManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IncomingCallEventSyncMessageManagerTest.swift; sourceTree = "<group>"; };
 		D979CC4B2AD4DECB006AAC49 /* MockDeletedCallRecordStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockDeletedCallRecordStore.swift; sourceTree = "<group>"; };
 		D979CC562AD5E240006AAC49 /* CallRecordTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallRecordTest.swift; sourceTree = "<group>"; };
 		D979CC582AD61641006AAC49 /* GroupCallInteractionFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupCallInteractionFinder.swift; sourceTree = "<group>"; };
@@ -4798,6 +4801,7 @@
 		D9F6554129D67708002A330A /* SDSCodableModel+SDSSerialization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDSCodableModel+SDSSerialization.swift"; sourceTree = "<group>"; };
 		D9F6554329D798CC002A330A /* FactoryInitialization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactoryInitialization.swift; sourceTree = "<group>"; };
 		D9F6554629DA4233002A330A /* FactoryInitializationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactoryInitializationTests.swift; sourceTree = "<group>"; };
+		D9F9A6342BFEE2A600EF13EC /* MockInteractionDeleteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockInteractionDeleteManager.swift; sourceTree = "<group>"; };
 		E14592622B59A86E00536BF2 /* GroupCallMemberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallMemberView.swift; sourceTree = "<group>"; };
 		E14EDF6D2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientContextMenuHelper.swift; sourceTree = "<group>"; };
 		E16B440D2BBF242C00D2583E /* ReactionsModelTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReactionsModelTest.swift; sourceTree = "<group>"; };
@@ -9128,7 +9132,7 @@
 				C179B01D29ED94FA00275AD1 /* EditRecord.swift */,
 				6618DF3F2BBEF56900BCDC06 /* MessageEdits.swift */,
 				C13B9BB52A1819C7007F74C4 /* OutgoingEditMessage.swift */,
-				C1EAECDE2A1EFC21008A3D58 /* OutgoingEditSyncMessage.swift */,
+				C1EAECDE2A1EFC21008A3D58 /* OutgoingEditMessageSyncTranscript.swift */,
 			);
 			path = Edit;
 			sourceTree = "<group>";
@@ -9516,7 +9520,6 @@
 			isa = PBXGroup;
 			children = (
 				D9C42C2E2B6C60600086B142 /* CallRecordDeleteManagerTest.swift */,
-				D979CC4A2AD4DECA006AAC49 /* CallRecordIncomingSyncMessageManagerTest.swift */,
 				D9A81C6E2BAB43D900C07D2B /* CallRecordMissedCallManagerTest.swift */,
 				D93108052B30F920006A034E /* CallRecordQuerierTest.swift */,
 				D979CC492AD4DECA006AAC49 /* CallRecordStatusTransitionManagerTest.swift */,
@@ -9524,6 +9527,7 @@
 				D979CC562AD5E240006AAC49 /* CallRecordTest.swift */,
 				D979CC5C2AD616A4006AAC49 /* GroupCallRecordManagerTest.swift */,
 				D91F0B4B2B1939B60086DB30 /* GroupCallRecordRingUpdateDelegateTest.swift */,
+				D979CC4A2AD4DECA006AAC49 /* IncomingCallEventSyncMessageManagerTest.swift */,
 				D958C67C2BA0F3B2002F6888 /* IncomingCallLogEventSyncMessageManagerTest.swift */,
 				D979CC472AD4DECA006AAC49 /* IndividualCallRecordManagerTest.swift */,
 			);
@@ -9745,6 +9749,7 @@
 				C1939F6E2A844C6D003BAEF0 /* SignalProtocolStore */,
 				D990CAC42B4CCA69000A99A2 /* Usernames */,
 				D990CACC2B4DCD69000A99A2 /* Util */,
+				D9F9A6342BFEE2A600EF13EC /* MockInteractionDeleteManager.swift */,
 			);
 			path = Mocks;
 			sourceTree = "<group>";
@@ -10433,6 +10438,7 @@
 				669FAE162B7A8DA4009EE2FE /* LinkPreview */,
 				669FAE0C2B744BA4009EE2FE /* Quotes */,
 				667AF9E12B4DC5EE008AEE5D /* GroupUpdateSource.swift */,
+				D9247EA92BFD424800DFEF6F /* InteractionDeleteManager.swift */,
 				50468F2829EE130A00948E02 /* InteractionStore.swift */,
 				F9C5C8EB289453B100548EEE /* MentionFinder.swift */,
 				F9C5C908289453B100548EEE /* OWSDisappearingConfigurationUpdateInfoMessage+SDS.swift */,
@@ -13697,6 +13703,7 @@
 				F9C5CC12289453B300548EEE /* InstalledSticker+SDS.swift in Sources */,
 				F9C5CC15289453B300548EEE /* InstalledSticker.m in Sources */,
 				F9C5CE0F289453B400548EEE /* Int+SSK.swift in Sources */,
+				D9247EAA2BFD424800DFEF6F /* InteractionDeleteManager.swift in Sources */,
 				F9C5CD18289453B300548EEE /* InteractionFinder.swift in Sources */,
 				D979CC2B2AD3933B006AAC49 /* InteractionStore+CallRecord.swift in Sources */,
 				50468F2929EE130A00948E02 /* InteractionStore.swift in Sources */,
@@ -13839,6 +13846,7 @@
 				66076B5D2BC06CA70043D547 /* MockEditManagerAttachments.swift in Sources */,
 				66076B662BC07EE80043D547 /* MockEditManagerTSResources.swift in Sources */,
 				50F946102AD768AF002EF293 /* MockIdentityManager.swift in Sources */,
+				D9F9A6352BFEE2A600EF13EC /* MockInteractionDeleteManager.swift in Sources */,
 				F9C5CE66289453B400548EEE /* MockKeychainStorage.swift in Sources */,
 				6600BB1D2BA3ABDD0005A035 /* MockLinkPreviewManager.swift in Sources */,
 				D990CAC92B4CCB97000A99A2 /* MockLocalUsernameManager.swift in Sources */,
@@ -13890,7 +13898,7 @@
 				D979CC292AD3933B006AAC49 /* OutgoingCallEventSyncMessageManager.swift in Sources */,
 				D9DB37F32B71B037007B16C8 /* OutgoingCallLogEventSyncMessage.swift in Sources */,
 				C13B9BB62A1819C7007F74C4 /* OutgoingEditMessage.swift in Sources */,
-				C1EAECDF2A1EFC21008A3D58 /* OutgoingEditSyncMessage.swift in Sources */,
+				C1EAECDF2A1EFC21008A3D58 /* OutgoingEditMessageSyncTranscript.swift in Sources */,
 				D9AA37A42A8A9A910088EFFB /* OutgoingGroupCallUpdateMessage.swift in Sources */,
 				F96A534328A1AE7C003262D4 /* OutgoingGroupUpdateMessage.swift in Sources */,
 				F9C5CBB9289453B300548EEE /* OutgoingPaymentSyncMessage.m in Sources */,
@@ -14533,7 +14541,6 @@
 				F9426273289B1B5500460798 /* BlockingManagerStateTests.swift in Sources */,
 				F9426283289B1B5600460798 /* BlockingManagerTests.swift in Sources */,
 				D9C42C2F2B6C60600086B142 /* CallRecordDeleteManagerTest.swift in Sources */,
-				D979CC4F2AD4DECB006AAC49 /* CallRecordIncomingSyncMessageManagerTest.swift in Sources */,
 				D9A81C6F2BAB43D900C07D2B /* CallRecordMissedCallManagerTest.swift in Sources */,
 				D93108062B30F920006A034E /* CallRecordQuerierTest.swift in Sources */,
 				D979CC4E2AD4DECB006AAC49 /* CallRecordStatusTransitionManagerTest.swift in Sources */,
@@ -14574,6 +14581,7 @@
 				F9426251289B1B5500460798 /* GroupModelsTest.swift in Sources */,
 				F9426245289B1B5500460798 /* HTMLMetadataTests.swift in Sources */,
 				D9C0AE672BD7162300FCB05E /* InactiveLinkedDeviceFinderTest.swift in Sources */,
+				D979CC4F2AD4DECB006AAC49 /* IncomingCallEventSyncMessageManagerTest.swift in Sources */,
 				D958C67D2BA0F3B2002F6888 /* IncomingCallLogEventSyncMessageManagerTest.swift in Sources */,
 				D979CC4C2AD4DECB006AAC49 /* IndividualCallRecordManagerTest.swift in Sources */,
 				F942624D289B1B5500460798 /* InteractionFinderTest.swift in Sources */,
