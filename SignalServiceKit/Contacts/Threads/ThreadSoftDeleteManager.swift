@@ -4,6 +4,7 @@
 //
 
 import Intents
+import LibSignalClient
 import SignalCoreKit
 
 public protocol ThreadSoftDeleteManager {
@@ -17,17 +18,29 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
         static let interactionDeletionBatchSize: Int = 500
     }
 
+    private let intentsManager: Shims.IntentsManager
     private let interactionDeleteManager: InteractionDeleteManager
+    private let recipientDatabaseTable: RecipientDatabaseTable
+    private let storyManager: Shims.StoryManager
     private let threadReplyInfoStore: ThreadReplyInfoStore
+    private let tsAccountManager: TSAccountManager
 
     private let logger = PrefixedLogger(prefix: "[ThreadDeleteMgr]")
 
     init(
+        intentsManager: Shims.IntentsManager,
         interactionDeleteManager: InteractionDeleteManager,
-        threadReplyInfoStore: ThreadReplyInfoStore
+        recipientDatabaseTable: RecipientDatabaseTable,
+        storyManager: Shims.StoryManager,
+        threadReplyInfoStore: ThreadReplyInfoStore,
+        tsAccountManager: TSAccountManager
     ) {
+        self.intentsManager = intentsManager
         self.interactionDeleteManager = interactionDeleteManager
+        self.recipientDatabaseTable = recipientDatabaseTable
+        self.storyManager = storyManager
         self.threadReplyInfoStore = threadReplyInfoStore
+        self.tsAccountManager = tsAccountManager
     }
 
     func softDelete(thread: TSThread, tx: any DBWriteTransaction) {
@@ -41,7 +54,19 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
         }
         threadReplyInfoStore.remove(for: thread.uniqueId, tx: tx)
 
-        INInteraction.delete(with: thread.uniqueId)
+        if
+            let contactThread = thread as? TSContactThread,
+            let contactAci = recipientDatabaseTable.fetchServiceId(contactThread: contactThread, tx: tx)
+                .flatMap({ $0 as? Aci }),
+            let localIdentifiers = self.tsAccountManager.localIdentifiers(tx: tx),
+            !localIdentifiers.contains(serviceId: contactAci)
+        {
+            storyManager.deleteAllStories(contactAci: contactAci, tx: tx)
+        } else if let groupThread = thread as? TSGroupThread {
+            storyManager.deleteAllStories(groupId: groupThread.groupId, tx: tx)
+        }
+
+        intentsManager.deleteAllIntents(withGroupIdentifier: thread.uniqueId)
     }
 
     func removeAllInteractions(
@@ -84,6 +109,53 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
         thread.anyUpdate(transaction: sdsTx) { thread in
             thread.lastInteractionRowId = 0
         }
+    }
+}
+
+// MARK: - Shims
+
+extension ThreadSoftDeleteManagerImpl {
+    enum Shims {
+        typealias StoryManager = _ThreadSoftDeleteManagerImpl_StoryManager_Shim
+        typealias IntentsManager = _ThreadSoftDeleteManagerImpl_IntentsManager_Shim
+    }
+
+    enum Wrappers {
+        typealias StoryManager = _ThreadSoftDeleteManagerImpl_StoryManager_Wrapper
+        typealias IntentsManager = _ThreadSoftDeleteManagerImpl_IntentsManager_Wrapper
+    }
+}
+
+// MARK: StoryManager
+
+protocol _ThreadSoftDeleteManagerImpl_StoryManager_Shim {
+    func deleteAllStories(contactAci: Aci, tx: DBWriteTransaction)
+    func deleteAllStories(groupId: Data, tx: DBWriteTransaction)
+}
+
+final class _ThreadSoftDeleteManagerImpl_StoryManager_Wrapper: _ThreadSoftDeleteManagerImpl_StoryManager_Shim {
+    init() {}
+
+    func deleteAllStories(contactAci: Aci, tx: any DBWriteTransaction) {
+        StoryManager.deleteAllStories(forSender: contactAci, tx: SDSDB.shimOnlyBridge(tx))
+    }
+
+    func deleteAllStories(groupId: Data, tx: any DBWriteTransaction) {
+        StoryManager.deleteAllStories(forGroupId: groupId, tx: SDSDB.shimOnlyBridge(tx))
+    }
+}
+
+// MARK: Intents
+
+protocol _ThreadSoftDeleteManagerImpl_IntentsManager_Shim {
+    func deleteAllIntents(withGroupIdentifier groupIdentifier: String)
+}
+
+final class _ThreadSoftDeleteManagerImpl_IntentsManager_Wrapper: _ThreadSoftDeleteManagerImpl_IntentsManager_Shim {
+    init() {}
+
+    func deleteAllIntents(withGroupIdentifier groupIdentifier: String) {
+        INInteraction.delete(with: groupIdentifier)
     }
 }
 

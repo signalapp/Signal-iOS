@@ -528,8 +528,12 @@ public class AppSetup {
         )
 
         let threadSoftDeleteManager = ThreadSoftDeleteManagerImpl(
+            intentsManager: ThreadSoftDeleteManagerImpl.Wrappers.IntentsManager(),
             interactionDeleteManager: interactionDeleteManager,
-            threadReplyInfoStore: threadReplyInfoStore
+            recipientDatabaseTable: recipientDatabaseTable,
+            storyManager: ThreadSoftDeleteManagerImpl.Wrappers.StoryManager(),
+            threadReplyInfoStore: threadReplyInfoStore,
+            tsAccountManager: tsAccountManager
         )
         let threadRemover = ThreadRemoverImpl(
             chatColorSettingStore: chatColorSettingStore,

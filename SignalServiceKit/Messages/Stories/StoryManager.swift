@@ -165,6 +165,12 @@ public class StoryManager: NSObject {
         }
     }
 
+    public class func deleteAllStories(forGroupId groupId: Data, tx: SDSAnyWriteTransaction) {
+        StoryFinder.enumerateStoriesForContext(.groupId(groupId), transaction: tx) { storyMessage, _ in
+            storyMessage.anyRemove(transaction: tx)
+        }
+    }
+
     /// Removes a given address from any TSPrivateStoryThread(s) that have it as an _explicit_ address, whether by exclusion or
     /// inclusion.
     public class func removeAddressFromAllPrivateStoryThreads(_ address: SignalServiceAddress, tx: SDSAnyWriteTransaction) {
