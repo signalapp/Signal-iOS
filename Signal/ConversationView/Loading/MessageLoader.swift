@@ -17,8 +17,7 @@ private enum Constants {
 
 protocol MessageLoaderBatchFetcher {
     func fetchUniqueIds(
-        filter: RowIdFilter,
-        excludingPlaceholders excludePlaceholders: Bool,
+        filter: InteractionFinder.RowIdFilter,
         limit: Int,
         tx: DBReadTransaction
     ) throws -> [String]
@@ -222,10 +221,9 @@ class MessageLoader {
         deletedInteractionIds: Set<String>?,
         tx: DBReadTransaction
     ) throws -> MessageLoaderBatch {
-        func fetch(filter: RowIdFilter, limit: Int) throws -> [String] {
+        func fetch(filter: InteractionFinder.RowIdFilter, limit: Int) throws -> [String] {
             return try batchFetcher.fetchUniqueIds(
                 filter: filter,
-                excludingPlaceholders: !DebugFlags.showFailedDecryptionPlaceholders.get(),
                 limit: limit,
                 tx: tx
             )
@@ -395,14 +393,12 @@ class ConversationViewBatchFetcher: MessageLoaderBatchFetcher {
     }
 
     func fetchUniqueIds(
-        filter: RowIdFilter,
-        excludingPlaceholders excludePlaceholders: Bool,
+        filter: InteractionFinder.RowIdFilter,
         limit: Int,
         tx: DBReadTransaction
     ) throws -> [String] {
-        try interactionFinder.fetchUniqueIds(
-            filter: filter,
-            excludingPlaceholders: excludePlaceholders,
+        try interactionFinder.fetchUniqueIdsForConversationView(
+            rowIdFilter: filter,
             limit: limit,
             tx: SDSDB.shimOnlyBridge(tx)
         )

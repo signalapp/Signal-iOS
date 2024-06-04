@@ -13,13 +13,6 @@ public enum EditMessageQueryMode {
     case excludeAllEdits
 }
 
-public enum RowIdFilter {
-    case newest
-    case before(Int64)
-    case after(Int64)
-    case range(ClosedRange<Int64>)
-}
-
 // MARK: -
 
 @objc
@@ -595,7 +588,7 @@ public class InteractionFinder: NSObject {
                 SELECT *
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .threadUniqueId) = ?
-                \(Self.filterStoryRepliesClause())
+                \(Self.filterGroupStoryRepliesClause())
                 \(Self.filterEditHistoryClause())
                 AND \(interactionColumn: .errorType) IS NOT ?
                 AND \(interactionColumn: .messageType) IS NOT ?
@@ -701,48 +694,6 @@ public class InteractionFinder: NSObject {
         while let uniqueId = try cursor.next() {
             var stop: ObjCBool = false
             block(uniqueId, &stop)
-            if stop.boolValue {
-                return
-            }
-        }
-    }
-
-    @objc
-    public func enumerateRecentInteractions(
-        transaction: SDSAnyReadTransaction,
-        block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void
-    ) throws {
-        try enumerateRecentInteractions(
-            excludingPlaceholders: true,
-            transaction: transaction,
-            block: block
-        )
-    }
-
-    public func enumerateRecentInteractions(
-        excludingPlaceholders excludePlaceholders: Bool,
-        transaction: SDSAnyReadTransaction,
-        block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void
-    ) throws {
-        let sql = """
-            SELECT *
-            FROM \(InteractionRecord.databaseTableName)
-            WHERE \(interactionColumn: .threadUniqueId) = ?
-            \(Self.filterStoryRepliesClause())
-            \(Self.filterEditHistoryClause())
-            \(excludePlaceholders ? Self.filterPlaceholdersClause : "")
-            ORDER BY \(interactionColumn: .id) DESC
-        """
-        let arguments: StatementArguments = [threadUniqueId]
-        let cursor = TSInteraction.grdbFetchCursor(
-            sql: sql,
-            arguments: arguments,
-            transaction: transaction.unwrapGrdbRead
-        )
-
-        while let interaction = try cursor.next() {
-            var stop: ObjCBool = false
-            block(interaction, &stop)
             if stop.boolValue {
                 return
             }
@@ -1131,7 +1082,7 @@ public class InteractionFinder: NSObject {
                         AND \(interactionColumn: .errorType) IN (\(errorMessageTypes.map { "\($0.rawValue)" }.joined(separator: ",")))
                     ) OR \(interactionColumn: .recordType) IN (\(interactionTypes.map { "\($0.rawValue)" }.joined(separator: ",")))
                 )
-                \(Self.filterStoryRepliesClause())
+                \(Self.filterGroupStoryRepliesClause())
                 \(Self.filterEditHistoryClause())
                 LIMIT 1
             )
@@ -1228,53 +1179,194 @@ public class InteractionFinder: NSObject {
         }
     }
 
-    public func fetchUniqueIds(
-        filter: RowIdFilter,
-        excludingPlaceholders excludePlaceholders: Bool,
+    // MARK: - Fetch by Row ID
+
+    public enum RowIdFilter {
+        case newest
+        case before(Int64)
+        case after(Int64)
+        case range(ClosedRange<Int64>)
+    }
+
+    /// Fetch interaction unique IDs covered by this finder, filtered and
+    /// ordered as they should appear in the conversation view.
+    public func fetchUniqueIdsForConversationView(
+        rowIdFilter: RowIdFilter,
         limit: Int,
         tx: SDSAnyReadTransaction
     ) throws -> [String] {
-        let rowIdFilter: String
+        let (rowIdClause, arguments, isAscending) = sqlClauseForInteractionsByRowId(
+            rowIdFilter: rowIdFilter,
+            additionalFiltering: .filterForConversationView,
+            limit: limit
+        )
+
+        let uniqueIds = try String.fetchAll(
+            tx.unwrapGrdbRead.database,
+            sql: """
+                SELECT "uniqueId" FROM \(InteractionRecord.databaseTableName)
+                \(rowIdClause)
+            """,
+            arguments: arguments
+        )
+
+        return isAscending ? uniqueIds : Array(uniqueIds.reversed())
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func enumerateRecentInteractionsForConversationView(
+        transaction tx: SDSAnyReadTransaction,
+        block: (TSInteraction) -> Bool
+    ) throws {
+        try enumerateInteractionsForConversationView(
+            rowIdFilter: .newest,
+            tx: tx,
+            block: block
+        )
+    }
+
+    /// Enumerate interactions covered by this finder, filtered and ordered as
+    /// they should appear in the conversation view.
+    ///
+    /// - Parameter block
+    /// A block executed for each enumerated interaction. Returns `true` if
+    /// enumeration should continue, and `false` otherwise.
+    public func enumerateInteractionsForConversationView(
+        rowIdFilter: RowIdFilter,
+        tx: SDSAnyReadTransaction,
+        block: (TSInteraction) -> Bool
+    ) throws {
+        try enumerateInteractions(
+            rowIdFilter: rowIdFilter,
+            additionalFiltering: .filterForConversationView,
+            limit: nil,
+            tx: tx,
+            block: block
+        )
+    }
+
+    /// Enumerate all interactions covered by this finder.
+    /// - Parameter limit
+    /// The max number of interactions to enumerate. `nil` means no limit.
+    /// - Parameter block
+    /// A block executed for each enumerated interaction. Returns `true` if
+    /// enumeration should continue, and `false` otherwise.
+    public func enumerateAllInteractions(
+        rowIdFilter: RowIdFilter,
+        limit: Int?,
+        tx: SDSAnyReadTransaction,
+        block: (TSInteraction) -> Bool
+    ) throws {
+        try enumerateInteractions(
+            rowIdFilter: rowIdFilter,
+            additionalFiltering: .noFiltering,
+            limit: limit,
+            tx: tx,
+            block: block
+        )
+    }
+
+    /// Options for configuring the SQL clause to fetch interactions by row ID.
+    ///
+    /// - Important
+    /// At the time of writing, all cases included here result in a SQL clause
+    /// that is supported by a database index and is therefore fast. Take care
+    /// when updating these options that the resulting SQL clause does not
+    /// result in queries that will *not* be supported by an index.
+    private enum InteractionsByRowIdAdditionalFiltering {
+        /// Filter the fetched interactions as appropriate for the conversation
+        /// view. This includes filtering out decryption placeholders, group
+        /// story replies, and edit history.
+        case filterForConversationView
+
+        /// Do no additional filtering. This will return all interactions.
+        case noFiltering
+    }
+
+    private func enumerateInteractions(
+        rowIdFilter: RowIdFilter,
+        additionalFiltering: InteractionsByRowIdAdditionalFiltering,
+        limit: Int?,
+        tx: SDSAnyReadTransaction,
+        block: (TSInteraction) -> Bool
+    ) throws {
+        let (rowIdClause, arguments, _) = sqlClauseForInteractionsByRowId(
+            rowIdFilter: rowIdFilter,
+            additionalFiltering: additionalFiltering,
+            limit: limit
+        )
+
+        let cursor = TSInteraction.grdbFetchCursor(
+            sql: """
+                SELECT * FROM \(InteractionRecord.databaseTableName)
+                \(rowIdClause)
+            """,
+            arguments: arguments,
+            transaction: tx.unwrapGrdbRead
+        )
+
+        while
+            let interaction = try cursor.next(),
+            block(interaction)
+        {}
+    }
+
+    private func sqlClauseForInteractionsByRowId(
+        rowIdFilter: RowIdFilter,
+        additionalFiltering: InteractionsByRowIdAdditionalFiltering,
+        limit: Int?
+    ) -> (String, StatementArguments, isAscending: Bool) {
+        let rowIdFilterClause: String
         let rowIdArguments: StatementArguments
         let isAscending: Bool
-        switch filter {
+        switch rowIdFilter {
         case .newest:
-            rowIdFilter = ""
+            rowIdFilterClause = ""
             rowIdArguments = []
             isAscending = false
         case .before(let rowId):
-            rowIdFilter = "AND \(interactionColumn: .id) < ?"
+            rowIdFilterClause = "AND \(interactionColumn: .id) < ?"
             rowIdArguments = [rowId]
             isAscending = false
         case .after(let rowId):
-            rowIdFilter = "AND \(interactionColumn: .id) > ?"
+            rowIdFilterClause = "AND \(interactionColumn: .id) > ?"
             rowIdArguments = [rowId]
             isAscending = true
         case .range(let rowIds):
-            rowIdFilter = "AND \(interactionColumn: .id) >= ? AND \(interactionColumn: .id) <= ?"
+            rowIdFilterClause = "AND \(interactionColumn: .id) >= ? AND \(interactionColumn: .id) <= ?"
             rowIdArguments = [rowIds.lowerBound, rowIds.upperBound]
             isAscending = true
         }
 
-        let sql = """
-            SELECT "uniqueId" FROM \(InteractionRecord.databaseTableName)
+        let additionalFilterClause: String = switch additionalFiltering {
+        case .filterForConversationView:
+            """
+                \(Self.filterGroupStoryRepliesClause())
+                \(Self.filterEditHistoryClause())
+                \(Self.filterPlaceholdersClause)
+            """
+        case .noFiltering:
+            ""
+        }
+
+        var sql = """
             WHERE
                 \(interactionColumn: .threadUniqueId) = ?
-                \(rowIdFilter)
-                \(Self.filterStoryRepliesClause())
-                \(Self.filterEditHistoryClause())
-                \(excludePlaceholders ? Self.filterPlaceholdersClause : "")
+                \(rowIdFilterClause)
+                \(additionalFilterClause)
             ORDER BY \(interactionColumn: .id) \(isAscending ? "ASC" : "DESC")
-            LIMIT \(limit)
         """
+        if let limit {
+            sql += " LIMIT \(limit)"
+        }
+
         let arguments: StatementArguments = [threadUniqueId] + rowIdArguments
-        let uniqueIds = try String.fetchAll(
-            tx.unwrapGrdbRead.database,
-            sql: sql,
-            arguments: arguments
-        )
-        return isAscending ? uniqueIds : Array(uniqueIds.reversed())
+
+        return (sql, arguments, isAscending)
     }
+
+    // MARK: -
 
     public static func maxRowId(transaction: SDSAnyReadTransaction) -> Int {
         do {
@@ -1321,7 +1413,7 @@ private extension InteractionFinder {
         return """
         (
             \(interactionColumn: .read) IS 0
-            \(Self.filterStoryRepliesClause())
+            \(Self.filterGroupStoryRepliesClause())
             \(self.filterEditHistoryClause(mode: editQueryMode))
             AND \(interactionColumn: .recordType) IN (\(recordTypesSql))
         )
@@ -1340,7 +1432,7 @@ private extension InteractionFinder {
 
         return """
         \(columnPrefix)\(interactionColumn: .read) IS 0
-        \(Self.filterStoryRepliesClause(interactionsAlias: interactionsAlias))
+        \(Self.filterGroupStoryRepliesClause(interactionsAlias: interactionsAlias))
         \(Self.filterEditHistoryClause(mode: .excludeReadEdits, interactionsAlias: interactionsAlias))
         AND (
             \(columnPrefix)\(interactionColumn: .recordType) IS \(SDSRecordType.incomingMessage.rawValue)
@@ -1366,7 +1458,7 @@ private extension InteractionFinder {
     // If you need to adjust this clause, you should probably update the index as well. This is a perf sensitive code path.
     static let filterPlaceholdersClause = "AND \(interactionColumn: .recordType) IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue)"
 
-    static func filterStoryRepliesClause(interactionsAlias: String? = nil) -> String {
+    static func filterGroupStoryRepliesClause(interactionsAlias: String? = nil) -> String {
         let columnPrefix: String
         if let interactionsAlias = interactionsAlias {
             columnPrefix = interactionsAlias + "."

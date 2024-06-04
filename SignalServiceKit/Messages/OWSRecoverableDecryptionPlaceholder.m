@@ -152,10 +152,7 @@ NS_ASSUME_NONNULL_BEGIN
         senderName = [self.contactManagerObjC shortDisplayNameStringForAddress:self.sender transaction:transaction];
     }
 
-    if (SSKDebugFlags.showFailedDecryptionPlaceholders.value) {
-        return [[NSString alloc]
-            initWithFormat:@"Placeholder for timestamp: %llu from sender: %@", self.timestamp, senderName];
-    } else if (senderName) {
+    if (senderName) {
         OWSFailDebug(@"Should not be directly surfaced to user");
         NSString *formatString = OWSLocalizedString(@"ERROR_MESSAGE_DECRYPTION_FAILURE",
             @"Error message for a decryption failure. Embeds {{sender short name}}.");

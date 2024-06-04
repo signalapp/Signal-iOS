@@ -292,17 +292,18 @@ extension GroupUpdateInfoMessageInserterImpl {
         var secondMostRecentVisibleInteraction: TSInteraction?
         do {
             try InteractionFinder(threadUniqueId: groupThread.uniqueId)
-                .enumerateRecentInteractions(
-                    excludingPlaceholders: !DebugFlags.showFailedDecryptionPlaceholders.get(), // This matches how messages are loaded in MessageLoader
-                    transaction: transaction,
-                    block: { interaction, shouldStop in
-                        if mostRecentVisibleInteraction == nil {
-                            mostRecentVisibleInteraction = interaction
-                        } else if secondMostRecentVisibleInteraction == nil {
-                            secondMostRecentVisibleInteraction = interaction
-                            shouldStop.pointee = true
-                        }
-                    })
+                .enumerateInteractionsForConversationView(
+                    rowIdFilter: .newest,
+                    tx: transaction
+                ) { interaction -> Bool in
+                    if mostRecentVisibleInteraction == nil {
+                        mostRecentVisibleInteraction = interaction
+                    } else if secondMostRecentVisibleInteraction == nil {
+                        secondMostRecentVisibleInteraction = interaction
+                        return false
+                    }
+                    return true
+                }
         } catch let error {
             Logger.warn("Failed to get most recent interactions for thread: \(error.localizedDescription)")
             return nil

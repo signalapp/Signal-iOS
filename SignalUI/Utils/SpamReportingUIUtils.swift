@@ -147,17 +147,18 @@ public struct ReportSpamUIUtils {
             } else {
                 try InteractionFinder(
                     threadUniqueId: thread.uniqueId
-                ).enumerateRecentInteractions(
-                    transaction: tx
-                ) { interaction, stop in
-                    guard let incomingMessage = interaction as? TSIncomingMessage else { return }
+                ).enumerateInteractionsForConversationView(
+                    rowIdFilter: .newest,
+                    tx: tx
+                ) { interaction -> Bool in
+                    guard let incomingMessage = interaction as? TSIncomingMessage else { return true }
                     if let serverGuid = incomingMessage.serverGuid {
                         guidsToReport.insert(serverGuid)
                     }
-                    guard guidsToReport.count < maxMessagesToReport else {
-                        stop.pointee = true
-                        return
+                    if guidsToReport.count < maxMessagesToReport {
+                        return true
                     }
+                    return false
                 }
             }
         } catch {

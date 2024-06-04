@@ -16,7 +16,7 @@ class MessageLoaderTest: XCTestCase {
 
     private class MockBatchFetcher: MessageLoaderBatchFetcher {
         var interactions = [TSInteraction]()
-        func fetchUniqueIds(filter: RowIdFilter, excludingPlaceholders excludePlaceholders: Bool, limit: Int, tx: DBReadTransaction) throws -> [String] {
+        func fetchUniqueIds(filter: InteractionFinder.RowIdFilter, limit: Int, tx: DBReadTransaction) throws -> [String] {
             switch filter {
             case .newest:
                 return Array(interactions.lazy.suffix(limit).map { $0.uniqueId })

@@ -205,8 +205,12 @@ final class DatabaseRecoveryTest: SSKBaseTest {
             let threadInteractions: [TSInteraction] = {
                 var result = [TSInteraction]()
                 let finder = InteractionFinder(threadUniqueId: thread.uniqueId)
-                try? finder.enumerateRecentInteractions(transaction: transaction) { interaction, _ in
+                try? finder.enumerateInteractionsForConversationView(
+                    rowIdFilter: .newest,
+                    tx: transaction
+                ) { interaction -> Bool in
                     result.append(interaction)
+                    return true
                 }
                 return result
             }()

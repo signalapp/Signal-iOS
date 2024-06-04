@@ -271,10 +271,12 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 {
     NSError *error;
     InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId];
-    [interactionFinder
-        enumerateRecentInteractionsWithTransaction:transaction
-                                             error:&error
-                                             block:^(TSInteraction *interaction, BOOL *stop) { block(interaction); }];
+    [interactionFinder enumerateRecentInteractionsForConversationViewWithTransaction:transaction
+                                                                               error:&error
+                                                                               block:^BOOL(TSInteraction *interaction) {
+                                                                                   block(interaction);
+                                                                                   return YES;
+                                                                               }];
     if (error != nil) {
         OWSFailDebug(@"Error during enumeration: %@", error);
     }

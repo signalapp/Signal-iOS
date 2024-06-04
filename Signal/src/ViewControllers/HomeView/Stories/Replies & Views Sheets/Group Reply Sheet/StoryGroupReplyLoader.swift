@@ -345,7 +345,7 @@ private class StoryGroupReplyBatchFetcher: MessageLoaderBatchFetcher {
         )
     }
 
-    func fetchUniqueIds(filter: RowIdFilter, excludingPlaceholders excludePlaceholders: Bool, limit: Int, tx: DBReadTransaction) throws -> [String] {
+    func fetchUniqueIds(filter: InteractionFinder.RowIdFilter, limit: Int, tx: DBReadTransaction) throws -> [String] {
         // This design is extremely weird. However, we already fetch all the
         // uniqueIds for a given story when rendering the view, and while we could
         // design a bunch of equivalent database queries to do the same thing, we

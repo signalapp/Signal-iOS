@@ -325,13 +325,6 @@ public class DebugFlags: NSObject {
     )
 
     @objc
-    public static let showFailedDecryptionPlaceholders = TestableFlag(
-        false,
-        title: LocalizationNotNeeded("Sender Key: Show failed decryption placeholders"),
-        details: LocalizationNotNeeded("Shows placeholder interactions in the conversation list.")
-    )
-
-    @objc
     public static let fastPlaceholderExpiration = TestableFlag(
         false,
         title: LocalizationNotNeeded("Sender Key: Early placeholder expiration"),
@@ -364,7 +357,6 @@ public class DebugFlags: NSObject {
             paymentsMalformedMessages,
             paymentsNoRequestsComplete,
             paymentsSkipSubmissionAndOutgoingVerification,
-            showFailedDecryptionPlaceholders,
         ]
     }
 }
