@@ -79,6 +79,7 @@ public class SSKEnvironment: NSObject {
     public let messageSenderJobQueueRef: MessageSenderJobQueue
     public let localUserLeaveGroupJobQueueRef: LocalUserLeaveGroupJobQueue
     public let callRecordDeleteAllJobQueueRef: CallRecordDeleteAllJobQueue
+    public let bulkDeleteInteractionJobQueueRef: BulkDeleteInteractionJobQueue
     public let preferencesRef: Preferences
     public let proximityMonitoringManagerRef: OWSProximityMonitoringManager
     public let avatarBuilderRef: AvatarBuilder
@@ -144,6 +145,7 @@ public class SSKEnvironment: NSObject {
         messageSenderJobQueue: MessageSenderJobQueue,
         localUserLeaveGroupJobQueue: LocalUserLeaveGroupJobQueue,
         callRecordDeleteAllJobQueue: CallRecordDeleteAllJobQueue,
+        bulkdDeleteInteractionJobQueue: BulkDeleteInteractionJobQueue,
         preferences: Preferences,
         proximityMonitoringManager: OWSProximityMonitoringManager,
         avatarBuilder: AvatarBuilder,
@@ -204,6 +206,7 @@ public class SSKEnvironment: NSObject {
         self.messageSenderJobQueueRef = messageSenderJobQueue
         self.localUserLeaveGroupJobQueueRef = localUserLeaveGroupJobQueue
         self.callRecordDeleteAllJobQueueRef = callRecordDeleteAllJobQueue
+        self.bulkDeleteInteractionJobQueueRef = bulkdDeleteInteractionJobQueue
         self.preferencesRef = preferences
         self.proximityMonitoringManagerRef = proximityMonitoringManager
         self.avatarBuilderRef = avatarBuilder
@@ -244,6 +247,7 @@ public class SSKEnvironment: NSObject {
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             self.localUserLeaveGroupJobQueueRef.start(appContext: CurrentAppContext())
             self.callRecordDeleteAllJobQueueRef.start(appContext: CurrentAppContext())
+            self.bulkDeleteInteractionJobQueueRef.start(appContext: CurrentAppContext())
             self.smJobQueuesRef.tsAttachmentMultisendJobQueue.start(appContext: CurrentAppContext())
             self.smJobQueuesRef.incomingContactSyncJobQueue.start(appContext: CurrentAppContext())
             self.smJobQueuesRef.receiptCredentialJobQueue.start(appContext: CurrentAppContext())

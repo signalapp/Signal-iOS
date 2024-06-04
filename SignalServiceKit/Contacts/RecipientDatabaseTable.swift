@@ -51,6 +51,10 @@ extension RecipientDatabaseTable {
             ?? address.phoneNumber.flatMap({ fetchRecipient(phoneNumber: $0, transaction: tx) })
         )
     }
+
+    public func fetchAuthorRecipient(incomingMessage: TSIncomingMessage, tx: DBReadTransaction) -> SignalRecipient? {
+        return fetchRecipient(address: incomingMessage.authorAddress, tx: tx)
+    }
 }
 
 public class RecipientDatabaseTableImpl: RecipientDatabaseTable {

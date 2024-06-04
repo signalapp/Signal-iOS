@@ -179,9 +179,9 @@ private struct InterleavableCallRecordCursor: InterleavableCursor {
 
     // MARK: InterleavableCursor
 
-    typealias Element = CallRecord
+    typealias InterleavableElement = CallRecord
 
-    func nextElement() throws -> Element? {
+    func nextInterleavableElement() throws -> InterleavableElement? {
         return try callRecordCursor.next()
     }
 }

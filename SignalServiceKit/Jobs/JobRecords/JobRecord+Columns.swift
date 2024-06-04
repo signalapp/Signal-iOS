@@ -110,5 +110,11 @@ extension JobRecord {
         case deleteAllBeforeCallId = "CRDAJR_deleteAllBeforeCallId"
         case deleteAllBeforeConversationId = "CRDAJR_deleteAllBeforeConversationId"
         case deleteAllBeforeTimestamp = "CRDAJR_deleteAllBeforeTimestamp"
+
+        // MARK: BulkDeleteInteractionJobRecord
+
+        case BDIJR_anchorMessageRowId = "BDIJR_anchorMessageRowId"
+        case BDIJR_fullThreadDeletionAnchorMessageRowId = "BDIJR_fullThreadDeletionAnchorMessageRowId"
+        case BDIJR_threadUniqueId = "BDIJR_threadUniqueId"
     }
 }

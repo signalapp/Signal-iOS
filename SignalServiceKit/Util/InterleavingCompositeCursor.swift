@@ -3,19 +3,19 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-protocol InterleavableCursor<Element> {
-    associatedtype Element
+public protocol InterleavableCursor<InterleavableElement> {
+    associatedtype InterleavableElement
 
     /// Returns the next value from the cursor, if any remain.
-    mutating func nextElement() throws -> Element?
+    mutating func nextInterleavableElement() throws -> InterleavableElement?
 }
 
-class InterleavingCompositeCursor<CursorType: InterleavableCursor> {
-    typealias Element = CursorType.Element
+open class InterleavingCompositeCursor<CursorType: InterleavableCursor> {
+    public typealias Element = CursorType.InterleavableElement
 
     /// Compare two elements for sorting. Returns `true` if the first argument
     /// should be ordered before the second argument. `false` otherwise.
-    typealias ElementSortComparator = (_ lhs: Element, _ rhs: Element) -> Bool
+    public typealias ElementSortComparator = (_ lhs: Element, _ rhs: Element) -> Bool
 
     private let nextElementComparator: ElementSortComparator
 
@@ -29,7 +29,7 @@ class InterleavingCompositeCursor<CursorType: InterleavableCursor> {
     /// - Parameter nextElementComparator
     /// A comparator used to determine which component cursor this composite
     /// cursor should return a value from next.
-    init(
+    public init(
         interleaving cursors: [CursorType],
         nextElementComparator: @escaping ElementSortComparator
     ) throws {
@@ -39,7 +39,7 @@ class InterleavingCompositeCursor<CursorType: InterleavableCursor> {
         self.nextElements = [:]
 
         for (id, var cursor) in cursors.enumerated() {
-            let element = try cursor.nextElement()
+            let element = try cursor.nextInterleavableElement()
 
             self.cursors[id] = cursor
             self.nextElements[id] = element
@@ -47,7 +47,7 @@ class InterleavingCompositeCursor<CursorType: InterleavableCursor> {
     }
 
     /// Returns the next value with the minimum value across
-    func next() throws -> Element? {
+    public func next() throws -> Element? {
         /// Get the min element from the "next" elements for each of our
         /// component cursors, which represents the next element the composite
         /// cursor should return.
@@ -76,8 +76,19 @@ class InterleavingCompositeCursor<CursorType: InterleavableCursor> {
         }
 
         // Get the new "next" for the cursor from which we're taking a value.
-        nextElements[nextCursorId] = try cursors[nextCursorId]!.nextElement()
+        nextElements[nextCursorId] = try cursors[nextCursorId]!.nextInterleavableElement()
 
         return nextCursorElement
+    }
+
+    /// Iterate this cursor, executing the given block on each element.
+    /// - Parameter shouldContinueBlock
+    /// A block executed on each iterated element. Returns `true` if iteration
+    /// should continue, and `false` otherwise.
+    public func iterate(shouldContinueBlock: (Element) -> Bool) throws {
+        while
+            let nextElement = try next(),
+            shouldContinueBlock(nextElement)
+        {}
     }
 }

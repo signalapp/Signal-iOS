@@ -358,6 +358,8 @@ private class StoryGroupReplyBatchFetcher: MessageLoaderBatchFetcher {
         switch filter {
         case .newest:
             return Array(uniqueIdsAndRowIds.lazy.suffix(limit).map { $0.uniqueId })
+        case .atOrBefore(let rowId):
+            return Array(uniqueIdsAndRowIds.lazy.filter { $0.rowId <= rowId }.suffix(limit).map { $0.uniqueId })
         case .before(let rowId):
             return Array(uniqueIdsAndRowIds.lazy.filter { $0.rowId < rowId }.suffix(limit).map { $0.uniqueId })
         case .after(let rowId):

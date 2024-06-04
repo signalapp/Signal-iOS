@@ -1183,6 +1183,7 @@ public class InteractionFinder: NSObject {
 
     public enum RowIdFilter {
         case newest
+        case atOrBefore(Int64)
         case before(Int64)
         case after(Int64)
         case range(ClosedRange<Int64>)
@@ -1237,33 +1238,66 @@ public class InteractionFinder: NSObject {
         tx: SDSAnyReadTransaction,
         block: (TSInteraction) -> Bool
     ) throws {
-        try enumerateInteractions(
+        try buildInteractionCursor(
             rowIdFilter: rowIdFilter,
             additionalFiltering: .filterForConversationView,
             limit: nil,
-            tx: tx,
-            block: block
-        )
+            tx: tx
+        ).enumerate(block: block)
     }
 
-    /// Enumerate all interactions covered by this finder.
-    /// - Parameter limit
-    /// The max number of interactions to enumerate. `nil` means no limit.
-    /// - Parameter block
-    /// A block executed for each enumerated interaction. Returns `true` if
-    /// enumeration should continue, and `false` otherwise.
-    public func enumerateAllInteractions(
+    /// Fetch all interactions covered by this finder.
+    func fetchAllInteractions(
         rowIdFilter: RowIdFilter,
-        limit: Int?,
-        tx: SDSAnyReadTransaction,
-        block: (TSInteraction) -> Bool
-    ) throws {
-        try enumerateInteractions(
+        limit: Int,
+        tx: SDSAnyReadTransaction
+    ) throws -> [TSInteraction] {
+        var interactions: [TSInteraction] = []
+
+        try buildInteractionCursor(
             rowIdFilter: rowIdFilter,
             additionalFiltering: .noFiltering,
             limit: limit,
-            tx: tx,
-            block: block
+            tx: tx
+        ).enumerate { interaction -> Bool in
+            interactions.append(interaction)
+            return true
+        }
+
+        return interactions
+    }
+
+    /// Returns a cursor over all ``TSIncomingMessage``s covered by this finder
+    /// that returns its next element in O(1) time.
+    ///
+    /// - Important
+    /// This cursor may not outlive the given transaction!
+    func buildIncomingMessagesCursor(
+        rowIdFilter: RowIdFilter,
+        tx: SDSAnyReadTransaction
+    ) -> TSInteractionCursor {
+        return buildInteractionCursor(
+            rowIdFilter: rowIdFilter,
+            additionalFiltering: .filterForIncomingMessages,
+            limit: nil,
+            tx: tx
+        )
+    }
+
+    /// Returns a cursor over all ``TSOutgoingMessage``s covered by this finder
+    /// that returns its next element in O(1) time.
+    ///
+    /// - Important
+    /// This cursor may not outlive the given transaction!
+    func buildOutgoingMessagesCursor(
+        rowIdFilter: RowIdFilter,
+        tx: SDSAnyReadTransaction
+    ) -> TSInteractionCursor {
+        return buildInteractionCursor(
+            rowIdFilter: rowIdFilter,
+            additionalFiltering: .filterForIncomingMessages,
+            limit: nil,
+            tx: tx
         )
     }
 
@@ -1278,26 +1312,43 @@ public class InteractionFinder: NSObject {
         /// Filter the fetched interactions as appropriate for the conversation
         /// view. This includes filtering out decryption placeholders, group
         /// story replies, and edit history.
+        ///
+        /// Relies on `index_model_TSInteraction_UnreadMessages`.
         case filterForConversationView
 
+        /// Filter the fetched interactions to ``TSIncomingMessage``s.
+        ///
+        /// Relies on `index_interactions_on_recordType_and_threadUniqueId_and_errorType`,
+        /// by passing a `NULL` error type since no incoming message will
+        /// have that column populated.
+        case filterForIncomingMessages
+
+        /// Filter the fetched interactions to ``TSOutgoingMessage``s.
+        ///
+        /// Relies on `index_interactions_on_recordType_and_threadUniqueId_and_errorType`,
+        /// by passing a `NULL` error type since no outgoing message will
+        /// have that column populated.
+        case filterForOutgoingMessages
+
         /// Do no additional filtering. This will return all interactions.
+        ///
+        /// Relies on `index_interactions_on_threadUniqueId_and_id`.
         case noFiltering
     }
 
-    private func enumerateInteractions(
+    private func buildInteractionCursor(
         rowIdFilter: RowIdFilter,
         additionalFiltering: InteractionsByRowIdAdditionalFiltering,
         limit: Int?,
-        tx: SDSAnyReadTransaction,
-        block: (TSInteraction) -> Bool
-    ) throws {
+        tx: SDSAnyReadTransaction
+    ) -> TSInteractionCursor {
         let (rowIdClause, arguments, _) = sqlClauseForInteractionsByRowId(
             rowIdFilter: rowIdFilter,
             additionalFiltering: additionalFiltering,
             limit: limit
         )
 
-        let cursor = TSInteraction.grdbFetchCursor(
+        return TSInteraction.grdbFetchCursor(
             sql: """
                 SELECT * FROM \(InteractionRecord.databaseTableName)
                 \(rowIdClause)
@@ -1305,11 +1356,6 @@ public class InteractionFinder: NSObject {
             arguments: arguments,
             transaction: tx.unwrapGrdbRead
         )
-
-        while
-            let interaction = try cursor.next(),
-            block(interaction)
-        {}
     }
 
     private func sqlClauseForInteractionsByRowId(
@@ -1324,6 +1370,10 @@ public class InteractionFinder: NSObject {
         case .newest:
             rowIdFilterClause = ""
             rowIdArguments = []
+            isAscending = false
+        case .atOrBefore(let rowId):
+            rowIdFilterClause = "AND \(interactionColumn: .id) <= ?"
+            rowIdArguments = [rowId]
             isAscending = false
         case .before(let rowId):
             rowIdFilterClause = "AND \(interactionColumn: .id) < ?"
@@ -1342,10 +1392,14 @@ public class InteractionFinder: NSObject {
         let additionalFilterClause: String = switch additionalFiltering {
         case .filterForConversationView:
             """
-                \(Self.filterGroupStoryRepliesClause())
-                \(Self.filterEditHistoryClause())
-                \(Self.filterPlaceholdersClause)
+            \(Self.filterGroupStoryRepliesClause())
+            \(Self.filterEditHistoryClause())
+            \(Self.filterPlaceholdersClause)
             """
+        case .filterForIncomingMessages:
+            "AND recordType = \(SDSRecordType.incomingMessage.rawValue) AND errorType is NULL"
+        case .filterForOutgoingMessages:
+            "AND recordType = \(SDSRecordType.outgoingMessage.rawValue) AND errorType is NULL"
         case .noFiltering:
             ""
         }
@@ -1368,6 +1422,24 @@ public class InteractionFinder: NSObject {
 
     // MARK: -
 
+    /// The SQLite row ID of the most-recently inserted interaction covered by
+    /// this finder.
+    func mostRecentRowId(tx: SDSAnyReadTransaction) -> Int64 {
+        var mostRecentRowId: Int64 = 0
+
+        try? buildInteractionCursor(
+            rowIdFilter: .newest,
+            additionalFiltering: .noFiltering,
+            limit: 1,
+            tx: tx
+        ).enumerate { mostRecentInteraction -> Bool in
+            mostRecentRowId = mostRecentInteraction.sqliteRowId!
+            return false
+        }
+
+        return mostRecentRowId
+    }
+
     public static func maxRowId(transaction: SDSAnyReadTransaction) -> Int {
         do {
             return try Int.fetchOne(
@@ -1381,6 +1453,15 @@ public class InteractionFinder: NSObject {
             )
             owsFail("Failed to find max row id")
         }
+    }
+}
+
+private extension TSInteractionCursor {
+    func enumerate(block: (TSInteraction) -> Bool) throws {
+        while
+            let interaction = try next(),
+            block(interaction)
+        {}
     }
 }
 

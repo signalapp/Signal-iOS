@@ -140,6 +140,11 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 - (void)updateWithUpdatedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction;
 - (void)updateWithRemovedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction;
 
+- (void)updateOnInteractionsRemovedWithNeedsToUpdateLastInteractionRowId:(BOOL)needsToUpdateLastInteractionRowId
+                                          needsToUpdateLastVisibleSortId:(BOOL)needsToUpdateLastVisibleSortId
+                                                             transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(updateOnInteractionsRemoved(needsToUpdateLastInteractionRowId:needsToUpdateLastVisibleSortId:transaction:));
+
 #pragma mark Archival
 
 /**

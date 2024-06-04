@@ -8,9 +8,41 @@ import LibSignalClient
 import SignalCoreKit
 
 public protocol ThreadSoftDeleteManager {
-    func softDelete(thread: TSThread, tx: any DBWriteTransaction)
+    func softDelete(
+        thread: TSThread,
+        associatedCallDeleteBehavior: InteractionDelete.SideEffects.AssociatedCallDeleteBehavior,
+        tx: any DBWriteTransaction
+    )
 
-    func removeAllInteractions(thread: TSThread, tx: any DBWriteTransaction)
+    func removeAllInteractions(
+        thread: TSThread,
+        associatedCallDeleteBehavior: InteractionDelete.SideEffects.AssociatedCallDeleteBehavior,
+        tx: any DBWriteTransaction
+    )
+}
+
+public extension ThreadSoftDeleteManager {
+    func softDelete(
+        thread: TSThread,
+        tx: any DBWriteTransaction
+    ) {
+        softDelete(
+            thread: thread,
+            associatedCallDeleteBehavior: .localDeleteAndSendSyncMessage,
+            tx: tx
+        )
+    }
+
+    func removeAllInteractions(
+        thread: TSThread,
+        tx: any DBWriteTransaction
+    ) {
+        removeAllInteractions(
+            thread: thread,
+            associatedCallDeleteBehavior: .localDeleteAndSendSyncMessage,
+            tx: tx
+        )
+    }
 }
 
 final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
@@ -43,10 +75,18 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
         self.tsAccountManager = tsAccountManager
     }
 
-    func softDelete(thread: TSThread, tx: any DBWriteTransaction) {
+    func softDelete(
+        thread: TSThread,
+        associatedCallDeleteBehavior: InteractionDelete.SideEffects.AssociatedCallDeleteBehavior,
+        tx: any DBWriteTransaction
+    ) {
         logger.info("Deleting thread with ID \(thread.uniqueId).")
 
-        removeAllInteractions(thread: thread, tx: tx)
+        removeAllInteractions(
+            thread: thread,
+            associatedCallDeleteBehavior: associatedCallDeleteBehavior,
+            tx: tx
+        )
 
         thread.anyUpdate(transaction: SDSDB.shimOnlyBridge(tx)) { thread in
             thread.messageDraft = nil
@@ -71,6 +111,7 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
 
     func removeAllInteractions(
         thread: TSThread,
+        associatedCallDeleteBehavior: InteractionDelete.SideEffects.AssociatedCallDeleteBehavior,
         tx: any DBWriteTransaction
     ) {
         let sdsTx = SDSDB.shimOnlyBridge(tx)
@@ -90,7 +131,10 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
                     for interaction in interactionBatch {
                         interactionDeleteManager.delete(
                             interaction,
-                            sideEffects: .custom(updateThreadOnEachDeletedInteraction: false),
+                            sideEffects: .custom(
+                                associatedCallDelete: associatedCallDeleteBehavior,
+                                updateThreadOnInteractionDelete: .doNotUpdate
+                            ),
                             tx: tx
                         )
                     }
@@ -161,34 +205,11 @@ final class _ThreadSoftDeleteManagerImpl_IntentsManager_Wrapper: _ThreadSoftDele
 
 // MARK: -
 
-private extension InteractionFinder {
-    func fetchAllInteractions(
-        rowIdFilter: RowIdFilter,
-        limit: Int,
-        tx: SDSAnyReadTransaction
-    ) throws -> [TSInteraction] {
-        var interactions: [TSInteraction] = []
-
-        try enumerateAllInteractions(
-            rowIdFilter: rowIdFilter,
-            limit: limit,
-            tx: tx
-        ) { interaction -> Bool in
-            interactions.append(interaction)
-            return true
-        }
-
-        return interactions
-    }
-}
-
-// MARK: -
-
 #if TESTABLE_BUILD
 
 open class MockThreadSoftDeleteManager: ThreadSoftDeleteManager {
-    open func softDelete(thread: TSThread, tx: any DBWriteTransaction) {}
-    open func removeAllInteractions(thread: TSThread, tx: any DBWriteTransaction) {}
+    open func softDelete(thread: TSThread, associatedCallDeleteBehavior: InteractionDelete.SideEffects.AssociatedCallDeleteBehavior, tx: any DBWriteTransaction) {}
+    open func removeAllInteractions(thread: TSThread, associatedCallDeleteBehavior: InteractionDelete.SideEffects.AssociatedCallDeleteBehavior, tx: any DBWriteTransaction) {}
 }
 
 #endif

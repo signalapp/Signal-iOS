@@ -140,7 +140,7 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
         return await JobAttemptResult.executeBlockWithDefaultErrorHandler(
             jobRecord: jobRecord,
             retryLimit: Constants.maxRetries,
-            db: DependenciesBridge.shared.db,
+            db: db,
             block: {
                 try await _runJobAttempt(jobRecord)
             }

@@ -22,6 +22,8 @@ class MessageLoaderTest: XCTestCase {
                 return Array(interactions.lazy.suffix(limit).map { $0.uniqueId })
             case .after(let rowId):
                 return Array(interactions.lazy.filter { $0.sqliteRowId! > rowId }.prefix(limit).map { $0.uniqueId })
+            case .atOrBefore(let rowId):
+                return Array(interactions.lazy.filter { $0.sqliteRowId! <= rowId }.suffix(limit).map { $0.uniqueId })
             case .before(let rowId):
                 return Array(interactions.lazy.filter { $0.sqliteRowId! < rowId }.suffix(limit).map { $0.uniqueId })
             case .range(let rowIds):

@@ -61,11 +61,14 @@ public enum SealedSenderContentHint: Int, Codable, CustomStringConvertible {
 
 public final class MessageReceiver: Dependencies {
     private let callMessageHandler: any CallMessageHandler
+    private let deleteForMeSyncMessageReceiver: any DeleteForMeSyncMessageReceiver
 
-    public init(
-        callMessageHandler: any CallMessageHandler
+    init(
+        callMessageHandler: any CallMessageHandler,
+        deleteForMeSyncMessageReceiver: any DeleteForMeSyncMessageReceiver
     ) {
         self.callMessageHandler = callMessageHandler
+        self.deleteForMeSyncMessageReceiver = deleteForMeSyncMessageReceiver
     }
 
     private static let pendingTasks = PendingTasks(label: "messageReceiver")
@@ -627,7 +630,10 @@ public final class MessageReceiver: Dependencies {
                     tx: tx.asV2Write
                 )
         } else if let deleteForMe = syncMessage.deleteForMe {
-            // [DeleteForMe] TODO: Receive support
+            deleteForMeSyncMessageReceiver.handleDeleteForMeProto(
+                deleteForMeProto: deleteForMe,
+                tx: tx.asV2Write
+            )
         } else {
             Logger.warn("Ignoring unsupported sync message.")
         }
@@ -1980,6 +1986,9 @@ extension SSKProtoSyncMessage {
         }
         if callLogEvent != nil {
             parts.append("callLogEvent")
+        }
+        if deleteForMe != nil {
+            parts.append("deleteForMe")
         }
         if hasUnknownFields {
             parts.append("unknown fields")

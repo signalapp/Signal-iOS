@@ -1677,6 +1677,8 @@
 		D9247EA12BFBED2A00DFEF6F /* account-data.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9247E9B2BFBED2A00DFEF6F /* account-data.binproto */; };
 		D9247EA22BFBED2A00DFEF6F /* unregistered-contact.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9247E9C2BFBED2A00DFEF6F /* unregistered-contact.binproto */; };
 		D9247EA32BFBED2A00DFEF6F /* registered-blocked-contact.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D9247E9D2BFBED2A00DFEF6F /* registered-blocked-contact.binproto */; };
+		D9247EA62BFBFFCA00DFEF6F /* DeleteForMeIncomingSyncMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9247EA42BFBFFCA00DFEF6F /* DeleteForMeIncomingSyncMessageManager.swift */; };
+		D9247EA82BFD28E800DFEF6F /* DeleteForMeSyncMessageReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9247EA72BFD28E800DFEF6F /* DeleteForMeSyncMessageReceiver.swift */; };
 		D9247EAA2BFD424800DFEF6F /* InteractionDeleteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9247EA92BFD424800DFEF6F /* InteractionDeleteManager.swift */; };
 		D925937A28B0497900D5D437 /* LocalUserLeaveGroupJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925937928B0497900D5D437 /* LocalUserLeaveGroupJob.swift */; };
 		D925C7BB2B7BEC0F00AC73B0 /* OutgoingCallLogEventSyncMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925C7BA2B7BEC0F00AC73B0 /* OutgoingCallLogEventSyncMessageTest.swift */; };
@@ -1691,7 +1693,6 @@
 		D93108042B30F7E3006A034E /* CallRecordQuerier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93108032B30F7E3006A034E /* CallRecordQuerier.swift */; };
 		D93108062B30F920006A034E /* CallRecordQuerierTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93108052B30F920006A034E /* CallRecordQuerierTest.swift */; };
 		D93108092B337A23006A034E /* CallRecordLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93108082B337A23006A034E /* CallRecordLoader.swift */; };
-		D931080B2B338CE5006A034E /* InterleavingCompositeCursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D931080A2B338CE5006A034E /* InterleavingCompositeCursor.swift */; };
 		D931080E2B338D15006A034E /* InterleavingCompositeCursorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D931080D2B338D15006A034E /* InterleavingCompositeCursorTest.swift */; };
 		D93108152B34B6BE006A034E /* CallRecordLoaderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93108132B34B69E006A034E /* CallRecordLoaderTest.swift */; };
 		D9317FD32A4BAC8300075A92 /* BitmapsImagePixelMergingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9317FD12A4BA7B000075A92 /* BitmapsImagePixelMergingTest.swift */; };
@@ -1728,6 +1729,9 @@
 		D95C39EA296E108100A9DA23 /* UsernameSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95C39E9296E108100A9DA23 /* UsernameSelectionViewController.swift */; };
 		D95C39EC296E1BC600A9DA23 /* PrefixedLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95C39EB296E1BC600A9DA23 /* PrefixedLogger.swift */; };
 		D95DA7ED28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95DA7EC28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift */; };
+		D962346B2C0E937500DAF6CB /* InterleavingCompositeCursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D931080A2B338CE5006A034E /* InterleavingCompositeCursor.swift */; };
+		D962346D2C0E957800DAF6CB /* DeleteForMeMostRecentAddressableMessageCursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D962346C2C0E957800DAF6CB /* DeleteForMeMostRecentAddressableMessageCursor.swift */; };
+		D96234702C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D962346F2C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift */; };
 		D96A94A72954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96A94A62954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift */; };
 		D96BE42E292EF04200E4FE1A /* PaypalButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96BE42D292EF04200E4FE1A /* PaypalButton.swift */; };
 		D9708B5C29E4CCCB004306FA /* OWSDeviceManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9708B5B29E4CCCB004306FA /* OWSDeviceManagerTest.swift */; };
@@ -1872,6 +1876,9 @@
 		D9F6554229D67708002A330A /* SDSCodableModel+SDSSerialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554129D67708002A330A /* SDSCodableModel+SDSSerialization.swift */; };
 		D9F6554429D798CC002A330A /* FactoryInitialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554329D798CC002A330A /* FactoryInitialization.swift */; };
 		D9F6554829DA4277002A330A /* FactoryInitializationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554629DA4233002A330A /* FactoryInitializationTests.swift */; };
+		D9F9A6392BFFC84300EF13EC /* BulkDeleteInteractionJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A6382BFFC84300EF13EC /* BulkDeleteInteractionJobRecord.swift */; };
+		D9F9A63B2BFFFCC400EF13EC /* BulkDeleteInteractionJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A63A2BFFFCC400EF13EC /* BulkDeleteInteractionJobQueue.swift */; };
+		D9F9A63D2C00FDA100EF13EC /* DeleteForMeAddressableMessageFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A63C2C00FDA100EF13EC /* DeleteForMeAddressableMessageFinder.swift */; };
 		D9F9A63F2C013EF100EF13EC /* ThreadSoftDeleteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A63E2C013EF100EF13EC /* ThreadSoftDeleteManager.swift */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		E14592632B59A86E00536BF2 /* GroupCallMemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E14592622B59A86E00536BF2 /* GroupCallMemberView.swift */; };
@@ -4584,6 +4591,8 @@
 		D9247E9B2BFBED2A00DFEF6F /* account-data.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = "account-data.binproto"; path = "Signal-Message-Backup-Tests/test-cases/account-data.binproto"; sourceTree = "<group>"; };
 		D9247E9C2BFBED2A00DFEF6F /* unregistered-contact.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = "unregistered-contact.binproto"; path = "Signal-Message-Backup-Tests/test-cases/unregistered-contact.binproto"; sourceTree = "<group>"; };
 		D9247E9D2BFBED2A00DFEF6F /* registered-blocked-contact.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = "registered-blocked-contact.binproto"; path = "Signal-Message-Backup-Tests/test-cases/registered-blocked-contact.binproto"; sourceTree = "<group>"; };
+		D9247EA42BFBFFCA00DFEF6F /* DeleteForMeIncomingSyncMessageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteForMeIncomingSyncMessageManager.swift; sourceTree = "<group>"; };
+		D9247EA72BFD28E800DFEF6F /* DeleteForMeSyncMessageReceiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeSyncMessageReceiver.swift; sourceTree = "<group>"; };
 		D9247EA92BFD424800DFEF6F /* InteractionDeleteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionDeleteManager.swift; sourceTree = "<group>"; };
 		D925937928B0497900D5D437 /* LocalUserLeaveGroupJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalUserLeaveGroupJob.swift; sourceTree = "<group>"; };
 		D925C7BA2B7BEC0F00AC73B0 /* OutgoingCallLogEventSyncMessageTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutgoingCallLogEventSyncMessageTest.swift; sourceTree = "<group>"; };
@@ -4640,6 +4649,8 @@
 		D95C39E9296E108100A9DA23 /* UsernameSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameSelectionViewController.swift; sourceTree = "<group>"; };
 		D95C39EB296E1BC600A9DA23 /* PrefixedLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrefixedLogger.swift; sourceTree = "<group>"; };
 		D95DA7EC28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+SystemMessageItems.swift"; sourceTree = "<group>"; };
+		D962346C2C0E957800DAF6CB /* DeleteForMeMostRecentAddressableMessageCursor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeMostRecentAddressableMessageCursor.swift; sourceTree = "<group>"; };
+		D962346F2C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeMostRecentAddressableMessageCursorTest.swift; sourceTree = "<group>"; };
 		D9668B34291B088200665298 /* SignalMessagingJobQueues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalMessagingJobQueues.swift; sourceTree = "<group>"; };
 		D96A94A62954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonateViewController+MonthlyPaypalDonation.swift"; sourceTree = "<group>"; };
 		D96A94A82955270D004EA434 /* Stripe+Subscriptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Stripe+Subscriptions.swift"; sourceTree = "<group>"; };
@@ -4801,6 +4812,9 @@
 		D9F6554129D67708002A330A /* SDSCodableModel+SDSSerialization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDSCodableModel+SDSSerialization.swift"; sourceTree = "<group>"; };
 		D9F6554329D798CC002A330A /* FactoryInitialization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactoryInitialization.swift; sourceTree = "<group>"; };
 		D9F6554629DA4233002A330A /* FactoryInitializationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactoryInitializationTests.swift; sourceTree = "<group>"; };
+		D9F9A6382BFFC84300EF13EC /* BulkDeleteInteractionJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BulkDeleteInteractionJobRecord.swift; sourceTree = "<group>"; };
+		D9F9A63A2BFFFCC400EF13EC /* BulkDeleteInteractionJobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BulkDeleteInteractionJobQueue.swift; sourceTree = "<group>"; };
+		D9F9A63C2C00FDA100EF13EC /* DeleteForMeAddressableMessageFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeAddressableMessageFinder.swift; sourceTree = "<group>"; };
 		D9F9A63E2C013EF100EF13EC /* ThreadSoftDeleteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSoftDeleteManager.swift; sourceTree = "<group>"; };
 		E14592622B59A86E00536BF2 /* GroupCallMemberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallMemberView.swift; sourceTree = "<group>"; };
 		E14EDF6D2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientContextMenuHelper.swift; sourceTree = "<group>"; };
@@ -8899,7 +8913,6 @@
 				D9E7C8782B9B9072005BD3B9 /* IdentifierIndexedArray.swift */,
 				88D23D0D23CEBF6000B0E74B /* IndividualCall.swift */,
 				88D23D1423CEC0C700B0E74B /* IndividualCallService.swift */,
-				D931080A2B338CE5006A034E /* InterleavingCompositeCursor.swift */,
 				8841584B252F9F1C0078903D /* SignalCall.swift */,
 				88D23D1F23CEC0C700B0E74B /* TurnServerInfo.swift */,
 				88D23D1E23CEC0C700B0E74B /* WebRTCCallMessageHandler.swift */,
@@ -9395,6 +9408,17 @@
 			name = TestCases;
 			sourceTree = "<group>";
 		};
+		D9247EA52BFBFFCA00DFEF6F /* DeleteForMe */ = {
+			isa = PBXGroup;
+			children = (
+				D9F9A63C2C00FDA100EF13EC /* DeleteForMeAddressableMessageFinder.swift */,
+				D9247EA42BFBFFCA00DFEF6F /* DeleteForMeIncomingSyncMessageManager.swift */,
+				D962346C2C0E957800DAF6CB /* DeleteForMeMostRecentAddressableMessageCursor.swift */,
+				D9247EA72BFD28E800DFEF6F /* DeleteForMeSyncMessageReceiver.swift */,
+			);
+			path = DeleteForMe;
+			sourceTree = "<group>";
+		};
 		D925F55C298C6A6000158EE4 /* Usernames */ = {
 			isa = PBXGroup;
 			children = (
@@ -9454,7 +9478,6 @@
 			children = (
 				D93108132B34B69E006A034E /* CallRecordLoaderTest.swift */,
 				D9F02BE62B96556C00E872C2 /* CallsListViewController+ViewModelLoaderTest.swift */,
-				D931080D2B338D15006A034E /* InterleavingCompositeCursorTest.swift */,
 			);
 			path = CallsTab;
 			sourceTree = "<group>";
@@ -9484,6 +9507,14 @@
 			path = Links;
 			sourceTree = "<group>";
 		};
+		D962346E2C0E99CE00DAF6CB /* DeleteForMe */ = {
+			isa = PBXGroup;
+			children = (
+				D962346F2C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift */,
+			);
+			path = DeleteForMe;
+			sourceTree = "<group>";
+		};
 		D96343082A4B62CC0086C052 /* Bitmaps */ = {
 			isa = PBXGroup;
 			children = (
@@ -9500,6 +9531,7 @@
 			isa = PBXGroup;
 			children = (
 				F9C5CA85289453B100548EEE /* JobRecords */,
+				D9F9A63A2BFFFCC400EF13EC /* BulkDeleteInteractionJobQueue.swift */,
 				D9DB37F82B72A770007B16C8 /* CallRecordDeleteAllJobQueue.swift */,
 				4C9D347E23689E06006A4307 /* IncomingContactSyncJobQueue.swift */,
 				F9C5CB19289453B200548EEE /* JobQueue.swift */,
@@ -9951,6 +9983,7 @@
 				D9106E002AC20061007ABFE6 /* EmptyForCodableTest.swift */,
 				502B1B54297B28AF00FDB3AE /* ErrorTest.swift */,
 				76DA4D7F2A2AF9B3004F98FD /* FunctionalUtilTest.m */,
+				D931080D2B338D15006A034E /* InterleavingCompositeCursorTest.swift */,
 				50D5E2422980B53000899660 /* LinkValidatorTest.swift */,
 				F94261F2289B1B5400460798 /* LRUCacheTest.swift */,
 				F94261FC289B1B5400460798 /* MathOWSTests.swift */,
@@ -10028,6 +10061,7 @@
 			children = (
 				66FC636D29DF793000F00DAC /* BodyRanges */,
 				6660725F2BAB58760084B3D2 /* ContactShare */,
+				D962346E2C0E99CE00DAF6CB /* DeleteForMe */,
 				C182C4BC29E45D64007F7A7C /* Edit */,
 				F942621F289B1B5500460798 /* Interactions */,
 				669FAE192B7AC8E5009EE2FE /* LinkPreview */,
@@ -10405,6 +10439,7 @@
 		F9C5C8B7289453B100548EEE /* DeviceSyncing */ = {
 			isa = PBXGroup;
 			children = (
+				D9247EA52BFBFFCA00DFEF6F /* DeleteForMe */,
 				F9C5C8D1289453B100548EEE /* OutgoingPaymentSyncMessage.h */,
 				F9C5C8C4289453B100548EEE /* OutgoingPaymentSyncMessage.m */,
 				F9C5C8BF289453B100548EEE /* OutgoingPaymentSyncMessage.swift */,
@@ -10984,6 +11019,7 @@
 		F9C5CA85289453B100548EEE /* JobRecords */ = {
 			isa = PBXGroup;
 			children = (
+				D9F9A6382BFFC84300EF13EC /* BulkDeleteInteractionJobRecord.swift */,
 				D9DB37FA2B72A85C007B16C8 /* CallRecordDeleteAllJobRecord.swift */,
 				D9AE0ACE29186D7F0063488B /* IncomingContactSyncJobRecord.swift */,
 				D9AE0AD0291870220063488B /* IncomingGroupSyncJobRecord.swift */,
@@ -11198,6 +11234,7 @@
 				4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */,
 				F9C5CB0D289453B200548EEE /* ImageQuality.swift */,
 				F9C5CB3D289453B200548EEE /* Int+SSK.swift */,
+				D931080A2B338CE5006A034E /* InterleavingCompositeCursor.swift */,
 				50D5E2402980AD6F00899660 /* LinkValidator.swift */,
 				F9C5CB61289453B200548EEE /* LocalDevice.swift */,
 				F9C5CB15289453B200548EEE /* Locale+SSK.swift */,
@@ -13016,7 +13053,6 @@
 				88D23D2023CEC0C700B0E74B /* IndividualCallService.swift in Sources */,
 				34B3F8751E8DF1700035BE1A /* IndividualCallViewController.swift in Sources */,
 				88BCCC8123837B7D00CE5FE6 /* InteractionReactionState.swift in Sources */,
-				D931080B2B338CE5006A034E /* InterleavingCompositeCursor.swift in Sources */,
 				8862A55925F090C5005D65DB /* InternalSettingsViewController.swift in Sources */,
 				88A505FA23DBA1360005C012 /* IntroducingPINs.swift in Sources */,
 				32AC5CE7255B51E900829BD8 /* JoinGroupCallPill.swift in Sources */,
@@ -13478,6 +13514,8 @@
 				F9C5CC74289453B300548EEE /* BlurHash.swift in Sources */,
 				668FE09B28B923A4008B9071 /* Bool+SSK.swift in Sources */,
 				66144B362BF7FBC900E2C9CD /* BridgingWallpaperImageStore.swift in Sources */,
+				D9F9A63B2BFFFCC400EF13EC /* BulkDeleteInteractionJobQueue.swift in Sources */,
+				D9F9A6392BFFC84300EF13EC /* BulkDeleteInteractionJobRecord.swift in Sources */,
 				E7D7C93F28B580AC003F043B /* Bundle+OWS.swift in Sources */,
 				7254653F2BA01FCC00EABFD2 /* CachedBadge.swift in Sources */,
 				50D3136F2BFFE9370023EDCC /* CallEventInserter.swift in Sources */,
@@ -13570,6 +13608,10 @@
 				D91AC9322B61AD9A00814975 /* DeletedCallRecord.swift in Sources */,
 				D9CA8AB02B698DFF00787167 /* DeletedCallRecordCleanupManager.swift in Sources */,
 				D91AC9342B61C1F000814975 /* DeletedCallRecordStore.swift in Sources */,
+				D9F9A63D2C00FDA100EF13EC /* DeleteForMeAddressableMessageFinder.swift in Sources */,
+				D9247EA62BFBFFCA00DFEF6F /* DeleteForMeIncomingSyncMessageManager.swift in Sources */,
+				D962346D2C0E957800DAF6CB /* DeleteForMeMostRecentAddressableMessageCursor.swift in Sources */,
+				D9247EA82BFD28E800DFEF6F /* DeleteForMeSyncMessageReceiver.swift in Sources */,
 				F9C5CC34289453B300548EEE /* DeliveryReceiptContext.swift in Sources */,
 				F9C5CDFD289453B400548EEE /* Dependencies+SSK.swift in Sources */,
 				6698FC1A2980AB45004EFC30 /* DependenciesBridge.swift in Sources */,
@@ -13707,6 +13749,7 @@
 				F9C5CD18289453B300548EEE /* InteractionFinder.swift in Sources */,
 				D979CC2B2AD3933B006AAC49 /* InteractionStore+CallRecord.swift in Sources */,
 				50468F2929EE130A00948E02 /* InteractionStore.swift in Sources */,
+				D962346B2C0E937500DAF6CB /* InterleavingCompositeCursor.swift in Sources */,
 				F9C5CDEB289453B400548EEE /* JobQueue.swift in Sources */,
 				5008FEBC2B1811A0004E73FD /* JobQueueRunner.swift in Sources */,
 				D9AE0ADD2918B2960063488B /* JobRecord+Columns.swift in Sources */,
@@ -14563,6 +14606,7 @@
 				F94C912428FDECC40065DF75 /* DecimalTest.swift in Sources */,
 				D9CA8AB32B6ACC0600787167 /* DeletedCallRecordCleanupManagerTest.swift in Sources */,
 				D91AC9362B61C79600814975 /* DeletedCallRecordStoreTest.swift in Sources */,
+				D96234702C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift in Sources */,
 				F942629B289B1B5600460798 /* DeliveryReceiptContextTests.swift in Sources */,
 				F9426263289B1B5500460798 /* DeviceNamesTest.swift in Sources */,
 				F9E39CE929493D4C001D7721 /* DisappearingMessageFinderTest.swift in Sources */,

@@ -39,6 +39,7 @@ extension JobRecord: NeedsFactoryInitializationFromRecordType {
         // MARK: Created after migration to SDSCodableModel
 
         case callRecordDeleteAll = 100
+        case bulkDeleteInteractionJobRecord = 101
     }
 
     static var recordTypeCodingKey: JobRecordColumns {
@@ -61,6 +62,7 @@ extension JobRecord: NeedsFactoryInitializationFromRecordType {
         case .sendGiftBadge: return SendGiftBadgeJobRecord.self
         case .sessionReset: return SessionResetJobRecord.self
         case .callRecordDeleteAll: return CallRecordDeleteAllJobRecord.self
+        case .bulkDeleteInteractionJobRecord: return BulkDeleteInteractionJobRecord.self
         }
     }
 }
@@ -90,6 +92,8 @@ extension JobRecord.JobRecordType {
             return "SessionReset"
         case .callRecordDeleteAll:
             return "CallRecordDeleteAll"
+        case .bulkDeleteInteractionJobRecord:
+            return "BulkDeleteInteraction"
         }
     }
 }

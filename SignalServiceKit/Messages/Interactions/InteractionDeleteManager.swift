@@ -15,15 +15,20 @@ public enum InteractionDelete {
             case localDeleteOnly
         }
 
+        public enum UpdateThreadOnInteractionDeleteBehavior {
+            case updateOnEachDeletedInteraction
+            case doNotUpdate
+        }
+
         let associatedCallDelete: AssociatedCallDeleteBehavior
-        let updateThreadOnEachDeletedInteraction: Bool
+        let updateThreadOnInteractionDelete: UpdateThreadOnInteractionDeleteBehavior
 
         private init(
             associatedCallDelete: AssociatedCallDeleteBehavior,
-            updateThreadOnEachDeletedInteraction: Bool
+            updateThreadOnInteractionDelete: UpdateThreadOnInteractionDeleteBehavior
         ) {
             self.associatedCallDelete = associatedCallDelete
-            self.updateThreadOnEachDeletedInteraction = updateThreadOnEachDeletedInteraction
+            self.updateThreadOnInteractionDelete = updateThreadOnInteractionDelete
         }
 
         public static func `default`() -> SideEffects {
@@ -32,11 +37,11 @@ public enum InteractionDelete {
 
         public static func custom(
             associatedCallDelete: AssociatedCallDeleteBehavior = .localDeleteAndSendSyncMessage,
-            updateThreadOnEachDeletedInteraction: Bool = true
+            updateThreadOnInteractionDelete: UpdateThreadOnInteractionDeleteBehavior = .updateOnEachDeletedInteraction
         ) -> SideEffects {
             return SideEffects(
                 associatedCallDelete: associatedCallDelete,
-                updateThreadOnEachDeletedInteraction: updateThreadOnEachDeletedInteraction
+                updateThreadOnInteractionDelete: updateThreadOnInteractionDelete
             )
         }
     }
@@ -239,11 +244,13 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
         sideEffects: SideEffects,
         tx: SDSAnyWriteTransaction
     ) {
-        if
-            sideEffects.updateThreadOnEachDeletedInteraction,
-            let associatedThread = interaction.thread(tx: tx)
-        {
-            associatedThread.update(withRemovedMessage: interaction, transaction: tx)
+        switch sideEffects.updateThreadOnInteractionDelete {
+        case .updateOnEachDeletedInteraction:
+            if let associatedThread = interaction.thread(tx: tx) {
+                associatedThread.update(withRemovedMessage: interaction, transaction: tx)
+            }
+        case .doNotUpdate:
+            break
         }
 
         messageSendLog.deleteAllPayloadsForInteraction(interaction, tx: tx)

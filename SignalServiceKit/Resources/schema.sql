@@ -290,6 +290,9 @@ CREATE
             ,"ICSJR_encryptionKey" BLOB
             ,"ICSJR_digest" BLOB
             ,"ICSJR_plaintextLength" INTEGER
+            ,"BDIJR_anchorMessageRowId" INTEGER
+            ,"BDIJR_fullThreadDeletionAnchorMessageRowId" INTEGER
+            ,"BDIJR_threadUniqueId" TEXT
         )
 ;
 

@@ -26,6 +26,7 @@ class JobRecordTest: XCTestCase {
         case .sendGiftBadge: return SendGiftBadgeJobRecord.self
         case .sessionReset: return SessionResetJobRecord.self
         case .callRecordDeleteAll: return CallRecordDeleteAllJobRecord.self
+        case .bulkDeleteInteractionJobRecord: return BulkDeleteInteractionJobRecord.self
         }
     }
 
@@ -657,6 +658,29 @@ extension CallRecordDeleteAllJobRecord: ValidatableModel {
         guard
             sendDeleteAllSyncMessage == against.sendDeleteAllSyncMessage,
             deleteAllBeforeTimestamp == against.deleteAllBeforeTimestamp
+        else {
+            throw ValidatableModelError.failedToValidate
+        }
+    }
+}
+
+extension BulkDeleteInteractionJobRecord: ValidatableModel {
+    static let constants: [(BulkDeleteInteractionJobRecord, base64JsonData: Data)] = [
+        (
+            BulkDeleteInteractionJobRecord(
+                anchorMessageRowId: 12,
+                fullThreadDeletionAnchorMessageRowId: 42,
+                threadUniqueId: "8279D1D7-EA6F-4D4E-A652-ADBF03DDDF14"
+            ),
+            Data(base64Encoded: "eyJCRElKUl9hbmNob3JNZXNzYWdlUm93SWQiOjEyLCJCRElKUl90aHJlYWRVbmlxdWVJZCI6IjgyNzlEMUQ3LUVBNkYtNEQ0RS1BNjUyLUFEQkYwM0REREYxNCIsIkJESUpSX2Z1bGxUaHJlYWREZWxldGlvbkFuY2hvck1lc3NhZ2VSb3dJZCI6NDIsInN1cGVyIjp7ImZhaWx1cmVDb3VudCI6MCwic3RhdHVzIjoxLCJsYWJlbCI6IkJ1bGtEZWxldGVJbnRlcmFjdGlvbiIsInJlY29yZFR5cGUiOjEwMSwidW5pcXVlSWQiOiJFMDFDRDZGMC1BM0IyLTRBQzYtODAxNC05REFGQkMzNkVCNjMifX0=")!
+        )
+    ]
+
+    func validate(against: BulkDeleteInteractionJobRecord) throws {
+        guard
+            anchorMessageRowId == against.anchorMessageRowId,
+            fullThreadDeletionAnchorMessageRowId == against.fullThreadDeletionAnchorMessageRowId,
+            threadUniqueId == against.threadUniqueId
         else {
             throw ValidatableModelError.failedToValidate
         }

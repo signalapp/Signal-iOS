@@ -425,6 +425,29 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     BOOL needsToUpdateLastVisibleSortId
         = (lastVisibleSortId != nil && lastVisibleSortId.unsignedLongLongValue == messageSortId);
 
+    [self updateOnInteractionsRemovedWithNeedsToUpdateLastInteractionRowId:needsToUpdateLastInteractionRowId
+                                            needsToUpdateLastVisibleSortId:needsToUpdateLastVisibleSortId
+                                                         lastVisibleSortId:lastVisibleSortId
+                                                               transaction:transaction];
+}
+
+- (void)updateOnInteractionsRemovedWithNeedsToUpdateLastInteractionRowId:(BOOL)needsToUpdateLastInteractionRowId
+                                          needsToUpdateLastVisibleSortId:(BOOL)needsToUpdateLastVisibleSortId
+                                                             transaction:(SDSAnyWriteTransaction *)transaction
+{
+    NSNumber *_Nullable lastVisibleSortId = [self lastVisibleSortIdWithTransaction:transaction];
+
+    [self updateOnInteractionsRemovedWithNeedsToUpdateLastInteractionRowId:needsToUpdateLastInteractionRowId
+                                            needsToUpdateLastVisibleSortId:needsToUpdateLastVisibleSortId
+                                                         lastVisibleSortId:lastVisibleSortId
+                                                               transaction:transaction];
+}
+
+- (void)updateOnInteractionsRemovedWithNeedsToUpdateLastInteractionRowId:(BOOL)needsToUpdateLastInteractionRowId
+                                          needsToUpdateLastVisibleSortId:(BOOL)needsToUpdateLastVisibleSortId
+                                                       lastVisibleSortId:(nullable NSNumber *)lastVisibleSortId
+                                                             transaction:(SDSAnyWriteTransaction *)transaction
+{
     if (needsToUpdateLastInteractionRowId || needsToUpdateLastVisibleSortId) {
         [self anyUpdateWithTransaction:transaction
                                  block:^(TSThread *thread) {

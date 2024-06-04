@@ -916,6 +916,23 @@ public class AppSetup {
 
         let orphanedAttachmentCleaner = OrphanedAttachmentCleanerImpl(db: databaseStorage)
 
+        let bulkDeleteInteractionJobQueue = BulkDeleteInteractionJobQueue(
+            db: db,
+            interactionDeleteManager: interactionDeleteManager,
+            recipientDatabaseTable: recipientDatabaseTable,
+            threadSoftDeleteManager: threadSoftDeleteManager,
+            threadStore: threadStore,
+            tsAccountManager: tsAccountManager
+        )
+        let deleteForMeIncomingSyncMessageManager = DeleteForMeIncomingSyncMessageManagerImpl(
+            bulkDeleteInteractionJobQueue: bulkDeleteInteractionJobQueue,
+            interactionDeleteManager: interactionDeleteManager,
+            recipientDatabaseTable: recipientDatabaseTable,
+            threadSoftDeleteManager: threadSoftDeleteManager,
+            threadStore: threadStore,
+            tsAccountManager: tsAccountManager
+        )
+
         let dependenciesBridge = DependenciesBridge(
             accountAttributesUpdater: accountAttributesUpdater,
             appExpiry: appExpiry,
@@ -940,6 +957,7 @@ public class AppSetup {
             db: db,
             deletedCallRecordCleanupManager: deletedCallRecordCleanupManager,
             deletedCallRecordStore: deletedCallRecordStore,
+            deleteForMeIncomingSyncMessageManager: deleteForMeIncomingSyncMessageManager,
             deviceManager: deviceManager,
             deviceStore: deviceStore,
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
@@ -1024,7 +1042,15 @@ public class AppSetup {
         )
 
         let pendingReceiptRecorder = testDependencies.pendingReceiptRecorder ?? MessageRequestPendingReceipts()
-        let messageReceiver = MessageReceiver(callMessageHandler: callMessageHandler)
+        let messageReceiver = MessageReceiver(
+            callMessageHandler: callMessageHandler,
+            deleteForMeSyncMessageReceiver: DeleteForMeSyncMessageReceiverImpl(
+                deleteForMeIncomingSyncMessageManager: deleteForMeIncomingSyncMessageManager,
+                recipientDatabaseTable: recipientDatabaseTable,
+                threadStore: threadStore,
+                tsAccountManager: tsAccountManager
+            )
+        )
         let remoteConfigManager = testDependencies.remoteConfigManager ?? RemoteConfigManagerImpl(
             appExpiry: appExpiry,
             db: db,
@@ -1137,6 +1163,7 @@ public class AppSetup {
             messageSenderJobQueue: messageSenderJobQueue,
             localUserLeaveGroupJobQueue: localUserLeaveGroupJobQueue,
             callRecordDeleteAllJobQueue: callRecordDeleteAllJobQueue,
+            bulkdDeleteInteractionJobQueue: bulkDeleteInteractionJobQueue,
             preferences: preferences,
             proximityMonitoringManager: proximityMonitoringManager,
             avatarBuilder: avatarBuilder,

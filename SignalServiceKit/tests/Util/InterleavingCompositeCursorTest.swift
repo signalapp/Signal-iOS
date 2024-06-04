@@ -5,7 +5,7 @@
 
 import XCTest
 
-@testable import Signal
+@testable import SignalServiceKit
 
 final class InterleavingCompositeCursorTest: XCTestCase {
     func testInterleaving() {
@@ -65,14 +65,14 @@ private extension InterleavingCompositeCursor<ArrayCursor<Int>> {
     }
 }
 
-private struct ArrayCursor<Element: Comparable>: InterleavableCursor {
-    private var elements: [Element?]
+private struct ArrayCursor<InterleavableElement: Comparable>: InterleavableCursor {
+    private var elements: [InterleavableElement?]
 
-    init(_ elements: [Element?]) {
+    init(_ elements: [InterleavableElement?]) {
         self.elements = elements
     }
 
-    mutating func nextElement() throws -> Element? {
+    mutating func nextInterleavableElement() throws -> InterleavableElement? {
         guard let first = elements.first else {
             return nil
         }
@@ -83,11 +83,11 @@ private struct ArrayCursor<Element: Comparable>: InterleavableCursor {
 }
 
 private extension InterleavingCompositeCursor {
-    func drain() -> [CursorType.Element] {
-        var elements: [CursorType.Element] = []
+    func drain() -> [CursorType.InterleavableElement] {
+        var elements: [CursorType.InterleavableElement] = []
 
-        while let nextElement = try! next() {
-            elements.append(nextElement)
+        while let nextInterleavableElement = try! next() {
+            elements.append(nextInterleavableElement)
         }
 
         return elements

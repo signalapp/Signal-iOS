@@ -260,6 +260,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addAttachmentMetadataColumnsToIncomingContactSyncJobRecord
         case removeRedundantPhoneNumbers3
         case addV2AttachmentTable
+        case addBulkDeleteInteractionJobRecord
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2805,6 +2806,16 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(.addV2AttachmentTable) { tx in
             return try Self.createV2AttachmentTables(tx)
+        }
+
+        migrator.registerMigration(.addBulkDeleteInteractionJobRecord) { tx in
+            try tx.database.alter(table: "model_SSKJobRecord") { table in
+                table.add(column: "BDIJR_anchorMessageRowId", .integer)
+                table.add(column: "BDIJR_fullThreadDeletionAnchorMessageRowId", .integer)
+                table.add(column: "BDIJR_threadUniqueId", .text)
+            }
+
+            return .success(())
         }
 
         // MARK: - Schema Migration Insertion Point
