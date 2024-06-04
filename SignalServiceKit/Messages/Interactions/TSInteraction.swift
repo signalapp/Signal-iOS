@@ -148,7 +148,7 @@ extension TSInteraction {
         } else {
             Logger.info("Placeholder not eligible for replacement, deleting.")
             DependenciesBridge.shared.interactionDeleteManager
-                .delete(placeholder, tx: transaction.asV2Write)
+                .delete(placeholder, sideEffects: .default(), tx: transaction.asV2Write)
             return false
         }
     }

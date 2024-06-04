@@ -118,6 +118,7 @@ public class DependenciesBridge {
     public let threadAssociatedDataStore: ThreadAssociatedDataStore
     public let threadRemover: ThreadRemover
     public let threadReplyInfoStore: ThreadReplyInfoStore
+    public let threadSoftDeleteManager: ThreadSoftDeleteManager
     public let threadStore: ThreadStore
     public let tsAccountManager: TSAccountManager
     public let tsResourceCloner: SignalTSResourceCloner
@@ -215,6 +216,7 @@ public class DependenciesBridge {
         threadAssociatedDataStore: ThreadAssociatedDataStore,
         threadRemover: ThreadRemover,
         threadReplyInfoStore: ThreadReplyInfoStore,
+        threadSoftDeleteManager: ThreadSoftDeleteManager,
         threadStore: ThreadStore,
         tsAccountManager: TSAccountManager,
         tsResourceCloner: SignalTSResourceCloner,
@@ -311,6 +313,7 @@ public class DependenciesBridge {
         self.threadAssociatedDataStore = threadAssociatedDataStore
         self.threadRemover = threadRemover
         self.threadReplyInfoStore = threadReplyInfoStore
+        self.threadSoftDeleteManager = threadSoftDeleteManager
         self.threadStore = threadStore
         self.tsAccountManager = tsAccountManager
         self.tsResourceCloner = tsResourceCloner

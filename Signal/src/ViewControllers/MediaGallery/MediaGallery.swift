@@ -842,7 +842,7 @@ class MediaGallery: Dependencies {
                         // within this transaction.
                         message.anyReload(transaction: tx)
                         DependenciesBridge.shared.interactionDeleteManager
-                            .delete(message, tx: tx.asV2Write)
+                            .delete(message, sideEffects: .default(), tx: tx.asV2Write)
                     }
                 }
             } catch {

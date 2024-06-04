@@ -991,7 +991,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         // Delete all group replies for the message.
         InteractionFinder.enumerateGroupReplies(for: self, transaction: transaction) { reply, _ in
             DependenciesBridge.shared.interactionDeleteManager
-                .delete(reply, tx: transaction.asV2Write)
+                .delete(reply, sideEffects: .default(), tx: transaction.asV2Write)
         }
 
         // Delete all attachments for the message.

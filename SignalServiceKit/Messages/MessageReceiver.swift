@@ -329,7 +329,7 @@ public final class MessageReceiver: Dependencies {
             owsAssertDebug(placeholders.count <= 1)
             for placeholder in placeholders {
                 DependenciesBridge.shared.interactionDeleteManager
-                    .delete(placeholder, tx: tx.asV2Write)
+                    .delete(placeholder, sideEffects: .default(), tx: tx.asV2Write)
             }
         } catch {
             owsFailDebug("Failed to fetch placeholders: \(error)")
@@ -1119,7 +1119,7 @@ public final class MessageReceiver: Dependencies {
         } catch {
             owsFailDebug("Could not build attachments!")
             DependenciesBridge.shared.interactionDeleteManager
-                .delete(message, tx: tx.asV2Write)
+                .delete(message, sideEffects: .default(), tx: tx.asV2Write)
             return nil
         }
 

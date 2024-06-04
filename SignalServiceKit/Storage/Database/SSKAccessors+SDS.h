@@ -19,13 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 // This header exposes private properties for SDS serialization.
 
-@interface TSThread (SDS)
-
-@property (nonatomic, copy, nullable, readonly) NSString *messageDraft;
-@property (nonatomic, readonly, nullable) MessageBodyRanges *messageDraftBodyRanges;
-
-@end
-
 #pragma mark -
 
 @interface TSMessage (SDS)

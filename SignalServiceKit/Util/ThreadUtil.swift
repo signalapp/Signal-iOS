@@ -250,7 +250,7 @@ extension ThreadUtil {
 
         databaseStorage.write { transaction in
             TSThread.anyEnumerate(transaction: transaction, batched: true) { thread, _ in
-                thread.softDelete(with: transaction)
+                DependenciesBridge.shared.threadSoftDeleteManager.softDelete(thread: thread, tx: transaction.asV2Write)
             }
 
             DependenciesBridge.shared.interactionDeleteManager.deleteAll(tx: transaction.asV2Write)

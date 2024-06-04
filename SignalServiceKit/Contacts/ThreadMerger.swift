@@ -459,11 +459,11 @@ extension ThreadMerger {
             chatColorSettingStore: chatColorSettingStore,
             databaseStorage: ThreadRemover_MockDatabaseStorage(),
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
-            interactionRemover: ThreadRemover_MockInteractionRemover(),
             sdsThreadRemover: ThreadRemover_MockSDSThreadRemover(),
             threadAssociatedDataStore: threadAssociatedDataStore,
             threadReadCache: ThreadRemover_MockThreadReadCache(),
             threadReplyInfoStore: threadReplyInfoStore,
+            threadSoftDeleteManager: MockThreadSoftDeleteManager(),
             threadStore: threadStore,
             wallpaperStore: wallpaperStore
         )

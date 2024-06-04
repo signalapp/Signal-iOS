@@ -81,8 +81,8 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
         /// If the call record in question is present, it should be deleted.
         mockDB.write { tx in
             var didDeleteModels = false
-            mockInteractionDeleteManager.deleteAlongsideCallRecordsMock = { _, behavior in
-                XCTAssertEqual(behavior, .localDeleteOnly)
+            mockInteractionDeleteManager.deleteAlongsideCallRecordsMock = { _, sideEffects in
+                XCTAssertEqual(sideEffects.associatedCallDelete, .localDeleteOnly)
                 didDeleteModels = true
             }
 
@@ -156,8 +156,8 @@ final class IncomingCallEventSyncMessageManagerTest: XCTestCase {
         /// If the call record in question is present, it should be deleted.
         mockDB.write { tx in
             var didDeleteModels = false
-            mockInteractionDeleteManager.deleteAlongsideCallRecordsMock = { _, behavior in
-                XCTAssertEqual(behavior, .localDeleteOnly)
+            mockInteractionDeleteManager.deleteAlongsideCallRecordsMock = { _, sideEffects in
+                XCTAssertEqual(sideEffects.associatedCallDelete, .localDeleteOnly)
                 didDeleteModels = true
             }
 

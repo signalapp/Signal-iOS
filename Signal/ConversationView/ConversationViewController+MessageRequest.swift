@@ -203,7 +203,8 @@ extension ConversationViewController: MessageRequestDelegate {
 
         let completion = {
             ConversationViewController.databaseStorage.write { transaction in
-                self.thread.softDelete(with: transaction)
+                DependenciesBridge.shared.threadSoftDeleteManager
+                    .softDelete(thread: self.thread, tx: transaction.asV2Write)
             }
             self.conversationSplitViewController?.closeSelectedConversation(animated: true)
             NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)

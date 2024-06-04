@@ -262,7 +262,7 @@ public extension TSMessage {
 
             if let message {
                 DependenciesBridge.shared.interactionDeleteManager
-                    .delete(message, tx: transaction.asV2Write)
+                    .delete(message, sideEffects: .default(), tx: transaction.asV2Write)
             }
         }
     }

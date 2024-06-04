@@ -379,7 +379,7 @@ extension ConversationViewController {
         }
 
         DependenciesBridge.shared.interactionDeleteManager
-            .delete(interaction, tx: transaction.asV2Write)
+            .delete(interaction, sideEffects: .default(), tx: transaction.asV2Write)
     }
 
     func didTapForwardSelectedItems() {
@@ -452,7 +452,8 @@ extension ConversationViewController {
             ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { [weak self] modalActivityIndicator in
                 guard let self = self else { return }
                 self.databaseStorage.write {
-                    thread.removeAllThreadInteractions(transaction: $0)
+                    DependenciesBridge.shared.threadSoftDeleteManager
+                        .removeAllInteractions(thread: thread, tx: $0.asV2Write)
                 }
                 DispatchQueue.main.async {
                     modalActivityIndicator.dismiss { [weak self] in

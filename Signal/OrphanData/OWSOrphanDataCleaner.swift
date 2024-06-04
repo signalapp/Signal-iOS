@@ -723,7 +723,7 @@ enum OWSOrphanDataCleaner {
                     continue
                 }
                 DependenciesBridge.shared.interactionDeleteManager
-                    .delete(interaction, tx: transaction.asV2Write)
+                    .delete(interaction, sideEffects: .default(), tx: transaction.asV2Write)
             }
             Logger.info("Deleted orphan interactions: \(interactionsRemoved)")
 

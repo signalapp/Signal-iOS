@@ -213,18 +213,6 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction, StoreContext {
         }
     }
 
-    private var threadUniqueIdsToIgnoreInteractionUpdates = Set<String>()
-
-    @objc
-    public func ignoreInteractionUpdates(forThreadUniqueId threadUniqueId: String) {
-        threadUniqueIdsToIgnoreInteractionUpdates.insert(threadUniqueId)
-    }
-
-    @objc
-    public func shouldIgnoreInteractionUpdates(forThreadUniqueId threadUniqueId: String) -> Bool {
-        return threadUniqueIdsToIgnoreInteractionUpdates.contains(threadUniqueId)
-    }
-
     public typealias TransactionFinalizationBlock = (SDSAnyWriteTransaction) -> Void
 
     @objc

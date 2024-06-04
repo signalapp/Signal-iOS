@@ -4,20 +4,40 @@
 //
 
 public enum InteractionDelete {
-    /// Specifies what should happen with the ``CallRecord`` associated with a
-    /// ``TSInteraction`` being deleted, if one exists.
-    public enum AssociatedCallDeleteBehavior {
-        /// Delete any ``CallRecord`` associated with the interaction, and send
-        /// a sync message about that deletion.
-        case localDeleteAndSendSyncMessage
-        /// Delete any ``CallRecord`` associated with the interaction.
-        case localDeleteOnly
+    public struct SideEffects {
+        /// Specifies what should happen with the ``CallRecord`` associated with
+        /// a ``TSInteraction`` being deleted, if one exists.
+        public enum AssociatedCallDeleteBehavior {
+            /// Delete any ``CallRecord`` associated with the interaction, and
+            /// send a sync message about that deletion.
+            case localDeleteAndSendSyncMessage
+            /// Delete any ``CallRecord`` associated with the interaction.
+            case localDeleteOnly
+        }
 
-        fileprivate var sendSyncMessage: Bool {
-            switch self {
-            case .localDeleteAndSendSyncMessage: return true
-            case .localDeleteOnly: return false
-            }
+        let associatedCallDelete: AssociatedCallDeleteBehavior
+        let updateThreadOnEachDeletedInteraction: Bool
+
+        private init(
+            associatedCallDelete: AssociatedCallDeleteBehavior,
+            updateThreadOnEachDeletedInteraction: Bool
+        ) {
+            self.associatedCallDelete = associatedCallDelete
+            self.updateThreadOnEachDeletedInteraction = updateThreadOnEachDeletedInteraction
+        }
+
+        public static func `default`() -> SideEffects {
+            return .custom()
+        }
+
+        public static func custom(
+            associatedCallDelete: AssociatedCallDeleteBehavior = .localDeleteAndSendSyncMessage,
+            updateThreadOnEachDeletedInteraction: Bool = true
+        ) -> SideEffects {
+            return SideEffects(
+                associatedCallDelete: associatedCallDelete,
+                updateThreadOnEachDeletedInteraction: updateThreadOnEachDeletedInteraction
+            )
         }
     }
 }
@@ -34,52 +54,24 @@ public enum InteractionDelete {
 /// counterintuitive, but avoids a circular dependency between interaction and
 /// call record deletion.
 public protocol InteractionDeleteManager {
-    typealias AssociatedCallDeleteBehavior = InteractionDelete.AssociatedCallDeleteBehavior
+    typealias SideEffects = InteractionDelete.SideEffects
 
     /// Remove the given interaction.
-    ///
-    /// - Parameter associatedCallDeleteBehavior
-    /// What behavior this method should adopt when deleting a ``CallRecord``
-    /// associated with the given interaction, if one exists.
     func delete(
         _ interaction: TSInteraction,
-        associatedCallDeleteBehavior: AssociatedCallDeleteBehavior,
+        sideEffects: SideEffects,
         tx: any DBWriteTransaction
     )
 
     /// Deletes the given call records and their associated interactions.
-    ///
-    /// - Parameter associatedCallDeleteBehavior
-    /// What behavior this method should adopt when deleting a ``CallRecord``
-    /// associated with the given interaction, if one exists.
     func delete(
         alongsideAssociatedCallRecords callRecords: [CallRecord],
-        associatedCallDeleteBehavior: AssociatedCallDeleteBehavior,
+        sideEffects: SideEffects,
         tx: any DBWriteTransaction
     )
 
-    /// Remove all interactions.
+    /// Remove all interactions with the default side-effects.
     func deleteAll(tx: any DBWriteTransaction)
-}
-
-public extension InteractionDeleteManager {
-    /// Remove the given interaction.
-    ///
-    /// - Important
-    /// The ``CallRecord`` associated with this interaction will be deleted and
-    /// a corresponding sync message sent, if one exists.
-    ///
-    /// - SeeAlso ``delete(_:associatedCallDeleteBehavior:tx:)``.
-    func delete(
-        _ interaction: TSInteraction,
-        tx: any DBWriteTransaction
-    ) {
-        delete(
-            interaction,
-            associatedCallDeleteBehavior: .localDeleteAndSendSyncMessage,
-            tx: tx
-        )
-    }
 }
 
 final class InteractionDeleteManagerImpl: InteractionDeleteManager {
@@ -111,7 +103,7 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
 
     func delete(
         _ interaction: TSInteraction,
-        associatedCallDeleteBehavior: AssociatedCallDeleteBehavior,
+        sideEffects: SideEffects,
         tx: any DBWriteTransaction
     ) {
         guard interaction.shouldBeSaved else {
@@ -121,14 +113,14 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
         _deleteInternal(
             interaction: interaction,
             knownAssociatedCallRecord: nil,
-            associatedCallDeleteBehavior: associatedCallDeleteBehavior,
+            sideEffects: sideEffects,
             tx: SDSDB.shimOnlyBridge(tx)
         )
     }
 
     func delete(
         alongsideAssociatedCallRecords callRecords: [CallRecord],
-        associatedCallDeleteBehavior: AssociatedCallDeleteBehavior,
+        sideEffects: SideEffects,
         tx: any DBWriteTransaction
     ) {
         for callRecord in callRecords {
@@ -142,7 +134,7 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
             _deleteInternal(
                 interaction: associatedInteraction,
                 knownAssociatedCallRecord: callRecord,
-                associatedCallDeleteBehavior: associatedCallDeleteBehavior,
+                sideEffects: sideEffects,
                 tx: SDSDB.shimOnlyBridge(tx)
             )
         }
@@ -160,23 +152,25 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
                 _deleteInternal(
                     interaction: interaction,
                     knownAssociatedCallRecord: nil,
-                    associatedCallDeleteBehavior: .localDeleteAndSendSyncMessage,
+                    sideEffects: .default(),
                     tx: SDSDB.shimOnlyBridge(tx)
                 )
             }
         }
     }
 
+    // MARK: -
+
     private func _deleteInternal(
         interaction: TSInteraction,
         knownAssociatedCallRecord: CallRecord?,
-        associatedCallDeleteBehavior: AssociatedCallDeleteBehavior,
+        sideEffects: SideEffects,
         tx: SDSAnyWriteTransaction
     ) {
         willRemove(
             interaction: interaction,
             knownAssociatedCallRecord: knownAssociatedCallRecord,
-            associatedCallDeleteBehavior: associatedCallDeleteBehavior,
+            sideEffects: sideEffects,
             tx: tx
         )
 
@@ -185,15 +179,17 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
             arguments: [interaction.uniqueId]
         )
 
-        didRemove(interaction: interaction, tx: tx)
+        didRemove(
+            interaction: interaction,
+            sideEffects: sideEffects,
+            tx: tx
+        )
     }
-
-    // MARK: -
 
     private func willRemove(
         interaction: TSInteraction,
         knownAssociatedCallRecord: CallRecord?,
-        associatedCallDeleteBehavior: AssociatedCallDeleteBehavior,
+        sideEffects: SideEffects,
         tx: SDSAnyWriteTransaction
     ) {
         databaseStorage.updateIdMapping(interaction: interaction, transaction: tx)
@@ -205,9 +201,14 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
                 interactionRowId: interactionRowId, tx: tx.asV2Read
             )
         {
+            let sendSyncMessage = switch sideEffects.associatedCallDelete {
+            case .localDeleteOnly: false
+            case .localDeleteAndSendSyncMessage: true
+            }
+
             callRecordDeleteManager.deleteCallRecord(
                 associatedCallRecord,
-                sendSyncMessageOnDelete: associatedCallDeleteBehavior.sendSyncMessage,
+                sendSyncMessageOnDelete: sendSyncMessage,
                 tx: tx.asV2Write
             )
         }
@@ -233,9 +234,13 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
         }
     }
 
-    private func didRemove(interaction: TSInteraction, tx: SDSAnyWriteTransaction) {
+    private func didRemove(
+        interaction: TSInteraction,
+        sideEffects: SideEffects,
+        tx: SDSAnyWriteTransaction
+    ) {
         if
-            !tx.shouldIgnoreInteractionUpdates(forThreadUniqueId: interaction.uniqueThreadId),
+            sideEffects.updateThreadOnEachDeletedInteraction,
             let associatedThread = interaction.thread(tx: tx)
         {
             associatedThread.update(withRemovedMessage: interaction, transaction: tx)
@@ -259,17 +264,31 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
     }
 }
 
-// MARK: -
+// MARK: - Mock
 
-@objc
-final class InteractionDeleteManagerObjcBridge: NSObject {
-    @objc
-    static func remove(_ interaction: TSInteraction, tx: SDSAnyWriteTransaction) {
-        // [DeleteForMe] TODO: This is downstream of thread delete, which should go through DeleteForMe sync messages instead of call delete.
-        DependenciesBridge.shared.interactionDeleteManager.delete(
-            interaction,
-            associatedCallDeleteBehavior: .localDeleteAndSendSyncMessage,
-            tx: tx.asV2Write
-        )
+#if TESTABLE_BUILD
+
+open class MockInteractionDeleteManager: InteractionDeleteManager {
+    var deleteInteractionMock: ((
+        _ interaction: TSInteraction,
+        _ sideEffects: SideEffects
+    ) -> Void)?
+    open func delete(_ interaction: TSInteraction, sideEffects: SideEffects, tx: any DBWriteTransaction) {
+        deleteInteractionMock!(interaction, sideEffects)
+    }
+
+    var deleteAlongsideCallRecordsMock: ((
+        _ callRecords: [CallRecord],
+        _ sideEffects: SideEffects
+    ) -> Void)?
+    open func delete(alongsideAssociatedCallRecords callRecords: [CallRecord], sideEffects: SideEffects, tx: any DBWriteTransaction) {
+        deleteAlongsideCallRecordsMock!(callRecords, sideEffects)
+    }
+
+    var deleteAllMock: (() -> Void)?
+    open func deleteAll(tx: any DBWriteTransaction) {
+        deleteAllMock!()
     }
 }
+
+#endif

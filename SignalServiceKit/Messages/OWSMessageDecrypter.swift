@@ -750,7 +750,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                     }
                     Logger.info("Cleaning up placeholder \(placeholder.timestamp)")
                     DependenciesBridge.shared.interactionDeleteManager
-                        .delete(placeholder, tx: tx.asV2Write)
+                        .delete(placeholder, sideEffects: .default(), tx: tx.asV2Write)
                     guard let thread = placeholder.thread(tx: tx) else {
                         return
                     }

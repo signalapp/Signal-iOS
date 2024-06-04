@@ -30,11 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL isArchivedObsolete;
 @property (nonatomic) BOOL isMarkedUnreadObsolete;
 
-@property (nonatomic, copy, nullable) NSString *messageDraft;
-@property (nonatomic, nullable) MessageBodyRanges *messageDraftBodyRanges;
-
 @property (atomic) uint64_t mutedUntilTimestampObsolete;
-@property (nonatomic) uint64_t lastInteractionRowId;
 
 @property (nonatomic, nullable) NSDate *mutedUntilDateObsolete;
 @property (nonatomic) uint64_t lastVisibleSortIdObsolete;
@@ -182,49 +178,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     [self.modelReadCaches.threadReadCache didInsertOrUpdateThread:self transaction:transaction];
 
     [PinnedThreadManagerObjcBridge handleUpdatedThread:self transaction:transaction];
-}
-
-- (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    [super anyWillRemoveWithTransaction:transaction];
-    OWSFail(@"Not supported.");
-}
-
-- (void)removeAllThreadInteractionsWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    // We can't safely delete interactions while enumerating them, so
-    // we collect and delete separately.
-    //
-    // We don't want to instantiate the interactions when collecting them
-    // or when deleting them.
-    NSMutableArray<NSString *> *interactionIds = [NSMutableArray new];
-    NSError *error;
-    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId];
-    [interactionFinder
-        enumerateInteractionIdsWithTransaction:transaction
-                                         error:&error
-                                         block:^(NSString *key, BOOL *stop) { [interactionIds addObject:key]; }];
-    if (error != nil) {
-        OWSFailDebug(@"Error during enumeration: %@", error);
-    }
-
-    [transaction ignoreInteractionUpdatesForThreadUniqueId:self.uniqueId];
-
-    for (NSString *interactionId in interactionIds) {
-        // We need to fetch each interaction, since [TSInteraction removeWithTransaction:] does important work.
-        TSInteraction *_Nullable interaction = [TSInteraction anyFetchWithUniqueId:interactionId
-                                                                       transaction:transaction];
-        if (!interaction) {
-            OWSFailDebug(@"couldn't load thread's interaction for deletion.");
-            continue;
-        }
-        [InteractionDeleteManagerObjcBridge remove:interaction tx:transaction];
-    }
-
-    // As an optimization, we called `ignoreInteractionUpdatesForThreadUniqueId` so as not
-    // to re-save the thread after *each* interaction deletion. However, we still need to resave
-    // the thread just once, after all the interactions are deleted.
-    [self anyUpdateWithTransaction:transaction block:^(TSThread *thread) { thread.lastInteractionRowId = 0; }];
 }
 
 - (BOOL)isNoteToSelf
@@ -511,22 +464,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                                                                                   shouldReindex:NO
                                                                                     transaction:transactionForBlock];
                                                           }];
-}
-
-- (void)softDeleteThreadWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSLogInfo(@"Soft deleting thread with ID %@", self.uniqueId);
-
-    [self removeAllThreadInteractionsWithTransaction:transaction];
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSThread *thread) {
-                                 thread.messageDraft = nil;
-                                 thread.shouldThreadBeVisible = NO;
-                                 [ThreadReplyInfoObjC deleteWithThreadUniqueId:thread.uniqueId tx:transaction];
-                             }];
-
-    // Delete any intents we previously donated for this thread.
-    [INInteraction deleteInteractionsWithGroupIdentifier:self.uniqueId completion:^(NSError *error) {}];
 }
 
 #pragma mark - Archival

@@ -312,7 +312,7 @@ private extension IncomingCallEventSyncMessageManagerImpl {
             // reacting to one!
             interactionDeleteManager.delete(
                 alongsideAssociatedCallRecords: [existingCallRecord],
-                associatedCallDeleteBehavior: .localDeleteOnly,
+                sideEffects: .custom(associatedCallDelete: .localDeleteOnly),
                 tx: tx
             )
         case .matchNotFound:

@@ -285,7 +285,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             } catch let error {
                 Logger.error("Attachment failure: \(error)")
                 // Roll back the message
-                interactionDeleteManager.delete(outgoingMessage, tx: tx)
+                interactionDeleteManager.delete(outgoingMessage, sideEffects: .default(), tx: tx)
                 return .failure(error)
             }
         }

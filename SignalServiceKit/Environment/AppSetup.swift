@@ -430,19 +430,6 @@ public class AppSetup {
 
         let disappearingMessagesConfigurationStore = DisappearingMessagesConfigurationStoreImpl()
 
-        let threadRemover = ThreadRemoverImpl(
-            chatColorSettingStore: chatColorSettingStore,
-            databaseStorage: ThreadRemoverImpl.Wrappers.DatabaseStorage(databaseStorage),
-            disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
-            interactionRemover: ThreadRemoverImpl.Wrappers.InteractionRemover(),
-            sdsThreadRemover: ThreadRemoverImpl.Wrappers.SDSThreadRemover(),
-            threadAssociatedDataStore: threadAssociatedDataStore,
-            threadReadCache: ThreadRemoverImpl.Wrappers.ThreadReadCache(modelReadCaches.threadReadCache),
-            threadReplyInfoStore: threadReplyInfoStore,
-            threadStore: threadStore,
-            wallpaperStore: wallpaperStore
-        )
-
         let groupMemberUpdater = GroupMemberUpdaterImpl(
             temporaryShims: GroupMemberUpdaterTemporaryShimsImpl(),
             groupMemberStore: groupMemberStore,
@@ -538,6 +525,23 @@ public class AppSetup {
                 callRecordDeleteAllJobQueue
             ),
             missedCallManager: callRecordMissedCallManager
+        )
+
+        let threadSoftDeleteManager = ThreadSoftDeleteManagerImpl(
+            interactionDeleteManager: interactionDeleteManager,
+            threadReplyInfoStore: threadReplyInfoStore
+        )
+        let threadRemover = ThreadRemoverImpl(
+            chatColorSettingStore: chatColorSettingStore,
+            databaseStorage: ThreadRemoverImpl.Wrappers.DatabaseStorage(databaseStorage),
+            disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
+            sdsThreadRemover: ThreadRemoverImpl.Wrappers.SDSThreadRemover(),
+            threadAssociatedDataStore: threadAssociatedDataStore,
+            threadReadCache: ThreadRemoverImpl.Wrappers.ThreadReadCache(modelReadCaches.threadReadCache),
+            threadReplyInfoStore: threadReplyInfoStore,
+            threadSoftDeleteManager: threadSoftDeleteManager,
+            threadStore: threadStore,
+            wallpaperStore: wallpaperStore
         )
 
         let pinnedThreadStore = PinnedThreadStoreImpl(keyValueStoreFactory: keyValueStoreFactory)
@@ -988,6 +992,7 @@ public class AppSetup {
             threadAssociatedDataStore: threadAssociatedDataStore,
             threadRemover: threadRemover,
             threadReplyInfoStore: threadReplyInfoStore,
+            threadSoftDeleteManager: threadSoftDeleteManager,
             threadStore: threadStore,
             tsAccountManager: tsAccountManager,
             tsResourceCloner: tsResourceCloner,

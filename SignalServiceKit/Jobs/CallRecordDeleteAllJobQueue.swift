@@ -248,7 +248,7 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
                 /// deleting all the records.
                 interactionDeleteManager.delete(
                     alongsideAssociatedCallRecords: callRecordsToDelete,
-                    associatedCallDeleteBehavior: .localDeleteOnly,
+                    sideEffects: .custom(associatedCallDelete: .localDeleteOnly),
                     tx: tx
                 )
 

@@ -185,7 +185,7 @@ extension GroupUpdateInfoMessageInserterImpl {
             cancelingAci == requester
         {
             DependenciesBridge.shared.interactionDeleteManager
-                .delete(mostRecentInfoMsg, tx: transaction.asV2Write)
+                .delete(mostRecentInfoMsg, sideEffects: .default(), tx: transaction.asV2Write)
 
             secondMostRecentInfoMsg.setSingleUpdateItem(
                 singleUpdateItem: .sequenceOfInviteLinkRequestAndCancels(

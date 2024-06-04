@@ -1872,7 +1872,7 @@
 		D9F6554229D67708002A330A /* SDSCodableModel+SDSSerialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554129D67708002A330A /* SDSCodableModel+SDSSerialization.swift */; };
 		D9F6554429D798CC002A330A /* FactoryInitialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554329D798CC002A330A /* FactoryInitialization.swift */; };
 		D9F6554829DA4277002A330A /* FactoryInitializationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554629DA4233002A330A /* FactoryInitializationTests.swift */; };
-		D9F9A6352BFEE2A600EF13EC /* MockInteractionDeleteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A6342BFEE2A600EF13EC /* MockInteractionDeleteManager.swift */; };
+		D9F9A63F2C013EF100EF13EC /* ThreadSoftDeleteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A63E2C013EF100EF13EC /* ThreadSoftDeleteManager.swift */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		E14592632B59A86E00536BF2 /* GroupCallMemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E14592622B59A86E00536BF2 /* GroupCallMemberView.swift */; };
 		E14EDF6E2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E14EDF6D2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift */; };
@@ -4801,7 +4801,7 @@
 		D9F6554129D67708002A330A /* SDSCodableModel+SDSSerialization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDSCodableModel+SDSSerialization.swift"; sourceTree = "<group>"; };
 		D9F6554329D798CC002A330A /* FactoryInitialization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactoryInitialization.swift; sourceTree = "<group>"; };
 		D9F6554629DA4233002A330A /* FactoryInitializationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactoryInitializationTests.swift; sourceTree = "<group>"; };
-		D9F9A6342BFEE2A600EF13EC /* MockInteractionDeleteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockInteractionDeleteManager.swift; sourceTree = "<group>"; };
+		D9F9A63E2C013EF100EF13EC /* ThreadSoftDeleteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSoftDeleteManager.swift; sourceTree = "<group>"; };
 		E14592622B59A86E00536BF2 /* GroupCallMemberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallMemberView.swift; sourceTree = "<group>"; };
 		E14EDF6D2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientContextMenuHelper.swift; sourceTree = "<group>"; };
 		E16B440D2BBF242C00D2583E /* ReactionsModelTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReactionsModelTest.swift; sourceTree = "<group>"; };
@@ -9749,7 +9749,6 @@
 				C1939F6E2A844C6D003BAEF0 /* SignalProtocolStore */,
 				D990CAC42B4CCA69000A99A2 /* Usernames */,
 				D990CACC2B4DCD69000A99A2 /* Util */,
-				D9F9A6342BFEE2A600EF13EC /* MockInteractionDeleteManager.swift */,
 			);
 			path = Mocks;
 			sourceTree = "<group>";
@@ -10779,6 +10778,7 @@
 			isa = PBXGroup;
 			children = (
 				502D45432A05A34B00B8BCE0 /* ThreadRemover.swift */,
+				D9F9A63E2C013EF100EF13EC /* ThreadSoftDeleteManager.swift */,
 				5033D46029D638FD007FEADA /* ThreadStore.swift */,
 				F9C5C9EA289453B100548EEE /* TSContactThread+SDS.swift */,
 				F9C5C9EB289453B100548EEE /* TSContactThread.h */,
@@ -13846,7 +13846,6 @@
 				66076B5D2BC06CA70043D547 /* MockEditManagerAttachments.swift in Sources */,
 				66076B662BC07EE80043D547 /* MockEditManagerTSResources.swift in Sources */,
 				50F946102AD768AF002EF293 /* MockIdentityManager.swift in Sources */,
-				D9F9A6352BFEE2A600EF13EC /* MockInteractionDeleteManager.swift in Sources */,
 				F9C5CE66289453B400548EEE /* MockKeychainStorage.swift in Sources */,
 				6600BB1D2BA3ABDD0005A035 /* MockLinkPreviewManager.swift in Sources */,
 				D990CAC92B4CCB97000A99A2 /* MockLocalUsernameManager.swift in Sources */,
@@ -14336,6 +14335,7 @@
 				502D45442A05A34B00B8BCE0 /* ThreadRemover.swift in Sources */,
 				45161BA928A2E54B0055AB45 /* ThreadReplyInfo.swift in Sources */,
 				502D45482A0AD7BE00B8BCE0 /* ThreadReplyInfoStore.swift in Sources */,
+				D9F9A63F2C013EF100EF13EC /* ThreadSoftDeleteManager.swift in Sources */,
 				D979CC282AD3933B006AAC49 /* ThreadStore+CallRecord.swift in Sources */,
 				5033D46129D638FD007FEADA /* ThreadStore.swift in Sources */,
 				725465252BA017EF00EABFD2 /* ThreadUtil.swift in Sources */,

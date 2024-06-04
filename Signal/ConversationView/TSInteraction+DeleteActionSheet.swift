@@ -28,7 +28,7 @@ public extension TSInteraction {
                 ) else { return }
 
                 DependenciesBridge.shared.interactionDeleteManager
-                    .delete(freshSelf, tx: tx.asV2Write)
+                    .delete(freshSelf, sideEffects: .default(), tx: tx.asV2Write)
             }
         }
         actionSheetController.addAction(deleteForMeAction)

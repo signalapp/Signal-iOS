@@ -145,7 +145,7 @@ class SDSDatabaseStorageTest: SSKBaseTest {
         storage.write { transaction in
             XCTAssertEqual(1, TSThread.anyFetchAll(transaction: transaction).count)
             XCTAssertEqual(2, TSInteraction.anyFetchAll(transaction: transaction).count)
-            DependenciesBridge.shared.interactionDeleteManager.delete(message1, tx: transaction.asV2Write)
+            DependenciesBridge.shared.interactionDeleteManager.delete(message1, sideEffects: .default(), tx: transaction.asV2Write)
             XCTAssertEqual(1, TSThread.anyFetchAll(transaction: transaction).count)
             XCTAssertEqual(1, TSInteraction.anyFetchAll(transaction: transaction).count)
         }
@@ -156,7 +156,7 @@ class SDSDatabaseStorageTest: SSKBaseTest {
         storage.write { transaction in
             XCTAssertEqual(1, TSThread.anyFetchAll(transaction: transaction).count)
             XCTAssertEqual(1, TSInteraction.anyFetchAll(transaction: transaction).count)
-            DependenciesBridge.shared.interactionDeleteManager.delete(message2, tx: transaction.asV2Write)
+            DependenciesBridge.shared.interactionDeleteManager.delete(message2, sideEffects: .default(), tx: transaction.asV2Write)
             XCTAssertEqual(1, TSThread.anyFetchAll(transaction: transaction).count)
             XCTAssertEqual(0, TSInteraction.anyFetchAll(transaction: transaction).count)
         }

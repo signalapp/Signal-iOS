@@ -1572,12 +1572,9 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
             /// Deleting these call records will trigger a ``CallRecordStoreNotification``,
             /// which we're listening for in this view and will in turn lead us
             /// to update the UI as appropriate.
-            ///
-            /// We also want to send a sync message since this is a delete
-            /// originating from this device.
             self.deps.interactionDeleteManager.delete(
                 alongsideAssociatedCallRecords: callRecordsToDelete,
-                associatedCallDeleteBehavior: .localDeleteAndSendSyncMessage,
+                sideEffects: .default(),
                 tx: tx.asV2Write
             )
         }

@@ -14,11 +14,11 @@ class ThreadRemoverImpl: ThreadRemover {
     private let chatColorSettingStore: ChatColorSettingStore
     private let databaseStorage: Shims.DatabaseStorage
     private let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
-    private let interactionRemover: Shims.InteractionRemover
     private let sdsThreadRemover: Shims.SDSThreadRemover
     private let threadAssociatedDataStore: ThreadAssociatedDataStore
     private let threadReadCache: Shims.ThreadReadCache
     private let threadReplyInfoStore: ThreadReplyInfoStore
+    private let threadSoftDeleteManager: ThreadSoftDeleteManager
     private let threadStore: ThreadStore
     private let wallpaperStore: WallpaperStore
 
@@ -26,22 +26,22 @@ class ThreadRemoverImpl: ThreadRemover {
         chatColorSettingStore: ChatColorSettingStore,
         databaseStorage: Shims.DatabaseStorage,
         disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
-        interactionRemover: Shims.InteractionRemover,
         sdsThreadRemover: Shims.SDSThreadRemover,
         threadAssociatedDataStore: ThreadAssociatedDataStore,
         threadReadCache: Shims.ThreadReadCache,
         threadReplyInfoStore: ThreadReplyInfoStore,
+        threadSoftDeleteManager: ThreadSoftDeleteManager,
         threadStore: ThreadStore,
         wallpaperStore: WallpaperStore
     ) {
         self.chatColorSettingStore = chatColorSettingStore
         self.databaseStorage = databaseStorage
         self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
-        self.interactionRemover = interactionRemover
         self.sdsThreadRemover = sdsThreadRemover
         self.threadAssociatedDataStore = threadAssociatedDataStore
         self.threadReadCache = threadReadCache
         self.threadReplyInfoStore = threadReplyInfoStore
+        self.threadSoftDeleteManager = threadSoftDeleteManager
         self.threadStore = threadStore
         self.wallpaperStore = wallpaperStore
     }
@@ -53,7 +53,7 @@ class ThreadRemoverImpl: ThreadRemover {
     private func removeAny(_ thread: TSThread, tx: DBWriteTransaction) {
         chatColorSettingStore.setRawSetting(nil, for: thread.uniqueId, tx: tx)
         databaseStorage.updateIdMapping(thread: thread, tx: tx)
-        interactionRemover.removeAllInteractions(in: thread, tx: tx)
+        threadSoftDeleteManager.removeAllInteractions(thread: thread, tx: tx)
         disappearingMessagesConfigurationStore.remove(for: thread, tx: tx)
         threadAssociatedDataStore.remove(for: thread.uniqueId, tx: tx)
         threadReplyInfoStore.remove(for: thread.uniqueId, tx: tx)
@@ -71,27 +71,15 @@ class ThreadRemoverImpl: ThreadRemover {
 
 extension ThreadRemoverImpl {
     enum Shims {
-        typealias InteractionRemover = _ThreadRemoverImpl_InteractionRemoverShim
         typealias ThreadReadCache = _ThreadRemoverImpl_ThreadReadCacheShim
         typealias DatabaseStorage = _ThreadRemoverImpl_DatabaseStorageShim
         typealias SDSThreadRemover = _ThreadRemoverImpl_SDSThreadRemoverShim
     }
 
     enum Wrappers {
-        typealias InteractionRemover = _ThreadRemoverImpl_InteractionRemoverWrapper
         typealias ThreadReadCache = _ThreadRemoverImpl_ThreadReadCacheWrapper
         typealias DatabaseStorage = _ThreadRemoverImpl_DatabaseStorageWrapper
         typealias SDSThreadRemover = _ThreadRemoverImpl_SDSThreadRemoverWrapper
-    }
-}
-
-protocol _ThreadRemoverImpl_InteractionRemoverShim {
-    func removeAllInteractions(in thread: TSThread, tx: DBWriteTransaction)
-}
-
-class _ThreadRemoverImpl_InteractionRemoverWrapper: _ThreadRemoverImpl_InteractionRemoverShim {
-    func removeAllInteractions(in thread: TSThread, tx: DBWriteTransaction) {
-        thread.removeAllThreadInteractions(transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
 
@@ -136,10 +124,6 @@ class _ThreadRemoverImpl_SDSThreadRemoverWrapper: _ThreadRemoverImpl_SDSThreadRe
 // MARK: - Unit Tests
 
 #if TESTABLE_BUILD
-
-class ThreadRemover_MockInteractionRemover: ThreadRemoverImpl.Shims.InteractionRemover {
-    func removeAllInteractions(in thread: TSThread, tx: DBWriteTransaction) {}
-}
 
 class ThreadRemover_MockThreadReadCache: ThreadRemoverImpl.Shims.ThreadReadCache {
     func didRemove(thread: TSThread, tx: DBWriteTransaction) {}

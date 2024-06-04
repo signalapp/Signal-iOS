@@ -40,7 +40,7 @@ extension OWSDisappearingMessagesJob {
                 throw OWSAssertionError("Couldn't fetch message that must exist.")
             }
             DependenciesBridge.shared.interactionDeleteManager
-                .delete(message, tx: tx)
+                .delete(message, sideEffects: .default(), tx: tx)
         }
         return rowIds.count
     }

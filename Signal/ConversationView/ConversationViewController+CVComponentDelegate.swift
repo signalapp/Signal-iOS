@@ -656,7 +656,7 @@ extension ConversationViewController: CVComponentDelegate {
 
             Self.databaseStorage.write { tx in
                 DependenciesBridge.shared.interactionDeleteManager
-                    .delete(message, tx: tx.asV2Write)
+                    .delete(message, sideEffects: .default(), tx: tx.asV2Write)
             }
         }.catch(on: DispatchQueue.global()) { error in
             owsFailDebug("Error: \(error)")

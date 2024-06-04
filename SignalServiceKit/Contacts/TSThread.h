@@ -58,9 +58,12 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSThreadStoryViewMode) {
 @property (nonatomic, readonly) uint64_t lastVisibleSortIdObsolete;
 @property (nonatomic, readonly) double lastVisibleSortIdOnScreenPercentageObsolete;
 
+@property (nonatomic, copy, nullable) NSString *messageDraft;
+@property (nonatomic, nullable) MessageBodyRanges *messageDraftBodyRanges;
+
 // zero if thread has never had an interaction.
 // The corresponding interaction may have been deleted.
-@property (nonatomic, readonly) uint64_t lastInteractionRowId;
+@property (nonatomic) uint64_t lastInteractionRowId;
 
 @property (nonatomic, nullable) NSNumber *editTargetTimestamp;
 
@@ -138,11 +141,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 - (void)updateWithRemovedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark Archival
-
-- (void)softDeleteThreadWithTransaction:(SDSAnyWriteTransaction *)transaction;
-
-- (void)removeAllThreadInteractionsWithTransaction:(SDSAnyWriteTransaction *)transaction
-    NS_SWIFT_NAME(removeAllThreadInteractions(transaction:));
 
 /**
  *  Sets the draft of a thread. Typically called when leaving a conversation view.

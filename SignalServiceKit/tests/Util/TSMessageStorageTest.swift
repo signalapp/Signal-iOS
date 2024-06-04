@@ -103,7 +103,8 @@ final class TSMessageStorageTest: SSKBaseTest {
                 XCTAssertEqual(thread.uniqueId, fetchedMessage.uniqueThreadId)
             }
 
-            thread.softDelete(with: tx)
+            DependenciesBridge.shared.threadSoftDeleteManager
+                .softDelete(thread: thread, tx: tx.asV2Write)
 
             for message in messages {
                 XCTAssertNil(TSIncomingMessage.anyFetchIncomingMessage(
@@ -155,7 +156,8 @@ final class TSMessageStorageTest: SSKBaseTest {
                 XCTAssertEqual(groupThread.uniqueId, fetchedMessage.uniqueThreadId)
             }
 
-            groupThread.softDelete(with: tx)
+            DependenciesBridge.shared.threadSoftDeleteManager
+                .softDelete(thread: groupThread, tx: tx.asV2Write)
 
             for message in messages {
                 XCTAssertNil(TSIncomingMessage.anyFetchIncomingMessage(
