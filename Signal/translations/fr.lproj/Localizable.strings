@@ -3302,10 +3302,10 @@
 "GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Voulez-vous vraiment supprimer « %1$@ » ?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Les membres du groupe de la discussion “%1$@” peuvent consulter et interagir avec cette Story. Vous pouvez paramétrer les spectateurs depuis la discussion du groupe.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Les membres de la conversation de groupe « %1$@ » peuvent afficher cette story et y réagir. Vous pouvez ajouter ou retirer des spectateurs depuis les paramètres du groupe.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Qui peut voir cette story";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Qui peut voir cette story ?";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Le groupe a été mis à jour.";
@@ -4301,10 +4301,10 @@
 "MUTED_BADGE" = "En sourdine";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "Les mises à jour de votre Story apparaîtront ici.";
+"MY_STORIES_NO_STORIES" = "Les contenus que vous ajouterez à votre story s’afficheront ici.";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Tout le monde sauf…";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Tous mes contacts Signal, sauf…";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Tous mes contacts Signal";
@@ -4421,16 +4421,16 @@
 "NEW_PRIVATE_STORY_CREATE_BUTTON" = "Créer";
 
 /* Message for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "Un nom de Story est requis.";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "Veuillez saisir le titre de la story.";
 
 /* Title for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Nom de la story manquant";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Titre de story manquant";
 
 /* Section footer for the name text field on the 'new private story' creation view */
-"NEW_PRIVATE_STORY_NAME_FOOTER" = "Vous seul pouvez voir le nom de cette Story.";
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "Vous seul pouvez voir le titre de cette story.";
 
 /* Placeholder text for a new private story name */
-"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Nom de la story (obligatoire)";
+"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Titre de la story (requis)";
 
 /* The title for the 'new private story' view. */
 "NEW_PRIVATE_STORY_VIEW_TITLE" = "Sélectionner les spectateurs";
@@ -5399,16 +5399,16 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Ajouter des spectateurs";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Effacer la Story personnalisée";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Supprimer la story personnalisée";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Voulez-vous vraiment supprimer « %1$@ » ? Les nouveaux contenus ajoutés à cette Story seront également supprimés.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Voulez-vous vraiment supprimer « %1$@ » ? Les contenus ajoutés à cette story seront aussi supprimés.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Retirer";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "Cette personne ne pourra plus voir cette Story.";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "Ce contact n’aura plus accès à votre story.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Retirer %1$@ ?";
@@ -5555,13 +5555,13 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Le message original est introuvable.";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "A réagi à votre Story";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "a réagi à votre story";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "A réagi à la Story de %1$@";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "a réagi à la story de %1$@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · Story";
+"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "Story · %1$@";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "Fichier joint";
@@ -5585,40 +5585,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "Toutes · %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "A réagi par %1$@ à votre message";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "a réagi par %1$@ à votre message";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "A réagi par %1$@ à votre album";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "a réagi par %1$@ à votre album";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "A réagi par %1$@ à votre message audio";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "a réagi par %1$@ à votre fichier audio";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "A réagi par %1$@ à votre partage de contact";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "a réagi par %1$@ à votre partage de contact";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "A réagi par %1$@ à votre fichier";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "a réagi par %1$@ à votre fichier";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "A réagi par %1$@ à votre GIF";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "a réagi par %1$@ à votre GIF";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "A réagi par %1$@ à votre photo";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "a réagi par %1$@ à votre photo";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "A réagi par %1$@ à votre sticker";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "a réagi par %1$@ à votre sticker";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "A réagi par %1$@ à : « %2$@ »";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "a réagi par %1$@ à : « %2$@ »";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "A réagi par %1$@ à votre vidéo";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "a réagi par %1$@ à votre vidéo";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "A réagi par %1$@ à votre média éphémère";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "a réagi par %1$@ à votre média éphémère";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "A réagi par %1$@ à votre message vocal";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "a réagi par %1$@ à votre message vocal";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "Lu";
@@ -7016,7 +7016,7 @@
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Verrou d’écran";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "Cacher l'écran dans le changeur d’appli";
+"SETTINGS_SCREEN_SECURITY" = "Masquer l’écran dans le sélecteur d’app";
 
 /* Footer for table section */
 "SETTINGS_SECTION_FOOTER_CALLING" = "Afficher les appels dans la liste « Récents » dans l'appli Téléphone d’iOS.";
@@ -7232,10 +7232,10 @@
 "STORIES_DELETE_STORY_ACTION" = "Supprimer";
 
 /* Title asking the user if they are sure they want to delete their story */
-"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Supprimer cette Story ? Elle sera aussi supprimée pour quiconque l’a reçue.";
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Supprimer cette story ? Cela la supprime aussi pour tous ses destinataires.";
 
 /* toast alert shown after user taps the 'save' button */
-"STORIES_DID_SAVE" = "Story sauvegardée";
+"STORIES_DID_SAVE" = "Story enregistrée";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "Transférer";
@@ -7244,13 +7244,13 @@
 "STORIES_GO_TO_CHAT_ACTION" = "Accéder à la conversation";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
-"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "Vous ne pouvez pas interagir sur cette Story, car vous n'êtes plus membre de ce groupe.";
+"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "Vous ne pouvez pas interagir avec cette story, car vous n'êtes plus membre de ce groupe.";
 
 /* Header for the hidden stories section of the stories list */
 "STORIES_HIDDEN_SECTION_HEADER" = "Stories masquées";
 
 /* Context menu action to hide the selected story */
-"STORIES_HIDE_STORY_ACTION" = "Cacher la story";
+"STORIES_HIDE_STORY_ACTION" = "Masquer la story";
 
 /* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
 "STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "Les nouvelles Stories de %1$@ n'apparaîtront plus en haut de la liste des Stories.";
@@ -7259,7 +7259,7 @@
 "STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Masquer la Story ?";
 
 /* Short context menu action to hide the selected story */
-"STORIES_HIDE_STORY_ACTION_SHORT" = "Cacher";
+"STORIES_HIDE_STORY_ACTION_SHORT" = "Masquer";
 
 /* Toast shown when a story is successfuly hidden */
 "STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Story masquée";
@@ -7280,7 +7280,7 @@
 "STORIES_NO_VIEWS_YET" = "Aucune vue pour le moment";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Permettez aux personnes qui peuvent voir votre Story de réagir et de répondre.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Les spectateurs de votre story peuvent y réagir et y répondre.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "Réponses et réactions";
@@ -7292,13 +7292,13 @@
 "STORIES_REPLIES_TAB" = "Réponses";
 
 /* alert notifying that the 'save' operation failed */
-"STORIES_SAVE_FAILED" = "Échec d'enregistrement de la story";
+"STORIES_SAVE_FAILED" = "Impossible d’enregistrer la story";
 
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "Enregistrer";
 
 /* Footer for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_FOOTER" = "Les nouveaux contenus ajoutés aux stories sont automatiquement supprimés après 24 heures. Identifiez les spectateurs autorisés à voir votre Story ou créez de nouvelles Stories en identifiant des spectateurs ou des groupes spécifiques.";
+"STORIES_SETTINGS_STORIES_FOOTER" = "Les nouveaux contenus ajoutés aux stories sont automatiquement supprimés au bout de 24 heures. Vous pouvez sélectionner les spectateurs autorisés à voir votre story ou créer de nouvelles stories, puis définir les contacts ou les groupes autorisés à les afficher.";
 
 /* Header for the 'Stories' section of the stories settings */
 "STORIES_SETTINGS_STORIES_HEADER" = "Stories";
@@ -7310,7 +7310,7 @@
 "STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Désactiver et supprimer les Stories";
 
 /* Footer for the 'turn off' section of the stories settings */
-"STORIES_SETTINGS_TURN_OFF_FOOTER" = "Si vous décidez de quitter la fonction Stories, vous ne pourrez plus en partager ni en consulter.";
+"STORIES_SETTINGS_TURN_OFF_FOOTER" = "Si vous décidez de désactiver les stories, vous ne pourrez plus en partager ni en consulter.";
 
 /* Button to turn off stories on the story privacy settings view */
 "STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Désactiver les stories";
@@ -7325,7 +7325,7 @@
 "STORIES_SETTINGS_VIEW_RECEIPTS" = "Confirmation de vue";
 
 /* Footer for the 'view receipts' section of the stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "Voir et partager lorsque les Stories sont visionnées. Si cette option est désactivée, vous ne pourrez pas savoir si un spectateur regarde votre Story.";
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "Vous êtes informé lorsque vos contacts voient vos stories. Si cette option est désactivée, vous ne saurez pas si des spectateurs les ont vues.";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Partager";
@@ -7349,13 +7349,13 @@
 "STORIES_TITLE" = "Stories";
 
 /* Context menu action to unhide the selected story */
-"STORIES_UNHIDE_STORY_ACTION" = "Démasquer la story";
+"STORIES_UNHIDE_STORY_ACTION" = "Afficher la story";
 
 /* Short context menu action to unhide the selected story */
-"STORIES_UNHIDE_STORY_ACTION_SHORT" = "Démasquer";
+"STORIES_UNHIDE_STORY_ACTION_SHORT" = "Afficher";
 
 /* Toast shown when a story is successfuly unhidden */
-"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Story démasquée";
+"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Story affichée";
 
 /* Text explaining that you will not see any views for your story because you have view receipts turned off */
 "STORIES_VIEWS_OFF_DESCRIPTION" = "Activer les confirmations de vue pour savoir qui a consulté vos Stories.";
@@ -7370,7 +7370,7 @@
 "STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Impossible de charger le lien. Vérifiez votre connexion et réessayez.";
 
 /* Displayed in text story composer when user is about to attach a link with preview */
-"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Partager un lien avec les personnes qui voient votre Story";
+"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Partager un lien avec les spectateurs de votre story";
 
 /* Placeholder text in text stories compose UI */
 "STORY_COMPOSER_TAP_ADD_TEXT" = "Touchez pour ajouter du texte";
@@ -7394,25 +7394,25 @@
 "STORY_PRIVACY_TITLE" = "Confidentialité de la story";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "A réagi par %1$@ à votre Story";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "a réagi par %1$@ à votre story";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "avez réagi par %1$@ à votre Story";
+"STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "avez réagi par %1$@ à une story";
 
 /* quote text for a reaction to a story by some other user (the header on the bubble says their name, e.g. \"Bob\"). Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON" = "a réagi par %1$@ à une Story";
+"STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON" = "a réagi par %1$@ à une story";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "A réagi par %1$@ à la Story de %2$@";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "a réagi par %1$@ à la story de %2$@";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "Répondre";
 
 /* Text indicating you reacted to a story (the header on the bubble says \"You\") */
-"STORY_REPLY_REACTION_SECOND_PERSON" = "avez réagi à la Story";
+"STORY_REPLY_REACTION_SECOND_PERSON" = "avez réagi à la story";
 
 /* Text indicating someone else reacted to a story (the header on the bubble says their name, e.g. \"Bob\") */
-"STORY_REPLY_REACTION_THIRD_PERSON" = "a réagi à la Story";
+"STORY_REPLY_REACTION_THIRD_PERSON" = "a réagi à la story";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Répondre";
@@ -7427,22 +7427,22 @@
 "STORY_REPLY_TO_PRIVATE_TEXT_FIELD_PLACEHOLDER" = "Répondre à %1$@";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
-"STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Impossible d'envoyer la Story. Vérifiez votre connexion puis réessayez";
+"STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Impossible d’envoyer la story. Vérifiez votre connexion et réessayez";
 
 /* Title for the dialog asking user if they wish to resend a partially failed story message. */
-"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "Cette Story n’a pas pu être envoyée à certains contacts. Vérifiez votre connexion et réessayez";
+"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "Impossible d’envoyer cette story à certains contacts. Vérifiez votre connexion et réessayez.";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Ne partager qu’avec…";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Tout le monde sauf…";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Tous mes contacts Signal, sauf…";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "Échec d’envoi";
 
 /* Body for notification shown when a story fails to send. */
-"STORY_SEND_FAILED_NOTIFICATION_BODY" = "❗️ Échec de l’envoi de la Story";
+"STORY_SEND_FAILED_NOTIFICATION_BODY" = "❗️ Impossible d’envoyer la story";
 
 /* Text indicating that you can tap to retry sending */
 "STORY_SEND_FAILED_RETRY" = "Réessayer";
@@ -7478,13 +7478,13 @@
 "STORY_SETTINGS_TITLE" = "Stories";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choisissez les contacts Signal qui peuvent voir votre Story. Les changements ne s'appliqueront pas aux Stories que vous avez déjà envoyées.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Sélectionnez les contacts Signal qui peuvent voir votre story. Cela ne modifiera pas l’audience des stories déjà publiées.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Qui peut voir cette story";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Qui peut voir cette story ?";
 
 /* Header for the 'viewers' section on the 'story settings' bottom sheet */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choisissez les contacts Signal qui peuvent voir votre Story. Vous pouvez modifier ce choix dans les paramètres de confidentialité.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Sélectionnez les contacts Signal autorisés à voir votre story. Vous pouvez modifier ce choix à tout moment via les paramètres de confidentialité.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
 "STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Les vidéos envoyées dans les Stories seront coupées en clips de %1$d s pour être envoyées sous forme de plusieurs Stories.";

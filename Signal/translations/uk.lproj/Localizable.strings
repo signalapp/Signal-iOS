@@ -107,7 +107,7 @@
 "ADD_TO_GROUP_ALREADY_A_MEMBER" = "Вже учасник";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%1$@ вже є учасником групи %2$@";
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "Користувач %1$@ вже є учасником групи «%2$@»";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%1$@ додано до %2$@";
@@ -161,7 +161,7 @@
 "ALL_MEDIA_FILTER_GIFS" = "GIF";
 
 /* Menu option to remove content type restriction in All Media view */
-"ALL_MEDIA_FILTER_NONE" = "Усі медіафайли";
+"ALL_MEDIA_FILTER_NONE" = "Медіафайли";
 
 /* Menu option to limit All Media view to displaying only photos */
 "ALL_MEDIA_FILTER_PHOTOS" = "Фото";
@@ -677,7 +677,7 @@
 "BUTTON_YES" = "Так";
 
 /* Label for button that lets users call a contact again. */
-"CALL_AGAIN_BUTTON_TITLE" = "Перетелефонувати";
+"CALL_AGAIN_BUTTON_TITLE" = "Передзвонити";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Пропущений аудіовиклик: %1$@";
@@ -782,7 +782,7 @@
 "CALL_VIEW_UNMUTE_LABEL" = "Сповіщати";
 
 /* notification action */
-"CALLBACK_BUTTON_TITLE" = "Перетелефонувати";
+"CALLBACK_BUTTON_TITLE" = "Передзвонити";
 
 /* Indicates to the user that their camera is currently off. */
 "CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Камера вимкнена";
@@ -1721,7 +1721,7 @@
 "DEBUG_LOG_INFO_BUTTON" = "Інформація про журнали налагодження";
 
 /* info message text in conversation view */
-"DECLINED_VIDEO_CALL" = "Ви відхилили відеодзвінок";
+"DECLINED_VIDEO_CALL" = "Ви відхилили відеовиклик";
 
 /* info message text in conversation view */
 "DECLINED_VOICE_CALL" = "Ви відхилили аудіовиклик";
@@ -2825,7 +2825,7 @@
 "GROUP_CALL_NO_ONE_HERE" = "Тут більше нікого немає";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%1$@ приєднався до дзвінка";
+"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "Користувач %1$@ приєднався до виклику";
 
 /* Copy explaining that a user has left the group call. Embeds {member name} */
 "GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%1$@ залишив дзвінок";
@@ -3170,7 +3170,7 @@
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ відкликав(-а) ваші привілеї адміністратора.";
 
 /* Message indicating that the local user was added to the group. */
-"GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "Учасник додав вас в групу.";
+"GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "Один з учасників додав вас до групи.";
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Адміністратор";
@@ -3503,7 +3503,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Почніть перший чат.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
-"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%1$@ додав(-ла) вас в групу";
+"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "Користувач %1$@ додав вас до групи";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
 "HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Запит спілкування";
@@ -3596,7 +3596,7 @@
 "INBOX_VIEW_EMPTY_INBOX" = "Чатів поки що немає.\n Напишіть щось друзям.";
 
 /* info message text in conversation view */
-"INCOMING_VIDEO_CALL" = "Вхідний відеодзвінок";
+"INCOMING_VIDEO_CALL" = "Вхідний відеовиклик";
 
 /* info message text in conversation view */
 "INCOMING_VOICE_CALL" = "Вхідний аудіовиклик";
@@ -3842,7 +3842,7 @@
 "LONG_TEXT_VIEW_TITLE" = "Повідомлення";
 
 /* nav bar button item */
-"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Усі медіафайли";
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Медіафайли";
 
 /* Title for the button that discards all edits in media editor. */
 "MEDIA_EDITOR_CLEAR_ALL" = "Очистити все";
@@ -4265,7 +4265,7 @@
 "MISSED_CALL_FOCUS_MODE" = "Пропущений виклик у режимі «Фокус»";
 
 /* info message text in conversation view */
-"MISSED_VIDEO_CALL" = "Пропущений відеодзвінок";
+"MISSED_VIDEO_CALL" = "Пропущений відеовиклик";
 
 /* info message text in conversation view */
 "MISSED_VOICE_CALL" = "Пропущений аудіовиклик";
@@ -4721,7 +4721,7 @@
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Оновіть Signal для використання платежів. Ваш баланс може бути неактуальним.";
 
 /* info message text in conversation view */
-"OUTGOING_MISSED_VIDEO_CALL" = "Відеодзвінок без відповіді";
+"OUTGOING_MISSED_VIDEO_CALL" = "Відеовиклик без відповіді";
 
 /* info message text in conversation view */
 "OUTGOING_MISSED_VOICE_CALL" = "Аудіовиклик без відповіді";
@@ -4736,7 +4736,7 @@
 "OUTGOING_TRANSFER_COMPLETE_TITLE" = "Перенесення завершено!";
 
 /* info message text in conversation view */
-"OUTGOING_VIDEO_CALL" = "Вихідний відеодзвінок";
+"OUTGOING_VIDEO_CALL" = "Вихідний відеовиклик";
 
 /* info message text in conversation view */
 "OUTGOING_VOICE_CALL" = "Вихідний аудіовиклик";
@@ -6062,7 +6062,7 @@
 "SECURE_SESSION_RESET" = "Безпечний сеанс скинуто.";
 
 /* Label for the 'see all' button. */
-"SEE_ALL_BUTTON" = "Дивитись усіх";
+"SEE_ALL_BUTTON" = "Усі";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Надіслати знову";
@@ -7271,10 +7271,10 @@
 "STORIES_NO_RECENT_MESSAGES" = "Оновлень поки що немає.";
 
 /* The subtitle when this story has no replies */
-"STORIES_NO_REPLIES_SUBTITLE" = "Відповіді можуть переглядати усі учасники цієї групи";
+"STORIES_NO_REPLIES_SUBTITLE" = "Усі учасники групового чату можуть переглядати відповіді";
 
 /* Indicates that this story has no replies yet */
-"STORIES_NO_REPLIES_YET" = "Ще немає відповідей";
+"STORIES_NO_REPLIES_YET" = "Відповідей ще немає";
 
 /* Indicates that this story has no views yet */
 "STORIES_NO_VIEWS_YET" = "Ще немає переглядів";
@@ -7283,10 +7283,10 @@
 "STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Дозвольте глядачам ваших історій реагувати й відповідати на них.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_HEADER" = "Відповіді і реакції";
+"STORIES_REPLIES_AND_REACTIONS_HEADER" = "Відповіді й реакції";
 
 /* Toggle text for the 'replies & reactions' switch in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Дозволити відповіді і реакції";
+"STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Дозволити відповіді й реакції";
 
 /* Title text for the 'replies' tab on the stories views & replies sheet */
 "STORIES_REPLIES_TAB" = "Відповіді";
@@ -7469,7 +7469,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "вони є в контактах вашого телефона.";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Ваші контакти бачать ваше ім'я та фото, а також усе, що ви викладаєте в «Моїй історії», якщо ви її не приховали.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Контакти Signal бачать ваше ім'я та фото, а також усе, що ви викладаєте в «Моїй історії», якщо ви її не приховали.";
 
 /* Header for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Контакти Signal</bold> — це люди, яким ви довіряєте. Ця довіра виявляється в тому, що:";
@@ -7676,22 +7676,22 @@
 "THIS_MESSAGE_WAS_DELETED" = "Це повідомлення було видалено.";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
-"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Учасник у %1$@,%2$@, та у %3$lu інших групах";
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Учасник «%1$@»,«%2$@» та %3$lu інших груп";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
 "THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "У цьому чаті ви можете робити для себе нотатки. Якщо ваш акаунт має зв'язані пристрої, нові нотатки буде синхронізовано.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Є учасником «%1$@»";
+"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Учасник «%1$@»";
 
 /* Indicator that a blurred avatar can be revealed by tapping. */
 "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "Детальніше";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Є учасником «%1$@», «%2$@» і «%3$@»";
+"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Учасник «%1$@», «%2$@» і «%3$@»";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Є учасником «%1$@» і «%2$@»";
+"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Учасник «%1$@» і «%2$@»";
 
 /* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
 "THREAD_MERGE_LEARN_MORE" = "Після спілкування з %1$@ ви дізналися, що цей номер належить користувачу %2$@. Це приватний номер.\n\nВашу історію повідомлень для обох чатів було об'єднано тут.";
