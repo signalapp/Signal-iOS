@@ -460,4 +460,34 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             )
         }
     }
+
+    // MARK: - Encryption
+
+    private func computePlaintextHash(input: Input) async throws -> Data {
+        switch input {
+        case .inMemory(let data):
+            guard let hash = Cryptography.computeSHA256Digest(data) else {
+                throw OWSAssertionError("Couldn't compute plaintext hash")
+            }
+            return hash
+        case .unencryptedFile(let fileUrl):
+            return try Cryptography.computeSHA256DigestOfFile(at: fileUrl)
+        case .encryptedFile(let fileUrl, let encryptionKey, let plaintextLength, _):
+            let fileHandle = try Cryptography.encryptedAttachmentFileHandle(
+                at: fileUrl,
+                plaintextLength: plaintextLength,
+                encryptionKey: encryptionKey
+            )
+            var digestContext = SHA256DigestContext()
+            var bytesRemaining = plaintextLength
+            while bytesRemaining > 0 {
+                // Read in 1mb chunks.
+                let chunkSize = min(bytesRemaining, 1024 * 1024)
+                let data = try fileHandle.read(upToCount: chunkSize)
+                try digestContext.update(data)
+                bytesRemaining -= chunkSize
+            }
+            return try digestContext.finalize()
+        }
+    }
 }
