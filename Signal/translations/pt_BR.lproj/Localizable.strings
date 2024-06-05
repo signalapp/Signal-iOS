@@ -326,7 +326,7 @@
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE" = "Mais lento, tamanho maior";
 
 /* Subtitle for the 'standard' option for media quality. */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Mais rápido, tamanho menor";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Envio mais rápido, arquivo menor";
 
 /* Title for the attachment approval media quality sheet */
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Qualidade da foto";
@@ -706,20 +706,23 @@
 /* label for button shown when an incoming call rings */
 "CALL_CONTROLS_INCOMING_DECLINE" = "recusar";
 
+/* Label on button for lowering hand in call. */
+"CALL_LOWER_HAND_BUTTON_LABEL" = "Lower Hand";
+
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Chamada perdida porque o número de segurança da outra pessoa mudou.";
+
+/* Label on button for raising hand in call. */
+"CALL_RAISE_HAND_BUTTON_LABEL" = "Raise Hand";
 
 /* Button to return to the current call */
 "CALL_RETURN_BUTTON" = "Voltar para a chamada";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "Sem Resposta.";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "No answer";
 
 /* Button to start a call */
 "CALL_START_BUTTON" = "Começar a Chamada";
-
-/* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
-"CALL_STATUS_FORMAT" = "Signal %1$@";
 
 /* Label for call button for alert offering to call a user. */
 "CALL_USER_ALERT_CALL_BUTTON" = "Ligar";
@@ -1957,6 +1960,12 @@
 /* The unit for a number of weeks */
 "DISAPPEARING_MESSAGES_WEEKS" = "semanas";
 
+/* Message/subtitle for confirmation prompt when discarding a draft before editing a message */
+"DISCARD_DRAFT_CONFIRMATION_MESSAGE" = "This action can’t be undone.";
+
+/* Title for confirmation prompt when discarding a draft before editing a message */
+"DISCARD_DRAFT_CONFIRMATION_TITLE" = "Discard Draft?";
+
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Ignorar";
 
@@ -2450,7 +2459,7 @@
 "END_CALL_RESPONDER_IS_BUSY" = "Ocupado";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Chamada Falhou.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Call failed";
 
 /* Error indicating that a message could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Não foi possível encaminhar a mensagem.";
@@ -3551,13 +3560,13 @@
 "IN_CALL_CONNECTING" = "Conectando…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
-"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Atendeu em outro aparelho.";
+"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Answered on other device";
 
 /* Call screen label when call was canceled on this device because the call recipient has a call in progress on another device. */
-"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Chamada ocupada em outro aparelho.";
+"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Missed because a call in progress on another device";
 
 /* Call screen label when call was canceled on this device because the call recipient declined on another device. */
-"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Recusou em outro aparelho.";
+"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Declined on other device";
 
 /* Call setup status label */
 "IN_CALL_RECONNECTING" = "Reconectando…";
@@ -3575,7 +3584,7 @@
 "IN_CALL_SECURING" = "Atendida. Estabelecendo chamada segura…";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Chamada encerrada.";
+"IN_CALL_TERMINATED" = "Call ended";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user doesn't want to be reminded. */
 "INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "Não me lembre";
@@ -5972,7 +5981,7 @@
 "SCREEN_LOCK_UNLOCK_FAILED" = "Falha na autenticação";
 
 /* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Destrancar Signal";
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Desbloquear";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
 "SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Nome, nome de usuário ou número";

@@ -706,20 +706,23 @@
 /* label for button shown when an incoming call rings */
 "CALL_CONTROLS_INCOMING_DECLINE" = "rechazar";
 
+/* Label on button for lowering hand in call. */
+"CALL_LOWER_HAND_BUTTON_LABEL" = "Lower Hand";
+
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Llamada perdida debido a cambio en cifras de seguridad.";
+
+/* Label on button for raising hand in call. */
+"CALL_RAISE_HAND_BUTTON_LABEL" = "Raise Hand";
 
 /* Button to return to the current call */
 "CALL_RETURN_BUTTON" = "Volver a la llamada";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "Sin respuesta";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "No answer";
 
 /* Button to start a call */
 "CALL_START_BUTTON" = "Iniciar llamada";
-
-/* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
-"CALL_STATUS_FORMAT" = "Signal %1$@";
 
 /* Label for call button for alert offering to call a user. */
 "CALL_USER_ALERT_CALL_BUTTON" = "Llamar";
@@ -1957,6 +1960,12 @@
 /* The unit for a number of weeks */
 "DISAPPEARING_MESSAGES_WEEKS" = "semanas";
 
+/* Message/subtitle for confirmation prompt when discarding a draft before editing a message */
+"DISCARD_DRAFT_CONFIRMATION_MESSAGE" = "This action can’t be undone.";
+
+/* Title for confirmation prompt when discarding a draft before editing a message */
+"DISCARD_DRAFT_CONFIRMATION_TITLE" = "Discard Draft?";
+
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Ignorar";
 
@@ -2450,7 +2459,7 @@
 "END_CALL_RESPONDER_IS_BUSY" = "Ocupado";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Llamada fallida.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Call failed";
 
 /* Error indicating that a message could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Fallo al reenviar el mensaje.";
@@ -3551,13 +3560,13 @@
 "IN_CALL_CONNECTING" = "Conectando …";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
-"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Atendida en otro dispositivo.";
+"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Answered on other device";
 
 /* Call screen label when call was canceled on this device because the call recipient has a call in progress on another device. */
-"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Perdida debido a llamada en curso en otro dispositivo.";
+"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Missed because a call in progress on another device";
 
 /* Call screen label when call was canceled on this device because the call recipient declined on another device. */
-"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Rechazada en otro dispositivo.";
+"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Declined on other device";
 
 /* Call setup status label */
 "IN_CALL_RECONNECTING" = "Reconectando …";
@@ -3575,7 +3584,7 @@
 "IN_CALL_SECURING" = "Respondida. Asegurando …";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Llamada finalizada.";
+"IN_CALL_TERMINATED" = "Call ended";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user doesn't want to be reminded. */
 "INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "No me lo recuerdes";
@@ -4646,7 +4655,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_WITH_UNKNOWN_REGLOCK_EXPLANATION" = "Te has quedado sin intentos pero aún puedes acceder a tu cuenta de Signal si verificas tu número de teléfono. Por tu seguridad y para proteger tu privacidad, se restaurará tu cuenta eliminando cualquier información guardada en tu perfil o ajustes.";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Términos y política de privacidad";
+"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Términos y Política de privacidad";
 
 /* Title of the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TITLE" = "Lleva la privacidad contigo.\nAñade tu personalidad en todos tus mensajes.";
@@ -6392,7 +6401,7 @@
 "SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Dejar archivados los chats silenciados";
 
 /* No comment provided by engineer. */
-"SETTINGS_LEGAL_TERMS_CELL" = "Aviso legal y privacidad";
+"SETTINGS_LEGAL_TERMS_CELL" = "Términos y Política de privacidad";
 
 /* Setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS" = "Vista previa de enlaces";

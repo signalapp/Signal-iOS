@@ -706,20 +706,23 @@
 /* label for button shown when an incoming call rings */
 "CALL_CONTROLS_INCOMING_DECLINE" = "avfärda";
 
+/* Label on button for lowering hand in call. */
+"CALL_LOWER_HAND_BUTTON_LABEL" = "Lower Hand";
+
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Missade samtalet för att den andra personens säkerhetsnummer har ändrats.";
+
+/* Label on button for raising hand in call. */
+"CALL_RAISE_HAND_BUTTON_LABEL" = "Raise Hand";
 
 /* Button to return to the current call */
 "CALL_RETURN_BUTTON" = "Återgå till samtal";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "Inget svar";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "No answer";
 
 /* Button to start a call */
 "CALL_START_BUTTON" = "Starta samtal";
-
-/* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
-"CALL_STATUS_FORMAT" = "Signal %1$@";
 
 /* Label for call button for alert offering to call a user. */
 "CALL_USER_ALERT_CALL_BUTTON" = "Ring";
@@ -1957,6 +1960,12 @@
 /* The unit for a number of weeks */
 "DISAPPEARING_MESSAGES_WEEKS" = "veckor";
 
+/* Message/subtitle for confirmation prompt when discarding a draft before editing a message */
+"DISCARD_DRAFT_CONFIRMATION_MESSAGE" = "This action can’t be undone.";
+
+/* Title for confirmation prompt when discarding a draft before editing a message */
+"DISCARD_DRAFT_CONFIRMATION_TITLE" = "Discard Draft?";
+
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Avfärda";
 
@@ -2450,7 +2459,7 @@
 "END_CALL_RESPONDER_IS_BUSY" = "Upptaget";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Samtalsfel.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Call failed";
 
 /* Error indicating that a message could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Det gick inte att vidarebefordra meddelandet.";
@@ -3551,13 +3560,13 @@
 "IN_CALL_CONNECTING" = "Ansluter …";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
-"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Besvaras på annan enhet.";
+"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Answered on other device";
 
 /* Call screen label when call was canceled on this device because the call recipient has a call in progress on another device. */
-"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Missades på grund av pågående samtal på annan enhet.";
+"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Missed because a call in progress on another device";
 
 /* Call screen label when call was canceled on this device because the call recipient declined on another device. */
-"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Avfärdades på annan enhet.";
+"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Declined on other device";
 
 /* Call setup status label */
 "IN_CALL_RECONNECTING" = "Återansluter …";
@@ -3575,7 +3584,7 @@
 "IN_CALL_SECURING" = "Besvarat. Säkrar …";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Samtalet avslutades.";
+"IN_CALL_TERMINATED" = "Call ended";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user doesn't want to be reminded. */
 "INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "Påminn mig inte";

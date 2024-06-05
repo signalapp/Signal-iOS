@@ -107,7 +107,7 @@
 "ADD_TO_GROUP_ALREADY_A_MEMBER" = "Вже учасник";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%1$@ вже є учасником групи %2$@";
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "Користувач %1$@ вже є учасником групи «%2$@»";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%1$@ додано до %2$@";
@@ -161,7 +161,7 @@
 "ALL_MEDIA_FILTER_GIFS" = "GIF";
 
 /* Menu option to remove content type restriction in All Media view */
-"ALL_MEDIA_FILTER_NONE" = "Усі медіафайли";
+"ALL_MEDIA_FILTER_NONE" = "Медіафайли";
 
 /* Menu option to limit All Media view to displaying only photos */
 "ALL_MEDIA_FILTER_PHOTOS" = "Фото";
@@ -677,7 +677,7 @@
 "BUTTON_YES" = "Так";
 
 /* Label for button that lets users call a contact again. */
-"CALL_AGAIN_BUTTON_TITLE" = "Перетелефонувати";
+"CALL_AGAIN_BUTTON_TITLE" = "Передзвонити";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Пропущений аудіовиклик: %1$@";
@@ -706,20 +706,23 @@
 /* label for button shown when an incoming call rings */
 "CALL_CONTROLS_INCOMING_DECLINE" = "відхилити";
 
+/* Label on button for lowering hand in call. */
+"CALL_LOWER_HAND_BUTTON_LABEL" = "Lower Hand";
+
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "Виклик пропущено, оскільки код безпеки особи, що телефонує, змінився.";
+
+/* Label on button for raising hand in call. */
+"CALL_RAISE_HAND_BUTTON_LABEL" = "Raise Hand";
 
 /* Button to return to the current call */
 "CALL_RETURN_BUTTON" = "Повернутись до виклику";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "Немає відповіді";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "No answer";
 
 /* Button to start a call */
-"CALL_START_BUTTON" = "Почати дзвінок";
-
-/* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
-"CALL_STATUS_FORMAT" = "Виклик у Signal: %1$@";
+"CALL_START_BUTTON" = "Почати виклик";
 
 /* Label for call button for alert offering to call a user. */
 "CALL_USER_ALERT_CALL_BUTTON" = "Виклик";
@@ -758,7 +761,7 @@
 "CALL_VIEW_HANGUP_LABEL" = "Завершити виклик";
 
 /* Accessibility label for leaving a call */
-"CALL_VIEW_LEAVE_CALL_LABEL" = "Покинути дзвінок";
+"CALL_VIEW_LEAVE_CALL_LABEL" = "Покинути виклик";
 
 /* Accessibility label for the More button in the Call Controls row. */
 "CALL_VIEW_MORE_LABEL" = "Більше";
@@ -782,7 +785,7 @@
 "CALL_VIEW_UNMUTE_LABEL" = "Сповіщати";
 
 /* notification action */
-"CALLBACK_BUTTON_TITLE" = "Перетелефонувати";
+"CALLBACK_BUTTON_TITLE" = "Передзвонити";
 
 /* Indicates to the user that their camera is currently off. */
 "CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Камера вимкнена";
@@ -842,10 +845,10 @@
 "CALLS_TAB_NO_MISSED_CALLS_LABEL" = "Немає пропущених викликів";
 
 /* Label explaining that the user has no recent calls, so their Calls Tab is empty. */
-"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "Немає нещодавніх викликів";
+"CALLS_TAB_NO_RECENT_CALLS_LABEL" = "Викликів не було";
 
 /* Label suggesting that the user start a call, shown when their Calls Tab is empty. */
-"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "Почніть із дзвінка другу";
+"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "Подзвоніть комусь із друзів";
 
 /* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
 "CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "Повернутися до виклику";
@@ -1511,7 +1514,7 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS" = "Усі учасники";
 
 /* Footer for the 'send messages' section in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Оберіть, хто може відправити повідомлення та почати дзвінок у цій групі.";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Оберіть, хто в цій групі зможе надсилати повідомлення та починати виклики.";
 
 /* Label for 'send messages' action in conversation settings permissions view. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Відправити повідомлення";
@@ -1721,7 +1724,7 @@
 "DEBUG_LOG_INFO_BUTTON" = "Інформація про журнали налагодження";
 
 /* info message text in conversation view */
-"DECLINED_VIDEO_CALL" = "Ви відхилили відеодзвінок";
+"DECLINED_VIDEO_CALL" = "Ви відхилили відеовиклик";
 
 /* info message text in conversation view */
 "DECLINED_VOICE_CALL" = "Ви відхилили аудіовиклик";
@@ -1956,6 +1959,12 @@
 
 /* The unit for a number of weeks */
 "DISAPPEARING_MESSAGES_WEEKS" = "тижні";
+
+/* Message/subtitle for confirmation prompt when discarding a draft before editing a message */
+"DISCARD_DRAFT_CONFIRMATION_MESSAGE" = "This action can’t be undone.";
+
+/* Title for confirmation prompt when discarding a draft before editing a message */
+"DISCARD_DRAFT_CONFIRMATION_TITLE" = "Discard Draft?";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Закрити";
@@ -2399,7 +2408,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Привіт,\n\nОстаннім часом я користуюсь Signal, щоб усі чати на моєму iPhone залишались приватними. Хотів би бачити його встановленим і на твоєму пристрої, щоб бути впевненими, що лише ми вдвох маємо доступ до наших повідомлень та дзвінків.\n\nSignal доступний для iPhone та Android. Завантажувати тут: %1$@\n\nSignal працює як твій поточний месенджер. Ми можемо: відправити фото та відео, дзвонити один одному та створювати групові дзвінки. А найкраще те, що ніхто окрім нас цього не бачитиме чи чутиме, навіть творці Signal!\n\nБільше про Open Whisper Systems — людей, які створюють Signal, тут: %2$@";
+"EMAIL_INVITE_BODY" = "Привіт,\n\nОстаннім часом я користуюся Signal, щоб усі мої чати на iPhone були конфіденційні. Було б добре, якби він був установлений і в тебе. Тоді ми точно знатимемо, що лише ми з тобою читаємо наші повідомлення й чуємо наші дзвінки.\n\nSignal можна завантажити й на iPhone, і на Android за цим посиланням: %1$@\n\nSignal працює так само, як і твій поточний месенджер. У ньому можна обмінюватися фото й відео, дзвонити й створювати групові чати. А найкраще те, що ніхто крім нас не бачить і не чує того, що ми робимо в цьому месенджері, навіть самі творці Signal!\n\nТут можна почитати про Open Whisper Systems — людей, які створюють Signal: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Пора переходити в Signal";
@@ -2450,7 +2459,7 @@
 "END_CALL_RESPONDER_IS_BUSY" = "зайнято";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Збій виклику.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Call failed";
 
 /* Error indicating that a message could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Не вдалось переслати повідомлення.";
@@ -2765,31 +2774,31 @@
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "Користувача %1$@ заблоковано";
 
 /* Message for error alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Лише адміністратори цієї групи можуть почати дзвінок.";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Починати виклики можуть тільки адміністратори цієї групи.";
 
 /* Title for error alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Неможливо почати дзвінок у групі";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Неможливо почати груповий виклик";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "Користувача %1$@ заблоковано";
 
 /* Button to continue an ongoing group call */
-"GROUP_CALL_CONTINUE_BUTTON" = "Продовжити дзвінок";
+"GROUP_CALL_CONTINUE_BUTTON" = "Продовжити виклик";
 
 /* Text in conversation view for a group call that has since ended */
-"GROUP_CALL_ENDED_MESSAGE" = "Груповий дзвінок завершено";
+"GROUP_CALL_ENDED_MESSAGE" = "Груповий виклик завершено";
 
 /* A button to receive more info about not seeing a participant in group call grid */
 "GROUP_CALL_ERROR_DETAILS" = "Детальніше";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
-"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Досягнуто максимальної кількості учасників для цього дзвінка. Спробуйте пізніше.";
+"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Для цього виклику досягнуто максимальної кількості учасників. Спробуйте пізніше.";
 
 /* Text explaining that someone has sent a ring to the group. Embeds {ring sender name} */
 "GROUP_CALL_INCOMING_RING_FORMAT" = "%1$@ дзвонить групі";
 
 /* Text explaining the group call is full */
-"GROUP_CALL_IS_FULL" = "Дзвінок повний";
+"GROUP_CALL_IS_FULL" = "Немає місць";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
 "GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Виклик: %1$@…";
@@ -2801,7 +2810,7 @@
 "GROUP_CALL_JOIN_BUTTON" = "Приєднатись";
 
 /* Button to leave a group call */
-"GROUP_CALL_LEAVE_BUTTON" = "Покинути дзвінок";
+"GROUP_CALL_LEAVE_BUTTON" = "Покинути виклик";
 
 /* Title for the section of the group call member list which displays the list of all members in the call. */
 "GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "Учасники виклику";
@@ -2825,19 +2834,19 @@
 "GROUP_CALL_NO_ONE_HERE" = "Тут більше нікого немає";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%1$@ приєднався до дзвінка";
+"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "Користувач %1$@ приєднався до виклику";
 
 /* Copy explaining that a user has left the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%1$@ залишив дзвінок";
+"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "Користувач %1$@ покинув виклик";
 
 /* Copy explaining that two users have joined the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%1$@ та %2$@ приєднались до дзвінка";
+"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "Користувачі %1$@ та %2$@ приєдналися до виклику";
 
 /* Copy explaining that two users have left the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%1$@ та %2$@ залишили дзвінок";
+"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "Користувачі %1$@ та %2$@ покинули виклик";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
-"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%1$@ у цьому дзвінку";
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%1$@ бере участь у цьому виклику";
 
 /* Text explaining that a member is presenting. Embeds {member name} */
 "GROUP_CALL_PRESENTING_FORMAT" = "%1$@ поширює свій екран";
@@ -2855,28 +2864,28 @@
 "GROUP_CALL_SCREEN_SHARE_TOAST" = "Потягніть вгору, щоб побачити поширення екрану";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
-"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Хтось почав груповий дзвінок";
+"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Хтось почав груповий виклик";
 
 /* Toast view text informing user about swiping to speaker view */
 "GROUP_CALL_SPEAKER_VIEW_TOAST" = "Потягніть вгору для зміни вигляду";
 
 /* Tooltip highlighting group calls. */
-"GROUP_CALL_START_TOOLTIP" = "Натисніть сюди, щоб почати груповий дзвінок";
+"GROUP_CALL_START_TOOLTIP" = "Торкніться, щоб почати груповий виклик";
 
 /* Text explaining that you started a group call. */
-"GROUP_CALL_STARTED_BY_YOU" = "Ви розпочали груповий дзвінок";
+"GROUP_CALL_STARTED_BY_YOU" = "Ви почали груповий виклик";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
-"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%1$@ розпочав груповий дзвінок";
+"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "Користувач %1$@ почав груповий виклик";
 
 /* Text displayed when trying to turn on ringing when calling a large group. */
-"GROUP_CALL_TOO_LARGE_TO_RING" = "Група завелика для дзвінків її учасникам.";
+"GROUP_CALL_TOO_LARGE_TO_RING" = "Група завелика, тому здійснити виклик учасникам неможливо.";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ та %2$@ у цьому дзвінку";
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ і %2$@ беруть участь у цьому виклику";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "Дзвінок було перервано. Перевірте з'єднання та спробуйте знов.";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "Виклик було перервано. Перевірте з'єднання та спробуйте приєднатися до нього знов.";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name} */
 "GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%1$@ отримає сповіщення";
@@ -2891,7 +2900,7 @@
 "GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal зателефонує користувачам %1$@ і %2$@";
 
 /* Text explaining that you are in the group call. */
-"GROUP_CALL_YOU_ARE_HERE" = "Ви у груповому дзвінку";
+"GROUP_CALL_YOU_ARE_HERE" = "Ви берете участь у груповому виклику";
 
 /* Text describing the local user in the group call members sheet when connected from another device. */
 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE" = "Ви (на іншому пристрої)";
@@ -3170,7 +3179,7 @@
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ відкликав(-а) ваші привілеї адміністратора.";
 
 /* Message indicating that the local user was added to the group. */
-"GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "Учасник додав вас в групу.";
+"GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "Один з учасників додав вас до групи.";
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Адміністратор";
@@ -3503,7 +3512,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Почніть перший чат.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
-"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%1$@ додав(-ла) вас в групу";
+"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "Користувач %1$@ додав вас до групи";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
 "HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Запит спілкування";
@@ -3551,13 +3560,13 @@
 "IN_CALL_CONNECTING" = "триває з'єднання…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
-"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Розмову прийнято на іншому пристрої.";
+"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Answered on other device";
 
 /* Call screen label when call was canceled on this device because the call recipient has a call in progress on another device. */
-"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Пропущений, тому що виконується дзвінок на іншому пристрої.";
+"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Missed because a call in progress on another device";
 
 /* Call screen label when call was canceled on this device because the call recipient declined on another device. */
-"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Відхилений на іншому пристрої.";
+"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Declined on other device";
 
 /* Call setup status label */
 "IN_CALL_RECONNECTING" = "відновлюємо з'єднання…";
@@ -3575,7 +3584,7 @@
 "IN_CALL_SECURING" = "є відповідь. Забезпечуємо захист…";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "завершено";
+"IN_CALL_TERMINATED" = "Call ended";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user doesn't want to be reminded. */
 "INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "Не нагадувати";
@@ -3596,7 +3605,7 @@
 "INBOX_VIEW_EMPTY_INBOX" = "Чатів поки що немає.\n Напишіть щось друзям.";
 
 /* info message text in conversation view */
-"INCOMING_VIDEO_CALL" = "Вхідний відеодзвінок";
+"INCOMING_VIDEO_CALL" = "Вхідний відеовиклик";
 
 /* info message text in conversation view */
 "INCOMING_VOICE_CALL" = "Вхідний аудіовиклик";
@@ -3800,7 +3809,7 @@
 "LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Дозволити сповіщення";
 
 /* Explanation in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_EXPLANATION" = "Дозвольте сповіщення, щоб дізнаватися про нові повідомлення, дзвінки чи активність у розмові.";
+"LINKED_ONBOARDING_PERMISSIONS_EXPLANATION" = "Увімкніть сповіщення, щоб знати про нові повідомлення, виклики та оновлення в чатах.";
 
 /* Title of the 'onboarding permissions' view. */
 "LINKED_ONBOARDING_PERMISSIONS_TITLE" = "Дозвольте сповіщення";
@@ -3842,7 +3851,7 @@
 "LONG_TEXT_VIEW_TITLE" = "Повідомлення";
 
 /* nav bar button item */
-"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Усі медіафайли";
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Медіафайли";
 
 /* Title for the button that discards all edits in media editor. */
 "MEDIA_EDITOR_CLEAR_ALL" = "Очистити все";
@@ -4265,7 +4274,7 @@
 "MISSED_CALL_FOCUS_MODE" = "Пропущений виклик у режимі «Фокус»";
 
 /* info message text in conversation view */
-"MISSED_VIDEO_CALL" = "Пропущений відеодзвінок";
+"MISSED_VIDEO_CALL" = "Пропущений відеовиклик";
 
 /* info message text in conversation view */
 "MISSED_VOICE_CALL" = "Пропущений аудіовиклик";
@@ -4721,7 +4730,7 @@
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Оновіть Signal для використання платежів. Ваш баланс може бути неактуальним.";
 
 /* info message text in conversation view */
-"OUTGOING_MISSED_VIDEO_CALL" = "Відеодзвінок без відповіді";
+"OUTGOING_MISSED_VIDEO_CALL" = "Відеовиклик без відповіді";
 
 /* info message text in conversation view */
 "OUTGOING_MISSED_VOICE_CALL" = "Аудіовиклик без відповіді";
@@ -4736,7 +4745,7 @@
 "OUTGOING_TRANSFER_COMPLETE_TITLE" = "Перенесення завершено!";
 
 /* info message text in conversation view */
-"OUTGOING_VIDEO_CALL" = "Вихідний відеодзвінок";
+"OUTGOING_VIDEO_CALL" = "Вихідний відеовиклик";
 
 /* info message text in conversation view */
 "OUTGOING_VOICE_CALL" = "Вихідний аудіовиклик";
@@ -6062,7 +6071,7 @@
 "SECURE_SESSION_RESET" = "Безпечний сеанс скинуто.";
 
 /* Label for the 'see all' button. */
-"SEE_ALL_BUTTON" = "Дивитись усіх";
+"SEE_ALL_BUTTON" = "Усі";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Надіслати знову";
@@ -7271,10 +7280,10 @@
 "STORIES_NO_RECENT_MESSAGES" = "Оновлень поки що немає.";
 
 /* The subtitle when this story has no replies */
-"STORIES_NO_REPLIES_SUBTITLE" = "Відповіді можуть переглядати усі учасники цієї групи";
+"STORIES_NO_REPLIES_SUBTITLE" = "Усі учасники групового чату можуть переглядати відповіді";
 
 /* Indicates that this story has no replies yet */
-"STORIES_NO_REPLIES_YET" = "Ще немає відповідей";
+"STORIES_NO_REPLIES_YET" = "Відповідей ще немає";
 
 /* Indicates that this story has no views yet */
 "STORIES_NO_VIEWS_YET" = "Ще немає переглядів";
@@ -7283,10 +7292,10 @@
 "STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Дозвольте глядачам ваших історій реагувати й відповідати на них.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_HEADER" = "Відповіді і реакції";
+"STORIES_REPLIES_AND_REACTIONS_HEADER" = "Відповіді й реакції";
 
 /* Toggle text for the 'replies & reactions' switch in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Дозволити відповіді і реакції";
+"STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Дозволити відповіді й реакції";
 
 /* Title text for the 'replies' tab on the stories views & replies sheet */
 "STORIES_REPLIES_TAB" = "Відповіді";
@@ -7469,7 +7478,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "вони є в контактах вашого телефона.";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Ваші контакти бачать ваше ім'я та фото, а також усе, що ви викладаєте в «Моїй історії», якщо ви її не приховали.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Контакти Signal бачать ваше ім'я та фото, а також усе, що ви викладаєте в «Моїй історії», якщо ви її не приховали.";
 
 /* Header for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Контакти Signal</bold> — це люди, яким ви довіряєте. Ця довіра виявляється в тому, що:";
@@ -7676,22 +7685,22 @@
 "THIS_MESSAGE_WAS_DELETED" = "Це повідомлення було видалено.";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
-"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Учасник у %1$@,%2$@, та у %3$lu інших групах";
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Учасник «%1$@»,«%2$@» та %3$lu інших груп";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
 "THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "У цьому чаті ви можете робити для себе нотатки. Якщо ваш акаунт має зв'язані пристрої, нові нотатки буде синхронізовано.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Є учасником «%1$@»";
+"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Учасник «%1$@»";
 
 /* Indicator that a blurred avatar can be revealed by tapping. */
 "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "Детальніше";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Є учасником «%1$@», «%2$@» і «%3$@»";
+"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Учасник «%1$@», «%2$@» і «%3$@»";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Є учасником «%1$@» і «%2$@»";
+"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Учасник «%1$@» і «%2$@»";
 
 /* Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John). */
 "THREAD_MERGE_LEARN_MORE" = "Після спілкування з %1$@ ви дізналися, що цей номер належить користувачу %2$@. Це приватний номер.\n\nВашу історію повідомлень для обох чатів було об'єднано тут.";
