@@ -10,7 +10,13 @@ import GRDB
 /// Consumers of this table should delete the associate file(s) and _then_ delete the row from this table.
 public struct OrphanedAttachmentRecord: Codable, FetchableRecord, MutablePersistableRecord {
 
-    var sqliteId: Int64?
+    public typealias IDType = Int64
+
+    var sqliteId: IDType?
+    /// If true, the files in question are going to be uses for a as-yet-uncreated attachment.
+    /// We want to delete these if creation fails, but for these (and only these) we want to
+    /// wait a bit to give attachment creation a chance to succeed first.
+    var isPendingAttachment: Bool
     let localRelativeFilePath: String?
     let localRelativeFilePathThumbnail: String?
     let localRelativeFilePathAudioWaveform: String?
@@ -20,6 +26,7 @@ public struct OrphanedAttachmentRecord: Codable, FetchableRecord, MutablePersist
 
     public enum CodingKeys: String, CodingKey {
         case sqliteId = "id"
+        case isPendingAttachment = "isPendingAttachment"
         case localRelativeFilePath
         case localRelativeFilePathThumbnail
         case localRelativeFilePathAudioWaveform
@@ -37,13 +44,15 @@ public struct OrphanedAttachmentRecord: Codable, FetchableRecord, MutablePersist
     // MARK: - Initializers
 
     internal init(
-        sqliteId: Int64? = nil,
+        sqliteId: IDType? = nil,
+        isPendingAttachment: Bool = false,
         localRelativeFilePath: String?,
         localRelativeFilePathThumbnail: String?,
         localRelativeFilePathAudioWaveform: String?,
         localRelativeFilePathVideoStillFrame: String?
     ) {
         self.sqliteId = sqliteId
+        self.isPendingAttachment = isPendingAttachment
         self.localRelativeFilePath = localRelativeFilePath
         self.localRelativeFilePathThumbnail = localRelativeFilePathThumbnail
         self.localRelativeFilePathAudioWaveform = localRelativeFilePathAudioWaveform

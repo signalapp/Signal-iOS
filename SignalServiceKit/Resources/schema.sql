@@ -1848,6 +1848,7 @@ CREATE
             ,"localRelativeFilePathThumbnail" TEXT
             ,"localRelativeFilePathAudioWaveform" TEXT
             ,"localRelativeFilePathVideoStillFrame" TEXT
+            ,"isPendingAttachment" BOOLEAN NOT NULL DEFAULT 0
         )
 ;
 

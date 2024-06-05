@@ -262,6 +262,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addV2AttachmentTable
         case addBulkDeleteInteractionJobRecord
         case cleanUpThreadIndexes
+        case addOrphanAttachmentPendingColumn
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -323,7 +324,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 71
+    public static let grdbSchemaVersionLatest: UInt = 72
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -2825,6 +2826,20 @@ public class GRDBSchemaMigrator: NSObject {
             DROP INDEX IF EXISTS "index_thread_on_shouldThreadBeVisible";
             CREATE INDEX "index_thread_on_shouldThreadBeVisible" ON "model_TSThread" ("shouldThreadBeVisible", "lastInteractionRowId" DESC);
             """)
+            return .success(())
+        }
+
+        migrator.registerMigration(.addOrphanAttachmentPendingColumn) { tx in
+            try tx.database.alter(table: "OrphanedAttachment") { table in
+                // When we create an attachment, we first insert the new files
+                // into the orphan table, so they get cleaned up if we fail.
+                // We don't want to clean them up immediately, so track when
+                // we do this so for these cases (and not others) we wait a bit
+                // before deleting.
+                table.add(column: "isPendingAttachment", .boolean)
+                    .notNull()
+                    .defaults(to: false)
+            }
             return .success(())
         }
 
