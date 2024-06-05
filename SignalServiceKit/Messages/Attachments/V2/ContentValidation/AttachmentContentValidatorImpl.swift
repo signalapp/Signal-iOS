@@ -48,10 +48,25 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         mimeType: String,
         sourceFilename: String?
     ) async throws -> PendingAttachment {
+        // Very very first thing: validate the digest.
+        // Throw if this fails.
+        let validated = Cryptography.validateAttachment(
+            at: fileUrl,
+            metadata: .init(
+                key: encryptionKey,
+                digest: digestSHA256Ciphertext,
+                plaintextLength: Int(plaintextLength)
+            )
+        )
+        guard validated else {
+            throw OWSAssertionError("Invalid encryption")
+        }
+
         let input = Input.encryptedFile(
             fileUrl,
             encryptionKey: encryptionKey,
-            plaintextLength: plaintextLength
+            plaintextLength: plaintextLength,
+            digestSHA256Ciphertext: digestSHA256Ciphertext
         )
         return try await validateContents(
             input: input,
@@ -79,7 +94,12 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
     private enum Input {
         case inMemory(Data)
         case unencryptedFile(URL)
-        case encryptedFile(URL, encryptionKey: Data, plaintextLength: UInt32)
+        case encryptedFile(
+            URL,
+            encryptionKey: Data,
+            plaintextLength: UInt32,
+            digestSHA256Ciphertext: Data
+        )
     }
 
     private func validateContents(
@@ -174,7 +194,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 return data
             case .unencryptedFile(let fileUrl):
                 return try FileHandleImageSource(fileUrl: fileUrl)
-            case let .encryptedFile(fileUrl, encryptionKey, plaintextLength):
+            case let .encryptedFile(fileUrl, encryptionKey, plaintextLength, _):
                 return try EncryptedFileHandleImageSource(
                     encryptedFileUrl: fileUrl,
                     encryptionKey: encryptionKey,
@@ -231,7 +251,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 return data.count
             case .unencryptedFile(let fileUrl):
                 return OWSFileSystem.fileSize(of: fileUrl)?.intValue ?? 0
-            case .encryptedFile(_, _, let plaintextLength):
+            case .encryptedFile(_, _, let plaintextLength, _):
                 return Int(plaintextLength)
             }
         }()
@@ -248,7 +268,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 return AVAsset(url: tmpFile)
             case .unencryptedFile(let fileUrl):
                 return AVAsset(url: fileUrl)
-            case let .encryptedFile(fileUrl, encryptionKey, plaintextLength):
+            case let .encryptedFile(fileUrl, encryptionKey, plaintextLength, _):
                 return try AVAsset.fromEncryptedFile(
                     at: fileUrl,
                     encryptionKey: encryptionKey,
@@ -342,7 +362,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             let player = try AVAudioPlayer(contentsOf: fileUrl)
             player.prepareToPlay()
             return player.duration
-        case let .encryptedFile(fileUrl, encryptionKey, plaintextLength):
+        case let .encryptedFile(fileUrl, encryptionKey, plaintextLength, _):
             // We can't load an AVAudioPlayer for encrypted files.
             // Use AVAsset instead.
             let asset = try AVAsset.fromEncryptedFile(
@@ -385,7 +405,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 tmpFileUrl: outputWaveformFile,
                 isTmpFileEncrypted: false
             )
-        case let .encryptedFile(fileUrl, encryptionKey, plaintextLength):
+        case let .encryptedFile(fileUrl, encryptionKey, plaintextLength, _):
             try await audioWaveformManager.audioWaveform(
                 forEncryptedAudioFileAtPath: fileUrl.path,
                 encryptionKey: encryptionKey,
