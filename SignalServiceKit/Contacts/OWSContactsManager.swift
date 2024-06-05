@@ -929,7 +929,6 @@ extension OWSContactsManager: ContactManager {
         let intersectionPromise = intersectContacts(phoneNumbersToIntersect, retryDelaySeconds: 1)
         return intersectionPromise.done(on: swiftValues.intersectionQueue) { intersectedRecipients in
             Self.databaseStorage.write { tx in
-                self.migrateDidIntersectAddressBookIfNeeded(tx: tx)
                 self.postJoinNotificationsIfNeeded(
                     addressBookPhoneNumbers: systemContactPhoneNumbers,
                     phoneNumberRegistrationStatus: signalRecipientPhoneNumbers,
@@ -943,28 +942,6 @@ extension OWSContactsManager: ContactManager {
                 self.didFinishIntersection(mode: intersectionMode, phoneNumbers: phoneNumbersToIntersect, tx: tx)
             }
         }
-    }
-
-    private func migrateDidIntersectAddressBookIfNeeded(tx: SDSAnyWriteTransaction) {
-        // This is carefully-constructed migration code that can be deleted in the
-        // future without requiring additional cleanup logic. If we don't know
-        // whether or not the address book has ever been intersected (ie we're
-        // running this logic for the first time in a version that includes this
-        // new flag), we set the flag based on whether or not we've ever performed
-        // a full intersection (ie whether or not we've intersected the address
-        // book). (Once we delete this logic, users who haven't run it will
-        // potentially miss one round of "User Joined Signal" notifications, but
-        // that's a reasonable fallback.)
-        //
-        // TODO: Delete this migration method on/after Jan 31, 2024.
-        if keyValueStore.hasValue(forKey: Constants.didIntersectAddressBook, transaction: tx) {
-            return
-        }
-        keyValueStore.setBool(
-            keyValueStore.hasValue(forKey: Constants.nextFullIntersectionDate, transaction: tx),
-            key: Constants.didIntersectAddressBook,
-            transaction: tx
-        )
     }
 
     private func postJoinNotificationsIfNeeded(
