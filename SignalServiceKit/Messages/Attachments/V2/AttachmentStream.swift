@@ -48,6 +48,16 @@ public class AttachmentStream {
         )
     }
 
+    /// Generate a new (random) relative file path for an attachment file.
+    /// Can be used for the primary file, thumbnail, audio waveform, etc.
+    public static func newRelativeFilePath() -> String {
+        let id = UUID().uuidString
+        // Make a subdirectory with the first two characters.
+        // This is meaningless except to avoid slowing down the filesystem
+        // with every attachment file at the top level.
+        return "\(id.prefix(2))/\(id)"
+    }
+
     /// Given a relative "attachment file" path, returns the absolute path.
     /// "Attachment files" include fullsize files (localRelativeFilePath), thumbnails, audio waveforms, video still frames.
     /// All files related to attachments are in the same root directory, with subdirectories only based off the first few characters of their filename.
