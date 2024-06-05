@@ -55,6 +55,10 @@ extension ContactManager {
         guard let cnContact = self.cnContact(withId: cnContactId) else {
             return nil
         }
+        return avatarData(for: cnContact)
+    }
+
+    public func avatarData(for cnContact: CNContact) -> Data? {
         return SystemContact.avatarData(for: cnContact)
     }
 

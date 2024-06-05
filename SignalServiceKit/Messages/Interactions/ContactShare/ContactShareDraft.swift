@@ -79,7 +79,7 @@ public class ContactShareDraft {
         tsAccountManager: any TSAccountManager,
         tx: SDSAnyReadTransaction
     ) -> Data? {
-        if let systemAvatarImageData = contactManager.avatarData(for: cnContact.identifier) {
+        if let systemAvatarImageData = contactManager.avatarData(for: cnContact) {
             return systemAvatarImageData
         }
 
