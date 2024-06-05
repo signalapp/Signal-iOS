@@ -261,6 +261,7 @@ public class GRDBSchemaMigrator: NSObject {
         case removeRedundantPhoneNumbers3
         case addV2AttachmentTable
         case addBulkDeleteInteractionJobRecord
+        case cleanUpThreadIndexes
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2815,6 +2816,15 @@ public class GRDBSchemaMigrator: NSObject {
                 table.add(column: "BDIJR_threadUniqueId", .text)
             }
 
+            return .success(())
+        }
+
+        migrator.registerMigration(.cleanUpThreadIndexes) { tx in
+            try tx.database.execute(sql: """
+            DROP INDEX IF EXISTS "index_model_TSThread_on_isMarkedUnread_and_shouldThreadBeVisible";
+            DROP INDEX IF EXISTS "index_thread_on_shouldThreadBeVisible";
+            CREATE INDEX "index_thread_on_shouldThreadBeVisible" ON "model_TSThread" ("shouldThreadBeVisible", "lastInteractionRowId" DESC);
+            """)
             return .success(())
         }
 

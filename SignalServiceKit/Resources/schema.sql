@@ -539,14 +539,6 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_thread_on_shouldThreadBeVisible"
-        ON "model_TSThread"("shouldThreadBeVisible"
-    ,"isArchived"
-    ,"lastInteractionRowId"
-)
-;
-
-CREATE
     INDEX "index_user_profiles_on_recipientPhoneNumber"
         ON "model_OWSUserProfile"("recipientPhoneNumber"
 )
@@ -937,13 +929,6 @@ CREATE
     UNIQUE INDEX "index_model_TSMention_on_uniqueMessageId_and_uuidString"
         ON "model_TSMention"("uniqueMessageId"
     ,"uuidString"
-)
-;
-
-CREATE
-    INDEX "index_model_TSThread_on_isMarkedUnread_and_shouldThreadBeVisible"
-        ON "model_TSThread"("isMarkedUnread"
-    ,"shouldThreadBeVisible"
 )
 ;
 
@@ -2007,4 +1992,12 @@ CREATE
 ;
 
 END
+;
+
+CREATE
+    INDEX "index_thread_on_shouldThreadBeVisible"
+        ON "model_TSThread" (
+        "shouldThreadBeVisible"
+        ,"lastInteractionRowId" DESC
+    )
 ;
