@@ -34,6 +34,26 @@ public protocol StoryStore {
         lastViewedTimestamp: UInt64?,
         tx: DBWriteTransaction
     )
+
+    func getOrCreateMyStory(tx: DBWriteTransaction) -> TSPrivateStoryThread
+
+    func getDeletedAtTimestamp(forDistributionListIdentifier: Data, tx: DBReadTransaction) -> UInt64?
+
+    func setDeletedAtTimestamp(forDistributionListIdentifier: Data, timestamp: UInt64, tx: DBWriteTransaction)
+
+    /// Returns an array of distribution list identifiers for all deleted story distribution lists.
+    func getAllDeletedStories(tx: any DBReadTransaction) -> [Data]
+
+    func update(
+        storyThread: TSPrivateStoryThread,
+        name: String,
+        allowReplies: Bool,
+        viewMode: TSThreadStoryViewMode,
+        addresses: [SignalServiceAddress],
+        tx: DBWriteTransaction
+    )
+
+    func insert(storyThread: TSPrivateStoryThread, tx: DBWriteTransaction)
 }
 
 extension StoryStore {
@@ -104,6 +124,66 @@ public class StoryStoreImpl: StoryStore {
             transaction: SDSDB.shimOnlyBridge(tx)
         )
     }
+
+    public func getOrCreateMyStory(tx: any DBWriteTransaction) -> TSPrivateStoryThread {
+        return TSPrivateStoryThread.getOrCreateMyStory(transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func getDeletedAtTimestamp(
+        forDistributionListIdentifier identifier: Data,
+        tx: any DBReadTransaction
+    ) -> UInt64? {
+        return TSPrivateStoryThread.deletedAtTimestamp(
+            forDistributionListIdentifier: identifier,
+            transaction: SDSDB.shimOnlyBridge(tx)
+        )
+    }
+
+    public func getAllDeletedStories(tx: any DBReadTransaction) -> [Data] {
+        return TSPrivateStoryThread.allDeletedIdentifiers(transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func setDeletedAtTimestamp(
+        forDistributionListIdentifier identifier: Data,
+        timestamp: UInt64,
+        tx: any DBWriteTransaction
+    ) {
+        TSPrivateStoryThread.recordDeletedAtTimestamp(
+            timestamp,
+            forDistributionListIdentifier: identifier,
+            transaction: SDSDB.shimOnlyBridge(tx)
+        )
+    }
+
+    public func update(
+        storyThread: TSPrivateStoryThread,
+        name: String,
+        allowReplies: Bool,
+        viewMode: TSThreadStoryViewMode,
+        addresses: [SignalServiceAddress],
+        tx: any DBWriteTransaction
+    ) {
+        storyThread.updateWithName(
+            name,
+            updateStorageService: false,
+            transaction: SDSDB.shimOnlyBridge(tx)
+        )
+        storyThread.updateWithAllowsReplies(
+            allowReplies,
+            updateStorageService: false,
+            transaction: SDSDB.shimOnlyBridge(tx)
+        )
+        storyThread.updateWithStoryViewMode(
+            viewMode,
+            addresses: addresses,
+            updateStorageService: false,
+            transaction: SDSDB.shimOnlyBridge(tx)
+        )
+    }
+
+    public func insert(storyThread: TSPrivateStoryThread, tx: DBWriteTransaction) {
+        storyThread.anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
+    }
 }
 
 #if TESTABLE_BUILD
@@ -156,6 +236,28 @@ open class StoryStoreMock: StoryStore {
         lastViewedTimestamp: UInt64? = nil,
         tx: DBWriteTransaction
     ) {
+        // Unimplemented
+    }
+
+    public func getOrCreateMyStory(tx: any DBWriteTransaction) -> TSPrivateStoryThread {
+        return TSPrivateStoryThread(uniqueId: TSPrivateStoryThread.myStoryUniqueId, name: "", allowsReplies: true, addresses: [], viewMode: .blockList)
+    }
+
+    public func getDeletedAtTimestamp(forDistributionListIdentifier: Data, tx: any DBReadTransaction) -> UInt64? {
+        return nil
+    }
+
+    public func setDeletedAtTimestamp(forDistributionListIdentifier: Data, timestamp: UInt64, tx: any DBWriteTransaction) {
+        // Unimplemented
+    }
+
+    public func getAllDeletedStories(tx: any DBReadTransaction) -> [Data] { return [] }
+
+    public func update(storyThread: TSPrivateStoryThread, name: String, allowReplies: Bool, viewMode: TSThreadStoryViewMode, addresses: [SignalServiceAddress], tx: any DBWriteTransaction) {
+        // Unimplemented
+    }
+
+    public func insert(storyThread: TSPrivateStoryThread, tx: DBWriteTransaction) {
         // Unimplemented
     }
 }

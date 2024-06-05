@@ -94,7 +94,7 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
                     chatItem.id
                 ))
                 continue
-            case .localAddress, .group:
+            case .localAddress, .group, .distributionList:
                 // Recipients can only be contacts.
                 partialErrors.append(.restoreFrameError(
                     .invalidProtoData(.outgoingNonContactMessageRecipient),

@@ -27,6 +27,31 @@ public class ThreadFinder: Dependencies {
         return thread
     }
 
+    /// Enumerates through all story thread (distribution lists)
+    public func enumerateStoryThreads(
+        transaction: SDSAnyReadTransaction,
+        block: (TSPrivateStoryThread, _ stop: inout Bool) -> Void
+    ) throws {
+        let sql = """
+            SELECT *
+            FROM \(ThreadRecord.databaseTableName)
+            WHERE \(threadColumn: .recordType) = \(SDSRecordType.privateStoryThread.rawValue)
+        """
+        var stop = false
+        let cursor = try ThreadRecord.fetchCursor(
+            transaction.unwrapGrdbRead.database,
+            sql: sql
+        )
+        while let threadRecord = try cursor.next() {
+            let thread = try TSThread.fromRecord(threadRecord)
+            guard let storyThread = thread as? TSPrivateStoryThread else { continue }
+            block(storyThread, &stop)
+            if stop {
+                return
+            }
+        }
+    }
+
     /// Enumerates group threads in "last interaction" order.
     public func enumerateGroupThreads(
         transaction: SDSAnyReadTransaction,

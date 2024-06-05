@@ -41,6 +41,7 @@ extension MessageBackup {
     }
 
     public typealias GroupId = Data
+    public typealias DistributionId = Data
 
     /**
      * As we go archiving recipients, we use this object to track mappings from the addressing we use in the app
@@ -56,6 +57,7 @@ extension MessageBackup {
 
             case contact(ContactAddress)
             case group(GroupId)
+            case distributionList(DistributionId)
         }
 
         public let localRecipientId: RecipientId
@@ -64,6 +66,7 @@ extension MessageBackup {
 
         private var currentRecipientId: RecipientId
         private let groupIdMap = SharedMap<GroupId, RecipientId>()
+        private let distributionIdMap = SharedMap<DistributionId, RecipientId>()
         private let contactAciMap = SharedMap<Aci, RecipientId>()
         private let contactPniMap = SharedMap<Pni, RecipientId>()
         private let contactE164ap = SharedMap<E164, RecipientId>()
@@ -96,6 +99,8 @@ extension MessageBackup {
             switch address {
             case .group(let groupId):
                 groupIdMap[groupId] = currentRecipientId
+            case .distributionList(let distributionId):
+                distributionIdMap[distributionId] = currentRecipientId
             case .contact(let contactAddress):
                 // Create mappings for every identifier we know about
                 if let aci = contactAddress.aci {
@@ -117,6 +122,8 @@ extension MessageBackup {
                 switch address {
                 case .group(let groupId):
                     return groupIdMap[groupId]
+                case .distributionList(let distributionId):
+                    return distributionIdMap[distributionId]
                 case .contact(let contactAddress):
                     // Go down identifiers in priority order, return the first we have.
                     if let aci = contactAddress.aci {
@@ -138,6 +145,7 @@ extension MessageBackup {
             case localAddress
             case contact(ContactAddress)
             case group(GroupId)
+            case distributionList(DistributionId)
         }
 
         internal let localIdentifiers: LocalIdentifiers
@@ -168,6 +176,8 @@ extension MessageBackup.RecipientArchivingContext.Address: MessageBackupLoggable
             return address.typeLogString
         case .group:
             return "TSGroupThread"
+        case .distributionList:
+            return "TSPrivateStoryThread"
         }
     }
 
@@ -178,6 +188,8 @@ extension MessageBackup.RecipientArchivingContext.Address: MessageBackupLoggable
         case .group(let groupId):
             // Rely on the scrubber to scrub the id.
             return groupId.base64EncodedString()
+        case .distributionList(let distributionId):
+            return distributionId.base64EncodedString()
         }
     }
 }

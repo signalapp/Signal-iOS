@@ -85,7 +85,7 @@ message BackupProto {
     oneof destination {
       Contact contact = 2;
       Group group = 3;
-      DistributionList distributionList = 4;
+      DistributionListItem distributionList = 4;
       SelfRecipient selfRecipient = 5;
       ReleaseNotes releaseNotes = 6;
     }
@@ -216,6 +216,14 @@ message BackupProto {
     optional FilePointer wallpaper = 9;
   }
 
+  message DistributionListItem {
+    bytes distributionId = 1; // distribution list ids are uuids
+    oneof item {
+      uint64 deletionTimestamp = 2;
+      DistributionList distributionList = 3;
+    }
+  }
+
   message DistributionList {
     enum PrivacyMode {
       UNKNOWN = 0;
@@ -225,11 +233,9 @@ message BackupProto {
     }
 
     string name = 1;
-    bytes distributionId = 2; // distribution list ids are uuids
-    bool allowReplies = 3;
-    uint64 deletionTimestamp = 4;
-    optional PrivacyMode privacyMode = 5;
-    repeated uint64 memberRecipientIds = 6; // generated recipient id
+    bool allowReplies = 2;
+    PrivacyMode privacyMode = 3;
+    repeated uint64 memberRecipientIds = 4; // generated recipient id
   }
 
   message Identity {

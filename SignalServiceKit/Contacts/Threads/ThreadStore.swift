@@ -12,6 +12,11 @@ public protocol ThreadStore {
         tx: DBReadTransaction,
         block: @escaping (TSThread, _ stop: inout Bool) -> Void
     ) throws
+    /// Enumerates story distribution lists
+    func enumerateStoryThreads(
+        tx: DBReadTransaction,
+        block: @escaping (TSPrivateStoryThread, _ stop: inout Bool) -> Void
+    ) throws
     /// Enumerates group threads in "last interaction" order.
     func enumerateGroupThreads(
         tx: DBReadTransaction,
@@ -123,6 +128,10 @@ public class ThreadStoreImpl: ThreadStore {
 
     public func enumerateNonStoryThreads(tx: DBReadTransaction, block: @escaping (TSThread, inout Bool) -> Void) throws {
         return try ThreadFinder().enumerateNonStoryThreads(transaction: SDSDB.shimOnlyBridge(tx), block: block)
+    }
+
+    public func enumerateStoryThreads(tx: DBReadTransaction, block: @escaping (TSPrivateStoryThread, inout Bool) -> Void) throws {
+        return try ThreadFinder().enumerateStoryThreads(transaction: SDSDB.shimOnlyBridge(tx), block: block)
     }
 
     public func enumerateGroupThreads(tx: DBReadTransaction, block: @escaping (TSGroupThread, inout Bool) -> Void) throws {
@@ -250,6 +259,19 @@ public class MockThreadStore: ThreadStore {
                 continue
             }
             block(thread, &stop)
+            if stop {
+                return
+            }
+        }
+    }
+
+    public func enumerateStoryThreads(tx: any DBReadTransaction, block: @escaping (TSPrivateStoryThread, inout Bool) -> Void) throws {
+        var stop = false
+        for thread in threads {
+            guard let storyThread = thread as? TSPrivateStoryThread else {
+                continue
+            }
+            block(storyThread, &stop)
             if stop {
                 return
             }

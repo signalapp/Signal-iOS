@@ -297,6 +297,11 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         case .contact(let address):
             let contactThread = threadStore.getOrCreateContactThread(with: address.asInteropAddress(), tx: tx)
             thread = .contact(contactThread)
+        case .distributionList:
+            return .failure([
+                .restoreFrameError(
+                    .developerError(OWSAssertionError("Distribution Lists cannot be chat authors")),
+                    chat.chatId)])
         }
 
         context.mapChatId(chat.chatId, to: thread)

@@ -280,7 +280,7 @@ private extension MessageBackup.RecipientRestoringContext {
         case .contact(let contactAddress):
             guard let aci = contactAddress.aci else { fallthrough }
             return .found(aci)
-        case .group:
+        case .group, .distributionList:
             return .missing(.restoreFrameError(
                 .invalidProtoData(.groupCallRecipientIdNotAnAci(recipientId)),
                 chatItemId

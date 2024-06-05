@@ -129,6 +129,48 @@ final class MessageBackupContactTest: MessageBackupIntegrationTestCase {
     }
 }
 
+final class MessageBackupDistributionListTest: MessageBackupIntegrationTestCase {
+    typealias ListValidationBlock = ((TSPrivateStoryThread) -> Void)
+
+    let storyStore = StoryStoreImpl()
+    let threadStore = ThreadStoreImpl()
+
+    func testDistributionList() async throws {
+        try await runTest(backupName: "story-distribution-list") { sdsTx, tx in
+            let deletedStories = storyStore.getAllDeletedStories(tx: tx)
+            XCTAssertEqual(deletedStories.count, 2)
+
+            let validationBlocks: [UUID: ListValidationBlock] = [
+                UUID(TSPrivateStoryThread.myStoryUniqueId): { thread in
+                    XCTAssertTrue(thread.allowsReplies)
+                },
+                UUID(data: Data(base64Encoded: "me/ptJ9tRnyCWu/eg9uP7Q==")!)!: { thread in
+                    XCTAssertEqual(thread.name, "Mandalorians")
+                    XCTAssertTrue(thread.allowsReplies)
+                    XCTAssertEqual(thread.storyViewMode, .blockList)
+                    XCTAssertEqual(thread.addresses.count, 2)
+                },
+                UUID(data: Data(base64Encoded: "ZYoHlxwxS8aBGSQJ1tL0sA==")!)!: { thread in
+                    XCTAssertEqual(thread.name, "Hutts")
+                    XCTAssertFalse(thread.allowsReplies)
+                    // check member list
+                    XCTAssertEqual(thread.storyViewMode, .explicit)
+                    XCTAssertEqual(thread.addresses.count, 1)
+                }
+            ]
+
+            try threadStore.enumerateStoryThreads(tx: tx) { thread, stop in
+                do {
+                    let validationBlock = try XCTUnwrap(validationBlocks[UUID(thread.uniqueId)])
+                    validationBlock(thread)
+                } catch {
+                    XCTFail("Missing validation block")
+                }
+            }
+        }
+    }
+}
+
 // MARK: -
 
 private extension RecipientDatabaseTable {

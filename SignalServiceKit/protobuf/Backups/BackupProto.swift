@@ -293,17 +293,27 @@ extension BackupProto {
 
     }
 
-    public struct DistributionList {
+    public struct DistributionListItem {
 
-        public var name: String
         /**
          * distribution list ids are uuids
          */
         public var distributionId: Foundation.Data
+        public var item: BackupProto.DistributionListItem.Item?
+        public var unknownFields: UnknownFields = .init()
+
+        public init(distributionId: Foundation.Data, configure: (inout Self) -> Swift.Void = { _ in }) {
+            self.distributionId = distributionId
+            configure(&self)
+        }
+
+    }
+
+    public struct DistributionList {
+
+        public var name: String
         public var allowReplies: Bool
-        public var deletionTimestamp: UInt64
-        @ProtoDefaulted
-        public var privacyMode: BackupProto.DistributionList.PrivacyMode?
+        public var privacyMode: BackupProto.DistributionList.PrivacyMode
         /**
          * generated recipient id
          */
@@ -312,15 +322,13 @@ extension BackupProto {
 
         public init(
             name: String,
-            distributionId: Foundation.Data,
             allowReplies: Bool,
-            deletionTimestamp: UInt64,
+            privacyMode: BackupProto.DistributionList.PrivacyMode,
             configure: (inout Self) -> Swift.Void = { _ in }
         ) {
             self.name = name
-            self.distributionId = distributionId
             self.allowReplies = allowReplies
-            self.deletionTimestamp = deletionTimestamp
+            self.privacyMode = privacyMode
             configure(&self)
         }
 
@@ -2477,7 +2485,7 @@ extension BackupProto.Recipient : Proto3Codable {
             case 1: id = try protoReader.decode(UInt64.self)
             case 2: destination = .contact(try protoReader.decode(BackupProto.Contact.self))
             case 3: destination = .group(try protoReader.decode(BackupProto.Group.self))
-            case 4: destination = .distributionList(try protoReader.decode(BackupProto.DistributionList.self))
+            case 4: destination = .distributionList(try protoReader.decode(BackupProto.DistributionListItem.self))
             case 5: destination = .selfRecipient(try protoReader.decode(BackupProto.SelfRecipient.self))
             case 6: destination = .releaseNotes(try protoReader.decode(BackupProto.ReleaseNotes.self))
             default: try protoReader.readUnknownField(tag: tag)
@@ -2509,7 +2517,7 @@ extension BackupProto.Recipient : Codable {
             self.destination = .contact(contact)
         } else if let group = try container.decodeIfPresent(BackupProto.Group.self, forKey: "group") {
             self.destination = .group(group)
-        } else if let distributionList = try container.decodeIfPresent(BackupProto.DistributionList.self, forKey: "distributionList") {
+        } else if let distributionList = try container.decodeIfPresent(BackupProto.DistributionListItem.self, forKey: "distributionList") {
             self.destination = .distributionList(distributionList)
         } else if let selfRecipient = try container.decodeIfPresent(BackupProto.SelfRecipient.self, forKey: "selfRecipient") {
             self.destination = .selfRecipient(selfRecipient)
@@ -2549,7 +2557,7 @@ extension BackupProto.Recipient {
 
         case contact(BackupProto.Contact)
         case group(BackupProto.Group)
-        case distributionList(BackupProto.DistributionList)
+        case distributionList(BackupProto.DistributionListItem)
         case selfRecipient(BackupProto.SelfRecipient)
         case releaseNotes(BackupProto.ReleaseNotes)
 
@@ -4004,6 +4012,124 @@ extension BackupProto.Chat : Codable {
 #endif
 
 #if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.DistributionListItem : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.DistributionListItem : Hashable {
+}
+#endif
+
+extension BackupProto.DistributionListItem : Sendable {
+}
+
+extension BackupProto.DistributionListItem : ProtoMessage {
+
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/BackupProto.BackupProto.DistributionListItem"
+    }
+
+}
+
+extension BackupProto.DistributionListItem : Proto3Codable {
+
+    public init(from protoReader: ProtoReader) throws {
+        var distributionId: Foundation.Data = .init()
+        var item: BackupProto.DistributionListItem.Item? = nil
+
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
+            switch tag {
+            case 1: distributionId = try protoReader.decode(Foundation.Data.self)
+            case 2: item = .deletionTimestamp(try protoReader.decode(UInt64.self))
+            case 3: item = .distributionList(try protoReader.decode(BackupProto.DistributionList.self))
+            default: try protoReader.readUnknownField(tag: tag)
+            }
+        }
+        self.unknownFields = try protoReader.endMessage(token: token)
+
+        self.distributionId = distributionId
+        self.item = item
+    }
+
+    public func encode(to protoWriter: ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.distributionId)
+        if let item = self.item {
+            try item.encode(to: protoWriter)
+        }
+        try protoWriter.writeUnknownFields(unknownFields)
+    }
+
+}
+
+#if !WIRE_REMOVE_CODABLE
+extension BackupProto.DistributionListItem : Codable {
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.distributionId = try container.decode(stringEncoded: Foundation.Data.self, forKey: "distributionId")
+        if let deletionTimestamp = try container.decodeIfPresent(UInt64.self, forKey: "deletionTimestamp") {
+            self.item = .deletionTimestamp(deletionTimestamp)
+        } else if let distributionList = try container.decodeIfPresent(BackupProto.DistributionList.self, forKey: "distributionList") {
+            self.item = .distributionList(distributionList)
+        } else {
+            self.item = nil
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
+
+        if includeDefaults || !self.distributionId.isEmpty {
+            try container.encode(stringEncoded: self.distributionId, forKey: "distributionId")
+        }
+        switch self.item {
+        case .deletionTimestamp(let deletionTimestamp): try container.encode(deletionTimestamp, forKey: "deletionTimestamp")
+        case .distributionList(let distributionList): try container.encode(distributionList, forKey: "distributionList")
+        case Optional.none: break
+        }
+    }
+
+}
+#endif
+
+/**
+ * Subtypes within BackupProto.DistributionListItem
+ */
+extension BackupProto.DistributionListItem {
+
+    public enum Item {
+
+        case deletionTimestamp(UInt64)
+        case distributionList(BackupProto.DistributionList)
+
+        fileprivate func encode(to protoWriter: ProtoWriter) throws {
+            switch self {
+            case .deletionTimestamp(let deletionTimestamp): try protoWriter.encode(tag: 2, value: deletionTimestamp)
+            case .distributionList(let distributionList): try protoWriter.encode(tag: 3, value: distributionList)
+            }
+        }
+
+    }
+
+}
+
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.DistributionListItem.Item : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.DistributionListItem.Item : Hashable {
+}
+#endif
+
+extension BackupProto.DistributionListItem.Item : Sendable {
+}
+
+#if !WIRE_REMOVE_EQUATABLE
 extension BackupProto.DistributionList : Equatable {
 }
 #endif
@@ -4028,9 +4154,7 @@ extension BackupProto.DistributionList : Proto3Codable {
 
     public init(from protoReader: ProtoReader) throws {
         var name: String = ""
-        var distributionId: Foundation.Data = .init()
         var allowReplies: Bool = false
-        var deletionTimestamp: UInt64 = 0
         var privacyMode: BackupProto.DistributionList.PrivacyMode? = nil
         var memberRecipientIds: [UInt64] = []
 
@@ -4038,31 +4162,25 @@ extension BackupProto.DistributionList : Proto3Codable {
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
             case 1: name = try protoReader.decode(String.self)
-            case 2: distributionId = try protoReader.decode(Foundation.Data.self)
-            case 3: allowReplies = try protoReader.decode(Bool.self)
-            case 4: deletionTimestamp = try protoReader.decode(UInt64.self)
-            case 5: privacyMode = try protoReader.decode(BackupProto.DistributionList.PrivacyMode.self)
-            case 6: try protoReader.decode(into: &memberRecipientIds)
+            case 2: allowReplies = try protoReader.decode(Bool.self)
+            case 3: privacyMode = try protoReader.decode(BackupProto.DistributionList.PrivacyMode.self)
+            case 4: try protoReader.decode(into: &memberRecipientIds)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
         self.name = name
-        self.distributionId = distributionId
         self.allowReplies = allowReplies
-        self.deletionTimestamp = deletionTimestamp
-        self._privacyMode.wrappedValue = try BackupProto.DistributionList.PrivacyMode.defaultIfMissing(privacyMode)
+        self.privacyMode = try BackupProto.DistributionList.PrivacyMode.defaultIfMissing(privacyMode)
         self.memberRecipientIds = memberRecipientIds
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
         try protoWriter.encode(tag: 1, value: self.name)
-        try protoWriter.encode(tag: 2, value: self.distributionId)
-        try protoWriter.encode(tag: 3, value: self.allowReplies)
-        try protoWriter.encode(tag: 4, value: self.deletionTimestamp)
-        try protoWriter.encode(tag: 5, value: self.privacyMode)
-        try protoWriter.encode(tag: 6, value: self.memberRecipientIds, packed: true)
+        try protoWriter.encode(tag: 2, value: self.allowReplies)
+        try protoWriter.encode(tag: 3, value: self.privacyMode)
+        try protoWriter.encode(tag: 4, value: self.memberRecipientIds, packed: true)
         try protoWriter.writeUnknownFields(unknownFields)
     }
 
@@ -4074,10 +4192,8 @@ extension BackupProto.DistributionList : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.name = try container.decode(String.self, forKey: "name")
-        self.distributionId = try container.decode(stringEncoded: Foundation.Data.self, forKey: "distributionId")
         self.allowReplies = try container.decode(Bool.self, forKey: "allowReplies")
-        self.deletionTimestamp = try container.decode(stringEncoded: UInt64.self, forKey: "deletionTimestamp")
-        self._privacyMode.wrappedValue = try container.decodeIfPresent(BackupProto.DistributionList.PrivacyMode.self, forKey: "privacyMode")
+        self.privacyMode = try container.decode(BackupProto.DistributionList.PrivacyMode.self, forKey: "privacyMode")
         self.memberRecipientIds = try container.decodeProtoArray(UInt64.self, forKey: "memberRecipientIds")
     }
 
@@ -4088,16 +4204,12 @@ extension BackupProto.DistributionList : Codable {
         if includeDefaults || !self.name.isEmpty {
             try container.encode(self.name, forKey: "name")
         }
-        if includeDefaults || !self.distributionId.isEmpty {
-            try container.encode(stringEncoded: self.distributionId, forKey: "distributionId")
-        }
         if includeDefaults || self.allowReplies != false {
             try container.encode(self.allowReplies, forKey: "allowReplies")
         }
-        if includeDefaults || self.deletionTimestamp != 0 {
-            try container.encode(stringEncoded: self.deletionTimestamp, forKey: "deletionTimestamp")
+        if includeDefaults || self.privacyMode.rawValue != 0 {
+            try container.encode(self.privacyMode, forKey: "privacyMode")
         }
-        try container.encodeIfPresent(self.privacyMode, forKey: "privacyMode")
         if includeDefaults || !self.memberRecipientIds.isEmpty {
             try container.encodeProtoArray(self.memberRecipientIds, forKey: "memberRecipientIds")
         }

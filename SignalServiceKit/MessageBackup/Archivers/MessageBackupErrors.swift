@@ -69,6 +69,20 @@ extension MessageBackup {
 
             /// A group call record had an invalid individual-call status.
             case groupCallRecordHadIndividualCallStatus
+
+            /// A distributionListIdentifier memberRecipientId was invalid
+            case invalidDistributionListMemberAddress
+
+            /// The story distribution list contained memberRecipientIds for a privacy mode
+            /// that didn't expect any.
+            case distributionListUnexpectedRecipients
+
+            /// The story distribution list was marked as deleted but missing a deletion timestamp
+            case distributionListMissingDeletionTimestamp
+
+            /// The story distribution list was missing memberRecipiendIds for a privacy mode
+            /// where they should be present.
+            case distributionListMissingRecipients
         }
 
         private let type: ErrorType
@@ -116,9 +130,13 @@ extension MessageBackup {
                 // Collapse these by the id they refer to, which is in the "type".
                 return typeLogString
             case
+                    .distributionListMissingDeletionTimestamp,
+                    .distributionListMissingRecipients,
+                    .distributionListUnexpectedRecipients,
                     .fileIOError,
                     .groupMasterKeyError,
                     .contactThreadMissingAddress,
+                    .invalidDistributionListMemberAddress,
                     .invalidIncomingMessageAuthor,
                     .invalidOutgoingMessageRecipient,
                     .invalidQuoteAuthor,
@@ -212,6 +230,8 @@ extension MessageBackup {
                 /// Could not parse an ``OWSAES256Key`` profile key. Includes the class
                 /// of the offending proto.
                 case invalidProfileKey(protoClass: Any.Type)
+                /// An invalid member (group, distribution list, etc) was specified as a distribution list member.  Includes the offending proto
+                case invalidDistributionListMember(protoClass: Any.Type)
 
                 /// A BackupProto.Contact with no aci, pni, or e164.
                 case contactWithoutIdentifiers
@@ -287,6 +307,18 @@ extension MessageBackup {
                 /// A BackupProto.GroupCall referenced a recipient that was not
                 /// a contact or otherwise did not contain an ACI.
                 case groupCallRecipientIdNotAnAci(RecipientId)
+
+                /// BackupProto.DistributionList.distributionId was not a valid UUID
+                case invalidDistributionListId
+
+                /// BackupProto.DistributionList.privacyMode was missing, or contained an unknown privacy mode
+                case invalidDistributionListPrivacyMode
+
+                /// The specified BackupProto.DistributionList.privacyMode was missing a list of associated member IDs
+                case invalidDistributionListPrivacyModeMissingRequiredMembers
+
+                /// BackupProto.DistributionListItem.deletionTimestamp was invalid
+                case invalidDistributionListDeletionTimestamp
             }
 
             /// The proto contained invalid or self-contradictory data, e.g an invalid ACI.
@@ -298,6 +330,7 @@ extension MessageBackup {
             /// The object being inserted depended on a TSGroupThread that should have been created earlier but was not.
             /// The overlap with referencedChatThreadNotFound is confusing, but this is for restoring group-specific metadata.
             case referencedGroupThreadNotFound(GroupId)
+
             case databaseInsertionFailed(RawError)
 
             /// These should never happen; it means some invariant we could not
@@ -374,6 +407,11 @@ extension MessageBackup {
                         .sequenceOfRequestsAndCancelsWithLocalAci,
                         .unrecognizedGroupUpdate,
                         .frameMissingItem,
+                        .invalidDistributionListMember,
+                        .invalidDistributionListDeletionTimestamp,
+                        .invalidDistributionListId,
+                        .invalidDistributionListPrivacyMode,
+                        .invalidDistributionListPrivacyModeMissingRequiredMembers,
                         .invalidLocalProfileKey,
                         .invalidLocalUsernameLink,
                         .individualCallNotInContactThread,
