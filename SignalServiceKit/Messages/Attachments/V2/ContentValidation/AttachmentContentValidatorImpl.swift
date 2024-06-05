@@ -490,4 +490,58 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             return try digestContext.finalize()
         }
     }
+
+    private func encryptPrimaryFile(
+        input: Input,
+        encryptionKey: Data
+    ) async throws -> (PendingFile, EncryptionMetadata) {
+        switch input {
+        case .inMemory(let data):
+            let (encryptedData, encryptionMetadata) = try Cryptography.encrypt(
+                data,
+                encryptionKey: encryptionKey
+            )
+            // We'll unwrap the digest again later, but unwrap and fail
+            // early so we don't waste time writing bytes to disk.
+            guard encryptionMetadata.digest != nil else {
+                throw OWSAssertionError("No digest in output")
+            }
+            let outputFile = OWSFileSystem.temporaryFileUrl()
+            try encryptedData.write(to: outputFile)
+            return (
+                PendingFile(
+                    tmpFileUrl: outputFile,
+                    isTmpFileEncrypted: true
+                ),
+                encryptionMetadata
+            )
+        case .unencryptedFile(let fileUrl):
+            let outputFile = OWSFileSystem.temporaryFileUrl()
+            let encryptionMetadata = try Cryptography.encryptAttachment(
+                at: fileUrl,
+                output: outputFile,
+                encryptionKey: encryptionKey
+            )
+            return (
+                PendingFile(
+                    tmpFileUrl: outputFile,
+                    isTmpFileEncrypted: true
+                ),
+                encryptionMetadata
+            )
+        case .encryptedFile(let fileUrl, _, let plaintextLength, let digest):
+            // Already encrypted
+            return (
+                PendingFile(
+                    tmpFileUrl: fileUrl,
+                    isTmpFileEncrypted: true
+                ),
+                EncryptionMetadata(
+                    key: encryptionKey,
+                    digest: digest,
+                    plaintextLength: Int(plaintextLength)
+                )
+            )
+        }
+    }
 }
