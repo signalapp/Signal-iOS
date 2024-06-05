@@ -19,10 +19,11 @@ extension UIImage {
         )
     }
 
+    /// If no plaintext length is provided, the file is assumed to only use pkcs7 padding.
     public static func fromEncryptedFile(
         at fileURL: URL,
         encryptionKey: Data,
-        plaintextLength: UInt32,
+        plaintextLength: UInt32?,
         mimeType: String
     ) throws -> UIImage {
         if mimeType.caseInsensitiveCompare(MimeType.imageJpeg.rawValue) == .orderedSame {
@@ -51,7 +52,7 @@ extension UIImage {
                 at: fileURL,
                 metadata: .init(
                     key: encryptionKey,
-                    plaintextLength: Int(plaintextLength)
+                    plaintextLength: plaintextLength.map(Int.init(_:))
                 )
             )
             let image: UIImage?
@@ -81,17 +82,26 @@ extension CGDataProvider {
         }
     }
 
+    /// If no plaintext length is provided, the file is assumed to only use pkcs7 padding.
     fileprivate static func loadFromEncryptedFile<T>(
         at fileURL: URL,
         encryptionKey: Data,
-        plaintextLength: UInt32,
+        plaintextLength: UInt32?,
         block: (CGDataProvider) throws -> T
     ) throws -> T {
-        let fileHandle = try Cryptography.encryptedAttachmentFileHandle(
-            at: fileURL,
-            plaintextLength: plaintextLength,
-            encryptionKey: encryptionKey
-        )
+        let fileHandle: EncryptedFileHandle
+        if let plaintextLength {
+            fileHandle = try Cryptography.encryptedAttachmentFileHandle(
+                at: fileURL,
+                plaintextLength: plaintextLength,
+                encryptionKey: encryptionKey
+            )
+        } else {
+            fileHandle = try Cryptography.encryptedFileHandle(
+                at: fileURL,
+                encryptionKey: encryptionKey
+            )
+        }
         let dataProvider = try CGDataProvider.from(fileHandle: fileHandle)
         return try block(dataProvider)
     }

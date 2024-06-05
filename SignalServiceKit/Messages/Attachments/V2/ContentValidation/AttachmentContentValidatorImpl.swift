@@ -133,7 +133,17 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
     private struct PendingFile {
         let tmpFileUrl: URL
         let isTmpFileEncrypted: Bool
-        let reservedRelativeFilePath: String = AttachmentStream.newRelativeFilePath()
+        let reservedRelativeFilePath: String
+
+        init(
+            tmpFileUrl: URL,
+            isTmpFileEncrypted: Bool,
+            reservedRelativeFilePath: String = AttachmentStream.newRelativeFilePath()
+        ) {
+            self.tmpFileUrl = tmpFileUrl
+            self.isTmpFileEncrypted = isTmpFileEncrypted
+            self.reservedRelativeFilePath = reservedRelativeFilePath
+        }
     }
 
     private struct ContentTypeResult {
@@ -543,5 +553,32 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 )
             )
         }
+    }
+
+    private func encryptAncillaryFileIfNeeded(
+        _ file: PendingFile?,
+        encryptionKey: Data
+    ) async throws -> PendingFile? {
+        guard let file, !file.isTmpFileEncrypted else {
+            return file
+        }
+
+        let outputFile = OWSFileSystem.temporaryFileUrl()
+        // Encrypt _without_ custom padding; we never send these files
+        // and just use them locally, so no need for custom padding
+        // that later requires out-of-band plaintext length tracking
+        // so we can trim the custom padding at read time.
+        _ = try Cryptography.encryptFile(
+            at: file.tmpFileUrl,
+            output: outputFile,
+            encryptionKey: encryptionKey
+        )
+        return PendingFile(
+            tmpFileUrl: outputFile,
+            isTmpFileEncrypted: true,
+            // Preserve the reserved file path; this is already
+            // on the ContentType enum and musn't be changed.
+            reservedRelativeFilePath: file.reservedRelativeFilePath
+        )
     }
 }

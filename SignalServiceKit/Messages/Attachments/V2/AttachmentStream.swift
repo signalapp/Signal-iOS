@@ -121,7 +121,7 @@ public class AttachmentStream {
             return try UIImage.fromEncryptedFile(
                 at: Self.absoluteAttachmentFileURL(relativeFilePath: stillImageRelativeFilePath),
                 encryptionKey: attachment.encryptionKey,
-                plaintextLength: info.unencryptedByteCount,
+                plaintextLength: nil,
                 mimeType: OWSMediaUtils.videoStillFrameMimeType.rawValue
             )
         }
