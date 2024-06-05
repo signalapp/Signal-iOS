@@ -17,7 +17,7 @@ public class OWSMediaUtils: NSObject {
     private override init() {
     }
 
-    private class func thumbnail(forImage image: UIImage, maxDimensionPixels: CGFloat) throws -> UIImage {
+    public class func thumbnail(forImage image: UIImage, maxDimensionPixels: CGFloat) throws -> UIImage {
         if image.pixelSize.width <= maxDimensionPixels,
            image.pixelSize.height <= maxDimensionPixels {
             let result = image.withNativeScale

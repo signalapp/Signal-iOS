@@ -83,6 +83,31 @@ public class BlurHash: NSObject {
         return promise
     }
 
+    public class func computeBlurHash(for image: UIImage) async throws -> String {
+        // Use a small thumbnail size; quality doesn't matter. This is important for perf.
+        var thumbnail: UIImage
+        let maxDimensionPixels: CGFloat = 200
+        if image.pixelSize.width > maxDimensionPixels || image.pixelSize.height > maxDimensionPixels {
+            thumbnail = try OWSMediaUtils.thumbnail(forImage: image, maxDimensionPixels: maxDimensionPixels)
+        } else {
+            thumbnail = image
+        }
+        guard let normalized = normalize(image: thumbnail, backgroundColor: .white) else {
+            throw OWSAssertionError("Could not normalize thumbnail.")
+        }
+        // blurHash uses a DCT transform, so these are AC and DC components.
+        // We use 4x3.
+        //
+        // https://github.com/woltapp/blurhash/blob/master/Algorithm.md
+        guard let blurHash = normalized.blurHash(numberOfComponents: (4, 3)) else {
+            throw OWSAssertionError("Could not generate blurHash.")
+        }
+        guard self.isValidBlurHash(blurHash) else {
+            throw OWSAssertionError("Generated invalid blurHash.")
+        }
+        return blurHash
+    }
+
     // Large enough to reflect max quality of blurHash;
     // Small enough to avoid most perf hotspots around
     // these thumbnails.

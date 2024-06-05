@@ -138,6 +138,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
     private struct ContentTypeResult {
         let contentType: Attachment.ContentType
+        let blurHash: String?
         let audioWaveformFile: PendingFile?
         let videoStillFrameFile: PendingFile?
     }
@@ -148,23 +149,26 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         mimeType: String
     ) async throws -> ContentTypeResult {
         let contentType: Attachment.ContentType
+        let blurHash: String?
         let audioWaveformFile: PendingFile?
         let videoStillFrameFile: PendingFile?
         switch rawContentType(mimeType: mimeType) {
         case .invalid:
             contentType = .invalid
+            blurHash = nil
             audioWaveformFile = nil
             videoStillFrameFile = nil
         case .file:
             contentType = .file
+            blurHash = nil
             audioWaveformFile = nil
             videoStillFrameFile = nil
         case .image, .animatedImage:
-            contentType = try await validateImageContentType(input, mimeType: mimeType)
+            (contentType, blurHash) = try await validateImageContentType(input, mimeType: mimeType)
             audioWaveformFile = nil
             videoStillFrameFile = nil
         case .video:
-            (contentType, videoStillFrameFile) = try await validateVideoContentType(
+            (contentType, videoStillFrameFile, blurHash) = try await validateVideoContentType(
                 input,
                 mimeType: mimeType,
                 encryptionKey: encryptionKey
@@ -175,10 +179,12 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 input,
                 mimeType: mimeType
             )
+            blurHash = nil
             videoStillFrameFile = nil
         }
         return ContentTypeResult(
             contentType: contentType,
+            blurHash: blurHash,
             audioWaveformFile: audioWaveformFile,
             videoStillFrameFile: videoStillFrameFile
         )
@@ -187,7 +193,10 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
     // MARK: Image/Animated
 
     // Includes static and animated image validation.
-    private func validateImageContentType(_ input: Input, mimeType: String) async throws -> Attachment.ContentType {
+    private func validateImageContentType(
+        _ input: Input,
+        mimeType: String
+    ) async throws -> (Attachment.ContentType, blurHash: String?) {
         let imageSource: OWSImageSource = try {
             switch input {
             case .inMemory(let data):
@@ -214,7 +223,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         case .imageTypeSizeLimitExceeded:
             throw OWSAssertionError("Image size too large")
         case .invalid:
-            return .invalid
+            return (.invalid, nil)
         case .valid(let metadata):
             imageMetadata = metadata
         case .mimeTypeMismatch(let metadata), .fileExtensionMismatch(let metadata):
@@ -227,14 +236,42 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         }
 
         guard imageMetadata.isValid else {
-            return .invalid
+            return (.invalid, nil)
         }
 
         let pixelSize = imageMetadata.pixelSize
+
+        let blurHash: String? = await {
+            switch input {
+            case .inMemory(let data):
+                guard let image = UIImage(data: data) else {
+                    return nil
+                }
+                return try? await BlurHash.computeBlurHash(for: image)
+            case .unencryptedFile(let fileUrl):
+                guard let image = UIImage(contentsOfFile: fileUrl.path) else {
+                    return nil
+                }
+                return try? await BlurHash.computeBlurHash(for: image)
+            case .encryptedFile(let fileUrl, let encryptionKey, let plaintextLength, _):
+                guard
+                    let image = try? UIImage.fromEncryptedFile(
+                        at: fileUrl,
+                        encryptionKey: encryptionKey,
+                        plaintextLength: plaintextLength,
+                        mimeType: mimeType
+                    )
+                else {
+                    return nil
+                }
+                return try? await BlurHash.computeBlurHash(for: image)
+            }
+        }()
+
         if imageMetadata.isAnimated {
-            return .animatedImage(pixelSize: pixelSize)
+            return (.animatedImage(pixelSize: pixelSize), blurHash)
         } else {
-            return .image(pixelSize: pixelSize)
+            return (.image(pixelSize: pixelSize), blurHash)
         }
     }
 
@@ -244,7 +281,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         _ input: Input,
         mimeType: String,
         encryptionKey: Data
-    ) async throws -> (Attachment.ContentType, stillFrame: PendingFile?) {
+    ) async throws -> (Attachment.ContentType, stillFrame: PendingFile?, blurHash: String?) {
         let byteSize: Int = {
             switch input {
             case .inMemory(let data):
@@ -279,7 +316,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         }()
 
         guard OWSMediaUtils.isValidVideo(asset: asset) else {
-            return (.invalid, nil)
+            return (.invalid, nil, nil)
         }
 
         let thumbnailImage = try? OWSMediaUtils.thumbnail(
@@ -287,7 +324,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             maxSizePixels: .square(AttachmentStream.thumbnailDimensionPoints(forThumbnailQuality: .large))
         )
         guard let thumbnailImage else {
-            return (.invalid, nil)
+            return (.invalid, nil, nil)
         }
         owsAssertDebug(
             OWSMediaUtils.videoStillFrameMimeType == MimeType.imageJpeg,
@@ -304,6 +341,8 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 return PendingFile(tmpFileUrl: thumbnailTmpFile, isTmpFileEncrypted: true)
             }
 
+        let blurHash = try? await BlurHash.computeBlurHash(for: thumbnailImage)
+
         let duration = asset.duration.seconds
 
         // We have historically used the size of the still frame as the video size.
@@ -315,7 +354,8 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 pixelSize: pixelSize,
                 stillFrameRelativeFilePath: stillFrameFile?.reservedRelativeFilePath
             ),
-            stillFrameFile
+            stillFrameFile,
+            blurHash
         )
     }
 
