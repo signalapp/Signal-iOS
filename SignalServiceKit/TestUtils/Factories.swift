@@ -383,23 +383,19 @@ public class IncomingMessageFactory: NSObject, Factory {
 
 public class ConversationFactory: NSObject {
 
-    public var attachmentCount: Int = 0
-
     @discardableResult
-    public func createSentMessage(transaction: SDSAnyWriteTransaction) -> TSOutgoingMessage {
+    public func createSentMessage(
+        bodyAttachmentDataSources: [TSResourceDataSource],
+        transaction: SDSAnyWriteTransaction
+    ) -> TSOutgoingMessage {
         let outgoingFactory = OutgoingMessageFactory()
         outgoingFactory.threadCreator = threadCreator
         let message = outgoingFactory.create(transaction: transaction)
 
-        let attachmentInfos: [OutgoingAttachmentInfo] = (0..<attachmentCount).map { albumIndex in
-            let caption = Bool.random() ? "(\(albumIndex)) \(CommonGenerator.sentence)" : nil
-            return attachmentInfoBuilder(message, caption)
-        }
-
         databaseStorage.asyncWrite { asyncTransaction in
             let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
                 message,
-                unsavedBodyMediaAttachments: attachmentInfos.map{ $0.asAttachmentDataSource() }
+                unsavedBodyMediaAttachments: bodyAttachmentDataSources
             )
             _ = try! unpreparedMessage.prepare(tx: asyncTransaction)
 
@@ -432,18 +428,6 @@ public class ConversationFactory: NSObject {
     public var threadCreator: (SDSAnyWriteTransaction) -> TSThread = { transaction in
         ContactThreadFactory().create(transaction: transaction)
     }
-
-    public var attachmentInfoBuilder: (TSOutgoingMessage, String?) -> OutgoingAttachmentInfo = { outgoingMessage, caption in
-        let dataSource = DataSourceValue.dataSource(with: ImageFactory().buildPNGData(), fileExtension: "png")!
-        return OutgoingAttachmentInfo(
-            dataSource: dataSource,
-            contentType: "image/png",
-            caption: caption,
-            albumMessageId: outgoingMessage.uniqueId,
-            isVoiceMessage: outgoingMessage.isVoiceMessage
-        )
-    }
-
 }
 
 public class CommonGenerator {

@@ -31,7 +31,10 @@ class DebugContactsUtils: Dependencies {
         return result
     }
 
-    static func createRandomContacts(_ count: UInt, contactHandler: ((CNContact, Int, inout Bool) -> Void)? = nil) {
+    static func createRandomContacts(
+        _ count: UInt,
+        contactHandler: ((CNContact, Int, inout Bool) async -> Void)? = nil
+    ) async {
         guard count > 0 else { return }
 
         let authorizationStatus = CNContactStore.authorizationStatus(for: .contacts)
@@ -43,36 +46,36 @@ class DebugContactsUtils: Dependencies {
         // Request access
         guard authorizationStatus == .authorized else {
             let store = CNContactStore()
-            store.requestAccess(for: .contacts) { granted, error in
-                guard granted && error == nil else {
-                    DispatchQueue.main.async {
-                        OWSActionSheets.showErrorAlert(message: "No Contacts access.")
-                    }
-                    return
-                }
-                DispatchQueue.main.async {
-                    createRandomContacts(count, contactHandler: contactHandler)
-                }
+            let granted: Bool
+            do {
+                granted = try await store.requestAccess(for: .contacts)
+            } catch {
+                granted = false
             }
+            guard granted else {
+                DispatchQueue.main.async {
+                    OWSActionSheets.showErrorAlert(message: "No Contacts access.")
+                }
+                return
+            }
+            await createRandomContacts(count, contactHandler: contactHandler)
             return
         }
 
         let maxBatchSize: UInt = 10
         let batchSize = min(maxBatchSize, count)
         let remainder = count - batchSize
-        createRandomContactsBatch(batchSize, contactHandler: contactHandler) {
-            guard remainder > 0 else { return }
-            DispatchQueue.main.async {
-                createRandomContacts(remainder, contactHandler: contactHandler)
-            }
+        await createRandomContactsBatch(batchSize, contactHandler: contactHandler)
+        guard remainder > 0 else { return }
+        Task { @MainActor in
+            await createRandomContacts(remainder, contactHandler: contactHandler)
         }
     }
 
     private static func createRandomContactsBatch(
         _ count: UInt,
-        contactHandler: ((CNContact, Int, inout Bool) -> Void)?,
-        completion: () -> Void
-    ) {
+        contactHandler: ((CNContact, Int, inout Bool) async -> Void)?
+    ) async {
         Logger.debug("createRandomContactsBatch: \(count)")
 
         var contacts = [CNContact]()
@@ -123,7 +126,7 @@ class DebugContactsUtils: Dependencies {
             if let contactHandler {
                 for (index, contact) in contacts.enumerated() {
                     var stop = false
-                    contactHandler(contact, index, &stop)
+                    await contactHandler(contact, index, &stop)
                     if stop {
                         break
                     }
@@ -135,8 +138,6 @@ class DebugContactsUtils: Dependencies {
                 OWSActionSheets.showErrorAlert(message: error.userErrorDescription)
             }
         }
-
-        completion()
     }
 
     // MARK: Contact Deletion

@@ -16,13 +16,13 @@ class DebugUIContacts: DebugUIPage {
     func section(thread: TSThread?) -> OWSTableSection? {
         return OWSTableSection(title: name, items: [
             OWSTableItem(title: "Create 1 Random Contact",
-                         actionBlock: { DebugContactsUtils.createRandomContacts(1) }),
+                         actionBlock: { Task { await DebugContactsUtils.createRandomContacts(1) } }),
             OWSTableItem(title: "Create 100 Random Contacts",
-                         actionBlock: { DebugContactsUtils.createRandomContacts(100) }),
+                         actionBlock: { Task { await DebugContactsUtils.createRandomContacts(100) } }),
             OWSTableItem(title: "Create 1k Random Contacts",
-                         actionBlock: { DebugContactsUtils.createRandomContacts(1000) }),
+                         actionBlock: { Task { await DebugContactsUtils.createRandomContacts(1000) } }),
             OWSTableItem(title: "Create 10k Random Contacts",
-                         actionBlock: { DebugContactsUtils.createRandomContacts(10 * 1000) }),
+                         actionBlock: { Task { await DebugContactsUtils.createRandomContacts(10 * 1000) } }),
             OWSTableItem(title: "Delete Random Contacts",
                          actionBlock: { DebugContactsUtils.deleteRandomContacts() }),
             OWSTableItem(title: "Delete All Contacts",
