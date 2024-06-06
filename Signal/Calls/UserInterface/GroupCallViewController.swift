@@ -194,8 +194,8 @@ class GroupCallViewController: UIViewController {
             }
 
             let callService = AppEnvironment.shared.callService!
-            guard let (call, groupThreadCall) = callService.buildAndConnectGroupCallIfPossible(
-                thread: thread, videoMuted: videoMuted
+            guard let (call, groupThreadCall) = callService.buildAndConnectGroupCall(
+                for: thread, isVideoMuted: videoMuted
             ) else {
                 return owsFailDebug("Failed to build group call")
             }

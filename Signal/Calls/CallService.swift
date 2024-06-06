@@ -483,54 +483,59 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     // MARK: -
 
-    func buildAndConnectGroupCallIfPossible(thread: TSGroupThread, videoMuted: Bool) -> (SignalCall, GroupThreadCall)? {
+    func buildAndConnectGroupCall(for thread: TSGroupThread, isVideoMuted: Bool) -> (SignalCall, GroupThreadCall)? {
+        owsAssertDebug(thread.groupModel.groupsVersion == .V2)
+
+        return _buildAndConnectGroupCall(isOutgoingVideoMuted: isVideoMuted) { () -> (SignalCall, GroupThreadCall)? in
+            let videoCaptureController = VideoCaptureController()
+            let sfuUrl = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
+            let ringRtcCall = callManager.createGroupCall(
+                groupId: thread.groupModel.groupId,
+                sfuUrl: sfuUrl,
+                hkdfExtraInfo: Data(),
+                audioLevelsIntervalMillis: nil,
+                videoCaptureController: videoCaptureController
+            )
+            guard let ringRtcCall else {
+                return nil
+            }
+            let groupThreadCall = GroupThreadCall(
+                delegate: self,
+                ringRtcCall: ringRtcCall,
+                groupThread: thread,
+                videoCaptureController: videoCaptureController
+            )
+            return (SignalCall(groupThreadCall: groupThreadCall), groupThreadCall)
+        }
+    }
+
+    private func _buildAndConnectGroupCall<T: GroupCall>(
+        isOutgoingVideoMuted: Bool,
+        createCall: () -> (SignalCall, T)?
+    ) -> (SignalCall, T)? {
         AssertIsOnMainThread()
         guard callServiceState.currentCall == nil else { return nil }
 
-        guard let (call, groupThreadCall) = buildGroupCall(for: thread) else { return nil }
+        guard let (call, groupCall) = createCall() else {
+            owsFailDebug("Failed to create call")
+            return nil
+        }
 
         // By default, group calls should start out with speakerphone enabled.
         self.audioService.requestSpeakerphone(isEnabled: true)
 
-        groupThreadCall.ringRtcCall.isOutgoingAudioMuted = false
-        groupThreadCall.ringRtcCall.isOutgoingVideoMuted = videoMuted
+        groupCall.ringRtcCall.isOutgoingAudioMuted = false
+        groupCall.ringRtcCall.isOutgoingVideoMuted = isOutgoingVideoMuted
 
         callServiceState.setCurrentCall(call)
 
         // Connect (but don't join) to subscribe to live updates.
-        guard connectGroupCallIfNeeded(groupThreadCall) else {
+        guard connectGroupCallIfNeeded(groupCall) else {
             callServiceState.terminateCall(call)
             return nil
         }
 
-        return (call, groupThreadCall)
-    }
-
-    private func buildGroupCall(for thread: TSGroupThread) -> (SignalCall, GroupThreadCall)? {
-        owsAssertDebug(thread.groupModel.groupsVersion == .V2)
-
-        let videoCaptureController = VideoCaptureController()
-        let sfuURL = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
-
-        guard let groupCall = callManager.createGroupCall(
-            groupId: thread.groupModel.groupId,
-            sfuUrl: sfuURL,
-            hkdfExtraInfo: Data.init(),
-            audioLevelsIntervalMillis: nil,
-            videoCaptureController: videoCaptureController
-        ) else {
-            owsFailDebug("Failed to create group call")
-            return nil
-        }
-
-        let groupThreadCall = GroupThreadCall(
-            delegate: self,
-            ringRtcCall: groupCall,
-            groupThread: thread,
-            videoCaptureController: videoCaptureController
-        )
-
-        return (SignalCall(groupThreadCall: groupThreadCall), groupThreadCall)
+        return (call, groupCall)
     }
 
     func joinGroupCallIfNecessary(_ call: SignalCall, groupThreadCall: GroupThreadCall) {
@@ -1513,9 +1518,9 @@ extension CallService: CallManagerDelegate {
             // Mute video by default unless the user has already approved it.
             // This keeps us from popping the "give permission to use your camera" alert before the user answers.
             let videoMuted = AVCaptureDevice.authorizationStatus(for: .video) != .authorized
-            guard let (call, groupThreadCall) = buildAndConnectGroupCallIfPossible(
-                thread: thread,
-                videoMuted: videoMuted
+            guard let (call, groupThreadCall) = buildAndConnectGroupCall(
+                for: thread,
+                isVideoMuted: videoMuted
             ) else {
                 return owsFailDebug("Failed to build group call")
             }
