@@ -21,6 +21,7 @@ public struct AttachmentDataSource {
         case dataSource(DataSource, shouldCopy: Bool)
         case data(Data)
         case existingAttachment(Attachment.IDType)
+        case pendingAttachment(PendingAttachment)
     }
 
     internal init(
@@ -71,6 +72,17 @@ public struct AttachmentDataSource {
             contentHash: existingAttachment.contentHash,
             sourceFilename: reference.sourceFilename,
             dataSource: .existingAttachment(existingAttachment.attachment.id)
+        )
+    }
+
+    public static func from(
+        pendingAttachment: PendingAttachment
+    ) -> AttachmentDataSource {
+        return .init(
+            mimeType: pendingAttachment.mimeType,
+            contentHash: pendingAttachment.sha256ContentHash,
+            sourceFilename: pendingAttachment.sourceFilename,
+            dataSource: .pendingAttachment(pendingAttachment)
         )
     }
 }

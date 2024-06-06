@@ -884,6 +884,7 @@
 		666072622BAB58A20084B3D2 /* OWSContactSerializationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666072602BAB58850084B3D2 /* OWSContactSerializationTest.swift */; };
 		6664B9AB2A314EBD008EF74B /* SpoilerRevealStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6664B9AA2A314EBD008EF74B /* SpoilerRevealStateTests.swift */; };
 		666654212AD0B03F00B23B32 /* MasterKeySyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666654202AD0B03F00B23B32 /* MasterKeySyncManager.swift */; };
+		666B0A8E2C0CD37100737CA0 /* TSResourceContentValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666B0A8D2C0CD37100737CA0 /* TSResourceContentValidator.swift */; };
 		6673FF702978C40300F96CFD /* SVRAuthCredentialStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF6F2978C40300F96CFD /* SVRAuthCredentialStorage.swift */; };
 		6673FF722979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF712979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift */; };
 		6673FF752979F87500F96CFD /* SVRAuthCredentialStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF742979F87500F96CFD /* SVRAuthCredentialStorageTests.swift */; };
@@ -3803,6 +3804,7 @@
 		666072602BAB58850084B3D2 /* OWSContactSerializationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSContactSerializationTest.swift; sourceTree = "<group>"; };
 		6664B9AA2A314EBD008EF74B /* SpoilerRevealStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRevealStateTests.swift; sourceTree = "<group>"; };
 		666654202AD0B03F00B23B32 /* MasterKeySyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterKeySyncManager.swift; sourceTree = "<group>"; };
+		666B0A8D2C0CD37100737CA0 /* TSResourceContentValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceContentValidator.swift; sourceTree = "<group>"; };
 		6673FF6F2978C40300F96CFD /* SVRAuthCredentialStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorage.swift; sourceTree = "<group>"; };
 		6673FF712979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorageImpl.swift; sourceTree = "<group>"; };
 		6673FF742979F87500F96CFD /* SVRAuthCredentialStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRAuthCredentialStorageTests.swift; sourceTree = "<group>"; };
@@ -7344,6 +7346,7 @@
 		661BFDFE2C07C5E20065435B /* ContentValidation */ = {
 			isa = PBXGroup;
 			children = (
+				666B0A8C2C0CD36300737CA0 /* TSResource */,
 				661BFDFF2C07C5F30065435B /* AttachmentContentValidator.swift */,
 				661BFE012C07C6670065435B /* AttachmentContentValidatorImpl.swift */,
 				661BFE032C07C68F0065435B /* AttachmentContentValidatorMock.swift */,
@@ -7614,6 +7617,14 @@
 				666072602BAB58850084B3D2 /* OWSContactSerializationTest.swift */,
 			);
 			path = ContactShare;
+			sourceTree = "<group>";
+		};
+		666B0A8C2C0CD36300737CA0 /* TSResource */ = {
+			isa = PBXGroup;
+			children = (
+				666B0A8D2C0CD37100737CA0 /* TSResourceContentValidator.swift */,
+			);
+			path = TSResource;
 			sourceTree = "<group>";
 		};
 		666BAB0E2980B76B00867196 /* Dependencies */ = {
@@ -14502,6 +14513,7 @@
 				6691E7EF2996E8FB0032A68A /* TSRequestOWSURLSessionMock.swift in Sources */,
 				66C102F22B61E38100B47EC2 /* TSResource.swift in Sources */,
 				66D7B91F2B97C5E90005C98B /* TSResourceContentType.swift in Sources */,
+				666B0A8E2C0CD37100737CA0 /* TSResourceContentValidator.swift in Sources */,
 				664BA84D2BB63102005638E0 /* TSResourceDataSource.swift in Sources */,
 				66D7B9372B99463C0005C98B /* TSResourceDownloadManager.swift in Sources */,
 				66D7B9392B99466F0005C98B /* TSResourceDownloadManagerImpl.swift in Sources */,

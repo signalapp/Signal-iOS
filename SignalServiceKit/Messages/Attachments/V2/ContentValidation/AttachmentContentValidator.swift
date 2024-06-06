@@ -48,3 +48,38 @@ public protocol AttachmentContentValidator {
         sourceFilename: String?
     ) async throws -> PendingAttachment
 }
+
+extension AttachmentContentValidator {
+
+    public func validateContents(
+        dataSource: DataSource,
+        shouldConsume: Bool,
+        mimeType: String,
+        sourceFilename: String?
+    ) async throws -> AttachmentDataSource {
+        return .from(pendingAttachment: try await self.validateContents(
+            dataSource: dataSource,
+            shouldConsume: shouldConsume,
+            mimeType: mimeType,
+            sourceFilename: sourceFilename
+        ))
+    }
+
+    public func validateContents(
+        ofEncryptedFileAt fileUrl: URL,
+        encryptionKey: Data,
+        plaintextLength: UInt32,
+        digestSHA256Ciphertext: Data,
+        mimeType: String,
+        sourceFilename: String?
+    ) async throws -> AttachmentDataSource {
+        return .from(pendingAttachment: try await self.validateContents(
+            ofEncryptedFileAt: fileUrl,
+            encryptionKey: encryptionKey,
+            plaintextLength: plaintextLength,
+            digestSHA256Ciphertext: digestSHA256Ciphertext,
+            mimeType: mimeType,
+            sourceFilename: sourceFilename
+        ))
+    }
+}

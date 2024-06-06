@@ -20,9 +20,10 @@ public struct TSResourceDataSource {
         case dataSource(DataSource, shouldCopy: Bool)
         case data(Data)
         case existingAttachment(TSResourceId)
+        case pendingAttachment(PendingAttachment)
     }
 
-    private init(
+    fileprivate init(
         mimeType: String,
         caption: MessageBody?,
         renderingFlag: AttachmentReference.RenderingFlag,
@@ -115,6 +116,18 @@ public struct TSResourceDataSource {
         }
     }
 
+    public static func from(
+        pendingAttachment: PendingAttachment
+    ) -> TSResourceDataSource {
+        return .init(
+            mimeType: pendingAttachment.mimeType,
+            caption: nil,
+            renderingFlag: .default,
+            sourceFilename: pendingAttachment.sourceFilename,
+            dataSource: .pendingAttachment(pendingAttachment)
+        )
+    }
+
     mutating func removeBorderlessRenderingFlagIfPresent() {
         switch renderingFlag {
         case .default, .voiceMessage, .shouldLoop:
@@ -192,6 +205,34 @@ extension TSResourceDataSource {
                     dataSource: .existingAttachment(uniqueId: uniqueId)
                 ))
             }
+        case .pendingAttachment(let pendingAttachment):
+            return .v2(.from(pendingAttachment: pendingAttachment), renderingFlag)
         }
+    }
+}
+
+extension AttachmentDataSource {
+
+    public var tsDataSource: TSResourceDataSource {
+        return .init(
+            mimeType: mimeType,
+            // Caption and rendering flag live elsewhere
+            // for v2 attachments, and aren't on the source.
+            caption: nil,
+            renderingFlag: .default,
+            sourceFilename: sourceFilename,
+            dataSource: {
+                switch self.dataSource {
+                case let .dataSource(dataSource, shouldCopy):
+                    return .dataSource(dataSource, shouldCopy: shouldCopy)
+                case let .data(data):
+                    return .data(data)
+                case let .existingAttachment(attachmentId):
+                    return .existingAttachment(.v2(rowId: attachmentId))
+                case let .pendingAttachment(pendingAttachment):
+                    return .pendingAttachment(pendingAttachment)
+                }
+            }()
+        )
     }
 }

@@ -8,14 +8,11 @@ import Foundation
 public class AttachmentManagerImpl: AttachmentManager {
 
     private let attachmentStore: AttachmentStore
-    private let contentValidator: AttachmentContentValidator
 
     public init(
-        attachmentStore: AttachmentStore,
-        contentValidator: AttachmentContentValidator
+        attachmentStore: AttachmentStore
     ) {
         self.attachmentStore = attachmentStore
-        self.contentValidator = contentValidator
     }
 
     // MARK: - Public
@@ -264,6 +261,8 @@ public class AttachmentManagerImpl: AttachmentManager {
             guard let streamInfo = existingAttachment.streamInfo else {
                 throw OWSAssertionError("Copying from non-stream attachment!")
             }
+        case .pendingAttachment(let pendingAttachment):
+            break
         }
 
         let attachment: Attachment = {

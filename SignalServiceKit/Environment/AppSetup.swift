@@ -234,10 +234,12 @@ public class AppSetup {
             audioWaveformManager: audioWaveformManager,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner
         )
+        let tsResourceContentValidator = TSResourceContentValidatorImpl(
+            attachmentValidator: attachmentContentValidator
+        )
         let attachmentStore = AttachmentStoreImpl()
         let attachmentManager = AttachmentManagerImpl(
-            attachmentStore: attachmentStore,
-            contentValidator: attachmentContentValidator
+            attachmentStore: attachmentStore
         )
 
         let mediaBandwidthPreferenceStore = MediaBandwidthPreferenceStoreImpl(
@@ -948,6 +950,7 @@ public class AppSetup {
             accountAttributesUpdater: accountAttributesUpdater,
             appExpiry: appExpiry,
             attachmentCloner: attachmentCloner,
+            attachmentContentValidator: attachmentContentValidator,
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentManager: attachmentManager,
             attachmentStore: attachmentStore,
@@ -1029,6 +1032,7 @@ public class AppSetup {
             threadStore: threadStore,
             tsAccountManager: tsAccountManager,
             tsResourceCloner: tsResourceCloner,
+            tsResourceContentValidator: tsResourceContentValidator,
             tsResourceDownloadManager: tsResourceDownloadManager,
             tsResourceManager: tsResourceManager,
             tsResourceStore: tsResourceStore,
