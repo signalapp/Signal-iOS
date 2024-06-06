@@ -178,6 +178,20 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (BOOL)consumeAndDeleteWithError:(NSError **)outError
+{
+    OWSAssertDebug(!self.isConsumed);
+
+    self.isConsumed = YES;
+
+    if (!self.cachedFileUrl) {
+        // Nothing to delete.
+        return YES;
+    }
+
+    return [OWSFileSystem deleteFileIfExistsWithUrl:self.cachedFileUrl error:outError];
+}
+
 - (BOOL)isValidImage
 {
     OWSAssertDebug(!self.isConsumed);
@@ -453,6 +467,15 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Could not write data with error: %@", error);
     }
     return success;
+}
+
+- (BOOL)consumeAndDeleteWithError:(NSError **)outError
+{
+    OWSAssertDebug(!self.isConsumed);
+
+    self.isConsumed = YES;
+
+    return [OWSFileSystem deleteFileIfExistsWithUrl:self.fileUrl error:outError];
 }
 
 - (nullable NSString *)mimeType

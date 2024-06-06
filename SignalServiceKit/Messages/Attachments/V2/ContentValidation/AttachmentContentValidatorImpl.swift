@@ -21,6 +21,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
     public func validateContents(
         dataSource: DataSource,
+        shouldConsume: Bool,
         mimeType: String,
         sourceFilename: String?
     ) async throws -> PendingAttachment {
@@ -35,12 +36,18 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             }
         }()
         let encryptionKey = Cryptography.randomAttachmentEncryptionKey()
-        return try await validateContents(
+        let pendingAttachment = try await validateContents(
             input: input,
             encryptionKey: encryptionKey,
             mimeType: mimeType,
             sourceFilename: sourceFilename
         )
+
+        if shouldConsume {
+            try dataSource.consumeAndDelete()
+        }
+
+        return pendingAttachment
     }
 
     public func validateContents(

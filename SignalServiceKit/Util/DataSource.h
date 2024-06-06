@@ -44,6 +44,8 @@ NS_ASSUME_NONNULL_BEGIN
 // and cannot be used after it's been moved.
 - (BOOL)moveToUrlAndConsume:(NSURL *)dstUrl error:(NSError **)error;
 
+- (BOOL)consumeAndDeleteWithError:(NSError **)error;
+
 @end
 
 #pragma mark -

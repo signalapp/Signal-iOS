@@ -25,8 +25,12 @@ public protocol AttachmentContentValidator {
     /// Returns a PendingAttachment with validated contents, ready to be inserted.
     /// Note the content type may be `invalid`; we can still create an Attachment from these.
     /// Errors are thrown if data reading/parsing fails.
+    ///
+    /// - Parameter  shouldConsume: If true, the source file will be deleted and the DataSource
+    /// consumed after validation is complete; otherwise the source file will be left as-is.
     func validateContents(
         dataSource: DataSource,
+        shouldConsume: Bool,
         mimeType: String,
         sourceFilename: String?
     ) async throws -> PendingAttachment

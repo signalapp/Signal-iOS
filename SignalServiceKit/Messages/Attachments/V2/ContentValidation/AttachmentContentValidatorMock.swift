@@ -13,6 +13,7 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
 
     open func validateContents(
         dataSource: DataSource,
+        shouldConsume: Bool,
         mimeType: String,
         sourceFilename: String?
     ) async throws -> PendingAttachment {
