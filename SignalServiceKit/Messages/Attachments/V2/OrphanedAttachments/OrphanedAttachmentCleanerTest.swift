@@ -23,7 +23,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
         mockFileSystem = OrphanedAttachmentCleanerImpl.Mocks.OWSFileSystem()
         mockTaskScheduler = OrphanedAttachmentCleanerImpl.Mocks.TaskScheduler()
         orphanedAttachmentCleaner = OrphanedAttachmentCleanerImpl(
-            db: db.databaseQueue,
+            dbProvider: { [db] in db!.databaseQueue },
             featureFlags: OrphanedAttachmentCleanerImpl.Mocks.FeatureFlags(),
             fileSystem: mockFileSystem,
             taskScheduler: mockTaskScheduler
