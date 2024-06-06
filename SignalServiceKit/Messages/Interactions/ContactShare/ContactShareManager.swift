@@ -140,7 +140,6 @@ public class ContactShareManagerImpl: ContactShareManager {
             avatarDataSource = .from(
                 data: imageData,
                 mimeType: mimeType,
-                caption: nil,
                 renderingFlag: .default,
                 sourceFilename: nil
             )

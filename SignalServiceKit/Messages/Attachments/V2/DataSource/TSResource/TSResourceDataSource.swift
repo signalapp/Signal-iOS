@@ -55,13 +55,12 @@ public struct TSResourceDataSource {
     public static func from(
         data: Data,
         mimeType: String,
-        caption: MessageBody?,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
     ) -> TSResourceDataSource {
         return .init(
             mimeType: mimeType,
-            caption: caption,
+            caption: nil,
             renderingFlag: renderingFlag,
             sourceFilename: sourceFilename,
             dataSource: .data(data)

@@ -2562,7 +2562,6 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                     let avatarDataSource = TSResourceDataSource.from(
                         data: avatarData,
                         mimeType: MimeType.imageJpeg.rawValue,
-                        caption: nil,
                         renderingFlag: .default,
                         sourceFilename: nil
                     )
@@ -3446,7 +3445,6 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 let dataSource = TSResourceDataSource.from(
                     data: UIImage.image(color: .blue, size: .square(100)).jpegData(compressionQuality: 0.1)!,
                     mimeType: "image/jpg",
-                    caption: nil,
                     renderingFlag: .default,
                     sourceFilename: "test.jpg"
                 )
@@ -3871,7 +3869,6 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             let resourceDataSource = TSResourceDataSource.from(
                 data: dataSource.data,
                 mimeType: fakeAssetLoader.mimeType,
-                caption: nil,
                 renderingFlag: .default,
                 sourceFilename: filename
             )

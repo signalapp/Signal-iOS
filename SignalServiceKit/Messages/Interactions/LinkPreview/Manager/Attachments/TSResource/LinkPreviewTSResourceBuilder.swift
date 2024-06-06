@@ -24,7 +24,6 @@ public class LinkPreviewTSResourceBuilder: LinkPreviewBuilder {
         return TSResourceDataSource.from(
             data: data,
             mimeType: mimeType,
-            caption: nil,
             renderingFlag: .default,
             sourceFilename: nil
         )
