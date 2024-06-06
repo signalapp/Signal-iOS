@@ -1234,7 +1234,7 @@ private extension SignalCall {
         switch mode {
         case .individual(let individualCall):
             return individualCall.callId
-        case .groupThread(let call):
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
             return call.ringRtcCall.peekInfo?.eraId.map { callIdFromEra($0) }
         }
     }
@@ -1250,6 +1250,8 @@ private extension SignalCall {
             return call.thread.sqliteRowId!
         case .groupThread(let call):
             return call.groupThread.sqliteRowId!
+        case .callLink:
+            owsFail("[CallLink] TODO: Can't fetch threadRowId for a CallLink call")
         }
     }
 }

@@ -278,7 +278,7 @@ private class CallControlsViewModel {
         switch call.mode {
         case .individual(let call):
             call.addObserverAndSyncState(self)
-        case .groupThread(let call):
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
             call.addObserverAndSyncState(self)
         }
         callService.audioService.delegate = self
@@ -338,7 +338,7 @@ private class CallControlsViewModel {
         switch call.mode {
         case .individual(_):
             return false
-        case .groupThread(let call):
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
             return call.joinState != .joined
         }
     }
@@ -359,7 +359,7 @@ private class CallControlsViewModel {
         switch call.mode {
         case .individual(let call):
             return ![.idle, .dialing, .remoteRinging, .localRinging_Anticipatory, .localRinging_ReadyToAnswer].contains(call.state)
-        case .groupThread(let call):
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
             // Because joined group calls include the `moreButton`, we're out of
             // space for the `flipCameraButton`.
             //
@@ -380,7 +380,7 @@ private class CallControlsViewModel {
         case .individual(_):
             // TODO: Introduce lobby for starting 1:1 video calls.
             return true
-        case .groupThread(let call):
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
             return call.ringRtcCall.localDeviceState.joinState == .joined
         }
     }
@@ -430,6 +430,9 @@ private class CallControlsViewModel {
                     comment: "Button to join an ongoing group call"
                 )
                 label = call.ringRestrictions.contains(.callInProgress) ? joinCallText : startCallText
+            case .callLink:
+                // [CallLink] TODO: Localize "Ask to Join"
+                label = "Ask to Join"
             }
             return JoinButtonConfiguration(
                 label: label,
@@ -450,6 +453,8 @@ private class CallControlsViewModel {
             return true
         case .groupThread(let call):
             return call.joinState == .joined || call.ringRestrictions.contains(.callInProgress)
+        case .callLink:
+            return true
         }
     }
 
@@ -483,6 +488,8 @@ private class CallControlsViewModel {
                 isSelected: isSelected,
                 shouldDrawAsDisabled: shouldDrawAsDisabled
             )
+        case .callLink:
+            return nil
         }
     }
 
@@ -492,6 +499,9 @@ private class CallControlsViewModel {
             return true
         case .groupThread(let call):
             return call.ringRtcCall.localDeviceState.joinState != .joined
+        case .callLink:
+            // [CallLink] TODO: .
+            return true
         }
     }
 
@@ -648,6 +658,8 @@ extension CallControlsViewModel {
                 refreshView?()
             }
             delegate?.didPressRing()
+        case .callLink:
+            owsFailDebug("Can't ring Call Link call.")
         }
     }
 
@@ -680,7 +692,7 @@ extension CallControlsViewModel {
                 "CALL_VIEW_HANGUP_LABEL",
                 comment: "Accessibility label for hang up call"
             )
-        case .groupThread(_):
+        case .groupThread, .callLink:
             return OWSLocalizedString(
                 "CALL_VIEW_LEAVE_CALL_LABEL",
                 comment: "Accessibility label for leaving a call"

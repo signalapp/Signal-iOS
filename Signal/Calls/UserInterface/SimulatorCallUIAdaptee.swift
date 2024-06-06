@@ -38,6 +38,8 @@ class SimulatorCallUIAdaptee: NSObject, CallUIAdaptee {
                 // Recover by considering ourselves connected
                 recipientAcceptedCall(call.mode)
             }
+        case .callLink:
+            recipientAcceptedCall(call.mode)
         }
     }
 
@@ -61,6 +63,8 @@ class SimulatorCallUIAdaptee: NSObject, CallUIAdaptee {
             // Explicitly unmute to request permissions.
             self.callService.updateIsLocalAudioMuted(isLocalAudioMuted: false)
             self.callService.joinGroupCallIfNecessary(call, groupThreadCall: groupThreadCall)
+        case .callLink:
+            owsFail("Can't answer Call Link call")
         }
 
         // Enable audio for locally accepted calls after the session is configured.

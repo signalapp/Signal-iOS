@@ -20,8 +20,8 @@ class GroupCallRemoteVideoManager {
             return nil
         case .individual:
             return nil
-        case .groupThread(let groupThreadCall):
-            return groupThreadCall.ringRtcCall
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
+            return call.ringRtcCall
         }
     }
 
@@ -113,13 +113,13 @@ extension GroupCallRemoteVideoManager: CallServiceStateObserver {
         switch oldValue?.mode {
         case nil, .individual:
             break
-        case .groupThread(let call):
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
             call.removeObserver(self)
         }
         switch newValue?.mode {
         case nil, .individual:
             break
-        case .groupThread(let call):
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
             call.addObserverAndSyncState(self)
         }
     }

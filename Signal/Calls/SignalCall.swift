@@ -10,11 +10,14 @@ import SignalUI
 enum CallMode {
     case individual(IndividualCall)
     case groupThread(GroupThreadCall)
+    case callLink(CallLinkCall)
 
     var commonState: CommonCallState {
         switch self {
-        case .individual(let call): return call.commonState
-        case .groupThread(let call): return call.commonState
+        case .individual(let call):
+            return call.commonState
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
+            return call.commonState
         }
     }
 
@@ -22,20 +25,25 @@ enum CallMode {
         switch self {
         case .individual(let call): return call.hasTerminated
         case .groupThread(let call): return call.hasTerminated
+        case .callLink: return false
         }
     }
 
     var isOutgoingAudioMuted: Bool {
         switch self {
-        case .individual(let call): return call.isMuted
-        case .groupThread(let call): return call.ringRtcCall.isOutgoingAudioMuted
+        case .individual(let call):
+            return call.isMuted
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
+            return call.ringRtcCall.isOutgoingAudioMuted
         }
     }
 
     var isOutgoingVideoMuted: Bool {
         switch self {
-        case .individual(let call): return !call.hasLocalVideo
-        case .groupThread(let call): return call.ringRtcCall.isOutgoingVideoMuted
+        case .individual(let call):
+            return !call.hasLocalVideo
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
+            return call.ringRtcCall.isOutgoingVideoMuted
         }
     }
 
@@ -67,14 +75,17 @@ enum CallMode {
                  .dialing:
                 return .joined
             }
-        case .groupThread(let call): return call.joinState
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
+            return call.joinState
         }
     }
 
     var canJoin: Bool {
         switch self {
-        case .individual(_): return true
-        case .groupThread(let call): return !call.ringRtcCall.isFull
+        case .individual:
+            return true
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
+            return !call.ringRtcCall.isFull
         }
     }
 
@@ -94,13 +105,17 @@ enum CallMode {
                 return nil
             }
             return caller
+        case .callLink:
+            return nil
         }
     }
 
     var videoCaptureController: VideoCaptureController {
         switch self {
-        case .individual(let call): return call.videoCaptureController
-        case .groupThread(let call): return call.videoCaptureController
+        case .individual(let call):
+            return call.videoCaptureController
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
+            return call.videoCaptureController
         }
     }
 }
@@ -150,6 +165,10 @@ class SignalCall: CallManagerCallReference {
         self.mode = .groupThread(groupThreadCall)
     }
 
+    init(callLinkCall: CallLinkCall) {
+        self.mode = .callLink(callLinkCall)
+    }
+
     init(individualCall: IndividualCall) {
         self.mode = .individual(individualCall)
     }
@@ -162,6 +181,7 @@ class SignalCall: CallManagerCallReference {
         switch mode {
         case .individual(let call): return call.offerMediaType
         case .groupThread: return .video
+        case .callLink: return .video
         }
     }
 }

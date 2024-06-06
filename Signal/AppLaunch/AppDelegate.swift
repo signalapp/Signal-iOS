@@ -1319,7 +1319,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                     case .individual(let call) where thread.uniqueId == call.thread.uniqueId:
                         Logger.info("Upgrading existing call to video")
                         callService.updateIsLocalVideoMuted(isLocalVideoMuted: false)
-                    case .individual:
+                    case .individual, .callLink:
                         Logger.warn("Ignoring user activity; on another call.")
                     case .groupThread:
                         // TODO: It seems like this should be implemented.

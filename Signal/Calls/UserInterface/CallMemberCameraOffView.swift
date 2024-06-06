@@ -52,7 +52,7 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
             switch call.mode {
             case .individual:
                 self.avatarView = ConversationAvatarView(localUserDisplayMode: .asUser, badged: false)
-            case .groupThread:
+            case .groupThread, .callLink:
                 self.detailedNoVideoIndicatorView = self.createDetailedVideoOffIndicatorView()
                 self.noVideoIndicatorImageView = self.createVideoOffIndicatorImageView()
             }

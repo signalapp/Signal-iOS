@@ -271,7 +271,7 @@ public class NotificationActionHandler: Dependencies {
                     return true
                 case .groupThread(let call) where call.groupThread.uniqueId == thread.uniqueId:
                     return true
-                case nil, .individual, .groupThread:
+                case nil, .individual, .groupThread, .callLink:
                     return false
                 }
             }()

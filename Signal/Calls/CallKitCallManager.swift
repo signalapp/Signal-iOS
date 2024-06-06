@@ -73,6 +73,8 @@ final class CallKitCallManager {
                 type = .generic
                 value = Self.kGroupCallHandlePrefix + groupThreadCall.groupThread.groupModel.groupId.asBase64Url
             }
+        case .callLink:
+            owsFail("[CallLink] TODO: Create CallKit handles for Call Link calls")
         }
         return CXHandle(type: type, value: value)
     }
@@ -122,11 +124,11 @@ final class CallKitCallManager {
         switch call.mode {
         case .individual(let individualCall):
             startCallAction.isVideo = individualCall.offerMediaType == .video
-        case .groupThread(let groupThreadCall):
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
             // All group calls are video calls even if the local video is off,
             // but what we set here is how the call shows up in the system call log,
             // which controls what happens if the user starts another call from the system call log.
-            startCallAction.isVideo = !groupThreadCall.ringRtcCall.isOutgoingVideoMuted
+            startCallAction.isVideo = !call.ringRtcCall.isOutgoingVideoMuted
         }
 
         let transaction = CXTransaction()

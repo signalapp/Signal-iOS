@@ -16,6 +16,7 @@ protocol CallUIAdaptee: AnyObject {
     init(showNamesOnCallScreen: Bool, useSystemCallLog: Bool)
 
     func startOutgoingCall(call: SignalCall)
+    // [CallLink] TODO: Only allow individual & group calls.
     func reportIncomingCall(_ call: SignalCall, completion: @escaping (Error?) -> Void)
     func answerCall(_ call: SignalCall)
     func recipientAcceptedCall(_ call: CallMode)
@@ -216,8 +217,8 @@ public class CallUIAdapter: NSObject {
         switch call.mode {
         case .individual(let individualCall):
             callViewController = IndividualCallViewController(call: call, individualCall: individualCall)
-        case .groupThread(let groupThreadCall):
-            callViewController = GroupCallViewController(call: call, groupCall: groupThreadCall)
+        case .groupThread(let groupCall as GroupCall), .callLink(let groupCall as GroupCall):
+            callViewController = GroupCallViewController(call: call, groupCall: groupCall)
         }
 
         callViewController.modalTransitionStyle = .crossDissolve

@@ -234,6 +234,7 @@ struct ConversationHeaderBuilder: Dependencies {
                 case nil: return false
                 case .individual(let call): return call.thread.uniqueId == delegate.thread.uniqueId
                 case .groupThread(let call): return call.groupThread.uniqueId == delegate.thread.uniqueId
+                case .callLink: return false
                 }
             }()
 
@@ -599,7 +600,7 @@ extension ConversationHeaderDelegate {
             WindowManager.shared.returnToCallView()
         case .groupThread(let call) where call.groupThread.uniqueId == thread.uniqueId:
             WindowManager.shared.returnToCallView()
-        case .individual, .groupThread:
+        case .individual, .groupThread, .callLink:
             owsFailDebug("Tried to start call while call was ongoing")
         }
     }

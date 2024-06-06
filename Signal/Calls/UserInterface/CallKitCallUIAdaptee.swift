@@ -120,6 +120,9 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
                 "CALLKIT_ANONYMOUS_GROUP_NAME",
                 comment: "The generic name used for group calls if CallKit privacy is enabled"
             )
+        case .callLink:
+            // [CallLink] TODO: Show "Call Link" or the name of the Call Link.
+            return "Call Link Call"
         }
     }
 
@@ -192,6 +195,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
                 return individualCall.offerMediaType == .video
             case .groupThread:
                 return true
+            case .callLink:
+                owsFail("Can't ring Call Link calls.")
             }
         }()
 
@@ -356,7 +361,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         switch call.mode {
         case .individual:
             self.callService.individualCallService.handleOutgoingCall(call)
-        case .groupThread:
+        case .groupThread, .callLink:
             break
         }
 
@@ -386,6 +391,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
                 // Recover by considering ourselves connected
                 recipientAcceptedCall(call.mode)
             }
+        case .callLink:
+            recipientAcceptedCall(call.mode)
         }
     }
 
@@ -400,6 +407,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         }
 
         switch call.mode {
+        case .callLink:
+            owsFail("Can't answer Call Link calls.")
         case .groupThread(let groupThreadCall):
             // Explicitly unmute to request permissions, if needed.
             callService.updateIsLocalAudioMuted(isLocalAudioMuted: call.isOutgoingAudioMuted)
@@ -533,7 +542,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         case .individual(let individualCall) where individualCall.direction == .incoming:
             // Only enable audio upon activation for locally accepted calls.
             self.audioSession.isRTCAudioEnabled = true
-        case .individual, .groupThread:
+        case .individual, .groupThread, .callLink:
             break
         }
     }

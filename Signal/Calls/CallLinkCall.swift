@@ -4,6 +4,17 @@
 //
 
 import Foundation
+import SignalRingRTC
 
 final class CallLinkCall: Signal.GroupCall {
+    init(
+        ringRtcCall: SignalRingRTC.GroupCall,
+        videoCaptureController: VideoCaptureController
+    ) {
+        super.init(
+            audioDescription: "[SignalCall] Call link call",
+            ringRtcCall: ringRtcCall,
+            videoCaptureController: videoCaptureController
+        )
+    }
 }

@@ -821,7 +821,7 @@ extension CVLoadCoordinator: CallServiceStateObserver {
         switch signalCall?.mode {
         case .groupThread(let call):
             return call.groupThread.uniqueId == thread.uniqueId
-        case nil, .individual:
+        case nil, .individual, .callLink:
             return false
         }
     }

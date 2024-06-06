@@ -20,7 +20,7 @@ extension CurrentCall: CurrentCallProvider {
     var hasCurrentCall: Bool { self.get() != nil }
     var currentGroupCallThread: TSGroupThread? {
         switch self.get()?.mode {
-        case nil, .individual:
+        case nil, .individual, .callLink:
             return nil
         case .groupThread(let call):
             return call.groupThread

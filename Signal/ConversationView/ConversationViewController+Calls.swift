@@ -16,6 +16,8 @@ public extension ConversationViewController {
             return call.thread.uniqueId == thread.uniqueId
         case .groupThread(let call):
             return call.groupThread.uniqueId == thread.uniqueId
+        case .callLink:
+            return false
         }
     }
 

@@ -130,8 +130,8 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
         switch call.mode {
         case .individual(let individualCall):
             requestSpeakerphone(call: individualCall, isEnabled: isEnabled)
-        case .groupThread(let groupThreadCall):
-            requestSpeakerphone(call: groupThreadCall, isEnabled: isEnabled)
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
+            requestSpeakerphone(call: call, isEnabled: isEnabled)
         }
     }
 
@@ -150,7 +150,7 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
         switch call.mode {
         case .individual(let call):
             ensureProperAudioSession(call: call)
-        case .groupThread(let call):
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
             ensureProperAudioSession(call: call)
         }
     }
@@ -447,7 +447,7 @@ extension CallAudioService: CallServiceStateObserver {
             break
         case .individual(let call):
             call.removeObserver(self)
-        case .groupThread(let call):
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
             call.removeObserver(self)
         }
         switch newValue?.mode {
@@ -455,7 +455,7 @@ extension CallAudioService: CallServiceStateObserver {
             break
         case .individual(let call):
             call.addObserverAndSyncState(self)
-        case .groupThread(let call):
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
             call.addObserverAndSyncState(self)
         }
     }

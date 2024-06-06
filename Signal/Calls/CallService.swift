@@ -162,7 +162,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             break
         case .individual(let call):
             call.removeObserver(self)
-        case .groupThread(let call):
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
             call.removeObserver(self)
         }
         switch newValue?.mode {
@@ -170,7 +170,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             break
         case .individual(let call):
             call.addObserverAndSyncState(self)
-        case .groupThread(let call):
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
             call.addObserverAndSyncState(self)
         }
 
@@ -197,7 +197,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         case .individual:
             // By default, individual calls should start out with speakerphone disabled.
             self.audioService.requestSpeakerphone(isEnabled: false)
-        case .groupThread, nil:
+        case .groupThread, .callLink, nil:
             break
         }
 
@@ -222,6 +222,9 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
                     peekTrigger: .localEvent()
                 )
             }
+        case .callLink:
+            // [CallLink] TODO: .
+            break
         }
     }
 
@@ -275,9 +278,9 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         owsAssert(call === callServiceState.currentCall)
 
         switch call.mode {
-        case .groupThread(let groupThreadCall):
-            groupThreadCall.ringRtcCall.isOutgoingAudioMuted = isLocalAudioMuted
-            groupThreadCall.groupCall(onLocalDeviceStateChanged: groupThreadCall.ringRtcCall)
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
+            call.ringRtcCall.isOutgoingAudioMuted = isLocalAudioMuted
+            call.groupCall(onLocalDeviceStateChanged: call.ringRtcCall)
         case .individual(let individualCall):
             individualCall.isMuted = isLocalAudioMuted
             individualCallService.ensureAudioState(call: call)
@@ -330,9 +333,9 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         owsAssert(call === callServiceState.currentCall)
 
         switch call.mode {
-        case .groupThread(let groupThreadCall):
-            groupThreadCall.ringRtcCall.isOutgoingVideoMuted = isLocalVideoMuted
-            groupThreadCall.groupCall(onLocalDeviceStateChanged: groupThreadCall.ringRtcCall)
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
+            call.ringRtcCall.isOutgoingVideoMuted = isLocalVideoMuted
+            call.groupCall(onLocalDeviceStateChanged: call.ringRtcCall)
         case .individual(let individualCall):
             individualCall.hasLocalVideo = !isLocalVideoMuted
         }
@@ -397,8 +400,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
                 shouldResetUI: false,
                 shouldResetRingRTC: true
             )
-        case .groupThread(let groupThreadCall):
-            leaveAndTerminateGroupCall(failedCall, groupCall: groupThreadCall)
+        case .groupThread(let groupCall as GroupCall), .callLink(let groupCall as GroupCall):
+            leaveAndTerminateGroupCall(failedCall, groupCall: groupCall)
         }
     }
 
@@ -428,6 +431,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
                 }
             }
             leaveAndTerminateGroupCall(call, groupCall: groupThreadCall)
+        case .callLink(let callLinkCall):
+            leaveAndTerminateGroupCall(call, groupCall: callLinkCall)
         }
     }
 
@@ -449,8 +454,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         switch call.mode {
         case .individual(let individualCall):
             return individualCall.state == .connected && individualCall.hasLocalVideo
-        case .groupThread(let groupThreadCall):
-            return !groupThreadCall.ringRtcCall.isOutgoingVideoMuted
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
+            return !call.ringRtcCall.isOutgoingVideoMuted
         }
     }
 
@@ -467,12 +472,12 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
                 // If we're not yet connected, just enable the camera but don't tell RingRTC
                 // to start sending video. This allows us to show a "vanity" view while connecting.
                 if !Platform.isSimulator && individualCall.hasLocalVideo {
-                    call.videoCaptureController.startCapture()
+                    individualCall.videoCaptureController.startCapture()
                 } else {
-                    call.videoCaptureController.stopCapture()
+                    individualCall.videoCaptureController.stopCapture()
                 }
             }
-        case .groupThread:
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
             if shouldHaveLocalVideoTrack {
                 call.videoCaptureController.startCapture()
             } else {
@@ -506,6 +511,31 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
                 videoCaptureController: videoCaptureController
             )
             return (SignalCall(groupThreadCall: groupThreadCall), groupThreadCall)
+        }
+    }
+
+    func buildAndConnectCallLinkCall(callLink: CallLink) -> (SignalCall, CallLinkCall)? {
+        return _buildAndConnectGroupCall(isOutgoingVideoMuted: false) { () -> (SignalCall, CallLinkCall)? in
+            // [CallLink] TODO: Provide adminPasskey.
+            let videoCaptureController = VideoCaptureController()
+            let sfuUrl = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
+            let ringRtcCall = callManager.createCallLinkCall(
+                sfuUrl: sfuUrl,
+                authCredentialPresentation: [],
+                linkRootKey: callLink.rootKey,
+                adminPasskey: nil,
+                hkdfExtraInfo: Data(),
+                audioLevelsIntervalMillis: nil,
+                videoCaptureController: videoCaptureController
+            )
+            guard let ringRtcCall else {
+                return nil
+            }
+            let callLinkCall = CallLinkCall(
+                ringRtcCall: ringRtcCall,
+                videoCaptureController: videoCaptureController
+            )
+            return (SignalCall(callLinkCall: callLinkCall), callLinkCall)
         }
     }
 
@@ -718,10 +748,10 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             // If we're in an audio-only 1:1 call, the user isn't going to be looking at the screen.
             // Don't distract them with rotating icons.
             return individualCall.hasLocalVideo || individualCall.isRemoteVideoEnabled
-        case .groupThread:
-            // If we're in a group call, we don't want to use rotating icons,
-            // because we don't rotate user video at the same time,
-            // and that's very obvious for grid view or any non-speaker tile in speaker view.
+        case .groupThread, .callLink:
+            // If we're in a group call, we don't want to use rotating icons because we
+            // don't rotate user video at the same time, and that's very obvious for
+            // grid view or any non-speaker tile in speaker view.
             return false
         }
     }
@@ -782,6 +812,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
                 owsFailDebug("Failed to fetch membership info: \(error)")
                 return
             }
+            // [CallLink] TODO: .
             groupThreadCall.ringRtcCall.updateGroupMembers(members: membershipInfo)
         }
     }
@@ -920,9 +951,9 @@ extension CallService: GroupCallObserver {
         switch call?.mode {
         case nil, .individual:
             owsFail("Can't receive callback without an active group call")
-        case .groupThread(let groupThreadCall):
-            owsAssert(groupThreadCall === groupCall)
-            if groupThreadCall.shouldTerminateOnEndEvent {
+        case .groupThread(let currentCall as GroupCall), .callLink(let currentCall as GroupCall):
+            owsAssert(currentCall === groupCall)
+            if currentCall.shouldTerminateOnEndEvent {
                 callServiceState.terminateCall(call!)
             }
         }
@@ -982,6 +1013,8 @@ extension SignalCall {
             return nil
         case .groupThread(let groupThreadCall):
             return groupThreadCall
+        case .callLink:
+            return nil
         }
     }
 }
@@ -1004,7 +1037,7 @@ extension CallService: DatabaseChangeDelegate {
         owsAssertDebug(AppReadiness.isAppReady)
 
         switch callServiceState.currentCall?.mode {
-        case nil, .individual:
+        case nil, .individual, .callLink:
             break
         case .groupThread(let groupThreadCall):
             if databaseChanges.didUpdate(thread: groupThreadCall.groupThread) {
@@ -1088,7 +1121,8 @@ extension CallService: CallManagerDelegate {
                     owsFailDebug("We can't send messages to inactive group calls.")
                 case .individual:
                     owsFailDebug("We don't send messages for 1:1 calls.")
-                case .groupThread(let call):
+                case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
+                    // [CallLink] TODO: Check if this callback is used.
                     call.publishSendFailureUntrustedParticipantIdentity()
                 }
             } else {
@@ -1197,7 +1231,7 @@ extension CallService: CallManagerDelegate {
             individualCall.setOutgoingCallIdAndUpdateCallRecord(callId)
         case .individual:
             break
-        case .groupThread:
+        case .groupThread, .callLink:
             owsFail("Can't start a group call using this method.")
         }
 
@@ -1245,7 +1279,7 @@ extension CallService: CallManagerDelegate {
         case .individual(let individualCall):
             individualCall.networkRoute = networkRoute
             configureDataMode()
-        case .groupThread:
+        case .groupThread, .callLink:
             owsFail("Can't set the network route for a group call.")
         }
     }
