@@ -14,9 +14,8 @@ import UIKit
 // and replace CallViewController
 class GroupCallViewController: UIViewController {
     private let call: SignalCall
-    // TODO: Support Call Links.
+    private let groupCall: GroupCall
     private let ringRtcCall: SignalRingRTC.GroupCall
-    private let groupThreadCall: GroupThreadCall
     private lazy var callControlsConfirmationToastManager = CallControlsConfirmationToastManager(
         presentingContainerView: callControlsConfirmationToastContainerView
     )
@@ -29,11 +28,11 @@ class GroupCallViewController: UIViewController {
     private lazy var callControlsConfirmationToastContainerView = UIView()
     private var callService: CallService { AppEnvironment.shared.callService }
     private lazy var incomingCallControls = IncomingCallControls(video: true, delegate: self)
-    private lazy var callHeader = CallHeader(groupCall: groupThreadCall, delegate: self)
-    private lazy var notificationView = GroupCallNotificationView(groupCall: groupThreadCall)
+    private lazy var callHeader = CallHeader(groupCall: groupCall, delegate: self)
+    private lazy var notificationView = GroupCallNotificationView(groupCall: groupCall)
 
-    private lazy var videoGrid = GroupCallVideoGrid(call: call, groupCall: groupThreadCall)
-    private lazy var videoOverflow = GroupCallVideoOverflow(call: call, groupCall: groupThreadCall, delegate: self)
+    private lazy var videoGrid = GroupCallVideoGrid(call: call, groupCall: groupCall)
+    private lazy var videoOverflow = GroupCallVideoOverflow(call: call, groupCall: groupCall, delegate: self)
 
     private let localMemberView: CallMemberView
     private let speakerView: CallMemberView_GroupBridge
@@ -65,9 +64,9 @@ class GroupCallViewController: UIViewController {
         }
     }
 
-    lazy var tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTouchRootView))
-    lazy var videoOverflowTopConstraint = videoOverflow.autoPinEdge(toSuperviewEdge: .top)
-    lazy var videoOverflowTrailingConstraint = videoOverflow.autoPinEdge(toSuperviewEdge: .trailing)
+    private lazy var tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTouchRootView))
+    private lazy var videoOverflowTopConstraint = videoOverflow.autoPinEdge(toSuperviewEdge: .top)
+    private lazy var videoOverflowTrailingConstraint = videoOverflow.autoPinEdge(toSuperviewEdge: .trailing)
 
     enum CallControlsDisplayState {
         case callControlsAndOverflow
@@ -122,7 +121,7 @@ class GroupCallViewController: UIViewController {
         )
     }()
 
-    init(call: SignalCall, groupThreadCall: GroupThreadCall) {
+    init(call: SignalCall, groupCall: GroupCall) {
         // TODO: Eventually unify UI for group and individual calls
 
         if FeatureFlags.useCallMemberComposableViewsForRemoteUsersInGroupCalls {
@@ -136,14 +135,14 @@ class GroupCallViewController: UIViewController {
         localMemberView = CallMemberView(type: type)
 
         self.call = call
-        self.ringRtcCall = groupThreadCall.ringRtcCall
-        self.groupThreadCall = groupThreadCall
+        self.groupCall = groupCall
+        self.ringRtcCall = groupCall.ringRtcCall
 
         super.init(nibName: nil, bundle: nil)
 
         self.localMemberView.animatableLocalMemberViewDelegate = self
 
-        groupThreadCall.addObserverAndSyncState(self)
+        groupCall.addObserverAndSyncState(self)
 
         videoGrid.memberViewErrorPresenter = self
         videoOverflow.memberViewErrorPresenter = self
@@ -205,7 +204,7 @@ class GroupCallViewController: UIViewController {
                 // Dismiss the group call tooltip
                 self.preferences.setWasGroupCallTooltipShown()
 
-                let vc = GroupCallViewController(call: call, groupThreadCall: groupThreadCall)
+                let vc = GroupCallViewController(call: call, groupCall: groupThreadCall)
                 vc.modalTransitionStyle = .crossDissolve
 
                 WindowManager.shared.startCall(viewController: vc)
@@ -597,7 +596,10 @@ class GroupCallViewController: UIViewController {
 
         guard !isCallMinimized else { return }
 
-        if groupThreadCall.groupCallRingState.isIncomingRing {
+        if
+            case .groupThread(let groupThreadCall) = groupCall.concreteType,
+            groupThreadCall.groupCallRingState.isIncomingRing
+        {
             callControls.isHidden = true
             incomingCallControls.isHidden = false
             // These views aren't visible at this point, but we need them to be configured anyway.
@@ -922,7 +924,10 @@ extension GroupCallViewController: CallViewControllerWindowReference {
     private func safetyNumberMismatchAddresses(untrustedThreshold: Date?) -> [SignalServiceAddress] {
         databaseStorage.read { transaction in
             let addressesToCheck: [SignalServiceAddress]
-            if ringRtcCall.localDeviceState.joinState == .notJoined {
+            if
+                case .groupThread(let groupThreadCall) = groupCall.concreteType,
+                ringRtcCall.localDeviceState.joinState == .notJoined
+            {
                 // If we haven't joined the call yet, we want to alert for all members of the group
                 addressesToCheck = groupThreadCall.groupThread.recipientAddresses(with: transaction)
             } else {
@@ -938,6 +943,15 @@ extension GroupCallViewController: CallViewControllerWindowReference {
                     tx: transaction.asV2Read
                 ) != nil
             }
+        }
+    }
+
+    private func groupCallThreadForSafetyNumberMismatch() -> GroupThreadCall {
+        switch groupCall.concreteType {
+        case .groupThread(let groupThreadCall):
+            return groupThreadCall
+        case .callLink:
+            owsFail("[CallLink] TODO: Support Safety Number mismatches.")
         }
     }
 
@@ -969,7 +983,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
             // It's not worth trying to track this more precisely.
             let atLeastOneUnresolvedPresentAtJoin = unresolvedAddresses.contains { membersAtJoin?.contains($0) ?? false }
             Self.notificationPresenterImpl.notifyForGroupCallSafetyNumberChange(
-                inThread: groupThreadCall.groupThread,
+                inThread: self.groupCallThreadForSafetyNumberMismatch().groupThread,
                 presentAtJoin: atLeastOneUnresolvedPresentAtJoin
             )
         }
@@ -998,7 +1012,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
         let approveText: String
         let denyText: String
         if localDeviceHasNotJoined {
-            approveText = groupThreadCall.ringRestrictions.contains(.callInProgress) ? joinCallString : startCallString
+            approveText = self.groupCallThreadForSafetyNumberMismatch().ringRestrictions.contains(.callInProgress) ? joinCallString : startCallString
             denyText = cancelString
         } else {
             approveText = continueCallString
@@ -1025,7 +1039,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
 extension GroupCallViewController: GroupCallObserver {
     func groupCallLocalDeviceStateChanged(_ call: GroupCall) {
         AssertIsOnMainThread()
-        owsAssert(self.groupThreadCall === call)
+        owsAssert(self.groupCall === call)
 
         updateCallUI()
 
@@ -1041,7 +1055,7 @@ extension GroupCallViewController: GroupCallObserver {
 
     func groupCallRemoteDeviceStatesChanged(_ call: GroupCall) {
         AssertIsOnMainThread()
-        owsAssert(self.groupThreadCall === call)
+        owsAssert(self.groupCall === call)
 
         isAnyRemoteDeviceScreenSharing = ringRtcCall.remoteDeviceStates.values.first { $0.sharingScreen == true } != nil
 
@@ -1059,14 +1073,14 @@ extension GroupCallViewController: GroupCallObserver {
 
     func groupCallPeekChanged(_ call: GroupCall) {
         AssertIsOnMainThread()
-        owsAssert(self.groupThreadCall === call)
+        owsAssert(self.groupCall === call)
 
         updateCallUI()
     }
 
     func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason) {
         AssertIsOnMainThread()
-        owsAssert(self.groupThreadCall === call)
+        owsAssert(self.groupCall === call)
 
         let title: String
 
@@ -1133,7 +1147,7 @@ extension GroupCallViewController: GroupCallObserver {
     }
 
     func groupCallReceivedReactions(_ call: GroupCall, reactions: [SignalRingRTC.Reaction]) {
-        owsAssert(self.groupThreadCall === call)
+        owsAssert(self.groupCall === call)
         let localAci = databaseStorage.read { tx in
             return DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci
         }
@@ -1172,7 +1186,7 @@ extension GroupCallViewController: GroupCallObserver {
 
     func callMessageSendFailedUntrustedIdentity(_ call: GroupCall) {
         AssertIsOnMainThread()
-        owsAssert(self.groupThreadCall === call)
+        owsAssert(self.groupCall === call)
 
         if !hasUnresolvedSafetyNumberMismatch {
             hasUnresolvedSafetyNumberMismatch = true
@@ -1214,8 +1228,13 @@ extension GroupCallViewController: CallHeaderDelegate {
     }
 
     func didTapMembersButton() {
-        let sheet = GroupCallMemberSheet(call: call, groupThreadCall: groupThreadCall)
-        present(sheet, animated: true)
+        switch groupCall.concreteType {
+        case .groupThread(let groupThreadCall):
+            let sheet = GroupCallMemberSheet(call: call, groupThreadCall: groupThreadCall)
+            present(sheet, animated: true)
+        case .callLink:
+            owsFail("[CallLink] TODO: Add Info button for Call Link calls")
+        }
     }
 }
 
@@ -1247,12 +1266,17 @@ extension GroupCallViewController: UIScrollViewDelegate {
 
 extension GroupCallViewController: CallControlsDelegate {
     func didPressRing() {
-        if groupThreadCall.ringRestrictions.isEmpty {
-            // Refresh the call header.
-            callHeader.groupCallLocalDeviceStateChanged(groupThreadCall)
-        } else if groupThreadCall.ringRestrictions.contains(.groupTooLarge) {
-            let toast = ToastController(text: OWSLocalizedString("GROUP_CALL_TOO_LARGE_TO_RING", comment: "Text displayed when trying to turn on ringing when calling a large group."))
-            toast.presentToastView(from: .top, of: view, inset: view.safeAreaInsets.top + 8)
+        switch groupCall.concreteType {
+        case .groupThread(let groupThreadCall):
+            if groupThreadCall.ringRestrictions.isEmpty {
+                // Refresh the call header.
+                callHeader.groupCallLocalDeviceStateChanged(groupThreadCall)
+            } else if groupThreadCall.ringRestrictions.contains(.groupTooLarge) {
+                let toast = ToastController(text: OWSLocalizedString("GROUP_CALL_TOO_LARGE_TO_RING", comment: "Text displayed when trying to turn on ringing when calling a large group."))
+                toast.presentToastView(from: .top, of: view, inset: view.safeAreaInsets.top + 8)
+            }
+        case .callLink:
+            owsFail("Can't ring a call link")
         }
     }
 
@@ -1260,8 +1284,10 @@ extension GroupCallViewController: CallControlsDelegate {
         guard call.canJoin else {
             let text: String
             if let maxDevices = ringRtcCall.maxDevices {
-                let formatString = OWSLocalizedString("GROUP_CALL_HAS_MAX_DEVICES_%d", tableName: "PluralAware",
-                                                     comment: "An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}."
+                let formatString = OWSLocalizedString(
+                    "GROUP_CALL_HAS_MAX_DEVICES_%d",
+                    tableName: "PluralAware",
+                    comment: "An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}."
                 )
                 text = String.localizedStringWithFormat(formatString, maxDevices)
             } else {
@@ -1284,8 +1310,12 @@ extension GroupCallViewController: CallControlsDelegate {
 
         presentSafetyNumberChangeSheetIfNecessary { [weak self] success in
             guard let self = self else { return }
-            if success {
-                self.callService.joinGroupCallIfNecessary(self.call, groupThreadCall: self.groupThreadCall)
+            guard success else { return }
+            switch self.groupCall.concreteType {
+            case .groupThread(let groupThreadCall):
+                self.callService.joinGroupCallIfNecessary(self.call, groupThreadCall: groupThreadCall)
+            case .callLink:
+                owsFail("[CallLink] TODO: Join the Call Link call")
             }
         }
     }

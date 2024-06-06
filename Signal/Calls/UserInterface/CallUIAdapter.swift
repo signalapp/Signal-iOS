@@ -217,7 +217,7 @@ public class CallUIAdapter: NSObject {
         case .individual(let individualCall):
             callViewController = IndividualCallViewController(call: call, individualCall: individualCall)
         case .groupThread(let groupThreadCall):
-            callViewController = GroupCallViewController(call: call, groupThreadCall: groupThreadCall)
+            callViewController = GroupCallViewController(call: call, groupCall: groupThreadCall)
         }
 
         callViewController.modalTransitionStyle = .crossDissolve
