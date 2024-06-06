@@ -1557,6 +1557,7 @@
 		B9A87A362A9D1D25009FCA13 /* EditorSticker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A87A352A9D1D25009FCA13 /* EditorSticker.swift */; };
 		B9A87A382A9E34BD009FCA13 /* Hatsuishi-UPM800.otf in Resources */ = {isa = PBXBuildFile; fileRef = B9A87A372A9E34BD009FCA13 /* Hatsuishi-UPM800.otf */; };
 		B9B2AA942BC598B60060B56C /* ContactNoteSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B2AA932BC598B60060B56C /* ContactNoteSheet.swift */; };
+		B9B89EED2C064E760093A2FA /* notification_simple-01.caf in Resources */ = {isa = PBXBuildFile; fileRef = B9B89EEC2C064E700093A2FA /* notification_simple-01.caf */; };
 		B9D413742BCDDE66006D4E48 /* Tooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D413732BCDDE66006D4E48 /* Tooltip.swift */; };
 		B9D65E532BAE1DA70067322A /* NicknameEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D65E522BAE1DA70067322A /* NicknameEditorViewController.swift */; };
 		B9DB91702AF46B9A0051A3FD /* BankTransferMandateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9DB916F2AF46B9A0051A3FD /* BankTransferMandateViewController.swift */; };
@@ -4474,6 +4475,7 @@
 		B9A87A352A9D1D25009FCA13 /* EditorSticker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorSticker.swift; sourceTree = "<group>"; };
 		B9A87A372A9E34BD009FCA13 /* Hatsuishi-UPM800.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Hatsuishi-UPM800.otf"; sourceTree = "<group>"; };
 		B9B2AA932BC598B60060B56C /* ContactNoteSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactNoteSheet.swift; sourceTree = "<group>"; };
+		B9B89EEC2C064E700093A2FA /* notification_simple-01.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "notification_simple-01.caf"; sourceTree = "<group>"; };
 		B9D413732BCDDE66006D4E48 /* Tooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tooltip.swift; sourceTree = "<group>"; };
 		B9D65E522BAE1DA70067322A /* NicknameEditorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicknameEditorViewController.swift; sourceTree = "<group>"; };
 		B9DB916F2AF46B9A0051A3FD /* BankTransferMandateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BankTransferMandateViewController.swift; sourceTree = "<group>"; };
@@ -5821,6 +5823,7 @@
 				88D6E93D254CF712003142D9 /* group_call_leave.aiff */,
 				34661FB720C1C0D60056EDD6 /* message_sent.aiff */,
 				45A2F004204473A3002E978A /* NewMessage.aifc */,
+				B9B89EEC2C064E700093A2FA /* notification_simple-01.caf */,
 				34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */,
 				886CB07724E77E5B00753909 /* silence.aiff */,
 				34C3C78E2040A4F70000134C /* sonarping.mp3 */,
@@ -12010,6 +12013,7 @@
 				45A2F005204473A3002E978A /* NewMessage.aifc in Resources */,
 				45B74A7F2044AAB600CD42F8 /* note-quiet.aifc in Resources */,
 				45B74A862044AAB600CD42F8 /* note.aifc in Resources */,
+				B9B89EED2C064E760093A2FA /* notification_simple-01.caf in Resources */,
 				4C9D34972369F0FC006A4307 /* notificationPermission.json in Resources */,
 				4C9D349C2369F11F006A4307 /* notificationPermission0.png in Resources */,
 				4C9D349B2369F11F006A4307 /* notificationPermission1.png in Resources */,

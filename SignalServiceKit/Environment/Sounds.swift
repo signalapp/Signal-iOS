@@ -95,6 +95,7 @@ public enum StandardSound: UInt {
     // Group Calls
     case groupCallJoin = 19
     case groupCallLeave = 20
+    case raisedHand = 26
 
     // Other
     case messageSent = 21
@@ -132,13 +133,14 @@ public extension StandardSound {
 
             // Calls
         case .callConnecting: return "Call Connecting"
-        case .callOutboundRinging: return "Call Outboung Ringing"
+        case .callOutboundRinging: return "Call Outbound Ringing"
         case .callBusy: return "Call Busy"
         case .callEnded: return "Call Ended"
 
             // Group Calls
         case .groupCallJoin: return "Group Call Join"
         case .groupCallLeave: return "Group Call Leave"
+        case .raisedHand: return "Raise Hand"
 
             // Other
         case .messageSent: return "Message Sent"
@@ -199,6 +201,7 @@ public extension StandardSound {
             // Group Calls
         case .groupCallJoin: return "group_call_join.aiff"
         case .groupCallLeave: return "group_call_leave.aiff"
+        case .raisedHand: return "notification_simple-01.caf"
 
             // Other
         case .messageSent: return "message_sent.aiff"

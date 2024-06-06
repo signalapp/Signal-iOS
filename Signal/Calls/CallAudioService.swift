@@ -84,6 +84,14 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
         ensureProperAudioSession(call: call)
     }
 
+    private var oldRaisedHands: [UInt32] = []
+    func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [DemuxId]) {
+        if oldRaisedHands.isEmpty && !raisedHands.isEmpty {
+            self.playRaiseHandSound()
+        }
+        oldRaisedHands = raisedHands
+    }
+
     private let routePicker = AVRoutePickerView()
 
     @discardableResult
@@ -420,6 +428,10 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
 
     func playLeaveSound() {
         play(sound: .groupCallLeave)
+    }
+
+    private func playRaiseHandSound() {
+        play(sound: .raisedHand)
     }
 }
 
