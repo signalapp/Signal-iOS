@@ -42,6 +42,7 @@ class CallControlsOverflowView: UIView {
         init() {
             self.raiseHandLabel = UILabel()
             self.raiseHandLabel.translatesAutoresizingMaskIntoConstraints = false
+            self.raiseHandLabel.textColor = .white
 
             let icon = UIImageView(image: .init(named: "raise_hand"))
             icon.tintColor = .white
