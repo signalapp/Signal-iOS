@@ -21,7 +21,7 @@ public class UnpreparedOutgoingMessage {
         linkPreviewDraft: OWSLinkPreviewDraft? = nil,
         quotedReplyDraft: DraftQuotedReplyModel? = nil,
         messageStickerDraft: MessageStickerDraft? = nil,
-        contactShareDraft: ContactShareDraft? = nil
+        contactShareDraft: ContactShareDraft.ForSending? = nil
     ) -> UnpreparedOutgoingMessage {
         if !message.shouldBeSaved {
             owsAssertDebug(
@@ -134,7 +134,7 @@ public class UnpreparedOutgoingMessage {
             let linkPreviewDraft: OWSLinkPreviewDraft?
             let quotedReplyDraft: DraftQuotedReplyModel?
             let messageStickerDraft: MessageStickerDraft?
-            let contactShareDraft: ContactShareDraft?
+            let contactShareDraft: ContactShareDraft.ForSending?
         }
 
         struct EditMessage {
@@ -235,7 +235,7 @@ public class UnpreparedOutgoingMessage {
         }
 
         let contactShareBuilder = try message.contactShareDraft.map {
-            try DependenciesBridge.shared.contactShareManager.validateAndBuild(
+            try DependenciesBridge.shared.contactShareManager.build(
                 draft: $0,
                 tx: tx.asV2Write
             )

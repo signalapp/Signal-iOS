@@ -254,6 +254,14 @@ extension SharingThreadPickerViewController {
             guard let contactShareDraft else {
                 return .failure(.init(outgoingMessages: [], error: OWSAssertionError("Missing contactShare.")))
             }
+            let contactShareForSending: ContactShareDraft.ForSending
+            do {
+                contactShareForSending = try await DependenciesBridge.shared.contactShareManager.validateAndPrepare(
+                    draft: contactShareDraft
+                )
+            } catch {
+                return .failure(.init(outgoingMessages: [], error: error))
+            }
             return await self.sendToOutgoingMessageThreads(
                 selectedConversations: selectedConversations,
                 messageBlock: { thread, tx in
@@ -263,7 +271,7 @@ extension SharingThreadPickerViewController {
                     let message = builder.build(transaction: tx)
                     let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
                         message,
-                        contactShareDraft: contactShareDraft
+                        contactShareDraft: contactShareForSending
                     )
                     return try unpreparedMessage.prepare(tx: tx)
                 },

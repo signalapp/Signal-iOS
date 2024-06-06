@@ -333,9 +333,16 @@ extension SendMessageFlow {
                 self.send(messageBody: messageBody, linkPreviewDraft: linkPreviewDraft, thread: thread)
             }
         case .contactShare(let contactShare):
-            return sendInEachThread { thread in
-                self.send(contactShare: contactShare, thread: thread)
-            }
+            return sendInEachThread(
+                firstly: {
+                    return try await DependenciesBridge.shared.contactShareManager.validateAndPrepare(
+                        draft: contactShare
+                    )
+                },
+                enqueueBlock: { thread, contactShare in
+                    self.send(contactShare: contactShare, thread: thread)
+                }
+            )
         case .installedSticker(let stickerMetadata):
             let stickerInfo = stickerMetadata.stickerInfo
             return sendInEachThread { thread in
@@ -374,7 +381,7 @@ extension SendMessageFlow {
         }
     }
 
-    func send(contactShare: ContactShareDraft, thread: TSThread) {
+    func send(contactShare: ContactShareDraft.ForSending, thread: TSThread) {
         ThreadUtil.enqueueMessage(withContactShare: contactShare, thread: thread)
     }
 
@@ -388,20 +395,38 @@ extension SendMessageFlow {
     }
 
     func sendInEachThread(enqueueBlock: @escaping (TSThread) throws -> Void) -> Promise<[TSThread]> {
+        return sendInEachThread(
+            firstly: { Void() },
+            enqueueBlock: { thread, _ in
+                try enqueueBlock(thread)
+            }
+        )
+    }
+
+    func sendInEachThread<T>(
+        firstly firstlyBlock: @escaping () async throws -> T,
+        enqueueBlock: @escaping (TSThread, T) throws -> Void
+    ) -> Promise<[TSThread]> {
         AssertIsOnMainThread()
 
         let conversations = self.selectedConversations
         return firstly {
             self.threads(for: conversations)
-        }.map { (threads: [TSThread]) -> [TSThread] in
-            // TODO: Move off main thread?
-            for thread in threads {
-                try enqueueBlock(thread)
-
-                // We're sending a message to this thread, approve any pending message request
-                ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
+        }.then { threads in
+            return Promise.wrapAsync {
+                let t = try await firstlyBlock()
+                return (threads, t)
             }
-            return threads
+        }.then { (threads: [TSThread], t: T) -> Promise<[TSThread]> in
+            return Promise.wrapAsync {
+                for thread in threads {
+                    try enqueueBlock(thread, t)
+
+                    // We're sending a message to this thread, approve any pending message request
+                    ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
+                }
+                return threads
+            }
         }
     }
 

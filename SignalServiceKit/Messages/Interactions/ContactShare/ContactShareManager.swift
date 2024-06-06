@@ -11,8 +11,12 @@ public protocol ContactShareManager {
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSContact>
 
-    func validateAndBuild(
-        draft: ContactShareDraft,
+    func validateAndPrepare(
+        draft: ContactShareDraft
+    ) async throws -> ContactShareDraft.ForSending
+
+    func build(
+        draft: ContactShareDraft.ForSending,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSContact>
 
@@ -27,13 +31,16 @@ public class ContactShareManagerImpl: ContactShareManager {
 
     private let attachmentManager: TSResourceManager
     private let attachmentStore: TSResourceStore
+    private let attachmentValidator: TSResourceContentValidator
 
     public init(
         attachmentManager: TSResourceManager,
-        attachmentStore: TSResourceStore
+        attachmentStore: TSResourceStore,
+        attachmentValidator: TSResourceContentValidator
     ) {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
+        self.attachmentValidator = attachmentValidator
     }
 
     public func validateAndBuild(
@@ -109,8 +116,52 @@ public class ContactShareManagerImpl: ContactShareManager {
         }
     }
 
-    public func validateAndBuild(
-        draft: ContactShareDraft,
+    public func validateAndPrepare(
+        draft: ContactShareDraft
+    ) async throws -> ContactShareDraft.ForSending {
+        let avatarDataSource: TSResourceDataSource? = try await {
+            if
+                let existingAvatarAttachment = draft.existingAvatarAttachment,
+                let stream = existingAvatarAttachment.attachment.asResourceStream()
+            {
+                return .forwarding(
+                    existingAttachment: stream,
+                    with: existingAvatarAttachment.reference
+                )
+            } else if let avatarImage = draft.avatarImage {
+                guard let imageData = avatarImage.jpegData(compressionQuality: 0.9) else {
+                    throw OWSAssertionError("Failed to get JPEG")
+                }
+                let mimeType = MimeType.imageJpeg.rawValue
+                guard let dataSource = DataSourceValue.dataSource(
+                    with: imageData,
+                    mimeType: mimeType
+                ) else {
+                    throw OWSAssertionError("Failed to create data source")
+                }
+                return try await attachmentValidator.validateContents(
+                    dataSource: dataSource,
+                    shouldConsume: true,
+                    mimeType: mimeType,
+                    sourceFilename: nil,
+                    caption: nil,
+                    renderingFlag: .default
+                )
+            } else {
+                return nil
+            }
+        }()
+        return ContactShareDraft.ForSending(
+            name: draft.name,
+            addresses: draft.addresses,
+            emails: draft.emails,
+            phoneNumbers: draft.phoneNumbers,
+            avatar: avatarDataSource
+        )
+    }
+
+    public func build(
+        draft: ContactShareDraft.ForSending,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSContact> {
         func buildContact(legacyAttachmentId: String? = nil) -> OWSContact {
@@ -123,27 +174,7 @@ public class ContactShareManagerImpl: ContactShareManager {
             )
         }
 
-        let avatarDataSource: TSResourceDataSource
-        if
-            let existingAvatarAttachment = draft.existingAvatarAttachment,
-            let stream = existingAvatarAttachment.attachment.asResourceStream()
-        {
-            avatarDataSource = .forwarding(
-                existingAttachment: stream,
-                with: existingAvatarAttachment.reference
-            )
-        } else if let avatarImage = draft.avatarImage {
-            guard let imageData = avatarImage.jpegData(compressionQuality: 0.9) else {
-                throw OWSAssertionError("Failed to get JPEG")
-            }
-            let mimeType = MimeType.imageJpeg.rawValue
-            avatarDataSource = .from(
-                data: imageData,
-                mimeType: mimeType,
-                renderingFlag: .default,
-                sourceFilename: nil
-            )
-        } else {
+        guard let avatarDataSource = draft.avatar else {
             return .withoutFinalizer(buildContact())
         }
 
@@ -237,8 +268,14 @@ public class MockContactShareManager: ContactShareManager {
         return .withoutFinalizer(OWSContact())
     }
 
-    public func validateAndBuild(
-        draft: ContactShareDraft,
+    public func validateAndPrepare(
+        draft: ContactShareDraft
+    ) async throws -> ContactShareDraft.ForSending {
+        throw OWSAssertionError("Unimplemented")
+    }
+
+    public func build(
+        draft: ContactShareDraft.ForSending,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSContact> {
         return .withoutFinalizer(OWSContact())

@@ -146,4 +146,21 @@ public class ContactShareDraft {
             addresses: addresses
         )
     }
+
+    public struct ForSending {
+        public let name: OWSContactName
+        public let addresses: [OWSContactAddress]
+        public let emails: [OWSContactEmail]
+        public let phoneNumbers: [OWSContactPhoneNumber]
+        public let avatar: TSResourceDataSource?
+
+        public var ows_isValid: Bool {
+            return OWSContact.isValid(
+                name: name,
+                phoneNumbers: phoneNumbers,
+                emails: emails,
+                addresses: addresses
+            )
+        }
+    }
 }

@@ -56,8 +56,21 @@ public extension ThreadUtil {
     class func enqueueMessage(
         withContactShare contactShareDraft: ContactShareDraft,
         thread: TSThread
+    ) async throws -> TSOutgoingMessage {
+        assert(contactShareDraft.ows_isValid)
+
+        let sendableContactShareDraft = try await DependenciesBridge.shared.contactShareManager.validateAndPrepare(
+            draft: contactShareDraft
+        )
+
+        return enqueueMessage(withContactShare: sendableContactShareDraft, thread: thread)
+    }
+
+    @discardableResult
+    class func enqueueMessage(
+        withContactShare contactShareDraft: ContactShareDraft.ForSending,
+        thread: TSThread
     ) -> TSOutgoingMessage {
-        AssertIsOnMainThread()
         assert(contactShareDraft.ows_isValid)
 
         let builder = TSOutgoingMessageBuilder(thread: thread)

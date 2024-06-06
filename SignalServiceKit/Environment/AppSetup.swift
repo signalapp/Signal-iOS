@@ -773,7 +773,8 @@ public class AppSetup {
 
         let contactShareManager = ContactShareManagerImpl(
             attachmentManager: tsResourceManager,
-            attachmentStore: tsResourceStore
+            attachmentStore: tsResourceStore,
+            attachmentValidator: tsResourceContentValidator
         )
 
         let sentMessageTranscriptReceiver = SentMessageTranscriptReceiverImpl(

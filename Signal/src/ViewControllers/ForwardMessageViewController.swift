@@ -440,8 +440,9 @@ extension ForwardMessageViewController {
     }
 
     fileprivate func send(contactShare: ContactShareDraft, thread: TSThread) -> Promise<Void> {
-        ThreadUtil.enqueueMessage(withContactShare: contactShare, thread: thread)
-        return Promise.value(())
+        return Promise.wrapAsync {
+            try await ThreadUtil.enqueueMessage(withContactShare: contactShare, thread: thread)
+        }
     }
 
     fileprivate func send(body: MessageBody, attachment: SignalAttachment, thread: TSThread) -> Promise<Void> {
