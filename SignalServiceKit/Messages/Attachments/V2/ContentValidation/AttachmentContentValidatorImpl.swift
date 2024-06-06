@@ -9,11 +9,14 @@ import Foundation
 public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
     private let audioWaveformManager: AudioWaveformManager
+    private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
 
     public init(
-        audioWaveformManager: AudioWaveformManager
+        audioWaveformManager: AudioWaveformManager,
+        orphanedAttachmentCleaner: OrphanedAttachmentCleaner
     ) {
         self.audioWaveformManager = audioWaveformManager
+        self.orphanedAttachmentCleaner = orphanedAttachmentCleaner
     }
 
     public func validateContents(
@@ -89,6 +92,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         let localRelativeFilePath: String
         let sourceFilename: String?
         let validatedContentType: Attachment.ContentType
+        let orphanRecordId: OrphanedAttachmentRecord.IDType
     }
 
     private enum Input {
@@ -108,8 +112,18 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         mimeType: String,
         sourceFilename: String?
     ) async throws -> PendingAttachment {
-        _ = try await validateContentType(input: input, encryptionKey: encryptionKey, mimeType: mimeType)
-        fatalError("Unimplemented")
+        let contentTypeResult = try await validateContentType(
+            input: input,
+            encryptionKey: encryptionKey,
+            mimeType: mimeType
+        )
+        return try await prepareAttachmentFiles(
+            input: input,
+            encryptionKey: encryptionKey,
+            mimeType: mimeType,
+            sourceFilename: sourceFilename,
+            contentResult: contentTypeResult
+        )
     }
 
     // MARK: Content Type Validation
@@ -130,7 +144,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         }
     }
 
-    private struct PendingFile {
+    fileprivate struct PendingFile {
         let tmpFileUrl: URL
         let isTmpFileEncrypted: Bool
         let reservedRelativeFilePath: String
@@ -471,6 +485,85 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         }
     }
 
+    // MARK: - File Preparation
+
+    private func prepareAttachmentFiles(
+        input: Input,
+        encryptionKey: Data,
+        mimeType: String,
+        sourceFilename: String?,
+        contentResult: ContentTypeResult
+    ) async throws -> PendingAttachmentImpl {
+        let primaryFilePlaintextHash = try await computePlaintextHash(input: input)
+
+        // First encrypt the files that need encrypting.
+        let (primaryPendingFile, primaryFileMetadata) = try await encryptPrimaryFile(
+            input: input,
+            encryptionKey: encryptionKey
+        )
+        guard let primaryFileDigest = primaryFileMetadata.digest else {
+            throw OWSAssertionError("No digest in output")
+        }
+        guard
+            let primaryPlaintextLength = primaryFileMetadata.plaintextLength
+                .map(UInt32.init(exactly:)) ?? nil
+        else {
+            throw OWSAssertionError("File too large")
+        }
+
+        guard
+            let primaryEncryptedLength = OWSFileSystem.fileSize(
+                of: primaryPendingFile.tmpFileUrl
+            )?.uint32Value
+        else {
+            throw OWSAssertionError("Couldn't determine size")
+        }
+
+        let audioWaveformFile = try await contentResult.audioWaveformFile?.encryptFileIfNeeded(
+            encryptionKey: encryptionKey
+        )
+        let videoStillFrameFile = try await contentResult.videoStillFrameFile?.encryptFileIfNeeded(
+            encryptionKey: encryptionKey
+        )
+
+        // Before we copy files to their final location, orphan them.
+        // This ensures if we exit for _any_ reason before we create their
+        // associated Attachment row, the files will be cleaned up.
+        // See OrphanedAttachmentCleaner for details.
+        let orphanRecord = OrphanedAttachmentRecord(
+            localRelativeFilePath: primaryPendingFile.reservedRelativeFilePath,
+            // We don't pre-generate thumbnails for local attachments.
+            localRelativeFilePathThumbnail: nil,
+            localRelativeFilePathAudioWaveform: audioWaveformFile?.reservedRelativeFilePath,
+            localRelativeFilePathVideoStillFrame: videoStillFrameFile?.reservedRelativeFilePath
+        )
+        let orphanRecordId = try await orphanedAttachmentCleaner.commitPendingAttachment(orphanRecord)
+
+        // Now we can copy files.
+        for pendingFile in [primaryPendingFile, audioWaveformFile, videoStillFrameFile].compacted() {
+            try OWSFileSystem.moveFile(
+                from: pendingFile.tmpFileUrl,
+                to: AttachmentStream.absoluteAttachmentFileURL(
+                    relativeFilePath: pendingFile.reservedRelativeFilePath
+                )
+            )
+        }
+
+        return PendingAttachmentImpl(
+            blurHash: contentResult.blurHash,
+            sha256ContentHash: primaryFilePlaintextHash,
+            encryptedByteCount: primaryEncryptedLength,
+            unencryptedByteCount: primaryPlaintextLength,
+            mimeType: mimeType,
+            encryptionKey: encryptionKey,
+            digestSHA256Ciphertext: primaryFileDigest,
+            localRelativeFilePath: primaryPendingFile.reservedRelativeFilePath,
+            sourceFilename: sourceFilename,
+            validatedContentType: contentResult.contentType,
+            orphanRecordId: orphanRecordId
+        )
+    }
+
     // MARK: - Encryption
 
     private func computePlaintextHash(input: Input) async throws -> Data {
@@ -554,13 +647,15 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             )
         }
     }
+}
 
-    private func encryptAncillaryFileIfNeeded(
-        _ file: PendingFile?,
+extension AttachmentContentValidatorImpl.PendingFile {
+
+    fileprivate func encryptFileIfNeeded(
         encryptionKey: Data
-    ) async throws -> PendingFile? {
-        guard let file, !file.isTmpFileEncrypted else {
-            return file
+    ) async throws -> Self {
+        if isTmpFileEncrypted {
+            return self
         }
 
         let outputFile = OWSFileSystem.temporaryFileUrl()
@@ -569,16 +664,16 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         // that later requires out-of-band plaintext length tracking
         // so we can trim the custom padding at read time.
         _ = try Cryptography.encryptFile(
-            at: file.tmpFileUrl,
+            at: tmpFileUrl,
             output: outputFile,
             encryptionKey: encryptionKey
         )
-        return PendingFile(
+        return Self(
             tmpFileUrl: outputFile,
             isTmpFileEncrypted: true,
             // Preserve the reserved file path; this is already
             // on the ContentType enum and musn't be changed.
-            reservedRelativeFilePath: file.reservedRelativeFilePath
+            reservedRelativeFilePath: self.reservedRelativeFilePath
         )
     }
 }

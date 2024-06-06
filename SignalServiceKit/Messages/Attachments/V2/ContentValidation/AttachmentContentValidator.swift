@@ -16,6 +16,7 @@ public protocol PendingAttachment {
     var localRelativeFilePath: String { get }
     var sourceFilename: String? { get }
     var validatedContentType: Attachment.ContentType { get }
+    var orphanRecordId: OrphanedAttachmentRecord.IDType { get }
 }
 
 public protocol AttachmentContentValidator {

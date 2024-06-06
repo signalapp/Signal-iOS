@@ -229,8 +229,10 @@ public class AppSetup {
         let pniProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .pni)
 
         let audioWaveformManager = AudioWaveformManagerImpl()
+        let orphanedAttachmentCleaner = OrphanedAttachmentCleanerImpl(db: databaseStorage)
         let attachmentContentValidator = AttachmentContentValidatorImpl(
-            audioWaveformManager: audioWaveformManager
+            audioWaveformManager: audioWaveformManager,
+            orphanedAttachmentCleaner: orphanedAttachmentCleaner
         )
         let attachmentStore = AttachmentStoreImpl()
         let attachmentManager = AttachmentManagerImpl(
@@ -941,8 +943,6 @@ public class AppSetup {
             remoteConfig: InactiveLinkedDeviceFinderImpl.Wrappers.RemoteConfig(),
             tsAccountManager: tsAccountManager
         )
-
-        let orphanedAttachmentCleaner = OrphanedAttachmentCleanerImpl(db: databaseStorage)
 
         let dependenciesBridge = DependenciesBridge(
             accountAttributesUpdater: accountAttributesUpdater,
