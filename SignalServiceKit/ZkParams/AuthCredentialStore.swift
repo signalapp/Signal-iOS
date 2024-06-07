@@ -32,17 +32,17 @@ class AuthCredentialStore {
     func callLinkAuthCredential(
         for redemptionTime: UInt64,
         tx: DBReadTransaction
-    ) throws -> CallLinkAuthCredential? {
+    ) throws -> LibSignalClient.CallLinkAuthCredential? {
         return try callLinkAuthCredentialStore.getData(
             Self.callLinkAuthCredentialKey(for: redemptionTime),
             transaction: tx
         ).map {
-            return try CallLinkAuthCredential.init(contents: [UInt8]($0))
+            return try LibSignalClient.CallLinkAuthCredential(contents: [UInt8]($0))
         }
     }
 
     func setCallLinkAuthCredential(
-        _ credential: CallLinkAuthCredential,
+        _ credential: LibSignalClient.CallLinkAuthCredential,
         for redemptionTime: UInt64,
         tx: DBWriteTransaction
     ) {

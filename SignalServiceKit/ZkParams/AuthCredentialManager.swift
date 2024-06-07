@@ -36,7 +36,9 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
     // MARK: -
 
     func fetchGroupAuthCredential(localIdentifiers: LocalIdentifiers) async throws -> AuthCredentialWithPni {
+        let redemptionTime = self.startOfTodayTimestamp()
         return try await fetchAuthCredential(
+            for: redemptionTime,
             localIdentifiers: localIdentifiers,
             fetchCachedAuthCredential: self.authCredentialStore.groupAuthCredential(for:tx:),
             authCredentialsKeyPath: \.groupAuthCredentials
@@ -44,19 +46,27 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
     }
 
     func fetchCallLinkAuthCredential(localIdentifiers: LocalIdentifiers) async throws -> CallLinkAuthCredential {
-        return try await fetchAuthCredential(
+        let redemptionTime = self.startOfTodayTimestamp()
+        let authCredential = try await fetchAuthCredential(
+            for: redemptionTime,
             localIdentifiers: localIdentifiers,
             fetchCachedAuthCredential: self.authCredentialStore.callLinkAuthCredential(for:tx:),
             authCredentialsKeyPath: \.callLinkAuthCredentials
         )
+        return CallLinkAuthCredential(
+            localAci: localIdentifiers.aci,
+            redemptionTime: redemptionTime,
+            serverParams: self.callLinkPublicParams,
+            authCredential: authCredential
+        )
     }
 
     private func fetchAuthCredential<T>(
+        for redemptionTime: UInt64,
         localIdentifiers: LocalIdentifiers,
         fetchCachedAuthCredential: (UInt64, DBReadTransaction) throws -> T?,
         authCredentialsKeyPath: KeyPath<ReceivedAuthCredentials, [(redemptionTime: UInt64, authCredential: T)]>
     ) async throws -> T {
-        let redemptionTime = self.startOfTodayTimestamp()
         do {
             let authCredential = try self.db.read { (tx) throws -> T? in
                 return try fetchCachedAuthCredential(redemptionTime, tx)
@@ -106,7 +116,7 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
 
     private struct ReceivedAuthCredentials {
         var groupAuthCredentials = [(redemptionTime: UInt64, authCredential: AuthCredentialWithPni)]()
-        var callLinkAuthCredentials = [(redemptionTime: UInt64, authCredential: CallLinkAuthCredential)]()
+        var callLinkAuthCredentials = [(redemptionTime: UInt64, authCredential: LibSignalClient.CallLinkAuthCredential)]()
     }
 
     private func fetchNewAuthCredentials(
