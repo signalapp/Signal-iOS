@@ -170,60 +170,57 @@ class GroupCallViewController: UIViewController {
                                                object: nil)
     }
 
-    @discardableResult
-    class func presentLobby(thread: TSGroupThread, videoMuted: Bool = false) -> Bool {
+    static func presentLobby(thread: TSGroupThread, videoMuted: Bool = false) {
+        Task {
+            await self._presentLobby(shouldAskForCameraPermission: !videoMuted) {
+                let callService = AppEnvironment.shared.callService!
+                return callService.buildAndConnectGroupCall(for: thread, isVideoMuted: videoMuted)
+            }
+            await databaseStorage.awaitableWrite { tx in
+                // Dismiss the group call tooltip
+                self.preferences.setWasGroupCallTooltipShown(tx: tx)
+            }
+        }
+    }
+
+    private static func _presentLobby(
+        shouldAskForCameraPermission: Bool,
+        buildAndStartConnecting: () async throws -> (SignalCall, GroupCall)?
+    ) async rethrows {
         guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-            Logger.warn("aborting due to user not being onboarded.")
+            Logger.warn("Can't show lobby unless you're registered")
             OWSActionSheets.showActionSheet(title: OWSLocalizedString(
                 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING",
                 comment: "alert body shown when trying to use features in the app before completing registration-related setup."
             ))
-            return false
+            return
         }
 
         guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
-            owsFailDebug("could not identify frontmostViewController")
-            return false
+            owsFail("Can't show lobby if there's no view controller")
         }
 
-        frontmostViewController.ows_askForMicrophonePermissions { granted in
-            guard granted == true else {
-                Logger.warn("aborting due to missing microphone permissions.")
-                frontmostViewController.ows_showNoMicrophonePermissionActionSheet()
+        guard await frontmostViewController.askForMicrophonePermissions() else {
+            Logger.warn("aborting due to missing microphone permissions.")
+            frontmostViewController.ows_showNoMicrophonePermissionActionSheet()
+            return
+        }
+
+        if shouldAskForCameraPermission {
+            guard await frontmostViewController.askForCameraPermissions() else {
+                Logger.warn("aborting due to missing camera permissions.")
                 return
             }
-
-            let callService = AppEnvironment.shared.callService!
-            guard let (call, groupThreadCall) = callService.buildAndConnectGroupCall(
-                for: thread, isVideoMuted: videoMuted
-            ) else {
-                return owsFailDebug("Failed to build group call")
-            }
-
-            let completion = {
-                // Dismiss the group call tooltip
-                self.preferences.setWasGroupCallTooltipShown()
-
-                let vc = GroupCallViewController(call: call, groupCall: groupThreadCall)
-                vc.modalTransitionStyle = .crossDissolve
-
-                WindowManager.shared.startCall(viewController: vc)
-            }
-
-            if videoMuted {
-                completion()
-            } else {
-                frontmostViewController.ows_askForCameraPermissions { granted in
-                    guard granted else {
-                        Logger.warn("aborting due to missing camera permissions.")
-                        return
-                    }
-                    completion()
-                }
-            }
         }
 
-        return true
+        guard let (call, groupCall) = try await buildAndStartConnecting() else {
+            owsFailDebug("Can't show lobby if the call can't start")
+            return
+        }
+
+        let vc = GroupCallViewController(call: call, groupCall: groupCall)
+        vc.modalTransitionStyle = .crossDissolve
+        WindowManager.shared.startCall(viewController: vc)
     }
 
     required init?(coder: NSCoder) {

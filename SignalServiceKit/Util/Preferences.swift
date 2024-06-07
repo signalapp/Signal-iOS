@@ -115,8 +115,12 @@ public class Preferences: NSObject {
 
     private func setBool(_ value: Bool, forKey key: Key) {
         databaseStorage.write { transaction in
-            keyValueStore.setBool(value, key: key.rawValue, transaction: transaction)
+            setBool(value, forKey: key, tx: transaction)
         }
+    }
+
+    private func setBool(_ value: Bool, forKey key: Key, tx: SDSAnyWriteTransaction) {
+        keyValueStore.setBool(value, key: key.rawValue, transaction: tx)
     }
 
     private func uint(forKey key: Key, defaultValue: UInt) -> UInt {
@@ -305,14 +309,14 @@ public class Preferences: NSObject {
 
         // If we have shown the tooltip more than 3 times, don't show it again.
         if incrementedCount > 3 {
-            setWasGroupCallTooltipShown()
+            databaseStorage.write(block: setWasGroupCallTooltipShown(tx:))
         } else {
             setUInt(incrementedCount, forKey: .wasGroupCallTooltipShownCount)
         }
     }
 
-    public func setWasGroupCallTooltipShown() {
-        setBool(true, forKey: .wasGroupCallTooltipShown)
+    public func setWasGroupCallTooltipShown(tx: SDSAnyWriteTransaction) {
+        setBool(true, forKey: .wasGroupCallTooltipShown, tx: tx)
     }
 
     public var wasBlurTooltipShown: Bool {

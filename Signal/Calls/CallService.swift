@@ -628,32 +628,33 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
     }
 
-    @discardableResult
-    @objc
-    public func initiateCall(thread: TSThread, isVideo: Bool) -> Bool {
+    func initiateCall(thread: TSThread, isVideo: Bool) {
         initiateCall(thread: thread, isVideo: isVideo, untrustedThreshold: nil)
     }
 
-    private func initiateCall(thread: TSThread, isVideo: Bool, untrustedThreshold: Date?) -> Bool {
+    private func initiateCall(thread: TSThread, isVideo: Bool, untrustedThreshold: Date?) {
         guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             Logger.warn("aborting due to user not being registered.")
-            OWSActionSheets.showActionSheet(title: OWSLocalizedString("YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING",
-                                                                     comment: "alert body shown when trying to use features in the app before completing registration-related setup."))
-            return false
+            OWSActionSheets.showActionSheet(title: OWSLocalizedString(
+                "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING",
+                comment: "alert body shown when trying to use features in the app before completing registration-related setup."
+            ))
+            return
         }
 
         guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
             owsFailDebug("could not identify frontmostViewController")
-            return false
+            return
         }
 
         if let groupThread = thread as? TSGroupThread {
-            return GroupCallViewController.presentLobby(thread: groupThread, videoMuted: !isVideo)
+            GroupCallViewController.presentLobby(thread: groupThread, videoMuted: !isVideo)
+            return
         }
 
         guard let thread = thread as? TSContactThread else {
             owsFailDebug("cannot initiate call to group thread")
-            return false
+            return
         }
 
         let newUntrustedThreshold = Date()
@@ -663,10 +664,10 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             untrustedThreshold: untrustedThreshold
         ) { didConfirmIdentity in
             guard didConfirmIdentity else { return }
-            _ = self.initiateCall(thread: thread, isVideo: isVideo, untrustedThreshold: newUntrustedThreshold)
+            self.initiateCall(thread: thread, isVideo: isVideo, untrustedThreshold: newUntrustedThreshold)
         }
         guard !showedAlert else {
-            return false
+            return
         }
 
         frontmostViewController.ows_askForMicrophonePermissions { granted in
@@ -689,8 +690,6 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
                 self.callUIAdapter.startAndShowOutgoingCall(thread: thread, hasLocalVideo: false)
             }
         }
-
-        return true
     }
 
     func buildOutgoingIndividualCallIfPossible(thread: TSContactThread, hasVideo: Bool) -> (SignalCall, IndividualCall)? {

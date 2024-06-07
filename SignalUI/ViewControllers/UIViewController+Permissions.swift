@@ -62,9 +62,18 @@ extension UIViewController {
         case .notDetermined:
             AVCaptureDevice.requestAccess(for: .video, completionHandler: threadSafeCallback)
 
-        default:
+        case .restricted:
+            threadSafeCallback(false)
+
+        @unknown default:
             Logger.error("Unknown AVAuthorizationStatus: \(authorizationStatus)")
             threadSafeCallback(false)
+        }
+    }
+
+    public func askForCameraPermissions() async -> Bool {
+        return await withCheckedContinuation { continuation in
+            self.ows_askForCameraPermissions(callback: continuation.resume(returning:))
         }
     }
 
@@ -157,24 +166,30 @@ extension UIViewController {
         AVAudioSession.sharedInstance().requestRecordPermission(threadSafeCallback)
     }
 
-    public func ows_showNoMicrophonePermissionActionSheet() {
-        DispatchMainThreadSafe {
-            let actionSheet = ActionSheetController(
-                title: OWSLocalizedString(
-                    "CALL_AUDIO_PERMISSION_TITLE",
-                    comment: "Alert title when calling and permissions for microphone are missing"
-                ),
-                message: OWSLocalizedString(
-                    "CALL_AUDIO_PERMISSION_MESSAGE",
-                    comment: "Alert message when calling and permissions for microphone are missing"
-                )
-            )
-
-            if let openSettingsAction = AppContextUtils.openSystemSettingsAction() {
-                actionSheet.addAction(openSettingsAction)
-            }
-            actionSheet.addAction(OWSActionSheets.dismissAction)
-            self.presentActionSheet(actionSheet)
+    public func askForMicrophonePermissions() async -> Bool {
+        return await withCheckedContinuation { continuation in
+            self.ows_askForMicrophonePermissions(callback: continuation.resume(returning:))
         }
+    }
+
+    public func ows_showNoMicrophonePermissionActionSheet() {
+        AssertIsOnMainThread()
+
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "CALL_AUDIO_PERMISSION_TITLE",
+                comment: "Alert title when calling and permissions for microphone are missing"
+            ),
+            message: OWSLocalizedString(
+                "CALL_AUDIO_PERMISSION_MESSAGE",
+                comment: "Alert message when calling and permissions for microphone are missing"
+            )
+        )
+
+        if let openSettingsAction = AppContextUtils.openSystemSettingsAction() {
+            actionSheet.addAction(openSettingsAction)
+        }
+        actionSheet.addAction(OWSActionSheets.dismissAction)
+        self.presentActionSheet(actionSheet)
     }
 }
