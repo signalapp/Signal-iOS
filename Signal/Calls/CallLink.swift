@@ -29,7 +29,7 @@ struct CallLink {
     init?(url: URL) {
         guard
             var components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-            components.scheme == Constants.scheme,
+            components.scheme == Constants.scheme || components.scheme == UrlOpener.Constants.sgnlPrefix,
             components.user == nil,
             components.password == nil,
             components.host == Constants.host,
@@ -41,10 +41,9 @@ struct CallLink {
         }
         components.percentEncodedQuery = components.percentEncodedFragment
         guard
-            let queryItems = components.queryItems,
+            let queryItems = components.queryItems?.filter({ $0.name == Constants.key }),
             queryItems.count == 1,
             let keyItem = queryItems.first,
-            keyItem.name == Constants.key,
             let keyValue = keyItem.value,
             let rootKey = try? CallLinkRootKey(keyValue)
         else {
