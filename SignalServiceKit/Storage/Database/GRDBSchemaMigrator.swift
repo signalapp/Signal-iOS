@@ -263,6 +263,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addBulkDeleteInteractionJobRecord
         case cleanUpThreadIndexes
         case addOrphanAttachmentPendingColumn
+        case cleanUpUniqueIndexes
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2840,6 +2841,36 @@ public class GRDBSchemaMigrator: NSObject {
                     .notNull()
                     .defaults(to: false)
             }
+            return .success(())
+        }
+
+        migrator.registerMigration(.cleanUpUniqueIndexes) { tx in
+            try tx.database.execute(sql: """
+            DROP INDEX IF EXISTS "index_model_ExperienceUpgrade_on_uniqueId";
+            DROP INDEX IF EXISTS "index_model_IncomingGroupsV2MessageJob_on_uniqueId";
+            DROP INDEX IF EXISTS "index_model_InstalledSticker_on_uniqueId";
+            DROP INDEX IF EXISTS "index_model_KnownStickerPack_on_uniqueId";
+            DROP INDEX IF EXISTS "index_model_OWSDevice_on_uniqueId";
+            DROP INDEX IF EXISTS "index_model_OWSDisappearingMessagesConfiguration_on_uniqueId";
+            DROP INDEX IF EXISTS "index_model_OWSMessageContentJob_on_uniqueId";
+            DROP INDEX IF EXISTS "index_model_OWSReaction_on_uniqueId";
+            DROP INDEX IF EXISTS "index_model_OWSRecipientIdentity_on_uniqueId";
+            DROP INDEX IF EXISTS "index_model_OWSUserProfile_on_uniqueId";
+            DROP INDEX IF EXISTS "index_model_SSKJobRecord_on_uniqueId";
+            DROP INDEX IF EXISTS "index_model_SignalAccount_on_uniqueId";
+            DROP INDEX IF EXISTS "index_model_SignalRecipient_on_uniqueId";
+            DROP INDEX IF EXISTS "index_model_StickerPack_on_uniqueId";
+            DROP INDEX IF EXISTS "index_model_StoryMessage_on_uniqueId";
+            DROP INDEX IF EXISTS "index_model_TSAttachment_on_uniqueId";
+            DROP INDEX IF EXISTS "index_model_TSGroupMember_on_uniqueId";
+            DROP INDEX IF EXISTS "index_model_TSInteraction_on_uniqueId";
+            DROP INDEX IF EXISTS "index_model_TSMention_on_uniqueId";
+            DROP INDEX IF EXISTS "index_model_TSPaymentModel_on_uniqueId";
+            DROP INDEX IF EXISTS "index_model_TSThread_on_uniqueId";
+            DROP INDEX IF EXISTS "index_model_TestModel_on_uniqueId";
+            DROP INDEX IF EXISTS "index_media_gallery_items_on_attachmentId";
+            DROP INDEX IF EXISTS "index_thread_associated_data_on_threadUniqueId";
+            """)
             return .success(())
         }
 

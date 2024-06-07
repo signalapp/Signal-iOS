@@ -45,12 +45,6 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_model_TSThread_on_uniqueId"
-        ON "model_TSThread"("uniqueId"
-)
-;
-
-CREATE
     TABLE
         IF NOT EXISTS "model_TSInteraction" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
@@ -131,12 +125,6 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_model_TSInteraction_on_uniqueId"
-        ON "model_TSInteraction"("uniqueId"
-)
-;
-
-CREATE
     TABLE
         IF NOT EXISTS "model_StickerPack" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
@@ -154,12 +142,6 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_model_StickerPack_on_uniqueId"
-        ON "model_StickerPack"("uniqueId"
-)
-;
-
-CREATE
     TABLE
         IF NOT EXISTS "model_InstalledSticker" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
@@ -173,12 +155,6 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_model_InstalledSticker_on_uniqueId"
-        ON "model_InstalledSticker"("uniqueId"
-)
-;
-
-CREATE
     TABLE
         IF NOT EXISTS "model_KnownStickerPack" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
@@ -189,12 +165,6 @@ CREATE
             ,"info" BLOB NOT NULL
             ,"referenceCount" INTEGER NOT NULL
         )
-;
-
-CREATE
-    INDEX "index_model_KnownStickerPack_on_uniqueId"
-        ON "model_KnownStickerPack"("uniqueId"
-)
 ;
 
 CREATE
@@ -297,12 +267,6 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_model_SSKJobRecord_on_uniqueId"
-        ON "model_SSKJobRecord"("uniqueId"
-)
-;
-
-CREATE
     TABLE
         IF NOT EXISTS "model_OWSMessageContentJob" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
@@ -315,12 +279,6 @@ CREATE
             ,"wasReceivedByUD" INTEGER NOT NULL
             ,"serverDeliveryTimestamp" INTEGER NOT NULL DEFAULT 0
         )
-;
-
-CREATE
-    INDEX "index_model_OWSMessageContentJob_on_uniqueId"
-        ON "model_OWSMessageContentJob"("uniqueId"
-)
 ;
 
 CREATE
@@ -339,12 +297,6 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_model_OWSRecipientIdentity_on_uniqueId"
-        ON "model_OWSRecipientIdentity"("uniqueId"
-)
-;
-
-CREATE
     TABLE
         IF NOT EXISTS "model_OWSDisappearingMessagesConfiguration" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
@@ -354,12 +306,6 @@ CREATE
             ,"durationSeconds" INTEGER NOT NULL
             ,"enabled" INTEGER NOT NULL
         )
-;
-
-CREATE
-    INDEX "index_model_OWSDisappearingMessagesConfiguration_on_uniqueId"
-        ON "model_OWSDisappearingMessagesConfiguration"("uniqueId"
-)
 ;
 
 CREATE
@@ -376,12 +322,6 @@ CREATE
             ,"pni" TEXT
             ,"isPhoneNumberDiscoverable" BOOLEAN
         )
-;
-
-CREATE
-    INDEX "index_model_SignalRecipient_on_uniqueId"
-        ON "model_SignalRecipient"("uniqueId"
-)
 ;
 
 CREATE
@@ -411,12 +351,6 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_model_OWSUserProfile_on_uniqueId"
-        ON "model_OWSUserProfile"("uniqueId"
-)
-;
-
-CREATE
     INDEX "index_model_OWSUserProfile_on_lastFetchDate_and_lastMessagingDate"
         ON "model_OWSUserProfile"("lastFetchDate"
     ,"lastMessagingDate"
@@ -438,12 +372,6 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_model_OWSDevice_on_uniqueId"
-        ON "model_OWSDevice"("uniqueId"
-)
-;
-
-CREATE
     TABLE
         IF NOT EXISTS "model_TestModel" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
@@ -460,12 +388,6 @@ CREATE
             ,"nsuIntegerValue" INTEGER NOT NULL
             ,"uint64Value" INTEGER NOT NULL
         )
-;
-
-CREATE
-    INDEX "index_model_TestModel_on_uniqueId"
-        ON "model_TestModel"("uniqueId"
-)
 ;
 
 CREATE
@@ -601,12 +523,6 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_model_SignalAccount_on_uniqueId"
-        ON "model_SignalAccount"("uniqueId"
-)
-;
-
-CREATE
     INDEX "index_signal_accounts_on_recipientPhoneNumber"
         ON "model_SignalAccount"("recipientPhoneNumber"
 )
@@ -637,12 +553,6 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_media_gallery_items_on_attachmentId"
-        ON "media_gallery_items"("attachmentId"
-)
-;
-
-CREATE
     TABLE
         IF NOT EXISTS "model_OWSReaction" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
@@ -657,12 +567,6 @@ CREATE
             ,"uniqueMessageId" TEXT NOT NULL
             ,"read" BOOLEAN NOT NULL DEFAULT 0
         )
-;
-
-CREATE
-    INDEX "index_model_OWSReaction_on_uniqueId"
-        ON "model_OWSReaction"("uniqueId"
-)
 ;
 
 CREATE
@@ -812,12 +716,6 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_model_IncomingGroupsV2MessageJob_on_uniqueId"
-        ON "model_IncomingGroupsV2MessageJob"("uniqueId"
-)
-;
-
-CREATE
     TABLE
         IF NOT EXISTS "model_ExperienceUpgrade" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
@@ -830,12 +728,6 @@ CREATE
             ,"manifest" BLOB
             ,"snoozeCount" INTEGER NOT NULL DEFAULT 0
         )
-;
-
-CREATE
-    INDEX "index_model_ExperienceUpgrade_on_uniqueId"
-        ON "model_ExperienceUpgrade"("uniqueId"
-)
 ;
 
 CREATE
@@ -878,12 +770,6 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_model_TSAttachment_on_uniqueId"
-        ON "model_TSAttachment"("uniqueId"
-)
-;
-
-CREATE
     INDEX "index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"
         ON "model_TSInteraction"("uniqueThreadId"
     ,"recordType"
@@ -910,12 +796,6 @@ CREATE
             ,"uuidString" TEXT NOT NULL
             ,"creationTimestamp" DOUBLE NOT NULL
         )
-;
-
-CREATE
-    INDEX "index_model_TSMention_on_uniqueId"
-        ON "model_TSMention"("uniqueId"
-)
 ;
 
 CREATE
@@ -973,12 +853,6 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_model_TSPaymentModel_on_uniqueId"
-        ON "model_TSPaymentModel"("uniqueId"
-)
-;
-
-CREATE
     INDEX "index_model_TSPaymentModel_on_paymentState"
         ON "model_TSPaymentModel"("paymentState"
 )
@@ -1020,12 +894,6 @@ CREATE
             ,"uuidString" TEXT
             ,"lastInteractionTimestamp" INTEGER NOT NULL DEFAULT 0
         )
-;
-
-CREATE
-    INDEX "index_model_TSGroupMember_on_uniqueId"
-        ON "model_TSGroupMember"("uniqueId"
-)
 ;
 
 CREATE
@@ -1077,12 +945,6 @@ CREATE
             ,"mutedUntilTimestamp" INTEGER NOT NULL DEFAULT 0
             ,"audioPlaybackRate" DOUBLE NOT NULL DEFAULT 1
         )
-;
-
-CREATE
-    UNIQUE INDEX "index_thread_associated_data_on_threadUniqueId"
-        ON "thread_associated_data"("threadUniqueId"
-)
 ;
 
 CREATE
@@ -1190,12 +1052,6 @@ CREATE
             ,"attachment" BLOB NOT NULL
             ,"replyCount" INTEGER NOT NULL DEFAULT 0
         )
-;
-
-CREATE
-    INDEX "index_model_StoryMessage_on_uniqueId"
-        ON "model_StoryMessage"("uniqueId"
-)
 ;
 
 CREATE
