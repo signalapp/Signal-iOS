@@ -264,6 +264,7 @@ public class GRDBSchemaMigrator: NSObject {
         case cleanUpThreadIndexes
         case addOrphanAttachmentPendingColumn
         case cleanUpUniqueIndexes
+        case dropTableTestModel
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -325,7 +326,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 72
+    public static let grdbSchemaVersionLatest: UInt = 73
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -2870,6 +2871,13 @@ public class GRDBSchemaMigrator: NSObject {
             DROP INDEX IF EXISTS "index_model_TestModel_on_uniqueId";
             DROP INDEX IF EXISTS "index_media_gallery_items_on_attachmentId";
             DROP INDEX IF EXISTS "index_thread_associated_data_on_threadUniqueId";
+            """)
+            return .success(())
+        }
+
+        migrator.registerMigration(.dropTableTestModel) { tx in
+            try tx.database.execute(sql: """
+            DROP TABLE IF EXISTS "model_TestModel"
             """)
             return .success(())
         }

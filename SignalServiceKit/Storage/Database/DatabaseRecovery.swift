@@ -446,7 +446,6 @@ public extension DatabaseRecovery {
             StoryContextAssociatedData.databaseTableName,
             ExperienceUpgrade.databaseTableName,
             InstalledSticker.table.tableName,
-            TestModel.table.tableName,
             CancelledGroupRing.databaseTableName,
             CdsPreviousE164.databaseTableName,
             SpamReportingTokenRecord.databaseTableName

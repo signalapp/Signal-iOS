@@ -372,25 +372,6 @@ CREATE
 ;
 
 CREATE
-    TABLE
-        IF NOT EXISTS "model_TestModel" (
-            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
-            ,"recordType" INTEGER NOT NULL
-            ,"uniqueId" TEXT NOT NULL UNIQUE
-                ON CONFLICT FAIL
-            ,"dateValue" DOUBLE
-            ,"doubleValue" DOUBLE NOT NULL
-            ,"floatValue" DOUBLE NOT NULL
-            ,"int64Value" INTEGER NOT NULL
-            ,"nsIntegerValue" INTEGER NOT NULL
-            ,"nsNumberValueUsingInt64" INTEGER
-            ,"nsNumberValueUsingUInt64" INTEGER
-            ,"nsuIntegerValue" INTEGER NOT NULL
-            ,"uint64Value" INTEGER NOT NULL
-        )
-;
-
-CREATE
     INDEX "index_interactions_on_threadUniqueId_and_id"
         ON "model_TSInteraction"("uniqueThreadId"
     ,"id"

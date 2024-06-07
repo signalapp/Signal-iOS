@@ -131,5 +131,4 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/TSUnreadIndicatorInteraction.h>
 #import <SignalServiceKit/TSYapDatabaseObject.h>
-#import <SignalServiceKit/TestModel.h>
 #import <SignalServiceKit/YDBStorage.h>

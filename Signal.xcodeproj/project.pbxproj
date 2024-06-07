@@ -1966,7 +1966,6 @@
 		F9426245289B1B5500460798 /* HTMLMetadataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261D4289B1B5400460798 /* HTMLMetadataTests.swift */; };
 		F9426246289B1B5500460798 /* MessageSendJobQueueTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261D5289B1B5400460798 /* MessageSendJobQueueTest.swift */; };
 		F9426248289B1B5500460798 /* OWSIdentityManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261D9289B1B5400460798 /* OWSIdentityManagerTests.swift */; };
-		F9426249289B1B5500460798 /* TestModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261DA289B1B5400460798 /* TestModelTests.swift */; };
 		F942624A289B1B5500460798 /* SDSKeyValueStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261DB289B1B5400460798 /* SDSKeyValueStoreTest.swift */; };
 		F942624B289B1B5500460798 /* SDSDatabaseStorageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261DC289B1B5400460798 /* SDSDatabaseStorageTest.swift */; };
 		F942624C289B1B5500460798 /* ModelReadCacheTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261DD289B1B5400460798 /* ModelReadCacheTest.swift */; };
@@ -2524,7 +2523,6 @@
 		F9C5CDCA289453B400548EEE /* ContentProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAF7289453B200548EEE /* ContentProxy.swift */; };
 		F9C5CDCC289453B400548EEE /* OWSFileSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAFA289453B200548EEE /* OWSFileSystem.m */; };
 		F9C5CDCD289453B400548EEE /* ParamParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAFB289453B200548EEE /* ParamParser.swift */; };
-		F9C5CDCE289453B400548EEE /* TestModel+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAFC289453B200548EEE /* TestModel+SDS.swift */; };
 		F9C5CDD0289453B400548EEE /* OWSUserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAFE289453B200548EEE /* OWSUserProfile.swift */; };
 		F9C5CDD3289453B400548EEE /* OWSOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB01289453B200548EEE /* OWSOperation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CDD5289453B400548EEE /* ViewOnceMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB03289453B200548EEE /* ViewOnceMessages.swift */; };
@@ -2544,7 +2542,6 @@
 		F9C5CDE5289453B400548EEE /* UIColor+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB13289453B200548EEE /* UIColor+SSK.swift */; };
 		F9C5CDE7289453B400548EEE /* Locale+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB15289453B200548EEE /* Locale+SSK.swift */; };
 		F9C5CDE8289453B400548EEE /* DispatchQueue+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB16289453B200548EEE /* DispatchQueue+OWS.swift */; };
-		F9C5CDEA289453B400548EEE /* TestModel.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB18289453B200548EEE /* TestModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CDEB289453B400548EEE /* JobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB19289453B200548EEE /* JobQueue.swift */; };
 		F9C5CDEC289453B400548EEE /* FunctionalUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1A289453B200548EEE /* FunctionalUtil.m */; };
 		F9C5CDEE289453B400548EEE /* SDS+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1C289453B200548EEE /* SDS+SSK.swift */; };
@@ -2582,7 +2579,6 @@
 		F9C5CE1E289453B400548EEE /* OrderedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB4C289453B200548EEE /* OrderedSet.swift */; };
 		F9C5CE1F289453B400548EEE /* UIImage+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB4D289453B200548EEE /* UIImage+OWS.swift */; };
 		F9C5CE20289453B400548EEE /* PendingTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB4E289453B200548EEE /* PendingTasks.swift */; };
-		F9C5CE22289453B400548EEE /* TestModel.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB50289453B200548EEE /* TestModel.m */; };
 		F9C5CE23289453B400548EEE /* Error+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB51289453B200548EEE /* Error+SSK.swift */; };
 		F9C5CE25289453B400548EEE /* AppReadiness.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB53289453B200548EEE /* AppReadiness.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE26289453B400548EEE /* UserProfileFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB54289453B200548EEE /* UserProfileFinder.swift */; };
@@ -4916,7 +4912,6 @@
 		F94261D4289B1B5400460798 /* HTMLMetadataTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTMLMetadataTests.swift; sourceTree = "<group>"; };
 		F94261D5289B1B5400460798 /* MessageSendJobQueueTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageSendJobQueueTest.swift; sourceTree = "<group>"; };
 		F94261D9289B1B5400460798 /* OWSIdentityManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSIdentityManagerTests.swift; sourceTree = "<group>"; };
-		F94261DA289B1B5400460798 /* TestModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestModelTests.swift; sourceTree = "<group>"; };
 		F94261DB289B1B5400460798 /* SDSKeyValueStoreTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSKeyValueStoreTest.swift; sourceTree = "<group>"; };
 		F94261DC289B1B5400460798 /* SDSDatabaseStorageTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSDatabaseStorageTest.swift; sourceTree = "<group>"; };
 		F94261DD289B1B5400460798 /* ModelReadCacheTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelReadCacheTest.swift; sourceTree = "<group>"; };
@@ -5482,7 +5477,6 @@
 		F9C5CAF7289453B200548EEE /* ContentProxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentProxy.swift; sourceTree = "<group>"; };
 		F9C5CAFA289453B200548EEE /* OWSFileSystem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSFileSystem.m; sourceTree = "<group>"; };
 		F9C5CAFB289453B200548EEE /* ParamParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ParamParser.swift; sourceTree = "<group>"; };
-		F9C5CAFC289453B200548EEE /* TestModel+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TestModel+SDS.swift"; sourceTree = "<group>"; };
 		F9C5CAFE289453B200548EEE /* OWSUserProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSUserProfile.swift; sourceTree = "<group>"; };
 		F9C5CB01289453B200548EEE /* OWSOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSOperation.h; sourceTree = "<group>"; };
 		F9C5CB03289453B200548EEE /* ViewOnceMessages.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewOnceMessages.swift; sourceTree = "<group>"; };
@@ -5502,7 +5496,6 @@
 		F9C5CB13289453B200548EEE /* UIColor+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+SSK.swift"; sourceTree = "<group>"; };
 		F9C5CB15289453B200548EEE /* Locale+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Locale+SSK.swift"; sourceTree = "<group>"; };
 		F9C5CB16289453B200548EEE /* DispatchQueue+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DispatchQueue+OWS.swift"; sourceTree = "<group>"; };
-		F9C5CB18289453B200548EEE /* TestModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestModel.h; sourceTree = "<group>"; };
 		F9C5CB19289453B200548EEE /* JobQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobQueue.swift; sourceTree = "<group>"; };
 		F9C5CB1A289453B200548EEE /* FunctionalUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FunctionalUtil.m; sourceTree = "<group>"; };
 		F9C5CB1C289453B200548EEE /* SDS+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDS+SSK.swift"; sourceTree = "<group>"; };
@@ -5540,7 +5533,6 @@
 		F9C5CB4C289453B200548EEE /* OrderedSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderedSet.swift; sourceTree = "<group>"; };
 		F9C5CB4D289453B200548EEE /* UIImage+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+OWS.swift"; sourceTree = "<group>"; };
 		F9C5CB4E289453B200548EEE /* PendingTasks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PendingTasks.swift; sourceTree = "<group>"; };
-		F9C5CB50289453B200548EEE /* TestModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestModel.m; sourceTree = "<group>"; };
 		F9C5CB51289453B200548EEE /* Error+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Error+SSK.swift"; sourceTree = "<group>"; };
 		F9C5CB53289453B200548EEE /* AppReadiness.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppReadiness.h; sourceTree = "<group>"; };
 		F9C5CB54289453B200548EEE /* UserProfileFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserProfileFinder.swift; sourceTree = "<group>"; };
@@ -9983,7 +9975,6 @@
 				C167F1E42A7162D700D4A9AF /* SSKKyberPreKeyStoreTest.swift */,
 				C1CD0E3F2A6B37BF00307F1A /* SSKPreKeyStoreTests.swift */,
 				F94261E1289B1B5400460798 /* SSKSignedPreKeyStoreTest.swift */,
-				F94261DA289B1B5400460798 /* TestModelTests.swift */,
 				50C38CAC2A8EB2610030A731 /* TimeGatedBatchTest.swift */,
 			);
 			name = Storage;
@@ -11329,9 +11320,6 @@
 				F9C5CB09289453B200548EEE /* String+SSK.swift */,
 				F9C5CB5D289453B200548EEE /* SwiftSingletons.swift */,
 				F9C5CB32289453B200548EEE /* SyncManagerProtocol.swift */,
-				F9C5CAFC289453B200548EEE /* TestModel+SDS.swift */,
-				F9C5CB18289453B200548EEE /* TestModel.h */,
-				F9C5CB50289453B200548EEE /* TestModel.m */,
 				66FC638129E2172400F00DAC /* ThemedColor.swift */,
 				F9C5CB10289453B200548EEE /* ThreadBacked.swift */,
 				348C686C246B0B100039705A /* ThreadUtil.swift */,
@@ -11552,7 +11540,6 @@
 				F9C5CD51289453B300548EEE /* SSKSignedPreKeyStore.h in Headers */,
 				F9C5CC1C289453B300548EEE /* StickerInfo.h in Headers */,
 				F9C5CC0F289453B300548EEE /* StickerPack.h in Headers */,
-				F9C5CDEA289453B400548EEE /* TestModel.h in Headers */,
 				F9C5CC73289453B300548EEE /* TSAttachment.h in Headers */,
 				F9C5CC7D289453B300548EEE /* TSAttachmentPointer.h in Headers */,
 				F9C5CC7E289453B300548EEE /* TSAttachmentStream.h in Headers */,
@@ -14400,8 +14387,6 @@
 				669E901028B57D6300043D28 /* SystemStoryManagerMock.swift in Sources */,
 				669E900728B43F5B00043D28 /* SystemStoryManagerProtocol.swift in Sources */,
 				72B994DB2BE950DB000CBBFD /* TestAppContext.swift in Sources */,
-				F9C5CDCE289453B400548EEE /* TestModel+SDS.swift in Sources */,
-				F9C5CE22289453B400548EEE /* TestModel.m in Sources */,
 				F9C5CE5C289453B400548EEE /* TestProtocolRunner.swift in Sources */,
 				661278132996BE3400A1D5A1 /* TestScheduler.swift in Sources */,
 				661278112996BE0C00A1D5A1 /* TestSchedulers.swift in Sources */,
@@ -14779,7 +14764,6 @@
 				6618D5EF2A20065F0059BA93 /* SVR2ConcurrencyTests.swift in Sources */,
 				6673FF752979F87500F96CFD /* SVRAuthCredentialStorageTests.swift in Sources */,
 				884BF73D28D37D5F00D94636 /* SystemStoryManagerTest.swift in Sources */,
-				F9426249289B1B5500460798 /* TestModelTests.swift in Sources */,
 				F9426288289B1B5600460798 /* TestProtocolRunnerTest.swift in Sources */,
 				6600F38B299016BC00B1EDB7 /* TestSchedulerTest.swift in Sources */,
 				5011D9702A0429B6000FE8E5 /* ThreadMergerTest.swift in Sources */,

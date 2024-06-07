@@ -159,7 +159,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             OWSMessageContentJob.table,
             OWSRecipientIdentity.table,
             OWSDisappearingMessagesConfiguration.table,
-            TestModel.table,
             IncomingGroupsV2MessageJob.table,
             TSPaymentModel.table
         ]
