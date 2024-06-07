@@ -261,7 +261,13 @@ extension OWSNavigationController: UINavigationControllerDelegate {
         willShow viewController: UIViewController,
         animated: Bool
     ) {
-        updateNavbarAppearance(for: viewController, fromViewControllerTransition: true, animated: animated)
+        // The `viewController` parameter is non-Optional. It is annotated as such
+        // in Apple's header. However, on iOS 16, they pass `nil`, and that causes
+        // our code to blow up. Detect when they've given us nil in a non-Optional
+        // parameter and avoid calling the method that causes things to blow up.
+        if let viewController = viewController as AnyObject as? UIViewController {
+            updateNavbarAppearance(for: viewController, fromViewControllerTransition: true, animated: animated)
+        }
         externalDelegate?.navigationController?(navigationController, willShow: viewController, animated: animated)
     }
 
