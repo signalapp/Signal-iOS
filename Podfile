@@ -25,7 +25,7 @@ pod 'SignalRingRTC', git: 'https://github.com/signalapp/ringrtc', tag: 'v2.42.0'
 pod 'GRDB.swift/SQLCipher'
 # pod 'GRDB.swift/SQLCipher', path: '../GRDB.swift'
 
-pod 'SQLCipher', git: 'https://github.com/signalapp/sqlcipher.git', tag: 'v4.5.6-f_barrierfsync'
+pod 'SQLCipher', git: 'https://github.com/signalapp/sqlcipher.git', tag: 'v4.6.0-f_barrierfsync'
 # pod 'SQLCipher', path: '../sqlcipher'
 
 ###
