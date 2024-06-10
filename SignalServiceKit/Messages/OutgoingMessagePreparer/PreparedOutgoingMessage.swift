@@ -151,10 +151,24 @@ public class PreparedOutgoingMessage {
     public func attachmentIdsForUpload(tx: SDSAnyReadTransaction) -> [TSResourceId] {
         switch messageType {
         case .persisted(let persisted):
-            return DependenciesBridge.shared.tsResourceStore.allAttachments(
+            var attachmentIds = DependenciesBridge.shared.tsResourceStore.allAttachments(
                 for: persisted.message,
                 tx: tx.asV2Read
             ).map(\.resourceId)
+            if
+                let quoteAttachentInfo = persisted.message.quotedMessage?.attachmentInfo(),
+                let quoteLegacyAttachmentId = quoteAttachentInfo.attachmentId
+            {
+                switch quoteAttachentInfo.attachmentType {
+                case .originalForSend, .original, .untrustedPointer:
+                    // Only for legacy attachments, ignore "original" and "untrusted pointer"
+                    // quote attachments for uploading purposes.
+                    attachmentIds.removeAll(where: { $0 == .legacy(uniqueId: quoteLegacyAttachmentId) })
+                default:
+                    break
+                }
+            }
+            return attachmentIds
         case .editMessage(let editMessage):
             return DependenciesBridge.shared.tsResourceStore.allAttachments(
                 for: editMessage.editedMessage,

@@ -52,7 +52,13 @@ extension TSAttachment: TSResource {
     }
 
     public var isUploadedToTransitTier: Bool {
-        (self as? TSAttachmentStream)?.isUploaded ?? false
+        if let stream = self as? TSAttachmentStream {
+            return stream.isUploaded
+        } else if let pointer = self as? TSAttachmentPointer {
+            return true
+        } else {
+            return false
+        }
     }
 
     public var mimeType: String {
