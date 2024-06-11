@@ -32,13 +32,21 @@ extension RecipientPickerDelegate where Self: UIViewController & UsernameLinkSca
     }
 }
 
-extension BaseMemberViewController: MemberViewUsernameQRCodeScannerPresenter, UsernameLinkScanDelegate {
+// TODO: Remove conditional code once Xcode 15 support is dropped
+#if compiler(<6.0)
+extension BaseMemberViewController: MemberViewUsernameQRCodeScannerPresenter {}
+#else
+extension BaseMemberViewController: @retroactive MemberViewUsernameQRCodeScannerPresenter {}
+#endif
+extension BaseMemberViewController {
     public func presentUsernameQRCodeScannerFromMemberView() {
         presentUsernameQRCodeScanner()
     }
 }
 
 // MARK: UsernameLinkScanDelegate + RecipientPickerDelegate
+
+extension BaseMemberViewController: UsernameLinkScanDelegate {}
 
 extension UsernameLinkScanDelegate where Self: RecipientPickerDelegate & RecipientPickerContainerViewController {
     func usernameLinkScanned(_ usernameLink: Usernames.UsernameLink) {
