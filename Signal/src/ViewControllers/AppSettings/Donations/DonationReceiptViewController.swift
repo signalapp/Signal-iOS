@@ -147,7 +147,7 @@ class DonationReceiptViewController: OWSTableViewController2 {
 
     // MARK: - Donation receipt image activity provider
 
-    private class DonationReceiptImageActivityItemProvider: UIActivityItemProvider {
+    private class DonationReceiptImageActivityItemProvider: UIActivityItemProvider, @unchecked Sendable {
         let donationReceiptImage: UIImage
 
         public override var item: Any { donationReceiptImage }

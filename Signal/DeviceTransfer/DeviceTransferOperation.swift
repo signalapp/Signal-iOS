@@ -6,8 +6,7 @@
 import MultipeerConnectivity
 import SignalServiceKit
 
-class DeviceTransferOperation: OWSOperation {
-
+class DeviceTransferOperation: OWSOperation, @unchecked Sendable {
     public struct CancelError: Error {}
 
     let file: DeviceTransferProtoFile

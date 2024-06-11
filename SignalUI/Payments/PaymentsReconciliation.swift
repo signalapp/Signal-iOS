@@ -43,7 +43,7 @@ public class PaymentsReconciliation: Dependencies {
         return operationQueue
     }()
 
-    public class PaymentsReconciliationOperation: OWSOperation {
+    public class PaymentsReconciliationOperation: OWSOperation, @unchecked Sendable {
         override public func run() {
             firstly(on: DispatchQueue.global()) {
                 PaymentsReconciliation.reconciliationPromise()

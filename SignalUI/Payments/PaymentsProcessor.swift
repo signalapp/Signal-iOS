@@ -362,8 +362,7 @@ private protocol PaymentProcessingOperationDelegate: AnyObject {
 // MARK: -
 
 // See comments on PaymentsProcessor.process().
-private class PaymentProcessingOperation: OWSOperation {
-
+private class PaymentProcessingOperation: OWSOperation, @unchecked Sendable {
     private weak var delegate: PaymentProcessingOperationDelegate?
     private let paymentId: String
     private let retryDelayInteral: TimeInterval
