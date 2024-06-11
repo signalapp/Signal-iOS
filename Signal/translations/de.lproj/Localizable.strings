@@ -356,10 +356,10 @@
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Anhang ist zu groß.";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Anhang besitzt ungültigen Inhalt.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "Ungültiger Inhalt im Anhang.";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Anhang besitzt ein ungültiges Dateiformat.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Ungültiges Dateiformat des Anhangs.";
 
 /* Attachment error message for attachments without any data */
 "ATTACHMENT_ERROR_MISSING_DATA" = "Anhang ist leer.";
@@ -572,7 +572,7 @@
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Ihr werdet einander schreiben und euch anrufen können.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Vorhandene Mitglieder können dich wieder zur Gruppe hinzufügen.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Bestehende Mitglieder können dich wieder zur Gruppe hinzufügen.";
 
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Gruppenmitglieder werden dich wieder zu dieser Gruppe hinzufügen können.";
@@ -707,19 +707,19 @@
 "CALL_CONTROLS_INCOMING_DECLINE" = "ablehnen";
 
 /* Label on button for lowering hand in call. */
-"CALL_LOWER_HAND_BUTTON_LABEL" = "Lower Hand";
+"CALL_LOWER_HAND_BUTTON_LABEL" = "Hand senken";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Verpasster Anruf, da sich die Sicherheitsnummer des Anrufers geändert hat.";
 
 /* Label on button for raising hand in call. */
-"CALL_RAISE_HAND_BUTTON_LABEL" = "Raise Hand";
+"CALL_RAISE_HAND_BUTTON_LABEL" = "Hand heben";
 
 /* Button to return to the current call */
 "CALL_RETURN_BUTTON" = "Zurück zum Anruf";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "No answer";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "Keine Antwort";
 
 /* Button to start a call */
 "CALL_START_BUTTON" = "Anruf starten";
@@ -1148,7 +1148,7 @@
 "CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Um Kontaktnamen und -fotos in deinen Chats anzuzeigen:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tippe unten auf »Einstellungen öffnen«";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tippe unten auf »Zu Einstellungen«";
 
 /* Third step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Schalte »Kontakte« ein";
@@ -1349,7 +1349,7 @@
 "CONVERSATION_PICKER_TITLE" = "Empfänger auswählen";
 
 /* keyboard toolbar label when no messages match the search string */
-"CONVERSATION_SEARCH_NO_RESULTS" = "Keine Treffer";
+"CONVERSATION_SEARCH_NO_RESULTS" = "Keine Ergebnisse";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Chat-Einstellungen";
@@ -1364,7 +1364,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Zu Telefonkontakten hinzufügen";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Wähle aus, wer Gruppenname, -foto, -beschreibung und die Ablaufzeit für »Verschwindende Nachrichten« bearbeiten kann.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Wähle aus, wer Name, Foto und Beschreibung der Gruppe sowie die Ablaufzeit für »Verschwindende Nachrichten« bearbeiten kann.";
 
 /* Footer string for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "Unterstütze Signal und erhalte Abzeichen für dein Profil. Tippe auf ein Abzeichen, um mehr zu erfahren.";
@@ -1562,7 +1562,7 @@
 "COPIED_TO_CLIPBOARD" = "In Zwischenablage kopiert";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "Das Zurücksetzen der Unterhaltungssitzung ermöglicht dir, zukünftig Nachrichten von %1$@ zu erhalten, wird jedoch bereits fehlerhafte Nachrichten nicht wiederherstellen.";
+"CORRUPTED_SESSION_DESCRIPTION" = "Das Zurücksetzen der Chat-Sitzung ermöglicht dir, zukünftig Nachrichten von %1$@ zu erhalten, wird jedoch bereits fehlerhafte Nachrichten nicht wiederherstellen.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Landesvorwahl auswählen";
@@ -1622,7 +1622,7 @@
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Starten";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "Das hilft uns, dein Problem zu lösen und kann einige Minuten dauern. Du kannst Signal schließen, während die Prüfung läuft, aber bitte vergiss nicht, anschließend deine Logs zu senden.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "Das hilft uns, dein Problem zu lösen und kann einige Minuten dauern. Du kannst Signal schließen, während die Prüfung läuft, aber bitte vergiss nicht, anschließend deine Diagnoseprotokolle zu senden.";
 
 /* Button to skip database integrity check step */
 "DATABASE_INTEGRITY_CHECK_SKIP" = "Überspringen";
@@ -1856,7 +1856,7 @@
 "DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "Von iOS-Gerät übertragen";
 
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
-"DEVICE_TRANSFER_CHOICE_WARNING" = "Falls du fortfährst, wird Signal auf allen anderen, aktuell mit derselben Telefonnummer registrierten Geräten deaktiviert.";
+"DEVICE_TRANSFER_CHOICE_WARNING" = "Wenn du fortfährst, wird Signal auf allen anderen Geräten deaktiviert, die aktuell mit derselben Telefonnummer registriert sind.";
 
 /* Button shown to contract a QR code and exit the fullscreen view. */
 "DEVICE_TRANSFER_CONTRACT_QR_CODE_BUTTON" = "Ansicht verkleinern";
@@ -1898,7 +1898,7 @@
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Positioniere diesen QR-Code innerhalb des Rahmens deines anderen iOS-Geräts.";
 
 /* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
-"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Keine Aufforderung sichtbar auf deinem alten Gerät?";
+"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Keine Aufforderung auf deinem alten Gerät sichtbar?";
 
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "QR-Code einscannen";
@@ -1961,10 +1961,10 @@
 "DISAPPEARING_MESSAGES_WEEKS" = "Wochen";
 
 /* Message/subtitle for confirmation prompt when discarding a draft before editing a message */
-"DISCARD_DRAFT_CONFIRMATION_MESSAGE" = "This action can’t be undone.";
+"DISCARD_DRAFT_CONFIRMATION_MESSAGE" = "Dies kann nicht rückgängig gemacht werden.";
 
 /* Title for confirmation prompt when discarding a draft before editing a message */
-"DISCARD_DRAFT_CONFIRMATION_TITLE" = "Discard Draft?";
+"DISCARD_DRAFT_CONFIRMATION_TITLE" = "Entwurf verwerfen?";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Verwerfen";
@@ -2438,7 +2438,7 @@
 "EMOJI_CATEGORY_ON_MESSAGE_NAME" = "Diese Nachricht";
 
 /* The name for the emoji category 'Recents' */
-"EMOJI_CATEGORY_RECENTS_NAME" = "Letzte Anrufe";
+"EMOJI_CATEGORY_RECENTS_NAME" = "Zuletzt verwendet";
 
 /* The name for the emoji category 'Smileys & People' */
 "EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & Menschen";
@@ -2450,7 +2450,7 @@
 "EMOJI_CATEGORY_TRAVEL_NAME" = "Reisen & Orte";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Keiner deiner Kontakte verwendet Signal.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Keiner deiner Kontakte verwendet bislang Signal.";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Warum lädst du nicht jemanden ein?";
@@ -2459,7 +2459,7 @@
 "END_CALL_RESPONDER_IS_BUSY" = "Besetzt";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Call failed";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Anruf gescheitert";
 
 /* Error indicating that a message could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Nachricht konnte nicht weitergeleitet werden.";
@@ -2561,7 +2561,7 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Sicherheitsnummer geändert.";
 
 /* Error indicating network connectivity problems. */
-"ERROR_NETWORK_FAILURE" = "Netzfehler";
+"ERROR_NETWORK_FAILURE" = "Netzwerkfehler";
 
 /* Format string for an error alert notification message. Embeds {{ error string }} */
 "ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Bitte hilf uns, Signal zu verbessern, und melde diesen Fehler zusammen mit einem Diagnoseprotokoll deines Geräts bei support@signal.org; %1$@";
@@ -2729,7 +2729,7 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Suchbegriff eingeben";
 
 /* Label for the 'go to settings' button */
-"GO_TO_SETTINGS_BUTTON" = "Einstellungen öffnen";
+"GO_TO_SETTINGS_BUTTON" = "Zu Einstellungen";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Du hast die Berechtigung »Gruppendetails bearbeiten« zu »%1$@« geändert.";
@@ -2987,10 +2987,10 @@
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ hat Admin-Bestätigungen für den Gruppen-Link eingeschaltet.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the name of the member. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%1$@ kann von dir nicht automatisch zu dieser Gruppe hinzugefügt werden. Der Nutzer wurde eingeladen beizutreten, wird aber keine Gruppennachrichten erhalten, bis er die Einladung angenommen hat.";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%1$@ kann von dir nicht automatisch zu dieser Gruppe hinzugefügt werden. Die Person wurde eingeladen beizutreten, wird aber keine Gruppennachrichten erhalten, bis sie die Einladung angenommen hat.";
 
 /* Message for an alert indicating that some members were invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Diese Nutzer können von dir nicht automatisch zu dieser Gruppe hinzugefügt werden. Sie wurden eingeladen beizutreten, werden aber keine Gruppennachrichten erhalten, bis sie die Einladung angenommen haben.";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Diese Personen können von dir nicht automatisch zu dieser Gruppe hinzugefügt werden. Sie wurden eingeladen beizutreten, werden aber keine Gruppennachrichten erhalten, bis sie die Einladung angenommen haben.";
 
 /* Message indicating that 'announcement-only' mode was disabled. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "Die Gruppen-Einstellungen wurden geändert, um allen Mitgliedern das Senden von Nachrichten zu erlauben.";
@@ -3059,13 +3059,13 @@
 "GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Link teilen";
 
 /* Subtitle for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Teile diesen Link mit Freunden, damit sie der Gruppe einfach beitreten können.";
+"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Teile diesen Link mit Personen, damit sie der Gruppe einfach beitreten können.";
 
 /* Title for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_TITLE" = "Freunde einladen";
+"GROUP_LINK_PROMOTION_ALERT_TITLE" = "Personen einladen";
 
 /* Suggestion to invite more group members via the group invite link. */
-"GROUP_LINK_PROMOTION_UPDATE" = "Lade mit einem Gruppen-Link Freunde zu dieser Gruppe ein";
+"GROUP_LINK_PROMOTION_UPDATE" = "Lade mit einem Gruppen-Link Personen zu dieser Gruppe ein";
 
 /* Description text in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Personen, die diesen Code einscannen, können deiner Gruppe beitreten. Neue Mitglieder müssen jedoch von einem Admin bestätigt werden, falls du diese Einstellung eingeschaltet hast.";
@@ -3131,7 +3131,7 @@
 "GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "Du hast eine Gruppeneinladung abgelehnt.";
 
 /* Message indicating that the local user declined an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "Du hast Gruppeneinladung von %1$@ abgelehnt.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "Du hast eine Gruppeneinladung von %1$@ abgelehnt.";
 
 /* Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%1$@ hat deine Gruppeneinladung widerrufen.";
@@ -3185,7 +3185,7 @@
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Admin";
 
 /* Label indicating that a new group has no other members. */
-"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Nachdem diese Gruppe erstellt wurde, kannst du Freunde hinzufügen oder einladen.";
+"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Nachdem diese Gruppe erstellt wurde, kannst du Personen hinzufügen oder einladen.";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Mitglieder";
@@ -3221,7 +3221,7 @@
 "GROUP_REMOTE_USER_DECLINED_INVITE" = "1 Person hat die Gruppeneinladung abgelehnt.";
 
 /* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 von %1$@ eingeladene Person hat die Gruppeneinladung abgelehnt.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "Eine von %1$@ eingeladene Person hat die Gruppeneinladung abgelehnt.";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%1$@ hat deine Gruppeneinladung abgelehnt.";
@@ -3404,7 +3404,7 @@
 "GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "Anfrage blockieren";
 
 /* Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}. */
-"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%1$@ kann dieser Gruppe nicht über den Gruppenlink beitreten oder einen Antrag auf Beitritt stellen. Ein Administrator kann ihn trotzdem hinzufügen.";
+"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%1$@ kann dieser Gruppe nicht über den Gruppenlink beitreten oder einen Antrag auf Beitritt stellen. Ein Admin kann ihn trotzdem hinzufügen.";
 
 /* Title for sheet asking if the user wants to block a request to join the group. */
 "GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "Anfrage blockieren?";
@@ -3560,13 +3560,13 @@
 "IN_CALL_CONNECTING" = "verbindet …";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
-"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Answered on other device";
+"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Auf anderem Gerät angenommen";
 
 /* Call screen label when call was canceled on this device because the call recipient has a call in progress on another device. */
-"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Missed because a call in progress on another device";
+"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Verpasst aufgrund laufenden Anrufs auf anderem Gerät";
 
 /* Call screen label when call was canceled on this device because the call recipient declined on another device. */
-"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Declined on other device";
+"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Auf anderem Gerät abgelehnt";
 
 /* Call setup status label */
 "IN_CALL_RECONNECTING" = "Neu verbinden …";
@@ -3584,7 +3584,7 @@
 "IN_CALL_SECURING" = "Angenommen. Absichern …";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Call ended";
+"IN_CALL_TERMINATED" = "Anruf beendet";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user doesn't want to be reminded. */
 "INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "Mich nicht erinnern";
@@ -3671,13 +3671,13 @@
 "INVALID_PROXY_HOST_ERROR" = "Die von dir eingegebene Proxy-Adresse ist ungültig. Bitte überprüfe die Adresse und versuche es erneut.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Du kannst den Zugriff auf deine Kontakte in der iOS-App »Einstellungen« aktivieren, um deine Freunde zu Signal einzuladen.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Du kannst den Zugriff auf deine Kontakte in der iOS-App »Einstellungen« aktivieren, um deine Kontakte zu Signal einzuladen.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Zugriff auf Kontakte erlauben";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Freunde zu Signal einladen";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Kontakte zu Signal einladen";
 
 /* Header label above a section for more options for adding contacts */
 "INVITE_FRIENDS_CONTACT_TABLE_HEADER" = "Mehr";
@@ -3686,10 +3686,10 @@
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Suchen";
 
 /* Navbar title */
-"INVITE_FRIENDS_PICKER_TITLE" = "Freunde einladen";
+"INVITE_FRIENDS_PICKER_TITLE" = "Kontakte einladen";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
-"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Gleichzeitiges Einladen mehrerer Nutzer beginnt eine Gruppennachricht, deren Empfänger sich gegenseitig sehen können.";
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Gleichzeitiges Einladen mehrerer Personen beginnt eine Gruppennachricht, deren Empfänger sich gegenseitig sehen können.";
 
 /* Button to join an active group call */
 "JOIN_CALL_PILL_BUTTON" = "Beitreten";
@@ -3782,7 +3782,7 @@
 "LINK_DEVICE_RESTART" = "Erneut versuchen";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scanne den auf dem zu koppelnden Gerät angezeigten QR-Code ein.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scanne den QR-Code ein, der auf dem zu koppelnden Gerät angezeigt wird.";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Scanne den QR-Code zum Koppeln eines neuen Geräts.";
@@ -3842,7 +3842,7 @@
 "LOCATION_PICKER_TITLE" = "Ort auswählen";
 
 /* Title for the 'logging' help section. */
-"LOGGING_SECTION" = "Protokollierung";
+"LOGGING_SECTION" = "Diagnoseprotokoll";
 
 /* Footer for the 'logging' help section. */
 "LOGGING_SECTION_FOOTER" = "Diagnoseprotokolle helfen Signal beim Beheben von Problemen und Abstürzen.";
@@ -4172,7 +4172,7 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Chat mit dieser Gruppe fortsetzen und deinen Namen und dein Foto mit deren Mitgliedern teilen?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Darf %1$@ dir Nachrichten schreiben und deinen Namen und dein Foto sehen? Der Nutzer weiß nicht, dass du seine Nachricht gesehen hast, bis du die Anfrage annimmst.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Darf %1$@ dir Nachrichten schreiben und deinen Namen und dein Foto sehen? Die Person weiß nicht, dass du ihre Nachricht gesehen hast, bis du die Anfrage annimmst.";
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Möchtest du dieser Gruppe beitreten und deinen Namen und dein Foto mit deren Mitgliedern teilen? Sie wissen nicht, dass du ihre Nachrichten gesehen hast, bis du die Einladung annimmst.";
@@ -4196,7 +4196,7 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Deine Gruppenbeitrittanfrage abbrechen?";
 
 /* Indicator that you have requested to join this group. */
-"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Deine Beitrittsanfrage wurde an den Gruppen-Admin versendet. Du wirst benachrichtigt, sobald er über sie entschieden hat.";
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Deine Beitrittsanfrage wurde an den Gruppen-Admin versendet. Du wirst über die Entscheidung darüber benachrichtigt.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Zugestellt";
@@ -4268,7 +4268,7 @@
 "MISSED_CALL_BLOCKED_SYSTEM_SETTINGS_SHEET_TITLE" = "%1$@ ist in den Telefoneinstellungen blockiert";
 
 /* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
-"MISSED_CALL_DO_NOT_DISTURB" = "Verpasster Anruf bei aktiviertem Ruhemodus";
+"MISSED_CALL_DO_NOT_DISTURB" = "Verpasster Anruf bei aktivierter »Nicht stören«-Funktion";
 
 /* info message text in conversation view (use Apple's name for 'Focus') */
 "MISSED_CALL_FOCUS_MODE" = "Verpasster Anruf während der Verwendung von Fokus";
@@ -4514,7 +4514,7 @@
 "NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "Um Mitteilungen über neue Nachrichten zu erhalten:";
 
 /* First step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tippe unten auf »Einstellungen öffnen«";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tippe unten auf »Zu Einstellungen«";
 
 /* Third step for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Schalte »Mitteilungen erlauben« ein";
@@ -4544,10 +4544,10 @@
 "NOTIFICATIONS_ERROR_TITLE" = "Mitteilungen konnten nicht angezeigt werden";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Aktionen umfassen »Als gelesen markieren«, »Antworten« und »Rückruf«.";
+"NOTIFICATIONS_FOOTER_WARNING" = "Aktionen umfasst »Als gelesen markieren«, »Antworten« und »Rückruf«.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "Kein Name oder Inhalt";
+"NOTIFICATIONS_NONE" = "Kein Name und Inhalt";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "Töne bei geöffneter App";
@@ -4658,7 +4658,7 @@
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Bedingungen & Datenschutzerklärung";
 
 /* Title of the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TITLE" = "Nimm Privatsphäre mit dir.\nSei du selbst in jeder Nachricht.";
+"ONBOARDING_SPLASH_TITLE" = "Privatsphäre immer dabei.\nSei du selbst in jeder Nachricht.";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
 "ONBOARDING_VERIFICATION_BACK_LINK" = "Falsche Telefonnummer?";
@@ -5078,7 +5078,7 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Gruppeneinladung für %1$@ widerrufen?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Du kannst keine Details zu von anderen Gruppenmitgliedern eingeladenen Personen ansehen. Erst wenn die Eingeladenen der Gruppe beitreten, sind ihre Details für dich und die anderen Gruppenmitglieder einsehbar. Bis zum Beitritt erhalten die Eingeladenen auch keine Gruppennachrichten.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Du kannst keine Details von Personen sehen, die von anderen Gruppenmitgliedern eingeladen wurden. Erst wenn die Eingeladenen der Gruppe beitreten, sind ihre Details für dich und die anderen Gruppenmitglieder sichtbar. Bis zum Beitritt erhalten die Eingeladenen auch keine Gruppennachrichten.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Personen auf dieser Liste möchten der Gruppe »%1$@« über den Gruppen-Link beitreten.";
@@ -6449,7 +6449,7 @@
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Mitteilungsinhalt";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Neuer Signal-Kontakt";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "ein Kontakt Signal beitritt";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Benachrichtigen, wenn …";
@@ -7184,7 +7184,7 @@
 "STICKER_CATEGORY_FEATURED_NAME" = "Ausgewählt";
 
 /* The name for the sticker category 'Recents' */
-"STICKER_CATEGORY_RECENTS_NAME" = "Letzte Anrufe";
+"STICKER_CATEGORY_RECENTS_NAME" = "Zuletzt verwendet";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Sticker-Nachricht";

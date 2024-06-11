@@ -707,19 +707,19 @@
 "CALL_CONTROLS_INCOMING_DECLINE" = "رەت قىل";
 
 /* Label on button for lowering hand in call. */
-"CALL_LOWER_HAND_BUTTON_LABEL" = "Lower Hand";
+"CALL_LOWER_HAND_BUTTON_LABEL" = "قول چۈشۈرۈش";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ جاۋابسىز چاقىرىش چۈنكى چاقىرغۇچىنىڭ بىخەتەرلىك نومۇرى ئۆزگەرگەن.";
 
 /* Label on button for raising hand in call. */
-"CALL_RAISE_HAND_BUTTON_LABEL" = "Raise Hand";
+"CALL_RAISE_HAND_BUTTON_LABEL" = "قول كۆتۈرۈش";
 
 /* Button to return to the current call */
 "CALL_RETURN_BUTTON" = "چاقىرىشقا قايت";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "No answer";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "جاۋاب يوق";
 
 /* Button to start a call */
 "CALL_START_BUTTON" = "چاقىرىق باشلا";
@@ -1961,10 +1961,10 @@
 "DISAPPEARING_MESSAGES_WEEKS" = "ھەپتە";
 
 /* Message/subtitle for confirmation prompt when discarding a draft before editing a message */
-"DISCARD_DRAFT_CONFIRMATION_MESSAGE" = "This action can’t be undone.";
+"DISCARD_DRAFT_CONFIRMATION_MESSAGE" = "بۇ مەشغۇلاتنى ئەمەلدىن قالدۇرغىلى بولمايدۇ.";
 
 /* Title for confirmation prompt when discarding a draft before editing a message */
-"DISCARD_DRAFT_CONFIRMATION_TITLE" = "Discard Draft?";
+"DISCARD_DRAFT_CONFIRMATION_TITLE" = "ئورگىنالنى ئەمەلدىن قالدۇرامسىز؟";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "تارقىتىۋېتىش";
@@ -2459,7 +2459,7 @@
 "END_CALL_RESPONDER_IS_BUSY" = "ئالدىراش";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Call failed";
+"END_CALL_UNCATEGORIZED_FAILURE" = "چاقىرىق مەغلۇب بولدى";
 
 /* Error indicating that a message could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "ئۇچۇرنى ئۇلاپ يوللىيالمايدۇ.";
@@ -3560,13 +3560,13 @@
 "IN_CALL_CONNECTING" = "باغلىنىۋاتىدۇ…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
-"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Answered on other device";
+"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "باشقا بىر ئۈسكۈنىدە قوبۇل قىلدى";
 
 /* Call screen label when call was canceled on this device because the call recipient has a call in progress on another device. */
-"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Missed because a call in progress on another device";
+"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "باشقا ئۈسكۈنىدە چاقىرىش داۋاملىشىۋاتقاچقا ئالالمىدى";
 
 /* Call screen label when call was canceled on this device because the call recipient declined on another device. */
-"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Declined on other device";
+"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "باشقا بىر ئۈسكۈنىدە رەت قىلدى";
 
 /* Call setup status label */
 "IN_CALL_RECONNECTING" = "قايتا ئۇلىنىۋاتىدۇ…";
@@ -3584,7 +3584,7 @@
 "IN_CALL_SECURING" = "جاۋابلاندى. قوغدىلىۋاتىدۇ...";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Call ended";
+"IN_CALL_TERMINATED" = "چاقرىق ئاخىرلاشتى";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user doesn't want to be reminded. */
 "INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "ئەسكەرتمەڭ";

@@ -184,9 +184,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Treffer</string>
+			<string>Ergebnis</string>
 			<key>other</key>
-			<string>von %2$d Treffern</string>
+			<string>von %2$d Ergebnissen</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>

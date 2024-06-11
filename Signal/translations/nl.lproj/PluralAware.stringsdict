@@ -184,9 +184,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>overeenkomst</string>
+			<string>resultaat</string>
 			<key>other</key>
-			<string>van %2$d overeenkomsten</string>
+			<string>van %2$d resultaten</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
