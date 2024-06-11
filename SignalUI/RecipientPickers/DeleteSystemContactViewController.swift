@@ -269,6 +269,11 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
             break
         case .notDetermined, .denied, .restricted:
             fallthrough
+#if compiler(>=6.0)
+        case .limited:
+            owsFailDebug("Limited authorization for Contacts not yet supported")
+            fallthrough
+#endif
         @unknown default:
             Logger.info("No contact permissions")
             showGenericErrorToastAndDismiss()
