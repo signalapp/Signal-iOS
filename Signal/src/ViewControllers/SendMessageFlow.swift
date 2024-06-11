@@ -366,12 +366,9 @@ extension SendMessageFlow {
     }
 
     func send(messageBody: MessageBody, linkPreviewDraft: OWSLinkPreviewDraft?, thread: TSThread) {
-        databaseStorage.read { transaction in
-            ThreadUtil.enqueueMessage(body: messageBody,
-                                      thread: thread,
-                                      linkPreviewDraft: linkPreviewDraft,
-                                      transaction: transaction)
-        }
+        ThreadUtil.enqueueMessage(body: messageBody,
+                                  thread: thread,
+                                  linkPreviewDraft: linkPreviewDraft)
     }
 
     func send(contactShare: ContactShareDraft, thread: TSThread) {
@@ -379,12 +376,9 @@ extension SendMessageFlow {
     }
 
     func send(messageBody: MessageBody?, attachment: SignalAttachment, thread: TSThread) {
-        databaseStorage.read { transaction in
-            ThreadUtil.enqueueMessage(body: messageBody,
-                                      mediaAttachments: [attachment],
-                                      thread: thread,
-                                      transaction: transaction)
-        }
+        ThreadUtil.enqueueMessage(body: messageBody,
+                                  mediaAttachments: [attachment],
+                                  thread: thread)
     }
 
     func sendInEachThread(enqueueBlock: @escaping (TSThread) throws -> Void) -> Promise<[TSThread]> {

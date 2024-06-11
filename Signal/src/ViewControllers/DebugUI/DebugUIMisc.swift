@@ -183,14 +183,11 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
             owsFailDebug("attachment[\(String(describing: attachment.sourceFilename))]: \(String(describing: attachment.errorName))")
             return
         }
-        databaseStorage.read { transaction in
-            ThreadUtil.enqueueMessage(
-                body: nil,
-                mediaAttachments: [ attachment ],
-                thread: thread,
-                transaction: transaction
-            )
-        }
+        ThreadUtil.enqueueMessage(
+            body: nil,
+            mediaAttachments: [ attachment ],
+            thread: thread
+        )
     }
 
     private static func shareAssets(_ count: UInt, fromAssetLoaders assetLoaders: [DebugUIMessagesAssetLoader]) {

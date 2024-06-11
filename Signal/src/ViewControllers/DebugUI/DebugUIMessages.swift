@@ -1624,26 +1624,23 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         thread: TSThread,
         messageText: String?
     ) {
-        databaseStorage.read { transaction in
-            let attachments: [SignalAttachment]
-            if let attachment {
-                attachments = [ attachment ]
-            } else {
-                attachments = []
-            }
-            let messageBody: MessageBody?
-            if let messageText {
-                messageBody = MessageBody(text: messageText, ranges: .empty)
-            } else {
-                messageBody = nil
-            }
-            ThreadUtil.enqueueMessage(
-                body: messageBody,
-                mediaAttachments: attachments,
-                thread: thread,
-                transaction: transaction
-            )
+        let attachments: [SignalAttachment]
+        if let attachment {
+            attachments = [ attachment ]
+        } else {
+            attachments = []
         }
+        let messageBody: MessageBody?
+        if let messageText {
+            messageBody = MessageBody(text: messageText, ranges: .empty)
+        } else {
+            messageBody = nil
+        }
+        ThreadUtil.enqueueMessage(
+            body: messageBody,
+            mediaAttachments: attachments,
+            thread: thread
+        )
     }
 
     private static func sendRandomAttachmentInThread(_ thread: TSThread, uti: String, length: UInt32 = 256) {
@@ -1746,14 +1743,11 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             messageBody = nil
         }
 
-        databaseStorage.read { transaction in
-            ThreadUtil.enqueueMessage(
-                body: messageBody,
-                mediaAttachments: attachments,
-                thread: thread,
-                transaction: transaction
-            )
-        }
+        ThreadUtil.enqueueMessage(
+            body: messageBody,
+            mediaAttachments: attachments,
+            thread: thread
+        )
     }
 
     // MARK: Send Text Messages
@@ -1795,13 +1789,10 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         Logger.flush()
 
         let text = "\(counter) " + randomText()
-        databaseStorage.write { transaction in
-            ThreadUtil.enqueueMessage(
-                body: MessageBody(text: text, ranges: .empty),
-                thread: thread,
-                transaction: transaction
-            )
-        }
+        ThreadUtil.enqueueMessage(
+            body: MessageBody(text: text, ranges: .empty),
+            thread: thread
+        )
     }
 
     private static func sendOversizeTextMessageInThread(_ thread: TSThread) {
@@ -2389,15 +2380,12 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         guard count > 0 else { return }
 
         let completion: (TSGroupThread) -> Void = { groupThread in
-            databaseStorage.write { transaction in
-                ThreadUtil.enqueueMessage(
-                    body: MessageBody(text: "\(count)", ranges: .empty),
-                    thread: groupThread,
-                    transaction: transaction
-                )
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
-                    createNewGroups(count: count - 1, recipientAddress: recipientAddress)
-                }
+            ThreadUtil.enqueueMessage(
+                body: MessageBody(text: "\(count)", ranges: .empty),
+                thread: groupThread
+            )
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+                createNewGroups(count: count - 1, recipientAddress: recipientAddress)
             }
         }
 

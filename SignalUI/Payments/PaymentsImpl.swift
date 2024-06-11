@@ -1086,8 +1086,7 @@ public extension PaymentsImpl {
 
         ThreadUtil.enqueueMessage(
             unpreparedMessage,
-            thread: thread,
-            transaction: transaction
+            thread: thread
         )
 
         return message

@@ -15,26 +15,33 @@ extension ThreadUtil {
         thread: TSThread,
         quotedReplyDraft: DraftQuotedReplyModel? = nil,
         linkPreviewDraft: OWSLinkPreviewDraft? = nil,
-        persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil,
-        transaction readTransaction: SDSAnyReadTransaction
+        persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil
     ) {
         AssertIsOnMainThread()
 
-        let unpreparedMessage = UnpreparedOutgoingMessage.build(
-            thread: thread,
-            messageBody: messageBody,
-            mediaAttachments: mediaAttachments,
-            quotedReplyDraft: quotedReplyDraft,
-            linkPreviewDraft: linkPreviewDraft,
-            transaction: readTransaction
-        )
+        let messageTimestamp = Date.ows_millisecondTimestamp()
 
-        enqueueMessage(
-            unpreparedMessage,
-            thread: thread,
-            persistenceCompletionHandler: persistenceCompletion,
-            transaction: readTransaction
-        )
+        let benchEventId = sendMessageBenchEventStart(messageTimestamp: messageTimestamp)
+        self.enqueueSendQueue.async {
+            let unpreparedMessage = Self.databaseStorage.read { readTransaction in
+                UnpreparedOutgoingMessage.build(
+                    thread: thread,
+                    timestamp: messageTimestamp,
+                    messageBody: messageBody,
+                    mediaAttachments: mediaAttachments,
+                    quotedReplyDraft: quotedReplyDraft,
+                    linkPreviewDraft: linkPreviewDraft,
+                    transaction: readTransaction
+                )
+            }
+
+            Self.enqueueMessageSync(
+                unpreparedMessage,
+                benchEventId: benchEventId,
+                thread: thread,
+                persistenceCompletionHandler: persistenceCompletion
+            )
+        }
     }
 
     public class func enqueueEditMessage(
@@ -43,26 +50,30 @@ extension ThreadUtil {
         quotedReplyEdit: MessageEdits.Edit<Void>,
         linkPreviewDraft: OWSLinkPreviewDraft?,
         editTarget: TSOutgoingMessage,
-        persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil,
-        transaction readTransaction: SDSAnyReadTransaction
+        persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil
     ) {
         AssertIsOnMainThread()
 
-        let unpreparedMessage = UnpreparedOutgoingMessage.buildForEdit(
-            thread: thread,
-            messageBody: messageBody,
-            quotedReplyEdit: quotedReplyEdit,
-            linkPreviewDraft: linkPreviewDraft,
-            editTarget: editTarget,
-            transaction: readTransaction
-        )
+        let messageTimestamp = Date.ows_millisecondTimestamp()
 
-        enqueueMessage(
-            unpreparedMessage,
-            thread: thread,
-            persistenceCompletionHandler: persistenceCompletion,
-            transaction: readTransaction
-        )
+        let benchEventId = sendMessageBenchEventStart(messageTimestamp: messageTimestamp)
+        self.enqueueSendQueue.async {
+            let unpreparedMessage = UnpreparedOutgoingMessage.buildForEdit(
+                thread: thread,
+                timestamp: messageTimestamp,
+                messageBody: messageBody,
+                quotedReplyEdit: quotedReplyEdit,
+                linkPreviewDraft: linkPreviewDraft,
+                editTarget: editTarget
+            )
+
+            Self.enqueueMessageSync(
+                unpreparedMessage,
+                benchEventId: benchEventId,
+                thread: thread,
+                persistenceCompletionHandler: persistenceCompletion
+            )
+        }
     }
 
     // MARK: - Durable Message Enqueue
@@ -70,17 +81,28 @@ extension ThreadUtil {
     class func enqueueMessage(
         _ unpreparedMessage: UnpreparedOutgoingMessage,
         thread: TSThread,
-        persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil,
-        transaction readTransaction: SDSAnyReadTransaction
+        persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil
     ) {
-        let messageTimestampForLogging = unpreparedMessage.messageTimestampForLogging
-        let eventId = "sendMessageMarkedAsSent-\(messageTimestampForLogging)"
-        BenchEventStart(
-            title: "Send Message Milestone: Marked as Sent (\(messageTimestampForLogging))",
-            eventId: eventId,
-            logInProduction: true
-        )
-        enqueueSendAsyncWrite { writeTransaction in
+        let benchEventId = sendMessageBenchEventStart(messageTimestamp: unpreparedMessage.messageTimestampForLogging)
+        self.enqueueSendQueue.async {
+            Self.enqueueMessageSync(
+                unpreparedMessage,
+                benchEventId: benchEventId,
+                thread: thread,
+                persistenceCompletionHandler: persistenceCompletion
+            )
+        }
+    }
+
+    /// WARNING: MUST be called on enqueueSendQueue!
+    private class func enqueueMessageSync(
+        _ unpreparedMessage: UnpreparedOutgoingMessage,
+        benchEventId: String,
+        thread: TSThread,
+        persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil
+    ) {
+        assertOnQueue(Self.enqueueSendQueue)
+        Self.databaseStorage.write { writeTransaction in
             guard let preparedMessage = try? unpreparedMessage.prepare(tx: writeTransaction) else {
                 owsFailDebug("Failed to prepare message")
                 return
@@ -96,7 +118,7 @@ extension ThreadUtil {
                 }
             }
             _ = promise.done(on: DispatchQueue.global()) {
-                BenchEventComplete(eventId: eventId)
+                BenchEventComplete(eventId: benchEventId)
             }
 
             if
@@ -107,6 +129,16 @@ extension ThreadUtil {
             }
         }
     }
+
+    private static func sendMessageBenchEventStart(messageTimestamp: UInt64) -> String {
+        let eventId = "sendMessageMarkedAsSent-\(messageTimestamp)"
+        BenchEventStart(
+            title: "Send Message Milestone: Marked as Sent (\(messageTimestamp))",
+            eventId: eventId,
+            logInProduction: true
+        )
+        return eventId
+    }
 }
 
 // MARK: -
@@ -115,6 +147,7 @@ extension UnpreparedOutgoingMessage {
 
     public static func build(
         thread: TSThread,
+        timestamp: UInt64? = nil,
         messageBody: MessageBody?,
         mediaAttachments: [SignalAttachment] = [],
         quotedReplyDraft: DraftQuotedReplyModel?,
@@ -147,7 +180,7 @@ extension UnpreparedOutgoingMessage {
             }
         }
 
-        let messageBuilder = TSOutgoingMessageBuilder(thread: thread)
+        let messageBuilder = TSOutgoingMessageBuilder(thread: thread, timestamp: timestamp)
 
         messageBuilder.messageBody = truncatedBody?.text
         messageBuilder.bodyRanges = truncatedBody?.ranges
@@ -172,17 +205,17 @@ extension UnpreparedOutgoingMessage {
 
     public static func buildForEdit(
         thread: TSThread,
+        timestamp: UInt64,
         messageBody: MessageBody?,
         quotedReplyEdit: MessageEdits.Edit<Void>,
         linkPreviewDraft: OWSLinkPreviewDraft?,
-        editTarget: TSOutgoingMessage,
-        transaction: SDSAnyReadTransaction
+        editTarget: TSOutgoingMessage
     ) -> UnpreparedOutgoingMessage {
 
         let (truncatedBody, oversizeTextDataSource) = handleOversizeText(messageBody: messageBody)
 
         let edits = MessageEdits(
-            timestamp: NSDate.ows_millisecondTimeStamp(),
+            timestamp: timestamp,
             body: .change(truncatedBody?.text),
             bodyRanges: .change(truncatedBody?.ranges)
         )

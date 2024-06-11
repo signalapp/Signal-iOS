@@ -119,35 +119,31 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             return
         }
 
-        Self.databaseStorage.read { transaction in
-            if let editTarget = inputToolbar.editTarget {
-                ThreadUtil.enqueueEditMessage(
-                    body: messageBody,
-                    thread: self.thread,
-                    // If we have _any_ quoted reply populated, keep the existing quoted reply.
-                    // If its cleared, "change" it to nothing (clear it).
-                    quotedReplyEdit: inputToolbar.quotedReplyDraft == nil ? .change(()) : .keep,
-                    linkPreviewDraft: inputToolbar.linkPreviewDraft,
-                    editTarget: editTarget,
-                    persistenceCompletionHandler: {
-                        AssertIsOnMainThread()
-                        self.loadCoordinator.enqueueReload()
-                    },
-                    transaction: transaction
-                )
-            } else {
-                ThreadUtil.enqueueMessage(
-                    body: messageBody,
-                    thread: self.thread,
-                    quotedReplyDraft: inputToolbar.quotedReplyDraft,
-                    linkPreviewDraft: inputToolbar.linkPreviewDraft,
-                    persistenceCompletionHandler: {
-                        AssertIsOnMainThread()
-                        self.loadCoordinator.enqueueReload()
-                    },
-                    transaction: transaction
-                )
-            }
+        if let editTarget = inputToolbar.editTarget {
+            ThreadUtil.enqueueEditMessage(
+                body: messageBody,
+                thread: self.thread,
+                // If we have _any_ quoted reply populated, keep the existing quoted reply.
+                // If its cleared, "change" it to nothing (clear it).
+                quotedReplyEdit: inputToolbar.quotedReplyDraft == nil ? .change(()) : .keep,
+                linkPreviewDraft: inputToolbar.linkPreviewDraft,
+                editTarget: editTarget,
+                persistenceCompletionHandler: {
+                    AssertIsOnMainThread()
+                    self.loadCoordinator.enqueueReload()
+                }
+            )
+        } else {
+            ThreadUtil.enqueueMessage(
+                body: messageBody,
+                thread: self.thread,
+                quotedReplyDraft: inputToolbar.quotedReplyDraft,
+                linkPreviewDraft: inputToolbar.linkPreviewDraft,
+                persistenceCompletionHandler: {
+                    AssertIsOnMainThread()
+                    self.loadCoordinator.enqueueReload()
+                }
+            )
         }
 
         messageWasSent()
@@ -417,19 +413,16 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
             let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(self.thread)
 
-            Self.databaseStorage.read { transaction in
-                ThreadUtil.enqueueMessage(
-                    body: messageBody,
-                    mediaAttachments: attachments,
-                    thread: self.thread,
-                    quotedReplyDraft: inputToolbar.quotedReplyDraft,
-                    persistenceCompletionHandler: {
-                        AssertIsOnMainThread()
-                        self.loadCoordinator.enqueueReload()
-                    },
-                    transaction: transaction
-                )
-            }
+            ThreadUtil.enqueueMessage(
+                body: messageBody,
+                mediaAttachments: attachments,
+                thread: self.thread,
+                quotedReplyDraft: inputToolbar.quotedReplyDraft,
+                persistenceCompletionHandler: {
+                    AssertIsOnMainThread()
+                    self.loadCoordinator.enqueueReload()
+                }
+            )
 
             self.messageWasSent()
 
@@ -707,17 +700,14 @@ extension ConversationViewController: LocationPickerDelegate {
 
             let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(self.thread)
 
-            Self.databaseStorage.read { transaction in
-                ThreadUtil.enqueueMessage(body: MessageBody(text: location.messageText,
-                                                            ranges: .empty),
-                                          mediaAttachments: [ attachment ],
-                                          thread: self.thread,
-                                          persistenceCompletionHandler: {
-                                                AssertIsOnMainThread()
-                                                self.loadCoordinator.enqueueReload()
-                                          },
-                                          transaction: transaction)
-            }
+            ThreadUtil.enqueueMessage(body: MessageBody(text: location.messageText,
+                                                        ranges: .empty),
+                                      mediaAttachments: [ attachment ],
+                                      thread: self.thread,
+                                      persistenceCompletionHandler: {
+                                            AssertIsOnMainThread()
+                                            self.loadCoordinator.enqueueReload()
+                                      })
 
             self.messageWasSent()
 

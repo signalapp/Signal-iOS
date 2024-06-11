@@ -428,14 +428,14 @@ extension ForwardMessageViewController {
     }
 
     fileprivate func send(body: MessageBody, linkPreviewDraft: OWSLinkPreviewDraft? = nil, recipientThread: TSThread) -> Promise<Void> {
-        databaseStorage.read { transaction in
-            ThreadUtil.enqueueMessage(
-                body: body.forForwarding(to: recipientThread, transaction: transaction.unwrapGrdbRead).asMessageBodyForForwarding(),
-                thread: recipientThread,
-                linkPreviewDraft: linkPreviewDraft,
-                transaction: transaction
-            )
+        let body = databaseStorage.read { transaction in
+            return body.forForwarding(to: recipientThread, transaction: transaction.unwrapGrdbRead).asMessageBodyForForwarding()
         }
+        ThreadUtil.enqueueMessage(
+            body: body,
+            thread: recipientThread,
+            linkPreviewDraft: linkPreviewDraft
+        )
         return Promise.value(())
     }
 
@@ -445,12 +445,12 @@ extension ForwardMessageViewController {
     }
 
     fileprivate func send(body: MessageBody, attachment: SignalAttachment, thread: TSThread) -> Promise<Void> {
-        databaseStorage.read { transaction in
-            ThreadUtil.enqueueMessage(body: body,
-                                      mediaAttachments: [attachment],
-                                      thread: thread,
-                                      transaction: transaction)
+        let body = databaseStorage.read { transaction in
+            return body.forForwarding(to: thread, transaction: transaction.unwrapGrdbRead).asMessageBodyForForwarding()
         }
+        ThreadUtil.enqueueMessage(body: body,
+                                  mediaAttachments: [attachment],
+                                  thread: thread)
         return Promise.value(())
     }
 
