@@ -3,6 +3,14 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+// MARK: - RPRecentCallType
+
+extension RPRecentCallType: CustomStringConvertible {
+    public var description: String {
+        NSStringFromCallType(self)
+    }
+}
+
 // MARK: - OWSReadTracking
 
 @objc

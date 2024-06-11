@@ -1323,12 +1323,6 @@ final class IndividualCallService: CallServiceStateObserver {
     }
 }
 
-extension RPRecentCallType: CustomStringConvertible {
-    public var description: String {
-        NSStringFromCallType(self)
-    }
-}
-
 extension NSNumber {
     convenience init?(value: UInt32?) {
         guard let value = value else { return nil }
