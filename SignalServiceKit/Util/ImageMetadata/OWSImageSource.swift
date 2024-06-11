@@ -137,7 +137,7 @@ extension OWSImageSource {
         let heifBrandHeaderHeifStream = Data("ftypmsf1\0".utf8)
 
         // Pull the string from the header and compare it with the supported formats
-        let header = try? readData(byteOffset: heifBrandStartsAt, byteLength: totalHeaderLength)
+        let header = try? readData(byteOffset: heifHeaderStartsAt, byteLength: totalHeaderLength)
 
         if header == heifBrandHeaderHeic {
             return .heic
