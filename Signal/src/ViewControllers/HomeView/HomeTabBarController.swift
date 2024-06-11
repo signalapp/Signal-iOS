@@ -40,7 +40,7 @@ class HomeTabBarController: UITabBarController {
         selectedImage: UIImage(named: "tab-calls")
     )
 
-    var selectedTab: Tabs {
+    var selectedHomeTab: Tabs {
         get { Tabs(rawValue: selectedIndex) ?? .chatList }
         set { selectedIndex = newValue.rawValue }
     }
@@ -83,7 +83,7 @@ class HomeTabBarController: UITabBarController {
 
     @objc
     private func didEnterForeground() {
-        if selectedTab == .stories {
+        if selectedHomeTab == .stories {
             storyBadgeCountManager.markAllStoriesRead()
         }
     }
@@ -107,17 +107,18 @@ class HomeTabBarController: UITabBarController {
             areStoriesEnabled: StoryManager.areStoriesEnabled
         )
 
-        if selectedTab == .stories {
+        if selectedHomeTab == .stories {
             storiesNavController.popToRootViewController(animated: false)
         }
 
-        selectedTab = .chatList
+        selectedHomeTab = .chatList
         setTabBarHidden(false, animated: false)
     }
 
     // MARK: - Hiding the tab bar
 
-    private var isTabBarHidden: Bool = false
+    // FIXME: Can this conditionally override UITabBarController.isTabBarHidden on iOS 18?
+    private var _isTabBarHidden: Bool = false
 
     /// Hides or displays the tab bar, resizing the selected view controller to
     /// fill the space remaining.
@@ -128,10 +129,10 @@ class HomeTabBarController: UITabBarController {
         completion: ((Bool) -> Void)? = nil
     ) {
         defer {
-            isTabBarHidden = hidden
+            _isTabBarHidden = hidden
         }
 
-        guard isTabBarHidden != hidden else {
+        guard _isTabBarHidden != hidden else {
             tabBar.isHidden = hidden
             owsTabBar?.applyTheme()
             completion?(true)
@@ -192,7 +193,7 @@ extension HomeTabBarController: BadgeObserver {
 extension HomeTabBarController: StoryBadgeCountObserver {
 
     public var isStoriesTabActive: Bool {
-        return selectedTab == .stories && CurrentAppContext().isAppForegroundAndActive()
+        return selectedHomeTab == .stories && CurrentAppContext().isAppForegroundAndActive()
     }
 
     public func didUpdateStoryBadge(_ badge: String?) {
@@ -226,7 +227,7 @@ extension HomeTabBarController: UITabBarControllerDelegate {
         // If we re-select the active tab, scroll to the top.
         if selectedViewController == viewController {
             let tableView: UITableView
-            switch selectedTab {
+            switch selectedHomeTab {
             case .chatList:
                 tableView = chatListViewController.tableView
             case .stories:

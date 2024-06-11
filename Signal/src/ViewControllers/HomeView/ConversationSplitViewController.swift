@@ -132,7 +132,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             return
         }
 
-        if homeVC.selectedTab != .chatList {
+        if homeVC.selectedHomeTab != .chatList {
             guard homeVC.presentedViewController == nil else {
                 homeVC.dismiss(animated: true) {
                     self.presentThread(thread, action: action, focusMessageId: focusMessageId, animated: animated)
@@ -141,7 +141,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             }
 
             // Ensure the tab bar is on the chat list.
-            homeVC.selectedTab = .chatList
+            homeVC.selectedHomeTab = .chatList
         }
 
         guard selectedThread?.uniqueId != thread.uniqueId else {
@@ -198,7 +198,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             return
         }
 
-        if homeVC.selectedTab != .stories {
+        if homeVC.selectedHomeTab != .stories {
             guard homeVC.presentedViewController == nil else {
                 homeVC.dismiss(animated: true) {
                     self.showMyStoriesController(animated: animated)
@@ -207,7 +207,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             }
 
             // Ensure the tab bar is on the stories tab.
-            homeVC.selectedTab = .stories
+            homeVC.selectedHomeTab = .stories
         }
 
         homeVC.storiesViewController.showMyStories(animated: animated)
@@ -432,7 +432,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         if selectedThread != nil {
             keyCommands += selectedConversationKeyCommands
         }
-        if homeVC.selectedTab == .chatList {
+        if homeVC.selectedHomeTab == .chatList {
             keyCommands += chatListKeyCommands
         }
         return keyCommands
