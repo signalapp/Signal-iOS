@@ -114,8 +114,7 @@ public struct AttachmentApprovalItem: Hashable {
 // MARK: -
 
 class AttachmentApprovalItemCollection {
-
-    private (set) var attachmentApprovalItems: [AttachmentApprovalItem]
+    private(set) var attachmentApprovalItems: [AttachmentApprovalItem]
     let isAddMoreVisible: () -> Bool
 
     init(attachmentApprovalItems: [AttachmentApprovalItem], isAddMoreVisible: @escaping () -> Bool) {
