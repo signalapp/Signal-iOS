@@ -196,8 +196,12 @@ public extension NSTextAlignment {
 
 // MARK: -
 
-extension NSTextAlignment: CustomStringConvertible {
-
+#if compiler(>=6)
+extension NSTextAlignment: @retroactive CustomStringConvertible {}
+#else
+extension NSTextAlignment: CustomStringConvertible {}
+#endif
+extension NSTextAlignment {
     public var description: String {
         switch self {
         case .left:

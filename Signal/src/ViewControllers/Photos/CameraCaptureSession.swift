@@ -1541,7 +1541,12 @@ private class PhotoCapture: NSObject {
 
 // MARK: -
 
-extension AVCaptureDevice.FocusMode: CustomStringConvertible {
+#if compiler(>=6)
+extension AVCaptureDevice.FocusMode: @retroactive CustomStringConvertible {}
+#else
+extension AVCaptureDevice.FocusMode: CustomStringConvertible {}
+#endif
+extension AVCaptureDevice.FocusMode {
     public var description: String {
         switch self {
         case .locked:
@@ -1558,7 +1563,12 @@ extension AVCaptureDevice.FocusMode: CustomStringConvertible {
 
 // MARK: -
 
-extension AVCaptureDevice.ExposureMode: CustomStringConvertible {
+#if compiler(>=6)
+extension AVCaptureDevice.ExposureMode: @retroactive CustomStringConvertible {}
+#else
+extension AVCaptureDevice.ExposureMode: CustomStringConvertible {}
+#endif
+extension AVCaptureDevice.ExposureMode {
     public var description: String {
         switch self {
         case .locked:
@@ -1577,7 +1587,12 @@ extension AVCaptureDevice.ExposureMode: CustomStringConvertible {
 
 // MARK: -
 
-extension AVCaptureVideoOrientation: CustomStringConvertible {
+#if compiler(>=6)
+extension AVCaptureVideoOrientation: @retroactive CustomStringConvertible {}
+#else
+extension AVCaptureVideoOrientation: CustomStringConvertible {}
+#endif
+extension AVCaptureVideoOrientation {
     public var description: String {
         switch self {
         case .portrait:
@@ -1596,7 +1611,12 @@ extension AVCaptureVideoOrientation: CustomStringConvertible {
 
 // MARK: -
 
-extension UIDeviceOrientation: CustomStringConvertible {
+#if compiler(>=6)
+extension UIDeviceOrientation: @retroactive CustomStringConvertible {}
+#else
+extension UIDeviceOrientation: CustomStringConvertible {}
+#endif
+extension UIDeviceOrientation {
     public var description: String {
         switch self {
         case .unknown:
@@ -1621,7 +1641,12 @@ extension UIDeviceOrientation: CustomStringConvertible {
 
 // MARK: -
 
-extension UIInterfaceOrientation: CustomStringConvertible {
+#if compiler(>=6)
+extension UIInterfaceOrientation: @retroactive CustomStringConvertible {}
+#else
+extension UIInterfaceOrientation: CustomStringConvertible {}
+#endif
+extension UIInterfaceOrientation {
     public var description: String {
         switch self {
         case .unknown:
@@ -1642,7 +1667,12 @@ extension UIInterfaceOrientation: CustomStringConvertible {
 
 // MARK: -
 
-extension UIImage.Orientation: CustomStringConvertible {
+#if compiler(>=6)
+extension UIImage.Orientation: @retroactive CustomStringConvertible {}
+#else
+extension UIImage.Orientation: CustomStringConvertible {}
+#endif
+extension UIImage.Orientation {
     public var description: String {
         switch self {
         case .up:

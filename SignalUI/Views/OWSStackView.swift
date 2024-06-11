@@ -133,7 +133,12 @@ open class OWSStackView: UIStackView {
 
 // MARK: -
 
-extension NSLayoutConstraint.Axis: CustomStringConvertible {
+#if compiler(>=6)
+extension NSLayoutConstraint.Axis: @retroactive CustomStringConvertible {}
+#else
+extension NSLayoutConstraint.Axis: CustomStringConvertible {}
+#endif
+extension NSLayoutConstraint.Axis {
     public var description: String {
         switch self {
         case .horizontal:
@@ -149,7 +154,12 @@ extension NSLayoutConstraint.Axis: CustomStringConvertible {
 
 // MARK: -
 
-extension UIStackView.Alignment: CustomStringConvertible {
+#if compiler(>=6)
+extension UIStackView.Alignment: @retroactive CustomStringConvertible {}
+#else
+extension UIStackView.Alignment: CustomStringConvertible {}
+#endif
+extension UIStackView.Alignment {
     public var description: String {
         switch self {
         case .fill:
