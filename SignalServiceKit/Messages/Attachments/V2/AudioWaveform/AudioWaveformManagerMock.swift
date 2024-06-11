@@ -32,6 +32,21 @@ public class AudioWaveformManagerMock: AudioWaveformManager {
     ) async throws {
         // Do nothing
     }
+
+    public func audioWaveformSync(
+        forAudioPath audioPath: String
+    ) throws -> AudioWaveform {
+        return AudioWaveform(decibelSamples: [])
+    }
+
+    public func audioWaveformSync(
+        forEncryptedAudioFileAtPath filePath: String,
+        encryptionKey: Data,
+        plaintextDataLength: UInt32,
+        mimeType: String
+    ) throws -> AudioWaveform {
+        return AudioWaveform(decibelSamples: [])
+    }
 }
 
 #endif

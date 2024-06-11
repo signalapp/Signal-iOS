@@ -2165,7 +2165,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 return
             }
 
-            let messageContents = try! await createFakeMessageContents(
+            let messageContents = try! createFakeMessageContents(
                 count: messageQuantity,
                 messageContentType: .longText
             )
@@ -2190,7 +2190,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
     private static func createFakeMessageContents(
         count: UInt,
         messageContentType: MessageContentType
-    ) async throws -> [FakeMessageContent] {
+    ) throws -> [FakeMessageContent] {
         var contents = [FakeMessageContent]()
         for i in 0..<count {
             let randomText: String
@@ -2208,7 +2208,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             case 1:
                 contents.append(.outgoingTextOnly(randomText))
             case 2:
-                let attachmentDataSource = try await DependenciesBridge.shared.tsResourceContentValidator.validateContents(
+                let attachmentDataSource = try DependenciesBridge.shared.tsResourceContentValidator.validateContents(
                     dataSource: DataSourceValue.dataSource(
                         with: UIImage.image(color: .blue, size: .square(100)).jpegData(compressionQuality: 0.1)!,
                         mimeType: "image/jpg"
@@ -2224,7 +2224,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 let attachmentCount = Int.random(in: 0...SignalAttachment.maxAttachmentsAllowed)
                 var attachmentDataSources = [TSResourceDataSource]()
                 for _ in (0..<attachmentCount) {
-                    let dataSource = try await DependenciesBridge.shared.tsResourceContentValidator.validateContents(
+                    let dataSource = try DependenciesBridge.shared.tsResourceContentValidator.validateContents(
                         dataSource: DataSourceValue.dataSource(
                             with: ImageFactory().buildPNGData(),
                             fileExtension: "png"
@@ -2545,21 +2545,20 @@ class DebugUIMessages: DebugUIPage, Dependencies {
     // MARK: Random Actions
 
     private static func performRandomActions(_ counter: UInt, inThread thread: TSThread) {
-        Task { @MainActor in
-            try await Task.sleep(nanoseconds: NSEC_PER_SEC)
-            await performRandomActionInThread(thread, counter: counter)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            performRandomActionInThread(thread, counter: counter)
             if counter > 0 {
                 performRandomActions(counter - 1, inThread: thread)
             }
         }
     }
 
-    private static func performRandomActionInThread(_ thread: TSThread, counter: UInt) async {
+    private static func performRandomActionInThread(_ thread: TSThread, counter: UInt) {
         let numActions = Int.random(in: 1...4)
         var actions = [(SDSAnyWriteTransaction) -> Void]()
         for _ in (0..<numActions) {
             let randomAction = Int.random(in: 0...2)
-            let action: (SDSAnyWriteTransaction) -> Void = await {
+            let action: (SDSAnyWriteTransaction) -> Void = {
                 switch randomAction {
                 case 0:
                     return { transaction in
@@ -2577,7 +2576,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                     }
                 default:
                     let messageCount = UInt.random(in: 1...4)
-                    let messageContents = try! await createFakeMessageContents(count: messageCount, messageContentType: .normal)
+                    let messageContents = try! createFakeMessageContents(count: messageCount, messageContentType: .normal)
 
                     return  { transaction in
                         createFakeMessages(messageContents, inThread: thread, transaction: transaction)
@@ -2587,7 +2586,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             actions.append(action)
         }
 
-        await databaseStorage.awaitableWrite { transaction in
+        databaseStorage.write { transaction in
             actions.forEach { $0(transaction) }
         }
     }

@@ -13,7 +13,7 @@ public protocol ContactShareManager {
 
     func validateAndPrepare(
         draft: ContactShareDraft
-    ) async throws -> ContactShareDraft.ForSending
+    ) throws -> ContactShareDraft.ForSending
 
     func build(
         draft: ContactShareDraft.ForSending,
@@ -118,8 +118,8 @@ public class ContactShareManagerImpl: ContactShareManager {
 
     public func validateAndPrepare(
         draft: ContactShareDraft
-    ) async throws -> ContactShareDraft.ForSending {
-        let avatarDataSource: TSResourceDataSource? = try await {
+    ) throws -> ContactShareDraft.ForSending {
+        let avatarDataSource: TSResourceDataSource? = try {
             if
                 let existingAvatarAttachment = draft.existingAvatarAttachment,
                 let stream = existingAvatarAttachment.attachment.asResourceStream()
@@ -139,7 +139,7 @@ public class ContactShareManagerImpl: ContactShareManager {
                 ) else {
                     throw OWSAssertionError("Failed to create data source")
                 }
-                return try await attachmentValidator.validateContents(
+                return try attachmentValidator.validateContents(
                     dataSource: dataSource,
                     shouldConsume: true,
                     mimeType: mimeType,
@@ -270,7 +270,7 @@ public class MockContactShareManager: ContactShareManager {
 
     public func validateAndPrepare(
         draft: ContactShareDraft
-    ) async throws -> ContactShareDraft.ForSending {
+    ) throws -> ContactShareDraft.ForSending {
         throw OWSAssertionError("Unimplemented")
     }
 

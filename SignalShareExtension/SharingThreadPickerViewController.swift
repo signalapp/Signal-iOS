@@ -256,7 +256,7 @@ extension SharingThreadPickerViewController {
             }
             let contactShareForSending: ContactShareDraft.ForSending
             do {
-                contactShareForSending = try await DependenciesBridge.shared.contactShareManager.validateAndPrepare(
+                contactShareForSending = try DependenciesBridge.shared.contactShareManager.validateAndPrepare(
                     draft: contactShareDraft
                 )
             } catch {

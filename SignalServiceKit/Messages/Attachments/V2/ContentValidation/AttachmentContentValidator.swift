@@ -33,7 +33,7 @@ public protocol AttachmentContentValidator {
         shouldConsume: Bool,
         mimeType: String,
         sourceFilename: String?
-    ) async throws -> PendingAttachment
+    ) throws -> PendingAttachment
 
     /// Validate and prepare an encrypted attachment file's contents, based on the provided mimetype.
     /// Returns a PendingAttachment with validated contents, ready to be inserted.
@@ -46,7 +46,7 @@ public protocol AttachmentContentValidator {
         digestSHA256Ciphertext: Data,
         mimeType: String,
         sourceFilename: String?
-    ) async throws -> PendingAttachment
+    ) throws -> PendingAttachment
 }
 
 extension AttachmentContentValidator {
@@ -56,8 +56,8 @@ extension AttachmentContentValidator {
         shouldConsume: Bool,
         mimeType: String,
         sourceFilename: String?
-    ) async throws -> AttachmentDataSource {
-        return .from(pendingAttachment: try await self.validateContents(
+    ) throws -> AttachmentDataSource {
+        return .from(pendingAttachment: try self.validateContents(
             dataSource: dataSource,
             shouldConsume: shouldConsume,
             mimeType: mimeType,
@@ -72,8 +72,8 @@ extension AttachmentContentValidator {
         digestSHA256Ciphertext: Data,
         mimeType: String,
         sourceFilename: String?
-    ) async throws -> AttachmentDataSource {
-        return .from(pendingAttachment: try await self.validateContents(
+    ) throws -> AttachmentDataSource {
+        return .from(pendingAttachment: try self.validateContents(
             ofEncryptedFileAt: fileUrl,
             encryptionKey: encryptionKey,
             plaintextLength: plaintextLength,

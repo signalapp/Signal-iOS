@@ -20,7 +20,7 @@ public protocol TSResourceContentValidator {
         sourceFilename: String?,
         caption: MessageBody?,
         renderingFlag: AttachmentReference.RenderingFlag
-    ) async throws -> TSResourceDataSource
+    ) throws -> TSResourceDataSource
 }
 
 public class TSResourceContentValidatorImpl: TSResourceContentValidator {
@@ -38,10 +38,10 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
         sourceFilename: String?,
         caption: MessageBody?,
         renderingFlag: AttachmentReference.RenderingFlag
-    ) async throws -> TSResourceDataSource {
+    ) throws -> TSResourceDataSource {
         if FeatureFlags.newAttachmentsUseV2 {
             let attachmentDataSource: AttachmentDataSource =
-                try await attachmentValidator.validateContents(
+                try attachmentValidator.validateContents(
                     dataSource: dataSource,
                     shouldConsume: shouldConsume,
                     mimeType: mimeType,
@@ -74,7 +74,7 @@ open class TSResourceContentValidatorMock: TSResourceContentValidator {
         sourceFilename: String?,
         caption: MessageBody?,
         renderingFlag: AttachmentReference.RenderingFlag
-    ) async throws -> TSResourceDataSource {
+    ) throws -> TSResourceDataSource {
         return .from(
             dataSource: dataSource,
             mimeType: mimeType,

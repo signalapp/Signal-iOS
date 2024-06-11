@@ -125,6 +125,32 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
         _ = try await task.value
     }
 
+    public func audioWaveformSync(
+        forAudioPath audioPath: String
+    ) throws -> AudioWaveform {
+        return try _buildAudioWaveForm(
+            source: .unencryptedFile(path: audioPath),
+            waveformPath: nil
+        )
+    }
+
+    public func audioWaveformSync(
+        forEncryptedAudioFileAtPath filePath: String,
+        encryptionKey: Data,
+        plaintextDataLength: UInt32,
+        mimeType: String
+    ) throws -> AudioWaveform {
+        return try _buildAudioWaveForm(
+            source: .encryptedFile(
+                path: filePath,
+                encryptionKey: encryptionKey,
+                plaintextDataLength: plaintextDataLength,
+                mimeType: mimeType
+            ),
+            waveformPath: nil
+        )
+    }
+
     private enum AVAssetSource {
         case unencryptedFile(path: String)
         case encryptedFile(
@@ -172,11 +198,9 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
 
             let taskQueue = highPriority ? self.highPriorityTaskQueue : self.taskQueue
             return try await taskQueue.enqueue(operation: {
-                let waveform = try await self._buildAudioWaveForm(
+                let waveform = try self._buildAudioWaveForm(
                     source: source,
-                    waveformPath: waveformPath,
-                    identifier: identifier,
-                    highPriority: highPriority
+                    waveformPath: waveformPath
                 )
 
                 identifier.cacheKey.map { self.cache[$0] = Weak(value: waveform) }
@@ -187,19 +211,20 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
 
     private func _buildAudioWaveForm(
         source: AVAssetSource,
-        waveformPath: String,
-        identifier: WaveformId,
-        highPriority: Bool
-    ) async throws -> AudioWaveform {
-        if FileManager.default.fileExists(atPath: waveformPath) {
-            // We have a cached waveform on disk, read it into memory.
-            do {
-                return try AudioWaveform(contentsOfFile: waveformPath)
-            } catch {
-                owsFailDebug("Error: \(error)")
+        // If non-nil, writes the waveform to this output file.
+        waveformPath: String?
+    ) throws -> AudioWaveform {
+        if let waveformPath {
+            if FileManager.default.fileExists(atPath: waveformPath) {
+                // We have a cached waveform on disk, read it into memory.
+                do {
+                    return try AudioWaveform(contentsOfFile: waveformPath)
+                } catch {
+                    owsFailDebug("Error: \(error)")
 
-                // Remove the file from disk and create a new one.
-                OWSFileSystem.deleteFileIfExists(waveformPath)
+                    // Remove the file from disk and create a new one.
+                    OWSFileSystem.deleteFileIfExists(waveformPath)
+                }
             }
         }
 
@@ -225,25 +250,27 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
             throw AudioWaveformError.audioTooLong
         }
 
-        let waveform = try await sampleWaveform(asset: asset)
+        let waveform = try sampleWaveform(asset: asset)
 
-        do {
-            let parentDirectoryPath = (waveformPath as NSString).deletingLastPathComponent
-            if OWSFileSystem.ensureDirectoryExists(parentDirectoryPath) {
-                switch source {
-                case .unencryptedFile:
-                    try waveform.write(toFile: waveformPath, atomically: true)
-                case .encryptedFile(_, let encryptionKey, _, _):
-                    let waveformData = try waveform.archive()
-                    let (encryptedWaveform, _) = try Cryptography.encrypt(waveformData, encryptionKey: encryptionKey)
-                    try encryptedWaveform.write(to: URL(fileURLWithPath: waveformPath), options: .atomicWrite)
+        if let waveformPath {
+            do {
+                let parentDirectoryPath = (waveformPath as NSString).deletingLastPathComponent
+                if OWSFileSystem.ensureDirectoryExists(parentDirectoryPath) {
+                    switch source {
+                    case .unencryptedFile:
+                        try waveform.write(toFile: waveformPath, atomically: true)
+                    case .encryptedFile(_, let encryptionKey, _, _):
+                        let waveformData = try waveform.archive()
+                        let (encryptedWaveform, _) = try Cryptography.encrypt(waveformData, encryptionKey: encryptionKey)
+                        try encryptedWaveform.write(to: URL(fileURLWithPath: waveformPath), options: .atomicWrite)
+                    }
+
+                } else {
+                    owsFailDebug("Could not create parent directory.")
                 }
-
-            } else {
-                owsFailDebug("Could not create parent directory.")
+            } catch {
+                owsFailDebug("Error: \(error)")
             }
-        } catch {
-            owsFailDebug("Error: \(error)")
         }
 
         return waveform
@@ -353,7 +380,7 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
         return result
     }
 
-    private func sampleWaveform(asset: AVAsset) async throws -> AudioWaveform {
+    private func sampleWaveform(asset: AVAsset) throws -> AudioWaveform {
         try Task.checkCancellation()
 
         guard let assetReader = try? AVAssetReader(asset: asset) else {

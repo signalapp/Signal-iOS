@@ -142,6 +142,7 @@ public final class AtomicValue<T> {
         }
     }
 
+    @discardableResult
     public func update<Result>(block: (inout T) throws -> Result) rethrows -> Result {
         try lock.withLock { try block(&self.value) }
     }

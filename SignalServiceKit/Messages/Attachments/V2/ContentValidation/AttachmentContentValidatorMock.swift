@@ -16,7 +16,7 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
         shouldConsume: Bool,
         mimeType: String,
         sourceFilename: String?
-    ) async throws -> PendingAttachment {
+    ) throws -> PendingAttachment {
         throw OWSAssertionError("Unimplemented")
     }
 
@@ -27,7 +27,7 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
         digestSHA256Ciphertext: Data,
         mimeType: String,
         sourceFilename: String?
-    ) async throws -> PendingAttachment {
+    ) throws -> PendingAttachment {
         throw OWSAssertionError("Unimplemented")
     }
 }

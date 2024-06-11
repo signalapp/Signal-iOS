@@ -56,21 +56,8 @@ public extension ThreadUtil {
     class func enqueueMessage(
         withContactShare contactShareDraft: ContactShareDraft,
         thread: TSThread
-    ) async throws -> TSOutgoingMessage {
-        assert(contactShareDraft.ows_isValid)
-
-        let sendableContactShareDraft = try await DependenciesBridge.shared.contactShareManager.validateAndPrepare(
-            draft: contactShareDraft
-        )
-
-        return enqueueMessage(withContactShare: sendableContactShareDraft, thread: thread)
-    }
-
-    @discardableResult
-    class func enqueueMessage(
-        withContactShare contactShareDraft: ContactShareDraft.ForSending,
-        thread: TSThread
     ) -> TSOutgoingMessage {
+        AssertIsOnMainThread()
         assert(contactShareDraft.ows_isValid)
 
         let builder = TSOutgoingMessageBuilder(thread: thread)
@@ -80,22 +67,32 @@ public extension ThreadUtil {
             return builder.build(transaction: tx)
         }
 
-        let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
-            message,
-            contactShareDraft: contactShareDraft
-        )
-
-        Self.enqueueSendAsyncWrite { transaction in
-            guard let preparedMessage = try? unpreparedMessage.prepare(tx: transaction) else {
-                owsFailDebug("Unable to build message for sending!")
+        Self.enqueueSendQueue.async {
+            guard
+                let sendableContactShareDraft = try? DependenciesBridge.shared.contactShareManager
+                    .validateAndPrepare(draft: contactShareDraft)
+            else {
+                owsFailDebug("Failed to build contact share")
                 return
             }
-            SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
-            if
-                let messageForIntent = preparedMessage.messageForIntentDonation(tx: transaction),
-                let thread = messageForIntent.thread(tx: transaction)
-            {
-                thread.donateSendMessageIntent(for: messageForIntent, transaction: transaction)
+
+            let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
+                message,
+                contactShareDraft: sendableContactShareDraft
+            )
+
+            Self.databaseStorage.write { transaction in
+                guard let preparedMessage = try? unpreparedMessage.prepare(tx: transaction) else {
+                    owsFailDebug("Unable to build message for sending!")
+                    return
+                }
+                SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
+                if
+                    let messageForIntent = preparedMessage.messageForIntentDonation(tx: transaction),
+                    let thread = messageForIntent.thread(tx: transaction)
+                {
+                    thread.donateSendMessageIntent(for: messageForIntent, transaction: transaction)
+                }
             }
         }
 

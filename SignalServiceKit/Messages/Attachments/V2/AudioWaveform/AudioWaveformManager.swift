@@ -30,4 +30,19 @@ public protocol AudioWaveformManager {
         mimeType: String,
         outputWaveformPath: String
     ) async throws
+
+    /// No caching, no enqueueing.
+    /// Generates an audio waveform synchronously, blocking on file I/O operations.
+    func audioWaveformSync(
+        forAudioPath audioPath: String
+    ) throws -> AudioWaveform
+
+    /// No caching, no enqueueing.
+    /// Generates an audio waveform synchronously, blocking on file I/O operations.
+    func audioWaveformSync(
+        forEncryptedAudioFileAtPath filePath: String,
+        encryptionKey: Data,
+        plaintextDataLength: UInt32,
+        mimeType: String
+    ) throws -> AudioWaveform
 }

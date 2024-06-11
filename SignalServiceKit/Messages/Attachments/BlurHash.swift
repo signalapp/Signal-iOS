@@ -83,7 +83,7 @@ public class BlurHash: NSObject {
         return promise
     }
 
-    public class func computeBlurHash(for image: UIImage) async throws -> String {
+    public class func computeBlurHashSync(for image: UIImage) throws -> String {
         // Use a small thumbnail size; quality doesn't matter. This is important for perf.
         var thumbnail: UIImage
         let maxDimensionPixels: CGFloat = 200
