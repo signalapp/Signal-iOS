@@ -28,7 +28,7 @@ extension Bitmaps {
         }
     }
 
-    class Rect {
+    struct Rect: Equatable {
         let origin: Point
         let width: Int
         let height: Int

@@ -39,8 +39,24 @@ extension PaymentMethodFieldValidity where Invalidity == Void {
     }
 }
 
-enum CreditAndDebitCards {
+#if TESTABLE_BUILD
+extension PaymentMethodFieldValidity: Equatable where Invalidity: Equatable {
+    static func == (lhs: PaymentMethodFieldValidity<Invalidity>, rhs: PaymentMethodFieldValidity<Invalidity>) -> Bool where Invalidity: Equatable {
+        switch (lhs, rhs) {
+        case (.potentiallyValid, .potentiallyValid):
+            return true
+        case (.fullyValid, .fullyValid):
+            return true
+        case let (.invalid(invalidLHS), .invalid(invalidRHS)):
+            return invalidLHS == invalidRHS
+        default:
+            return false
+        }
+    }
+}
+#endif
 
+enum CreditAndDebitCards {
     typealias Validity = PaymentMethodFieldValidity<Void>
 
     /// The type of the credit card as useful for Signal's purposes.

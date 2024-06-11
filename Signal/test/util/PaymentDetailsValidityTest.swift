@@ -272,18 +272,3 @@ private func XCTAssertEqual(
         XCTFail("(\"\(lhs)\") is not equal to (\"\(rhs)\")", file: file, line: line)
     }
 }
-
-extension PaymentMethodFieldValidity: Equatable where Invalidity: Equatable {
-    public static func == (lhs: PaymentMethodFieldValidity<Invalidity>, rhs: PaymentMethodFieldValidity<Invalidity>) -> Bool where Invalidity: Equatable {
-        switch (lhs, rhs) {
-        case (.potentiallyValid, .potentiallyValid):
-            return true
-        case (.fullyValid, .fullyValid):
-            return true
-        case let (.invalid(invalidLHS), .invalid(invalidRHS)):
-            return invalidLHS == invalidRHS
-        default:
-            return false
-        }
-    }
-}

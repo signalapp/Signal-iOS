@@ -9,8 +9,7 @@ import XCTest
 @testable import SignalServiceKit
 
 class OWSOperationTest: XCTestCase {
-
-    private class TestOperation: OWSOperation {
+    private class TestOperation: OWSOperation, @unchecked Sendable {
         let expectation: XCTestExpectation
 
         init(expectation: XCTestExpectation) {

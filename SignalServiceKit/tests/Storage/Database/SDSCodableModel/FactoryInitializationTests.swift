@@ -100,43 +100,6 @@ class FactoryInitializationTests: XCTestCase {
     }
 
     func testFactoryInitialization_ThrowsForBadRecordType() throws {
-        class BaseClassThatMisinterpretsRecordTypes: NeedsFactoryInitializationFromRecordType {
-            enum CodingKeys: CodingKey { case recordType }
-
-            static var recordTypeCodingKey: CodingKeys { .recordType }
-
-            static func classToInitialize(
-                forRecordType recordType: UInt
-            ) -> (FactoryInitializableFromRecordType.Type)? {
-                switch recordType {
-                case 1:
-                    return BarClass.self
-                case 2:
-                    return FooClass.self
-                default:
-                    return nil
-                }
-            }
-        }
-
-        class FooClass: BaseClassThatMisinterpretsRecordTypes, FactoryInitializableFromRecordType {
-            static var recordType: UInt { 1 }
-
-            required init(forRecordTypeFactoryInitializationFrom decoder: Decoder) throws {
-                XCTFail("Initializer should never have been called!")
-                fatalError("")
-            }
-        }
-
-        class BarClass: BaseClassThatMisinterpretsRecordTypes, FactoryInitializableFromRecordType {
-            static var recordType: UInt { 2 }
-
-            required init(forRecordTypeFactoryInitializationFrom decoder: Decoder) throws {
-                XCTFail("Initializer should never have been called!")
-                fatalError("")
-            }
-        }
-
         let invalidJsonData: Data = #"{ "super": { "recordType": 3 } }"#.data(using: .utf8)!
         let fooJsonData: Data = #"{ "super": { "recordType": 1 } }"#.data(using: .utf8)!
         let barJsonData: Data = #"{ "super": { "recordType": 2 } }"#.data(using: .utf8)!
@@ -156,5 +119,42 @@ class FactoryInitializationTests: XCTestCase {
         try decodeAndCatchDecodingError(fromData: invalidJsonData)
         try decodeAndCatchDecodingError(fromData: fooJsonData)
         try decodeAndCatchDecodingError(fromData: barJsonData)
+    }
+}
+
+private class BaseClassThatMisinterpretsRecordTypes: NeedsFactoryInitializationFromRecordType {
+    enum CodingKeys: CodingKey { case recordType }
+
+    static var recordTypeCodingKey: CodingKeys { .recordType }
+
+    static func classToInitialize(
+        forRecordType recordType: UInt
+    ) -> (FactoryInitializableFromRecordType.Type)? {
+        switch recordType {
+        case 1:
+            return BarClass.self
+        case 2:
+            return FooClass.self
+        default:
+            return nil
+        }
+    }
+}
+
+private class FooClass: BaseClassThatMisinterpretsRecordTypes, FactoryInitializableFromRecordType {
+    static var recordType: UInt { 1 }
+
+    required init(forRecordTypeFactoryInitializationFrom decoder: Decoder) throws {
+        XCTFail("Initializer should never have been called!")
+        fatalError("")
+    }
+}
+
+private class BarClass: BaseClassThatMisinterpretsRecordTypes, FactoryInitializableFromRecordType {
+    static var recordType: UInt { 2 }
+
+    required init(forRecordTypeFactoryInitializationFrom decoder: Decoder) throws {
+        XCTFail("Initializer should never have been called!")
+        fatalError("")
     }
 }

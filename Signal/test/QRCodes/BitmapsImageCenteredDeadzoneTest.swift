@@ -61,11 +61,3 @@ private struct TestCase {
         expectedRect: Bitmaps.Rect(x: 11, y: 15, width: 8, height: 11)
     )
 }
-
-extension Bitmaps.Rect: Equatable {
-    public static func == (lhs: Bitmaps.Rect, rhs: Bitmaps.Rect) -> Bool {
-        return lhs.origin == rhs.origin
-        && lhs.height == rhs.height
-        && lhs.width == rhs.width
-    }
-}

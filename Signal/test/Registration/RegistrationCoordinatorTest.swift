@@ -810,7 +810,7 @@ public class RegistrationCoordinatorTest: XCTestCase {
             let failResponse = TSRequestOWSURLSessionMock.Response(
                 urlSuffix: expectedRecoveryPwRequest.url!.absoluteString,
                 statusCode: RegistrationServiceResponses.AccountCreationResponseCodes.reglockFailed.rawValue,
-                bodyJson: RegistrationServiceResponses.RegistrationLockFailureResponse(
+                bodyJson: EncodableRegistrationLockFailureResponse(
                     timeRemainingMs: 10,
                     svr2AuthCredential: Stubs.svr2AuthCredential
                 )
@@ -4135,11 +4135,24 @@ private class PreKeyError: Error {
     init() {}
 }
 
-extension RegistrationServiceResponses.RegistrationLockFailureResponse: Encodable {
-    public func encode(to encoder: Encoder) throws {
+struct EncodableRegistrationLockFailureResponse: Codable {
+    typealias ResponseType = RegistrationServiceResponses.RegistrationLockFailureResponse
+    typealias CodingKeys = ResponseType.CodingKeys
+
+    var response: ResponseType
+
+    init(from decoder: any Decoder) throws {
+        response = try ResponseType(from: decoder)
+    }
+
+    init(timeRemainingMs: Int, svr2AuthCredential: SVR2AuthCredential) {
+        self.response = ResponseType(timeRemainingMs: timeRemainingMs, svr2AuthCredential: svr2AuthCredential)
+    }
+
+    func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(timeRemainingMs, forKey: .timeRemainingMs)
-        try container.encodeIfPresent(svr2AuthCredential.credential, forKey: .svr2AuthCredential)
+        try container.encode(response.timeRemainingMs, forKey: .timeRemainingMs)
+        try container.encodeIfPresent(response.svr2AuthCredential.credential, forKey: .svr2AuthCredential)
     }
 }
 
