@@ -40,6 +40,14 @@ public extension UIView {
     }
 
     @discardableResult
+    func autoPinWidthToSuperviewMargins(withInset inset: CGFloat) -> [NSLayoutConstraint] {
+        return [
+            autoPinEdge(toSuperviewMargin: .leading, withInset: inset),
+            autoPinEdge(toSuperviewMargin: .trailing, withInset: inset)
+        ]
+    }
+
+    @discardableResult
     func autoPinWidthToSuperviewMargins(relation: NSLayoutConstraint.Relation = .equal) -> [NSLayoutConstraint] {
         // We invert the relation because of the weird grammar switch when talking about
         // the size of widths to the positioning of edges

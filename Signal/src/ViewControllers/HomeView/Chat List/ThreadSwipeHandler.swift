@@ -85,8 +85,23 @@ extension ThreadSwipeHandler where Self: UIViewController {
         muteAction.accessibilityLabel = threadViewModel.isMuted ? CommonStrings.unmuteButton : CommonStrings.muteButton
 
         let deleteAction = UIContextualAction(style: .destructive, title: nil) { [weak self] (_, _, completion) in
-            self?.deleteThreadWithConfirmation(threadViewModel: threadViewModel, closeConversationBlock: closeConversationBlock)
-            completion(false)
+            guard let self else {
+                completion(false)
+                return
+            }
+
+            DeleteForMeInfoSheetCoordinator.fromGlobals().coordinateDelete(
+                fromViewController: self
+            ) { [weak self] _, threadSoftDeleteManager in
+                guard let self else { return }
+
+                self.deleteThreadWithConfirmation(
+                    threadViewModel: threadViewModel,
+                    threadSoftDeleteManager: threadSoftDeleteManager,
+                    closeConversationBlock: closeConversationBlock
+                )
+                completion(false)
+            }
         }
         deleteAction.backgroundColor = .ows_accentRed
         deleteAction.image = actionImage(name: "trash-fill", title: CommonStrings.deleteButton)
@@ -140,34 +155,38 @@ extension ThreadSwipeHandler where Self: UIViewController {
         updateUIAfterSwipeAction()
     }
 
-    fileprivate func deleteThreadWithConfirmation(threadViewModel: ThreadViewModel, closeConversationBlock: (() -> Void)?) {
+    fileprivate func deleteThreadWithConfirmation(
+        threadViewModel: ThreadViewModel,
+        threadSoftDeleteManager: any ThreadSoftDeleteManager,
+        closeConversationBlock: (() -> Void)?
+    ) {
         AssertIsOnMainThread()
 
         let alert = ActionSheetController(title: OWSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE",
                                                                    comment: "Title for the 'conversation delete confirmation' alert."),
                                           message: OWSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE",
                                                                      comment: "Message for the 'conversation delete confirmation' alert."))
-        alert.addAction(ActionSheetAction(title: CommonStrings.deleteButton,
-                                          style: .destructive) { [weak self] _ in
-            self?.deleteThread(threadViewModel: threadViewModel, closeConversationBlock: closeConversationBlock)
+        alert.addAction(ActionSheetAction(
+            title: CommonStrings.deleteButton,
+            style: .destructive
+        ) { [weak self] _ in
+            guard let self else { return }
+
+            closeConversationBlock?()
+
+            databaseStorage.write { transaction in
+                threadSoftDeleteManager.softDelete(
+                    threads: [threadViewModel.threadRecord],
+                    sendDeleteForMeSyncMessage: true,
+                    tx: transaction.asV2Write
+                )
+            }
+
+            updateUIAfterSwipeAction()
         })
         alert.addAction(OWSActionSheets.cancelAction)
 
         presentActionSheet(alert)
-    }
-
-    func deleteThread(threadViewModel: ThreadViewModel, closeConversationBlock: (() -> Void)?) {
-        AssertIsOnMainThread()
-
-        closeConversationBlock?()
-        databaseStorage.write { transaction in
-            DependenciesBridge.shared.threadSoftDeleteManager.softDelete(
-                threads: [threadViewModel.threadRecord],
-                sendDeleteForMeSyncMessage: true,
-                tx: transaction.asV2Write
-            )
-        }
-        updateUIAfterSwipeAction()
     }
 
     func markThreadAsRead(threadViewModel: ThreadViewModel) {

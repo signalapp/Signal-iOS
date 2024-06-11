@@ -172,6 +172,13 @@ class DebugUIMisc: NSObject, DebugUIPage, Dependencies {
                 let flipCamTooltipManager = FlipCameraTooltipManager(db: DependenciesBridge.shared.db)
                 flipCamTooltipManager.markTooltipAsUnread()
             }),
+
+            OWSTableItem(title: "Enable DeleteForMeSyncMessage info sheet", actionBlock: {
+                SDSDatabaseStorage.shared.write { tx in
+                    DeleteForMeInfoSheetCoordinator.fromGlobals()
+                        .forceEnableInfoSheet(tx: tx.asV2Write)
+                }
+            })
         ]
         return OWSTableSection(title: name, items: items)
     }

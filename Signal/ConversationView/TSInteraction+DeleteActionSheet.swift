@@ -10,6 +10,97 @@ import UIKit
 
 public extension TSInteraction {
     func presentDeletionActionSheet(from fromViewController: UIViewController, forceDarkTheme: Bool = false) {
+        let (associatedThread, hasLinkedDevices): (TSThread?, Bool) = databaseStorage.read { tx in
+            return (
+                thread(tx: tx),
+                DependenciesBridge.shared.deviceStore.hasLinkedDevices(tx: tx.asV2Read)
+            )
+        }
+
+        guard let associatedThread else { return }
+
+        if
+            // We only want the new Note to Self delete UX if we're sending
+            // DeleteForMe sync messages.
+            DeleteForMeSyncMessage.isSendingEnabled,
+            associatedThread.isNoteToSelf
+        {
+            presentDeletionActionSheetForNoteToSelf(
+                fromViewController: fromViewController,
+                thread: associatedThread,
+                hasLinkedDevices: hasLinkedDevices,
+                forceDarkTheme: forceDarkTheme,
+                interactionDeleteManager: DependenciesBridge.shared.interactionDeleteManager
+            )
+        } else {
+            DeleteForMeInfoSheetCoordinator.fromGlobals().coordinateDelete(
+                fromViewController: fromViewController
+            ) { [weak self] interactionDeleteManager, _ in
+                self?.presentDeletionActionSheetForNotNoteToSelf(
+                    fromViewController: fromViewController,
+                    thread: associatedThread,
+                    forceDarkTheme: forceDarkTheme,
+                    interactionDeleteManager: interactionDeleteManager
+                )
+            }
+        }
+    }
+
+    private func presentDeletionActionSheetForNoteToSelf(
+        fromViewController: UIViewController,
+        thread: TSThread,
+        hasLinkedDevices: Bool,
+        forceDarkTheme: Bool,
+        interactionDeleteManager: any InteractionDeleteManager
+    ) {
+        let deleteMessageHeaderText = OWSLocalizedString(
+            "DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_HEADER",
+            comment: "Header text for an action sheet confirming deleting a message in Note to Self."
+        )
+        let (title, message, deleteActionTitle): (String?, String, String) = if hasLinkedDevices {
+            (
+                deleteMessageHeaderText,
+                OWSLocalizedString(
+                    "DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_SUBHEADER",
+                    comment: "Subheader for an action sheet explaining that a Note to Self deleted on this device will be deleted on the user's other devices as well."
+                ),
+                OWSLocalizedString(
+                    "DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_BUTTON_TITLE",
+                    comment: "Title for an action sheet button explaining that a message will be deleted."
+                )
+            )
+        } else {
+            (
+                nil,
+                deleteMessageHeaderText,
+                OWSLocalizedString(
+                    "DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_NOT_PRESENT_ACTION_SHEET_BUTTON_TITLE",
+                    comment: "Title for an action sheet button explaining that a message will be deleted."
+                )
+            )
+        }
+
+        let actionSheet = ActionSheetController(
+            title: title,
+            message: message,
+            theme: forceDarkTheme ? .translucentDark : .default
+        )
+        actionSheet.addAction(deleteForMeAction(
+            title: deleteActionTitle,
+            thread: thread,
+            interactionDeleteManager: interactionDeleteManager
+        ))
+        actionSheet.addAction(.cancel)
+
+        fromViewController.presentActionSheet(actionSheet)
+    }
+
+    private func presentDeletionActionSheetForNotNoteToSelf(
+        fromViewController: UIViewController,
+        thread: TSThread,
+        forceDarkTheme: Bool,
+        interactionDeleteManager: any InteractionDeleteManager
+    ) {
         let actionSheetController = ActionSheetController(
             message: OWSLocalizedString(
                 "MESSAGE_ACTION_DELETE_FOR_TITLE",
@@ -18,33 +109,11 @@ public extension TSInteraction {
             theme: forceDarkTheme ? .translucentDark : .default
         )
 
-        let deleteForMeAction = ActionSheetAction(
+        actionSheetController.addAction(deleteForMeAction(
             title: CommonStrings.deleteForMeButton,
-            style: .destructive
-        ) { _ in
-            Self.databaseStorage.asyncWrite { tx in
-                guard let freshSelf = TSInteraction.anyFetch(
-                    uniqueId: self.uniqueId, transaction: tx
-                ) else { return }
-
-                if let thread = freshSelf.thread(tx: tx) {
-                    DependenciesBridge.shared.interactionDeleteManager.delete(
-                        interactions: [freshSelf],
-                        sideEffects: .custom(
-                            deleteForMeSyncMessage: .sendSyncMessage(interactionsThread: thread)
-                        ),
-                        tx: tx.asV2Write
-                    )
-                } else {
-                    DependenciesBridge.shared.interactionDeleteManager.delete(
-                        interactions: [freshSelf],
-                        sideEffects: .default(),
-                        tx: tx.asV2Write
-                    )
-                }
-            }
-        }
-        actionSheetController.addAction(deleteForMeAction)
+            thread: thread,
+            interactionDeleteManager: interactionDeleteManager
+        ))
 
         if
             let outgoingMessage = self as? TSOutgoingMessage,
@@ -121,6 +190,34 @@ public extension TSInteraction {
             proceedStyle: .destructive) { _ in
             Self.preferences.setWasDeleteForEveryoneConfirmationShown()
             completion()
+        }
+    }
+
+    private func deleteForMeAction(
+        title: String,
+        thread: TSThread,
+        interactionDeleteManager: any InteractionDeleteManager
+    ) -> ActionSheetAction {
+        return ActionSheetAction(
+            title: CommonStrings.deleteForMeButton,
+            style: .destructive
+        ) { [weak self] _ in
+            guard let self else { return }
+
+            self.databaseStorage.asyncWrite { tx in
+                guard
+                    let freshSelf = TSInteraction.anyFetch(uniqueId: self.uniqueId, transaction: tx),
+                    let freshThread = TSThread.anyFetch(uniqueId: thread.uniqueId, transaction: tx)
+                else { return }
+
+                interactionDeleteManager.delete(
+                    interactions: [freshSelf],
+                    sideEffects: .custom(
+                        deleteForMeSyncMessage: .sendSyncMessage(interactionsThread: freshThread)
+                    ),
+                    tx: tx.asV2Write
+                )
+            }
         }
     }
 }

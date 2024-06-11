@@ -118,6 +118,10 @@ public extension OWSDevice {
     var isPrimaryDevice: Bool {
         deviceId == Self.primaryDeviceId
     }
+
+    var isLinkedDevice: Bool {
+        !isPrimaryDevice
+    }
 }
 
 // MARK: - Replace all

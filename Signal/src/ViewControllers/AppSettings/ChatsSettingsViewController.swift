@@ -171,34 +171,71 @@ class ChatsSettingsViewController: OWSTableViewController2 {
         Self.storageServiceManager.recordPendingLocalAccountUpdates()
     }
 
+    // MARK: -
+
     private func didTapClearHistory() {
-        OWSActionSheets.showConfirmationAlert(
-            title: OWSLocalizedString(
-                "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION",
-                comment: "Alert message before user confirms clearing history"
-            ),
-            proceedTitle: OWSLocalizedString(
-                "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON",
-                comment: "Confirmation text for button which deletes all message, calling, attachments, etc."
-            ),
-            proceedStyle: .destructive,
-            proceedAction: { [weak self] _ in self?.clearHistory() }
-        )
+        DeleteForMeInfoSheetCoordinator.fromGlobals().coordinateDelete(
+            fromViewController: self
+        ) { _, threadSoftDeleteManager in
+            OWSActionSheets.showConfirmationAlert(
+                title: OWSLocalizedString(
+                    "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION",
+                    comment: "Alert message before user confirms clearing history"
+                ),
+                proceedTitle: OWSLocalizedString(
+                    "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON",
+                    comment: "Confirmation text for button which deletes all message, calling, attachments, etc."
+                ),
+                proceedStyle: .destructive,
+                proceedAction: { [weak self] _ in
+                    self?.clearHistoryBehindSpinner(threadSoftDeleteManager: threadSoftDeleteManager)
+                }
+            )
+        }
     }
 
-    private func clearHistory() {
+    private func clearHistoryBehindSpinner(
+        threadSoftDeleteManager: any ThreadSoftDeleteManager
+    ) {
         ModalActivityIndicatorViewController.present(
             fromViewController: self,
             canCancel: false,
             presentationDelay: 0.5,
+            backgroundBlockQueueQos: .userInitiated,
             backgroundBlock: { modal in
-                DispatchQueue.global(qos: .userInitiated).async {
-                    ThreadUtil.deleteAllContentWithSneakyTransaction()
-                    DispatchQueue.main.async {
-                        modal.dismiss()
-                    }
+                self.databaseStorage.write { tx in
+                    self.clearHistoryWithSneakyTransaction(
+                        threadSoftDeleteManager: threadSoftDeleteManager
+                    )
+                }
+
+                DispatchQueue.main.async {
+                    modal.dismiss()
                 }
             }
         )
+    }
+
+    private func clearHistoryWithSneakyTransaction(
+        threadSoftDeleteManager: any ThreadSoftDeleteManager
+    ) {
+        Logger.info("")
+
+        databaseStorage.write { transaction in
+            threadSoftDeleteManager.softDelete(
+                threads: TSThread.anyFetchAll(transaction: transaction),
+                sendDeleteForMeSyncMessage: true,
+                tx: transaction.asV2Write
+            )
+
+            StoryMessage.anyRemoveAllWithInstantiation(transaction: transaction)
+            TSAttachment.anyRemoveAllWithInstantiation(transaction: transaction)
+
+            // Deleting attachments above should be enough to remove any gallery items, but
+            // we redunantly clean up *all* gallery items to be safe.
+            MediaGalleryRecordManager.didRemoveAllContent(transaction: transaction)
+        }
+
+        TSAttachmentStream.deleteAttachmentsFromDisk()
     }
 }

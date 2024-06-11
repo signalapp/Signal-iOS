@@ -278,6 +278,16 @@ extension ChatListViewController {
             return
         }
 
+        DeleteForMeInfoSheetCoordinator.fromGlobals().coordinateDelete(
+            fromViewController: self
+        ) { [weak self] _, threadSoftDeleteManager in
+            self?.showDeleteAllActionSheet(
+                threadSoftDeleteManager: threadSoftDeleteManager
+            )
+        }
+    }
+
+    private func showDeleteAllActionSheet(threadSoftDeleteManager: any ThreadSoftDeleteManager) {
         let title: String
         let message: String
         let count = tableView.indexPathsForSelectedRows?.count ?? 0
@@ -306,7 +316,7 @@ extension ChatListViewController {
                 // change as we're deleting them.
                 self.databaseStorage.write { transaction in
                     self.performOnAllSelectedEntries { threadViewModels in
-                        DependenciesBridge.shared.threadSoftDeleteManager.softDelete(
+                        threadSoftDeleteManager.softDelete(
                             threads: threadViewModels.map { $0.threadRecord },
                             sendDeleteForMeSyncMessage: true,
                             tx: transaction.asV2Write

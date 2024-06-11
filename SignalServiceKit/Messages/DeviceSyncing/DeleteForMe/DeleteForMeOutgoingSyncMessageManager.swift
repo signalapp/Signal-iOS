@@ -58,9 +58,9 @@ public protocol DeleteForMeOutgoingSyncMessageManager {
     ) -> Outgoing.ThreadDeletionContext?
 }
 
-extension DeleteForMeOutgoingSyncMessageManager {
+extension DeleteForMeSyncMessage {
     /// Is sending a `DeleteForMe` sync message enabled at all?
-    func isSendingEnabled() -> Bool {
+    public static var isSendingEnabled: Bool {
         // [DeleteForMe] TODO: We can remove this 90d after release.
         return FeatureFlags.shouldSendDeleteForMeSyncMessages
             || RemoteConfig.shouldSendDeleteForMeSyncMessages
@@ -231,7 +231,7 @@ final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMe
         contents: DeleteForMeOutgoingSyncMessage.Contents,
         tx: any DBWriteTransaction
     ) {
-        guard isSendingEnabled() else {
+        guard DeleteForMeSyncMessage.isSendingEnabled else {
             logger.warn("Skipping delete-for-me sync message, feature not enabled!")
             return
         }

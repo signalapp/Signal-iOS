@@ -1862,6 +1862,8 @@
 		D9E7C8772B9A4A9C005BD3B9 /* CallRecord+Sorting.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E7C8762B9A4A9C005BD3B9 /* CallRecord+Sorting.swift */; };
 		D9E7C8792B9B9072005BD3B9 /* IdentifierIndexedArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E7C8782B9B9072005BD3B9 /* IdentifierIndexedArray.swift */; };
 		D9E8EDED2C0EAFE700923E3C /* DeleteForMeOutgoingSyncMessageManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E8EDEC2C0EAFE700923E3C /* DeleteForMeOutgoingSyncMessageManagerTest.swift */; };
+		D9E8EDF12C0FCB3000923E3C /* DeleteForMeSyncMessageInfoSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E8EDF02C0FCB3000923E3C /* DeleteForMeSyncMessageInfoSheet.swift */; };
+		D9E8EDF32C0FD8C800923E3C /* DeleteForMeInfoSheetCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E8EDF22C0FD8C800923E3C /* DeleteForMeInfoSheetCoordinator.swift */; };
 		D9EB221E2A4B636C00C73E1D /* Bitmaps+LineDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB22192A4B636B00C73E1D /* Bitmaps+LineDrawing.swift */; };
 		D9EB221F2A4B636C00C73E1D /* Bitmaps+Shapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221A2A4B636B00C73E1D /* Bitmaps+Shapes.swift */; };
 		D9EB22202A4B636C00C73E1D /* Bitmaps+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221B2A4B636B00C73E1D /* Bitmaps+Image.swift */; };
@@ -4803,6 +4805,8 @@
 		D9E7C8762B9A4A9C005BD3B9 /* CallRecord+Sorting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CallRecord+Sorting.swift"; sourceTree = "<group>"; };
 		D9E7C8782B9B9072005BD3B9 /* IdentifierIndexedArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentifierIndexedArray.swift; sourceTree = "<group>"; };
 		D9E8EDEC2C0EAFE700923E3C /* DeleteForMeOutgoingSyncMessageManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteForMeOutgoingSyncMessageManagerTest.swift; sourceTree = "<group>"; };
+		D9E8EDF02C0FCB3000923E3C /* DeleteForMeSyncMessageInfoSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteForMeSyncMessageInfoSheet.swift; sourceTree = "<group>"; };
+		D9E8EDF22C0FD8C800923E3C /* DeleteForMeInfoSheetCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeInfoSheetCoordinator.swift; sourceTree = "<group>"; };
 		D9EB22192A4B636B00C73E1D /* Bitmaps+LineDrawing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bitmaps+LineDrawing.swift"; sourceTree = "<group>"; };
 		D9EB221A2A4B636B00C73E1D /* Bitmaps+Shapes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bitmaps+Shapes.swift"; sourceTree = "<group>"; };
 		D9EB221B2A4B636B00C73E1D /* Bitmaps+Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bitmaps+Image.swift"; sourceTree = "<group>"; };
@@ -9308,6 +9312,7 @@
 				88D23D1323CEC0C700B0E74B /* Calls */,
 				50B6BCAF2AEC4F3B0010FB3B /* Contacts */,
 				3448BFC01EDF0EA7005B2D69 /* ConversationView */,
+				D9E8EDEF2C0FCB0600923E3C /* DeleteForMe */,
 				88C4E38124671F9D009C9B97 /* DeviceTransfer */,
 				3428576F26BD8777005A2A96 /* Emoji */,
 				50E7E1CC2BACBDE000A94861 /* Expiration */,
@@ -9810,6 +9815,15 @@
 				D990CACC2B4DCD69000A99A2 /* Util */,
 			);
 			path = Mocks;
+			sourceTree = "<group>";
+		};
+		D9E8EDEF2C0FCB0600923E3C /* DeleteForMe */ = {
+			isa = PBXGroup;
+			children = (
+				D9E8EDF22C0FD8C800923E3C /* DeleteForMeInfoSheetCoordinator.swift */,
+				D9E8EDF02C0FCB3000923E3C /* DeleteForMeSyncMessageInfoSheet.swift */,
+			);
+			path = DeleteForMe;
 			sourceTree = "<group>";
 		};
 		D9F399B72A9EA1EB001599EC /* Mocks */ = {
@@ -12958,6 +12972,8 @@
 				88DBDFB9263731C800C2101C /* DefaultDisappearingMessageTimerInteraction.swift in Sources */,
 				66B8B28028C94C0F005EAFE0 /* DelegatingContextMenuButton.swift in Sources */,
 				887B6DC925F6C3E900E677D4 /* DeleteAccountConfirmationViewController.swift in Sources */,
+				D9E8EDF32C0FD8C800923E3C /* DeleteForMeInfoSheetCoordinator.swift in Sources */,
+				D9E8EDF12C0FCB3000923E3C /* DeleteForMeSyncMessageInfoSheet.swift in Sources */,
 				3498AC892513896400B1F315 /* Dependencies+MainApp.swift in Sources */,
 				5011D1CD29400E7300064098 /* DeviceProvisioningURL.swift in Sources */,
 				887CD4772472FEA500FDD265 /* DeviceTransferOperation.swift in Sources */,

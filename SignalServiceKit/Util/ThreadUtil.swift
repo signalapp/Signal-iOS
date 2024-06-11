@@ -252,31 +252,6 @@ extension ThreadUtil {
     }
 }
 
-// MARK: - Delete all content
-
-extension ThreadUtil {
-    public static func deleteAllContentWithSneakyTransaction() {
-        Logger.info("")
-
-        databaseStorage.write { transaction in
-            DependenciesBridge.shared.threadSoftDeleteManager.softDelete(
-                threads: TSThread.anyFetchAll(transaction: transaction),
-                sendDeleteForMeSyncMessage: true,
-                tx: transaction.asV2Write
-            )
-
-            StoryMessage.anyRemoveAllWithInstantiation(transaction: transaction)
-            TSAttachment.anyRemoveAllWithInstantiation(transaction: transaction)
-
-            // Deleting attachments above should be enough to remove any gallery items, but
-            // we redunantly clean up *all* gallery items to be safe.
-            MediaGalleryRecordManager.didRemoveAllContent(transaction: transaction)
-        }
-
-        TSAttachmentStream.deleteAttachmentsFromDisk()
-    }
-}
-
 // MARK: - Sharing Suggestions
 
 import Intents

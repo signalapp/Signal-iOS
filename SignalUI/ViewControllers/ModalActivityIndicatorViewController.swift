@@ -9,6 +9,9 @@ import SignalServiceKit
 // A modal view that be used during blocking interactions (e.g. waiting on response from
 // service or on the completion of a long-running local operation).
 public class ModalActivityIndicatorViewController: OWSViewController {
+    public enum Constants {
+        public static let defaultPresentationDelay: TimeInterval = 0.05
+    }
 
     let canCancel: Bool
 
@@ -27,7 +30,6 @@ public class ModalActivityIndicatorViewController: OWSViewController {
 
     var wasDimissed: Bool = false
 
-    private static let kPresentationDelayDefault: TimeInterval = 0.05
     private let presentationDelay: TimeInterval
 
     // MARK: Initializers
@@ -47,21 +49,8 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     public class func present(
         fromViewController: UIViewController,
         canCancel: Bool,
-        backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void
-    ) {
-        present(
-            fromViewController: fromViewController,
-            canCancel: canCancel,
-            presentationDelay: kPresentationDelayDefault,
-            isInvisible: false,
-            backgroundBlock: backgroundBlock
-        )
-    }
-
-    public class func present(
-        fromViewController: UIViewController,
-        canCancel: Bool,
-        presentationDelay: TimeInterval,
+        presentationDelay: TimeInterval = Constants.defaultPresentationDelay,
+        backgroundBlockQueueQos: DispatchQoS = .default,
         backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void
     ) {
         present(
@@ -69,6 +58,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
             canCancel: canCancel,
             presentationDelay: presentationDelay,
             isInvisible: false,
+            backgroundBlockQueueQos: backgroundBlockQueueQos,
             backgroundBlock: backgroundBlock
         )
     }
@@ -80,17 +70,19 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         present(
             fromViewController: fromViewController,
             canCancel: false,
-            presentationDelay: kPresentationDelayDefault,
+            presentationDelay: Constants.defaultPresentationDelay,
             isInvisible: true,
+            backgroundBlockQueueQos: .default,
             backgroundBlock: backgroundBlock
         )
     }
 
-    public class func present(
+    private class func present(
         fromViewController: UIViewController,
         canCancel: Bool,
         presentationDelay: TimeInterval,
         isInvisible: Bool,
+        backgroundBlockQueueQos: DispatchQoS,
         backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void
     ) {
         AssertIsOnMainThread()
@@ -103,7 +95,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         // Present this modal _over_ the current view contents.
         view.modalPresentationStyle = .overFullScreen
         fromViewController.present(view, animated: false) {
-            DispatchQueue.global().async {
+            DispatchQueue.global(qos: backgroundBlockQueueQos.qosClass).async {
                 backgroundBlock(view)
             }
         }

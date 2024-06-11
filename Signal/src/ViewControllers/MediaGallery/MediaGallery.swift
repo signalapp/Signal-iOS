@@ -300,6 +300,8 @@ class MediaGallery: Dependencies {
     typealias Update = Sections.Update
     typealias Journal = [JournalingOrderedDictionaryChange<Sections.ItemChange>]
 
+    private let thread: TSThread
+
     // Used for filtering.
     private(set) var mediaFilter: AllMediaFilter
     private let mediaCategory: AllMediaCategory
@@ -324,6 +326,7 @@ class MediaGallery: Dependencies {
     }
 
     init(thread: TSThread, mediaCategory: AllMediaCategory, spoilerState: SpoilerRenderState) {
+        self.thread = thread
         mediaFilter = AllMediaFilter.defaultMediaType(for: mediaCategory)
         let finder = MediaGalleryResourceFinder(thread: thread, filter: mediaFilter)
         self.mediaGalleryFinder = finder
@@ -837,26 +840,22 @@ class MediaGallery: Dependencies {
                         return false
                     }()
                     if shouldDeleteMessage {
-                        // Refresh attachment list on the model, so deletion doesn't try to remove
-                        // them again. Also, this ensures we've fetched the latest message details
-                        // within this transaction.
+                        // Refresh attachment list on the message, so deletion doesn't try to remove
+                        // them again. We want to ensure we have the latest models within this transaction.
                         message.anyReload(transaction: tx)
+                        self.thread.anyReload(transaction: tx)
 
-                        if let thread = message.thread(tx: tx) {
-                            DependenciesBridge.shared.interactionDeleteManager.delete(
-                                message,
-                                sideEffects: .custom(
-                                    deleteForMeSyncMessage: .sendSyncMessage(interactionsThread: thread)
-                                ),
-                                tx: tx.asV2Write
-                            )
-                        } else {
-                            DependenciesBridge.shared.interactionDeleteManager.delete(
-                                message,
-                                sideEffects: .default(),
-                                tx: tx.asV2Write
-                            )
-                        }
+                        // Since we don't know until we're deep in the write
+                        // transaction whether we'll actually end up deleting an
+                        // interaction, we'll skip showing the one-time "delete
+                        // sync info sheet".
+                        DependenciesBridge.shared.interactionDeleteManager.delete(
+                            message,
+                            sideEffects: .custom(
+                                deleteForMeSyncMessage: .sendSyncMessage(interactionsThread: self.thread)
+                            ),
+                            tx: tx.asV2Write
+                        )
                     }
                 }
             } catch {

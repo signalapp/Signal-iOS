@@ -86,6 +86,11 @@ public enum InteractionDelete {
 /// delete call records alongside their associated interactions. This may seem
 /// counterintuitive, but avoids a circular dependency between interaction and
 /// call record deletion.
+///
+/// - SeeAlso
+/// If you're calling this type for a user-initiated deletion, consider using
+/// ``DeleteForMeInfoSheetCoordinator`` in the Signal target instead, which
+/// handles some one-time informational UX.
 public protocol InteractionDeleteManager {
     typealias SideEffects = InteractionDelete.SideEffects
 

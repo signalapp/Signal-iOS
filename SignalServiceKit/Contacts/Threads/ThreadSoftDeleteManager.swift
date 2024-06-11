@@ -7,6 +7,19 @@ import Intents
 import LibSignalClient
 import SignalCoreKit
 
+/// Responsible for "soft-deleting" threads, or removing their contents without
+/// removing the `TSThread` record itself. The app's architecture is to never\*
+/// delete the thread itself, but instead to delete all data associated with the
+/// thread, in case the thread is needed again later on.
+///
+/// \*Threads can be hard-deleted, but only in niche scenarios.
+///
+/// - SeeAlso ``ThreadRemover``.
+///
+/// - SeeAlso
+/// If you're calling this type for a user-initiated deletion, consider using
+/// ``DeleteForMeInfoSheetCoordinator`` in the Signal target instead, which
+/// handles some one-time informational UX.
 public protocol ThreadSoftDeleteManager {
     func softDelete(
         threads: [TSThread],
@@ -168,7 +181,7 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
                     )
 
                     let callDeleteBehavior: InteractionDelete.SideEffects.AssociatedCallDeleteBehavior = {
-                        if deleteForMeOutgoingSyncMessageManager.isSendingEnabled() {
+                        if DeleteForMeSyncMessage.isSendingEnabled {
                             /// If we're able to send a `DeleteForMe` sync
                             /// message, we don't need to send `CallEvent`s...
                             return .localDeleteOnly

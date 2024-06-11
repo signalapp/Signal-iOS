@@ -300,35 +300,67 @@ extension ConversationViewController {
             return
         }
 
-        let messageFormat = OWSLocalizedString("DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d", tableName: "PluralAware",
-                                              comment: "action sheet body. Embeds {{number of selected messages}} which will be deleted.")
-        let message = String.localizedStringWithFormat(messageFormat, selectionItems.count)
-        let alert = ActionSheetController(title: nil, message: message)
-        alert.addAction(OWSActionSheets.cancelAction)
+        DeleteForMeInfoSheetCoordinator.fromGlobals().coordinateDelete(
+            fromViewController: self
+        ) { interactionDeleteManager, _ in
+            self.presentDeleteSelectedMessagesActionSheet(
+                selectionItems: selectionItems,
+                interactionDeleteManager: interactionDeleteManager
+            )
+        }
+    }
 
-        let delete = ActionSheetAction(title: CommonStrings.deleteForMeButton, style: .destructive) { [weak self] _ in
+    private func presentDeleteSelectedMessagesActionSheet(
+        selectionItems: [CVSelectionItem],
+        interactionDeleteManager: InteractionDeleteManager
+    ) {
+        let deleteAction = ActionSheetAction(
+            title: CommonStrings.deleteForMeButton,
+            style: .destructive
+        ) { [weak self] _ in
             guard let self = self else { return }
-            ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { [weak self] modalActivityIndicator in
+
+            ModalActivityIndicatorViewController.present(
+                fromViewController: self,
+                canCancel: false
+            ) { [weak self] modalActivityIndicator in
                 guard let self = self else { return }
 
                 DispatchQueue.main.async {
                     Self.deleteSelectedItems(
                         selectionItems: selectionItems,
-                        thread: self.thread
+                        thread: self.thread,
+                        interactionDeleteManager: interactionDeleteManager
                     )
+
                     modalActivityIndicator.dismiss {
                         self.uiMode = .normal
                     }
                 }
             }
         }
-        alert.addAction(delete)
+
+        let alert = ActionSheetController(
+            title: nil,
+            message: String.localizedStringWithFormat(
+                OWSLocalizedString(
+                    "DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d",
+                    tableName: "PluralAware",
+                    comment: "action sheet body. Embeds {{number of selected messages}} which will be deleted."
+                ),
+                selectionItems.count
+            )
+        )
+        alert.addAction(OWSActionSheets.cancelAction)
+        alert.addAction(deleteAction)
+
         present(alert, animated: true)
     }
 
     private static func deleteSelectedItems(
         selectionItems: [CVSelectionItem],
-        thread: TSThread
+        thread: TSThread,
+        interactionDeleteManager: InteractionDeleteManager
     ) {
         databaseStorage.write { tx in
             var interactionsToDelete = [TSInteraction]()
@@ -351,7 +383,7 @@ extension ConversationViewController {
                 }
             }
 
-            DependenciesBridge.shared.interactionDeleteManager.delete(
+            interactionDeleteManager.delete(
                 interactions: interactionsToDelete,
                 sideEffects: .custom(
                     deleteForMeSyncMessage: .sendSyncMessage(interactionsThread: thread)
@@ -462,6 +494,20 @@ extension ConversationViewController {
     }
 
     func didTapDeleteAll() {
+        DeleteForMeInfoSheetCoordinator.fromGlobals().coordinateDelete(
+            fromViewController: self
+        ) { [weak self] _, threadSoftDeleteManager in
+            guard let self else { return }
+
+            self.presentDeleteAllConfirmationSheet(
+                threadSoftDeleteManager: threadSoftDeleteManager
+            )
+        }
+    }
+
+    private func presentDeleteAllConfirmationSheet(
+        threadSoftDeleteManager: any ThreadSoftDeleteManager
+    ) {
         let thread = self.thread
         let alert = ActionSheetController(title: nil, message: OWSLocalizedString("DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY", comment: "action sheet body"))
         alert.addAction(OWSActionSheets.cancelAction)
@@ -471,8 +517,11 @@ extension ConversationViewController {
             ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { [weak self] modalActivityIndicator in
                 guard let self = self else { return }
                 self.databaseStorage.write {
-                    DependenciesBridge.shared.threadSoftDeleteManager
-                        .removeAllInteractions(thread: thread, sendDeleteForMeSyncMessage: true, tx: $0.asV2Write)
+                    threadSoftDeleteManager.removeAllInteractions(
+                        thread: thread,
+                        sendDeleteForMeSyncMessage: true,
+                        tx: $0.asV2Write
+                    )
                 }
                 DispatchQueue.main.async {
                     modalActivityIndicator.dismiss { [weak self] in
