@@ -1098,6 +1098,7 @@
 		66E1ADA02B9155C200C56B7B /* AttachmentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD9F2B9155C200C56B7B /* AttachmentStore.swift */; };
 		66E3C8F62994634E00BB38ED /* RegistrationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E3C8F52994634E00BB38ED /* RegistrationCoordinator.swift */; };
 		66E793E52BC0D8A600929E5E /* MessageStickerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E793E42BC0D8A600929E5E /* MessageStickerManager.swift */; };
+		66E828592C13599800F91D06 /* OrphanedAttachmentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E828582C13599800F91D06 /* OrphanedAttachmentStore.swift */; };
 		66EA22872BC70B9A00A36B97 /* TSAttachmentDownloadManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EA22852BC70B9500A36B97 /* TSAttachmentDownloadManagerTest.swift */; };
 		66EB029B2BAB9F1C004F0580 /* ReferencedAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EB029A2BAB9F1C004F0580 /* ReferencedAttachment.swift */; };
 		66EB029D2BAB9F55004F0580 /* ReferencedTSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EB029C2BAB9F55004F0580 /* ReferencedTSResource.swift */; };
@@ -4023,6 +4024,7 @@
 		66E1AD9F2B9155C200C56B7B /* AttachmentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentStore.swift; sourceTree = "<group>"; };
 		66E3C8F52994634E00BB38ED /* RegistrationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinator.swift; sourceTree = "<group>"; };
 		66E793E42BC0D8A600929E5E /* MessageStickerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageStickerManager.swift; sourceTree = "<group>"; };
+		66E828582C13599800F91D06 /* OrphanedAttachmentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrphanedAttachmentStore.swift; sourceTree = "<group>"; };
 		66EA22852BC70B9500A36B97 /* TSAttachmentDownloadManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAttachmentDownloadManagerTest.swift; sourceTree = "<group>"; };
 		66EB029A2BAB9F1C004F0580 /* ReferencedAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferencedAttachment.swift; sourceTree = "<group>"; };
 		66EB029C2BAB9F55004F0580 /* ReferencedTSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferencedTSResource.swift; sourceTree = "<group>"; };
@@ -7727,6 +7729,7 @@
 			children = (
 				6689B23C2C064E82003D5B2F /* OrphanedAttachmentCleaner.swift */,
 				663D02DE2C069AB600350632 /* OrphanedAttachmentCleanerTest.swift */,
+				66E828582C13599800F91D06 /* OrphanedAttachmentStore.swift */,
 			);
 			path = OrphanedAttachments;
 			sourceTree = "<group>";
@@ -13982,6 +13985,7 @@
 				F9C5CE1E289453B400548EEE /* OrderedSet.swift in Sources */,
 				6689B23D2C064E82003D5B2F /* OrphanedAttachmentCleaner.swift in Sources */,
 				6689B23A2C055F7C003D5B2F /* OrphanedAttachmentRecord.swift in Sources */,
+				66E828592C13599800F91D06 /* OrphanedAttachmentStore.swift in Sources */,
 				F9C5CD9F289453B400548EEE /* OutageDetection.swift in Sources */,
 				502C69702B06CE9C00012867 /* OutgoingAttachmentInfo.swift in Sources */,
 				6640639E294D20A900997E0B /* OutgoingCallEventSyncMessage.swift in Sources */,
