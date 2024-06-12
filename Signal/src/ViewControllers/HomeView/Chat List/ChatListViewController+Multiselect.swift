@@ -140,7 +140,7 @@ extension ChatListViewController {
             readButton = UIBarButtonItem(title: CommonStrings.readAction, style: .plain, target: self, action: #selector(performRead))
             readButton.isEnabled = false
             for path in tableView.indexPathsForSelectedRows ?? [] {
-                if let thread = tableDataSource.threadViewModel(forIndexPath: path, expectsSuccess: false), thread.hasUnreadMessages {
+                if let thread = tableDataSource.threadViewModel(forIndexPath: path), thread.hasUnreadMessages {
                     readButton.isEnabled = true
                     break
                 }
@@ -155,7 +155,7 @@ extension ChatListViewController {
                 target: self,
                 action: #selector(performReadAll)
             )
-            readButton.isEnabled = hasUnreadEntry(threads: Array(renderState.pinnedThreads.orderedValues)) || hasUnreadEntry(threads: Array(renderState.unpinnedThreads))
+            readButton.isEnabled = hasUnreadEntry(threads: renderState.pinnedThreads) || hasUnreadEntry(threads: renderState.unpinnedThreads)
         }
 
         let deleteBtn = UIBarButtonItem(title: CommonStrings.deleteButton, style: .plain, target: self, action: #selector(performDelete))
@@ -254,7 +254,7 @@ extension ChatListViewController {
     @objc
     func performReadAll() {
         var threadViewModels: [ThreadViewModel] = []
-        var threads = Array(renderState.pinnedThreads.orderedValues)
+        var threads = renderState.pinnedThreads
         threads.append(contentsOf: renderState.unpinnedThreads)
         for t in threads {
             let threadViewModel = tableDataSource.threadViewModel(forThread: t)
@@ -340,10 +340,7 @@ extension ChatListViewController {
     }
 
     private func performOn(indexPaths: [IndexPath], action: ([ThreadViewModel]) -> Void) {
-        let threadViewModels: [ThreadViewModel] = indexPaths.compactMap { path -> ThreadViewModel? in
-            tableDataSource.threadViewModel(forIndexPath: path, expectsSuccess: false)
-        }
-
+        let threadViewModels = indexPaths.compactMap(tableDataSource.threadViewModel(forIndexPath:))
         performOn(threadViewModels: threadViewModels, action: action)
     }
 

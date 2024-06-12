@@ -111,8 +111,8 @@ public class ThreadFinder: Dependencies {
         let sql = """
             SELECT COUNT(*)
             FROM \(ThreadRecord.databaseTableName)
-            \(archivedJoin(isArchived: isArchived))
-            AND \(threadColumn: .shouldThreadBeVisible) = 1
+            \(threadAssociatedDataJoinClause(isArchived: isArchived, associatedDataAlias: "ad"))
+            WHERE \(threadColumn: .shouldThreadBeVisible) = 1
         """
 
         guard let count = try UInt.fetchOne(
@@ -134,8 +134,8 @@ public class ThreadFinder: Dependencies {
         let sql = """
             SELECT *
             FROM \(ThreadRecord.databaseTableName)
-            \(archivedJoin(isArchived: isArchived))
-            AND \(threadColumn: .shouldThreadBeVisible) = 1
+            \(threadAssociatedDataJoinClause(isArchived: isArchived, associatedDataAlias: "ad"))
+            WHERE \(threadColumn: .shouldThreadBeVisible) = 1
             ORDER BY \(threadColumn: .lastInteractionRowId) DESC
         """
 
@@ -156,14 +156,24 @@ public class ThreadFinder: Dependencies {
         }
     }
 
-    public func visibleThreadIds(
-        isArchived: Bool,
+    public func visibleInboxThreadIds(transaction: SDSAnyReadTransaction) throws -> [String] {
+        let sql = """
+            SELECT \(threadColumn: .uniqueId)
+            FROM \(ThreadRecord.databaseTableName)
+            \(threadAssociatedDataJoinClause(isArchived: false, associatedDataAlias: "ad"))
+            WHERE \(threadColumn: .shouldThreadBeVisible) = 1
+            ORDER BY \(threadColumn: .lastInteractionRowId) DESC
+            """
+        return try String.fetchAll(transaction.unwrapGrdbRead.database, sql: sql)
+    }
+
+    public func visibleArchivedThreadIds(
         transaction: SDSAnyReadTransaction
     ) throws -> [String] {
         let sql = """
             SELECT \(threadColumn: .uniqueId)
             FROM \(ThreadRecord.databaseTableName)
-            \(archivedJoin(isArchived: isArchived))
+            \(threadAssociatedDataJoinClause(isArchived: true, associatedDataAlias: "ad"))
             AND \(threadColumn: .shouldThreadBeVisible) = 1
             ORDER BY \(threadColumn: .lastInteractionRowId) DESC
         """
@@ -438,11 +448,13 @@ public class ThreadFinder: Dependencies {
         return threads
     }
 
-    private func archivedJoin(isArchived: Bool) -> String {
+    private func threadAssociatedDataJoinClause(isArchived: Bool, associatedDataAlias: String = "") -> String {
+        let aliasClause = associatedDataAlias.isEmpty ? "" : " AS \(associatedDataAlias)"
+        let aliasPrefix = associatedDataAlias.isEmpty ? "" : "\(associatedDataAlias)."
         return """
-            INNER JOIN \(ThreadAssociatedData.databaseTableName) AS ad
-                ON ad.threadUniqueId = \(threadColumn: .uniqueId)
-            WHERE ad.isArchived = \(isArchived ? "1" : "0")
-        """
+            INNER JOIN \(ThreadAssociatedData.databaseTableName)\(aliasClause)
+                ON \(aliasPrefix)threadUniqueId = \(threadColumnFullyQualified: .uniqueId)
+               AND \(aliasPrefix)isArchived = \(isArchived ? "1" : "0")
+            """
     }
 }

@@ -5,70 +5,48 @@
 
 import SignalServiceKit
 
-public class CLVRenderState {
-
+struct CLVRenderState {
     let viewInfo: CLVViewInfo
-
-    let pinnedThreads: OrderedDictionary<String, TSThread>
+    let pinnedThreads: [TSThread]
     let unpinnedThreads: [TSThread]
 
-    var archiveCount: UInt { viewInfo.archiveCount }
-    var inboxCount: UInt { viewInfo.inboxCount }
-
-    var visibleThreadCount: Int { pinnedThreads.count + unpinnedThreads.count }
-
-    var hasArchivedThreadsRow: Bool { viewInfo.hasArchivedThreadsRow }
-    var hasVisibleReminders: Bool { viewInfo.hasVisibleReminders }
-
-    // MARK: -
-
-    public init(viewInfo: CLVViewInfo,
-                pinnedThreads: OrderedDictionary<String, TSThread>,
-                unpinnedThreads: [TSThread]) {
-        self.viewInfo = viewInfo
-        self.pinnedThreads = pinnedThreads
-        self.unpinnedThreads = unpinnedThreads
+    var archiveCount: UInt {
+        viewInfo.archiveCount
     }
 
-    public static var empty: CLVRenderState {
-        CLVRenderState(viewInfo: .empty,
-                      pinnedThreads: OrderedDictionary(),
-                      unpinnedThreads: [])
+    var inboxCount: UInt {
+        viewInfo.inboxCount
     }
 
-    public var hasPinnedAndUnpinnedThreads: Bool {
+    var visibleThreadCount: Int {
+        pinnedThreads.count + unpinnedThreads.count
+    }
+
+    var hasArchivedThreadsRow: Bool {
+        viewInfo.hasArchivedThreadsRow
+    }
+
+    var hasVisibleReminders: Bool {
+        viewInfo.hasVisibleReminders
+    }
+
+    static var empty: CLVRenderState {
+        CLVRenderState(viewInfo: .empty, pinnedThreads: [], unpinnedThreads: [])
+    }
+
+    var hasPinnedAndUnpinnedThreads: Bool {
         !pinnedThreads.isEmpty && !unpinnedThreads.isEmpty
     }
 
-    func thread(forIndexPath indexPath: IndexPath, expectsSuccess: Bool = true) -> TSThread? {
-        guard let section = ChatListSection(rawValue: indexPath.section) else {
-            if expectsSuccess {
-                owsFailDebug("Invalid section: \(indexPath.section).")
-            }
-            return nil
-        }
+    func thread(forIndexPath indexPath: IndexPath) -> TSThread? {
+        let section = ChatListSection(rawValue: indexPath.section)!
 
         switch section {
         case .pinned:
-            guard let thread = pinnedThreads[safe: indexPath.row]?.value else {
-                if expectsSuccess {
-                    owsFailDebug("No thread for index path: \(indexPath)")
-                }
-                return nil
-            }
-            return thread
+            return pinnedThreads[indexPath.row]
         case .unpinned:
-            guard let thread = unpinnedThreads[safe: indexPath.row] else {
-                if expectsSuccess {
-                    owsFailDebug("No thread for index path: \(indexPath)")
-                }
-                return nil
-            }
-            return thread
+            return unpinnedThreads[indexPath.row]
         default:
-            if expectsSuccess {
-                owsFailDebug("Invalid index path: \(indexPath).")
-            }
             return nil
         }
     }
@@ -76,7 +54,7 @@ public class CLVRenderState {
     func indexPath(forUniqueId uniqueId: String) -> IndexPath? {
         if let index = (unpinnedThreads.firstIndex { $0.uniqueId == uniqueId}) {
             return IndexPath(item: index, section: ChatListSection.unpinned.rawValue)
-        } else if let index = (pinnedThreads.orderedKeys.firstIndex { $0 == uniqueId}) {
+        } else if let index = pinnedThreads.firstIndex(where: { $0.uniqueId == uniqueId }) {
             return IndexPath(item: index, section: ChatListSection.pinned.rawValue)
         } else {
             return nil
@@ -85,14 +63,14 @@ public class CLVRenderState {
 
     func indexPath(afterThread thread: TSThread?) -> IndexPath? {
         let isPinnedThread: Bool
-        if let thread = thread, pinnedThreads.orderedKeys.contains(thread.uniqueId) {
+        if let thread = thread, pinnedThreads.contains(where: { $0.uniqueId == thread.uniqueId }) {
             isPinnedThread = true
         } else {
             isPinnedThread = false
         }
 
         let section: ChatListSection = isPinnedThread ? .pinned : .unpinned
-        let threadsInSection = isPinnedThread ? pinnedThreads.orderedValues : unpinnedThreads
+        let threadsInSection = isPinnedThread ? pinnedThreads : unpinnedThreads
 
         guard !threadsInSection.isEmpty else { return nil }
 
@@ -112,14 +90,14 @@ public class CLVRenderState {
 
     func indexPath(beforeThread thread: TSThread?) -> IndexPath? {
         let isPinnedThread: Bool
-        if let thread = thread, pinnedThreads.orderedKeys.contains(thread.uniqueId) {
+        if let thread = thread, pinnedThreads.contains(where: { $0.uniqueId == thread.uniqueId }) {
             isPinnedThread = true
         } else {
             isPinnedThread = false
         }
 
         let section: ChatListSection = isPinnedThread ? .pinned : .unpinned
-        let threadsInSection = isPinnedThread ? pinnedThreads.orderedValues : unpinnedThreads
+        let threadsInSection = isPinnedThread ? pinnedThreads : unpinnedThreads
 
         guard !threadsInSection.isEmpty else { return nil }
 
@@ -140,7 +118,7 @@ public class CLVRenderState {
 
 // MARK: -
 
-public struct CLVViewInfo: Equatable {
+struct CLVViewInfo: Equatable {
     let chatListMode: ChatListMode
     let archiveCount: UInt
     let inboxCount: UInt
@@ -148,26 +126,32 @@ public struct CLVViewInfo: Equatable {
     let hasVisibleReminders: Bool
 
     static var empty: CLVViewInfo {
-        CLVViewInfo(chatListMode: .inbox,
-                   archiveCount: 0,
-                   inboxCount: 0,
-                   hasArchivedThreadsRow: false,
-                   hasVisibleReminders: false)
+        CLVViewInfo(
+            chatListMode: .inbox,
+            archiveCount: 0,
+            inboxCount: 0,
+            hasArchivedThreadsRow: false,
+            hasVisibleReminders: false
+        )
     }
 
-    static func build(chatListMode: ChatListMode,
-                      hasVisibleReminders: Bool,
-                      transaction: SDSAnyReadTransaction) -> CLVViewInfo {
+    static func build(
+        chatListMode: ChatListMode,
+        hasVisibleReminders: Bool,
+        transaction: SDSAnyReadTransaction
+    ) -> CLVViewInfo {
         do {
             let threadFinder = ThreadFinder()
             let archiveCount = try threadFinder.visibleThreadCount(isArchived: true, transaction: transaction)
             let inboxCount = try threadFinder.visibleThreadCount(isArchived: false, transaction: transaction)
             let hasArchivedThreadsRow = (chatListMode == .inbox && archiveCount > 0)
-            return CLVViewInfo(chatListMode: chatListMode,
-                              archiveCount: archiveCount,
-                               inboxCount: inboxCount,
-                               hasArchivedThreadsRow: hasArchivedThreadsRow,
-                               hasVisibleReminders: hasVisibleReminders)
+            return CLVViewInfo(
+                chatListMode: chatListMode,
+                archiveCount: archiveCount,
+                inboxCount: inboxCount,
+                hasArchivedThreadsRow: hasArchivedThreadsRow,
+                hasVisibleReminders: hasVisibleReminders
+            )
         } catch {
             owsFailDebug("Error: \(error)")
             return .empty

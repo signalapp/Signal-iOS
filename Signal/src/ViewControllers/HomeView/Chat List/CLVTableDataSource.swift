@@ -7,7 +7,6 @@ import SignalServiceKit
 import SignalUI
 
 class CLVTableDataSource: NSObject {
-
     private var viewState: CLVViewState!
 
     let tableView = CLVTableView()
@@ -71,15 +70,12 @@ class CLVTableDataSource: NSObject {
         return threadViewModel
     }
 
-    func threadViewModel(forIndexPath indexPath: IndexPath, expectsSuccess: Bool = true) -> ThreadViewModel? {
-        guard let thread = thread(forIndexPath: indexPath, expectsSuccess: expectsSuccess) else {
-            return nil
-        }
-        return threadViewModel(forThread: thread)
+    func threadViewModel(forIndexPath indexPath: IndexPath) -> ThreadViewModel? {
+        thread(forIndexPath: indexPath).map(threadViewModel(forThread:))
     }
 
-    func thread(forIndexPath indexPath: IndexPath, expectsSuccess: Bool = true) -> TSThread? {
-        renderState.thread(forIndexPath: indexPath, expectsSuccess: expectsSuccess)
+    func thread(forIndexPath indexPath: IndexPath) -> TSThread? {
+        renderState.thread(forIndexPath: indexPath)
     }
 
     private func preloadCellsIfNecessary() {

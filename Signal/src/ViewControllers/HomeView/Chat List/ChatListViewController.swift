@@ -410,7 +410,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         var selectedThreadIds: Set<String> = []
         for indexPath in tableView.indexPathsForSelectedRows ?? [] {
-            if let key = tableDataSource.thread(forIndexPath: indexPath, expectsSuccess: false)?.uniqueId {
+            if let key = tableDataSource.thread(forIndexPath: indexPath)?.uniqueId {
                 selectedThreadIds.insert(key)
             }
         }
@@ -422,7 +422,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             for section in 0..<tableDataSource.numberOfSections(in: tableView) {
                 for row in 0..<tableDataSource.tableView(tableView, numberOfRowsInSection: section) {
                     let indexPath = IndexPath(row: row, section: section)
-                    if let key = tableDataSource.thread(forIndexPath: indexPath, expectsSuccess: false)?.uniqueId, threadIdsToBeSelected.contains(key) {
+                    if let key = tableDataSource.thread(forIndexPath: indexPath)?.uniqueId, threadIdsToBeSelected.contains(key) {
                         tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
                         threadIdsToBeSelected.remove(key)
                         if threadIdsToBeSelected.isEmpty {
