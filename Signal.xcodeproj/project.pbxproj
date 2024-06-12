@@ -727,7 +727,7 @@
 		6605D5032A86D305004DC345 /* indeterminate_spinner_white.json in Resources */ = {isa = PBXBuildFile; fileRef = 6605D5022A86D305004DC345 /* indeterminate_spinner_white.json */; };
 		6605D5052A86EE50004DC345 /* MessageRecipientStatusUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6605D5042A86EE50004DC345 /* MessageRecipientStatusUtils.swift */; };
 		66076B4C2BC053290043D547 /* LinkPreviewBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66076B4B2BC053290043D547 /* LinkPreviewBuilder.swift */; };
-		66076B4E2BC056980043D547 /* LinkPreviewAttachmentBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66076B4D2BC056980043D547 /* LinkPreviewAttachmentBuilder.swift */; };
+		66076B4E2BC056980043D547 /* LinkPreviewBuilderImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66076B4D2BC056980043D547 /* LinkPreviewBuilderImpl.swift */; };
 		66076B512BC05C480043D547 /* LinkPreviewTSResourceBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66076B502BC05C480043D547 /* LinkPreviewTSResourceBuilder.swift */; };
 		66076B532BC05F700043D547 /* LinkPreviewTSAttachmentBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66076B522BC05F700043D547 /* LinkPreviewTSAttachmentBuilder.swift */; };
 		66076B5C2BC06CA70043D547 /* EditManagerAttachmentsShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66076B582BC06CA70043D547 /* EditManagerAttachmentsShims.swift */; };
@@ -3643,7 +3643,7 @@
 		6605D5022A86D305004DC345 /* indeterminate_spinner_white.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = indeterminate_spinner_white.json; sourceTree = "<group>"; };
 		6605D5042A86EE50004DC345 /* MessageRecipientStatusUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRecipientStatusUtils.swift; sourceTree = "<group>"; };
 		66076B4B2BC053290043D547 /* LinkPreviewBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewBuilder.swift; sourceTree = "<group>"; };
-		66076B4D2BC056980043D547 /* LinkPreviewAttachmentBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewAttachmentBuilder.swift; sourceTree = "<group>"; };
+		66076B4D2BC056980043D547 /* LinkPreviewBuilderImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewBuilderImpl.swift; sourceTree = "<group>"; };
 		66076B502BC05C480043D547 /* LinkPreviewTSResourceBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewTSResourceBuilder.swift; sourceTree = "<group>"; };
 		66076B522BC05F700043D547 /* LinkPreviewTSAttachmentBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewTSAttachmentBuilder.swift; sourceTree = "<group>"; };
 		66076B582BC06CA70043D547 /* EditManagerAttachmentsShims.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditManagerAttachmentsShims.swift; sourceTree = "<group>"; };
@@ -7185,8 +7185,8 @@
 			isa = PBXGroup;
 			children = (
 				66076B4F2BC05C390043D547 /* TSResource */,
-				66076B4D2BC056980043D547 /* LinkPreviewAttachmentBuilder.swift */,
 				66076B4B2BC053290043D547 /* LinkPreviewBuilder.swift */,
+				66076B4D2BC056980043D547 /* LinkPreviewBuilderImpl.swift */,
 			);
 			path = Attachments;
 			sourceTree = "<group>";
@@ -13815,8 +13815,8 @@
 				F9C5CD4E289453B300548EEE /* LegacySessionState.m in Sources */,
 				66144B342BF7FB9F00E2C9CD /* LegacyWallpaperImageStore.swift in Sources */,
 				D9F399B22A96D65D001599EC /* LinkedDevicePniKeyManager.swift in Sources */,
-				66076B4E2BC056980043D547 /* LinkPreviewAttachmentBuilder.swift in Sources */,
 				66076B4C2BC053290043D547 /* LinkPreviewBuilder.swift in Sources */,
+				66076B4E2BC056980043D547 /* LinkPreviewBuilderImpl.swift in Sources */,
 				6600BB212BA3BC540005A035 /* LinkPreviewHelper.swift in Sources */,
 				6600BB182BA3A04C0005A035 /* LinkPreviewManager.swift in Sources */,
 				6600BB1F2BA3AD350005A035 /* LinkPreviewManagerImpl+Shims.swift in Sources */,

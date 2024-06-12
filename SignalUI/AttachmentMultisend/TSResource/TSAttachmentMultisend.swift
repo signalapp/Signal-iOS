@@ -189,14 +189,17 @@ public class TSAttachmentMultisend: Dependencies {
         to conversations: [ConversationItem]
     ) -> AttachmentMultisend.Result {
         let preparedPromise = firstly(on: ThreadUtil.enqueueSendQueue) { () -> PreparedMultisend in
-            try self.prepareForSending(conversations: conversations, textAttachment: textAttachment)
+            try self.prepareForSending(
+                conversations: conversations,
+                textAttachment: textAttachment.validateAndPrepareForSending()
+            )
         }
         return sendAttachment(preparedSend: preparedPromise)
     }
 
     private class func prepareForSending(
         conversations: [ConversationItem],
-        textAttachment: UnsentTextAttachment
+        textAttachment: UnsentTextAttachment.ForSending
     ) throws -> PreparedMultisend {
 
         let state = MultisendState(approvalMessageBody: nil)
@@ -254,7 +257,7 @@ public class TSAttachmentMultisend: Dependencies {
     // MARK: - Helpers
 
     private class func validateLinkPreviewAndBuildUnownedTextAttachment(
-        _ textAttachment: UnsentTextAttachment,
+        _ textAttachment: UnsentTextAttachment.ForSending,
         transaction: SDSAnyWriteTransaction
     ) -> (TextAttachment, imageAttachmentUniqueId: String?)? {
         var validatedLinkPreview: OWSLinkPreview?
@@ -266,7 +269,7 @@ public class TSAttachmentMultisend: Dependencies {
                     transaction: transaction
                 )
             } catch LinkPreviewError.featureDisabled {
-                validatedLinkPreview = .withoutImage(urlString: linkPreview.urlString)
+                validatedLinkPreview = .withoutImage(urlString: linkPreview.metadata.urlString)
             } catch {
                 Logger.error("Failed to generate link preview.")
             }
@@ -287,7 +290,7 @@ public class TSAttachmentMultisend: Dependencies {
     }
 
     private class func buildValidatedUnownedLinkPreview(
-        fromInfo info: OWSLinkPreviewDraft,
+        fromInfo info: LinkPreviewTSResourceDataSource,
         transaction: SDSAnyWriteTransaction
     ) throws -> (OWSLinkPreview, attachmentUniqueId: String?) {
         guard SSKPreferences.areLinkPreviewsEnabled(transaction: transaction) else {
@@ -296,16 +299,8 @@ public class TSAttachmentMultisend: Dependencies {
         let attachmentUniqueId: String?
         do {
             if
-                let imageData = info.imageData,
-                let imageMimeType = info.imageMimeType
+                let attachmentDataSource = info.imageLegacyDataSource
             {
-                let attachmentDataSource = TSAttachmentDataSource(
-                    mimeType: imageMimeType,
-                    caption: nil,
-                    renderingFlag: .default,
-                    sourceFilename: nil,
-                    dataSource: .data(imageData)
-                )
                 attachmentUniqueId = try TSAttachmentManager().createAttachmentStream(
                     from: attachmentDataSource,
                     tx: transaction
@@ -319,13 +314,13 @@ public class TSAttachmentMultisend: Dependencies {
         }
         let linkPreview = attachmentUniqueId.map {
             OWSLinkPreview.withLegacyImageAttachment(
-                urlString: info.urlString,
-                title: info.title,
+                urlString: info.metadata.urlString,
+                title: info.metadata.title,
                 attachmentId: $0
             )
-        } ?? OWSLinkPreview.withoutImage(urlString: info.urlString, title: info.title)
-        linkPreview.previewDescription = info.previewDescription
-        linkPreview.date = info.date
+        } ?? OWSLinkPreview.withoutImage(urlString: info.metadata.urlString, title: info.metadata.title)
+        linkPreview.previewDescription = info.metadata.previewDescription
+        linkPreview.date = info.metadata.date
         return (linkPreview, attachmentUniqueId: attachmentUniqueId)
     }
 
@@ -385,7 +380,7 @@ class Identified<T> {
 
 enum MultisendContent {
     case media([Identified<SignalAttachment>])
-    case text(Identified<UnsentTextAttachment>)
+    case text(Identified<UnsentTextAttachment.ForSending>)
 }
 
 class MultisendDestination: NSObject {

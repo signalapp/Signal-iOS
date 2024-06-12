@@ -34,42 +34,96 @@ public struct UnsentTextAttachment {
         self.linkPreviewDraft = linkPreviewDraft
     }
 
-    public func validateLinkPreviewAndBuildTextAttachment(
-        transaction: SDSAnyWriteTransaction
-    ) -> OwnedAttachmentBuilder<TextAttachment>? {
-        var validatedLinkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>?
+    public func validateAndPrepareForSending() throws -> ForSending {
+        let validatedLinkPreview: LinkPreviewTSResourceDataSource?
         if let linkPreview = linkPreviewDraft {
             do {
-                validatedLinkPreviewBuilder = try DependenciesBridge.shared.linkPreviewManager.validateAndBuildLinkPreview(
-                    from: linkPreview,
-                    tx: transaction.asV2Write
+                validatedLinkPreview = try DependenciesBridge.shared.linkPreviewManager.buildDataSource(
+                    from: linkPreview
                 )
             } catch LinkPreviewError.featureDisabled {
-                validatedLinkPreviewBuilder = .withoutFinalizer(.withoutImage(urlString: linkPreview.urlString))
+                validatedLinkPreview = .init(
+                    metadata: .init(
+                        urlString: linkPreview.urlString,
+                        title: nil,
+                        previewDescription: nil,
+                        date: nil
+                    ),
+                    imageV2DataSource: nil,
+                    imageLegacyDataSource: nil
+                )
             } catch {
                 Logger.error("Failed to generate link preview.")
+                validatedLinkPreview = nil
             }
-        }
-
-        guard validatedLinkPreviewBuilder != nil || !(body?.isEmpty ?? true) else {
-            owsFailDebug("Empty content")
-            return nil
-        }
-
-        func buildTextAttachment(linkPreview: OWSLinkPreview?) -> TextAttachment {
-            return TextAttachment(
-                body: body,
-                textStyle: textStyle,
-                textForegroundColor: textForegroundColor,
-                textBackgroundColor: textBackgroundColor,
-                background: background,
-                linkPreview: linkPreview
-            )
-        }
-        if let validatedLinkPreviewBuilder {
-            return validatedLinkPreviewBuilder.wrap(buildTextAttachment(linkPreview:))
         } else {
-            return .withoutFinalizer(buildTextAttachment(linkPreview: nil))
+            validatedLinkPreview = nil
+        }
+
+        guard validatedLinkPreview != nil || !(body?.isEmpty ?? true) else {
+            throw OWSAssertionError("Empty content")
+        }
+
+        return .init(
+            body: self.body,
+            textStyle: self.textStyle,
+            textForegroundColor: self.textForegroundColor,
+            textBackgroundColor: self.textBackgroundColor,
+            background: self.background,
+            linkPreviewDraft: validatedLinkPreview
+        )
+    }
+
+    public struct ForSending {
+        public let body: StyleOnlyMessageBody?
+        public let textStyle: TextAttachment.TextStyle
+        public let textForegroundColor: UIColor
+        public let textBackgroundColor: UIColor?
+        public let background: TextAttachment.Background
+
+        public let linkPreviewDraft: LinkPreviewTSResourceDataSource?
+
+        public var textContent: TextAttachment.TextContent {
+            return TextAttachment.textContent(body: body, textStyle: textStyle)
+        }
+
+        public func buildTextAttachment(
+            transaction: SDSAnyWriteTransaction
+        ) -> OwnedAttachmentBuilder<TextAttachment>? {
+            var linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>?
+            if let linkPreview = linkPreviewDraft {
+                do {
+                    linkPreviewBuilder = try DependenciesBridge.shared.linkPreviewManager.buildLinkPreview(
+                        from: linkPreview,
+                        tx: transaction.asV2Write
+                    )
+                } catch LinkPreviewError.featureDisabled {
+                    linkPreviewBuilder = .withoutFinalizer(.withoutImage(urlString: linkPreview.metadata.urlString))
+                } catch {
+                    Logger.error("Failed to generate link preview.")
+                }
+            }
+
+            guard linkPreviewBuilder != nil || !(body?.isEmpty ?? true) else {
+                owsFailDebug("Empty content")
+                return nil
+            }
+
+            func buildTextAttachment(linkPreview: OWSLinkPreview?) -> TextAttachment {
+                return TextAttachment(
+                    body: body,
+                    textStyle: textStyle,
+                    textForegroundColor: textForegroundColor,
+                    textBackgroundColor: textBackgroundColor,
+                    background: background,
+                    linkPreview: linkPreview
+                )
+            }
+            if let linkPreviewBuilder {
+                return linkPreviewBuilder.wrap(buildTextAttachment(linkPreview:))
+            } else {
+                return .withoutFinalizer(buildTextAttachment(linkPreview: nil))
+            }
         }
     }
 }

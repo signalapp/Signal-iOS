@@ -228,6 +228,16 @@ extension SharingThreadPickerViewController {
             guard let messageBody, !messageBody.text.isEmpty else {
                 return .failure(.init(outgoingMessages: [], error: OWSAssertionError("Missing body.")))
             }
+
+            let linkPreviewDataSource: LinkPreviewTSResourceDataSource?
+            if let linkPreviewDraft {
+                linkPreviewDataSource = try? DependenciesBridge.shared.linkPreviewManager.buildDataSource(
+                    from: linkPreviewDraft
+                )
+            } else {
+                linkPreviewDataSource = nil
+            }
+
             return await self.sendToOutgoingMessageThreads(
                 selectedConversations: selectedConversations,
                 messageBlock: { thread, tx in
@@ -235,7 +245,7 @@ extension SharingThreadPickerViewController {
                         thread: thread,
                         messageBody: messageBody,
                         quotedReplyDraft: nil,
-                        linkPreviewDraft: linkPreviewDraft,
+                        linkPreviewDataSource: linkPreviewDataSource,
                         transaction: tx
                     )
                     return try unpreparedMessage.prepare(tx: tx)

@@ -23,16 +23,26 @@ extension ThreadUtil {
 
         let benchEventId = sendMessageBenchEventStart(messageTimestamp: messageTimestamp)
         self.enqueueSendQueue.async {
-            let unpreparedMessage = Self.databaseStorage.read { readTransaction in
-                UnpreparedOutgoingMessage.build(
-                    thread: thread,
-                    timestamp: messageTimestamp,
-                    messageBody: messageBody,
-                    mediaAttachments: mediaAttachments,
-                    quotedReplyDraft: quotedReplyDraft,
-                    linkPreviewDraft: linkPreviewDraft,
-                    transaction: readTransaction
-                )
+            let unpreparedMessage: UnpreparedOutgoingMessage
+            do {
+                let linkPreviewDataSource = try linkPreviewDraft.map {
+                    try DependenciesBridge.shared.linkPreviewManager.buildDataSource(from: $0)
+                }
+
+                unpreparedMessage = Self.databaseStorage.read { readTransaction in
+                    UnpreparedOutgoingMessage.build(
+                        thread: thread,
+                        timestamp: messageTimestamp,
+                        messageBody: messageBody,
+                        mediaAttachments: mediaAttachments,
+                        quotedReplyDraft: quotedReplyDraft,
+                        linkPreviewDataSource: linkPreviewDataSource,
+                        transaction: readTransaction
+                    )
+                }
+            } catch {
+                owsFailDebug("Failed to build message")
+                return
             }
 
             Self.enqueueMessageSync(
@@ -58,14 +68,24 @@ extension ThreadUtil {
 
         let benchEventId = sendMessageBenchEventStart(messageTimestamp: messageTimestamp)
         self.enqueueSendQueue.async {
-            let unpreparedMessage = UnpreparedOutgoingMessage.buildForEdit(
-                thread: thread,
-                timestamp: messageTimestamp,
-                messageBody: messageBody,
-                quotedReplyEdit: quotedReplyEdit,
-                linkPreviewDraft: linkPreviewDraft,
-                editTarget: editTarget
-            )
+            let unpreparedMessage: UnpreparedOutgoingMessage
+            do {
+                let linkPreviewDataSource = try linkPreviewDraft.map {
+                    try DependenciesBridge.shared.linkPreviewManager.buildDataSource(from: $0)
+                }
+
+                unpreparedMessage = UnpreparedOutgoingMessage.buildForEdit(
+                    thread: thread,
+                    timestamp: messageTimestamp,
+                    messageBody: messageBody,
+                    quotedReplyEdit: quotedReplyEdit,
+                    linkPreviewDataSource: linkPreviewDataSource,
+                    editTarget: editTarget
+                )
+            } catch {
+                owsFailDebug("Failed to build message")
+                return
+            }
 
             Self.enqueueMessageSync(
                 unpreparedMessage,
@@ -151,7 +171,7 @@ extension UnpreparedOutgoingMessage {
         messageBody: MessageBody?,
         mediaAttachments: [SignalAttachment] = [],
         quotedReplyDraft: DraftQuotedReplyModel?,
-        linkPreviewDraft: OWSLinkPreviewDraft?,
+        linkPreviewDataSource: LinkPreviewTSResourceDataSource?,
         transaction: SDSAnyReadTransaction
     ) -> UnpreparedOutgoingMessage {
 
@@ -197,7 +217,7 @@ extension UnpreparedOutgoingMessage {
             message,
             unsavedBodyMediaAttachments: attachmentInfos,
             oversizeTextDataSource: oversizeTextDataSource,
-            linkPreviewDraft: linkPreviewDraft,
+            linkPreviewDraft: linkPreviewDataSource,
             quotedReplyDraft: quotedReplyDraft
         )
         return unpreparedMessage
@@ -208,7 +228,7 @@ extension UnpreparedOutgoingMessage {
         timestamp: UInt64,
         messageBody: MessageBody?,
         quotedReplyEdit: MessageEdits.Edit<Void>,
-        linkPreviewDraft: OWSLinkPreviewDraft?,
+        linkPreviewDataSource: LinkPreviewTSResourceDataSource?,
         editTarget: TSOutgoingMessage
     ) -> UnpreparedOutgoingMessage {
 
@@ -224,7 +244,7 @@ extension UnpreparedOutgoingMessage {
             targetMessage: editTarget,
             edits: edits,
             oversizeTextDataSource: oversizeTextDataSource,
-            linkPreviewDraft: linkPreviewDraft,
+            linkPreviewDraft: linkPreviewDataSource,
             quotedReplyEdit: quotedReplyEdit
         )
         return unpreparedMessage

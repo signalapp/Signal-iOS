@@ -92,6 +92,9 @@ public class AttachmentMultisend {
         let (enqueuedPromise, enqueuedFuture) = Promise<[TSThread]>.pending()
 
         let sentPromise = Promise<[TSThread]>.wrapAsync {
+            // Prepare the text attachment
+            let textAttachment = try textAttachment.validateAndPrepareForSending()
+
             let threads: [TSThread]
             let preparedMessages: [PreparedOutgoingMessage]
             let sendPromises: [Promise<Void>]
@@ -260,7 +263,7 @@ public class AttachmentMultisend {
 
     private class func prepareForSending(
         conversations: [ConversationItem],
-        _ textAttachment: UnsentTextAttachment,
+        _ textAttachment: UnsentTextAttachment.ForSending,
         tx: SDSAnyWriteTransaction
     ) throws -> ([TSThread], [PreparedOutgoingMessage]) {
         let storyMessageBuilder = try storyMessageBuilder(textAttachment: textAttachment, tx: tx)
@@ -339,7 +342,7 @@ public class AttachmentMultisend {
             messageBody: messageBody,
             mediaAttachments: attachments,
             quotedReplyDraft: nil,
-            linkPreviewDraft: nil,
+            linkPreviewDataSource: nil,
             transaction: tx
         )
         return try unpreparedMessage.prepare(tx: tx)
@@ -537,7 +540,7 @@ public class AttachmentMultisend {
     }
 
     private class func storyMessageBuilder(
-        textAttachment: UnsentTextAttachment,
+        textAttachment: UnsentTextAttachment.ForSending,
         tx: SDSAnyWriteTransaction
     ) throws -> StoryMessageBuilder {
         guard let localAci = deps.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci else {
@@ -545,7 +548,7 @@ public class AttachmentMultisend {
         }
         guard
             let textAttachmentBuilder = textAttachment
-                .validateLinkPreviewAndBuildTextAttachment(transaction: tx)?
+                .buildTextAttachment(transaction: tx)?
                 .wrap({ StoryMessageAttachment.text($0) })
         else {
             throw OWSAssertionError("Invalid text attachment")

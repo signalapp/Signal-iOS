@@ -9,14 +9,12 @@ public protocol LinkPreviewBuilder {
 
     associatedtype DataSource
 
-    static func buildAttachmentDataSource(
-        data: Data,
-        mimeType: String
-    ) -> DataSource
+    func buildDataSource(
+        _ draft: OWSLinkPreviewDraft
+    ) throws -> DataSource
 
     func createLinkPreview(
         from dataSource: DataSource,
-        metadata: OWSLinkPreview.Metadata,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview>
 

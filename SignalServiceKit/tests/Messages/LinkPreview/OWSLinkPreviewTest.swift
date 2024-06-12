@@ -34,6 +34,7 @@ class OWSLinkPreviewTest: SSKBaseTest {
         linkPreviewManager = LinkPreviewManagerImpl(
             attachmentManager: TSResourceManagerMock(),
             attachmentStore: TSResourceStoreMock(),
+            attachmentValidator: AttachmentContentValidatorMock(),
             db: mockDB,
             groupsV2: LinkPreviewManagerImpl.Wrappers.GroupsV2(MockGroupsV2()),
             sskPreferences: MockSSKPreferences()

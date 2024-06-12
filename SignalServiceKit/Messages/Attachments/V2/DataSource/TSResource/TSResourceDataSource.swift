@@ -236,3 +236,24 @@ extension AttachmentDataSource {
         )
     }
 }
+
+extension TSAttachmentDataSource {
+    public var tsDataSource: TSResourceDataSource {
+        return .init(
+            mimeType: mimeType,
+            caption: caption,
+            renderingFlag: renderingFlag,
+            sourceFilename: sourceFilename,
+            dataSource: {
+                switch dataSource {
+                case .dataSource(let dataSource, let shouldCopy):
+                    return .dataSource(dataSource, shouldCopy: shouldCopy)
+                case .data(let data):
+                    return .data(data)
+                case .existingAttachment(let uniqueId):
+                    return .existingAttachment(.legacy(uniqueId: uniqueId))
+                }
+            }()
+        )
+    }
+}

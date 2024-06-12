@@ -9,6 +9,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
 
     private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore
+    private let attachmentValidator: AttachmentContentValidator
     private let linkPreviewManager: LinkPreviewManager
     private let tsMessageStore: EditManagerAttachmentsImpl.Shims.TSMessageStore
     private let tsResourceManager: TSResourceManager
@@ -17,6 +18,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
     public init(
         attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
+        attachmentValidator: AttachmentContentValidator,
         linkPreviewManager: LinkPreviewManager,
         tsMessageStore: EditManagerAttachmentsImpl.Shims.TSMessageStore,
         tsResourceManager: TSResourceManager,
@@ -24,6 +26,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
     ) {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
+        self.attachmentValidator = attachmentValidator
         self.linkPreviewManager = linkPreviewManager
         self.tsMessageStore = tsMessageStore
         self.tsResourceManager = tsResourceManager
@@ -208,13 +211,16 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         }
 
         // Create and assign the new link preview.
-        let builder = LinkPreviewAttachmentBuilder(attachmentManager: attachmentManager)
+        let builder = LinkPreviewBuilderImpl(
+            attachmentManager: attachmentManager,
+            attachmentValidator: attachmentValidator
+        )
         switch newLinkPreview {
         case .none:
             break
         case .draft(let draft):
-            let builder = try linkPreviewManager.validateAndBuildLinkPreview(
-                from: draft,
+            let builder = try linkPreviewManager.buildLinkPreview(
+                from: draft.v2DataSource,
                 builder: builder,
                 tx: tx
             )

@@ -50,15 +50,37 @@ public class MockLinkPreviewManager: LinkPreviewManager {
         return .withoutFinalizer(.init())
     }
 
-    public func validateAndBuildLinkPreview(
+    public func buildDataSource(
+        from draft: OWSLinkPreviewDraft
+    ) throws -> LinkPreviewTSResourceDataSource {
+        return .init(
+            metadata: .init(
+                urlString: draft.urlString,
+                title: draft.title,
+                previewDescription: draft.previewDescription,
+                date: draft.date
+            ),
+            imageV2DataSource: nil,
+            imageLegacyDataSource: nil
+        )
+    }
+
+    public func buildDataSource<Builder: LinkPreviewBuilder>(
         from draft: OWSLinkPreviewDraft,
+        builder: Builder
+    ) throws -> Builder.DataSource {
+        return try builder.buildDataSource(draft)
+    }
+
+    public func buildLinkPreview(
+        from dataSource: LinkPreviewTSResourceDataSource,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
         return .withoutFinalizer(.init())
     }
 
-    public func validateAndBuildLinkPreview<Builder: LinkPreviewBuilder>(
-        from draft: OWSLinkPreviewDraft,
+    public func buildLinkPreview<Builder: LinkPreviewBuilder>(
+        from dataSource: Builder.DataSource,
         builder: Builder,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {

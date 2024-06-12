@@ -18,7 +18,7 @@ public class UnpreparedOutgoingMessage {
         _ message: TSOutgoingMessage,
         unsavedBodyMediaAttachments: [TSResourceDataSource] = [],
         oversizeTextDataSource: DataSource? = nil,
-        linkPreviewDraft: OWSLinkPreviewDraft? = nil,
+        linkPreviewDraft: LinkPreviewTSResourceDataSource? = nil,
         quotedReplyDraft: DraftQuotedReplyModel? = nil,
         messageStickerDraft: MessageStickerDraft? = nil,
         contactShareDraft: ContactShareDraft.ForSending? = nil
@@ -51,7 +51,7 @@ public class UnpreparedOutgoingMessage {
         targetMessage: TSOutgoingMessage,
         edits: MessageEdits,
         oversizeTextDataSource: DataSource?,
-        linkPreviewDraft: OWSLinkPreviewDraft?,
+        linkPreviewDraft: LinkPreviewTSResourceDataSource?,
         quotedReplyEdit: MessageEdits.Edit<Void>
     ) -> UnpreparedOutgoingMessage {
         return .init(messageType: .editMessage(.init(
@@ -131,7 +131,7 @@ public class UnpreparedOutgoingMessage {
             let message: TSOutgoingMessage
             let unsavedBodyMediaAttachments: [TSResourceDataSource]
             let oversizeTextDataSource: DataSource?
-            let linkPreviewDraft: OWSLinkPreviewDraft?
+            let linkPreviewDraft: LinkPreviewTSResourceDataSource?
             let quotedReplyDraft: DraftQuotedReplyModel?
             let messageStickerDraft: MessageStickerDraft?
             let contactShareDraft: ContactShareDraft.ForSending?
@@ -141,7 +141,7 @@ public class UnpreparedOutgoingMessage {
             let targetMessage: TSOutgoingMessage
             let edits: MessageEdits
             let oversizeTextDataSource: DataSource?
-            let linkPreviewDraft: OWSLinkPreviewDraft?
+            let linkPreviewDraft: LinkPreviewTSResourceDataSource?
             let quotedReplyEdit: MessageEdits.Edit<Void>
         }
 
@@ -207,7 +207,7 @@ public class UnpreparedOutgoingMessage {
         }
 
         let linkPreviewBuilder = try message.linkPreviewDraft.map {
-            try DependenciesBridge.shared.linkPreviewManager.validateAndBuildLinkPreview(
+            try DependenciesBridge.shared.linkPreviewManager.buildLinkPreview(
                 from: $0,
                 tx: tx.asV2Write
             )

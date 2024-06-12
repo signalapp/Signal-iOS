@@ -13,7 +13,7 @@ extension MessageEdits {
     }
 
     public enum LinkPreviewSource {
-        case draft(OWSLinkPreviewDraft)
+        case draft(LinkPreviewTSResourceDataSource)
         case proto(SSKProtoPreview, SSKProtoDataMessage)
     }
 }

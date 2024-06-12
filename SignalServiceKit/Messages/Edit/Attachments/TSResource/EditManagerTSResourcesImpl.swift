@@ -152,8 +152,8 @@ public class EditManagerTSResourcesImpl: EditManagerTSResources {
         case .none:
             break
         case .draft(let draft):
-            let builder = try linkPreviewManager.validateAndBuildLinkPreview(
-                from: draft,
+            let builder = try linkPreviewManager.buildLinkPreview(
+                from: draft.legacyDataSource,
                 builder: builder,
                 tx: tx
             )

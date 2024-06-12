@@ -75,7 +75,7 @@ extension OutgoingStoryMessage {
                 } else {
                     guard
                         let textAttachmentBuilder = textAttachment.value
-                            .validateLinkPreviewAndBuildTextAttachment(transaction: transaction)
+                            .buildTextAttachment(transaction: transaction)
                     else {
                         throw OWSAssertionError("Invalid text attachment")
                     }

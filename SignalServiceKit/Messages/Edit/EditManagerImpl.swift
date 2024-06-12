@@ -206,7 +206,7 @@ public class EditManagerImpl: EditManager {
         edits: MessageEdits,
         oversizeText: DataSource?,
         quotedReplyEdit: MessageEdits.Edit<Void>,
-        linkPreview: OWSLinkPreviewDraft?,
+        linkPreview: LinkPreviewTSResourceDataSource?,
         tx: DBWriteTransaction
     ) throws -> OutgoingEditMessage {
 

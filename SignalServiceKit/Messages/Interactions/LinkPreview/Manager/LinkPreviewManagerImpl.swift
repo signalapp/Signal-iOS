@@ -15,6 +15,7 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
 
     private let attachmentManager: TSResourceManager
     private let attachmentStore: TSResourceStore
+    private let attachmentValidator: AttachmentContentValidator
     private let db: DB
     private let groupsV2: Shims.GroupsV2
     private let sskPreferences: Shims.SSKPreferences
@@ -22,18 +23,23 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
     public init(
         attachmentManager: TSResourceManager,
         attachmentStore: TSResourceStore,
+        attachmentValidator: AttachmentContentValidator,
         db: DB,
         groupsV2: Shims.GroupsV2,
         sskPreferences: Shims.SSKPreferences
     ) {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
+        self.attachmentValidator = attachmentValidator
         self.db = db
         self.groupsV2 = groupsV2
         self.sskPreferences = sskPreferences
     }
 
-    private lazy var defaultBuilder = LinkPreviewTSResourceBuilder(tsResourceManager: attachmentManager)
+    private lazy var defaultBuilder = LinkPreviewTSResourceBuilder(
+        attachmentValidator: attachmentValidator,
+        tsResourceManager: attachmentManager
+    )
 
     // MARK: - Public
 
@@ -116,49 +122,39 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
         return try buildValidatedLinkPreview(proto: proto, builder: defaultBuilder, tx: tx)
     }
 
-    public func validateAndBuildLinkPreview(
-        from draft: OWSLinkPreviewDraft,
-        tx: DBWriteTransaction
-    ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
-        return try self.validateAndBuildLinkPreview(
-            from: draft,
-            builder: defaultBuilder,
-            tx: tx
-        )
+    public func buildDataSource(
+        from draft: OWSLinkPreviewDraft
+    ) throws -> LinkPreviewTSResourceDataSource {
+        return try buildDataSource(from: draft, builder: defaultBuilder)
     }
 
-    public func validateAndBuildLinkPreview<Builder: LinkPreviewBuilder>(
+    public func buildDataSource<Builder: LinkPreviewBuilder>(
         from draft: OWSLinkPreviewDraft,
+        builder: Builder
+    ) throws -> Builder.DataSource {
+        let areLinkPreviewsEnabled = db.read { sskPreferences.areLinkPreviewsEnabled(tx: $0) }
+        guard areLinkPreviewsEnabled else {
+            throw LinkPreviewError.featureDisabled
+        }
+        return try builder.buildDataSource(draft)
+    }
+
+    public func buildLinkPreview(
+        from dataSource: LinkPreviewTSResourceDataSource,
+        tx: DBWriteTransaction
+    ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
+        return try buildLinkPreview(from: dataSource, builder: defaultBuilder, tx: tx)
+    }
+
+    public func buildLinkPreview<Builder: LinkPreviewBuilder>(
+        from dataSource: Builder.DataSource,
         builder: Builder,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
         guard sskPreferences.areLinkPreviewsEnabled(tx: tx) else {
             throw LinkPreviewError.featureDisabled
         }
-
-        let metadata = OWSLinkPreview.Metadata(
-            urlString: draft.urlString,
-            title: draft.title,
-            previewDescription: draft.previewDescription,
-            date: draft.date
-        )
-
-        guard
-            let imageData = draft.imageData,
-            let imageMimeType = draft.imageMimeType
-        else {
-            return .withoutFinalizer(.withoutImage(metadata: metadata))
-        }
-
-        let dataSource = Builder.buildAttachmentDataSource(
-            data: imageData,
-            mimeType: imageMimeType
-        )
-        return try builder.createLinkPreview(
-            from: dataSource,
-            metadata: metadata,
-            tx: tx
-        )
+        return try builder.createLinkPreview(from: dataSource, tx: tx)
     }
 
     public func buildProtoForSending(

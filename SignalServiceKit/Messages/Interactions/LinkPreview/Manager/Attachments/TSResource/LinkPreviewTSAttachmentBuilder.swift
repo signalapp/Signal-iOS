@@ -5,9 +5,14 @@
 
 import Foundation
 
+public struct LinkPreviewTSAttachmentDataSource {
+    public let metadata: OWSLinkPreview.Metadata
+    public let imageDataSource: TSAttachmentDataSource?
+}
+
 public class LinkPreviewTSAttachmentBuilder: LinkPreviewBuilder {
 
-    public typealias DataSource = TSAttachmentDataSource
+    public typealias DataSource = LinkPreviewTSAttachmentDataSource
 
     private let tsAttachmentManager: TSAttachmentManager
 
@@ -17,29 +22,39 @@ public class LinkPreviewTSAttachmentBuilder: LinkPreviewBuilder {
         self.tsAttachmentManager = tsAttachmentManager
     }
 
-    public static func buildAttachmentDataSource(
-        data: Data,
-        mimeType: String
-    ) -> DataSource {
-        return TSAttachmentDataSource(
-            mimeType: mimeType,
+    public func buildDataSource(
+        _ draft: OWSLinkPreviewDraft
+    ) throws -> LinkPreviewTSAttachmentDataSource {
+        let metadata = OWSLinkPreview.Metadata(
+            urlString: draft.urlString,
+            title: draft.title,
+            previewDescription: draft.previewDescription,
+            date: draft.date
+        )
+        guard let imageData = draft.imageData, let imageMimeType = draft.imageMimeType else {
+            return .init(metadata: metadata, imageDataSource: nil)
+        }
+        return .init(metadata: metadata, imageDataSource: .init(
+            mimeType: imageMimeType,
             caption: nil,
             renderingFlag: .default,
             sourceFilename: nil,
-            dataSource: .data(data)
-        )
+            dataSource: .data(imageData)
+        ))
     }
 
     public func createLinkPreview(
-        from dataSource: DataSource,
-        metadata: OWSLinkPreview.Metadata,
+        from dataSource: LinkPreviewTSAttachmentDataSource,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
+        guard let imageDataSource = dataSource.imageDataSource else {
+            return .withoutFinalizer(.withoutImage(metadata: dataSource.metadata))
+        }
         let attachmentId = try tsAttachmentManager.createAttachmentStream(
-            from: dataSource,
+            from: imageDataSource,
             tx: SDSDB.shimOnlyBridge(tx)
         )
-        return .withoutFinalizer(.withLegacyImageAttachment(metadata: metadata, attachmentId: attachmentId))
+        return .withoutFinalizer(.withLegacyImageAttachment(metadata: dataSource.metadata, attachmentId: attachmentId))
     }
 
     public func createLinkPreview(
