@@ -162,12 +162,8 @@ public protocol TSResourceManager {
 
     // MARK: - Quoted reply thumbnails
 
-    /// Given an original message available locally, reurns a builder
-    /// for creating a thumbnail attachment for quoted replies.
-    ///
-    /// If the original lacks an attachment, returns nil. If the original has an
-    /// attachment that can't be thumbnailed, returns an appropriate
-    /// info without creating a new attachment.
+    /// Given a data source for the thumbnail, returns a builder for creating
+    /// a thumbnail attachment for quoted replies.
     ///
     /// The attachment info needed to construct the reply message
     /// is available immediately, but the caller _must_ finalize
@@ -178,7 +174,7 @@ public protocol TSResourceManager {
     /// Callers should only assume the attachment (if any) exists
     /// after finalizing.
     func newQuotedReplyMessageThumbnailBuilder(
-        originalMessage: TSMessage,
+        from dataSource: QuotedReplyTSResourceDataSource,
         fallbackQuoteProto: SSKProtoDataMessageQuote?,
         tx: DBWriteTransaction
     ) -> OwnedAttachmentBuilder<QuotedAttachmentInfo>?
@@ -188,4 +184,38 @@ public protocol TSResourceManager {
         parentMessage: TSMessage,
         tx: DBReadTransaction
     ) -> UIImage?
+}
+
+extension TSResourceManager {
+
+    public func newQuotedReplyMessageThumbnailBuilder(
+        originalAttachment: TSResource,
+        originalReference: TSResourceReference,
+        fallbackQuoteProto: SSKProtoDataMessageQuote?,
+        originalMessageRowId: Int64,
+        tx: DBWriteTransaction
+    ) -> OwnedAttachmentBuilder<QuotedAttachmentInfo>? {
+        switch (originalReference.concreteType, originalAttachment.concreteType) {
+
+        case (.legacy(let tsAttachmentReference), .legacy(let tsAttachment)):
+            return self.newQuotedReplyMessageThumbnailBuilder(
+                from: .fromLegacyOriginalAttachment(tsAttachment, originalMessageRowId: originalMessageRowId),
+                fallbackQuoteProto: fallbackQuoteProto,
+                tx: tx
+            )
+        case (.v2(let attachmentReference), .v2(let attachment)):
+            return self.newQuotedReplyMessageThumbnailBuilder(
+                from: QuotedReplyAttachmentDataSource.fromOriginalAttachment(
+                    attachment,
+                    originalReference: attachmentReference
+                ).tsDataSource,
+                fallbackQuoteProto: fallbackQuoteProto,
+                tx: tx
+            )
+
+        case (.v2, .legacy), (.legacy, .v2):
+            owsFailDebug("Invalid combination!")
+            return nil
+        }
+    }
 }

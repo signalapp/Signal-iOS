@@ -309,19 +309,34 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             // on the original message.
             return nil
         }
-        guard
-            let attachmentBuilder = attachmentManager.newQuotedReplyMessageThumbnailBuilder(
+
+        if
+            let originalReference = attachmentStore.attachmentToUseInQuote(
                 originalMessage: originalMessage,
+                tx: tx
+            ),
+            let originalAttachment = attachmentStore.fetch(
+                [originalReference.resourceId],
+                tx: tx
+            ).first
+        {
+            guard let originalMessageRowId = originalMessage.sqliteRowId else {
+                owsFailDebug("Quoting uninserted message")
+                return nil
+            }
+            return attachmentManager.newQuotedReplyMessageThumbnailBuilder(
+                originalAttachment: originalAttachment,
+                originalReference: originalReference,
                 fallbackQuoteProto: quoteProto,
+                originalMessageRowId: originalMessageRowId,
                 tx: tx
             )
-        else {
+        } else {
             // This could happen if a sender spoofs their quoted message proto.
             // Our quoted message will include no thumbnails.
             owsFailDebug("Sender sent \(quoteProto.attachments.count) quoted attachments. Local copy has none.")
             return nil
         }
-        return attachmentBuilder
     }
 
     // MARK: - Creating draft
@@ -701,6 +716,10 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
         draft: DraftQuotedReplyModel.ForSending,
         tx: DBWriteTransaction
     ) -> OwnedAttachmentBuilder<TSQuotedMessage> {
+        if let tsQuotedMessage = draft.quotedMessageFromEdit {
+            return .withoutFinalizer(tsQuotedMessage)
+        }
+
         // Find the original message.
         guard
             let originalMessageTimestamp = draft.originalMessageTimestamp,
@@ -711,21 +730,17 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
         else {
-            if let tsQuotedMessage = draft.quotedMessageFromEdit {
-                return .withoutFinalizer(tsQuotedMessage)
-            } else {
-                return .withoutFinalizer(TSQuotedMessage(
-                    targetMessageTimestamp: draft.originalMessageTimestamp.map(NSNumber.init(value:)),
-                    authorAddress: draft.originalMessageAuthorAddress,
-                    body: OWSLocalizedString(
-                        "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE",
-                        comment: "Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender."
-                    ),
-                    bodyRanges: nil,
-                    bodySource: .remote,
-                    isGiftBadge: false
-                ))
-            }
+            return .withoutFinalizer(TSQuotedMessage(
+                targetMessageTimestamp: draft.originalMessageTimestamp.map(NSNumber.init(value:)),
+                authorAddress: draft.originalMessageAuthorAddress,
+                body: OWSLocalizedString(
+                    "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE",
+                    comment: "Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender."
+                ),
+                bodyRanges: nil,
+                bodySource: .remote,
+                isGiftBadge: false
+            ))
         }
 
         let body = draft.quoteBody
@@ -741,17 +756,30 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             )
         }
 
-        if
-            originalMessage.isViewOnceMessage.negated,
-            let attachmentBuilder = attachmentManager.newQuotedReplyMessageThumbnailBuilder(
-                originalMessage: originalMessage,
-                fallbackQuoteProto: nil,
-                tx: tx
-            )
-        {
-            return attachmentBuilder.wrap(buildQuotedMessage(_:))
-        } else {
+        guard let quotedAttachment = draft.attachment, originalMessage.isViewOnceMessage.negated else {
             return .withoutFinalizer(buildQuotedMessage(nil))
+        }
+
+        switch quotedAttachment {
+        case .stub(let stub):
+            return .withoutFinalizer(buildQuotedMessage(.init(
+                info: .init(
+                    stubWithMimeType: stub.mimeType ?? MimeType.applicationOctetStream.rawValue,
+                    sourceFilename: stub.sourceFilename
+                ),
+                renderingFlag: .default
+            )))
+        case .thumbnail(let dataSource):
+            guard
+                let attachmentBuilder = attachmentManager.newQuotedReplyMessageThumbnailBuilder(
+                    from: dataSource,
+                    fallbackQuoteProto: nil,
+                    tx: tx
+                )
+            else {
+                return .withoutFinalizer(buildQuotedMessage(nil))
+            }
+            return attachmentBuilder.wrap(buildQuotedMessage(_:))
         }
     }
 

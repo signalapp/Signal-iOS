@@ -92,7 +92,7 @@ public class TSResourceManagerMock: TSResourceManager {
     }
 
     public func newQuotedReplyMessageThumbnailBuilder(
-        originalMessage: TSMessage,
+        from dataSource: QuotedReplyTSResourceDataSource,
         fallbackQuoteProto: SSKProtoDataMessageQuote?,
         tx: DBWriteTransaction
     ) -> OwnedAttachmentBuilder<QuotedAttachmentInfo>? {

@@ -31,8 +31,7 @@ open class AttachmentManagerMock: AttachmentManager {
     }
 
     open func createQuotedReplyMessageThumbnail(
-        originalMessage: TSMessage,
-        quotedReplyMessageId: Int64,
+        consuming: OwnedQuotedReplyAttachmentDataSource,
         tx: DBWriteTransaction
     ) throws {
         // Do nothing

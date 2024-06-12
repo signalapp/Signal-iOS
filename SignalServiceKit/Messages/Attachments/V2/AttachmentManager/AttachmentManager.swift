@@ -45,17 +45,10 @@ public protocol AttachmentManager {
         tx: DBReadTransaction
     ) -> QuotedAttachmentInfo?
 
-    /// Given an original message available locally and a new message
-    /// quoting that original, creates a thumbnail attachment and an owner
-    /// reference to it.
-    ///
-    /// If the original lacks an attachment, does nothing.
-    /// If the original has an attachment that can't be thumbnailed, does nothing.
-    ///
-    /// Only throws if a thumbnail _should_ have been created but failed.
+    /// Given a quote thumbnail source and a new message owner for that quote,
+    /// creates a thumbnail attachment and an owner reference to it.
     func createQuotedReplyMessageThumbnail(
-        originalMessage: TSMessage,
-        quotedReplyMessageId: Int64,
+        consuming: OwnedQuotedReplyAttachmentDataSource,
         tx: DBWriteTransaction
     ) throws
 

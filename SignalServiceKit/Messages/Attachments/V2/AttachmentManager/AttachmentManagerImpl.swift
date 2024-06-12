@@ -65,24 +65,20 @@ public class AttachmentManagerImpl: AttachmentManager {
     }
 
     public func createQuotedReplyMessageThumbnail(
-        originalMessage: TSMessage,
-        quotedReplyMessageId: Int64,
+        consuming dataSource: OwnedQuotedReplyAttachmentDataSource,
         tx: DBWriteTransaction
     ) throws {
-        guard let originalMessageRowId = originalMessage.sqliteRowId else {
-            throw OWSAssertionError("Cloning attachment for un-inserted message")
-        }
-        guard
-            let info = _quotedReplyAttachmentInfo(originalMessageRowId: originalMessageRowId, tx: tx),
-            // Not a stub! Stubs would be .unset
-            info.info.info.attachmentType == .V2
-        else {
-            return
+        if let originalMessageRowId = dataSource.source.originalMessageRowId {
+            guard
+                let info = _quotedReplyAttachmentInfo(originalMessageRowId: originalMessageRowId, tx: tx),
+                // Not a stub! Stubs would be .unset
+                info.info.info.attachmentType == .V2
+            else {
+                return
+            }
         }
         try _createQuotedReplyMessageThumbnail(
-            originalReference: info.originalAttachmentReference,
-            originalAttachment: info.originalAttachment,
-            quotedReplyMessageId: quotedReplyMessageId,
+            dataSource: dataSource,
             tx: tx
         )
     }
@@ -385,9 +381,7 @@ public class AttachmentManagerImpl: AttachmentManager {
     }
 
     private func _createQuotedReplyMessageThumbnail(
-        originalReference: AttachmentReference,
-        originalAttachment: Attachment,
-        quotedReplyMessageId: Int64,
+        dataSource: OwnedQuotedReplyAttachmentDataSource,
         tx: DBWriteTransaction
     ) throws {
         // TODO: create and insert a new attachment+pointer.

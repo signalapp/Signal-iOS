@@ -429,19 +429,18 @@ public class TSResourceManagerImpl: TSResourceManager {
     // MARK: - Quoted reply thumbnails
 
     public func newQuotedReplyMessageThumbnailBuilder(
-        originalMessage: TSMessage,
+        from dataSource: QuotedReplyTSResourceDataSource,
         fallbackQuoteProto: SSKProtoDataMessageQuote?,
         tx: DBWriteTransaction
     ) -> OwnedAttachmentBuilder<QuotedAttachmentInfo>? {
-        let originalAttachmentRef = tsResourceStore.attachmentToUseInQuote(
-            originalMessage: originalMessage,
-            tx: tx
-        )
-        switch originalAttachmentRef?.concreteType {
-        case nil:
-            return nil
-        case .legacy(let tSAttachmentReference):
-            guard let attachment = tSAttachmentReference.attachment else {
+        switch dataSource.source {
+        case .originalLegacyAttachment(let attachmentUniqueId):
+            guard
+                let attachment = tsResourceStore.fetch(
+                    [.legacy(uniqueId: attachmentUniqueId)],
+                    tx: tx
+                ).first as? TSAttachment
+            else {
                 return nil
             }
             if FeatureFlags.newAttachmentsUseV2 {
@@ -456,26 +455,20 @@ public class TSResourceManagerImpl: TSResourceManager {
                 // 2. Otherwise try and use the cdn info from the v1 attachment, if it still exists,
                 //    and use that to create a new v2 attachment (even if the v1 is already downloaded).
                 // 3. Give up. Omit the thumbnail.
-                let thumbnailProto =
-                    fallbackQuoteProto?.attachments.first?.thumbnail
-                    ?? Self.buildProtoAsIfWeReceivedThisAttachment(attachment)
-                if let thumbnailProto {
-                    guard
-                        let thumbnailAttachmentBuilder = try? self.createAttachmentPointerBuilder(
-                            from: thumbnailProto,
-                            tx: tx
-                        )
-                    else {
-                        return nil
-                    }
-                    return thumbnailAttachmentBuilder.wrap { _ in
-                        return .init(
-                            info: OWSAttachmentInfo(forV2ThumbnailReference: ()),
-                            renderingFlag: .fromProto(thumbnailProto)
-                        )
-                    }
+                let v2DataSource: QuotedReplyAttachmentDataSource
+                if let proto = fallbackQuoteProto?.attachments.first?.thumbnail {
+                    return newV2QuotedReplyMessageThumbnailBuilder(
+                        from: .pointer(proto),
+                        originalMessageRowId: dataSource.originalMessageRowId,
+                        tx: tx
+                    )
+                } else if let proto = Self.buildProtoAsIfWeReceivedThisAttachment(attachment) {
+                    return newV2QuotedReplyMessageThumbnailBuilder(
+                        from: .pointer(proto),
+                        originalMessageRowId: dataSource.originalMessageRowId,
+                        tx: tx
+                    )
                 } else {
-                    Logger.error("Unable to clone legacy attachment for v2 quoted reply; giving up.")
                     return nil
                 }
             } else {
@@ -489,34 +482,45 @@ public class TSResourceManagerImpl: TSResourceManager {
                 }
                 return .withoutFinalizer(info)
             }
-        case .v2:
-            guard
-                let info = attachmentManager.quotedReplyAttachmentInfo(
-                    originalMessage: originalMessage,
-                    tx: tx
-                )
-            else {
-                return nil
-            }
-            return OwnedAttachmentBuilder<QuotedAttachmentInfo>(
-                info: info,
-                finalize: { [attachmentManager, originalMessage] ownerId, tx in
-                    let quotedReplyMessageId: Int64
-                    switch ownerId {
-                    case .quotedReplyAttachment(let metadata):
-                        quotedReplyMessageId = metadata.messageRowId
-                    default:
-                        owsFailDebug("Invalid owner sent to quoted reply builder!")
-                        return
-                    }
-                    try attachmentManager.createQuotedReplyMessageThumbnail(
-                        originalMessage: originalMessage,
-                        quotedReplyMessageId: quotedReplyMessageId,
-                        tx: tx
-                    )
-                }
+        case .v2Source(let v2DataSource):
+            return newV2QuotedReplyMessageThumbnailBuilder(
+                from: v2DataSource,
+                originalMessageRowId: dataSource.originalMessageRowId,
+                tx: tx
             )
         }
+    }
+
+    private func newV2QuotedReplyMessageThumbnailBuilder(
+        from dataSource: QuotedReplyAttachmentDataSource.Source,
+        originalMessageRowId: Int64?,
+        tx: DBWriteTransaction
+    ) -> OwnedAttachmentBuilder<QuotedAttachmentInfo>? {
+        guard FeatureFlags.newAttachmentsUseV2 else {
+            owsFailDebug("Should not have a v2 data source if we aren't using v2 attachments!")
+            return nil
+        }
+        return OwnedAttachmentBuilder<QuotedAttachmentInfo>(
+            info: .init(info: .init(forV2ThumbnailReference: ()), renderingFlag: dataSource.renderingFlag),
+            finalize: { [attachmentManager, dataSource] ownerId, tx in
+                let replyMessageOwner: AttachmentReference.OwnerBuilder.MessageAttachmentBuilder
+                switch ownerId {
+                case .quotedReplyAttachment(let metadata):
+                    replyMessageOwner = metadata
+                default:
+                    owsFailDebug("Invalid owner sent to quoted reply builder!")
+                    return
+                }
+
+                try attachmentManager.createQuotedReplyMessageThumbnail(
+                    consuming: .init(
+                        dataSource: .init(originalMessageRowId: originalMessageRowId, source: dataSource),
+                        owner: replyMessageOwner
+                    ),
+                    tx: tx
+                )
+            }
+        )
     }
 
     public func thumbnailImage(

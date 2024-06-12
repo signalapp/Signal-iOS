@@ -46,7 +46,7 @@ public struct QuotedReplyAttachmentDataSource {
         public let sourceMediaSizePixels: CGSize?
     }
 
-    private init(originalMessageRowId: Int64?, source: Source) {
+    internal init(originalMessageRowId: Int64?, source: Source) {
         self.originalMessageRowId = originalMessageRowId
         self.source = source
     }
