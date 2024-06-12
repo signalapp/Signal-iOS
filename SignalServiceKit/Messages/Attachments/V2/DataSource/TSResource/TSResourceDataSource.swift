@@ -148,42 +148,21 @@ extension TSResourceDataSource {
     var concreteType: ConcreteType {
         switch dataSource {
         case .dataSource(let dataSource, shouldCopy: let shouldCopy):
-            if FeatureFlags.newAttachmentsUseV2 {
-                return .v2(
-                    .from(
-                        dataSource: dataSource,
-                        mimeType: mimeType,
-                        shouldCopyDataSource: shouldCopy
-                    ),
-                    renderingFlag
-                )
-            } else {
-                return .legacy(.init(
-                    mimeType: mimeType,
-                    caption: caption,
-                    renderingFlag: renderingFlag,
-                    sourceFilename: sourceFilename,
-                    dataSource: .dataSource(dataSource, shouldCopy: shouldCopy)
-                ))
-            }
+            return .legacy(.init(
+                mimeType: mimeType,
+                caption: caption,
+                renderingFlag: renderingFlag,
+                sourceFilename: sourceFilename,
+                dataSource: .dataSource(dataSource, shouldCopy: shouldCopy)
+            ))
         case .data(let data):
-            if FeatureFlags.newAttachmentsUseV2 {
-                return .v2(
-                    .from(
-                        data: data,
-                        mimeType: mimeType
-                    ),
-                   renderingFlag
-                )
-            } else {
-                return .legacy(.init(
-                    mimeType: mimeType,
-                    caption: caption,
-                    renderingFlag: renderingFlag,
-                    sourceFilename: sourceFilename,
-                    dataSource: .data(data)
-                ))
-            }
+            return .legacy(.init(
+                mimeType: mimeType,
+                caption: caption,
+                renderingFlag: renderingFlag,
+                sourceFilename: sourceFilename,
+                dataSource: .data(data)
+            ))
         case .existingAttachment(let existingResourceId):
             switch existingResourceId {
             case .v2(let rowId):
@@ -223,10 +202,6 @@ extension AttachmentDataSource {
             sourceFilename: sourceFilename,
             dataSource: {
                 switch self.dataSource {
-                case let .dataSource(dataSource, shouldCopy):
-                    return .dataSource(dataSource, shouldCopy: shouldCopy)
-                case let .data(data):
-                    return .data(data)
                 case let .existingAttachment(attachmentId):
                     return .existingAttachment(.v2(rowId: attachmentId))
                 case let .pendingAttachment(pendingAttachment):
