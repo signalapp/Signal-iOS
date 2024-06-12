@@ -841,31 +841,6 @@ extension OWSContactsManager: ContactManager {
         swiftValues.intersectionQueue.async { self._updateContacts(addressBookContacts, isUserRequested: isUserRequested) }
     }
 
-    private func _updateContacts(_ addressBookContacts: [SystemContact]?, isUserRequested: Bool) {
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        let localNumber = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
-        let fetchedSystemContacts = FetchedSystemContacts.parseContacts(
-            addressBookContacts ?? [],
-            phoneNumberUtil: NSObject.phoneNumberUtil,
-            localPhoneNumber: localNumber
-        )
-        setFetchedSystemContacts(fetchedSystemContacts)
-
-        swiftValues.cnContactCache.removeAllObjects()
-
-        NotificationCenter.default.postNotificationNameAsync(.OWSContactsManagerContactsDidChange, object: nil)
-
-        intersectContacts(
-            systemContactPhoneNumbers: fetchedSystemContacts.phoneNumberToContactRef.keys,
-            localNumber: localNumber,
-            isUserRequested: isUserRequested
-        ).done(on: swiftValues.intersectionQueue) {
-            self.buildSignalAccountsAndUpdatePersistedState(for: fetchedSystemContacts)
-        }.catch(on: DispatchQueue.global()) { error in
-            owsFailDebug("Couldn't intersect contacts: \(error)")
-        }
-    }
-
     private func fetchPriorIntersectionPhoneNumbers(tx: SDSAnyReadTransaction) -> Set<String>? {
         keyValueStore.getObject(forKey: Constants.lastKnownContactPhoneNumbers, transaction: tx) as? Set<String>
     }
@@ -898,11 +873,30 @@ extension OWSContactsManager: ContactManager {
         return .deltaIntersection(priorPhoneNumbers: priorPhoneNumbers)
     }
 
+    private func _updateContacts(_ addressBookContacts: [SystemContact]?, isUserRequested: Bool) {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let localNumber = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
+        let fetchedSystemContacts = FetchedSystemContacts.parseContacts(
+            addressBookContacts ?? [],
+            phoneNumberUtil: NSObject.phoneNumberUtil,
+            localPhoneNumber: localNumber
+        )
+        setFetchedSystemContacts(fetchedSystemContacts)
+
+        intersectContacts(
+            fetchedSystemContacts: fetchedSystemContacts,
+            localNumber: localNumber,
+            isUserRequested: isUserRequested
+        )
+    }
+
     private func intersectContacts(
-        systemContactPhoneNumbers: some Sequence<CanonicalPhoneNumber>,
+        fetchedSystemContacts: FetchedSystemContacts,
         localNumber: String?,
         isUserRequested: Bool
-    ) -> Promise<Void> {
+    ) {
+        let systemContactPhoneNumbers = fetchedSystemContacts.phoneNumberToContactRef.keys
+
         let (intersectionMode, signalRecipientPhoneNumbers) = databaseStorage.read { tx in
             let intersectionMode = fetchIntersectionMode(isUserRequested: isUserRequested, tx: tx)
             let signalRecipientPhoneNumbers = SignalRecipient.fetchAllPhoneNumbers(tx: tx)
@@ -927,8 +921,21 @@ extension OWSContactsManager: ContactManager {
         }
 
         let intersectionPromise = intersectContacts(phoneNumbersToIntersect, retryDelaySeconds: 1)
-        return intersectionPromise.done(on: swiftValues.intersectionQueue) { intersectedRecipients in
-            Self.databaseStorage.write { tx in
+        intersectionPromise.done(on: swiftValues.intersectionQueue) { intersectedRecipients in
+            // Mark it as complete. If the app crashes after this transaction, we'll
+            // avoid a redundant (expensive) intersection when we retry.
+            self.databaseStorage.write { tx in
+                self.didFinishIntersection(
+                    mode: intersectionMode,
+                    phoneNumbers: phoneNumbersToIntersect,
+                    tx: tx
+                )
+            }
+
+            // Save names to the database before generating notifications.
+            self.buildSignalAccountsAndUpdatePersistedState(for: fetchedSystemContacts)
+
+            self.databaseStorage.write { tx in
                 self.postJoinNotificationsIfNeeded(
                     addressBookPhoneNumbers: systemContactPhoneNumbers,
                     phoneNumberRegistrationStatus: signalRecipientPhoneNumbers,
@@ -939,8 +946,9 @@ extension OWSContactsManager: ContactManager {
                     addressBookPhoneNumbers: systemContactPhoneNumbers,
                     tx: tx.asV2Write
                 )
-                self.didFinishIntersection(mode: intersectionMode, phoneNumbers: phoneNumbersToIntersect, tx: tx)
             }
+        }.catch(on: swiftValues.intersectionQueue) { error in
+            owsFailDebug("Couldn't intersect contacts: \(error)")
         }
     }
 
@@ -1086,8 +1094,10 @@ extension OWSContactsManager: ContactManager {
 
     // MARK: - System Contacts
 
-    func setFetchedSystemContacts(_ fetchedSystemContacts: FetchedSystemContacts) {
+    private func setFetchedSystemContacts(_ fetchedSystemContacts: FetchedSystemContacts) {
         swiftValues.systemContactsCache.fetchedSystemContacts.set(fetchedSystemContacts)
+        swiftValues.cnContactCache.removeAllObjects()
+        NotificationCenter.default.postNotificationNameAsync(.OWSContactsManagerContactsDidChange, object: nil)
     }
 
     public func cnContact(withId cnContactId: String?) -> CNContact? {
