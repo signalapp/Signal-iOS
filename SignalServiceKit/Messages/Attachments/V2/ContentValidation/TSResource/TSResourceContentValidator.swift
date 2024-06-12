@@ -62,6 +62,14 @@ public protocol TSResourceContentValidator {
     func prepareOversizeTextIfNeeded(
         from messageBody: MessageBody
     ) throws -> ValidatedTSMessageBody?
+
+    /// Build a `QuotedReplyTSResourceDataSource` for a reply to a message with the provided attachment.
+    /// Throws an error if the provided attachment is non-visual, or if data reading/writing fails.
+    func prepareQuotedReplyThumbnail(
+        fromOriginalAttachment: TSResource,
+        originalReference: TSResourceReference,
+        originalMessageRowId: Int64
+    ) throws -> QuotedReplyTSResourceDataSource
 }
 
 public class TSResourceContentValidatorImpl: TSResourceContentValidator {
@@ -206,6 +214,96 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
             fullsize: dataSource
         )
     }
+
+    public func prepareQuotedReplyThumbnail(
+        fromOriginalAttachment originalAttachment: TSResource,
+        originalReference: TSResourceReference,
+        originalMessageRowId: Int64
+    ) throws -> QuotedReplyTSResourceDataSource {
+        switch (originalAttachment.concreteType, originalReference.concreteType) {
+        case (.v2, .legacy), (.legacy, .v2):
+            throw OWSAssertionError("Invalid attachment + reference combination")
+
+        case (.v2(let attachment), .v2(let attachmentReference)):
+            guard FeatureFlags.newAttachmentsUseV2 else {
+                throw OWSAssertionError("How did we get a v2 attachment if we aren't creating them yet")
+            }
+            return try attachmentValidator.prepareQuotedReplyThumbnail(
+                fromOriginalAttachment: attachment,
+                originalReference: attachmentReference
+            ).tsDataSource
+        case (.legacy(let tsAttachment), .legacy):
+            guard FeatureFlags.newAttachmentsUseV2 else {
+                // legacy to legacy is easy; we just refer to the original.
+                return .fromLegacyOriginalAttachment(tsAttachment, originalMessageRowId: originalMessageRowId)
+            }
+
+            // We have a legacy attachment, but we want to clone it as a v2 attachment.
+            // This is doable; we can read the attachment data in and clone that directly.
+            return try prepareV2QuotedReplyThumbnail(
+                fromLegacyAttachment: tsAttachment,
+                originalMessageRowId: originalMessageRowId
+            ).tsDataSource
+        }
+    }
+
+    private func prepareV2QuotedReplyThumbnail(
+        fromLegacyAttachment originalAttachment: TSAttachment,
+        originalMessageRowId: Int64
+    ) throws -> QuotedReplyAttachmentDataSource {
+        let isVisualMedia: Bool = {
+            if let contentType = originalAttachment.asResourceStream()?.cachedContentType {
+                return contentType.isVisualMedia
+            } else {
+                return MimeTypeUtil.isSupportedVisualMediaMimeType(originalAttachment.mimeType)
+            }
+        }()
+        guard isVisualMedia else {
+            throw OWSAssertionError("Non visual media target")
+        }
+        guard let stream = originalAttachment as? TSAttachmentStream else {
+            // If we don't have a stream, the best we can do is try to create
+            // a pointer proto out of the cdn info of the original.
+            if let proto = TSResourceManagerImpl.buildProtoAsIfWeReceivedThisAttachment(originalAttachment) {
+                return .fromPointerProto(proto)
+            } else {
+                Logger.error("Unable to create v2 quote attachment from v1 attachment")
+                class CannotCreateV2FromV1AttachmentError: Error {}
+                throw CannotCreateV2FromV1AttachmentError()
+            }
+        }
+
+        guard
+            let imageData = stream
+                .thumbnailImageSmallSync()?
+                .resized(maxDimensionPoints: AttachmentStream.thumbnailDimensionPointsForQuotedReply)?
+                .jpegData(compressionQuality: 0.8)
+        else {
+            throw OWSAssertionError("Unable to create thumbnail")
+        }
+
+        let renderingFlagForThumbnail: AttachmentReference.RenderingFlag
+        switch originalAttachment.attachmentType.asRenderingFlag {
+        case .borderless:
+            // Preserve borderless flag from the original
+            renderingFlagForThumbnail = .borderless
+        case .default, .voiceMessage, .shouldLoop:
+            // Other cases become default for the still image.
+            renderingFlagForThumbnail = .default
+        }
+
+        let pendingAttachment: PendingAttachment = try attachmentValidator.validateContents(
+            data: imageData,
+            mimeType: MimeType.imageJpeg.rawValue,
+            renderingFlag: renderingFlagForThumbnail,
+            sourceFilename: originalAttachment.sourceFilename
+        )
+
+        return .fromPendingAttachment(
+            pendingAttachment,
+            originalMessageRowId: originalMessageRowId
+        )
+    }
 }
 
 #if DEBUG
@@ -251,6 +349,27 @@ open class TSResourceContentValidatorMock: TSResourceContentValidator {
         from messageBody: MessageBody
     ) throws -> ValidatedTSMessageBody? {
         return .inline(messageBody)
+    }
+
+    open func prepareQuotedReplyThumbnail(
+        fromOriginalAttachment originalAttachment: TSResource,
+        originalReference: TSResourceReference,
+        originalMessageRowId: Int64
+    ) throws -> QuotedReplyTSResourceDataSource {
+        switch originalAttachment.concreteType {
+        case .legacy(let tsAttachment):
+            return .fromLegacyOriginalAttachment(tsAttachment, originalMessageRowId: originalMessageRowId)
+        case .v2(let attachment):
+            switch originalReference.concreteType {
+            case .legacy(let tSAttachmentReference):
+                fatalError("Invalid combination")
+            case .v2(let attachmentReference):
+                return QuotedReplyAttachmentDataSource.fromOriginalAttachment(
+                    attachment,
+                    originalReference: attachmentReference
+                ).tsDataSource
+            }
+        }
     }
 }
 

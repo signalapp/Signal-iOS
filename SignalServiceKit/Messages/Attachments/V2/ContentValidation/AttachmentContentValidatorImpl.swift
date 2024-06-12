@@ -137,6 +137,70 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         return .oversize(truncated: truncatedBody, fullsize: pendingAttachment)
     }
 
+    public func prepareQuotedReplyThumbnail(
+        fromOriginalAttachment originalAttachment: Attachment,
+        originalReference: AttachmentReference
+    ) throws -> QuotedReplyAttachmentDataSource {
+        let isVisualMedia: Bool = {
+            if let streamInfo = originalAttachment.streamInfo {
+                return streamInfo.contentType.isVisualMedia
+            } else {
+                return MimeTypeUtil.isSupportedVisualMediaMimeType(originalAttachment.mimeType)
+            }
+        }()
+        guard isVisualMedia else {
+            throw OWSAssertionError("Non visual media target")
+        }
+        guard let stream = originalAttachment.asStream() else {
+            // If we don't have a stream, the best we can do is create a reference
+            // to the original.
+            return .fromOriginalAttachment(
+                originalAttachment,
+                originalReference: originalReference
+            )
+        }
+
+        guard
+            let imageData = stream
+                .thumbnailImageSync(quality: .small)?
+                .resized(maxDimensionPoints: AttachmentStream.thumbnailDimensionPointsForQuotedReply)?
+                .jpegData(compressionQuality: 0.8)
+        else {
+            throw OWSAssertionError("Unable to create thumbnail")
+        }
+
+        let renderingFlagForThumbnail: AttachmentReference.RenderingFlag
+        switch originalReference.renderingFlag {
+        case .borderless:
+            // Preserve borderless flag from the original
+            renderingFlagForThumbnail = .borderless
+        case .default, .voiceMessage, .shouldLoop:
+            // Other cases become default for the still image.
+            renderingFlagForThumbnail = .default
+        }
+
+        let pendingAttachment: PendingAttachment = try self.validateContents(
+            data: imageData,
+            mimeType: MimeType.imageJpeg.rawValue,
+            renderingFlag: renderingFlagForThumbnail,
+            sourceFilename: originalReference.sourceFilename
+        )
+
+        let originalMessageRowId: Int64?
+        switch originalReference.owner {
+        case .message(let messageSource):
+            originalMessageRowId = messageSource.messageRowId
+        case .storyMessage, .thread:
+            owsFailDebug("Should not be quote replying a non-message attachment")
+            originalMessageRowId = nil
+        }
+
+        return .fromPendingAttachment(
+            pendingAttachment,
+            originalMessageRowId: originalMessageRowId
+        )
+    }
+
     // MARK: - Private
 
     private struct PendingAttachmentImpl: PendingAttachment {

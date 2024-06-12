@@ -458,7 +458,7 @@ public class TSResourceManagerImpl: TSResourceManager {
                 // 3. Give up. Omit the thumbnail.
                 let thumbnailProto =
                     fallbackQuoteProto?.attachments.first?.thumbnail
-                    ?? buildProtoAsIfWeReceivedThisAttachment(attachment)
+                    ?? Self.buildProtoAsIfWeReceivedThisAttachment(attachment)
                 if let thumbnailProto {
                     guard
                         let thumbnailAttachmentBuilder = try? self.createAttachmentPointerBuilder(
@@ -545,7 +545,7 @@ public class TSResourceManagerImpl: TSResourceManager {
         }
     }
 
-    private func buildProtoAsIfWeReceivedThisAttachment(_ attachment: TSAttachment) -> SSKProtoAttachmentPointer? {
+    public static func buildProtoAsIfWeReceivedThisAttachment(_ attachment: TSAttachment) -> SSKProtoAttachmentPointer? {
         guard
             attachment.cdnNumber >= 3,
             attachment.cdnKey.isEmpty.negated,

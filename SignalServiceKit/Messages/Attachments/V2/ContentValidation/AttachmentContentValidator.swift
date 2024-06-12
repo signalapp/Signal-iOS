@@ -75,6 +75,13 @@ public protocol AttachmentContentValidator {
     func prepareOversizeTextIfNeeded(
         from messageBody: MessageBody
     ) throws -> ValidatedMessageBody?
+
+    /// Build a `QuotedReplyAttachmentDataSource` for a reply to a message with the provided attachment.
+    /// Throws an error if the provided attachment is non-visual, or if data reading/writing fails.
+    func prepareQuotedReplyThumbnail(
+        fromOriginalAttachment: Attachment,
+        originalReference: AttachmentReference
+    ) throws -> QuotedReplyAttachmentDataSource
 }
 
 extension AttachmentContentValidator {

@@ -33,10 +33,10 @@ public struct QuotedReplyTSResourceDataSource {
 
     public static func fromLegacyOriginalAttachment(
         _ originalAttachment: TSAttachment,
-        originalMessage: TSMessage
+        originalMessageRowId: Int64
     ) -> Self {
         return .init(
-            originalMessageRowId: originalMessage.sqliteRowId,
+            originalMessageRowId: originalMessageRowId,
             source: .originalLegacyAttachment(uniqueId: originalAttachment.uniqueId)
         )
     }
