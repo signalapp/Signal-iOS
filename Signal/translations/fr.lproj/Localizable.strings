@@ -707,19 +707,19 @@
 "CALL_CONTROLS_INCOMING_DECLINE" = "refuser";
 
 /* Label on button for lowering hand in call. */
-"CALL_LOWER_HAND_BUTTON_LABEL" = "Lower Hand";
+"CALL_LOWER_HAND_BUTTON_LABEL" = "Baisser la main";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Vous avez manqué un appel, car le numéro de sécurité de l’appelant a changé.";
 
 /* Label on button for raising hand in call. */
-"CALL_RAISE_HAND_BUTTON_LABEL" = "Raise Hand";
+"CALL_RAISE_HAND_BUTTON_LABEL" = "Lever la main";
 
 /* Button to return to the current call */
 "CALL_RETURN_BUTTON" = "Revenir à l’appel";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "No answer";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "Sans réponse";
 
 /* Button to start a call */
 "CALL_START_BUTTON" = "Lancer l’appel";
@@ -983,7 +983,7 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Sélectionner un pays";
 
 /* Button label to allow user to change avatar */
-"CHANGE_AVATAR_BUTTON_LABEL" = "Modifier la photo";
+"CHANGE_AVATAR_BUTTON_LABEL" = "Changer de photo";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
 "CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Votre nouveau numéro ne doit pas être le même que l’ancien. Veuillez saisir un nouveau numéro de téléphone pour changer votre numéro.";
@@ -1637,7 +1637,7 @@
 "DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Problème de récupération des données";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Continuer tout de même";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Continuer quand même";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
 "DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "Afin de pouvoir récupérer vos données, nous vous recommandons de disposer d’au moins %1$@ d’espace de stockage sur votre appareil.";
@@ -1785,6 +1785,27 @@
 
 /* Toast message confirming the system contact was deleted. Embeds {{The name of the user who was deleted.}}. */
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ a été supprimé de vos contacts et retiré de la liste.";
+
+/* Header text for an action sheet confirming deleting a message in Note to Self. */
+"DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_HEADER" = "Delete message?";
+
+/* Title for an action sheet button explaining that a message will be deleted. */
+"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_NOT_PRESENT_ACTION_SHEET_BUTTON_TITLE" = "Delete";
+
+/* Title for an action sheet button explaining that a message will be deleted. */
+"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_BUTTON_TITLE" = "Delete for Me";
+
+/* Subheader for an action sheet explaining that a Note to Self deleted on this device will be deleted on the user's other devices as well. */
+"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_SUBHEADER" = "This message will be deleted from all your devices.";
+
+/* Label for a button in an info sheet confirming that deletes are now synced across devices. */
+"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_BUTTON" = "Got it";
+
+/* Subtitle for an info sheet explaining that deletes are now synced across devices. */
+"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_SUBTITLE" = "When you delete messages or chats, they will be deleted from your phone and all linked devices.";
+
+/* Title for an info sheet explaining that deletes are now synced across devices. */
+"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_TITLE" = "Deleting is now synced across all of your devices";
 
 /* Label indicating a user who deleted their account. */
 "DELETED_USER" = "Compte supprimé";
@@ -1961,10 +1982,10 @@
 "DISAPPEARING_MESSAGES_WEEKS" = "semaines";
 
 /* Message/subtitle for confirmation prompt when discarding a draft before editing a message */
-"DISCARD_DRAFT_CONFIRMATION_MESSAGE" = "This action can’t be undone.";
+"DISCARD_DRAFT_CONFIRMATION_MESSAGE" = "Cette action est irréversible.";
 
 /* Title for confirmation prompt when discarding a draft before editing a message */
-"DISCARD_DRAFT_CONFIRMATION_TITLE" = "Discard Draft?";
+"DISCARD_DRAFT_CONFIRMATION_TITLE" = "Supprimer le brouillon ?";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Fermer";
@@ -2459,7 +2480,7 @@
 "END_CALL_RESPONDER_IS_BUSY" = "Occupé";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Call failed";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Échec de l’appel";
 
 /* Error indicating that a message could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Impossible de transférer le message.";
@@ -2768,7 +2789,7 @@
 "GROUP_ADMIN_ONLY_WARNING" = "Seuls les administrateurs peuvent changer cette option.";
 
 /* Message body for alert explaining that a group call participant is blocked */
-"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "Vous ne recevrez ni l’audio, ni la vidéo de cet utilisateur et il ne recevra pas les vôtres.";
+"GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "Vous ne recevez ni l’audio, ni la vidéo de cet utilisateur et il ne reçoit pas les vôtres.";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%1$@ est bloqué";
@@ -3560,13 +3581,13 @@
 "IN_CALL_CONNECTING" = "Connexion…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
-"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Answered on other device";
+"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Vous avez pris l’appel sur un autre appareil";
 
 /* Call screen label when call was canceled on this device because the call recipient has a call in progress on another device. */
-"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Missed because a call in progress on another device";
+"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Appel manqué : appel en cours sur un autre appareil.";
 
 /* Call screen label when call was canceled on this device because the call recipient declined on another device. */
-"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Declined on other device";
+"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Appel refusé sur un autre appareil";
 
 /* Call setup status label */
 "IN_CALL_RECONNECTING" = "Reconnexion…";
@@ -3584,7 +3605,7 @@
 "IN_CALL_SECURING" = "Pris. Sécurisation…";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Call ended";
+"IN_CALL_TERMINATED" = "Appel terminé";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user doesn't want to be reminded. */
 "INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "Ne plus afficher de rappels";
@@ -3881,7 +3902,7 @@
 "MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Supprimer le filtre";
 
 /* Explanatory text displayed when deleting N items in All Media screen. */
-"MEDIA_GALLERY_DELETE_MEDIA_BODY" = "Cette action supprimera définitivement les fichiers sélectionnés. Tout message associé à ces éléments sera également supprimé.";
+"MEDIA_GALLERY_DELETE_MEDIA_BODY" = "Cette action supprimera définitivement les fichiers sélectionnés. Les messages associés à ces éléments seront aussi supprimés.";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+ %1$@";
@@ -3917,7 +3938,7 @@
 "MEGAPHONE_WILL_REMIND_LATER" = "Nous vous le rappellerons plus tard.";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_TEXT" = "Copier le texto";
+"MESSAGE_ACTION_COPY_TEXT" = "Copier le message";
 
 /* The title for the action that deletes a message for all users in the conversation. */
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Supprimer pour tout le monde";
@@ -3935,7 +3956,7 @@
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Supprimer ce message";
 
 /* accessibility label */
-"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Supprimez les messages sélectionnés";
+"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Supprimer les messages sélectionnés";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "Plus de précisions";
@@ -6317,10 +6338,10 @@
 "SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nSous licence AGPLv3";
 
 /* Label for the 'data' section of the app settings. */
-"SETTINGS_DATA" = "Utilisations des données";
+"SETTINGS_DATA" = "Consommation des données";
 
 /* Item title for the low bandwidth call setting */
-"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Utiliser moins de données";
+"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Limiter la consommation de données";
 
 /* Section footer for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_FOOTER" = "Utiliser moins de données peut améliorer la qualité des appels en cas de mauvaise couverture réseau.";
@@ -6347,7 +6368,7 @@
 "SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Médias envoyés";
 
 /* The title for the data settings. */
-"SETTINGS_DATA_TITLE" = "Utilisations des données";
+"SETTINGS_DATA_TITLE" = "Consommation des données";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Supprimer le compte";
@@ -7349,7 +7370,7 @@
 "STORIES_SHARESHEET_PARTIAL_SEND_TITLE" = "Partiellement envoyée";
 
 /* Subtitle shown when failing to send an incompatible file to stories via the sharesheet. */
-"STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_SUBTITLE" = "Le type de fichier sélectionné n’est pas pris en charge.";
+"STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_SUBTITLE" = "Ce type de fichier n’est pas pris en charge.";
 
 /* Title shown when failing to send an incompatible file to stories via the sharesheet. */
 "STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_TITLE" = "Envoi impossible";

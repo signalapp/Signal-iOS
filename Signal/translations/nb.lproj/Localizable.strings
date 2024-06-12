@@ -707,19 +707,19 @@
 "CALL_CONTROLS_INCOMING_DECLINE" = "avvis";
 
 /* Label on button for lowering hand in call. */
-"CALL_LOWER_HAND_BUTTON_LABEL" = "Lower Hand";
+"CALL_LOWER_HAND_BUTTON_LABEL" = "Ta ned hånden";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Tapt anrop grunnet endring av din kontakts sikkerhetsnummer";
 
 /* Label on button for raising hand in call. */
-"CALL_RAISE_HAND_BUTTON_LABEL" = "Raise Hand";
+"CALL_RAISE_HAND_BUTTON_LABEL" = "Rekk opp hånden";
 
 /* Button to return to the current call */
 "CALL_RETURN_BUTTON" = "Tilbake til samtale";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "No answer";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "Ingen svar";
 
 /* Button to start a call */
 "CALL_START_BUTTON" = "Start anrop";
@@ -1786,6 +1786,27 @@
 /* Toast message confirming the system contact was deleted. Embeds {{The name of the user who was deleted.}}. */
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ ble slettet og fjernet fra kontaktlisten din.";
 
+/* Header text for an action sheet confirming deleting a message in Note to Self. */
+"DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_HEADER" = "Delete message?";
+
+/* Title for an action sheet button explaining that a message will be deleted. */
+"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_NOT_PRESENT_ACTION_SHEET_BUTTON_TITLE" = "Delete";
+
+/* Title for an action sheet button explaining that a message will be deleted. */
+"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_BUTTON_TITLE" = "Delete for Me";
+
+/* Subheader for an action sheet explaining that a Note to Self deleted on this device will be deleted on the user's other devices as well. */
+"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_SUBHEADER" = "This message will be deleted from all your devices.";
+
+/* Label for a button in an info sheet confirming that deletes are now synced across devices. */
+"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_BUTTON" = "Got it";
+
+/* Subtitle for an info sheet explaining that deletes are now synced across devices. */
+"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_SUBTITLE" = "When you delete messages or chats, they will be deleted from your phone and all linked devices.";
+
+/* Title for an info sheet explaining that deletes are now synced across devices. */
+"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_TITLE" = "Deleting is now synced across all of your devices";
+
 /* Label indicating a user who deleted their account. */
 "DELETED_USER" = "Slettet konto";
 
@@ -1961,10 +1982,10 @@
 "DISAPPEARING_MESSAGES_WEEKS" = "uker";
 
 /* Message/subtitle for confirmation prompt when discarding a draft before editing a message */
-"DISCARD_DRAFT_CONFIRMATION_MESSAGE" = "This action can’t be undone.";
+"DISCARD_DRAFT_CONFIRMATION_MESSAGE" = "Dette kan ikke angres.";
 
 /* Title for confirmation prompt when discarding a draft before editing a message */
-"DISCARD_DRAFT_CONFIRMATION_TITLE" = "Discard Draft?";
+"DISCARD_DRAFT_CONFIRMATION_TITLE" = "Vil du forkaste utkastet?";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Avbryt";
@@ -2459,7 +2480,7 @@
 "END_CALL_RESPONDER_IS_BUSY" = "Opptatt";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Call failed";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Anropet ble avbrutt";
 
 /* Error indicating that a message could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Kunne ikke videresende meldingen.";
@@ -3560,13 +3581,13 @@
 "IN_CALL_CONNECTING" = "Kobler til…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
-"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Answered on other device";
+"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Besvart på annen enhet";
 
 /* Call screen label when call was canceled on this device because the call recipient has a call in progress on another device. */
-"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Missed because a call in progress on another device";
+"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Avbrutt fordi personen er i en annen samtale på en annen enhet";
 
 /* Call screen label when call was canceled on this device because the call recipient declined on another device. */
-"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Declined on other device";
+"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Samtale avslått på annen enhet.";
 
 /* Call setup status label */
 "IN_CALL_RECONNECTING" = "Kobler til på nytt…";
@@ -3584,7 +3605,7 @@
 "IN_CALL_SECURING" = "Besvart. Sikrer…";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Call ended";
+"IN_CALL_TERMINATED" = "Anropet ble avsluttet";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user doesn't want to be reminded. */
 "INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "Ikke minn meg på det";

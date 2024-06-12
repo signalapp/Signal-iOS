@@ -856,9 +856,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d sélectionné</string>
+			<string>%1$d élément sélectionné</string>
 			<key>other</key>
-			<string>%1$d sélectionnés</string>
+			<string>%1$d éléments sélectionnés</string>
 		</dict>
 	</dict>
 	<key>MESSAGE_REACTIONS_ACCESSIBILITY_LABEL_%d</key>

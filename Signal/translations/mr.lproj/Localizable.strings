@@ -707,19 +707,19 @@
 "CALL_CONTROLS_INCOMING_DECLINE" = "नाकारा";
 
 /* Label on button for lowering hand in call. */
-"CALL_LOWER_HAND_BUTTON_LABEL" = "Lower Hand";
+"CALL_LOWER_HAND_BUTTON_LABEL" = "हात खाली घ्या";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ सुटलेला कॉल कारण वापरकर्त्याचा सुरक्षितता नंबर बदलला आहे.";
 
 /* Label on button for raising hand in call. */
-"CALL_RAISE_HAND_BUTTON_LABEL" = "Raise Hand";
+"CALL_RAISE_HAND_BUTTON_LABEL" = "हात वर करा";
 
 /* Button to return to the current call */
 "CALL_RETURN_BUTTON" = "कॉलवर परत या";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "No answer";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "कुठलेही उत्तर नाही";
 
 /* Button to start a call */
 "CALL_START_BUTTON" = "कॉल चालू करा";
@@ -1786,6 +1786,27 @@
 /* Toast message confirming the system contact was deleted. Embeds {{The name of the user who was deleted.}}. */
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ ना आपल्या संपर्कांमधून हटवले आणि काढून टाकले.";
 
+/* Header text for an action sheet confirming deleting a message in Note to Self. */
+"DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_HEADER" = "Delete message?";
+
+/* Title for an action sheet button explaining that a message will be deleted. */
+"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_NOT_PRESENT_ACTION_SHEET_BUTTON_TITLE" = "Delete";
+
+/* Title for an action sheet button explaining that a message will be deleted. */
+"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_BUTTON_TITLE" = "Delete for Me";
+
+/* Subheader for an action sheet explaining that a Note to Self deleted on this device will be deleted on the user's other devices as well. */
+"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_SUBHEADER" = "This message will be deleted from all your devices.";
+
+/* Label for a button in an info sheet confirming that deletes are now synced across devices. */
+"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_BUTTON" = "Got it";
+
+/* Subtitle for an info sheet explaining that deletes are now synced across devices. */
+"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_SUBTITLE" = "When you delete messages or chats, they will be deleted from your phone and all linked devices.";
+
+/* Title for an info sheet explaining that deletes are now synced across devices. */
+"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_TITLE" = "Deleting is now synced across all of your devices";
+
 /* Label indicating a user who deleted their account. */
 "DELETED_USER" = "हटवलेले अकाऊंट";
 
@@ -1961,10 +1982,10 @@
 "DISAPPEARING_MESSAGES_WEEKS" = "आठवडे";
 
 /* Message/subtitle for confirmation prompt when discarding a draft before editing a message */
-"DISCARD_DRAFT_CONFIRMATION_MESSAGE" = "This action can’t be undone.";
+"DISCARD_DRAFT_CONFIRMATION_MESSAGE" = "ही क्रिया पूर्ववत केली जाऊ शकत नाही.";
 
 /* Title for confirmation prompt when discarding a draft before editing a message */
-"DISCARD_DRAFT_CONFIRMATION_TITLE" = "Discard Draft?";
+"DISCARD_DRAFT_CONFIRMATION_TITLE" = "मसुदा टाकून द्यायचा?";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "रद्द करा";
@@ -2459,7 +2480,7 @@
 "END_CALL_RESPONDER_IS_BUSY" = "व्यस्त";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Call failed";
+"END_CALL_UNCATEGORIZED_FAILURE" = "कॉल अयशस्वी झाला";
 
 /* Error indicating that a message could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "संदेश अग्रेषित करू शकलो नाही.";
@@ -3560,13 +3581,13 @@
 "IN_CALL_CONNECTING" = "कनेक्ट करत आहे…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
-"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Answered on other device";
+"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "इतर डिव्हाईस वर उत्तर दिले";
 
 /* Call screen label when call was canceled on this device because the call recipient has a call in progress on another device. */
-"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Missed because a call in progress on another device";
+"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "इतर डिव्हाइस वर कॉल सुरू असल्याने सुटला";
 
 /* Call screen label when call was canceled on this device because the call recipient declined on another device. */
-"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Declined on other device";
+"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "इतर डिव्हाईस वर नकारले गेले";
 
 /* Call setup status label */
 "IN_CALL_RECONNECTING" = "पुनःकनेक्ट करत आहे…";
@@ -3584,7 +3605,7 @@
 "IN_CALL_SECURING" = "उत्तर दिले. सुरक्षित करत आहे…";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Call ended";
+"IN_CALL_TERMINATED" = "कॉल संपला";
 
 /* Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user doesn't want to be reminded. */
 "INACTIVE_LINKED_DEVICE_REMINDER_MEGAPHONE_DONT_REMIND_ME_BUTTON" = "मला आठवण करून देऊ नका";
