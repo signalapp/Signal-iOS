@@ -90,9 +90,11 @@ public class MessageStickerManagerImpl: MessageStickerManager {
     ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo> {
 
         // As an optimization, if the sticker is already installed,
-        // try to derive an TSAttachmentStream using that.
+        // try to derive an TSAttachmentStream (only legacy) using that.
+        // V2 attachments use the local sticker pack at "download" time.
         if
-            let attachment = attachmentForInstalledSticker(
+            !FeatureFlags.newAttachmentsUseV2,
+            let attachment = tsAttachmentForInstalledSticker(
                 dataProto: dataProto,
                 stickerInfo: stickerInfo,
                 tx: tx
@@ -119,7 +121,7 @@ public class MessageStickerManagerImpl: MessageStickerManager {
         }
     }
 
-    private func attachmentForInstalledSticker(
+    private func tsAttachmentForInstalledSticker(
         dataProto: SSKProtoAttachmentPointer,
         stickerInfo: StickerInfo,
         tx: DBWriteTransaction
@@ -155,16 +157,16 @@ public class MessageStickerManagerImpl: MessageStickerManager {
                 mimeType = MimeType.imageWebp.rawValue
             }
 
-            let attachmentDataSource = TSResourceDataSource.from(
-                dataSource: dataSource,
+            let attachmentDataSource = TSAttachmentDataSource(
                 mimeType: mimeType,
                 caption: nil,
                 renderingFlag: .default,
-                shouldCopyDataSource: true
+                sourceFilename: nil,
+                dataSource: .dataSource(dataSource, shouldCopy: true)
             )
 
             return try attachmentManager.createAttachmentStreamBuilder(
-                from: attachmentDataSource,
+                from: attachmentDataSource.tsDataSource,
                 tx: tx
             )
         } catch {
