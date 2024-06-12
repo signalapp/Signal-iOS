@@ -40,12 +40,6 @@ public protocol TSResource {
     var concreteType: ConcreteTSResource { get }
 
     func asResourceStream() -> TSResourceStream?
-
-    // MARK: - Table Join Getters
-
-    func attachmentType(forContainingMessage: TSMessage, tx: DBReadTransaction) -> TSAttachmentType
-
-    func caption(forContainingMessage: TSMessage, tx: DBReadTransaction) -> String?
 }
 
 extension TSResource {

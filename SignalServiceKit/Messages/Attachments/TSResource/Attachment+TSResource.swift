@@ -32,14 +32,6 @@ extension Attachment: TSResource {
     public func asResourceStream() -> TSResourceStream? {
         return AttachmentStream(attachment: self)
     }
-
-    public func attachmentType(forContainingMessage: TSMessage, tx: DBReadTransaction) -> TSAttachmentType {
-        fatalError("Unimplemented!")
-    }
-
-    public func caption(forContainingMessage: TSMessage, tx: DBReadTransaction) -> String? {
-        fatalError("Unimplemented!")
-    }
 }
 
 // MARK: - Attachment Stream
@@ -89,14 +81,6 @@ extension AttachmentStream: TSResource {
     public var concreteType: ConcreteTSResource { attachment.concreteType }
 
     public func asResourceStream() -> TSResourceStream? { self }
-
-    public func attachmentType(forContainingMessage: TSMessage, tx: DBReadTransaction) -> TSAttachmentType {
-        return attachment.attachmentType(forContainingMessage: forContainingMessage, tx: tx)
-    }
-
-    public func caption(forContainingMessage: TSMessage, tx: DBReadTransaction) -> String? {
-        return attachment.caption(forContainingMessage: forContainingMessage, tx: tx)
-    }
 }
 
 // MARK: - AttachmentTransitPointer
