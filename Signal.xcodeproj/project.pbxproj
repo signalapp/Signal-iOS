@@ -1012,6 +1012,7 @@
 		66C2B1502A13F0CA008DDE72 /* MockSgxWebsocketConnectionFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B14F2A13F0CA008DDE72 /* MockSgxWebsocketConnectionFactory.swift */; };
 		66C2B1542A13F26E008DDE72 /* ContactDiscoveryV2WebsocketConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1532A13F26E008DDE72 /* ContactDiscoveryV2WebsocketConfigurator.swift */; };
 		66C2B1562A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1552A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift */; };
+		66C343D22C13C55B004C3D60 /* QuotedReplyTSResourceDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C343D12C13C55B004C3D60 /* QuotedReplyTSResourceDataSource.swift */; };
 		66C3887E29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */; };
 		66CA4CE42B9BDDE3009A5ED8 /* AttachmentThumbnailQuality.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CA4CE32B9BDDE3009A5ED8 /* AttachmentThumbnailQuality.swift */; };
 		66CA4CE62B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CA4CE52B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift */; };
@@ -1099,6 +1100,7 @@
 		66E3C8F62994634E00BB38ED /* RegistrationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E3C8F52994634E00BB38ED /* RegistrationCoordinator.swift */; };
 		66E793E52BC0D8A600929E5E /* MessageStickerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E793E42BC0D8A600929E5E /* MessageStickerManager.swift */; };
 		66E828592C13599800F91D06 /* OrphanedAttachmentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E828582C13599800F91D06 /* OrphanedAttachmentStore.swift */; };
+		66E8285B2C139DCD00F91D06 /* QuotedReplyAttachmentDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E8285A2C139DCD00F91D06 /* QuotedReplyAttachmentDataSource.swift */; };
 		66EA22872BC70B9A00A36B97 /* TSAttachmentDownloadManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EA22852BC70B9500A36B97 /* TSAttachmentDownloadManagerTest.swift */; };
 		66EB029B2BAB9F1C004F0580 /* ReferencedAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EB029A2BAB9F1C004F0580 /* ReferencedAttachment.swift */; };
 		66EB029D2BAB9F55004F0580 /* ReferencedTSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EB029C2BAB9F55004F0580 /* ReferencedTSResource.swift */; };
@@ -3938,6 +3940,7 @@
 		66C2B1532A13F26E008DDE72 /* ContactDiscoveryV2WebsocketConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryV2WebsocketConfigurator.swift; sourceTree = "<group>"; };
 		66C2B1552A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVR2WebsocketConfigurator.swift; sourceTree = "<group>"; };
 		66C336D02A994B97000F4F50 /* FailedStorySendDisplayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FailedStorySendDisplayController.swift; sourceTree = "<group>"; };
+		66C343D12C13C55B004C3D60 /* QuotedReplyTSResourceDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedReplyTSResourceDataSource.swift; sourceTree = "<group>"; };
 		66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTransferProgressViewController.swift; sourceTree = "<group>"; };
 		66CA4CE32B9BDDE3009A5ED8 /* AttachmentThumbnailQuality.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentThumbnailQuality.swift; sourceTree = "<group>"; };
 		66CA4CE52B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentReference+RenderingFlag.swift"; sourceTree = "<group>"; };
@@ -4025,6 +4028,7 @@
 		66E3C8F52994634E00BB38ED /* RegistrationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinator.swift; sourceTree = "<group>"; };
 		66E793E42BC0D8A600929E5E /* MessageStickerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageStickerManager.swift; sourceTree = "<group>"; };
 		66E828582C13599800F91D06 /* OrphanedAttachmentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrphanedAttachmentStore.swift; sourceTree = "<group>"; };
+		66E8285A2C139DCD00F91D06 /* QuotedReplyAttachmentDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedReplyAttachmentDataSource.swift; sourceTree = "<group>"; };
 		66EA22852BC70B9500A36B97 /* TSAttachmentDownloadManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAttachmentDownloadManagerTest.swift; sourceTree = "<group>"; };
 		66EB029A2BAB9F1C004F0580 /* ReferencedAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferencedAttachment.swift; sourceTree = "<group>"; };
 		66EB029C2BAB9F55004F0580 /* ReferencedTSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferencedTSResource.swift; sourceTree = "<group>"; };
@@ -7512,6 +7516,7 @@
 		664BA84B2BB630E8005638E0 /* TSResource */ = {
 			isa = PBXGroup;
 			children = (
+				66C343D12C13C55B004C3D60 /* QuotedReplyTSResourceDataSource.swift */,
 				664BA84E2BB632D9005638E0 /* TSAttachmentDataSource.swift */,
 				664BA84C2BB63102005638E0 /* TSResourceDataSource.swift */,
 			);
@@ -7610,6 +7615,7 @@
 			children = (
 				664BA84B2BB630E8005638E0 /* TSResource */,
 				6660725D2BAB36960084B3D2 /* AttachmentDataSource.swift */,
+				66E8285A2C139DCD00F91D06 /* QuotedReplyAttachmentDataSource.swift */,
 			);
 			path = DataSource;
 			sourceTree = "<group>";
@@ -14210,9 +14216,11 @@
 				6676A40C2BD1F5F9006B9CC9 /* QuotedAttachmentInfo.swift in Sources */,
 				66D7B9132B979C3A0005C98B /* QuotedMessageAttachmentReference+TSResource.swift in Sources */,
 				66D7B90E2B9798950005C98B /* QuotedMessageAttachmentReference.swift in Sources */,
+				66E8285B2C139DCD00F91D06 /* QuotedReplyAttachmentDataSource.swift in Sources */,
 				6635B8A52BA25D9F005C80EA /* QuotedReplyManager.swift in Sources */,
 				6635B8A72BA25DDD005C80EA /* QuotedReplyManagerImpl.swift in Sources */,
 				6635B8A92BA25E08005C80EA /* QuotedReplyManagerMock.swift in Sources */,
+				66C343D22C13C55B004C3D60 /* QuotedReplyTSResourceDataSource.swift in Sources */,
 				F9C5CD95289453B300548EEE /* ReachabilityManager.swift in Sources */,
 				F9C5CC3C289453B300548EEE /* ReactionFinder.swift in Sources */,
 				F9C5CC3D289453B300548EEE /* ReactionManager.swift in Sources */,
