@@ -1281,7 +1281,7 @@ extension GroupCallViewController: CallControlsDelegate {
     }
 
     func didPressJoin() {
-        guard call.canJoin else {
+        if call.isFull {
             let text: String
             if let maxDevices = ringRtcCall.maxDevices {
                 let formatString = OWSLocalizedString(

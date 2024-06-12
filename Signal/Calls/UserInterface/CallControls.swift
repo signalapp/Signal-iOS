@@ -393,7 +393,7 @@ private class CallControlsViewModel {
     }
 
     var joinButtonConfig: JoinButtonConfiguration {
-        if !call.canJoin {
+        if call.isFull {
             // Make the button look disabled, but don't actually disable it.
             // We want to show a toast if the user taps anyway.
             return JoinButtonConfiguration(

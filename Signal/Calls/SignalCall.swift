@@ -80,12 +80,12 @@ enum CallMode {
         }
     }
 
-    var canJoin: Bool {
+    var isFull: Bool {
         switch self {
         case .individual:
-            return true
+            return false
         case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
-            return !call.ringRtcCall.isFull
+            return call.ringRtcCall.isFull
         }
     }
 
@@ -157,7 +157,7 @@ class SignalCall: CallManagerCallReference {
     var isOutgoingAudioMuted: Bool { mode.isOutgoingAudioMuted }
     var isOutgoingVideoMuted: Bool { mode.isOutgoingVideoMuted }
     var joinState: JoinState { mode.joinState }
-    var canJoin: Bool { mode.canJoin }
+    var isFull: Bool { mode.isFull }
     var caller: SignalServiceAddress? { mode.caller }
     var videoCaptureController: VideoCaptureController { mode.videoCaptureController }
 
