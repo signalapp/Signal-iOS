@@ -61,7 +61,7 @@ public protocol TSResourceManager {
     ) throws
 
     func createOversizeTextAttachmentStream(
-        consuming dataSource: DataSource,
+        consuming dataSource: OversizeTextDataSource,
         message: TSMessage,
         tx: DBWriteTransaction
     ) throws

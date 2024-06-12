@@ -35,16 +35,25 @@ public class AttachmentMultisend {
             let preparedMessages: [PreparedOutgoingMessage]
             let sendPromises: [Promise<Void>]
             do {
+                let destinations = try Self.prepareForSending(
+                    approvedMessageBody,
+                    to: conversations,
+                    db: deps.databaseStorage,
+                    attachmentValidator: deps.attachmentValidator
+                )
+
                 let segmentedAttachments = try await segmentAttachmentsIfNecessary(
                     for: conversations,
                     approvedAttachments: approvedAttachments
                 )
+
                 (threads, preparedMessages, sendPromises) = try await deps.databaseStorage.awaitableWrite { tx in
                     let threads: [TSThread]
                     let preparedMessages: [PreparedOutgoingMessage]
                     (threads, preparedMessages) = try prepareForSending(
-                        conversations: conversations,
-                        approvedMessageBody: approvedMessageBody,
+                        destinations: destinations,
+                        // Stories get an untruncated message body
+                        messageBodyForStories: approvedMessageBody,
                         approvedAttachments: segmentedAttachments,
                         tx: tx
                     )
@@ -147,6 +156,7 @@ public class AttachmentMultisend {
 
     private struct Dependencies {
         let attachmentManager: AttachmentManager
+        let attachmentValidator: TSResourceContentValidator
         let contactsMentionHydrator: ContactsMentionHydrator.Type
         let databaseStorage: SDSDatabaseStorage
         let imageQualityLevel: ImageQualityLevel.Type
@@ -156,6 +166,7 @@ public class AttachmentMultisend {
 
     private static var deps = Dependencies(
         attachmentManager: DependenciesBridge.shared.attachmentManager,
+        attachmentValidator: DependenciesBridge.shared.tsResourceContentValidator,
         contactsMentionHydrator: ContactsMentionHydrator.self,
         databaseStorage: SSKEnvironment.shared.databaseStorage,
         imageQualityLevel: ImageQualityLevel.self,
@@ -201,8 +212,8 @@ public class AttachmentMultisend {
     // MARK: - Preparing messages
 
     private class func prepareForSending(
-        conversations: [ConversationItem],
-        approvedMessageBody: MessageBody?,
+        destinations: [Destination],
+        messageBodyForStories: MessageBody?,
         approvedAttachments: [SignalAttachment.SegmentAttachmentResult],
         tx: SDSAnyWriteTransaction
     ) throws -> ([TSThread], [PreparedOutgoingMessage]) {
@@ -211,17 +222,16 @@ public class AttachmentMultisend {
         })
         let unsegmentedAttachments = approvedAttachments.map(\.original)
 
-        var nonStoryThreads = [TSThread]()
+        var nonStoryThreads = [Destination]()
         var privateStoryThreads = [TSPrivateStoryThread]()
         var groupStoryThreads = [TSGroupThread]()
-        for conversation in conversations {
-            guard let thread = conversation.getOrCreateThread(transaction: tx) else {
-                throw OWSAssertionError("Missing thread for conversation")
-            }
+        for destination in destinations {
+            let conversation = destination.conversationItem
+            let thread = destination.thread
             switch conversation.outgoingMessageType {
             case .message:
                 owsAssertDebug(conversation.limitsVideoAttachmentLengthForStories == false)
-                nonStoryThreads.append(thread)
+                nonStoryThreads.append(destination)
             case .storyMessage where thread is TSPrivateStoryThread:
                 owsAssertDebug(conversation.limitsVideoAttachmentLengthForStories == true)
                 privateStoryThreads.append(thread as! TSPrivateStoryThread)
@@ -234,15 +244,14 @@ public class AttachmentMultisend {
         }
 
         let nonStoryMessages = try prepareNonStoryMessages(
-            threads: nonStoryThreads,
-            approvedMessageBody: approvedMessageBody,
+            threadDestinations: nonStoryThreads,
             unsegmentedAttachments: unsegmentedAttachments,
             tx: tx
         )
 
         let storyMessageBuilders = try storyMessageBuilders(
             segmentedAttachments: segmentedAttachments,
-            approvedMessageBody: approvedMessageBody,
+            approvedMessageBody: messageBodyForStories,
             tx: tx
         )
 
@@ -257,7 +266,7 @@ public class AttachmentMultisend {
             tx: tx
         )
         let preparedMessages = nonStoryMessages + groupStoryMessages + privateStoryMessages
-        let allThreads = nonStoryThreads + groupStoryThreads + privateStoryThreads
+        let allThreads = nonStoryThreads.map(\.thread) + groupStoryThreads + privateStoryThreads
         return (allThreads, preparedMessages)
     }
 
@@ -305,12 +314,12 @@ public class AttachmentMultisend {
     // MARK: Preparing Non-Story Messages
 
     private class func prepareNonStoryMessages(
-        threads: [TSThread],
-        approvedMessageBody: MessageBody?,
+        threadDestinations: [Destination],
         unsegmentedAttachments: [SignalAttachment],
         tx: SDSAnyWriteTransaction
     ) throws -> [PreparedOutgoingMessage] {
-        return try threads.map { thread in
+        return try threadDestinations.map { destination in
+            let thread = destination.thread
             // If this thread has a pending message request, treat it as accepted.
             ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequest(
                 thread,
@@ -319,7 +328,7 @@ public class AttachmentMultisend {
             )
 
             let preparedMessage = try prepareNonStoryMessage(
-                messageBody: approvedMessageBody,
+                messageBody: destination.messageBody,
                 attachments: unsegmentedAttachments,
                 thread: thread,
                 tx: tx
@@ -332,7 +341,7 @@ public class AttachmentMultisend {
     }
 
     private class func prepareNonStoryMessage(
-        messageBody: MessageBody?,
+        messageBody: ValidatedTSMessageBody?,
         attachments: [SignalAttachment],
         thread: TSThread,
         tx: SDSAnyWriteTransaction

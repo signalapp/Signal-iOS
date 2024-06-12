@@ -30,6 +30,12 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
     ) throws -> PendingAttachment {
         throw OWSAssertionError("Unimplemented")
     }
+
+    open func prepareOversizeTextIfNeeded(
+        from messageBody: MessageBody
+    ) throws -> ValidatedMessageBody? {
+        return .inline(messageBody)
+    }
 }
 
 #endif

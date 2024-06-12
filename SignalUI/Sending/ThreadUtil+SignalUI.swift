@@ -25,6 +25,10 @@ extension ThreadUtil {
         self.enqueueSendQueue.async {
             let unpreparedMessage: UnpreparedOutgoingMessage
             do {
+                let messageBody = try messageBody.map {
+                    try DependenciesBridge.shared.tsResourceContentValidator
+                        .prepareOversizeTextIfNeeded(from: $0)
+                } ?? nil
                 let linkPreviewDataSource = try linkPreviewDraft.map {
                     try DependenciesBridge.shared.linkPreviewManager.buildDataSource(from: $0)
                 }
@@ -70,6 +74,10 @@ extension ThreadUtil {
         self.enqueueSendQueue.async {
             let unpreparedMessage: UnpreparedOutgoingMessage
             do {
+                let messageBody = try messageBody.map {
+                    try DependenciesBridge.shared.tsResourceContentValidator
+                        .prepareOversizeTextIfNeeded(from: $0)
+                } ?? nil
                 let linkPreviewDataSource = try linkPreviewDraft.map {
                     try DependenciesBridge.shared.linkPreviewManager.buildDataSource(from: $0)
                 }
@@ -168,14 +176,26 @@ extension UnpreparedOutgoingMessage {
     public static func build(
         thread: TSThread,
         timestamp: UInt64? = nil,
-        messageBody: MessageBody?,
+        messageBody: ValidatedTSMessageBody?,
         mediaAttachments: [SignalAttachment] = [],
         quotedReplyDraft: DraftQuotedReplyModel?,
         linkPreviewDataSource: LinkPreviewTSResourceDataSource?,
         transaction: SDSAnyReadTransaction
     ) -> UnpreparedOutgoingMessage {
 
-        let (truncatedBody, oversizeTextDataSource) = handleOversizeText(messageBody: messageBody)
+        let truncatedBody: MessageBody?
+        let oversizeTextDataSource: OversizeTextDataSource?
+        switch messageBody {
+        case .inline(let messageBody):
+            truncatedBody = messageBody
+            oversizeTextDataSource = nil
+        case .oversize(let truncated, let fullsize):
+            truncatedBody = truncated
+            oversizeTextDataSource = fullsize
+        case nil:
+            truncatedBody = nil
+            oversizeTextDataSource = nil
+        }
 
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
         let expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
@@ -226,13 +246,25 @@ extension UnpreparedOutgoingMessage {
     public static func buildForEdit(
         thread: TSThread,
         timestamp: UInt64,
-        messageBody: MessageBody?,
+        messageBody: ValidatedTSMessageBody?,
         quotedReplyEdit: MessageEdits.Edit<Void>,
         linkPreviewDataSource: LinkPreviewTSResourceDataSource?,
         editTarget: TSOutgoingMessage
     ) -> UnpreparedOutgoingMessage {
 
-        let (truncatedBody, oversizeTextDataSource) = handleOversizeText(messageBody: messageBody)
+        let truncatedBody: MessageBody?
+        let oversizeTextDataSource: OversizeTextDataSource?
+        switch messageBody {
+        case .inline(let messageBody):
+            truncatedBody = messageBody
+            oversizeTextDataSource = nil
+        case .oversize(let truncated, let fullsize):
+            truncatedBody = truncated
+            oversizeTextDataSource = fullsize
+        case nil:
+            truncatedBody = nil
+            oversizeTextDataSource = nil
+        }
 
         let edits = MessageEdits(
             timestamp: timestamp,
@@ -248,22 +280,5 @@ extension UnpreparedOutgoingMessage {
             quotedReplyEdit: quotedReplyEdit
         )
         return unpreparedMessage
-    }
-
-    private static func handleOversizeText(
-        messageBody: MessageBody?
-    ) -> (MessageBody?, DataSource?) {
-        guard let messageBody, !messageBody.text.isEmpty else {
-            return (nil, nil)
-        }
-        if let truncatedText = messageBody.text.trimmedIfNeeded(maxByteCount: Int(kOversizeTextMessageSizeThreshold)) {
-            let bodyRanges = messageBody.ranges
-            let truncatedBody = MessageBody(text: truncatedText, ranges: bodyRanges)
-
-            let dataSource = DataSourceValue.dataSource(withOversizeText: messageBody.text)
-            return (truncatedBody, dataSource)
-        } else {
-            return (messageBody, nil)
-        }
     }
 }

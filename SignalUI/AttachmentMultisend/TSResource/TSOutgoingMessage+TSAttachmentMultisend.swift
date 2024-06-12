@@ -25,13 +25,20 @@ extension TSOutgoingMessage {
                 transaction: transaction.unwrapGrdbRead
             ).asMessageBodyForForwarding()
 
+            // Legacy only codepath; don't need validation.
+            let validatedMessageBody = messageBodyForContext.map {
+                TSResourceContentValidatorImpl.prepareLegacyOversizeTextIfNeeded(
+                    from: $0
+                )
+            } ?? nil
+
             let preparedMessage: PreparedOutgoingMessage
             let attachmentUUIDs: [UUID]
             switch destination.content {
             case .media(let attachments):
                 attachmentUUIDs = attachments.map(\.id)
                 preparedMessage = try Self.createUnsentMessage(
-                    body: messageBodyForContext,
+                    body: validatedMessageBody,
                     mediaAttachments: attachments.map(\.value),
                     thread: destination.thread,
                     transaction: transaction
@@ -59,7 +66,7 @@ extension TSOutgoingMessage {
     }
 
     private class func createUnsentMessage(
-        body messageBody: MessageBody?,
+        body messageBody: ValidatedTSMessageBody?,
         mediaAttachments: [SignalAttachment],
         thread: TSThread,
         transaction: SDSAnyWriteTransaction

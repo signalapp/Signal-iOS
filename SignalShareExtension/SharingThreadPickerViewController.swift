@@ -240,10 +240,11 @@ extension SharingThreadPickerViewController {
 
             return await self.sendToOutgoingMessageThreads(
                 selectedConversations: selectedConversations,
-                messageBlock: { thread, tx in
+                messageBody: messageBody,
+                messageBlock: { destination, tx in
                     let unpreparedMessage = UnpreparedOutgoingMessage.build(
-                        thread: thread,
-                        messageBody: messageBody,
+                        thread: destination.thread,
+                        messageBody: destination.messageBody,
                         quotedReplyDraft: nil,
                         linkPreviewDataSource: linkPreviewDataSource,
                         transaction: tx
@@ -274,10 +275,14 @@ extension SharingThreadPickerViewController {
             }
             return await self.sendToOutgoingMessageThreads(
                 selectedConversations: selectedConversations,
-                messageBlock: { thread, tx in
-                    let builder = TSOutgoingMessageBuilder(thread: thread)
+                messageBody: nil,
+                messageBlock: { destination, tx in
+                    let builder = TSOutgoingMessageBuilder(thread: destination.thread)
                     let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-                    builder.expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: tx.asV2Read)
+                    builder.expiresInSeconds = dmConfigurationStore.durationSeconds(
+                        for: destination.thread,
+                        tx: tx.asV2Read
+                    )
                     let message = builder.build(transaction: tx)
                     let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
                         message,
@@ -354,24 +359,32 @@ extension SharingThreadPickerViewController {
 
     private nonisolated func sendToOutgoingMessageThreads(
         selectedConversations: [ConversationItem],
-        messageBlock: @escaping (TSThread, SDSAnyWriteTransaction) throws -> PreparedOutgoingMessage,
+        messageBody: MessageBody?,
+        messageBlock: @escaping (AttachmentMultisend.Destination, SDSAnyWriteTransaction) throws -> PreparedOutgoingMessage,
         storySendBlock: (([ConversationItem]) -> AttachmentMultisend.Result?)?
     ) async -> Result<Void, SendError> {
         let conversations = selectedConversations.filter { $0.outgoingMessageType == .message }
 
         let preparedNonStoryMessages: [PreparedOutgoingMessage]
         let nonStorySendPromises: [Promise<Void>]
+
         do {
+            let destinations = try AttachmentMultisend.prepareForSending(
+                messageBody,
+                to: conversations,
+                db: self.databaseStorage,
+                attachmentValidator: DependenciesBridge.shared.tsResourceContentValidator
+            )
+
             (preparedNonStoryMessages, nonStorySendPromises) = try await self.databaseStorage.awaitableWrite { tx in
-                let threads = self.threads(for: conversations, tx: tx)
-                let preparedMessages = try threads.map { thread in
-                    return try messageBlock(thread, tx)
+                let preparedMessages = try destinations.map { destination in
+                    return try messageBlock(destination, tx)
                 }
 
                 // We're sending a message to this thread, approve any pending message request
-                threads.forEach { thread in
+                destinations.forEach { destination in
                     ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequest(
-                        thread,
+                        destination.thread,
                         setDefaultTimerIfNecessary: true,
                         tx: tx
                     )

@@ -17,7 +17,7 @@ public class UnpreparedOutgoingMessage {
     public static func forMessage(
         _ message: TSOutgoingMessage,
         unsavedBodyMediaAttachments: [TSResourceDataSource] = [],
-        oversizeTextDataSource: DataSource? = nil,
+        oversizeTextDataSource: OversizeTextDataSource? = nil,
         linkPreviewDraft: LinkPreviewTSResourceDataSource? = nil,
         quotedReplyDraft: DraftQuotedReplyModel? = nil,
         messageStickerDraft: MessageStickerDraft? = nil,
@@ -50,7 +50,7 @@ public class UnpreparedOutgoingMessage {
     public static func forEditMessage(
         targetMessage: TSOutgoingMessage,
         edits: MessageEdits,
-        oversizeTextDataSource: DataSource?,
+        oversizeTextDataSource: OversizeTextDataSource?,
         linkPreviewDraft: LinkPreviewTSResourceDataSource?,
         quotedReplyEdit: MessageEdits.Edit<Void>
     ) -> UnpreparedOutgoingMessage {
@@ -130,7 +130,7 @@ public class UnpreparedOutgoingMessage {
         struct Persistable {
             let message: TSOutgoingMessage
             let unsavedBodyMediaAttachments: [TSResourceDataSource]
-            let oversizeTextDataSource: DataSource?
+            let oversizeTextDataSource: OversizeTextDataSource?
             let linkPreviewDraft: LinkPreviewTSResourceDataSource?
             let quotedReplyDraft: DraftQuotedReplyModel?
             let messageStickerDraft: MessageStickerDraft?
@@ -140,7 +140,7 @@ public class UnpreparedOutgoingMessage {
         struct EditMessage {
             let targetMessage: TSOutgoingMessage
             let edits: MessageEdits
-            let oversizeTextDataSource: DataSource?
+            let oversizeTextDataSource: OversizeTextDataSource?
             let linkPreviewDraft: LinkPreviewTSResourceDataSource?
             let quotedReplyEdit: MessageEdits.Edit<Void>
         }

@@ -86,6 +86,34 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         )
     }
 
+    public func prepareOversizeTextIfNeeded(
+        from messageBody: MessageBody
+    ) throws -> ValidatedMessageBody? {
+        guard !messageBody.text.isEmpty else {
+            return nil
+        }
+        let truncatedText = messageBody.text.trimmedIfNeeded(maxByteCount: Int(kOversizeTextMessageSizeThreshold))
+        guard let truncatedText else {
+            // No need to truncate
+            return .inline(messageBody)
+        }
+        let truncatedBody = MessageBody(text: truncatedText, ranges: messageBody.ranges)
+
+        guard let textData = messageBody.text.filterForDisplay.data(using: .utf8) else {
+            throw OWSAssertionError("Unable to encode text")
+        }
+        let input = Input.inMemory(textData)
+        let encryptionKey = Cryptography.randomAttachmentEncryptionKey()
+        let pendingAttachment = try self.validateContents(
+            input: input,
+            encryptionKey: encryptionKey,
+            mimeType: MimeType.textXSignalPlain.rawValue,
+            sourceFilename: nil
+        )
+
+        return .oversize(truncated: truncatedBody, fullsize: pendingAttachment)
+    }
+
     // MARK: - Private
 
     private struct PendingAttachmentImpl: PendingAttachment {

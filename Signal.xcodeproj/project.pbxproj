@@ -879,6 +879,7 @@
 		665CBD052BADC87A0059EA4F /* DraftQuotedReplyModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665CBD042BADC87A0059EA4F /* DraftQuotedReplyModel.swift */; };
 		665CBD072BAE259A0059EA4F /* StoryMessageTSAttachmentReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665CBD062BAE259A0059EA4F /* StoryMessageTSAttachmentReference.swift */; };
 		665CC7C52BF2BF8100E3A00B /* AVAsset+TSAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665CC7C42BF2BF8100E3A00B /* AVAsset+TSAttachment.swift */; };
+		665D9B452C111C6D00E73E94 /* AttachmentMultisend+OversizeText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665D9B442C111C6D00E73E94 /* AttachmentMultisend+OversizeText.swift */; };
 		665EF86D290C385B00F490D2 /* OWSNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665EF86C290C385B00F490D2 /* OWSNavigationController.swift */; };
 		665FAE8C2A02C0D400FA298D /* SpoilerRevealState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665FAE8B2A02C0D400FA298D /* SpoilerRevealState.swift */; };
 		6660725E2BAB36960084B3D2 /* AttachmentDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6660725D2BAB36960084B3D2 /* AttachmentDataSource.swift */; };
@@ -3797,6 +3798,7 @@
 		665CBD042BADC87A0059EA4F /* DraftQuotedReplyModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraftQuotedReplyModel.swift; sourceTree = "<group>"; };
 		665CBD062BAE259A0059EA4F /* StoryMessageTSAttachmentReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryMessageTSAttachmentReference.swift; sourceTree = "<group>"; };
 		665CC7C42BF2BF8100E3A00B /* AVAsset+TSAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVAsset+TSAttachment.swift"; sourceTree = "<group>"; };
+		665D9B442C111C6D00E73E94 /* AttachmentMultisend+OversizeText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentMultisend+OversizeText.swift"; sourceTree = "<group>"; };
 		665EF86C290C385B00F490D2 /* OWSNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSNavigationController.swift; sourceTree = "<group>"; };
 		665FAE8B2A02C0D400FA298D /* SpoilerRevealState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRevealState.swift; sourceTree = "<group>"; };
 		6660725D2BAB36960084B3D2 /* AttachmentDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDataSource.swift; sourceTree = "<group>"; };
@@ -8570,6 +8572,7 @@
 			isa = PBXGroup;
 			children = (
 				663A18A12BCDDC10005C1B41 /* TSResource */,
+				665D9B442C111C6D00E73E94 /* AttachmentMultisend+OversizeText.swift */,
 				661566712BCEDD58003F1647 /* AttachmentMultisend.swift */,
 			);
 			path = AttachmentMultisend;
@@ -12447,6 +12450,7 @@
 				763D7DDD27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift in Sources */,
 				3402AA4A271D9DCD0084CBAE /* AttachmentApprovalViewController.swift in Sources */,
 				3402AA34271D9DCD0084CBAE /* AttachmentItemCollection.swift in Sources */,
+				665D9B452C111C6D00E73E94 /* AttachmentMultisend+OversizeText.swift in Sources */,
 				661566722BCEDD58003F1647 /* AttachmentMultisend.swift in Sources */,
 				3402AA3D271D9DCD0084CBAE /* AttachmentPrepViewController.swift in Sources */,
 				66FF4D302BE2FA3400106033 /* AttachmentSharing+TSResource.swift in Sources */,

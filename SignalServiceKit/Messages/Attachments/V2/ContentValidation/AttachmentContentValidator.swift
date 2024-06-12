@@ -19,6 +19,13 @@ public protocol PendingAttachment {
     var orphanRecordId: OrphanedAttachmentRecord.IDType { get }
 }
 
+public enum ValidatedMessageBody {
+    /// The original body was small enough to send as-is.
+    case inline(MessageBody)
+    /// The original body was too large; we truncated and created an attachment with the untruncated text.
+    case oversize(truncated: MessageBody, fullsize: PendingAttachment)
+}
+
 public protocol AttachmentContentValidator {
 
     /// Validate and prepare a DataSource's contents, based on the provided mimetype.
@@ -47,6 +54,13 @@ public protocol AttachmentContentValidator {
         mimeType: String,
         sourceFilename: String?
     ) throws -> PendingAttachment
+
+    /// If the provided message body is large enough to require an oversize text
+    /// attachment, creates a pending one, alongside the truncated message body.
+    /// If not, just returns the message body as is.
+    func prepareOversizeTextIfNeeded(
+        from messageBody: MessageBody
+    ) throws -> ValidatedMessageBody?
 }
 
 extension AttachmentContentValidator {

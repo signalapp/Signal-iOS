@@ -302,14 +302,12 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         case .none:
             break
         case .dataSource(let dataSource):
+            guard let attachmentDataSource = dataSource.v2DataSource else {
+                throw OWSAssertionError("Missing v2 data source")
+            }
             try attachmentManager.createAttachmentStream(
                 consuming: .init(
-                    dataSource: AttachmentDataSource(
-                        mimeType: MimeType.textXSignalPlain.rawValue,
-                        contentHash: nil,
-                        sourceFilename: nil,
-                        dataSource: .dataSource(dataSource, shouldCopy: false)
-                    ),
+                    dataSource: attachmentDataSource,
                     owner: .messageOversizeText(.init(
                         messageRowId: latestRevisionRowId,
                         receivedAtTimestamp: latestRevision.receivedAtTimestamp,

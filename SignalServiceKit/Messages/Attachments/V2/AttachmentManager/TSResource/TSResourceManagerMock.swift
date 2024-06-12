@@ -32,7 +32,7 @@ public class TSResourceManagerMock: TSResourceManager {
     }
 
     public func createOversizeTextAttachmentStream(
-        consuming dataSource: DataSource,
+        consuming dataSource: OversizeTextDataSource,
         message: TSMessage,
         tx: DBWriteTransaction
     ) throws {

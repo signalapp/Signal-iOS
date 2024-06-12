@@ -212,13 +212,7 @@ public class EditManagerTSResourcesImpl: EditManagerTSResources {
                 throw OWSAssertionError("Can only set local data source oversize text on outgoing edits")
             }
             try tsAttachmentManager.createBodyAttachmentStreams(
-                consuming: [TSAttachmentDataSource(
-                    mimeType: MimeType.textXSignalPlain.rawValue,
-                    caption: nil,
-                    renderingFlag: .default,
-                    sourceFilename: nil,
-                    dataSource: .dataSource(dataSource, shouldCopy: false)
-                )],
+                consuming: [dataSource.legacyDataSource],
                 message: latestRevisionOutgoing,
                 tx: SDSDB.shimOnlyBridge(tx)
             )
