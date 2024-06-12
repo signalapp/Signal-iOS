@@ -26,7 +26,7 @@ public struct TSResourceDataSource {
 
         // V2 Cases
         case pendingAttachment(PendingAttachment)
-        case existingV2Attachment(id: Attachment.IDType, contentHash: Data?)
+        case existingV2Attachment(id: Attachment.IDType, contentHash: Data)
     }
 
     fileprivate init(
@@ -140,12 +140,12 @@ extension TSResourceDataSource {
             ))
         case .existingV2Attachment(let rowId, let contentHash):
             return .v2(
-                .init(
+                .existingAttachment(.init(
+                    id: rowId,
                     mimeType: mimeType,
                     contentHash: contentHash,
-                    sourceFilename: sourceFilename,
-                    dataSource: .existingAttachment(rowId)
-                ),
+                    sourceFilename: sourceFilename
+                )),
                 renderingFlag
             )
         case .existingLegacyAttachment(let uniqueId):
@@ -173,9 +173,9 @@ extension AttachmentDataSource {
             renderingFlag: .default,
             sourceFilename: sourceFilename,
             dataSource: {
-                switch self.dataSource {
-                case let .existingAttachment(attachmentId):
-                    return .existingV2Attachment(id: attachmentId, contentHash: contentHash)
+                switch self {
+                case let .existingAttachment(existingAttachment):
+                    return .existingV2Attachment(id: existingAttachment.id, contentHash: existingAttachment.contentHash)
                 case let .pendingAttachment(pendingAttachment):
                     return .pendingAttachment(pendingAttachment)
                 }

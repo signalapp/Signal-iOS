@@ -242,9 +242,9 @@ public class AttachmentManagerImpl: AttachmentManager {
             throw OWSAssertionError("Invalid mime type!")
         }
 
-        switch dataSource.dataSource {
-        case .existingAttachment(let id):
-            guard let existingAttachment = attachmentStore.fetch(id: id, tx: tx) else {
+        switch dataSource.source {
+        case .existingAttachment(let existingAttachmentMetadata):
+            guard let existingAttachment = attachmentStore.fetch(id: existingAttachmentMetadata.id, tx: tx) else {
                 throw OWSAssertionError("Missing existing attachment!")
             }
             guard let streamInfo = existingAttachment.streamInfo else {

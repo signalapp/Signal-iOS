@@ -7,54 +7,63 @@ import Foundation
 
 /// A DataSource for an attachment to be created locally, with
 /// additional required metadata.
-public struct AttachmentDataSource {
-    let mimeType: String
-    /// If we have it, the precomputed content hash.
-    /// Otherwise will be computed at insertion time.
-    let contentHash: Data?
-    let sourceFilename: String?
+public enum AttachmentDataSource {
 
-    let dataSource: Source
+    case existingAttachment(ExistingAttachmentSource)
+    case pendingAttachment(PendingAttachment)
 
-    public enum Source {
-        case existingAttachment(Attachment.IDType)
-        case pendingAttachment(PendingAttachment)
+    /// Reference to an existing attachment to use as the source of a new one.
+    public struct ExistingAttachmentSource {
+        public let id: Attachment.IDType
+        public let mimeType: String
+        public let contentHash: Data
+        /// Note: this comes from the AttachmentReference we are sourcing from.
+        public let sourceFilename: String?
     }
 
-    internal init(
-        mimeType: String,
-        // TODO: we can precompute this in more cases.
-        contentHash: Data?,
-        sourceFilename: String?,
-        dataSource: Source
-    ) {
-        self.mimeType = mimeType
-        self.contentHash = contentHash
-        self.dataSource = dataSource
-        self.sourceFilename = sourceFilename
+    public var mimeType: String {
+        switch self {
+        case .existingAttachment(let existingAttachmentSource):
+            return existingAttachmentSource.mimeType
+        case .pendingAttachment(let pendingAttachment):
+            return pendingAttachment.mimeType
+        }
+    }
+
+    public var contentHash: Data {
+        switch self {
+        case .existingAttachment(let existingAttachmentSource):
+            return existingAttachmentSource.contentHash
+        case .pendingAttachment(let pendingAttachment):
+            return pendingAttachment.sha256ContentHash
+        }
+    }
+
+    public var sourceFilename: String? {
+        switch self {
+        case .existingAttachment(let existingAttachmentSource):
+            return existingAttachmentSource.sourceFilename
+        case .pendingAttachment(let pendingAttachment):
+            return pendingAttachment.sourceFilename
+        }
     }
 
     public static func forwarding(
         existingAttachment: AttachmentStream,
         with reference: AttachmentReference
     ) -> AttachmentDataSource {
-        return .init(
+        return .existingAttachment(.init(
+            id: existingAttachment.attachment.id,
             mimeType: existingAttachment.mimeType,
             contentHash: existingAttachment.contentHash,
-            sourceFilename: reference.sourceFilename,
-            dataSource: .existingAttachment(existingAttachment.attachment.id)
-        )
+            sourceFilename: reference.sourceFilename
+        ))
     }
 
     public static func from(
         pendingAttachment: PendingAttachment
     ) -> AttachmentDataSource {
-        return .init(
-            mimeType: pendingAttachment.mimeType,
-            contentHash: pendingAttachment.sha256ContentHash,
-            sourceFilename: pendingAttachment.sourceFilename,
-            dataSource: .pendingAttachment(pendingAttachment)
-        )
+        return .pendingAttachment(pendingAttachment)
     }
 }
 
@@ -64,7 +73,6 @@ public struct OwnedAttachmentDataSource {
 
     public var mimeType: String { source.mimeType }
     public var contentHash: Data? { source.contentHash }
-    public var dataSource: AttachmentDataSource.Source { source.dataSource }
 
     public init(dataSource: AttachmentDataSource, owner: AttachmentReference.OwnerBuilder) {
         self.source = dataSource
