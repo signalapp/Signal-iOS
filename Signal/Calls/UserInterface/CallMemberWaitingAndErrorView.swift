@@ -175,3 +175,12 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
         fatalError("init(coder:) has not been implemented")
     }
 }
+
+enum CallMemberErrorState {
+    case blocked(SignalServiceAddress)
+    case noMediaKeys(SignalServiceAddress)
+}
+
+protocol CallMemberErrorPresenter: AnyObject {
+    func presentErrorSheet(for error: CallMemberErrorState)
+}

@@ -95,13 +95,6 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
     // MARK: - Contact Views
 
     private lazy var contactNameLabel = MarqueeLabel()
-    private lazy var contactAvatarView = ConversationAvatarView(
-        sizeClass: .customDiameter(200),
-        localUserDisplayMode: .asUser,
-        badged: false)
-    // TODO: When `remoteMemberView` is a `CallMemberView`, a camera-off avatar
-    // will not need to be handled by `IndividualCallVC`.
-    private lazy var contactAvatarContainerView = UIView.container()
     private lazy var callStatusLabel = UILabel()
     private lazy var backButton = UIButton()
 
@@ -145,7 +138,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
 
     // MARK: - Video Views
 
-    private var remoteMemberView: CallMemberView_IndividualRemoteBridge
+    private var remoteMemberView: CallMemberView
     private weak var remoteVideoTrack: RTCVideoTrack?
 
     private var localVideoView: CallMemberView
@@ -169,24 +162,13 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         self.individualCall = individualCall
         self.thread = TSContactThread.getOrCreateThread(contactAddress: individualCall.remoteAddress)
 
-        if FeatureFlags.useCallMemberComposableViewsForRemoteUserInIndividualCalls {
-            let type = CallMemberView.MemberType.remoteInIndividual(individualCall)
-            remoteMemberView = CallMemberView(type: type)
-        } else {
-            remoteMemberView = RemoteVideoView()
-        }
-
-        let type = CallMemberView.MemberType.local
-        localVideoView = CallMemberView(type: type)
+        let type = CallMemberView.MemberType.remoteInIndividual(individualCall)
+        remoteMemberView = CallMemberView(type: type)
+        localVideoView = CallMemberView(type: CallMemberView.MemberType.local)
 
         super.init()
 
         self.localVideoView.animatableLocalMemberViewDelegate = self
-
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(updateOrientationForPhone),
-                                               name: CallService.phoneOrientationDidChange,
-                                               object: nil)
     }
 
     deinit {
@@ -245,11 +227,8 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if FeatureFlags.useCallMemberComposableViewsForRemoteUserInIndividualCalls {
-            // `IndividualCallVC` should not manage showing/hiding the new member view.
-            remoteMemberView.applyChangesToCallMemberViewAndVideoView { view in
-                view.isHidden = false
-            }
+        remoteMemberView.applyChangesToCallMemberViewAndVideoView { view in
+            view.isHidden = false
         }
 
         contactNameLabel.text = databaseStorage.read { tx in
@@ -392,23 +371,14 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
 
         topGradientView.addSubview(callStatusLabel)
 
-        contactAvatarContainerView.addSubview(contactAvatarView)
-        if let videoView = localVideoView.associatedCallMemberVideoView {
-            view.insertSubview(contactAvatarContainerView, belowSubview: videoView)
-        }
-
         backButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "leaveCallViewButton")
         contactNameLabel.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "contactNameLabel")
         callStatusLabel.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "callStatusLabel")
-        contactAvatarView.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "contactAvatarView")
     }
 
     @objc
     private func updateAvatarImage() {
         databaseStorage.read { transaction in
-            contactAvatarView.update(transaction) { config in
-                config.dataSource = .thread(thread)
-            }
             backgroundAvatarView.image = contactsManagerImpl.avatarImage(forAddress: thread.contactAddress,
                                                                          shouldValidate: true,
                                                                          transaction: transaction)
@@ -486,7 +456,6 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
 
         let contactVSpacing: CGFloat = 3
         let bottomMargin = CGFloat.scaleFromIPhone5To7Plus(23, 41)
-        let avatarMargin = CGFloat.scaleFromIPhone5To7Plus(25, 50)
 
         backButton.autoPinEdge(toSuperviewEdge: .leading)
 
@@ -508,12 +477,6 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
             view.autoPinEdgesToSuperviewEdges()
         }
 
-        contactAvatarContainerView.autoPinEdge(.top, to: .bottom, of: callStatusLabel, withOffset: +avatarMargin)
-        contactAvatarContainerView.autoPinEdge(.bottom, to: .top, of: callControls, withOffset: -avatarMargin)
-        contactAvatarContainerView.autoPinWidthToSuperview(withMargin: avatarMargin)
-
-        contactAvatarView.autoCenterInSuperview()
-
         incomingVideoCallControls.autoPinEdge(toSuperviewEdge: .top)
 
         for controls in [incomingVideoCallControls, incomingAudioCallControls] {
@@ -524,12 +487,6 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
     }
 
     internal func updateRemoteVideoLayout() {
-        if !FeatureFlags.useCallMemberComposableViewsForRemoteUserInIndividualCalls {
-            // `IndividualCallVC` manages showing/hiding the old member view.
-            remoteMemberView.applyChangesToCallMemberViewAndVideoView { view in
-                view.isHidden = !self.hasRemoteVideoTrack
-            }
-        }
         updateCallUI()
     }
 
@@ -806,7 +763,6 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         // Rework control state if remote video is available.
         remoteMemberView.isFullScreen = true
         remoteMemberView.isScreenShare = individualCall.isRemoteSharingScreen
-        contactAvatarView.isHidden = self.individualCall.isRemoteVideoEnabled || isRenderingLocalVanityVideo
 
         // Layout controls immediately to avoid spurious animation.
         for controls in [incomingVideoCallControls, incomingAudioCallControls, callControls] {
@@ -888,54 +844,21 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         incomingVideoCallControls.removeFromSuperview()
         callControls.removeFromSuperview()
         backButton.removeFromSuperview()
-
-        let needPermissionStack = UIStackView()
-        needPermissionStack.axis = .vertical
-        needPermissionStack.spacing = 20
-
-        view.addSubview(needPermissionStack)
-        needPermissionStack.autoPinWidthToSuperview(withMargin: 16)
-        needPermissionStack.autoVCenterInSuperview()
-
-        needPermissionStack.addArrangedSubview(contactAvatarContainerView)
-        contactAvatarContainerView.autoSetDimension(.height, toSize: 200)
-
-        let shortName = SDSDatabaseStorage.shared.read {
-            return self.contactsManager.displayName(
-                for: self.thread.contactAddress,
-                tx: $0
-            ).resolvedValue(useShortNameIfAvailable: true)
+        remoteMemberView.applyChangesToCallMemberViewAndVideoView { view in
+            view.removeFromSuperview()
+        }
+        localVideoView.applyChangesToCallMemberViewAndVideoView { view in
+            view.removeFromSuperview()
         }
 
-        let needPermissionLabel = UILabel()
-        needPermissionLabel.text = String(
-            format: OWSLocalizedString("CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT",
-                                      comment: "Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}."),
-            shortName
-        )
-        needPermissionLabel.numberOfLines = 0
-        needPermissionLabel.lineBreakMode = .byWordWrapping
-        needPermissionLabel.textAlignment = .center
-        needPermissionLabel.textColor = Theme.darkThemePrimaryColor
-        needPermissionLabel.font = .dynamicTypeBody
-        needPermissionStack.addArrangedSubview(needPermissionLabel)
-
-        let okayButton = OWSFlatButton()
-        okayButton.useDefaultCornerRadius()
-        okayButton.setTitle(title: CommonStrings.okayButton, font: UIFont.dynamicTypeBody.semibold(), titleColor: Theme.accentBlueColor)
-        okayButton.setBackgroundColors(upColor: .ows_gray05)
-        okayButton.contentEdgeInsets = UIEdgeInsets(top: 13, left: 34, bottom: 13, right: 34)
-
-        okayButton.setPressedBlock { [weak self] in
-            self?.dismissImmediately(completion: nil)
-        }
-
-        let okayButtonContainer = UIView()
-        okayButtonContainer.addSubview(okayButton)
-        okayButton.autoPinHeightToSuperview()
-        okayButton.autoHCenterInSuperview()
-
-        needPermissionStack.addArrangedSubview(okayButtonContainer)
+        let permissionErrorView = PermissionErrorView(
+            thread: self.thread,
+            contactManager: self.contactsManager) { [weak self] in
+                self?.dismissImmediately(completion: nil)
+            }
+        view.addSubview(permissionErrorView)
+        permissionErrorView.autoPinWidthToSuperview(withMargin: 16)
+        permissionErrorView.autoVCenterInSuperview()
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 10) { [weak self] in
             self?.dismissImmediately(completion: nil)
@@ -944,19 +867,6 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
 
     func updateCallDuration() {
         updateCallStatusLabel()
-    }
-
-    @objc
-    private func updateOrientationForPhone(_ notification: Notification) {
-        let rotationAngle = notification.object as! CGFloat
-
-        if view.window == nil {
-            self.contactAvatarView.transform = CGAffineTransform(rotationAngle: rotationAngle)
-        } else {
-            UIView.animate(withDuration: 0.3, delay: 0, options: .allowUserInteraction) {
-                self.contactAvatarView.transform = CGAffineTransform(rotationAngle: rotationAngle)
-            }
-        }
     }
 
     // MARK: - Video control timeout
@@ -1134,7 +1044,7 @@ extension IndividualCallViewController: UIGestureRecognizerDelegate {
 }
 
 extension IndividualCallViewController: CallViewControllerWindowReference {
-    var remoteVideoViewReference: CallMemberView_RemoteMemberBridge { remoteMemberView }
+    var remoteVideoViewReference: CallMemberView { remoteMemberView }
     var localVideoViewReference: CallMemberView { localVideoView }
     var remoteVideoAddress: SignalServiceAddress { thread.contactAddress }
 
@@ -1160,7 +1070,7 @@ extension IndividualCallViewController: CallViewControllerWindowReference {
         }
 
         localVideoView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { aView in
-            view.insertSubview(aView, aboveSubview: contactAvatarContainerView)
+            view.insertSubview(aView, aboveSubview: remoteMemberView)
         }
 
         updateLocalVideoLayout()
@@ -1248,5 +1158,95 @@ extension IndividualCallViewController: AnimatableLocalMemberViewDelegate {
     func animatableLocalMemberViewWillBeginAnimation(_ localMemberView: CallMemberView) {
         self.isPipAnimationInProgress = true
         self.flipCameraTooltipManager.dismissTooltip()
+    }
+}
+
+private class PermissionErrorView: UIView {
+    private lazy var okayButton: OWSFlatButton = {
+        let okayButton = OWSFlatButton()
+        okayButton.useDefaultCornerRadius()
+        okayButton.setTitle(title: CommonStrings.okayButton, font: UIFont.dynamicTypeBody.semibold(), titleColor: Theme.accentBlueColor)
+        okayButton.setBackgroundColors(upColor: .ows_gray05)
+        okayButton.contentEdgeInsets = UIEdgeInsets(top: 13, left: 34, bottom: 13, right: 34)
+        return okayButton
+    }()
+
+    private lazy var contactAvatarView: ConversationAvatarView = {
+        let contactAvatarView = ConversationAvatarView(
+            sizeClass: .customDiameter(200),
+            localUserDisplayMode: .asUser,
+            badged: false
+        )
+        databaseStorage.read { transaction in
+            contactAvatarView.update(transaction) { config in
+                config.dataSource = .thread(thread)
+            }
+        }
+        return contactAvatarView
+    }()
+
+    private lazy var needPermissionLabel: UILabel = {
+        let shortName = SDSDatabaseStorage.shared.read {
+            return contactManager.displayName(
+                for: thread.contactAddress,
+                tx: $0
+            ).resolvedValue(useShortNameIfAvailable: true)
+        }
+
+        let needPermissionLabel = UILabel()
+        needPermissionLabel.text = String(
+            format: OWSLocalizedString(
+                "CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT",
+                comment: "Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}."
+            ),
+            shortName
+        )
+        needPermissionLabel.numberOfLines = 0
+        needPermissionLabel.lineBreakMode = .byWordWrapping
+        needPermissionLabel.textAlignment = .center
+        needPermissionLabel.textColor = Theme.darkThemePrimaryColor
+        needPermissionLabel.font = .dynamicTypeBody
+
+        return needPermissionLabel
+    }()
+
+    private let thread: TSContactThread
+    private let contactManager: ContactManager
+
+    init(
+        thread: TSContactThread,
+        contactManager: ContactManager,
+        okayButtonWasTapped: @escaping () -> Void
+    ) {
+        self.thread = thread
+        self.contactManager = contactManager
+
+        super.init(frame: .zero)
+
+        self.addSubview(contactAvatarView)
+        contactAvatarView.autoSetDimension(.height, toSize: 200)
+
+        self.addSubview(needPermissionLabel)
+
+        okayButton.setPressedBlock(okayButtonWasTapped)
+        self.addSubview(okayButton)
+
+        contactAvatarView.translatesAutoresizingMaskIntoConstraints = false
+        needPermissionLabel.translatesAutoresizingMaskIntoConstraints = false
+        okayButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            contactAvatarView.topAnchor.constraint(equalTo: self.topAnchor),
+            contactAvatarView.bottomAnchor.constraint(equalTo: needPermissionLabel.topAnchor, constant: -20),
+            needPermissionLabel.bottomAnchor.constraint(equalTo: okayButton.topAnchor, constant: -20),
+            okayButton.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            needPermissionLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            needPermissionLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor)
+        ])
+        contactAvatarView.autoHCenterInSuperview()
+        okayButton.autoHCenterInSuperview()
+    }
+
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }

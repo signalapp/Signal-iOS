@@ -35,7 +35,7 @@ class GroupCallViewController: UIViewController {
     private lazy var videoOverflow = GroupCallVideoOverflow(call: call, groupCall: groupCall, delegate: self)
 
     private let localMemberView: CallMemberView
-    private let speakerView: CallMemberView_GroupBridge
+    private let speakerView: CallMemberView
 
     private var didUserEverSwipeToSpeakerView = true
     private var didUserEverSwipeToScreenShare = true
@@ -124,15 +124,9 @@ class GroupCallViewController: UIViewController {
     init(call: SignalCall, groupCall: GroupCall) {
         // TODO: Eventually unify UI for group and individual calls
 
-        if FeatureFlags.useCallMemberComposableViewsForRemoteUsersInGroupCalls {
-            let type = CallMemberView.MemberType.remoteInGroup(.speaker)
-            speakerView = CallMemberView(type: type)
-        } else {
-            speakerView = GroupCallRemoteMemberView(context: .speaker)
-        }
-
-        let type = CallMemberView.MemberType.local
-        localMemberView = CallMemberView(type: type)
+        let type = CallMemberView.MemberType.remoteInGroup(.speaker)
+        speakerView = CallMemberView(type: type)
+        localMemberView = CallMemberView(type: CallMemberView.MemberType.local)
 
         self.call = call
         self.groupCall = groupCall
@@ -579,14 +573,10 @@ class GroupCallViewController: UIViewController {
         }
 
         if let speakerState = ringRtcCall.remoteDeviceStates.sortedBySpeakerTime.first {
-            if let speakerView = speakerView as? CallMemberView {
-                speakerView.configure(
-                    call: call,
-                    remoteGroupMemberDeviceState: speakerState
-                )
-            } else if let speakerView = speakerView as? GroupCallRemoteMemberView {
-                speakerView.configure(call: call, device: speakerState)
-            }
+            speakerView.configure(
+                call: call,
+                remoteGroupMemberDeviceState: speakerState
+            )
         } else {
             speakerView.clearConfiguration()
         }
@@ -843,7 +833,7 @@ class GroupCallViewController: UIViewController {
 
 extension GroupCallViewController: CallViewControllerWindowReference {
     var localVideoViewReference: CallMemberView { localMemberView }
-    var remoteVideoViewReference: CallMemberView_RemoteMemberBridge { speakerView }
+    var remoteVideoViewReference: CallMemberView { speakerView }
 
     var remoteVideoAddress: SignalServiceAddress {
         guard let firstMember = ringRtcCall.remoteDeviceStates.sortedByAddedTime.first else {

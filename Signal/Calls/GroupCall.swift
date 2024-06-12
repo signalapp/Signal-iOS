@@ -132,10 +132,7 @@ class GroupCall: SignalRingRTC.GroupCallDelegate {
     }
 
     func groupCall(onRaisedHands groupCall: SignalRingRTC.GroupCall, raisedHands: [DemuxId]) {
-        guard
-            FeatureFlags.callRaiseHandReceiveSupport,
-            FeatureFlags.useCallMemberComposableViewsForRemoteUsersInGroupCalls
-        else { return }
+        guard FeatureFlags.callRaiseHandReceiveSupport else { return }
 
         self.raisedHands = raisedHands
 

@@ -1892,7 +1892,6 @@
 		D9F9A6412C06645F00EF13EC /* DeleteForMeOutgoingSyncMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A6402C06645F00EF13EC /* DeleteForMeOutgoingSyncMessageManager.swift */; };
 		D9F9A6452C07ADEB00EF13EC /* DeleteForMeOutgoingSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A6442C07ADEB00EF13EC /* DeleteForMeOutgoingSyncMessage.swift */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
-		E14592632B59A86E00536BF2 /* GroupCallMemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E14592622B59A86E00536BF2 /* GroupCallMemberView.swift */; };
 		E14EDF6E2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E14EDF6D2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift */; };
 		E16B440E2BBF242C00D2583E /* ReactionsModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E16B440D2BBF242C00D2583E /* ReactionsModelTest.swift */; };
 		E17283DE2B2A713C00302DC7 /* CallControlsConfirmationToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17283DD2B2A713C00302DC7 /* CallControlsConfirmationToast.swift */; };
@@ -4834,7 +4833,6 @@
 		D9F9A63E2C013EF100EF13EC /* ThreadSoftDeleteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSoftDeleteManager.swift; sourceTree = "<group>"; };
 		D9F9A6402C06645F00EF13EC /* DeleteForMeOutgoingSyncMessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeOutgoingSyncMessageManager.swift; sourceTree = "<group>"; };
 		D9F9A6442C07ADEB00EF13EC /* DeleteForMeOutgoingSyncMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteForMeOutgoingSyncMessage.swift; sourceTree = "<group>"; };
-		E14592622B59A86E00536BF2 /* GroupCallMemberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallMemberView.swift; sourceTree = "<group>"; };
 		E14EDF6D2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientContextMenuHelper.swift; sourceTree = "<group>"; };
 		E16B440D2BBF242C00D2583E /* ReactionsModelTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReactionsModelTest.swift; sourceTree = "<group>"; };
 		E17283DD2B2A713C00302DC7 /* CallControlsConfirmationToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallControlsConfirmationToast.swift; sourceTree = "<group>"; };
@@ -8967,7 +8965,6 @@
 				E1DB073C2BA4FEDD00181E4C /* FlipCameraTooltip.swift */,
 				32B2A433256CDC42001D66C7 /* GroupCallErrorView.swift */,
 				88ABB8BC25352B8200229EAA /* GroupCallMemberSheet.swift */,
-				E14592622B59A86E00536BF2 /* GroupCallMemberView.swift */,
 				88D6E93B254CE317003142D9 /* GroupCallNotificationView.swift */,
 				328EF3DB25782A6A00D5C31D /* GroupCallSwipeToastView.swift */,
 				88CB462125843758001900F2 /* GroupCallTooltip.swift */,
@@ -13058,7 +13055,6 @@
 				32AC5CF1255F875C00829BD8 /* GroupCallAccessoryMessageDelegate.swift in Sources */,
 				32B2A434256CDC42001D66C7 /* GroupCallErrorView.swift in Sources */,
 				88ABB8BD25352B8300229EAA /* GroupCallMemberSheet.swift in Sources */,
-				E14592632B59A86E00536BF2 /* GroupCallMemberView.swift in Sources */,
 				88D6E93C254CE317003142D9 /* GroupCallNotificationView.swift in Sources */,
 				D95777BE2B472AA100CFE3AE /* GroupCallRecordRingingCleanupManager.swift in Sources */,
 				8814D9662564A33E00A472E3 /* GroupCallRemoteVideoManager.swift in Sources */,

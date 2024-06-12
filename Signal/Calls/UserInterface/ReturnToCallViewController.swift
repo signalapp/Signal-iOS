@@ -8,7 +8,7 @@ import SignalUI
 
 protocol CallViewControllerWindowReference: AnyObject {
     var localVideoViewReference: CallMemberView { get }
-    var remoteVideoViewReference: CallMemberView_RemoteMemberBridge { get }
+    var remoteVideoViewReference: CallMemberView { get }
     var remoteVideoAddress: SignalServiceAddress { get }
     var view: UIView! { get }
 

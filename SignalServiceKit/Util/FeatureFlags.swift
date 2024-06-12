@@ -67,9 +67,6 @@ public class FeatureFlags: NSObject {
 
     public static let isPrerelease = build.includes(.beta)
 
-    public static let useCallMemberComposableViewsForRemoteUsersInGroupCalls = build.includes(.production)
-    public static let useCallMemberComposableViewsForRemoteUserInIndividualCalls = build.includes(.production)
-
     @objc
     public static var notificationServiceExtension: Bool {
         // The CallKit APIs for the NSE are only available from iOS 14.5 and on,

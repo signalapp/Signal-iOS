@@ -24,7 +24,7 @@ protocol CallMemberComposableView: UIView {
     func clearConfiguration()
 }
 
-class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_IndividualRemoteBridge {
+class CallMemberView: UIView {
     private let callMemberCameraOffView: CallMemberCameraOffView
     private let callMemberWaitingAndErrorView: CallMemberWaitingAndErrorView
     private let callMemberChromeOverlayView: CallMemberChromeOverlayView
@@ -187,8 +187,6 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: CallMemberView_GroupBridge
-
     var associatedCallMemberVideoView: CallMemberVideoView? {
         return self._associatedCallMemberVideoView
     }
@@ -204,6 +202,20 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
         )
     }
 
+    /// Applies the changes in the `apply` block to both the `CallMemberView` and
+    /// its `associatedCallMemberVideoView`. (See documentation of the latter to
+    /// understand why it is not simply a subview of the former. The tl;dr is:
+    /// pip animations were finicky and much easier to get right with these views
+    /// as siblings.) Since many layout changes made to `CallMemberView` also need
+    /// to be made to `associatedCallMemberVideoView`, this method acts a convenience
+    /// wrapper to apply the changes to both at once.
+    ///
+    /// - Parameter startWithVideoView: Whether the `apply` block should be applied first
+    ///   to the `associatedCallMemberVideoView` and then to the `CallMemberView`. For
+    ///   example, the order matters when `apply` includes adding subviews. Generally, we
+    ///   want the video view to sit underneath the `CallMemberView`.
+    /// - Parameter apply: The block that will be applied to each UIView - the `CallMemberView`
+    ///   and the `associatedCallMemberVideoView`.
     func applyChangesToCallMemberViewAndVideoView(startWithVideoView: Bool = true, apply: (UIView) -> Void) {
         if startWithVideoView {
             apply(self._associatedCallMemberVideoView)
@@ -231,8 +243,6 @@ class CallMemberView: UIView, CallMemberView_GroupBridge, CallMemberView_Individ
             self.callMemberWaitingAndErrorView.errorPresenter = newValue
         }
     }
-
-    // MARK: CallMemberView_IndividualRemoteBridge
 
     var isGroupCall: Bool {
         get {
@@ -622,51 +632,4 @@ protocol AnimatableLocalMemberViewDelegate: AnyObject {
 
     /// Called right before a contraction or expansion animation is triggered.
     func animatableLocalMemberViewWillBeginAnimation(_ localMemberView: CallMemberView)
-}
-
-// MARK: - Bridges
-
-/// For both local and remote call member views in group calls.
-protocol CallMemberView_GroupBridge: UIView, CallMemberView_RemoteMemberBridge {
-    var isCallMinimized: Bool { get set }
-    var errorPresenter: CallMemberErrorPresenter? { get set }
-    func cleanupVideoViews()
-    func configureRemoteVideo(device: RemoteDeviceState, context: CallMemberVisualContext)
-    func clearConfiguration()
-}
-
-protocol CallMemberView_RemoteMemberBridge: UIView {
-    /// Applies the changes in the `apply` block to both the `CallMemberView` and
-    /// its `associatedCallMemberVideoView`. (See documentation of the latter to
-    /// understand why it is not simply a subview of the former. The tl;dr is:
-    /// pip animations were finicky and much easier to get right with these views
-    /// as siblings.) Since many layout changes made to `CallMemberView` also need
-    /// to be made to `associatedCallMemberVideoView`, this method acts a convenience
-    /// wrapper to apply the changes to both at once.
-    ///
-    /// - Parameter startWithVideoView: Whether the `apply` block should be applied first
-    ///   to the `associatedCallMemberVideoView` and then to the `CallMemberView`. For
-    ///   example, the order matters when `apply` includes adding subviews. Generally, we
-    ///   want the video view to sit underneath the `CallMemberView`.
-    /// - Parameter apply: The block that will be applied to each UIView - the `CallMemberView`
-    ///   and the `associatedCallMemberVideoView`.
-    func applyChangesToCallMemberViewAndVideoView(startWithVideoView: Bool, apply: (UIView) -> Void)
-}
-
-extension CallMemberView_RemoteMemberBridge {
-    func applyChangesToCallMemberViewAndVideoView(startWithVideoView: Bool = true, apply: (UIView) -> Void) {
-        return self.applyChangesToCallMemberViewAndVideoView(startWithVideoView: startWithVideoView, apply: apply)
-    }
-}
-
-protocol CallMemberView_IndividualRemoteBridge: UIView, CallMemberView_RemoteMemberBridge {
-    var isGroupCall: Bool { get set }
-    var isScreenShare: Bool { get set }
-    var isFullScreen: Bool { get set }
-    var remoteVideoView: RemoteVideoView? { get }
-    func configure(
-        call: SignalCall,
-        isFullScreen: Bool,
-        remoteGroupMemberDeviceState: RemoteDeviceState?
-    )
 }

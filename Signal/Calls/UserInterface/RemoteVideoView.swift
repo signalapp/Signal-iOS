@@ -9,7 +9,7 @@ import SignalServiceKit
 import SignalUI
 import WebRTC
 
-class RemoteVideoView: UIView, CallMemberView_IndividualRemoteBridge {
+class RemoteVideoView: UIView {
     private lazy var rtcMetalView = RTCMTLVideoView(frame: bounds)
 
     override init(frame: CGRect) {
@@ -186,20 +186,4 @@ extension RemoteVideoView: RTCVideoRenderer {
             }
         }
     }
-
-    // MARK: - CallMemberView_IndividualRemoteBridge
-
-    var associatedCallMemberVideoView: CallMemberVideoView? { return nil }
-    func applyChangesToCallMemberViewAndVideoView(startWithVideoView: Bool = true, apply: (UIView) -> Void) {
-        apply(self)
-    }
-    var remoteVideoView: RemoteVideoView? { return self }
-
-    // MARK: - CallMemberView_IndividualRemoteBridge
-
-    func configure(
-        call: SignalCall,
-        isFullScreen: Bool,
-        remoteGroupMemberDeviceState: RemoteDeviceState? = nil
-    ) {}
 }
