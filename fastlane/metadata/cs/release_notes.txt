@@ -1,1 +1,1 @@
-• Přidali jsme rychlou volbu pro úpravu odeslaných zpráv dvojitým klepnutím na bublinu zprávy. Dvojitým klepnutím tak můžete nejen lajkovat, ale i opravit překlepy.
+• This update fixes a minor bug for users on iOS 16.

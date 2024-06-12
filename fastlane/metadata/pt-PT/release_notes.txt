@@ -1,1 +1,1 @@
-• Adicionámos um atalho para editar mensagens enviadas ao clicar duas vezes na bolha de mensagem.
+• This update fixes a minor bug for users on iOS 16.

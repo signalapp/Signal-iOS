@@ -1,1 +1,1 @@
-• הוספנו קיצור דרך לעריכת הודעות שנשלחו באמצעות לחיצה כפולה על בועת ההודעה.
+• This update fixes a minor bug for users on iOS 16.

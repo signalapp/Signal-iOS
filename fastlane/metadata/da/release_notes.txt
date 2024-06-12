@@ -1,1 +1,1 @@
-• Vi har tilføjet en genvej til at redigere sendte beskeder ved at dobbelttrykke på beskedboblen. Dobbelttryk er ikke kun til likes, medmindre du virkelig kan lide at redigere skrivefejl.
+• This update fixes a minor bug for users on iOS 16.

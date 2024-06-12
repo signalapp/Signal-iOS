@@ -1,1 +1,1 @@
-• Mesaj balonuna çift dokunarak gönderilen mesajları düzenlemek için bir kısayol ekledik. Ayrıca çift dokunuşlar sadece beğenmeler için değildir.
+• This update fixes a minor bug for users on iOS 16.

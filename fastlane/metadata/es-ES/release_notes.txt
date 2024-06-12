@@ -1,1 +1,1 @@
-• Hemos añadido una forma más directa de editar los mensajes enviados: basta con pulsar dos veces la burbuja del mensaje.
+• This update fixes a minor bug for users on iOS 16.

@@ -1,1 +1,1 @@
-• Kami menambah cara mudah mengedit mesej yang dihantar dengan mengetik dua kali pada gelembung mesej.
+• This update fixes a minor bug for users on iOS 16.

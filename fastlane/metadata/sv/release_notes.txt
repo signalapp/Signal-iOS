@@ -1,1 +1,1 @@
-• Vi har lagt till en genväg för att redigera skickade meddelanden genom att dubbeltrycka på meddelandebubblan.
+• This update fixes a minor bug for users on iOS 16.

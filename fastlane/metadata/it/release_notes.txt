@@ -1,1 +1,1 @@
-• Abbiamo anche aggiunto una scorciatoia per modificare i messaggi inviati. Tocca due volte sul messaggio e come per magia potrai modificare il passato.
+• This update fixes a minor bug for users on iOS 16.

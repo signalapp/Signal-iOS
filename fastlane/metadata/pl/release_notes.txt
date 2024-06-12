@@ -1,1 +1,1 @@
-• Dodaliśmy skrót do edycji wysłanych wiadomości. Od teraz, aby edytować wiadomość, wystarczy dwa razy stuknąć dymek.
+• This update fixes a minor bug for users on iOS 16.

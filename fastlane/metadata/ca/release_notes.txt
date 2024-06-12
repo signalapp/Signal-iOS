@@ -1,1 +1,1 @@
-• Hem afegit una manera més directa d'editar els missatges enviats: només cal tocar dues vegades la bombolla del missatge.
+• This update fixes a minor bug for users on iOS 16.

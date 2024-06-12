@@ -1,1 +1,1 @@
-• 我们增加了一个快捷键，用户可以双击消息气泡来编辑已发送的消息。
+• This update fixes a minor bug for users on iOS 16.

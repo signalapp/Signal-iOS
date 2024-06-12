@@ -1,1 +1,1 @@
-• Pridali sme skratku na úpravu odoslaných správ dvojitým ťuknutím na bublinu správy.
+• This update fixes a minor bug for users on iOS 16.

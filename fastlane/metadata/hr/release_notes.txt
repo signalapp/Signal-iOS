@@ -1,1 +1,1 @@
-• Dodali smo prečac pomoću kojeg možete uređivati poslane poruke tako da dvaput dodirnete oblačić poruke.
+• This update fixes a minor bug for users on iOS 16.

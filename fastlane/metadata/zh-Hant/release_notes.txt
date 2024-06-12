@@ -1,1 +1,1 @@
-• 我們新增了一個捷徑設定，就是透過連按兩下訊息對話框來編輯已傳送的訊息。
+• This update fixes a minor bug for users on iOS 16.

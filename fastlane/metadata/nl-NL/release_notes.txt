@@ -1,1 +1,1 @@
-• We hebben het dubbel zo gemakkelijk gemaakt om verzonden berichten te bewerken, namelijk door te dubbeltikken op de berichtballon.
+• This update fixes a minor bug for users on iOS 16.

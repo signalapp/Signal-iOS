@@ -1,1 +1,1 @@
-• Lisäsimme pikakuvakkeen, jolla voit muokata lähetettyjä viestejä kaksoisnapauttamalla viestikuplaa.
+• This update fixes a minor bug for users on iOS 16.

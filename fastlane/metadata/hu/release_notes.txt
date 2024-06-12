@@ -1,1 +1,1 @@
-• Hozzáadtunk egy parancsikont, amellyel szerkeszthetők az elküldött üzenetek, ha duplán rákoppintasz az üzenetbuborékra.
+• This update fixes a minor bug for users on iOS 16.

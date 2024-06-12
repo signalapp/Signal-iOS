@@ -1,1 +1,1 @@
-• メッセージの吹き出しをダブルタップして送信済みメッセージを編集するショートカットを追加しました。
+• This update fixes a minor bug for users on iOS 16.

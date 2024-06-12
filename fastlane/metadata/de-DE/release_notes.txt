@@ -1,1 +1,1 @@
-• Wir haben einen Shortcut zum Bearbeiten gesendeter Nachrichten hinzugefügt. Tippe dazu zweimal auf die Nachrichtenblase.
+• This update fixes a minor bug for users on iOS 16.

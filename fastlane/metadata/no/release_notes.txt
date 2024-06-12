@@ -1,1 +1,1 @@
-• Vi har lagt til en snarvei for å redigere sendte meldinger: bare dobbelttrykk på meldingen.
+• This update fixes a minor bug for users on iOS 16.
