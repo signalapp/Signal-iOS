@@ -41,10 +41,12 @@ public final class OutgoingAttachmentInfo {
         }()
     }
 
-    public func asAttachmentDataSource() -> TSResourceDataSource {
-        return .from(
+    public func asAttachmentDataSource() throws -> TSResourceDataSource {
+        return try DependenciesBridge.shared.tsResourceContentValidator.validateContents(
             dataSource: dataSource,
+            shouldConsume: true,
             mimeType: contentType,
+            sourceFilename: nil,
             caption: caption.map { MessageBody(text: $0, ranges: .empty) },
             renderingFlag: renderingFlag
         )

@@ -827,6 +827,7 @@
 		6642A8792A8D85F500E591C2 /* OWSPaymentActivationRequestMessage+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6642A8772A8D85F500E591C2 /* OWSPaymentActivationRequestMessage+SDS.swift */; };
 		6642A87A2A8D85F500E591C2 /* OWSPaymentActivationRequestFinishedMessage+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6642A8782A8D85F500E591C2 /* OWSPaymentActivationRequestFinishedMessage+SDS.swift */; };
 		6642A87C2A8EB0D800E591C2 /* TSPaymentsActivationRequestModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6642A87B2A8EB0D800E591C2 /* TSPaymentsActivationRequestModel.swift */; };
+		664428962C12305D0092D0E2 /* SignalAttachment+Sending.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664428952C12305D0092D0E2 /* SignalAttachment+Sending.swift */; };
 		6645F30829BF8D2000B58EBD /* AccountAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6645F30729BF8D2000B58EBD /* AccountAttributes.swift */; };
 		6645F30A29BF8DBC00B58EBD /* AccountAttributesRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6645F30929BF8DBC00B58EBD /* AccountAttributesRequestFactory.swift */; };
 		6645F30C29BFA28A00B58EBD /* AccountAttributes+Dependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6645F30B29BFA28A00B58EBD /* AccountAttributes+Dependencies.swift */; };
@@ -3746,6 +3747,7 @@
 		6642A8772A8D85F500E591C2 /* OWSPaymentActivationRequestMessage+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSPaymentActivationRequestMessage+SDS.swift"; sourceTree = "<group>"; };
 		6642A8782A8D85F500E591C2 /* OWSPaymentActivationRequestFinishedMessage+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSPaymentActivationRequestFinishedMessage+SDS.swift"; sourceTree = "<group>"; };
 		6642A87B2A8EB0D800E591C2 /* TSPaymentsActivationRequestModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSPaymentsActivationRequestModel.swift; sourceTree = "<group>"; };
+		664428952C12305D0092D0E2 /* SignalAttachment+Sending.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalAttachment+Sending.swift"; sourceTree = "<group>"; };
 		6645F30729BF8D2000B58EBD /* AccountAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAttributes.swift; sourceTree = "<group>"; };
 		6645F30929BF8DBC00B58EBD /* AccountAttributesRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAttributesRequestFactory.swift; sourceTree = "<group>"; };
 		6645F30B29BFA28A00B58EBD /* AccountAttributes+Dependencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AccountAttributes+Dependencies.swift"; sourceTree = "<group>"; };
@@ -8376,6 +8378,7 @@
 			isa = PBXGroup;
 			children = (
 				664E8D822BD6D70B00C4968A /* TSResource */,
+				664428952C12305D0092D0E2 /* SignalAttachment+Sending.swift */,
 				66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */,
 				34D913491F62D4A500722898 /* SignalAttachment.swift */,
 				664E8D872BD6D87700C4968A /* SignalAttachmentCloner.swift */,
@@ -14303,6 +14306,7 @@
 				F9C5CCDD289453B300548EEE /* SignalAccountFinder.swift in Sources */,
 				50EF8DD52A1FE55D00A00935 /* SignalAccountMergeObserver.swift in Sources */,
 				50597BBA2B97C38C004681E1 /* SignalAccountStore.swift in Sources */,
+				664428962C12305D0092D0E2 /* SignalAttachment+Sending.swift in Sources */,
 				7255A4C62B98DEFB00E95368 /* SignalAttachment+VideoSegmenting.swift in Sources */,
 				7255A4C72B98DEFB00E95368 /* SignalAttachment.swift in Sources */,
 				664E8D882BD6D87700C4968A /* SignalAttachmentCloner.swift in Sources */,

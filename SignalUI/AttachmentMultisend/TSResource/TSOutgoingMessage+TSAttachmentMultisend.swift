@@ -71,10 +71,26 @@ extension TSOutgoingMessage {
         thread: TSThread,
         transaction: SDSAnyWriteTransaction
     ) throws -> PreparedOutgoingMessage {
+        // Don't do any validation.
+        let attachmentsForSending = mediaAttachments.map { attachment in
+            let dataSource = TSAttachmentDataSource(
+                mimeType: attachment.mimeType,
+                caption: attachment.captionText.map { MessageBody(text: $0, ranges: .empty) },
+                renderingFlag: attachment.renderingFlag,
+                sourceFilename: attachment.sourceFilename,
+                dataSource: .dataSource(attachment.dataSource, shouldCopy: false)
+            ).tsDataSource
+            return SignalAttachment.ForSending(
+                dataSource: dataSource,
+                isViewOnce: attachment.isViewOnceAttachment,
+                renderingFlag: attachment.renderingFlag
+            )
+        }
+
         let unpreparedMessage = UnpreparedOutgoingMessage.build(
             thread: thread,
             messageBody: messageBody,
-            mediaAttachments: mediaAttachments,
+            mediaAttachments: attachmentsForSending,
             quotedReplyDraft: nil,
             linkPreviewDataSource: nil,
             transaction: transaction)

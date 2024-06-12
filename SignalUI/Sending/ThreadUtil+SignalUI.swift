@@ -32,6 +32,9 @@ extension ThreadUtil {
                 let linkPreviewDataSource = try linkPreviewDraft.map {
                     try DependenciesBridge.shared.linkPreviewManager.buildDataSource(from: $0)
                 }
+                let mediaAttachments = try mediaAttachments.map {
+                    try $0.forSending()
+                }
 
                 unpreparedMessage = Self.databaseStorage.read { readTransaction in
                     UnpreparedOutgoingMessage.build(
@@ -177,7 +180,7 @@ extension UnpreparedOutgoingMessage {
         thread: TSThread,
         timestamp: UInt64? = nil,
         messageBody: ValidatedTSMessageBody?,
-        mediaAttachments: [SignalAttachment] = [],
+        mediaAttachments: [SignalAttachment.ForSending] = [],
         quotedReplyDraft: DraftQuotedReplyModel?,
         linkPreviewDataSource: LinkPreviewTSResourceDataSource?,
         transaction: SDSAnyReadTransaction
@@ -200,21 +203,19 @@ extension UnpreparedOutgoingMessage {
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
         let expiresInSeconds = dmConfigurationStore.durationSeconds(for: thread, tx: transaction.asV2Read)
 
-        assert(mediaAttachments.allSatisfy { !$0.hasError && !$0.mimeType.isEmpty })
-
         let isVoiceMessage = mediaAttachments.count == 1
             && oversizeTextDataSource == nil
-            && mediaAttachments.last?.isVoiceMessage == true
+            && mediaAttachments.last?.renderingFlag == .voiceMessage
 
         var isViewOnceMessage = false
         for attachment in mediaAttachments {
-            if attachment.isViewOnceAttachment {
+            if attachment.isViewOnce {
                 assert(mediaAttachments.count == 1)
                 isViewOnceMessage = true
                 break
             }
 
-            if attachment.isBorderless {
+            if attachment.renderingFlag == .borderless {
                 assert(mediaAttachments.count == 1)
                 break
             }
@@ -231,7 +232,7 @@ extension UnpreparedOutgoingMessage {
 
         let message = messageBuilder.build(transaction: transaction)
 
-        let attachmentInfos = mediaAttachments.map { $0.buildAttachmentDataSource(message: message) }
+        let attachmentInfos = mediaAttachments.map(\.dataSource)
 
         let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
             message,

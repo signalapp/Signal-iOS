@@ -39,12 +39,25 @@ public class AttachmentMultisend {
                     approvedMessageBody,
                     to: conversations,
                     db: deps.databaseStorage,
-                    attachmentValidator: deps.attachmentValidator
+                    attachmentValidator: deps.tsResourceValidator
                 )
+
+                var hasNonStoryDestination = false
+                var hasStoryDestination = false
+                destinations.forEach { destination in
+                    switch destination.conversationItem.outgoingMessageType {
+                    case .message:
+                        hasNonStoryDestination = true
+                    case .storyMessage:
+                        hasStoryDestination = true
+                    }
+                }
 
                 let segmentedAttachments = try await segmentAttachmentsIfNecessary(
                     for: conversations,
-                    approvedAttachments: approvedAttachments
+                    approvedAttachments: approvedAttachments,
+                    hasNonStoryDestination: hasNonStoryDestination,
+                    hasStoryDestination: hasStoryDestination
                 )
 
                 (threads, preparedMessages, sendPromises) = try await deps.databaseStorage.awaitableWrite { tx in
@@ -156,50 +169,139 @@ public class AttachmentMultisend {
 
     private struct Dependencies {
         let attachmentManager: AttachmentManager
-        let attachmentValidator: TSResourceContentValidator
+        let attachmentValidator: AttachmentContentValidator
         let contactsMentionHydrator: ContactsMentionHydrator.Type
         let databaseStorage: SDSDatabaseStorage
         let imageQualityLevel: ImageQualityLevel.Type
         let messageSenderJobQueue: MessageSenderJobQueue
         let tsAccountManager: TSAccountManager
+        let tsResourceValidator: TSResourceContentValidator
     }
 
     private static var deps = Dependencies(
         attachmentManager: DependenciesBridge.shared.attachmentManager,
-        attachmentValidator: DependenciesBridge.shared.tsResourceContentValidator,
+        attachmentValidator: DependenciesBridge.shared.attachmentContentValidator,
         contactsMentionHydrator: ContactsMentionHydrator.self,
         databaseStorage: SSKEnvironment.shared.databaseStorage,
         imageQualityLevel: ImageQualityLevel.self,
         messageSenderJobQueue: SSKEnvironment.shared.messageSenderJobQueueRef,
-        tsAccountManager: DependenciesBridge.shared.tsAccountManager
+        tsAccountManager: DependenciesBridge.shared.tsAccountManager,
+        tsResourceValidator: DependenciesBridge.shared.tsResourceContentValidator
     )
 
     // MARK: - Segmenting Attachments
 
+    private struct SegmentAttachmentResult {
+        let original: AttachmentDataSource?
+        let segmented: [AttachmentDataSource]?
+        let isViewOnce: Bool
+        let renderingFlag: AttachmentReference.RenderingFlag
+
+        init(
+            original: AttachmentDataSource?,
+            segmented: [AttachmentDataSource]?,
+            isViewOnce: Bool,
+            renderingFlag: AttachmentReference.RenderingFlag
+        ) throws {
+            // We only create data sources for the original or segments if we need to.
+            // Stories use segments if available; non stories always need the original.
+            // Creating data sources is expensive, so only create what we need,
+            // but always at least one.
+            guard original != nil || segmented != nil else {
+                throw OWSAssertionError("Must have some kind of attachment!")
+            }
+            self.original = original
+            self.segmented = segmented
+            self.isViewOnce = isViewOnce
+            self.renderingFlag = renderingFlag
+        }
+
+        var segmentedOrOriginal: [AttachmentDataSource] {
+            if let segmented {
+                return segmented
+            }
+            return [original].compacted()
+        }
+    }
+
     private class func segmentAttachmentsIfNecessary(
         for conversations: [ConversationItem],
-        approvedAttachments: [SignalAttachment]
-    ) async throws -> [SignalAttachment.SegmentAttachmentResult] {
+        approvedAttachments: [SignalAttachment],
+        hasNonStoryDestination: Bool,
+        hasStoryDestination: Bool
+    ) async throws -> [SegmentAttachmentResult] {
         let maxSegmentDurations = conversations.compactMap(\.videoAttachmentDurationLimit)
-        guard !maxSegmentDurations.isEmpty, let requiredSegmentDuration = maxSegmentDurations.min() else {
+        guard hasStoryDestination, !maxSegmentDurations.isEmpty, let requiredSegmentDuration = maxSegmentDurations.min() else {
             // No need to segment!
-            return approvedAttachments.map { .init($0) }
+            var results = [SegmentAttachmentResult]()
+            for attachment in approvedAttachments {
+                let dataSource: AttachmentDataSource = try deps.attachmentValidator.validateContents(
+                    dataSource: attachment.dataSource,
+                    shouldConsume: true,
+                    mimeType: attachment.mimeType,
+                    sourceFilename: attachment.sourceFilename
+                )
+                try results.append(.init(
+                    original: dataSource,
+                    segmented: nil,
+                    isViewOnce: attachment.isViewOnceAttachment,
+                    renderingFlag: attachment.renderingFlag
+                ))
+            }
+            return results
         }
 
         let qualityLevel = deps.databaseStorage.read(block: deps.imageQualityLevel.resolvedQuality(tx:))
 
         let segmentedResults = try await withThrowingTaskGroup(
-            of: (Int, SignalAttachment.SegmentAttachmentResult).self
+            of: (Int, SegmentAttachmentResult).self
         ) { taskGroup in
             for (index, attachment) in approvedAttachments.enumerated() {
                 taskGroup.addTask(operation: {
-                    let result = try await attachment.preparedForOutput(qualityLevel: qualityLevel)
+                    let segmentingResult = try await attachment.preparedForOutput(qualityLevel: qualityLevel)
                         .segmentedIfNecessary(on: ThreadUtil.enqueueSendQueue, segmentDuration: requiredSegmentDuration)
                         .awaitable()
-                    return (index, result)
+
+                    let originalDataSource: AttachmentDataSource?
+                    if hasNonStoryDestination || segmentingResult.segmented == nil {
+                        // We need to prepare the original, either because there are no segments
+                        // or because we are sending to a non-story which doesn't segment.
+                        originalDataSource = try deps.attachmentValidator.validateContents(
+                            dataSource: segmentingResult.original.dataSource,
+                            shouldConsume: true,
+                            mimeType: segmentingResult.original.mimeType,
+                            sourceFilename: segmentingResult.original.sourceFilename
+                        )
+                    } else {
+                        originalDataSource = nil
+                    }
+
+                    let segmentedDataSources: [AttachmentDataSource]? = try { () -> [AttachmentDataSource]? in
+                        guard let segments = segmentingResult.segmented, hasStoryDestination else {
+                            return nil
+                        }
+                        var segmentedDataSources = [AttachmentDataSource]()
+                        for segment in segments {
+                            let dataSource: AttachmentDataSource = try deps.attachmentValidator.validateContents(
+                                dataSource: segment.dataSource,
+                                shouldConsume: true,
+                                mimeType: segment.mimeType,
+                                sourceFilename: segment.sourceFilename
+                            )
+                            segmentedDataSources.append(dataSource)
+                        }
+                        return segmentedDataSources
+                    }()
+
+                    return try (index, .init(
+                        original: originalDataSource,
+                        segmented: segmentedDataSources,
+                        isViewOnce: attachment.isViewOnceAttachment,
+                        renderingFlag: attachment.renderingFlag
+                    ))
                 })
             }
-            var segmentedResults = [SignalAttachment.SegmentAttachmentResult?].init(repeating: nil, count: approvedAttachments.count)
+            var segmentedResults = [SegmentAttachmentResult?].init(repeating: nil, count: approvedAttachments.count)
             for try await result in taskGroup {
                 segmentedResults[result.0] = result.1
             }
@@ -214,13 +316,22 @@ public class AttachmentMultisend {
     private class func prepareForSending(
         destinations: [Destination],
         messageBodyForStories: MessageBody?,
-        approvedAttachments: [SignalAttachment.SegmentAttachmentResult],
+        approvedAttachments: [SegmentAttachmentResult],
         tx: SDSAnyWriteTransaction
     ) throws -> ([TSThread], [PreparedOutgoingMessage]) {
         let segmentedAttachments = approvedAttachments.reduce([], { arr, segmented in
-            return arr + (segmented.segmented ?? [segmented.original])
+            return arr + segmented.segmentedOrOriginal.map { ($0, segmented.renderingFlag == .shouldLoop) }
         })
-        let unsegmentedAttachments = approvedAttachments.map(\.original)
+        let unsegmentedAttachments = approvedAttachments.compactMap { (attachment) -> SignalAttachment.ForSending? in
+            guard let original = attachment.original else {
+                return nil
+            }
+            return SignalAttachment.ForSending(
+                dataSource: original.tsDataSource,
+                isViewOnce: attachment.isViewOnce,
+                renderingFlag: attachment.renderingFlag
+            )
+        }
 
         var nonStoryThreads = [Destination]()
         var privateStoryThreads = [TSPrivateStoryThread]()
@@ -246,6 +357,7 @@ public class AttachmentMultisend {
         let nonStoryMessages = try prepareNonStoryMessages(
             threadDestinations: nonStoryThreads,
             unsegmentedAttachments: unsegmentedAttachments,
+            isViewOnceMessage: approvedAttachments.contains(where: \.isViewOnce),
             tx: tx
         )
 
@@ -315,7 +427,8 @@ public class AttachmentMultisend {
 
     private class func prepareNonStoryMessages(
         threadDestinations: [Destination],
-        unsegmentedAttachments: [SignalAttachment],
+        unsegmentedAttachments: [SignalAttachment.ForSending],
+        isViewOnceMessage: Bool,
         tx: SDSAnyWriteTransaction
     ) throws -> [PreparedOutgoingMessage] {
         return try threadDestinations.map { destination in
@@ -342,7 +455,7 @@ public class AttachmentMultisend {
 
     private class func prepareNonStoryMessage(
         messageBody: ValidatedTSMessageBody?,
-        attachments: [SignalAttachment],
+        attachments: [SignalAttachment.ForSending],
         thread: TSThread,
         tx: SDSAnyWriteTransaction
     ) throws -> PreparedOutgoingMessage {
@@ -511,7 +624,7 @@ public class AttachmentMultisend {
     }
 
     private class func storyMessageBuilders(
-        segmentedAttachments: [SignalAttachment],
+        segmentedAttachments: [(AttachmentDataSource, isLoopingVideo: Bool)],
         approvedMessageBody: MessageBody?,
         tx: SDSAnyReadTransaction
     ) throws -> [StoryMessageBuilder] {
@@ -523,12 +636,7 @@ public class AttachmentMultisend {
             .hydrating(mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: tx.asV2Read))
             .asStyleOnlyBody()
 
-        return segmentedAttachments.map { attachment in
-            let attachmentDataSource = AttachmentDataSource.from(
-                dataSource: attachment.dataSource,
-                mimeType: attachment.mimeType
-            )
-
+        return segmentedAttachments.map { attachmentDataSource, isLoopingVideo in
             let attachmentManager = deps.attachmentManager
             let attachmentBuilder = OwnedAttachmentBuilder<StoryMessageAttachment>(
                 info: .foreignReferenceAttachment,
@@ -543,7 +651,7 @@ public class AttachmentMultisend {
                 attachmentBuilder: attachmentBuilder,
                 localAci: localAci,
                 mediaCaption: storyCaption,
-                shouldLoop: attachment.isLoopingVideo
+                shouldLoop: isLoopingVideo
             )
         }
     }

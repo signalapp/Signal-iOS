@@ -305,8 +305,8 @@ public class SignalAttachment: NSObject {
         )
     }
 
-    public func buildAttachmentDataSource(message: TSMessage? = nil) -> TSResourceDataSource {
-        return buildOutgoingAttachmentInfo(message: message).asAttachmentDataSource()
+    public func buildAttachmentDataSource(message: TSMessage? = nil) throws -> TSResourceDataSource {
+        return try buildOutgoingAttachmentInfo(message: message).asAttachmentDataSource()
     }
 
     public func buildLegacyAttachmentDataSource(message: TSMessage? = nil) -> TSAttachmentDataSource {
@@ -344,6 +344,18 @@ public class SignalAttachment: NSObject {
             let thumbnail = image.resized(maxDimensionPixels: maxDimensionPixels)
             cachedThumbnail = thumbnail
             return thumbnail
+        }
+    }
+
+    public var renderingFlag: AttachmentReference.RenderingFlag {
+        if isVoiceMessage {
+            return .voiceMessage
+        } else if isBorderless {
+            return .borderless
+        } else if isLoopingVideo || MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(mimeType) {
+            return .shouldLoop
+        } else {
+            return .default
         }
     }
 
