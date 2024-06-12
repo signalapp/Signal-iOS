@@ -357,6 +357,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 originalMessageTimestamp: timestamp,
                 originalMessageAuthorAddress: authorAddress,
                 isOriginalMessageAuthorLocalUser: originalMessage is TSOutgoingMessage,
+                threadUniqueId: originalMessage.uniqueThreadId,
                 content: content
             )
         }
@@ -534,6 +535,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 originalMessageTimestamp: innerContent.originalMessageTimestamp,
                 originalMessageAuthorAddress: innerContent.originalMessageAuthorAddress,
                 isOriginalMessageAuthorLocalUser: innerContent.isOriginalMessageAuthorLocalUser,
+                threadUniqueId: quotedReplyMessage.uniqueThreadId,
                 content: .edit(
                     quotedReplyMessage,
                     quotedReply,
@@ -584,6 +586,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 originalMessageTimestamp: quotedReply.timestampValue?.uint64Value,
                 originalMessageAuthorAddress: quotedReply.authorAddress,
                 isOriginalMessageAuthorLocalUser: isOriginalMessageAuthorLocalUser,
+                threadUniqueId: quotedReplyMessage.uniqueThreadId,
                 content: .edit(
                     quotedReplyMessage,
                     quotedReply,
@@ -595,7 +598,6 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
 
     public func buildQuotedReplyForSending(
         draft: DraftQuotedReplyModel,
-        threadUniqueId: String,
         tx: DBWriteTransaction
     ) -> OwnedAttachmentBuilder<TSQuotedMessage> {
         // Find the original message.
@@ -603,13 +605,13 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             let originalMessageTimestamp = draft.originalMessageTimestamp,
             let originalMessage = InteractionFinder.findMessage(
                 withTimestamp: originalMessageTimestamp,
-                threadId: threadUniqueId,
+                threadId: draft.threadUniqueId,
                 author: draft.originalMessageAuthorAddress,
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
         else {
             switch draft.content {
-            case .edit(_, let tsQuotedMessage, let content):
+            case .edit(_, let tsQuotedMessage, _):
                 return .withoutFinalizer(tsQuotedMessage)
             default:
                 return .withoutFinalizer(TSQuotedMessage(

@@ -625,7 +625,6 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 )!
                 let quotedMessageBuilder = DependenciesBridge.shared.quotedReplyManager.buildQuotedReplyForSending(
                     draft: draft,
-                    threadUniqueId: thread.uniqueId,
                     tx: transaction.asV2Write
                 )
 

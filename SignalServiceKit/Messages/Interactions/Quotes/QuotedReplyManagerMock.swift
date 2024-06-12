@@ -37,7 +37,6 @@ open class QuotedReplyManagerMock: QuotedReplyManager {
 
     open func buildQuotedReplyForSending(
         draft: DraftQuotedReplyModel,
-        threadUniqueId: String,
         tx: DBWriteTransaction
     ) -> OwnedAttachmentBuilder<TSQuotedMessage> {
         fatalError("Unimplemented!")

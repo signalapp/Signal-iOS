@@ -9,6 +9,7 @@ public class DraftQuotedReplyModel {
 
     public let originalMessageTimestamp: UInt64?
     public let originalMessageAuthorAddress: SignalServiceAddress
+    public let threadUniqueId: String
     public let isOriginalMessageAuthorLocalUser: Bool
 
     // MARK: Attachments
@@ -101,11 +102,13 @@ public class DraftQuotedReplyModel {
         originalMessageTimestamp: UInt64?,
         originalMessageAuthorAddress: SignalServiceAddress,
         isOriginalMessageAuthorLocalUser: Bool,
+        threadUniqueId: String,
         content: Content
     ) {
         self.originalMessageTimestamp = originalMessageTimestamp
         self.originalMessageAuthorAddress = originalMessageAuthorAddress
         self.isOriginalMessageAuthorLocalUser = isOriginalMessageAuthorLocalUser
+        self.threadUniqueId = threadUniqueId
         self.content = content
     }
 
@@ -132,6 +135,7 @@ public class DraftQuotedReplyModel {
             originalMessageTimestamp: originalMessage.timestamp,
             originalMessageAuthorAddress: authorAddress,
             isOriginalMessageAuthorLocalUser: originalMessage.isOutgoing,
+            threadUniqueId: originalMessage.uniqueThreadId,
             content: .payment(amountString)
         )
     }
@@ -161,6 +165,7 @@ public class DraftQuotedReplyModel {
             originalMessageTimestamp: originalMessage.timestamp,
             originalMessageAuthorAddress: authorAddress,
             isOriginalMessageAuthorLocalUser: originalMessage.isOutgoing,
+            threadUniqueId: originalMessage.uniqueThreadId,
             content: .edit(replyMessage, quotedReply, content: .payment(amountString))
         )
     }

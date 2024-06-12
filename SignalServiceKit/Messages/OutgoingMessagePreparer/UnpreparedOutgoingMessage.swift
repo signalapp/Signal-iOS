@@ -219,7 +219,6 @@ public class UnpreparedOutgoingMessage {
         let quotedReplyBuilder = message.quotedReplyDraft.map {
             DependenciesBridge.shared.quotedReplyManager.buildQuotedReplyForSending(
                 draft: $0,
-                threadUniqueId: thread.uniqueId,
                 tx: tx.asV2Write
             )
         }.map {
