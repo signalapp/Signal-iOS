@@ -318,6 +318,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
         guard
             let attachmentBuilder = attachmentManager.newQuotedReplyMessageThumbnailBuilder(
                 originalMessage: originalMessage,
+                fallbackQuoteProto: quoteProto,
                 tx: tx
             )
         else {
@@ -660,6 +661,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             originalMessage.isViewOnceMessage.negated,
             let attachmentBuilder = attachmentManager.newQuotedReplyMessageThumbnailBuilder(
                 originalMessage: originalMessage,
+                fallbackQuoteProto: nil,
                 tx: tx
             )
         {

@@ -463,6 +463,7 @@ public class TSResourceManagerImpl: TSResourceManager {
 
     public func newQuotedReplyMessageThumbnailBuilder(
         originalMessage: TSMessage,
+        fallbackQuoteProto: SSKProtoDataMessageQuote?,
         tx: DBWriteTransaction
     ) -> OwnedAttachmentBuilder<QuotedAttachmentInfo>? {
         let originalAttachmentRef = tsResourceStore.attachmentToUseInQuote(
@@ -477,36 +478,39 @@ public class TSResourceManagerImpl: TSResourceManager {
                 return nil
             }
             if FeatureFlags.newAttachmentsUseV2 {
-                // Create a copy of the v1 attachment _as a v2 attachment_.
-                // This ensures once we start writing v2 attachments, all new attachments
-                // are v2 (with the exception of edits, which have special handling and DONT
-                // create new quoted replies.)
-                guard
-                    let info = attachmentManager.quotedReplyAttachmentInfo(
-                        originalMessage: originalMessage,
-                        tx: tx
-                    )
-                else {
+                // We are in a conundrum. New messages should be using v2 attachments, but
+                // we are quoting a legacy message attachment.
+                // The process of cloning a legacy attachment as a v2 attachment is asynchronous
+                // and cannot be done in this write transaction.
+                // So we will try the following in order:
+                // 1. Use the provided fallback proto (meaning the user will need to download
+                //    the quote thumbnail from the sender's cdn upload, even though we already
+                //    technically have the original source locally. Not a big deal.
+                // 2. Otherwise try and use the cdn info from the v1 attachment, if it still exists,
+                //    and use that to create a new v2 attachment (even if the v1 is already downloaded).
+                // 3. Give up. Omit the thumbnail.
+                let thumbnailProto =
+                    fallbackQuoteProto?.attachments.first?.thumbnail
+                    ?? buildProtoAsIfWeReceivedThisAttachment(attachment)
+                if let thumbnailProto {
+                    guard
+                        let thumbnailAttachmentBuilder = try? self.createAttachmentPointerBuilder(
+                            from: thumbnailProto,
+                            tx: tx
+                        )
+                    else {
+                        return nil
+                    }
+                    return thumbnailAttachmentBuilder.wrap { _ in
+                        return .init(
+                            info: OWSAttachmentInfo(forV2ThumbnailReference: ()),
+                            renderingFlag: .fromProto(thumbnailProto)
+                        )
+                    }
+                } else {
+                    Logger.error("Unable to clone legacy attachment for v2 quoted reply; giving up.")
                     return nil
                 }
-                return OwnedAttachmentBuilder<QuotedAttachmentInfo>(
-                    info: info,
-                    finalize: { [attachmentStore] ownerId, tx in
-                        let quotedReplyMessageId: Int64
-                        switch ownerId {
-                        case .quotedReplyAttachment(let metadata):
-                            quotedReplyMessageId = metadata.messageRowId
-                        default:
-                            owsFailDebug("Invalid owner sent to quoted reply builder!")
-                            return
-                        }
-                        let (attachmentBuider, referenceBuilder) = try LegacyAttachmentMigrator.createQuotedReplyMessageThumbnail(
-                            migratingLegacyAttachment: attachment,
-                            quotedReplyMessageId: quotedReplyMessageId
-                        )
-                        try attachmentStore.insert(attachmentBuider, reference: referenceBuilder, tx: tx)
-                    }
-                )
             } else {
                 guard
                     let info = tsAttachmentManager.cloneThumbnailForNewQuotedReplyMessage(
@@ -572,5 +576,56 @@ public class TSResourceManagerImpl: TSResourceManager {
                 tx: SDSDB.shimOnlyBridge(tx)
             )
         }
+    }
+
+    private func buildProtoAsIfWeReceivedThisAttachment(_ attachment: TSAttachment) -> SSKProtoAttachmentPointer? {
+        guard
+            attachment.cdnNumber >= 3,
+            attachment.cdnKey.isEmpty.negated,
+            let encryptionKey = attachment.encryptionKey
+        else {
+            return nil
+        }
+        let builder = SSKProtoAttachmentPointer.builder()
+
+        builder.setCdnNumber(attachment.cdnNumber)
+        builder.setCdnKey(attachment.cdnKey)
+
+        builder.setContentType(attachment.mimeType)
+
+        attachment.sourceFilename.map(builder.setFileName(_:))
+
+        if let flags = attachment.attachmentType.asRenderingFlag.toProto() {
+            builder.setFlags(UInt32(flags.rawValue))
+        } else {
+            builder.setFlags(0)
+        }
+        attachment.caption.map(builder.setCaption(_:))
+
+        if
+            attachment.isVisualMediaMimeType,
+            let imageSizePixels = (attachment as? TSAttachmentStream)?.imageSizePixels,
+            let imageWidth = UInt32(exactly: imageSizePixels.width.rounded()),
+            let imageHeight = UInt32(exactly: imageSizePixels.height.rounded())
+        {
+            builder.setWidth(imageWidth)
+            builder.setHeight(imageHeight)
+        }
+
+        if attachment.byteCount > 0 {
+            builder.setSize(attachment.byteCount)
+        }
+        builder.setKey(encryptionKey)
+        if let blurHash = attachment.blurHash?.nilIfEmpty {
+            builder.setBlurHash(blurHash)
+        }
+        if
+            let digest = (attachment as? TSAttachmentPointer)?.digest
+                ?? (attachment as? TSAttachmentStream)?.digest
+        {
+            builder.setDigest(digest)
+        }
+
+        return builder.buildInfallibly()
     }
 }

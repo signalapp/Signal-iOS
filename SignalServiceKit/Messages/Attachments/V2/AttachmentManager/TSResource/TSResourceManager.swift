@@ -196,6 +196,7 @@ public protocol TSResourceManager {
     /// after finalizing.
     func newQuotedReplyMessageThumbnailBuilder(
         originalMessage: TSMessage,
+        fallbackQuoteProto: SSKProtoDataMessageQuote?,
         tx: DBWriteTransaction
     ) -> OwnedAttachmentBuilder<QuotedAttachmentInfo>?
 
