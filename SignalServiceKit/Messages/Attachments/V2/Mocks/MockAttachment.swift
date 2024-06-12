@@ -127,7 +127,8 @@ public class MockAttachment: Attachment {
         transitTierInfo: Attachment.TransitTierInfo? = nil,
         mediaTierInfo: Attachment.MediaTierInfo? = nil,
         thumbnailInfo: Attachment.ThumbnailMediaTierInfo? = nil,
-        localRelativeFilePathThumbnail: String? = nil
+        localRelativeFilePathThumbnail: String? = nil,
+        originalAttachmentIdForQuotedReply: Attachment.IDType? = nil
     ) -> MockAttachment {
         let record = Attachment.Record(
            sqliteId: .random(in: 0..<(.max)),
@@ -139,7 +140,8 @@ public class MockAttachment: Attachment {
            streamInfo: streamInfo,
            transitTierInfo: transitTierInfo,
            mediaTierInfo: mediaTierInfo,
-           thumbnailMediaTierInfo: thumbnailInfo
+           thumbnailMediaTierInfo: thumbnailInfo,
+           originalAttachmentIdForQuotedReply: originalAttachmentIdForQuotedReply
        )
 
         return try! MockAttachment(record: record)

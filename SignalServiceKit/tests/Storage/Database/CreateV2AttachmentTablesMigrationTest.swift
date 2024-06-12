@@ -303,6 +303,62 @@ public class AttachmentV2MigrationTest: XCTestCase {
         }
     }
 
+    // MARK: - OriginalAttachmentIdForQuotedReply
+
+    func testOriginalAttachmentIdForQuotedReplyForeignKey() throws {
+        try runMigration()
+        try runOriginalAttachmentIdForQuotedReplyMigration()
+
+        try db.write { tx in
+            // Create 2 attachments, 1 a regular attachment and one with
+            // an attachment that references the first attachment.
+            let originalAttachmentId = try insertAttachment(tx: tx)
+            let replyAttachmentId = try insertQuotedReplyAttachment(
+                originalAttachmentIdForQuotedReply: originalAttachmentId,
+                tx: tx
+            )
+
+            // Fetch the second by the first attachment's ID.
+            var replyAttachment = try Row.fetchOne(
+                tx.unwrapGrdbRead.database,
+                sql: """
+                    SELECT * FROM Attachment WHERE originalAttachmentIdForQuotedReply = ?;
+                """,
+                arguments: [originalAttachmentId]
+            )
+            XCTAssertEqual(replyAttachment?["id"], replyAttachmentId)
+
+            // Delete the first attachment.
+            try tx.unwrapGrdbWrite.database.execute(
+                sql: """
+                    DELETE FROM Attachment WHERE id = ?;
+                """,
+                arguments: [originalAttachmentId]
+            )
+
+            // Should not be able to find the second attachment by the original's id now.
+            replyAttachment = try Row.fetchOne(
+                tx.unwrapGrdbRead.database,
+                sql: """
+                    SELECT * FROM Attachment WHERE originalAttachmentIdForQuotedReply = ?;
+                """,
+                arguments: [originalAttachmentId]
+            )
+            XCTAssertNil(replyAttachment)
+
+            // But we can fetch it by its id.
+            replyAttachment = try Row.fetchOne(
+                tx.unwrapGrdbRead.database,
+                sql: """
+                    SELECT * FROM Attachment WHERE id = ?;
+                """,
+                arguments: [replyAttachmentId]
+            )
+            XCTAssertNotNil(replyAttachment)
+            XCTAssertNil(replyAttachment?["originalAttachmentIdForQuotedReply"])
+        }
+    }
+
     // MARK: - Indexes
 
     func testIndexes() throws {
@@ -310,10 +366,7 @@ public class AttachmentV2MigrationTest: XCTestCase {
 
         try db.read { tx in
             func assertUsesIndex(sql: String) throws {
-                let queryPlan: String = try Row.fetchOne(tx.unwrapGrdbRead.database, sql: """
-                    EXPLAIN QUERY PLAN \(sql)
-                """)!["detail"]
-                XCTAssert(queryPlan.contains("USING COVERING INDEX"))
+                try self.assertUsesIndex(sql: sql, tx: tx)
             }
 
             // Common attachment lookups.
@@ -355,6 +408,15 @@ public class AttachmentV2MigrationTest: XCTestCase {
         }
     }
 
+    func testOriginalAttachmentIdForQuotedReplyIndex() throws {
+        try runMigration()
+        try runOriginalAttachmentIdForQuotedReplyMigration()
+
+        try db.read { tx in
+            try assertUsesIndex(sql: "SELECT 0 FROM Attachment WHERE originalAttachmentIdForQuotedReply = 1", tx: tx)
+        }
+    }
+
     // MARK: - Helpers
 
     private func runMigration() throws {
@@ -386,6 +448,22 @@ public class AttachmentV2MigrationTest: XCTestCase {
         }
     }
 
+    private func runOriginalAttachmentIdForQuotedReplyMigration() throws {
+        try db.write { tx in
+            let tx = tx.unwrapGrdbWrite
+
+            // Create the attachment tables, indexes, triggers.
+            _ = try GRDBSchemaMigrator.addOriginalAttachmentIdForQuotedReplyColumn(tx)
+        }
+    }
+
+    private func assertUsesIndex(sql: String, tx: SDSAnyReadTransaction) throws {
+        let queryPlan: String = try Row.fetchOne(tx.unwrapGrdbRead.database, sql: """
+            EXPLAIN QUERY PLAN \(sql)
+        """)!["detail"]
+        XCTAssert(queryPlan.contains("USING COVERING INDEX"))
+    }
+
     // MARK: Inserts
 
     private func insertAttachment(
@@ -413,6 +491,38 @@ public class AttachmentV2MigrationTest: XCTestCase {
             arguments: [
                 filepath,
                 contentType
+            ]
+        )
+        return tx.unwrapGrdbWrite.database.lastInsertedRowID
+    }
+
+    private func insertQuotedReplyAttachment(
+        filepath: String = UUID().uuidString,
+        originalAttachmentIdForQuotedReply: Attachment.IDType,
+        tx: SDSAnyWriteTransaction
+    ) throws -> Int64 {
+        // Only set columns which are relevant to the SQL constraints + triggers.
+        // Irrelevant columns with NOT NULL are set to arbitrary values.
+        // Other columns that aren't NOT NULL are ignored for this test.
+        try tx.unwrapGrdbWrite.database.execute(
+            sql: """
+                INSERT INTO Attachment (
+                    mimeType
+                    ,encryptionKey
+                    ,localRelativeFilePath
+                    ,contentType
+                    ,originalAttachmentIdForQuotedReply
+                ) VALUES (
+                    'image/png'
+                    ,x'1234'
+                    ,?
+                    ,0
+                    ,?
+                );
+            """,
+            arguments: [
+                filepath,
+                originalAttachmentIdForQuotedReply
             ]
         )
         return tx.unwrapGrdbWrite.database.lastInsertedRowID

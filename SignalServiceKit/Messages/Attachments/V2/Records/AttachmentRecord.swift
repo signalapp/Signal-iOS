@@ -40,6 +40,7 @@ extension Attachment {
         let cachedVideoDurationSeconds: Double?
         let audioWaveformRelativeFilePath: String?
         let videoStillFrameRelativeFilePath: String?
+        let originalAttachmentIdForQuotedReply: Int64?
 
         // MARK: - Coding Keys
 
@@ -75,6 +76,7 @@ extension Attachment {
             case cachedVideoDurationSeconds
             case audioWaveformRelativeFilePath
             case videoStillFrameRelativeFilePath
+            case originalAttachmentIdForQuotedReply
         }
 
         // MARK: - UInt64SafeRecord
@@ -131,7 +133,8 @@ extension Attachment {
             cachedMediaWidthPixels: UInt32?,
             cachedVideoDurationSeconds: Double?,
             audioWaveformRelativeFilePath: String?,
-            videoStillFrameRelativeFilePath: String?
+            videoStillFrameRelativeFilePath: String?,
+            originalAttachmentIdForQuotedReply: Int64?
         ) {
             self.sqliteId = sqliteId
             self.blurHash = blurHash
@@ -164,6 +167,7 @@ extension Attachment {
             self.cachedVideoDurationSeconds = cachedVideoDurationSeconds
             self.audioWaveformRelativeFilePath = audioWaveformRelativeFilePath
             self.videoStillFrameRelativeFilePath = videoStillFrameRelativeFilePath
+            self.originalAttachmentIdForQuotedReply = originalAttachmentIdForQuotedReply
         }
 
         internal init(attachment: Attachment) {
@@ -177,7 +181,8 @@ extension Attachment {
                 streamInfo: attachment.streamInfo,
                 transitTierInfo: attachment.transitTierInfo,
                 mediaTierInfo: attachment.mediaTierInfo,
-                thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo
+                thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo,
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
             )
         }
 
@@ -192,7 +197,8 @@ extension Attachment {
                 streamInfo: params.streamInfo,
                 transitTierInfo: params.transitTierInfo,
                 mediaTierInfo: params.mediaTierInfo,
-                thumbnailMediaTierInfo: params.thumbnailMediaTierInfo
+                thumbnailMediaTierInfo: params.thumbnailMediaTierInfo,
+                originalAttachmentIdForQuotedReply: params.originalAttachmentIdForQuotedReply
             )
         }
 
@@ -206,7 +212,8 @@ extension Attachment {
             streamInfo: Attachment.StreamInfo?,
             transitTierInfo: Attachment.TransitTierInfo?,
             mediaTierInfo: Attachment.MediaTierInfo?,
-            thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo?
+            thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo?,
+            originalAttachmentIdForQuotedReply: Int64?
         ) {
             self.init(
                 optionalSqliteId: sqliteId,
@@ -218,7 +225,8 @@ extension Attachment {
                 streamInfo: streamInfo,
                 transitTierInfo: transitTierInfo,
                 mediaTierInfo: mediaTierInfo,
-                thumbnailMediaTierInfo: thumbnailMediaTierInfo
+                thumbnailMediaTierInfo: thumbnailMediaTierInfo,
+                originalAttachmentIdForQuotedReply: originalAttachmentIdForQuotedReply
             )
         }
 
@@ -233,7 +241,8 @@ extension Attachment {
             streamInfo: Attachment.StreamInfo?,
             transitTierInfo: Attachment.TransitTierInfo?,
             mediaTierInfo: Attachment.MediaTierInfo?,
-            thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo?
+            thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo?,
+            originalAttachmentIdForQuotedReply: Int64?
         ) {
             self.sqliteId = optionalSqliteId
             self.blurHash = blurHash
@@ -260,6 +269,7 @@ extension Attachment {
             self.lastThumbnailDownloadAttemptTimestamp = thumbnailMediaTierInfo?.lastDownloadAttemptTimestamp
             self.localRelativeFilePath = streamInfo?.localRelativeFilePath
             self.localRelativeFilePathThumbnail = localRelativeFilePathThumbnail
+            self.originalAttachmentIdForQuotedReply = originalAttachmentIdForQuotedReply
 
             let cachedAudioDurationSeconds: TimeInterval?
             let cachedMediaSizePixels: CGSize?

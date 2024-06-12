@@ -95,6 +95,13 @@ public class Attachment {
     /// Information for the transit tier upload, if known to be uploaded.
     public let transitTierInfo: TransitTierInfo?
 
+    /// Used for quoted reply thumbnail attachments.
+    /// The id of the quoted reply's target message's attachment that is to be thumbnail'ed.
+    /// Only relevant for non-streams. At "download" time instead of using the transit tier info
+    /// as the source we use the original attachment's file. Once this attachment is a stream,
+    /// this field should be set to nil (but should just be ignored regardless).
+    public let originalAttachmentIdForQuotedReply: Attachment.IDType?
+
     /// MediaName used for backups (but assigned even if backups disabled).
     /// Nonnull if downloaded OR if restored from a backup.
     public let mediaName: String?
@@ -188,6 +195,7 @@ public class Attachment {
             lastDownloadAttemptTimestamp: record.lastThumbnailDownloadAttemptTimestamp
         )
         self.localRelativeFilePathThumbnail = record.localRelativeFilePathThumbnail
+        self.originalAttachmentIdForQuotedReply = record.originalAttachmentIdForQuotedReply
     }
 
     public var isUploadedToTransitTier: Bool {

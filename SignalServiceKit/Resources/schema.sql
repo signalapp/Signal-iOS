@@ -1541,7 +1541,12 @@ CREATE
             ,"cachedVideoDurationSeconds" DOUBLE
             ,"audioWaveformRelativeFilePath" TEXT
             ,"videoStillFrameRelativeFilePath" TEXT
+            ,"originalAttachmentIdForQuotedReply" INTEGER REFERENCES "Attachment"("id"
         )
+            ON DELETE
+            SET
+                NULL
+)
 ;
 
 CREATE
@@ -1838,4 +1843,10 @@ CREATE
         "shouldThreadBeVisible"
         ,"lastInteractionRowId" DESC
     )
+;
+
+CREATE
+    INDEX "index_attachment_on_originalAttachmentIdForQuotedReply"
+        ON "Attachment"("originalAttachmentIdForQuotedReply"
+)
 ;

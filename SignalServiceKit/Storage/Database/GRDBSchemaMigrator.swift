@@ -265,6 +265,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addOrphanAttachmentPendingColumn
         case cleanUpUniqueIndexes
         case dropTableTestModel
+        case addOriginalAttachmentIdForQuotedReplyColumn
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2882,6 +2883,10 @@ public class GRDBSchemaMigrator: NSObject {
             return .success(())
         }
 
+        migrator.registerMigration(.addOriginalAttachmentIdForQuotedReplyColumn) { tx in
+            return try Self.addOriginalAttachmentIdForQuotedReplyColumn(tx)
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -3918,6 +3923,22 @@ public class GRDBSchemaMigrator: NSObject {
                 );
               END;
         """)
+
+        return .success(())
+    }
+
+    static func addOriginalAttachmentIdForQuotedReplyColumn(_ tx: GRDBWriteTransaction) throws -> Result<Void, Error> {
+        try tx.database.alter(table: "Attachment") { table in
+            table.add(column: "originalAttachmentIdForQuotedReply", .integer)
+                .references("Attachment", column: "id", onDelete: .setNull)
+        }
+
+        // For finding quoted reply attachments that reference an original attachment.
+        try tx.database.create(
+            index: "index_attachment_on_originalAttachmentIdForQuotedReply",
+            on: "Attachment",
+            columns: ["originalAttachmentIdForQuotedReply"]
+        )
 
         return .success(())
     }

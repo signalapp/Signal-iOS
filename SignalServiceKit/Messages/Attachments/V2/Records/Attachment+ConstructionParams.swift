@@ -24,6 +24,7 @@ extension Attachment {
         public let mediaTierInfo: MediaTierInfo?
         public let thumbnailMediaTierInfo: ThumbnailMediaTierInfo?
         public let localRelativeFilePathThumbnail: String?
+        public let originalAttachmentIdForQuotedReply: Attachment.IDType?
 
         private init(
             blurHash: String?,
@@ -34,7 +35,8 @@ extension Attachment {
             mediaName: String?,
             mediaTierInfo: MediaTierInfo?,
             thumbnailMediaTierInfo: ThumbnailMediaTierInfo?,
-            localRelativeFilePathThumbnail: String?
+            localRelativeFilePathThumbnail: String?,
+            originalAttachmentIdForQuotedReply: Attachment.IDType?
         ) {
             self.blurHash = blurHash
             self.mimeType = mimeType
@@ -45,6 +47,7 @@ extension Attachment {
             self.mediaTierInfo = mediaTierInfo
             self.thumbnailMediaTierInfo = thumbnailMediaTierInfo
             self.localRelativeFilePathThumbnail = localRelativeFilePathThumbnail
+            self.originalAttachmentIdForQuotedReply = originalAttachmentIdForQuotedReply
         }
 
         public static func fromPointer(
@@ -62,7 +65,8 @@ extension Attachment {
                 mediaName: nil,
                 mediaTierInfo: nil,
                 thumbnailMediaTierInfo: nil,
-                localRelativeFilePathThumbnail: nil
+                localRelativeFilePathThumbnail: nil,
+                originalAttachmentIdForQuotedReply: nil
             )
         }
 
@@ -82,7 +86,8 @@ extension Attachment {
                 mediaName: mediaName,
                 mediaTierInfo: nil,
                 thumbnailMediaTierInfo: nil,
-                localRelativeFilePathThumbnail: nil
+                localRelativeFilePathThumbnail: nil,
+                originalAttachmentIdForQuotedReply: nil
             )
         }
 
@@ -104,7 +109,29 @@ extension Attachment {
                 mediaName: mediaName,
                 mediaTierInfo: mediaTierInfo,
                 thumbnailMediaTierInfo: thumbnailMediaTierInfo,
-                localRelativeFilePathThumbnail: nil
+                localRelativeFilePathThumbnail: nil,
+                originalAttachmentIdForQuotedReply: nil
+            )
+        }
+
+        public static func forQuotedReplyThumbnailPointer(
+            originalAttachment: Attachment,
+            thumbnailBlurHash: String?,
+            thumbnailMimeType: String,
+            thumbnailEncryptionKey: Data,
+            thumbnailTransitTierInfo: TransitTierInfo?
+        ) -> ConstructionParams {
+            return .init(
+                blurHash: thumbnailBlurHash,
+                mimeType: thumbnailMimeType,
+                encryptionKey: thumbnailEncryptionKey,
+                streamInfo: nil,
+                transitTierInfo: thumbnailTransitTierInfo,
+                mediaName: nil,
+                mediaTierInfo: nil,
+                thumbnailMediaTierInfo: nil,
+                localRelativeFilePathThumbnail: nil,
+                originalAttachmentIdForQuotedReply: originalAttachment.id
             )
         }
     }
