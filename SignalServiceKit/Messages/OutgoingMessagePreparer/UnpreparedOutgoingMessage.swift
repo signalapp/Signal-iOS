@@ -20,7 +20,7 @@ public class UnpreparedOutgoingMessage {
         oversizeTextDataSource: OversizeTextDataSource? = nil,
         linkPreviewDraft: LinkPreviewTSResourceDataSource? = nil,
         quotedReplyDraft: DraftQuotedReplyModel? = nil,
-        messageStickerDraft: MessageStickerDraft? = nil,
+        messageStickerDraft: MessageStickerDataSource? = nil,
         contactShareDraft: ContactShareDraft.ForSending? = nil
     ) -> UnpreparedOutgoingMessage {
         if !message.shouldBeSaved {
@@ -133,7 +133,7 @@ public class UnpreparedOutgoingMessage {
             let oversizeTextDataSource: OversizeTextDataSource?
             let linkPreviewDraft: LinkPreviewTSResourceDataSource?
             let quotedReplyDraft: DraftQuotedReplyModel?
-            let messageStickerDraft: MessageStickerDraft?
+            let messageStickerDraft: MessageStickerDataSource?
             let contactShareDraft: ContactShareDraft.ForSending?
         }
 
@@ -228,7 +228,7 @@ public class UnpreparedOutgoingMessage {
         }
 
         let messageStickerBuilder = try message.messageStickerDraft.map {
-            try DependenciesBridge.shared.messageStickerManager.buildValidatedMessageSticker(fromDraft: $0, tx: tx.asV2Write)
+            try DependenciesBridge.shared.messageStickerManager.buildValidatedMessageSticker(from: $0, tx: tx.asV2Write)
         }.map {
             message.message.update(with: $0.info, transaction: tx)
             return $0

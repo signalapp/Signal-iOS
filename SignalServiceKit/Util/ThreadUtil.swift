@@ -114,24 +114,42 @@ public extension ThreadUtil {
             return builder.build(transaction: tx)
         }
 
-        enqueueSendAsyncWrite { tx in
-            guard let stickerMetadata = StickerManager.installedStickerMetadata(stickerInfo: stickerInfo, transaction: tx) else {
-                owsFailDebug("Could not find sticker file.")
+        Self.enqueueSendQueue.async {
+            let stickerDraft: MessageStickerDraft? = Self.databaseStorage.read { tx in
+                guard let stickerMetadata = StickerManager.installedStickerMetadata(stickerInfo: stickerInfo, transaction: tx) else {
+                    owsFailDebug("Could not find sticker file.")
+                    return nil
+                }
+
+                guard let stickerData = try? stickerMetadata.readStickerData() else {
+                    owsFailDebug("Couldn't load sticker data.")
+                    return nil
+                }
+
+                return MessageStickerDraft(
+                    info: stickerInfo,
+                    stickerData: stickerData,
+                    stickerType: stickerMetadata.stickerType,
+                    emoji: stickerMetadata.firstEmoji
+                )
+            }
+
+            guard let stickerDraft else {
                 return
             }
 
-            guard let stickerData = try? stickerMetadata.readStickerData() else {
-                owsFailDebug("Couldn't load sticker data.")
+            let stickerDataSource: MessageStickerDataSource
+            do {
+                stickerDataSource = try DependenciesBridge.shared.messageStickerManager.buildDataSource(
+                    fromDraft: stickerDraft
+                )
+            } catch {
+                owsFailDebug("Failed to build sticker!")
                 return
             }
-
-            let stickerDraft = MessageStickerDraft(
-                info: stickerInfo,
-                stickerData: stickerData,
-                stickerType: stickerMetadata.stickerType,
-                emoji: stickerMetadata.firstEmoji
-            )
-            self.enqueueMessage(message, stickerDraft: stickerDraft, thread: thread, tx: tx)
+            Self.databaseStorage.write { tx in
+                self.enqueueMessage(message, stickerDataSource: stickerDataSource, thread: thread, tx: tx)
+            }
         }
 
         return message
@@ -158,8 +176,19 @@ public extension ThreadUtil {
             emoji: stickerMetadata.firstEmoji
         )
 
-        enqueueSendAsyncWrite { tx in
-            self.enqueueMessage(message, stickerDraft: stickerDraft, thread: thread, tx: tx)
+        Self.enqueueSendQueue.async {
+            let stickerDataSource: MessageStickerDataSource
+            do {
+                stickerDataSource = try DependenciesBridge.shared.messageStickerManager.buildDataSource(
+                    fromDraft: stickerDraft
+                )
+            } catch {
+                owsFailDebug("Failed to build sticker!")
+                return
+            }
+            Self.databaseStorage.write { tx in
+                self.enqueueMessage(message, stickerDataSource: stickerDataSource, thread: thread, tx: tx)
+            }
         }
 
         return message
@@ -167,7 +196,7 @@ public extension ThreadUtil {
 
     private class func enqueueMessage(
         _ message: TSOutgoingMessage,
-        stickerDraft: MessageStickerDraft,
+        stickerDataSource: MessageStickerDataSource,
         thread: TSThread,
         tx: SDSAnyWriteTransaction
     ) {
@@ -175,7 +204,7 @@ public extension ThreadUtil {
 
         let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
             message,
-            messageStickerDraft: stickerDraft
+            messageStickerDraft: stickerDataSource
         )
         let preparedMessage: PreparedOutgoingMessage
         do {

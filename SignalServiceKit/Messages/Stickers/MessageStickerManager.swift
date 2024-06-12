@@ -6,6 +6,13 @@
 import Foundation
 import SignalCoreKit
 
+public struct MessageStickerDataSource {
+    public let info: StickerInfo
+    public let stickerType: StickerType
+    public let emoji: String?
+    public let source: TSResourceDataSource
+}
+
 public protocol MessageStickerManager {
 
     func buildValidatedMessageSticker(
@@ -13,8 +20,10 @@ public protocol MessageStickerManager {
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<MessageSticker>
 
+    func buildDataSource(fromDraft: MessageStickerDraft) throws -> MessageStickerDataSource
+
     func buildValidatedMessageSticker(
-        fromDraft draft: MessageStickerDraft,
+        from dataSource: MessageStickerDataSource,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<MessageSticker>
 
@@ -29,15 +38,18 @@ public class MessageStickerManagerImpl: MessageStickerManager {
 
     private let attachmentManager: TSResourceManager
     private let attachmentStore: TSResourceStore
+    private let attachmentValidator: TSResourceContentValidator
     private let stickerManager: Shims.StickerManager
 
     public init(
         attachmentManager: TSResourceManager,
         attachmentStore: TSResourceStore,
+        attachmentValidator: TSResourceContentValidator,
         stickerManager: Shims.StickerManager
     ) {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
+        self.attachmentValidator = attachmentValidator
         self.stickerManager = stickerManager
     }
 
@@ -161,65 +173,52 @@ public class MessageStickerManagerImpl: MessageStickerManager {
         }
     }
 
+    public func buildDataSource(fromDraft draft: MessageStickerDraft) throws -> MessageStickerDataSource {
+        guard
+            let dataSource = DataSourceValue.dataSource(
+                with: draft.stickerData,
+                mimeType: draft.stickerType.mimeType
+            )
+        else {
+            throw OWSAssertionError("Could not create data source!")
+        }
+
+        let validatedDataSource = try attachmentValidator.validateContents(
+            dataSource: dataSource,
+            shouldConsume: true,
+            mimeType: draft.stickerType.mimeType,
+            sourceFilename: nil,
+            caption: nil,
+            renderingFlag: .default
+        )
+        return .init(
+            info: draft.info,
+            stickerType: draft.stickerType,
+            emoji: draft.emoji,
+            source: validatedDataSource
+        )
+    }
+
     public func buildValidatedMessageSticker(
-        fromDraft draft: MessageStickerDraft,
+        from dataSource: MessageStickerDataSource,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<MessageSticker> {
-        let attachmentBuilder = try saveAttachment(
-            stickerData: draft.stickerData,
-            stickerType: draft.stickerType,
+        let attachmentBuilder = try attachmentManager.createAttachmentStreamBuilder(
+            from: dataSource.source,
             tx: tx
         )
 
         let messageSticker: MessageSticker
         switch attachmentBuilder.info {
         case .legacy(let uniqueId):
-            messageSticker = .withLegacyAttachment(info: draft.info, legacyAttachmentId: uniqueId, emoji: draft.emoji)
+            messageSticker = .withLegacyAttachment(info: dataSource.info, legacyAttachmentId: uniqueId, emoji: dataSource.emoji)
         case .v2:
-            messageSticker = .withForeignReferenceAttachment(info: draft.info, emoji: draft.emoji)
+            messageSticker = .withForeignReferenceAttachment(info: dataSource.info, emoji: dataSource.emoji)
         }
         guard messageSticker.isValid else {
             throw StickerError.invalidInput
         }
         return attachmentBuilder.wrap { _ in messageSticker }
-    }
-
-    private func saveAttachment(
-        stickerData: Data,
-        stickerType: StickerType,
-        tx: DBWriteTransaction
-    ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo> {
-        let fileSize = stickerData.count
-        guard fileSize > 0 else {
-            owsFailDebug("Invalid file size for data.")
-            throw StickerError.assertionFailure
-        }
-        let fileExtension = stickerType.fileExtension
-        var mimeType = stickerType.mimeType
-        let fileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: fileExtension)
-        try stickerData.write(to: fileUrl)
-
-        let imageMetadata = Data.imageMetadata(withPath: fileUrl.path, mimeType: nil)
-        if imageMetadata.imageFormat != .unknown,
-           let mimeTypeFromMetadata = imageMetadata.mimeType {
-            mimeType = mimeTypeFromMetadata
-        }
-
-        let dataSource = try DataSourcePath.dataSource(with: fileUrl, shouldDeleteOnDeallocation: true)
-
-        let attachmentDataSource = TSResourceDataSource.from(
-            dataSource: dataSource,
-            mimeType: mimeType,
-            caption: nil,
-            renderingFlag: .default,
-            // this data source should be consumed.
-            shouldCopyDataSource: false
-        )
-
-        return try attachmentManager.createAttachmentStreamBuilder(
-            from: attachmentDataSource,
-            tx: tx
-        )
     }
 
     public func buildProtoForSending(
@@ -280,11 +279,15 @@ public class MockMessageStickerManager: MessageStickerManager {
         ))
     }
 
+    public func buildDataSource(fromDraft draft: MessageStickerDraft) throws -> MessageStickerDataSource {
+        throw OWSAssertionError("Unimplemented")
+    }
+
     public func buildValidatedMessageSticker(
-        fromDraft draft: MessageStickerDraft,
+        from dataSource: MessageStickerDataSource,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<MessageSticker> {
-        return .withoutFinalizer(.withForeignReferenceAttachment(info: draft.info, emoji: draft.emoji))
+        return .withoutFinalizer(.withForeignReferenceAttachment(info: dataSource.info, emoji: dataSource.emoji))
     }
 
     public func buildProtoForSending(
