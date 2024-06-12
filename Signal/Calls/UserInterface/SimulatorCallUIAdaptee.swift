@@ -62,7 +62,7 @@ class SimulatorCallUIAdaptee: NSObject, CallUIAdaptee {
         case .groupThread(let groupThreadCall):
             // Explicitly unmute to request permissions.
             self.callService.updateIsLocalAudioMuted(isLocalAudioMuted: false)
-            self.callService.joinGroupCallIfNecessary(call, groupThreadCall: groupThreadCall)
+            self.callService.joinGroupCallIfNecessary(call, groupCall: groupThreadCall)
         case .callLink:
             owsFail("Can't answer Call Link call")
         }

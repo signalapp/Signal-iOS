@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-protocol AuthCredentialManager {
+public protocol AuthCredentialManager {
     func fetchGroupAuthCredential(localIdentifiers: LocalIdentifiers) async throws -> AuthCredentialWithPni
     func fetchCallLinkAuthCredential(localIdentifiers: LocalIdentifiers) async throws -> CallLinkAuthCredential
 }

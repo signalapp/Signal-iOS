@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-struct CallLinkAuthCredential {
+public struct CallLinkAuthCredential {
     private let localAci: Aci
     private let redemptionTime: UInt64
     private let serverParams: GenericServerPublicParams
@@ -24,7 +24,7 @@ struct CallLinkAuthCredential {
         self.authCredential = authCredential
     }
 
-    func present(callLinkParams: CallLinkSecretParams) -> CallLinkAuthCredentialPresentation {
+    public func present(callLinkParams: CallLinkSecretParams) -> CallLinkAuthCredentialPresentation {
         return self.authCredential.present(
             userId: self.localAci,
             redemptionTime: Date(timeIntervalSince1970: TimeInterval(self.redemptionTime)),

@@ -344,6 +344,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         SUIEnvironment.shared.setup()
         AppEnvironment.shared.setUp(callService: CallService(
             appContext: launchContext.appContext,
+            authCredentialManager: databaseContinuation.authCredentialManager,
             groupCallPeekClient: NSObject.groupCallManager.groupCallPeekClient,
             mutableCurrentCall: _currentCall
         ))

@@ -21,6 +21,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     public let callManager: CallManagerType
 
     private var audioSession: AudioSession { NSObject.audioSession }
+    private let authCredentialManager: any AuthCredentialManager
     private var databaseStorage: SDSDatabaseStorage { NSObject.databaseStorage }
     private var deviceSleepManager: DeviceSleepManager { DeviceSleepManager.shared }
     private var groupCallManager: GroupCallManager { NSObject.groupCallManager }
@@ -64,9 +65,11 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     public init(
         appContext: any AppContext,
+        authCredentialManager: any AuthCredentialManager,
         groupCallPeekClient: GroupCallPeekClient,
         mutableCurrentCall: AtomicValue<SignalCall?>
     ) {
+        self.authCredentialManager = authCredentialManager
         self.callManager = CallManager(
             httpClient: groupCallPeekClient.httpClient,
             fieldTrials: RingrtcFieldTrials.trials(with: appContext.appUserDefaults())
@@ -514,14 +517,19 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
     }
 
-    func buildAndConnectCallLinkCall(callLink: CallLink) -> (SignalCall, CallLinkCall)? {
+    @MainActor
+    func buildAndConnectCallLinkCall(callLink: CallLink) async throws -> (SignalCall, CallLinkCall)? {
+        let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!
+        let authCredential = try await authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: localIdentifiers)
         return _buildAndConnectGroupCall(isOutgoingVideoMuted: false) { () -> (SignalCall, CallLinkCall)? in
             // [CallLink] TODO: Provide adminPasskey.
             let videoCaptureController = VideoCaptureController()
             let sfuUrl = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
+            let secretParams = CallLinkSecretParams.deriveFromRootKey(callLink.rootKey.bytes)
+            let authCredentialPresentation = authCredential.present(callLinkParams: secretParams)
             let ringRtcCall = callManager.createCallLinkCall(
                 sfuUrl: sfuUrl,
-                authCredentialPresentation: [],
+                authCredentialPresentation: authCredentialPresentation.serialize(),
                 linkRootKey: callLink.rootKey,
                 adminPasskey: nil,
                 hkdfExtraInfo: Data(),
@@ -568,7 +576,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         return (call, groupCall)
     }
 
-    func joinGroupCallIfNecessary(_ call: SignalCall, groupThreadCall: GroupThreadCall) {
+    func joinGroupCallIfNecessary(_ call: SignalCall, groupCall: GroupCall) {
         guard call === self.callServiceState.currentCall else {
             owsFailDebug("Can't join a group call if it's not the current call")
             return
@@ -577,7 +585,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         // If we're disconnected, it means we hit an error with the first
         // connection, so connect now. (Ex: You try to join a call that's full, and
         // then you try to join again.)
-        guard connectGroupCallIfNeeded(groupThreadCall) else {
+        guard connectGroupCallIfNeeded(groupCall) else {
             owsFailDebug("Can't join a group call if we can't connect()")
             return
         }
@@ -585,12 +593,12 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         // If we're not yet joined, join now. In general, it's unexpected that
         // this method would be called when you're already joined, but it is
         // safe to do so.
-        let groupCall = groupThreadCall.ringRtcCall
-        if groupCall.localDeviceState.joinState == .notJoined {
-            groupCall.join()
+        let ringRtcCall = groupCall.ringRtcCall
+        if ringRtcCall.localDeviceState.joinState == .notJoined {
+            ringRtcCall.join()
             // Group calls can get disconnected, but we don't count that as ending the call.
             // So this call may have already been reported.
-            if groupThreadCall.commonState.systemState == .notReported && !groupThreadCall.groupCallRingState.isIncomingRing {
+            if groupCall.commonState.systemState == .notReported {
                 callUIAdapter.startOutgoingCall(call: call)
             }
         }

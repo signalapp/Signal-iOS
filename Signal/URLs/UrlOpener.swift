@@ -215,8 +215,7 @@ class UrlOpener {
             }
 
         case .callLink(let callLink):
-            // CallLink TODO: Join the call.
-            Logger.debug("Trying to open \(callLink)")
+            GroupCallViewController.presentLobby(for: callLink)
         }
     }
 }

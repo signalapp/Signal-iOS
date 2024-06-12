@@ -1201,7 +1201,8 @@ public class AppSetup {
             authCredentialStore: authCredentialStore,
             dependenciesBridge: dependenciesBridge,
             sskEnvironment: sskEnvironment,
-            backgroundTask: backgroundTask
+            backgroundTask: backgroundTask,
+            authCredentialManager: authCredentialManager
         )
     }
 
@@ -1220,18 +1221,25 @@ extension AppSetup {
         private let sskEnvironment: SSKEnvironment
         private let backgroundTask: OWSBackgroundTask
 
+        // We need this in AppDelegate, but it doesn't need to be a global/attached
+        // to DependenciesBridge.shared. We'll need some mechanism for this in the
+        // future, but for now, just put it here so it's part of the result.
+        public let authCredentialManager: any AuthCredentialManager
+
         fileprivate init(
             appContext: AppContext,
             authCredentialStore: AuthCredentialStore,
             dependenciesBridge: DependenciesBridge,
             sskEnvironment: SSKEnvironment,
-            backgroundTask: OWSBackgroundTask
+            backgroundTask: OWSBackgroundTask,
+            authCredentialManager: any AuthCredentialManager
         ) {
             self.appContext = appContext
             self.authCredentialStore = authCredentialStore
             self.dependenciesBridge = dependenciesBridge
             self.sskEnvironment = sskEnvironment
             self.backgroundTask = backgroundTask
+            self.authCredentialManager = authCredentialManager
         }
     }
 }

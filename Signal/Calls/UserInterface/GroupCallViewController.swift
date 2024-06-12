@@ -177,6 +177,19 @@ class GroupCallViewController: UIViewController {
         }
     }
 
+    static func presentLobby(for callLink: CallLink) {
+        Task {
+            do {
+                try await self._presentLobby(shouldAskForCameraPermission: true) {
+                    let callService = AppEnvironment.shared.callService!
+                    return try await callService.buildAndConnectCallLinkCall(callLink: callLink)
+                }
+            } catch {
+                owsFail("[CallLink] TODO: Couldn't buildAndConnectCallLinkCall \(error)")
+            }
+        }
+    }
+
     private static func _presentLobby(
         shouldAskForCameraPermission: Bool,
         buildAndStartConnecting: () async throws -> (SignalCall, GroupCall)?
@@ -1298,12 +1311,7 @@ extension GroupCallViewController: CallControlsDelegate {
         presentSafetyNumberChangeSheetIfNecessary { [weak self] success in
             guard let self = self else { return }
             guard success else { return }
-            switch self.groupCall.concreteType {
-            case .groupThread(let groupThreadCall):
-                self.callService.joinGroupCallIfNecessary(self.call, groupThreadCall: groupThreadCall)
-            case .callLink:
-                owsFail("[CallLink] TODO: Join the Call Link call")
-            }
+            self.callService.joinGroupCallIfNecessary(self.call, groupCall: self.groupCall)
         }
     }
 
