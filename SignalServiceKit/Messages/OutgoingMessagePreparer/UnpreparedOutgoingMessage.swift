@@ -223,7 +223,7 @@ public class UnpreparedOutgoingMessage {
                 tx: tx.asV2Write
             )
         }.map {
-            message.message.update(with: $0.info.quotedMessage, transaction: tx)
+            message.message.update(with: $0.info, transaction: tx)
             return $0
         }
 

@@ -1067,7 +1067,7 @@ public final class MessageReceiver: Dependencies {
         }
 
         // Update attachment fields before inserting.
-        quotedMessageBuilder.map { message.update(with: $0.info.quotedMessage, transaction: tx) }
+        quotedMessageBuilder.map { message.update(with: $0.info, transaction: tx) }
         contactBuilder.map { message.update(withContactShare: $0.info, transaction: tx) }
         linkPreviewBuilder.map { message.update(with: $0.info, transaction: tx) }
         messageStickerBuilder.map { message.update(with: $0.info, transaction: tx) }

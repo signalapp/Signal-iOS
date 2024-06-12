@@ -175,7 +175,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         var outgoingMessage = interactionStore.buildOutgoingMessage(builder: outgoingMessageBuilder, tx: tx)
 
         let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>?
-        let quotedMessageBuilder: OwnedAttachmentBuilder<QuotedMessageInfo>?
+        let quotedMessageBuilder: OwnedAttachmentBuilder<TSQuotedMessage>?
         let contactBuilder: OwnedAttachmentBuilder<OWSContact>?
         let messageStickerBuilder: OwnedAttachmentBuilder<MessageSticker>?
         do {
@@ -228,7 +228,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             }
 
             // Update attachment fields before inserting.
-            quotedMessageBuilder.map { interactionStore.update(outgoingMessage, with: $0.info.quotedMessage, tx: tx) }
+            quotedMessageBuilder.map { interactionStore.update(outgoingMessage, with: $0.info, tx: tx) }
             contactBuilder.map { interactionStore.update(outgoingMessage, with: $0.info, tx: tx) }
             linkPreviewBuilder.map { interactionStore.update(outgoingMessage, with: $0.info, tx: tx) }
             messageStickerBuilder.map { interactionStore.update(outgoingMessage, with: $0.info, tx: tx) }

@@ -35,7 +35,7 @@ public enum SentMessageTranscriptType {
 
         /// Construction of the builder itself deferred since the builder's constructor does database inserts.
         /// Edit messages construct a transcript but don't use the attachment builders and instead make their own.
-        public let makeQuotedMessageBuilder: (DBWriteTransaction) throws -> OwnedAttachmentBuilder<QuotedMessageInfo>?
+        public let makeQuotedMessageBuilder: (DBWriteTransaction) throws -> OwnedAttachmentBuilder<TSQuotedMessage>?
 
         /// Construction of the builder itself deferred since the builder's constructor does database inserts.
         /// Edit messages construct a transcript but don't use the attachment builders and instead make their own.

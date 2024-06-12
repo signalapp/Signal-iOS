@@ -2584,7 +2584,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         messageState: TSOutgoingMessageState,
         isDelivered: Bool = false,
         isRead: Bool = false,
-        quotedMessageBuilder: OwnedAttachmentBuilder<QuotedMessageInfo>? = nil,
+        quotedMessageBuilder: OwnedAttachmentBuilder<TSQuotedMessage>? = nil,
         contactShareBlock: CreateContactBlock? = nil,
         linkPreview: OWSLinkPreview? = nil,
         messageSticker: MessageSticker? = nil,
@@ -2597,7 +2597,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
         let message = messageBuilder.build(transaction: transaction)
 
-        quotedMessageBuilder.map { message.update(with: $0.info.quotedMessage, transaction: transaction) }
+        quotedMessageBuilder.map { message.update(with: $0.info, transaction: transaction) }
         linkPreview.map { message.update(with: $0, transaction: transaction) }
         messageSticker.map { message.update(with: $0, transaction: transaction) }
 
@@ -2706,7 +2706,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         thread: TSThread,
         messageBody: String?,
         isAttachmentDownloaded: Bool = false,
-        quotedMessageBuilder: OwnedAttachmentBuilder<QuotedMessageInfo>? = nil,
+        quotedMessageBuilder: OwnedAttachmentBuilder<TSQuotedMessage>? = nil,
         transaction: SDSAnyWriteTransaction
     ) -> TSIncomingMessage {
         owsAssertDebug(!messageBody.isEmptyOrNil)
@@ -2719,7 +2719,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             messageBody: messageBody
         )
         let message = incomingMessageBuilder.build()
-        quotedMessageBuilder.map { message.update(with: $0.info.quotedMessage, transaction: transaction) }
+        quotedMessageBuilder.map { message.update(with: $0.info, transaction: transaction) }
         message.anyInsert(transaction: transaction)
         message.debugonly_markAsReadNow(transaction: transaction)
 

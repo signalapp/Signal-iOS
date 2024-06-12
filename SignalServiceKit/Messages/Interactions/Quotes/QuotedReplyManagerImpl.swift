@@ -26,7 +26,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
         for dataMessage: SSKProtoDataMessage,
         thread: TSThread,
         tx: DBWriteTransaction
-    ) -> OwnedAttachmentBuilder<QuotedMessageInfo>? {
+    ) -> OwnedAttachmentBuilder<TSQuotedMessage>? {
         guard let quote = dataMessage.quote else {
             return nil
         }
@@ -84,7 +84,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
         quoteAuthor: Aci,
         quoteTimestamp: UInt64,
         tx: DBWriteTransaction
-    ) -> OwnedAttachmentBuilder<QuotedMessageInfo>? {
+    ) -> OwnedAttachmentBuilder<TSQuotedMessage>? {
         let quoteAuthorAddress = SignalServiceAddress(quoteAuthor)
 
         // This is untrusted content from other users that may not be well-formed.
@@ -94,17 +94,14 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             quoteProto.hasType,
             quoteProto.unwrappedType == .giftBadge
         {
-            return .withoutFinalizer(.init(
-                quotedMessage: TSQuotedMessage(
-                    timestamp: quoteTimestamp,
-                    authorAddress: quoteAuthorAddress,
-                    body: nil,
-                    bodyRanges: nil,
-                    bodySource: .remote,
-                    receivedQuotedAttachmentInfo: nil,
-                    isGiftBadge: true
-                ),
-                renderingFlag: .default
+            return .withoutFinalizer(TSQuotedMessage(
+                timestamp: quoteTimestamp,
+                authorAddress: quoteAuthorAddress,
+                body: nil,
+                bodyRanges: nil,
+                bodySource: .remote,
+                receivedQuotedAttachmentInfo: nil,
+                isGiftBadge: true
             ))
         }
 
@@ -158,18 +155,15 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             return nil
         }
 
-        func quotedMessage(attachmentInfo: QuotedAttachmentInfo?) -> QuotedMessageInfo {
-            return .init(
-                quotedMessage: TSQuotedMessage(
-                    timestamp: quoteTimestamp,
-                    authorAddress: quoteAuthorAddress,
-                    body: body,
-                    bodyRanges: bodyRanges,
-                    bodySource: .remote,
-                    receivedQuotedAttachmentInfo: attachmentInfo?.info,
-                    isGiftBadge: false
-                ),
-                renderingFlag: attachmentInfo?.renderingFlag ?? .default
+        func quotedMessage(attachmentInfo: QuotedAttachmentInfo?) -> TSQuotedMessage {
+            return TSQuotedMessage(
+                timestamp: quoteTimestamp,
+                authorAddress: quoteAuthorAddress,
+                body: body,
+                bodyRanges: bodyRanges,
+                bodySource: .remote,
+                receivedQuotedAttachmentInfo: attachmentInfo?.info,
+                isGiftBadge: false
             )
         }
 
@@ -186,7 +180,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
         quoteProto: SSKProtoDataMessageQuote,
         author: Aci,
         tx: DBWriteTransaction
-    ) -> OwnedAttachmentBuilder<QuotedMessageInfo>? {
+    ) -> OwnedAttachmentBuilder<TSQuotedMessage>? {
         let authorAddress: SignalServiceAddress
         if let incomingOriginal = originalMessage as? TSIncomingMessage {
             authorAddress = incomingOriginal.authorAddress
@@ -211,17 +205,14 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 "PER_MESSAGE_EXPIRATION_NOT_VIEWABLE",
                 comment: "inbox cell and notification text for an already viewed view-once media message."
             )
-            return .withoutFinalizer(.init(
-                quotedMessage: TSQuotedMessage(
-                    timestamp: originalMessage.timestamp,
-                    authorAddress: authorAddress,
-                    body: body,
-                    bodyRanges: nil,
-                    bodySource: .local,
-                    receivedQuotedAttachmentInfo: nil,
-                    isGiftBadge: false
-                ),
-                renderingFlag: .default
+            return .withoutFinalizer(TSQuotedMessage(
+                timestamp: originalMessage.timestamp,
+                authorAddress: authorAddress,
+                body: body,
+                bodyRanges: nil,
+                bodySource: .local,
+                receivedQuotedAttachmentInfo: nil,
+                isGiftBadge: false
             ))
         }
 
@@ -283,18 +274,15 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             return nil
         }
 
-        func quotedMessage(attachmentInfo: QuotedAttachmentInfo?) -> QuotedMessageInfo {
-            return .init(
-                quotedMessage: TSQuotedMessage(
-                    timestamp: originalMessage.timestamp,
-                    authorAddress: authorAddress,
-                    body: body,
-                    bodyRanges: bodyRanges,
-                    bodySource: .local,
-                    receivedQuotedAttachmentInfo: attachmentInfo?.info,
-                    isGiftBadge: isGiftBadge
-                ),
-                renderingFlag: attachmentInfo?.renderingFlag ?? .default
+        func quotedMessage(attachmentInfo: QuotedAttachmentInfo?) -> TSQuotedMessage {
+            return TSQuotedMessage(
+                timestamp: originalMessage.timestamp,
+                authorAddress: authorAddress,
+                body: body,
+                bodyRanges: bodyRanges,
+                bodySource: .local,
+                receivedQuotedAttachmentInfo: attachmentInfo?.info,
+                isGiftBadge: isGiftBadge
             )
         }
 
@@ -609,7 +597,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
         draft: DraftQuotedReplyModel,
         threadUniqueId: String,
         tx: DBWriteTransaction
-    ) -> OwnedAttachmentBuilder<QuotedMessageInfo> {
+    ) -> OwnedAttachmentBuilder<TSQuotedMessage> {
         // Find the original message.
         guard
             let originalMessageTimestamp = draft.originalMessageTimestamp,
@@ -622,38 +610,32 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
         else {
             switch draft.content {
             case .edit(_, let tsQuotedMessage, let content):
-                return .withoutFinalizer(.init(quotedMessage: tsQuotedMessage, renderingFlag: content.renderingFlag))
+                return .withoutFinalizer(tsQuotedMessage)
             default:
-                return .withoutFinalizer(.init(
-                    quotedMessage: TSQuotedMessage(
-                        targetMessageTimestamp: draft.originalMessageTimestamp.map(NSNumber.init(value:)),
-                        authorAddress: draft.originalMessageAuthorAddress,
-                        body: OWSLocalizedString(
-                            "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE",
-                            comment: "Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender."
-                        ),
-                        bodyRanges: nil,
-                        bodySource: .remote,
-                        isGiftBadge: false
+                return .withoutFinalizer(TSQuotedMessage(
+                    targetMessageTimestamp: draft.originalMessageTimestamp.map(NSNumber.init(value:)),
+                    authorAddress: draft.originalMessageAuthorAddress,
+                    body: OWSLocalizedString(
+                        "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE",
+                        comment: "Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender."
                     ),
-                    renderingFlag: draft.content.renderingFlag
+                    bodyRanges: nil,
+                    bodySource: .remote,
+                    isGiftBadge: false
                 ))
             }
         }
 
         let body = draft.bodyForSending
 
-        func buildQuotedMessage(_ attachmentInfo: QuotedAttachmentInfo?) -> QuotedMessageInfo {
-            return .init(
-                quotedMessage: TSQuotedMessage(
-                    timestamp: draft.originalMessageTimestamp.map(NSNumber.init(value:)),
-                    authorAddress: draft.originalMessageAuthorAddress,
-                    body: body?.text,
-                    bodyRanges: body?.ranges,
-                    quotedAttachmentForSending: attachmentInfo?.info,
-                    isGiftBadge: draft.content.isGiftBadge
-                ),
-                renderingFlag: attachmentInfo?.renderingFlag ?? .default
+        func buildQuotedMessage(_ attachmentInfo: QuotedAttachmentInfo?) -> TSQuotedMessage {
+            return TSQuotedMessage(
+                timestamp: draft.originalMessageTimestamp.map(NSNumber.init(value:)),
+                authorAddress: draft.originalMessageAuthorAddress,
+                body: body?.text,
+                bodyRanges: body?.ranges,
+                quotedAttachmentForSending: attachmentInfo?.info,
+                isGiftBadge: draft.content.isGiftBadge
             )
         }
 
