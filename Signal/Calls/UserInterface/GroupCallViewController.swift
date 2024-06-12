@@ -27,7 +27,7 @@ class GroupCallViewController: UIViewController {
     )
     private lazy var callControlsConfirmationToastContainerView = UIView()
     private var callService: CallService { AppEnvironment.shared.callService }
-    private lazy var incomingCallControls = IncomingCallControls(video: true, delegate: self)
+    private var incomingCallControls: IncomingCallControls?
     private lazy var callHeader = CallHeader(groupCall: groupCall, delegate: self)
     private lazy var notificationView = GroupCallNotificationView(groupCall: groupCall)
 
@@ -41,7 +41,7 @@ class GroupCallViewController: UIViewController {
     private var didUserEverSwipeToScreenShare = true
     private let swipeToastView = GroupCallSwipeToastView()
 
-    private var speakerPage = UIView()
+    private let speakerPage = UIView()
 
     private let scrollView = UIScrollView()
 
@@ -258,10 +258,6 @@ class GroupCallViewController: UIViewController {
         view.addSubview(callControls)
         callControls.autoPinWidthToSuperview()
         callControls.autoPinEdge(toSuperviewEdge: .bottom)
-
-        view.addSubview(incomingCallControls)
-        incomingCallControls.autoPinWidthToSuperview()
-        incomingCallControls.autoPinEdge(toSuperviewEdge: .bottom)
 
         view.addSubview(videoOverflow)
         videoOverflow.autoPinEdge(toSuperviewEdge: .leading)
@@ -601,14 +597,14 @@ class GroupCallViewController: UIViewController {
             groupThreadCall.groupCallRingState.isIncomingRing
         {
             callControls.isHidden = true
-            incomingCallControls.isHidden = false
+            createIncomingCallControlsIfNeeded().isHidden = false
             // These views aren't visible at this point, but we need them to be configured anyway.
             updateMemberViewFrames(size: size, controlsAreHidden: true)
             updateScrollViewFrames(size: size, controlsAreHidden: true)
             return
         }
 
-        if !incomingCallControls.isHidden {
+        if let incomingCallControls, !incomingCallControls.isHidden {
             // We were showing the incoming call controls, but now we don't want to.
             // To make sure all views transition properly, pretend we were showing the regular controls all along.
             callControls.isHidden = false
@@ -841,6 +837,37 @@ class GroupCallViewController: UIViewController {
         case .callControlsOnly:
             self.callControlsDisplayState = .none
         }
+    }
+
+    // MARK: - Ringing/Incoming Call Controls
+
+    private func createIncomingCallControlsIfNeeded() -> IncomingCallControls {
+        if let incomingCallControls {
+            return incomingCallControls
+        }
+        let incomingCallControls = IncomingCallControls(
+            isVideoCall: true,
+            didDeclineCall: { [unowned self] in self.dismissCall() },
+            didAcceptCall: { [unowned self] hasVideo in self.acceptRingingIncomingCall(hasVideo: hasVideo) }
+        )
+        self.view.addSubview(incomingCallControls)
+        incomingCallControls.autoPinWidthToSuperview()
+        incomingCallControls.autoPinEdge(toSuperviewEdge: .bottom)
+        self.incomingCallControls = incomingCallControls
+        return incomingCallControls
+    }
+
+    private func acceptRingingIncomingCall(hasVideo: Bool) {
+        // Explicitly unmute video in order to request permissions as needed.
+        // (Audio is unmuted as part of the call UI adapter.)
+
+        callService.updateIsLocalVideoMuted(isLocalVideoMuted: !hasVideo)
+        // When turning off video, default speakerphone to on.
+        if !hasVideo, !callService.audioService.hasExternalInputs {
+            callService.audioService.requestSpeakerphone(call: call, isEnabled: true)
+        }
+
+        callService.callUIAdapter.answerCall(call)
     }
 }
 
@@ -1192,26 +1219,6 @@ extension GroupCallViewController: GroupCallObserver {
             hasUnresolvedSafetyNumberMismatch = true
             resolveSafetyNumberMismatch()
         }
-    }
-}
-
-extension GroupCallViewController: IncomingCallControlsDelegate {
-    func didDeclineIncomingCall() {
-        dismissCall()
-    }
-
-    func didAcceptIncomingCall(sender: UIButton) {
-        // Explicitly unmute video in order to request permissions as needed.
-        // (Audio is unmuted as part of the call UI adapter.)
-
-        let videoMute = IncomingCallControls.VideoEnabledTag(rawValue: sender.tag) == .disabled
-        callService.updateIsLocalVideoMuted(isLocalVideoMuted: videoMute)
-        // When turning off video, default speakerphone to on.
-        if videoMute && !callService.audioService.hasExternalInputs {
-            callService.audioService.requestSpeakerphone(call: call, isEnabled: true)
-        }
-
-        callService.callUIAdapter.answerCall(call)
     }
 }
 
