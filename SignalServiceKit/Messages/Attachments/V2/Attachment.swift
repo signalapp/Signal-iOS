@@ -198,6 +198,13 @@ public class Attachment {
         return AttachmentStream(attachment: self)
     }
 
+    public static func mediaName(digestSHA256Ciphertext: Data) -> String {
+        // We use the base-64-encoded digest as the media name.
+        // This ensures media name collisions occur only between the
+        // same attachment contents encrypted with the same key.
+        return digestSHA256Ciphertext.base64EncodedString()
+    }
+
     public enum TransitUploadStrategy {
         case reuseExistingUpload(TransitTierInfo)
         case reuseStreamEncryption(Upload.LocalUploadMetadata)

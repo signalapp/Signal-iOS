@@ -238,8 +238,11 @@ public class AppSetup {
             attachmentValidator: attachmentContentValidator
         )
         let attachmentStore = AttachmentStoreImpl()
+        let orphanedAttachmentStore = OrphanedAttachmentStoreImpl()
         let attachmentManager = AttachmentManagerImpl(
-            attachmentStore: attachmentStore
+            attachmentStore: attachmentStore,
+            orphanedAttachmentCleaner: orphanedAttachmentCleaner,
+            orphanedAttachmentStore: orphanedAttachmentStore
         )
 
         let mediaBandwidthPreferenceStore = MediaBandwidthPreferenceStoreImpl(

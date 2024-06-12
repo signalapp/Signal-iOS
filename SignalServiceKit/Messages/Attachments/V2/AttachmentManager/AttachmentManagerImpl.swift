@@ -8,11 +8,17 @@ import Foundation
 public class AttachmentManagerImpl: AttachmentManager {
 
     private let attachmentStore: AttachmentStore
+    private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
+    private let orphanedAttachmentStore: OrphanedAttachmentStore
 
     public init(
-        attachmentStore: AttachmentStore
+        attachmentStore: AttachmentStore,
+        orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
+        orphanedAttachmentStore: OrphanedAttachmentStore
     ) {
         self.attachmentStore = attachmentStore
+        self.orphanedAttachmentCleaner = orphanedAttachmentCleaner
+        self.orphanedAttachmentStore = orphanedAttachmentStore
     }
 
     // MARK: - Public
@@ -214,7 +220,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         let referenceParams = AttachmentReference.ConstructionParams(
             owner: try owner.build(
                 orderInOwner: sourceOrder,
-                // TODO: [Delete Syncs] pull id off the pointer proto.
+                // TODO: [DeleteForMe] pull attachment id off the pointer proto.
                 idInOwner: nil,
                 renderingFlag: .fromProto(proto),
                 // Not downloaded so we don't know the content type.
@@ -238,10 +244,6 @@ public class AttachmentManagerImpl: AttachmentManager {
         sourceOrder: UInt32?,
         tx: DBWriteTransaction
     ) throws {
-        guard let fileExtension = MimeTypeUtil.fileExtensionForMimeType(dataSource.mimeType) else {
-            throw OWSAssertionError("Invalid mime type!")
-        }
-
         switch dataSource.source {
         case .existingAttachment(let existingAttachmentMetadata):
             guard let existingAttachment = attachmentStore.fetch(id: existingAttachmentMetadata.id, tx: tx) else {
@@ -250,6 +252,8 @@ public class AttachmentManagerImpl: AttachmentManager {
 
             let owner: AttachmentReference.Owner = try dataSource.owner.build(
                 orderInOwner: sourceOrder,
+                // TODO: [DeleteForMe] either reuse id from the original reference we copied from,
+                // or assign a new id. Yet undecided what the behavior should be for forwarding.
                 idInOwner: nil,
                 renderingFlag: existingAttachmentMetadata.renderingFlag,
                 contentType: existingAttachment.streamInfo?.contentType.raw
@@ -266,19 +270,68 @@ public class AttachmentManagerImpl: AttachmentManager {
                 tx: tx
             )
         case .pendingAttachment(let pendingAttachment):
-            break
+            let owner: AttachmentReference.Owner = try dataSource.owner.build(
+                orderInOwner: sourceOrder,
+                // TODO: [DeleteForMe] assign IDs for message body attachments and
+                // pass them through to here.
+                idInOwner: nil,
+                renderingFlag: pendingAttachment.renderingFlag,
+                contentType: pendingAttachment.validatedContentType.raw
+            )
+            let mediaSizePixels: CGSize?
+            switch pendingAttachment.validatedContentType {
+            case .invalid, .file, .audio:
+                mediaSizePixels = nil
+            case .image(let pixelSize), .video(_, let pixelSize, _), .animatedImage(let pixelSize):
+                mediaSizePixels = pixelSize
+            }
+            let referenceParams = AttachmentReference.ConstructionParams(
+                owner: owner,
+                sourceFilename: pendingAttachment.sourceFilename,
+                sourceUnencryptedByteCount: pendingAttachment.unencryptedByteCount,
+                sourceMediaSizePixels: mediaSizePixels
+            )
+            let attachmentParams = Attachment.ConstructionParams.fromStream(
+                blurHash: pendingAttachment.blurHash,
+                mimeType: pendingAttachment.mimeType,
+                encryptionKey: pendingAttachment.encryptionKey,
+                streamInfo: .init(
+                    sha256ContentHash: pendingAttachment.sha256ContentHash,
+                    encryptedByteCount: pendingAttachment.encryptedByteCount,
+                    unencryptedByteCount: pendingAttachment.unencryptedByteCount,
+                    contentType: pendingAttachment.validatedContentType,
+                    digestSHA256Ciphertext: pendingAttachment.digestSHA256Ciphertext,
+                    localRelativeFilePath: pendingAttachment.localRelativeFilePath
+                ),
+                mediaName: Attachment.mediaName(digestSHA256Ciphertext: pendingAttachment.digestSHA256Ciphertext)
+            )
+
+            do {
+                guard orphanedAttachmentStore.orphanAttachmentExists(with: pendingAttachment.orphanRecordId, tx: tx) else {
+                    throw OWSAssertionError("Attachment file deleted before creation")
+                }
+
+                // Try and insert the new attachment.
+                try attachmentStore.insert(
+                    attachmentParams,
+                    reference: referenceParams,
+                    tx: tx
+                )
+                // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
+                try orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
+            } catch let AttachmentInsertError.duplicatePlaintextHash(existingAttachmentId) {
+                // Already have an attachment with the same plaintext hash! Create a new reference to it instead.
+                // DO NOT remove the pending attachment's orphan table row, so the pending copy gets cleaned up.
+                try attachmentStore.addOwner(
+                    referenceParams,
+                    for: existingAttachmentId,
+                    tx: tx
+                )
+                return
+            } catch let error {
+                throw error
+            }
         }
-
-        let attachment: Attachment = {
-            // TODO: Create and insert Attachment for the provided data.
-
-            // IMPORTANT: respect dataSource.shouldCopyDataSource
-            fatalError("Unimplemented")
-        }()
-        let attachmentReference: AttachmentReference = {
-            // TODO: Create and insert AttachmentReference from the provided owner to the new Attachment
-            fatalError("Unimplemented")
-        }()
     }
 
     // MARK: Quoted Replies
