@@ -13,11 +13,6 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
 
     private let blurredAvatarBackgroundView = BlurredAvatarBackgroundView()
 
-    enum ErrorState {
-        case blocked(SignalServiceAddress)
-        case noMediaKeys(SignalServiceAddress)
-    }
-
     private let errorView = GroupCallErrorView()
     private let spinner = UIActivityIndicatorView(style: .large)
 
@@ -99,7 +94,11 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
             } else if !remoteGroupMemberDeviceState.mediaKeysReceived {
                 // No media keys. Display error view
                 errorView.isHidden = false
-                configureErrorView(for: remoteGroupMemberDeviceState.address, isBlocked: isRemoteDeviceBlocked)
+                if isRemoteDeviceBlocked {
+                    configureErrorView(errorState: .blocked(remoteGroupMemberDeviceState.address))
+                } else {
+                    configureErrorView(errorState: .noMediaKeys(remoteGroupMemberDeviceState.address))
+                }
                 blurredAvatarBackgroundView.isHidden = false
             } else {
                 spinner.isHidden = true
@@ -114,38 +113,80 @@ class CallMemberWaitingAndErrorView: UIView, CallMemberComposableView {
         )
     }
 
-    private func configureErrorView(for address: SignalServiceAddress, isBlocked: Bool) {
-        let displayName: String
+    private func displayName(address: SignalServiceAddress) -> String {
         if address.isLocalAddress {
-            displayName = OWSLocalizedString(
+            return OWSLocalizedString(
                 "GROUP_CALL_YOU_ON_ANOTHER_DEVICE",
                 comment: "Text describing the local user in the group call members sheet when connected from another device.")
         } else {
-            displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
+            return databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
+        }
+    }
+
+    private func configureErrorView(errorState: CallMemberErrorState) {
+        let label: String
+        let image: UIImage?
+        switch errorState {
+        case .blocked(let addr):
+            let blockFormat = OWSLocalizedString(
+                "GROUP_CALL_BLOCKED_USER_FORMAT",
+                comment: "String displayed in group call grid cell when a user is blocked. Embeds {user's name}"
+            )
+            let displayName = displayName(address: addr)
+            label = String(format: blockFormat, arguments: [displayName])
+            image = UIImage(named: "block")
+        case .noMediaKeys(let addr):
+            let missingKeyFormat = OWSLocalizedString(
+                "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT",
+                comment: "String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name}"
+            )
+            let displayName = displayName(address: addr)
+            label = String(format: missingKeyFormat, arguments: [displayName])
+            image = UIImage(named: "error-circle-fill")
         }
 
-        let blockFormat = OWSLocalizedString(
-            "GROUP_CALL_BLOCKED_USER_FORMAT",
-            comment: "String displayed in group call grid cell when a user is blocked. Embeds {user's name}")
-        let missingKeyFormat = OWSLocalizedString(
-            "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT",
-            comment: "String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name}")
-
-        let labelFormat = isBlocked ? blockFormat : missingKeyFormat
-        let label = String(format: labelFormat, arguments: [displayName])
-        let image = isBlocked ? UIImage(named: "block") : UIImage(named: "error-circle-fill")
+        let (errorSheetTitle, errorSheetMessage) = errorSheetContents(errorState: errorState)
 
         errorView.iconImage = image
         errorView.labelText = label
         errorView.userTapAction = { [weak self] _ in
             guard let self = self else { return }
-
-            if isBlocked {
-                self.errorPresenter?.presentErrorSheet(for: .blocked(address))
-            } else {
-                self.errorPresenter?.presentErrorSheet(for: .noMediaKeys(address))
-            }
+            self.errorPresenter?.presentErrorSheet(
+                title: errorSheetTitle,
+                message: errorSheetMessage
+            )
         }
+    }
+
+    private func errorSheetContents(errorState: CallMemberErrorState) -> (String, String) {
+        let title: String
+        let message: String
+
+        switch errorState {
+        case let .blocked(address):
+            message = OWSLocalizedString(
+                "GROUP_CALL_BLOCKED_ALERT_MESSAGE",
+                comment: "Message body for alert explaining that a group call participant is blocked")
+
+            let titleFormat = OWSLocalizedString(
+                "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT",
+                comment: "Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }}")
+            let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
+            title = String(format: titleFormat, displayName)
+
+        case let .noMediaKeys(address):
+            message = OWSLocalizedString(
+                "GROUP_CALL_NO_KEYS_ALERT_MESSAGE",
+                comment: "Message body for alert explaining that a group call participant cannot be displayed because of missing keys")
+
+            let titleFormat = OWSLocalizedString(
+                "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT",
+                comment: "Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }}")
+            let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
+            title = String(format: titleFormat, displayName)
+        }
+
+        return (title, message)
     }
 
     func rotateForPhoneOrientation(_ rotationAngle: CGFloat) {
@@ -182,5 +223,5 @@ enum CallMemberErrorState {
 }
 
 protocol CallMemberErrorPresenter: AnyObject {
-    func presentErrorSheet(for error: CallMemberErrorState)
+    func presentErrorSheet(title: String, message: String)
 }

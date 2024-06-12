@@ -1329,34 +1329,7 @@ extension GroupCallViewController: CallControlsDelegate {
 }
 
 extension GroupCallViewController: CallMemberErrorPresenter {
-    func presentErrorSheet(for error: CallMemberErrorState) {
-        let title: String
-        let message: String
-
-        switch error {
-        case let .blocked(address):
-            message = OWSLocalizedString(
-                "GROUP_CALL_BLOCKED_ALERT_MESSAGE",
-                comment: "Message body for alert explaining that a group call participant is blocked")
-
-            let titleFormat = OWSLocalizedString(
-                "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT",
-                comment: "Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }}")
-            let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
-            title = String(format: titleFormat, displayName)
-
-        case let .noMediaKeys(address):
-            message = OWSLocalizedString(
-                "GROUP_CALL_NO_KEYS_ALERT_MESSAGE",
-                comment: "Message body for alert explaining that a group call participant cannot be displayed because of missing keys")
-
-            let titleFormat = OWSLocalizedString(
-                "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT",
-                comment: "Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }}")
-            let displayName = databaseStorage.read { tx in contactsManager.displayName(for: address, tx: tx).resolvedValue() }
-            title = String(format: titleFormat, displayName)
-        }
-
+    func presentErrorSheet(title: String, message: String) {
         let actionSheet = ActionSheetController(title: title, message: message, theme: .translucentDark)
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.okButton))
         presentActionSheet(actionSheet)
