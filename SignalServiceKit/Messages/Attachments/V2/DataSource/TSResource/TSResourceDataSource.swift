@@ -19,7 +19,8 @@ public struct TSResourceDataSource {
         // If shouldCopy=true, the data source will be copied instead of moved.
         case dataSource(DataSource, shouldCopy: Bool)
         case data(Data)
-        case existingAttachment(TSResourceId)
+        case existingLegacyAttachment(uniqueId: String)
+        case existingV2Attachment(id: Attachment.IDType, contentHash: Data?)
         case pendingAttachment(PendingAttachment)
     }
 
@@ -51,7 +52,7 @@ public struct TSResourceDataSource {
                 caption: caption,
                 renderingFlag: reference.renderingFlag,
                 sourceFilename: reference.sourceFilename,
-                dataSource: .existingAttachment(existingAttachment.resourceId)
+                dataSource: .existingLegacyAttachment(uniqueId: attachment.uniqueId)
             )
         case (.v2(let attachment), .v2(let reference)):
             let v2 = AttachmentDataSource.forwarding(existingAttachment: attachment, with: reference)
@@ -78,7 +79,7 @@ public struct TSResourceDataSource {
                 caption: caption,
                 renderingFlag: renderingFlag,
                 sourceFilename: v2.sourceFilename,
-                dataSource: .existingAttachment(existingAttachment.resourceId)
+                dataSource: .existingV2Attachment(id: attachment.attachment.id, contentHash: attachment.contentHash)
             )
         default:
             fatalError("Invalid type combination!")
@@ -132,27 +133,24 @@ extension TSResourceDataSource {
                 sourceFilename: sourceFilename,
                 dataSource: .data(data)
             ))
-        case .existingAttachment(let existingResourceId):
-            switch existingResourceId {
-            case .v2(let rowId):
-                return .v2(
-                    .init(
-                        mimeType: mimeType,
-                        contentHash: nil,
-                        sourceFilename: sourceFilename,
-                        dataSource: .existingAttachment(rowId)
-                    ),
-                    renderingFlag
-                )
-            case .legacy(let uniqueId):
-                return .legacy(.init(
+        case .existingV2Attachment(let rowId, let contentHash):
+            return .v2(
+                .init(
                     mimeType: mimeType,
-                    caption: caption,
-                    renderingFlag: renderingFlag,
+                    contentHash: contentHash,
                     sourceFilename: sourceFilename,
-                    dataSource: .existingAttachment(uniqueId: uniqueId)
-                ))
-            }
+                    dataSource: .existingAttachment(rowId)
+                ),
+                renderingFlag
+            )
+        case .existingLegacyAttachment(let uniqueId):
+            return .legacy(.init(
+                mimeType: mimeType,
+                caption: caption,
+                renderingFlag: renderingFlag,
+                sourceFilename: sourceFilename,
+                dataSource: .existingAttachment(uniqueId: uniqueId)
+            ))
         case .pendingAttachment(let pendingAttachment):
             return .v2(.from(pendingAttachment: pendingAttachment), renderingFlag)
         }
@@ -172,7 +170,7 @@ extension AttachmentDataSource {
             dataSource: {
                 switch self.dataSource {
                 case let .existingAttachment(attachmentId):
-                    return .existingAttachment(.v2(rowId: attachmentId))
+                    return .existingV2Attachment(id: attachmentId, contentHash: contentHash)
                 case let .pendingAttachment(pendingAttachment):
                     return .pendingAttachment(pendingAttachment)
                 }
@@ -195,7 +193,7 @@ extension TSAttachmentDataSource {
                 case .data(let data):
                     return .data(data)
                 case .existingAttachment(let uniqueId):
-                    return .existingAttachment(.legacy(uniqueId: uniqueId))
+                    return .existingLegacyAttachment(uniqueId: uniqueId)
                 }
             }()
         )
