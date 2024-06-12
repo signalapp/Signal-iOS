@@ -72,6 +72,7 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
                     dataSource: dataSource,
                     shouldConsume: shouldConsume,
                     mimeType: mimeType,
+                    renderingFlag: renderingFlag,
                     sourceFilename: sourceFilename
                 )
             return attachmentDataSource.tsDataSource

@@ -117,6 +117,7 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
             dataSource: imageDataSource,
             shouldConsume: true,
             mimeType: mimeType,
+            renderingFlag: .default,
             sourceFilename: nil
         )
     }

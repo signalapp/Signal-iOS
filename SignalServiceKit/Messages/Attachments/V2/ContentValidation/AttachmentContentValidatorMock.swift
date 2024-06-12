@@ -15,6 +15,7 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
         dataSource: DataSource,
         shouldConsume: Bool,
         mimeType: String,
+        renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
     ) throws -> PendingAttachment {
         throw OWSAssertionError("Unimplemented")
@@ -26,6 +27,7 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
         plaintextLength: UInt32,
         digestSHA256Ciphertext: Data,
         mimeType: String,
+        renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
     ) throws -> PendingAttachment {
         throw OWSAssertionError("Unimplemented")

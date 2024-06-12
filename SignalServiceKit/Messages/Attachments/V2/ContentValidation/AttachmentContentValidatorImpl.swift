@@ -23,6 +23,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         dataSource: DataSource,
         shouldConsume: Bool,
         mimeType: String,
+        renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
     ) throws -> PendingAttachment {
         let input: Input = {
@@ -40,6 +41,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             input: input,
             encryptionKey: encryptionKey,
             mimeType: mimeType,
+            renderingFlag: renderingFlag,
             sourceFilename: sourceFilename
         )
 
@@ -56,6 +58,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         plaintextLength: UInt32,
         digestSHA256Ciphertext: Data,
         mimeType: String,
+        renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
     ) throws -> PendingAttachment {
         // Very very first thing: validate the digest.
@@ -82,6 +85,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             input: input,
             encryptionKey: encryptionKey,
             mimeType: mimeType,
+            renderingFlag: renderingFlag,
             sourceFilename: sourceFilename
         )
     }
@@ -108,6 +112,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             input: input,
             encryptionKey: encryptionKey,
             mimeType: MimeType.textXSignalPlain.rawValue,
+            renderingFlag: .default,
             sourceFilename: nil
         )
 
@@ -125,6 +130,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         let encryptionKey: Data
         let digestSHA256Ciphertext: Data
         let localRelativeFilePath: String
+        let renderingFlag: AttachmentReference.RenderingFlag
         let sourceFilename: String?
         let validatedContentType: Attachment.ContentType
         let orphanRecordId: OrphanedAttachmentRecord.IDType
@@ -145,6 +151,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         input: Input,
         encryptionKey: Data,
         mimeType: String,
+        renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
     ) throws -> PendingAttachment {
         let contentTypeResult = try validateContentType(
@@ -156,6 +163,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             input: input,
             encryptionKey: encryptionKey,
             mimeType: mimeType,
+            renderingFlag: renderingFlag,
             sourceFilename: sourceFilename,
             contentResult: contentTypeResult
         )
@@ -528,6 +536,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         input: Input,
         encryptionKey: Data,
         mimeType: String,
+        renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?,
         contentResult: ContentTypeResult
     ) throws -> PendingAttachmentImpl {
@@ -595,6 +604,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             encryptionKey: encryptionKey,
             digestSHA256Ciphertext: primaryFileDigest,
             localRelativeFilePath: primaryPendingFile.reservedRelativeFilePath,
+            renderingFlag: renderingFlag,
             sourceFilename: sourceFilename,
             validatedContentType: contentResult.contentType,
             orphanRecordId: orphanRecordId

@@ -239,6 +239,7 @@ public class AttachmentMultisend {
                     dataSource: attachment.dataSource,
                     shouldConsume: true,
                     mimeType: attachment.mimeType,
+                    renderingFlag: attachment.renderingFlag,
                     sourceFilename: attachment.sourceFilename
                 )
                 try results.append(.init(
@@ -270,6 +271,7 @@ public class AttachmentMultisend {
                             dataSource: segmentingResult.original.dataSource,
                             shouldConsume: true,
                             mimeType: segmentingResult.original.mimeType,
+                            renderingFlag: segmentingResult.original.renderingFlag,
                             sourceFilename: segmentingResult.original.sourceFilename
                         )
                     } else {
@@ -286,6 +288,7 @@ public class AttachmentMultisend {
                                 dataSource: segment.dataSource,
                                 shouldConsume: true,
                                 mimeType: segment.mimeType,
+                                renderingFlag: segment.renderingFlag,
                                 sourceFilename: segment.sourceFilename
                             )
                             segmentedDataSources.append(dataSource)

@@ -44,6 +44,7 @@ public class LinkPreviewBuilderImpl: LinkPreviewBuilder {
             dataSource: dataSource,
             shouldConsume: true,
             mimeType: imageMimeType,
+            renderingFlag: .default,
             sourceFilename: nil
         )
         return .init(metadata: metadata, imageDataSource: imageDataSource)

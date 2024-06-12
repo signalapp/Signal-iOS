@@ -14,6 +14,7 @@ public protocol PendingAttachment {
     var encryptionKey: Data { get }
     var digestSHA256Ciphertext: Data { get }
     var localRelativeFilePath: String { get }
+    var renderingFlag: AttachmentReference.RenderingFlag { get }
     var sourceFilename: String? { get }
     var validatedContentType: Attachment.ContentType { get }
     var orphanRecordId: OrphanedAttachmentRecord.IDType { get }
@@ -39,6 +40,7 @@ public protocol AttachmentContentValidator {
         dataSource: DataSource,
         shouldConsume: Bool,
         mimeType: String,
+        renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
     ) throws -> PendingAttachment
 
@@ -52,6 +54,7 @@ public protocol AttachmentContentValidator {
         plaintextLength: UInt32,
         digestSHA256Ciphertext: Data,
         mimeType: String,
+        renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
     ) throws -> PendingAttachment
 
@@ -69,12 +72,14 @@ extension AttachmentContentValidator {
         dataSource: DataSource,
         shouldConsume: Bool,
         mimeType: String,
+        renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
     ) throws -> AttachmentDataSource {
         return .from(pendingAttachment: try self.validateContents(
             dataSource: dataSource,
             shouldConsume: shouldConsume,
             mimeType: mimeType,
+            renderingFlag: renderingFlag,
             sourceFilename: sourceFilename
         ))
     }
@@ -85,6 +90,7 @@ extension AttachmentContentValidator {
         plaintextLength: UInt32,
         digestSHA256Ciphertext: Data,
         mimeType: String,
+        renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
     ) throws -> AttachmentDataSource {
         return .from(pendingAttachment: try self.validateContents(
@@ -93,6 +99,7 @@ extension AttachmentContentValidator {
             plaintextLength: plaintextLength,
             digestSHA256Ciphertext: digestSHA256Ciphertext,
             mimeType: mimeType,
+            renderingFlag: renderingFlag,
             sourceFilename: sourceFilename
         ))
     }

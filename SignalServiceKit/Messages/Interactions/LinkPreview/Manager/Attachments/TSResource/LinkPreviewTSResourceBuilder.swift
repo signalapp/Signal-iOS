@@ -67,6 +67,7 @@ public class LinkPreviewTSResourceBuilder: LinkPreviewBuilder {
                 dataSource: imageDataSource,
                 shouldConsume: true,
                 mimeType: imageMimeType,
+                renderingFlag: .default,
                 sourceFilename: nil
             )
         } else {
