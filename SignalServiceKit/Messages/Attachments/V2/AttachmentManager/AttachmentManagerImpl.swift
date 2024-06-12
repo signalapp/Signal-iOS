@@ -247,15 +247,12 @@ public class AttachmentManagerImpl: AttachmentManager {
             guard let existingAttachment = attachmentStore.fetch(id: existingAttachmentMetadata.id, tx: tx) else {
                 throw OWSAssertionError("Missing existing attachment!")
             }
-            guard let streamInfo = existingAttachment.streamInfo else {
-                throw OWSAssertionError("Copying from non-stream attachment!")
-            }
 
             let owner: AttachmentReference.Owner = try dataSource.owner.build(
                 orderInOwner: sourceOrder,
                 idInOwner: nil,
                 renderingFlag: existingAttachmentMetadata.renderingFlag,
-                contentType: streamInfo.contentType.raw
+                contentType: existingAttachment.streamInfo?.contentType.raw
             )
             let referenceParams = AttachmentReference.ConstructionParams(
                 owner: owner,

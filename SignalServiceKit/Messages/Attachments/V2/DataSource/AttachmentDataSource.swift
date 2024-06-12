@@ -16,7 +16,6 @@ public enum AttachmentDataSource {
     public struct ExistingAttachmentSource {
         public let id: Attachment.IDType
         public let mimeType: String
-        public let contentHash: Data
         /// Note: these come from the AttachmentReference we are sourcing from.
         public let renderingFlag: AttachmentReference.RenderingFlag
         public let sourceFilename: String?
@@ -30,15 +29,6 @@ public enum AttachmentDataSource {
             return existingAttachmentSource.mimeType
         case .pendingAttachment(let pendingAttachment):
             return pendingAttachment.mimeType
-        }
-    }
-
-    public var contentHash: Data {
-        switch self {
-        case .existingAttachment(let existingAttachmentSource):
-            return existingAttachmentSource.contentHash
-        case .pendingAttachment(let pendingAttachment):
-            return pendingAttachment.sha256ContentHash
         }
     }
 
@@ -58,7 +48,6 @@ public enum AttachmentDataSource {
         return .existingAttachment(.init(
             id: existingAttachment.attachment.id,
             mimeType: existingAttachment.mimeType,
-            contentHash: existingAttachment.contentHash,
             renderingFlag: reference.renderingFlag,
             sourceFilename: reference.sourceFilename,
             sourceUnencryptedByteCount: reference.sourceUnencryptedByteCount,
@@ -78,7 +67,6 @@ public struct OwnedAttachmentDataSource {
     public let owner: AttachmentReference.OwnerBuilder
 
     public var mimeType: String { source.mimeType }
-    public var contentHash: Data? { source.contentHash }
 
     public init(dataSource: AttachmentDataSource, owner: AttachmentReference.OwnerBuilder) {
         self.source = dataSource

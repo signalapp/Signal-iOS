@@ -87,7 +87,6 @@ public struct TSResourceDataSource {
                 dataSource: .existingV2Attachment(.init(
                     id: attachment.attachment.id,
                     mimeType: attachment.mimeType,
-                    contentHash: attachment.contentHash,
                     renderingFlag: reference.renderingFlag,
                     sourceFilename: reference.sourceFilename,
                     sourceUnencryptedByteCount: reference.sourceUnencryptedByteCount,
