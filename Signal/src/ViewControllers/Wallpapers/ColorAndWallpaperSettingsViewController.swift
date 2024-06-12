@@ -239,14 +239,17 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
 
     func resetWallpaper() {
         let thread = self.thread
-        databaseStorage.asyncWrite { tx in
+        DispatchQueue.global().async {
             do {
                 let wallpaperStore = DependenciesBridge.shared.wallpaperStore
-                try wallpaperStore.reset(for: thread, tx: tx.asV2Write)
+                let onInsert = { [wallpaperStore] (tx: DBWriteTransaction) throws -> Void in
+                    try wallpaperStore.reset(for: thread, tx: tx)
+                }
+
                 if let thread {
-                    try DependenciesBridge.shared.wallpaperImageStore.setWallpaperImage(nil, for: thread, tx: tx.asV2Write)
+                    try DependenciesBridge.shared.wallpaperImageStore.setWallpaperImage(nil, for: thread, onInsert: onInsert)
                 } else {
-                    try DependenciesBridge.shared.wallpaperImageStore.setGlobalThreadWallpaperImage(nil, tx: tx.asV2Write)
+                    try DependenciesBridge.shared.wallpaperImageStore.setGlobalThreadWallpaperImage(nil, onInsert: onInsert)
                 }
             } catch {
                 owsFailDebug("Failed to clear wallpaper with error: \(error)")
@@ -257,7 +260,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
                     )
                 }
             }
-            tx.addAsyncCompletionOnMain {
+            DispatchQueue.main.async {
                 self.updateTableContents()
             }
         }

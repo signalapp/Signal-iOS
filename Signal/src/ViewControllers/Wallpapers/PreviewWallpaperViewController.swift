@@ -117,23 +117,31 @@ class PreviewWallpaperViewController: UIViewController {
     }
 
     func setCurrentWallpaperAndDismiss() {
-        databaseStorage.asyncWrite { transaction in
+        let croppedAndScaledPhoto: UIImage?
+        let preset: Wallpaper?
+        switch self.mode {
+        case .photo:
+            guard let standalonePage = self.standalonePage else {
+                return owsFailDebug("Missing standalone page for photo")
+            }
+            croppedAndScaledPhoto = standalonePage.view.renderAsImage()
+            preset = nil
+        case .preset(let selectedWallpaper):
+            croppedAndScaledPhoto = nil
+            preset = selectedWallpaper
+        }
+        DispatchQueue.global().async { [weak self, thread] in
             do {
-                switch self.mode {
-                case .photo:
-                    guard let standalonePage = self.standalonePage else {
-                        return owsFailDebug("Missing standalone page for photo")
-                    }
-                    let croppedAndScaledPhoto = standalonePage.view.renderAsImage()
-                    try Wallpaper.setPhoto(croppedAndScaledPhoto, for: self.thread, transaction: transaction)
-                case .preset(let selectedWallpaper):
-                    try Wallpaper.setBuiltIn(selectedWallpaper, for: self.thread, transaction: transaction)
+                if let croppedAndScaledPhoto {
+                    try Wallpaper.setPhoto(croppedAndScaledPhoto, for: thread)
+                } else if let preset {
+                    try Wallpaper.setBuiltIn(preset, for: thread)
                 }
             } catch {
                 owsFailDebug("Failed to set wallpaper \(error)")
             }
-
-            transaction.addAsyncCompletionOnMain {
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
                 self.delegate?.previewWallpaperDidComplete(self)
             }
         }

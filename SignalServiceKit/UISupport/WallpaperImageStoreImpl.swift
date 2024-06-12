@@ -9,24 +9,55 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
 
     private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore
+    private let attachmentValidator: AttachmentContentValidator
+    private let db: DB
 
     public init(
         attachmentManager: AttachmentManager,
-        attachmentStore: AttachmentStore
+        attachmentStore: AttachmentStore,
+        attachmentValidator: AttachmentContentValidator,
+        db: DB
     ) {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
+        self.attachmentValidator = attachmentValidator
+        self.db = db
     }
 
-    public func setWallpaperImage(_ photo: UIImage?, for thread: TSThread, tx: DBWriteTransaction) throws {
+    public func setWallpaperImage(
+        _ photo: UIImage?,
+        for thread: TSThread,
+        onInsert: @escaping (DBWriteTransaction) throws -> Void
+    ) throws {
         guard let rowId = thread.sqliteRowId else {
             throw OWSAssertionError("Inserting wallpaper for uninserted thread!")
         }
-        try setWallpaperImage(photo, owner: .threadWallpaperImage(threadRowId: rowId), tx: tx)
+        if let photo {
+            let dataSource = try dataSource(wallpaperImage: photo)
+            try setWallpaperImage(
+                dataSource,
+                owner: .threadWallpaperImage(threadRowId: rowId),
+                onInsert: onInsert
+            )
+        } else {
+            try setWallpaperImage(
+                nil,
+                owner: .threadWallpaperImage(threadRowId: rowId),
+                onInsert: onInsert
+            )
+        }
     }
 
-    public func setGlobalThreadWallpaperImage(_ photo: UIImage?, tx: DBWriteTransaction) throws {
-        try setWallpaperImage(photo, owner: .globalThreadWallpaperImage, tx: tx)
+    public func setGlobalThreadWallpaperImage(
+        _ photo: UIImage?,
+        onInsert: @escaping (DBWriteTransaction) throws -> Void
+    ) throws {
+        if let photo {
+            let dataSource = try dataSource(wallpaperImage: photo)
+            try setWallpaperImage(dataSource, owner: .globalThreadWallpaperImage, onInsert: onInsert)
+        } else {
+            try setWallpaperImage(nil, owner: .globalThreadWallpaperImage, onInsert: onInsert)
+        }
     }
 
     public func loadWallpaperImage(for thread: TSThread, tx: DBReadTransaction) -> UIImage? {
@@ -75,28 +106,40 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
     // MARK: - Private
 
     private func dataSource(wallpaperImage photo: UIImage) throws -> AttachmentDataSource {
-        guard let imageData = photo.jpegData(compressionQuality: 0.8) else {
+        let mimeType = MimeType.imageJpeg.rawValue
+        guard
+            let imageData = photo.jpegData(compressionQuality: 0.8),
+            let imageDataSource = DataSourceValue.dataSource(with: imageData, mimeType: mimeType)
+        else {
             throw OWSAssertionError("Failed to get jpg data for wallpaper photo")
         }
-        return .from(data: imageData, mimeType: MimeType.imageJpeg.rawValue)
+        return try attachmentValidator.validateContents(
+            dataSource: imageDataSource,
+            shouldConsume: true,
+            mimeType: mimeType,
+            sourceFilename: nil
+        )
     }
 
     private func setWallpaperImage(
-        _ photo: UIImage?,
+        _ dataSource: AttachmentDataSource?,
         owner: AttachmentReference.OwnerBuilder,
-        tx: DBWriteTransaction
+        onInsert: @escaping (DBWriteTransaction) throws -> Void
     ) throws {
-        // First remove any existing wallpaper.
-        if let existingReference = attachmentStore.fetchFirstReference(owner: owner.id, tx: tx) {
-            try attachmentStore.removeOwner(owner.id, for: existingReference.attachmentRowId, tx: tx)
-        }
-        // Set the new image if any.
-        if let photo {
-            let dataSource = OwnedAttachmentDataSource(
-                dataSource: try dataSource(wallpaperImage: photo),
-                owner: owner
-            )
-            try attachmentManager.createAttachmentStream(consuming: dataSource, tx: tx)
+        try db.write { tx in
+            // First remove any existing wallpaper.
+            if let existingReference = self.attachmentStore.fetchFirstReference(owner: owner.id, tx: tx) {
+                try self.attachmentStore.removeOwner(owner.id, for: existingReference.attachmentRowId, tx: tx)
+            }
+            // Set the new image if any.
+            if let dataSource {
+                let dataSource = OwnedAttachmentDataSource(
+                    dataSource: dataSource,
+                    owner: owner
+                )
+                try self.attachmentManager.createAttachmentStream(consuming: dataSource, tx: tx)
+            }
+            try onInsert(tx)
         }
     }
 

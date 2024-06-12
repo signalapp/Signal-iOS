@@ -38,18 +38,14 @@ public enum Wallpaper: String, CaseIterable {
 
     public static var defaultWallpapers: [Wallpaper] { allCases.filter { $0 != .photo } }
 
-    public static func setBuiltIn(_ wallpaper: Wallpaper, for thread: TSThread? = nil, transaction: SDSAnyWriteTransaction) throws {
-        owsAssertDebug(!Thread.isMainThread)
-
+    public static func setBuiltIn(_ wallpaper: Wallpaper, for thread: TSThread? = nil) throws {
         owsAssertDebug(wallpaper != .photo)
 
-        try set(wallpaper, for: thread, transaction: transaction)
+        try set(wallpaper, for: thread)
     }
 
-    public static func setPhoto(_ photo: UIImage, for thread: TSThread? = nil, transaction: SDSAnyWriteTransaction) throws {
-        owsAssertDebug(Thread.current != .main)
-
-        try set(.photo, photo: photo, for: thread, transaction: transaction)
+    public static func setPhoto(_ photo: UIImage, for thread: TSThread? = nil) throws {
+        try set(.photo, photo: photo, for: thread)
     }
 
     public static func dimInDarkMode(for thread: TSThread? = nil, transaction tx: SDSAnyReadTransaction) -> Bool {
@@ -119,18 +115,21 @@ public enum Wallpaper: String, CaseIterable {
 // MARK: -
 
 private extension Wallpaper {
-    static func set(_ wallpaper: Wallpaper?, photo: UIImage? = nil, for thread: TSThread?, transaction tx: SDSAnyWriteTransaction) throws {
+    static func set(_ wallpaper: Wallpaper?, photo: UIImage? = nil, for thread: TSThread?) throws {
         owsAssertDebug(photo == nil || wallpaper == .photo)
 
         let wallpaperStore = DependenciesBridge.shared.wallpaperStore
         let wallpaperImageStore = DependenciesBridge.shared.wallpaperImageStore
 
-        if let thread {
-            try wallpaperImageStore.setWallpaperImage(photo, for: thread, tx: tx.asV2Write)
-        } else {
-            try wallpaperImageStore.setGlobalThreadWallpaperImage(photo, tx: tx.asV2Write)
+        let onInsert = { [wallpaperStore] (tx: DBWriteTransaction) throws -> Void in
+            wallpaperStore.setWallpaper(wallpaper?.rawValue, for: thread?.uniqueId, tx: tx)
         }
-        wallpaperStore.setWallpaper(wallpaper?.rawValue, for: thread?.uniqueId, tx: tx.asV2Write)
+
+        if let thread {
+            try wallpaperImageStore.setWallpaperImage(photo, for: thread, onInsert: onInsert)
+        } else {
+            try wallpaperImageStore.setGlobalThreadWallpaperImage(photo, onInsert: onInsert)
+        }
     }
 
     static func get(for threadUniqueId: String?, transaction tx: SDSAnyReadTransaction) -> Wallpaper? {

@@ -7,25 +7,43 @@ import Foundation
 
 public class BridgingWallpaperImageStore: WallpaperImageStore {
 
+    private let db: DB
     private let wallpaperStore: WallpaperImageStoreImpl
 
-    public init(wallpaperStore: WallpaperImageStoreImpl) {
+    public init(
+        db: DB,
+        wallpaperStore: WallpaperImageStoreImpl
+    ) {
+        self.db = db
         self.wallpaperStore = wallpaperStore
     }
 
-    public func setWallpaperImage(_ photo: UIImage?, for thread: TSThread, tx: DBWriteTransaction) throws {
+    public func setWallpaperImage(
+        _ photo: UIImage?,
+        for thread: TSThread,
+        onInsert: @escaping (DBWriteTransaction) throws -> Void
+    ) throws {
         if FeatureFlags.v2ThreadAttachments {
-            try wallpaperStore.setWallpaperImage(photo, for: thread, tx: tx)
+            try wallpaperStore.setWallpaperImage(photo, for: thread, onInsert: onInsert)
         } else {
             try LegacyWallpaperImageStore.setPhoto(photo, for: thread)
+            try db.write { tx in
+                try onInsert(tx)
+            }
         }
     }
 
-    public func setGlobalThreadWallpaperImage(_ photo: UIImage?, tx: DBWriteTransaction) throws {
+    public func setGlobalThreadWallpaperImage(
+        _ photo: UIImage?,
+        onInsert: @escaping (DBWriteTransaction) throws -> Void
+    ) throws {
         if FeatureFlags.v2ThreadAttachments {
-            try wallpaperStore.setGlobalThreadWallpaperImage(photo, tx: tx)
+            try wallpaperStore.setGlobalThreadWallpaperImage(photo, onInsert: onInsert)
         } else {
             try LegacyWallpaperImageStore.setPhoto(photo, for: nil)
+            try db.write { tx in
+                try onInsert(tx)
+            }
         }
     }
 

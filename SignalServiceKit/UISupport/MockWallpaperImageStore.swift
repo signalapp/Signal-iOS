@@ -9,11 +9,18 @@ import Foundation
 
 public class MockWallpaperImageStore: WallpaperImageStore {
 
-    public func setWallpaperImage(_ photo: UIImage?, for thread: TSThread, tx: DBWriteTransaction) throws {
+    public func setWallpaperImage(
+        _ photo: UIImage?,
+        for thread: TSThread,
+        onInsert: @escaping (DBWriteTransaction) throws -> Void
+    ) throws {
         // Do nothing
     }
 
-    public func setGlobalThreadWallpaperImage(_ photo: UIImage?, tx: DBWriteTransaction) throws {
+    public func setGlobalThreadWallpaperImage(
+        _ photo: UIImage?,
+        onInsert: @escaping (DBWriteTransaction) throws -> Void
+    ) throws {
         // Do nothing
     }
 
