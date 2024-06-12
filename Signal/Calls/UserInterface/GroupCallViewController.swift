@@ -68,7 +68,7 @@ class GroupCallViewController: UIViewController {
     private lazy var videoOverflowTopConstraint = videoOverflow.autoPinEdge(toSuperviewEdge: .top)
     private lazy var videoOverflowTrailingConstraint = videoOverflow.autoPinEdge(toSuperviewEdge: .trailing)
 
-    enum CallControlsDisplayState {
+    private enum CallControlsDisplayState {
         case callControlsAndOverflow
         case callControlsOnly
         case none
@@ -77,8 +77,8 @@ class GroupCallViewController: UIViewController {
     private var callControlsDisplayState: CallControlsDisplayState = .callControlsOnly {
         didSet { updateCallUI() }
     }
-    var hasUnresolvedSafetyNumberMismatch = false
-    var hasDismissed = false
+    private var hasUnresolvedSafetyNumberMismatch = false
+    private var hasDismissed = false
 
     private var membersAtJoin: Set<SignalServiceAddress>?
 
@@ -509,7 +509,7 @@ class GroupCallViewController: UIViewController {
         }
     }
 
-    func updateSwipeToastView() {
+    private func updateSwipeToastView() {
         let isSpeakerViewAvailable = ringRtcCall.remoteDeviceStates.count >= 2 && ringRtcCall.localDeviceState.joinState == .joined
         guard isSpeakerViewAvailable else {
             swipeToastView.isHidden = true
@@ -565,7 +565,7 @@ class GroupCallViewController: UIViewController {
 
     private var flipCameraTooltipManager = FlipCameraTooltipManager(db: DependenciesBridge.shared.db)
 
-    func updateCallUI(size: CGSize? = nil) {
+    private func updateCallUI(size: CGSize? = nil) {
         // Force load the view if it hasn't been yet.
         _ = self.view
 
@@ -756,7 +756,7 @@ class GroupCallViewController: UIViewController {
         didHangupCall()
     }
 
-    func didHangupCall() {
+    private func didHangupCall() {
         guard !hasDismissed else {
             return
         }

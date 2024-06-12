@@ -17,7 +17,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
     let thread: TSContactThread
     let call: SignalCall
     let individualCall: IndividualCall
-    var hasDismissed = false
+    private var hasDismissed = false
 
     // MARK: - Views
 
@@ -145,10 +145,10 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
 
     // MARK: - Gestures
 
-    lazy var tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTouchRootView))
-    lazy var panGesture = UIPanGestureRecognizer(target: self, action: #selector(handleLocalVideoPan))
+    private lazy var tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTouchRootView))
+    private lazy var panGesture = UIPanGestureRecognizer(target: self, action: #selector(handleLocalVideoPan))
 
-    var shouldRemoteVideoControlsBeHidden = false {
+    private var shouldRemoteVideoControlsBeHidden = false {
         didSet {
             updateCallUI()
         }
@@ -191,7 +191,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         }
     }
 
-    public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         coordinator.animate(alongsideTransition: { [weak self] _ in
             self?.updateLocalVideoLayout()
@@ -262,7 +262,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
 
     // MARK: - Create Views
 
-    func createViews() {
+    private func createViews() {
         view.isUserInteractionEnabled = true
 
         view.addGestureRecognizer(tapGesture)
@@ -318,7 +318,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         }
     }
 
-    func createVideoViews() {
+    private func createVideoViews() {
         remoteMemberView.applyChangesToCallMemberViewAndVideoView { aView in
             aView.isUserInteractionEnabled = false
             aView.isHidden = true
@@ -335,7 +335,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         }
     }
 
-    func createContactViews() {
+    private func createContactViews() {
         backButton.setImage(UIImage(imageLiteralResourceName: "NavBarBack"), for: .normal)
         backButton.tintColor = Theme.darkThemeNavbarIconColor
         backButton.autoSetDimensions(to: CGSize(square: 40))
@@ -385,7 +385,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         }
     }
 
-    func createIncomingCallControls() {
+    private func createIncomingCallControls() {
         audioAnswerIncomingButton.text = OWSLocalizedString("CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
                                                            comment: "label for accepting incoming calls")
         audioAnswerIncomingButton.unselectedBackgroundColor = .ows_accentGreen
@@ -452,7 +452,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
 
     // MARK: - Layout
 
-    func createViewConstraints() {
+    private func createViewConstraints() {
 
         let contactVSpacing: CGFloat = 3
         let bottomMargin = CGFloat.scaleFromIPhone5To7Plus(23, 41)
@@ -486,7 +486,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         }
     }
 
-    internal func updateRemoteVideoLayout() {
+    private func updateRemoteVideoLayout() {
         updateCallUI()
     }
 
@@ -634,16 +634,9 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         }
     }
 
-    // MARK: - Methods
-
-    func showCallFailed(error: Error) {
-        // TODO Show something in UI.
-        Logger.error("call failed with error: \(error)")
-    }
-
     // MARK: - View State
 
-    func localizedTextForCallState() -> String {
+    private func localizedTextForCallState() -> String {
         assert(Thread.isMainThread)
 
         switch individualCall.state {
@@ -700,8 +693,8 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         }
     }
 
-    var isBlinkingReconnectLabel = false
-    func updateCallStatusLabel() {
+    private var isBlinkingReconnectLabel = false
+    private func updateCallStatusLabel() {
         assert(Thread.isMainThread)
 
         let text = localizedTextForCallState()
@@ -729,7 +722,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         }
     }
 
-    func updateCallUI() {
+    private func updateCallUI() {
         assert(Thread.isMainThread)
         updateCallStatusLabel()
 
@@ -831,7 +824,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         scheduleControlTimeoutIfNecessary()
     }
 
-    func displayNeedPermissionErrorAndDismiss() {
+    private func displayNeedPermissionErrorAndDismiss() {
         guard !hasDismissed else { return }
 
         hasDismissed = true
@@ -865,7 +858,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         }
     }
 
-    func updateCallDuration() {
+    private func updateCallDuration() {
         updateCallStatusLabel()
     }
 
@@ -929,19 +922,19 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
 
     // MARK: - CallObserver
 
-    internal func individualCallStateDidChange(_ call: IndividualCall, state: CallState) {
+    func individualCallStateDidChange(_ call: IndividualCall, state: CallState) {
         AssertIsOnMainThread()
         Logger.info("new call status: \(state)")
 
         self.updateCallUI()
     }
 
-    internal func individualCallLocalVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool) {
+    func individualCallLocalVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool) {
         AssertIsOnMainThread()
         self.updateCallUI()
     }
 
-    internal func individualCallLocalAudioMuteDidChange(_ call: IndividualCall, isAudioMuted: Bool) {
+    func individualCallLocalAudioMuteDidChange(_ call: IndividualCall, isAudioMuted: Bool) {
         AssertIsOnMainThread()
         self.updateCallUI()
     }
@@ -963,11 +956,11 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
 
     // MARK: - Video
 
-    var hasRemoteVideoTrack: Bool {
+    private var hasRemoteVideoTrack: Bool {
         return self.remoteVideoTrack != nil
     }
 
-    internal func updateRemoteVideoTrack(remoteVideoTrack: RTCVideoTrack?) {
+    private func updateRemoteVideoTrack(remoteVideoTrack: RTCVideoTrack?) {
         AssertIsOnMainThread()
 
         guard self.remoteVideoTrack != remoteVideoTrack else {
@@ -994,9 +987,11 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
 
     // MARK: Video Haptics
 
-    let feedbackGenerator = NotificationHapticFeedback()
-    var lastHapticTime: TimeInterval = CACurrentMediaTime()
-    func playRemoteEnabledVideoHapticFeedback() {
+    private let feedbackGenerator = NotificationHapticFeedback()
+
+    private var lastHapticTime: TimeInterval = CACurrentMediaTime()
+
+    private func playRemoteEnabledVideoHapticFeedback() {
         let currentTime = CACurrentMediaTime()
         guard currentTime - lastHapticTime > 5 else {
             Logger.debug("ignoring haptic feedback since it's too soon")
@@ -1008,7 +1003,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
 
     // MARK: - Dismiss
 
-    internal func dismissIfPossible(shouldDelay: Bool, completion: (() -> Void)? = nil) {
+    private func dismissIfPossible(shouldDelay: Bool, completion: (() -> Void)? = nil) {
         callService.audioService.delegate = nil
 
         if hasDismissed {
@@ -1031,7 +1026,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         }
     }
 
-    internal func dismissImmediately(completion: (() -> Void)?) {
+    private func dismissImmediately(completion: (() -> Void)?) {
         WindowManager.shared.endCall(viewController: self)
         completion?()
     }
@@ -1048,7 +1043,7 @@ extension IndividualCallViewController: CallViewControllerWindowReference {
     var localVideoViewReference: CallMemberView { localVideoView }
     var remoteVideoAddress: SignalServiceAddress { thread.contactAddress }
 
-    public func returnFromPip(pipWindow: UIWindow) {
+    func returnFromPip(pipWindow: UIWindow) {
         // The call "pip" uses our remote and local video views since only
         // one `AVCaptureVideoPreviewLayer` per capture session is supported.
         // We need to re-add them when we return to this view.
