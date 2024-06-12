@@ -428,39 +428,6 @@ public class TSResourceManagerImpl: TSResourceManager {
 
     // MARK: - Quoted reply thumbnails
 
-    public func createThumbnailAndUpdateMessageIfNecessary(
-        quotedMessage: TSQuotedMessage,
-        parentMessage: TSMessage,
-        tx: DBWriteTransaction
-    ) -> TSResourceStream? {
-        switch quotedMessage.attachmentInfo()?.attachmentType {
-        case nil:
-            return nil
-        case .V2:
-            guard let messageRowId = parentMessage.sqliteRowId else {
-                owsFailDebug("Cloning thumbnail attachment from un-inserted message.")
-                return nil
-            }
-            let attachment = attachmentStore.fetchFirst(owner: .quotedReplyAttachment(messageRowId: messageRowId), tx: tx)
-
-            // If its a stream, its the thumbnail (we do cloning and resizing at download time).
-            // If its not a stream, that's because its undownloaded and we should return nil.
-            return attachment?.asStream()
-        case
-                .unset,
-                .originalForSend,
-                .original,
-                .thumbnail,
-                .untrustedPointer:
-            fallthrough
-        @unknown default:
-            return tsAttachmentManager.createThumbnailAndUpdateMessageIfNecessary(
-                parentMessage: parentMessage,
-                tx: SDSDB.shimOnlyBridge(tx)
-            )
-        }
-    }
-
     public func newQuotedReplyMessageThumbnailBuilder(
         originalMessage: TSMessage,
         fallbackQuoteProto: SSKProtoDataMessageQuote?,

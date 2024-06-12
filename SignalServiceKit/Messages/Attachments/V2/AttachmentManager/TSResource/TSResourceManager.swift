@@ -162,23 +162,6 @@ public protocol TSResourceManager {
 
     // MARK: - Quoted reply thumbnails
 
-    /// If the currently referenced quoted attachment is
-    /// [not a thumbnail] OR ([is legacy attachment] AND [not owned by the quote])
-    /// creates a new attachment that is a thumbnailed-clone of the original,
-    /// updates references to it on the parent message in memory and on disk,
-    /// and returns it.
-    ///
-    /// If there was already a thumbnail attachment stream on the message, returns
-    /// it with no changes.
-    ///
-    /// If the attachment is an undownloaded pointer or could not be cloned as
-    /// a thumbnail, returns nil.
-    func createThumbnailAndUpdateMessageIfNecessary(
-        quotedMessage: TSQuotedMessage,
-        parentMessage: TSMessage,
-        tx: DBWriteTransaction
-    ) -> TSResourceStream?
-
     /// Given an original message available locally, reurns a builder
     /// for creating a thumbnail attachment for quoted replies.
     ///

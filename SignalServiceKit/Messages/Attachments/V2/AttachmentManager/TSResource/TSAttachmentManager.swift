@@ -186,16 +186,6 @@ public class TSAttachmentManager {
 
     // MARK: - Quoted reply thumbnails
 
-    func createThumbnailAndUpdateMessageIfNecessary(
-        parentMessage: TSMessage,
-        tx: SDSAnyWriteTransaction
-    ) -> TSAttachmentStream? {
-        return Self.refetchMessageAndCreateThumbnailIfNeeded(
-            originalParentMessageInstance: parentMessage,
-            tx: tx
-        )
-    }
-
     func thumbnailImage(
         attachment: TSAttachment,
         info: OWSAttachmentInfo,
