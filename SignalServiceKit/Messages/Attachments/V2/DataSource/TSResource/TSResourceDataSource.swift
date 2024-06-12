@@ -16,12 +16,17 @@ public struct TSResourceDataSource {
     let dataSource: Source
 
     public enum Source {
+
+        // Legacy Cases
+
+        case legacyData(Data)
         // If shouldCopy=true, the data source will be copied instead of moved.
-        case dataSource(DataSource, shouldCopy: Bool)
-        case data(Data)
+        case legacyDataSource(DataSource, shouldCopy: Bool)
         case existingLegacyAttachment(uniqueId: String)
-        case existingV2Attachment(id: Attachment.IDType, contentHash: Data?)
+
+        // V2 Cases
         case pendingAttachment(PendingAttachment)
+        case existingV2Attachment(id: Attachment.IDType, contentHash: Data?)
     }
 
     fileprivate init(
@@ -117,7 +122,7 @@ extension TSResourceDataSource {
 
     var concreteType: ConcreteType {
         switch dataSource {
-        case .dataSource(let dataSource, shouldCopy: let shouldCopy):
+        case .legacyDataSource(let dataSource, shouldCopy: let shouldCopy):
             return .legacy(.init(
                 mimeType: mimeType,
                 caption: caption,
@@ -125,7 +130,7 @@ extension TSResourceDataSource {
                 sourceFilename: sourceFilename,
                 dataSource: .dataSource(dataSource, shouldCopy: shouldCopy)
             ))
-        case .data(let data):
+        case .legacyData(let data):
             return .legacy(.init(
                 mimeType: mimeType,
                 caption: caption,
@@ -189,9 +194,9 @@ extension TSAttachmentDataSource {
             dataSource: {
                 switch dataSource {
                 case .dataSource(let dataSource, let shouldCopy):
-                    return .dataSource(dataSource, shouldCopy: shouldCopy)
+                    return .legacyDataSource(dataSource, shouldCopy: shouldCopy)
                 case .data(let data):
-                    return .data(data)
+                    return .legacyData(data)
                 case .existingAttachment(let uniqueId):
                     return .existingLegacyAttachment(uniqueId: uniqueId)
                 }
