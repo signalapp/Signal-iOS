@@ -384,7 +384,53 @@ public class AttachmentManagerImpl: AttachmentManager {
         dataSource: OwnedQuotedReplyAttachmentDataSource,
         tx: DBWriteTransaction
     ) throws {
-        // TODO: create and insert a new attachment+pointer.
-        fatalError("Unimplemented")
+        let referenceOwner = AttachmentReference.OwnerBuilder.quotedReplyAttachment(dataSource.owner)
+
+        switch dataSource.source.source {
+        case .pointer(let proto):
+            try self._createAttachmentPointer(
+                from: .init(
+                    proto: proto,
+                    owner: referenceOwner
+                ),
+                sourceOrder: nil,
+                tx: tx
+            )
+        case .pendingAttachment(let pendingAttachment):
+            try self._createAttachmentStream(
+                consuming: .init(
+                    dataSource: .pendingAttachment(pendingAttachment),
+                    owner: referenceOwner
+                ),
+                sourceOrder: nil,
+                tx: tx
+            )
+        case .originalAttachment(let originalAttachmentSource):
+            guard let originalAttachment = attachmentStore.fetch(id: originalAttachmentSource.id, tx: tx) else {
+                // The original has been deleted.
+                throw OWSAssertionError("Original attachment not found")
+            }
+
+            // Create a new attachment, but add foreign key reference to the original
+            // so that when/if we download the original we can update this thumbnail'ed copy.
+            let attachmentParams = Attachment.ConstructionParams.forQuotedReplyThumbnailPointer(
+                originalAttachment: originalAttachment,
+                thumbnailBlurHash: originalAttachment.blurHash,
+                thumbnailMimeType: originalAttachment.mimeType,
+                thumbnailEncryptionKey: originalAttachment.encryptionKey,
+                thumbnailTransitTierInfo: originalAttachment.transitTierInfo
+            )
+            let referenceParams = AttachmentReference.ConstructionParams(
+                owner: try referenceOwner.build(
+                    orderInOwner: nil,
+                    idInOwner: nil,
+                    renderingFlag: originalAttachmentSource.renderingFlag,
+                    contentType: nil
+                ),
+                sourceFilename: originalAttachmentSource.sourceFilename,
+                sourceUnencryptedByteCount: originalAttachmentSource.sourceUnencryptedByteCount,
+                sourceMediaSizePixels: originalAttachmentSource.sourceMediaSizePixels
+            )
+        }
     }
 }
