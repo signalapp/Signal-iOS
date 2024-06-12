@@ -250,6 +250,24 @@ public class AttachmentManagerImpl: AttachmentManager {
             guard let streamInfo = existingAttachment.streamInfo else {
                 throw OWSAssertionError("Copying from non-stream attachment!")
             }
+
+            let owner: AttachmentReference.Owner = try dataSource.owner.build(
+                orderInOwner: sourceOrder,
+                idInOwner: nil,
+                renderingFlag: existingAttachmentMetadata.renderingFlag,
+                contentType: streamInfo.contentType.raw
+            )
+            let referenceParams = AttachmentReference.ConstructionParams(
+                owner: owner,
+                sourceFilename: existingAttachmentMetadata.sourceFilename,
+                sourceUnencryptedByteCount: existingAttachmentMetadata.sourceUnencryptedByteCount,
+                sourceMediaSizePixels: existingAttachmentMetadata.sourceMediaSizePixels
+            )
+            try attachmentStore.addOwner(
+                referenceParams,
+                for: existingAttachment.id,
+                tx: tx
+            )
         case .pendingAttachment(let pendingAttachment):
             break
         }

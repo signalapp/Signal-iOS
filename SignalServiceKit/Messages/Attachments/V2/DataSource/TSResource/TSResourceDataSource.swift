@@ -26,7 +26,7 @@ public struct TSResourceDataSource {
 
         // V2 Cases
         case pendingAttachment(PendingAttachment)
-        case existingV2Attachment(id: Attachment.IDType, contentHash: Data)
+        case existingV2Attachment(AttachmentDataSource.ExistingAttachmentSource)
     }
 
     fileprivate init(
@@ -84,7 +84,15 @@ public struct TSResourceDataSource {
                 caption: caption,
                 renderingFlag: renderingFlag,
                 sourceFilename: v2.sourceFilename,
-                dataSource: .existingV2Attachment(id: attachment.attachment.id, contentHash: attachment.contentHash)
+                dataSource: .existingV2Attachment(.init(
+                    id: attachment.attachment.id,
+                    mimeType: attachment.mimeType,
+                    contentHash: attachment.contentHash,
+                    renderingFlag: reference.renderingFlag,
+                    sourceFilename: reference.sourceFilename,
+                    sourceUnencryptedByteCount: reference.sourceUnencryptedByteCount,
+                    sourceMediaSizePixels: reference.sourceMediaSizePixels
+                ))
             )
         default:
             fatalError("Invalid type combination!")
@@ -138,14 +146,9 @@ extension TSResourceDataSource {
                 sourceFilename: sourceFilename,
                 dataSource: .data(data)
             ))
-        case .existingV2Attachment(let rowId, let contentHash):
+        case .existingV2Attachment(let metadata):
             return .v2(
-                .existingAttachment(.init(
-                    id: rowId,
-                    mimeType: mimeType,
-                    contentHash: contentHash,
-                    sourceFilename: sourceFilename
-                )),
+                .existingAttachment(metadata),
                 renderingFlag
             )
         case .existingLegacyAttachment(let uniqueId):
@@ -175,7 +178,7 @@ extension AttachmentDataSource {
             dataSource: {
                 switch self {
                 case let .existingAttachment(existingAttachment):
-                    return .existingV2Attachment(id: existingAttachment.id, contentHash: existingAttachment.contentHash)
+                    return .existingV2Attachment(existingAttachment)
                 case let .pendingAttachment(pendingAttachment):
                     return .pendingAttachment(pendingAttachment)
                 }

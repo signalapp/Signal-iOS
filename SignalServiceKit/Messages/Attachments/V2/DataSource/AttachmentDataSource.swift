@@ -17,8 +17,11 @@ public enum AttachmentDataSource {
         public let id: Attachment.IDType
         public let mimeType: String
         public let contentHash: Data
-        /// Note: this comes from the AttachmentReference we are sourcing from.
+        /// Note: these come from the AttachmentReference we are sourcing from.
+        public let renderingFlag: AttachmentReference.RenderingFlag
         public let sourceFilename: String?
+        public let sourceUnencryptedByteCount: UInt32?
+        public let sourceMediaSizePixels: CGSize?
     }
 
     public var mimeType: String {
@@ -56,7 +59,10 @@ public enum AttachmentDataSource {
             id: existingAttachment.attachment.id,
             mimeType: existingAttachment.mimeType,
             contentHash: existingAttachment.contentHash,
-            sourceFilename: reference.sourceFilename
+            renderingFlag: reference.renderingFlag,
+            sourceFilename: reference.sourceFilename,
+            sourceUnencryptedByteCount: reference.sourceUnencryptedByteCount,
+            sourceMediaSizePixels: reference.sourceMediaSizePixels
         ))
     }
 
