@@ -123,4 +123,16 @@ public class OnboardingStoryManagerStoryMessageFactoryMock: OnboardingStoryManag
             transaction: transaction
         )
     }
+
+    public override class func validateAttachmentContents(
+        dataSource: any DataSource,
+        mimeType: String
+    ) throws -> TSResourceDataSource {
+        return .from(
+            dataSource: dataSource,
+            mimeType: mimeType,
+            caption: nil,
+            renderingFlag: .default
+        )
+    }
 }

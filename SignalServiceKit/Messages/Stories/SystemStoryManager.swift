@@ -48,6 +48,20 @@ public class OnboardingStoryManagerStoryMessageFactory: NSObject {
             transaction: transaction
         )
     }
+
+    public class func validateAttachmentContents(
+        dataSource: DataSource,
+        mimeType: String
+    ) throws -> TSResourceDataSource {
+        return try DependenciesBridge.shared.tsResourceContentValidator.validateContents(
+            dataSource: dataSource,
+            shouldConsume: true,
+            mimeType: mimeType,
+            sourceFilename: nil,
+            caption: nil,
+            renderingFlag: .default
+        )
+    }
 }
 
 @objc
@@ -541,7 +555,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
             on: schedulers.global(),
             url,
             method: .get
-        ).map(on: self.queue) { [fileSystem] result in
+        ).map(on: self.queue) { [fileSystem, storyMessageFactory] result in
             let resultUrl = result.downloadUrl
 
             guard fileSystem.fileOrFolderExists(url: resultUrl) else {
@@ -556,11 +570,9 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
                 with: resultUrl,
                 shouldDeleteOnDeallocation: CurrentAppContext().isRunningTests.negated
             )
-            return TSResourceDataSource.from(
+            return try storyMessageFactory.validateAttachmentContents(
                 dataSource: dataSource,
-                mimeType: Constants.imageMimeType,
-                caption: nil,
-                renderingFlag: .default
+                mimeType: Constants.imageMimeType
             )
         }
     }
