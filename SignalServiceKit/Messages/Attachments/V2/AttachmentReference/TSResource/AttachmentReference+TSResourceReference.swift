@@ -7,7 +7,7 @@ import Foundation
 
 extension AttachmentReference: TSResourceReference {
     public var resourceId: TSResourceId {
-        fatalError("Unimplemented!")
+        return .v2(rowId: attachmentRowId)
     }
 
     public var concreteType: ConcreteTSResourceReference { .v2(self) }
