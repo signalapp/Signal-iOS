@@ -35,6 +35,9 @@ extension ThreadUtil {
                 let mediaAttachments = try mediaAttachments.map {
                     try $0.forSending()
                 }
+                let quotedReplyDraft = try quotedReplyDraft.map {
+                    try DependenciesBridge.shared.quotedReplyManager.prepareDraftForSending($0)
+                }
 
                 unpreparedMessage = Self.databaseStorage.read { readTransaction in
                     UnpreparedOutgoingMessage.build(
@@ -181,7 +184,7 @@ extension UnpreparedOutgoingMessage {
         timestamp: UInt64? = nil,
         messageBody: ValidatedTSMessageBody?,
         mediaAttachments: [SignalAttachment.ForSending] = [],
-        quotedReplyDraft: DraftQuotedReplyModel?,
+        quotedReplyDraft: DraftQuotedReplyModel.ForSending?,
         linkPreviewDataSource: LinkPreviewTSResourceDataSource?,
         transaction: SDSAnyReadTransaction
     ) -> UnpreparedOutgoingMessage {

@@ -35,8 +35,22 @@ open class QuotedReplyManagerMock: QuotedReplyManager {
         fatalError("Unimplemented!")
     }
 
+    open func prepareDraftForSending(
+        _ draft: DraftQuotedReplyModel
+    ) throws -> DraftQuotedReplyModel.ForSending {
+        return .init(
+            originalMessageTimestamp: draft.originalMessageTimestamp,
+            originalMessageAuthorAddress: draft.originalMessageAuthorAddress,
+            originalMessageIsGiftBadge: draft.content.isGiftBadge,
+            threadUniqueId: draft.threadUniqueId,
+            quoteBody: draft.bodyForSending,
+            attachment: nil,
+            quotedMessageFromEdit: nil
+        )
+    }
+
     open func buildQuotedReplyForSending(
-        draft: DraftQuotedReplyModel,
+        draft: DraftQuotedReplyModel.ForSending,
         tx: DBWriteTransaction
     ) -> OwnedAttachmentBuilder<TSQuotedMessage> {
         fatalError("Unimplemented!")

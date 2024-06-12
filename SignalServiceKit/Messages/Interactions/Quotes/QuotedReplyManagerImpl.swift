@@ -10,15 +10,21 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
 
     private let attachmentManager: TSResourceManager
     private let attachmentStore: TSResourceStore
+    private let attachmentValidator: TSResourceContentValidator
+    private let db: DB
     private let tsAccountManager: TSAccountManager
 
     public init(
         attachmentManager: TSResourceManager,
         attachmentStore: TSResourceStore,
+        attachmentValidator: TSResourceContentValidator,
+        db: DB,
         tsAccountManager: TSAccountManager
     ) {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
+        self.attachmentValidator = attachmentValidator
+        self.db = db
         self.tsAccountManager = tsAccountManager
     }
 
@@ -596,8 +602,103 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
         }
     }
 
+    public func prepareDraftForSending(
+        _ draft: DraftQuotedReplyModel
+    ) throws -> DraftQuotedReplyModel.ForSending {
+        switch draft.content {
+        case .edit(_, let tsQuotedMessage, _):
+            return .init(
+                originalMessageTimestamp: draft.originalMessageTimestamp,
+                originalMessageAuthorAddress: draft.originalMessageAuthorAddress,
+                originalMessageIsGiftBadge: draft.content.isGiftBadge,
+                threadUniqueId: draft.threadUniqueId,
+                quoteBody: draft.bodyForSending,
+                attachment: nil,
+                quotedMessageFromEdit: tsQuotedMessage
+            )
+        default:
+            break
+        }
+
+        // Find the original message and any attachment
+        let (originalMessage, originalAttachmentReference, originalAttachment): (
+            TSMessage?,
+            TSResourceReference?,
+            TSResource?
+        ) = db.read { tx in
+            guard
+                let originalMessageTimestamp = draft.originalMessageTimestamp,
+                let originalMessage = InteractionFinder.findMessage(
+                    withTimestamp: originalMessageTimestamp,
+                    threadId: draft.threadUniqueId,
+                    author: draft.originalMessageAuthorAddress,
+                    transaction: SDSDB.shimOnlyBridge(tx)
+                )
+            else {
+                return (nil, nil, nil)
+            }
+            let attachmentReference = attachmentStore.attachmentToUseInQuote(
+                originalMessage: originalMessage,
+                tx: tx
+            )
+            let attachment = attachmentStore.fetch([attachmentReference?.resourceId].compacted(), tx: tx).first
+            return (originalMessage, attachmentReference, attachment)
+        }
+        guard let originalMessage else {
+            return .init(
+                originalMessageTimestamp: draft.originalMessageTimestamp,
+                originalMessageAuthorAddress: draft.originalMessageAuthorAddress,
+                originalMessageIsGiftBadge: draft.content.isGiftBadge,
+                threadUniqueId: draft.threadUniqueId,
+                quoteBody: draft.bodyForSending,
+                attachment: nil,
+                quotedMessageFromEdit: nil
+            )
+        }
+        // We just fetched it, safe to unwrap.
+        let originalMessageRowId = originalMessage.sqliteRowId!
+
+        let quoteAttachment = { () -> DraftQuotedReplyModel.ForSending.Attachment? in
+            guard let originalAttachmentReference, let originalAttachment else {
+                return nil
+            }
+            let isVisualMedia: Bool = {
+                if let cachedContentType = originalAttachment.asResourceStream()?.cachedContentType {
+                    return cachedContentType.isVisualMedia
+                } else {
+                    return MimeTypeUtil.isSupportedVisualMediaMimeType(originalAttachment.mimeType)
+                }
+            }()
+            guard isVisualMedia else {
+                // Just return a stub for non-visual media.
+                return .stub(.init(mimeType: originalAttachment.mimeType, sourceFilename: originalAttachmentReference.sourceFilename))
+            }
+            do {
+                let dataSource = try attachmentValidator.prepareQuotedReplyThumbnail(
+                    fromOriginalAttachment: originalAttachment,
+                    originalReference: originalAttachmentReference,
+                    originalMessageRowId: originalMessageRowId
+                )
+                return .thumbnail(dataSource: dataSource)
+            } catch {
+                // If we experience errors, just fall back to a stub.
+                return .stub(.init(mimeType: originalAttachment.mimeType, sourceFilename: originalAttachmentReference.sourceFilename))
+            }
+        }()
+
+        return .init(
+            originalMessageTimestamp: draft.originalMessageTimestamp,
+            originalMessageAuthorAddress: draft.originalMessageAuthorAddress,
+            originalMessageIsGiftBadge: draft.content.isGiftBadge,
+            threadUniqueId: draft.threadUniqueId,
+            quoteBody: draft.bodyForSending,
+            attachment: quoteAttachment,
+            quotedMessageFromEdit: nil
+        )
+    }
+
     public func buildQuotedReplyForSending(
-        draft: DraftQuotedReplyModel,
+        draft: DraftQuotedReplyModel.ForSending,
         tx: DBWriteTransaction
     ) -> OwnedAttachmentBuilder<TSQuotedMessage> {
         // Find the original message.
@@ -610,10 +711,9 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
         else {
-            switch draft.content {
-            case .edit(_, let tsQuotedMessage, _):
+            if let tsQuotedMessage = draft.quotedMessageFromEdit {
                 return .withoutFinalizer(tsQuotedMessage)
-            default:
+            } else {
                 return .withoutFinalizer(TSQuotedMessage(
                     targetMessageTimestamp: draft.originalMessageTimestamp.map(NSNumber.init(value:)),
                     authorAddress: draft.originalMessageAuthorAddress,
@@ -628,7 +728,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             }
         }
 
-        let body = draft.bodyForSending
+        let body = draft.quoteBody
 
         func buildQuotedMessage(_ attachmentInfo: QuotedAttachmentInfo?) -> TSQuotedMessage {
             return TSQuotedMessage(
@@ -637,7 +737,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 body: body?.text,
                 bodyRanges: body?.ranges,
                 quotedAttachmentForSending: attachmentInfo?.info,
-                isGiftBadge: draft.content.isGiftBadge
+                isGiftBadge: draft.originalMessageIsGiftBadge
             )
         }
 

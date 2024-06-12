@@ -19,7 +19,7 @@ public class UnpreparedOutgoingMessage {
         unsavedBodyMediaAttachments: [TSResourceDataSource] = [],
         oversizeTextDataSource: OversizeTextDataSource? = nil,
         linkPreviewDraft: LinkPreviewTSResourceDataSource? = nil,
-        quotedReplyDraft: DraftQuotedReplyModel? = nil,
+        quotedReplyDraft: DraftQuotedReplyModel.ForSending? = nil,
         messageStickerDraft: MessageStickerDataSource? = nil,
         contactShareDraft: ContactShareDraft.ForSending? = nil
     ) -> UnpreparedOutgoingMessage {
@@ -132,7 +132,7 @@ public class UnpreparedOutgoingMessage {
             let unsavedBodyMediaAttachments: [TSResourceDataSource]
             let oversizeTextDataSource: OversizeTextDataSource?
             let linkPreviewDraft: LinkPreviewTSResourceDataSource?
-            let quotedReplyDraft: DraftQuotedReplyModel?
+            let quotedReplyDraft: DraftQuotedReplyModel.ForSending?
             let messageStickerDraft: MessageStickerDataSource?
             let contactShareDraft: ContactShareDraft.ForSending?
         }

@@ -26,8 +26,12 @@ public protocol QuotedReplyManager {
         tx: DBReadTransaction
     ) -> DraftQuotedReplyModel
 
+    func prepareDraftForSending(
+        _ draft: DraftQuotedReplyModel
+    ) throws -> DraftQuotedReplyModel.ForSending
+
     func buildQuotedReplyForSending(
-        draft: DraftQuotedReplyModel,
+        draft: DraftQuotedReplyModel.ForSending,
         tx: DBWriteTransaction
     ) -> OwnedAttachmentBuilder<TSQuotedMessage>
 

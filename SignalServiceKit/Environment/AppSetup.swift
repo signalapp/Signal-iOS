@@ -281,6 +281,8 @@ public class AppSetup {
         let quotedReplyManager = QuotedReplyManagerImpl(
             attachmentManager: tsResourceManager,
             attachmentStore: tsResourceStore,
+            attachmentValidator: tsResourceContentValidator,
+            db: db,
             tsAccountManager: tsAccountManager
         )
 

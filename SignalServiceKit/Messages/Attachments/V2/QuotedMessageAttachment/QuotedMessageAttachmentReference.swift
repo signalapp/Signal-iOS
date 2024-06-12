@@ -30,6 +30,11 @@ public enum QuotedMessageAttachmentReference {
             self.sourceFilename = sourceFilename
         }
 
+        public init(mimeType: String, sourceFilename: String?) {
+            self.mimeType = mimeType
+            self.sourceFilename = sourceFilename
+        }
+
         public init?(_ info: OWSAttachmentInfo) {
             self.init(mimeType: info.stubMimeType, sourceFilename: info.stubSourceFilename)
         }
