@@ -44,6 +44,17 @@ public protocol AttachmentContentValidator {
         sourceFilename: String?
     ) throws -> PendingAttachment
 
+    /// Validate and prepare a Data's contents, based on the provided mimetype.
+    /// Returns a PendingAttachment with validated contents, ready to be inserted.
+    /// Note the content type may be `invalid`; we can still create an Attachment from these.
+    /// Errors are thrown if data parsing fails.
+    func validateContents(
+        data: Data,
+        mimeType: String,
+        renderingFlag: AttachmentReference.RenderingFlag,
+        sourceFilename: String?
+    ) throws -> PendingAttachment
+
     /// Validate and prepare an encrypted attachment file's contents, based on the provided mimetype.
     /// Returns a PendingAttachment with validated contents, ready to be inserted.
     /// Note the content type may be `invalid`; we can still create an Attachment from these.
@@ -78,6 +89,20 @@ extension AttachmentContentValidator {
         return .from(pendingAttachment: try self.validateContents(
             dataSource: dataSource,
             shouldConsume: shouldConsume,
+            mimeType: mimeType,
+            renderingFlag: renderingFlag,
+            sourceFilename: sourceFilename
+        ))
+    }
+
+    public func validateContents(
+        data: Data,
+        mimeType: String,
+        renderingFlag: AttachmentReference.RenderingFlag,
+        sourceFilename: String?
+    ) throws -> AttachmentDataSource {
+        return .from(pendingAttachment: try self.validateContents(
+            data: data,
             mimeType: mimeType,
             renderingFlag: renderingFlag,
             sourceFilename: sourceFilename

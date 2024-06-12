@@ -133,15 +133,8 @@ public class ContactShareManagerImpl: ContactShareManager {
                     throw OWSAssertionError("Failed to get JPEG")
                 }
                 let mimeType = MimeType.imageJpeg.rawValue
-                guard let dataSource = DataSourceValue.dataSource(
-                    with: imageData,
-                    mimeType: mimeType
-                ) else {
-                    throw OWSAssertionError("Failed to create data source")
-                }
                 return try attachmentValidator.validateContents(
-                    dataSource: dataSource,
-                    shouldConsume: true,
+                    data: imageData,
                     mimeType: mimeType,
                     sourceFilename: nil,
                     caption: nil,

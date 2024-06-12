@@ -108,14 +108,12 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
     private func dataSource(wallpaperImage photo: UIImage) throws -> AttachmentDataSource {
         let mimeType = MimeType.imageJpeg.rawValue
         guard
-            let imageData = photo.jpegData(compressionQuality: 0.8),
-            let imageDataSource = DataSourceValue.dataSource(with: imageData, mimeType: mimeType)
+            let imageData = photo.jpegData(compressionQuality: 0.8)
         else {
             throw OWSAssertionError("Failed to get jpg data for wallpaper photo")
         }
         return try attachmentValidator.validateContents(
-            dataSource: imageDataSource,
-            shouldConsume: true,
+            data: imageData,
             mimeType: mimeType,
             renderingFlag: .default,
             sourceFilename: nil

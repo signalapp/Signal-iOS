@@ -22,6 +22,15 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
     }
 
     open func validateContents(
+        data: Data,
+        mimeType: String,
+        renderingFlag: AttachmentReference.RenderingFlag,
+        sourceFilename: String?
+    ) throws -> PendingAttachment {
+        throw OWSAssertionError("Unimplemented")
+    }
+
+    open func validateContents(
         ofEncryptedFileAt fileUrl: URL,
         encryptionKey: Data,
         plaintextLength: UInt32,

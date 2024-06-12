@@ -42,6 +42,20 @@ public protocol TSResourceContentValidator {
         renderingFlag: AttachmentReference.RenderingFlag
     ) throws -> TSResourceDataSource
 
+    /// Prepare and possibly validate Data's contents, based on the provided mimetype.
+    /// Returns a TSResourceDataSource, ready to be inserted.
+    /// If using legacy attachments, contents will _not_ be validated.
+    /// If using v2 attachments, contents _will_ be validated.
+    /// Errors are thrown if data parsing/cryptography fails but NOT if contents are invalid;
+    /// invalid contents are still represented as `invalid` attachments.
+    func validateContents(
+        data: Data,
+        mimeType: String,
+        sourceFilename: String?,
+        caption: MessageBody?,
+        renderingFlag: AttachmentReference.RenderingFlag
+    ) throws -> TSResourceDataSource
+
     /// If the provided message body is large enough to require an oversize text
     /// attachment, creates a pending one, alongside the truncated message body.
     /// If not, just returns the message body as is.
@@ -84,6 +98,34 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
                 renderingFlag: renderingFlag,
                 sourceFilename: dataSource.sourceFilename,
                 dataSource: .dataSource(dataSource, shouldCopy: !shouldConsume)
+            ).tsDataSource
+        }
+    }
+
+    public func validateContents(
+        data: Data,
+        mimeType: String,
+        sourceFilename: String?,
+        caption: MessageBody?,
+        renderingFlag: AttachmentReference.RenderingFlag
+    ) throws -> TSResourceDataSource {
+        if FeatureFlags.newAttachmentsUseV2 {
+            let attachmentDataSource: AttachmentDataSource =
+                try attachmentValidator.validateContents(
+                    data: data,
+                    mimeType: mimeType,
+                    renderingFlag: renderingFlag,
+                    sourceFilename: sourceFilename
+                )
+            return attachmentDataSource.tsDataSource
+        } else {
+            // We don't do validation up front for legacy attachments.
+            return TSAttachmentDataSource(
+                mimeType: mimeType,
+                caption: caption,
+                renderingFlag: renderingFlag,
+                sourceFilename: sourceFilename,
+                dataSource: .data(data)
             ).tsDataSource
         }
     }
@@ -186,6 +228,22 @@ open class TSResourceContentValidatorMock: TSResourceContentValidator {
             renderingFlag: renderingFlag,
             sourceFilename: dataSource.sourceFilename,
             dataSource: .dataSource(dataSource, shouldCopy: !shouldConsume)
+        ).tsDataSource
+    }
+
+    open func validateContents(
+        data: Data,
+        mimeType: String,
+        sourceFilename: String?,
+        caption: MessageBody?,
+        renderingFlag: AttachmentReference.RenderingFlag
+    ) throws -> TSResourceDataSource {
+        return TSAttachmentDataSource(
+            mimeType: mimeType,
+            caption: caption,
+            renderingFlag: renderingFlag,
+            sourceFilename: sourceFilename,
+            dataSource: .data(data)
         ).tsDataSource
     }
 

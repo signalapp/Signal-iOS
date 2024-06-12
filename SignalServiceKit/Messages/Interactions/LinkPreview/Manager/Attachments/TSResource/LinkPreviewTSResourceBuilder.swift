@@ -60,12 +60,8 @@ public class LinkPreviewTSResourceBuilder: LinkPreviewBuilder {
         // since started using v2 for new attachments.
         let v2DataSource: AttachmentDataSource?
         if FeatureFlags.newAttachmentsUseV2 {
-            guard let imageDataSource = DataSourceValue.dataSource(with: imageData, mimeType: imageMimeType) else {
-                throw OWSAssertionError("Unable to create image data source")
-            }
             v2DataSource = try attachmentValidator.validateContents(
-                dataSource: imageDataSource,
-                shouldConsume: true,
+                data: imageData,
                 mimeType: imageMimeType,
                 renderingFlag: .default,
                 sourceFilename: nil

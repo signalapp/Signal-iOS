@@ -2200,11 +2200,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 contents.append(.outgoingTextOnly(randomText))
             case 2:
                 let attachmentDataSource = try DependenciesBridge.shared.tsResourceContentValidator.validateContents(
-                    dataSource: DataSourceValue.dataSource(
-                        with: UIImage.image(color: .blue, size: .square(100)).jpegData(compressionQuality: 0.1)!,
-                        mimeType: "image/jpg"
-                    )!,
-                    shouldConsume: true,
+                    data: UIImage.image(color: .blue, size: .square(100)).jpegData(compressionQuality: 0.1)!,
                     mimeType: "image/jpg",
                     sourceFilename: "test.jpg",
                     caption: nil,

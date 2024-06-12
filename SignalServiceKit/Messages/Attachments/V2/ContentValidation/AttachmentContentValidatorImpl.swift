@@ -53,6 +53,24 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
     }
 
     public func validateContents(
+        data: Data,
+        mimeType: String,
+        renderingFlag: AttachmentReference.RenderingFlag,
+        sourceFilename: String?
+    ) throws -> PendingAttachment {
+        let encryptionKey = Cryptography.randomAttachmentEncryptionKey()
+        let pendingAttachment = try validateContents(
+            input: .inMemory(data),
+            encryptionKey: encryptionKey,
+            mimeType: mimeType,
+            renderingFlag: renderingFlag,
+            sourceFilename: sourceFilename
+        )
+
+        return pendingAttachment
+    }
+
+    public func validateContents(
         ofEncryptedFileAt fileUrl: URL,
         encryptionKey: Data,
         plaintextLength: UInt32,

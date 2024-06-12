@@ -37,12 +37,8 @@ public class LinkPreviewBuilderImpl: LinkPreviewBuilder {
         guard let imageData = draft.imageData, let imageMimeType = draft.imageMimeType else {
             return .init(metadata: metadata, imageDataSource: nil)
         }
-        guard let dataSource = DataSourceValue.dataSource(with: imageData, mimeType: imageMimeType) else {
-            throw OWSAssertionError("Unable to create data source")
-        }
         let imageDataSource: AttachmentDataSource = try attachmentValidator.validateContents(
-            dataSource: dataSource,
-            shouldConsume: true,
+            data: imageData,
             mimeType: imageMimeType,
             renderingFlag: .default,
             sourceFilename: nil

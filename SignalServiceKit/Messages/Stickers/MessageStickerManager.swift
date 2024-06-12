@@ -176,18 +176,8 @@ public class MessageStickerManagerImpl: MessageStickerManager {
     }
 
     public func buildDataSource(fromDraft draft: MessageStickerDraft) throws -> MessageStickerDataSource {
-        guard
-            let dataSource = DataSourceValue.dataSource(
-                with: draft.stickerData,
-                mimeType: draft.stickerType.mimeType
-            )
-        else {
-            throw OWSAssertionError("Could not create data source!")
-        }
-
         let validatedDataSource = try attachmentValidator.validateContents(
-            dataSource: dataSource,
-            shouldConsume: true,
+            data: draft.stickerData,
             mimeType: draft.stickerType.mimeType,
             sourceFilename: nil,
             caption: nil,
