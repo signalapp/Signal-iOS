@@ -107,7 +107,7 @@ public extension ChatListViewController {
     func showArchivedConversations(offerMultiSelectMode: Bool = true) {
         AssertIsOnMainThread()
 
-        owsAssertDebug(chatListMode == .inbox)
+        owsAssertDebug(viewState.chatListMode == .inbox)
 
         // When showing archived conversations, we want to use a conventional "back" button
         // to return to the "inbox" conversation list.

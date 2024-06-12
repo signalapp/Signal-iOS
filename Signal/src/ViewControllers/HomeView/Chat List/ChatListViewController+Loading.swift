@@ -68,20 +68,13 @@ extension ChatListViewController {
                                                 transaction: SDSAnyReadTransaction) -> CLVLoadResult {
         AssertIsOnMainThread()
 
-        guard !updatedThreadIds.isEmpty else {
-            owsFailDebug("Empty updatedThreadIds.")
-            // Ignoring irrelevant update.
-            return .noChanges
-        }
-
         return CLVLoader.loadRenderStateAndDiff(viewInfo: viewInfo,
                                                updatedItemIds: updatedThreadIds,
                                                lastRenderState: renderState,
                                                transaction: transaction)
     }
 
-    fileprivate func applyLoadResult(_ loadResult: CLVLoadResult,
-                                     isAnimated: Bool) {
+    fileprivate func applyLoadResult(_ loadResult: CLVLoadResult, animated: Bool) {
         AssertIsOnMainThread()
 
         switch loadResult {
@@ -94,9 +87,7 @@ extension ChatListViewController {
 
             reloadTableData()
         case .renderStateWithRowChanges(renderState: let renderState, let rowChanges):
-            tableDataSource.renderState = renderState
-            applyPartialLoadResult(rowChanges: rowChanges,
-                                   isAnimated: isAnimated)
+            applyRowChanges(rowChanges, renderState: renderState, animated: animated)
         case .renderStateWithoutRowChanges(let renderState):
             tableDataSource.renderState = renderState
         case .reloadTable:
@@ -114,8 +105,7 @@ extension ChatListViewController {
         )
     }
 
-    fileprivate func applyPartialLoadResult(rowChanges: [CLVRowChange],
-                                            isAnimated: Bool) {
+    fileprivate func applyRowChanges(_ rowChanges: [CLVRowChange], renderState: CLVRenderState, animated: Bool) {
         AssertIsOnMainThread()
 
         guard !rowChanges.isEmpty else {
@@ -123,10 +113,15 @@ extension ChatListViewController {
             return
         }
 
+        let isChangingFilter = tableDataSource.renderState.viewInfo.inboxFilter != renderState.viewInfo.inboxFilter
+        tableDataSource.renderState = renderState
+
         let tableView = self.tableView
         let threadViewModelCache = self.threadViewModelCache
         let cellContentCache = self.cellContentCache
-        let rowAnimation: UITableView.RowAnimation = isAnimated ? .automatic : .none
+
+        let filterChangeAnimation = animated ? UITableView.RowAnimation.fade : .none
+        let defaultRowAnimation = animated ? UITableView.RowAnimation.automatic : .none
 
         // only perform a beginUpdates/endUpdates block if really necessary, otherwise
         // strange scroll animations may occur
@@ -147,18 +142,17 @@ extension ChatListViewController {
         // animate move, insert and delete changes the indexPaths of the to be updated rows will differ.
         var useFallBackUpdateMechanism = false
         for rowChange in rowChanges {
-
             threadViewModelCache.removeObject(forKey: rowChange.threadUniqueId)
             cellContentCache.removeObject(forKey: rowChange.threadUniqueId)
 
             switch rowChange.type {
             case .delete(let oldIndexPath):
                 checkAndSetTableUpdates()
-                tableView.deleteRows(at: [oldIndexPath], with: rowAnimation)
+                tableView.deleteRows(at: [oldIndexPath], with: isChangingFilter ? filterChangeAnimation : defaultRowAnimation)
                 useFallBackUpdateMechanism = true
             case .insert(let newIndexPath):
                 checkAndSetTableUpdates()
-                tableView.insertRows(at: [newIndexPath], with: rowAnimation)
+                tableView.insertRows(at: [newIndexPath], with: isChangingFilter ? filterChangeAnimation : defaultRowAnimation)
                 useFallBackUpdateMechanism = true
             case .move(let oldIndexPath, let newIndexPath):
                 // NOTE: if we're moving within the same section, we perform
@@ -173,8 +167,8 @@ extension ChatListViewController {
                 if oldIndexPath.section != newIndexPath.section {
                     tableView.moveRow(at: oldIndexPath, to: newIndexPath)
                 } else {
-                    tableView.deleteRows(at: [oldIndexPath], with: rowAnimation)
-                    tableView.insertRows(at: [newIndexPath], with: rowAnimation)
+                    tableView.deleteRows(at: [oldIndexPath], with: defaultRowAnimation)
+                    tableView.insertRows(at: [newIndexPath], with: defaultRowAnimation)
                 }
                 useFallBackUpdateMechanism = true
             case .update(let oldIndexPath):
@@ -208,30 +202,38 @@ private enum CLVLoadType {
 // MARK: -
 
 public class CLVLoadCoordinator: Dependencies {
-
     public weak var viewController: ChatListViewController?
+    private var loadInfoBuilder = CLVLoadInfoBuilder()
 
     private struct CLVLoadInfo {
         let viewInfo: CLVViewInfo
         let loadType: CLVLoadType
     }
+
     private class CLVLoadInfoBuilder {
         var shouldResetAll = false
         var updatedThreadIds = Set<String>()
 
-        func build(chatListMode: ChatListMode,
-                   hasVisibleReminders: Bool,
-                   canApplyRowChanges: Bool,
-                   lastViewInfo: CLVViewInfo,
-                   transaction: SDSAnyReadTransaction) -> CLVLoadInfo {
-            let viewInfo = CLVViewInfo.build(chatListMode: chatListMode,
-                                            hasVisibleReminders: hasVisibleReminders,
-                                            transaction: transaction)
+        func build(
+            chatListMode: ChatListMode,
+            inboxFilter: InboxFilter?,
+            hasVisibleReminders: Bool,
+            canApplyRowChanges: Bool,
+            lastViewInfo: CLVViewInfo,
+            transaction: SDSAnyReadTransaction
+        ) -> CLVLoadInfo {
+            let viewInfo = CLVViewInfo.build(
+                chatListMode: chatListMode,
+                inboxFilter: inboxFilter,
+                hasVisibleReminders: hasVisibleReminders,
+                transaction: transaction
+            )
+
             if shouldResetAll ||
                 viewInfo.hasArchivedThreadsRow != lastViewInfo.hasArchivedThreadsRow ||
                 viewInfo.hasVisibleReminders != lastViewInfo.hasVisibleReminders {
                 return CLVLoadInfo(viewInfo: viewInfo, loadType: .resetAll)
-            } else if !updatedThreadIds.isEmpty {
+            } else if !updatedThreadIds.isEmpty || viewInfo.inboxFilter != lastViewInfo.inboxFilter {
                 if canApplyRowChanges {
                     return CLVLoadInfo(viewInfo: viewInfo, loadType: .incrementalDiff(updatedThreadIds: updatedThreadIds))
                 } else {
@@ -244,7 +246,6 @@ public class CLVLoadCoordinator: Dependencies {
             }
         }
     }
-    private var loadInfoBuilder = CLVLoadInfoBuilder()
 
     public init() {
         loadInfoBuilder.shouldResetAll = true
@@ -258,7 +259,7 @@ public class CLVLoadCoordinator: Dependencies {
         loadIfNecessary()
     }
 
-    public func scheduleLoad(updatedThreadIds: Set<String>) {
+    public func scheduleLoad(updatedThreadIds: some Collection<String>) {
         AssertIsOnMainThread()
         owsAssertDebug(!updatedThreadIds.isEmpty)
 
@@ -305,8 +306,7 @@ public class CLVLoadCoordinator: Dependencies {
         }
     }
 
-    public func loadIfNecessary(suppressAnimations: Bool = false,
-                                shouldForceLoad: Bool = false) {
+    public func loadIfNecessary(suppressAnimations: Bool = false, shouldForceLoad: Bool = false) {
         AssertIsOnMainThread()
 
         guard let viewController else {
@@ -324,11 +324,16 @@ public class CLVLoadCoordinator: Dependencies {
         let loadResult: CLVLoadResult = databaseStorage.read { transaction in
             // Decide what kind of load we prefer.
             let canApplyRowChanges = viewController.tableDataSource.renderState.visibleThreadCount > 0
-            let loadInfo = loadInfoBuilder.build(chatListMode: viewController.chatListMode,
-                                                 hasVisibleReminders: hasVisibleReminders,
-                                                 canApplyRowChanges: canApplyRowChanges,
-                                                 lastViewInfo: viewController.renderState.viewInfo,
-                                                 transaction: transaction)
+
+            let loadInfo = loadInfoBuilder.build(
+                chatListMode: viewController.viewState.chatListMode,
+                inboxFilter: viewController.viewState.inboxFilter,
+                hasVisibleReminders: hasVisibleReminders,
+                canApplyRowChanges: canApplyRowChanges,
+                lastViewInfo: viewController.renderState.viewInfo,
+                transaction: transaction
+            )
+
             // Reset the builder.
             loadInfoBuilder = CLVLoadInfoBuilder()
 
@@ -337,15 +342,21 @@ public class CLVLoadCoordinator: Dependencies {
             // NOTE: we might not receive the kind of load that we requested.
             switch loadInfo.loadType {
             case .resetAll:
-                return viewController.loadRenderStateForReset(viewInfo: loadInfo.viewInfo,
-                                                              transaction: transaction)
+                return viewController.loadRenderStateForReset(
+                    viewInfo: loadInfo.viewInfo,
+                    transaction: transaction
+                )
+
             case .incrementalDiff(let updatedThreadIds):
-                owsAssertDebug(!updatedThreadIds.isEmpty)
-                return viewController.loadNewRenderStateWithDiff(viewInfo: loadInfo.viewInfo,
-                                                                 updatedThreadIds: updatedThreadIds,
-                                                                 transaction: transaction)
+                return viewController.loadNewRenderStateWithDiff(
+                    viewInfo: loadInfo.viewInfo,
+                    updatedThreadIds: updatedThreadIds,
+                    transaction: transaction
+                )
+
             case .reloadTableOnly:
                 return .reloadTable
+
             case .none:
                 return .noChanges
             }
@@ -353,13 +364,13 @@ public class CLVLoadCoordinator: Dependencies {
 
         // Apply the load to the view.
         let wasViewEmpty = viewController.tableDataSource.renderState.visibleThreadCount == 0
-        let isAnimated = !suppressAnimations && !wasViewEmpty && viewController.hasEverAppeared
-        if isAnimated {
-            viewController.applyLoadResult(loadResult, isAnimated: isAnimated)
+        let shouldAnimate = !suppressAnimations && !wasViewEmpty && viewController.hasEverAppeared
+        if shouldAnimate {
+            viewController.applyLoadResult(loadResult, animated: shouldAnimate)
         } else {
             // Suppress animations.
             UIView.animate(withDuration: 0) {
-                viewController.applyLoadResult(loadResult, isAnimated: isAnimated)
+                viewController.applyLoadResult(loadResult, animated: shouldAnimate)
             }
         }
     }

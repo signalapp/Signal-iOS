@@ -8,11 +8,8 @@ import SignalUI
 import StoreKit
 
 public class ChatListViewController: OWSViewController, HomeTabViewController {
-
-    // MARK: Init
-
     init(chatListMode: ChatListMode) {
-        self.viewState = CLVViewState(chatListMode: chatListMode)
+        self.viewState = CLVViewState(chatListMode: chatListMode, inboxFilter: nil)
 
         super.init()
 
@@ -31,7 +28,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         keyboardObservationBehavior = .never
 
-        switch chatListMode {
+        switch viewState.chatListMode {
         case .inbox:
             title = NSLocalizedString("CHAT_LIST_TITLE_INBOX", comment: "Title for the chat list's default mode.")
         case .archive:
@@ -85,7 +82,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         isViewVisible = true
 
         // Ensure the tabBar is always hidden if we're in the archive.
-        let shouldHideTabBar = chatListMode == .archive
+        let shouldHideTabBar = viewState.chatListMode == .archive
         if shouldHideTabBar {
             tabBarController?.tabBar.isHidden = true
             extendedLayoutIncludesOpaqueBars = true
@@ -346,6 +343,33 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             actions: { settingsAction in
                 var contextMenuActions: [ContextMenuAction] = []
 
+                if FeatureFlags.chatListFilter {
+                    switch viewState.inboxFilter {
+                    case .unread:
+                        contextMenuActions.append(
+                            ContextMenuAction(
+                                title: OWSLocalizedString("CHAT_LIST_CLEAR_FILTER_MENU_ACTION", comment: "Title for context menu action to disable chat list filter (e.g., Filter by Unread)"),
+                                image: Theme.iconImage(.chatListClearFilter),
+                                attributes: [],
+                                handler: { [weak self] _ in
+                                    self?.disableChatListFilter()
+                                }
+                            )
+                        )
+                    case nil:
+                        contextMenuActions.append(
+                            ContextMenuAction(
+                                title: OWSLocalizedString("CHAT_LIST_UNREAD_FILTER_MENU_ACTION", comment: "Title for context menu action to enable Filter by Unread"),
+                                image: Theme.iconImage(.chatListFilterByUnread),
+                                attributes: [],
+                                handler: { [weak self] _ in
+                                    self?.enableChatListFilter()
+                                }
+                            )
+                        )
+                    }
+                }
+
                 if viewState.settingsButtonCreator.hasInboxChats {
                     contextMenuActions.append(
                         ContextMenuAction(
@@ -478,14 +502,14 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     }
 
     private func updateLeftBarButtonItem() {
-        guard chatListMode == .inbox && !viewState.multiSelectState.isActive else { return }
+        guard viewState.chatListMode == .inbox && !viewState.multiSelectState.isActive else { return }
 
         // Settings button.
         navigationItem.leftBarButtonItem = settingsBarButtonItem()
     }
 
     private func updateRightBarButtonItems() {
-        guard chatListMode == .inbox && !viewState.multiSelectState.isActive else { return }
+        guard viewState.chatListMode == .inbox && !viewState.multiSelectState.isActive else { return }
 
         var rightBarButtonItems = [UIBarButtonItem]()
 
@@ -658,7 +682,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     }
 
     private var shouldShowEmptyInboxView: Bool {
-        return chatListMode == .inbox && numberOfInboxThreads == 0 && numberOfArchivedThreads == 0 && !hasVisibleReminders
+        return viewState.chatListMode == .inbox && numberOfInboxThreads == 0 && numberOfArchivedThreads == 0 && !hasVisibleReminders
     }
 
     func updateViewState() {
@@ -997,7 +1021,21 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         return true
     }
 
-    // MARK: Payments
+    // MARK: - Chat List Filter
+
+    func enableChatListFilter() {
+        viewState.inboxFilter = .unread
+        updateBarButtonItems()
+        loadCoordinator.loadIfNecessary()
+    }
+
+    func disableChatListFilter() {
+        viewState.inboxFilter = nil
+        updateBarButtonItems()
+        loadCoordinator.loadIfNecessary()
+    }
+
+    // MARK: - Payments
 
     func configureUnreadPaymentsBannerSingle(_ paymentsReminderView: UIView,
                                              paymentModel: TSPaymentModel,
@@ -1462,7 +1500,7 @@ extension ChatListViewController: ThreadSwipeHandler {
 extension ChatListViewController: GetStartedBannerViewControllerDelegate {
 
     func presentGetStartedBannerIfNecessary() {
-        guard getStartedBanner == nil && chatListMode == .inbox else { return }
+        guard getStartedBanner == nil && viewState.chatListMode == .inbox else { return }
 
         let getStartedVC = GetStartedBannerViewController(delegate: self)
         if getStartedVC.hasIncompleteCards {

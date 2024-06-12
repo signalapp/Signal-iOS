@@ -30,6 +30,8 @@ public enum ThemeIcon: UInt {
     case profileAbout
     case profileBadges
 
+    case chatListClearFilter
+    case chatListFilterByUnread
     case chatSettingsTimerOn
     case chatSettingsTimerOff
     case chatSettingsWallpaper
@@ -269,8 +271,11 @@ public extension Theme {
             return "connections"
         case .contactInfoNoDirectChat:
             return "chat-x"
-        case .contactInfoPendingRequest:
+        case .chatListFilterByUnread,
+             .contactInfoPendingRequest:
             return "chat-badge"
+        case .chatListClearFilter:
+            return "chat-badge-fill"
         case .contactInfoPhone:
             return "phone"
         case .contactInfoGroups:

@@ -96,6 +96,8 @@ public class FeatureFlags: NSObject {
     public static let callRaiseHandToastSupport = build.includes(.internal)
 
     public static let enableDeleteSyncCapability = build.includes(.internal)
+
+    public static let chatListFilter = build.includes(.dev)
 }
 
 // MARK: -

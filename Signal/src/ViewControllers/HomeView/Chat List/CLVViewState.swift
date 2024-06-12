@@ -7,11 +7,8 @@ import SignalServiceKit
 import SignalUI
 
 class CLVViewState {
-
     let tableDataSource = CLVTableDataSource()
-
     let multiSelectState = MultiSelectState()
-
     let loadCoordinator = CLVLoadCoordinator()
 
     // MARK: - Caches
@@ -34,11 +31,9 @@ class CLVViewState {
     // MARK: - State
 
     let chatListMode: ChatListMode
-
+    var inboxFilter: InboxFilter?
     var shouldBeUpdatingView = false
-
     var shouldFocusSearchOnAppear = false
-
     var isViewVisible = false
     var hasEverAppeared = false
 
@@ -50,8 +45,9 @@ class CLVViewState {
 
     // MARK: - Initializer
 
-    init(chatListMode: ChatListMode) {
+    init(chatListMode: ChatListMode, inboxFilter: InboxFilter?) {
         self.chatListMode = chatListMode
+        self.inboxFilter = inboxFilter
     }
 
     func configure() {
@@ -90,8 +86,6 @@ extension ChatListViewController {
 
     var numberOfInboxThreads: UInt { renderState.inboxCount }
     var numberOfArchivedThreads: UInt { renderState.archiveCount }
-
-    var chatListMode: ChatListMode { viewState.chatListMode }
 
     var hasEverAppeared: Bool {
         get { viewState.hasEverAppeared }

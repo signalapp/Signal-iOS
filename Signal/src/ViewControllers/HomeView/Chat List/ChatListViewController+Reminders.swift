@@ -219,7 +219,7 @@ extension ChatListViewController {
     public func updateReminderViews() {
         AssertIsOnMainThread()
 
-        archiveReminderView.isHidden = chatListMode != .archive
+        archiveReminderView.isHidden = viewState.chatListMode != .archive
         let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction
         deregisteredView.isHidden = !tsRegistrationState.isDeregistered
         outageView.isHidden = !OutageDetection.shared.hasOutage

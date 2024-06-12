@@ -24,7 +24,7 @@ extension ChatListViewController {
         // multi selection does not work well with displaying search results, so let's clear the search for now
         searchBar.delegate?.searchBarCancelButtonClicked?(searchBar)
         viewState.multiSelectState.title = title
-        if chatListMode == .inbox {
+        if viewState.chatListMode == .inbox {
             let doneButton: UIBarButtonItem = .cancelButton { [weak self] in
                 self?.done()
             }
@@ -48,7 +48,7 @@ extension ChatListViewController {
             return
         }
 
-        if chatListMode == .archive {
+        if viewState.chatListMode == .archive {
             owsAssertDebug(navigationItem.rightBarButtonItem != nil, "can't change label of right bar button")
             navigationItem.rightBarButtonItem?.title = CommonStrings.selectButton
             navigationItem.rightBarButtonItem?.accessibilityHint = CommonStrings.selectButton
@@ -85,7 +85,7 @@ extension ChatListViewController {
                 }
             }
             if
-                self.chatListMode == .inbox,
+                viewState.chatListMode == .inbox,
                 let tabController = self.tabBarController as? HomeTabBarController
             {
                 tabController.setTabBarHidden(true, animated: true, duration: 0.1) { _ in
@@ -122,7 +122,7 @@ extension ChatListViewController {
         leaveMultiselectMode()
         updateBarButtonItems()
         updateViewState()
-        if self.chatListMode == .archive {
+        if viewState.chatListMode == .archive {
             navigationItem.rightBarButtonItem?.title = CommonStrings.selectButton
         }
     }
@@ -131,7 +131,7 @@ extension ChatListViewController {
         let hasSelectedEntries = !(tableView.indexPathsForSelectedRows ?? []).isEmpty
 
         let archiveBtn = UIBarButtonItem(
-            title: chatListMode == .archive ? CommonStrings.unarchiveAction : CommonStrings.archiveAction,
+            title: viewState.chatListMode == .archive ? CommonStrings.unarchiveAction : CommonStrings.archiveAction,
             style: .plain, target: self, action: #selector(performUnarchive))
         archiveBtn.isEnabled = hasSelectedEntries
 
@@ -196,7 +196,7 @@ extension ChatListViewController {
                 toolbar.removeFromSuperview()
                 self?.viewState.multiSelectState.toolbar = nil
                 if
-                    self?.chatListMode == .inbox,
+                    self?.viewState.chatListMode == .inbox,
                     let tabController = self?.tabBarController as? HomeTabBarController
                 {
                     tabController.setTabBarHidden(false, animated: true, duration: 0.1)

@@ -101,7 +101,7 @@ public class CLVLoader: Dependencies {
             // 1. Fetch the uniqueIds for the visible threads.
             let threadIds = isViewingArchive
                 ? try threadFinder.visibleArchivedThreadIds(transaction: transaction)
-                : try threadFinder.visibleInboxThreadIds(transaction: transaction)
+                : try threadFinder.visibleInboxThreadIds(filteredBy: viewInfo.inboxFilter, transaction: transaction)
 
             guard !threadIds.isEmpty else {
                 break loading
@@ -211,8 +211,8 @@ public class CLVLoader: Dependencies {
         let oldUnpinnedValues = oldUnpinnedThreadIds.map { CLVBatchUpdateValue(threadUniqueId: $0) }
         let newUnpinnedValues = newUnpinnedThreadIds.map { CLVBatchUpdateValue(threadUniqueId: $0) }
 
-        let pinnedChangedValues = newPinnedValues.filter { allUpdatedItemIds.contains($0.threadUniqueId) }
-        let unpinnedChangedValues = newUnpinnedValues.filter { allUpdatedItemIds.contains($0.threadUniqueId) }
+        let pinnedChangedValues = newPinnedValues.filter { updatedItemIds.contains($0.threadUniqueId) }
+        let unpinnedChangedValues = newUnpinnedValues.filter { updatedItemIds.contains($0.threadUniqueId) }
 
         let pinnedBatchUpdateItems: [BatchUpdate.Item] = try BatchUpdate.build(viewType: .uiTableView,
                                                                                oldValues: oldPinnedValues,

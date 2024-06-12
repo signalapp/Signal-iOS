@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0517B9782BFCFF12002CDE7D /* TSThreadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0517B9772BFCFF12002CDE7D /* TSThreadTests.swift */; };
+		05412B3C2C22219E007AC9C7 /* InboxFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05412B3B2C22219E007AC9C7 /* InboxFilter.swift */; };
 		05572BC42BFC0094006A72F1 /* DoubleTapToEditOnboardingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05572BC32BFC0094006A72F1 /* DoubleTapToEditOnboardingController.swift */; };
 		0CE014267EDFBD2538E940A0 /* Pods_Signal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FF88FB580BC19B240EEB86A /* Pods_Signal.framework */; };
 		1404D8B3276A353B0068E2F6 /* ChatListViewController+Multiselect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1404D8B2276A353A0068E2F6 /* ChatListViewController+Multiselect.swift */; };
@@ -2885,6 +2886,7 @@
 
 /* Begin PBXFileReference section */
 		0517B9772BFCFF12002CDE7D /* TSThreadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSThreadTests.swift; sourceTree = "<group>"; };
+		05412B3B2C22219E007AC9C7 /* InboxFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxFilter.swift; sourceTree = "<group>"; };
 		05572BC32BFC0094006A72F1 /* DoubleTapToEditOnboardingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoubleTapToEditOnboardingController.swift; sourceTree = "<group>"; };
 		05E3A4DD8B4442530268AFC1 /* Pods-SignalShareExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.app store release.xcconfig"; path = "Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.app store release.xcconfig"; sourceTree = "<group>"; };
 		0BADD293DAFC82BF3274F0F6 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -11316,6 +11318,7 @@
 		F9C5CA35289453B100548EEE /* Records */ = {
 			isa = PBXGroup;
 			children = (
+				05412B3B2C22219E007AC9C7 /* InboxFilter.swift */,
 				F9C5CA38289453B100548EEE /* InteractionFinder.swift */,
 				F9C5CA37289453B100548EEE /* ThreadFinder.swift */,
 			);
@@ -14144,6 +14147,7 @@
 				661BFE0A2C07FB950065435B /* ImageMetadata.swift in Sources */,
 				F9C5CDDF289453B400548EEE /* ImageQuality.swift in Sources */,
 				D9C0AE662BD7103100FCB05E /* InactiveLinkedDeviceFinder.swift in Sources */,
+				05412B3C2C22219E007AC9C7 /* InboxFilter.swift in Sources */,
 				505166D72BB37DAE00FF6B4A /* IncomingCallEventSyncMessageManager.swift in Sources */,
 				505166D62BB37DA700FF6B4A /* IncomingCallEventSyncMessageParams.swift in Sources */,
 				D958C6792B9FBD66002F6888 /* IncomingCallLogEventSyncMessageManager.swift in Sources */,

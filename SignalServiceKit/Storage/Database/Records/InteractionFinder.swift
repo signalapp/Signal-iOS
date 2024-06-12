@@ -1465,8 +1465,7 @@ private extension TSInteractionCursor {
 
 // MARK: - Clauses
 
-private extension InteractionFinder {
-
+extension InteractionFinder {
     private static func sqlClauseForAllUnreadInteractions(
         excludeReadEdits: Bool = false
     ) -> String {
@@ -1499,7 +1498,7 @@ private extension InteractionFinder {
         """
     }
 
-    private static func sqlClauseForUnreadInteractionCounts(
+    static func sqlClauseForUnreadInteractionCounts(
         interactionsAlias: String? = nil
     ) -> String {
         let columnPrefix: String
