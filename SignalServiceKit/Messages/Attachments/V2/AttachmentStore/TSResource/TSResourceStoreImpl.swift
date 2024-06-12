@@ -217,7 +217,8 @@ public class TSResourceStoreImpl: TSResourceStore {
     ) -> TSResourceReference? {
         if
             FeatureFlags.readV2Attachments,
-            let attachment = attachmentStore.attachmentToUseInQuote(originalMessage: originalMessage, tx: tx)
+            let originalMessageRowId = originalMessage.sqliteRowId,
+            let attachment = attachmentStore.attachmentToUseInQuote(originalMessageRowId: originalMessageRowId, tx: tx)
         {
             return attachment
         } else {

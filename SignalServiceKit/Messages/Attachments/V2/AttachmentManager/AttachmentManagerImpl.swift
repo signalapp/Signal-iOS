@@ -57,7 +57,11 @@ public class AttachmentManagerImpl: AttachmentManager {
         originalMessage: TSMessage,
         tx: DBReadTransaction
     ) -> QuotedAttachmentInfo? {
-        return _quotedReplyAttachmentInfo(originalMessage: originalMessage, tx: tx)?.info
+        guard let originalMessageRowId = originalMessage.sqliteRowId else {
+            owsFailDebug("Cloning attachment for un-inserted message")
+            return nil
+        }
+        return _quotedReplyAttachmentInfo(originalMessageRowId: originalMessageRowId, tx: tx)?.info
     }
 
     public func createQuotedReplyMessageThumbnail(
@@ -65,8 +69,11 @@ public class AttachmentManagerImpl: AttachmentManager {
         quotedReplyMessageId: Int64,
         tx: DBWriteTransaction
     ) throws {
+        guard let originalMessageRowId = originalMessage.sqliteRowId else {
+            throw OWSAssertionError("Cloning attachment for un-inserted message")
+        }
         guard
-            let info = _quotedReplyAttachmentInfo(originalMessage: originalMessage, tx: tx),
+            let info = _quotedReplyAttachmentInfo(originalMessageRowId: originalMessageRowId, tx: tx),
             // Not a stub! Stubs would be .unset
             info.info.info.attachmentType == .V2
         else {
@@ -343,12 +350,12 @@ public class AttachmentManagerImpl: AttachmentManager {
     }
 
     private func _quotedReplyAttachmentInfo(
-        originalMessage: TSMessage,
+        originalMessageRowId: Int64,
         tx: DBReadTransaction
     ) -> WrappedQuotedAttachmentInfo? {
         guard
             let originalReference = attachmentStore.attachmentToUseInQuote(
-                originalMessage: originalMessage,
+                originalMessageRowId: originalMessageRowId,
                 tx: tx
             ),
             let originalAttachment = attachmentStore.fetch(id: originalReference.attachmentRowId, tx: tx)

@@ -186,6 +186,13 @@ extension AttachmentStore {
             owsFailDebug("Fetching attachments for un-inserted message")
             return []
         }
+        return self.orderedBodyAttachments(forMessageRowId: messageRowId, tx: tx)
+    }
+
+    public func orderedBodyAttachments(
+        forMessageRowId messageRowId: Int64,
+        tx: DBReadTransaction
+    ) -> [AttachmentReference] {
         return self
             .fetchReferences(owner: .messageBodyAttachment(messageRowId: messageRowId), tx: tx)
             .lazy
