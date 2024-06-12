@@ -77,13 +77,13 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
             return attachmentDataSource.tsDataSource
         } else {
             // We don't do validation up front for legacy attachments.
-            return .from(
-                dataSource: dataSource,
+            return TSAttachmentDataSource(
                 mimeType: mimeType,
                 caption: caption,
                 renderingFlag: renderingFlag,
-                shouldCopyDataSource: !shouldConsume
-            )
+                sourceFilename: dataSource.sourceFilename,
+                dataSource: .dataSource(dataSource, shouldCopy: !shouldConsume)
+            ).tsDataSource
         }
     }
 
@@ -179,13 +179,13 @@ open class TSResourceContentValidatorMock: TSResourceContentValidator {
         caption: MessageBody?,
         renderingFlag: AttachmentReference.RenderingFlag
     ) throws -> TSResourceDataSource {
-        return .from(
-            dataSource: dataSource,
+        return TSAttachmentDataSource(
             mimeType: mimeType,
             caption: caption,
             renderingFlag: renderingFlag,
-            shouldCopyDataSource: !shouldConsume
-        )
+            sourceFilename: dataSource.sourceFilename,
+            dataSource: .dataSource(dataSource, shouldCopy: !shouldConsume)
+        ).tsDataSource
     }
 
     open func prepareOversizeTextIfNeeded(

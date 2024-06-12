@@ -37,22 +37,6 @@ public struct TSResourceDataSource {
         self.dataSource = dataSource
     }
 
-    public static func from(
-        dataSource: DataSource,
-        mimeType: String,
-        caption: MessageBody?,
-        renderingFlag: AttachmentReference.RenderingFlag,
-        shouldCopyDataSource: Bool = false
-    ) -> TSResourceDataSource {
-        return .init(
-            mimeType: mimeType,
-            caption: caption,
-            renderingFlag: renderingFlag,
-            sourceFilename: dataSource.sourceFilename,
-            dataSource: .dataSource(dataSource, shouldCopy: shouldCopyDataSource)
-        )
-    }
-
     public static func forwarding(
         existingAttachment: TSResourceStream,
         with reference: TSResourceReference

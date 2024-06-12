@@ -128,11 +128,12 @@ public class OnboardingStoryManagerStoryMessageFactoryMock: OnboardingStoryManag
         dataSource: any DataSource,
         mimeType: String
     ) throws -> TSResourceDataSource {
-        return .from(
-            dataSource: dataSource,
+        return TSAttachmentDataSource(
             mimeType: mimeType,
             caption: nil,
-            renderingFlag: .default
-        )
+            renderingFlag: .default,
+            sourceFilename: dataSource.sourceFilename,
+            dataSource: .dataSource(dataSource, shouldCopy: false)
+        ).tsDataSource
     }
 }
