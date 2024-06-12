@@ -1013,6 +1013,7 @@
 		66C2B1542A13F26E008DDE72 /* ContactDiscoveryV2WebsocketConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1532A13F26E008DDE72 /* ContactDiscoveryV2WebsocketConfigurator.swift */; };
 		66C2B1562A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C2B1552A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift */; };
 		66C343D22C13C55B004C3D60 /* QuotedReplyTSResourceDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C343D12C13C55B004C3D60 /* QuotedReplyTSResourceDataSource.swift */; };
+		66C343D62C140BA7004C3D60 /* DraftQuotedReplyModel+ForSending.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C343D52C140BA7004C3D60 /* DraftQuotedReplyModel+ForSending.swift */; };
 		66C3887E29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */; };
 		66CA4CE42B9BDDE3009A5ED8 /* AttachmentThumbnailQuality.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CA4CE32B9BDDE3009A5ED8 /* AttachmentThumbnailQuality.swift */; };
 		66CA4CE62B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CA4CE52B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift */; };
@@ -3941,6 +3942,7 @@
 		66C2B1552A1400E8008DDE72 /* SVR2WebsocketConfigurator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVR2WebsocketConfigurator.swift; sourceTree = "<group>"; };
 		66C336D02A994B97000F4F50 /* FailedStorySendDisplayController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FailedStorySendDisplayController.swift; sourceTree = "<group>"; };
 		66C343D12C13C55B004C3D60 /* QuotedReplyTSResourceDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedReplyTSResourceDataSource.swift; sourceTree = "<group>"; };
+		66C343D52C140BA7004C3D60 /* DraftQuotedReplyModel+ForSending.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DraftQuotedReplyModel+ForSending.swift"; sourceTree = "<group>"; };
 		66C3887D29CA537400E6DC00 /* RegistrationTransferProgressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTransferProgressViewController.swift; sourceTree = "<group>"; };
 		66CA4CE32B9BDDE3009A5ED8 /* AttachmentThumbnailQuality.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentThumbnailQuality.swift; sourceTree = "<group>"; };
 		66CA4CE52B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentReference+RenderingFlag.swift"; sourceTree = "<group>"; };
@@ -7807,6 +7809,7 @@
 		669FAE0C2B744BA4009EE2FE /* Quotes */ = {
 			isa = PBXGroup;
 			children = (
+				66C343D52C140BA7004C3D60 /* DraftQuotedReplyModel+ForSending.swift */,
 				665CBD042BADC87A0059EA4F /* DraftQuotedReplyModel.swift */,
 				6635B8A42BA25D9F005C80EA /* QuotedReplyManager.swift */,
 				6635B8A62BA25DDD005C80EA /* QuotedReplyManagerImpl.swift */,
@@ -13692,6 +13695,7 @@
 				7254653C2BA01FCC00EABFD2 /* DonationUtilities.swift in Sources */,
 				F9C5CC14289453B300548EEE /* DownloadStickerOperation.swift in Sources */,
 				F9C5CC18289453B300548EEE /* DownloadStickerPackOperation.swift in Sources */,
+				66C343D62C140BA7004C3D60 /* DraftQuotedReplyModel+ForSending.swift in Sources */,
 				665CBD052BADC87A0059EA4F /* DraftQuotedReplyModel.swift in Sources */,
 				5003BB43299F034D0037159B /* E164.swift in Sources */,
 				F9C5CC8A289453B300548EEE /* EarlyMessageManager.swift in Sources */,
