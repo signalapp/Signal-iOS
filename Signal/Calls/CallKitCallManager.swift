@@ -24,6 +24,7 @@ final class CallKitCallManager {
 
     static let kAnonymousCallHandlePrefix = "Signal:"
     static let kGroupThreadCallHandlePrefix = "SignalGroup:"
+    static let kCallLinkCallHandlePrefix = "SignalCall:"
 
     private static func decodeGroupId(fromIntentHandle handle: String) -> Data? {
         let prefix = handle.prefix(kGroupThreadCallHandlePrefix.count)
@@ -53,7 +54,7 @@ final class CallKitCallManager {
         case .individual(let individualCall):
             if !showNamesOnCallScreen {
                 let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
-                CallKitIdStore.setThread(individualCall.thread, forCallKitId: callKitId)
+                CallKitIdStore.setContactThread(individualCall.thread, forCallKitId: callKitId)
                 type = .generic
                 value = callKitId
             } else if let phoneNumber = individualCall.remoteAddress.phoneNumber {
@@ -66,20 +67,27 @@ final class CallKitCallManager {
         case .groupThread(let groupThreadCall):
             if !showNamesOnCallScreen {
                 let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
-                CallKitIdStore.setThread(groupThreadCall.groupThread, forCallKitId: callKitId)
+                CallKitIdStore.setGroupThread(groupThreadCall.groupThread, forCallKitId: callKitId)
                 type = .generic
                 value = callKitId
             } else {
                 type = .generic
                 value = Self.kGroupThreadCallHandlePrefix + groupThreadCall.groupThread.groupModel.groupId.asBase64Url
             }
-        case .callLink:
-            owsFail("[CallLink] TODO: Create CallKit handles for Call Link calls")
+        case .callLink(let callLinkCall):
+            let callKitId: String
+            if !showNamesOnCallScreen {
+                callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
+            } else {
+                callKitId = Self.kCallLinkCallHandlePrefix + callLinkCall.callLink.rootKey.deriveRoomId().base64EncodedString()
+            }
+            CallKitIdStore.setCallLink(callLinkCall.callLink, forCallKitId: callKitId)
+            type = .generic
+            value = callKitId
         }
         return CXHandle(type: type, value: value)
     }
 
-    @objc
     static func threadForHandleWithSneakyTransaction(_ handle: String) -> TSThread? {
         owsAssertDebug(!handle.isEmpty)
 

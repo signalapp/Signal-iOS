@@ -540,6 +540,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
                 return nil
             }
             let callLinkCall = CallLinkCall(
+                callLink: callLink,
                 ringRtcCall: ringRtcCall,
                 videoCaptureController: videoCaptureController
             )

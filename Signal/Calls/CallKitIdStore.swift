@@ -10,31 +10,49 @@ class CallKitIdStore {
     private static let phoneNumberStore = SDSKeyValueStore(collection: "TSStorageManagerCallKitIdToPhoneNumberCollection")
     private static let serviceIdStore = SDSKeyValueStore(collection: "TSStorageManagerCallKitIdToUUIDCollection")
     private static let groupIdStore = SDSKeyValueStore(collection: "TSStorageManagerCallKitIdToGroupId")
+    private static let callLinkStore = SDSKeyValueStore(collection: "CallKitIdToCallLink")
 
-    static func setThread(_ thread: TSThread, forCallKitId callKitId: String) {
+    static func setGroupThread(_ thread: TSGroupThread, forCallKitId callKitId: String) {
         NSObject.databaseStorage.write { tx in
-            if let groupModel = thread.groupModelIfGroupThread {
-                groupIdStore.setData(groupModel.groupId, key: callKitId, transaction: tx)
-                // This is probably overkill since we currently generate these IDs randomly,
-                // but better futureproof than sorry.
-                serviceIdStore.removeValue(forKey: callKitId, transaction: tx)
-                phoneNumberStore.removeValue(forKey: callKitId, transaction: tx)
-            } else if let contactThread = thread as? TSContactThread {
-                let address = contactThread.contactAddress
-                if let serviceIdString = address.serviceIdUppercaseString {
-                    serviceIdStore.setString(serviceIdString, key: callKitId, transaction: tx)
-                    phoneNumberStore.removeValue(forKey: callKitId, transaction: tx)
-                } else if let phoneNumber = address.phoneNumber {
-                    owsFailDebug("making a call to an address with no UUID")
-                    phoneNumberStore.setString(phoneNumber, key: callKitId, transaction: tx)
-                    serviceIdStore.removeValue(forKey: callKitId, transaction: tx)
-                } else {
-                    owsFailDebug("making a call to an address with no phone number or uuid")
-                }
-                groupIdStore.removeValue(forKey: callKitId, transaction: tx)
+            // Make sure it doesn't exist, but only in DEBUG builds.
+            assert(!phoneNumberStore.hasValue(forKey: callKitId, transaction: tx))
+            assert(!serviceIdStore.hasValue(forKey: callKitId, transaction: tx))
+            assert(!groupIdStore.hasValue(forKey: callKitId, transaction: tx))
+            assert(!callLinkStore.hasValue(forKey: callKitId, transaction: tx))
+
+            groupIdStore.setData(thread.groupModel.groupId, key: callKitId, transaction: tx)
+        }
+    }
+
+    static func setContactThread(_ thread: TSContactThread, forCallKitId callKitId: String) {
+        NSObject.databaseStorage.write { tx in
+            // Make sure it doesn't exist, but only in DEBUG builds.
+            assert(!phoneNumberStore.hasValue(forKey: callKitId, transaction: tx))
+            assert(!serviceIdStore.hasValue(forKey: callKitId, transaction: tx))
+            assert(!groupIdStore.hasValue(forKey: callKitId, transaction: tx))
+            assert(!callLinkStore.hasValue(forKey: callKitId, transaction: tx))
+
+            let address = thread.contactAddress
+            if let serviceIdString = address.serviceIdUppercaseString {
+                serviceIdStore.setString(serviceIdString, key: callKitId, transaction: tx)
+            } else if let phoneNumber = address.phoneNumber {
+                owsFailDebug("making a call to an address with no UUID")
+                phoneNumberStore.setString(phoneNumber, key: callKitId, transaction: tx)
             } else {
-                owsFailDebug("Unexpected type of thread: \(type(of: thread))")
+                owsFailDebug("making a call to an address with no phone number or uuid")
             }
+        }
+    }
+
+    static func setCallLink(_ callLink: CallLink, forCallKitId callKitId: String) {
+        NSObject.databaseStorage.write { tx in
+            // Make sure it doesn't exist, but only in DEBUG builds.
+            assert(!phoneNumberStore.hasValue(forKey: callKitId, transaction: tx))
+            assert(!serviceIdStore.hasValue(forKey: callKitId, transaction: tx))
+            assert(!groupIdStore.hasValue(forKey: callKitId, transaction: tx))
+            // Call Links may be stored multiple times...
+
+            callLinkStore.setData(callLink.rootKey.bytes, key: callKitId, transaction: tx)
         }
     }
 
