@@ -117,7 +117,7 @@ final class CallKitCallManager {
 
     // MARK: Actions
 
-    func startCall(_ call: SignalCall) {
+    func startOutgoingCall(_ call: SignalCall) {
         let handle = createCallHandleWithSneakyTransaction(for: call)
         let startCallAction = CXStartCallAction(call: call.localId, handle: handle)
 

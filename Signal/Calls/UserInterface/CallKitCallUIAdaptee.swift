@@ -136,7 +136,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         // So we can find it in the provider delegate callbacks.
         Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
             self.callManager.addCall(call)
-            self.callManager.startCall(call)
+            self.callManager.startOutgoingCall(call)
         }
     }
 
