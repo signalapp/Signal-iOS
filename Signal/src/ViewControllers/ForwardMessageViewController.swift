@@ -333,12 +333,16 @@ extension ForwardMessageViewController {
                 let sortedItems = content.allItems.sorted { lhs, rhs in
                     lhs.interaction?.timestamp ?? 0 < rhs.interaction?.timestamp ?? 0
                 }
-                let promises: [Promise<Void>] = sortedItems.map { item in
-                    self.send(item: item, toOutgoingMessageRecipientThreads: outgoingMessageRecipientThreads)
+                // _Enqueue_ each item serially.
+                // Each item waits on the previous' enqueue promise, then sets its own
+                // enqueue promise as the previous promise var.
+                var prevEnqueuePromise = Promise<Void>.value(())
+                for item in sortedItems {
+                    prevEnqueuePromise = prevEnqueuePromise.then(on: DispatchQueue.main) {
+                        return self.send(item: item, toOutgoingMessageRecipientThreads: outgoingMessageRecipientThreads)
+                    }
                 }
-                return firstly(on: DispatchQueue.main) { () -> Promise<Void> in
-                    Promise.when(resolved: promises).asVoid()
-                }.then(on: DispatchQueue.main) { _ -> Promise<Void> in
+                return prevEnqueuePromise.then(on: DispatchQueue.main) { _ -> Promise<Void> in
                     // The user may have added an additional text message to the forward.
                     // It should be sent last.
                     if let textMessage = textMessage {
