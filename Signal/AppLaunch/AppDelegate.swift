@@ -1286,108 +1286,26 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             }
             return true
         case "INStartVideoCallIntent":
-            let intent = userActivity.interaction?.intent
-            guard let intent = intent as? INStartVideoCallIntent else {
-                owsFailDebug("Wrong type for intent: \(type(of: intent))")
-                return false
-            }
-            guard let handle = intent.contacts?.first?.personHandle?.value else {
-                owsFailDebug("Missing handle for intent")
-                return false
-            }
-            AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-                let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-                guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-                    Logger.warn("Ignoring user activity; not registered.")
-                    return
-                }
-                guard let thread = CallKitCallManager.threadForHandleWithSneakyTransaction(handle) else {
-                    Logger.warn("Ignoring user activity; unknown user.")
-                    return
-                }
-
-                // This intent can be received from more than one user interaction.
-                //
-                // * It can be received if the user taps the "video" button in the CallKit UI for an
-                //   an ongoing call.  If so, the correct response is to try to activate the local
-                //   video for that call.
-                // * It can be received if the user taps the "video" button for a contact in the
-                //   contacts app.  If so, the correct response is to try to initiate a new call
-                //   to that user - unless there already is another call in progress.
-                let callService = AppEnvironment.shared.callService!
-                if let currentCall = callService.callServiceState.currentCall {
-                    switch currentCall.mode {
-                    case .individual(let call) where thread.uniqueId == call.thread.uniqueId:
-                        Logger.info("Upgrading existing call to video")
-                        callService.updateIsLocalVideoMuted(isLocalVideoMuted: false)
-                    case .individual, .callLink:
-                        Logger.warn("Ignoring user activity; on another call.")
-                    case .groupThread:
-                        // TODO: It seems like this should be implemented.
-                        Logger.warn("Ignoring user activity; on another call.")
-                    }
-                    return
-                }
-                callService.initiateCall(thread: thread, isVideo: true)
-            }
-            return true
+            return handleStartCallIntent(
+                INStartVideoCallIntent.self,
+                userActivity: userActivity,
+                contacts: \.contacts,
+                isVideoCall: { _ in true }
+            )
         case "INStartAudioCallIntent":
-            let intent = userActivity.interaction?.intent
-            guard let intent = intent as? INStartAudioCallIntent else {
-                owsFailDebug("Wrong type for intent: \(type(of: intent))")
-                return false
-            }
-            guard let handle = intent.contacts?.first?.personHandle?.value else {
-                owsFailDebug("Missing handle for intent")
-                return false
-            }
-            AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-                let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-                guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-                    Logger.warn("Ignoring user activity; not registered.")
-                    return
-                }
-                guard let thread = CallKitCallManager.threadForHandleWithSneakyTransaction(handle) else {
-                    Logger.warn("Ignoring user activity; unknown user.")
-                    return
-                }
-                let callService = AppEnvironment.shared.callService!
-                if callService.callServiceState.currentCall != nil {
-                    Logger.warn("Ignoring user activity; on another call.")
-                    return
-                }
-                callService.initiateCall(thread: thread, isVideo: false)
-            }
-            return true
+            return handleStartCallIntent(
+                INStartAudioCallIntent.self,
+                userActivity: userActivity,
+                contacts: \.contacts,
+                isVideoCall: { _ in false }
+            )
         case "INStartCallIntent":
-            let intent = userActivity.interaction?.intent
-            guard let intent = intent as? INStartCallIntent else {
-                owsFailDebug("Wrong type for intent: \(type(of: intent))")
-                return false
-            }
-            guard let handle = intent.contacts?.first?.personHandle?.value else {
-                owsFailDebug("Missing handle for intent")
-                return false
-            }
-            let isVideo = intent.callCapability == .videoCall
-            AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-                let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-                guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-                    Logger.warn("Ignoring user activity; not registered.")
-                    return
-                }
-                guard let thread = CallKitCallManager.threadForHandleWithSneakyTransaction(handle) else {
-                    Logger.warn("Ignoring user activity; unknown user.")
-                    return
-                }
-                let callService = AppEnvironment.shared.callService!
-                if callService.callServiceState.currentCall != nil {
-                    Logger.warn("Ignoring user activity; on another call.")
-                    return
-                }
-                callService.initiateCall(thread: thread, isVideo: isVideo)
-            }
-            return true
+            return handleStartCallIntent(
+                INStartCallIntent.self,
+                userActivity: userActivity,
+                contacts: \.contacts,
+                isVideoCall: { $0.callCapability == .videoCall }
+            )
         case NSUserActivityTypeBrowsingWeb:
             guard let webpageUrl = userActivity.webpageURL else {
                 owsFailDebug("Missing webpageUrl.")
@@ -1397,6 +1315,56 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         default:
             return false
         }
+    }
+
+    private func handleStartCallIntent<T: INIntent>(
+        _ intentType: T.Type,
+        userActivity: NSUserActivity,
+        contacts: KeyPath<T, [INPerson]?>,
+        isVideoCall: (T) -> Bool
+    ) -> Bool {
+        let intent = userActivity.interaction?.intent
+        guard let intent = intent as? T else {
+            owsFailDebug("Wrong type for intent: \(type(of: intent))")
+            return false
+        }
+        guard let handle = intent[keyPath: contacts]?.first?.personHandle?.value else {
+            owsFailDebug("Missing handle for intent")
+            return false
+        }
+        let isVideo = isVideoCall(intent)
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
+                Logger.warn("Ignoring user activity; not registered.")
+                return
+            }
+            guard let thread = CallKitCallManager.threadForHandleWithSneakyTransaction(handle) else {
+                Logger.warn("Ignoring user activity; unknown user.")
+                return
+            }
+            // This intent can be received from more than one user interaction.
+            //
+            // * It can be received if the user taps the "video" button in the CallKit
+            // UI for an an ongoing call. If so, the correct response is to try to
+            // activate the local video for that call.
+            //
+            // * It can be received if the user taps the "video" button for a contact
+            // in the contacts app. If so, the correct response is to try to initiate a
+            // new call to that user - unless there is another call in progress.
+            let callService = AppEnvironment.shared.callService!
+            if let currentCall = callService.callServiceState.currentCall {
+                if isVideo, case .individual(let call) = currentCall.mode, call.thread.uniqueId == thread.uniqueId {
+                    Logger.info("Upgrading existing call to video")
+                    callService.updateIsLocalVideoMuted(isLocalVideoMuted: false)
+                } else {
+                    Logger.warn("Ignoring user activity; already on another call")
+                }
+                return
+            }
+            callService.initiateCall(thread: thread, isVideo: isVideo)
+        }
+        return true
     }
 
     // MARK: - Events
