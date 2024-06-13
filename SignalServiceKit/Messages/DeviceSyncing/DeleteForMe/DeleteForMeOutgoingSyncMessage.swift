@@ -80,14 +80,14 @@ class DeleteForMeOutgoingSyncMessage: OWSOutgoingSyncMessage {
 
 extension DeleteForMeSyncMessage.Outgoing {
     enum ConversationIdentifier: Codable {
-        case threadAci(aci: String)
+        case threadServiceId(serviceId: String)
         case threadE164(e164: String)
         case threadGroupId(groupId: Data)
 
         fileprivate var asProto: SSKProtoSyncMessageDeleteForMeConversationIdentifier {
             let protoBuilder = SSKProtoSyncMessageDeleteForMeConversationIdentifier.builder()
             switch self {
-            case .threadAci(let aci): protoBuilder.setThreadAci(aci)
+            case .threadServiceId(let serviceId): protoBuilder.setThreadServiceID(serviceId)
             case .threadE164(let e164): protoBuilder.setThreadE164(e164)
             case .threadGroupId(let groupId): protoBuilder.setThreadGroupID(groupId)
             }
@@ -97,7 +97,11 @@ extension DeleteForMeSyncMessage.Outgoing {
 
     struct AddressableMessage: Codable {
         enum Author: Codable {
+            /// The author's ACI. Note that the author of a message must be an
+            /// ACI, never a PNI.
             case aci(aci: String)
+            /// The author's E164, if their ACI is absent. This should only be
+            /// relevant for old (pre-ACI) messages.
             case e164(e164: String)
         }
 
@@ -125,7 +129,7 @@ extension DeleteForMeSyncMessage.Outgoing {
             let protoBuilder = SSKProtoSyncMessageDeleteForMeAddressableMessage.builder()
             protoBuilder.setSentTimestamp(sentTimestamp)
             switch author {
-            case .aci(let aci): protoBuilder.setAuthorAci(aci)
+            case .aci(let aci): protoBuilder.setAuthorServiceID(aci)
             case .e164(let e164): protoBuilder.setAuthorE164(e164)
             }
             return protoBuilder.buildInfallibly()

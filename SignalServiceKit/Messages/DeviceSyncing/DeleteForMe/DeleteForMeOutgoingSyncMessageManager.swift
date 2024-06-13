@@ -210,10 +210,9 @@ final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMe
     ) -> Outgoing.ConversationIdentifier? {
         if
             let contactThread = thread as? TSContactThread,
-            let contactAci = recipientDatabaseTable.fetchServiceId(contactThread: contactThread, tx: tx) as? Aci
+            let contactServiceId = recipientDatabaseTable.fetchServiceId(contactThread: contactThread, tx: tx)
         {
-            // [DeleteForMe] What if the service ID is a PNI? Will we always have the E164 then?
-            return .threadAci(aci: contactAci.serviceIdUppercaseString)
+            return .threadServiceId(serviceId: contactServiceId.serviceIdUppercaseString)
         } else if
             let contactThread = thread as? TSContactThread,
             let contactE164 = contactThread.contactPhoneNumber
@@ -367,7 +366,7 @@ open class MockDeleteForMeOutgoingSyncMessageManager: DeleteForMeOutgoingSyncMes
 
     public func buildThreadDeletionContext(thread: TSThread, isFullDelete: Bool, tx: any DBReadTransaction) -> Outgoing.ThreadDeletionContext? {
         let conversationIdentifier: Outgoing.ConversationIdentifier = if let contactThread = thread as? TSContactThread {
-            .threadAci(aci: contactThread.contactUUID!)
+            .threadServiceId(serviceId: contactThread.contactUUID!)
         } else if let groupThread = thread as? TSGroupThread {
             .threadGroupId(groupId: groupThread.groupId)
         } else {

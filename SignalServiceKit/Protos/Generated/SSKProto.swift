@@ -13188,15 +13188,15 @@ public class SSKProtoSyncMessageDeleteForMeConversationIdentifier: NSObject, Cod
     fileprivate let proto: SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier
 
     @objc
-    public var threadAci: String? {
-        guard hasThreadAci else {
+    public var threadServiceID: String? {
+        guard hasThreadServiceID else {
             return nil
         }
-        return proto.threadAci
+        return proto.threadServiceID
     }
     @objc
-    public var hasThreadAci: Bool {
-        return proto.hasThreadAci
+    public var hasThreadServiceID: Bool {
+        return proto.hasThreadServiceID
     }
 
     @objc
@@ -13296,8 +13296,8 @@ extension SSKProtoSyncMessageDeleteForMeConversationIdentifier {
     @objc
     public func asBuilder() -> SSKProtoSyncMessageDeleteForMeConversationIdentifierBuilder {
         let builder = SSKProtoSyncMessageDeleteForMeConversationIdentifierBuilder()
-        if let _value = threadAci {
-            builder.setThreadAci(_value)
+        if let _value = threadServiceID {
+            builder.setThreadServiceID(_value)
         }
         if let _value = threadGroupID {
             builder.setThreadGroupID(_value)
@@ -13322,13 +13322,13 @@ public class SSKProtoSyncMessageDeleteForMeConversationIdentifierBuilder: NSObje
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setThreadAci(_ valueParam: String?) {
+    public func setThreadServiceID(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        proto.threadAci = valueParam
+        proto.threadServiceID = valueParam
     }
 
-    public func setThreadAci(_ valueParam: String) {
-        proto.threadAci = valueParam
+    public func setThreadServiceID(_ valueParam: String) {
+        proto.threadServiceID = valueParam
     }
 
     @objc
@@ -13402,15 +13402,15 @@ public class SSKProtoSyncMessageDeleteForMeAddressableMessage: NSObject, Codable
     fileprivate let proto: SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage
 
     @objc
-    public var authorAci: String? {
-        guard hasAuthorAci else {
+    public var authorServiceID: String? {
+        guard hasAuthorServiceID else {
             return nil
         }
-        return proto.authorAci
+        return proto.authorServiceID
     }
     @objc
-    public var hasAuthorAci: Bool {
-        return proto.hasAuthorAci
+    public var hasAuthorServiceID: Bool {
+        return proto.hasAuthorServiceID
     }
 
     @objc
@@ -13507,8 +13507,8 @@ extension SSKProtoSyncMessageDeleteForMeAddressableMessage {
     @objc
     public func asBuilder() -> SSKProtoSyncMessageDeleteForMeAddressableMessageBuilder {
         let builder = SSKProtoSyncMessageDeleteForMeAddressableMessageBuilder()
-        if let _value = authorAci {
-            builder.setAuthorAci(_value)
+        if let _value = authorServiceID {
+            builder.setAuthorServiceID(_value)
         }
         if let _value = authorE164 {
             builder.setAuthorE164(_value)
@@ -13533,13 +13533,13 @@ public class SSKProtoSyncMessageDeleteForMeAddressableMessageBuilder: NSObject {
 
     @objc
     @available(swift, obsoleted: 1.0)
-    public func setAuthorAci(_ valueParam: String?) {
+    public func setAuthorServiceID(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        proto.authorAci = valueParam
+        proto.authorServiceID = valueParam
     }
 
-    public func setAuthorAci(_ valueParam: String) {
-        proto.authorAci = valueParam
+    public func setAuthorServiceID(_ valueParam: String) {
+        proto.authorServiceID = valueParam
     }
 
     @objc

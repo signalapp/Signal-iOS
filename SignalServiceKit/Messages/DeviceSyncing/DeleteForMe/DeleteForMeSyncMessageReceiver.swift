@@ -127,16 +127,16 @@ final class DeleteForMeSyncMessageReceiverImpl: DeleteForMeSyncMessageReceiver {
         guard let proto else { return nil }
 
         if
-            let threadAci = proto.threadAci.flatMap({ Aci.parseFrom(aciString: $0) })
+            let threadServiceId = proto.threadServiceID.flatMap({ try? ServiceId.parseFrom(serviceIdString: $0) })
         {
             if
                 let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx),
-                localIdentifiers.contains(serviceId: threadAci),
-                let localThread = threadStore.fetchContactThreads(serviceId: threadAci, tx: tx).first
+                localIdentifiers.contains(serviceId: threadServiceId),
+                let localThread = threadStore.fetchContactThreads(serviceId: threadServiceId, tx: tx).first
             {
                 return .localUser(localThread)
             } else if
-                let threadRecipient = recipientDatabaseTable.fetchRecipient(serviceId: threadAci, transaction: tx),
+                let threadRecipient = recipientDatabaseTable.fetchRecipient(serviceId: threadServiceId, transaction: tx),
                 let contactThread = threadStore.fetchContactThread(recipient: threadRecipient, tx: tx)
             {
                 return .contact(contactThread)
@@ -176,13 +176,13 @@ final class DeleteForMeSyncMessageReceiverImpl: DeleteForMeSyncMessageReceiver {
             let sentTimestamp = proto.sentTimestamp
             var author: AddressableMessage.Author?
 
-            if let authorAci = proto.authorAci.flatMap({ Aci.parseFrom(aciString: $0) }) {
+            if let authorServiceId = proto.authorServiceID.flatMap({ try? ServiceId.parseFrom(serviceIdString: $0) }) {
                 if
                     let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx),
-                    localIdentifiers.contains(serviceId: authorAci)
+                    localIdentifiers.contains(serviceId: authorServiceId)
                 {
                     author = .localUser
-                } else if let _author = recipientDatabaseTable.fetchRecipient(serviceId: authorAci, transaction: tx) {
+                } else if let _author = recipientDatabaseTable.fetchRecipient(serviceId: authorServiceId, transaction: tx) {
                     author = .otherUser(_author)
                 }
             } else if

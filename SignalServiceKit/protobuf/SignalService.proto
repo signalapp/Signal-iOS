@@ -654,7 +654,7 @@ message SyncMessage {
   message DeleteForMe {
     message ConversationIdentifier {
       // oneof identifier {
-        optional string threadAci = 1;
+        optional string threadServiceId = 1;
         optional bytes threadGroupId = 2;
         optional string threadE164 = 3;
       // }
@@ -662,7 +662,7 @@ message SyncMessage {
 
     message AddressableMessage {
       // oneof author {
-        optional string authorAci = 1;
+        optional string authorServiceId = 1;
         optional string authorE164 = 2;
       // }
       optional uint64 sentTimestamp = 3;

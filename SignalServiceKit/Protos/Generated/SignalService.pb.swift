@@ -3762,14 +3762,14 @@ struct SignalServiceProtos_SyncMessage {
       // methods supported on all messages.
 
       /// oneof identifier {
-      var threadAci: String {
-        get {return _threadAci ?? String()}
-        set {_threadAci = newValue}
+      var threadServiceID: String {
+        get {return _threadServiceID ?? String()}
+        set {_threadServiceID = newValue}
       }
-      /// Returns true if `threadAci` has been explicitly set.
-      var hasThreadAci: Bool {return self._threadAci != nil}
-      /// Clears the value of `threadAci`. Subsequent reads from it will return its default value.
-      mutating func clearThreadAci() {self._threadAci = nil}
+      /// Returns true if `threadServiceID` has been explicitly set.
+      var hasThreadServiceID: Bool {return self._threadServiceID != nil}
+      /// Clears the value of `threadServiceID`. Subsequent reads from it will return its default value.
+      mutating func clearThreadServiceID() {self._threadServiceID = nil}
 
       var threadGroupID: Data {
         get {return _threadGroupID ?? Data()}
@@ -3794,7 +3794,7 @@ struct SignalServiceProtos_SyncMessage {
 
       init() {}
 
-      fileprivate var _threadAci: String? = nil
+      fileprivate var _threadServiceID: String? = nil
       fileprivate var _threadGroupID: Data? = nil
       fileprivate var _threadE164: String? = nil
     }
@@ -3805,14 +3805,14 @@ struct SignalServiceProtos_SyncMessage {
       // methods supported on all messages.
 
       /// oneof author {
-      var authorAci: String {
-        get {return _authorAci ?? String()}
-        set {_authorAci = newValue}
+      var authorServiceID: String {
+        get {return _authorServiceID ?? String()}
+        set {_authorServiceID = newValue}
       }
-      /// Returns true if `authorAci` has been explicitly set.
-      var hasAuthorAci: Bool {return self._authorAci != nil}
-      /// Clears the value of `authorAci`. Subsequent reads from it will return its default value.
-      mutating func clearAuthorAci() {self._authorAci = nil}
+      /// Returns true if `authorServiceID` has been explicitly set.
+      var hasAuthorServiceID: Bool {return self._authorServiceID != nil}
+      /// Clears the value of `authorServiceID`. Subsequent reads from it will return its default value.
+      mutating func clearAuthorServiceID() {self._authorServiceID = nil}
 
       var authorE164: String {
         get {return _authorE164 ?? String()}
@@ -3837,7 +3837,7 @@ struct SignalServiceProtos_SyncMessage {
 
       init() {}
 
-      fileprivate var _authorAci: String? = nil
+      fileprivate var _authorServiceID: String? = nil
       fileprivate var _authorE164: String? = nil
       fileprivate var _sentTimestamp: UInt64? = nil
     }
@@ -8660,7 +8660,7 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe: SwiftProtobuf.Message, Sw
 extension SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.DeleteForMe.protoMessageName + ".ConversationIdentifier"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "threadAci"),
+    1: .same(proto: "threadServiceId"),
     2: .same(proto: "threadGroupId"),
     3: .same(proto: "threadE164"),
   ]
@@ -8671,7 +8671,7 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier: Sw
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self._threadAci) }()
+      case 1: try { try decoder.decodeSingularStringField(value: &self._threadServiceID) }()
       case 2: try { try decoder.decodeSingularBytesField(value: &self._threadGroupID) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self._threadE164) }()
       default: break
@@ -8684,7 +8684,7 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier: Sw
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
     // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._threadAci {
+    try { if let v = self._threadServiceID {
       try visitor.visitSingularStringField(value: v, fieldNumber: 1)
     } }()
     try { if let v = self._threadGroupID {
@@ -8697,7 +8697,7 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier: Sw
   }
 
   static func ==(lhs: SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier, rhs: SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier) -> Bool {
-    if lhs._threadAci != rhs._threadAci {return false}
+    if lhs._threadServiceID != rhs._threadServiceID {return false}
     if lhs._threadGroupID != rhs._threadGroupID {return false}
     if lhs._threadE164 != rhs._threadE164 {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -8708,7 +8708,7 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier: Sw
 extension SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.DeleteForMe.protoMessageName + ".AddressableMessage"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "authorAci"),
+    1: .same(proto: "authorServiceId"),
     2: .same(proto: "authorE164"),
     3: .same(proto: "sentTimestamp"),
   ]
@@ -8719,7 +8719,7 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage: SwiftP
       // allocates stack space for every case branch when no optimizations are
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self._authorAci) }()
+      case 1: try { try decoder.decodeSingularStringField(value: &self._authorServiceID) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self._authorE164) }()
       case 3: try { try decoder.decodeSingularUInt64Field(value: &self._sentTimestamp) }()
       default: break
@@ -8732,7 +8732,7 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage: SwiftP
     // allocates stack space for every if/case branch local when no optimizations
     // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
     // https://github.com/apple/swift-protobuf/issues/1182
-    try { if let v = self._authorAci {
+    try { if let v = self._authorServiceID {
       try visitor.visitSingularStringField(value: v, fieldNumber: 1)
     } }()
     try { if let v = self._authorE164 {
@@ -8745,7 +8745,7 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage: SwiftP
   }
 
   static func ==(lhs: SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage, rhs: SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage) -> Bool {
-    if lhs._authorAci != rhs._authorAci {return false}
+    if lhs._authorServiceID != rhs._authorServiceID {return false}
     if lhs._authorE164 != rhs._authorE164 {return false}
     if lhs._sentTimestamp != rhs._sentTimestamp {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
