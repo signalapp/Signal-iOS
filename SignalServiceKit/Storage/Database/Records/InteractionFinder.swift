@@ -230,8 +230,7 @@ public class InteractionFinder: NSObject {
         let sql = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
-            WHERE \(interactionColumn: .expiresInSeconds) > 0
-            AND \(interactionColumn: .expiresAt) > 0
+            WHERE \(interactionColumn: .expiresAt) > 0
             ORDER BY \(interactionColumn: .expiresAt)
         """
         let cursor = TSInteraction.grdbFetchCursor(
