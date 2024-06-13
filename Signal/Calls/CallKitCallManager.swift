@@ -23,11 +23,11 @@ final class CallKitCallManager {
     let showNamesOnCallScreen: Bool
 
     static let kAnonymousCallHandlePrefix = "Signal:"
-    static let kGroupCallHandlePrefix = "SignalGroup:"
+    static let kGroupThreadCallHandlePrefix = "SignalGroup:"
 
     private static func decodeGroupId(fromIntentHandle handle: String) -> Data? {
-        let prefix = handle.prefix(kGroupCallHandlePrefix.count)
-        guard prefix == kGroupCallHandlePrefix else {
+        let prefix = handle.prefix(kGroupThreadCallHandlePrefix.count)
+        guard prefix == kGroupThreadCallHandlePrefix else {
             return nil
         }
         do {
@@ -71,7 +71,7 @@ final class CallKitCallManager {
                 value = callKitId
             } else {
                 type = .generic
-                value = Self.kGroupCallHandlePrefix + groupThreadCall.groupThread.groupModel.groupId.asBase64Url
+                value = Self.kGroupThreadCallHandlePrefix + groupThreadCall.groupThread.groupModel.groupId.asBase64Url
             }
         case .callLink:
             owsFail("[CallLink] TODO: Create CallKit handles for Call Link calls")
