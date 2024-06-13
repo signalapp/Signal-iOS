@@ -45,31 +45,31 @@ public class ParamParser {
 
     // MARK: Errors
 
-    public enum ParseError: Error, CustomStringConvertible {
+    private enum ParseError: Error, CustomStringConvertible {
         case missingField(Key)
-        case invalidFormat(_ key: Key, description: String? = nil)
+        case invalidType(Key, expectedType: Any.Type, actualType: Any.Type)
+        case intValueOutOfBounds(Key)
+        case invalidUuidString(Key)
+        case invalidBase64DataString(Key)
 
-        public var description: String {
+        var description: String {
             switch self {
             case .missingField(let key):
-                return "ParseError: missing field for \(key)"
-            case .invalidFormat(let key, let description):
-                if let description = description {
-                    return "ParseError: invalid format for \(key) - \(description)"
-                } else {
-                    return "ParseError: invalid format for \(key)"
-                }
+                return "ParseError: Missing field for key \(key)!"
+            case .invalidType(let key, let expectedType, let actualType):
+                return "ParseError: Invalid type for key \(key)! Expected \(expectedType), found \(actualType)"
+            case .intValueOutOfBounds(let key):
+                return "ParseError: Int value was out of bounds for key \(key)!"
+            case .invalidUuidString(let key):
+                return "ParseError: Invalid UUID string for key \(key)!"
+            case .invalidBase64DataString(let key):
+                return "ParseError: Invalid base64 data string for key \(key)!"
             }
         }
     }
 
-    private func badCast<T>(key: Key, type: T.Type) -> ParseError {
-        let description = "Could not cast result to expected type: \(T.self)."
-        return ParseError.invalidFormat(key, description: description)
-    }
-
-    private func invalid(key: Key) -> ParseError {
-        return ParseError.invalidFormat(key)
+    private func badCast<T>(key: Key, expectedType: T.Type, castTarget: Any) -> ParseError {
+        return .invalidType(key, expectedType: expectedType, actualType: type(of: castTarget))
     }
 
     private func missing(key: Key) -> ParseError {
@@ -96,7 +96,7 @@ public class ParamParser {
         }
 
         guard let typedValue = someValue as? T else {
-            throw badCast(key: key, type: T.self)
+            throw badCast(key: key, expectedType: T.self, castTarget: someValue)
         }
 
         return typedValue
@@ -129,11 +129,11 @@ public class ParamParser {
             return typedValue
         case let int as Int:
             guard int >= T.min, int <= T.max else {
-                throw badCast(key: key, type: T.self)
+                throw ParseError.intValueOutOfBounds(key)
             }
             return T(int)
         default:
-            throw badCast(key: key, type: T.self)
+            throw badCast(key: key, expectedType: T.self, castTarget: someValue)
         }
     }
 
@@ -153,7 +153,7 @@ public class ParamParser {
         }
 
         guard let uuid = UUID(uuidString: uuidString) else {
-            throw invalid(key: key)
+            throw ParseError.invalidUuidString(key)
         }
 
         return uuid
@@ -161,27 +161,21 @@ public class ParamParser {
 
     // MARK: Base64 Data
 
-    public func requiredBase64EncodedData(key: Key, byteCount: Int? = nil) throws -> Data {
-        guard let data: Data = try optionalBase64EncodedData(key: key, byteCount: byteCount) else {
+    public func requiredBase64EncodedData(key: Key) throws -> Data {
+        guard let data: Data = try optionalBase64EncodedData(key: key) else {
             throw ParseError.missingField(key)
         }
 
         return data
     }
 
-    public func optionalBase64EncodedData(key: Key, byteCount: Int? = nil) throws -> Data? {
+    public func optionalBase64EncodedData(key: Key) throws -> Data? {
         guard let encodedData: String = try self.optional(key: key) else {
             return nil
         }
 
         guard let data = Data(base64Encoded: encodedData) else {
-            throw ParseError.invalidFormat(key)
-        }
-
-        if let byteCount = byteCount {
-            guard data.count == byteCount else {
-                throw ParseError.invalidFormat(key, description: "expected byteCount: \(byteCount) but found: \(data.count)")
-            }
+            throw ParseError.invalidBase64DataString(key)
         }
 
         guard data.count > 0 else {

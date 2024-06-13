@@ -390,14 +390,10 @@ public class MessageFetcherJob: NSObject {
 
             let typeInt: Int32 = try params.required(key: "type")
             guard let type: SSKProtoEnvelopeType = SSKProtoEnvelopeType(rawValue: typeInt) else {
-                Logger.error("`type` was invalid: \(typeInt)")
-                throw ParamParser.ParseError.invalidFormat("type")
+                throw OWSAssertionError("Invalid envelope type: \(typeInt)")
             }
 
-            guard let timestamp: UInt64 = try params.required(key: "timestamp") else {
-                Logger.error("`timestamp` was invalid: \(typeInt)")
-                throw ParamParser.ParseError.invalidFormat("timestamp")
-            }
+            let timestamp: UInt64 = try params.required(key: "timestamp")
 
             let builder = SSKProtoEnvelope.builder(timestamp: timestamp)
             builder.setType(type)

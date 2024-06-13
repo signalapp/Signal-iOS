@@ -26,27 +26,12 @@ class ParamParserTest: XCTestCase {
     }
 
     func testCastingFailures() {
-        // Required
-        do {
+        XCTAssertThrowsError(try {
             let _: Int = try parser.required(key: "some_string")
-            XCTFail("Expected last statement to throw")
-        } catch ParamParser.ParseError.invalidFormat(let key, let description) {
-            XCTAssertEqual(key, "some_string")
-            XCTAssertNotNil(description, "Expected description string explaining failed cast")
-        } catch {
-            XCTFail("Unexpected error: \(error)")
-        }
-
-        // Optional
-        do {
+        }())
+        XCTAssertThrowsError(try {
             let _: Int? = try parser.optional(key: "some_string")
-            XCTFail("Expected last statement to throw")
-        } catch ParamParser.ParseError.invalidFormat(let key, let description) {
-            XCTAssertEqual(key, "some_string")
-            XCTAssertNotNil(description, "Expected description string explaining failed cast")
-        } catch {
-            XCTFail("Unexpected error: \(error)")
-        }
+        }())
     }
 
     func testNumeric() {
