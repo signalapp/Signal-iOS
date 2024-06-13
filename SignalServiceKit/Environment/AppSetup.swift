@@ -503,11 +503,15 @@ public class AppSetup {
             threadStore: threadStore
         )
 
+        let deleteForMeSyncMessageSettingsStore = DeleteForMeSyncMessageSettingsStoreImpl(
+            keyValueStoreFactory: keyValueStoreFactory
+        )
         let deleteForMeAddressableMessageFinder = DeleteForMeAddressableMessageFinderImpl(
             tsAccountManager: tsAccountManager
         )
         let deleteForMeOutgoingSyncMessageManager = DeleteForMeOutgoingSyncMessageManagerImpl(
             addressableMessageFinder: deleteForMeAddressableMessageFinder,
+            deleteForMeSyncMessageSettingsStore: deleteForMeSyncMessageSettingsStore,
             recipientDatabaseTable: recipientDatabaseTable,
             syncMessageSender: DeleteForMeOutgoingSyncMessageManagerImpl.Wrappers.SyncMessageSender(messageSenderJobQueue),
             threadStore: threadStore,
@@ -554,6 +558,7 @@ public class AppSetup {
 
         let threadSoftDeleteManager = ThreadSoftDeleteManagerImpl(
             deleteForMeOutgoingSyncMessageManager: deleteForMeOutgoingSyncMessageManager,
+            deleteForMeSyncMessageSettingsStore: deleteForMeSyncMessageSettingsStore,
             intentsManager: ThreadSoftDeleteManagerImpl.Wrappers.IntentsManager(),
             interactionDeleteManager: interactionDeleteManager,
             recipientDatabaseTable: recipientDatabaseTable,
@@ -984,6 +989,7 @@ public class AppSetup {
             deletedCallRecordCleanupManager: deletedCallRecordCleanupManager,
             deletedCallRecordStore: deletedCallRecordStore,
             deleteForMeIncomingSyncMessageManager: deleteForMeIncomingSyncMessageManager,
+            deleteForMeSyncMessageSettingsStore: deleteForMeSyncMessageSettingsStore,
             deviceManager: deviceManager,
             deviceStore: deviceStore,
             disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
@@ -1098,6 +1104,7 @@ public class AppSetup {
         let messageFetcherJob = MessageFetcherJob()
         let profileFetcher = ProfileFetcherImpl(
             db: db,
+            deleteForMeSyncMessageSettingsStore: deleteForMeSyncMessageSettingsStore,
             identityManager: identityManager,
             paymentsHelper: paymentsHelper,
             profileManager: profileManager,
@@ -1105,6 +1112,7 @@ public class AppSetup {
             recipientDatabaseTable: recipientDatabaseTable,
             recipientManager: recipientManager,
             recipientMerger: recipientMerger,
+            syncManager: syncManager,
             tsAccountManager: tsAccountManager,
             udManager: udManager,
             versionedProfiles: versionedProfiles

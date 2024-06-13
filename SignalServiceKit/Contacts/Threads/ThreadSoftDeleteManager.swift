@@ -40,6 +40,7 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
     }
 
     private let deleteForMeOutgoingSyncMessageManager: DeleteForMeOutgoingSyncMessageManager
+    private let deleteForMeSyncMessageSettingsStore: DeleteForMeSyncMessageSettingsStore
     private let intentsManager: Shims.IntentsManager
     private let interactionDeleteManager: InteractionDeleteManager
     private let recipientDatabaseTable: RecipientDatabaseTable
@@ -51,6 +52,7 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
 
     init(
         deleteForMeOutgoingSyncMessageManager: DeleteForMeOutgoingSyncMessageManager,
+        deleteForMeSyncMessageSettingsStore: DeleteForMeSyncMessageSettingsStore,
         intentsManager: Shims.IntentsManager,
         interactionDeleteManager: InteractionDeleteManager,
         recipientDatabaseTable: RecipientDatabaseTable,
@@ -59,6 +61,7 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
         tsAccountManager: TSAccountManager
     ) {
         self.deleteForMeOutgoingSyncMessageManager = deleteForMeOutgoingSyncMessageManager
+        self.deleteForMeSyncMessageSettingsStore = deleteForMeSyncMessageSettingsStore
         self.intentsManager = intentsManager
         self.interactionDeleteManager = interactionDeleteManager
         self.recipientDatabaseTable = recipientDatabaseTable
@@ -168,6 +171,9 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
     ) {
         let sdsTx = SDSDB.shimOnlyBridge(tx)
 
+        let isDeleteForMeSyncMessageSendingEnabled = deleteForMeSyncMessageSettingsStore
+            .isSendingEnabled(tx: tx)
+
         do {
             var moreInteractionsRemaining = true
             while moreInteractionsRemaining {
@@ -181,7 +187,7 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
                     )
 
                     let callDeleteBehavior: InteractionDelete.SideEffects.AssociatedCallDeleteBehavior = {
-                        if DeleteForMeSyncMessage.isSendingEnabled {
+                        if isDeleteForMeSyncMessageSendingEnabled {
                             /// If we're able to send a `DeleteForMe` sync
                             /// message, we don't need to send `CallEvent`s...
                             return .localDeleteOnly

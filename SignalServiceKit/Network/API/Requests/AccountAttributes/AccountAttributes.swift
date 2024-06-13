@@ -125,11 +125,15 @@ public struct AccountAttributes: Codable {
         public let pni = true
         public let paymentActivation = true
 
+        // [DeleteForMe] TODO: Toggle on once rollout plan is finalized.
+        public let deleteSyncSendSupport = false
+
         public enum CodingKeys: String, CodingKey {
             case transfer
             case hasSVRBackups = "storage"
             case pni
             case paymentActivation
+            case deleteSyncSendSupport = "deleteSync"
         }
 
         public init(hasSVRBackups: Bool) {

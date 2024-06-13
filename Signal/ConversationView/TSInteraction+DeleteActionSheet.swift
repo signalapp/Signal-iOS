@@ -10,10 +10,19 @@ import UIKit
 
 public extension TSInteraction {
     func presentDeletionActionSheet(from fromViewController: UIViewController, forceDarkTheme: Bool = false) {
-        let (associatedThread, hasLinkedDevices): (TSThread?, Bool) = databaseStorage.read { tx in
+        let (
+            associatedThread,
+            hasLinkedDevices,
+            isSendingDeleteForMeSyncMessagesEnabled
+        ): (
+            TSThread?,
+            Bool,
+            Bool
+        ) = databaseStorage.read { tx in
             return (
                 thread(tx: tx),
-                DependenciesBridge.shared.deviceStore.hasLinkedDevices(tx: tx.asV2Read)
+                DependenciesBridge.shared.deviceStore.hasLinkedDevices(tx: tx.asV2Read),
+                DependenciesBridge.shared.deleteForMeSyncMessageSettingsStore.isSendingEnabled(tx: tx.asV2Read)
             )
         }
 
@@ -22,7 +31,7 @@ public extension TSInteraction {
         if
             // We only want the new Note to Self delete UX if we're sending
             // DeleteForMe sync messages.
-            DeleteForMeSyncMessage.isSendingEnabled,
+            isSendingDeleteForMeSyncMessagesEnabled,
             associatedThread.isNoteToSelf
         {
             presentDeletionActionSheetForNoteToSelf(

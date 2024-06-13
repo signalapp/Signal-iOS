@@ -63,6 +63,7 @@ public class DependenciesBridge {
     public let deletedCallRecordCleanupManager: DeletedCallRecordCleanupManager
     let deletedCallRecordStore: DeletedCallRecordStore
     let deleteForMeIncomingSyncMessageManager: DeleteForMeIncomingSyncMessageManager
+    public let deleteForMeSyncMessageSettingsStore: DeleteForMeSyncMessageSettingsStore
     public let deviceManager: OWSDeviceManager
     public let deviceStore: OWSDeviceStore
     public let disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore
@@ -165,6 +166,7 @@ public class DependenciesBridge {
         deletedCallRecordCleanupManager: DeletedCallRecordCleanupManager,
         deletedCallRecordStore: DeletedCallRecordStore,
         deleteForMeIncomingSyncMessageManager: DeleteForMeIncomingSyncMessageManager,
+        deleteForMeSyncMessageSettingsStore: DeleteForMeSyncMessageSettingsStore,
         deviceManager: OWSDeviceManager,
         deviceStore: OWSDeviceStore,
         disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
@@ -264,6 +266,7 @@ public class DependenciesBridge {
         self.deletedCallRecordCleanupManager = deletedCallRecordCleanupManager
         self.deletedCallRecordStore = deletedCallRecordStore
         self.deleteForMeIncomingSyncMessageManager = deleteForMeIncomingSyncMessageManager
+        self.deleteForMeSyncMessageSettingsStore = deleteForMeSyncMessageSettingsStore
         self.deviceManager = deviceManager
         self.deviceStore = deviceStore
         self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore

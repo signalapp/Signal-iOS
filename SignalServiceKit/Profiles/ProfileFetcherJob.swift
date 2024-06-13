@@ -20,12 +20,14 @@ public class ProfileFetcherJob {
     private let authedAccount: AuthedAccount
 
     private let db: any DB
+    private let deleteForMeSyncMessageSettingsStore: any DeleteForMeSyncMessageSettingsStore
     private let identityManager: any OWSIdentityManager
     private let paymentsHelper: any PaymentsHelper
     private let profileManager: any ProfileManager
     private let recipientDatabaseTable: any RecipientDatabaseTable
     private let recipientManager: any SignalRecipientManager
     private let recipientMerger: any RecipientMerger
+    private let syncManager: any SyncManagerProtocol
     private let tsAccountManager: any TSAccountManager
     private let udManager: any OWSUDManager
     private let versionedProfiles: any VersionedProfilesSwift
@@ -34,12 +36,14 @@ public class ProfileFetcherJob {
         serviceId: ServiceId,
         authedAccount: AuthedAccount,
         db: any DB,
+        deleteForMeSyncMessageSettingsStore: any DeleteForMeSyncMessageSettingsStore,
         identityManager: any OWSIdentityManager,
         paymentsHelper: any PaymentsHelper,
         profileManager: any ProfileManager,
         recipientDatabaseTable: any RecipientDatabaseTable,
         recipientManager: any SignalRecipientManager,
         recipientMerger: any RecipientMerger,
+        syncManager: any SyncManagerProtocol,
         tsAccountManager: any TSAccountManager,
         udManager: any OWSUDManager,
         versionedProfiles: any VersionedProfilesSwift
@@ -47,12 +51,14 @@ public class ProfileFetcherJob {
         self.serviceId = serviceId
         self.authedAccount = authedAccount
         self.db = db
+        self.deleteForMeSyncMessageSettingsStore = deleteForMeSyncMessageSettingsStore
         self.identityManager = identityManager
         self.paymentsHelper = paymentsHelper
         self.profileManager = profileManager
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientManager = recipientManager
         self.recipientMerger = recipientMerger
+        self.syncManager = syncManager
         self.tsAccountManager = tsAccountManager
         self.udManager = udManager
         self.versionedProfiles = versionedProfiles
@@ -160,7 +166,10 @@ public class ProfileFetcherJob {
 
         let result = try await requestMaker.makeRequest().awaitable()
 
-        let profile = try SignalServiceProfile(serviceId: serviceId, responseObject: result.responseJson)
+        let profile: SignalServiceProfile = try .fromResponse(
+            serviceId: serviceId,
+            responseObject: result.responseJson
+        )
 
         // If we sent a versioned request, store the credential that was returned.
         if let versionedProfileRequest = currentVersionedProfileRequest {
@@ -335,6 +344,11 @@ public class ProfileFetcherJob {
             )
 
             if localIdentifiers.contains(serviceId: serviceId) {
+                self.updateLocalCapabilitiesIfNeeded(
+                    fetchedCapabilities: fetchedProfile.profile.capabilities,
+                    tx: transaction
+                )
+
                 self.reconcileLocalProfileIfNeeded(fetchedProfile: fetchedProfile)
             }
 
@@ -384,6 +398,28 @@ public class ProfileFetcherJob {
             return .enabled
         }()
         udManager.setUnidentifiedAccessMode(unidentifiedAccessMode, for: serviceId, tx: SDSDB.shimOnlyBridge(tx))
+    }
+
+    private func updateLocalCapabilitiesIfNeeded(
+        fetchedCapabilities: SignalServiceProfile.Capabilities,
+        tx: DBWriteTransaction
+    ) {
+        if
+            fetchedCapabilities.deleteSync,
+            !deleteForMeSyncMessageSettingsStore.isSendingEnabled(tx: tx)
+        {
+            deleteForMeSyncMessageSettingsStore.enableSending(tx: tx)
+
+            /// Now that the capability is enabled, we want to enable sending
+            /// not just on this device but on all our devices. To that end, we
+            /// can send a "fetch our latest profile" sync message to our other
+            /// devices, which will make them fetch the profile and learn that
+            /// they should also enable `DeleteForMe` sending.
+            ///
+            /// This would happen automatically the next time those devices
+            /// fetch the local profile, but we'd prefer it happen ASAP!
+            syncManager.sendFetchLatestProfileSyncMessage(tx: SDSDB.shimOnlyBridge(tx))
+        }
     }
 
     private func reconcileLocalProfileIfNeeded(fetchedProfile: FetchedProfile) {

@@ -58,17 +58,9 @@ public protocol DeleteForMeOutgoingSyncMessageManager {
     ) -> Outgoing.ThreadDeletionContext?
 }
 
-extension DeleteForMeSyncMessage {
-    /// Is sending a `DeleteForMe` sync message enabled at all?
-    public static var isSendingEnabled: Bool {
-        // [DeleteForMe] TODO: We can remove this 90d after release.
-        return FeatureFlags.shouldSendDeleteForMeSyncMessages
-            || RemoteConfig.shouldSendDeleteForMeSyncMessages
-    }
-}
-
 final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMessageManager {
     private let addressableMessageFinder: any DeleteForMeAddressableMessageFinder
+    private let deleteForMeSyncMessageSettingsStore: any DeleteForMeSyncMessageSettingsStore
     private let recipientDatabaseTable: any RecipientDatabaseTable
     private let syncMessageSender: any Shims.SyncMessageSender
     private let threadStore: any ThreadStore
@@ -78,12 +70,14 @@ final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMe
 
     init(
         addressableMessageFinder: any DeleteForMeAddressableMessageFinder,
+        deleteForMeSyncMessageSettingsStore: any DeleteForMeSyncMessageSettingsStore,
         recipientDatabaseTable: any RecipientDatabaseTable,
         syncMessageSender: any Shims.SyncMessageSender,
         threadStore: any ThreadStore,
         tsAccountManager: any TSAccountManager
     ) {
         self.addressableMessageFinder = addressableMessageFinder
+        self.deleteForMeSyncMessageSettingsStore = deleteForMeSyncMessageSettingsStore
         self.recipientDatabaseTable = recipientDatabaseTable
         self.syncMessageSender = syncMessageSender
         self.threadStore = threadStore
@@ -230,7 +224,7 @@ final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMe
         contents: DeleteForMeOutgoingSyncMessage.Contents,
         tx: any DBWriteTransaction
     ) {
-        guard DeleteForMeSyncMessage.isSendingEnabled else {
+        guard deleteForMeSyncMessageSettingsStore.isSendingEnabled(tx: tx) else {
             logger.warn("Skipping delete-for-me sync message, feature not enabled!")
             return
         }

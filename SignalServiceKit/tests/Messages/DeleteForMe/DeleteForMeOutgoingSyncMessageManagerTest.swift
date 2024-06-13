@@ -25,6 +25,7 @@ final class DeleteForMeOutgoingSyncMessageManagerTest: XCTestCase {
 
         outgoingSyncMessageManager = DeleteForMeOutgoingSyncMessageManagerImpl(
             addressableMessageFinder: mockAddressableMessageFinder,
+            deleteForMeSyncMessageSettingsStore: MockDeleteForMeSyncMessageSettingsStore(),
             recipientDatabaseTable: mockRecipientDatabaseTable,
             syncMessageSender: mockSyncMessageSender,
             threadStore: mockThreadStore,
@@ -110,6 +111,16 @@ private extension String {
 }
 
 // MARK: - Mocks
+
+private final class MockDeleteForMeSyncMessageSettingsStore: DeleteForMeSyncMessageSettingsStore {
+    func isSendingEnabled(tx: any DBReadTransaction) -> Bool {
+        return true
+    }
+
+    func enableSending(tx: any DBWriteTransaction) {
+        owsFail("Not implemented!")
+    }
+}
 
 private final class MockSyncMessageSender: DeleteForMeOutgoingSyncMessageManagerImpl.Shims.SyncMessageSender {
     var sendSyncMessageMock: ((

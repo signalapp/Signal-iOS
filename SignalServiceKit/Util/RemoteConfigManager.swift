@@ -286,10 +286,6 @@ public class RemoteConfig: NSObject {
         )
     }
 
-    public static var shouldSendDeleteForMeSyncMessages: Bool {
-        return isEnabled(.deleteForMeSyncMessageSending)
-    }
-
     // MARK: UInt values
 
     private static func getUIntValue(

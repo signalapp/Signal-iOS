@@ -6,10 +6,17 @@
 import Foundation
 import LibSignalClient
 
+/// Represents a user's profile as fetched from the service.
+///
+/// All non-capability fields are encrypted, and if present should be decrypted
+/// using this user's profile key.
 public class SignalServiceProfile {
+    private struct ValidationError: Error, CustomStringConvertible {
+        let description: String
+    }
 
-    public enum ValidationError: Error {
-        case invalid(description: String)
+    public struct Capabilities {
+        public let deleteSync: Bool
     }
 
     public let serviceId: ServiceId
@@ -25,83 +32,129 @@ public class SignalServiceProfile {
     public let badges: [(OWSUserProfileBadgeInfo, ProfileBadge)]
     public let phoneNumberSharingEncrypted: Data?
 
-    public init(serviceId: ServiceId, responseObject: Any?) throws {
+    public let capabilities: Capabilities
+
+    private init(
+        serviceId: ServiceId,
+        identityKey: IdentityKey,
+        profileNameEncrypted: Data?,
+        bioEncrypted: Data?,
+        bioEmojiEncrypted: Data?,
+        avatarUrlPath: String?,
+        paymentAddressEncrypted: Data?,
+        unidentifiedAccessVerifier: Data?,
+        hasUnrestrictedUnidentifiedAccess: Bool,
+        credential: Data?,
+        badges: [(OWSUserProfileBadgeInfo, ProfileBadge)],
+        phoneNumberSharingEncrypted: Data?,
+        capabilities: Capabilities
+    ) {
+        self.serviceId = serviceId
+        self.identityKey = identityKey
+        self.profileNameEncrypted = profileNameEncrypted
+        self.bioEncrypted = bioEncrypted
+        self.bioEmojiEncrypted = bioEmojiEncrypted
+        self.avatarUrlPath = avatarUrlPath
+        self.paymentAddressEncrypted = paymentAddressEncrypted
+        self.unidentifiedAccessVerifier = unidentifiedAccessVerifier
+        self.hasUnrestrictedUnidentifiedAccess = hasUnrestrictedUnidentifiedAccess
+        self.credential = credential
+        self.badges = badges
+        self.phoneNumberSharingEncrypted = phoneNumberSharingEncrypted
+        self.capabilities = capabilities
+    }
+
+    public static func fromResponse(serviceId: ServiceId, responseObject: Any?) throws -> SignalServiceProfile {
         guard let params = ParamParser(responseObject: responseObject) else {
-            throw ValidationError.invalid(description: "invalid response: \(String(describing: responseObject))")
+            throw ValidationError(description: "Invalid response JSON!")
         }
 
-        self.serviceId = serviceId
+        do {
+            let identityKey = try IdentityKey(bytes: try params.requiredBase64EncodedData(key: "identityKey"))
+            let profileNameEncrypted = try params.optionalBase64EncodedData(key: "name")
+            let bioEncrypted = try params.optionalBase64EncodedData(key: "about")
+            let bioEmojiEncrypted = try params.optionalBase64EncodedData(key: "aboutEmoji")
+            let avatarUrlPath: String? = try params.optional(key: "avatar")
+            let paymentAddressEncrypted = try params.optionalBase64EncodedData(key: "paymentAddress")
+            let unidentifiedAccessVerifier = try params.optionalBase64EncodedData(key: "unidentifiedAccess")
+            let hasUnrestrictedUnidentifiedAccess: Bool = try params.optional(key: "unrestrictedUnidentifiedAccess") ?? false
+            let credential = try params.optionalBase64EncodedData(key: "credential")
+            let badges: [(OWSUserProfileBadgeInfo, ProfileBadge)] = try parseBadges(params: params)
+            let phoneNumberSharingEncrypted = try params.optionalBase64EncodedData(key: "phoneNumberSharing")
+            let capabilities: Capabilities = try parseCapabilities(params: params)
 
-        self.identityKey = try IdentityKey(bytes: try params.requiredBase64EncodedData(key: "identityKey"))
-
-        self.profileNameEncrypted = try params.optionalBase64EncodedData(key: "name")
-
-        self.bioEncrypted = try params.optionalBase64EncodedData(key: "about")
-
-        self.bioEmojiEncrypted = try params.optionalBase64EncodedData(key: "aboutEmoji")
-
-        let avatarUrlPath: String? = try params.optional(key: "avatar")
-        self.avatarUrlPath = avatarUrlPath
-
-        self.paymentAddressEncrypted = try params.optionalBase64EncodedData(key: "paymentAddress")
-
-        self.unidentifiedAccessVerifier = try params.optionalBase64EncodedData(key: "unidentifiedAccess")
-
-        self.hasUnrestrictedUnidentifiedAccess = try params.optional(key: "unrestrictedUnidentifiedAccess") ?? false
-
-        self.credential = try params.optionalBase64EncodedData(key: "credential")
-
-        self.phoneNumberSharingEncrypted = try params.optionalBase64EncodedData(key: "phoneNumberSharing")
-
-        if let badgeArray: [[String: Any]] = try params.optional(key: "badges") {
-            self.badges = badgeArray.compactMap {
-                do {
-                    let badgeParams = ParamParser(dictionary: $0)
-                    let isVisible: Bool? = try badgeParams.optional(key: "visible")
-                    let expiration: TimeInterval? = try badgeParams.optional(key: "expiration")
-                    let expirationMills = expiration.flatMap { UInt64($0 * 1000) }
-
-                    let badge = try ProfileBadge(jsonDictionary: $0)
-                    let badgeMetadata: OWSUserProfileBadgeInfo
-                    if let expirationMills = expirationMills, let isVisible = isVisible {
-                        badgeMetadata = OWSUserProfileBadgeInfo(badgeId: badge.id, expiration: expirationMills, isVisible: isVisible)
-                    } else {
-                        badgeMetadata = OWSUserProfileBadgeInfo(badgeId: badge.id)
-                    }
-                    return (badgeMetadata, badge)
-                } catch {
-                    owsFailDebug("Invalid badge: \(error)")
-                    return nil
-                }
-            }
-        } else {
-            self.badges = []
+            return SignalServiceProfile(
+                serviceId: serviceId,
+                identityKey: identityKey,
+                profileNameEncrypted: profileNameEncrypted,
+                bioEncrypted: bioEncrypted,
+                bioEmojiEncrypted: bioEmojiEncrypted,
+                avatarUrlPath: avatarUrlPath,
+                paymentAddressEncrypted: paymentAddressEncrypted,
+                unidentifiedAccessVerifier: unidentifiedAccessVerifier,
+                hasUnrestrictedUnidentifiedAccess: hasUnrestrictedUnidentifiedAccess,
+                credential: credential,
+                badges: badges,
+                phoneNumberSharingEncrypted: phoneNumberSharingEncrypted,
+                capabilities: capabilities
+            )
+        } catch let error {
+            throw ValidationError(description: "Failed to parse profile JSON: \(error)")
         }
     }
 
-    private static func parseCapabilityFlag(capabilityKey: String,
-                                            params: ParamParser,
-                                            requireCapability: Bool) -> Bool {
-        do {
-            let capabilitiesJson: Any? = try params.required(key: "capabilities")
-            if let capabilities = ParamParser(responseObject: capabilitiesJson) {
-                if let value: Bool = try capabilities.optional(key: capabilityKey) {
-                    return value
+    private static func parseBadges(params: ParamParser) throws -> [(OWSUserProfileBadgeInfo, ProfileBadge)] {
+        if let badgeArray: [[String: Any]] = try params.optional(key: "badges") {
+            return try badgeArray.compactMap { badgeDict in
+                let badgeParams = ParamParser(dictionary: badgeDict)
+                let isVisible: Bool? = try badgeParams.optional(key: "visible")
+                let expiration: TimeInterval? = try badgeParams.optional(key: "expiration")
+                let expirationMills = expiration.flatMap { UInt64($0 * 1000) }
+
+                let badge = try ProfileBadge(jsonDictionary: badgeDict)
+                let badgeMetadata: OWSUserProfileBadgeInfo
+                if let expirationMills = expirationMills, let isVisible = isVisible {
+                    badgeMetadata = OWSUserProfileBadgeInfo(badgeId: badge.id, expiration: expirationMills, isVisible: isVisible)
                 } else {
-                    if requireCapability {
-                        owsFailDebug("Missing capability: \(capabilityKey).")
-                    } else {
-                        Logger.warn("Missing capability: \(capabilityKey).")
-                    }
-                    // The capability has been retired from the service.
-                    return true
+                    badgeMetadata = OWSUserProfileBadgeInfo(badgeId: badge.id)
                 }
-            } else {
-                owsFailDebug("Missing capabilities.")
+                return (badgeMetadata, badge)
+            }
+        } else {
+            return []
+        }
+    }
+
+    private static func parseCapabilities(params: ParamParser) throws -> Capabilities {
+        guard
+            let capabilitiesJson: Any? = try params.required(key: "capabilities"),
+            let capabilitiesParser = ParamParser(responseObject: capabilitiesJson)
+        else {
+            throw ValidationError(description: "Missing or invalid capabilities JSON!")
+        }
+
+        return Capabilities(
+            deleteSync: parseCapabilityFlag(capabilitiesParser: capabilitiesParser, capabilityKey: "deleteSync")
+        )
+    }
+
+    /// Parse a boolean capability with the given key from the given parser.
+    /// - Important
+    /// If the capability is missing (or weirdly fails to parse), we assume it
+    /// was removed from the service and is therefore default-true.
+    private static func parseCapabilityFlag(
+        capabilitiesParser: ParamParser,
+        capabilityKey: String
+    ) -> Bool {
+        do {
+            guard let capabilityFlag: Bool = try capabilitiesParser.optional(key: capabilityKey) else {
+                owsFailDebug("Missing capability \(capabilityKey)! Assuming retired from service, and therefore hardcoded-on.")
                 return true
             }
-        } catch {
-            owsFailDebug("Error: \(error)")
+
+            return capabilityFlag
+        } catch let error {
+            owsFailDebug("Failed to parse capability \(capabilityKey)! Hardcoding to true.")
             return true
         }
     }
