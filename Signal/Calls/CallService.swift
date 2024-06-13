@@ -637,67 +637,34 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     }
 
     func initiateCall(thread: TSThread, isVideo: Bool) {
-        initiateCall(thread: thread, isVideo: isVideo, untrustedThreshold: nil)
+        switch thread {
+        case let groupThread as TSGroupThread:
+            GroupCallViewController.presentLobby(thread: groupThread, videoMuted: !isVideo)
+        case let contactThread as TSContactThread:
+            Task { await self.initiateIndividualCall(thread: contactThread, isVideo: isVideo) }
+        default:
+            owsFailDebug("Can't call thread of type \(type(of: thread))")
+        }
     }
 
-    private func initiateCall(thread: TSThread, isVideo: Bool, untrustedThreshold: Date?) {
-        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-            Logger.warn("aborting due to user not being registered.")
-            OWSActionSheets.showActionSheet(title: OWSLocalizedString(
-                "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING",
-                comment: "alert body shown when trying to use features in the app before completing registration-related setup."
-            ))
+    @MainActor
+    private func initiateIndividualCall(thread: TSContactThread, isVideo: Bool) async {
+        let untrustedThreshold = Date(timeIntervalSinceNow: -OWSIdentityManagerImpl.Constants.defaultUntrustedInterval)
+
+        guard let viewController = await CallStarter.prepareToStartCall(shouldAskForCameraPermission: isVideo) else {
             return
         }
 
-        guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
-            owsFailDebug("could not identify frontmostViewController")
-            return
-        }
-
-        if let groupThread = thread as? TSGroupThread {
-            GroupCallViewController.presentLobby(thread: groupThread, videoMuted: !isVideo)
-            return
-        }
-
-        guard let thread = thread as? TSContactThread else {
-            owsFailDebug("cannot initiate call to group thread")
-            return
-        }
-
-        let newUntrustedThreshold = Date()
-        let showedAlert = SafetyNumberConfirmationSheet.presentIfNecessary(
-            addresses: [thread.contactAddress],
+        guard await SafetyNumberConfirmationSheet.presentRepeatedlyAsNecessary(
+            for: { [thread.contactAddress] },
+            from: viewController,
             confirmationText: CallStrings.confirmAndCallButtonTitle,
             untrustedThreshold: untrustedThreshold
-        ) { didConfirmIdentity in
-            guard didConfirmIdentity else { return }
-            self.initiateCall(thread: thread, isVideo: isVideo, untrustedThreshold: newUntrustedThreshold)
-        }
-        guard !showedAlert else {
+        ) else {
             return
         }
 
-        frontmostViewController.ows_askForMicrophonePermissions { granted in
-            guard granted == true else {
-                Logger.warn("aborting due to missing microphone permissions.")
-                frontmostViewController.ows_showNoMicrophonePermissionActionSheet()
-                return
-            }
-
-            if isVideo {
-                frontmostViewController.ows_askForCameraPermissions { granted in
-                    guard granted else {
-                        Logger.warn("aborting due to missing camera permissions.")
-                        return
-                    }
-
-                    self.callUIAdapter.startAndShowOutgoingCall(thread: thread, hasLocalVideo: true)
-                }
-            } else {
-                self.callUIAdapter.startAndShowOutgoingCall(thread: thread, hasLocalVideo: false)
-            }
-        }
+        self.callUIAdapter.startAndShowOutgoingCall(thread: thread, hasLocalVideo: isVideo)
     }
 
     func buildOutgoingIndividualCallIfPossible(thread: TSContactThread, hasVideo: Bool) -> (SignalCall, IndividualCall)? {

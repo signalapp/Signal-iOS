@@ -124,7 +124,68 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         untrustedThreshold: Date? = nil,
         completion: @escaping (Bool) -> Void
     ) -> Bool {
+        return presentIfNecessary(
+            for: addresses,
+            from: CurrentAppContext().frontmostViewController(),
+            confirmationText: confirmationText,
+            untrustedThreshold: untrustedThreshold,
+            completion: completion
+        )
+    }
 
+    /// Presents the a `SafetyNumberConfirmationSheet` if needed.
+    ///
+    /// The sheet will be presented repeatedly to handle cases where Safety
+    /// Numbers change while the sheet is visible.
+    ///
+    /// This method will recompute `addresses` before the initial sheet
+    /// presentation as well as after each sheet presentation.
+    ///
+    /// - Returns: True if the user accepted all Safety Number changes OR if
+    /// there weren't any that needed to be accepted.
+    public class func presentRepeatedlyAsNecessary(
+        for addresses: () -> [SignalServiceAddress],
+        from viewController: UIViewController,
+        confirmationText: String,
+        untrustedThreshold: Date? = nil
+    ) async -> Bool {
+        while true {
+            var untrustedThreshold = untrustedThreshold
+            let terminalResult: Bool? = await withCheckedContinuation { continuation in
+                let newUntrustedThreshold = Date()
+                defer { untrustedThreshold = newUntrustedThreshold }
+
+                let didPresent = self.presentIfNecessary(
+                    for: addresses(),
+                    from: viewController,
+                    confirmationText: confirmationText,
+                    untrustedThreshold: untrustedThreshold,
+                    completion: { didConfirmIdentity in
+                        if didConfirmIdentity {
+                            // The user said it's fine -- loop and check for more mismatches.
+                            continuation.resume(returning: nil)
+                        } else {
+                            continuation.resume(returning: false)
+                        }
+                    }
+                )
+                if !didPresent {
+                    continuation.resume(returning: true)
+                }
+            }
+            if let terminalResult {
+                return terminalResult
+            }
+        }
+    }
+
+    public class func presentIfNecessary(
+        for addresses: [SignalServiceAddress],
+        from viewController: UIViewController?,
+        confirmationText: String,
+        untrustedThreshold: Date?,
+        completion: @escaping (Bool) -> Void
+    ) -> Bool {
         let identityManager = DependenciesBridge.shared.identityManager
         let untrustedAddresses = databaseStorage.read { tx in
             addresses.filter { address in
@@ -143,7 +204,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
             completionHandler: completion
         )
 
-        CurrentAppContext().frontmostViewController()?.present(sheet, animated: true)
+        viewController?.present(sheet, animated: true)
         return true
     }
 

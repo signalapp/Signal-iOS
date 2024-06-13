@@ -194,30 +194,8 @@ class GroupCallViewController: UIViewController {
         shouldAskForCameraPermission: Bool,
         buildAndStartConnecting: () async throws -> (SignalCall, GroupCall)?
     ) async rethrows {
-        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-            Logger.warn("Can't show lobby unless you're registered")
-            OWSActionSheets.showActionSheet(title: OWSLocalizedString(
-                "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING",
-                comment: "alert body shown when trying to use features in the app before completing registration-related setup."
-            ))
+        guard await CallStarter.prepareToStartCall(shouldAskForCameraPermission: shouldAskForCameraPermission) != nil else {
             return
-        }
-
-        guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
-            owsFail("Can't show lobby if there's no view controller")
-        }
-
-        guard await frontmostViewController.askForMicrophonePermissions() else {
-            Logger.warn("aborting due to missing microphone permissions.")
-            frontmostViewController.ows_showNoMicrophonePermissionActionSheet()
-            return
-        }
-
-        if shouldAskForCameraPermission {
-            guard await frontmostViewController.askForCameraPermissions() else {
-                Logger.warn("aborting due to missing camera permissions.")
-                return
-            }
         }
 
         guard let (call, groupCall) = try await buildAndStartConnecting() else {

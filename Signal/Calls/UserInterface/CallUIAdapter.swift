@@ -154,8 +154,6 @@ public class CallUIAdapter: NSObject {
             return
         }
 
-        Logger.debug("")
-
         startOutgoingCall(call: call)
         individualCall.hasLocalVideo = hasLocalVideo
         self.showCall(call)
