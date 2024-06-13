@@ -114,6 +114,7 @@ class NSEEnvironment: Dependencies {
         if !didStartAppSetup {
             debugLogger.enableTTYLoggingIfNeeded()
             DebugLogger.registerLibsignal()
+            DebugLogger.registerRingRTC()
             Cryptography.seedRandom()
             didStartAppSetup = true
         }

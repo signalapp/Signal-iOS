@@ -7,6 +7,7 @@ import AudioToolbox
 import CocoaLumberjack
 import LibSignalClient
 import SignalCoreKit
+import SignalRingRTC
 
 private final class DebugLogFileManager: DDLogFileManagerDefault {
     private static func deleteLogFiles(inDirectory logsDirPath: String, olderThanDate cutoffDate: Date) {
@@ -206,6 +207,24 @@ public final class DebugLogger {
             return .error
         }())
     }
+
+    public static func registerRingRTC() {
+        RingRTCLoggerImpl().setUpRingRTCLogging(maxLogLevel: { () -> RingRTCLogLevel in
+            if ShouldLogVerbose() {
+                return .trace
+            }
+            if ShouldLogDebug() {
+                return .debug
+            }
+            if ShouldLogInfo() {
+                return .info
+            }
+            if ShouldLogWarning() {
+                return .warn
+            }
+            return .error
+        }())
+    }
 }
 
 private extension LibsignalLogLevel {
@@ -227,6 +246,34 @@ final class LibsignalLoggerImpl: LibsignalLogger {
             flag: level.logFlag,
             file: file.map(String.init(cString:)) ?? "",
             function: "",
+            line: Int(line)
+        )
+    }
+
+    func flush() {
+        Logger.flush()
+    }
+}
+
+private extension RingRTCLogLevel {
+    var logFlag: DDLogFlag {
+        switch self {
+        case .error: return .error
+        case .warn: return .warning
+        case .info: return .info
+        case .debug: return .debug
+        case .trace: return .verbose
+        }
+    }
+}
+
+final class RingRTCLoggerImpl: RingRTCLogger {
+    func log(level: RingRTCLogLevel, file: String, function: String, line: UInt32, message: String) {
+        Logger.log(
+            message,
+            flag: level.logFlag,
+            file: file,
+            function: function,
             line: Int(line)
         )
     }

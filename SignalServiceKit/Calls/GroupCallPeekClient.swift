@@ -52,7 +52,7 @@ public class GroupCallPeekClient {
             groupMembers: membership
         )
 
-        let peekResponse = await self.sfuClient.peek(request: peekRequest).awaitable()
+        let peekResponse = await self.sfuClient.peek(request: peekRequest)
         if let errorCode = peekResponse.errorStatusCode {
             throw OWSGenericError("Failed to peek with status code: \(errorCode)")
         } else {

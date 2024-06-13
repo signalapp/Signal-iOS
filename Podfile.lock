@@ -34,11 +34,9 @@ PODS:
     - CocoaLumberjack (~> 3.7.4)
   - SignalCoreKit/Tests (1.0.0):
     - CocoaLumberjack (~> 3.7.4)
-  - SignalRingRTC (2.42.0):
-    - SignalCoreKit
-    - SignalRingRTC/WebRTC (= 2.42.0)
-  - SignalRingRTC/WebRTC (2.42.0):
-    - SignalCoreKit
+  - SignalRingRTC (2.44.0):
+    - SignalRingRTC/WebRTC (= 2.44.0)
+  - SignalRingRTC/WebRTC (2.44.0)
   - SQLCipher (4.6.0):
     - SQLCipher/standard (= 4.6.0)
   - SQLCipher/common (4.6.0)
@@ -71,7 +69,7 @@ DEPENDENCIES:
   - Reachability
   - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit`)
   - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit`)
-  - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.42.0`)
+  - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.44.0`)
   - SQLCipher (from `https://github.com/signalapp/sqlcipher.git`, tag `v4.6.0-f_barrierfsync`)
   - SSZipArchive (from `ThirdParty/SSZipArchive.podspec`)
   - SwiftProtobuf (>= 1.14.0)
@@ -116,7 +114,7 @@ EXTERNAL SOURCES:
     :git: https://github.com/signalapp/SignalCoreKit
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
-    :tag: v2.42.0
+    :tag: v2.44.0
   SQLCipher:
     :git: https://github.com/signalapp/sqlcipher.git
     :tag: v4.6.0-f_barrierfsync
@@ -150,7 +148,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/SignalCoreKit
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
-    :tag: v2.42.0
+    :tag: v2.44.0
   SQLCipher:
     :git: https://github.com/signalapp/sqlcipher.git
     :tag: v4.6.0-f_barrierfsync
@@ -174,13 +172,13 @@ SPEC CHECKSUMS:
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   Reachability: fd0ecd23705e2599e4cceeb943222ae02296cbc6
   SignalCoreKit: 7658a72244fa81858df4618e92044b0db0dcf59e
-  SignalRingRTC: 29d5907bbef88ae80ae05bac944599c760c96e6f
+  SignalRingRTC: 433014da641c83234d3119a207c584c2b406f20e
   SQLCipher: 30a8e81afa6128e600b17ffa77d0f92fa05ed208
   SSZipArchive: 8c3485528a87fa6f90afdbfc33682eb61d985ae5
   SwiftProtobuf: 5e8349171e7c2f88f5b9e683cb3cb79d1dc780b3
   Wire: f5fe13fcad476bfd248f23a45a2004167c0ebae2
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: 0ebee5ecb51d95b8ce55580af44c932c7560a928
+PODFILE CHECKSUM: c414982877f39b3b3b655bd07c3ffd0bdc74a30e
 
 COCOAPODS: 1.15.2
