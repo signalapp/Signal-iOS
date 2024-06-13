@@ -50,9 +50,7 @@ class DeviceTransferOperation: OWSOperation {
 
     override func reportCancelled() {
         super.reportCancelled()
-        if !future.isSealed {
-            future.reject(CancelError())
-        }
+        future.reject(CancelError())
     }
 
     override public func run() {
