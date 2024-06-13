@@ -681,6 +681,7 @@
 		50E5E4B129932D9B00E15A1C /* DeviceMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E5E4B029932D9B00E15A1C /* DeviceMessage.swift */; };
 		50E5E4B32993352C00E15A1C /* ChangePhoneNumberPniManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E5E4B22993352C00E15A1C /* ChangePhoneNumberPniManager.swift */; };
 		50E642C929E4E9CD00566D5D /* SSKEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E642C829E4E9CD00566D5D /* SSKEnvironment.swift */; };
+		50EF680D2C1A353D00BEB3B5 /* CallKitIdStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EF680C2C1A353D00BEB3B5 /* CallKitIdStore.swift */; };
 		50EF8DCA2A1885C000A00935 /* AppIconBadgeUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EF8DC92A1885C000A00935 /* AppIconBadgeUpdater.swift */; };
 		50EF8DCC2A189B3000A00935 /* ConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EF8DCB2A189B3000A00935 /* ConversationViewModel.swift */; };
 		50EF8DD32A1EC6B100A00935 /* OWSDisappearingMessagesConfigurationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EF8DD22A1EC6B100A00935 /* OWSDisappearingMessagesConfigurationTest.swift */; };
@@ -2425,7 +2426,6 @@
 		F9C5CD2D289453B300548EEE /* SDSCodableModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA4E289453B100548EEE /* SDSCodableModel.swift */; };
 		F9C5CD2E289453B300548EEE /* SDSSerializable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA4F289453B100548EEE /* SDSSerializable.swift */; };
 		F9C5CD2F289453B300548EEE /* SDSCrossProcess.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA50289453B100548EEE /* SDSCrossProcess.m */; };
-		F9C5CD32289453B300548EEE /* CallKitIdStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA54289453B100548EEE /* CallKitIdStore.m */; };
 		F9C5CD33289453B300548EEE /* SSKSignedPreKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA55289453B100548EEE /* SSKSignedPreKeyStore.swift */; };
 		F9C5CD34289453B300548EEE /* SignalProtocolStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA56289453B100548EEE /* SignalProtocolStore.swift */; };
 		F9C5CD35289453B300548EEE /* SessionRecordMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA57289453B100548EEE /* SessionRecordMigration.swift */; };
@@ -2433,7 +2433,6 @@
 		F9C5CD37289453B300548EEE /* SenderKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA59289453B100548EEE /* SenderKeyStore.swift */; };
 		F9C5CD38289453B300548EEE /* SSKPreKeyStore.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA5A289453B100548EEE /* SSKPreKeyStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD39289453B300548EEE /* AxolotlExceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA5B289453B100548EEE /* AxolotlExceptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CD3A289453B300548EEE /* CallKitIdStore.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA5C289453B100548EEE /* CallKitIdStore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD3C289453B300548EEE /* SSKSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA5E289453B100548EEE /* SSKSessionStore.swift */; };
 		F9C5CD3D289453B300548EEE /* LegacySendingChain.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA60289453B100548EEE /* LegacySendingChain.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CD3E289453B300548EEE /* LegacyRootKey.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA61289453B100548EEE /* LegacyRootKey.m */; };
@@ -3599,6 +3598,7 @@
 		50E5E4B029932D9B00E15A1C /* DeviceMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceMessage.swift; sourceTree = "<group>"; };
 		50E5E4B22993352C00E15A1C /* ChangePhoneNumberPniManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePhoneNumberPniManager.swift; sourceTree = "<group>"; };
 		50E642C829E4E9CD00566D5D /* SSKEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKEnvironment.swift; sourceTree = "<group>"; };
+		50EF680C2C1A353D00BEB3B5 /* CallKitIdStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallKitIdStore.swift; sourceTree = "<group>"; };
 		50EF8DC42A1860EF00A00935 /* BadgeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeManager.swift; sourceTree = "<group>"; };
 		50EF8DC92A1885C000A00935 /* AppIconBadgeUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconBadgeUpdater.swift; sourceTree = "<group>"; };
 		50EF8DCB2A189B3000A00935 /* ConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewModel.swift; sourceTree = "<group>"; };
@@ -5388,7 +5388,6 @@
 		F9C5CA4E289453B100548EEE /* SDSCodableModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSCodableModel.swift; sourceTree = "<group>"; };
 		F9C5CA4F289453B100548EEE /* SDSSerializable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSSerializable.swift; sourceTree = "<group>"; };
 		F9C5CA50289453B100548EEE /* SDSCrossProcess.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDSCrossProcess.m; sourceTree = "<group>"; };
-		F9C5CA54289453B100548EEE /* CallKitIdStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallKitIdStore.m; sourceTree = "<group>"; };
 		F9C5CA55289453B100548EEE /* SSKSignedPreKeyStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKSignedPreKeyStore.swift; sourceTree = "<group>"; };
 		F9C5CA56289453B100548EEE /* SignalProtocolStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalProtocolStore.swift; sourceTree = "<group>"; };
 		F9C5CA57289453B100548EEE /* SessionRecordMigration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionRecordMigration.swift; sourceTree = "<group>"; };
@@ -5396,7 +5395,6 @@
 		F9C5CA59289453B100548EEE /* SenderKeyStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SenderKeyStore.swift; sourceTree = "<group>"; };
 		F9C5CA5A289453B100548EEE /* SSKPreKeyStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKPreKeyStore.h; sourceTree = "<group>"; };
 		F9C5CA5B289453B100548EEE /* AxolotlExceptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AxolotlExceptions.h; sourceTree = "<group>"; };
-		F9C5CA5C289453B100548EEE /* CallKitIdStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallKitIdStore.h; sourceTree = "<group>"; };
 		F9C5CA5E289453B100548EEE /* SSKSessionStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKSessionStore.swift; sourceTree = "<group>"; };
 		F9C5CA60289453B100548EEE /* LegacySendingChain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LegacySendingChain.h; sourceTree = "<group>"; };
 		F9C5CA61289453B100548EEE /* LegacyRootKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LegacyRootKey.m; sourceTree = "<group>"; };
@@ -8941,6 +8939,7 @@
 				88D23D2D23CEC1BE00B0E74B /* AudioSource.swift */,
 				88D23D2B23CEC17400B0E74B /* CallAudioService.swift */,
 				88D23D1A23CEC0C700B0E74B /* CallKitCallManager.swift */,
+				50EF680C2C1A353D00BEB3B5 /* CallKitIdStore.swift */,
 				50552C2D2BAC066A00815474 /* CallLink.swift */,
 				50A7830D2C0128D70008030E /* CallLinkCall.swift */,
 				D93108082B337A23006A034E /* CallRecordLoader.swift */,
@@ -11026,8 +11025,6 @@
 			children = (
 				F9C5CA5F289453B100548EEE /* Model */,
 				F9C5CA5B289453B100548EEE /* AxolotlExceptions.h */,
-				F9C5CA5C289453B100548EEE /* CallKitIdStore.h */,
-				F9C5CA54289453B100548EEE /* CallKitIdStore.m */,
 				5050A8782B76E2E100E9BFA4 /* PreKeyId.swift */,
 				F9C5CA59289453B100548EEE /* SenderKeyStore.swift */,
 				F9C5CA57289453B100548EEE /* SessionRecordMigration.swift */,
@@ -11481,7 +11478,6 @@
 				F9C5CE25289453B400548EEE /* AppReadiness.h in Headers */,
 				F9C5CD39289453B300548EEE /* AxolotlExceptions.h in Headers */,
 				F9C5CD77289453B300548EEE /* BaseModel.h in Headers */,
-				F9C5CD3A289453B300548EEE /* CallKitIdStore.h in Headers */,
 				F9C5CCC9289453B300548EEE /* Contact.h in Headers */,
 				F9C5CCEC289453B300548EEE /* ContactsManagerProtocol.h in Headers */,
 				F9C5CE27289453B400548EEE /* DarwinNotificationCenter.h in Headers */,
@@ -12807,6 +12803,7 @@
 				88ABB8B52534070400229EAA /* CallHeader.swift in Sources */,
 				88D23D2423CEC0C700B0E74B /* CallKitCallManager.swift in Sources */,
 				88D23D2523CEC0C700B0E74B /* CallKitCallUIAdaptee.swift in Sources */,
+				50EF680D2C1A353D00BEB3B5 /* CallKitIdStore.swift in Sources */,
 				50552C2E2BAC066A00815474 /* CallLink.swift in Sources */,
 				50A7830E2C0128D70008030E /* CallLinkCall.swift in Sources */,
 				E1E78CAF2B573BD100B6FC2D /* CallMemberCameraOffView.swift in Sources */,
@@ -13578,7 +13575,6 @@
 				E7D7C93F28B580AC003F043B /* Bundle+OWS.swift in Sources */,
 				7254653F2BA01FCC00EABFD2 /* CachedBadge.swift in Sources */,
 				50D3136F2BFFE9370023EDCC /* CallEventInserter.swift in Sources */,
-				F9C5CD32289453B300548EEE /* CallKitIdStore.m in Sources */,
 				50A4AC622C111FAE00D89C8E /* CallLinkAuthCredential.swift in Sources */,
 				50C831762BAA3A8000BEBF25 /* CallMessageHandler.swift in Sources */,
 				72C9058E2B9AC8E600E586B8 /* CallMessageRelay.swift in Sources */,
