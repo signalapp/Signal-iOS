@@ -48,7 +48,10 @@ class GroupCallViewController: UIViewController {
     private let incomingReactionsView = IncomingReactionsView()
 
     private var isCallMinimized = false {
-        didSet { speakerView.isCallMinimized = isCallMinimized }
+        didSet {
+            speakerView.isCallMinimized = isCallMinimized
+            scheduleControlTimeoutIfNecessary()
+        }
     }
 
     private var isAutoScrollingToScreenShare = false
@@ -69,14 +72,19 @@ class GroupCallViewController: UIViewController {
     private lazy var videoOverflowTrailingConstraint = videoOverflow.autoPinEdge(toSuperviewEdge: .trailing)
 
     private enum CallControlsDisplayState {
+        /// "Overflow" refers to the "..." menu that shows reactions & "Raise Hand".
         case callControlsAndOverflow
         case callControlsOnly
         case none
     }
 
     private var callControlsDisplayState: CallControlsDisplayState = .callControlsOnly {
-        didSet { updateCallUI() }
+        didSet {
+            updateCallUI()
+            scheduleControlTimeoutIfNecessary()
+        }
     }
+
     private var hasUnresolvedSafetyNumberMismatch = false
     private var hasDismissed = false
 
@@ -617,7 +625,6 @@ class GroupCallViewController: UIViewController {
             )
         }
 
-        scheduleControlTimeoutIfNecessary()
         updateSwipeToastView()
     }
 
@@ -666,7 +673,7 @@ class GroupCallViewController: UIViewController {
             case .none:
                 // This can happen if you tap the root view fast enough in succession.
                 animateCallControls(
-                    hideCallControls: !ringRtcCall.remoteDeviceStates.isEmpty,
+                    hideCallControls: true,
                     size: size
                 )
                 self.callControlsOverflowView.animateOut()
@@ -679,7 +686,7 @@ class GroupCallViewController: UIViewController {
                 updateFrames(controlsAreHidden: false)
             case .none:
                 animateCallControls(
-                    hideCallControls: !ringRtcCall.remoteDeviceStates.isEmpty,
+                    hideCallControls: true,
                     size: size
                 )
             }
@@ -769,28 +776,43 @@ class GroupCallViewController: UIViewController {
 
     @objc
     private func didTouchRootView(sender: UIGestureRecognizer) {
+        if callControlsMustBeVisible {
+            return
+        }
         switch self.callControlsDisplayState {
-        case .callControlsAndOverflow,
-             .none:
+        case .callControlsAndOverflow, .none:
             self.callControlsDisplayState = .callControlsOnly
         case .callControlsOnly:
             self.callControlsDisplayState = .none
         }
     }
 
+    private var callControlsMustBeVisible: Bool {
+        return ringRtcCall.remoteDeviceStates.isEmpty
+    }
+
     private var controlTimeoutTimer: Timer?
     private func scheduleControlTimeoutIfNecessary() {
-        switch self.callControlsDisplayState {
-        case .callControlsAndOverflow,
-             .none:
-            controlTimeoutTimer?.invalidate()
-            controlTimeoutTimer = nil
-            return
-        case .callControlsOnly:
-            break
-        }
+        let shouldAutomaticallyHideCallControls: Bool = {
+            switch self.callControlsDisplayState {
+            case .callControlsAndOverflow, .none:
+                return false
+            case .callControlsOnly:
+                break
+            }
 
-        if ringRtcCall.remoteDeviceStates.isEmpty {
+            if callControlsMustBeVisible {
+                return false
+            }
+
+            if isCallMinimized {
+                return false
+            }
+
+            return true
+        }()
+
+        guard shouldAutomaticallyHideCallControls else {
             controlTimeoutTimer?.invalidate()
             controlTimeoutTimer = nil
             return
@@ -803,17 +825,22 @@ class GroupCallViewController: UIViewController {
     }
 
     private func timeoutControls() {
-        controlTimeoutTimer?.invalidate()
-        controlTimeoutTimer = nil
+        self.controlTimeoutTimer = nil
+        self.callControlsDisplayState = .none
+    }
 
-        guard !isCallMinimized && !ringRtcCall.remoteDeviceStates.isEmpty else { return }
+    private func showCallControlsIfTheyMustBeVisible() {
+        if callControlsMustBeVisible {
+            showCallControlsIfHidden()
+        }
+    }
 
+    private func showCallControlsIfHidden() {
         switch self.callControlsDisplayState {
-        case .callControlsAndOverflow,
-             .none:
-            return
-        case .callControlsOnly:
-            self.callControlsDisplayState = .none
+        case .callControlsAndOverflow, .callControlsOnly:
+            break
+        case .none:
+            self.callControlsDisplayState = .callControlsOnly
         }
     }
 
@@ -878,13 +905,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
 
         isCallMinimized = false
 
-        switch self.callControlsDisplayState {
-        case .callControlsAndOverflow,
-             .callControlsOnly:
-            break
-        case .none:
-            self.callControlsDisplayState = .callControlsOnly
-        }
+        showCallControlsIfHidden()
 
         animateReturnFromPip(pipSnapshot: pipSnapshot, pipFrame: pipWindow.frame, splitViewSnapshot: splitViewSnapshot)
     }
@@ -1064,16 +1085,10 @@ extension GroupCallViewController: GroupCallObserver {
 
         isAnyRemoteDeviceScreenSharing = ringRtcCall.remoteDeviceStates.values.first { $0.sharingScreen == true } != nil
 
-        if ringRtcCall.remoteDeviceStates.isEmpty {
-            switch self.callControlsDisplayState {
-            case .callControlsAndOverflow, .callControlsOnly:
-                break
-            case .none:
-                self.callControlsDisplayState = .callControlsOnly
-            }
-        }
+        showCallControlsIfTheyMustBeVisible()
 
         updateCallUI()
+        scheduleControlTimeoutIfNecessary()
     }
 
     func groupCallPeekChanged(_ call: GroupCall) {
@@ -1130,7 +1145,7 @@ extension GroupCallViewController: GroupCallObserver {
                 .iceFailedWhileConnecting,
                 .iceFailedAfterConnected,
                 .serverChangedDemuxId:
-            owsFailDebug("Group call ended with reason \(reason)")
+            Logger.warn("Group call ended with reason \(reason)")
             title = OWSLocalizedString(
                 "GROUP_CALL_UNEXPECTEDLY_ENDED",
                 comment: "An error displayed to the user when the group call unexpectedly ends."
@@ -1148,6 +1163,7 @@ extension GroupCallViewController: GroupCallObserver {
         ))
         presentActionSheet(actionSheet)
 
+        showCallControlsIfTheyMustBeVisible()
         updateCallUI()
     }
 
