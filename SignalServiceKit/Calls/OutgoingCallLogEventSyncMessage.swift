@@ -48,6 +48,14 @@ public class OutgoingCallLogEventSyncMessage: OWSOutgoingSyncMessage {
         callLogEventBuilder.setTimestamp(callLogEvent.timestamp)
         callLogEventBuilder.setType(callLogEvent.eventType.protoType)
 
+        if let callId = callLogEvent.callId {
+            callLogEventBuilder.setCallID(callId)
+        }
+
+        if let conversationId = callLogEvent.conversationId {
+            callLogEventBuilder.setConversationID(conversationId.asData)
+        }
+
         let builder = SSKProtoSyncMessage.builder()
         builder.setCallLogEvent(callLogEventBuilder.buildInfallibly())
         return builder
