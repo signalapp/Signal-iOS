@@ -196,6 +196,11 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             OWSUserProfile.self,
             DeletedCallRecord.self,
             NicknameRecord.self,
+            Attachment.Record.self,
+            AttachmentReference.MessageAttachmentReferenceRecord.self,
+            AttachmentReference.StoryMessageAttachmentReferenceRecord.self,
+            AttachmentReference.ThreadAttachmentReferenceRecord.self,
+            OrphanedAttachmentRecord.self
         ]
     }
 

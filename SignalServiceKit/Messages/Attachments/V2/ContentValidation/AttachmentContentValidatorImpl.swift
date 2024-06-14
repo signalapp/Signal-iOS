@@ -669,11 +669,15 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
         // Now we can copy files.
         for pendingFile in [primaryPendingFile, audioWaveformFile, videoStillFrameFile].compacted() {
+            let destinationUrl = AttachmentStream.absoluteAttachmentFileURL(
+                relativeFilePath: pendingFile.reservedRelativeFilePath
+            )
+            guard OWSFileSystem.ensureDirectoryExists(destinationUrl.deletingLastPathComponent().path) else {
+                throw OWSAssertionError("Unable to create directory")
+            }
             try OWSFileSystem.moveFile(
                 from: pendingFile.tmpFileUrl,
-                to: AttachmentStream.absoluteAttachmentFileURL(
-                    relativeFilePath: pendingFile.reservedRelativeFilePath
-                )
+                to: destinationUrl
             )
         }
 
