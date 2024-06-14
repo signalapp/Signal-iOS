@@ -121,7 +121,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         }
         let truncatedBody = MessageBody(text: truncatedText, ranges: messageBody.ranges)
 
-        guard let textData = messageBody.text.filterForDisplay.data(using: .utf8) else {
+        guard let textData = messageBody.text.data(using: .utf8) else {
             throw OWSAssertionError("Unable to encode text")
         }
         let input = Input.inMemory(textData)

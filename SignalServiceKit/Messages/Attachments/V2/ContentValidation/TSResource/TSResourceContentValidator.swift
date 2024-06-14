@@ -10,12 +10,12 @@ public struct OversizeTextDataSource {
     public let legacyDataSource: TSAttachmentDataSource
 
     public var dataSource: TSResourceDataSource {
-            if FeatureFlags.newAttachmentsUseV2, let v2DataSource {
-                return v2DataSource.tsDataSource
-            } else {
-                return legacyDataSource.tsDataSource
-            }
+        if FeatureFlags.newAttachmentsUseV2, let v2DataSource {
+            return v2DataSource.tsDataSource
+        } else {
+            return legacyDataSource.tsDataSource
         }
+    }
 }
 
 public enum ValidatedTSMessageBody {
