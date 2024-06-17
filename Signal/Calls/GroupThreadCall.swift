@@ -199,7 +199,7 @@ extension SignalRingRTC.GroupCall {
         guard let peekInfo = peekInfo, let maxDevices = peekInfo.maxDevices else {
             return false
         }
-        return peekInfo.deviceCountExcludingPendingDevices >= maxDevices
+        return peekInfo.deviceCountIncludingPendingDevices >= maxDevices
     }
 
     var maxDevices: UInt32? {
