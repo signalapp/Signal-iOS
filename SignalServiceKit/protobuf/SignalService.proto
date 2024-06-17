@@ -727,6 +727,10 @@ message AttachmentPointer {
   optional fixed64 cdnId = 1;
   optional string cdnKey = 15;
   // }
+    
+  // Cross-client identifier for this attachment among all attachments on the
+  // owning message.
+  optional bytes clientUuid = 20;
   optional string contentType = 2;
   optional bytes key = 3;
   optional uint32 size = 4;
@@ -740,7 +744,7 @@ message AttachmentPointer {
   optional string blurHash = 12;
   optional uint64 uploadTimestamp = 13;
   optional uint32 cdnNumber = 14;
-  // Next ID: 16
+  // Next ID: 21
 }
 
 message GroupContextV2 {

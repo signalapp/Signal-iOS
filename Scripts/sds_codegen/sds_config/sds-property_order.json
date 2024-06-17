@@ -11,6 +11,7 @@
     "AttachmentRecord.caption": 5,
     "AttachmentRecord.cdnKey": 24,
     "AttachmentRecord.cdnNumber": 25,
+    "AttachmentRecord.clientUuid": 29,
     "AttachmentRecord.contentType": 6,
     "AttachmentRecord.creationTimestamp": 13,
     "AttachmentRecord.digest": 14,

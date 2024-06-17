@@ -140,6 +140,7 @@ NSString *NSStringForAttachmentThumbnailQuality(TSAttachmentThumbnailQuality val
                          caption:(nullable NSString *)caption
                           cdnKey:(NSString *)cdnKey
                        cdnNumber:(unsigned int)cdnNumber
+                      clientUuid:(nullable NSString *)clientUuid
                      contentType:(NSString *)contentType
                    encryptionKey:(nullable NSData *)encryptionKey
                         serverId:(unsigned long long)serverId
@@ -167,6 +168,7 @@ NSString *NSStringForAttachmentThumbnailQuality(TSAttachmentThumbnailQuality val
                            caption:caption
                             cdnKey:cdnKey
                          cdnNumber:cdnNumber
+                        clientUuid:clientUuid
                        contentType:contentType
                      encryptionKey:encryptionKey
                           serverId:serverId
@@ -1062,6 +1064,16 @@ NSString *NSStringForAttachmentThumbnailQuality(TSAttachmentThumbnailQuality val
     builder.size = self.byteCount;
     builder.key = self.encryptionKey;
     builder.digest = self.digest;
+
+    if (self.clientUuid != nil) {
+        NSUUID *_Nullable clientUuid = [[NSUUID alloc] initWithUUIDString:self.clientUuid];
+
+        if (clientUuid != nil) {
+            builder.clientUuid = [clientUuid asData];
+        } else {
+            OWSFailDebug(@"TSAttachment clientUuid unexpectedly failed to convert to UUID!");
+        }
+    }
 
     if (self.attachmentType == TSAttachmentTypeVoiceMessage) {
         builder.flags = SSKProtoAttachmentPointerFlagsVoiceMessage;

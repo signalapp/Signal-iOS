@@ -31,7 +31,7 @@ extension AttachmentReference.ConstructionParams {
         caption: String? = nil,
         renderingFlag: AttachmentReference.RenderingFlag = .default,
         orderInOwner: UInt32 = 0,
-        idInOwner: String? = nil,
+        idInOwner: UUID? = nil,
         sourceFilename: String? = UUID().uuidString,
         sourceUnencryptedByteCount: UInt32? = .random(in: 0...100),
         sourceMediaSizePixels: CGSize? = CGSize(width: .random(in: 0...100), height: .random(in: 0...100))

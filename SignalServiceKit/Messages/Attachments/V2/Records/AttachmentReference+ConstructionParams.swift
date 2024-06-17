@@ -32,9 +32,15 @@ extension AttachmentReference {
         case threadWallpaperImage(threadRowId: Int64)
         case globalThreadWallpaperImage
 
+        /// Build the owner of this attachment reference.
+        ///
+        /// - Parameter knowIdInOwner
+        /// A known identifier for this attachment within the owner. Callers
+        /// should pass `nil` if no pre-known identifier is available. Only
+        /// relevant for message body attachments!
         public func build(
             orderInOwner: UInt32?,
-            idInOwner: String?,
+            knownIdInOwner: UUID?,
             renderingFlag: AttachmentReference.RenderingFlag,
             contentType: AttachmentReference.ContentType?
         ) throws -> AttachmentReference.Owner {
@@ -53,7 +59,7 @@ extension AttachmentReference {
                     caption: nil,
                     renderingFlag: renderingFlag,
                     orderInOwner: orderInOwner,
-                    idInOwner: idInOwner
+                    idInOwner: knownIdInOwner ?? UUID()
                 )))
             case .messageOversizeText(let metadata):
                 return .message(.oversizeText(.init(

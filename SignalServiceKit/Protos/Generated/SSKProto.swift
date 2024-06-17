@@ -14946,6 +14946,18 @@ public class SSKProtoAttachmentPointer: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
+    public var clientUuid: Data? {
+        guard hasClientUuid else {
+            return nil
+        }
+        return proto.clientUuid
+    }
+    @objc
+    public var hasClientUuid: Bool {
+        return proto.hasClientUuid && !proto.clientUuid.isEmpty
+    }
+
+    @objc
     public var contentType: String? {
         guard hasContentType else {
             return nil
@@ -15162,6 +15174,9 @@ extension SSKProtoAttachmentPointer {
         if let _value = cdnKey {
             builder.setCdnKey(_value)
         }
+        if let _value = clientUuid {
+            builder.setClientUuid(_value)
+        }
         if let _value = contentType {
             builder.setContentType(_value)
         }
@@ -15230,6 +15245,17 @@ public class SSKProtoAttachmentPointerBuilder: NSObject {
 
     public func setCdnKey(_ valueParam: String) {
         proto.cdnKey = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setClientUuid(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.clientUuid = valueParam
+    }
+
+    public func setClientUuid(_ valueParam: Data) {
+        proto.clientUuid = valueParam
     }
 
     @objc

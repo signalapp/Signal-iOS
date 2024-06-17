@@ -39,6 +39,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
                    encryptionKey:(NSData *)encryptionKey
                        byteCount:(UInt32)byteCount
                      contentType:(NSString *)contentType
+                      clientUuid:(NSUUID *)clientUuid
                   sourceFilename:(nullable NSString *)sourceFilename
                          caption:(nullable NSString *)caption
                   attachmentType:(TSAttachmentType)attachmentType
@@ -73,6 +74,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     _encryptionKey = encryptionKey;
     _byteCount = byteCount;
     _contentType = contentType;
+    _clientUuid = [clientUuid UUIDString];
     _sourceFilename = sourceFilename;
     _caption = caption;
     _attachmentType = attachmentType;
@@ -114,6 +116,10 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     _caption = caption;
     _albumMessageId = albumMessageId;
     _attachmentType = attachmentType;
+
+    // Since this is a new attachment it won't have a existing in-message UUID
+    // to use, so we'll generate one here.
+    _clientUuid = [[NSUUID new] UUIDString];
 
     _attachmentSchemaVersion = TSAttachmentSchemaVersion;
 
@@ -157,6 +163,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
         contentType = MimeTypeUtil.mimeTypeApplicationOctetStream;
     }
     _contentType = contentType;
+    _clientUuid = pointer.clientUuid;
     _caption = pointer.caption;
     _albumMessageId = pointer.albumMessageId;
     _blurHash = pointer.blurHash;
@@ -211,6 +218,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
                          caption:(nullable NSString *)caption
                           cdnKey:(NSString *)cdnKey
                        cdnNumber:(unsigned int)cdnNumber
+                      clientUuid:(nullable NSString *)clientUuid
                      contentType:(NSString *)contentType
                    encryptionKey:(nullable NSData *)encryptionKey
                         serverId:(unsigned long long)serverId
@@ -233,6 +241,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     _caption = caption;
     _cdnKey = cdnKey;
     _cdnNumber = cdnNumber;
+    _clientUuid = clientUuid;
     _contentType = contentType;
     _encryptionKey = encryptionKey;
     _serverId = serverId;

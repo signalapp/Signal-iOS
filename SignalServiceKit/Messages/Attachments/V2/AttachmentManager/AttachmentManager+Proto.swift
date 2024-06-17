@@ -29,6 +29,9 @@ extension AttachmentManager {
             if let caption = metadata.caption {
                 builder.setCaption(caption)
             }
+            if let idInOwner = metadata.idInOwner {
+                builder.setClientUuid(idInOwner.data)
+            }
             flags = metadata.renderingFlag.toProto()
         case .message(.quotedReply(let metadata)):
             flags = metadata.renderingFlag.toProto()

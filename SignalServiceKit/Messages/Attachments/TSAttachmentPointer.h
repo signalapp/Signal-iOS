@@ -51,6 +51,7 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value);
                    encryptionKey:(NSData *)encryptionKey
                        byteCount:(UInt32)byteCount
                      contentType:(NSString *)contentType
+                      clientUuid:(NSUUID *)clientUuid
                   sourceFilename:(nullable NSString *)sourceFilename
                          caption:(nullable NSString *)caption
                   attachmentType:(TSAttachmentType)attachmentType
@@ -79,6 +80,7 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value);
                        caption:(nullable NSString *)caption
                         cdnKey:(NSString *)cdnKey
                      cdnNumber:(unsigned int)cdnNumber
+                    clientUuid:(nullable NSString *)clientUuid
                    contentType:(NSString *)contentType
                  encryptionKey:(nullable NSData *)encryptionKey
                       serverId:(unsigned long long)serverId
@@ -95,6 +97,7 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value);
                           digest:(nullable NSData *)digest
                        byteCount:(UInt32)byteCount
                      contentType:(NSString *)contentType
+                      clientUuid:(NSUUID *)clientUuid
                   sourceFilename:(nullable NSString *)sourceFilename
                          caption:(nullable NSString *)caption
                   albumMessageId:(nullable NSString *)albumMessageId
@@ -121,6 +124,7 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value);
                          caption:(nullable NSString *)caption
                           cdnKey:(NSString *)cdnKey
                        cdnNumber:(unsigned int)cdnNumber
+                      clientUuid:(nullable NSString *)clientUuid
                      contentType:(NSString *)contentType
                    encryptionKey:(nullable NSData *)encryptionKey
                         serverId:(unsigned long long)serverId
@@ -132,7 +136,7 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value);
                        mediaSize:(CGSize)mediaSize
                      pointerType:(NSUInteger)pointerType
                            state:(TSAttachmentPointerState)state
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentSchemaVersion:attachmentType:blurHash:byteCount:caption:cdnKey:cdnNumber:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:videoDuration:digest:lazyRestoreFragmentId:mediaSize:pointerType:state:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentSchemaVersion:attachmentType:blurHash:byteCount:caption:cdnKey:cdnNumber:clientUuid:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:videoDuration:digest:lazyRestoreFragmentId:mediaSize:pointerType:state:));
 
 // clang-format on
 

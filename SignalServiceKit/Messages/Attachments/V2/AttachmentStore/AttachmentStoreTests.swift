@@ -70,8 +70,8 @@ class AttachmentStoreTests: XCTestCase {
         let message2AttachmentIds: [UUID] = [.init(), .init()]
         let message3AttachmentIds: [UUID] = [.init(), .init(), .init()]
 
-        var attachmentIdToAttachmentParams = [String: Attachment.ConstructionParams]()
-        var attachmentIdToAttachmentReferenceParams = [String: AttachmentReference.ConstructionParams]()
+        var attachmentIdToAttachmentParams = [UUID: Attachment.ConstructionParams]()
+        var attachmentIdToAttachmentReferenceParams = [UUID: AttachmentReference.ConstructionParams]()
 
         try db.write { tx in
             for (messageId, threadId, attachmentIds) in [
@@ -85,7 +85,7 @@ class AttachmentStoreTests: XCTestCase {
                         messageRowId: messageId,
                         threadRowId: threadId,
                         orderInOwner: UInt32(index),
-                        idInOwner: id.uuidString
+                        idInOwner: id
                     )
                     try attachmentStore.insert(
                         attachmentParams,
@@ -93,8 +93,8 @@ class AttachmentStoreTests: XCTestCase {
                         db: InMemoryDB.shimOnlyBridge(tx).db,
                         tx: tx
                     )
-                    attachmentIdToAttachmentParams[id.uuidString] = attachmentParams
-                    attachmentIdToAttachmentReferenceParams[id.uuidString] = attachmentReferenceParams
+                    attachmentIdToAttachmentParams[id] = attachmentParams
+                    attachmentIdToAttachmentReferenceParams[id] = attachmentReferenceParams
                 }
             }
         }
@@ -124,7 +124,7 @@ class AttachmentStoreTests: XCTestCase {
             for (reference, attachment) in zip(references, attachments) {
                 XCTAssertEqual(reference.attachmentRowId, attachment.id)
 
-                let attachmentId: String
+                let attachmentId: UUID
                 switch reference.owner {
                 case .message(.bodyAttachment(let metadata)):
                     attachmentId = metadata.idInOwner!
@@ -369,11 +369,11 @@ class AttachmentStoreTests: XCTestCase {
         // Insert many references to the same Params over and over.
         let attachmentParams = Attachment.ConstructionParams.mockStream()
 
-        let attachmentIdsInOwner: [String] = try db.write { tx in
+        let attachmentIdsInOwner: [UUID] = try db.write { tx in
             var attachmentRowId: Attachment.IDType?
             return try threadIdAndMessageIds.flatMap { threadId, messageId in
                 return try (0..<5).map { index in
-                    let attachmentIdInOwner = UUID().uuidString
+                    let attachmentIdInOwner = UUID()
                     let attachmentReferenceParams = AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
                         messageRowId: messageId,
                         threadRowId: threadId,

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalCoreKit
 
 public class AttachmentManagerImpl: AttachmentManager {
 
@@ -174,6 +174,16 @@ public class AttachmentManagerImpl: AttachmentManager {
             throw OWSAssertionError("Missing digest")
         }
 
+        let clientUuid: UUID?
+        if
+            let uuidData = proto.clientUuid,
+            let uuid = UUID(data: uuidData)
+        {
+            clientUuid = uuid
+        } else {
+            clientUuid = nil
+        }
+
         let mimeType: String
         if let protoMimeType = proto.contentType?.nilIfEmpty {
             mimeType = protoMimeType
@@ -223,8 +233,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         let referenceParams = AttachmentReference.ConstructionParams(
             owner: try owner.build(
                 orderInOwner: sourceOrder,
-                // TODO: [DeleteForMe] pull attachment id off the pointer proto.
-                idInOwner: nil,
+                knownIdInOwner: clientUuid,
                 renderingFlag: .fromProto(proto),
                 // Not downloaded so we don't know the content type.
                 contentType: nil
@@ -255,9 +264,7 @@ public class AttachmentManagerImpl: AttachmentManager {
 
             let owner: AttachmentReference.Owner = try dataSource.owner.build(
                 orderInOwner: sourceOrder,
-                // TODO: [DeleteForMe] either reuse id from the original reference we copied from,
-                // or assign a new id. Yet undecided what the behavior should be for forwarding.
-                idInOwner: nil,
+                knownIdInOwner: nil,
                 renderingFlag: existingAttachmentMetadata.renderingFlag,
                 contentType: existingAttachment.streamInfo?.contentType.raw
             )
@@ -275,9 +282,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         case .pendingAttachment(let pendingAttachment):
             let owner: AttachmentReference.Owner = try dataSource.owner.build(
                 orderInOwner: sourceOrder,
-                // TODO: [DeleteForMe] assign IDs for message body attachments and
-                // pass them through to here.
-                idInOwner: nil,
+                knownIdInOwner: nil,
                 renderingFlag: pendingAttachment.renderingFlag,
                 contentType: pendingAttachment.validatedContentType.raw
             )
@@ -423,7 +428,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             let referenceParams = AttachmentReference.ConstructionParams(
                 owner: try referenceOwner.build(
                     orderInOwner: nil,
-                    idInOwner: nil,
+                    knownIdInOwner: nil,
                     renderingFlag: originalAttachmentSource.renderingFlag,
                     contentType: nil
                 ),

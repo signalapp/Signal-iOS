@@ -123,7 +123,7 @@ extension AttachmentReference {
                 /// Not necessarily an index; there may be gaps.
                 public let orderInOwner: UInt32
                 /// Uniquely identifies this attachment in the owning message's body attachments.
-                public let idInOwner: String?
+                public let idInOwner: UUID?
 
                 internal init(
                     messageRowId: Int64,
@@ -133,7 +133,7 @@ extension AttachmentReference {
                     caption: String?,
                     renderingFlag: RenderingFlag,
                     orderInOwner: UInt32,
-                    idInOwner: String?
+                    idInOwner: UUID?
                 ) {
                     self.caption = caption
                     self.renderingFlag = renderingFlag
@@ -304,7 +304,7 @@ extension AttachmentReference.Owner {
                 caption: record.caption,
                 renderingFlag: try .init(rawValue: record.renderingFlag),
                 orderInOwner: orderInOwner,
-                idInOwner: record.idInMessage
+                idInOwner: record.idInMessage.flatMap { UUID(uuidString: $0) }
             )))
         case .oversizeText:
             return .message(.oversizeText(.init(

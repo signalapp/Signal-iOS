@@ -206,7 +206,7 @@ extension AttachmentReference {
                 self.receivedAtTimestamp = metadata.receivedAtTimestamp
                 self.contentType = metadata.contentType.map { UInt32($0.rawValue) }
                 self.renderingFlag = UInt32(metadata.renderingFlag.rawValue)
-                self.idInMessage = metadata.idInOwner
+                self.idInMessage = metadata.idInOwner?.uuidString
                 self.orderInMessage = metadata.orderInOwner
                 self.threadRowId = metadata.threadRowId
                 self.caption = nil

@@ -266,6 +266,7 @@ public class GRDBSchemaMigrator: NSObject {
         case cleanUpUniqueIndexes
         case dropTableTestModel
         case addOriginalAttachmentIdForQuotedReplyColumn
+        case addClientUuidToTSAttachment
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2885,6 +2886,14 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(.addOriginalAttachmentIdForQuotedReplyColumn) { tx in
             return try Self.addOriginalAttachmentIdForQuotedReplyColumn(tx)
+        }
+
+        migrator.registerMigration(.addClientUuidToTSAttachment) { tx in
+            try tx.database.alter(table: "model_TSAttachment") { table in
+                table.add(column: "clientUuid", .text)
+            }
+
+            return .success(())
         }
 
         // MARK: - Schema Migration Insertion Point

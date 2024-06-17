@@ -59,6 +59,7 @@ public struct AttachmentRecord: SDSRecord {
     public let isAnimatedCached: Bool?
     public let attachmentSchemaVersion: UInt
     public let videoDuration: Double?
+    public let clientUuid: String?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -92,6 +93,7 @@ public struct AttachmentRecord: SDSRecord {
         case isAnimatedCached
         case attachmentSchemaVersion
         case videoDuration
+        case clientUuid
     }
 
     public static func columnName(_ column: AttachmentRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -146,6 +148,7 @@ public extension AttachmentRecord {
         isAnimatedCached = row[28]
         attachmentSchemaVersion = row[29]
         videoDuration = row[30]
+        clientUuid = row[31]
     }
 }
 
@@ -184,6 +187,7 @@ extension TSAttachment {
             let caption: String? = record.caption
             let cdnKey: String = record.cdnKey
             let cdnNumber: UInt32 = record.cdnNumber
+            let clientUuid: String? = record.clientUuid
             let contentType: String = record.contentType
             let encryptionKey: Data? = SDSDeserialization.optionalData(record.encryptionKey, name: "encryptionKey")
             let serverId: UInt64 = record.serverId
@@ -201,6 +205,7 @@ extension TSAttachment {
                                 caption: caption,
                                 cdnKey: cdnKey,
                                 cdnNumber: cdnNumber,
+                                clientUuid: clientUuid,
                                 contentType: contentType,
                                 encryptionKey: encryptionKey,
                                 serverId: serverId,
@@ -219,6 +224,7 @@ extension TSAttachment {
             let caption: String? = record.caption
             let cdnKey: String = record.cdnKey
             let cdnNumber: UInt32 = record.cdnNumber
+            let clientUuid: String? = record.clientUuid
             let contentType: String = record.contentType
             let encryptionKey: Data? = SDSDeserialization.optionalData(record.encryptionKey, name: "encryptionKey")
             let serverId: UInt64 = record.serverId
@@ -244,6 +250,7 @@ extension TSAttachment {
                                        caption: caption,
                                        cdnKey: cdnKey,
                                        cdnNumber: cdnNumber,
+                                       clientUuid: clientUuid,
                                        contentType: contentType,
                                        encryptionKey: encryptionKey,
                                        serverId: serverId,
@@ -267,6 +274,7 @@ extension TSAttachment {
             let caption: String? = record.caption
             let cdnKey: String = record.cdnKey
             let cdnNumber: UInt32 = record.cdnNumber
+            let clientUuid: String? = record.clientUuid
             let contentType: String = record.contentType
             let encryptionKey: Data? = SDSDeserialization.optionalData(record.encryptionKey, name: "encryptionKey")
             let serverId: UInt64 = record.serverId
@@ -297,6 +305,7 @@ extension TSAttachment {
                                       caption: caption,
                                       cdnKey: cdnKey,
                                       cdnNumber: cdnNumber,
+                                      clientUuid: clientUuid,
                                       contentType: contentType,
                                       encryptionKey: encryptionKey,
                                       serverId: serverId,
@@ -376,6 +385,7 @@ extension TSAttachment: DeepCopyable {
             let caption: String? = modelToCopy.caption
             let cdnKey: String = modelToCopy.cdnKey
             let cdnNumber: UInt32 = modelToCopy.cdnNumber
+            let clientUuid: String? = modelToCopy.clientUuid
             let contentType: String = modelToCopy.contentType
             let encryptionKey: Data? = modelToCopy.encryptionKey
             let serverId: UInt64 = modelToCopy.serverId
@@ -403,6 +413,7 @@ extension TSAttachment: DeepCopyable {
                                       caption: caption,
                                       cdnKey: cdnKey,
                                       cdnNumber: cdnNumber,
+                                      clientUuid: clientUuid,
                                       contentType: contentType,
                                       encryptionKey: encryptionKey,
                                       serverId: serverId,
@@ -432,6 +443,7 @@ extension TSAttachment: DeepCopyable {
             let caption: String? = modelToCopy.caption
             let cdnKey: String = modelToCopy.cdnKey
             let cdnNumber: UInt32 = modelToCopy.cdnNumber
+            let clientUuid: String? = modelToCopy.clientUuid
             let contentType: String = modelToCopy.contentType
             let encryptionKey: Data? = modelToCopy.encryptionKey
             let serverId: UInt64 = modelToCopy.serverId
@@ -454,6 +466,7 @@ extension TSAttachment: DeepCopyable {
                                        caption: caption,
                                        cdnKey: cdnKey,
                                        cdnNumber: cdnNumber,
+                                       clientUuid: clientUuid,
                                        contentType: contentType,
                                        encryptionKey: encryptionKey,
                                        serverId: serverId,
@@ -479,6 +492,7 @@ extension TSAttachment: DeepCopyable {
             let caption: String? = modelToCopy.caption
             let cdnKey: String = modelToCopy.cdnKey
             let cdnNumber: UInt32 = modelToCopy.cdnNumber
+            let clientUuid: String? = modelToCopy.clientUuid
             let contentType: String = modelToCopy.contentType
             let encryptionKey: Data? = modelToCopy.encryptionKey
             let serverId: UInt64 = modelToCopy.serverId
@@ -496,6 +510,7 @@ extension TSAttachment: DeepCopyable {
                                 caption: caption,
                                 cdnKey: cdnKey,
                                 cdnNumber: cdnNumber,
+                                clientUuid: clientUuid,
                                 contentType: contentType,
                                 encryptionKey: encryptionKey,
                                 serverId: serverId,
@@ -545,6 +560,7 @@ extension TSAttachmentSerializer {
     static var isAnimatedCachedColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isAnimatedCached", columnType: .int, isOptional: true) }
     static var attachmentSchemaVersionColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "attachmentSchemaVersion", columnType: .int64) }
     static var videoDurationColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "videoDuration", columnType: .double, isOptional: true) }
+    static var clientUuidColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "clientUuid", columnType: .unicodeString, isOptional: true) }
 
     public static var table: SDSTableMetadata {
         SDSTableMetadata(collection: TSAttachment.collection(),
@@ -580,7 +596,8 @@ extension TSAttachmentSerializer {
         cdnNumberColumn,
         isAnimatedCachedColumn,
         attachmentSchemaVersionColumn,
-        videoDurationColumn
+        videoDurationColumn,
+        clientUuidColumn
         ])
     }
 }
@@ -1009,8 +1026,9 @@ class TSAttachmentSerializer: SDSSerializer {
         let isAnimatedCached: Bool? = nil
         let attachmentSchemaVersion: UInt = model.attachmentSchemaVersion
         let videoDuration: Double? = archiveOptionalNSNumber(model.videoDuration, conversion: { $0.doubleValue })
+        let clientUuid: String? = model.clientUuid
 
-        return AttachmentRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, albumMessageId: albumMessageId, attachmentType: attachmentType, blurHash: blurHash, byteCount: byteCount, caption: caption, contentType: contentType, encryptionKey: encryptionKey, serverId: serverId, sourceFilename: sourceFilename, cachedAudioDurationSeconds: cachedAudioDurationSeconds, cachedImageHeight: cachedImageHeight, cachedImageWidth: cachedImageWidth, creationTimestamp: creationTimestamp, digest: digest, isUploaded: isUploaded, isValidImageCached: isValidImageCached, isValidVideoCached: isValidVideoCached, lazyRestoreFragmentId: lazyRestoreFragmentId, localRelativeFilePath: localRelativeFilePath, mediaSize: mediaSize, pointerType: pointerType, state: state, uploadTimestamp: uploadTimestamp, cdnKey: cdnKey, cdnNumber: cdnNumber, isAnimatedCached: isAnimatedCached, attachmentSchemaVersion: attachmentSchemaVersion, videoDuration: videoDuration)
+        return AttachmentRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, albumMessageId: albumMessageId, attachmentType: attachmentType, blurHash: blurHash, byteCount: byteCount, caption: caption, contentType: contentType, encryptionKey: encryptionKey, serverId: serverId, sourceFilename: sourceFilename, cachedAudioDurationSeconds: cachedAudioDurationSeconds, cachedImageHeight: cachedImageHeight, cachedImageWidth: cachedImageWidth, creationTimestamp: creationTimestamp, digest: digest, isUploaded: isUploaded, isValidImageCached: isValidImageCached, isValidVideoCached: isValidVideoCached, lazyRestoreFragmentId: lazyRestoreFragmentId, localRelativeFilePath: localRelativeFilePath, mediaSize: mediaSize, pointerType: pointerType, state: state, uploadTimestamp: uploadTimestamp, cdnKey: cdnKey, cdnNumber: cdnNumber, isAnimatedCached: isAnimatedCached, attachmentSchemaVersion: attachmentSchemaVersion, videoDuration: videoDuration, clientUuid: clientUuid)
     }
 }
 

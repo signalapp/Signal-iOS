@@ -40,6 +40,14 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSAnimatedMimeType) {
 @property (atomic, readwrite, nullable) NSData *encryptionKey;
 @property (nonatomic, readonly) NSString *contentType;
 
+/// Uniquely identifies this attachment among the body attachments on a message.
+/// Unset for attachments other than message body attachments, or for legacy
+/// attachments.
+///
+/// This should be a UUID in practice, but the SDS codegen didn't like the
+/// `NSUUID` type.
+@property (nonatomic, readonly, nullable) NSString *clientUuid;
+
 // Though now required, may incorrectly be 0 on legacy attachments.
 @property (nonatomic, readonly) UInt32 byteCount;
 
@@ -87,6 +95,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSAnimatedMimeType) {
                    encryptionKey:(NSData *)encryptionKey
                        byteCount:(UInt32)byteCount
                      contentType:(NSString *)contentType
+                      clientUuid:(NSUUID *)clientUuid
                   sourceFilename:(nullable NSString *)sourceFilename
                          caption:(nullable NSString *)caption
                   attachmentType:(TSAttachmentType)attachmentType
@@ -126,13 +135,14 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSAnimatedMimeType) {
                          caption:(nullable NSString *)caption
                           cdnKey:(NSString *)cdnKey
                        cdnNumber:(unsigned int)cdnNumber
+                      clientUuid:(nullable NSString *)clientUuid
                      contentType:(NSString *)contentType
                    encryptionKey:(nullable NSData *)encryptionKey
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
                  uploadTimestamp:(unsigned long long)uploadTimestamp
                    videoDuration:(nullable NSNumber *)videoDuration
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentSchemaVersion:attachmentType:blurHash:byteCount:caption:cdnKey:cdnNumber:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:videoDuration:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentSchemaVersion:attachmentType:blurHash:byteCount:caption:cdnKey:cdnNumber:clientUuid:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:videoDuration:));
 
 // clang-format on
 

@@ -202,6 +202,7 @@ CREATE
             ,"isAnimatedCached" INTEGER
             ,"attachmentSchemaVersion" INTEGER DEFAULT 0
             ,"videoDuration" DOUBLE
+            ,"clientUuid" TEXT
         )
 ;
 

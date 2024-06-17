@@ -78,6 +78,7 @@ static const NSUInteger kMaxAttachmentsPerDataMessage = 100;
                           digest:(nullable NSData *)digest
                        byteCount:(UInt32)byteCount
                      contentType:(NSString *)contentType
+                      clientUuid:(NSUUID *)clientUuid
                   sourceFilename:(nullable NSString *)sourceFilename
                          caption:(nullable NSString *)caption
                   albumMessageId:(nullable NSString *)albumMessageId
@@ -93,6 +94,7 @@ static const NSUInteger kMaxAttachmentsPerDataMessage = 100;
                      encryptionKey:key
                          byteCount:byteCount
                        contentType:contentType
+                        clientUuid:clientUuid
                     sourceFilename:sourceFilename
                            caption:caption
                     attachmentType:attachmentType
@@ -130,6 +132,7 @@ static const NSUInteger kMaxAttachmentsPerDataMessage = 100;
                          caption:(nullable NSString *)caption
                           cdnKey:(NSString *)cdnKey
                        cdnNumber:(unsigned int)cdnNumber
+                      clientUuid:(nullable NSString *)clientUuid
                      contentType:(NSString *)contentType
                    encryptionKey:(nullable NSData *)encryptionKey
                         serverId:(unsigned long long)serverId
@@ -152,6 +155,7 @@ static const NSUInteger kMaxAttachmentsPerDataMessage = 100;
                            caption:caption
                             cdnKey:cdnKey
                          cdnNumber:cdnNumber
+                        clientUuid:clientUuid
                        contentType:contentType
                      encryptionKey:encryptionKey
                           serverId:serverId
@@ -195,6 +199,14 @@ static const NSUInteger kMaxAttachmentsPerDataMessage = 100;
         OWSFailDebug(@"Invalid attachment key.");
         return nil;
     }
+
+    NSUUID *_Nullable clientUuid;
+    if (attachmentProto.hasClientUuid) {
+        clientUuid = [NSUUID fromData:attachmentProto.clientUuid];
+    } else {
+        clientUuid = nil;
+    }
+
     NSString *_Nullable fileName = attachmentProto.fileName;
     NSString *_Nullable contentType = attachmentProto.contentType;
     if (contentType.length < 1) {
@@ -267,6 +279,7 @@ static const NSUInteger kMaxAttachmentsPerDataMessage = 100;
                                                                           digest:digest
                                                                        byteCount:attachmentProto.size
                                                                      contentType:contentType
+                                                                      clientUuid:clientUuid
                                                                   sourceFilename:fileName
                                                                          caption:caption
                                                                   albumMessageId:albumMessageId
