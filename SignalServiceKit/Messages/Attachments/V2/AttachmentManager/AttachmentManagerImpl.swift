@@ -174,15 +174,16 @@ public class AttachmentManagerImpl: AttachmentManager {
             throw OWSAssertionError("Missing digest")
         }
 
-        let clientUuid: UUID?
-        if
-            let uuidData = proto.clientUuid,
-            let uuid = UUID(data: uuidData)
-        {
-            clientUuid = uuid
-        } else {
-            clientUuid = nil
-        }
+        let knownIdFromProto: OwnerBuilder.KnownIdInOwner = {
+            if
+                let uuidData = proto.clientUuid,
+                let uuid = UUID(data: uuidData)
+            {
+                return .known(uuid)
+            } else {
+                return .knownNil
+            }
+        }()
 
         let mimeType: String
         if let protoMimeType = proto.contentType?.nilIfEmpty {
@@ -233,7 +234,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         let referenceParams = AttachmentReference.ConstructionParams(
             owner: try owner.build(
                 orderInOwner: sourceOrder,
-                knownIdInOwner: clientUuid,
+                knownIdInOwner: knownIdFromProto,
                 renderingFlag: .fromProto(proto),
                 // Not downloaded so we don't know the content type.
                 contentType: nil
@@ -264,7 +265,7 @@ public class AttachmentManagerImpl: AttachmentManager {
 
             let owner: AttachmentReference.Owner = try dataSource.owner.build(
                 orderInOwner: sourceOrder,
-                knownIdInOwner: nil,
+                knownIdInOwner: .none,
                 renderingFlag: existingAttachmentMetadata.renderingFlag,
                 contentType: existingAttachment.streamInfo?.contentType.raw
             )
@@ -282,7 +283,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         case .pendingAttachment(let pendingAttachment):
             let owner: AttachmentReference.Owner = try dataSource.owner.build(
                 orderInOwner: sourceOrder,
-                knownIdInOwner: nil,
+                knownIdInOwner: .none,
                 renderingFlag: pendingAttachment.renderingFlag,
                 contentType: pendingAttachment.validatedContentType.raw
             )
@@ -428,7 +429,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             let referenceParams = AttachmentReference.ConstructionParams(
                 owner: try referenceOwner.build(
                     orderInOwner: nil,
-                    knownIdInOwner: nil,
+                    knownIdInOwner: .none,
                     renderingFlag: originalAttachmentSource.renderingFlag,
                     contentType: nil
                 ),

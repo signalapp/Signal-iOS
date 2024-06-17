@@ -8,7 +8,7 @@ import GRDB
 
 extension AttachmentReference {
 
-    /// A builder for the "owner" metadata of the attachment, with the bare minimum per-type
+    /// A builder for the "owner" metadata of an attachment, with the bare minimum per-type
     /// metadata required for construction.
     ///
     /// This type is used by external constructors to indicate what _kind_ of owner they want
@@ -32,15 +32,30 @@ extension AttachmentReference {
         case threadWallpaperImage(threadRowId: Int64)
         case globalThreadWallpaperImage
 
+        /// A known identifier for this attachment within the owner, shared
+        /// with linked devices and other users.
+        ///
+        /// - Note
+        /// This is only relevant for message body attachments.
+        public enum KnownIdInOwner {
+            /// No known identifier is available and a new random one will be assigned.
+            /// This should be preferred for most callers, especially local outgoing attachments.
+            case none
+            /// An identifier is affirmatively known to be missing.
+            case knownNil
+            /// A known identifier is present.
+            case known(UUID)
+        }
+
         /// Build the owner of this attachment reference.
         ///
         /// - Parameter knowIdInOwner
         /// A known identifier for this attachment within the owner. Callers
-        /// should pass `nil` if no pre-known identifier is available. Only
-        /// relevant for message body attachments!
+        /// should pass ``KnownIdInOwner/none`` if no identifier information is
+        /// available. Only relevant for message body attachments!
         public func build(
             orderInOwner: UInt32?,
-            knownIdInOwner: UUID?,
+            knownIdInOwner: KnownIdInOwner,
             renderingFlag: AttachmentReference.RenderingFlag,
             contentType: AttachmentReference.ContentType?
         ) throws -> AttachmentReference.Owner {
@@ -59,7 +74,13 @@ extension AttachmentReference {
                     caption: nil,
                     renderingFlag: renderingFlag,
                     orderInOwner: orderInOwner,
-                    idInOwner: knownIdInOwner ?? UUID()
+                    idInOwner: { () -> UUID? in
+                        switch knownIdInOwner {
+                        case .none: return UUID()
+                        case .knownNil: return nil
+                        case .known(let knownValue): return knownValue
+                        }
+                    }()
                 )))
             case .messageOversizeText(let metadata):
                 return .message(.oversizeText(.init(
