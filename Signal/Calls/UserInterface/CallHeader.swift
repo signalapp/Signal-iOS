@@ -245,7 +245,7 @@ class CallHeader: UIView {
 
     private func callStatusLabelText() -> String {
         switch ringRtcCall.localDeviceState.joinState {
-        case .notJoined, .joining, .pending:
+        case .notJoined, .joining:
             switch groupCall.concreteType {
             case .groupThread(let groupThreadCall):
                 if case .incomingRing(let caller, _) = groupThreadCall.groupCallRingState {
@@ -264,9 +264,13 @@ class CallHeader: UIView {
                     return willNotifyOthersText(groupThreadCall: groupThreadCall)
                 }
             case .callLink:
-                // [CallLink] TODO: Localize this value.
-                return "Signal Call Link"
+                return whoIsHereText(joinedMembers: ringRtcCall.peekInfo?.joinedMembers ?? [])
             }
+        case .pending:
+            return OWSLocalizedString(
+                "CALL_WAITING_TO_BE_LET_IN",
+                comment: "Shown in the header below the name of the call while waiting for the host to allow you to enter the call."
+            )
         case .joined:
             if ringRtcCall.localDeviceState.connectionState == .reconnecting {
                 return OWSLocalizedString(
@@ -274,19 +278,26 @@ class CallHeader: UIView {
                     comment: "Text indicating that the user has lost their connection to the call and we are reconnecting."
                 )
             }
-            if !ringRtcCall.remoteDeviceStates.isEmpty {
-                return callDurationText()
-            }
             switch groupCall.concreteType {
             case .groupThread(let groupThreadCall):
+                if !ringRtcCall.remoteDeviceStates.isEmpty {
+                    return callDurationText()
+                }
                 if case .ringing = groupThreadCall.groupCallRingState {
                     return ringingOthersText(groupThreadCall: groupThreadCall)
                 }
-                return noOneElseIsHereText()
             case .callLink:
-                // [CallLink] TODO: Show the right string for incoming/outgoing.
-                return "Waiting..."
+                guard let peekInfo = ringRtcCall.peekInfo else {
+                    return ""
+                }
+                if !peekInfo.pendingUsers.isEmpty {
+                    return howManyAreWaitingText(count: peekInfo.pendingUsers.count)
+                }
+                if peekInfo.deviceCountExcludingPendingDevices > 0 {
+                    return howManyAreHereText(count: Int(peekInfo.deviceCountExcludingPendingDevices))
+                }
             }
+            return noOneElseIsHereText()
         }
     }
 
@@ -310,7 +321,7 @@ class CallHeader: UIView {
         return describeMembers(
             count: joinedMembers.count,
             names: memberNames,
-            zeroMemberString: "",
+            zeroMemberString: noOneElseIsHereText(),
             oneMemberFormat: OWSLocalizedString(
                 "GROUP_CALL_ONE_PERSON_HERE_FORMAT",
                 comment: "Text explaining that there is one person in the group call. Embeds {member name}"
@@ -416,6 +427,24 @@ class CallHeader: UIView {
         )
     }
 
+    private func howManyAreWaitingText(count: Int) -> String {
+        let format = OWSLocalizedString(
+            "CALL_PEOPLE_WAITING",
+            tableName: "PluralAware",
+            comment: "Text shown in the header of a call to indicate how many people have requested to join and need to be approved."
+        )
+        return String.localizedStringWithFormat(format, count)
+    }
+
+    private func howManyAreHereText(count: Int) -> String {
+        let format = OWSLocalizedString(
+            "CALL_PEOPLE_HERE",
+            tableName: "PluralAware",
+            comment: "Text shown in the header of a call to indicate how many people are present."
+        )
+        return String.localizedStringWithFormat(format, count)
+    }
+
     private func updateCallTitleLabel() {
         callTitleLabel.text = self.callTitleLabelText()
     }
@@ -441,9 +470,11 @@ class CallHeader: UIView {
             return databaseStorage.read { transaction in
                 contactsManager.displayName(for: groupThreadCall.groupThread, transaction: transaction)
             }
-        case .callLink:
-            // [CallLink] TODO: Show the name here.
-            return "Call Link"
+        case .callLink(let call):
+            return call.callLinkState.name ?? OWSLocalizedString(
+                "SIGNAL_CALL",
+                comment: "Shown in the header when the user hasn't provided a custom name for a call."
+            )
         }
     }
 
@@ -469,9 +500,7 @@ class CallHeader: UIView {
 
 extension CallHeader: GroupCallObserver {
     func groupCallLocalDeviceStateChanged(_ call: GroupCall) {
-        if ringRtcCall.localDeviceState.joinState == .joined {
-            gradientView.isHidden = false
-            avatarView?.isHidden = true // hide the container
+        if case .groupThread = call.concreteType, call.joinState == .joined {
             if callDurationTimer == nil {
                 let kDurationUpdateFrequencySeconds = 1 / 20.0
                 callDurationTimer = WeakTimer.scheduledTimer(
@@ -484,10 +513,16 @@ extension CallHeader: GroupCallObserver {
                 }
             }
         } else {
-            gradientView.isHidden = true
-            avatarView?.isHidden = false
             callDurationTimer?.invalidate()
             callDurationTimer = nil
+        }
+
+        if call.joinState == .joined {
+            gradientView.isHidden = false
+            avatarView?.isHidden = true // hide the container
+        } else {
+            gradientView.isHidden = true
+            avatarView?.isHidden = false
         }
 
         updateCallStatusLabel()

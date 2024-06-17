@@ -66,6 +66,38 @@
 			<string>Add New Members</string>
 		</dict>
 	</dict>
+	<key>CALL_PEOPLE_HERE</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>ld</string>
+			<key>one</key>
+			<string>%ld person</string>
+			<key>other</key>
+			<string>%ld people</string>
+		</dict>
+	</dict>
+	<key>CALL_PEOPLE_WAITING</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>ld</string>
+			<key>one</key>
+			<string>%ld person waiting</string>
+			<key>other</key>
+			<string>%ld people waiting</string>
+		</dict>
+	</dict>
 	<key>CAMERA_VO_N_ITEMS</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

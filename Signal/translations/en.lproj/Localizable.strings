@@ -784,6 +784,9 @@
 /* Accessibility label for unmuting the microphone */
 "CALL_VIEW_UNMUTE_LABEL" = "Unmute";
 
+/* Shown in the header below the name of the call while waiting for the host to allow you to enter the call. */
+"CALL_WAITING_TO_BE_LET_IN" = "Waiting to be let in…";
+
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Call Back";
 
@@ -7158,6 +7161,9 @@
 
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "Show Chat";
+
+/* Shown in the header when the user hasn't provided a custom name for a call. */
+"SIGNAL_CALL" = "Signal Call";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "I'm inviting you to install Signal! Here is the link:";
