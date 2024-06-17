@@ -414,32 +414,44 @@ private class CallControlsViewModel {
                 isUserInteractionEnabled: false
             )
         }
-        let startCallText = OWSLocalizedString(
-            "CALL_START_BUTTON",
-            comment: "Button to start a call"
-        )
         let label: String
         switch call.mode {
         case .individual(_):
             // We only show a lobby for 1:1 calls when the call is being initiated.
             // TODO: The work of adding the lobby for 1:1 calls in the unified call view
             // controller (currently GroupCallViewController) is not yet complete.
-            label = startCallText
+            label = startCallText()
         case .groupThread(let call):
-            let joinCallText = OWSLocalizedString(
-                "GROUP_CALL_JOIN_BUTTON",
-                comment: "Button to join an ongoing group call"
-            )
-            label = call.ringRestrictions.contains(.callInProgress) ? joinCallText : startCallText
-        case .callLink:
-            // [CallLink] TODO: Localize "Ask to Join"
-            label = "Ask to Join"
+            label = call.ringRestrictions.contains(.callInProgress) ? joinCallText() : startCallText()
+        case .callLink(let call):
+            label = call.mayNeedToAskToJoin ? askToJoinText() : joinCallText()
         }
         return JoinButtonConfiguration(
             label: label,
             color: .white,
             adjustsImageWhenHighlighted: true,
             isUserInteractionEnabled: true
+        )
+    }
+
+    private func startCallText() -> String {
+        return OWSLocalizedString(
+            "CALL_START_BUTTON",
+            comment: "Button to start a call"
+        )
+    }
+
+    private func joinCallText() -> String {
+        return OWSLocalizedString(
+            "GROUP_CALL_JOIN_BUTTON",
+            comment: "Button to join an ongoing group call"
+        )
+    }
+
+    private func askToJoinText() -> String {
+        return OWSLocalizedString(
+            "ASK_TO_JOIN_CALL",
+            comment: "Button to try to join a call. The admin may need to approve the request before the user can join."
         )
     }
 
@@ -497,11 +509,9 @@ private class CallControlsViewModel {
         switch call.mode {
         case .individual(_):
             return true
-        case .groupThread(let call):
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
+            // [Call Link] TODO: Figure out if this should be shown while pending.
             return call.ringRtcCall.localDeviceState.joinState != .joined
-        case .callLink:
-            // [CallLink] TODO: .
-            return true
         }
     }
 

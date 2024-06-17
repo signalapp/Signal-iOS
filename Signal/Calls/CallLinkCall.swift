@@ -27,4 +27,8 @@ final class CallLinkCall: Signal.GroupCall {
             videoCaptureController: videoCaptureController
         )
     }
+
+    var mayNeedToAskToJoin: Bool {
+        return callLinkState.requiresAdminApproval && adminPasskey == nil
+    }
 }

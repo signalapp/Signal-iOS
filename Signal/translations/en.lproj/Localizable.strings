@@ -298,6 +298,9 @@
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "Archive";
 
+/* Button to try to join a call. The admin may need to approve the request before the user can join. */
+"ASK_TO_JOIN_CALL" = "Ask to Join Call";
+
 /* One of the choices for pre-defined aspect ratio of a photo in media editor. */
 "ASPECT_RATIO_ORIGINAL" = "Original";
 
