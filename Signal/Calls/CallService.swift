@@ -19,6 +19,9 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     public typealias CallManagerType = CallManager<SignalCall, CallService>
 
     public let callManager: CallManagerType
+    // Even though we never use this, we need to retain it to ensure
+    // `callManager` continues to work properly.
+    private let callManagerHttpClient: AnyObject
 
     private var audioSession: AudioSession { NSObject.audioSession }
     private let authCredentialManager: any AuthCredentialManager
@@ -66,14 +69,15 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     public init(
         appContext: any AppContext,
         authCredentialManager: any AuthCredentialManager,
-        groupCallPeekClient: GroupCallPeekClient,
         mutableCurrentCall: AtomicValue<SignalCall?>
     ) {
         self.authCredentialManager = authCredentialManager
+        let httpClient = CallHTTPClient()
         self.callManager = CallManager(
-            httpClient: groupCallPeekClient.httpClient,
+            httpClient: httpClient.ringRtcHttpClient,
             fieldTrials: RingrtcFieldTrials.trials(with: appContext.appUserDefaults())
         )
+        self.callManagerHttpClient = httpClient
         let callUIAdapter = CallUIAdapter()
         self.callUIAdapter = callUIAdapter
         self.callServiceState = CallServiceState(currentCall: mutableCurrentCall)

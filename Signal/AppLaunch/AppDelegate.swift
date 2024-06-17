@@ -346,7 +346,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         AppEnvironment.shared.setUp(callService: CallService(
             appContext: launchContext.appContext,
             authCredentialManager: databaseContinuation.authCredentialManager,
-            groupCallPeekClient: NSObject.groupCallManager.groupCallPeekClient,
             mutableCurrentCall: _currentCall
         ))
         let result = databaseContinuation.prepareDatabase()

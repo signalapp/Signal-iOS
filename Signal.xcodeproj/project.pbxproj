@@ -678,6 +678,7 @@
 		50D8796A2A16D2C20031345D /* MessageLoaderBatchTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D879692A16D2C20031345D /* MessageLoaderBatchTest.swift */; };
 		50DC0D9B2BE56EF0003C57D3 /* CallServiceState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50DC0D9A2BE56EF0003C57D3 /* CallServiceState.swift */; };
 		50E42FE42C1B6E2100554BD6 /* CallTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E42FE32C1B6E2100554BD6 /* CallTarget.swift */; };
+		50E42FEA2C1BA3B900554BD6 /* CallHTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E42FE92C1BA3B900554BD6 /* CallHTTPClient.swift */; };
 		50E51A3B2AE989C4004F9069 /* AccountAttributesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E51A3A2AE989C4004F9069 /* AccountAttributesTest.swift */; };
 		50E5E4B129932D9B00E15A1C /* DeviceMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E5E4B029932D9B00E15A1C /* DeviceMessage.swift */; };
 		50E5E4B32993352C00E15A1C /* ChangePhoneNumberPniManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E5E4B22993352C00E15A1C /* ChangePhoneNumberPniManager.swift */; };
@@ -3596,6 +3597,7 @@
 		50D879692A16D2C20031345D /* MessageLoaderBatchTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageLoaderBatchTest.swift; sourceTree = "<group>"; };
 		50DC0D9A2BE56EF0003C57D3 /* CallServiceState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallServiceState.swift; sourceTree = "<group>"; };
 		50E42FE32C1B6E2100554BD6 /* CallTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallTarget.swift; sourceTree = "<group>"; };
+		50E42FE92C1BA3B900554BD6 /* CallHTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallHTTPClient.swift; sourceTree = "<group>"; };
 		50E51A3A2AE989C4004F9069 /* AccountAttributesTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAttributesTest.swift; sourceTree = "<group>"; };
 		50E5E4B029932D9B00E15A1C /* DeviceMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceMessage.swift; sourceTree = "<group>"; };
 		50E5E4B22993352C00E15A1C /* ChangePhoneNumberPniManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePhoneNumberPniManager.swift; sourceTree = "<group>"; };
@@ -10192,6 +10194,7 @@
 				D9CA8AAD2B698B2400787167 /* DeletedCallRecord */,
 				D9AA379D2A86C9660088EFFB /* Group */,
 				D9AA379E2A86CA3F0088EFFB /* Individual */,
+				50E42FE92C1BA3B900554BD6 /* CallHTTPClient.swift */,
 				50C831752BAA3A8000BEBF25 /* CallMessageHandler.swift */,
 				32525F9427C74B1A0099E801 /* GroupCallManager.swift */,
 				D95777B92B46411300CFE3AE /* GroupCallPeekClient.swift */,
@@ -13579,6 +13582,7 @@
 				E7D7C93F28B580AC003F043B /* Bundle+OWS.swift in Sources */,
 				7254653F2BA01FCC00EABFD2 /* CachedBadge.swift in Sources */,
 				50D3136F2BFFE9370023EDCC /* CallEventInserter.swift in Sources */,
+				50E42FEA2C1BA3B900554BD6 /* CallHTTPClient.swift in Sources */,
 				50A4AC622C111FAE00D89C8E /* CallLinkAuthCredential.swift in Sources */,
 				50C831762BAA3A8000BEBF25 /* CallMessageHandler.swift in Sources */,
 				72C9058E2B9AC8E600E586B8 /* CallMessageRelay.swift in Sources */,
