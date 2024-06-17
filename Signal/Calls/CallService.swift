@@ -34,6 +34,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     let individualCallService: IndividualCallService
     let groupCallRemoteVideoManager: GroupCallRemoteVideoManager
+    let callLinkManager: CallLinkManagerImpl
 
     /// Needs to be lazily initialized, because it uses singletons that are not
     /// available when this class is initialized.
@@ -69,7 +70,10 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     public init(
         appContext: any AppContext,
         authCredentialManager: any AuthCredentialManager,
-        mutableCurrentCall: AtomicValue<SignalCall?>
+        callLinkPublicParams: GenericServerPublicParams,
+        mutableCurrentCall: AtomicValue<SignalCall?>,
+        networkManager: NetworkManager,
+        tsAccountManager: any TSAccountManager
     ) {
         self.authCredentialManager = authCredentialManager
         let httpClient = CallHTTPClient()
@@ -87,6 +91,11 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         )
         self.groupCallRemoteVideoManager = GroupCallRemoteVideoManager(
             callServiceState: self.callServiceState
+        )
+        self.callLinkManager = CallLinkManagerImpl(
+            networkManager: networkManager,
+            serverParams: callLinkPublicParams,
+            tsAccountManager: tsAccountManager
         )
         self.callManager.delegate = self
         SwiftSingletons.register(self)

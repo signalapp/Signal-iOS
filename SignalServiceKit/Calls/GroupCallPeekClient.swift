@@ -25,7 +25,7 @@ public class GroupCallPeekClient {
     private let groupsV2: any GroupsV2
     private let sfuClient: SFUClient
     // Even though we never use this, we need to retain it to ensure
-    // `callManager` continues to work properly.
+    // `sfuClient` continues to work properly.
     private let sfuClientHttpClient: AnyObject
 
     init(

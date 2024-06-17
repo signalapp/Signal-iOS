@@ -18,8 +18,8 @@ private protocol CallCellDelegate: AnyObject {
 // MARK: - CallsListViewController
 
 class CallsListViewController: OWSViewController, HomeTabViewController, CallServiceStateObserver {
-    private typealias DiffableDataSource = UITableViewDiffableDataSource<Section, CallViewModel.Reference>
-    private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, CallViewModel.Reference>
+    private typealias DiffableDataSource = UITableViewDiffableDataSource<Section, RowIdentifier>
+    private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, RowIdentifier>
 
     private enum Constants {
         /// The maximum number of search results to match.
@@ -103,6 +103,8 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         tableView.allowsMultipleSelectionDuringEditing = true
         tableView.separatorStyle = .none
         tableView.contentInset = .zero
+        // [CallLink] TODO: Add the icon & formatting to the table view row.
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: Self.createCallLinkReuseIdentifier)
         tableView.register(CallCell.self, forCellReuseIdentifier: Self.callCellReuseIdentifier)
         tableView.dataSource = dataSource
 
@@ -248,6 +250,12 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         }
 
         deleteCalls(viewModelReferences: selectedViewModelReferences)
+    }
+
+    // MARK: Call Link Button
+
+    private func createCallLink() {
+        CreateCallLinkViewController().createCallLinkOnServerAndPresent(fromViewController: self)
     }
 
     // MARK: New call button
@@ -730,14 +738,14 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     /// The call view model for this index path. A return value of `nil`
     /// represents an unexpected error.
     private func loadMoreCallsIfNecessary(
-        indexPathToBeDisplayed indexPath: IndexPath
+        indexToBeDisplayed callIndex: Int
     ) -> CallViewModel? {
-        if indexPath.row == viewModelLoader.loadedViewModelReferences.count - 1 {
+        if callIndex == viewModelLoader.loadedViewModelReferences.count - 1 {
             /// If this index path represents the oldest loaded call, try and
             /// load another page of even-older calls.
             loadMoreCalls(direction: .older, animated: false)
         } else if !viewModelLoader.hasCachedViewModel(
-            loadedViewModelReferenceIndex: indexPath.row
+            loadedViewModelReferenceIndex: callIndex
         ) {
             /// If we don't have a view model ready to go for this row, load
             /// until we do.
@@ -759,13 +767,13 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             /// an arbitrary index path", which is what this does.
             deps.db.read { tx in
                 viewModelLoader.loadUntilCached(
-                    loadedViewModelReferenceIndex: indexPath.row, tx: tx.asV2Read
+                    loadedViewModelReferenceIndex: callIndex, tx: tx.asV2Read
                 )
             }
         }
 
         return viewModelLoader.getCachedViewModel(
-            loadedViewModelReferenceIndex: indexPath.row
+            loadedViewModelReferenceIndex: callIndex
         )
     }
 
@@ -959,7 +967,13 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     // MARK: - Table view
 
     fileprivate enum Section: Int, Hashable {
-        case primary = 0
+        case createCallLink
+        case existingCalls
+    }
+
+    fileprivate enum RowIdentifier: Hashable {
+        case createCallLink
+        case callViewModelReference(CallViewModel.Reference)
     }
 
     struct CallViewModel {
@@ -1102,40 +1116,58 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
     let tableView = UITableView(frame: .zero, style: .plain)
 
-    private static var callCellReuseIdentifier = "callCell"
+    private static let createCallLinkReuseIdentifier = "createCallLink"
+    private static let callCellReuseIdentifier = "callCell"
 
     private lazy var dataSource = DiffableDataSource(
         tableView: tableView
-    ) { [weak self] tableView, indexPath, _viewModelReference -> UITableViewCell? in
-        guard
-            let self,
-            let callCell = tableView.dequeueReusableCell(
-                withIdentifier: Self.callCellReuseIdentifier
-            ) as? CallCell
-        else { return UITableViewCell() }
+    ) { [weak self] tableView, indexPath, _ -> UITableViewCell? in
+        return self?.buildTableViewCell(tableView: tableView, indexPath: indexPath) ?? UITableViewCell()
+    }
 
-        /// This load should be sufficiently fast that doing it here
-        /// synchronously is fine.
-        if let viewModelForIndexPath = self.loadMoreCallsIfNecessary(
-            indexPathToBeDisplayed: indexPath
-        ) {
-            callCell.delegate = self
-            callCell.viewModel = viewModelForIndexPath
+    private func buildTableViewCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell? {
+        switch Section(rawValue: indexPath.section) {
+        case .createCallLink:
+            let createCallLinkCell = tableView.dequeueReusableCell(withIdentifier: Self.createCallLinkReuseIdentifier, for: indexPath)
+            // [CallLink] TODO: Localize.
+            createCallLinkCell.textLabel?.text = "Create a Call Link"
+            return createCallLinkCell
+        case .existingCalls:
+            guard
+                let callCell = tableView.dequeueReusableCell(
+                    withIdentifier: Self.callCellReuseIdentifier
+                ) as? CallCell
+            else {
+                return nil
+            }
+            /// This load should be sufficiently fast that doing it here
+            /// synchronously is fine.
+            if let viewModelForIndexPath = self.loadMoreCallsIfNecessary(
+                indexToBeDisplayed: indexPath.row
+            ) {
+                callCell.delegate = self
+                callCell.viewModel = viewModelForIndexPath
 
-            return callCell
-        } else {
-            owsFailDebug("Missing cached view model – how did this happen?")
-
-            /// Return an empty table cell, rather than a ``CallCell`` that's
-            /// gonna be incorrectly configured.
-            return UITableViewCell()
+                return callCell
+            } else {
+                owsFailDebug("Missing cached view model – how did this happen?")
+                /// Return an empty table cell, rather than a ``CallCell`` that's
+                /// gonna be incorrectly configured.
+            }
+        case .none:
+            break
         }
+        return nil
     }
 
     private func getSnapshot() -> Snapshot {
         var snapshot = Snapshot()
-        snapshot.appendSections([.primary])
-        snapshot.appendItems(viewModelLoader.loadedViewModelReferences.allElements)
+        snapshot.appendSections([.createCallLink])
+        if FeatureFlags.callLinkCreate {
+            snapshot.appendItems([.createCallLink])
+        }
+        snapshot.appendSections([.existingCalls])
+        snapshot.appendItems(viewModelLoader.loadedViewModelReferences.allElements.map { .callViewModelReference($0) })
         return snapshot
     }
 
@@ -1163,13 +1195,13 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         }
 
         var snapshot = getSnapshot()
-        snapshot.reloadItems(referencesToReload)
+        snapshot.reloadItems(referencesToReload.map { .callViewModelReference($0) })
         dataSource.apply(snapshot)
     }
 
     private func reloadAllRows() {
         var snapshot = getSnapshot()
-        snapshot.reloadSections([.primary])
+        snapshot.reloadSections([.existingCalls])
         dataSource.apply(snapshot)
     }
 
@@ -1224,7 +1256,7 @@ private extension IndexPath {
     static func indexPathForPrimarySection(row: Int) -> IndexPath {
         return IndexPath(
             row: row,
-            section: CallsListViewController.Section.primary.rawValue
+            section: CallsListViewController.Section.existingCalls.rawValue
         )
     }
 }
@@ -1277,7 +1309,7 @@ extension CallsListViewController: UITableViewDelegate {
         forIndexPathThatShouldHaveOne indexPath: IndexPath
     ) -> CallViewModel? {
         owsAssert(
-            indexPath.section == Section.primary.rawValue,
+            indexPath.section == Section.existingCalls.rawValue,
             "Unexpected section for index path: \(indexPath.section)"
         )
 
@@ -1299,10 +1331,15 @@ extension CallsListViewController: UITableViewDelegate {
 
         tableView.deselectRow(at: indexPath, animated: true)
 
-        guard let viewModel = viewModel(forIndexPathThatShouldHaveOne: indexPath) else {
-            return owsFailDebug("Missing view model")
+        switch Section(rawValue: indexPath.section) {
+        case .createCallLink:
+            createCallLink()
+        case .existingCalls, .none:
+            guard let viewModel = viewModel(forIndexPathThatShouldHaveOne: indexPath) else {
+                return owsFailDebug("Missing view model")
+            }
+            callBack(from: viewModel)
         }
-        callBack(from: viewModel)
     }
 
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
@@ -1312,7 +1349,12 @@ extension CallsListViewController: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, shouldBeginMultipleSelectionInteractionAt indexPath: IndexPath) -> Bool {
-        true
+        switch Section(rawValue: indexPath.section) {
+        case .createCallLink:
+            return false
+        case .existingCalls, .none:
+            return true
+        }
     }
 
     func tableView(_ tableView: UITableView, didBeginMultipleSelectionInteractionAt indexPath: IndexPath) {
@@ -1321,6 +1363,13 @@ extension CallsListViewController: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        switch Section(rawValue: indexPath.section) {
+        case .createCallLink:
+            return nil
+        case .existingCalls, .none:
+            break
+        }
+
         return self.longPressActions(forRowAt: indexPath)
             .map { actions in UIMenu.init(children: actions) }
             .map { menu in
@@ -1329,6 +1378,13 @@ extension CallsListViewController: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        switch Section(rawValue: indexPath.section) {
+        case .createCallLink:
+            return nil
+        case .existingCalls, .none:
+            break
+        }
+
         guard let viewModel = viewModel(forIndexPathThatShouldHaveOne: indexPath) else {
             owsFailDebug("Missing call view model")
             return nil
@@ -1347,6 +1403,13 @@ extension CallsListViewController: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        switch Section(rawValue: indexPath.section) {
+        case .createCallLink:
+            return nil
+        case .existingCalls, .none:
+            break
+        }
+
         guard let viewModel = viewModel(forIndexPathThatShouldHaveOne: indexPath) else {
             owsFailDebug("Missing call view model")
             return nil

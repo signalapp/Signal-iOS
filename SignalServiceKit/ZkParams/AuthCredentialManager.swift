@@ -19,12 +19,12 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
 
     init(
         authCredentialStore: AuthCredentialStore,
-        callLinkPublicParams: Data,
+        callLinkPublicParams: GenericServerPublicParams,
         dateProvider: @escaping DateProvider,
         db: any DB
     ) {
         self.authCredentialStore = authCredentialStore
-        self.callLinkPublicParams = try! GenericServerPublicParams(contents: [UInt8](callLinkPublicParams))
+        self.callLinkPublicParams = callLinkPublicParams
         self.dateProvider = dateProvider
         self.db = db
     }

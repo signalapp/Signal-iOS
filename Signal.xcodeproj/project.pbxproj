@@ -629,6 +629,8 @@
 		506A99D42B86B39F00E3C753 /* ContactManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506A99D32B86B39F00E3C753 /* ContactManager.swift */; };
 		506ABE6B2A43AECA008844D1 /* UserProfileStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506ABE6A2A43AECA008844D1 /* UserProfileStore.swift */; };
 		506ABE6E2A43B2FE008844D1 /* UserProfileMergerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506ABE6C2A43B2C0008844D1 /* UserProfileMergerTest.swift */; };
+		50733B1E2BAD038D00CEEC1F /* CallLinkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50733B1D2BAD038D00CEEC1F /* CallLinkManager.swift */; };
+		50733B202BAD03E400CEEC1F /* CreateCallLinkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50733B1F2BAD03E400CEEC1F /* CreateCallLinkViewController.swift */; };
 		5075004628B09CE6001922C9 /* ContactDiscoveryE164CollectionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4BC6C22102D697004040C9 /* ContactDiscoveryE164CollectionTest.swift */; };
 		5075C21729CA1EE700A260D2 /* GroupMemberUpdaterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5075C21629CA1EE700A260D2 /* GroupMemberUpdaterTest.swift */; };
 		5077B5B42BBC687C00EF399E /* CurrentCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5077B5B32BBC687C00EF399E /* CurrentCall.swift */; };
@@ -3550,6 +3552,8 @@
 		506A99D32B86B39F00E3C753 /* ContactManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactManager.swift; sourceTree = "<group>"; };
 		506ABE6A2A43AECA008844D1 /* UserProfileStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileStore.swift; sourceTree = "<group>"; };
 		506ABE6C2A43B2C0008844D1 /* UserProfileMergerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfileMergerTest.swift; sourceTree = "<group>"; };
+		50733B1D2BAD038D00CEEC1F /* CallLinkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkManager.swift; sourceTree = "<group>"; };
+		50733B1F2BAD03E400CEEC1F /* CreateCallLinkViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateCallLinkViewController.swift; sourceTree = "<group>"; };
 		5075C21629CA1EE700A260D2 /* GroupMemberUpdaterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupMemberUpdaterTest.swift; sourceTree = "<group>"; };
 		5077B5B32BBC687C00EF399E /* CurrentCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentCall.swift; sourceTree = "<group>"; };
 		5077B5B72BBC7FE600EF399E /* ContactTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactTest.swift; sourceTree = "<group>"; };
@@ -8946,6 +8950,7 @@
 				50EF680C2C1A353D00BEB3B5 /* CallKitIdStore.swift */,
 				50552C2D2BAC066A00815474 /* CallLink.swift */,
 				50A7830D2C0128D70008030E /* CallLinkCall.swift */,
+				50733B1D2BAD038D00CEEC1F /* CallLinkManager.swift */,
 				D93108082B337A23006A034E /* CallRecordLoader.swift */,
 				88588D25252E59CE00405414 /* CallService.swift */,
 				50DC0D9A2BE56EF0003C57D3 /* CallServiceState.swift */,
@@ -8986,6 +8991,7 @@
 				D9F122532B7EDF4C0008164A /* CallsListViewController+ViewModelLoader.swift */,
 				B93955E22B06D47000F35940 /* CallsListViewController.swift */,
 				88D23D1C23CEC0C700B0E74B /* CallUIAdapter.swift */,
+				50733B1F2BAD03E400CEEC1F /* CreateCallLinkViewController.swift */,
 				E1DB073C2BA4FEDD00181E4C /* FlipCameraTooltip.swift */,
 				32B2A433256CDC42001D66C7 /* GroupCallErrorView.swift */,
 				88ABB8BC25352B8200229EAA /* GroupCallMemberSheet.swift */,
@@ -12812,6 +12818,7 @@
 				50EF680D2C1A353D00BEB3B5 /* CallKitIdStore.swift in Sources */,
 				50552C2E2BAC066A00815474 /* CallLink.swift in Sources */,
 				50A7830E2C0128D70008030E /* CallLinkCall.swift in Sources */,
+				50733B1E2BAD038D00CEEC1F /* CallLinkManager.swift in Sources */,
 				E1E78CAF2B573BD100B6FC2D /* CallMemberCameraOffView.swift in Sources */,
 				E1E78CAD2B573B5800B6FC2D /* CallMemberChromeOverlayView.swift in Sources */,
 				E1E78CB42B575C2700B6FC2D /* CallMemberVideoView.swift in Sources */,
@@ -12908,6 +12915,7 @@
 				34A4D88D267A363A00A794E7 /* ConversationViewController.swift in Sources */,
 				3498AC9F25190E8C00B1F315 /* ConversationViewLayout.swift in Sources */,
 				50EF8DCC2A189B3000A00935 /* ConversationViewModel.swift in Sources */,
+				50733B202BAD03E400CEEC1F /* CreateCallLinkViewController.swift in Sources */,
 				D9C2D780299EC11400D79715 /* CreateUsernameMegaphone.swift in Sources */,
 				346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */,
 				3414896925C9B6490098E3ED /* CurrencyPickerViewController.swift in Sources */,

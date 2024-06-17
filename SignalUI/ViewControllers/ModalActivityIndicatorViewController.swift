@@ -87,16 +87,39 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     ) {
         AssertIsOnMainThread()
 
-        let view = ModalActivityIndicatorViewController(
+        let viewController = ModalActivityIndicatorViewController(
             canCancel: canCancel,
             presentationDelay: presentationDelay,
             isInvisible: isInvisible
         )
         // Present this modal _over_ the current view contents.
-        view.modalPresentationStyle = .overFullScreen
-        fromViewController.present(view, animated: false) {
+        viewController.modalPresentationStyle = .overFullScreen
+        fromViewController.present(viewController, animated: false) {
             DispatchQueue.global(qos: backgroundBlockQueueQos.qosClass).async {
-                backgroundBlock(view)
+                backgroundBlock(viewController)
+            }
+        }
+    }
+
+    public class func present(
+        fromViewController: UIViewController,
+        canCancel: Bool = false,
+        presentationDelay: TimeInterval = Constants.defaultPresentationDelay,
+        isInvisible: Bool = false,
+        asyncBlock: @escaping @MainActor (ModalActivityIndicatorViewController) async -> Void
+    ) {
+        AssertIsOnMainThread()
+
+        let viewController = ModalActivityIndicatorViewController(
+            canCancel: canCancel,
+            presentationDelay: presentationDelay,
+            isInvisible: isInvisible
+        )
+        // Present this modal _over_ the current view contents.
+        viewController.modalPresentationStyle = .overFullScreen
+        fromViewController.present(viewController, animated: false) {
+            Task {
+                await asyncBlock(viewController)
             }
         }
     }

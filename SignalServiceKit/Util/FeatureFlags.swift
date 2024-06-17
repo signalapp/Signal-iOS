@@ -91,6 +91,7 @@ public class FeatureFlags: NSObject {
     public static let v2ThreadAttachments = readV2Attachments && false
 
     public static let callLinkJoin = build.includes(.dev)
+    public static let callLinkCreate = build.includes(.dev)
 
     public static let callRaiseHandReceiveSupport = build.includes(.internal)
     public static let callRaiseHandSendSupport = build.includes(.internal)

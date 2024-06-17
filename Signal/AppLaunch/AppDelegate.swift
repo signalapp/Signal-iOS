@@ -346,7 +346,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         AppEnvironment.shared.setUp(callService: CallService(
             appContext: launchContext.appContext,
             authCredentialManager: databaseContinuation.authCredentialManager,
-            mutableCurrentCall: _currentCall
+            callLinkPublicParams: databaseContinuation.callLinkPublicParams,
+            mutableCurrentCall: _currentCall,
+            networkManager: NSObject.networkManager,
+            tsAccountManager: DependenciesBridge.shared.tsAccountManager
         ))
         let result = databaseContinuation.prepareDatabase()
         return result.map(on: SyncScheduler()) { ($0, sleepBlockObject) }

@@ -213,9 +213,10 @@ public class AppSetup {
 
         let authCredentialStore = AuthCredentialStore(keyValueStoreFactory: keyValueStoreFactory)
 
+        let callLinkPublicParams = try! GenericServerPublicParams(contents: [UInt8](tsConstants.callLinkPublicParams))
         let authCredentialManager = AuthCredentialManagerImpl(
             authCredentialStore: authCredentialStore,
-            callLinkPublicParams: tsConstants.callLinkPublicParams,
+            callLinkPublicParams: callLinkPublicParams,
             dateProvider: dateProvider,
             db: db
         )
@@ -1221,7 +1222,8 @@ public class AppSetup {
             dependenciesBridge: dependenciesBridge,
             sskEnvironment: sskEnvironment,
             backgroundTask: backgroundTask,
-            authCredentialManager: authCredentialManager
+            authCredentialManager: authCredentialManager,
+            callLinkPublicParams: callLinkPublicParams
         )
     }
 
@@ -1244,6 +1246,7 @@ extension AppSetup {
         // to DependenciesBridge.shared. We'll need some mechanism for this in the
         // future, but for now, just put it here so it's part of the result.
         public let authCredentialManager: any AuthCredentialManager
+        public let callLinkPublicParams: GenericServerPublicParams
 
         fileprivate init(
             appContext: AppContext,
@@ -1251,7 +1254,8 @@ extension AppSetup {
             dependenciesBridge: DependenciesBridge,
             sskEnvironment: SSKEnvironment,
             backgroundTask: OWSBackgroundTask,
-            authCredentialManager: any AuthCredentialManager
+            authCredentialManager: any AuthCredentialManager,
+            callLinkPublicParams: GenericServerPublicParams
         ) {
             self.appContext = appContext
             self.authCredentialStore = authCredentialStore
@@ -1259,6 +1263,7 @@ extension AppSetup {
             self.sskEnvironment = sskEnvironment
             self.backgroundTask = backgroundTask
             self.authCredentialManager = authCredentialManager
+            self.callLinkPublicParams = callLinkPublicParams
         }
     }
 }
