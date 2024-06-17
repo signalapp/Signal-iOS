@@ -63,6 +63,15 @@ class GroupCall: SignalRingRTC.GroupCallDelegate {
         return self.ringRtcCall.localDeviceState.joinState
     }
 
+    var hasJoinedOrIsWaitingForAdminApproval: Bool {
+        switch self.joinState {
+        case .notJoined, .joining:
+            return false
+        case .joined, .pending:
+            return true
+        }
+    }
+
     // MARK: - Concrete Type
 
     enum ConcreteType {

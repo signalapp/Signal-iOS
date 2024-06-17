@@ -517,7 +517,7 @@ extension CallHeader: GroupCallObserver {
             callDurationTimer = nil
         }
 
-        if call.joinState == .joined {
+        if call.hasJoinedOrIsWaitingForAdminApproval {
             gradientView.isHidden = false
             avatarView?.isHidden = true // hide the container
         } else {

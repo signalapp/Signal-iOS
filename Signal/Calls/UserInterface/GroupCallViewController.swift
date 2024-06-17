@@ -1218,7 +1218,7 @@ extension GroupCallViewController: GroupCallObserver {
 
 extension GroupCallViewController: CallHeaderDelegate {
     func didTapBackButton() {
-        if ringRtcCall.localDeviceState.joinState == .joined {
+        if groupCall.hasJoinedOrIsWaitingForAdminApproval {
             isCallMinimized = true
             WindowManager.shared.leaveCallView()
             // This ensures raised hands are removed

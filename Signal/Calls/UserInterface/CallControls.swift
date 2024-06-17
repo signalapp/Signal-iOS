@@ -339,7 +339,7 @@ private class CallControlsViewModel {
         case .individual(_):
             return false
         case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
-            return call.joinState != .joined
+            return !call.hasJoinedOrIsWaitingForAdminApproval
         }
     }
 
@@ -371,7 +371,7 @@ private class CallControlsViewModel {
             // TODO: Implement the future designs for this. In the meantime, Design
             // wants us to omit the flip camera button from Call Controls when in
             // joined fullscreen.
-            return call.ringRtcCall.localDeviceState.joinState == .joined
+            return call.hasJoinedOrIsWaitingForAdminApproval
         }
     }
 
@@ -381,7 +381,7 @@ private class CallControlsViewModel {
             // TODO: Introduce lobby for starting 1:1 video calls.
             return true
         case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
-            return call.ringRtcCall.localDeviceState.joinState == .joined
+            return call.hasJoinedOrIsWaitingForAdminApproval
         }
     }
 
@@ -516,7 +516,12 @@ private class CallControlsViewModel {
     }
 
     var gradientViewIsHidden: Bool {
-        return call.joinState != .joined
+        switch call.mode {
+        case .individual:
+            return call.joinState != .joined
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
+            return !call.hasJoinedOrIsWaitingForAdminApproval
+        }
     }
 
     var videoButtonIsSelected: Bool {
