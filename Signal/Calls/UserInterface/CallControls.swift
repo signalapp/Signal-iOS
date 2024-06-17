@@ -406,7 +406,7 @@ private class CallControlsViewModel {
                 isUserInteractionEnabled: true
             )
         }
-        if call.joinState == .joining || call.joinState == .pending {
+        if call.joinState == .joining {
             return JoinButtonConfiguration(
                 label: "",
                 color: .ows_whiteAlpha40,
