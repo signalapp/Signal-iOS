@@ -405,42 +405,42 @@ private class CallControlsViewModel {
                 adjustsImageWhenHighlighted: false,
                 isUserInteractionEnabled: true
             )
-        } else if call.joinState == .joining || call.joinState == .pending {
+        }
+        if call.joinState == .joining || call.joinState == .pending {
             return JoinButtonConfiguration(
                 label: "",
                 color: .ows_whiteAlpha40,
                 adjustsImageWhenHighlighted: false,
                 isUserInteractionEnabled: false
             )
-        } else {
-            let startCallText = OWSLocalizedString(
-                "CALL_START_BUTTON",
-                comment: "Button to start a call"
-            )
-            let label: String
-            switch call.mode {
-            case .individual(_):
-                // We only show a lobby for 1:1 calls when the call is being initiated.
-                // TODO: The work of adding the lobby for 1:1 calls in the unified call view
-                // controller (currently GroupCallViewController) is not yet complete.
-                label = startCallText
-            case .groupThread(let call):
-                let joinCallText = OWSLocalizedString(
-                    "GROUP_CALL_JOIN_BUTTON",
-                    comment: "Button to join an ongoing group call"
-                )
-                label = call.ringRestrictions.contains(.callInProgress) ? joinCallText : startCallText
-            case .callLink:
-                // [CallLink] TODO: Localize "Ask to Join"
-                label = "Ask to Join"
-            }
-            return JoinButtonConfiguration(
-                label: label,
-                color: .white,
-                adjustsImageWhenHighlighted: true,
-                isUserInteractionEnabled: true
-            )
         }
+        let startCallText = OWSLocalizedString(
+            "CALL_START_BUTTON",
+            comment: "Button to start a call"
+        )
+        let label: String
+        switch call.mode {
+        case .individual(_):
+            // We only show a lobby for 1:1 calls when the call is being initiated.
+            // TODO: The work of adding the lobby for 1:1 calls in the unified call view
+            // controller (currently GroupCallViewController) is not yet complete.
+            label = startCallText
+        case .groupThread(let call):
+            let joinCallText = OWSLocalizedString(
+                "GROUP_CALL_JOIN_BUTTON",
+                comment: "Button to join an ongoing group call"
+            )
+            label = call.ringRestrictions.contains(.callInProgress) ? joinCallText : startCallText
+        case .callLink:
+            // [CallLink] TODO: Localize "Ask to Join"
+            label = "Ask to Join"
+        }
+        return JoinButtonConfiguration(
+            label: label,
+            color: .white,
+            adjustsImageWhenHighlighted: true,
+            isUserInteractionEnabled: true
+        )
     }
 
     var shouldJoinButtonActivityIndicatorBeAnimating: Bool {
