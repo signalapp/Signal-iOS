@@ -397,6 +397,22 @@
 			<string>Ringing %2$@, %3$@, and %d others…</string>
 		</dict>
 	</dict>
+	<key>GROUP_CALL_MANY_OTHERS_HERE</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>ld</string>
+			<key>one</key>
+			<string>%ld person is in this call</string>
+			<key>other</key>
+			<string>%ld people are in this call</string>
+		</dict>
+	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -443,6 +459,22 @@
 			<string>%2$@, %3$@, and %d other left the call</string>
 			<key>other</key>
 			<string>%2$@, %3$@, and %d others left the call</string>
+		</dict>
+	</dict>
+	<key>GROUP_CALL_ONE_KNOWN_AND_MANY_OTHERS_HERE</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>ld</string>
+			<key>one</key>
+			<string>%2$@ and %ld other person are in this call</string>
+			<key>other</key>
+			<string>%2$@ and %ld others are in this call</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d</key>

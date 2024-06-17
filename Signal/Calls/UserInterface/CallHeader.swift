@@ -313,29 +313,61 @@ class CallHeader: UIView {
     }
 
     private func whoIsHereText(joinedMembers: [UUID]) -> String {
-        let memberNames: [String] = databaseStorage.read { tx in
-            joinedMembers.prefix(2).map {
-                contactsManager.displayName(for: SignalServiceAddress(Aci(fromUUID: $0)), tx: tx).resolvedValue(useShortNameIfAvailable: true)
-            }
+        if joinedMembers.isEmpty {
+            return noOneElseIsHereText()
         }
-        return describeMembers(
-            count: joinedMembers.count,
-            names: memberNames,
-            zeroMemberString: noOneElseIsHereText(),
-            oneMemberFormat: OWSLocalizedString(
+        let upToTwoKnownMemberNames: [String] = databaseStorage.read { tx -> [String] in
+            joinedMembers
+                .lazy
+                .map { [contactsManager] in contactsManager.displayName(for: SignalServiceAddress(Aci(fromUUID: $0)), tx: tx) }
+                .filter { $0.hasKnownValue }
+                .prefix(2)
+                .map { $0.resolvedValue(useShortNameIfAvailable: true) }
+        }
+        let noneOneOrBothKnownMemberNames: (String, String?)? = (
+            upToTwoKnownMemberNames.first.map { ($0, upToTwoKnownMemberNames.dropFirst().first) }
+        )
+        let otherOrUnknownMemberCount = joinedMembers.count - upToTwoKnownMemberNames.count
+        switch (noneOneOrBothKnownMemberNames, otherOrUnknownMemberCount) {
+        case ((let someMember, nil)?, 0):
+            // exactly one member, known
+            let format = OWSLocalizedString(
                 "GROUP_CALL_ONE_PERSON_HERE_FORMAT",
                 comment: "Text explaining that there is one person in the group call. Embeds {member name}"
-            ),
-            twoMemberFormat: OWSLocalizedString(
+            )
+            return String(format: format, someMember)
+        case ((let someMember, let someOtherMember?)?, 0):
+            // exactly two members, both known
+            let format = OWSLocalizedString(
                 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT",
                 comment: "Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }}"
-            ),
-            manyMemberFormat: OWSLocalizedString(
+            )
+            return String(format: format, someMember, someOtherMember)
+        case ((let someMember, let someOtherMember?)?, let otherCount):
+            // two or more members, at least two known
+            let format = OWSLocalizedString(
                 "GROUP_CALL_MANY_PEOPLE_HERE_%d",
                 tableName: "PluralAware",
                 comment: "Text explaining that there are three or more people in the group call. Embeds {{ %1$@ participantCount-2, %2$@ participant1, %3$@ participant2 }}"
             )
-        )
+            return String.localizedStringWithFormat(format, otherCount, someMember, someOtherMember)
+        case ((let someMember, nil)?, let unknownCount):
+            // two or more members, only one known
+            let format = OWSLocalizedString(
+                "GROUP_CALL_ONE_KNOWN_AND_MANY_OTHERS_HERE",
+                tableName: "PluralAware",
+                comment: "Text explaining that there is at least one person whose name is known in the call as well as others whose names may or may not be known."
+            )
+            return String.localizedStringWithFormat(format, unknownCount, someMember)
+        case (nil, let unknownCount):
+            // no known members
+            let format = OWSLocalizedString(
+                "GROUP_CALL_MANY_OTHERS_HERE",
+                tableName: "PluralAware",
+                comment: "Text explaining that there are people in the call whose names we don't know. The argument is how many people are in the call."
+            )
+            return String.localizedStringWithFormat(format, unknownCount)
+        }
     }
 
     private func willRingOthersText(groupThreadCall: GroupThreadCall) -> String {
