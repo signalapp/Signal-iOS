@@ -77,61 +77,52 @@ struct CallStarter {
     /// See ``StartCallResult``.
     @discardableResult
     func startCall(from viewController: UIViewController) -> StartCallResult {
-        let threadIsBlocked = context.databaseStorage.read { tx in
-            context.blockingManager.isThreadBlocked(
-                recipient.thread,
-                transaction: tx
-            )
+        let callTarget: CallTarget
+        let callThread: TSThread
+        let isVideoCall: Bool
+        switch recipient {
+        case .contact(let thread, let withVideo):
+            callTarget = .individual(thread)
+            callThread = thread
+            isVideoCall = withVideo
+        case .group(let thread):
+            callTarget = .groupThread(thread)
+            callThread = thread
+            isVideoCall = true
         }
 
+        let threadIsBlocked = context.databaseStorage.read { tx in
+            return context.blockingManager.isThreadBlocked(callThread, transaction: tx)
+        }
         if threadIsBlocked {
-            BlockListUIUtils.showUnblockThreadActionSheet(recipient.thread, from: viewController, completion: nil)
+            BlockListUIUtils.showUnblockThreadActionSheet(callThread, from: viewController, completion: nil)
             return .promptedToUnblock
         }
 
-        switch recipient {
-        case let .contact(thread, withVideo):
-            let isCurrentCall = { () -> Bool in
-                if case .individual(let call) = context.callService.callServiceState.currentCall?.mode {
-                    return call.thread.uniqueId == thread.uniqueId
-                }
-                return false
-            }()
-            if isCurrentCall {
-                WindowManager.shared.returnToCallView()
-                return .callStarted
-            }
+        if let currentCall = context.callService.callServiceState.currentCall, currentCall.mode.matches(callTarget) {
+            WindowManager.shared.returnToCallView()
+            return .callStarted
+        }
 
-            guard !thread.isNoteToSelf else {
-                owsFailDebug("Shouldn't be able to start call with Note to Self")
+        switch callTarget {
+        case .individual(let thread):
+            guard thread.canCall else {
+                owsFailDebug("Shouldn't be able to startCall if canCall is false")
                 return .callNotStarted
             }
-            self.whitelistThread(thread)
-            context.callService.initiateCall(thread: thread, isVideo: withVideo)
-        case let .group(thread):
-            let isCurrentCall = { () -> Bool in
-                if case .groupThread(let call) = context.callService.callServiceState.currentCall?.mode {
-                    return call.groupThread.uniqueId == thread.uniqueId
-                }
-                return false
-            }()
-            if isCurrentCall {
-                WindowManager.shared.returnToCallView()
-                return .callStarted
-            }
+        case .groupThread(let thread):
             guard !thread.isBlockedByAnnouncementOnly else {
                 Self.showBlockedByAnnouncementOnlySheet(from: viewController)
                 return .callNotStarted
             }
-            guard
-                thread.groupMembership.isLocalUserFullMember,
-                thread.isGroupV2Thread
-            else {
+            guard thread.canCall else {
                 return .callNotStarted
             }
-            self.whitelistThread(thread)
-            GroupCallViewController.presentLobby(thread: thread)
+        case .callLink:
+            owsFail("Not supported.")
         }
+        self.whitelistThread(callThread)
+        context.callService.initiateCall(to: callTarget, isVideo: isVideoCall)
         return .callStarted
     }
 

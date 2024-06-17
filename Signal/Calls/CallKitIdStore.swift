@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalRingRTC
 import SignalServiceKit
 
 class CallKitIdStore {
@@ -56,23 +57,27 @@ class CallKitIdStore {
         }
     }
 
-    static func thread(forCallKitId callKitId: String) -> TSThread? {
-        return NSObject.databaseStorage.read { tx in
+    static func callTarget(forCallKitId callKitId: String) -> CallTarget? {
+        return NSObject.databaseStorage.read { tx -> CallTarget? in
             // Most likely: modern 1:1 calls
             if let serviceIdString = serviceIdStore.getString(callKitId, transaction: tx) {
                 let address = SignalServiceAddress(serviceIdString: serviceIdString)
-                return TSContactThread.getWithContactAddress(address, transaction: tx)
+                return TSContactThread.getWithContactAddress(address, transaction: tx).map { .individual($0) }
             }
 
             // Next try group calls
             if let groupId = groupIdStore.getData(callKitId, transaction: tx) {
-                return TSGroupThread.fetch(groupId: groupId, transaction: tx)
+                return TSGroupThread.fetch(groupId: groupId, transaction: tx).map { .groupThread($0) }
             }
 
-            // Finally check the phone number store, for very old 1:1 calls.
+            // Check the phone number store, for very old 1:1 calls.
             if let phoneNumber = phoneNumberStore.getString(callKitId, transaction: tx) {
                 let address = SignalServiceAddress.legacyAddress(serviceIdString: nil, phoneNumber: phoneNumber)
-                return TSContactThread.getWithContactAddress(address, transaction: tx)
+                return TSContactThread.getWithContactAddress(address, transaction: tx).map { .individual($0) }
+            }
+
+            if let rootKeyBytes = callLinkStore.getData(callKitId, transaction: tx) {
+                return (try? CallLinkRootKey(rootKeyBytes)).map { .callLink(CallLink(rootKey: $0)) }
             }
 
             return nil

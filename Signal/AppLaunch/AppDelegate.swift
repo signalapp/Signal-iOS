@@ -1340,7 +1340,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 Logger.warn("Ignoring user activity; not registered.")
                 return
             }
-            guard let thread = CallKitCallManager.threadForHandleWithSneakyTransaction(handle) else {
+            guard let callTarget = CallKitCallManager.callTargetForHandleWithSneakyTransaction(handle) else {
                 Logger.warn("Ignoring user activity; unknown user.")
                 return
             }
@@ -1355,7 +1355,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             // new call to that user - unless there is another call in progress.
             let callService = AppEnvironment.shared.callService!
             if let currentCall = callService.callServiceState.currentCall {
-                if isVideo, case .individual(let call) = currentCall.mode, call.thread.uniqueId == thread.uniqueId {
+                if isVideo, case .individual = currentCall.mode, currentCall.mode.matches(callTarget) {
                     Logger.info("Upgrading existing call to video")
                     callService.updateIsLocalVideoMuted(isLocalVideoMuted: false)
                 } else {
@@ -1363,7 +1363,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
                 return
             }
-            callService.initiateCall(thread: thread, isVideo: isVideo)
+            callService.initiateCall(to: callTarget, isVideo: isVideo)
         }
         return true
     }

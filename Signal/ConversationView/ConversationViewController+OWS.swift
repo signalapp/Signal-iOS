@@ -52,20 +52,17 @@ extension ConversationViewController {
     }
 
     public static func canCall(threadViewModel: ThreadViewModel) -> Bool {
-        let thread = threadViewModel.threadRecord
-        guard thread.isLocalUserFullMemberOfThread else {
+        if threadViewModel.hasPendingMessageRequest {
             return false
         }
-        guard !threadViewModel.hasPendingMessageRequest else {
+        switch threadViewModel.threadRecord {
+        case let thread as TSContactThread:
+            return thread.canCall
+        case let thread as TSGroupThread:
+            return thread.canCall
+        default:
             return false
         }
-        guard let contactThread = thread as? TSContactThread else {
-            return thread.isGroupV2Thread
-        }
-        guard !contactThread.isNoteToSelf else {
-            return false
-        }
-        return true
     }
 
     // MARK: -

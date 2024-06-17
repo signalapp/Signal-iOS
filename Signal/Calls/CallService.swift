@@ -637,14 +637,14 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         }
     }
 
-    func initiateCall(thread: TSThread, isVideo: Bool) {
-        switch thread {
-        case let groupThread as TSGroupThread:
-            GroupCallViewController.presentLobby(thread: groupThread, videoMuted: !isVideo)
-        case let contactThread as TSContactThread:
+    func initiateCall(to callTarget: CallTarget, isVideo: Bool) {
+        switch callTarget {
+        case .individual(let contactThread):
             Task { await self.initiateIndividualCall(thread: contactThread, isVideo: isVideo) }
-        default:
-            owsFailDebug("Can't call thread of type \(type(of: thread))")
+        case .groupThread(let groupThread):
+            GroupCallViewController.presentLobby(thread: groupThread, videoMuted: !isVideo)
+        case .callLink(let callLink):
+            GroupCallViewController.presentLobby(for: callLink)
         }
     }
 

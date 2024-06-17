@@ -118,6 +118,19 @@ enum CallMode {
             return call.videoCaptureController
         }
     }
+
+    func matches(_ callTarget: CallTarget) -> Bool {
+        switch (self, callTarget) {
+        case (.individual(let call), .individual(let thread)) where call.thread.uniqueId == thread.uniqueId:
+            return true
+        case (.groupThread(let call), .groupThread(let thread)) where call.groupThread.uniqueId == thread.uniqueId:
+            return true
+        case (.callLink(let call), .callLink(let callLink)) where call.callLink.rootKey.bytes == callLink.rootKey.bytes:
+            return true
+        case (.individual, _), (.groupThread, _), (.callLink, _):
+            return false
+        }
+    }
 }
 
 enum CallError: Error {

@@ -577,10 +577,18 @@ extension ConversationHeaderDelegate {
 
     func startCall(withVideo: Bool) {
         guard ConversationViewController.canCall(threadViewModel: threadViewModel) else {
-            return owsFailDebug("Tried to start a can when calls are disabled")
+            owsFailDebug("Tried to start a call when calls are disabled")
+            return
         }
-        guard withVideo || !thread.isGroupThread else {
-            return owsFailDebug("Tried to start an audio only group call")
+        let callTarget: CallTarget
+        switch thread {
+        case let contactThread as TSContactThread:
+            callTarget = .individual(contactThread)
+        case let groupThread as TSGroupThread where withVideo:
+            callTarget = .groupThread(groupThread)
+        default:
+            owsFailDebug("Tried to start an audio only group call")
+            return
         }
 
         guard !threadViewModel.isBlocked else {
@@ -591,18 +599,18 @@ extension ConversationHeaderDelegate {
         }
 
         let callService = AppEnvironment.shared.callService!
-        switch callService.callServiceState.currentCall?.mode {
-        case nil:
-            // We initiated a call, so if there was a pending message request we should accept it.
-            ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
-            callService.initiateCall(thread: thread, isVideo: withVideo)
-        case .individual(let call) where call.thread.uniqueId == thread.uniqueId:
-            WindowManager.shared.returnToCallView()
-        case .groupThread(let call) where call.groupThread.uniqueId == thread.uniqueId:
-            WindowManager.shared.returnToCallView()
-        case .individual, .groupThread, .callLink:
-            owsFailDebug("Tried to start call while call was ongoing")
+        if let currentCall = callService.callServiceState.currentCall {
+            if currentCall.mode.matches(callTarget) {
+                WindowManager.shared.returnToCallView()
+            } else {
+                owsFailDebug("Tried to start call while call was ongoing")
+            }
+            return
         }
+
+        // We initiated a call, so if there was a pending message request we should accept it.
+        ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
+        callService.initiateCall(to: callTarget, isVideo: withVideo)
     }
 }
 

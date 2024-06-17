@@ -88,23 +88,26 @@ final class CallKitCallManager {
         return CXHandle(type: type, value: value)
     }
 
-    static func threadForHandleWithSneakyTransaction(_ handle: String) -> TSThread? {
+    static func callTargetForHandleWithSneakyTransaction(_ handle: String) -> CallTarget? {
         owsAssertDebug(!handle.isEmpty)
 
         let databaseStorage = NSObject.databaseStorage
         let phoneNumberUtil = NSObject.phoneNumberUtil
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
 
-        if handle.hasPrefix(kAnonymousCallHandlePrefix) {
-            return CallKitIdStore.thread(forCallKitId: handle)
+        if handle.hasPrefix(kAnonymousCallHandlePrefix) || handle.hasPrefix(kCallLinkCallHandlePrefix) {
+            return CallKitIdStore.callTarget(forCallKitId: handle)
         }
 
         if let groupId = decodeGroupId(fromIntentHandle: handle) {
-            return databaseStorage.read { tx in TSGroupThread.fetch(groupId: groupId, transaction: tx) }
+            return databaseStorage.read { tx in
+                return TSGroupThread.fetch(groupId: groupId, transaction: tx).map { .groupThread($0) }
+            }
         }
 
         if let serviceId = try? ServiceId.parseFrom(serviceIdString: handle) {
-            return TSContactThread.getOrCreateThread(contactAddress: SignalServiceAddress(serviceId))
+            let address = SignalServiceAddress(serviceId)
+            return .individual(TSContactThread.getOrCreateThread(contactAddress: address))
         }
 
         let phoneNumber: String? = {
@@ -117,7 +120,8 @@ final class CallKitCallManager {
             return phoneNumbers.first?.toE164()
         }()
         if let phoneNumber {
-            return TSContactThread.getOrCreateThread(contactAddress: SignalServiceAddress(phoneNumber: phoneNumber))
+            let address = SignalServiceAddress(phoneNumber: phoneNumber)
+            return .individual(TSContactThread.getOrCreateThread(contactAddress: address))
         }
 
         return nil
