@@ -534,6 +534,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     func buildAndConnectCallLinkCall(callLink: CallLink) async throws -> (SignalCall, CallLinkCall)? {
         let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!
         let authCredential = try await authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: localIdentifiers)
+        let callLinkState = try await callLinkManager.readCallLink(callLink.rootKey, authCredential: authCredential)
         return _buildAndConnectGroupCall(isOutgoingVideoMuted: false) { () -> (SignalCall, CallLinkCall)? in
             // [CallLink] TODO: Provide adminPasskey.
             let videoCaptureController = VideoCaptureController()
@@ -554,6 +555,8 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
             }
             let callLinkCall = CallLinkCall(
                 callLink: callLink,
+                adminPasskey: nil,
+                callLinkState: callLinkState,
                 ringRtcCall: ringRtcCall,
                 videoCaptureController: videoCaptureController
             )

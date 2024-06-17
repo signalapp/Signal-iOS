@@ -8,13 +8,19 @@ import SignalRingRTC
 
 final class CallLinkCall: Signal.GroupCall {
     let callLink: CallLink
+    let adminPasskey: Data?
+    let callLinkState: CallLinkState
 
     init(
         callLink: CallLink,
+        adminPasskey: Data?,
+        callLinkState: CallLinkState,
         ringRtcCall: SignalRingRTC.GroupCall,
         videoCaptureController: VideoCaptureController
     ) {
         self.callLink = callLink
+        self.adminPasskey = adminPasskey
+        self.callLinkState = callLinkState
         super.init(
             audioDescription: "[SignalCall] Call link call",
             ringRtcCall: ringRtcCall,

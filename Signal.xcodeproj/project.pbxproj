@@ -680,6 +680,7 @@
 		50D8796A2A16D2C20031345D /* MessageLoaderBatchTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D879692A16D2C20031345D /* MessageLoaderBatchTest.swift */; };
 		50DC0D9B2BE56EF0003C57D3 /* CallServiceState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50DC0D9A2BE56EF0003C57D3 /* CallServiceState.swift */; };
 		50E42FE42C1B6E2100554BD6 /* CallTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E42FE32C1B6E2100554BD6 /* CallTarget.swift */; };
+		50E42FE62C1B9EB900554BD6 /* CallLinkState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E42FE52C1B9EB900554BD6 /* CallLinkState.swift */; };
 		50E42FEA2C1BA3B900554BD6 /* CallHTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E42FE92C1BA3B900554BD6 /* CallHTTPClient.swift */; };
 		50E51A3B2AE989C4004F9069 /* AccountAttributesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E51A3A2AE989C4004F9069 /* AccountAttributesTest.swift */; };
 		50E5E4B129932D9B00E15A1C /* DeviceMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E5E4B029932D9B00E15A1C /* DeviceMessage.swift */; };
@@ -3601,6 +3602,7 @@
 		50D879692A16D2C20031345D /* MessageLoaderBatchTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageLoaderBatchTest.swift; sourceTree = "<group>"; };
 		50DC0D9A2BE56EF0003C57D3 /* CallServiceState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallServiceState.swift; sourceTree = "<group>"; };
 		50E42FE32C1B6E2100554BD6 /* CallTarget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallTarget.swift; sourceTree = "<group>"; };
+		50E42FE52C1B9EB900554BD6 /* CallLinkState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkState.swift; sourceTree = "<group>"; };
 		50E42FE92C1BA3B900554BD6 /* CallHTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallHTTPClient.swift; sourceTree = "<group>"; };
 		50E51A3A2AE989C4004F9069 /* AccountAttributesTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAttributesTest.swift; sourceTree = "<group>"; };
 		50E5E4B029932D9B00E15A1C /* DeviceMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceMessage.swift; sourceTree = "<group>"; };
@@ -8951,6 +8953,7 @@
 				50552C2D2BAC066A00815474 /* CallLink.swift */,
 				50A7830D2C0128D70008030E /* CallLinkCall.swift */,
 				50733B1D2BAD038D00CEEC1F /* CallLinkManager.swift */,
+				50E42FE52C1B9EB900554BD6 /* CallLinkState.swift */,
 				D93108082B337A23006A034E /* CallRecordLoader.swift */,
 				88588D25252E59CE00405414 /* CallService.swift */,
 				50DC0D9A2BE56EF0003C57D3 /* CallServiceState.swift */,
@@ -12819,6 +12822,7 @@
 				50552C2E2BAC066A00815474 /* CallLink.swift in Sources */,
 				50A7830E2C0128D70008030E /* CallLinkCall.swift in Sources */,
 				50733B1E2BAD038D00CEEC1F /* CallLinkManager.swift in Sources */,
+				50E42FE62C1B9EB900554BD6 /* CallLinkState.swift in Sources */,
 				E1E78CAF2B573BD100B6FC2D /* CallMemberCameraOffView.swift in Sources */,
 				E1E78CAD2B573B5800B6FC2D /* CallMemberChromeOverlayView.swift in Sources */,
 				E1E78CB42B575C2700B6FC2D /* CallMemberVideoView.swift in Sources */,

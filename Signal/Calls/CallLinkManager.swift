@@ -67,13 +67,27 @@ class CallLinkManagerImpl: CallLinkManager {
         let createCredentialPresentation = createCredential.present(roomId: roomId, userId: localIdentifiers.aci, serverParams: self.serverParams, callLinkParams: secretParams)
         let publicParams = secretParams.getPublicParams()
         let adminPasskey = CallLinkRootKey.generateAdminPasskey()
-        return try await self.sfuClient.createCallLink(
+        return CallLinkState(try await self.sfuClient.createCallLink(
             sfuUrl: sfuUrl,
             createCredentialPresentation: createCredentialPresentation.serialize(),
             linkRootKey: rootKey,
             adminPasskey: adminPasskey,
             callLinkPublicParams: publicParams.serialize()
-        ).unwrap()
+        ).unwrap())
+    }
+
+    func readCallLink(
+        _ rootKey: CallLinkRootKey,
+        authCredential: SignalServiceKit.CallLinkAuthCredential
+    ) async throws -> CallLinkState {
+        let sfuUrl = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
+        let secretParams = CallLinkSecretParams.deriveFromRootKey(rootKey.bytes)
+        let authCredentialPresentation = authCredential.present(callLinkParams: secretParams)
+        return CallLinkState(try await self.sfuClient.readCallLink(
+            sfuUrl: sfuUrl,
+            authCredentialPresentation: authCredentialPresentation.serialize(),
+            linkRootKey: rootKey
+        ).unwrap())
     }
 }
 
