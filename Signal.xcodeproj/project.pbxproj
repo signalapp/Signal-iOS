@@ -945,6 +945,9 @@
 		6694BF682B36484900B18764 /* PinnedThreadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6694BF672B36484800B18764 /* PinnedThreadManager.swift */; };
 		6694BF6A2B3650E400B18764 /* PinnedThreadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6694BF692B3650E400B18764 /* PinnedThreadStore.swift */; };
 		6694BF6C2B3656D500B18764 /* MockPinnedThreadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6694BF6B2B3656D500B18764 /* MockPinnedThreadManager.swift */; };
+		669572FA2C1A1DE00092B755 /* AttachmentThumbnailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669572F92C1A1DE00092B755 /* AttachmentThumbnailService.swift */; };
+		669572FC2C1A1DF30092B755 /* AttachmentThumbnailServiceImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669572FB2C1A1DF30092B755 /* AttachmentThumbnailServiceImpl.swift */; };
+		669572FE2C1A1E050092B755 /* MockAttachmentThumbnailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669572FD2C1A1E050092B755 /* MockAttachmentThumbnailService.swift */; };
 		6698FC0D297EFE21004EFC30 /* KeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC0C297EFE21004EFC30 /* KeyValueStore.swift */; };
 		6698FC0F297F03FE004EFC30 /* KeyValueStoreFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC0E297F03FE004EFC30 /* KeyValueStoreFactory.swift */; };
 		6698FC11297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC10297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStore.swift */; };
@@ -3876,6 +3879,9 @@
 		6694BF672B36484800B18764 /* PinnedThreadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedThreadManager.swift; sourceTree = "<group>"; };
 		6694BF692B3650E400B18764 /* PinnedThreadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedThreadStore.swift; sourceTree = "<group>"; };
 		6694BF6B2B3656D500B18764 /* MockPinnedThreadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPinnedThreadManager.swift; sourceTree = "<group>"; };
+		669572F92C1A1DE00092B755 /* AttachmentThumbnailService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentThumbnailService.swift; sourceTree = "<group>"; };
+		669572FB2C1A1DF30092B755 /* AttachmentThumbnailServiceImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentThumbnailServiceImpl.swift; sourceTree = "<group>"; };
+		669572FD2C1A1E050092B755 /* MockAttachmentThumbnailService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAttachmentThumbnailService.swift; sourceTree = "<group>"; };
 		6698FC0C297EFE21004EFC30 /* KeyValueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyValueStore.swift; sourceTree = "<group>"; };
 		6698FC0E297F03FE004EFC30 /* KeyValueStoreFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyValueStoreFactory.swift; sourceTree = "<group>"; };
 		6698FC10297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SDSKeyValueStore+KeyValueStore.swift"; sourceTree = "<group>"; };
@@ -7797,6 +7803,16 @@
 			path = PinnedThreadManager;
 			sourceTree = "<group>";
 		};
+		669572F82C1A1DD10092B755 /* Thumbnails */ = {
+			isa = PBXGroup;
+			children = (
+				669572F92C1A1DE00092B755 /* AttachmentThumbnailService.swift */,
+				669572FB2C1A1DF30092B755 /* AttachmentThumbnailServiceImpl.swift */,
+				669572FD2C1A1E050092B755 /* MockAttachmentThumbnailService.swift */,
+			);
+			path = Thumbnails;
+			sourceTree = "<group>";
+		};
 		6698FC12297F38AC004EFC30 /* ViewControllerContext */ = {
 			isa = PBXGroup;
 			children = (
@@ -7961,6 +7977,7 @@
 				6649651A2BDC6E8D00E2DE98 /* Playback */,
 				66D7B90C2B9798770005C98B /* QuotedMessageAttachment */,
 				66144B3B2BFD22EE00E2C9CD /* Records */,
+				669572F82C1A1DD10092B755 /* Thumbnails */,
 				66E1AD8C2B912A3000C56B7B /* TSResource */,
 				664E8D8D2BD72FF900C4968A /* VideoDuration */,
 				66B78E042BE5AACB0022580E /* ViewOnce */,
@@ -13554,6 +13571,8 @@
 				66D7B8FD2B9285EB0005C98B /* AttachmentStoreMock.swift in Sources */,
 				66D7B9072B928BD50005C98B /* AttachmentStream.swift in Sources */,
 				66CA4CE42B9BDDE3009A5ED8 /* AttachmentThumbnailQuality.swift in Sources */,
+				669572FA2C1A1DE00092B755 /* AttachmentThumbnailService.swift in Sources */,
+				669572FC2C1A1DF30092B755 /* AttachmentThumbnailServiceImpl.swift in Sources */,
 				66D7B92B2B97E5990005C98B /* AttachmentTransitPointer.swift in Sources */,
 				66DA59C62BBB090C00D0EC58 /* AttachmentUpload.swift in Sources */,
 				66C1A8772BB75E560076C65A /* AttachmentUploadManager.swift in Sources */,
@@ -13960,6 +13979,7 @@
 				F90E4AAC29F0798C00F54191 /* MockAppExpiry.swift in Sources */,
 				668B24182BBB663400EB60C4 /* MockAttachment.swift in Sources */,
 				663D02E12C06E2F400350632 /* MockAttachmentReference.swift in Sources */,
+				669572FE2C1A1E050092B755 /* MockAttachmentThumbnailService.swift in Sources */,
 				D9C42C332B6C66320086B142 /* MockCallRecordDeleteManager.swift in Sources */,
 				D9A81C712BAB443600C07D2B /* MockCallRecordQuerier.swift in Sources */,
 				D91AC93A2B62F79700814975 /* MockCallRecordStore.swift in Sources */,

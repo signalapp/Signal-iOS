@@ -46,6 +46,7 @@ public class DependenciesBridge {
     public let attachmentDownloadManager: AttachmentDownloadManager
     public let attachmentManager: AttachmentManager
     public let attachmentStore: AttachmentStore
+    public let attachmentThumbnailService: AttachmentThumbnailService
     public let attachmentUploadManager: AttachmentUploadManager
     public let attachmentViewOnceManager: AttachmentViewOnceManager
     public let audioWaveformManager: AudioWaveformManager
@@ -148,6 +149,7 @@ public class DependenciesBridge {
         attachmentDownloadManager: AttachmentDownloadManager,
         attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
+        attachmentThumbnailService: AttachmentThumbnailService,
         attachmentUploadManager: AttachmentUploadManager,
         attachmentViewOnceManager: AttachmentViewOnceManager,
         audioWaveformManager: AudioWaveformManager,
@@ -249,6 +251,7 @@ public class DependenciesBridge {
         self.attachmentDownloadManager = attachmentDownloadManager
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
+        self.attachmentThumbnailService = attachmentThumbnailService
         self.attachmentUploadManager = attachmentUploadManager
         self.attachmentViewOnceManager = attachmentViewOnceManager
         self.audioWaveformManager = audioWaveformManager

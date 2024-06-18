@@ -148,11 +148,13 @@ public class AttachmentStream {
     // MARK: - Thumbnails
 
     public func thumbnailImage(quality: AttachmentThumbnailQuality) async -> UIImage? {
-        fatalError("Unimplemented!")
+        return await DependenciesBridge.shared.attachmentThumbnailService
+            .thumbnailImage(for: self, quality: quality)
     }
 
     public func thumbnailImageSync(quality: AttachmentThumbnailQuality) -> UIImage? {
-        fatalError("Unimplemented!")
+        return DependenciesBridge.shared.attachmentThumbnailService
+            .thumbnailImageSync(for: self, quality: quality)
     }
 
     public static func pointSize(pixelSize: CGSize) -> CGSize {

@@ -246,6 +246,8 @@ public class AppSetup {
             orphanedAttachmentStore: orphanedAttachmentStore
         )
 
+        let attachmentThumbnailService = AttachmentThumbnailServiceImpl()
+
         let mediaBandwidthPreferenceStore = MediaBandwidthPreferenceStoreImpl(
             keyValueStoreFactory: keyValueStoreFactory,
             reachabilityManager: reachabilityManager,
@@ -972,6 +974,7 @@ public class AppSetup {
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentManager: attachmentManager,
             attachmentStore: attachmentStore,
+            attachmentThumbnailService: attachmentThumbnailService,
             attachmentUploadManager: attachmentUploadManager,
             attachmentViewOnceManager: attachmentViewOnceManager,
             audioWaveformManager: audioWaveformManager,
