@@ -3745,6 +3745,8 @@ struct SignalServiceProtos_SyncMessage {
 
     var localOnlyConversationDeletes: [SignalServiceProtos_SyncMessage.DeleteForMe.LocalOnlyConversationDelete] = []
 
+    var attachmentDeletes: [SignalServiceProtos_SyncMessage.DeleteForMe.AttachmentDelete] = []
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     struct ConversationIdentifier {
@@ -3854,6 +3856,70 @@ struct SignalServiceProtos_SyncMessage {
       init() {}
 
       fileprivate var _conversation: SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier? = nil
+    }
+
+    struct AttachmentDelete {
+      // SwiftProtobuf.Message conformance is added in an extension below. See the
+      // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+      // methods supported on all messages.
+
+      var conversation: SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier {
+        get {return _conversation ?? SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier()}
+        set {_conversation = newValue}
+      }
+      /// Returns true if `conversation` has been explicitly set.
+      var hasConversation: Bool {return self._conversation != nil}
+      /// Clears the value of `conversation`. Subsequent reads from it will return its default value.
+      mutating func clearConversation() {self._conversation = nil}
+
+      var targetMessage: SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage {
+        get {return _targetMessage ?? SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage()}
+        set {_targetMessage = newValue}
+      }
+      /// Returns true if `targetMessage` has been explicitly set.
+      var hasTargetMessage: Bool {return self._targetMessage != nil}
+      /// Clears the value of `targetMessage`. Subsequent reads from it will return its default value.
+      mutating func clearTargetMessage() {self._targetMessage = nil}
+
+      /// The `clientUuid` from `AttachmentPointer`.
+      var clientUuid: Data {
+        get {return _clientUuid ?? Data()}
+        set {_clientUuid = newValue}
+      }
+      /// Returns true if `clientUuid` has been explicitly set.
+      var hasClientUuid: Bool {return self._clientUuid != nil}
+      /// Clears the value of `clientUuid`. Subsequent reads from it will return its default value.
+      mutating func clearClientUuid() {self._clientUuid = nil}
+
+      /// SHA256 hash of the (encrypted, padded, etc.) attachment blob on the CDN.
+      var fallbackDigest: Data {
+        get {return _fallbackDigest ?? Data()}
+        set {_fallbackDigest = newValue}
+      }
+      /// Returns true if `fallbackDigest` has been explicitly set.
+      var hasFallbackDigest: Bool {return self._fallbackDigest != nil}
+      /// Clears the value of `fallbackDigest`. Subsequent reads from it will return its default value.
+      mutating func clearFallbackDigest() {self._fallbackDigest = nil}
+
+      /// SHA256 hash of the plaintext content of the attachment.
+      var fallbackPlaintextHash: Data {
+        get {return _fallbackPlaintextHash ?? Data()}
+        set {_fallbackPlaintextHash = newValue}
+      }
+      /// Returns true if `fallbackPlaintextHash` has been explicitly set.
+      var hasFallbackPlaintextHash: Bool {return self._fallbackPlaintextHash != nil}
+      /// Clears the value of `fallbackPlaintextHash`. Subsequent reads from it will return its default value.
+      mutating func clearFallbackPlaintextHash() {self._fallbackPlaintextHash = nil}
+
+      var unknownFields = SwiftProtobuf.UnknownStorage()
+
+      init() {}
+
+      fileprivate var _conversation: SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier? = nil
+      fileprivate var _targetMessage: SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage? = nil
+      fileprivate var _clientUuid: Data? = nil
+      fileprivate var _fallbackDigest: Data? = nil
+      fileprivate var _fallbackPlaintextHash: Data? = nil
     }
 
     struct ConversationDelete {
@@ -4748,6 +4814,7 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.DeleteForMe.ConversationIdentifier: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.DeleteForMe.MessageDeletes: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.DeleteForMe.AttachmentDelete: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.DeleteForMe.ConversationDelete: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.DeleteForMe.LocalOnlyConversationDelete: @unchecked Sendable {}
 extension SignalServiceProtos_AttachmentPointer: @unchecked Sendable {}
@@ -8656,6 +8723,7 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe: SwiftProtobuf.Message, Sw
     1: .same(proto: "messageDeletes"),
     2: .same(proto: "conversationDeletes"),
     3: .same(proto: "localOnlyConversationDeletes"),
+    4: .same(proto: "attachmentDeletes"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -8667,6 +8735,7 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe: SwiftProtobuf.Message, Sw
       case 1: try { try decoder.decodeRepeatedMessageField(value: &self.messageDeletes) }()
       case 2: try { try decoder.decodeRepeatedMessageField(value: &self.conversationDeletes) }()
       case 3: try { try decoder.decodeRepeatedMessageField(value: &self.localOnlyConversationDeletes) }()
+      case 4: try { try decoder.decodeRepeatedMessageField(value: &self.attachmentDeletes) }()
       default: break
       }
     }
@@ -8682,6 +8751,9 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe: SwiftProtobuf.Message, Sw
     if !self.localOnlyConversationDeletes.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.localOnlyConversationDeletes, fieldNumber: 3)
     }
+    if !self.attachmentDeletes.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.attachmentDeletes, fieldNumber: 4)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -8689,6 +8761,7 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe: SwiftProtobuf.Message, Sw
     if lhs.messageDeletes != rhs.messageDeletes {return false}
     if lhs.conversationDeletes != rhs.conversationDeletes {return false}
     if lhs.localOnlyConversationDeletes != rhs.localOnlyConversationDeletes {return false}
+    if lhs.attachmentDeletes != rhs.attachmentDeletes {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -8827,6 +8900,66 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe.MessageDeletes: SwiftProto
   static func ==(lhs: SignalServiceProtos_SyncMessage.DeleteForMe.MessageDeletes, rhs: SignalServiceProtos_SyncMessage.DeleteForMe.MessageDeletes) -> Bool {
     if lhs._conversation != rhs._conversation {return false}
     if lhs.messages != rhs.messages {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_SyncMessage.DeleteForMe.AttachmentDelete: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_SyncMessage.DeleteForMe.protoMessageName + ".AttachmentDelete"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "conversation"),
+    2: .same(proto: "targetMessage"),
+    3: .same(proto: "clientUuid"),
+    4: .same(proto: "fallbackDigest"),
+    5: .same(proto: "fallbackPlaintextHash"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._conversation) }()
+      case 2: try { try decoder.decodeSingularMessageField(value: &self._targetMessage) }()
+      case 3: try { try decoder.decodeSingularBytesField(value: &self._clientUuid) }()
+      case 4: try { try decoder.decodeSingularBytesField(value: &self._fallbackDigest) }()
+      case 5: try { try decoder.decodeSingularBytesField(value: &self._fallbackPlaintextHash) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._conversation {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._targetMessage {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    } }()
+    try { if let v = self._clientUuid {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
+    } }()
+    try { if let v = self._fallbackDigest {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 4)
+    } }()
+    try { if let v = self._fallbackPlaintextHash {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 5)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_SyncMessage.DeleteForMe.AttachmentDelete, rhs: SignalServiceProtos_SyncMessage.DeleteForMe.AttachmentDelete) -> Bool {
+    if lhs._conversation != rhs._conversation {return false}
+    if lhs._targetMessage != rhs._targetMessage {return false}
+    if lhs._clientUuid != rhs._clientUuid {return false}
+    if lhs._fallbackDigest != rhs._fallbackDigest {return false}
+    if lhs._fallbackPlaintextHash != rhs._fallbackPlaintextHash {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

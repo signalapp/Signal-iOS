@@ -13772,6 +13772,262 @@ extension SSKProtoSyncMessageDeleteForMeMessageDeletesBuilder {
 
 #endif
 
+// MARK: - SSKProtoSyncMessageDeleteForMeAttachmentDelete
+
+@objc
+public class SSKProtoSyncMessageDeleteForMeAttachmentDelete: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: SignalServiceProtos_SyncMessage.DeleteForMe.AttachmentDelete
+
+    @objc
+    public let conversation: SSKProtoSyncMessageDeleteForMeConversationIdentifier?
+
+    @objc
+    public let targetMessage: SSKProtoSyncMessageDeleteForMeAddressableMessage?
+
+    @objc
+    public var clientUuid: Data? {
+        guard hasClientUuid else {
+            return nil
+        }
+        return proto.clientUuid
+    }
+    @objc
+    public var hasClientUuid: Bool {
+        return proto.hasClientUuid && !proto.clientUuid.isEmpty
+    }
+
+    @objc
+    public var fallbackDigest: Data? {
+        guard hasFallbackDigest else {
+            return nil
+        }
+        return proto.fallbackDigest
+    }
+    @objc
+    public var hasFallbackDigest: Bool {
+        return proto.hasFallbackDigest
+    }
+
+    @objc
+    public var fallbackPlaintextHash: Data? {
+        guard hasFallbackPlaintextHash else {
+            return nil
+        }
+        return proto.fallbackPlaintextHash
+    }
+    @objc
+    public var hasFallbackPlaintextHash: Bool {
+        return proto.hasFallbackPlaintextHash
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_SyncMessage.DeleteForMe.AttachmentDelete,
+                 conversation: SSKProtoSyncMessageDeleteForMeConversationIdentifier?,
+                 targetMessage: SSKProtoSyncMessageDeleteForMeAddressableMessage?) {
+        self.proto = proto
+        self.conversation = conversation
+        self.targetMessage = targetMessage
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_SyncMessage.DeleteForMe.AttachmentDelete(serializedData: serializedData)
+        self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.DeleteForMe.AttachmentDelete) {
+        var conversation: SSKProtoSyncMessageDeleteForMeConversationIdentifier?
+        if proto.hasConversation {
+            conversation = SSKProtoSyncMessageDeleteForMeConversationIdentifier(proto.conversation)
+        }
+
+        var targetMessage: SSKProtoSyncMessageDeleteForMeAddressableMessage?
+        if proto.hasTargetMessage {
+            targetMessage = SSKProtoSyncMessageDeleteForMeAddressableMessage(proto.targetMessage)
+        }
+
+        self.init(proto: proto,
+                  conversation: conversation,
+                  targetMessage: targetMessage)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension SSKProtoSyncMessageDeleteForMeAttachmentDelete {
+    @objc
+    public static func builder() -> SSKProtoSyncMessageDeleteForMeAttachmentDeleteBuilder {
+        return SSKProtoSyncMessageDeleteForMeAttachmentDeleteBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoSyncMessageDeleteForMeAttachmentDeleteBuilder {
+        let builder = SSKProtoSyncMessageDeleteForMeAttachmentDeleteBuilder()
+        if let _value = conversation {
+            builder.setConversation(_value)
+        }
+        if let _value = targetMessage {
+            builder.setTargetMessage(_value)
+        }
+        if let _value = clientUuid {
+            builder.setClientUuid(_value)
+        }
+        if let _value = fallbackDigest {
+            builder.setFallbackDigest(_value)
+        }
+        if let _value = fallbackPlaintextHash {
+            builder.setFallbackPlaintextHash(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class SSKProtoSyncMessageDeleteForMeAttachmentDeleteBuilder: NSObject {
+
+    private var proto = SignalServiceProtos_SyncMessage.DeleteForMe.AttachmentDelete()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setConversation(_ valueParam: SSKProtoSyncMessageDeleteForMeConversationIdentifier?) {
+        guard let valueParam = valueParam else { return }
+        proto.conversation = valueParam.proto
+    }
+
+    public func setConversation(_ valueParam: SSKProtoSyncMessageDeleteForMeConversationIdentifier) {
+        proto.conversation = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setTargetMessage(_ valueParam: SSKProtoSyncMessageDeleteForMeAddressableMessage?) {
+        guard let valueParam = valueParam else { return }
+        proto.targetMessage = valueParam.proto
+    }
+
+    public func setTargetMessage(_ valueParam: SSKProtoSyncMessageDeleteForMeAddressableMessage) {
+        proto.targetMessage = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setClientUuid(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.clientUuid = valueParam
+    }
+
+    public func setClientUuid(_ valueParam: Data) {
+        proto.clientUuid = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setFallbackDigest(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.fallbackDigest = valueParam
+    }
+
+    public func setFallbackDigest(_ valueParam: Data) {
+        proto.fallbackDigest = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setFallbackPlaintextHash(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.fallbackPlaintextHash = valueParam
+    }
+
+    public func setFallbackPlaintextHash(_ valueParam: Data) {
+        proto.fallbackPlaintextHash = valueParam
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoSyncMessageDeleteForMeAttachmentDelete {
+        return SSKProtoSyncMessageDeleteForMeAttachmentDelete(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try SSKProtoSyncMessageDeleteForMeAttachmentDelete(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension SSKProtoSyncMessageDeleteForMeAttachmentDelete {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoSyncMessageDeleteForMeAttachmentDeleteBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoSyncMessageDeleteForMeAttachmentDelete? {
+        return self.buildInfallibly()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoSyncMessageDeleteForMeConversationDelete
 
 @objc
@@ -14131,6 +14387,9 @@ public class SSKProtoSyncMessageDeleteForMe: NSObject, Codable, NSSecureCoding {
     @objc
     public let localOnlyConversationDeletes: [SSKProtoSyncMessageDeleteForMeLocalOnlyConversationDelete]
 
+    @objc
+    public let attachmentDeletes: [SSKProtoSyncMessageDeleteForMeAttachmentDelete]
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -14142,11 +14401,13 @@ public class SSKProtoSyncMessageDeleteForMe: NSObject, Codable, NSSecureCoding {
     private init(proto: SignalServiceProtos_SyncMessage.DeleteForMe,
                  messageDeletes: [SSKProtoSyncMessageDeleteForMeMessageDeletes],
                  conversationDeletes: [SSKProtoSyncMessageDeleteForMeConversationDelete],
-                 localOnlyConversationDeletes: [SSKProtoSyncMessageDeleteForMeLocalOnlyConversationDelete]) {
+                 localOnlyConversationDeletes: [SSKProtoSyncMessageDeleteForMeLocalOnlyConversationDelete],
+                 attachmentDeletes: [SSKProtoSyncMessageDeleteForMeAttachmentDelete]) {
         self.proto = proto
         self.messageDeletes = messageDeletes
         self.conversationDeletes = conversationDeletes
         self.localOnlyConversationDeletes = localOnlyConversationDeletes
+        self.attachmentDeletes = attachmentDeletes
     }
 
     @objc
@@ -14170,10 +14431,14 @@ public class SSKProtoSyncMessageDeleteForMe: NSObject, Codable, NSSecureCoding {
         var localOnlyConversationDeletes: [SSKProtoSyncMessageDeleteForMeLocalOnlyConversationDelete] = []
         localOnlyConversationDeletes = proto.localOnlyConversationDeletes.map { SSKProtoSyncMessageDeleteForMeLocalOnlyConversationDelete($0) }
 
+        var attachmentDeletes: [SSKProtoSyncMessageDeleteForMeAttachmentDelete] = []
+        attachmentDeletes = proto.attachmentDeletes.map { SSKProtoSyncMessageDeleteForMeAttachmentDelete($0) }
+
         self.init(proto: proto,
                   messageDeletes: messageDeletes,
                   conversationDeletes: conversationDeletes,
-                  localOnlyConversationDeletes: localOnlyConversationDeletes)
+                  localOnlyConversationDeletes: localOnlyConversationDeletes,
+                  attachmentDeletes: attachmentDeletes)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -14225,6 +14490,7 @@ extension SSKProtoSyncMessageDeleteForMe {
         builder.setMessageDeletes(messageDeletes)
         builder.setConversationDeletes(conversationDeletes)
         builder.setLocalOnlyConversationDeletes(localOnlyConversationDeletes)
+        builder.setAttachmentDeletes(attachmentDeletes)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -14268,6 +14534,16 @@ public class SSKProtoSyncMessageDeleteForMeBuilder: NSObject {
     @objc
     public func setLocalOnlyConversationDeletes(_ wrappedItems: [SSKProtoSyncMessageDeleteForMeLocalOnlyConversationDelete]) {
         proto.localOnlyConversationDeletes = wrappedItems.map { $0.proto }
+    }
+
+    @objc
+    public func addAttachmentDeletes(_ valueParam: SSKProtoSyncMessageDeleteForMeAttachmentDelete) {
+        proto.attachmentDeletes.append(valueParam.proto)
+    }
+
+    @objc
+    public func setAttachmentDeletes(_ wrappedItems: [SSKProtoSyncMessageDeleteForMeAttachmentDelete]) {
+        proto.attachmentDeletes = wrappedItems.map { $0.proto }
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
