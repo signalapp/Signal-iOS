@@ -163,7 +163,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         guard
             let imageData = stream
                 .thumbnailImageSync(quality: .small)?
-                .resized(maxDimensionPoints: AttachmentStream.thumbnailDimensionPointsForQuotedReply)?
+                .resized(maxDimensionPoints: AttachmentThumbnailQuality.thumbnailDimensionPointsForQuotedReply)?
                 .jpegData(compressionQuality: 0.8)
         else {
             throw OWSAssertionError("Unable to create thumbnail")
@@ -471,7 +471,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
         let thumbnailImage = try? OWSMediaUtils.thumbnail(
             forVideo: asset,
-            maxSizePixels: .square(AttachmentStream.thumbnailDimensionPoints(forThumbnailQuality: .large))
+            maxSizePixels: .square(AttachmentThumbnailQuality.large.thumbnailDimensionPoints())
         )
         guard let thumbnailImage else {
             return (.invalid, nil, nil)

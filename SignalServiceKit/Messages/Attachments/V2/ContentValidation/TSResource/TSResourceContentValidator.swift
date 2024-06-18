@@ -276,7 +276,7 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
         guard
             let imageData = stream
                 .thumbnailImageSmallSync()?
-                .resized(maxDimensionPoints: AttachmentStream.thumbnailDimensionPointsForQuotedReply)?
+                .resized(maxDimensionPoints: AttachmentThumbnailQuality.thumbnailDimensionPointsForQuotedReply)?
                 .jpegData(compressionQuality: 0.8)
         else {
             throw OWSAssertionError("Unable to create thumbnail")

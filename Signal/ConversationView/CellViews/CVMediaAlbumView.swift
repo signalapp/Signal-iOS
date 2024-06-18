@@ -547,9 +547,7 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
                 // image pixels per screen pixels that we will accept."
                 let targetQuality: CGFloat = 0.8
                 let sizeTolerance: CGFloat = 1 / targetQuality
-                let thumbnailDimensionPoints = AttachmentStream.thumbnailDimensionPoints(
-                    forThumbnailQuality: quality
-                )
+                let thumbnailDimensionPoints = quality.thumbnailDimensionPoints()
                 if renderDimensionPoints <= CGFloat(thumbnailDimensionPoints) * sizeTolerance {
                     return quality
                 }

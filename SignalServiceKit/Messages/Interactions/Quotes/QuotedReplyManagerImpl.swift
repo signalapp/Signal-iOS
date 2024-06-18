@@ -480,7 +480,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
 
                 guard
                     let resizedThumbnailImage = thumbnailImage.resized(
-                        maxDimensionPoints: AttachmentStream.thumbnailDimensionPointsForQuotedReply
+                        maxDimensionPoints: AttachmentThumbnailQuality.thumbnailDimensionPointsForQuotedReply
                     )
                 else {
                     owsFailDebug("Couldn't generate thumbnail.")

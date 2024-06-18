@@ -157,42 +157,6 @@ public class AttachmentStream {
             .thumbnailImageSync(for: self, quality: quality)
     }
 
-    public static func pointSize(pixelSize: CGSize) -> CGSize {
-        let factor = 1 / UIScreen.main.scale
-        return CGSize(
-            width: pixelSize.width * factor,
-            height: pixelSize.height * factor
-        )
-    }
-
-    private static let thumbnailDimensionPointsSmall: CGFloat = 200
-    private static let thumbnailDimensionPointsMedium: CGFloat = 450
-    private static let thumbnailDimensionPointsMediumLarge: CGFloat = 600
-
-    public static let thumbnailDimensionPointsForQuotedReply = thumbnailDimensionPointsSmall
-
-    // This size is large enough to render full screen.
-    private static func thumbnailDimensionPointsLarge() -> CGFloat {
-        let screenSizePoints = UIScreen.main.bounds.size
-        return max(screenSizePoints.width, screenSizePoints.height)
-    }
-
-    // This size is large enough to render full screen.
-    public static func thumbnailDimensionPoints(
-        forThumbnailQuality thumbnailQuality: AttachmentThumbnailQuality
-    ) -> CGFloat {
-        switch thumbnailQuality {
-        case .small:
-            return thumbnailDimensionPointsSmall
-        case .medium:
-            return thumbnailDimensionPointsMedium
-        case .mediumLarge:
-            return thumbnailDimensionPointsMediumLarge
-        case .large:
-            return thumbnailDimensionPointsLarge()
-        }
-    }
-
     // MARK: - Audio Waveform
 
     public func audioWaveform() -> Task<AudioWaveform, Error> {
