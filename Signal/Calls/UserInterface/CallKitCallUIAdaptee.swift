@@ -120,9 +120,11 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
                 "CALLKIT_ANONYMOUS_GROUP_NAME",
                 comment: "The generic name used for group calls if CallKit privacy is enabled"
             )
-        case .callLink:
-            // [CallLink] TODO: Show "Call Link" or the name of the Call Link.
-            return "Call Link Call"
+        case .callLink(let call):
+            if showNamesOnCallScreen {
+                return call.localizedName
+            }
+            return CallLinkCall.defaultLocalizedName
         }
     }
 

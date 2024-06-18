@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 import SignalRingRTC
 
 final class CallLinkCall: Signal.GroupCall {
@@ -30,5 +31,16 @@ final class CallLinkCall: Signal.GroupCall {
 
     var mayNeedToAskToJoin: Bool {
         return callLinkState.requiresAdminApproval && adminPasskey == nil
+    }
+
+    var localizedName: String {
+        return self.callLinkState.name ?? Self.defaultLocalizedName
+    }
+
+    static var defaultLocalizedName: String {
+        return OWSLocalizedString(
+            "SIGNAL_CALL",
+            comment: "Shown in the header when the user hasn't provided a custom name for a call."
+        )
     }
 }

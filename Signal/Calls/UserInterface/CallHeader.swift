@@ -503,10 +503,7 @@ class CallHeader: UIView {
                 contactsManager.displayName(for: groupThreadCall.groupThread, transaction: transaction)
             }
         case .callLink(let call):
-            return call.callLinkState.name ?? OWSLocalizedString(
-                "SIGNAL_CALL",
-                comment: "Shown in the header when the user hasn't provided a custom name for a call."
-            )
+            return call.localizedName
         }
     }
 
