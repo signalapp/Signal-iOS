@@ -217,6 +217,7 @@ public class CLVLoadCoordinator: Dependencies {
         func build(
             chatListMode: ChatListMode,
             inboxFilter: InboxFilter?,
+            lastSelectedThreadId: String?,
             hasVisibleReminders: Bool,
             canApplyRowChanges: Bool,
             lastViewInfo: CLVViewInfo,
@@ -225,6 +226,7 @@ public class CLVLoadCoordinator: Dependencies {
             let viewInfo = CLVViewInfo.build(
                 chatListMode: chatListMode,
                 inboxFilter: inboxFilter,
+                lastSelectedThreadId: lastSelectedThreadId,
                 hasVisibleReminders: hasVisibleReminders,
                 transaction: transaction
             )
@@ -328,6 +330,7 @@ public class CLVLoadCoordinator: Dependencies {
             let loadInfo = loadInfoBuilder.build(
                 chatListMode: viewController.viewState.chatListMode,
                 inboxFilter: viewController.viewState.inboxFilter,
+                lastSelectedThreadId: viewController.viewState.lastSelectedThreadId,
                 hasVisibleReminders: hasVisibleReminders,
                 canApplyRowChanges: canApplyRowChanges,
                 lastViewInfo: viewController.renderState.viewInfo,

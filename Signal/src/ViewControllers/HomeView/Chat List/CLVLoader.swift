@@ -71,9 +71,7 @@ public class CLVLoader: Dependencies {
         }
     }
 
-    private static func loadRenderStateInternal(viewInfo: CLVViewInfo,
-                                                transaction: SDSAnyReadTransaction) throws -> CLVRenderState {
-
+    private static func loadRenderStateInternal(viewInfo: CLVViewInfo, transaction: SDSAnyReadTransaction) throws -> CLVRenderState {
         let threadFinder = ThreadFinder()
         let isViewingArchive = viewInfo.chatListMode == .archive
 
@@ -101,7 +99,11 @@ public class CLVLoader: Dependencies {
             // 1. Fetch the uniqueIds for the visible threads.
             let threadIds = isViewingArchive
                 ? try threadFinder.visibleArchivedThreadIds(transaction: transaction)
-                : try threadFinder.visibleInboxThreadIds(filteredBy: viewInfo.inboxFilter, transaction: transaction)
+                : try threadFinder.visibleInboxThreadIds(
+                    filteredBy: viewInfo.inboxFilter,
+                    requiredVisibleThreadIds: viewInfo.requiredVisibleThreadIds,
+                    transaction: transaction
+                )
 
             guard !threadIds.isEmpty else {
                 break loading

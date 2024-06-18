@@ -37,6 +37,10 @@ class CLVViewState {
     var isViewVisible = false
     var hasEverAppeared = false
 
+    /// Keeps track of the last presented thread so it can remain onscreen even
+    /// while filtering the chat list to only unread chats.
+    var lastSelectedThreadId: String?
+
     var unreadPaymentNotificationsCount: UInt = 0 {
         didSet { settingsButtonCreator.updateState(hasUnreadPaymentNotification: unreadPaymentNotificationsCount > 0) }
     }

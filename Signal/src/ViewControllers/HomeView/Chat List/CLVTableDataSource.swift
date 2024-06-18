@@ -17,6 +17,19 @@ class CLVTableDataSource: NSObject {
 
     var renderState: CLVRenderState = .empty
 
+    /// While table view selection is changing, i.e., between
+    /// `tableView(_:willSelectRowAt:)` and `tableView(_:didSelectRowAt:)`,
+    /// records the identifier of the newly selected thread, or `nil` if
+    /// being deselected.
+    ///
+    /// This is because `tableView(_:didDeselectRowAt:)` is always called before
+    /// `tableView(_:didSelectRowAt:)`, whether the previous selection is being
+    /// set to `nil` (i.e., deselecting the current row) or to a new index path
+    /// (changing the selection to a new row). Distinguishing between these two
+    /// cases allows us to avoid spurious changes to selection that could trigger
+    /// unwanted side-effects.
+    private var threadIdBeingSelected: String?
+
     fileprivate var lastReloadDate: Date? { tableView.lastReloadDate }
 
     fileprivate var lastPreloadCellDate: Date?
@@ -315,13 +328,44 @@ extension CLVTableDataSource: UITableViewDelegate {
         return UIView()
     }
 
+    public func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        AssertIsOnMainThread()
+
+        guard let section = ChatListSection(rawValue: indexPath.section) else {
+            owsFailDebug("Invalid section: \(indexPath.section)")
+            return nil
+        }
+
+        switch section {
+        case .reminders,
+             .archiveButton where viewState.multiSelectState.isActive:
+            return nil
+
+        case .archiveButton:
+            return indexPath
+
+        case .pinned, .unpinned:
+            guard let thread = thread(forIndexPath: indexPath) else {
+                owsFailDebug("Missing thread at index path: \(indexPath)")
+                return nil
+            }
+            threadIdBeingSelected = thread.uniqueId
+            return indexPath
+        }
+    }
+
     public func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         AssertIsOnMainThread()
+
+        if threadIdBeingSelected == nil {
+            viewState.lastSelectedThreadId = nil
+        }
 
         guard let viewController = self.viewController else {
             owsFailDebug("Missing viewController.")
             return
         }
+
         if viewState.multiSelectState.isActive {
             viewController.updateCaptions()
         }
@@ -339,30 +383,30 @@ extension CLVTableDataSource: UITableViewDelegate {
             viewController.cancelSearch()
         }
 
-        guard let section = ChatListSection(rawValue: indexPath.section) else {
-            owsFailDebug("Invalid section: \(indexPath.section).")
-            return
-        }
+        let section = ChatListSection(rawValue: indexPath.section)!
 
         switch section {
         case .reminders:
-            tableView.deselectRow(at: indexPath, animated: false)
+            owsFailDebug("Can't select reminders")
+
         case .pinned, .unpinned:
             guard let thread = thread(forIndexPath: indexPath) else {
                 owsFailDebug("Missing thread.")
                 return
             }
+            owsAssertDebug(thread.uniqueId == threadIdBeingSelected)
+            threadIdBeingSelected = nil
+            viewState.lastSelectedThreadId = thread.uniqueId
+
             if viewState.multiSelectState.isActive {
                 viewController.updateCaptions()
             } else {
                 viewController.presentThread(thread, animated: true)
             }
+
         case .archiveButton:
-            if viewState.multiSelectState.isActive {
-                tableView.deselectRow(at: indexPath, animated: false)
-            } else {
-                viewController.showArchivedConversations()
-            }
+            owsAssertDebug(!viewState.multiSelectState.isActive)
+            viewController.showArchivedConversations()
         }
     }
 

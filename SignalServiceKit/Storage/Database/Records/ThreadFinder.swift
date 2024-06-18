@@ -8,6 +8,15 @@ import GRDB
 public class ThreadFinder: Dependencies {
     public init() {}
 
+    private func requiredVisibleThreadsClause(forThreadIds threadIds: Set<String>) -> String {
+        if threadIds.isEmpty {
+            return ""
+        } else {
+            let threadIdsExpression = threadIds.lazy.map { "'\($0)'" }.joined(separator: ", ")
+            return "OR \(threadColumnFullyQualified: .uniqueId) IN (\(threadIdsExpression))"
+        }
+    }
+
     /// Fetch a thread with the given SQLite row ID, if one exists.
     public func fetch(rowId: Int64, tx: SDSAnyReadTransaction) -> TSThread? {
         guard let thread = TSThread.grdbFetchOne(
@@ -113,7 +122,7 @@ public class ThreadFinder: Dependencies {
             FROM \(ThreadRecord.databaseTableName)
             \(threadAssociatedDataJoinClause(isArchived: isArchived))
             WHERE \(threadColumn: .shouldThreadBeVisible) = 1
-        """
+            """
 
         guard let count = try UInt.fetchOne(
             transaction.unwrapGrdbRead.database,
@@ -137,7 +146,7 @@ public class ThreadFinder: Dependencies {
             \(threadAssociatedDataJoinClause(isArchived: isArchived))
             WHERE \(threadColumn: .shouldThreadBeVisible) = 1
             ORDER BY \(threadColumn: .lastInteractionRowId) DESC
-        """
+            """
 
         do {
             try ThreadRecord.fetchCursor(
@@ -156,7 +165,11 @@ public class ThreadFinder: Dependencies {
         }
     }
 
-    public func visibleInboxThreadIds(filteredBy inboxFilter: InboxFilter? = nil, transaction: SDSAnyReadTransaction) throws -> [String] {
+    public func visibleInboxThreadIds(
+        filteredBy inboxFilter: InboxFilter? = nil,
+        requiredVisibleThreadIds: Set<String> = [],
+        transaction: SDSAnyReadTransaction
+    ) throws -> [String] {
         if inboxFilter == .unread {
             let sql = """
                 SELECT
@@ -172,7 +185,11 @@ public class ThreadFinder: Dependencies {
                     AND \(InteractionFinder.sqlClauseForUnreadInteractionCounts(interactionsAlias: "i"))
                 WHERE \(threadColumnFullyQualified: .shouldThreadBeVisible) = 1
                 GROUP BY thread_uniqueId
-                HAVING thread_isMarkedUnread = 1 OR interactions_unreadCount > 0
+                HAVING (
+                    thread_isMarkedUnread = 1
+                    OR interactions_unreadCount > 0
+                    \(requiredVisibleThreadsClause(forThreadIds: requiredVisibleThreadIds))
+                )
                 ORDER BY \(threadColumnFullyQualified: .lastInteractionRowId) DESC
                 """
             return try String.fetchAll(transaction.unwrapGrdbRead.database, sql: sql, adapter: RangeRowAdapter(0..<1))
@@ -197,9 +214,9 @@ public class ThreadFinder: Dependencies {
             SELECT \(threadColumn: .uniqueId)
             FROM \(ThreadRecord.databaseTableName)
             \(threadAssociatedDataJoinClause(isArchived: true))
-            AND \(threadColumn: .shouldThreadBeVisible) = 1
+            WHERE \(threadColumn: .shouldThreadBeVisible) = 1
             ORDER BY \(threadColumn: .lastInteractionRowId) DESC
-        """
+            """
 
         return try String.fetchAll(transaction.unwrapGrdbRead.database, sql: sql)
     }
@@ -210,7 +227,7 @@ public class ThreadFinder: Dependencies {
             FROM \(ThreadRecord.databaseTableName)
             WHERE \(threadColumn: .shouldThreadBeVisible) = 1
             ORDER BY \(threadColumn: .lastInteractionRowId) DESC
-        """
+            """
         do {
             return try Int64.fetchAll(tx.unwrapGrdbRead.database, sql: sql)
         } catch {

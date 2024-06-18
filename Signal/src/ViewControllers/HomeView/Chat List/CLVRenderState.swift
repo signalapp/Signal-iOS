@@ -125,6 +125,8 @@ struct CLVViewInfo: Equatable {
     let inboxFilter: InboxFilter?
     let hasArchivedThreadsRow: Bool
     let hasVisibleReminders: Bool
+    let lastSelectedThreadId: String?
+    let requiredVisibleThreadIds: Set<String>
 
     static var empty: CLVViewInfo {
         CLVViewInfo(
@@ -133,17 +135,25 @@ struct CLVViewInfo: Equatable {
             inboxCount: 0,
             inboxFilter: nil,
             hasArchivedThreadsRow: false,
-            hasVisibleReminders: false
+            hasVisibleReminders: false,
+            lastSelectedThreadId: nil,
+            requiredVisibleThreadIds: []
         )
     }
 
     static func build(
         chatListMode: ChatListMode,
         inboxFilter: InboxFilter?,
+        lastSelectedThreadId: String?,
         hasVisibleReminders: Bool,
         transaction: SDSAnyReadTransaction
     ) -> CLVViewInfo {
         do {
+            let requiredThreadIds: Set<String> = if inboxFilter != nil, let lastSelectedThreadId {
+                [lastSelectedThreadId]
+            } else {
+                []
+            }
             let threadFinder = ThreadFinder()
             let archiveCount = try threadFinder.visibleThreadCount(isArchived: true, transaction: transaction)
             let inboxCount = try threadFinder.visibleThreadCount(isArchived: false, transaction: transaction)
@@ -154,7 +164,9 @@ struct CLVViewInfo: Equatable {
                 inboxCount: inboxCount,
                 inboxFilter: inboxFilter,
                 hasArchivedThreadsRow: hasArchivedThreadsRow,
-                hasVisibleReminders: hasVisibleReminders
+                hasVisibleReminders: hasVisibleReminders,
+                lastSelectedThreadId: lastSelectedThreadId,
+                requiredVisibleThreadIds: requiredThreadIds
             )
         } catch {
             owsFailDebug("Error: \(error)")

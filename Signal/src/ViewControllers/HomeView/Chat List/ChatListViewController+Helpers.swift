@@ -36,10 +36,11 @@ public extension ChatListViewController {
     /// Verifies that the currently selected cell matches the provided thread.
     /// If it does or if the user's in multi-select: Do nothing.
     /// If it doesn't: Select the first cell matching the provided thread, if one exists. Otherwise, deselect the current row.
-    private func ensureSelectedThread(_ targetThread: TSThread, animated: Bool) {
+    func ensureSelectedThread(_ targetThread: TSThread, animated: Bool) {
         // Ignore any updates if we're in multiselect mode. I don't think this can happen,
         // but if it does let's avoid stepping over the user's manual selection.
         let currentSelection = tableView.indexPathsForSelectedRows ?? []
+
         guard viewState.multiSelectState.isActive == false, currentSelection.count < 2 else {
             return
         }

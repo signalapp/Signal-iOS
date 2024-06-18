@@ -58,6 +58,10 @@ extension ChatListViewController {
         viewState.multiSelectState.setIsActive(false, tableView: tableView)
         title = viewState.multiSelectState.title
         hideToolbar()
+
+        if let lastViewedThread {
+            ensureSelectedThread(lastViewedThread, animated: false)
+        }
     }
 
     func showToolbar() {
