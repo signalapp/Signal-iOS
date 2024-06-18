@@ -89,6 +89,10 @@ class CallControls: UIView {
         return button
     }()
 
+    static func joinButtonLabel(for call: SignalCall) -> String {
+        return CallControlsViewModel.joinButtonLabel(for: call)
+    }
+
     private lazy var gradientView: UIView = {
         let gradientLayer = CAGradientLayer()
         gradientLayer.colors = [
@@ -414,41 +418,43 @@ private class CallControlsViewModel {
                 isUserInteractionEnabled: false
             )
         }
-        let label: String
-        switch call.mode {
-        case .individual(_):
-            // We only show a lobby for 1:1 calls when the call is being initiated.
-            // TODO: The work of adding the lobby for 1:1 calls in the unified call view
-            // controller (currently GroupCallViewController) is not yet complete.
-            label = startCallText()
-        case .groupThread(let call):
-            label = call.ringRestrictions.contains(.callInProgress) ? joinCallText() : startCallText()
-        case .callLink(let call):
-            label = call.mayNeedToAskToJoin ? askToJoinText() : joinCallText()
-        }
         return JoinButtonConfiguration(
-            label: label,
+            label: Self.joinButtonLabel(for: call),
             color: .white,
             adjustsImageWhenHighlighted: true,
             isUserInteractionEnabled: true
         )
     }
 
-    private func startCallText() -> String {
+    static func joinButtonLabel(for call: SignalCall) -> String {
+        switch call.mode {
+        case .individual:
+            // We only show a lobby for 1:1 calls when the call is being initiated.
+            // TODO: The work of adding the lobby for 1:1 calls in the unified call view
+            // controller (currently GroupCallViewController) is not yet complete.
+            return startCallText()
+        case .groupThread(let call):
+            return call.ringRestrictions.contains(.callInProgress) ? joinCallText() : startCallText()
+        case .callLink(let call):
+            return call.mayNeedToAskToJoin ? askToJoinText() : joinCallText()
+        }
+    }
+
+    private static func startCallText() -> String {
         return OWSLocalizedString(
             "CALL_START_BUTTON",
             comment: "Button to start a call"
         )
     }
 
-    private func joinCallText() -> String {
+    private static func joinCallText() -> String {
         return OWSLocalizedString(
             "GROUP_CALL_JOIN_BUTTON",
             comment: "Button to join an ongoing group call"
         )
     }
 
-    private func askToJoinText() -> String {
+    private static func askToJoinText() -> String {
         return OWSLocalizedString(
             "ASK_TO_JOIN_CALL",
             comment: "Button to try to join a call. The admin may need to approve the request before the user can join."

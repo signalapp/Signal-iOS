@@ -1029,8 +1029,6 @@ extension GroupCallViewController: CallViewControllerWindowReference {
             existingSheet.dismiss(animated: false)
         }
 
-        let startCallString = OWSLocalizedString("CALL_START_BUTTON", comment: "Button to start a call")
-        let joinCallString = OWSLocalizedString("GROUP_CALL_JOIN_BUTTON", comment: "Button to join an ongoing group call")
         let continueCallString = OWSLocalizedString("GROUP_CALL_CONTINUE_BUTTON", comment: "Button to continue an ongoing group call")
         let leaveCallString = OWSLocalizedString("GROUP_CALL_LEAVE_BUTTON", comment: "Button to leave a group call")
         let cancelString = CommonStrings.cancelButton
@@ -1038,7 +1036,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
         let approveText: String
         let denyText: String
         if localDeviceHasNotJoined {
-            approveText = self.groupCallThreadForSafetyNumberMismatch().ringRestrictions.contains(.callInProgress) ? joinCallString : startCallString
+            approveText = CallControls.joinButtonLabel(for: call)
             denyText = cancelString
         } else {
             approveText = continueCallString
