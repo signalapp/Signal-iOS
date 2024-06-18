@@ -1069,31 +1069,41 @@ extension CallService: CallManagerDelegate {
         AssertIsOnMainThread()
         Logger.info("")
 
-        let recipientAci = Aci(fromUUID: recipientUuid)
-
         let currentCall = self.callServiceState.currentCall
 
-        databaseStorage.write(.promise) { transaction in
-            TSContactThread.getOrCreateThread(
-                withContactAddress: SignalServiceAddress(recipientAci),
-                transaction: transaction
-            )
-        }.then(on: DispatchQueue.global()) { thread -> Promise<Void> in
+        Task {
             let opaqueBuilder = SSKProtoCallMessageOpaque.builder()
             opaqueBuilder.setData(message)
             opaqueBuilder.setUrgency(urgency.protobufValue)
+            await self.sendCallMessage(
+                opaqueBuilder.buildInfallibly(),
+                to: Aci(fromUUID: recipientUuid),
+                callAtStart: currentCall
+            )
+        }
+    }
 
-            return self.databaseStorage.write { transaction in
+    @MainActor
+    private func sendCallMessage(
+        _ opaqueMessage: SSKProtoCallMessageOpaque,
+        to recipientAci: Aci,
+        callAtStart: SignalCall?
+    ) async {
+        do {
+            let sendPromise = await databaseStorage.awaitableWrite { transaction in
+                let thread = TSContactThread.getOrCreateThread(
+                    withContactAddress: SignalServiceAddress(recipientAci),
+                    transaction: transaction
+                )
                 let callMessage = OWSOutgoingCallMessage(
                     thread: thread,
-                    opaqueMessage: opaqueBuilder.buildInfallibly(),
+                    opaqueMessage: opaqueMessage,
                     overrideRecipients: nil,
                     transaction: transaction
                 )
                 let preparedMessage = PreparedOutgoingMessage.preprepared(
                     transientMessageWithoutAttachments: callMessage
                 )
-
                 return ThreadUtil.enqueueMessagePromise(
                     message: preparedMessage,
                     limitToCurrentProcessLifetime: true,
@@ -1101,13 +1111,11 @@ extension CallService: CallManagerDelegate {
                     transaction: transaction
                 )
             }
-        }.done(on: DispatchQueue.main) { _ in
+            try await sendPromise.awaitable()
             // TODO: Tell RingRTC we succeeded in sending the message. API TBD
-        }.catch(on: DispatchQueue.main) { error in
-            if error.isNetworkFailureOrTimeout {
-                Logger.warn("Failed to send opaque message \(error)")
-            } else if error is UntrustedIdentityError {
-                switch currentCall?.mode {
+        } catch {
+            if error is UntrustedIdentityError {
+                switch callAtStart?.mode {
                 case nil:
                     owsFailDebug("We can't send messages to inactive group calls.")
                 case .individual:
@@ -1117,7 +1125,7 @@ extension CallService: CallManagerDelegate {
                     call.publishSendFailureUntrustedParticipantIdentity()
                 }
             } else {
-                Logger.error("Failed to send opaque message \(error)")
+                Logger.warn("Failed to send opaque message \(error)")
             }
             // TODO: Tell RingRTC something went wrong. API TBD
         }
@@ -1138,26 +1146,36 @@ extension CallService: CallManagerDelegate {
         urgency: CallMessageUrgency,
         overrideRecipients: [UUID]
     ) {
-        AssertIsOnMainThread()
         Logger.info("")
-
-        databaseStorage.read(.promise) { transaction throws -> TSGroupThread in
-            guard let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-                throw OWSAssertionError("tried to send call message to unknown group")
-            }
-            return thread
-        }.then(on: DispatchQueue.global()) { thread -> Promise<Void> in
+        Task {
             let opaqueBuilder = SSKProtoCallMessageOpaque.builder()
             opaqueBuilder.setData(message)
             opaqueBuilder.setUrgency(urgency.protobufValue)
+            await self.sendCallMessageToGroup(
+                opaqueBuilder.buildInfallibly(),
+                groupId: groupId,
+                overrideRecipients: overrideRecipients
+            )
+        }
+    }
 
-            return self.databaseStorage.write { transaction in
+    @MainActor
+    private func sendCallMessageToGroup(
+        _ opaqueMessage: SSKProtoCallMessageOpaque,
+        groupId: Data,
+        overrideRecipients: [UUID]
+    ) async {
+        do {
+            let sendPromise = try await self.databaseStorage.awaitableWrite { transaction in
+                guard let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+                    throw OWSAssertionError("tried to send call message to unknown group")
+                }
                 let overrideRecipients = overrideRecipients.map {
                     return AciObjC(Aci(fromUUID: $0))
                 }
                 let callMessage = OWSOutgoingCallMessage(
                     thread: thread,
-                    opaqueMessage: opaqueBuilder.buildInfallibly(),
+                    opaqueMessage: opaqueMessage,
                     overrideRecipients: overrideRecipients.isEmpty ? nil : overrideRecipients,
                     transaction: transaction
                 )
@@ -1172,14 +1190,10 @@ extension CallService: CallManagerDelegate {
                     transaction: transaction
                 )
             }
-        }.done(on: DispatchQueue.main) { _ in
+            try await sendPromise.awaitable()
             // TODO: Tell RingRTC we succeeded in sending the message. API TBD
-        }.catch(on: DispatchQueue.main) { error in
-            if error.isNetworkFailureOrTimeout {
-                Logger.warn("Failed to send opaque message \(error)")
-            } else {
-                Logger.error("Failed to send opaque message \(error)")
-            }
+        } catch {
+            Logger.warn("Failed to send opaque message \(error)")
             // TODO: Tell RingRTC something went wrong. API TBD
         }
     }
