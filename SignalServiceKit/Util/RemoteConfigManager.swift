@@ -286,6 +286,13 @@ public class RemoteConfig: NSObject {
         )
     }
 
+    public static var callLinkJoin: Bool {
+        return (
+            FeatureBuild.current == .dev
+            || FeatureBuild.current == .internal && isEnabled(.callLinkJoin)
+        )
+    }
+
     // MARK: UInt values
 
     private static func getUIntValue(
@@ -503,6 +510,7 @@ private enum IsEnabledFlag: String, FlagType {
     case experimentalTransportShadowingEnabled = "ios.experimentalTransportEnabled.shadowing"
     case cdsiLookupWithLibsignal = "ios.cdsiLookup.libsignal"
     case deleteForMeSyncMessageSending = "ios.deleteForMeSyncMessage.sending"
+    case callLinkJoin = "ios.callLink.join.v1"
 
     var isSticky: Bool {
         switch self {
@@ -527,6 +535,8 @@ private enum IsEnabledFlag: String, FlagType {
         case .experimentalTransportShadowingEnabled: fallthrough
         case .cdsiLookupWithLibsignal: fallthrough
         case .deleteForMeSyncMessageSending:
+            return false
+        case .callLinkJoin:
             return false
         }
     }
@@ -555,6 +565,8 @@ private enum IsEnabledFlag: String, FlagType {
         case .experimentalTransportShadowingEnabled: fallthrough
         case .deleteForMeSyncMessageSending:
             return false
+        case .callLinkJoin:
+            return true
         }
     }
 }
