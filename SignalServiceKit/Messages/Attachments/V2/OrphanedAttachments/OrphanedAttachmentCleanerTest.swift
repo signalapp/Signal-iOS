@@ -69,6 +69,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
         XCTAssertEqual(
             mockFileSystem.deletedFiles,
             [AttachmentStream.absoluteAttachmentFileURL(relativeFilePath: localRelativeFilePath)]
+            + thumbnailFileURLs(localRelativeFilePath: localRelativeFilePath)
         )
 
         // And no rows left.
@@ -100,7 +101,10 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
 
         XCTAssertEqual(
             mockFileSystem.deletedFiles,
-            filePaths.map { AttachmentStream.absoluteAttachmentFileURL(relativeFilePath: $0) }
+            filePaths.flatMap {
+                return [AttachmentStream.absoluteAttachmentFileURL(relativeFilePath: $0)]
+                    + thumbnailFileURLs(localRelativeFilePath: $0)
+            }
         )
 
         // And no rows left.
@@ -129,6 +133,9 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
 
         struct SomeError: Error {}
 
+        let allThumbnailFilePaths = thumbnailFileURLs(localRelativeFilePath: filePath1)
+            + thumbnailFileURLs(localRelativeFilePath: filePath2)
+
         var file1WasAttempted = false
         mockFileSystem.deleteFileMock = { url in
             if url == url1 {
@@ -139,6 +146,8 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
                     XCTFail("Unexpected deletion order")
                     return
                 }
+            } else if allThumbnailFilePaths.contains(url) {
+                return
             } else {
                 XCTFail("Unexpected file deleted")
             }
@@ -154,6 +163,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
         XCTAssertEqual(
             mockFileSystem.deletedFiles,
             [url2]
+            + thumbnailFileURLs(localRelativeFilePath: filePath2)
         )
 
         // The first row should still be around.
@@ -169,9 +179,12 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
         let url3 = AttachmentStream.absoluteAttachmentFileURL(relativeFilePath: filePath3)
 
         mockFileSystem.deleteFileMock = { url in
-            guard url == url3 else {
-                XCTFail("Unexpected file deleted")
+            if url == url3 {
                 return
+            } else if self.thumbnailFileURLs(localRelativeFilePath: filePath3).contains(url) {
+                return
+            } else {
+                XCTFail("Unexpected file deleted")
             }
         }
 
@@ -192,6 +205,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
         XCTAssertEqual(
             mockFileSystem.deletedFiles,
             [url3]
+            + thumbnailFileURLs(localRelativeFilePath: filePath3)
         )
 
         // The first row should still be around.
@@ -229,7 +243,22 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
             XCTAssert(mockFileSystem.deletedFiles.contains(url))
             fieldCount += 1
         }
+
+        // Should also get a deletion for every thumbnail size.
+        fieldCount += AttachmentThumbnailQuality.allCases.count
+
         XCTAssertEqual(mockFileSystem.deletedFiles.count, fieldCount)
+    }
+
+    // MARK: - Helpers
+
+    private func thumbnailFileURLs(localRelativeFilePath: String) -> [URL] {
+        return AttachmentThumbnailQuality.allCases.map { quality in
+            return AttachmentThumbnailQuality.thumbnailCacheFileUrl(
+                attachmentLocalRelativeFilePath: localRelativeFilePath,
+                at: quality
+            )
+        }
     }
 }
 

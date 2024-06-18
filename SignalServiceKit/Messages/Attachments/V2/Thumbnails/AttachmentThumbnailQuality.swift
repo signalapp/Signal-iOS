@@ -5,7 +5,7 @@
 
 import Foundation
 
-public enum AttachmentThumbnailQuality {
+public enum AttachmentThumbnailQuality: CaseIterable {
     case small
     case medium
     case mediumLarge
@@ -60,5 +60,28 @@ extension AttachmentThumbnailQuality {
         case .large:
             return Self.thumbnailDimensionPointsLarge()
         }
+    }
+
+    public static func thumbnailCacheFileUrl(
+        for attachmentStream: AttachmentStream,
+        at quality: AttachmentThumbnailQuality
+    ) -> URL {
+        return thumbnailCacheFileUrl(
+            attachmentLocalRelativeFilePath: attachmentStream.localRelativeFilePath,
+            at: quality
+        )
+    }
+
+    public static func thumbnailCacheFileUrl(
+        attachmentLocalRelativeFilePath: String,
+        at quality: AttachmentThumbnailQuality
+    ) -> URL {
+        let originalFilename = (attachmentLocalRelativeFilePath as NSString).lastPathComponent
+        // Its not SUPER important that this breaks if someone changes the description.
+        // Even in the unlikely event that happens, its just caching that we lose.
+        let thumbnailFilename = "\(originalFilename)_\(quality.description)"
+
+        let directory = URL(fileURLWithPath: OWSFileSystem.cachesDirectoryPath())
+        return directory.appendingPathComponent(thumbnailFilename)
     }
 }

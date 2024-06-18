@@ -267,6 +267,17 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
                 let fileURL = AttachmentStream.absoluteAttachmentFileURL(relativeFilePath: relativeFilePath)
                 try fileSystem.deleteFileIfExists(url: fileURL)
             }
+
+            if let localRelativeFilePath = record.localRelativeFilePath {
+                // Delete any cached thumbnails as well.
+                for quality in AttachmentThumbnailQuality.allCases {
+                    let cacheFileUrl = AttachmentThumbnailQuality.thumbnailCacheFileUrl(
+                        attachmentLocalRelativeFilePath: localRelativeFilePath,
+                        at: quality
+                    )
+                    try fileSystem.deleteFileIfExists(url: cacheFileUrl)
+                }
+            }
         }
     }
 
