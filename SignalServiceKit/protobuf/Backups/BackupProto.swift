@@ -482,6 +482,29 @@ extension BackupProto {
 
     }
 
+    public struct PaymentNotification {
+
+        /**
+         * stored as a decimal string, e.g. 1.00001
+         */
+        @ProtoDefaulted
+        public var amountMob: String?
+        /**
+         * stored as a decimal string, e.g. 1.00001
+         */
+        @ProtoDefaulted
+        public var feeMob: String?
+        @ProtoDefaulted
+        public var note: String?
+        public var transactionDetails: BackupProto.PaymentNotification.TransactionDetails?
+        public var unknownFields: UnknownFields = .init()
+
+        public init(configure: (inout Self) -> Swift.Void = { _ in }) {
+            configure(&self)
+        }
+
+    }
+
     public struct ContactAttachment {
 
         @ProtoDefaulted
@@ -4406,6 +4429,7 @@ extension BackupProto.ChatItem : Proto3Codable {
             case 13: item = .stickerMessage(try protoReader.decode(BackupProto.StickerMessage.self))
             case 14: item = .remoteDeletedMessage(try protoReader.decode(BackupProto.RemoteDeletedMessage.self))
             case 15: item = .updateMessage(try protoReader.decode(BackupProto.ChatUpdateMessage.self))
+            case 16: item = .paymentNotification(try protoReader.decode(BackupProto.PaymentNotification.self))
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -4472,6 +4496,8 @@ extension BackupProto.ChatItem : Codable {
             self.item = .remoteDeletedMessage(remoteDeletedMessage)
         } else if let updateMessage = try container.decodeIfPresent(BackupProto.ChatUpdateMessage.self, forKey: "updateMessage") {
             self.item = .updateMessage(updateMessage)
+        } else if let paymentNotification = try container.decodeIfPresent(BackupProto.PaymentNotification.self, forKey: "paymentNotification") {
+            self.item = .paymentNotification(paymentNotification)
         } else {
             self.item = nil
         }
@@ -4510,6 +4536,7 @@ extension BackupProto.ChatItem : Codable {
         case .stickerMessage(let stickerMessage): try container.encode(stickerMessage, forKey: "stickerMessage")
         case .remoteDeletedMessage(let remoteDeletedMessage): try container.encode(remoteDeletedMessage, forKey: "remoteDeletedMessage")
         case .updateMessage(let updateMessage): try container.encode(updateMessage, forKey: "updateMessage")
+        case .paymentNotification(let paymentNotification): try container.encode(paymentNotification, forKey: "paymentNotification")
         case Optional.none: break
         }
     }
@@ -4545,6 +4572,7 @@ extension BackupProto.ChatItem {
         case stickerMessage(BackupProto.StickerMessage)
         case remoteDeletedMessage(BackupProto.RemoteDeletedMessage)
         case updateMessage(BackupProto.ChatUpdateMessage)
+        case paymentNotification(BackupProto.PaymentNotification)
 
         fileprivate func encode(to protoWriter: ProtoWriter) throws {
             switch self {
@@ -4553,6 +4581,7 @@ extension BackupProto.ChatItem {
             case .stickerMessage(let stickerMessage): try protoWriter.encode(tag: 13, value: stickerMessage)
             case .remoteDeletedMessage(let remoteDeletedMessage): try protoWriter.encode(tag: 14, value: remoteDeletedMessage)
             case .updateMessage(let updateMessage): try protoWriter.encode(tag: 15, value: updateMessage)
+            case .paymentNotification(let paymentNotification): try protoWriter.encode(tag: 16, value: paymentNotification)
             }
         }
 
@@ -5248,6 +5277,599 @@ extension BackupProto.ContactMessage : Codable {
 
 }
 #endif
+
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.PaymentNotification : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.PaymentNotification : Hashable {
+}
+#endif
+
+extension BackupProto.PaymentNotification : Sendable {
+}
+
+extension BackupProto.PaymentNotification : ProtoDefaultedValue {
+
+    public static var defaultedValue: BackupProto.PaymentNotification {
+        BackupProto.PaymentNotification()
+    }
+}
+
+extension BackupProto.PaymentNotification : ProtoMessage {
+
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/BackupProto.BackupProto.PaymentNotification"
+    }
+
+}
+
+extension BackupProto.PaymentNotification : Proto3Codable {
+
+    public init(from protoReader: ProtoReader) throws {
+        var amountMob: String? = nil
+        var feeMob: String? = nil
+        var note: String? = nil
+        var transactionDetails: BackupProto.PaymentNotification.TransactionDetails? = nil
+
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
+            switch tag {
+            case 1: amountMob = try protoReader.decode(String.self)
+            case 2: feeMob = try protoReader.decode(String.self)
+            case 3: note = try protoReader.decode(String.self)
+            case 4: transactionDetails = try protoReader.decode(BackupProto.PaymentNotification.TransactionDetails.self)
+            default: try protoReader.readUnknownField(tag: tag)
+            }
+        }
+        self.unknownFields = try protoReader.endMessage(token: token)
+
+        self._amountMob.wrappedValue = amountMob
+        self._feeMob.wrappedValue = feeMob
+        self._note.wrappedValue = note
+        self.transactionDetails = transactionDetails
+    }
+
+    public func encode(to protoWriter: ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.amountMob)
+        try protoWriter.encode(tag: 2, value: self.feeMob)
+        try protoWriter.encode(tag: 3, value: self.note)
+        try protoWriter.encode(tag: 4, value: self.transactionDetails)
+        try protoWriter.writeUnknownFields(unknownFields)
+    }
+
+}
+
+#if !WIRE_REMOVE_CODABLE
+extension BackupProto.PaymentNotification : Codable {
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self._amountMob.wrappedValue = try container.decodeIfPresent(String.self, forKey: "amountMob")
+        self._feeMob.wrappedValue = try container.decodeIfPresent(String.self, forKey: "feeMob")
+        self._note.wrappedValue = try container.decodeIfPresent(String.self, forKey: "note")
+        self.transactionDetails = try container.decodeIfPresent(BackupProto.PaymentNotification.TransactionDetails.self, forKey: "transactionDetails")
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+
+        try container.encodeIfPresent(self.amountMob, forKey: "amountMob")
+        try container.encodeIfPresent(self.feeMob, forKey: "feeMob")
+        try container.encodeIfPresent(self.note, forKey: "note")
+        try container.encodeIfPresent(self.transactionDetails, forKey: "transactionDetails")
+    }
+
+}
+#endif
+
+/**
+ * Subtypes within BackupProto.PaymentNotification
+ */
+extension BackupProto.PaymentNotification {
+
+    public struct TransactionDetails {
+
+        public var payment: BackupProto.PaymentNotification.TransactionDetails.Payment?
+        public var unknownFields: UnknownFields = .init()
+
+        public init(configure: (inout Self) -> Swift.Void = { _ in }) {
+            configure(&self)
+        }
+
+    }
+
+}
+
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.PaymentNotification.TransactionDetails : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.PaymentNotification.TransactionDetails : Hashable {
+}
+#endif
+
+extension BackupProto.PaymentNotification.TransactionDetails : Sendable {
+}
+
+extension BackupProto.PaymentNotification.TransactionDetails : ProtoDefaultedValue {
+
+    public static var defaultedValue: BackupProto.PaymentNotification.TransactionDetails {
+        BackupProto.PaymentNotification.TransactionDetails()
+    }
+}
+
+extension BackupProto.PaymentNotification.TransactionDetails : ProtoMessage {
+
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/BackupProto.BackupProto.PaymentNotification.TransactionDetails"
+    }
+
+}
+
+extension BackupProto.PaymentNotification.TransactionDetails : Proto3Codable {
+
+    public init(from protoReader: ProtoReader) throws {
+        var payment: BackupProto.PaymentNotification.TransactionDetails.Payment? = nil
+
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
+            switch tag {
+            case 1: payment = .transaction(try protoReader.decode(BackupProto.PaymentNotification.TransactionDetails.Transaction.self))
+            case 2: payment = .failedTransaction(try protoReader.decode(BackupProto.PaymentNotification.TransactionDetails.FailedTransaction.self))
+            default: try protoReader.readUnknownField(tag: tag)
+            }
+        }
+        self.unknownFields = try protoReader.endMessage(token: token)
+
+        self.payment = payment
+    }
+
+    public func encode(to protoWriter: ProtoWriter) throws {
+        if let payment = self.payment {
+            try payment.encode(to: protoWriter)
+        }
+        try protoWriter.writeUnknownFields(unknownFields)
+    }
+
+}
+
+#if !WIRE_REMOVE_CODABLE
+extension BackupProto.PaymentNotification.TransactionDetails : Codable {
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        if let transaction = try container.decodeIfPresent(BackupProto.PaymentNotification.TransactionDetails.Transaction.self, forKey: "transaction") {
+            self.payment = .transaction(transaction)
+        } else if let failedTransaction = try container.decodeIfPresent(BackupProto.PaymentNotification.TransactionDetails.FailedTransaction.self, forKey: "failedTransaction") {
+            self.payment = .failedTransaction(failedTransaction)
+        } else {
+            self.payment = nil
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+
+        switch self.payment {
+        case .transaction(let transaction): try container.encode(transaction, forKey: "transaction")
+        case .failedTransaction(let failedTransaction): try container.encode(failedTransaction, forKey: "failedTransaction")
+        case Optional.none: break
+        }
+    }
+
+}
+#endif
+
+/**
+ * Subtypes within BackupProto.PaymentNotification.TransactionDetails
+ */
+extension BackupProto.PaymentNotification.TransactionDetails {
+
+    public enum Payment {
+
+        case transaction(BackupProto.PaymentNotification.TransactionDetails.Transaction)
+        case failedTransaction(BackupProto.PaymentNotification.TransactionDetails.FailedTransaction)
+
+        fileprivate func encode(to protoWriter: ProtoWriter) throws {
+            switch self {
+            case .transaction(let transaction): try protoWriter.encode(tag: 1, value: transaction)
+            case .failedTransaction(let failedTransaction): try protoWriter.encode(tag: 2, value: failedTransaction)
+            }
+        }
+
+    }
+
+    public struct MobileCoinTxoIdentification {
+
+        /**
+         * Used to map to payments on the ledger
+         * for received transactions
+         */
+        public var publicKey: [Foundation.Data] = []
+        /**
+         * for sent transactions
+         */
+        public var keyImages: [Foundation.Data] = []
+        public var unknownFields: UnknownFields = .init()
+
+        public init(configure: (inout Self) -> Swift.Void = { _ in }) {
+            configure(&self)
+        }
+
+    }
+
+    public struct FailedTransaction {
+
+        public var reason: BackupProto.PaymentNotification.TransactionDetails.FailedTransaction.FailureReason
+        public var unknownFields: UnknownFields = .init()
+
+        public init(reason: BackupProto.PaymentNotification.TransactionDetails.FailedTransaction.FailureReason) {
+            self.reason = reason
+        }
+
+    }
+
+    public struct Transaction {
+
+        public var status: BackupProto.PaymentNotification.TransactionDetails.Transaction.Status
+        /**
+         * This identification is used to map the payment table to the ledger
+         * and is likely required otherwise we may have issues reconciling with
+         * the ledger
+         */
+        @ProtoDefaulted
+        public var mobileCoinIdentification: BackupProto.PaymentNotification.TransactionDetails.MobileCoinTxoIdentification?
+        @ProtoDefaulted
+        public var timestamp: UInt64?
+        @ProtoDefaulted
+        public var blockIndex: UInt64?
+        @ProtoDefaulted
+        public var blockTimestamp: UInt64?
+        /**
+         * mobile coin blobs
+         */
+        @ProtoDefaulted
+        public var transaction: Foundation.Data?
+        /**
+         * mobile coin blobs
+         */
+        @ProtoDefaulted
+        public var receipt: Foundation.Data?
+        public var unknownFields: UnknownFields = .init()
+
+        public init(status: BackupProto.PaymentNotification.TransactionDetails.Transaction.Status, configure: (inout Self) -> Swift.Void = { _ in }) {
+            self.status = status
+            configure(&self)
+        }
+
+    }
+
+}
+
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.PaymentNotification.TransactionDetails.Payment : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.PaymentNotification.TransactionDetails.Payment : Hashable {
+}
+#endif
+
+extension BackupProto.PaymentNotification.TransactionDetails.Payment : Sendable {
+}
+
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.PaymentNotification.TransactionDetails.MobileCoinTxoIdentification : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.PaymentNotification.TransactionDetails.MobileCoinTxoIdentification : Hashable {
+}
+#endif
+
+extension BackupProto.PaymentNotification.TransactionDetails.MobileCoinTxoIdentification : Sendable {
+}
+
+extension BackupProto.PaymentNotification.TransactionDetails.MobileCoinTxoIdentification : ProtoDefaultedValue {
+
+    public static var defaultedValue: BackupProto.PaymentNotification.TransactionDetails.MobileCoinTxoIdentification {
+        BackupProto.PaymentNotification.TransactionDetails.MobileCoinTxoIdentification()
+    }
+}
+
+extension BackupProto.PaymentNotification.TransactionDetails.MobileCoinTxoIdentification : ProtoMessage {
+
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/BackupProto.BackupProto.PaymentNotification.TransactionDetails.MobileCoinTxoIdentification"
+    }
+
+}
+
+extension BackupProto.PaymentNotification.TransactionDetails.MobileCoinTxoIdentification : Proto3Codable {
+
+    public init(from protoReader: ProtoReader) throws {
+        var publicKey: [Foundation.Data] = []
+        var keyImages: [Foundation.Data] = []
+
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
+            switch tag {
+            case 1: try protoReader.decode(into: &publicKey)
+            case 2: try protoReader.decode(into: &keyImages)
+            default: try protoReader.readUnknownField(tag: tag)
+            }
+        }
+        self.unknownFields = try protoReader.endMessage(token: token)
+
+        self.publicKey = publicKey
+        self.keyImages = keyImages
+    }
+
+    public func encode(to protoWriter: ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.publicKey)
+        try protoWriter.encode(tag: 2, value: self.keyImages)
+        try protoWriter.writeUnknownFields(unknownFields)
+    }
+
+}
+
+#if !WIRE_REMOVE_CODABLE
+extension BackupProto.PaymentNotification.TransactionDetails.MobileCoinTxoIdentification : Codable {
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.publicKey = try container.decodeProtoArray(Foundation.Data.self, forKey: "publicKey")
+        self.keyImages = try container.decodeProtoArray(Foundation.Data.self, forKey: "keyImages")
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
+
+        if includeDefaults || !self.publicKey.isEmpty {
+            try container.encodeProtoArray(self.publicKey, forKey: "publicKey")
+        }
+        if includeDefaults || !self.keyImages.isEmpty {
+            try container.encodeProtoArray(self.keyImages, forKey: "keyImages")
+        }
+    }
+
+}
+#endif
+
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.PaymentNotification.TransactionDetails.FailedTransaction : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.PaymentNotification.TransactionDetails.FailedTransaction : Hashable {
+}
+#endif
+
+extension BackupProto.PaymentNotification.TransactionDetails.FailedTransaction : Sendable {
+}
+
+extension BackupProto.PaymentNotification.TransactionDetails.FailedTransaction : ProtoMessage {
+
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/BackupProto.BackupProto.PaymentNotification.TransactionDetails.FailedTransaction"
+    }
+
+}
+
+extension BackupProto.PaymentNotification.TransactionDetails.FailedTransaction : Proto3Codable {
+
+    public init(from protoReader: ProtoReader) throws {
+        var reason: BackupProto.PaymentNotification.TransactionDetails.FailedTransaction.FailureReason? = nil
+
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
+            switch tag {
+            case 1: reason = try protoReader.decode(BackupProto.PaymentNotification.TransactionDetails.FailedTransaction.FailureReason.self)
+            default: try protoReader.readUnknownField(tag: tag)
+            }
+        }
+        self.unknownFields = try protoReader.endMessage(token: token)
+
+        self.reason = try BackupProto.PaymentNotification.TransactionDetails.FailedTransaction.FailureReason.defaultIfMissing(reason)
+    }
+
+    public func encode(to protoWriter: ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.reason)
+        try protoWriter.writeUnknownFields(unknownFields)
+    }
+
+}
+
+#if !WIRE_REMOVE_CODABLE
+extension BackupProto.PaymentNotification.TransactionDetails.FailedTransaction : Codable {
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.reason = try container.decode(BackupProto.PaymentNotification.TransactionDetails.FailedTransaction.FailureReason.self, forKey: "reason")
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
+
+        if includeDefaults || self.reason.rawValue != 0 {
+            try container.encode(self.reason, forKey: "reason")
+        }
+    }
+
+}
+#endif
+
+/**
+ * Subtypes within BackupProto.PaymentNotification.TransactionDetails.FailedTransaction
+ */
+extension BackupProto.PaymentNotification.TransactionDetails.FailedTransaction {
+
+    /**
+     * Failed payments can't be synced from the ledger
+     */
+    public enum FailureReason : Int32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
+
+        case GENERIC = 0
+        case NETWORK = 1
+        case INSUFFICIENT_FUNDS = 2
+
+        public static var defaultedValue: BackupProto.PaymentNotification.TransactionDetails.FailedTransaction.FailureReason {
+            BackupProto.PaymentNotification.TransactionDetails.FailedTransaction.FailureReason.GENERIC
+        }
+        public var description: String {
+            switch self {
+            case .GENERIC: return "GENERIC"
+            case .NETWORK: return "NETWORK"
+            case .INSUFFICIENT_FUNDS: return "INSUFFICIENT_FUNDS"
+            }
+        }
+
+    }
+
+}
+
+extension BackupProto.PaymentNotification.TransactionDetails.FailedTransaction.FailureReason : Sendable {
+}
+
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.PaymentNotification.TransactionDetails.Transaction : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.PaymentNotification.TransactionDetails.Transaction : Hashable {
+}
+#endif
+
+extension BackupProto.PaymentNotification.TransactionDetails.Transaction : Sendable {
+}
+
+extension BackupProto.PaymentNotification.TransactionDetails.Transaction : ProtoMessage {
+
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/BackupProto.BackupProto.PaymentNotification.TransactionDetails.Transaction"
+    }
+
+}
+
+extension BackupProto.PaymentNotification.TransactionDetails.Transaction : Proto3Codable {
+
+    public init(from protoReader: ProtoReader) throws {
+        var status: BackupProto.PaymentNotification.TransactionDetails.Transaction.Status? = nil
+        var mobileCoinIdentification: BackupProto.PaymentNotification.TransactionDetails.MobileCoinTxoIdentification? = nil
+        var timestamp: UInt64? = nil
+        var blockIndex: UInt64? = nil
+        var blockTimestamp: UInt64? = nil
+        var transaction: Foundation.Data? = nil
+        var receipt: Foundation.Data? = nil
+
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
+            switch tag {
+            case 1: status = try protoReader.decode(BackupProto.PaymentNotification.TransactionDetails.Transaction.Status.self)
+            case 2: mobileCoinIdentification = try protoReader.decode(BackupProto.PaymentNotification.TransactionDetails.MobileCoinTxoIdentification.self)
+            case 3: timestamp = try protoReader.decode(UInt64.self)
+            case 4: blockIndex = try protoReader.decode(UInt64.self)
+            case 5: blockTimestamp = try protoReader.decode(UInt64.self)
+            case 6: transaction = try protoReader.decode(Foundation.Data.self)
+            case 7: receipt = try protoReader.decode(Foundation.Data.self)
+            default: try protoReader.readUnknownField(tag: tag)
+            }
+        }
+        self.unknownFields = try protoReader.endMessage(token: token)
+
+        self.status = try BackupProto.PaymentNotification.TransactionDetails.Transaction.Status.defaultIfMissing(status)
+        self._mobileCoinIdentification.wrappedValue = mobileCoinIdentification
+        self._timestamp.wrappedValue = timestamp
+        self._blockIndex.wrappedValue = blockIndex
+        self._blockTimestamp.wrappedValue = blockTimestamp
+        self._transaction.wrappedValue = transaction
+        self._receipt.wrappedValue = receipt
+    }
+
+    public func encode(to protoWriter: ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.status)
+        try protoWriter.encode(tag: 2, value: self.mobileCoinIdentification)
+        try protoWriter.encode(tag: 3, value: self.timestamp)
+        try protoWriter.encode(tag: 4, value: self.blockIndex)
+        try protoWriter.encode(tag: 5, value: self.blockTimestamp)
+        try protoWriter.encode(tag: 6, value: self.transaction)
+        try protoWriter.encode(tag: 7, value: self.receipt)
+        try protoWriter.writeUnknownFields(unknownFields)
+    }
+
+}
+
+#if !WIRE_REMOVE_CODABLE
+extension BackupProto.PaymentNotification.TransactionDetails.Transaction : Codable {
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.status = try container.decode(BackupProto.PaymentNotification.TransactionDetails.Transaction.Status.self, forKey: "status")
+        self._mobileCoinIdentification.wrappedValue = try container.decodeIfPresent(BackupProto.PaymentNotification.TransactionDetails.MobileCoinTxoIdentification.self, forKey: "mobileCoinIdentification")
+        self._timestamp.wrappedValue = try container.decodeIfPresent(stringEncoded: UInt64.self, forKey: "timestamp")
+        self._blockIndex.wrappedValue = try container.decodeIfPresent(stringEncoded: UInt64.self, forKey: "blockIndex")
+        self._blockTimestamp.wrappedValue = try container.decodeIfPresent(stringEncoded: UInt64.self, forKey: "blockTimestamp")
+        self._transaction.wrappedValue = try container.decodeIfPresent(stringEncoded: Foundation.Data.self, forKey: "transaction")
+        self._receipt.wrappedValue = try container.decodeIfPresent(stringEncoded: Foundation.Data.self, forKey: "receipt")
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
+
+        if includeDefaults || self.status.rawValue != 0 {
+            try container.encode(self.status, forKey: "status")
+        }
+        try container.encodeIfPresent(self.mobileCoinIdentification, forKey: "mobileCoinIdentification")
+        try container.encodeIfPresent(stringEncoded: self.timestamp, forKey: "timestamp")
+        try container.encodeIfPresent(stringEncoded: self.blockIndex, forKey: "blockIndex")
+        try container.encodeIfPresent(stringEncoded: self.blockTimestamp, forKey: "blockTimestamp")
+        try container.encodeIfPresent(stringEncoded: self.transaction, forKey: "transaction")
+        try container.encodeIfPresent(stringEncoded: self.receipt, forKey: "receipt")
+    }
+
+}
+#endif
+
+/**
+ * Subtypes within BackupProto.PaymentNotification.TransactionDetails.Transaction
+ */
+extension BackupProto.PaymentNotification.TransactionDetails.Transaction {
+
+    public enum Status : Int32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
+
+        case INITIAL = 0
+        case SUBMITTED = 1
+        case SUCCESSFUL = 2
+
+        public static var defaultedValue: BackupProto.PaymentNotification.TransactionDetails.Transaction.Status {
+            BackupProto.PaymentNotification.TransactionDetails.Transaction.Status.INITIAL
+        }
+        public var description: String {
+            switch self {
+            case .INITIAL: return "INITIAL"
+            case .SUBMITTED: return "SUBMITTED"
+            case .SUCCESSFUL: return "SUCCESSFUL"
+            }
+        }
+
+    }
+
+}
+
+extension BackupProto.PaymentNotification.TransactionDetails.Transaction.Status : Sendable {
+}
 
 #if !WIRE_REMOVE_EQUATABLE
 extension BackupProto.ContactAttachment : Equatable {
