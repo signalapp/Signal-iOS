@@ -48,7 +48,13 @@ extension TSAttachment: TSResource {
     }
 
     public var encryptedResourceSha256Digest: Data? {
-        return (self as? TSAttachmentPointer)?.digest
+        if let pointer = self as? TSAttachmentPointer {
+            return pointer.digest
+        } else if let stream = self as? TSAttachmentStream {
+            return stream.digest
+        }
+
+        return nil
     }
 
     public var isUploadedToTransitTier: Bool {
