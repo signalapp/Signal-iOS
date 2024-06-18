@@ -108,18 +108,32 @@ class CallControlsOverflowView: UIView {
         return ButtonStack()
     }()
 
-    private var reactionSender: ReactionSender?
-    private var reactionsSink: ReactionsSink?
+    private var reactionSender: ReactionSender
+    private var reactionsSink: ReactionsSink
 
-    private var raiseHandSender: RaiseHandSender?
-    private var call: SignalCall?
+    private var raiseHandSender: RaiseHandSender
+    private var call: SignalCall
 
     private weak var emojiPickerSheetPresenter: EmojiPickerSheetPresenter?
 
     private weak var callControlsOverflowPresenter: CallControlsOverflowPresenter?
 
-    private override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(
+        call: SignalCall,
+        reactionSender: ReactionSender,
+        reactionsSink: ReactionsSink,
+        raiseHandSender: RaiseHandSender,
+        emojiPickerSheetPresenter: EmojiPickerSheetPresenter,
+        callControlsOverflowPresenter: CallControlsOverflowPresenter
+    ) {
+        self.call = call
+        self.reactionSender = reactionSender
+        self.reactionsSink = reactionsSink
+        self.raiseHandSender = raiseHandSender
+        self.emojiPickerSheetPresenter = emojiPickerSheetPresenter
+        self.callControlsOverflowPresenter = callControlsOverflowPresenter
+
+        super.init(frame: .zero)
 
         self.addSubview(reactionPicker)
         NSLayoutConstraint.activate([
@@ -140,23 +154,6 @@ class CallControlsOverflowView: UIView {
         } else {
             reactionPicker.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
         }
-    }
-
-    convenience init(
-        call: SignalCall,
-        reactionSender: ReactionSender,
-        reactionsSink: ReactionsSink,
-        raiseHandSender: RaiseHandSender,
-        emojiPickerSheetPresenter: EmojiPickerSheetPresenter,
-        callControlsOverflowPresenter: CallControlsOverflowPresenter
-    ) {
-        self.init(frame: .zero)
-        self.call = call
-        self.reactionSender = reactionSender
-        self.reactionsSink = reactionsSink
-        self.raiseHandSender = raiseHandSender
-        self.emojiPickerSheetPresenter = emojiPickerSheetPresenter
-        self.callControlsOverflowPresenter = callControlsOverflowPresenter
     }
 
     // MARK: - Constants
@@ -270,7 +267,7 @@ extension CallControlsOverflowView: MessageReactionPickerDelegate {
 
     private func react(with reaction: String) {
         self.callControlsOverflowPresenter?.willSendReaction()
-        self.reactionSender?.react(value: reaction)
+        self.reactionSender.react(value: reaction)
         let localAci = databaseStorage.read { tx in
             DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci
         }
@@ -279,7 +276,7 @@ extension CallControlsOverflowView: MessageReactionPickerDelegate {
             return
         }
         // Locally-sent reactions do not come in via the API, so we add them here.
-        self.reactionsSink?.addReactions(
+        self.reactionsSink.addReactions(
             reactions: [
                 Reaction(
                     emoji: reaction,
@@ -332,12 +329,12 @@ extension CallControlsOverflowView {
     @objc
     private func didTapRaiseHandButton() {
         self.callControlsOverflowPresenter?.didTapRaiseOrLowerHand()
-        self.raiseHandSender?.raiseHand(raise: !self.localHandIsRaised)
+        self.raiseHandSender.raiseHand(raise: !self.localHandIsRaised)
     }
 
     private var localHandIsRaised: Bool {
         guard
-            let groupThreadCall = self.call?.unpackGroupCall(),
+            let groupThreadCall = self.call.unpackGroupCall(),
             let localDemuxId = groupThreadCall.ringRtcCall.localDeviceState.demuxId
         else {
             return false
