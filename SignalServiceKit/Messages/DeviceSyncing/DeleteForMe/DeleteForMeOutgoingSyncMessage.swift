@@ -79,7 +79,7 @@ class DeleteForMeOutgoingSyncMessage: OWSOutgoingSyncMessage {
 // MARK: -
 
 extension DeleteForMeSyncMessage.Outgoing {
-    enum ConversationIdentifier: Codable {
+    enum ConversationIdentifier: Codable, Equatable {
         case threadServiceId(serviceId: String)
         case threadE164(e164: String)
         case threadGroupId(groupId: Data)
@@ -95,8 +95,8 @@ extension DeleteForMeSyncMessage.Outgoing {
         }
     }
 
-    struct AddressableMessage: Codable {
-        enum Author: Codable {
+    struct AddressableMessage: Codable, Equatable {
+        enum Author: Codable, Equatable {
             /// The author's ACI. Note that the author of a message must be an
             /// ACI, never a PNI.
             case aci(aci: String)
@@ -107,6 +107,17 @@ extension DeleteForMeSyncMessage.Outgoing {
 
         let author: Author
         let sentTimestamp: UInt64
+
+        private init(author: Author, sentTimestamp: UInt64) {
+            self.author = author
+            self.sentTimestamp = sentTimestamp
+        }
+
+        #if TESTABLE_BUILD
+        static func forTests(author: Author, sentTimestamp: UInt64) -> AddressableMessage {
+            return AddressableMessage(author: author, sentTimestamp: sentTimestamp)
+        }
+        #endif
 
         init?(incomingMessage: TSIncomingMessage) {
             if let authorAci = incomingMessage.authorAddress.aci {
@@ -136,7 +147,7 @@ extension DeleteForMeSyncMessage.Outgoing {
         }
     }
 
-    struct MessageDeletes: Codable {
+    struct MessageDeletes: Codable, Equatable {
         let conversationIdentifier: ConversationIdentifier
         let addressableMessages: [AddressableMessage]
 
@@ -148,7 +159,7 @@ extension DeleteForMeSyncMessage.Outgoing {
         }
     }
 
-    struct ConversationDelete: Codable {
+    struct ConversationDelete: Codable, Equatable {
         let conversationIdentifier: ConversationIdentifier
         let mostRecentAddressableMessages: [AddressableMessage]
         let isFullDelete: Bool
@@ -162,7 +173,7 @@ extension DeleteForMeSyncMessage.Outgoing {
         }
     }
 
-    struct LocalOnlyConversationDelete: Codable {
+    struct LocalOnlyConversationDelete: Codable, Equatable {
         let conversationIdentifier: ConversationIdentifier
 
         fileprivate var asProto: SSKProtoSyncMessageDeleteForMeLocalOnlyConversationDelete {

@@ -1774,6 +1774,7 @@
 		D979DA132B8D1B65000EEAB8 /* BadgeManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EF8DCD2A1BEBAE00A00935 /* BadgeManagerTest.swift */; };
 		D979DA162B8D1FDD000EEAB8 /* BadgeCountFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D979DA152B8D1FDD000EEAB8 /* BadgeCountFetcher.swift */; };
 		D984F7212C1A2DE300E1CA49 /* DeleteForMeSyncMessageSettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D984F7202C1A2DE300E1CA49 /* DeleteForMeSyncMessageSettingsStore.swift */; };
+		D984F7242C21FF1600E1CA49 /* DeleteForMeOutgoingSyncMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D984F7232C21FF1600E1CA49 /* DeleteForMeOutgoingSyncMessageTest.swift */; };
 		D985D86629B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = D985D86529B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift */; };
 		D985D86829B94EC60087C90C /* ChangePhoneNumberPniManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D985D86329B91C400087C90C /* ChangePhoneNumberPniManagerTest.swift */; };
 		D98DD86028EE53B00089333E /* RemoteMegaphoneModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98DD85E28EE53B00089333E /* RemoteMegaphoneModel.swift */; };
@@ -4717,6 +4718,7 @@
 		D979DA152B8D1FDD000EEAB8 /* BadgeCountFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeCountFetcher.swift; sourceTree = "<group>"; };
 		D98300B12936E6C70018FDC2 /* SubscriptionManager+DonationConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SubscriptionManager+DonationConfiguration.swift"; sourceTree = "<group>"; };
 		D984F7202C1A2DE300E1CA49 /* DeleteForMeSyncMessageSettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeSyncMessageSettingsStore.swift; sourceTree = "<group>"; };
+		D984F7232C21FF1600E1CA49 /* DeleteForMeOutgoingSyncMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeOutgoingSyncMessageTest.swift; sourceTree = "<group>"; };
 		D985D86329B91C400087C90C /* ChangePhoneNumberPniManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePhoneNumberPniManagerTest.swift; sourceTree = "<group>"; };
 		D985D86529B949D20087C90C /* ChangePhoneNumberPniManager+Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChangePhoneNumberPniManager+Shims.swift"; sourceTree = "<group>"; };
 		D98DD85D28EE53B00089333E /* RemoteMegaphoneFetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteMegaphoneFetcher.swift; sourceTree = "<group>"; };
@@ -9591,6 +9593,7 @@
 			children = (
 				D962346F2C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift */,
 				D9E8EDEC2C0EAFE700923E3C /* DeleteForMeOutgoingSyncMessageManagerTest.swift */,
+				D984F7232C21FF1600E1CA49 /* DeleteForMeOutgoingSyncMessageTest.swift */,
 			);
 			path = DeleteForMe;
 			sourceTree = "<group>";
@@ -14712,6 +14715,7 @@
 				D91AC9362B61C79600814975 /* DeletedCallRecordStoreTest.swift in Sources */,
 				D96234702C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift in Sources */,
 				D9E8EDED2C0EAFE700923E3C /* DeleteForMeOutgoingSyncMessageManagerTest.swift in Sources */,
+				D984F7242C21FF1600E1CA49 /* DeleteForMeOutgoingSyncMessageTest.swift in Sources */,
 				F942629B289B1B5600460798 /* DeliveryReceiptContextTests.swift in Sources */,
 				F9426263289B1B5500460798 /* DeviceNamesTest.swift in Sources */,
 				F9E39CE929493D4C001D7721 /* DisappearingMessageFinderTest.swift in Sources */,
