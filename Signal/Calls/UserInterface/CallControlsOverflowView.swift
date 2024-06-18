@@ -178,7 +178,7 @@ class CallControlsOverflowView: UIView {
     private var isAnimating = false
 
     func animateIn() {
-        self.buttonStack?.isHandRaised = self.localHandIsRaised
+        self.buttonStack?.isHandRaised = self.isLocalHandRaised
 
         self.isHidden = false
         guard !isAnimating else {
@@ -329,17 +329,19 @@ extension CallControlsOverflowView {
     @objc
     private func didTapRaiseHandButton() {
         self.callControlsOverflowPresenter?.didTapRaiseOrLowerHand()
-        self.raiseHandSender.raiseHand(raise: !self.localHandIsRaised)
+        self.raiseHandSender.raiseHand(raise: !self.isLocalHandRaised)
     }
 
-    private var localHandIsRaised: Bool {
-        guard
-            let groupThreadCall = self.call.unpackGroupCall(),
-            let localDemuxId = groupThreadCall.ringRtcCall.localDeviceState.demuxId
-        else {
-            return false
+    private var isLocalHandRaised: Bool {
+        switch self.call.mode {
+        case .individual:
+            owsFailDebug("You shouldn't be able to raise your hand in a 1:1 call.")
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
+            if let localDemuxId = call.ringRtcCall.localDeviceState.demuxId {
+                return call.raisedHands.contains(localDemuxId)
+            }
         }
-        return groupThreadCall.raisedHands.contains(localDemuxId)
+        return false
     }
 }
 
