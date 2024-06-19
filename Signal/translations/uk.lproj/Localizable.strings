@@ -815,7 +815,7 @@
 "CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Очистити";
 
 /* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "Ця дія назавжди видалить усю історію викликів.";
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "Історію всіх викликів буде видалено остаточно.";
 
 /* Title for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
 "CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "Очистити історію викликів?";
@@ -1115,7 +1115,7 @@
 "CONTACT_CELL_IS_BLOCKED" = "Заблоковано";
 
 /* An indicator that a contact is no longer verified. */
-"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Не верифіковано";
+"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Не перевірено";
 
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Незареєстрований номер";
@@ -1421,7 +1421,7 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%1$@ зможе змінювати цю групу і її учасників.";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Запити та запрошення";
+"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Запити і запрошення";
 
 /* label for 'always' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Завжди сповіщати";
@@ -1787,25 +1787,25 @@
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "Користувача %1$@ було видалено зі списку контактів і вилучено.";
 
 /* Header text for an action sheet confirming deleting a message in Note to Self. */
-"DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_HEADER" = "Delete message?";
+"DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_HEADER" = "Видалити повідомлення?";
 
 /* Title for an action sheet button explaining that a message will be deleted. */
-"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_NOT_PRESENT_ACTION_SHEET_BUTTON_TITLE" = "Delete";
+"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_NOT_PRESENT_ACTION_SHEET_BUTTON_TITLE" = "Видалити";
 
 /* Title for an action sheet button explaining that a message will be deleted. */
-"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_BUTTON_TITLE" = "Delete for Me";
+"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_BUTTON_TITLE" = "Видалити для мене";
 
 /* Subheader for an action sheet explaining that a Note to Self deleted on this device will be deleted on the user's other devices as well. */
-"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_SUBHEADER" = "This message will be deleted from all your devices.";
+"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_SUBHEADER" = "Це повідомлення буде видалено з усіх ваших пристроїв.";
 
 /* Label for a button in an info sheet confirming that deletes are now synced across devices. */
-"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_BUTTON" = "Got it";
+"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_BUTTON" = "Зрозуміло";
 
 /* Subtitle for an info sheet explaining that deletes are now synced across devices. */
-"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_SUBTITLE" = "When you delete messages or chats, they will be deleted from your phone and all linked devices.";
+"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_SUBTITLE" = "Коли ви видаляєте повідомлення чи чати, вони зникають на вашому телефоні й усіх зв'язаних пристроях.";
 
 /* Title for an info sheet explaining that deletes are now synced across devices. */
-"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_TITLE" = "Deleting is now synced across all of your devices";
+"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_TITLE" = "Тепер видалення синхронізується на всіх ваших пристроях";
 
 /* Label indicating a user who deleted their account. */
 "DELETED_USER" = "Видалений акаунт";
@@ -2846,7 +2846,7 @@
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Неможливо отримати аудіо та відео від %1$@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
-"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Це могло статися через те, що користувач не підтвердив вашу зміну коду безпеки, зіткнувся з проблемою з пристроєм або заблокував вас.";
+"GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Це могло статися через те, що користувач не позначив ваш змінений код безпеки як перевірений, має проблему з пристроєм або заблокував вас.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
 "GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Неможливо отримати аудіо та відео від %1$@";
@@ -3002,7 +3002,7 @@
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Увімкнено адміністраторське затвердження для посилання на групу.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Ви ввімкнули адміністраторське затвердження для посилання на цю групу.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Ви ввімкнули адміністраторське затвердження для посилання на групу.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ увімкнув адміністраторське затвердження для посилання на цю групу.";
@@ -3227,7 +3227,7 @@
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%1$@прийняв(-ла) ваше запрошення в групу.";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ прийняв (-ла) запрошення в групу від %2$@.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "Користувач %1$@ прийняв запрошення в групу від користувача %2$@.";
 
 /* Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "Ви додали %1$@.";
@@ -3320,7 +3320,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "Запрошення";
 
 /* The title for the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Запити та запрошення";
+"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Запити і запрошення";
 
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
 "GROUP_STORY_NAME_FORMAT" = "%1$@ до %2$@";
@@ -3902,7 +3902,7 @@
 "MEDIA_GALLERY_CLEAR_FILTER_BUTTON" = "Скасувати фільтр";
 
 /* Explanatory text displayed when deleting N items in All Media screen. */
-"MEDIA_GALLERY_DELETE_MEDIA_BODY" = "Ця дія назавжди видалить вибрані файли. Текст повідомлень, пов'язаний із цими файлами, також буде видалено.";
+"MEDIA_GALLERY_DELETE_MEDIA_BODY" = "Вибрані файли буде видалено остаточно. Текст повідомлень, пов'язаних із цими файлами, також буде видалено.";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+ %1$@";
@@ -3944,7 +3944,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Видалити для всіх";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Це повідомлення буде видалено для усіх у цьому чаті, якщо вони використовують найновішу версію Signal. Вони зможуть побачити, що ви видалили повідомлення.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Це повідомлення буде видалено для всіх у цьому чаті, якщо вони використовують найновішу версію Signal. Учасники чату побачать, що ви видалили повідомлення.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "Для кого ви хочете видалити це повідомлення?";
@@ -4070,7 +4070,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Надсилається до";
 
 /* Status label for messages which are sent. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Надіслано до";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Кому надіслано:";
 
 /* Status label for messages which were skipped. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Пропущено";
@@ -4265,13 +4265,13 @@
 "MESSAGE_STATUS_VIEWED" = "Переглянуто";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%1$@ більше не верифікований. Натисніть для опцій.";
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "Користувача %1$@ уже не позначено як перевіреного. Торкніться, щоб побачити доступні дії.";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%1$@ більше не верифікований. Натисніть для опцій.";
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "Користувача %1$@ уже не позначено як перевіреного. Торкніться, щоб побачити доступні дії.";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "У цій групі понад один учасник більше не позначений як верифікований. Натисніть для опцій.";
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "У цій групі декілька учасників уже не позначено як верифікованих. Торкніться, щоб побачити доступні дії.";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Нові повідомлення";
@@ -4955,10 +4955,10 @@
 "PAYMENTS_PAYMENT_STATUS_IN_CHAT_PROCESSING" = "Обробка платежу…";
 
 /* Payment status context with contact name, incoming. Embeds {{ Name of sending contact }} */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_SENT_YOU" = "Надіслано користувачем %1$@";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_SENT_YOU" = "Користувач %1$@ надіслав вам";
 
 /* Payment status context with contact name, sent. Embeds {{ Name of receiving contact }} */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_YOU_SENT" = "Надіслано користувачеві %1$@";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_YOU_SENT" = "Ви надіслали користувачу %1$@";
 
 /* Status indicator for incoming payments which are complete. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "Платіж завершено";
@@ -5078,7 +5078,7 @@
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Відхилити запит від «%1$@»? Користувач більше не зможе надіслати запит на приєднання за посиланням на групу.";
 
 /* Label indicating that a group has no pending member requests. */
-"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "Немає запитів учасників, що очікують на розгляд.";
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "Немає нерозглянутих запитів на приєднання.";
 
 /* Label indicating that a group has no pending members. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Немає запрошень.";
@@ -5099,10 +5099,10 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Відкликати запрошення в групу для \"%1$@\"?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Деталі людей не показуються, запрошених іншими учасниками групи. Якщо запрошені вирішать приєднатися, їх інформація з того часу стане доступна групі. Вони не зможуть бачити ніяких повідомлень в групі до того, як приєднаються.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Інформація про людей, яких запросили інші учасники групи, не показується. Інформація запрошеного стане доступна для учасників групи в разі прийняття запрошення. Запрошені побачать повідомлення в групі тільки після приєднання.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Люди з цього списку намагаються приєднатись до «%1$@» через посилання.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Це список людей, які хочуть приєднатися до групи «%1$@» за посиланням.";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Хибні запрошення";
@@ -5390,7 +5390,7 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Відтворити медіа";
 
 /* Badge indicating that the user is verified. */
-"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Верифіковано";
+"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Перевірено";
 
 /* Button that shows the 'scan with camera' view. */
 "PRIVACY_TAP_TO_SCAN" = "Натисніть, щоб сканувати";
@@ -5909,13 +5909,13 @@
 "SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "Можливо, ці користувачі перевстановили застосунок або замінили пристрої. Перевірте коди безпеки для чатів з цими користувачами, щоб упевнитись у конфіденційності спілкування.";
 
 /* Text explaining that the given contact previously had their safety number verified. */
-"SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Підтверджені раніше";
+"SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Раніше було позначено як перевірений";
 
 /* Title for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_TITLE" = "Змінені коди безпеки";
 
 /* Text explaining that the given contact has had their safety number verified. */
-"SAFETY_NUMBER_CONFIRMATION_VERIFIED" = "Підтверджено";
+"SAFETY_NUMBER_CONFIRMATION_VERIFIED" = "Перевірено";
 
 /* View safety number action for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "Детальніше";
@@ -6674,7 +6674,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "Отримано від %1$@";
 
 /* Label for the sender in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "Надіслано";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "Відправник";
 
 /* Label for the sender in the payment details view in the app settings when the status is 'Failed'. Followed by sender name. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_ATTEMPTED" = "Спроба";
@@ -7361,10 +7361,10 @@
 "STORIES_SHARE_STORY_ACTION" = "Поділитися";
 
 /* Section title shown when sending to non-story conversations but failing to send the file to stories. */
-"STORIES_SHARESHEET_PARTIAL_SEND_REMAINING_SECTION_TITLE" = "Надіслано до";
+"STORIES_SHARESHEET_PARTIAL_SEND_REMAINING_SECTION_TITLE" = "Куди надіслано:";
 
 /* Section title shown when failing to send an incompatible file to stories, but still sending to non-story conversations. */
-"STORIES_SHARESHEET_PARTIAL_SEND_STORIES_SECTION_TITLE" = "Не надіслано";
+"STORIES_SHARESHEET_PARTIAL_SEND_STORIES_SECTION_TITLE" = "Куди не надіслано:";
 
 /* Title shown when failing to send an incompatible file to stories, but still sending to non-story conversations. */
 "STORIES_SHARESHEET_PARTIAL_SEND_TITLE" = "Надіслано частково";
@@ -7538,7 +7538,7 @@
 "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "ID пожертвувача скопійовано в буфер обміну";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Ваші коди безпеки із %1$@ збігаються. Ви можете підтвердити цей контакт.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Ваші коди безпеки з користувачем %1$@ збігаються. Ви можете позначити цей контакт як перевірений.";
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Коди безпеки збіглись!";
@@ -8117,7 +8117,7 @@
 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET" = "Гортайте, щоб побачити більше шпалер.";
 
 /* The outgoing bubble text when setting a wallpaper for all chats. */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Установити шпалери для всіх чатів.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Це будуть шпалери для всіх чатів.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Це будуть шпалери для чату «%1$@».";

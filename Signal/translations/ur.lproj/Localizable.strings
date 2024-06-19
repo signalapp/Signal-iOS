@@ -1787,25 +1787,25 @@
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ کو آپ کے روابط سے حذف اور ہٹا دیا گیا تھا۔";
 
 /* Header text for an action sheet confirming deleting a message in Note to Self. */
-"DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_HEADER" = "Delete message?";
+"DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_HEADER" = "پیغام حذف کریں؟";
 
 /* Title for an action sheet button explaining that a message will be deleted. */
-"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_NOT_PRESENT_ACTION_SHEET_BUTTON_TITLE" = "Delete";
+"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_NOT_PRESENT_ACTION_SHEET_BUTTON_TITLE" = "حذف کریں";
 
 /* Title for an action sheet button explaining that a message will be deleted. */
-"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_BUTTON_TITLE" = "Delete for Me";
+"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_BUTTON_TITLE" = "میرے لئے حذف کریں";
 
 /* Subheader for an action sheet explaining that a Note to Self deleted on this device will be deleted on the user's other devices as well. */
-"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_SUBHEADER" = "This message will be deleted from all your devices.";
+"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_SUBHEADER" = "یہ میسج آپ کی تمام ڈیوائسز سے حذف کر دیا جائے گا۔";
 
 /* Label for a button in an info sheet confirming that deletes are now synced across devices. */
-"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_BUTTON" = "Got it";
+"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_BUTTON" = "سمجھ گیا";
 
 /* Subtitle for an info sheet explaining that deletes are now synced across devices. */
-"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_SUBTITLE" = "When you delete messages or chats, they will be deleted from your phone and all linked devices.";
+"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_SUBTITLE" = "جب آپ میسج یا چیٹس حذف کرتے ہیں، تو وہ آپ کے فون اور تمام لنک کردہ ڈیوائسز سے حذف کر دی جائیں گی۔";
 
 /* Title for an info sheet explaining that deletes are now synced across devices. */
-"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_TITLE" = "Deleting is now synced across all of your devices";
+"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_TITLE" = "حذف کرنے کو اب آپ کی تمام ڈیوائسز پر مطابقت پذیرکر دیا گیا ہے";
 
 /* Label indicating a user who deleted their account. */
 "DELETED_USER" = "حذف شدہ اکاؤنٹ";
@@ -3581,13 +3581,13 @@
 "IN_CALL_CONNECTING" = "منسلک ہورہا ہے۔۔۔۔۔";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
-"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "کسی دوسرے device پر قبول کال";
+"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "کسی دوسرے ڈیوائس پر قبول کال";
 
 /* Call screen label when call was canceled on this device because the call recipient has a call in progress on another device. */
 "IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "چھوٹ گئی ہے کیونکہ دوسری ڈیوائس پر کال جاری ہے";
 
 /* Call screen label when call was canceled on this device because the call recipient declined on another device. */
-"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "دوسرے device سے انکار کردیا";
+"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "دوسرے ڈیوائس پر  انکار کردیا";
 
 /* Call setup status label */
 "IN_CALL_RECONNECTING" = "دوبارہ رابطہ ہو رہا ہے۔۔۔";

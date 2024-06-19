@@ -1,1 +1,1 @@
-• This update fixes a minor bug for users on iOS 16.
+• Bu güncelleme ile iOS 16 kullanıcıları için küçük bir hatayı düzelttik.

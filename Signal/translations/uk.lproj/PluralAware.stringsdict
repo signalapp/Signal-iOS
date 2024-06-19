@@ -1308,13 +1308,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d запит учасника очікує на розгляд.</string>
+			<string>Не розглянуто %1$d запит на приєднання.</string>
 			<key>few</key>
-			<string>%1$d запити учасників очікують на розгляд.</string>
+			<string>Не розглянуто %1$d запити на приєднання.</string>
 			<key>many</key>
-			<string>%1$d запитів учасників очікують на розгляд.</string>
+			<string>Не розглянуто %1$d запитів на приєднання.</string>
 			<key>other</key>
-			<string>%1$d запиту учасників очікують на розгляд.</string>
+			<string>Не розглянуто %1$d запиту на приєднання.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d</key>

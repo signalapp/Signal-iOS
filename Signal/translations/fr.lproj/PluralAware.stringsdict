@@ -488,9 +488,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d cas de nom dupliqué dans ce groupe.</string>
+			<string>%1$d conflit de noms dans ce groupe.</string>
 			<key>other</key>
-			<string>%1$d cas de nom dupliqué dans ce groupe.</string>
+			<string>%1$d conflits de noms dans ce groupe.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_COLLISION_MEMBER_COUNT_%d</key>
@@ -520,9 +520,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d cas de nom dupliqué a été constaté dans ce groupe. Examinez les membres ci-dessous et choisissez l’action appropriée.</string>
+			<string>Nous avons trouvé %1$d conflit de noms dans ce groupe. Vérifiez les membres ci-dessous et choisissez l’action appropriée.</string>
 			<key>other</key>
-			<string>%1$d cas de nom dupliqué ont été constatés dans ce groupe. Examinez les membres et choisissez l’action appropriée.</string>
+			<string>Nous avons trouvé %1$d conflits de noms dans ce groupe. Vérifiez les membres ci-dessous et choisissez l’action appropriée.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>

@@ -41,7 +41,7 @@
 "ACCOUNT_DATA_REPORT_ERROR_MESSAGE" = "Vérifiez votre connexion et réessayez.";
 
 /* Users can request a report of their account data. If this request fails (probably because of a network connection problem), they will see an error sheet. This is the title on that error. */
-"ACCOUNT_DATA_REPORT_ERROR_TITLE" = "Impossible de générer un rapport";
+"ACCOUNT_DATA_REPORT_ERROR_TITLE" = "Impossible de générer le rapport";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the subtitle on the button that switches to JSON mode. */
 "ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_SUBTITLE" = "Fichier pour lecture automatisée";
@@ -59,7 +59,7 @@
 "ACCOUNT_DATA_REPORT_EXPORT_REPORT_BUTTON" = "Exporter le rapport";
 
 /* Users can request a report of their account data. This text appears at the bottom of this screen, offering more information. */
-"ACCOUNT_DATA_REPORT_FOOTER" = "Le rapport est généré uniquement lors de l’exportation et n’est pas stocké par Signal sur votre appareil.";
+"ACCOUNT_DATA_REPORT_FOOTER" = "Le rapport n’est généré qu’au moment de l’exportation et Signal ne le stocke pas sur votre appareil.";
 
 /* Users can request a report of their account data. This is the subtitle on the screen where they do this, giving them more information. */
 "ACCOUNT_DATA_REPORT_SUBTITLE" = "Télécharger et exporter un rapport contenant les données de votre compte Signal. Ce rapport ne contient aucun message ou contenu multimédia.";
@@ -1007,13 +1007,13 @@
 "CHAT_COLOR_INCOMING_MESSAGE_2" = "Une autre bulle";
 
 /* The outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE" = "La couleur n’est visible que par vous.";
+"CHAT_COLOR_OUTGOING_MESSAGE" = "Vous seul pouvez voir cette couleur.";
 
 /* The first outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_1" = "La couleur n’est visible que par vous.";
+"CHAT_COLOR_OUTGOING_MESSAGE_1" = "Vous seul pouvez voir cette couleur.";
 
 /* The second outgoing bubble text when setting a chat color. */
-"CHAT_COLOR_OUTGOING_MESSAGE_2" = "La couleur n’est visible que par vous.";
+"CHAT_COLOR_OUTGOING_MESSAGE_2" = "Vous seul pouvez voir cette couleur.";
 
 /* Label for the 'automatic chat color' option in the chat color settings view. */
 "CHAT_COLOR_SETTINGS_AUTO" = "auto";
@@ -1205,10 +1205,10 @@
 "CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Dons et macarons";
 
 /* The localized representation of the 'feature request' support filter. */
-"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "J’aimerais proposer une nouvelle fonction";
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "Je voudrais suggérer une nouvelle fonctionnalité";
 
 /* A brief localized representation of the 'feature request' support filter. */
-"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "Demander une fonction";
+"CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "Suggestion relative aux fonctionnalités";
 
 /* The localized representation of the 'feedback' support filter. */
 "CONTACT_SUPPORT_FILTER_FEEDBACK" = "J’ai des commentaires sur l’appli";
@@ -1229,7 +1229,7 @@
 "CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT" = "Paiements";
 
 /* Prompt telling the user to select a filter for their support request. */
-"CONTACT_SUPPORT_FILTER_PROMPT" = "Comment pouvons-nous vous aider ?";
+"CONTACT_SUPPORT_FILTER_PROMPT" = "Que pouvons-nous faire pour vous aider ?";
 
 /* The localized representation of the 'question' support filter. */
 "CONTACT_SUPPORT_FILTER_QUESTION" = "J’ai une question";
@@ -1787,25 +1787,25 @@
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ a été supprimé de vos contacts et retiré de la liste.";
 
 /* Header text for an action sheet confirming deleting a message in Note to Self. */
-"DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_HEADER" = "Delete message?";
+"DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_HEADER" = "Supprimer le message ?";
 
 /* Title for an action sheet button explaining that a message will be deleted. */
-"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_NOT_PRESENT_ACTION_SHEET_BUTTON_TITLE" = "Delete";
+"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_NOT_PRESENT_ACTION_SHEET_BUTTON_TITLE" = "Supprimer";
 
 /* Title for an action sheet button explaining that a message will be deleted. */
-"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_BUTTON_TITLE" = "Delete for Me";
+"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_BUTTON_TITLE" = "Supprimer pour moi";
 
 /* Subheader for an action sheet explaining that a Note to Self deleted on this device will be deleted on the user's other devices as well. */
-"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_SUBHEADER" = "This message will be deleted from all your devices.";
+"DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_SUBHEADER" = "Ce message sera supprimé de tous vos appareils.";
 
 /* Label for a button in an info sheet confirming that deletes are now synced across devices. */
-"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_BUTTON" = "Got it";
+"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_BUTTON" = "J’ai compris";
 
 /* Subtitle for an info sheet explaining that deletes are now synced across devices. */
-"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_SUBTITLE" = "When you delete messages or chats, they will be deleted from your phone and all linked devices.";
+"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_SUBTITLE" = "Lorsque vous supprimez des messages ou des conversations, ils sont supprimés de votre téléphone et de tous vos appareils associés.";
 
 /* Title for an info sheet explaining that deletes are now synced across devices. */
-"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_TITLE" = "Deleting is now synced across all of your devices";
+"DELETE_FOR_ME_SYNC_MESSAGE_INFO_SHEET_TITLE" = "La suppression des messages est maintenant synchronisée sur tous vos appareils.";
 
 /* Label indicating a user who deleted their account. */
 "DELETED_USER" = "Compte supprimé";
@@ -2219,16 +2219,16 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "%1$@ a effectué un don à Signal de votre part ! Affichez votre soutien à Signal sur votre profil.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Messagerie privée. Aucune publicité, aucun traqueur, aucune surveillance.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Signal est une messagerie (vraiment) privée. Sans publicité, sans cookie de suivi, sans surveillance. ";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal est financé par des dons, autrement dit, votre vie privée est au centre de tout ce que nous faisons. Signal est construit pour vous et non pour notre profit ou pour que nous puissions collecter vos données.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal est financé par des dons. Autrement dit, la protection de votre vie privée est au centre de toutes nos actions. Nous avons conçu Signal pour vous. Pas pour collecter vos données, ni pour accumuler des profits.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "Si vous le pouvez, faites un don aujourd’hui pour que Signal reste amusant, fiable et disponible pour tous.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "Si vous le pouvez, faites un don aujourd’hui pour que Signal reste une messagerie conviviale, fiable et disponible pour tous.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the title of that screen. */
-"DONATION_READ_MORE_SCREEN_TITLE" = "Signal est différent.";
+"DONATION_READ_MORE_SCREEN_TITLE" = "Une messagerie pas comme les autres.";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Montant";
@@ -2279,7 +2279,7 @@
 "DONATION_SCREEN_DONATE_BUTTON" = "Faire un don";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
-"DONATION_SCREENS_HEADER_DESCRIPTION" = "Une messagerie privée, financée par vous. Aucune publicité, aucun traqueur, aucun compromis. Faites un don pour soutenir Signal.";
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "Une messagerie privée, financée par des personnes comme vous. Aucune publicité, aucun cookie de suivi, zéro compromis. Faites un don pour soutenir Signal.";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
 "DONATION_SCREENS_HEADER_READ_MORE" = "Lire la suite";
@@ -2585,7 +2585,7 @@
 "ERROR_NETWORK_FAILURE" = "Erreur réseau";
 
 /* Format string for an error alert notification message. Embeds {{ error string }} */
-"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Aidez-nous à améliorer Signal en signalant cette erreur accompagné des journaux de débogage de votre appareil à support@signal.org ;%1$@";
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Aidez-nous à améliorer Signal : signalez cette erreur à support@signal.org et joignez les journaux de débogage de votre appareil ;%1$@";
 
 /* Format string for an error alert notification title. */
 "ERROR_NOTIFICATION_TITLE" = "Signal Bêta : une erreur est survenue";
@@ -2942,10 +2942,10 @@
 "GROUP_DESCRIPTION_MORE" = "plus";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Ajouter une description au groupe…";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "Ajouter une description du groupe…";
 
 /* Footer text when editing the group description */
-"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Les descriptions de groupe seront visibles aux membres de ce groupe et aux personnes qui ont été invitées.";
+"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "La description du groupe sera visible aux membres de ce groupe et aux personnes invitées.";
 
 /* Title for the group description view. */
 "GROUP_DESCRIPTION_VIEW_TITLE" = "Description du groupe";
@@ -3644,7 +3644,7 @@
 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_FINISHED" = "%1$@ accepte désormais les paiements.";
 
 /* Shown when a user receives a payment activation request. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_RECEIVED" = "%1$@ souhaite que vous activiez les paiements. Envoyer des paiements uniquement aux personnes en qui vous avez confiance.";
+"INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_RECEIVED" = "%1$@ souhaite que vous activiez les paiements. N’envoyez de paiements qu’aux personnes en qui vous avez confiance.";
 
 /* Shown when requesting a user activates payments. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT" = "Vous avez envoyé une demande d’activation des paiements à %1$@";
@@ -4106,7 +4106,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Bloquer et supprimer";
 
 /* Action sheet action to confirm blocking and reporting spam for a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Signaler comme indésirable et bloquer";
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Signaler comme spam et bloquer";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Les personnes bloquées ne pourront ni vous appeler ni vous envoyer de messages.";
@@ -4163,7 +4163,7 @@
 "MESSAGE_REQUEST_SPAM_REPORTED" = "Signalé comme spam.";
 
 /* String indicating that spam has been reported and the chat has been blocked. */
-"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Signalé comme indésirable et bloqué.";
+"MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED" = "Signalé comme spam et bloqué.";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Accepter";
@@ -4205,7 +4205,7 @@
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Autoriser %1$@ à vous envoyer des messages et partager vos nom et photo avec ce contact ? Vous avez précédemment supprimé ce contact.";
 
 /* incoming message request button text which reports a conversation as spam */
-"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Signaler…";
+"MESSAGE_REQUEST_VIEW_REPORT_BUTTON" = "Signaler";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Débloquer";
@@ -7547,7 +7547,7 @@
 "SUPPORT_CONTACT_US_HEADER" = "Nous contacter";
 
 /* Placeholder string for support description */
-"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Expliquez-nous ce qu’il se passe";
+"SUPPORT_DESCRIPTION_PLACEHOLDER" = "Que se passe-t-il ? Dites-nous pourquoi vous nous contactez.";
 
 /* Default prompt for user description in support email requests */
 "SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Décrivez-nous la situation : ";
@@ -7583,13 +7583,13 @@
 "SUPPORT_EMAIL_SUBJECT" = "Demande d’assistance Signal pour iOS";
 
 /* Header for emoji mood selection */
-"SUPPORT_EMOJI_PROMPT" = "Comment vous sentez-vous ? (facultatif)";
+"SUPPORT_EMOJI_PROMPT" = "Quel émoji reflète le mieux votre humeur ? (Facultatif)";
 
 /* Label in support request informing user about Signal FAQ */
-"SUPPORT_FAQ_PROMPT" = "Avez-vous déjà lu notre FAQ ?";
+"SUPPORT_FAQ_PROMPT" = "Avez-vous parcouru notre FAQ ?";
 
 /* Label describing support switch to attach debug logs */
-"SUPPORT_INCLUDE_DEBUG_LOG" = "Inclure le journal de débogage";
+"SUPPORT_INCLUDE_DEBUG_LOG" = "Joindre le journal de débogage";
 
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Chargement";
