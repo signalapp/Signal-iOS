@@ -66,6 +66,10 @@ public extension TSInteraction {
             "DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_HEADER",
             comment: "Header text for an action sheet confirming deleting a message in Note to Self."
         )
+        let deleteActionSheetButtonTitle = OWSLocalizedString(
+            "DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_BUTTON_TITLE",
+            comment: "Title for an action sheet button explaining that a message will be deleted."
+        )
         let (title, message, deleteActionTitle): (String?, String, String) = if hasLinkedDevices {
             (
                 deleteMessageHeaderText,
@@ -73,19 +77,13 @@ public extension TSInteraction {
                     "DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_SUBHEADER",
                     comment: "Subheader for an action sheet explaining that a Note to Self deleted on this device will be deleted on the user's other devices as well."
                 ),
-                OWSLocalizedString(
-                    "DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_BUTTON_TITLE",
-                    comment: "Title for an action sheet button explaining that a message will be deleted."
-                )
+                deleteActionSheetButtonTitle
             )
         } else {
             (
                 nil,
                 deleteMessageHeaderText,
-                OWSLocalizedString(
-                    "DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_NOT_PRESENT_ACTION_SHEET_BUTTON_TITLE",
-                    comment: "Title for an action sheet button explaining that a message will be deleted."
-                )
+                deleteActionSheetButtonTitle
             )
         }
 
