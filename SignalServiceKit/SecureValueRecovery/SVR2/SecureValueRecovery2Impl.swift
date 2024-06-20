@@ -540,6 +540,9 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     }
 
     private static func deriveBackupKey(masterKey: Data) -> SVR.DerivedKeyData? {
+        guard FeatureFlags.messageBackupFileAlpha else {
+            owsFail("Internal only")
+        }
         return SVR.DerivedKeyData(SVR.DerivedKey.backupKey.derivedData(from: masterKey), .backupKey)
     }
 
