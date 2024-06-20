@@ -65,7 +65,7 @@ public protocol _MessageBackup_ProfileManagerShim {
 
     func addToWhitelist(_ thread: TSGroupThread, tx: DBWriteTransaction)
 
-    func setProfileKey(
+    func setProfileKeyIfMissing(
         _ profileKey: OWSAES256Key,
         forAci aci: Aci,
         localIdentifiers: LocalIdentifiers,
@@ -128,7 +128,7 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
         profileManager.addThread(toProfileWhitelist: thread, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    public func setProfileKey(
+    public func setProfileKeyIfMissing(
         _ profileKey: OWSAES256Key,
         forAci aci: Aci,
         localIdentifiers: LocalIdentifiers,
@@ -137,7 +137,7 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
         profileManager.setProfileKeyData(
             profileKey.keyData,
             for: aci,
-            onlyFillInIfMissing: false,
+            onlyFillInIfMissing: true,
             shouldFetchProfile: false,
             userProfileWriter: .messageBackupRestore,
             localIdentifiers: localIdentifiers,

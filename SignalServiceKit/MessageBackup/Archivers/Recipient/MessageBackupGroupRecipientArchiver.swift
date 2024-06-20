@@ -256,17 +256,20 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
             guard let role = TSGroupMemberRole(backupProtoRole: fullMember.role) else {
                 return .failure([.restoreFrameError(.invalidProtoData(.unrecognizedGV2MemberRole(protoClass: BackupProto.Group.Member.self)), recipient.recipientId)])
             }
-            guard let profileKey = OWSAES256Key(data: fullMember.profileKey) else {
-                return .failure([.restoreFrameError(.invalidProtoData(.invalidProfileKey(protoClass: BackupProto.Group.Member.self)), recipient.recipientId)])
-            }
 
             groupMembershipBuilder.addFullMember(aci, role: role)
-            profileManager.setProfileKey(
-                profileKey,
-                forAci: aci,
-                localIdentifiers: context.localIdentifiers,
-                tx: tx
-            )
+
+            if
+                let profileKey = OWSAES256Key(data: fullMember.profileKey),
+                !profileKey.isAllZeroes
+            {
+                profileManager.setProfileKeyIfMissing(
+                    profileKey,
+                    forAci: aci,
+                    localIdentifiers: context.localIdentifiers,
+                    tx: tx
+                )
+            }
         }
         for invitedMember in groupSnapshot.membersPendingProfileKey {
             guard let memberDetails = invitedMember.member else {
@@ -292,17 +295,19 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
             guard let aci = try? Aci.parseFrom(serviceIdBinary: requestingMember.userId) else {
                 return .failure([.restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto.Group.MemberPendingAdminApproval.self)), recipient.recipientId)])
             }
-            guard let profileKey = OWSAES256Key(data: requestingMember.profileKey) else {
-                return .failure([.restoreFrameError(.invalidProtoData(.invalidProfileKey(protoClass: BackupProto.Group.MemberPendingAdminApproval.self)), recipient.recipientId)])
-            }
-
             groupMembershipBuilder.addRequestingMember(aci)
-            profileManager.setProfileKey(
-                profileKey,
-                forAci: aci,
-                localIdentifiers: context.localIdentifiers,
-                tx: tx
-            )
+
+            if
+                let profileKey = OWSAES256Key(data: requestingMember.profileKey),
+                !profileKey.isAllZeroes
+            {
+                profileManager.setProfileKeyIfMissing(
+                    profileKey,
+                    forAci: aci,
+                    localIdentifiers: context.localIdentifiers,
+                    tx: tx
+                )
+            }
         }
         for bannedMember in groupSnapshot.membersBanned {
             guard let aci = try? Aci.parseFrom(serviceIdBinary: bannedMember.userId) else {
@@ -389,6 +394,21 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
 
         context[recipient.recipientId] = .group(groupModel.groupId)
         return .success
+    }
+}
+
+// MARK: -
+
+private extension OWSAES256Key {
+    /// Is this profile key comprised of all-zeroes?
+    ///
+    /// It's possible that other clients may not have a persisted profile key
+    /// for a user, and consequently when they build the group snapshot to put
+    /// in a backup they'll be unable to populate the profile key for some
+    /// members. In those cases, they'll put all-zero data for the profile key
+    /// as a sentinel value, and we should not persist it.
+    var isAllZeroes: Bool {
+        return keyData.allSatisfy { $0 == 0 }
     }
 }
 
