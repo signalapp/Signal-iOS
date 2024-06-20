@@ -6,7 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-public class ExpirationNagView: ReminderView {
+class ExpirationNagView: ReminderView {
     private let dateProvider: DateProvider
     private let appExpiry: AppExpiry
     private let osExpiry: OsExpiry
@@ -38,52 +38,94 @@ public class ExpirationNagView: ReminderView {
         update()
     }
 
+    enum ExpirationMessage: Equatable {
+        case appExpired
+        case appWillExpireToday
+        case appWillExpireSoon(Date)
+        case osExpired(canUpgrade: Bool)
+        case osWillExpireSoon(Date, canUpgrade: Bool)
+
+        var text: String {
+            switch self {
+            case .appExpired: return .appExpired
+            case .appWillExpireToday: return .appExpiresToday
+            case .appWillExpireSoon(let expirationDate): return .appExpires(on: expirationDate)
+            case .osExpired(canUpgrade: true): return .osExpiredAndCanUpgradeOs
+            case .osExpired(canUpgrade: false): return .osExpiredAndDeviceIsStuck
+            case .osWillExpireSoon(let expirationDate, canUpgrade: true):
+                return .osSoonToExpireAndCanUpgradeOs(expirationDate: expirationDate)
+            case .osWillExpireSoon(let expirationDate, canUpgrade: false):
+                return .osSoonToExpireAndDeviceWillBeStuck(on: expirationDate)
+            }
+        }
+
+        var actionTitle: String {
+            switch self {
+            case .appExpired, .appWillExpireToday, .appWillExpireSoon:
+                return .expiredActionTitle
+            case .osExpired(canUpgrade: true), .osWillExpireSoon(_, canUpgrade: true):
+                return .upgradeOsActionTitle
+            case .osExpired(canUpgrade: false), .osWillExpireSoon(_, canUpgrade: false):
+                return CommonStrings.learnMore
+            }
+        }
+
+        var urlToOpen: URL {
+            switch self {
+            case .appExpired, .appWillExpireToday, .appWillExpireSoon:
+                return .appStoreUrl
+            case .osExpired(canUpgrade: true), .osWillExpireSoon(_, canUpgrade: true):
+                return .upgradeOsUrl
+            case .osExpired(canUpgrade: false), .osWillExpireSoon(_, canUpgrade: false):
+                return .unsupportedOsUrl
+            }
+        }
+    }
+
     func update() {
+        if let expirationMessage = self.expirationMessage() {
+            self.isHidden = false
+            self.text = expirationMessage.text
+            self.actionTitle = expirationMessage.actionTitle
+            self.urlToOpen = expirationMessage.urlToOpen
+        } else {
+            self.isHidden = true
+        }
+    }
+
+    func expirationMessage() -> ExpirationMessage? {
         let now = dateProvider()
         lazy var daysUntilAppExpiry = DateUtil.daysFrom(
             firstDate: now,
             toSecondDate: appExpiry.expirationDate
         )
 
-        isHidden = false
+        let osExpirationDate: Date = (
+            device.iosMajorVersion < osExpiry.minimumIosMajorVersion ? osExpiry.enforcedAfter : .distantFuture
+        )
 
-        if device.iosMajorVersion < osExpiry.minimumIosMajorVersion {
-            let expirationDate = min(osExpiry.enforcedAfter, appExpiry.expirationDate)
-            let isExpired = expirationDate < now
-            let canUpgradeDevice = device.canUpgrade(to: osExpiry.minimumIosMajorVersion)
-            switch (isExpired, canUpgradeDevice) {
-            case (false, false):
-                text = .osSoonToExpireAndDeviceWillBeStuck(on: expirationDate)
-                actionTitle = CommonStrings.learnMore
-                urlToOpen = .unsupportedOsUrl
-            case (false, true):
-                text = .osSoonToExpireAndCanUpgradeOs(expirationDate: expirationDate)
-                actionTitle = .upgradeOsActionTitle
-                urlToOpen = .upgradeOsUrl
-            case (true, false):
-                text = .osExpiredAndDeviceIsStuck
-                actionTitle = CommonStrings.learnMore
-                urlToOpen = .unsupportedOsUrl
-            case (true, true):
-                text = .osExpiredAndCanUpgradeOs
-                actionTitle = .upgradeOsActionTitle
-                urlToOpen = .upgradeOsUrl
-            }
-        } else if appExpiry.expirationDate.isBefore(now) {
-            text = .appExpired
-            actionTitle = .expiredActionTitle
-            urlToOpen = .appStoreUrl
-        } else if daysUntilAppExpiry <= 1 {
-            text = .appExpiresToday
-            actionTitle = .expiredActionTitle
-            urlToOpen = .appStoreUrl
-        } else if daysUntilAppExpiry <= 10 {
-            text = .appExpires(on: appExpiry.expirationDate)
-            actionTitle = .expiredActionTitle
-            urlToOpen = .appStoreUrl
-        } else {
-            isHidden = true
+        // If the OS is expired, say that.
+        if osExpirationDate < now {
+            return .osExpired(canUpgrade: device.canUpgrade(to: osExpiry.minimumIosMajorVersion))
         }
+        // If the app expires before the OS, warn about that (within 10 days).
+        if appExpiry.expirationDate < osExpirationDate {
+            if appExpiry.expirationDate < now {
+                return .appExpired
+            }
+            if daysUntilAppExpiry <= 1 {
+                return .appWillExpireToday
+            }
+            if daysUntilAppExpiry <= 10 {
+                return .appWillExpireSoon(appExpiry.expirationDate)
+            }
+        }
+        // If the OS will expire "soon", say that.
+        if osExpirationDate < .distantFuture {
+            return .osWillExpireSoon(osExpiry.enforcedAfter, canUpgrade: device.canUpgrade(to: osExpiry.minimumIosMajorVersion))
+        }
+
+        return nil
     }
 }
 

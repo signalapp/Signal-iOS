@@ -16,6 +16,7 @@ final class ExpirationNagViewTest: XCTestCase {
     override func setUp() {
         date = Date()
         appExpiry = MockAppExpiry()
+        appExpiry.dateProvider = self.dateProvider
     }
 
     func testNoNag() {
@@ -25,7 +26,7 @@ final class ExpirationNagViewTest: XCTestCase {
             osExpiry: OsExpiry(minimumIosMajorVersion: 2, enforcedAfter: date),
             device: MockDevice()
         )
-        XCTAssertTrue(nag.isHidden)
+        XCTAssertNil(nag.expirationMessage())
     }
 
     func testAppExpiry() {
@@ -38,8 +39,7 @@ final class ExpirationNagViewTest: XCTestCase {
 
         // Hidden with 11 days left.
         date = appExpiry.expirationDate.subtractingTimeInterval(11 * kDayInterval)
-        nag.update()
-        XCTAssertTrue(nag.isHidden)
+        XCTAssertNil(nag.expirationMessage())
 
         // Shown with nonempty text if 10 days or sooner.
         for dayCount in [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, -1, -99] {
@@ -63,6 +63,49 @@ final class ExpirationNagViewTest: XCTestCase {
             texts.insert(nag.text)
         }
         XCTAssertEqual(texts.count, 3)
+    }
+
+    func testOsExpiry() {
+        let now = Date(timeIntervalSince1970: 1720000000)
+        let osExpiration = Date(timeIntervalSince1970: 1727740800)
+        let appExpiration1 = osExpiration.addingTimeInterval(-5 * kDayInterval)
+        let appExpiration2 = osExpiration.addingTimeInterval(5 * kDayInterval)
+
+        func d(_ offset: Int) -> Date {
+            return now.addingTimeInterval(TimeInterval(offset) * kDayInterval)
+        }
+
+        let testCases: [(
+            appExpiration: Date,
+            timeToCheck: Int,
+            expectedMessage: ExpirationNagView.ExpirationMessage?
+        )] = [
+            // The OS expires after the app.
+            (appExpiration1, 10, .osWillExpireSoon(osExpiration, canUpgrade: true)),
+            (appExpiration1, 80, .appWillExpireSoon(appExpiration1)),
+            (appExpiration1, 84, .appWillExpireToday),
+            (appExpiration1, 85, .appExpired),
+            // If you wait long enough, the message will switch to OS expiration.
+            (appExpiration1, 90, .osExpired(canUpgrade: true)),
+
+            // The OS expires before the app.
+            (appExpiration2, 10, .osWillExpireSoon(osExpiration, canUpgrade: true)),
+            (appExpiration2, 89, .osWillExpireSoon(osExpiration, canUpgrade: true)),
+            (appExpiration2, 90, .osExpired(canUpgrade: true)),
+            (appExpiration2, 95, .osExpired(canUpgrade: true)),
+            (appExpiration2, 99, .osExpired(canUpgrade: true)),
+        ]
+        for testCase in testCases {
+            self.date = now.addingTimeInterval(TimeInterval(testCase.timeToCheck) * kDayInterval)
+            self.appExpiry.expirationDate = testCase.appExpiration
+            let nag = ExpirationNagView(
+                dateProvider: dateProvider,
+                appExpiry: appExpiry,
+                osExpiry: OsExpiry(minimumIosMajorVersion: 3, enforcedAfter: osExpiration),
+                device: MockDevice()
+            )
+            XCTAssertEqual(nag.expirationMessage(), testCase.expectedMessage, "\(testCase.timeToCheck)")
+        }
     }
 
     func testOsExpirySoonToExpire() {
@@ -89,23 +132,7 @@ final class ExpirationNagViewTest: XCTestCase {
             device: MockDevice()
         )
 
-        XCTAssertFalse(nag.isHidden)
-        XCTAssertFalse(nag.text.contains(osExpirationDate.formatted))
-    }
-
-    func testOsExpiryPicksEarlierExpirationDate() {
-        let osExpirationDate = date.addingTimeInterval(5 * kDayInterval)
-        appExpiry.expirationDate = date.subtractingTimeInterval(1)
-
-        let nag = ExpirationNagView(
-            dateProvider: dateProvider,
-            appExpiry: appExpiry,
-            osExpiry: OsExpiry(minimumIosMajorVersion: 3, enforcedAfter: osExpirationDate),
-            device: MockDevice()
-        )
-
-        XCTAssertFalse(nag.isHidden)
-        XCTAssertFalse(nag.text.contains(osExpirationDate.formatted))
+        XCTAssertEqual(nag.expirationMessage(), .osExpired(canUpgrade: true))
     }
 }
 

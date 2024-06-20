@@ -8,9 +8,11 @@ import Foundation
 #if TESTABLE_BUILD
 
 public class MockAppExpiry: AppExpiry {
+    public var dateProvider: DateProvider = { Date() }
+
     public var expirationDate = Date().addingTimeInterval(30 * kDayInterval)
 
-    public var isExpired: Bool { expirationDate < Date() }
+    public var isExpired: Bool { expirationDate < dateProvider() }
 
     public func warmCaches(with: DBReadTransaction) {}
 
