@@ -8,8 +8,8 @@ import Foundation
 public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
     private let audioWaveformManager: AudioWaveformManager
+    private let downloadQueue: DownloadQueue
     private let schedulers: Schedulers
-    private let signalService: OWSSignalServiceProtocol
     private let videoDurationHelper: VideoDurationHelper
 
     public init(
@@ -19,23 +19,28 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         videoDurationHelper: VideoDurationHelper
     ) {
         self.audioWaveformManager = audioWaveformManager
+        self.downloadQueue = DownloadQueue(signalService: signalService)
         self.schedulers = schedulers
-        self.signalService = signalService
         self.videoDurationHelper = videoDurationHelper
     }
 
     public func downloadBackup(metadata: MessageBackupRemoteInfo, authHeaders: [String: String]) -> Promise<URL> {
         let downloadState = DownloadState(type: .backup(metadata, authHeaders: authHeaders))
-        return firstly(on: schedulers.sync) { () -> Promise<URL> in
+        return Promise.wrapAsync {
             let maxDownloadSize = MessageBackup.Constants.maxDownloadSizeBytes
-            return self.download(downloadState: downloadState, maxDownloadSizeBytes: maxDownloadSize)
+            return try await self.downloadQueue.enqueueDownload(
+                downloadState: downloadState,
+                maxDownloadSizeBytes: maxDownloadSize
+            )
         }
     }
 
     public func downloadTransientAttachment(metadata: AttachmentDownloads.DownloadMetadata) -> Promise<URL> {
         // TODO: this should enqueue the download and all that. For now this class
         // only does the transient download so do it immediately.
-        return retrieveAttachment(metadata: metadata)
+        return Promise.wrapAsync {
+            return try await self.retrieveAttachment(metadata: metadata)
+        }
     }
 
     public func enqueueDownloadOfAttachmentsForMessage(
@@ -133,45 +138,71 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
     private func retrieveAttachment(
         metadata: DownloadMetadata
-    ) -> Promise<URL> {
+    ) async throws -> URL {
 
         // We want to avoid large downloads from a compromised or buggy service.
         let maxDownloadSize = RemoteConfig.maxAttachmentDownloadSizeBytes
         let downloadState = DownloadState(type: .attachment(metadata))
 
-        return firstly(on: schedulers.sync) { () -> Promise<URL> in
-            self.download(
-                downloadState: downloadState,
-                maxDownloadSizeBytes: maxDownloadSize
-            )
-        }.then(on: schedulers.sync) { (encryptedFileUrl: URL) -> Promise<URL> in
-            // This dispatches to its own queue
-            Self.decrypt(encryptedFileUrl: encryptedFileUrl, metadata: metadata)
-        }
+        let encryptedFileUrl = try await self.downloadQueue.enqueueDownload(
+            downloadState: downloadState,
+            maxDownloadSizeBytes: maxDownloadSize
+        )
+        return try await self.decrypt(encryptedFileUrl: encryptedFileUrl, metadata: metadata)
     }
 
-    private func download(
-        downloadState: DownloadState,
-        maxDownloadSizeBytes: UInt
-    ) -> Promise<URL> {
-        return firstly(on: schedulers.sync) { () -> Promise<URL> in
-            self.downloadAttempt(
+    private actor DownloadQueue {
+
+        private let signalService: OWSSignalServiceProtocol
+
+        init(
+            signalService: OWSSignalServiceProtocol
+        ) {
+            self.signalService = signalService
+        }
+
+        private let maxConcurrentDownloads = 4
+        private var concurrentDownloads = 0
+        private var queue = [CheckedContinuation<Void, Error>]()
+
+        func enqueueDownload(
+            downloadState: DownloadState,
+            maxDownloadSizeBytes: UInt
+        ) async throws -> URL {
+            try Task.checkCancellation()
+
+            try await withCheckedThrowingContinuation { continuation in
+                queue.append(continuation)
+                runNextQueuedDownloadIfPossible()
+            }
+
+            defer {
+                concurrentDownloads -= 1
+                runNextQueuedDownloadIfPossible()
+            }
+            try Task.checkCancellation()
+            return try await performDownloadAttempt(
                 downloadState: downloadState,
-                maxDownloadSizeBytes: maxDownloadSizeBytes
+                maxDownloadSizeBytes: maxDownloadSizeBytes,
+                resumeData: nil,
+                attemptCount: 0
             )
         }
-    }
 
-    private func downloadAttempt(
-        downloadState: DownloadState,
-        maxDownloadSizeBytes: UInt,
-        resumeData: Data? = nil,
-        attemptIndex: UInt = 0
-    ) -> Promise<URL> {
+        private func runNextQueuedDownloadIfPossible() {
+            if queue.isEmpty || concurrentDownloads >= maxConcurrentDownloads { return }
 
-        let (promise, future) = Promise<URL>.pending()
+            concurrentDownloads += 1
+            let continuation = queue.removeFirst()
+            continuation.resume()
+        }
 
-        firstly(on: schedulers.global()) { () -> Promise<OWSUrlDownloadResponse> in
+        private nonisolated func performDownloadAttempt(
+            downloadState: DownloadState,
+            maxDownloadSizeBytes: UInt,
+            resumeData: Data?,
+            attemptCount: UInt
+        ) async throws -> URL {
             let urlSession = self.signalService.urlSessionForCdn(cdnNumber: downloadState.cdnNumber())
             let urlPath = try downloadState.urlPath()
             var headers = downloadState.additionalHeaders()
@@ -182,146 +213,127 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     downloadState: downloadState,
                     maxDownloadSizeBytes: maxDownloadSizeBytes,
                     task: task,
-                    progress: progress,
-                    future: future
+                    progress: progress
                 )
             }
 
-            if let resumeData = resumeData {
-                let request = try urlSession.endpoint.buildRequest(urlPath, method: .get, headers: headers)
-                guard let requestUrl = request.url else {
-                    return Promise(error: OWSAssertionError("Request missing url."))
-                }
-                return urlSession.downloadTaskPromise(requestUrl: requestUrl,
-                                                      resumeData: resumeData,
-                                                      progress: progress)
-            } else {
-                return urlSession.downloadTaskPromise(urlPath,
-                                                      method: .get,
-                                                      headers: headers,
-                                                      progress: progress)
-            }
-        }.map(on: schedulers.global()) { (response: OWSUrlDownloadResponse) in
-            let downloadUrl = response.downloadUrl
-            guard let fileSize = OWSFileSystem.fileSize(of: downloadUrl) else {
-                throw OWSAssertionError("Could not determine attachment file size.")
-            }
-            guard fileSize.int64Value <= maxDownloadSizeBytes else {
-                throw OWSGenericError("Attachment download length exceeds max size.")
-            }
-            return downloadUrl
-        }.recover(on: schedulers.sync) { [schedulers] (error: Error) -> Promise<URL> in
-            Logger.warn("Error: \(error)")
-
-            let maxAttemptCount = 16
-            if error.isNetworkFailureOrTimeout,
-               attemptIndex < maxAttemptCount {
-
-                return firstly(on: schedulers.sync) { [schedulers] in
-                    // Wait briefly before retrying.
-                    Guarantee.after(on: schedulers.global(), seconds: 0.25)
-                }.then(on: schedulers.sync) { () -> Promise<URL> in
-                    if let resumeData = (error as NSError).userInfo[NSURLSessionDownloadTaskResumeData] as? Data,
-                       !resumeData.isEmpty {
-                        return self.downloadAttempt(
-                            downloadState: downloadState,
-                            maxDownloadSizeBytes: maxDownloadSizeBytes,
-                            resumeData: resumeData,
-                            attemptIndex: attemptIndex + 1
-                        )
-                    } else {
-                        return self.downloadAttempt(
-                            downloadState: downloadState,
-                            maxDownloadSizeBytes: maxDownloadSizeBytes,
-                            attemptIndex: attemptIndex + 1
-                        )
+            do {
+                let downloadResponse: OWSUrlDownloadResponse
+                if let resumeData = resumeData {
+                    let request = try urlSession.endpoint.buildRequest(urlPath, method: .get, headers: headers)
+                    guard let requestUrl = request.url else {
+                        throw OWSAssertionError("Request missing url.")
                     }
+                    downloadResponse = try await urlSession.downloadTaskPromise(
+                        requestUrl: requestUrl,
+                        resumeData: resumeData,
+                        progress: progress
+                    ).awaitable()
+                } else {
+                    downloadResponse = try await urlSession.downloadTaskPromise(
+                        urlPath,
+                        method: .get,
+                        headers: headers,
+                        progress: progress
+                    ).awaitable()
                 }
-            } else {
-                throw error
+                let downloadUrl = downloadResponse.downloadUrl
+                guard let fileSize = OWSFileSystem.fileSize(of: downloadUrl) else {
+                    throw OWSAssertionError("Could not determine attachment file size.")
+                }
+                guard fileSize.int64Value <= maxDownloadSizeBytes else {
+                    throw OWSGenericError("Attachment download length exceeds max size.")
+                }
+                return downloadUrl
+            } catch let error {
+                Logger.warn("Error: \(error)")
+
+                let maxAttemptCount = 16
+                guard
+                    error.isNetworkFailureOrTimeout,
+                    attemptCount < maxAttemptCount
+                else {
+                    throw error
+                }
+
+                // Wait briefly before retrying.
+                try await Task.sleep(nanoseconds: 250 * NSEC_PER_MSEC)
+
+                let newResumeData = (error as NSError)
+                    .userInfo[NSURLSessionDownloadTaskResumeData]
+                    .map { $0 as? Data }
+                    .map(\.?.nilIfEmpty)
+                    ?? nil
+                return try await self.performDownloadAttempt(
+                    downloadState: downloadState,
+                    maxDownloadSizeBytes: maxDownloadSizeBytes,
+                    resumeData: newResumeData,
+                    attemptCount: attemptCount + 1
+                )
             }
-        }.done(on: schedulers.sync) { url in
-            future.resolve(url)
-        }.catch(on: schedulers.sync) { error in
-            future.reject(error)
         }
 
-        return promise
+        private nonisolated func handleDownloadProgress(
+            downloadState: DownloadState,
+            maxDownloadSizeBytes: UInt,
+            task: URLSessionTask,
+            progress: Progress
+        ) {
+            // Don't do anything until we've received at least one byte of data.
+            guard progress.completedUnitCount > 0 else {
+                return
+            }
+
+            guard progress.totalUnitCount <= maxDownloadSizeBytes,
+                  progress.completedUnitCount <= maxDownloadSizeBytes else {
+                // A malicious service might send a misleading content length header,
+                // so....
+                //
+                // If the current downloaded bytes or the expected total byes
+                // exceed the max download size, abort the download.
+                owsFailDebug("Attachment download exceed expected content length: \(progress.totalUnitCount), \(progress.completedUnitCount).")
+                task.cancel()
+                return
+            }
+
+            // TODO: update progress for non-transient downloads
+        }
     }
 
-    private func handleDownloadProgress(
-        downloadState: DownloadState,
-        maxDownloadSizeBytes: UInt,
-        task: URLSessionTask,
-        progress: Progress,
-        future: Future<URL>
-    ) {
-        // Don't do anything until we've received at least one byte of data.
-        guard progress.completedUnitCount > 0 else {
-            return
-        }
+    // Use serialQueue to ensure that we only load into memory
+    // & decrypt a single attachment at a time.
+    private let decryptionQueue = SerialTaskQueue()
 
-        guard progress.totalUnitCount <= maxDownloadSizeBytes,
-              progress.completedUnitCount <= maxDownloadSizeBytes else {
-            // A malicious service might send a misleading content length header,
-            // so....
-            //
-            // If the current downloaded bytes or the expected total byes
-            // exceed the max download size, abort the download.
-            owsFailDebug("Attachment download exceed expected content length: \(progress.totalUnitCount), \(progress.completedUnitCount).")
-            task.cancel()
-            future.reject(DownloadError.oversize)
-            return
-        }
-
-        // TODO: update progress for non-transient downloads
-    }
-
-    static let serialDecryptionQueue: DispatchQueue = {
-        return DispatchQueue(
-            label: "org.signal.attachment.download.v2",
-            qos: .utility,
-            autoreleaseFrequency: .workItem
-        )
-    }()
-
-    private class func decrypt(
+    private func decrypt(
         encryptedFileUrl: URL,
         metadata: DownloadMetadata
-    ) -> Promise<URL> {
-        let (promise, future) = Promise<URL>.pending()
+    ) async throws -> URL {
+        return try await decryptionQueue.enqueue(operation: {
+            do {
+                // TODO: attachment downloads should decrypt for verification purposes
+                // but can discard the decrypted file afterwards.
+                let outputUrl = OWSFileSystem.temporaryFileUrl()
 
-        // Use serialQueue to ensure that we only load into memory
-        // & decrypt a single attachment at a time.
-        Self.serialDecryptionQueue.async {
-            autoreleasepool {
+                try Cryptography.decryptAttachment(
+                    at: encryptedFileUrl,
+                    metadata: EncryptionMetadata(
+                        key: metadata.encryptionKey,
+                        digest: metadata.digest,
+                        plaintextLength: Int(metadata.plaintextLength)
+                    ),
+                    output: outputUrl
+                )
+
+                return outputUrl
+            } catch let error {
                 do {
-                    // TODO: attachment downloads should decrypt for verification purposes
-                    // but can discard the decrypted file afterwards.
-                    let outputUrl = OWSFileSystem.temporaryFileUrl()
-
-                    try Cryptography.decryptAttachment(
-                        at: encryptedFileUrl,
-                        metadata: EncryptionMetadata(
-                            key: metadata.encryptionKey,
-                            digest: metadata.digest,
-                            plaintextLength: Int(metadata.plaintextLength)
-                        ),
-                        output: outputUrl
-                    )
-
-                    future.resolve(outputUrl)
-                } catch let error {
-                    do {
-                        try OWSFileSystem.deleteFileIfExists(url: encryptedFileUrl)
-                    } catch let deleteFileError {
-                        owsFailDebug("Error: \(deleteFileError).")
-                    }
-                    future.reject(error)
+                    try OWSFileSystem.deleteFileIfExists(url: encryptedFileUrl)
+                } catch let deleteFileError {
+                    owsFailDebug("Error: \(deleteFileError).")
                 }
+                throw error
             }
-        }
-        return promise
+        }).value
     }
 
     func copyThumbnailForQuotedReplyIfNeeded(_ downloadedAttachment: AttachmentStream) {
