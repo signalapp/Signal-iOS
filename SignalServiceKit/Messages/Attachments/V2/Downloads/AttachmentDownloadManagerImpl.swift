@@ -56,6 +56,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         fatalError("Unimplemented")
     }
 
+    public func beginDownloadingIfNecessary() {
+        fatalError("Unimplemented")
+    }
+
     public func cancelDownload(for attachmentId: Attachment.IDType, tx: DBWriteTransaction) {
         fatalError("Unimplemented")
     }

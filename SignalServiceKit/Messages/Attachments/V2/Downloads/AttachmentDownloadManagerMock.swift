@@ -35,6 +35,10 @@ open class AttachmentDownloadManagerMock: AttachmentDownloadManager {
         return .value(())
     }
 
+    open func beginDownloadingIfNecessary() {
+        // Do nothing
+    }
+
     open func cancelDownload(
         for attachmentId: Attachment.IDType,
         tx: DBWriteTransaction

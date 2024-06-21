@@ -63,6 +63,10 @@ public protocol AttachmentDownloadManager {
         tx: DBWriteTransaction
     ) -> Promise<Void>
 
+    /// Starts downloading off the persisted queue, if there's anything to download
+    /// and if not already downloading the max number of parallel downloads at once.
+    func beginDownloadingIfNecessary()
+
     func cancelDownload(for attachmentId: Attachment.IDType, tx: DBWriteTransaction)
 
     func downloadProgress(for attachmentId: Attachment.IDType, tx: DBReadTransaction) -> CGFloat?
