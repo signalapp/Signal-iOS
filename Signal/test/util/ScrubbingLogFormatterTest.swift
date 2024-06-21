@@ -160,37 +160,22 @@ final class ScrubbingLogFormatterTest: XCTestCase {
     }
 
     func testThingsThatLookLikeGroupIdNotScrubbed() {
-        let forbiddenBase64Lengths = Set([
-            kGroupIdLengthV1.base64Length,
-            kGroupIdLengthV2.base64Length
-        ])
-
-        for _ in 1...100 {
-            let fakeGroupIdCount: Int32 = {
-                while true {
-                    let result = Int32.random(in: 1...(kGroupIdLengthV2 * 2))
-                    if !forbiddenBase64Lengths.contains(result.base64Length) {
-                        return result
-                    }
-                }
-            }()
+        for _ in 1...1024 {
+            let fakeGroupIdCount = Int32.random(in: 1...(kGroupIdLengthV2 * 2))
             let fakeGroupId = Randomness.generateRandomBytes(fakeGroupIdCount)
             let fakeGroupIdString = TSGroupThread.defaultThreadId(forGroupId: fakeGroupId)
-            // Unfortunately, a portion of the fake groupID can look like a base64-encoded
-            // uuid. For example:
-            // "SAFsdfdsafSDGHJ/SggGREgAFhGEWRGCDSFfds=="
-            // Is that a long group id, or a segment of a url with one path segment being
-            // "SAFsdfdsafSDGHJ" and another path segment being the 22 char length + 2 char
-            // padding of a base64 encoded uuid? We can't know with a simple regex.
-            // Just stop that case here.
-            if fakeGroupIdString.hasSuffix("=="), fakeGroupIdString.suffix(25).starts(with: "/") {
-                continue
-            }
             let input = "Hello \(fakeGroupIdString)!"
 
             let result = format(input)
-            XCTAssertEqual(result, input)
+            if result == input {
+                return
+            }
+            // It got scrubbed. Maybe it's
+            // - a group ID (≈1/16 chance)
+            // - a value that happens to look like a base64 UUID in a path (≈1/192 chance)
+            // - a value that happens to have many adjacent hex characters (??? chance)
         }
+        XCTFail("Too many things that aren't group IDs are being treated as group IDs.")
     }
 
     func testNotScrubbed() {
@@ -405,8 +390,4 @@ final class ScrubbingLogFormatterTest: XCTestCase {
             }
         }
     }
-}
-
-private extension Int32 {
-    var base64Length: Int32 { Int32(4 * ceil(Double(self) / 3)) }
 }
