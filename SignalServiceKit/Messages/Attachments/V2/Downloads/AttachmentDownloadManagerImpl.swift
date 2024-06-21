@@ -7,26 +7,20 @@ import Foundation
 
 public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
-    private let audioWaveformManager: AudioWaveformManager
+    private let attachmentValidator: AttachmentContentValidator
     private let downloadQueue: DownloadQueue
     private let progressStates: ProgressStates
-    private let schedulers: Schedulers
-    private let videoDurationHelper: VideoDurationHelper
 
     public init(
-        audioWaveformManager: AudioWaveformManager,
-        schedulers: Schedulers,
-        signalService: OWSSignalServiceProtocol,
-        videoDurationHelper: VideoDurationHelper
+        attachmentValidator: AttachmentContentValidator,
+        signalService: OWSSignalServiceProtocol
     ) {
-        self.audioWaveformManager = audioWaveformManager
+        self.attachmentValidator = attachmentValidator
         self.progressStates = ProgressStates()
         self.downloadQueue = DownloadQueue(
             progressStates: progressStates,
             signalService: signalService
         )
-        self.schedulers = schedulers
-        self.videoDurationHelper = videoDurationHelper
     }
 
     public func downloadBackup(metadata: MessageBackupRemoteInfo, authHeaders: [String: String]) -> Promise<URL> {
@@ -50,7 +44,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 downloadState: downloadState,
                 maxDownloadSizeBytes: maxDownloadSize
             )
-            return try await self.decrypt(encryptedFileUrl: encryptedFileUrl, metadata: metadata)
+            return try await self.decryptTransientAttachment(encryptedFileUrl: encryptedFileUrl, metadata: metadata)
         }
     }
 
@@ -329,14 +323,13 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     // & decrypt a single attachment at a time.
     private let decryptionQueue = SerialTaskQueue()
 
-    private func decrypt(
+    private func decryptTransientAttachment(
         encryptedFileUrl: URL,
         metadata: DownloadMetadata
     ) async throws -> URL {
         return try await decryptionQueue.enqueue(operation: {
             do {
-                // TODO: attachment downloads should decrypt for verification purposes
-                // but can discard the decrypted file afterwards.
+                // Transient attachments decrypt to a tmp file.
                 let outputUrl = OWSFileSystem.temporaryFileUrl()
 
                 try Cryptography.decryptAttachment(
@@ -357,6 +350,36 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     owsFailDebug("Error: \(deleteFileError).")
                 }
                 throw error
+            }
+        }).value
+    }
+
+    private func validateAndPrepare(
+        encryptedFileUrl: URL,
+        metadata: DownloadMetadata
+    ) async throws -> PendingAttachment {
+        let attachmentValidator = self.attachmentValidator
+        return try await decryptionQueue.enqueue(operation: {
+            // AttachmentValidator runs synchronously _and_ opens write transactions
+            // internally. We can't block on the write lock in the cooperative thread
+            // pool, so bridge out of structured concurrency to run the validation.
+            return try await withCheckedThrowingContinuation { continuation in
+                DispatchQueue.global().async {
+                    do {
+                        let pendingAttachment = try attachmentValidator.validateContents(
+                            ofEncryptedFileAt: encryptedFileUrl,
+                            encryptionKey: metadata.encryptionKey,
+                            plaintextLength: metadata.plaintextLength,
+                            digestSHA256Ciphertext: metadata.digest,
+                            mimeType: metadata.mimeType,
+                            renderingFlag: .default,
+                            sourceFilename: nil
+                        )
+                        continuation.resume(with: .success(pendingAttachment))
+                    } catch let error {
+                        continuation.resume(throwing: error)
+                    }
+                }
             }
         }).value
     }
