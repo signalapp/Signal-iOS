@@ -73,7 +73,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
     public func validateContents(
         ofEncryptedFileAt fileUrl: URL,
         encryptionKey: Data,
-        plaintextLength: UInt32,
+        plaintextLength: UInt32?,
         digestSHA256Ciphertext: Data,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
@@ -81,17 +81,19 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
     ) throws -> PendingAttachment {
         // Very very first thing: validate the digest.
         // Throw if this fails.
-        let validated = Cryptography.validateAttachment(
+        var decryptedLength = 0
+        try Cryptography.decryptFile(
             at: fileUrl,
             metadata: .init(
                 key: encryptionKey,
                 digest: digestSHA256Ciphertext,
-                plaintextLength: Int(plaintextLength)
-            )
+                plaintextLength: plaintextLength.map(Int.init)
+            ),
+            output: { data in
+                decryptedLength += data.count
+            }
         )
-        guard validated else {
-            throw OWSAssertionError("Invalid encryption")
-        }
+        let plaintextLength = plaintextLength ?? UInt32(decryptedLength)
 
         let input = Input.encryptedFile(
             fileUrl,

@@ -59,10 +59,14 @@ public protocol AttachmentContentValidator {
     /// Returns a PendingAttachment with validated contents, ready to be inserted.
     /// Note the content type may be `invalid`; we can still create an Attachment from these.
     /// Errors are thrown if data reading/parsing/decryption fails.
+    ///
+    /// - Parameter plaintextLength: If provided, the decrypted file will be truncated
+    /// after this length. If nil, it is assumed the encrypted file has no custom padding (anything besides PKCS7)
+    /// and will not be truncated after decrypting.
     func validateContents(
         ofEncryptedFileAt fileUrl: URL,
         encryptionKey: Data,
-        plaintextLength: UInt32,
+        plaintextLength: UInt32?,
         digestSHA256Ciphertext: Data,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
