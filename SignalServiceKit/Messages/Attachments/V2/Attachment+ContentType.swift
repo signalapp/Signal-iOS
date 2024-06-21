@@ -7,6 +7,13 @@ import Foundation
 
 extension Attachment {
     /// WARNING: these values are serialized to the database; changing them is dangerous.
+    /// If you do change them, you might also need to reindex the media gallery indexes:
+    /// message_attachment_reference_media_gallery_visualMedia_content_type_index
+    /// message_attachment_reference_media_gallery_fileOrInvalid_content_type_index
+    /// _
+    /// These indexes rely on the generated virtual columns isVisualMediaContentType and
+    /// isInvalidOrFileContentType respectively. These columns must be redefined if the raw
+    /// values of this enum change, and might need to be redefined if new cases are added.
     public enum ContentTypeRaw: Int {
         /// MIME type indicated it should be some other non-file type but validation failed.
         /// Inspect ``Attachment/mimeType`` to determine what type it tried to be.

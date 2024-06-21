@@ -17,7 +17,7 @@ extension Attachment {
         let mimeType: String
         let encryptionKey: Data
         let digestSHA256Ciphertext: Data?
-        let contentType: UInt32?
+        var contentType: UInt32?
         var transitCdnNumber: UInt32?
         var transitCdnKey: String?
         var transitUploadTimestamp: UInt64?

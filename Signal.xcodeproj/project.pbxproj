@@ -980,6 +980,7 @@
 		66AAC2CA29CBC07300566AD6 /* RegistrationPhoneNumberViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AAC2C929CBC07300566AD6 /* RegistrationPhoneNumberViewState.swift */; };
 		66AE5779298440A100E40CFA /* ViewControllerContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC13297F38BB004EFC30 /* ViewControllerContext.swift */; };
 		66AE57802984AB9F00E40CFA /* ToyExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AE577E2984AB8700E40CFA /* ToyExample.swift */; };
+		66AE8A872C169A900044D388 /* MediaGalleryAttachmentFinderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AE8A852C169A830044D388 /* MediaGalleryAttachmentFinderTest.swift */; };
 		66AEFCA42A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AEFCA32A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift */; };
 		66B78E032BE59B860022580E /* StickerMetadata+TSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B78E022BE59B860022580E /* StickerMetadata+TSResource.swift */; };
 		66B78E062BE5AADF0022580E /* AttachmentViewOnceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B78E052BE5AADF0022580E /* AttachmentViewOnceManager.swift */; };
@@ -3917,6 +3918,7 @@
 		66AAC2C729CB9ED900566AD6 /* RegistrationChangePhoneNumberConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationChangePhoneNumberConfirmationViewController.swift; sourceTree = "<group>"; };
 		66AAC2C929CBC07300566AD6 /* RegistrationPhoneNumberViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationPhoneNumberViewState.swift; sourceTree = "<group>"; };
 		66AE577E2984AB8700E40CFA /* ToyExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToyExample.swift; sourceTree = "<group>"; };
+		66AE8A852C169A830044D388 /* MediaGalleryAttachmentFinderTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryAttachmentFinderTest.swift; sourceTree = "<group>"; };
 		66AEFCA32A5CAED9004B4D6C /* SpoilerableLabelAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerableLabelAnimator.swift; sourceTree = "<group>"; };
 		66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalAttachment+VideoSegmenting.swift"; sourceTree = "<group>"; };
 		66B78E022BE59B860022580E /* StickerMetadata+TSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StickerMetadata+TSResource.swift"; sourceTree = "<group>"; };
@@ -7733,6 +7735,7 @@
 				667DEE662BC7342900EFF32D /* AttachmentReferenceId.swift */,
 				667DEE6A2BC7603C00EFF32D /* DatedAttachmentReferenceId.swift */,
 				663A189F2BCD8F16005C1B41 /* MediaGalleryAttachmentFinder.swift */,
+				66AE8A852C169A830044D388 /* MediaGalleryAttachmentFinderTest.swift */,
 			);
 			path = MediaGallery;
 			sourceTree = "<group>";
@@ -14750,6 +14753,7 @@
 				D938307C2A704338006CDCDE /* LocalUsernameManagerTests.swift in Sources */,
 				F942625F289B1B5500460798 /* LRUCacheTest.swift in Sources */,
 				F9426269289B1B5500460798 /* MathOWSTests.swift in Sources */,
+				66AE8A872C169A900044D388 /* MediaGalleryAttachmentFinderTest.swift in Sources */,
 				D9C964192BE59E270058F143 /* MessageBackupIntegrationTest.swift in Sources */,
 				D9C964172BE56DFB0058F143 /* MessageBackupIntegrationTestCase.swift in Sources */,
 				66FC637229DF7A1500F00DAC /* MessageBodyRangesTests.swift in Sources */,

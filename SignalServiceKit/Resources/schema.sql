@@ -1585,6 +1585,15 @@ CREATE
         ,"sourceMediaWidthPixels" INTEGER
         ,"stickerPackId" BLOB
         ,"stickerId" INTEGER
+        ,isVisualMediaContentType AS (
+            contentType = 2
+            OR contentType = 3
+            OR contentType = 4
+        ) VIRTUAL
+        ,isInvalidOrFileContentType AS (
+            contentType = 0
+            OR contentType = 1
+        ) VIRTUAL
 )
 ;
 
@@ -1612,18 +1621,6 @@ CREATE
     INDEX "index_message_attachment_reference_on_stickerPackId_and_stickerId"
         ON "MessageAttachmentReference"("stickerPackId"
     ,"stickerId"
-)
-;
-
-CREATE
-    INDEX "index_message_attachment_reference_on_threadRowId_and_ownerType_and_contentType_and_renderingFlag_and_receivedAtTimestamp_and_ownerRowId_and_orderInMessage"
-        ON "MessageAttachmentReference"("threadRowId"
-    ,"ownerType"
-    ,"contentType"
-    ,"renderingFlag"
-    ,"receivedAtTimestamp"
-    ,"ownerRowId"
-    ,"orderInMessage"
 )
 ;
 
@@ -1849,5 +1846,38 @@ CREATE
 CREATE
     INDEX "index_attachment_on_originalAttachmentIdForQuotedReply"
         ON "Attachment"("originalAttachmentIdForQuotedReply"
+)
+;
+
+CREATE
+    INDEX "message_attachment_reference_media_gallery_single_content_type_index"
+        ON "MessageAttachmentReference"("threadRowId"
+    ,"ownerType"
+    ,"contentType"
+    ,"receivedAtTimestamp"
+    ,"ownerRowId"
+    ,"orderInMessage"
+)
+;
+
+CREATE
+    INDEX "message_attachment_reference_media_gallery_visualMedia_content_type_index"
+        ON "MessageAttachmentReference"("threadRowId"
+    ,"ownerType"
+    ,"isVisualMediaContentType"
+    ,"receivedAtTimestamp"
+    ,"ownerRowId"
+    ,"orderInMessage"
+)
+;
+
+CREATE
+    INDEX "message_attachment_reference_media_gallery_fileOrInvalid_content_type_index"
+        ON "MessageAttachmentReference"("threadRowId"
+    ,"ownerType"
+    ,"isInvalidOrFileContentType"
+    ,"receivedAtTimestamp"
+    ,"ownerRowId"
+    ,"orderInMessage"
 )
 ;

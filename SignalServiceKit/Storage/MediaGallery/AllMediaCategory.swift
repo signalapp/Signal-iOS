@@ -16,7 +16,7 @@ public enum AllMediaCategory: Int, CaseIterable {
 /// Each ``AllMediaCategory`` has its own set of filters the UI
 /// allows the user to select from, as well as an "All" option that corresponds
 /// to a "all" filter case, that is selected by default.
-public enum AllMediaFilter {
+public enum AllMediaFilter: CaseIterable {
 
     // These cases correspond to the unfiltered top level categories.
     // They are a superset of all the subfilters below.

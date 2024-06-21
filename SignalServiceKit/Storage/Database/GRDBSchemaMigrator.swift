@@ -267,6 +267,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dropTableTestModel
         case addOriginalAttachmentIdForQuotedReplyColumn
         case addClientUuidToTSAttachment
+        case recreateMessageAttachmentReferenceMediaGalleryIndexes
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -328,7 +329,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 74
+    public static let grdbSchemaVersionLatest: UInt = 75
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -2892,7 +2893,81 @@ public class GRDBSchemaMigrator: NSObject {
             try tx.database.alter(table: "model_TSAttachment") { table in
                 table.add(column: "clientUuid", .text)
             }
+            return .success(())
+        }
 
+        migrator.registerMigration(.recreateMessageAttachmentReferenceMediaGalleryIndexes) { tx in
+            // Drop the original index; by putting renderingFlag before the three ordering columns
+            // we force all queries to filter to one rendering flag value, which most do not.
+            try tx.database.drop(
+                index:
+                    "index_message_attachment_reference_on"
+                    + "_threadRowId"
+                    + "_and_ownerType"
+                    + "_and_contentType"
+                    + "_and_renderingFlag"
+                    + "_and_receivedAtTimestamp"
+                    + "_and_ownerRowId"
+                    + "_and_orderInMessage"
+            )
+            try tx.database.alter(table: "MessageAttachmentReference") { table in
+                // We want to be able to filter by
+                // (contentType = image OR contentType = video OR contentType = animatedImage)
+                // To do this efficiently with the index while applying an ORDER BY, we need
+                // that OR to collapse into a single constraint.
+                // Do this by creating a generated column. It can be virtual, no need to store it.
+                table.addColumn(
+                    literal: "isVisualMediaContentType AS (contentType = 2 OR contentType = 3 OR contentType = 4) VIRTUAL"
+                )
+                // Ditto for
+                // (contentType = file OR contentType = invalid)
+                // Not used to today, but will be in the future.
+                table.addColumn(
+                    literal: "isInvalidOrFileContentType AS (contentType = 0 OR contentType = 1) VIRTUAL"
+                )
+            }
+
+            /// Create three indexes which vary only by contentType/isVisualMediaContentType/isInvalidOrFileContentType
+            /// Each media gallery query will either filter to a single content type or one of these pre-defined composit ones.
+            try tx.database.create(
+                index:
+                    "message_attachment_reference_media_gallery_single_content_type_index",
+                on: "MessageAttachmentReference",
+                columns: [
+                    "threadRowId",
+                    "ownerType",
+                    "contentType",
+                    "receivedAtTimestamp",
+                    "ownerRowId",
+                    "orderInMessage"
+                ]
+            )
+            try tx.database.create(
+                index:
+                    "message_attachment_reference_media_gallery_visualMedia_content_type_index",
+                on: "MessageAttachmentReference",
+                columns: [
+                    "threadRowId",
+                    "ownerType",
+                    "isVisualMediaContentType",
+                    "receivedAtTimestamp",
+                    "ownerRowId",
+                    "orderInMessage"
+                ]
+            )
+            try tx.database.create(
+                index:
+                    "message_attachment_reference_media_gallery_fileOrInvalid_content_type_index",
+                on: "MessageAttachmentReference",
+                columns: [
+                    "threadRowId",
+                    "ownerType",
+                    "isInvalidOrFileContentType",
+                    "receivedAtTimestamp",
+                    "ownerRowId",
+                    "orderInMessage"
+                ]
+            )
             return .success(())
         }
 
