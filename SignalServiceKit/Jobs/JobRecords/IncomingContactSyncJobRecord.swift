@@ -32,6 +32,7 @@ public final class IncomingContactSyncJobRecord: JobRecord, FactoryInitializable
             let plaintextLength
         {
             return .transient(.init(
+                mimeType: MimeType.applicationOctetStream.rawValue,
                 cdnNumber: cdnNumber,
                 cdnKey: cdnKey,
                 encryptionKey: encryptionKey,

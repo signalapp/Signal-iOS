@@ -106,6 +106,7 @@ public class OWSSyncManager: NSObject, SyncManagerProtocolObjc {
         }
         self.smJobQueues.incomingContactSyncJobQueue.add(
             downloadMetadata: .init(
+                mimeType: MimeType.applicationOctetStream.rawValue,
                 cdnNumber: syncMessage.blob.cdnNumber,
                 cdnKey: cdnKey,
                 encryptionKey: encryptionKey,

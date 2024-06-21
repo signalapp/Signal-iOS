@@ -16,6 +16,7 @@ public enum AttachmentDownloads {
     public static var attachmentDownloadAttachmentIDKey: String { "attachmentDownloadAttachmentIDKey" }
 
     public struct DownloadMetadata: Equatable {
+        public let mimeType: String
         public let cdnNumber: UInt32
         public let cdnKey: String
         public let encryptionKey: Data
@@ -23,12 +24,14 @@ public enum AttachmentDownloads {
         public let plaintextLength: UInt32
 
         public init(
+            mimeType: String,
             cdnNumber: UInt32,
             cdnKey: String,
             encryptionKey: Data,
             digest: Data,
             plaintextLength: UInt32
         ) {
+            self.mimeType = mimeType
             self.cdnNumber = cdnNumber
             self.cdnKey = cdnKey
             self.encryptionKey = encryptionKey
