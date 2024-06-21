@@ -18,6 +18,7 @@ protocol DeleteForMeSyncMessageReceiver {
 final class DeleteForMeSyncMessageReceiverImpl: DeleteForMeSyncMessageReceiver {
     private typealias Conversation = DeleteForMeSyncMessage.Incoming.Conversation
     private typealias AddressableMessage = DeleteForMeSyncMessage.Incoming.AddressableMessage
+    private typealias AttachmentIdentifier = DeleteForMeSyncMessage.Incoming.AttachmentIdentifier
 
     private let deleteForMeIncomingSyncMessageManager: DeleteForMeIncomingSyncMessageManager
     private let recipientDatabaseTable: RecipientDatabaseTable
@@ -69,6 +70,37 @@ final class DeleteForMeSyncMessageReceiverImpl: DeleteForMeSyncMessageReceiver {
                     tx: tx
                 )
             }
+        }
+
+        for attachmentDelete in deleteForMeProto.attachmentDeletes {
+            guard let conversation = conversation(
+                forProtoIdentifier: attachmentDelete.conversation,
+                tx: tx
+            ) else {
+                owsFailDebug("Missing conversation ID in attachment delete proto!")
+                continue
+            }
+
+            guard let targetMessage: AddressableMessage = addressableMessage(
+                forProtoMessage: attachmentDelete.targetMessage,
+                tx: tx
+            ) else {
+                owsFailDebug("Missing target message in attachment delete proto!")
+                continue
+            }
+
+            let attachmentIdentifier = AttachmentIdentifier(
+                clientUuid: attachmentDelete.clientUuid.flatMap { UUID(data: $0) },
+                encryptedDigest: attachmentDelete.fallbackDigest,
+                plaintextHash: attachmentDelete.fallbackPlaintextHash
+            )
+
+            deleteForMeIncomingSyncMessageManager.handleAttachmentDelete(
+                conversation: conversation,
+                targetMessage: targetMessage,
+                attachmentIdentifier: attachmentIdentifier,
+                tx: tx
+            )
         }
 
         for conversationDelete in deleteForMeProto.conversationDeletes {
@@ -162,6 +194,15 @@ final class DeleteForMeSyncMessageReceiverImpl: DeleteForMeSyncMessageReceiver {
         }
 
         return nil
+    }
+
+    private func addressableMessage(
+        forProtoMessage proto: SSKProtoSyncMessageDeleteForMeAddressableMessage?,
+        tx: DBReadTransaction
+    ) -> AddressableMessage? {
+        guard let proto else { return nil }
+
+        return addressableMessages(forProtoMessages: [proto], tx: tx).first
     }
 
     private func addressableMessages(

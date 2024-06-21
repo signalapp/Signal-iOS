@@ -57,6 +57,11 @@ extension TSAttachment: TSResource {
         return nil
     }
 
+    public var knownPlaintextResourceSha256Hash: Data? {
+        // V1 attachments do not track a digest of their plaintext contents.
+        return nil
+    }
+
     public var isUploadedToTransitTier: Bool {
         if let stream = self as? TSAttachmentStream {
             return stream.isUploaded

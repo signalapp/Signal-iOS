@@ -17,6 +17,7 @@ extension Attachment: TSResource {
     public var unencryptedResourceByteCount: UInt32? { streamInfo?.unencryptedByteCount }
     public var encryptedResourceByteCount: UInt32? { streamInfo?.encryptedByteCount }
     public var encryptedResourceSha256Digest: Data? { streamInfo?.digestSHA256Ciphertext }
+    public var knownPlaintextResourceSha256Hash: Data? { streamInfo?.sha256ContentHash }
     public var transitCdnKey: String? { transitTierInfo?.cdnKey }
     public var transitCdnNumber: UInt32? { transitTierInfo?.cdnNumber }
     public var transitUploadTimestamp: UInt64? { transitTierInfo?.uploadTimestamp }
@@ -73,6 +74,8 @@ extension AttachmentStream: TSResource {
     public var encryptedResourceByteCount: UInt32? { encryptedByteCount }
 
     public var encryptedResourceSha256Digest: Data? { encryptedFileSha256Digest }
+
+    public var knownPlaintextResourceSha256Hash: Data? { info.sha256ContentHash }
 
     public var isUploadedToTransitTier: Bool { attachment.isUploadedToTransitTier }
 

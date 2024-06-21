@@ -67,6 +67,15 @@ extension AttachmentReference: TSResourceReference {
             return nil
         }
     }
+
+    public func knownIdInOwningMessage(_ message: TSMessage) -> UUID? {
+        switch owner {
+        case .message(.bodyAttachment(let metadata)):
+            return metadata.idInOwner
+        default:
+            return nil
+        }
+    }
 }
 
 extension AttachmentReference.RenderingFlag {

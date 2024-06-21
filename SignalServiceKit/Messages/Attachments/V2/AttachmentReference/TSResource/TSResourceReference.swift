@@ -46,6 +46,8 @@ public protocol TSResourceReference {
     func fetchOwningMessage(tx: SDSAnyReadTransaction) -> TSMessage?
 
     func orderInOwningMessage(_ message: TSMessage) -> UInt32?
+
+    func knownIdInOwningMessage(_ message: TSMessage) -> UUID?
 }
 
 // MARK: - Convenience fetchers

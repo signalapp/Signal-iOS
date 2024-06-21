@@ -42,6 +42,12 @@ public enum DeleteForMeSyncMessage {
             let author: Author
             let sentTimestamp: UInt64
         }
+
+        public struct AttachmentIdentifier {
+            let clientUuid: UUID?
+            let encryptedDigest: Data?
+            let plaintextHash: Data?
+        }
     }
 }
 
@@ -55,10 +61,18 @@ public enum DeleteForMeSyncMessage {
 public protocol DeleteForMeIncomingSyncMessageManager {
     typealias Conversation = DeleteForMeSyncMessage.Incoming.Conversation
     typealias AddressableMessage = DeleteForMeSyncMessage.Incoming.AddressableMessage
+    typealias AttachmentIdentifier = DeleteForMeSyncMessage.Incoming.AttachmentIdentifier
 
     func handleMessageDelete(
         conversation: Conversation,
         addressableMessage: AddressableMessage,
+        tx: DBWriteTransaction
+    )
+
+    func handleAttachmentDelete(
+        conversation: Conversation,
+        targetMessage: AddressableMessage,
+        attachmentIdentifier: AttachmentIdentifier,
         tx: DBWriteTransaction
     )
 
@@ -80,6 +94,8 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
     private let bulkDeleteInteractionJobQueue: BulkDeleteInteractionJobQueue
     private let interactionDeleteManager: any InteractionDeleteManager
     private let threadSoftDeleteManager: any ThreadSoftDeleteManager
+    private let tsResourceManager: any TSResourceManager
+    private let tsResourceStore: any TSResourceStore
 
     private let logger = PrefixedLogger(prefix: "[DeleteForMe]")
 
@@ -88,12 +104,15 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
         bulkDeleteInteractionJobQueue: BulkDeleteInteractionJobQueue,
         interactionDeleteManager: any InteractionDeleteManager,
         threadSoftDeleteManager: any ThreadSoftDeleteManager,
-        tsAccountManager: any TSAccountManager
+        tsResourceManager: any TSResourceManager,
+        tsResourceStore: any TSResourceStore
     ) {
         self.addressableMessageFinder = addressableMessageFinder
         self.bulkDeleteInteractionJobQueue = bulkDeleteInteractionJobQueue
         self.interactionDeleteManager = interactionDeleteManager
         self.threadSoftDeleteManager = threadSoftDeleteManager
+        self.tsResourceManager = tsResourceManager
+        self.tsResourceStore = tsResourceStore
     }
 
     func handleMessageDelete(
@@ -106,7 +125,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
             addressableMessage: addressableMessage,
             tx: tx
         ) else {
-            logger.warn("No message found for incoming message delete-sync: \(addressableMessage.author):\(addressableMessage.sentTimestamp).")
+            logger.warn("No message found for incoming message-delete sync: \(addressableMessage.author):\(addressableMessage.sentTimestamp) in \(conversation.threadUniqueId).")
             return
         }
 
@@ -115,6 +134,73 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
             sideEffects: .custom(associatedCallDelete: .localDeleteOnly),
             tx: tx
         )
+    }
+
+    func handleAttachmentDelete(
+        conversation: Conversation,
+        targetMessage: AddressableMessage,
+        attachmentIdentifier: AttachmentIdentifier,
+        tx: any DBWriteTransaction
+    ) {
+        let logger = logger.suffixed(with: " [\(targetMessage.author):\(targetMessage.sentTimestamp) in \(conversation.threadUniqueId)]")
+
+        guard let targetMessage = addressableMessageFinder.findLocalMessage(
+            threadUniqueId: conversation.threadUniqueId,
+            addressableMessage: targetMessage,
+            tx: tx
+        ) else {
+            logger.warn("Target message not found for incoming attachment-delete sync.")
+            return
+        }
+
+        /// `DeleteForMe` syncing only applies to body media attachments, so
+        /// we'll pull all of them for the target message to see which one
+        /// matches the attachment identifer we were given.
+        let targetAttachmentCandidates: [ReferencedTSResource] = tsResourceStore.referencedBodyMediaAttachments(
+            for: targetMessage,
+            tx: tx
+        )
+
+        /// Look for a "match" among all our candidates, first by comparing the
+        /// `clientUuid` (added recently for attachments going forward), then
+        /// by the `encryptedDigest` (which should identify most legacy
+        /// attachments) and finally by the `plaintextHash` (a last-ditch option
+        /// for if somehow the encrypted digest is missing).
+        let targetAttachment: ReferencedTSResource? = {
+            if
+                let clientUuid = attachmentIdentifier.clientUuid,
+                let clientUuidMatch = targetAttachmentCandidates.first(where: { $0.reference.knownIdInOwningMessage(targetMessage) == clientUuid })
+            {
+                return clientUuidMatch
+            } else if
+                let encryptedDigest = attachmentIdentifier.encryptedDigest,
+                let encryptedDigestMatch = targetAttachmentCandidates.first(where: { $0.attachment.encryptedResourceSha256Digest == encryptedDigest})
+            {
+                return encryptedDigestMatch
+            } else if
+                let plaintextHash = attachmentIdentifier.plaintextHash,
+                let plaintextHashMatch = targetAttachmentCandidates.first(where: { $0.attachment.knownPlaintextResourceSha256Hash == plaintextHash })
+            {
+                return plaintextHashMatch
+            }
+
+            return nil
+        }()
+
+        guard let targetAttachment else {
+            logger.warn("Target attachment not found on target message for incoming attachment-delete sync.")
+            return
+        }
+
+        do {
+            try tsResourceManager.removeBodyAttachment(
+                targetAttachment.attachment,
+                from: targetMessage,
+                tx: tx
+            )
+        } catch {
+            logger.error("Failed to delete targe attachment!")
+        }
     }
 
     func handleConversationDelete(
@@ -133,7 +219,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
             }
 
         if potentialAnchorMessages.isEmpty {
-            logger.warn("No anchor messages found for incoming thread delete-sync: \(conversation.threadUniqueId).")
+            logger.warn("No anchor messages found for incoming thread-delete sync: \(conversation.threadUniqueId).")
             return
         }
 

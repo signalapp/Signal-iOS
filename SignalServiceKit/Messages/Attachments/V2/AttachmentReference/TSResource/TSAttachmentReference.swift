@@ -88,6 +88,10 @@ public class TSAttachmentReference: TSResourceReference {
     public func orderInOwningMessage(_ message: TSMessage) -> UInt32? {
         return message.attachmentIds.firstIndex(of: uniqueId).map(UInt32.init(_:))
     }
+
+    public func knownIdInOwningMessage(_ message: TSMessage) -> UUID? {
+        return attachment?.clientUuid.flatMap { UUID(uuidString: $0) }
+    }
 }
 
 extension TSAttachmentType {

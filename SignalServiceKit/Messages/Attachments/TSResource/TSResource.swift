@@ -28,7 +28,19 @@ public protocol TSResource {
     ///
     /// May be null if restored from a backup, or for legacy attachments. In this case, validation
     /// should be ignored.
+    ///
+    /// - SeeAlso: ``precomputedPlaintextResourceSha256Digest``
     var encryptedResourceSha256Digest: Data? { get }
+
+    /// A known SHA256 digest of the plaintext content of the resource.
+    ///
+    /// This property is `O(1)`, and correspondingly will return `nil` if the
+    /// plaintext digest has not been precomputed. For example, this value will
+    /// be `nil` for all V1 attachments, which have never tracked a plaintext
+    /// digest.
+    ///
+    /// - SeeAlso: ``encryptedResourceSha256Digest``
+    var knownPlaintextResourceSha256Hash: Data? { get }
 
     // f.k.a. contentType
     var mimeType: String { get }

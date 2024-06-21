@@ -582,7 +582,8 @@ public class AppSetup {
             bulkDeleteInteractionJobQueue: bulkDeleteInteractionJobQueue,
             interactionDeleteManager: interactionDeleteManager,
             threadSoftDeleteManager: threadSoftDeleteManager,
-            tsAccountManager: tsAccountManager
+            tsResourceManager: tsResourceManager,
+            tsResourceStore: tsResourceStore
         )
 
         let threadRemover = ThreadRemoverImpl(
