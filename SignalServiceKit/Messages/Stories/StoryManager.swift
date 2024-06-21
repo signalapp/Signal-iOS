@@ -284,7 +284,7 @@ public class StoryManager: NSObject {
                     unviewedDownloadedStoriesForContext += 1
                 } else if
                     let pointer = attachment.attachment.asTransitTierPointer(),
-                    [.downloading, .enqueued].contains(pointer.downloadState(tx: transaction.asV2Read))
+                    pointer.downloadState(tx: transaction.asV2Read) == .enqueuedOrDownloading
                 {
                     unviewedDownloadedStoriesForContext += 1
                 }

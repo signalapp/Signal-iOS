@@ -98,7 +98,7 @@ public class AudioAttachment {
         switch transitTierDownloadState {
         case .failed, .none:
             isDownloading = false
-        case .enqueued, .downloading:
+        case .enqueuedOrDownloading:
             isDownloading = true
         }
         self.receivedAtDate = receivedAtDate

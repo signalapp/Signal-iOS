@@ -276,7 +276,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
                 stateView.state = .downloadFailed
             case .none:
                 stateView.state = .tapToDownload
-            case .enqueued, .downloading:
+            case .enqueuedOrDownloading:
                 updateDownloadProgress(nil)
 
                 NotificationCenter.default.addObserver(
@@ -422,7 +422,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
             switch transitTierDownloadState {
             case .none:
                 return .pendingDownload(attachmentPointer: attachmentPointer.attachmentPointer)
-            case .failed, .enqueued, .downloading:
+            case .failed, .enqueuedOrDownloading:
                 return .downloading(
                     attachmentPointer: attachmentPointer.attachmentPointer,
                     transitTierDownloadState: transitTierDownloadState

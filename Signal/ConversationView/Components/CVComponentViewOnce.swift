@@ -127,7 +127,7 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
             let progressView = CVAttachmentProgressView(
                 direction: .download(
                     attachmentPointer: attachmentPointer,
-                    transitTierDownloadState: .downloading
+                    transitTierDownloadState: .enqueuedOrDownloading
                 ),
                 diameter: iconSize,
                 isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,

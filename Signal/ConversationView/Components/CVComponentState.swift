@@ -981,7 +981,7 @@ fileprivate extension CVComponentState.Builder {
                         continue
                     }
                     switch pointer.downloadState(tx: transaction.asV2Read) {
-                    case .downloading, .enqueued:
+                    case .enqueuedOrDownloading:
                         continue
                     case .failed:
                         mediaAlbumHasFailedAttachment = true
@@ -1094,7 +1094,7 @@ fileprivate extension CVComponentState.Builder {
                 }
             } else if let attachmentPointer = mediaAttachment.attachment.asTransitTierPointer() {
                 switch attachmentPointer.downloadState(tx: transaction.asV2Read) {
-                case .enqueued, .downloading:
+                case .enqueuedOrDownloading:
                     return buildViewOnce(viewOnceState: .incomingDownloading(
                         attachmentPointer: attachmentPointer,
                         renderingFlag: renderingFlag
@@ -1205,7 +1205,7 @@ fileprivate extension CVComponentState.Builder {
         } else if let attachmentPointer = attachment.asTransitTierPointer() {
             let downloadState = attachmentPointer.downloadState(tx: transaction.asV2Read)
             switch downloadState {
-            case .enqueued, .downloading:
+            case .enqueuedOrDownloading:
                 self.sticker = .downloading(attachmentPointer: .init(
                     reference: attachmentReference,
                     attachmentPointer: attachmentPointer

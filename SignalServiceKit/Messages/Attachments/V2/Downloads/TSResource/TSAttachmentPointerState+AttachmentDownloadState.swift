@@ -10,9 +10,9 @@ extension TSAttachmentPointerState {
     var asDownloadState: AttachmentDownloadState {
         switch self {
         case .enqueued:
-            return .enqueued
+            return .enqueuedOrDownloading
         case .downloading:
-            return .downloading
+            return .enqueuedOrDownloading
         case .failed:
             return .failed
         case .pendingMessageRequest, .pendingManualDownload:

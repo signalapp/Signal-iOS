@@ -1097,7 +1097,7 @@ extension StoryItem {
         return databaseStorage.write { tx in
             guard
                 case .pointer(let pointer) = attachment,
-                ![.enqueued, .downloading].contains(pointer.attachment.downloadState(tx: tx.asV2Read))
+                pointer.attachment.downloadState(tx: tx.asV2Read) != .enqueuedOrDownloading
             else {
                 return nil
             }

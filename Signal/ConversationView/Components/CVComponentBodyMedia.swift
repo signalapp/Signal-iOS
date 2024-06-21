@@ -218,7 +218,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                             switch transitTierDownloadState {
                             case .none:
                                 return attachment
-                            case .enqueued, .downloading, .failed:
+                            case .enqueuedOrDownloading, .failed:
                                 return nil
                             }
                         }
@@ -371,7 +371,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             case .failed, .none:
                 componentDelegate.didTapFailedOrPendingDownloads(message)
                 return true
-            case .enqueued, .downloading:
+            case .enqueuedOrDownloading:
                 Logger.warn("Media attachment not yet downloaded.")
                 self.databaseStorage.write { tx in
                     DependenciesBridge.shared.tsResourceDownloadManager.cancelDownload(

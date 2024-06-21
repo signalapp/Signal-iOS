@@ -12,11 +12,8 @@ public enum AttachmentDownloadState {
     /// was triggered by the user or by auto-download settings.
     case none
 
-    /// The download is enqueued and will be downloaded once the queue is freed.
-    case enqueued
-
-    /// There is an in-progress download.
-    case downloading
+    /// The download is enqueued or downloading and will complete (or fail) on its own.
+    case enqueuedOrDownloading
 
     /// The download was attempted but failed.
     case failed

@@ -94,7 +94,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
         case .downloading(let attachmentPointer):
             configureForRendering(
                 attachmentPointer: attachmentPointer,
-                transitTierDownloadState: .downloading,
+                transitTierDownloadState: .enqueuedOrDownloading,
                 stackView: stackView,
                 cellMeasurement: cellMeasurement
             )

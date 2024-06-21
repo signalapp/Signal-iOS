@@ -147,7 +147,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             }
 
             switch genericAttachment.attachment {
-            case .stream, .pointer(_, .enqueued), .pointer(_, .downloading):
+            case .stream, .pointer(_, .enqueuedOrDownloading):
                 break
             case .pointer(_, .failed), .pointer(_, .none):
                 textComponents.append(OWSLocalizedString("ACTION_TAP_TO_DOWNLOAD", comment: "A label for 'tap to download' buttons."))
@@ -304,7 +304,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
                     return true
                 }
                 componentDelegate.didTapFailedOrPendingDownloads(message)
-            case .enqueued, .downloading:
+            case .enqueuedOrDownloading:
                 break
             }
         }
