@@ -43,6 +43,18 @@ public protocol SystemStoryManagerProtocol {
     func isOnboardingOverlayViewed(transaction: SDSAnyReadTransaction) -> Bool
     func setOnboardingOverlayViewed(value: Bool, transaction: SDSAnyWriteTransaction)
 
+    /// Whether the "group story education sheet" has been viewed.
+    /// - Note
+    /// This feature has not been implemented on iOS, but we can learn about
+    /// this property via Storage Service or a Backup and so persist it.
+    func isGroupStoryEducationSheetViewed(tx: SDSAnyReadTransaction) -> Bool
+
+    /// Mark the "group story education sheet" as having been viewed.
+    /// - Note
+    /// This feature has not been implemented on iOS, but we can learn about
+    /// this property via Storage Service or a Backup and so persist it.
+    func setGroupStoryEducationSheetViewed(tx: SDSAnyWriteTransaction)
+
     // MARK: Hidden State
 
     func addStateChangedObserver(_ observer: SystemStoryStateChangeObserver)

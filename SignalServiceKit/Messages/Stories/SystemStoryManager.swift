@@ -73,6 +73,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
 
     private let kvStore = SDSKeyValueStore(collection: "OnboardingStory")
     private let overlayKvStore = SDSKeyValueStore(collection: "StoryViewerOnboardingOverlay")
+    private let groupStoryEducationStore = SDSKeyValueStore(collection: "GroupStoryEducation")
 
     private lazy var queue = schedulers.queue(label: "org.signal.story.onboarding", qos: .utility)
 
@@ -170,6 +171,23 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
     private func setHasViewedOnboardingStoryOnAnotherDevice(transaction: SDSAnyWriteTransaction) {
         try? setOnboardingStoryViewedOnAnotherDevice(transaction: transaction)
         self.cleanUpOnboardingStoryIfNeeded()
+    }
+
+    // MARK: Group story education
+
+    public func isGroupStoryEducationSheetViewed(tx: SDSAnyReadTransaction) -> Bool {
+        return groupStoryEducationStore.hasValue(
+            Constants.kvStoreGroupStoryEducationSheetViewedKey,
+            transaction: tx.asV2Read
+        )
+    }
+
+    public func setGroupStoryEducationSheetViewed(tx: SDSAnyWriteTransaction) {
+        groupStoryEducationStore.setBool(
+            true,
+            key: Constants.kvStoreGroupStoryEducationSheetViewedKey,
+            transaction: tx
+        )
     }
 
     // MARK: OnboardingOverlay state
@@ -721,6 +739,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         static let kvStoreOnboardingStoryDownloadStatusKey = "OnboardingStoryStatus"
         static let kvStoreHiddenStateKey = "SystemStoriesAreHidden"
         static let kvStoreOnboardingOverlayViewedKey = "hasSeenStoryViewerOnboardingOverlay" // leading 'h' lowercase for legacy reasons
+        static let kvStoreGroupStoryEducationSheetViewedKey = "GroupStoryEducationSheetViewed"
 
         static let manifestPath = "dynamic/ios/stories/onboarding/manifest.json"
         static let manifestVersionKey = "version"

@@ -428,10 +428,10 @@ public class _MessageBackup_AccountData_SystemStoryManagerWrapper: _MessageBacku
         try? systemStoryManager.setHasViewedOnboardingStory(source: source, transaction: SDSDB.shimOnlyBridge(tx))
     }
     public func hasSeenGroupStoryEducationSheet(tx: DBReadTransaction) -> Bool {
-        systemStoryManager.isOnboardingOverlayViewed(transaction: SDSDB.shimOnlyBridge(tx))
+        systemStoryManager.isGroupStoryEducationSheetViewed(tx: SDSDB.shimOnlyBridge(tx))
     }
     public func setHasSeenGroupStoryEducationSheet(value: Bool, tx: DBWriteTransaction) {
-        systemStoryManager.setOnboardingOverlayViewed(value: value, transaction: SDSDB.shimOnlyBridge(tx))
+        systemStoryManager.setGroupStoryEducationSheetViewed(tx: SDSDB.shimOnlyBridge(tx))
     }
 }
 

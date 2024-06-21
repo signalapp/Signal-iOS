@@ -55,6 +55,15 @@ public class SystemStoryManagerMock: NSObject, SystemStoryManagerProtocol {
         return
     }
 
+    public var isGroupStoryEducationSheetViewed: Bool = false
+    public func isGroupStoryEducationSheetViewed(tx: SDSAnyReadTransaction) -> Bool {
+        return isGroupStoryEducationSheetViewed
+    }
+
+    public func setGroupStoryEducationSheetViewed(tx: SDSAnyWriteTransaction) {
+        isGroupStoryEducationSheetViewed = true
+    }
+
     public func addStateChangedObserver(_ observer: SystemStoryStateChangeObserver) {
         fatalError("Unimplemented for tests")
     }
