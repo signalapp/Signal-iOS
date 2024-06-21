@@ -895,31 +895,32 @@ public class MessageSender: Dependencies {
         // for their send.
         let senderKeyStatus = senderKeyStatus(for: thread, intendedRecipients: serviceIds, udAccessMap: sendingAccessMap)
 
-        var senderKeyMessagePromise: Promise<Void>?
-        var senderKeyServiceIds: [ServiceId] = senderKeyStatus.allSenderKeyParticipants
-        var fanoutServiceIds: [ServiceId] = senderKeyStatus.fanoutParticipants
-        if thread.usesSenderKey, senderKeyServiceIds.count >= 2, message.canSendWithSenderKey {
-            senderKeyMessagePromise = senderKeyMessageSendPromise(
-                message: message,
-                plaintextContent: serializedMessage.plaintextData,
-                payloadId: serializedMessage.payloadId,
-                thread: thread,
-                status: senderKeyStatus,
-                udAccessMap: sendingAccessMap,
-                senderCertificates: senderCertificates,
-                localIdentifiers: localIdentifiers,
-                sendErrorBlock: sendErrorBlock
-            )
-        } else {
-            senderKeyServiceIds = []
-            fanoutServiceIds = serviceIds
-            if !message.canSendWithSenderKey {
-                Logger.info("Last sender key send attempt failed for message \(message.timestamp). Fanning out")
-            }
-        }
-        owsAssertDebug(fanoutServiceIds.count + senderKeyServiceIds.count == serviceIds.count)
-
         try await withThrowingTaskGroup(of: Void.self, returning: Void.self) { taskGroup in
+            var senderKeyServiceIds: [ServiceId] = senderKeyStatus.allSenderKeyParticipants
+            var fanoutServiceIds: [ServiceId] = senderKeyStatus.fanoutParticipants
+            if thread.usesSenderKey, senderKeyServiceIds.count >= 2, message.canSendWithSenderKey {
+                taskGroup.addTask {
+                    try await self.sendSenderKeyMessage(
+                        message: message,
+                        plaintextContent: serializedMessage.plaintextData,
+                        payloadId: serializedMessage.payloadId,
+                        thread: thread,
+                        status: senderKeyStatus,
+                        udAccessMap: sendingAccessMap,
+                        senderCertificates: senderCertificates,
+                        localIdentifiers: localIdentifiers,
+                        sendErrorBlock: sendErrorBlock
+                    )
+                }
+            } else {
+                senderKeyServiceIds = []
+                fanoutServiceIds = serviceIds
+                if !message.canSendWithSenderKey {
+                    Logger.info("Last sender key send attempt failed for message \(message.timestamp). Fanning out")
+                }
+            }
+            owsAssertDebug(fanoutServiceIds.count + senderKeyServiceIds.count == serviceIds.count)
+
             // Perform an "OWSMessageSend" for each non-senderKey recipient.
             for serviceId in fanoutServiceIds {
                 let messageSend = OWSMessageSend(
@@ -941,11 +942,6 @@ public class MessageSender: Dependencies {
                         throw error
                     }
                 }
-            }
-
-            // Also wait for the sender key promise.
-            if let senderKeyMessagePromise {
-                taskGroup.addTask { try await senderKeyMessagePromise.awaitable() }
             }
 
             // Wait for everything to finish, and *then* throw an arbitrary error b/c
