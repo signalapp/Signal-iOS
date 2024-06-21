@@ -262,6 +262,7 @@ public class AppSetup {
             tsResourceStore: tsResourceStore
         )
         let videoDurationHelper = VideoDurationHelperImpl()
+        let attachmentDownloadStore = AttachmentDownloadStoreImpl(dateProvider: dateProvider)
         let attachmentDownloadManager = AttachmentDownloadManagerImpl(
             audioWaveformManager: audioWaveformManager,
             schedulers: schedulers,
@@ -973,6 +974,7 @@ public class AppSetup {
             attachmentCloner: attachmentCloner,
             attachmentContentValidator: attachmentContentValidator,
             attachmentDownloadManager: attachmentDownloadManager,
+            attachmentDownloadStore: attachmentDownloadStore,
             attachmentManager: attachmentManager,
             attachmentStore: attachmentStore,
             attachmentThumbnailService: attachmentThumbnailService,

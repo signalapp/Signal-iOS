@@ -44,6 +44,7 @@ public class DependenciesBridge {
     public let attachmentCloner: SignalAttachmentCloner
     public let attachmentContentValidator: AttachmentContentValidator
     public let attachmentDownloadManager: AttachmentDownloadManager
+    public let attachmentDownloadStore: AttachmentDownloadStore
     public let attachmentManager: AttachmentManager
     public let attachmentStore: AttachmentStore
     public let attachmentThumbnailService: AttachmentThumbnailService
@@ -148,6 +149,7 @@ public class DependenciesBridge {
         attachmentCloner: SignalAttachmentCloner,
         attachmentContentValidator: AttachmentContentValidator,
         attachmentDownloadManager: AttachmentDownloadManager,
+        attachmentDownloadStore: AttachmentDownloadStore,
         attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
         attachmentThumbnailService: AttachmentThumbnailService,
@@ -251,6 +253,7 @@ public class DependenciesBridge {
         self.attachmentCloner = attachmentCloner
         self.attachmentContentValidator = attachmentContentValidator
         self.attachmentDownloadManager = attachmentDownloadManager
+        self.attachmentDownloadStore = attachmentDownloadStore
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
         self.attachmentThumbnailService = attachmentThumbnailService
