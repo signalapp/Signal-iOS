@@ -118,7 +118,16 @@ final class DeleteForMeSyncMessageReceiverImpl: DeleteForMeSyncMessageReceiver {
             )
             owsAssertDebug(
                 mostRecentMessages.count == conversationDelete.mostRecentMessages.count,
-                "Invalid addressable messages in message delete proto: \(conversationDelete.mostRecentMessages.count - mostRecentMessages.count) / \(conversationDelete.mostRecentMessages.count)!"
+                "Invalid addressable messages in conversation delete proto: \(conversationDelete.mostRecentMessages.count - mostRecentMessages.count) / \(conversationDelete.mostRecentMessages.count)!"
+            )
+
+            let mostRecentNonExpiringMessages: [AddressableMessage] = addressableMessages(
+                forProtoMessages: conversationDelete.mostRecentNonExpiringMessages,
+                tx: tx
+            )
+            owsAssertDebug(
+                mostRecentNonExpiringMessages.count == conversationDelete.mostRecentNonExpiringMessages.count,
+                "Invalid addressable messages in conversation delete proto: \(conversationDelete.mostRecentNonExpiringMessages.count - mostRecentNonExpiringMessages.count) / \(conversationDelete.mostRecentNonExpiringMessages.count)!"
             )
 
             guard conversationDelete.hasIsFullDelete else {
@@ -129,6 +138,7 @@ final class DeleteForMeSyncMessageReceiverImpl: DeleteForMeSyncMessageReceiver {
             deleteForMeIncomingSyncMessageManager.handleConversationDelete(
                 conversation: conversation,
                 mostRecentAddressableMessages: mostRecentMessages,
+                mostRecentNonExpiringAddressableMessages: mostRecentNonExpiringMessages,
                 isFullDelete: conversationDelete.isFullDelete,
                 tx: tx
             )

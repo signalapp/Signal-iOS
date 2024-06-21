@@ -14042,6 +14042,9 @@ public class SSKProtoSyncMessageDeleteForMeConversationDelete: NSObject, Codable
     public let mostRecentMessages: [SSKProtoSyncMessageDeleteForMeAddressableMessage]
 
     @objc
+    public let mostRecentNonExpiringMessages: [SSKProtoSyncMessageDeleteForMeAddressableMessage]
+
+    @objc
     public var isFullDelete: Bool {
         return proto.isFullDelete
     }
@@ -14060,10 +14063,12 @@ public class SSKProtoSyncMessageDeleteForMeConversationDelete: NSObject, Codable
 
     private init(proto: SignalServiceProtos_SyncMessage.DeleteForMe.ConversationDelete,
                  conversation: SSKProtoSyncMessageDeleteForMeConversationIdentifier?,
-                 mostRecentMessages: [SSKProtoSyncMessageDeleteForMeAddressableMessage]) {
+                 mostRecentMessages: [SSKProtoSyncMessageDeleteForMeAddressableMessage],
+                 mostRecentNonExpiringMessages: [SSKProtoSyncMessageDeleteForMeAddressableMessage]) {
         self.proto = proto
         self.conversation = conversation
         self.mostRecentMessages = mostRecentMessages
+        self.mostRecentNonExpiringMessages = mostRecentNonExpiringMessages
     }
 
     @objc
@@ -14086,9 +14091,13 @@ public class SSKProtoSyncMessageDeleteForMeConversationDelete: NSObject, Codable
         var mostRecentMessages: [SSKProtoSyncMessageDeleteForMeAddressableMessage] = []
         mostRecentMessages = proto.mostRecentMessages.map { SSKProtoSyncMessageDeleteForMeAddressableMessage($0) }
 
+        var mostRecentNonExpiringMessages: [SSKProtoSyncMessageDeleteForMeAddressableMessage] = []
+        mostRecentNonExpiringMessages = proto.mostRecentNonExpiringMessages.map { SSKProtoSyncMessageDeleteForMeAddressableMessage($0) }
+
         self.init(proto: proto,
                   conversation: conversation,
-                  mostRecentMessages: mostRecentMessages)
+                  mostRecentMessages: mostRecentMessages,
+                  mostRecentNonExpiringMessages: mostRecentNonExpiringMessages)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -14141,6 +14150,7 @@ extension SSKProtoSyncMessageDeleteForMeConversationDelete {
             builder.setConversation(_value)
         }
         builder.setMostRecentMessages(mostRecentMessages)
+        builder.setMostRecentNonExpiringMessages(mostRecentNonExpiringMessages)
         if hasIsFullDelete {
             builder.setIsFullDelete(isFullDelete)
         }
@@ -14178,6 +14188,16 @@ public class SSKProtoSyncMessageDeleteForMeConversationDeleteBuilder: NSObject {
     @objc
     public func setMostRecentMessages(_ wrappedItems: [SSKProtoSyncMessageDeleteForMeAddressableMessage]) {
         proto.mostRecentMessages = wrappedItems.map { $0.proto }
+    }
+
+    @objc
+    public func addMostRecentNonExpiringMessages(_ valueParam: SSKProtoSyncMessageDeleteForMeAddressableMessage) {
+        proto.mostRecentNonExpiringMessages.append(valueParam.proto)
+    }
+
+    @objc
+    public func setMostRecentNonExpiringMessages(_ wrappedItems: [SSKProtoSyncMessageDeleteForMeAddressableMessage]) {
+        proto.mostRecentNonExpiringMessages = wrappedItems.map { $0.proto }
     }
 
     @objc

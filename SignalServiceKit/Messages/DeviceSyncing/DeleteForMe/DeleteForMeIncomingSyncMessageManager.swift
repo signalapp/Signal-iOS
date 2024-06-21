@@ -74,12 +74,15 @@ public protocol DeleteForMeIncomingSyncMessageManager {
     typealias AddressableMessage = DeleteForMeSyncMessage.Incoming.AddressableMessage
     typealias AttachmentIdentifier = DeleteForMeSyncMessage.Incoming.AttachmentIdentifier
 
+    /// Delete the given message from the given conversation.
     func handleMessageDelete(
         conversation: Conversation,
         addressableMessage: AddressableMessage,
         tx: DBWriteTransaction
     )
 
+    /// Delete the given attachment from the given message in the given
+    /// conversation.
     func handleAttachmentDelete(
         conversation: Conversation,
         targetMessage: AddressableMessage,
@@ -87,13 +90,30 @@ public protocol DeleteForMeIncomingSyncMessageManager {
         tx: DBWriteTransaction
     )
 
+    /// Delete the given conversation, using the given addressable messages as
+    /// an "anchor" before which to delete.
+    ///
+    /// - Parameter mostRecentAddressableMessages
+    /// A selection of the most recent addressable messages in the conversation
+    /// according to the sender.
+    /// - Parameter mostRecentNonExpiringAddressableMessages
+    /// A selection of the most recent non-expiring addressable messages in the
+    /// conversation according to the sender, in case all of the most recent
+    /// messages have expired by the time we're handling this sync message.
+    /// - Parameter isFullDelete
+    /// Whether the sync message resulted from a "full thread deletion", which
+    /// includes actions in addition to removing all messages such as removing
+    /// from the chat list.
     func handleConversationDelete(
         conversation: Conversation,
         mostRecentAddressableMessages: [AddressableMessage],
+        mostRecentNonExpiringAddressableMessages: [AddressableMessage],
         isFullDelete: Bool,
         tx: DBWriteTransaction
     )
 
+    /// Delete the given conversation, which the sender believes contained only
+    /// non-addressable (local-only) messages.
     func handleLocalOnlyConversationDelete(
         conversation: Conversation,
         tx: DBWriteTransaction
@@ -217,10 +237,11 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
     func handleConversationDelete(
         conversation: Conversation,
         mostRecentAddressableMessages: [AddressableMessage],
+        mostRecentNonExpiringAddressableMessages: [AddressableMessage],
         isFullDelete: Bool,
         tx: any DBWriteTransaction
     ) {
-        let potentialAnchorMessages: [TSMessage] = mostRecentAddressableMessages
+        let potentialAnchorMessages: [TSMessage] = (mostRecentAddressableMessages + mostRecentNonExpiringAddressableMessages)
             .compactMap { addressableMessage in
                 return addressableMessageFinder.findLocalMessage(
                     threadUniqueId: conversation.threadUniqueId,

@@ -3938,6 +3938,8 @@ struct SignalServiceProtos_SyncMessage {
 
       var mostRecentMessages: [SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage] = []
 
+      var mostRecentNonExpiringMessages: [SignalServiceProtos_SyncMessage.DeleteForMe.AddressableMessage] = []
+
       var isFullDelete: Bool {
         get {return _isFullDelete ?? false}
         set {_isFullDelete = newValue}
@@ -8970,6 +8972,7 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe.ConversationDelete: SwiftP
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "conversation"),
     2: .same(proto: "mostRecentMessages"),
+    4: .same(proto: "mostRecentNonExpiringMessages"),
     3: .same(proto: "isFullDelete"),
   ]
 
@@ -8982,6 +8985,7 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe.ConversationDelete: SwiftP
       case 1: try { try decoder.decodeSingularMessageField(value: &self._conversation) }()
       case 2: try { try decoder.decodeRepeatedMessageField(value: &self.mostRecentMessages) }()
       case 3: try { try decoder.decodeSingularBoolField(value: &self._isFullDelete) }()
+      case 4: try { try decoder.decodeRepeatedMessageField(value: &self.mostRecentNonExpiringMessages) }()
       default: break
       }
     }
@@ -9001,12 +9005,16 @@ extension SignalServiceProtos_SyncMessage.DeleteForMe.ConversationDelete: SwiftP
     try { if let v = self._isFullDelete {
       try visitor.visitSingularBoolField(value: v, fieldNumber: 3)
     } }()
+    if !self.mostRecentNonExpiringMessages.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.mostRecentNonExpiringMessages, fieldNumber: 4)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_SyncMessage.DeleteForMe.ConversationDelete, rhs: SignalServiceProtos_SyncMessage.DeleteForMe.ConversationDelete) -> Bool {
     if lhs._conversation != rhs._conversation {return false}
     if lhs.mostRecentMessages != rhs.mostRecentMessages {return false}
+    if lhs.mostRecentNonExpiringMessages != rhs.mostRecentNonExpiringMessages {return false}
     if lhs._isFullDelete != rhs._isFullDelete {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
