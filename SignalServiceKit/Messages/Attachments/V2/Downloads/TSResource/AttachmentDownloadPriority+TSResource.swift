@@ -14,6 +14,9 @@ extension AttachmentDownloadPriority {
             return .default
         case .userInitiated:
             return .bypassAll
+        case .localClone:
+            // This won't actually download, so we "bypass" rules.
+            return .bypassAll
         }
     }
 }

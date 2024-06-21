@@ -15,7 +15,19 @@ import Foundation
 ///
 public enum AttachmentDownloadPriority: Int, Codable {
     case `default` = 50
+
     case userInitiated = 100
 
-    // TODO: how should backup downloads interact with auto-download settings?
+    /// Used if, at attachment creation/insertion time, we have a local source to pull from.
+    /// There are two cases:
+    /// * Incoming sticker message for a sticker pack we have installed
+    /// * Quoted reply for an original attachment we have downloaded
+    ///     > Typically, this happens if we receive an incoming quoted reply,
+    ///     but may also be if we downloaded the original between when we
+    ///     initiated an outgoing quoted reply and when we actually saved it.
+    ///
+    /// In these cases, we immediately "download" (regardless of settings, hence higher
+    /// than user initiated) but the actual "download" exclusively uses the local source
+    /// and, if that fails, re-enqueues at lower default priority.
+    case localClone = 200
 }
