@@ -214,7 +214,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 cdnKey: cdnKey,
                 uploadTimestamp: proto.uploadTimestamp,
                 encryptionKey: encryptionKey,
-                encryptedByteCount: nil,
+                unencryptedByteCount: proto.size,
                 digestSHA256Ciphertext: digestSHA256Ciphertext,
                 lastDownloadAttemptTimestamp: nil
             )

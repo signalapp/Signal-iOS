@@ -22,11 +22,12 @@ extension Attachment {
         var transitCdnKey: String?
         var transitUploadTimestamp: UInt64?
         var transitEncryptionKey: Data?
-        var transitEncryptedByteCount: UInt32?
+        var transitUnencryptedByteCount: UInt32?
         var transitDigestSHA256Ciphertext: Data?
         var lastTransitDownloadAttemptTimestamp: UInt64?
         let mediaName: String?
         let mediaTierCdnNumber: UInt32?
+        var mediaTierUnencryptedByteCount: UInt32?
         let mediaTierUploadEra: String?
         let lastMediaTierDownloadAttemptTimestamp: UInt64?
         let thumbnailCdnNumber: UInt32?
@@ -58,11 +59,12 @@ extension Attachment {
             case transitCdnKey
             case transitUploadTimestamp
             case transitEncryptionKey
-            case transitEncryptedByteCount
+            case transitUnencryptedByteCount
             case transitDigestSHA256Ciphertext
             case lastTransitDownloadAttemptTimestamp
             case mediaName
             case mediaTierCdnNumber
+            case mediaTierUnencryptedByteCount
             case mediaTierUploadEra
             case lastMediaTierDownloadAttemptTimestamp
             case thumbnailCdnNumber
@@ -116,11 +118,12 @@ extension Attachment {
             transitCdnKey: String?,
             transitUploadTimestamp: UInt64?,
             transitEncryptionKey: Data?,
-            transitEncryptedByteCount: UInt32?,
+            transitUnencryptedByteCount: UInt32?,
             transitDigestSHA256Ciphertext: Data?,
             lastTransitDownloadAttemptTimestamp: UInt64?,
             mediaName: String?,
             mediaTierCdnNumber: UInt32?,
+            mediaTierUnencryptedByteCount: UInt32?,
             mediaTierUploadEra: String?,
             lastMediaTierDownloadAttemptTimestamp: UInt64?,
             thumbnailCdnNumber: UInt32?,
@@ -149,11 +152,12 @@ extension Attachment {
             self.transitCdnKey = transitCdnKey
             self.transitUploadTimestamp = transitUploadTimestamp
             self.transitEncryptionKey = transitEncryptionKey
-            self.transitEncryptedByteCount = transitEncryptedByteCount
+            self.transitUnencryptedByteCount = transitUnencryptedByteCount
             self.transitDigestSHA256Ciphertext = transitDigestSHA256Ciphertext
             self.lastTransitDownloadAttemptTimestamp = lastTransitDownloadAttemptTimestamp
             self.mediaName = mediaName
             self.mediaTierCdnNumber = mediaTierCdnNumber
+            self.mediaTierUnencryptedByteCount = mediaTierUnencryptedByteCount
             self.mediaTierUploadEra = mediaTierUploadEra
             self.lastMediaTierDownloadAttemptTimestamp = lastMediaTierDownloadAttemptTimestamp
             self.thumbnailCdnNumber = thumbnailCdnNumber
@@ -257,11 +261,12 @@ extension Attachment {
             self.transitCdnKey = transitTierInfo?.cdnKey
             self.transitUploadTimestamp = transitTierInfo?.uploadTimestamp
             self.transitEncryptionKey = transitTierInfo?.encryptionKey
-            self.transitEncryptedByteCount = transitTierInfo?.encryptedByteCount
+            self.transitUnencryptedByteCount = transitTierInfo?.unencryptedByteCount
             self.transitDigestSHA256Ciphertext = transitTierInfo?.digestSHA256Ciphertext
             self.lastTransitDownloadAttemptTimestamp = transitTierInfo?.lastDownloadAttemptTimestamp
             self.mediaName = mediaName
             self.mediaTierCdnNumber = mediaTierInfo?.cdnNumber
+            self.mediaTierUnencryptedByteCount = mediaTierInfo?.unencryptedByteCount
             self.mediaTierUploadEra = mediaTierInfo?.uploadEra
             self.lastMediaTierDownloadAttemptTimestamp = mediaTierInfo?.lastDownloadAttemptTimestamp
             self.thumbnailCdnNumber = thumbnailMediaTierInfo?.cdnNumber

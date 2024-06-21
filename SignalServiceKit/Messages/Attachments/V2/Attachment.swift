@@ -75,9 +75,9 @@ public class Attachment {
         /// May be the same as the local stream encryption key, or may have been rotated for sending.
         public let encryptionKey: Data
 
-        /// Byte count of the resource encrypted using the ``TransitTierInfo.encryptionKey``.
-        /// Not provided to us by senders of incoming attachments; only set for attachments we upload.
-        public let encryptedByteCount: UInt32?
+        /// Expected byte count after decrypting the resource off the transit tier (and removing padding).
+        /// Provided by the sender of incoming attachments.
+        public let unencryptedByteCount: UInt32?
 
         /// SHA256Hash(iv + cyphertext + hmac),
         /// (iv + cyphertext + hmac) is the thing we actually upload to the CDN server, which uses
@@ -109,6 +109,10 @@ public class Attachment {
     public struct MediaTierInfo {
         /// CDN number for the fullsize upload in the media tier.
         public let cdnNumber: UInt32
+
+        /// Expected byte count after decrypting the resource off the media tier (and removing padding).
+        /// Provided by the sender of incoming attachments.
+        public let unencryptedByteCount: UInt32?
 
         /// If the value in this column doesn’t match the current Backup Subscription Era,
         /// it should also be considered un-uploaded.
@@ -179,13 +183,14 @@ public class Attachment {
             cdnKey: record.transitCdnKey,
             uploadTimestamp: record.transitUploadTimestamp,
             encryptionKey: record.transitEncryptionKey,
-            encryptedByteCount: record.transitEncryptedByteCount,
+            unencryptedByteCount: record.transitUnencryptedByteCount,
             digestSHA256Ciphertext: record.transitDigestSHA256Ciphertext,
             lastDownloadAttemptTimestamp: record.lastTransitDownloadAttemptTimestamp
         )
         self.mediaName = record.mediaName
         self.mediaTierInfo = MediaTierInfo(
             cdnNumber: record.mediaTierCdnNumber,
+            unencryptedByteCount: record.mediaTierUnencryptedByteCount,
             uploadEra: record.mediaTierUploadEra,
             lastDownloadAttemptTimestamp: record.lastMediaTierDownloadAttemptTimestamp
         )
@@ -301,7 +306,7 @@ extension Attachment.TransitTierInfo {
         cdnKey: String?,
         uploadTimestamp: UInt64?,
         encryptionKey: Data?,
-        encryptedByteCount: UInt32?,
+        unencryptedByteCount: UInt32?,
         digestSHA256Ciphertext: Data?,
         lastDownloadAttemptTimestamp: UInt64?
     ) {
@@ -310,7 +315,7 @@ extension Attachment.TransitTierInfo {
             let cdnKey,
             let uploadTimestamp,
             let encryptionKey,
-            let encryptedByteCount,
+            let unencryptedByteCount,
             let digestSHA256Ciphertext
         else {
             owsAssertDebug(
@@ -318,7 +323,7 @@ extension Attachment.TransitTierInfo {
                 && cdnKey == nil
                 && uploadTimestamp == nil
                 && encryptionKey == nil
-                && encryptedByteCount == nil
+                && unencryptedByteCount == nil
                 && digestSHA256Ciphertext == nil,
                 "Have partial transit cdn info!"
             )
@@ -329,7 +334,7 @@ extension Attachment.TransitTierInfo {
         self.uploadTimestamp = uploadTimestamp
         self.lastDownloadAttemptTimestamp = lastDownloadAttemptTimestamp
         self.encryptionKey = encryptionKey
-        self.encryptedByteCount = encryptedByteCount
+        self.unencryptedByteCount = unencryptedByteCount
         self.digestSHA256Ciphertext = digestSHA256Ciphertext
     }
 }
@@ -337,6 +342,7 @@ extension Attachment.TransitTierInfo {
 extension Attachment.MediaTierInfo {
     fileprivate init?(
         cdnNumber: UInt32?,
+        unencryptedByteCount: UInt32?,
         uploadEra: String?,
         lastDownloadAttemptTimestamp: UInt64?
     ) {
@@ -352,6 +358,7 @@ extension Attachment.MediaTierInfo {
             return nil
         }
         self.cdnNumber = cdnNumber
+        self.unencryptedByteCount = unencryptedByteCount
         self.uploadEra = uploadEra
         self.lastDownloadAttemptTimestamp = lastDownloadAttemptTimestamp
     }

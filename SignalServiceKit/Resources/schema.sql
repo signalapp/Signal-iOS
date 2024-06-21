@@ -1526,7 +1526,6 @@ CREATE
             ,"transitCdnKey" TEXT
             ,"transitUploadTimestamp" INTEGER
             ,"transitEncryptionKey" BLOB
-            ,"transitEncryptedByteCount" INTEGER
             ,"transitDigestSHA256Ciphertext" BLOB
             ,"lastTransitDownloadAttemptTimestamp" INTEGER
             ,"mediaTierCdnNumber" INTEGER
@@ -1547,6 +1546,8 @@ CREATE
             ON DELETE
             SET
                 NULL
+                ,"transitUnencryptedByteCount" INTEGER
+                ,"mediaTierUnencryptedByteCount" INTEGER
 )
 ;
 

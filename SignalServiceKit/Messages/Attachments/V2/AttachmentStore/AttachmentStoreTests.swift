@@ -568,7 +568,7 @@ class AttachmentStoreTests: XCTestCase {
             cdnKey: UUID().uuidString,
             uploadTimestamp: Date().ows_millisecondsSince1970,
             encryptionKey: UUID().data,
-            encryptedByteCount: 100,
+            unencryptedByteCount: 100,
             digestSHA256Ciphertext: UUID().data,
             lastDownloadAttemptTimestamp: nil
         )

@@ -223,7 +223,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 cdnKey: result.cdnKey,
                 uploadTimestamp: result.beginTimestamp,
                 encryptionKey: result.localUploadMetadata.key,
-                encryptedByteCount: result.localUploadMetadata.encryptedDataLength,
+                unencryptedByteCount: result.localUploadMetadata.plaintextDataLength,
                 digestSHA256Ciphertext: result.localUploadMetadata.digest,
                 lastDownloadAttemptTimestamp: nil
             )

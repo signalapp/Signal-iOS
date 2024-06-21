@@ -35,7 +35,7 @@ extension Attachment.TransitTierInfo {
         cdnKey: String? = nil,
         uploadTimestamp: UInt64? = nil,
         encryptionKey: Data? = nil,
-        encryptedByteCount: UInt32? = nil,
+        unencryptedByteCount: UInt32? = nil,
         digestSHA256Ciphertext: Data? = nil,
         lastDownloadAttemptTimestamp: UInt64? = nil
     ) -> Attachment.TransitTierInfo {
@@ -44,7 +44,7 @@ extension Attachment.TransitTierInfo {
             cdnKey: cdnKey ?? "\(UInt64.random(in: 0..<(.max)))",
             uploadTimestamp: uploadTimestamp ?? Date().ows_millisecondsSince1970,
             encryptionKey: encryptionKey ?? UInt64.random(in: 0..<(.max)).bigEndianData,
-            encryptedByteCount: encryptedByteCount ?? UInt32.random(in: 0..<(UInt32(OWSMediaUtils.kMaxFileSizeGeneric))),
+            unencryptedByteCount: unencryptedByteCount ?? UInt32.random(in: 0..<(UInt32(OWSMediaUtils.kMaxFileSizeGeneric))),
             digestSHA256Ciphertext: digestSHA256Ciphertext ?? UInt64.random(in: 0..<(.max)).bigEndianData,
             lastDownloadAttemptTimestamp: lastDownloadAttemptTimestamp
         )
@@ -54,11 +54,13 @@ extension Attachment.TransitTierInfo {
 extension Attachment.MediaTierInfo {
     public static func mock(
         cdnNumber: UInt32? = nil,
+        unencryptedByteCount: UInt32? = nil,
         uploadEra: String? = nil,
         lastDownloadAttemptTimestamp: UInt64? = nil
     ) -> Attachment.MediaTierInfo {
         return Attachment.MediaTierInfo(
             cdnNumber: cdnNumber ?? 3,
+            unencryptedByteCount: unencryptedByteCount ?? 16,
             uploadEra: uploadEra ?? "1",
             lastDownloadAttemptTimestamp: lastDownloadAttemptTimestamp
         )

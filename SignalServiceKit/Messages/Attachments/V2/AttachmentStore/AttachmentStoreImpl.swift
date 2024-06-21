@@ -542,7 +542,7 @@ extension AttachmentStoreImpl: AttachmentUploadStore {
         record.transitCdnNumber = transitTierInfo.cdnNumber
         record.transitEncryptionKey = transitTierInfo.encryptionKey
         record.transitUploadTimestamp = transitTierInfo.uploadTimestamp
-        record.transitEncryptedByteCount = transitTierInfo.encryptedByteCount
+        record.transitUnencryptedByteCount = transitTierInfo.unencryptedByteCount
         record.transitDigestSHA256Ciphertext = transitTierInfo.digestSHA256Ciphertext
         record.lastTransitDownloadAttemptTimestamp = transitTierInfo.lastDownloadAttemptTimestamp
         try record.update(db)

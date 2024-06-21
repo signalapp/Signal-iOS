@@ -408,7 +408,7 @@ public class ConversationFactory: NSObject {
                     cdnKey: "1234",
                     uploadTimestamp: 1,
                     encryptionKey: Randomness.generateRandomBytes(16),
-                    encryptedByteCount: 16,
+                    unencryptedByteCount: 16,
                     digestSHA256Ciphertext: Randomness.generateRandomBytes(16),
                     lastDownloadAttemptTimestamp: nil
                 )

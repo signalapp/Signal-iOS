@@ -239,7 +239,7 @@ class AttachmentUploadManagerTests: XCTestCase {
             uploadTimestamp: helper.mockDate
                 .addingTimeInterval(Upload.Constants.uploadReuseWindow * -2)
                 .ows_millisecondsSince1970,
-            encryptedByteCount: encryptedSize + 2
+            unencryptedByteCount: encryptedSize + 2
         )
 
         let attachment = MockAttachmentStream.mock(

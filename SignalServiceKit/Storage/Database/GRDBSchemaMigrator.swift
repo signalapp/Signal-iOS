@@ -269,6 +269,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addClientUuidToTSAttachment
         case recreateMessageAttachmentReferenceMediaGalleryIndexes
         case addAttachmentDownloadQueue
+        case attachmentAddCdnUnencryptedByteCounts
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -330,7 +331,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 75
+    public static let grdbSchemaVersionLatest: UInt = 76
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3052,6 +3053,17 @@ public class GRDBSchemaMigrator: NSObject {
                     );
                 END;
             """)
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.attachmentAddCdnUnencryptedByteCounts) { tx in
+
+            try tx.database.alter(table: "Attachment") { table in
+                table.drop(column: "transitEncryptedByteCount")
+                table.add(column: "transitUnencryptedByteCount", .integer)
+                table.add(column: "mediaTierUnencryptedByteCount", .integer)
+            }
 
             return .success(())
         }
