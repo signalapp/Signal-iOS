@@ -7,6 +7,7 @@ import Foundation
 
 public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
+    private let attachmentDownloadStore: AttachmentDownloadStore
     private let attachmentStore: AttachmentStore
     private let attachmentValidator: AttachmentContentValidator
     private let db: DB
@@ -16,6 +17,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     private let progressStates: ProgressStates
 
     public init(
+        attachmentDownloadStore: AttachmentDownloadStore,
         attachmentStore: AttachmentStore,
         attachmentValidator: AttachmentContentValidator,
         db: DB,
@@ -23,6 +25,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         orphanedAttachmentStore: OrphanedAttachmentStore,
         signalService: OWSSignalServiceProtocol
     ) {
+        self.attachmentDownloadStore = attachmentDownloadStore
         self.attachmentStore = attachmentStore
         self.attachmentValidator = attachmentValidator
         self.db = db
@@ -81,7 +84,15 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     }
 
     public func cancelDownload(for attachmentId: Attachment.IDType, tx: DBWriteTransaction) {
-        fatalError("Unimplemented")
+        progressStates.cancelledAttachmentIds.insert(attachmentId)
+        progressStates.states[attachmentId] = nil
+        QueuedAttachmentDownloadRecord.SourceType.allCases.forEach { source in
+            try? attachmentDownloadStore.removeAttachmentFromQueue(
+                withId: attachmentId,
+                source: source,
+                tx: tx
+            )
+        }
     }
 
     public func downloadProgress(for attachmentId: Attachment.IDType, tx: DBReadTransaction) -> CGFloat? {
@@ -156,6 +167,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
     private class ProgressStates {
         var states = [Attachment.IDType: Double]()
+        var cancelledAttachmentIds = Set<Attachment.IDType>()
 
         init() {}
     }
@@ -220,12 +232,21 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             var headers = downloadState.additionalHeaders()
             headers["Content-Type"] = MimeType.applicationOctetStream.rawValue
 
+            let attachmentId: Attachment.IDType?
+            switch downloadState.type {
+            case .backup, .transientAttachment:
+                attachmentId = nil
+            case .attachment(_, let id):
+                attachmentId = id
+            }
+
             let progress = { (task: URLSessionTask, progress: Progress) in
                 self.handleDownloadProgress(
                     downloadState: downloadState,
                     maxDownloadSizeBytes: maxDownloadSizeBytes,
                     task: task,
-                    progress: progress
+                    progress: progress,
+                    attachmentId: attachmentId
                 )
             }
 
@@ -289,8 +310,16 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             downloadState: DownloadState,
             maxDownloadSizeBytes: UInt,
             task: URLSessionTask,
-            progress: Progress
+            progress: Progress,
+            attachmentId: Attachment.IDType?
         ) {
+            if let attachmentId, progressStates.cancelledAttachmentIds.contains(attachmentId) {
+                Logger.info("Cancelling download.")
+                // Cancelling will inform the URLSessionTask delegate.
+                task.cancel()
+                return
+            }
+
             // Don't do anything until we've received at least one byte of data.
             guard progress.completedUnitCount > 0 else {
                 return

@@ -22,7 +22,7 @@ public struct QueuedAttachmentDownloadRecord: Codable, FetchableRecord, MutableP
 
     /// A given ``Attachment`` has metadata enabling downloading from
     /// many possible sources; this differentiates which should be used.
-    public enum SourceType: Int, Codable {
+    public enum SourceType: Int, Codable, CaseIterable {
         case transitTier = 0
 
         /// TODO[Backups]: add backup source(s).
