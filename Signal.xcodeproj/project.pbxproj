@@ -949,6 +949,7 @@
 		669572FC2C1A1DF30092B755 /* AttachmentThumbnailServiceImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669572FB2C1A1DF30092B755 /* AttachmentThumbnailServiceImpl.swift */; };
 		669572FE2C1A1E050092B755 /* MockAttachmentThumbnailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669572FD2C1A1E050092B755 /* MockAttachmentThumbnailService.swift */; };
 		669573002C1A37020092B755 /* AttachmentThumbnailQuality.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669572FF2C1A37020092B755 /* AttachmentThumbnailQuality.swift */; };
+		669573022C1B77C00092B755 /* QueuedAttachmentDownloadRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669573012C1B77C00092B755 /* QueuedAttachmentDownloadRecord.swift */; };
 		6698FC0D297EFE21004EFC30 /* KeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC0C297EFE21004EFC30 /* KeyValueStore.swift */; };
 		6698FC0F297F03FE004EFC30 /* KeyValueStoreFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC0E297F03FE004EFC30 /* KeyValueStoreFactory.swift */; };
 		6698FC11297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC10297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStore.swift */; };
@@ -3886,6 +3887,7 @@
 		669572FB2C1A1DF30092B755 /* AttachmentThumbnailServiceImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentThumbnailServiceImpl.swift; sourceTree = "<group>"; };
 		669572FD2C1A1E050092B755 /* MockAttachmentThumbnailService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAttachmentThumbnailService.swift; sourceTree = "<group>"; };
 		669572FF2C1A37020092B755 /* AttachmentThumbnailQuality.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentThumbnailQuality.swift; sourceTree = "<group>"; };
+		669573012C1B77C00092B755 /* QueuedAttachmentDownloadRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueuedAttachmentDownloadRecord.swift; sourceTree = "<group>"; };
 		6698FC0C297EFE21004EFC30 /* KeyValueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyValueStore.swift; sourceTree = "<group>"; };
 		6698FC0E297F03FE004EFC30 /* KeyValueStoreFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyValueStoreFactory.swift; sourceTree = "<group>"; };
 		6698FC10297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SDSKeyValueStore+KeyValueStore.swift"; sourceTree = "<group>"; };
@@ -8209,6 +8211,7 @@
 				66BED7EB2B9B9A8B00236BAD /* AttachmentDownloadManagerMock.swift */,
 				66D7B93F2B9A67B00005C98B /* AttachmentDownloadPriority.swift */,
 				664E8D932BD86AFB00C4968A /* AttachmentDownloadState.swift */,
+				669573012C1B77C00092B755 /* QueuedAttachmentDownloadRecord.swift */,
 			);
 			path = Downloads;
 			sourceTree = "<group>";
@@ -14267,6 +14270,7 @@
 				720547F72B9C98C600E2CF2F /* ProximityMonitoringManager.swift in Sources */,
 				503B47222AF0569B00978266 /* PublicKey.swift in Sources */,
 				F9C5CD91289453B300548EEE /* PushChallenge.swift in Sources */,
+				669573022C1B77C00092B755 /* QueuedAttachmentDownloadRecord.swift in Sources */,
 				6676A40C2BD1F5F9006B9CC9 /* QuotedAttachmentInfo.swift in Sources */,
 				66D7B9132B979C3A0005C98B /* QuotedMessageAttachmentReference+TSResource.swift in Sources */,
 				66D7B90E2B9798950005C98B /* QuotedMessageAttachmentReference.swift in Sources */,
