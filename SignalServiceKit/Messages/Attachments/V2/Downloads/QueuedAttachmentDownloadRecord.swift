@@ -40,6 +40,7 @@ public struct QueuedAttachmentDownloadRecord: Codable, FetchableRecord, MutableP
     /// Path to the partially downloaded file. Check the length (and existence)
     /// of the file on disk to determine how much progress has been made.
     /// Exists in the same folder as fully-downloaded attachments.
+    /// TODO: unused; partial progress is not tracked/reused between app launches.
     public let partialDownloadRelativeFilePath: String
 
     public var partialDownloadFileUrl: URL {

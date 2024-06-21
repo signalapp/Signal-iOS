@@ -9,6 +9,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
     private let audioWaveformManager: AudioWaveformManager
     private let downloadQueue: DownloadQueue
+    private let progressStates: ProgressStates
     private let schedulers: Schedulers
     private let videoDurationHelper: VideoDurationHelper
 
@@ -19,7 +20,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         videoDurationHelper: VideoDurationHelper
     ) {
         self.audioWaveformManager = audioWaveformManager
-        self.downloadQueue = DownloadQueue(signalService: signalService)
+        self.progressStates = ProgressStates()
+        self.downloadQueue = DownloadQueue(
+            progressStates: progressStates,
+            signalService: signalService
+        )
         self.schedulers = schedulers
         self.videoDurationHelper = videoDurationHelper
     }
@@ -36,10 +41,16 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     }
 
     public func downloadTransientAttachment(metadata: AttachmentDownloads.DownloadMetadata) -> Promise<URL> {
-        // TODO: this should enqueue the download and all that. For now this class
-        // only does the transient download so do it immediately.
         return Promise.wrapAsync {
-            return try await self.retrieveAttachment(metadata: metadata)
+            // We want to avoid large downloads from a compromised or buggy service.
+            let maxDownloadSize = RemoteConfig.maxAttachmentDownloadSizeBytes
+            let downloadState = DownloadState(type: .transientAttachment(metadata))
+
+            let encryptedFileUrl = try await self.downloadQueue.enqueueDownload(
+                downloadState: downloadState,
+                maxDownloadSizeBytes: maxDownloadSize
+            )
+            return try await self.decrypt(encryptedFileUrl: encryptedFileUrl, metadata: metadata)
         }
     }
 
@@ -68,7 +79,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     }
 
     public func downloadProgress(for attachmentId: Attachment.IDType, tx: DBReadTransaction) -> CGFloat? {
-        fatalError("Unimplemented")
+        return progressStates.states[attachmentId].map { CGFloat($0) }
     }
 
     // MARK: - Downloads
@@ -81,14 +92,15 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
     private enum DownloadType {
         case backup(MessageBackupRemoteInfo, authHeaders: [String: String])
-        case attachment(DownloadMetadata)
+        case transientAttachment(DownloadMetadata)
+        case attachment(DownloadMetadata, id: Attachment.IDType)
 
         // MARK: - Helpers
         func urlPath() throws -> String {
             switch self {
             case .backup(let info, _):
                 return "backups/\(info.backupDir)/\(info.backupName)"
-            case .attachment(let metadata):
+            case .attachment(let metadata, _), .transientAttachment(let metadata):
                 guard let encodedKey = metadata.cdnKey.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
                     throw OWSAssertionError("Invalid cdnKey.")
                 }
@@ -100,7 +112,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             switch self {
             case .backup(let info, _):
                 return UInt32(clamping: info.cdn)
-            case .attachment(let metadata):
+            case .attachment(let metadata, _), .transientAttachment(let metadata):
                 return metadata.cdnNumber
             }
         }
@@ -109,7 +121,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             switch self {
             case .backup(_, let authHeaders):
                 return authHeaders
-            case .attachment:
+            case .attachment, .transientAttachment:
                 return [:]
             }
         }
@@ -136,28 +148,22 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         }
     }
 
-    private func retrieveAttachment(
-        metadata: DownloadMetadata
-    ) async throws -> URL {
+    private class ProgressStates {
+        var states = [Attachment.IDType: Double]()
 
-        // We want to avoid large downloads from a compromised or buggy service.
-        let maxDownloadSize = RemoteConfig.maxAttachmentDownloadSizeBytes
-        let downloadState = DownloadState(type: .attachment(metadata))
-
-        let encryptedFileUrl = try await self.downloadQueue.enqueueDownload(
-            downloadState: downloadState,
-            maxDownloadSizeBytes: maxDownloadSize
-        )
-        return try await self.decrypt(encryptedFileUrl: encryptedFileUrl, metadata: metadata)
+        init() {}
     }
 
     private actor DownloadQueue {
 
+        private let progressStates: ProgressStates
         private let signalService: OWSSignalServiceProtocol
 
         init(
+            progressStates: ProgressStates,
             signalService: OWSSignalServiceProtocol
         ) {
+            self.progressStates = progressStates
             self.signalService = signalService
         }
 
@@ -296,7 +302,26 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return
             }
 
-            // TODO: update progress for non-transient downloads
+            // Use a slightly non-zero value to ensure that the progress
+            // indicator shows up as quickly as possible.
+            let progressTheta: Double = 0.001
+            let fractionCompleted = max(progressTheta, progress.fractionCompleted)
+
+            switch downloadState.type {
+            case .backup, .transientAttachment:
+                break
+            case .attachment(_, let attachmentId):
+                progressStates.states[attachmentId] = fractionCompleted
+
+                NotificationCenter.default.postNotificationNameAsync(
+                    AttachmentDownloads.attachmentDownloadProgressNotification,
+                    object: nil,
+                    userInfo: [
+                        AttachmentDownloads.attachmentDownloadProgressKey: NSNumber(value: fractionCompleted),
+                        AttachmentDownloads.attachmentDownloadAttachmentIDKey: attachmentId
+                    ]
+                )
+            }
         }
     }
 
