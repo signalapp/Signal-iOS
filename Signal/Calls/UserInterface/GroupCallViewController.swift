@@ -3,16 +3,19 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import LibSignalClient
 import SignalServiceKit
 import SignalRingRTC
 import SignalUI
-import UIKit
+
+// MARK: - GroupCallViewController
 
 // TODO: Eventually add 1:1 call support to this view
 // and replace CallViewController
 class GroupCallViewController: UIViewController {
+
+    // MARK: Properties
+
     private let call: SignalCall
     private let groupCall: GroupCall
     private let ringRtcCall: SignalRingRTC.GroupCall
@@ -32,7 +35,26 @@ class GroupCallViewController: UIViewController {
     private lazy var notificationView = GroupCallNotificationView(groupCall: groupCall)
 
     private lazy var videoGrid = GroupCallVideoGrid(call: call, groupCall: groupCall)
+
+    /// A UIStackView which allows taps on its subviews, but passes taps outside of those or in explicitly ignored views through to the parent.
+    private class PassthroughStackView: UIStackView {
+        var ignoredViews: WeakArray<UIView> = []
+
+        override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+            // super.hitTest will return the deepest view hit, so if it's
+            // just `self`, the highest view, that means a subview wasn't hit.
+            let hitView = super.hitTest(point, with: event)
+            if let hitView, hitView == self || ignoredViews.contains(hitView) {
+                return nil
+            }
+            return hitView
+        }
+    }
+
+    private let bottomVStack = PassthroughStackView()
     private lazy var videoOverflow = GroupCallVideoOverflow(call: call, groupCall: groupCall, delegate: self)
+    private let raisedHandsToastContainer = UIView()
+    private lazy var raisedHandsToast = RaisedHandsToast(call: self.groupCall)
 
     private let localMemberView: CallMemberView
     private let speakerView: CallMemberView
@@ -68,7 +90,7 @@ class GroupCallViewController: UIViewController {
     }
 
     private lazy var tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTouchRootView))
-    private lazy var videoOverflowTopConstraint = videoOverflow.autoPinEdge(toSuperviewEdge: .top)
+    private lazy var bottomVStackTopConstraint = self.bottomVStack.autoPinEdge(.bottom, to: .top, of: self.view)
     private lazy var videoOverflowTrailingConstraint = videoOverflow.autoPinEdge(toSuperviewEdge: .trailing)
 
     private enum CallControlsDisplayState {
@@ -220,6 +242,8 @@ class GroupCallViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // MARK: Lifecycle
+
     override func loadView() {
         view = UIView()
         view.clipsToBounds = true
@@ -245,15 +269,34 @@ class GroupCallViewController: UIViewController {
         callControls.autoPinWidthToSuperview()
         callControls.autoPinEdge(toSuperviewEdge: .bottom)
 
-        view.addSubview(videoOverflow)
-        videoOverflow.autoPinEdge(toSuperviewEdge: .leading)
+        view.addSubview(self.bottomVStack)
+        self.bottomVStack.autoPinWidthToSuperview()
+        self.bottomVStack.axis = .vertical
+        self.bottomVStack.preservesSuperviewLayoutMargins = true
+        // TODO: Update
+        self.bottomVStack.spacing = 24
+
+        let videoOverflowContainer = UIView()
+        videoOverflowContainer.addSubview(self.videoOverflow)
+        self.bottomVStack.addArrangedSubview(videoOverflowContainer)
+        self.bottomVStack.ignoredViews.append(videoOverflowContainer)
+        self.videoOverflow.autoPinHeightToSuperview()
+        self.videoOverflow.autoPinEdge(toSuperviewEdge: .leading)
+
+        raisedHandsToastContainer.addSubview(raisedHandsToast)
+        self.bottomVStack.insertArrangedSubview(raisedHandsToastContainer, at: 0)
+        self.bottomVStack.ignoredViews.append(raisedHandsToastContainer)
+        raisedHandsToast.autoPinEdges(toSuperviewMarginsExcludingEdge: .leading)
+        raisedHandsToast.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
+        raisedHandsToast.horizontalPinConstraint = raisedHandsToast.autoPinEdge(toSuperviewMargin: .leading)
+        raisedHandsToast.delegate = self
 
         scrollView.addSubview(videoGrid)
         scrollView.addSubview(speakerPage)
 
         view.addSubview(incomingReactionsView)
         incomingReactionsView.autoPinEdge(.leading, to: .leading, of: view, withOffset: 22)
-        incomingReactionsView.autoPinEdge(.bottom, to: .top, of: videoOverflow, withOffset: -25)
+        incomingReactionsView.autoPinEdge(.bottom, to: .top, of: self.bottomVStack, withOffset: -16)
         incomingReactionsView.widthAnchor.constraint(equalToConstant: IncomingReactionsView.Constants.viewWidth).isActive = true
         incomingReactionsView.heightAnchor.constraint(equalToConstant: IncomingReactionsView.viewHeight).isActive = true
 
@@ -337,6 +380,8 @@ class GroupCallViewController: UIViewController {
         }
     }
 
+    // MARK: Call members
+
     private var hasOverflowMembers: Bool { videoGrid.maxItems < ringRtcCall.remoteDeviceStates.count }
 
     private func updateScrollViewFrames(size: CGSize? = nil, controlsAreHidden: Bool) {
@@ -408,7 +453,7 @@ class GroupCallViewController: UIViewController {
 
         let yMax = (controlsAreHidden ? size.height - 16 : callControls.frame.minY) - 16
 
-        videoOverflowTopConstraint.constant = yMax - videoOverflow.height
+        bottomVStackTopConstraint.constant = yMax
 
         updateVideoOverflowTrailingConstraint()
 
@@ -443,7 +488,7 @@ class GroupCallViewController: UIViewController {
                         // the video overflow, which is tiny.
                         y = yMax - pipSize.height
                     } else {
-                        y = videoOverflow.frame.origin.y
+                        y = videoOverflow.convert(videoOverflow.bounds.origin, to: self.view).y
                     }
                     localMemberView.applyChangesToCallMemberViewAndVideoView { view in
                         view.frame = CGRect(
@@ -491,7 +536,9 @@ class GroupCallViewController: UIViewController {
         }
     }
 
-    private func updateSwipeToastView() {
+    // MARK: Other UI
+
+    func updateSwipeToastView() {
         let isSpeakerViewAvailable = ringRtcCall.remoteDeviceStates.count >= 2 && ringRtcCall.localDeviceState.joinState == .joined
         guard isSpeakerViewAvailable else {
             swipeToastView.isHidden = true
@@ -550,6 +597,12 @@ class GroupCallViewController: UIViewController {
     private func updateCallUI(size: CGSize? = nil) {
         // Force load the view if it hasn't been yet.
         _ = self.view
+
+        if FeatureFlags.callRaiseHandToastSupport {
+            self.raisedHandsToastContainer.isHiddenInStackView = self.raisedHandsToast.raisedHands.isEmpty
+        } else {
+            self.raisedHandsToastContainer.isHidden = true
+        }
 
         let localDevice = ringRtcCall.localDeviceState
 
@@ -876,6 +929,8 @@ class GroupCallViewController: UIViewController {
     }
 }
 
+// MARK: CallViewControllerWindowReference
+
 extension GroupCallViewController: CallViewControllerWindowReference {
     var localVideoViewReference: CallMemberView { localMemberView }
     var remoteVideoViewReference: CallMemberView { speakerView }
@@ -1060,6 +1115,8 @@ extension GroupCallViewController: CallViewControllerWindowReference {
     }
 }
 
+// MARK: CallObserver
+
 extension GroupCallViewController: GroupCallObserver {
     func groupCallLocalDeviceStateChanged(_ call: GroupCall) {
         AssertIsOnMainThread()
@@ -1200,7 +1257,13 @@ extension GroupCallViewController: GroupCallObserver {
     }
 
     func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [DemuxId]) {
-        updateCallUI()
+        self.raisedHandsToast.raisedHands = raisedHands
+
+        let animator = UIViewPropertyAnimator(duration: 0.3, springDamping: 1, springResponse: 0.3)
+        animator.addAnimations {
+            self.updateCallUI()
+        }
+        animator.startAnimation()
     }
 
     func callMessageSendFailedUntrustedIdentity(_ call: GroupCall) {
@@ -1213,6 +1276,8 @@ extension GroupCallViewController: GroupCallObserver {
         }
     }
 }
+
+// MARK: CallHeaderDelegate
 
 extension GroupCallViewController: CallHeaderDelegate {
     func didTapBackButton() {
@@ -1237,6 +1302,16 @@ extension GroupCallViewController: CallHeaderDelegate {
     }
 }
 
+// MARK: RaisedHandsToastDelegate
+
+extension GroupCallViewController: RaisedHandsToastDelegate {
+    func didTapViewRaisedHands() {
+        self.didTapMembersButton()
+    }
+}
+
+// MARK: GroupCallVideoOverflowDelegate
+
 extension GroupCallViewController: GroupCallVideoOverflowDelegate {
     var firstOverflowMemberIndex: Int {
         if scrollView.contentOffset.y >= view.height {
@@ -1247,12 +1322,15 @@ extension GroupCallViewController: GroupCallVideoOverflowDelegate {
     }
 }
 
+// MARK: UIScrollViewDelegate
+
 extension GroupCallViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         // If we changed pages, update the overflow view.
         if scrollView.contentOffset.y == 0 || scrollView.contentOffset.y == view.height {
             videoOverflow.reloadData()
             updateCallUI()
+            // TODO: Conditionally swap overflow and raised hand toast
         }
 
         if isAutoScrollingToScreenShare {
@@ -1262,6 +1340,8 @@ extension GroupCallViewController: UIScrollViewDelegate {
         updateSwipeToastView()
     }
 }
+
+// MARK: CallControlsDelegate
 
 extension GroupCallViewController: CallControlsDelegate {
     func didPressRing() {
@@ -1327,6 +1407,8 @@ extension GroupCallViewController: CallControlsDelegate {
     }
 }
 
+// MARK: CallMemberErrorPresenter
+
 extension GroupCallViewController: CallMemberErrorPresenter {
     func presentErrorSheet(title: String, message: String) {
         let actionSheet = ActionSheetController(title: title, message: message, theme: .translucentDark)
@@ -1334,6 +1416,8 @@ extension GroupCallViewController: CallMemberErrorPresenter {
         presentActionSheet(actionSheet)
     }
 }
+
+// MARK: AnimatableLocalMemberViewDelegate
 
 extension GroupCallViewController: AnimatableLocalMemberViewDelegate {
     var enclosingBounds: CGRect {

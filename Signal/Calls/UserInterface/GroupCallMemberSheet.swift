@@ -411,7 +411,7 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
 
         let trailingWrapper = UIView()
         setup(iconView: audioMutedIndicator, withImageNamed: "mic-slash", in: trailingWrapper)
-        setup(iconView: raisedHandIndicator, withImageNamed: "raise_hand", in: trailingWrapper)
+        setup(iconView: raisedHandIndicator, withImageNamed: Theme.iconName(.raiseHand), in: trailingWrapper)
 
         let leadingWrapper = UIView()
         setup(iconView: videoMutedIndicator, withImageNamed: "video-slash", in: leadingWrapper)

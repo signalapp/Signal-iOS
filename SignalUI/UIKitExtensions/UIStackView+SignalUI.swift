@@ -33,15 +33,37 @@ public extension UIStackView {
         insertArrangedSubview(hairlineView, at: index)
     }
 
+    func addBackgroundView(_ backgroundView: UIView) {
+        addSubview(backgroundView)
+        sendSubviewToBack(backgroundView)
+        backgroundView.autoPinEdgesToSuperviewEdges()
+    }
+
     @discardableResult
     func addBackgroundView(withBackgroundColor backgroundColor: UIColor, cornerRadius: CGFloat = 0) -> UIView {
         let backgroundView = UIView(frame: bounds)
         backgroundView.backgroundColor = backgroundColor
         backgroundView.layer.cornerRadius = cornerRadius
-        addSubview(backgroundView)
-        sendSubviewToBack(backgroundView)
-        backgroundView.autoPinEdgesToSuperviewEdges()
+        self.addBackgroundView(backgroundView)
         return backgroundView
+    }
+
+    @discardableResult
+    func addBackgroundBlurView(
+        blur: UIBlurEffect.Style,
+        accessibilityFallbackColor: UIColor,
+        cornerRadius: CGFloat = 0
+    ) -> UIView {
+        if UIAccessibility.isReduceTransparencyEnabled {
+            return self.addBackgroundView(
+                withBackgroundColor: accessibilityFallbackColor,
+                cornerRadius: cornerRadius
+            )
+        } else {
+            let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: blur))
+            self.addBackgroundView(blurEffectView)
+            return blurEffectView
+        }
     }
 
     @discardableResult
@@ -62,9 +84,7 @@ public extension UIStackView {
     func addPillBackgroundView(backgroundColor: UIColor) -> UIView {
         let backgroundView = OWSLayerView.pillView()
         backgroundView.backgroundColor = backgroundColor
-        addSubview(backgroundView)
-        backgroundView.autoPinEdgesToSuperviewEdges()
-        sendSubviewToBack(backgroundView)
+        self.addBackgroundView(backgroundView)
         return backgroundView
     }
 }

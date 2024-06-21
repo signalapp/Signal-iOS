@@ -35,12 +35,22 @@ open class OWSButton: UIButton {
         addTarget(self, action: #selector(didTap), for: .touchUpInside)
     }
 
-    public init(title: String, block: @escaping () -> Void = { }) {
+    public init(
+        title: String,
+        tintColor: UIColor? = nil,
+        dimsWhenHighlighted: Bool = false,
+        block: @escaping () -> Void = { }
+    ) {
+        self.dimsWhenHighlighted = dimsWhenHighlighted
         super.init(frame: .zero)
 
         self.block = block
         addTarget(self, action: #selector(didTap), for: .touchUpInside)
         setTitle(title, for: .normal)
+
+        if let tintColor {
+            self.tintColor = tintColor
+        }
     }
 
     public init(

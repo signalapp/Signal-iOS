@@ -207,7 +207,7 @@ class CallMemberChromeOverlayView: UIView, CallMemberComposableView {
             iconBackground.backgroundColor = .ows_white
             iconBackground.layer.cornerRadius = self.circleSize / 2
 
-            let iconView = UIImageView(image: .init(named: "raise_hand"))
+            let iconView = UIImageView(image: Theme.iconImage(.raiseHand))
             iconBackground.addSubview(iconView)
             iconView.autoSetDimensions(to: .square(self.iconSize))
             iconView.autoCenterInSuperview()

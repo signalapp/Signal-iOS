@@ -1574,6 +1574,7 @@
 		B9A87A362A9D1D25009FCA13 /* EditorSticker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9A87A352A9D1D25009FCA13 /* EditorSticker.swift */; };
 		B9A87A382A9E34BD009FCA13 /* Hatsuishi-UPM800.otf in Resources */ = {isa = PBXBuildFile; fileRef = B9A87A372A9E34BD009FCA13 /* Hatsuishi-UPM800.otf */; };
 		B9B2AA942BC598B60060B56C /* ContactNoteSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B2AA932BC598B60060B56C /* ContactNoteSheet.swift */; };
+		B9B89EEB2BFFD3430093A2FA /* RaisedHandsToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B89EEA2BFFD3430093A2FA /* RaisedHandsToast.swift */; };
 		B9B89EED2C064E760093A2FA /* notification_simple-01.caf in Resources */ = {isa = PBXBuildFile; fileRef = B9B89EEC2C064E700093A2FA /* notification_simple-01.caf */; };
 		B9D413742BCDDE66006D4E48 /* Tooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D413732BCDDE66006D4E48 /* Tooltip.swift */; };
 		B9D65E532BAE1DA70067322A /* NicknameEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9D65E522BAE1DA70067322A /* NicknameEditorViewController.swift */; };
@@ -4506,6 +4507,7 @@
 		B9A87A352A9D1D25009FCA13 /* EditorSticker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorSticker.swift; sourceTree = "<group>"; };
 		B9A87A372A9E34BD009FCA13 /* Hatsuishi-UPM800.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Hatsuishi-UPM800.otf"; sourceTree = "<group>"; };
 		B9B2AA932BC598B60060B56C /* ContactNoteSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactNoteSheet.swift; sourceTree = "<group>"; };
+		B9B89EEA2BFFD3430093A2FA /* RaisedHandsToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaisedHandsToast.swift; sourceTree = "<group>"; };
 		B9B89EEC2C064E700093A2FA /* notification_simple-01.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "notification_simple-01.caf"; sourceTree = "<group>"; };
 		B9D413732BCDDE66006D4E48 /* Tooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tooltip.swift; sourceTree = "<group>"; };
 		B9D65E522BAE1DA70067322A /* NicknameEditorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicknameEditorViewController.swift; sourceTree = "<group>"; };
@@ -9029,6 +9031,7 @@
 				34B3F83B1E8DF1700035BE1A /* IndividualCallViewController.swift */,
 				88238EA124E9DDB700F28079 /* LocalVideoView.swift */,
 				B935268F2B0E63C300421E6A /* NewCallViewController.swift */,
+				B9B89EEA2BFFD3430093A2FA /* RaisedHandsToast.swift */,
 				E1D827D42BD9B6E50022C1AF /* ReactionsBurstView.swift */,
 				E1D827D62BD9DA4D0022C1AF /* ReactionsSink.swift */,
 				766CE0D52A323DFE00AD609D /* RemoteVideoView.swift */,
@@ -13289,6 +13292,7 @@
 				D9DCFDAE2A3BB25200C73C0B /* QRCodeGenerator.swift in Sources */,
 				88A4CC12246CE2F50082211F /* QRCodeView.swift in Sources */,
 				3470C8742554926200F5847C /* QuotedMessageView.swift in Sources */,
+				B9B89EEB2BFFD3430093A2FA /* RaisedHandsToast.swift in Sources */,
 				88863A56280CD04B00977F69 /* ReactionFlybyAnimation.swift in Sources */,
 				E1D827D52BD9B6E50022C1AF /* ReactionsBurstView.swift in Sources */,
 				88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */,

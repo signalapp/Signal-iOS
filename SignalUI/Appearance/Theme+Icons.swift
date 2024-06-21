@@ -168,6 +168,8 @@ public enum ThemeIcon: UInt {
     case empty
 
     case profilePlaceholder
+
+    case raiseHand
 }
 
 // MARK: -
@@ -515,6 +517,9 @@ public extension Theme {
 
         case .profilePlaceholder:
             return isDarkThemeEnabled ? "profile-placeholder-dark-56" : "profile-placeholder-56"
+
+        case .raiseHand:
+            return "raise_hand"
         }
     }
 }
