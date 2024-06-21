@@ -41,6 +41,13 @@ public protocol AttachmentStore {
         block: (AttachmentReference) -> Void
     )
 
+    /// Return all attachments that are themselves quoted replies
+    /// of another attachment; provide the original attachment they point to.
+    func allQuotedReplyAttachments(
+        forOriginalAttachmentId: Attachment.IDType,
+        tx: DBReadTransaction
+    ) throws -> [Attachment]
+
     // MARK: - Writes
 
     /// Create a new ownership reference, copying properties of an existing reference.

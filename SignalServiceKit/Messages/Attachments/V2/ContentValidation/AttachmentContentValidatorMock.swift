@@ -54,6 +54,12 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
     ) throws -> QuotedReplyAttachmentDataSource {
         throw OWSAssertionError("Unimplemented")
     }
+
+    open func prepareQuotedReplyThumbnail(
+        fromOriginalAttachmentStream: AttachmentStream
+    ) throws -> PendingAttachment {
+        throw OWSAssertionError("Unimplemented")
+    }
 }
 
 #endif

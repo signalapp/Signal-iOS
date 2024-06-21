@@ -42,6 +42,14 @@ open class AttachmentStoreMock: AttachmentStore {
             .forEach(block)
     }
 
+    open func allQuotedReplyAttachments(
+        forOriginalAttachmentId: Attachment.IDType,
+        tx: DBReadTransaction
+    ) throws -> [Attachment] {
+        attachments
+            .filter { $0.originalAttachmentIdForQuotedReply == forOriginalAttachmentId }
+    }
+
     open func duplicateExistingMessageOwner(
         _ existingOwnerSource: AttachmentReference.Owner.MessageSource,
         with reference: AttachmentReference,

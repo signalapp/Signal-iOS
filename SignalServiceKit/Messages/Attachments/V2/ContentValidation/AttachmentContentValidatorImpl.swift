@@ -143,16 +143,6 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         fromOriginalAttachment originalAttachment: Attachment,
         originalReference: AttachmentReference
     ) throws -> QuotedReplyAttachmentDataSource {
-        let isVisualMedia: Bool = {
-            if let streamInfo = originalAttachment.streamInfo {
-                return streamInfo.contentType.isVisualMedia
-            } else {
-                return MimeTypeUtil.isSupportedVisualMediaMimeType(originalAttachment.mimeType)
-            }
-        }()
-        guard isVisualMedia else {
-            throw OWSAssertionError("Non visual media target")
-        }
         guard let stream = originalAttachment.asStream() else {
             // If we don't have a stream, the best we can do is create a reference
             // to the original.
@@ -162,29 +152,9 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             )
         }
 
-        guard
-            let imageData = stream
-                .thumbnailImageSync(quality: .small)?
-                .resized(maxDimensionPoints: AttachmentThumbnailQuality.thumbnailDimensionPointsForQuotedReply)?
-                .jpegData(compressionQuality: 0.8)
-        else {
-            throw OWSAssertionError("Unable to create thumbnail")
-        }
-
-        let renderingFlagForThumbnail: AttachmentReference.RenderingFlag
-        switch originalReference.renderingFlag {
-        case .borderless:
-            // Preserve borderless flag from the original
-            renderingFlagForThumbnail = .borderless
-        case .default, .voiceMessage, .shouldLoop:
-            // Other cases become default for the still image.
-            renderingFlagForThumbnail = .default
-        }
-
-        let pendingAttachment: PendingAttachment = try self.validateContents(
-            data: imageData,
-            mimeType: MimeType.imageJpeg.rawValue,
-            renderingFlag: renderingFlagForThumbnail,
+        let pendingAttachment = try prepareQuotedReplyThumbnail(
+            fromOriginalAttachmentStream: stream,
+            renderingFlag: originalReference.renderingFlag,
             sourceFilename: originalReference.sourceFilename
         )
 
@@ -200,6 +170,17 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         return .fromPendingAttachment(
             pendingAttachment,
             originalMessageRowId: originalMessageRowId
+        )
+    }
+
+    public func prepareQuotedReplyThumbnail(
+        fromOriginalAttachmentStream: AttachmentStream
+    ) throws -> PendingAttachment {
+        return try self.prepareQuotedReplyThumbnail(
+            fromOriginalAttachmentStream: fromOriginalAttachmentStream,
+            // These are irrelevant for this usage
+            renderingFlag: .default,
+            sourceFilename: nil
         )
     }
 
@@ -250,6 +231,43 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             renderingFlag: renderingFlag,
             sourceFilename: sourceFilename,
             contentResult: contentTypeResult
+        )
+    }
+
+    private func prepareQuotedReplyThumbnail(
+        fromOriginalAttachmentStream stream: AttachmentStream,
+        renderingFlag: AttachmentReference.RenderingFlag,
+        sourceFilename: String?
+    ) throws -> PendingAttachment {
+        let isVisualMedia = stream.contentType.isVisualMedia
+        guard isVisualMedia else {
+            throw OWSAssertionError("Non visual media target")
+        }
+
+        guard
+            let imageData = stream
+                .thumbnailImageSync(quality: .small)?
+                .resized(maxDimensionPoints: AttachmentThumbnailQuality.thumbnailDimensionPointsForQuotedReply)?
+                .jpegData(compressionQuality: 0.8)
+        else {
+            throw OWSAssertionError("Unable to create thumbnail")
+        }
+
+        let renderingFlagForThumbnail: AttachmentReference.RenderingFlag
+        switch renderingFlag {
+        case .borderless:
+            // Preserve borderless flag from the original
+            renderingFlagForThumbnail = .borderless
+        case .default, .voiceMessage, .shouldLoop:
+            // Other cases become default for the still image.
+            renderingFlagForThumbnail = .default
+        }
+
+        return try self.validateContents(
+            data: imageData,
+            mimeType: MimeType.imageJpeg.rawValue,
+            renderingFlag: renderingFlagForThumbnail,
+            sourceFilename: sourceFilename
         )
     }
 

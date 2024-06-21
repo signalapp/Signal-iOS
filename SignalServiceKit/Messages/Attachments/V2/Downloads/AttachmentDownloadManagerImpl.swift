@@ -480,24 +480,116 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         }
     }
 
-    func copyThumbnailForQuotedReplyIfNeeded(_ downloadedAttachment: AttachmentStream) {
-        /// Here's what this method needs to do:
-        /// 1. Figure out what attachment to actually use
-        ///   1a. If the passed in stream is not an image or video, use it directly.
-        ///   1b. If the passed in stream is a video, make a thumbnail still image copy and insert it
-        ///   1c. If its an image, make a thumbnail copy and insert it. (if its small, can reuse the same attachment, no insertion)
-        ///
-        /// 2. Create the edge between the attachment and this link preview
-        ///   2a. Find the row for this message in AttachmentReferences with quoted message thumnail ref type
-        ///   2b. Validate that the contentType column is null (its undownloaded). If its downloaded, exit early.
-        ///   2c. Update the attachmentId column for the row to the attachment from step 1. (possibly the same attachment)
-        ///
-        /// 3. As with any AttachmentReferences update, delete any now-orphaned attachments
-        ///   3a. Note the passed-in attachment itself may be orphaned, if it got enqueued with no other owners and wasn't used
-        ///      for the quoted reply.
-        ///
-        /// FYI nothing needs to be updated on the TSQuotedMessage or the parent message.
-        fatalError("Unimplemented")
+    func copyThumbnailForQuotedReplyIfNeeded(_ downloadedAttachment: AttachmentStream) async throws {
+        let thumbnailAttachments = try db.read { tx in
+            return try self.attachmentStore.allQuotedReplyAttachments(
+                forOriginalAttachmentId: downloadedAttachment.attachment.id,
+                tx: tx
+            )
+        }
+        guard thumbnailAttachments.contains(where: { $0.asStream() == nil }) else {
+            // all the referencing thumbnails already have their own streams, nothing to do.
+            return
+        }
+        let attachmentValidator = self.attachmentValidator
+        let pendingThumbnailAttachment = try await decryptionQueue.enqueue(operation: {
+            // AttachmentValidator runs synchronously _and_ opens write transactions
+            // internally. We can't block on the write lock in the cooperative thread
+            // pool, so bridge out of structured concurrency to run the validation.
+            return try await withCheckedThrowingContinuation { continuation in
+                DispatchQueue.global().async {
+                    do {
+                        let pendingAttachment = try attachmentValidator.prepareQuotedReplyThumbnail(
+                            fromOriginalAttachmentStream: downloadedAttachment
+                        )
+                        continuation.resume(with: .success(pendingAttachment))
+                    } catch let error {
+                        continuation.resume(throwing: error)
+                    }
+                }
+            }
+        }).value
+
+        try await db.awaitableWrite { tx in
+            let thumbnailAttachments = try self.attachmentStore
+                .allQuotedReplyAttachments(
+                    forOriginalAttachmentId: downloadedAttachment.attachment.id,
+                    tx: tx
+                )
+                .filter({ $0.asStream() == nil })
+
+            // Arbitrarily pick the first thumbnail as the one we will promote to
+            // a stream. The others' references will be re-pointed to this one.
+            guard let firstThumbnailAttachment = thumbnailAttachments.first else {
+                // Nothing to update.
+                return
+            }
+
+            let references = thumbnailAttachments.flatMap { attachment in
+                var refs = [AttachmentReference]()
+                self.attachmentStore.enumerateAllReferences(toAttachmentId: attachment.id, tx: tx) {
+                    refs.append($0)
+                }
+                return refs
+            }
+
+            let thumbnailAttachmentId: Attachment.IDType
+            do {
+                guard self.orphanedAttachmentStore.orphanAttachmentExists(with: pendingThumbnailAttachment.orphanRecordId, tx: tx) else {
+                    throw OWSAssertionError("Attachment file deleted before creation")
+                }
+
+                // Try and promote the attachment to a stream.
+                try self.attachmentStore.updateAttachmentAsDownloaded(
+                    from: .transitTier,
+                    id: firstThumbnailAttachment.id,
+                    streamInfo: .init(
+                        sha256ContentHash: pendingThumbnailAttachment.sha256ContentHash,
+                        encryptedByteCount: pendingThumbnailAttachment.encryptedByteCount,
+                        unencryptedByteCount: pendingThumbnailAttachment.unencryptedByteCount,
+                        contentType: pendingThumbnailAttachment.validatedContentType,
+                        digestSHA256Ciphertext: pendingThumbnailAttachment.digestSHA256Ciphertext,
+                        localRelativeFilePath: pendingThumbnailAttachment.localRelativeFilePath
+                    ),
+                    tx: tx
+                )
+                // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
+                try self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingThumbnailAttachment.orphanRecordId, tx: tx)
+
+                thumbnailAttachmentId = firstThumbnailAttachment.id
+            } catch let AttachmentInsertError.duplicatePlaintextHash(existingAttachmentId) {
+                // Already have an attachment with the same plaintext hash!
+                // We will instead re-point all references to this attachment.
+                thumbnailAttachmentId = existingAttachmentId
+            } catch let error {
+                throw error
+            }
+
+            // Move all existing references to the new thumbnail stream.
+            try references.forEach { reference in
+                if reference.attachmentRowId == thumbnailAttachmentId {
+                    // No need to update references already pointing at the right spot.
+                    return
+                }
+
+                try self.attachmentStore.removeOwner(
+                    reference.owner.id,
+                    for: reference.attachmentRowId,
+                    tx: tx
+                )
+                let newOwnerParams = AttachmentReference.ConstructionParams(
+                    owner: reference.owner,
+                    sourceFilename: reference.sourceFilename,
+                    sourceUnencryptedByteCount: reference.sourceUnencryptedByteCount,
+                    sourceMediaSizePixels: reference.sourceMediaSizePixels
+                )
+                try self.attachmentStore.addOwner(
+                    newOwnerParams,
+                    for: thumbnailAttachmentId,
+                    tx: tx
+                )
+            }
+        }
     }
 
     private static let encryptionOverheadByteLength: UInt32 = /* iv */ 16 + /* hmac */ 32

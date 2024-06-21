@@ -46,6 +46,17 @@ public class AttachmentStoreImpl: AttachmentStore {
         )
     }
 
+    public func allQuotedReplyAttachments(
+        forOriginalAttachmentId originalAttachmentId: Attachment.IDType,
+        tx: DBReadTransaction
+    ) throws -> [Attachment] {
+        return try allQuotedReplyAttachments(
+            forOriginalAttachmentId: originalAttachmentId,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
+            tx: tx
+        )
+    }
+
     // MARK: - Writes
 
     public func duplicateExistingMessageOwner(
@@ -251,6 +262,17 @@ public class AttachmentStoreImpl: AttachmentStore {
         return try Attachment.Record
             .filter(Column(Attachment.Record.CodingKeys.sha256ContentHash) == sha256ContentHash)
             .fetchOne(db)
+            .map(Attachment.init(record:))
+    }
+
+    func allQuotedReplyAttachments(
+        forOriginalAttachmentId originalAttachmentId: Attachment.IDType,
+        db: GRDB.Database,
+        tx: DBReadTransaction
+    ) throws -> [Attachment] {
+        return try Attachment.Record
+            .filter(Column(Attachment.Record.CodingKeys.originalAttachmentIdForQuotedReply) == originalAttachmentId)
+            .fetchAll(db)
             .map(Attachment.init(record:))
     }
 
