@@ -21,7 +21,7 @@ public enum AttachmentDownloads {
         public let cdnKey: String
         public let encryptionKey: Data
         public let digest: Data
-        public let plaintextLength: UInt32
+        public let plaintextLength: UInt32?
 
         public init(
             mimeType: String,
@@ -29,7 +29,7 @@ public enum AttachmentDownloads {
             cdnKey: String,
             encryptionKey: Data,
             digest: Data,
-            plaintextLength: UInt32
+            plaintextLength: UInt32?
         ) {
             self.mimeType = mimeType
             self.cdnNumber = cdnNumber

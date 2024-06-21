@@ -82,7 +82,7 @@ public final class IncomingContactSyncJobRecord: JobRecord, FactoryInitializable
         cdnKey: String,
         encryptionKey: Data,
         digest: Data,
-        plaintextLength: UInt32,
+        plaintextLength: UInt32?,
         isCompleteContactSync: Bool
     ) {
         self.init(
