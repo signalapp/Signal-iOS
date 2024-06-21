@@ -49,19 +49,17 @@ public protocol AttachmentDownloadManager {
         metadata: AttachmentDownloads.DownloadMetadata
     ) -> Promise<URL>
 
-    @discardableResult
     func enqueueDownloadOfAttachmentsForMessage(
         _ message: TSMessage,
         priority: AttachmentDownloadPriority,
         tx: DBWriteTransaction
-    ) -> Promise<Void>
+    )
 
-    @discardableResult
     func enqueueDownloadOfAttachmentsForStoryMessage(
         _ message: StoryMessage,
         priority: AttachmentDownloadPriority,
         tx: DBWriteTransaction
-    ) -> Promise<Void>
+    )
 
     /// Starts downloading off the persisted queue, if there's anything to download
     /// and if not already downloading the max number of parallel downloads at once.
@@ -74,19 +72,17 @@ public protocol AttachmentDownloadManager {
 
 extension AttachmentDownloadManager {
 
-    @discardableResult
     public func enqueueDownloadOfAttachmentsForMessage(
         _ message: TSMessage,
         tx: DBWriteTransaction
-    ) -> Promise<Void> {
-        return enqueueDownloadOfAttachmentsForMessage(message, priority: .default, tx: tx)
+    ) {
+        enqueueDownloadOfAttachmentsForMessage(message, priority: .default, tx: tx)
     }
 
-    @discardableResult
     public func enqueueDownloadOfAttachmentsForStoryMessage(
         _ message: StoryMessage,
         tx: DBWriteTransaction
-    ) -> Promise<Void> {
-        return enqueueDownloadOfAttachmentsForStoryMessage(message, priority: .default, tx: tx)
+    ) {
+        enqueueDownloadOfAttachmentsForStoryMessage(message, priority: .default, tx: tx)
     }
 }

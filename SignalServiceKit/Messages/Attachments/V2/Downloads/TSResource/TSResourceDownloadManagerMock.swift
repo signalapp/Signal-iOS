@@ -15,16 +15,16 @@ open class TSResourceDownloadManagerMock: TSResourceDownloadManager {
         _ message: TSMessage,
         priority: AttachmentDownloadPriority,
         tx: DBWriteTransaction
-    ) -> Promise<Void> {
-        return .value(())
+    ) {
+        // Do nothing
     }
 
     open func enqueueDownloadOfAttachmentsForStoryMessage(
         _ message: StoryMessage,
         priority: AttachmentDownloadPriority,
         tx: DBWriteTransaction
-    ) -> Promise<Void> {
-        return .value(())
+    ) {
+        // Do nothing
     }
 
     open func cancelDownload(for attachmentId: TSResourceId, tx: DBWriteTransaction) {

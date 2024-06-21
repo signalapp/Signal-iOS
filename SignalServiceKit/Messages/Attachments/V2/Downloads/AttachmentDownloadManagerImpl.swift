@@ -38,21 +38,19 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         return retrieveAttachment(metadata: metadata)
     }
 
-    @discardableResult
     public func enqueueDownloadOfAttachmentsForMessage(
         _ message: TSMessage,
         priority: AttachmentDownloadPriority,
         tx: DBWriteTransaction
-    ) -> Promise<Void> {
+    ) {
         fatalError("Unimplemented")
     }
 
-    @discardableResult
     public func enqueueDownloadOfAttachmentsForStoryMessage(
         _ message: StoryMessage,
         priority: AttachmentDownloadPriority,
         tx: DBWriteTransaction
-    ) -> Promise<Void> {
+    ) {
         fatalError("Unimplemented")
     }
 

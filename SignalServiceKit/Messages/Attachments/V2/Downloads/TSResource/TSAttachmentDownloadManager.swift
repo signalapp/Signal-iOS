@@ -104,7 +104,7 @@ public class TSAttachmentDownloadManager: NSObject {
                 store: Self.pendingMessageDownloads,
                 transaction: transaction
             ) { pendingMessageId, downloadBehavior in
-                _ = self.enqueueDownloadOfAttachmentsForMessageId(
+                self.enqueueDownloadOfAttachmentsForMessageId(
                     pendingMessageId,
                     downloadBehavior: downloadBehavior,
                     transaction: transaction
@@ -116,7 +116,7 @@ public class TSAttachmentDownloadManager: NSObject {
                 store: Self.pendingStoryMessageDownloads,
                 transaction: transaction
             ) { pendingStoryMessageId, downloadBehavior in
-                _ = self.enqueueDownloadOfAttachmentsForStoryMessageId(
+                self.enqueueDownloadOfAttachmentsForStoryMessageId(
                     pendingStoryMessageId,
                     downloadBehavior: downloadBehavior,
                     transaction: transaction
@@ -706,11 +706,11 @@ public extension TSAttachmentDownloadManager {
         _ message: TSMessage,
         downloadBehavior: TSAttachmentDownloadBehavior,
         transaction: SDSAnyWriteTransaction
-    ) -> Promise<Void> {
+    ) {
         // No attachments, nothing to do.
-        guard !TSAttachmentStore().allAttachmentIds(for: message).isEmpty else { return .value(()) }
+        guard !TSAttachmentStore().allAttachmentIds(for: message).isEmpty else { return }
 
-        return enqueueDownloadOfAttachmentsForMessageId(
+        enqueueDownloadOfAttachmentsForMessageId(
             message.uniqueId,
             downloadBehavior: message is TSOutgoingMessage ? .bypassAll : downloadBehavior,
             transaction: transaction
@@ -721,7 +721,7 @@ public extension TSAttachmentDownloadManager {
         _ messageId: String,
         downloadBehavior: TSAttachmentDownloadBehavior,
         transaction: SDSAnyWriteTransaction
-    ) -> Promise<Void> {
+    ) {
         // If we're not the main app, queue up the download for the next time
         // the main app launches.
         guard CurrentAppContext().isMainApp else {
@@ -734,12 +734,10 @@ public extension TSAttachmentDownloadManager {
             // but without a mayor overhaul its unavoidable.
             // We are moving to v2 attachments, so an overhaul of this legacy
             // class is overkill.
-            return .value(())
+            return
         }
 
         Self.pendingMessageDownloads.removeValue(forKey: messageId, transaction: transaction)
-
-        let (promise, future) = Promise<Void>.pending()
 
         // Don't enqueue the attachment downloads until the write
         // transaction is committed or attachmentDownloads might race
@@ -748,18 +746,15 @@ public extension TSAttachmentDownloadManager {
             self.enqueueDownloadOfAttachments(
                 forMessageId: messageId,
                 attachmentGroup: .allAttachments,
-                downloadBehavior: downloadBehavior,
-                future: future
+                downloadBehavior: downloadBehavior
             )
         }
-        return promise
     }
 
     func enqueueDownloadOfAttachments(
         forMessageId messageId: String,
         attachmentGroup: AttachmentGroup,
-        downloadBehavior: TSAttachmentDownloadBehavior,
-        future: Future<Void>
+        downloadBehavior: TSAttachmentDownloadBehavior
     ) {
         guard !CurrentAppContext().isRunningTests else {
             return
@@ -790,16 +785,6 @@ public extension TSAttachmentDownloadManager {
                 transaction: tx
             )
         }
-
-        let allPromise = Promise.when(resolved:
-            jobRequest.bodyAttachmentPromises + [
-                jobRequest.quotedReplyThumbnailPromise,
-                jobRequest.contactShareAvatarPromise,
-                jobRequest.stickerPromise,
-                jobRequest.linkPreviewPromise
-            ].compacted()
-        ).asVoid(on: SyncScheduler())
-        future.resolve(on: SyncScheduler(), with: allPromise)
     }
 
     private func buildMessageJobRequest(
@@ -846,21 +831,21 @@ public extension TSAttachmentDownloadManager {
         _ message: StoryMessage,
         downloadBehavior: TSAttachmentDownloadBehavior,
         transaction: SDSAnyWriteTransaction
-    ) -> Promise<Void> {
+    ) {
         switch message.attachment {
         case .file:
             break
         case .text(let textAttachemnt):
             // No attachment, nothing to do.
             guard textAttachemnt.preview?.legacyImageAttachmentId != nil else {
-                return .value(())
+                return
             }
         case .foreignReferenceAttachment:
             owsFailDebug("Downloading v2 attachment with legacy download manager!")
-            return .value(())
+            return
         }
 
-        return enqueueDownloadOfAttachmentsForStoryMessageId(
+        enqueueDownloadOfAttachmentsForStoryMessageId(
             message.uniqueId,
             downloadBehavior: message.direction == .outgoing ? .bypassAll : downloadBehavior,
             transaction: transaction
@@ -871,7 +856,7 @@ public extension TSAttachmentDownloadManager {
         _ storyMessageId: String,
         downloadBehavior: TSAttachmentDownloadBehavior,
         transaction: SDSAnyWriteTransaction
-    ) -> Promise<Void> {
+    ) {
         // If we're not the main app, queue up the download for the next time
         // the main app launches.
         guard CurrentAppContext().isMainApp else {
@@ -884,34 +869,28 @@ public extension TSAttachmentDownloadManager {
             // but without a mayor overhaul its unavoidable.
             // We are moving to v2 attachments, so an overhaul of this legacy
             // class is overkill.
-            return .value(())
+            return
         }
 
         Self.pendingStoryMessageDownloads.removeValue(forKey: storyMessageId, transaction: transaction)
-
-        let (promise, future) = Promise<Void>.pending()
 
         // Don't enqueue the attachment downloads until the write
         // transaction is committed or attachmentDownloads might race
         // and not be able to find the attachment(s)/message/thread.
         transaction.addAsyncCompletionOffMain {
-            let downloadPromise = self.enqueueDownloadOfAttachments(
+            self.enqueueDownloadOfAttachments(
                 forStoryMessageId: storyMessageId,
                 downloadBehavior: downloadBehavior
             )
-            future.resolve(on: SyncScheduler(), with: downloadPromise)
         }
-
-        return promise
     }
 
-    @discardableResult
     func enqueueDownloadOfAttachments(
         forStoryMessageId storyMessageId: String,
         downloadBehavior: TSAttachmentDownloadBehavior
-    ) -> Promise<Void> {
+    ) {
         guard !CurrentAppContext().isRunningTests else {
-            return .value(())
+            return
         }
         let bundle: (StoryMessage, StoryMessageJobRequest)? = Self.databaseStorage.read { transaction in
             guard let message = StoryMessage.anyFetch(uniqueId: storyMessageId, transaction: transaction) else {
@@ -931,7 +910,7 @@ public extension TSAttachmentDownloadManager {
             return (message, jobRequest)
         }
         guard let (storyMessage, jobRequest) = bundle else {
-            return .value(())
+            return
         }
 
         self.enqueueJobs(jobRequest: jobRequest)
@@ -940,12 +919,12 @@ public extension TSAttachmentDownloadManager {
             Self.databaseStorage.touch(storyMessage: storyMessage, transaction: transaction)
         }
 
-        return Promise.when(
+        Promise.when(
             on: schedulers.sync,
             fulfilled: jobRequest.jobs.map(\.promise)
         ).catch(on: schedulers.sync) { error in
             Logger.warn("Failed to fetch attachments for StoryMessage: \(storyMessageId) with error: \(error)")
-        }
+        }.cauterize()
     }
 
     @objc

@@ -18,19 +18,17 @@ public enum TSResourceDownloads {
 
 public protocol TSResourceDownloadManager {
 
-    @discardableResult
     func enqueueDownloadOfAttachmentsForMessage(
         _ message: TSMessage,
         priority: AttachmentDownloadPriority,
         tx: DBWriteTransaction
-    ) -> Promise<Void>
+    )
 
-    @discardableResult
     func enqueueDownloadOfAttachmentsForStoryMessage(
         _ message: StoryMessage,
         priority: AttachmentDownloadPriority,
         tx: DBWriteTransaction
-    ) -> Promise<Void>
+    )
 
     func cancelDownload(for attachmentId: TSResourceId, tx: DBWriteTransaction)
 
@@ -39,19 +37,17 @@ public protocol TSResourceDownloadManager {
 
 extension TSResourceDownloadManager {
 
-    @discardableResult
     public func enqueueDownloadOfAttachmentsForMessage(
         _ message: TSMessage,
         tx: DBWriteTransaction
-    ) -> Promise<Void> {
-        return enqueueDownloadOfAttachmentsForMessage(message, priority: .default, tx: tx)
+    ) {
+        enqueueDownloadOfAttachmentsForMessage(message, priority: .default, tx: tx)
     }
 
-    @discardableResult
     public func enqueueDownloadOfAttachmentsForStoryMessage(
         _ message: StoryMessage,
         tx: DBWriteTransaction
-    ) -> Promise<Void> {
-        return enqueueDownloadOfAttachmentsForStoryMessage(message, priority: .default, tx: tx)
+    ) {
+        enqueueDownloadOfAttachmentsForStoryMessage(message, priority: .default, tx: tx)
     }
 }

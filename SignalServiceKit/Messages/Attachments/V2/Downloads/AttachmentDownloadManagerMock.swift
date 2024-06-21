@@ -23,16 +23,16 @@ open class AttachmentDownloadManagerMock: AttachmentDownloadManager {
         _ message: TSMessage,
         priority: AttachmentDownloadPriority,
         tx: DBWriteTransaction
-    ) -> Promise<Void> {
-        return .value(())
+    ) {
+        // Do nothing
     }
 
     open func enqueueDownloadOfAttachmentsForStoryMessage(
         _ message: StoryMessage,
         priority: AttachmentDownloadPriority,
         tx: DBWriteTransaction
-    ) -> SignalCoreKit.Promise<Void> {
-        return .value(())
+    ) {
+        // Do nothing
     }
 
     open func beginDownloadingIfNecessary() {

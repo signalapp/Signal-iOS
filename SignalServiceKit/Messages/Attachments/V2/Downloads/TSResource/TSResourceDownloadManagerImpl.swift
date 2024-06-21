@@ -53,12 +53,11 @@ public class TSResourceDownloadManagerImpl: TSResourceDownloadManager {
         )
     }
 
-    @discardableResult
     public func enqueueDownloadOfAttachmentsForMessage(
         _ message: TSMessage,
         priority: AttachmentDownloadPriority,
         tx: DBWriteTransaction
-    ) -> Promise<Void> {
+    ) {
         let resources = tsResourceStore.allAttachments(for: message, tx: tx)
         var hasLegacyRef = false
         var hasV2Ref = false
@@ -73,46 +72,45 @@ public class TSResourceDownloadManagerImpl: TSResourceDownloadManager {
         // They should all be one type or the other. No mixing allowed.
         owsAssertDebug(!(hasLegacyRef && hasV2Ref))
         if hasV2Ref && FeatureFlags.readV2Attachments {
-            return attachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(message, priority: priority, tx: tx)
+            attachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(message, priority: priority, tx: tx)
         } else if hasLegacyRef {
-            return tsAttachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(
+            tsAttachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(
                 message,
                 downloadBehavior: priority.tsDownloadBehavior,
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
         } else {
-            return .value(())
+            return
         }
     }
 
-    @discardableResult
     public func enqueueDownloadOfAttachmentsForStoryMessage(
         _ message: StoryMessage,
         priority: AttachmentDownloadPriority,
         tx: DBWriteTransaction
-    ) -> Promise<Void> {
+    ) {
         switch message.attachment {
         case .file:
-            return tsAttachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(
+            tsAttachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(
                 message,
                 downloadBehavior: priority.tsDownloadBehavior,
                 transaction: SDSDB.shimOnlyBridge(tx)
             )
         case .text(let attachment):
             if attachment.preview?.usesV2AttachmentReference == true {
-                return attachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(message, priority: priority, tx: tx)
+                attachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(message, priority: priority, tx: tx)
             } else if attachment.preview?.legacyImageAttachmentId != nil {
-                return tsAttachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(
+                tsAttachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(
                     message,
                     downloadBehavior: priority.tsDownloadBehavior,
                     transaction: SDSDB.shimOnlyBridge(tx)
                 )
             } else {
                 Logger.info("Nothing to download!")
-                return .value(())
+                return
             }
         case .foreignReferenceAttachment:
-            return attachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(message, priority: priority, tx: tx)
+            attachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(message, priority: priority, tx: tx)
         }
     }
 
