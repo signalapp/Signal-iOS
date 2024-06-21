@@ -1881,3 +1881,60 @@ CREATE
     ,"orderInMessage"
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "AttachmentDownloadQueue" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"sourceType" INTEGER NOT NULL
+            ,"attachmentId" INTEGER NOT NULL REFERENCES "Attachment"("id"
+        )
+            ON DELETE
+                CASCADE
+                ,"priority" INTEGER NOT NULL
+                ,"minRetryTimestamp" INTEGER
+                ,"retryAttempts" INTEGER NOT NULL
+                ,"localRelativeFilePath" TEXT NOT NULL
+)
+;
+
+CREATE
+    INDEX "index_AttachmentDownloadQueue_on_attachmentId_and_sourceType"
+        ON "AttachmentDownloadQueue"("attachmentId"
+    ,"sourceType"
+)
+;
+
+CREATE
+    INDEX "index_AttachmentDownloadQueue_on_priority"
+        ON "AttachmentDownloadQueue"("priority"
+)
+;
+
+CREATE
+    INDEX "partial_index_AttachmentDownloadQueue_on_priority_DESC_and_id_where_minRetryTimestamp_isNull"
+        ON "AttachmentDownloadQueue" (
+        "priority" DESC
+        ,"id"
+    )
+WHERE
+    minRetryTimestamp IS NULL
+;
+
+CREATE
+    INDEX "partial_index_AttachmentDownloadQueue_on_minRetryTimestamp_where_isNotNull"
+        ON "AttachmentDownloadQueue" ("minRetryTimestamp")
+WHERE
+    minRetryTimestamp IS NOT NULL
+;
+
+CREATE
+    TRIGGER "__AttachmentDownloadQueue_ad" AFTER DELETE
+                ON "AttachmentDownloadQueue" BEGIN INSERT
+                INTO
+                    OrphanedAttachment (localRelativeFilePath)
+                VALUES (OLD.localRelativeFilePath)
+;
+
+END
+;

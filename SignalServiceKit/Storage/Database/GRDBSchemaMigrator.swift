@@ -268,6 +268,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addOriginalAttachmentIdForQuotedReplyColumn
         case addClientUuidToTSAttachment
         case recreateMessageAttachmentReferenceMediaGalleryIndexes
+        case addAttachmentDownloadQueue
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2968,6 +2969,90 @@ public class GRDBSchemaMigrator: NSObject {
                     "orderInMessage"
                 ]
             )
+            return .success(())
+        }
+
+        migrator.registerMigration(.addAttachmentDownloadQueue) { tx in
+            try tx.database.create(table: "AttachmentDownloadQueue") { table in
+                table.autoIncrementedPrimaryKey("id").notNull()
+                table.column("sourceType", .integer).notNull()
+                table.column("attachmentId", .integer)
+                    .references("Attachment", column: "id", onDelete: .cascade)
+                    .notNull()
+                table.column("priority", .integer).notNull()
+                table.column("minRetryTimestamp", .integer)
+                table.column("retryAttempts", .integer).notNull()
+                table.column("localRelativeFilePath", .text).notNull()
+            }
+
+            // When we enqueue a download (from an attachment in a particular source)
+            // we want to see if there's an existing download enqueued.
+            try tx.database.create(
+                index: "index_AttachmentDownloadQueue_on_attachmentId_and_sourceType",
+                on: "AttachmentDownloadQueue",
+                columns: [
+                    "attachmentId",
+                    "sourceType"
+                ]
+            )
+
+            // We only allow N downloads of priority "default", so if we exceed this
+            // limit we need to drop the oldest one. This helps us count them.
+            try tx.database.create(
+                index: "index_AttachmentDownloadQueue_on_priority",
+                on: "AttachmentDownloadQueue",
+                columns: [
+                    "priority"
+                ]
+            )
+
+            // The index we use to pop the next download off the queue.
+            // Only index where minRetryTimestamp == nil; we eliminate non-retryable rows.
+            // Then we sort by priority (DESC).
+            // Last, we break ties by row id (ASC, FIFO order).
+            // GRDB utilities don't let you specify a sort order for columns
+            // so just do raw SQL.
+            try tx.database.execute(sql: """
+                CREATE INDEX
+                    "partial_index_AttachmentDownloadQueue_on_priority_DESC_and_id_where_minRetryTimestamp_isNull"
+                ON
+                    "AttachmentDownloadQueue"
+                (
+                    "priority" DESC
+                    ,"id"
+                )
+                WHERE minRetryTimestamp IS NULL
+            """)
+
+            // We want to get the lowest minRetryTimestamp so we can nil out the column
+            // and mark that row as ready to retry when we reach that time.
+            try tx.database.execute(sql: """
+                CREATE INDEX
+                    "partial_index_AttachmentDownloadQueue_on_minRetryTimestamp_where_isNotNull"
+                ON
+                    "AttachmentDownloadQueue"
+                (
+                    "minRetryTimestamp"
+                )
+                WHERE minRetryTimestamp IS NOT NULL
+            """)
+
+            /// When we delete an attachment download row in the database, insert the partial download
+            /// into the orphan table so we can clean up the file on disk.
+            try tx.database.execute(sql: """
+                CREATE TRIGGER
+                    "__AttachmentDownloadQueue_ad"
+                AFTER DELETE ON
+                    "AttachmentDownloadQueue"
+                BEGIN
+                    INSERT INTO OrphanedAttachment (
+                        localRelativeFilePath
+                    ) VALUES (
+                        OLD.localRelativeFilePath
+                    );
+                END;
+            """)
+
             return .success(())
         }
 

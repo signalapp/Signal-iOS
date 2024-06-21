@@ -950,6 +950,7 @@
 		669572FE2C1A1E050092B755 /* MockAttachmentThumbnailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669572FD2C1A1E050092B755 /* MockAttachmentThumbnailService.swift */; };
 		669573002C1A37020092B755 /* AttachmentThumbnailQuality.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669572FF2C1A37020092B755 /* AttachmentThumbnailQuality.swift */; };
 		669573022C1B77C00092B755 /* QueuedAttachmentDownloadRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669573012C1B77C00092B755 /* QueuedAttachmentDownloadRecord.swift */; };
+		669573082C1B9ECD0092B755 /* AttachmentDownloadQueueDBTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669573052C1B9E360092B755 /* AttachmentDownloadQueueDBTests.swift */; };
 		6698FC0D297EFE21004EFC30 /* KeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC0C297EFE21004EFC30 /* KeyValueStore.swift */; };
 		6698FC0F297F03FE004EFC30 /* KeyValueStoreFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC0E297F03FE004EFC30 /* KeyValueStoreFactory.swift */; };
 		6698FC11297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC10297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStore.swift */; };
@@ -3888,6 +3889,7 @@
 		669572FD2C1A1E050092B755 /* MockAttachmentThumbnailService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAttachmentThumbnailService.swift; sourceTree = "<group>"; };
 		669572FF2C1A37020092B755 /* AttachmentThumbnailQuality.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentThumbnailQuality.swift; sourceTree = "<group>"; };
 		669573012C1B77C00092B755 /* QueuedAttachmentDownloadRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueuedAttachmentDownloadRecord.swift; sourceTree = "<group>"; };
+		669573052C1B9E360092B755 /* AttachmentDownloadQueueDBTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDownloadQueueDBTests.swift; sourceTree = "<group>"; };
 		6698FC0C297EFE21004EFC30 /* KeyValueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyValueStore.swift; sourceTree = "<group>"; };
 		6698FC0E297F03FE004EFC30 /* KeyValueStoreFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyValueStoreFactory.swift; sourceTree = "<group>"; };
 		6698FC10297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SDSKeyValueStore+KeyValueStore.swift"; sourceTree = "<group>"; };
@@ -8210,6 +8212,7 @@
 				66D7B9332B9945E60005C98B /* AttachmentDownloadManagerImpl.swift */,
 				66BED7EB2B9B9A8B00236BAD /* AttachmentDownloadManagerMock.swift */,
 				66D7B93F2B9A67B00005C98B /* AttachmentDownloadPriority.swift */,
+				669573052C1B9E360092B755 /* AttachmentDownloadQueueDBTests.swift */,
 				664E8D932BD86AFB00C4968A /* AttachmentDownloadState.swift */,
 				669573012C1B77C00092B755 /* QueuedAttachmentDownloadRecord.swift */,
 			);
@@ -14694,6 +14697,7 @@
 				50E51A3B2AE989C4004F9069 /* AccountAttributesTest.swift in Sources */,
 				F915A77229CB6F6F00EB6F68 /* AccountDataReportTest.swift in Sources */,
 				F908C67B29F08E4E00C3EFC4 /* AppExpiryTest.swift in Sources */,
+				669573082C1B9ECD0092B755 /* AttachmentDownloadQueueDBTests.swift in Sources */,
 				664013302C00155E00F10FC4 /* AttachmentStoreTests.swift in Sources */,
 				66C1A8852BB77EE00076C65A /* AttachmentUploadManagerTestHelper.swift in Sources */,
 				66C1A8862BB77EE30076C65A /* AttachmentUploadManagerTestMocks.swift in Sources */,

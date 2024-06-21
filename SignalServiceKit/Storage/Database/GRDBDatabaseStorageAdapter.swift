@@ -200,7 +200,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             AttachmentReference.MessageAttachmentReferenceRecord.self,
             AttachmentReference.StoryMessageAttachmentReferenceRecord.self,
             AttachmentReference.ThreadAttachmentReferenceRecord.self,
-            OrphanedAttachmentRecord.self
+            OrphanedAttachmentRecord.self,
+            QueuedAttachmentDownloadRecord.self,
         ]
     }
 
