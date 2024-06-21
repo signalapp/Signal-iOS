@@ -6,19 +6,9 @@
 import SignalCoreKit
 
 protocol DeleteForMeAddressableMessageFinder {
-    typealias Outgoing = DeleteForMeSyncMessage.Outgoing
-    typealias Incoming = DeleteForMeSyncMessage.Incoming
-
-    func findMostRecentAddressableMessages(
-        threadUniqueId: String,
-        maxCount: Int,
-        localIdentifiers: LocalIdentifiers,
-        tx: any DBReadTransaction
-    ) -> [Outgoing.AddressableMessage]
-
     func findLocalMessage(
         threadUniqueId: String,
-        addressableMessage: Incoming.AddressableMessage,
+        addressableMessage: DeleteForMeSyncMessage.Incoming.AddressableMessage,
         tx: any DBReadTransaction
     ) -> TSMessage?
 
@@ -37,50 +27,9 @@ final class DeleteForMeAddressableMessageFinderImpl: DeleteForMeAddressableMessa
         self.tsAccountManager = tsAccountManager
     }
 
-    func findMostRecentAddressableMessages(
-        threadUniqueId: String,
-        maxCount: Int,
-        localIdentifiers: LocalIdentifiers,
-        tx: any DBReadTransaction
-    ) -> [Outgoing.AddressableMessage] {
-        var addressableMessages = [Outgoing.AddressableMessage]()
-
-        do {
-            try DeleteForMeMostRecentAddressableMessageCursor(
-                threadUniqueId: threadUniqueId,
-                sdsTx: SDSDB.shimOnlyBridge(tx)
-            ).iterate { interaction -> Bool in
-                if let incomingMessage = interaction as? TSIncomingMessage {
-                    if let addressableMessage = Outgoing.AddressableMessage(
-                        incomingMessage: incomingMessage
-                    ) {
-                        addressableMessages.append(addressableMessage)
-                    } else {
-                        owsFailDebug("Failed to build addressable message for incoming message!")
-                    }
-                } else if let outgoingMessage = interaction as? TSOutgoingMessage {
-                    addressableMessages.append(Outgoing.AddressableMessage(
-                        outgoingMessage: outgoingMessage,
-                        localIdentifiers: localIdentifiers
-                    ))
-                } else {
-                    owsFail("Unexpected interaction type! \(type(of: interaction))")
-                }
-
-                // Continue iterating until we have `maxCount` items.
-                return addressableMessages.count < maxCount
-            }
-        } catch {
-            owsFailDebug("Failed to enumerate interactions!")
-            return []
-        }
-
-        return addressableMessages
-    }
-
     func findLocalMessage(
         threadUniqueId: String,
-        addressableMessage: Incoming.AddressableMessage,
+        addressableMessage: DeleteForMeSyncMessage.Incoming.AddressableMessage,
         tx: any DBReadTransaction
     ) -> TSMessage? {
         let authorAddress: SignalServiceAddress
@@ -135,11 +84,7 @@ final class DeleteForMeAddressableMessageFinderImpl: DeleteForMeAddressableMessa
 #if TESTABLE_BUILD
 
 open class MockDeleteForMeAddressableMessageFinder: DeleteForMeAddressableMessageFinder {
-    func findMostRecentAddressableMessages(threadUniqueId: String, maxCount: Int, localIdentifiers: LocalIdentifiers, tx: any DBReadTransaction) -> [Outgoing.AddressableMessage] {
-        return []
-    }
-
-    func findLocalMessage(threadUniqueId: String, addressableMessage: Incoming.AddressableMessage, tx: any DBReadTransaction) -> TSMessage? {
+    func findLocalMessage(threadUniqueId: String, addressableMessage: DeleteForMeSyncMessage.Incoming.AddressableMessage, tx: any DBReadTransaction) -> TSMessage? {
         return nil
     }
 

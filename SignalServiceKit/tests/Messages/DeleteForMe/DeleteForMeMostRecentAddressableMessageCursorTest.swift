@@ -8,27 +8,27 @@ import XCTest
 @testable import SignalServiceKit
 
 final class DeleteForMeMostRecentAddressableMessageCursorTest: XCTestCase {
-    func makeInteraction(rowId: Int64) -> TSInteraction {
-        let interaction = TSInteraction(
+    func makeMessage(rowId: Int64) -> TSMessage {
+        let message = TSOutgoingMessage(
             uniqueId: .uniqueId(),
             thread: TSThread(uniqueId: .uniqueId())
         )
-        interaction.updateRowId(rowId)
-        return interaction
+        message.updateRowId(rowId)
+        return message
     }
 
     func testInterleavedCursorOrdering() throws {
-        let incomingMessageCursor = MockInteractionCursor(interactions: [
-            makeInteraction(rowId: 111),
-            makeInteraction(rowId: 11),
-            makeInteraction(rowId: 1),
+        let incomingMessageCursor = MockInteractionCursor(messages: [
+            makeMessage(rowId: 111),
+            makeMessage(rowId: 11),
+            makeMessage(rowId: 1),
         ])
 
-        let outgoingMessageCursor = MockInteractionCursor(interactions: [
-            makeInteraction(rowId: 12),
-            makeInteraction(rowId: 10),
-            makeInteraction(rowId: 9),
-            makeInteraction(rowId: 8),
+        let outgoingMessageCursor = MockInteractionCursor(messages: [
+            makeMessage(rowId: 12),
+            makeMessage(rowId: 10),
+            makeMessage(rowId: 9),
+            makeMessage(rowId: 8),
         ])
 
         let addressableMessageCursor = try DeleteForMeMostRecentAddressableMessageCursor(
@@ -49,14 +49,14 @@ final class DeleteForMeMostRecentAddressableMessageCursorTest: XCTestCase {
 // MARK: -
 
 private class MockInteractionCursor: DeleteForMeAddressableMessageCursor {
-    private var interactions: [TSInteraction]
+    private var messages: [TSMessage]
 
-    init(interactions: [TSInteraction]) {
-        self.interactions = interactions
+    init(messages: [TSMessage]) {
+        self.messages = messages
     }
 
-    func nextAddressableMessage() throws -> TSInteraction? {
-        return interactions.popFirst()
+    func nextAddressableMessage() throws -> TSMessage? {
+        return messages.popFirst()
     }
 }
 

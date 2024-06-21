@@ -15,20 +15,77 @@ extension DeleteForMeSyncMessage {
 
         /// Wraps data necessary send a `DeleteForMe` sync message about a
         /// thread deletion.
-        public struct ThreadDeletionContext {
-            fileprivate enum DeletionType {
-                case conversation(ConversationDelete)
-                case localOnlyConversation(LocalOnlyConversationDelete)
+        ///
+        /// This is intentionally a reference type to facilitate its use as a
+        /// kind of "builder".
+        public class ThreadDeletionContext {
+            private enum Constants {
+                /// The max number of addressable messages to collect, per
+                /// category thereof.
+                static let maxAddressableMessages = 5
             }
 
-            fileprivate let wrapped: DeletionType
+            private let threadUniqueId: String
+            private let localIdentifiers: LocalIdentifiers
+            private var lastAddedMessageRowId: Int64 = .max
 
-            fileprivate init(_ conversation: ConversationDelete) {
-                wrapped = .conversation(conversation)
+            fileprivate let conversationIdentifier: ConversationIdentifier
+            fileprivate let isFullDelete: Bool
+
+            fileprivate var areAnyMostRecentMessagesExpiring: Bool = false
+            fileprivate var mostRecentAddressableMessages: [AddressableMessage] = []
+            fileprivate var mostRecentNonExpiringAddressableMessages: [AddressableMessage] = []
+
+            init(
+                conversationIdentifier: ConversationIdentifier,
+                isFullDelete: Bool,
+                threadUniqueId: String,
+                localIdentifiers: LocalIdentifiers
+            ) {
+                self.conversationIdentifier = conversationIdentifier
+                self.isFullDelete = isFullDelete
+
+                self.threadUniqueId = threadUniqueId
+                self.localIdentifiers = localIdentifiers
             }
 
-            fileprivate init(_ localOnly: LocalOnlyConversationDelete) {
-                wrapped = .localOnlyConversation(localOnly)
+            /// Register the given message as having been deleted from the
+            /// thread this context describes.
+            ///
+            /// - Important
+            /// All messages passed to this method must belong to the thread
+            /// this context describes.
+            ///
+            /// - Important
+            /// Messages must be passed to this method in chat order for the
+            /// thread; i.e., descending by SQL row ID.
+            func registerMessageDeletedFromThread(_ message: TSMessage) {
+                do {
+                    let messageRowId = message.sqliteRowId!
+                    owsAssert(messageRowId < lastAddedMessageRowId)
+                    lastAddedMessageRowId = messageRowId
+
+                    owsAssert(message.uniqueThreadId == threadUniqueId)
+                }
+
+                guard let addressableMessage: AddressableMessage = .addressing(
+                    message: message,
+                    localIdentifiers: localIdentifiers
+                ) else { return }
+
+                let isMessageExpiring = message.expiresAt > 0
+
+                if mostRecentAddressableMessages.count < Constants.maxAddressableMessages {
+                    mostRecentAddressableMessages.append(addressableMessage)
+                    areAnyMostRecentMessagesExpiring = areAnyMostRecentMessagesExpiring || isMessageExpiring
+                }
+
+                if
+                    mostRecentNonExpiringAddressableMessages.count < Constants.maxAddressableMessages,
+                    !isMessageExpiring
+                {
+                    mostRecentNonExpiringAddressableMessages.append(addressableMessage)
+                }
             }
         }
     }
@@ -39,12 +96,13 @@ extension DeleteForMeSyncMessage {
 public protocol DeleteForMeOutgoingSyncMessageManager {
     typealias Outgoing = DeleteForMeSyncMessage.Outgoing
 
-    /// Send a sync message for the given deleted interactions.
+    /// Send a sync message for the given deleted messages.
     /// - Important
-    /// All the given interactions must belong to the given thread.
+    /// All the given messages must belong to the given thread.
     func send(
-        deletedInteractions: [TSInteraction],
+        deletedMessages: [TSMessage],
         thread: TSThread,
+        localIdentifiers: LocalIdentifiers,
         tx: any DBWriteTransaction
     )
 
@@ -55,6 +113,7 @@ public protocol DeleteForMeOutgoingSyncMessageManager {
     func send(
         deletedAttachmentIdentifiers: [TSMessage: [Outgoing.AttachmentIdentifier]],
         thread: TSThread,
+        localIdentifiers: LocalIdentifiers,
         tx: any DBWriteTransaction
     )
 
@@ -64,13 +123,19 @@ public protocol DeleteForMeOutgoingSyncMessageManager {
         tx: any DBWriteTransaction
     )
 
-    /// Build a deletion context for the given thread.
+    /// Get a deletion context for the given thread. This context should be
+    /// requested by callers before a thread is deleted, and subsequently
+    /// populated with the messages deleted from the thread during its deletion.
     ///
-    /// This must be done before the thread is deleted, since it will look up
-    /// the interactions the thread contains.
-    func buildThreadDeletionContext(
+    /// - Important
+    /// The returned context is only valid within the transaction in which it
+    /// was created.
+    ///
+    /// - SeeAlso ``Outgoing/ThreadDeletionContext/registerMessageDeletedFromThread``
+    func makeThreadDeletionContext(
         thread: TSThread,
         isFullDelete: Bool,
+        localIdentifiers: LocalIdentifiers,
         tx: any DBReadTransaction
     ) -> Outgoing.ThreadDeletionContext?
 }
@@ -83,6 +148,7 @@ public extension DeleteForMeOutgoingSyncMessageManager {
     func send(
         deletedAttachments: [TSMessage: [ReferencedTSResource]],
         thread: TSThread,
+        localIdentifiers: LocalIdentifiers,
         tx: any DBWriteTransaction
     ) {
         var deletedAttachmentIdentifiers = [TSMessage: [Outgoing.AttachmentIdentifier]]()
@@ -102,6 +168,7 @@ public extension DeleteForMeOutgoingSyncMessageManager {
         send(
             deletedAttachmentIdentifiers: deletedAttachmentIdentifiers,
             thread: thread,
+            localIdentifiers: localIdentifiers,
             tx: tx
         )
     }
@@ -110,47 +177,37 @@ public extension DeleteForMeOutgoingSyncMessageManager {
 // MARK: -
 
 final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMessageManager {
-    private let addressableMessageFinder: any DeleteForMeAddressableMessageFinder
     private let deleteForMeSyncMessageSettingsStore: any DeleteForMeSyncMessageSettingsStore
     private let recipientDatabaseTable: any RecipientDatabaseTable
     private let syncMessageSender: any Shims.SyncMessageSender
     private let threadStore: any ThreadStore
-    private let tsAccountManager: any TSAccountManager
 
     private let logger = PrefixedLogger(prefix: "[DeleteForMe]")
 
     init(
-        addressableMessageFinder: any DeleteForMeAddressableMessageFinder,
         deleteForMeSyncMessageSettingsStore: any DeleteForMeSyncMessageSettingsStore,
         recipientDatabaseTable: any RecipientDatabaseTable,
         syncMessageSender: any Shims.SyncMessageSender,
-        threadStore: any ThreadStore,
-        tsAccountManager: any TSAccountManager
+        threadStore: any ThreadStore
     ) {
-        self.addressableMessageFinder = addressableMessageFinder
         self.deleteForMeSyncMessageSettingsStore = deleteForMeSyncMessageSettingsStore
         self.recipientDatabaseTable = recipientDatabaseTable
         self.syncMessageSender = syncMessageSender
         self.threadStore = threadStore
-        self.tsAccountManager = tsAccountManager
     }
 
     func send(
-        deletedInteractions: [TSInteraction],
+        deletedMessages: [TSMessage],
         thread: TSThread,
+        localIdentifiers: LocalIdentifiers,
         tx: any DBWriteTransaction
     ) {
-        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
-            logger.error("Skipping individual-message delete sync: not registered!")
-            return
-        }
-
         guard let conversationIdentifier = conversationIdentifier(thread: thread, tx: tx) else {
             return
         }
 
-        let addressableMessages = deletedInteractions.compactMap { interaction -> Outgoing.AddressableMessage? in
-            return addressableMessage(interaction: interaction, localIdentifiers: localIdentifiers)
+        let addressableMessages = deletedMessages.compactMap { message -> Outgoing.AddressableMessage? in
+            return .addressing(message: message, localIdentifiers: localIdentifiers)
         }
 
         if addressableMessages.isEmpty { return }
@@ -179,21 +236,17 @@ final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMe
     func send(
         deletedAttachmentIdentifiers: [TSMessage: [Outgoing.AttachmentIdentifier]],
         thread: TSThread,
+        localIdentifiers: LocalIdentifiers,
         tx: any DBWriteTransaction
     ) {
-        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
-            logger.error("Skipping individual-attachments delete sync: not registered!")
-            return
-        }
-
         guard let conversationIdentifier = conversationIdentifier(thread: thread, tx: tx) else {
             return
         }
 
         let attachmentDeletes: [Outgoing.AttachmentDelete] = deletedAttachmentIdentifiers
             .compactMap { (message, attachmentIdentifiers) -> [Outgoing.AttachmentDelete]? in
-                guard let targetMessage = addressableMessage(
-                    interaction: message,
+                guard let targetMessage: Outgoing.AddressableMessage = .addressing(
+                    message: message,
                     localIdentifiers: localIdentifiers
                 ) else {
                     // We failed to convert the deleted-from message into an
@@ -235,11 +288,23 @@ final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMe
             var localOnlyConversationDeletes = [Outgoing.LocalOnlyConversationDelete]()
 
             for context in deletionContextBatch {
-                switch context.wrapped {
-                case .conversation(let conversation):
-                    conversationDeletes.append(conversation)
-                case .localOnlyConversation(let localOnly):
-                    localOnlyConversationDeletes.append(localOnly)
+                if context.mostRecentAddressableMessages.isEmpty {
+                    localOnlyConversationDeletes.append(Outgoing.LocalOnlyConversationDelete(
+                        conversationIdentifier: context.conversationIdentifier
+                    ))
+                } else {
+                    conversationDeletes.append(Outgoing.ConversationDelete(
+                        conversationIdentifier: context.conversationIdentifier,
+                        mostRecentAddressableMessages: context.mostRecentAddressableMessages,
+                        mostRecentNonExpiringAddressableMessages: { () -> [Outgoing.AddressableMessage] in
+                            if context.areAnyMostRecentMessagesExpiring {
+                                return context.mostRecentNonExpiringAddressableMessages
+                            }
+
+                            return []
+                        }(),
+                        isFullDelete: context.isFullDelete
+                    ))
                 }
             }
 
@@ -255,39 +320,22 @@ final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMe
         }
     }
 
-    func buildThreadDeletionContext(
+    func makeThreadDeletionContext(
         thread: TSThread,
         isFullDelete: Bool,
+        localIdentifiers: LocalIdentifiers,
         tx: any DBReadTransaction
     ) -> Outgoing.ThreadDeletionContext? {
-        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
-            logger.error("Skipping deletion context creation: not registered!")
-            return nil
-        }
-
         guard let conversationIdentifier = conversationIdentifier(thread: thread, tx: tx) else {
             return nil
         }
 
-        let mostRecentAddressableMessages: [Outgoing.AddressableMessage] = addressableMessageFinder
-            .findMostRecentAddressableMessages(
-                threadUniqueId: thread.uniqueId,
-                maxCount: 5,
-                localIdentifiers: localIdentifiers,
-                tx: tx
-            )
-
-        if mostRecentAddressableMessages.isEmpty {
-            return Outgoing.ThreadDeletionContext(Outgoing.LocalOnlyConversationDelete(
-                conversationIdentifier: conversationIdentifier
-            ))
-        } else {
-            return Outgoing.ThreadDeletionContext(Outgoing.ConversationDelete(
-                conversationIdentifier: conversationIdentifier,
-                mostRecentAddressableMessages: mostRecentAddressableMessages,
-                isFullDelete: isFullDelete
-            ))
-        }
+        return Outgoing.ThreadDeletionContext(
+            conversationIdentifier: conversationIdentifier,
+            isFullDelete: isFullDelete,
+            threadUniqueId: thread.uniqueId,
+            localIdentifiers: localIdentifiers
+        )
     }
 
     // MARK: -
@@ -311,22 +359,6 @@ final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMe
         }
 
         logger.warn("No conversation identifier for thread of type: \(type(of: thread)).")
-        return nil
-    }
-
-    private func addressableMessage(
-        interaction: TSInteraction,
-        localIdentifiers: LocalIdentifiers
-    ) -> Outgoing.AddressableMessage? {
-        if let incomingMessage = interaction as? TSIncomingMessage {
-            return Outgoing.AddressableMessage(incomingMessage: incomingMessage)
-        } else if let outgoingMessage = interaction as? TSOutgoingMessage {
-            return Outgoing.AddressableMessage(
-                outgoingMessage: outgoingMessage,
-                localIdentifiers: localIdentifiers
-            )
-        }
-
         return nil
     }
 
@@ -463,17 +495,17 @@ final class _DeleteForMeOutgoingSyncMessageManagerImpl_SyncMessageSender_Wrapper
 #if TESTABLE_BUILD
 
 open class MockDeleteForMeOutgoingSyncMessageManager: DeleteForMeOutgoingSyncMessageManager {
-    var sendInteractionMock: ((
-        _ interactions: [TSInteraction]
+    var sendMessagesMock: ((
+        _ messages: [TSMessage]
     ) -> Void)!
-    public func send(deletedInteractions: [TSInteraction], thread: TSThread, tx: any DBWriteTransaction) {
-        sendInteractionMock(deletedInteractions)
+    public func send(deletedMessages: [TSMessage], thread: TSThread, localIdentifiers: LocalIdentifiers, tx: any DBWriteTransaction) {
+        sendMessagesMock(deletedMessages)
     }
 
     var sendAttachmentsMock: ((
         _ attachmentIdentifiers: [TSMessage: [Outgoing.AttachmentIdentifier]]
     ) -> Void)!
-    public func send(deletedAttachmentIdentifiers: [TSMessage: [Outgoing.AttachmentIdentifier]], thread: TSThread, tx: any DBWriteTransaction) {
+    public func send(deletedAttachmentIdentifiers: [TSMessage: [Outgoing.AttachmentIdentifier]], thread: TSThread, localIdentifiers: LocalIdentifiers, tx: any DBWriteTransaction) {
         sendAttachmentsMock(deletedAttachmentIdentifiers)
     }
 
@@ -484,7 +516,7 @@ open class MockDeleteForMeOutgoingSyncMessageManager: DeleteForMeOutgoingSyncMes
         sendDeletionContextMock(threadDeletionContexts)
     }
 
-    public func buildThreadDeletionContext(thread: TSThread, isFullDelete: Bool, tx: any DBReadTransaction) -> Outgoing.ThreadDeletionContext? {
+    public func makeThreadDeletionContext(thread: TSThread, isFullDelete: Bool, localIdentifiers: LocalIdentifiers, tx: any DBReadTransaction) -> Outgoing.ThreadDeletionContext? {
         let conversationIdentifier: Outgoing.ConversationIdentifier = if let contactThread = thread as? TSContactThread {
             .threadServiceId(serviceId: contactThread.contactUUID!)
         } else if let groupThread = thread as? TSGroupThread {
@@ -493,7 +525,12 @@ open class MockDeleteForMeOutgoingSyncMessageManager: DeleteForMeOutgoingSyncMes
             owsFail("Invalid thread!")
         }
 
-        return Outgoing.ThreadDeletionContext(Outgoing.LocalOnlyConversationDelete(conversationIdentifier: conversationIdentifier))
+        return Outgoing.ThreadDeletionContext(
+            conversationIdentifier: conversationIdentifier,
+            isFullDelete: true,
+            threadUniqueId: thread.uniqueId,
+            localIdentifiers: localIdentifiers
+        )
     }
 }
 

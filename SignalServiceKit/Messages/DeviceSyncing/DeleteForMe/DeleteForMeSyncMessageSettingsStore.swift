@@ -33,7 +33,7 @@ final class DeleteForMeSyncMessageSettingsStoreImpl: DeleteForMeSyncMessageSetti
     }
 
     func isSendingEnabled(tx: any DBReadTransaction) -> Bool {
-        // [DeleteForMe] TODO: We can remove this method, and its callers, 90d after delete-sync support ships.
+        // TODO: [DeleteForMe] We can remove this method, and its callers, 90d after delete-sync support ships.
         return keyValueStore.hasValue(StoreKeys.isSendingEnabled, transaction: tx)
     }
 

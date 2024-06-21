@@ -125,7 +125,7 @@ public struct AccountAttributes: Codable {
         public let pni = true
         public let paymentActivation = true
 
-        // [DeleteForMe] TODO: Toggle on once rollout plan is finalized.
+        // TODO: [DeleteForMe] Toggle on once rollout plan is finalized.
         public let deleteSyncSendSupport = FeatureFlags.enableDeleteSyncCapability
 
         public enum CodingKeys: String, CodingKey {

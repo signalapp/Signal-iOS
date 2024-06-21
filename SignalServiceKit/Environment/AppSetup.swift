@@ -509,16 +509,11 @@ public class AppSetup {
         let deleteForMeSyncMessageSettingsStore = DeleteForMeSyncMessageSettingsStoreImpl(
             keyValueStoreFactory: keyValueStoreFactory
         )
-        let deleteForMeAddressableMessageFinder = DeleteForMeAddressableMessageFinderImpl(
-            tsAccountManager: tsAccountManager
-        )
         let deleteForMeOutgoingSyncMessageManager = DeleteForMeOutgoingSyncMessageManagerImpl(
-            addressableMessageFinder: deleteForMeAddressableMessageFinder,
             deleteForMeSyncMessageSettingsStore: deleteForMeSyncMessageSettingsStore,
             recipientDatabaseTable: recipientDatabaseTable,
             syncMessageSender: DeleteForMeOutgoingSyncMessageManagerImpl.Wrappers.SyncMessageSender(messageSenderJobQueue),
-            threadStore: threadStore,
-            tsAccountManager: tsAccountManager
+            threadStore: threadStore
         )
         let interactionDeleteManager = InteractionDeleteManagerImpl(
             callRecordStore: callRecordStore,
@@ -528,7 +523,8 @@ public class AppSetup {
             interactionReadCache: modelReadCaches.interactionReadCache,
             interactionStore: interactionStore,
             mediaGalleryResourceManager: mediaGalleryResourceManager,
-            messageSendLog: messageSendLog
+            messageSendLog: messageSendLog,
+            tsAccountManager: tsAccountManager
         )
 
         let callRecordDeleteAllJobQueue = CallRecordDeleteAllJobQueue(
@@ -570,6 +566,9 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
+        let deleteForMeAddressableMessageFinder = DeleteForMeAddressableMessageFinderImpl(
+            tsAccountManager: tsAccountManager
+        )
         let bulkDeleteInteractionJobQueue = BulkDeleteInteractionJobQueue(
             addressableMessageFinder: deleteForMeAddressableMessageFinder,
             db: db,

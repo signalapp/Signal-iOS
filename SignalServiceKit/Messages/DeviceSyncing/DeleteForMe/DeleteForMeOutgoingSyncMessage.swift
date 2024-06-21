@@ -159,7 +159,23 @@ extension DeleteForMeSyncMessage.Outgoing {
         }
         #endif
 
-        init?(incomingMessage: TSIncomingMessage) {
+        static func addressing(
+            message: TSMessage,
+            localIdentifiers: LocalIdentifiers
+        ) -> AddressableMessage? {
+            if let incomingMessage = message as? TSIncomingMessage {
+                return AddressableMessage(incomingMessage: incomingMessage)
+            } else if let outgoingMessage = message as? TSOutgoingMessage {
+                return AddressableMessage(
+                    outgoingMessage: outgoingMessage,
+                    localIdentifiers: localIdentifiers
+                )
+            }
+
+            return nil
+        }
+
+        private init?(incomingMessage: TSIncomingMessage) {
             if let authorAci = incomingMessage.authorAddress.aci {
                 author = .aci(aci: authorAci.serviceIdUppercaseString)
             } else if let authorE164 = incomingMessage.authorAddress.e164 {
@@ -171,7 +187,7 @@ extension DeleteForMeSyncMessage.Outgoing {
             sentTimestamp = incomingMessage.timestamp
         }
 
-        init(outgoingMessage: TSOutgoingMessage, localIdentifiers: LocalIdentifiers) {
+        private init(outgoingMessage: TSOutgoingMessage, localIdentifiers: LocalIdentifiers) {
             author = .aci(aci: localIdentifiers.aci.serviceIdUppercaseString)
             sentTimestamp = outgoingMessage.timestamp
         }
@@ -224,14 +240,54 @@ extension DeleteForMeSyncMessage.Outgoing {
     }
 
     struct ConversationDelete: Codable, Equatable {
+        private enum CodingKeys: String, CodingKey {
+            case conversationIdentifier
+            case mostRecentAddressableMessages
+            case mostRecentNonExpiringAddressableMessages
+            case isFullDelete
+        }
+
         let conversationIdentifier: ConversationIdentifier
         let mostRecentAddressableMessages: [AddressableMessage]
+        /// Non-expiring messages were added after this type may already have
+        /// been persisted, so this needs to be an optional property that
+        /// decodes as `nil` from existing data.
+        let mostRecentNonExpiringAddressableMessages: [AddressableMessage]?
         let isFullDelete: Bool
+
+        #if TESTABLE_BUILD
+        init(
+            conversationIdentifier: ConversationIdentifier,
+            mostRecentAddressableMessages: [AddressableMessage],
+            nilNonExpiringAddressableMessages: Void,
+            isFullDelete: Bool
+        ) {
+            self.conversationIdentifier = conversationIdentifier
+            self.mostRecentAddressableMessages = mostRecentAddressableMessages
+            self.mostRecentNonExpiringAddressableMessages = nil
+            self.isFullDelete = isFullDelete
+        }
+        #endif
+
+        init(
+            conversationIdentifier: ConversationIdentifier,
+            mostRecentAddressableMessages: [AddressableMessage],
+            mostRecentNonExpiringAddressableMessages: [AddressableMessage],
+            isFullDelete: Bool
+        ) {
+            self.conversationIdentifier = conversationIdentifier
+            self.mostRecentAddressableMessages = mostRecentAddressableMessages
+            self.mostRecentNonExpiringAddressableMessages = mostRecentNonExpiringAddressableMessages
+            self.isFullDelete = isFullDelete
+        }
 
         fileprivate var asProto: SSKProtoSyncMessageDeleteForMeConversationDelete {
             let protoBuilder = SSKProtoSyncMessageDeleteForMeConversationDelete.builder()
             protoBuilder.setConversation(conversationIdentifier.asProto)
             protoBuilder.setMostRecentMessages(mostRecentAddressableMessages.map { $0.asProto })
+            if let mostRecentNonExpiringAddressableMessages {
+                protoBuilder.setMostRecentNonExpiringMessages(mostRecentNonExpiringAddressableMessages.map { $0.asProto })
+            }
             protoBuilder.setIsFullDelete(isFullDelete)
             return protoBuilder.buildInfallibly()
         }

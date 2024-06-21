@@ -43,7 +43,7 @@ final class DeleteForMeMostRecentAddressableMessageCursor: InterleavingComposite
 // MARK: -
 
 protocol DeleteForMeAddressableMessageCursor {
-    func nextAddressableMessage() throws -> TSInteraction?
+    func nextAddressableMessage() throws -> TSMessage?
 }
 
 struct DeleteForMeAddressableMessageInterleavableCursor: InterleavableCursor {
@@ -55,9 +55,9 @@ struct DeleteForMeAddressableMessageInterleavableCursor: InterleavableCursor {
 
     // MARK: InterleavableCursor
 
-    typealias InterleavableElement = TSInteraction
+    typealias InterleavableElement = TSMessage
 
-    func nextInterleavableElement() throws -> TSInteraction? {
+    func nextInterleavableElement() throws -> TSMessage? {
         return try addressableMessageCursor.nextAddressableMessage()
     }
 }
@@ -77,8 +77,8 @@ private struct MostRecentIncomingMessageCursor: DeleteForMeAddressableMessageCur
         )
     }
 
-    func nextAddressableMessage() throws -> TSInteraction? {
-        return try interactionCursor.next()
+    func nextAddressableMessage() throws -> TSMessage? {
+        return try interactionCursor.next().map { $0 as! TSIncomingMessage }
     }
 }
 
@@ -95,7 +95,7 @@ private struct MostRecentOutgoingMessageCursor: DeleteForMeAddressableMessageCur
         )
     }
 
-    func nextAddressableMessage() throws -> TSInteraction? {
-        return try interactionCursor.next()
+    func nextAddressableMessage() throws -> TSMessage? {
+        return try interactionCursor.next().map { $0 as! TSOutgoingMessage }
     }
 }

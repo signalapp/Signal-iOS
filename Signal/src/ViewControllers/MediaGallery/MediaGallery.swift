@@ -815,21 +815,29 @@ class MediaGallery: Dependencies {
                     items: items,
                     atIndexPaths: givenIndexPaths,
                     initiatedBy: initiatedBy,
-                    deleteForMeOutgoingSyncMessageManager: DependenciesBridge.shared.deleteForMeOutgoingSyncMessageManager,
-                    interactionDeleteManager: interactionDeleteManager,
-                    tsResourceManager: DependenciesBridge.shared.tsResourceManager
+                    deps: DeleteItemsDependencies(
+                        deleteForMeOutgoingSyncMessageManager: DependenciesBridge.shared.deleteForMeOutgoingSyncMessageManager,
+                        interactionDeleteManager: interactionDeleteManager,
+                        tsAccountManager: DependenciesBridge.shared.tsAccountManager,
+                        tsResourceManager: DependenciesBridge.shared.tsResourceManager
+                    )
                 )
             }
         )
+    }
+
+    private struct DeleteItemsDependencies {
+        let deleteForMeOutgoingSyncMessageManager: any DeleteForMeOutgoingSyncMessageManager
+        let interactionDeleteManager: any InteractionDeleteManager
+        let tsAccountManager: any TSAccountManager
+        let tsResourceManager: any TSResourceManager
     }
 
     private func _deleteInternal(
         items: [MediaGalleryItem],
         atIndexPaths givenIndexPaths: [MediaGalleryIndexPath]?,
         initiatedBy: UIViewController,
-        deleteForMeOutgoingSyncMessageManager: any DeleteForMeOutgoingSyncMessageManager,
-        interactionDeleteManager: any InteractionDeleteManager,
-        tsResourceManager: any TSResourceManager
+        deps: DeleteItemsDependencies
     ) {
         guard items.count > 0 else {
             return
@@ -855,7 +863,7 @@ class MediaGallery: Dependencies {
                     let message = item.message
                     let referencedAttachment: ReferencedTSResource = item.attachmentStream
 
-                    try tsResourceManager.removeBodyAttachment(
+                    try deps.tsResourceManager.removeBodyAttachment(
                         referencedAttachment.attachment,
                         from: message,
                         tx: tx.asV2Write
@@ -897,13 +905,16 @@ class MediaGallery: Dependencies {
                     }
                 }
 
-                deleteForMeOutgoingSyncMessageManager.send(
-                    deletedAttachments: messagesWithAttachmentsRemaining,
-                    thread: self.thread,
-                    tx: tx.asV2Write
-                )
+                if let localIdentifiers = deps.tsAccountManager.localIdentifiers(tx: tx.asV2Read) {
+                    deps.deleteForMeOutgoingSyncMessageManager.send(
+                        deletedAttachments: messagesWithAttachmentsRemaining,
+                        thread: self.thread,
+                        localIdentifiers: localIdentifiers,
+                        tx: tx.asV2Write
+                    )
+                }
 
-                interactionDeleteManager.delete(
+                deps.interactionDeleteManager.delete(
                     interactions: messagesWithAllAttachmentsRemoved,
                     sideEffects: .custom(
                         deleteForMeSyncMessage: .sendSyncMessage(interactionsThread: self.thread)

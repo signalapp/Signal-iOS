@@ -129,6 +129,7 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
     private let interactionStore: InteractionStore
     private let mediaGalleryResourceManager: MediaGalleryResourceManager
     private let messageSendLog: MessageSendLog
+    private let tsAccountManager: TSAccountManager
 
     init(
         callRecordStore: CallRecordStore,
@@ -138,7 +139,8 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
         interactionReadCache: InteractionReadCache,
         interactionStore: InteractionStore,
         mediaGalleryResourceManager: MediaGalleryResourceManager,
-        messageSendLog: MessageSendLog
+        messageSendLog: MessageSendLog,
+        tsAccountManager: TSAccountManager
     ) {
         self.callRecordStore = callRecordStore
         self.callRecordDeleteManager = callRecordDeleteManager
@@ -148,6 +150,7 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
         self.interactionStore = interactionStore
         self.mediaGalleryResourceManager = mediaGalleryResourceManager
         self.messageSendLog = messageSendLog
+        self.tsAccountManager = tsAccountManager
     }
 
     func delete(
@@ -217,11 +220,14 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
                 "Thread did not match interaction!"
             )
 
-            deleteForMeOutgoingSyncMessageManager.send(
-                deletedInteractions: interactions,
-                thread: interactionsThread,
-                tx: tx
-            )
+            if let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) {
+                deleteForMeOutgoingSyncMessageManager.send(
+                    deletedMessages: interactions.compactMap { $0 as? TSMessage },
+                    thread: interactionsThread,
+                    localIdentifiers: localIdentifiers,
+                    tx: tx
+                )
+            }
         case .doNotSend:
             break
         }

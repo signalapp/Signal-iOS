@@ -8,28 +8,22 @@
 import XCTest
 
 final class DeleteForMeOutgoingSyncMessageManagerTest: XCTestCase {
-    private var mockAddressableMessageFinder: MockDeleteForMeAddressableMessageFinder!
     private var mockSyncMessageSender: MockSyncMessageSender!
     private var mockRecipientDatabaseTable: MockRecipientDatabaseTable!
     private var mockThreadStore: MockThreadStore!
-    private var mockTSAccountManager: MockTSAccountManager!
 
     private var outgoingSyncMessageManager: DeleteForMeOutgoingSyncMessageManagerImpl!
 
     override func setUp() {
-        mockAddressableMessageFinder = MockDeleteForMeAddressableMessageFinder()
         mockSyncMessageSender = MockSyncMessageSender()
         mockRecipientDatabaseTable = MockRecipientDatabaseTable()
         mockThreadStore = MockThreadStore()
-        mockTSAccountManager = MockTSAccountManager()
 
         outgoingSyncMessageManager = DeleteForMeOutgoingSyncMessageManagerImpl(
-            addressableMessageFinder: mockAddressableMessageFinder,
             deleteForMeSyncMessageSettingsStore: MockDeleteForMeSyncMessageSettingsStore(),
             recipientDatabaseTable: mockRecipientDatabaseTable,
             syncMessageSender: mockSyncMessageSender,
-            threadStore: mockThreadStore,
-            tsAccountManager: mockTSAccountManager
+            threadStore: mockThreadStore
         )
     }
 
@@ -37,12 +31,6 @@ final class DeleteForMeOutgoingSyncMessageManagerTest: XCTestCase {
         let thread = TSContactThread(contactAddress: .isolatedRandomForTesting())
         let messagesToDelete = (0..<1501).map { _ -> TSOutgoingMessage in
             return TSOutgoingMessage(uniqueId: .uniqueId(), thread: thread)
-        }
-
-        /// These should be ignored by the sync message sender, since they are
-        /// not addressable.
-        let interactionsToDelete = (0..<10).map { _ -> TSInteraction in
-            return TSInteraction(uniqueId: .uniqueId(), thread: thread)
         }
 
         var expectedInteractionBatches: [Int] = [500, 500, 500, 1]
@@ -58,8 +46,9 @@ final class DeleteForMeOutgoingSyncMessageManagerTest: XCTestCase {
 
         MockDB().write { tx in
             outgoingSyncMessageManager.send(
-                deletedInteractions: messagesToDelete + interactionsToDelete,
+                deletedMessages: messagesToDelete,
                 thread: thread,
+                localIdentifiers: .forUnitTests,
                 tx: tx
             )
         }
@@ -97,6 +86,7 @@ final class DeleteForMeOutgoingSyncMessageManagerTest: XCTestCase {
                     }
                 ),
                 thread: thread,
+                localIdentifiers: .forUnitTests,
                 tx: tx
             )
         }
@@ -120,13 +110,14 @@ final class DeleteForMeOutgoingSyncMessageManagerTest: XCTestCase {
         }
 
         MockDB().write { tx in
-            /// These should all be local-only deletes, since the threads have
-            /// no messages (the `MockDeleteForMeAddressableMessageFinder` will
-            /// return `[]` for all threads, at the time of writing).
+            /// These should all be local-only deletes, since we're not populating
+            /// the contexts with any messages deletes (since we're not actually
+            /// deleting any messages from the threads in this test).
             let deletionContexts: [DeleteForMeSyncMessage.Outgoing.ThreadDeletionContext] = threadsToDelete.map { thread in
-                outgoingSyncMessageManager.buildThreadDeletionContext(
+                outgoingSyncMessageManager.makeThreadDeletionContext(
                     thread: thread,
                     isFullDelete: true,
+                    localIdentifiers: .forUnitTests,
                     tx: tx
                 )!
             }

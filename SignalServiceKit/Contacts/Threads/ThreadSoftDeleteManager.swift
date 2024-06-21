@@ -39,6 +39,8 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
         static let interactionDeletionBatchSize: Int = 500
     }
 
+    private typealias SyncMessageContext = DeleteForMeSyncMessage.Outgoing.ThreadDeletionContext
+
     private let deleteForMeOutgoingSyncMessageManager: DeleteForMeOutgoingSyncMessageManager
     private let deleteForMeSyncMessageSettingsStore: DeleteForMeSyncMessageSettingsStore
     private let intentsManager: Shims.IntentsManager
@@ -75,32 +77,36 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
         sendDeleteForMeSyncMessage: Bool,
         tx: any DBWriteTransaction
     ) {
-        var threadDeletionContexts = [DeleteForMeSyncMessage.Outgoing.ThreadDeletionContext]()
+        var syncMessageContexts = [SyncMessageContext]()
 
         for thread in threads {
-            /// If we're gonna send a `DeleteForMe` sync message we need to get
-            /// a deletion context before deleting the thread, since the context
-            /// relies on data that will be deleted when the thread is deleted.
+            var syncMessageContext: SyncMessageContext?
             if
                 sendDeleteForMeSyncMessage,
-                let additionalContext = deleteForMeOutgoingSyncMessageManager.buildThreadDeletionContext(
+                let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)
+            {
+                syncMessageContext = deleteForMeOutgoingSyncMessageManager.makeThreadDeletionContext(
                     thread: thread,
-                    isFullDelete: true,
+                    isFullDelete: false,
+                    localIdentifiers: localIdentifiers,
                     tx: tx
                 )
-            {
-                threadDeletionContexts.append(additionalContext)
             }
 
             softDelete(
                 thread: thread,
+                syncMessageContext: syncMessageContext,
                 tx: tx
             )
+
+            if let syncMessageContext {
+                syncMessageContexts.append(syncMessageContext)
+            }
         }
 
         if sendDeleteForMeSyncMessage {
             deleteForMeOutgoingSyncMessageManager.send(
-                threadDeletionContexts: threadDeletionContexts,
+                threadDeletionContexts: syncMessageContexts,
                 tx: tx
             )
         }
@@ -111,23 +117,28 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
         sendDeleteForMeSyncMessage: Bool,
         tx: any DBWriteTransaction
     ) {
-        var threadDeletionContext: DeleteForMeSyncMessage.Outgoing.ThreadDeletionContext?
-        if sendDeleteForMeSyncMessage {
-            threadDeletionContext = deleteForMeOutgoingSyncMessageManager.buildThreadDeletionContext(
+        var syncMessageContext: SyncMessageContext?
+        if
+            sendDeleteForMeSyncMessage,
+            let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)
+        {
+            syncMessageContext = deleteForMeOutgoingSyncMessageManager.makeThreadDeletionContext(
                 thread: thread,
                 isFullDelete: false,
+                localIdentifiers: localIdentifiers,
                 tx: tx
             )
         }
 
         removeAllInteractions(
             thread: thread,
+            syncMessageContext: syncMessageContext,
             tx: tx
         )
 
-        if let threadDeletionContext {
+        if let syncMessageContext {
             deleteForMeOutgoingSyncMessageManager.send(
-                threadDeletionContexts: [threadDeletionContext],
+                threadDeletionContexts: [syncMessageContext],
                 tx: tx
             )
         }
@@ -135,12 +146,14 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
 
     private func softDelete(
         thread: TSThread,
+        syncMessageContext: SyncMessageContext?,
         tx: any DBWriteTransaction
     ) {
         logger.info("Deleting thread with ID \(thread.uniqueId).")
 
         removeAllInteractions(
             thread: thread,
+            syncMessageContext: syncMessageContext,
             tx: tx
         )
 
@@ -167,6 +180,7 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
 
     private func removeAllInteractions(
         thread: TSThread,
+        syncMessageContext: SyncMessageContext?,
         tx: any DBWriteTransaction
     ) {
         let sdsTx = SDSDB.shimOnlyBridge(tx)
@@ -185,6 +199,12 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
                         limit: Constants.interactionDeletionBatchSize,
                         tx: sdsTx
                     )
+
+                    if let syncMessageContext {
+                        for messageToDelete: TSMessage in interactionBatch.compactMap({ $0 as? TSMessage }) {
+                            syncMessageContext.registerMessageDeletedFromThread(messageToDelete)
+                        }
+                    }
 
                     let callDeleteBehavior: InteractionDelete.SideEffects.AssociatedCallDeleteBehavior = {
                         if isDeleteForMeSyncMessageSendingEnabled {
