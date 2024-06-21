@@ -67,6 +67,43 @@ final class DeleteForMeOutgoingSyncMessageManagerTest: XCTestCase {
         XCTAssertTrue(expectedInteractionBatches.isEmpty)
     }
 
+    func testBatchedAttachmentDeletes() {
+        let thread = TSContactThread(contactAddress: .isolatedRandomForTesting())
+
+        let attachmentsToDelete = (0..<1501).map { _ -> DeleteForMeSyncMessage.Outgoing.AttachmentIdentifier in
+            return .init(clientUuid: UUID(), encryptedDigest: nil, plaintextHash: nil)
+        }
+
+        var expectedAttachmentBatches: [Int] = [500, 500, 500, 1]
+        mockSyncMessageSender.sendSyncMessageMock = { contents in
+            guard let expectedBatchSize = expectedAttachmentBatches.popFirst() else {
+                XCTFail("Unexpected batch!")
+                return
+            }
+
+            XCTAssertEqual(contents.attachmentDeletes!.count, expectedBatchSize)
+        }
+
+        MockDB().write { tx in
+            outgoingSyncMessageManager.send(
+                deletedAttachmentIdentifiers: Dictionary(
+                    [
+                        (TSOutgoingMessage(uniqueId: .uniqueId(), thread: thread), Array(attachmentsToDelete.prefix(200))),
+                        (TSOutgoingMessage(uniqueId: .uniqueId(), thread: thread), Array(attachmentsToDelete.dropFirst(200))),
+                    ],
+                    uniquingKeysWith: { lhs, rhs in
+                        XCTFail("Colliding keys!")
+                        return lhs
+                    }
+                ),
+                thread: thread,
+                tx: tx
+            )
+        }
+
+        XCTAssertTrue(expectedAttachmentBatches.isEmpty)
+    }
+
     func testBatchedThreadDeletes() {
         let threadsToDelete = (0..<301).map { _ -> TSContactThread in
             return TSContactThread(contactAddress: .isolatedRandomForTesting())

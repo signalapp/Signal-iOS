@@ -26,6 +26,7 @@ public enum DeleteForMeSyncMessage {
             }
         }
 
+        /// Describes a message that can be "addressed" across clients.
         public struct AddressableMessage {
             enum Author: CustomStringConvertible {
                 case localUser
@@ -43,9 +44,19 @@ public enum DeleteForMeSyncMessage {
             let sentTimestamp: UInt64
         }
 
+        /// Identifies an attachment within a message across clients, using a
+        /// variety of identifying information about the attachment.
         public struct AttachmentIdentifier {
+            /// A unique identifier for this attachment among others in the same
+            /// message. Preferred if available.
+            /// - SeeAlso ``TSResourceReference/knownIdInOwningMessage(_:)``
             let clientUuid: UUID?
+            /// The SHA256 hash of the encrypted (IV | ciphertext | HMAC) blob
+            /// for this attachment on the CDN.
+            /// - SeeAlso ``TSResource/encryptedResourceSha256Digest``
             let encryptedDigest: Data?
+            /// The SHA256 hash of the plaintext of the attachment.
+            /// - SeeAlso ``TSResource/knownPlaintextResourceSha256Digest``
             let plaintextHash: Data?
         }
     }

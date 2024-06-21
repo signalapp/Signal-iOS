@@ -233,6 +233,13 @@ public struct MediaGalleryResourceFinder {
         }
     }
 
+    public func isEmptyOfAttachments(
+        interaction: TSInteraction,
+        tx: DBReadTransaction
+    ) throws -> Bool {
+        return try countAllAttachments(of: interaction, tx: tx) == 0
+    }
+
     // MARK: - Helpers
 
     private func bridgeV2AttachmentIds(

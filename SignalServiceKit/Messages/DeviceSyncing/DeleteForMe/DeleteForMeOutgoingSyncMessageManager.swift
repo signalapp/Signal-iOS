@@ -8,6 +8,13 @@ import SignalCoreKit
 
 extension DeleteForMeSyncMessage {
     public enum Outgoing {
+        /// For the time being, the outgoing and incoming representations of
+        /// attachment identifiers are equivalent.
+        /// - SeeAlso ``DeleteForMeSyncMessage/Incoming/AttachmentIdentifier``
+        public typealias AttachmentIdentifier = Incoming.AttachmentIdentifier
+
+        /// Wraps data necessary send a `DeleteForMe` sync message about a
+        /// thread deletion.
         public struct ThreadDeletionContext {
             fileprivate enum DeletionType {
                 case conversation(ConversationDelete)
@@ -41,6 +48,16 @@ public protocol DeleteForMeOutgoingSyncMessageManager {
         tx: any DBWriteTransaction
     )
 
+    /// Send a sync message that the attachments with the given identifiers were
+    /// deleted from their respective messages.
+    /// - Important
+    /// All the given messages must belong to the given thread.
+    func send(
+        deletedAttachmentIdentifiers: [TSMessage: [Outgoing.AttachmentIdentifier]],
+        thread: TSThread,
+        tx: any DBWriteTransaction
+    )
+
     /// Send a sync message for the given thread deletion contexts.
     func send(
         threadDeletionContexts: [Outgoing.ThreadDeletionContext],
@@ -57,6 +74,40 @@ public protocol DeleteForMeOutgoingSyncMessageManager {
         tx: any DBReadTransaction
     ) -> Outgoing.ThreadDeletionContext?
 }
+
+public extension DeleteForMeOutgoingSyncMessageManager {
+    /// Send a sync message that the given attachments were deleted from their
+    /// respective messages.
+    /// - Important
+    /// All the given messages must belong to the given thread.
+    func send(
+        deletedAttachments: [TSMessage: [ReferencedTSResource]],
+        thread: TSThread,
+        tx: any DBWriteTransaction
+    ) {
+        var deletedAttachmentIdentifiers = [TSMessage: [Outgoing.AttachmentIdentifier]]()
+
+        for (message, attachments) in deletedAttachments {
+            let attachmentIdentifiers: [Outgoing.AttachmentIdentifier] = attachments.map { attachment in
+                return Outgoing.AttachmentIdentifier(
+                    clientUuid: attachment.reference.knownIdInOwningMessage(message),
+                    encryptedDigest: attachment.attachment.encryptedResourceSha256Digest,
+                    plaintextHash: attachment.attachment.knownPlaintextResourceSha256Digest
+                )
+            }
+
+            deletedAttachmentIdentifiers[message] = attachmentIdentifiers
+        }
+
+        send(
+            deletedAttachmentIdentifiers: deletedAttachmentIdentifiers,
+            thread: thread,
+            tx: tx
+        )
+    }
+}
+
+// MARK: -
 
 final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMessageManager {
     private let addressableMessageFinder: any DeleteForMeAddressableMessageFinder
@@ -99,16 +150,7 @@ final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMe
         }
 
         let addressableMessages = deletedInteractions.compactMap { interaction -> Outgoing.AddressableMessage? in
-            if let incomingMessage = interaction as? TSIncomingMessage {
-                return Outgoing.AddressableMessage(incomingMessage: incomingMessage)
-            } else if let outgoingMessage = interaction as? TSOutgoingMessage {
-                return Outgoing.AddressableMessage(
-                    outgoingMessage: outgoingMessage,
-                    localIdentifiers: localIdentifiers
-                )
-            }
-
-            return nil
+            return addressableMessage(interaction: interaction, localIdentifiers: localIdentifiers)
         }
 
         if addressableMessages.isEmpty { return }
@@ -125,6 +167,57 @@ final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMe
             sendSyncMessage(
                 contents: DeleteForMeOutgoingSyncMessage.Contents(
                     messageDeletes: [messageDeletes],
+                    attachmentDeletes: [],
+                    conversationDeletes: [],
+                    localOnlyConversationDelete: []
+                ),
+                tx: tx
+            )
+        }
+    }
+
+    func send(
+        deletedAttachmentIdentifiers: [TSMessage: [Outgoing.AttachmentIdentifier]],
+        thread: TSThread,
+        tx: any DBWriteTransaction
+    ) {
+        guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
+            logger.error("Skipping individual-attachments delete sync: not registered!")
+            return
+        }
+
+        guard let conversationIdentifier = conversationIdentifier(thread: thread, tx: tx) else {
+            return
+        }
+
+        let attachmentDeletes: [Outgoing.AttachmentDelete] = deletedAttachmentIdentifiers
+            .compactMap { (message, attachmentIdentifiers) -> [Outgoing.AttachmentDelete]? in
+                guard let targetMessage = addressableMessage(
+                    interaction: message,
+                    localIdentifiers: localIdentifiers
+                ) else {
+                    // We failed to convert the deleted-from message into an
+                    // addressable message. This should never happen!
+                    return nil
+                }
+
+                return attachmentIdentifiers.map { attachmentIdentifier -> Outgoing.AttachmentDelete in
+                    return Outgoing.AttachmentDelete(
+                        conversationIdentifier: conversationIdentifier,
+                        targetMessage: targetMessage,
+                        clientUuid: attachmentIdentifier.clientUuid,
+                        encryptedDigest: attachmentIdentifier.encryptedDigest,
+                        plaintextHash: attachmentIdentifier.plaintextHash
+                    )
+                }
+            }
+            .flatMap { $0 }
+
+        for attachmentBatch in Batcher().batch(attachmentDeletes: attachmentDeletes) {
+            sendSyncMessage(
+                contents: DeleteForMeOutgoingSyncMessage.Contents(
+                    messageDeletes: [],
+                    attachmentDeletes: attachmentBatch,
                     conversationDeletes: [],
                     localOnlyConversationDelete: []
                 ),
@@ -153,6 +246,7 @@ final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMe
             sendSyncMessage(
                 contents: DeleteForMeOutgoingSyncMessage.Contents(
                     messageDeletes: [],
+                    attachmentDeletes: [],
                     conversationDeletes: conversationDeletes,
                     localOnlyConversationDelete: localOnlyConversationDeletes
                 ),
@@ -220,6 +314,22 @@ final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMe
         return nil
     }
 
+    private func addressableMessage(
+        interaction: TSInteraction,
+        localIdentifiers: LocalIdentifiers
+    ) -> Outgoing.AddressableMessage? {
+        if let incomingMessage = interaction as? TSIncomingMessage {
+            return Outgoing.AddressableMessage(incomingMessage: incomingMessage)
+        } else if let outgoingMessage = interaction as? TSOutgoingMessage {
+            return Outgoing.AddressableMessage(
+                outgoingMessage: outgoingMessage,
+                localIdentifiers: localIdentifiers
+            )
+        }
+
+        return nil
+    }
+
     private func sendSyncMessage(
         contents: DeleteForMeOutgoingSyncMessage.Contents,
         tx: any DBWriteTransaction
@@ -248,11 +358,13 @@ final class DeleteForMeOutgoingSyncMessageManagerImpl: DeleteForMeOutgoingSyncMe
 
 private extension DeleteForMeOutgoingSyncMessageManagerImpl {
     struct Batcher {
-        /// The max number of deletes to include in a single sync message. Derived
-        /// from envelope-math to estimate the max number that can fit into a single
-        /// sync message, from an allowed-proto-size perspective, with wide margins.
+        /// The max number of deletes to include in a single sync message.
+        /// Derived from envelope-math to estimate the max number that can fit
+        /// into a single sync message, from an allowed-proto-size perspective,
+        /// with wide margins.
         private enum MaxSyncMessageSizeConstants {
             static let maxInteractionsPerSyncMessage: Int = 500
+            static let maxAttachmentsPerSyncMessage: Int = 500
             static let maxThreadContextsPerSyncMessage: Int = 100
         }
 
@@ -260,6 +372,13 @@ private extension DeleteForMeOutgoingSyncMessageManagerImpl {
             return batch(
                 addressableMessages,
                 maxBatchSize: MaxSyncMessageSizeConstants.maxInteractionsPerSyncMessage
+            )
+        }
+
+        func batch(attachmentDeletes: [Outgoing.AttachmentDelete]) -> [[Outgoing.AttachmentDelete]] {
+            return batch(
+                attachmentDeletes,
+                maxBatchSize: MaxSyncMessageSizeConstants.maxAttachmentsPerSyncMessage
             )
         }
 
@@ -349,6 +468,13 @@ open class MockDeleteForMeOutgoingSyncMessageManager: DeleteForMeOutgoingSyncMes
     ) -> Void)!
     public func send(deletedInteractions: [TSInteraction], thread: TSThread, tx: any DBWriteTransaction) {
         sendInteractionMock(deletedInteractions)
+    }
+
+    var sendAttachmentsMock: ((
+        _ attachmentIdentifiers: [TSMessage: [Outgoing.AttachmentIdentifier]]
+    ) -> Void)!
+    public func send(deletedAttachmentIdentifiers: [TSMessage: [Outgoing.AttachmentIdentifier]], thread: TSThread, tx: any DBWriteTransaction) {
+        sendAttachmentsMock(deletedAttachmentIdentifiers)
     }
 
     var sendDeletionContextMock: ((

@@ -799,11 +799,38 @@ class MediaGallery: Dependencies {
         _delegates = []
     }
 
-    internal func delete(items: [MediaGalleryItem],
-                         atIndexPaths givenIndexPaths: [MediaGalleryIndexPath]? = nil,
-                         initiatedBy: AnyObject) {
+    internal func delete(
+        items: [MediaGalleryItem],
+        atIndexPaths givenIndexPaths: [MediaGalleryIndexPath]? = nil,
+        initiatedBy: UIViewController
+    ) {
         AssertIsOnMainThread()
 
+        DeleteForMeInfoSheetCoordinator.fromGlobals().coordinateDelete(
+            fromViewController: initiatedBy,
+            deletionBlock: { [weak self] interactionDeleteManager, threadSoftDeleteManager in
+                guard let self else { return }
+
+                self._deleteInternal(
+                    items: items,
+                    atIndexPaths: givenIndexPaths,
+                    initiatedBy: initiatedBy,
+                    deleteForMeOutgoingSyncMessageManager: DependenciesBridge.shared.deleteForMeOutgoingSyncMessageManager,
+                    interactionDeleteManager: interactionDeleteManager,
+                    tsResourceManager: DependenciesBridge.shared.tsResourceManager
+                )
+            }
+        )
+    }
+
+    private func _deleteInternal(
+        items: [MediaGalleryItem],
+        atIndexPaths givenIndexPaths: [MediaGalleryIndexPath]?,
+        initiatedBy: UIViewController,
+        deleteForMeOutgoingSyncMessageManager: any DeleteForMeOutgoingSyncMessageManager,
+        interactionDeleteManager: any InteractionDeleteManager,
+        tsResourceManager: any TSResourceManager
+    ) {
         guard items.count > 0 else {
             return
         }
@@ -819,45 +846,70 @@ class MediaGallery: Dependencies {
 
         self.databaseStorage.asyncWrite { tx in
             do {
+                // Ensure we have the latest in-memory state for our thread.
+                self.thread.anyReload(transaction: tx)
+
+                var attachmentsRemoved = [TSMessage: [ReferencedTSResource]]()
+
                 for item in items {
                     let message = item.message
-                    let attachment = item.attachmentStream
-                    try DependenciesBridge.shared.tsResourceManager.removeBodyAttachment(
-                        attachment.attachmentStream,
+                    let referencedAttachment: ReferencedTSResource = item.attachmentStream
+
+                    try tsResourceManager.removeBodyAttachment(
+                        referencedAttachment.attachment,
                         from: message,
                         tx: tx.asV2Write
                     )
-                    // We always have to check the database in case we do more than one deletion (at a time or in a
-                    // row) without reloading existing media items and their associated message models.
-                    let shouldDeleteMessage: Bool = try {
-                        if message.hasBodyAttachments(transaction: tx).negated {
-                            return true
-                        }
-                        let upToDateCount = try self.mediaGalleryFinder.countAllAttachments(of: message, tx: tx.asV2Read)
-                        if upToDateCount == 0 {
-                            return true
-                        }
-                        return false
-                    }()
-                    if shouldDeleteMessage {
-                        // Refresh attachment list on the message, so deletion doesn't try to remove
-                        // them again. We want to ensure we have the latest models within this transaction.
-                        message.anyReload(transaction: tx)
-                        self.thread.anyReload(transaction: tx)
 
-                        // Since we don't know until we're deep in the write
-                        // transaction whether we'll actually end up deleting an
-                        // interaction, we'll skip showing the one-time "delete
-                        // sync info sheet".
-                        DependenciesBridge.shared.interactionDeleteManager.delete(
-                            message,
-                            sideEffects: .custom(
-                                deleteForMeSyncMessage: .sendSyncMessage(interactionsThread: self.thread)
-                            ),
-                            tx: tx.asV2Write
-                        )
+                    attachmentsRemoved.append(
+                        additionalElement: referencedAttachment,
+                        forKey: message
+                    )
+                }
+
+                var messagesWithAllAttachmentsRemoved = [TSMessage]()
+                var messagesWithAttachmentsRemaining = [TSMessage: [ReferencedTSResource]]()
+
+                /// After removing attachments, we want to segment our affected
+                /// messages into those that have attachments still and those
+                /// that don't.
+                ///
+                /// Messages with no remaining attachments will be locally
+                /// deleted, and a corresponding `DeleteForMe` sync message
+                /// sent.
+                ///
+                /// Messages with remaining attachments will not be deleted, and
+                /// instead we'll send a `DeleteForMe` sync about the removed
+                /// attachments.
+                for (message, removedAttachments) in attachmentsRemoved {
+                    // Refresh our in-memory model of the message so it has an
+                    // up-to-date attachment list.
+                    message.anyReload(transaction: tx)
+
+                    let noBodyAttachments = message.hasBodyAttachments(transaction: tx).negated
+                    let finderIsEmptyOfAttachments = try self.mediaGalleryFinder
+                        .isEmptyOfAttachments(interaction: message, tx: tx.asV2Read)
+
+                    if noBodyAttachments || finderIsEmptyOfAttachments {
+                        messagesWithAllAttachmentsRemoved.append(message)
+                    } else {
+                        messagesWithAttachmentsRemaining[message] = removedAttachments
                     }
                 }
+
+                deleteForMeOutgoingSyncMessageManager.send(
+                    deletedAttachments: messagesWithAttachmentsRemaining,
+                    thread: self.thread,
+                    tx: tx.asV2Write
+                )
+
+                interactionDeleteManager.delete(
+                    interactions: messagesWithAllAttachmentsRemoved,
+                    sideEffects: .custom(
+                        deleteForMeSyncMessage: .sendSyncMessage(interactionsThread: self.thread)
+                    ),
+                    tx: tx.asV2Write
+                )
             } catch {
                 owsFailDebug("database error: \(error)")
             }

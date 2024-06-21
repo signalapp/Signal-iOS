@@ -14,13 +14,53 @@ class DeleteForMeOutgoingSyncMessage: OWSOutgoingSyncMessage {
     typealias Outgoing = DeleteForMeSyncMessage.Outgoing
 
     struct Contents: Codable {
+        private enum CodingKeys: String, CodingKey {
+            case messageDeletes
+            case attachmentDeletes
+            case conversationDeletes
+            case localOnlyConversationDelete
+        }
+
         let messageDeletes: [Outgoing.MessageDeletes]
+        /// Attachment deletes were added after this type may already have been
+        /// persisted, so this needs to be an optional property that decodes as
+        /// `nil` from existing data.
+        let attachmentDeletes: [Outgoing.AttachmentDelete]?
         let conversationDeletes: [Outgoing.ConversationDelete]
         let localOnlyConversationDelete: [Outgoing.LocalOnlyConversationDelete]
+
+        #if TESTABLE_BUILD
+        init(
+            messageDeletes: [Outgoing.MessageDeletes],
+            nilAttachmentDeletes: Void,
+            conversationDeletes: [Outgoing.ConversationDelete],
+            localOnlyConversationDelete: [Outgoing.LocalOnlyConversationDelete]
+        ) {
+            self.messageDeletes = messageDeletes
+            self.attachmentDeletes = nil
+            self.conversationDeletes = conversationDeletes
+            self.localOnlyConversationDelete = localOnlyConversationDelete
+        }
+        #endif
+
+        init(
+            messageDeletes: [Outgoing.MessageDeletes],
+            attachmentDeletes: [Outgoing.AttachmentDelete],
+            conversationDeletes: [Outgoing.ConversationDelete],
+            localOnlyConversationDelete: [Outgoing.LocalOnlyConversationDelete]
+        ) {
+            self.attachmentDeletes = attachmentDeletes
+            self.messageDeletes = messageDeletes
+            self.conversationDeletes = conversationDeletes
+            self.localOnlyConversationDelete = localOnlyConversationDelete
+        }
 
         fileprivate var asProto: SSKProtoSyncMessageDeleteForMe {
             let protoBuilder = SSKProtoSyncMessageDeleteForMe.builder()
             protoBuilder.setMessageDeletes(messageDeletes.map { $0.asProto })
+            if let attachmentDeletes = attachmentDeletes {
+                protoBuilder.setAttachmentDeletes(attachmentDeletes.map { $0.asProto })
+            }
             protoBuilder.setConversationDeletes(conversationDeletes.map { $0.asProto })
             protoBuilder.setLocalOnlyConversationDeletes(localOnlyConversationDelete.map { $0.asProto })
             return protoBuilder.buildInfallibly()
@@ -155,6 +195,30 @@ extension DeleteForMeSyncMessage.Outgoing {
             let protoBuilder = SSKProtoSyncMessageDeleteForMeMessageDeletes.builder()
             protoBuilder.setConversation(conversationIdentifier.asProto)
             protoBuilder.setMessages(addressableMessages.map { $0.asProto })
+            return protoBuilder.buildInfallibly()
+        }
+    }
+
+    struct AttachmentDelete: Codable, Equatable {
+        let conversationIdentifier: ConversationIdentifier
+        let targetMessage: AddressableMessage
+        let clientUuid: UUID?
+        let encryptedDigest: Data?
+        let plaintextHash: Data?
+
+        fileprivate var asProto: SSKProtoSyncMessageDeleteForMeAttachmentDelete {
+            let protoBuilder = SSKProtoSyncMessageDeleteForMeAttachmentDelete.builder()
+            protoBuilder.setConversation(conversationIdentifier.asProto)
+            protoBuilder.setTargetMessage(targetMessage.asProto)
+            if let clientUuid {
+                protoBuilder.setClientUuid(clientUuid.data)
+            }
+            if let encryptedDigest {
+                protoBuilder.setFallbackDigest(encryptedDigest)
+            }
+            if let plaintextHash {
+                protoBuilder.setFallbackPlaintextHash(plaintextHash)
+            }
             return protoBuilder.buildInfallibly()
         }
     }

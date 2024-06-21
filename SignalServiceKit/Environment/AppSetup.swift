@@ -995,6 +995,7 @@ public class AppSetup {
             deletedCallRecordCleanupManager: deletedCallRecordCleanupManager,
             deletedCallRecordStore: deletedCallRecordStore,
             deleteForMeIncomingSyncMessageManager: deleteForMeIncomingSyncMessageManager,
+            deleteForMeOutgoingSyncMessageManager: deleteForMeOutgoingSyncMessageManager,
             deleteForMeSyncMessageSettingsStore: deleteForMeSyncMessageSettingsStore,
             deviceManager: deviceManager,
             deviceStore: deviceStore,
