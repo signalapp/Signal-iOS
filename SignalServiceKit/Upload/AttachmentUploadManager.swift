@@ -234,36 +234,40 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 tx: tx
             )
 
-            self.attachmentStore.enumerateAllReferences(
-                toAttachmentId: attachmentId,
-                tx: tx
-            ) { attachmentReference in
-                switch attachmentReference.owner {
-                case .message(let messageSource):
-                    guard
-                        let interaction = self.interactionStore.fetchInteraction(
-                            rowId: messageSource.messageRowId,
-                            tx: tx
-                        )
-                    else {
-                        logger.warn("Missing interaction.")
-                        return
+            do {
+                try self.attachmentStore.enumerateAllReferences(
+                    toAttachmentId: attachmentId,
+                    tx: tx
+                ) { attachmentReference in
+                    switch attachmentReference.owner {
+                    case .message(let messageSource):
+                        guard
+                            let interaction = self.interactionStore.fetchInteraction(
+                                rowId: messageSource.messageRowId,
+                                tx: tx
+                            )
+                        else {
+                            logger.warn("Missing interaction.")
+                            return
+                        }
+                        self.db.touch(interaction, shouldReindex: false, tx: tx)
+                    case .storyMessage(let storyMessageSource):
+                        guard
+                            let storyMessage = self.storyStore.fetchStoryMessage(
+                                rowId: storyMessageSource.storyMsessageRowId,
+                                tx: tx
+                            )
+                        else {
+                            logger.warn("Missing story message.")
+                            return
+                        }
+                        self.db.touch(storyMessage, tx: tx)
+                    case .thread:
+                        break
                     }
-                    self.db.touch(interaction, shouldReindex: false, tx: tx)
-                case .storyMessage(let storyMessageSource):
-                    guard
-                        let storyMessage = self.storyStore.fetchStoryMessage(
-                            rowId: storyMessageSource.storyMsessageRowId,
-                            tx: tx
-                        )
-                    else {
-                        logger.warn("Missing story message.")
-                        return
-                    }
-                    self.db.touch(storyMessage, tx: tx)
-                case .thread:
-                    break
                 }
+            } catch {
+                Logger.error("Failed to enumerate references: \(error)")
             }
         }
     }

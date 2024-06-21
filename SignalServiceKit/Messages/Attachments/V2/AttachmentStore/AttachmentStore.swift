@@ -39,7 +39,7 @@ public protocol AttachmentStore {
         toAttachmentId: Attachment.IDType,
         tx: DBReadTransaction,
         block: (AttachmentReference) -> Void
-    )
+    ) throws
 
     /// Return all attachments that are themselves quoted replies
     /// of another attachment; provide the original attachment they point to.

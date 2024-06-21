@@ -445,7 +445,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 // Just hold all refs in memory; this is a pointer so really there
                 // should only ever be one reference as we don't dedupe pointers.
                 var references = [AttachmentReference]()
-                self.attachmentStore.enumerateAllReferences(
+                try self.attachmentStore.enumerateAllReferences(
                     toAttachmentId: attachmentId,
                     tx: tx
                 ) { reference in
@@ -525,9 +525,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return
             }
 
-            let references = thumbnailAttachments.flatMap { attachment in
+            let references = try thumbnailAttachments.flatMap { attachment in
                 var refs = [AttachmentReference]()
-                self.attachmentStore.enumerateAllReferences(toAttachmentId: attachment.id, tx: tx) {
+                try self.attachmentStore.enumerateAllReferences(toAttachmentId: attachment.id, tx: tx) {
                     refs.append($0)
                 }
                 return refs

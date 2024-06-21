@@ -437,8 +437,8 @@ class AttachmentStoreTests: XCTestCase {
 
         // Check that we enumerate all the ids we created for the original attachment's id.
         var enumeratedCount = 0
-        db.read { tx in
-            attachmentStore.enumerateAllReferences(
+        try db.read { tx in
+            try attachmentStore.enumerateAllReferences(
                 toAttachmentId: attachmentId,
                 db: InMemoryDB.shimOnlyBridge(tx).db,
                 tx: tx,

@@ -35,7 +35,7 @@ open class AttachmentStoreMock: AttachmentStore {
         toAttachmentId: Attachment.IDType,
         tx: DBReadTransaction,
         block: (AttachmentReference) -> Void
-    ) {
+    ) throws {
         attachmentReferences
             .lazy
             .filter { $0.attachmentRowId == toAttachmentId }

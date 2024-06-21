@@ -37,8 +37,8 @@ public class AttachmentStoreImpl: AttachmentStore {
         toAttachmentId attachmentId: Attachment.IDType,
         tx: DBReadTransaction,
         block: (AttachmentReference) -> Void
-    ) {
-        enumerateAllReferences(
+    ) throws {
+        try enumerateAllReferences(
             toAttachmentId: attachmentId,
             db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
             tx: tx,
@@ -281,9 +281,9 @@ public class AttachmentStoreImpl: AttachmentStore {
         db: GRDB.Database,
         tx: DBReadTransaction,
         block: (AttachmentReference) -> Void
-    ) {
-        AttachmentReference.recordTypes.forEach { recordType in
-            enumerateReferences(
+    ) throws {
+        try AttachmentReference.recordTypes.forEach { recordType in
+            try enumerateReferences(
                 attachmentId: attachmentId,
                 recordType: recordType,
                 db: db,
@@ -299,25 +299,14 @@ public class AttachmentStoreImpl: AttachmentStore {
         db: GRDB.Database,
         tx: DBReadTransaction,
         block: (AttachmentReference) -> Void
-    ) {
-        do {
-            let cursor = try recordType
-                .filter(recordType.attachmentRowIdColumn == attachmentId)
-                .fetchCursor(db)
+    ) throws {
+        let cursor = try recordType
+            .filter(recordType.attachmentRowIdColumn == attachmentId)
+            .fetchCursor(db)
 
-            while let record = try cursor.next() {
-                do {
-                    let reference = try record.asReference()
-                    block(reference)
-                } catch {
-                    // Fail the individual row, not all of them.
-                    owsFailDebug("Failed to parse attachment reference: \(error)")
-                    continue
-                }
-            }
-        } catch {
-            owsFailDebug("Failed to enumerate attachment references \(error)")
-            return
+        while let record = try cursor.next() {
+            let reference = try record.asReference()
+            block(reference)
         }
     }
 
