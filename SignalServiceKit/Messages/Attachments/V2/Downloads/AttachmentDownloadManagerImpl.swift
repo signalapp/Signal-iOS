@@ -7,20 +7,32 @@ import Foundation
 
 public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
+    private let attachmentStore: AttachmentStore
     private let attachmentValidator: AttachmentContentValidator
+    private let db: DB
     private let downloadQueue: DownloadQueue
+    private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
+    private let orphanedAttachmentStore: OrphanedAttachmentStore
     private let progressStates: ProgressStates
 
     public init(
+        attachmentStore: AttachmentStore,
         attachmentValidator: AttachmentContentValidator,
+        db: DB,
+        orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
+        orphanedAttachmentStore: OrphanedAttachmentStore,
         signalService: OWSSignalServiceProtocol
     ) {
+        self.attachmentStore = attachmentStore
         self.attachmentValidator = attachmentValidator
+        self.db = db
         self.progressStates = ProgressStates()
         self.downloadQueue = DownloadQueue(
             progressStates: progressStates,
             signalService: signalService
         )
+        self.orphanedAttachmentCleaner = orphanedAttachmentCleaner
+        self.orphanedAttachmentStore = orphanedAttachmentStore
     }
 
     public func downloadBackup(metadata: MessageBackupRemoteInfo, authHeaders: [String: String]) -> Promise<URL> {
@@ -382,6 +394,90 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 }
             }
         }).value
+    }
+
+    private func updateAttachmentAsDownloaded(
+        attachmentId: Attachment.IDType,
+        pendingAttachment: PendingAttachment,
+        source: QueuedAttachmentDownloadRecord.SourceType
+    ) async throws -> AttachmentStream {
+        return try await db.awaitableWrite { tx in
+            guard let existingAttachment = self.attachmentStore.fetch(id: attachmentId, tx: tx) else {
+                throw OWSAssertionError("Missing attachment!")
+            }
+            if let stream = existingAttachment.asStream() {
+                // Its already a stream?
+                return stream
+            }
+
+            do {
+                guard self.orphanedAttachmentStore.orphanAttachmentExists(with: pendingAttachment.orphanRecordId, tx: tx) else {
+                    throw OWSAssertionError("Attachment file deleted before creation")
+                }
+
+                // Try and update the attachment.
+                try self.attachmentStore.updateAttachmentAsDownloaded(
+                    from: source,
+                    id: attachmentId,
+                    streamInfo: .init(
+                        sha256ContentHash: pendingAttachment.sha256ContentHash,
+                        encryptedByteCount: pendingAttachment.encryptedByteCount,
+                        unencryptedByteCount: pendingAttachment.unencryptedByteCount,
+                        contentType: pendingAttachment.validatedContentType,
+                        digestSHA256Ciphertext: pendingAttachment.digestSHA256Ciphertext,
+                        localRelativeFilePath: pendingAttachment.localRelativeFilePath
+                    ),
+                    tx: tx
+                )
+                // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
+                try self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
+
+                guard let stream = self.attachmentStore.fetch(id: attachmentId, tx: tx)?.asStream() else {
+                    throw OWSAssertionError("Not a stream")
+                }
+                return stream
+
+            } catch let AttachmentInsertError.duplicatePlaintextHash(existingAttachmentId) {
+                // Already have an attachment with the same plaintext hash!
+                // Move all existing references to that copy, instead.
+                // Doing so should delete the original attachment pointer.
+
+                // Just hold all refs in memory; this is a pointer so really there
+                // should only ever be one reference as we don't dedupe pointers.
+                var references = [AttachmentReference]()
+                self.attachmentStore.enumerateAllReferences(
+                    toAttachmentId: attachmentId,
+                    tx: tx
+                ) { reference in
+                    references.append(reference)
+                }
+                try references.forEach { reference in
+                    try self.attachmentStore.removeOwner(
+                        reference.owner.id,
+                        for: attachmentId,
+                        tx: tx
+                    )
+                    let newOwnerParams = AttachmentReference.ConstructionParams(
+                        owner: reference.owner,
+                        sourceFilename: reference.sourceFilename,
+                        sourceUnencryptedByteCount: reference.sourceUnencryptedByteCount,
+                        sourceMediaSizePixels: reference.sourceMediaSizePixels
+                    )
+                    try self.attachmentStore.addOwner(
+                        newOwnerParams,
+                        for: existingAttachmentId,
+                        tx: tx
+                    )
+                }
+
+                guard let stream = self.attachmentStore.fetch(id: existingAttachmentId, tx: tx)?.asStream() else {
+                    throw OWSAssertionError("Not a stream")
+                }
+                return stream
+            } catch let error {
+                throw error
+            }
+        }
     }
 
     func copyThumbnailForQuotedReplyIfNeeded(_ downloadedAttachment: AttachmentStream) {

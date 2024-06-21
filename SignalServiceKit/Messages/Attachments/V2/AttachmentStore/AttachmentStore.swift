@@ -79,6 +79,13 @@ public protocol AttachmentStore {
         tx: DBWriteTransaction
     ) throws
 
+    func updateAttachmentAsDownloaded(
+        from source: QueuedAttachmentDownloadRecord.SourceType,
+        id: Attachment.IDType,
+        streamInfo: Attachment.StreamInfo,
+        tx: DBWriteTransaction
+    ) throws
+
     func addOwner(
         _ reference: AttachmentReference.ConstructionParams,
         for attachmentId: Attachment.IDType,

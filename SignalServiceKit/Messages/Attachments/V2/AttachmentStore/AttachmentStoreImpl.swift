@@ -60,7 +60,7 @@ public class AttachmentStoreImpl: AttachmentStore {
             with: reference,
             newOwnerMessageRowId: newOwnerMessageRowId,
             newOwnerThreadRowId: newOwnerThreadRowId,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
             tx: tx
         )
     }
@@ -75,7 +75,7 @@ public class AttachmentStoreImpl: AttachmentStore {
             existingOwnerSource,
             with: reference,
             newOwnerThreadRowId: newOwnerThreadRowId,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
             tx: tx
         )
     }
@@ -88,7 +88,22 @@ public class AttachmentStoreImpl: AttachmentStore {
         try update(
             reference,
             withReceivedAtTimestamp: receivedAtTimestamp,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
+            tx: tx
+        )
+    }
+
+    public func updateAttachmentAsDownloaded(
+        from source: QueuedAttachmentDownloadRecord.SourceType,
+        id: Attachment.IDType,
+        streamInfo: Attachment.StreamInfo,
+        tx: DBWriteTransaction
+    ) throws {
+        try self.updateAttachmentAsDownloaded(
+            from: source,
+            id: id,
+            streamInfo: streamInfo,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
             tx: tx
         )
     }
@@ -101,7 +116,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         try addOwner(
             reference,
             for: attachmentId,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
             tx: tx
         )
     }
@@ -114,7 +129,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         try removeOwner(
             owner,
             for: attachmentId,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
             tx: tx
         )
     }
@@ -127,13 +142,13 @@ public class AttachmentStoreImpl: AttachmentStore {
         try insert(
             attachment,
             reference: reference,
-            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
             tx: tx
         )
     }
 
     public func removeAllThreadOwners(tx: DBWriteTransaction) throws {
-        try removeAllThreadOwners(db: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead.database, tx: tx)
+        try removeAllThreadOwners(db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database, tx: tx)
     }
 
     // MARK: - Implementation
@@ -357,6 +372,48 @@ public class AttachmentStoreImpl: AttachmentStore {
         case .thread:
             throw OWSAssertionError("Cannot update timestamp on thread attachment reference")
         }
+    }
+
+    private func updateAttachmentAsDownloaded(
+        from source: QueuedAttachmentDownloadRecord.SourceType,
+        id: Attachment.IDType,
+        streamInfo: Attachment.StreamInfo,
+        db: GRDB.Database,
+        tx: DBWriteTransaction
+    ) throws {
+        let existingAttachment = fetch(ids: [id], db: db, tx: tx).first
+        guard let existingAttachment else {
+            throw OWSAssertionError("Attachment does not exist")
+        }
+        guard existingAttachment.asStream() == nil else {
+            throw OWSAssertionError("Attachment already a stream")
+        }
+
+        // Find if there is already an attachment with the same plaintext hash.
+        let existingRecord = try fetchAttachment(
+            sha256ContentHash: streamInfo.sha256ContentHash,
+            db: db,
+            tx: tx
+        ).map(Attachment.Record.init(attachment:))
+
+        if let existingRecord {
+            throw AttachmentInsertError.duplicatePlaintextHash(existingAttachmentId: existingRecord.sqliteId!)
+        }
+
+        var newRecord: Attachment.Record
+        switch source {
+        case .transitTier:
+            newRecord = Attachment.Record(
+                params: .forUpdatingAsDownlodedFromTransitTier(
+                    attachment: existingAttachment,
+                    streamInfo: streamInfo,
+                    mediaName: Attachment.mediaName(digestSHA256Ciphertext: streamInfo.digestSHA256Ciphertext)
+                )
+            )
+        }
+        newRecord.sqliteId = id
+        try newRecord.checkAllUInt64FieldsFitInInt64()
+        try newRecord.update(db)
     }
 
     func addOwner(

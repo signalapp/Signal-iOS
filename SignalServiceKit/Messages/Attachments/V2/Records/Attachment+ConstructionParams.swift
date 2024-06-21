@@ -18,7 +18,7 @@ extension Attachment {
         public let blurHash: String?
         public let mimeType: String
         public let encryptionKey: Data
-        public let streamInfo: StreamInfo?
+        public var streamInfo: StreamInfo?
         public let transitTierInfo: TransitTierInfo?
         public let mediaName: String?
         public let mediaTierInfo: MediaTierInfo?
@@ -132,6 +132,37 @@ extension Attachment {
                 thumbnailMediaTierInfo: nil,
                 localRelativeFilePathThumbnail: nil,
                 originalAttachmentIdForQuotedReply: originalAttachment.id
+            )
+        }
+
+        public static func forUpdatingAsDownlodedFromTransitTier(
+            attachment: Attachment,
+            streamInfo: Attachment.StreamInfo,
+            mediaName: String
+        ) -> ConstructionParams {
+            let transitTierInfo = attachment.transitTierInfo.map {
+                return Attachment.TransitTierInfo(
+                    cdnNumber: $0.cdnNumber,
+                    cdnKey: $0.cdnKey,
+                    uploadTimestamp: $0.uploadTimestamp,
+                    encryptionKey: $0.encryptionKey,
+                    unencryptedByteCount: $0.unencryptedByteCount,
+                    digestSHA256Ciphertext: $0.digestSHA256Ciphertext,
+                    // Wipe the last download attempt time; its now succeeded.
+                    lastDownloadAttemptTimestamp: nil
+                )
+            }
+            return .init(
+                blurHash: attachment.blurHash,
+                mimeType: attachment.mimeType,
+                encryptionKey: attachment.encryptionKey,
+                streamInfo: streamInfo,
+                transitTierInfo: transitTierInfo,
+                mediaName: mediaName,
+                mediaTierInfo: attachment.mediaTierInfo,
+                thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo,
+                localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
             )
         }
     }

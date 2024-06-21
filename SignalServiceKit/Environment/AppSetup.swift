@@ -264,7 +264,11 @@ public class AppSetup {
         let videoDurationHelper = VideoDurationHelperImpl()
         let attachmentDownloadStore = AttachmentDownloadStoreImpl(dateProvider: dateProvider)
         let attachmentDownloadManager = AttachmentDownloadManagerImpl(
+            attachmentStore: attachmentStore,
             attachmentValidator: attachmentContentValidator,
+            db: db,
+            orphanedAttachmentCleaner: orphanedAttachmentCleaner,
+            orphanedAttachmentStore: orphanedAttachmentStore,
             signalService: signalService
         )
         let tsResourceDownloadManager = TSResourceDownloadManagerImpl(
