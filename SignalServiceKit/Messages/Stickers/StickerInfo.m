@@ -31,7 +31,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)asKey
 {
-    return [NSString stringWithFormat:@"%@.%lu", self.packId.hexadecimalString, (unsigned long)self.stickerId];
+    return [StickerInfo keyWithPackId:self.packId stickerId:self.stickerId];
+}
+
++ (NSString *)keyWithPackId:(NSData *)packId stickerId:(UInt32)stickerId
+{
+    return [NSString stringWithFormat:@"%@.%lu", packId.hexadecimalString, (unsigned long)stickerId];
 }
 
 + (StickerInfo *)defaultValue

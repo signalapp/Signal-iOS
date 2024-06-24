@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithPackId:(NSData *)packId packKey:(NSData *)packKey stickerId:(UInt32)stickerId;
 
 - (NSString *)asKey;
++ (NSString *)keyWithPackId:(NSData *)packId stickerId:(UInt32)stickerId;
 
 @property (nonatomic, readonly) StickerPackInfo *packInfo;
 

@@ -658,6 +658,17 @@ public class StickerManager: NSObject {
     }
 
     @objc
+    public class func fetchInstalledSticker(
+        packId: Data,
+        stickerId: UInt32,
+        transaction: SDSAnyReadTransaction
+    ) -> InstalledSticker? {
+        let uniqueId = StickerInfo.key(withPackId: packId, stickerId: stickerId)
+
+        return InstalledSticker.anyFetch(uniqueId: uniqueId, transaction: transaction)
+    }
+
+    @objc
     public class func installSticker(stickerInfo: StickerInfo,
                                      stickerUrl stickerTemporaryUrl: URL,
                                      contentType: String?,
