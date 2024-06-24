@@ -247,13 +247,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             isRetryable: Bool
         ) async {
             self.currentRecordIds.remove(record.id!)
-            if isRetryable {
-                // TODO: figure out retry time based on error.
-                let retryTime: TimeInterval = 100
+            if isRetryable, let retryTime = self.retryTime(for: record) {
                 await db.awaitableWrite { tx in
                     try? self.attachmentDownloadStore.markQueuedDownloadFailed(
                         withId: record.id!,
-                        minRetryTimestamp: Date().addingTimeInterval(retryTime).ows_millisecondsSince1970,
+                        minRetryTimestamp: retryTime,
                         tx: tx
                     )
                 }
@@ -272,6 +270,17 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         tx: tx
                     )
                 }
+            }
+        }
+
+        /// Returns nil if should not be retried.
+        /// Note these are not network-level retries; those happen separately.
+        /// These are persisted retries, usually for longer running retry attempts.
+        private nonisolated func retryTime(for record: QueuedAttachmentDownloadRecord) -> UInt64? {
+            switch record.sourceType {
+            case .transitTier:
+                // We don't do persistent retries fromt the transit tier.
+                return nil
             }
         }
 
