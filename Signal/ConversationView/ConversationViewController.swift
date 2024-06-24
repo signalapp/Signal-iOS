@@ -44,6 +44,10 @@ public final class ConversationViewController: OWSViewController {
     public let collectionView: ConversationCollectionView
     public let searchController: ConversationSearchController
 
+    /// A delegate we can ask about our visibility to the user. If the delegate
+    /// is `nil`, we should assume we are not visible.
+    public weak var isSelectedDelegate: ConversationViewIsSelectedDelegate?
+
     var selectionToolbar: MessageActionsToolbar?
 
     var otherUsersProfileDidChangeEvent: DebouncedEvent?
@@ -72,8 +76,9 @@ public final class ConversationViewController: OWSViewController {
 
     public static func load(
         threadViewModel: ThreadViewModel,
-        action: ConversationViewAction = .none,
-        focusMessageId: String? = nil,
+        isSelectedDelegate: (any ConversationViewIsSelectedDelegate)?,
+        action: ConversationViewAction,
+        focusMessageId: String?,
         tx: SDSAnyReadTransaction
     ) -> ConversationViewController {
         let thread = threadViewModel.threadRecord
@@ -110,7 +115,7 @@ public final class ConversationViewController: OWSViewController {
         let conversationViewModel = ConversationViewModel.load(for: thread, tx: tx)
         let didAlreadyShowGroupCallTooltipEnoughTimes = preferences.wasGroupCallTooltipShown(withTransaction: tx)
 
-        return ConversationViewController(
+        let cvc = ConversationViewController(
             threadViewModel: threadViewModel,
             conversationViewModel: conversationViewModel,
             action: action,
@@ -122,6 +127,9 @@ public final class ConversationViewController: OWSViewController {
             chatColor: chatColor,
             wallpaperViewBuilder: wallpaperViewBuilder
         )
+        cvc.isSelectedDelegate = isSelectedDelegate
+
+        return cvc
     }
 
     static func loadChatColor(for thread: TSThread, tx: SDSAnyReadTransaction) -> ColorOrGradientSetting {

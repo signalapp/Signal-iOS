@@ -439,13 +439,36 @@ extension ConversationViewController {
     public func markVisibleMessagesAsRead(caller: String = #function) {
         AssertIsOnMainThread()
 
-        if nil != self.presentedViewController {
+        guard
+            let isSelectedDelegate,
+            isSelectedDelegate.isConversationViewSelected(self)
+        else {
+            /// We've seen reports of conversation views marking messages as
+            /// read while users are on the chat list, which is to say even when
+            /// the given conversation isn't "selected". (We're not sure why,
+            /// although we suspect that something is holding onto a reference
+            /// to a CVC it shouldn't.)
+            ///
+            /// This workaround confirms that we are, in fact, selected before
+            /// trying to mark messages as read.
+            markAsReadLogger.warn("Trying to mark visible messages as read, but conversation view is not selected! \(caller)")
             return
         }
-        if WindowManager.shared.shouldShowCallView {
+
+        guard
+            let navigationController,
+            navigationController.topViewController === self
+        else {
+            // If this CVC has presented other view controllers, such as
+            // conversation settings, we shouldn't mark as read.
             return
         }
-        if navigationController?.topViewController != self {
+
+        guard self.presentedViewController == nil else {
+            return
+        }
+
+        guard !WindowManager.shared.shouldShowCallView else {
             return
         }
 
