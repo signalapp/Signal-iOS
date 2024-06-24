@@ -25,13 +25,15 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         db: DB,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
         orphanedAttachmentStore: OrphanedAttachmentStore,
-        signalService: OWSSignalServiceProtocol
+        signalService: OWSSignalServiceProtocol,
+        stickerManager: Shims.StickerManager
     ) {
         self.attachmentDownloadStore = attachmentDownloadStore
         self.attachmentStore = attachmentStore
         self.db = db
         self.decrypter = Decrypter(
-            attachmentValidator: attachmentValidator
+            attachmentValidator: attachmentValidator,
+            stickerManager: stickerManager
         )
         self.progressStates = ProgressStates()
         self.downloadQueue = DownloadQueue(
@@ -52,7 +54,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             dateProvider: dateProvider,
             db: db,
             decrypter: decrypter,
-            downloadQueue: downloadQueue
+            downloadQueue: downloadQueue,
+            stickerManager: stickerManager
         )
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
@@ -198,6 +201,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         private let db: DB
         private let decrypter: Decrypter
         private let downloadQueue: DownloadQueue
+        private let stickerManager: Shims.StickerManager
 
         init(
             attachmentDownloadStore: AttachmentDownloadStore,
@@ -206,7 +210,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             dateProvider: @escaping DateProvider,
             db: DB,
             decrypter: Decrypter,
-            downloadQueue: DownloadQueue
+            downloadQueue: DownloadQueue,
+            stickerManager: Shims.StickerManager
         ) {
             self.attachmentDownloadStore = attachmentDownloadStore
             self.attachmentStore = attachmentStore
@@ -215,6 +220,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             self.db = db
             self.decrypter = decrypter
             self.downloadQueue = downloadQueue
+            self.stickerManager = stickerManager
         }
 
         private let maxConcurrentDownloads: UInt = 4
@@ -326,21 +332,30 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return
             }
 
-            // TODO: use the local sticker pack, if available
-            // If not, and priority = localClone, re-enqueue at lower priority.
-
-            if let originalAttachmentIdForQuotedReply = attachment.originalAttachmentIdForQuotedReply {
-                let didCopyFromOriginal = await quoteUnquoteDownloadQuotedReplyFromOriginalStream(
+            if
+                let originalAttachmentIdForQuotedReply = attachment.originalAttachmentIdForQuotedReply,
+                await quoteUnquoteDownloadQuotedReplyFromOriginalStream(
                     originalAttachmentIdForQuotedReply: originalAttachmentIdForQuotedReply,
                     record: record
                 )
-                if didCopyFromOriginal {
-                    return
-                } else if record.priority == .localClone {
-                    // If we were trying for a local clone and failed, fail the whole thing.
-                    await self.didFailToDownload(record, isRetryable: false)
-                    return
-                }
+            {
+                // Done!
+                return
+            }
+
+            if await quoteUnquoteDownloadStickerFromInstalledPackIfPossible(record: record) {
+                // Done!
+                return
+            }
+
+            if record.priority == .localClone {
+                // Local clone happens in two ways:
+                // 1. Original's local stream for a quoted reply
+                // 2. Local installed sticker for a sticker message
+                // If we were trying for either of these and got this far,
+                // we failed to use the local data, so just fail the whole thing.
+                await self.didFailToDownload(record, isRetryable: false)
+                return
             }
 
             let downloadMetadata: DownloadMetadata
@@ -440,6 +455,71 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 Logger.error("Failed to update thumbnails: \(error)")
                 return false
             }
+        }
+
+        private nonisolated func quoteUnquoteDownloadStickerFromInstalledPackIfPossible(
+            record: QueuedAttachmentDownloadRecord
+        ) async -> Bool {
+            let installedSticker: InstalledSticker? = db.read { tx in
+                var stickerMetadata: AttachmentReference.Owner.MessageSource.StickerMetadata?
+                try? attachmentStore.enumerateAllReferences(
+                    toAttachmentId: record.attachmentId,
+                    tx: tx,
+                    block: { reference in
+                        switch reference.owner {
+                        case .message(.sticker(let metadata)):
+                            stickerMetadata = metadata
+                        default:
+                            break
+                        }
+                    }
+                )
+                guard let stickerMetadata else {
+                    return nil
+                }
+                return self.stickerManager.fetchInstalledSticker(
+                    packId: stickerMetadata.stickerPackId,
+                    stickerId: stickerMetadata.stickerId,
+                    tx: tx
+                )
+            }
+
+            guard let installedSticker else {
+                return false
+            }
+
+            // Pretend that is the file we've downloaded.
+            let pendingAttachment: PendingAttachment
+            do {
+                pendingAttachment = try await decrypter.validateAndPrepareInstalledSticker(installedSticker)
+            } catch let error {
+                Logger.error("Failed to validate sticker: \(error)")
+                return false
+            }
+
+            let attachmentStream: AttachmentStream
+            do {
+                attachmentStream = try await attachmentUpdater.updateAttachmentAsDownloaded(
+                    attachmentId: record.attachmentId,
+                    pendingAttachment: pendingAttachment,
+                    source: record.sourceType
+                )
+            } catch let error {
+                Logger.error("Failed to update attachment: \(error)")
+                return false
+            }
+
+            do {
+                try await attachmentUpdater.copyThumbnailForQuotedReplyIfNeeded(
+                    attachmentStream
+                )
+            } catch let error {
+                // Log error but don't block finishing; the thumbnails
+                // can update themselves later.
+                Logger.error("Failed to update thumbnails: \(error)")
+            }
+
+            return true
         }
     }
 
@@ -707,11 +787,14 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     private class Decrypter {
 
         private let attachmentValidator: AttachmentContentValidator
+        private let stickerManager: Shims.StickerManager
 
         init(
-            attachmentValidator: AttachmentContentValidator
+            attachmentValidator: AttachmentContentValidator,
+            stickerManager: Shims.StickerManager
         ) {
             self.attachmentValidator = attachmentValidator
+            self.stickerManager = stickerManager
         }
 
         // Use serialQueue to ensure that we only load into memory
@@ -745,6 +828,53 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         owsFailDebug("Error: \(deleteFileError).")
                     }
                     throw error
+                }
+            }).value
+        }
+
+        func validateAndPrepareInstalledSticker(
+            _ sticker: InstalledSticker
+        ) async throws -> PendingAttachment {
+            let attachmentValidator = self.attachmentValidator
+            let stickerManager = self.stickerManager
+            return try await decryptionQueue.enqueue(operation: {
+                // AttachmentValidator runs synchronously _and_ opens write transactions
+                // internally. We can't block on the write lock in the cooperative thread
+                // pool, so bridge out of structured concurrency to run the validation.
+                return try await withCheckedThrowingContinuation { continuation in
+                    DispatchQueue.global().async {
+                        do {
+                            guard let stickerDataUrl = stickerManager.stickerDataUrl(
+                                forInstalledSticker: sticker,
+                                verifyExists: true
+                            ) else {
+                                throw OWSAssertionError("Missing sticker")
+                            }
+
+                            let mimeType: String
+                            let imageMetadata = Data.imageMetadata(withPath: stickerDataUrl.path, mimeType: nil)
+                            if imageMetadata.imageFormat != .unknown,
+                               let mimeTypeFromMetadata = imageMetadata.mimeType {
+                                mimeType = mimeTypeFromMetadata
+                            } else {
+                                mimeType = MimeType.imageWebp.rawValue
+                            }
+
+                            let pendingAttachment = try attachmentValidator.validateContents(
+                                dataSource: DataSourcePath.dataSource(
+                                    with: stickerDataUrl,
+                                    shouldDeleteOnDeallocation: false
+                                ),
+                                shouldConsume: false,
+                                mimeType: mimeType,
+                                renderingFlag: .borderless,
+                                sourceFilename: nil
+                            )
+                            continuation.resume(with: .success(pendingAttachment))
+                        } catch let error {
+                            continuation.resume(throwing: error)
+                        }
+                    }
                 }
             }).value
         }
@@ -1034,10 +1164,12 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 extension AttachmentDownloadManagerImpl {
     public enum Shims {
         public typealias AppReadiness = _AttachmentDownloadManagerImpl_AppReadinessShim
+        public typealias StickerManager = _AttachmentDownloadManagerImpl_StickerManagerShim
     }
 
     public enum Wrappers {
         public typealias AppReadiness = _AttachmentDownloadManagerImpl_AppReadinessWrapper
+        public typealias StickerManager = _AttachmentDownloadManagerImpl_StickerManagerWrapper
     }
 }
 
@@ -1052,5 +1184,24 @@ public class _AttachmentDownloadManagerImpl_AppReadinessWrapper: _AttachmentDown
 
     public func runNowOrWhenMainAppDidBecomeReadyAsync(_ block: @escaping () -> Void) {
         AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync(block)
+    }
+}
+
+public protocol _AttachmentDownloadManagerImpl_StickerManagerShim {
+
+    func fetchInstalledSticker(packId: Data, stickerId: UInt32, tx: DBReadTransaction) -> InstalledSticker?
+
+    func stickerDataUrl(forInstalledSticker: InstalledSticker, verifyExists: Bool) -> URL?
+}
+
+public class _AttachmentDownloadManagerImpl_StickerManagerWrapper: _AttachmentDownloadManagerImpl_StickerManagerShim {
+    public init() {}
+
+    public func fetchInstalledSticker(packId: Data, stickerId: UInt32, tx: DBReadTransaction) -> InstalledSticker? {
+        return StickerManager.fetchInstalledSticker(packId: packId, stickerId: stickerId, transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func stickerDataUrl(forInstalledSticker: InstalledSticker, verifyExists: Bool) -> URL? {
+        return StickerManager.stickerDataUrl(forInstalledSticker: forInstalledSticker, verifyExists: verifyExists)
     }
 }

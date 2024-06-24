@@ -250,13 +250,15 @@ public class AppSetup {
             db: db,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
             orphanedAttachmentStore: orphanedAttachmentStore,
-            signalService: signalService
+            signalService: signalService,
+            stickerManager: AttachmentDownloadManagerImpl.Wrappers.StickerManager()
         )
         let attachmentManager = AttachmentManagerImpl(
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentStore: attachmentStore,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
-            orphanedAttachmentStore: orphanedAttachmentStore
+            orphanedAttachmentStore: orphanedAttachmentStore,
+            stickerManager: AttachmentManagerImpl.Wrappers.StickerManager()
         )
 
         let attachmentThumbnailService = AttachmentThumbnailServiceImpl()

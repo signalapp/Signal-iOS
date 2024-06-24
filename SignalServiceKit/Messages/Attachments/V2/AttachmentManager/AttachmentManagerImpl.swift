@@ -11,17 +11,20 @@ public class AttachmentManagerImpl: AttachmentManager {
     private let attachmentStore: AttachmentStore
     private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
     private let orphanedAttachmentStore: OrphanedAttachmentStore
+    private let stickerManager: Shims.StickerManager
 
     public init(
         attachmentDownloadManager: AttachmentDownloadManager,
         attachmentStore: AttachmentStore,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
-        orphanedAttachmentStore: OrphanedAttachmentStore
+        orphanedAttachmentStore: OrphanedAttachmentStore,
+        stickerManager: Shims.StickerManager
     ) {
         self.attachmentDownloadManager = attachmentDownloadManager
         self.attachmentStore = attachmentStore
         self.orphanedAttachmentCleaner = orphanedAttachmentCleaner
         self.orphanedAttachmentStore = orphanedAttachmentStore
+        self.stickerManager = stickerManager
     }
 
     // MARK: - Public
@@ -252,6 +255,33 @@ public class AttachmentManagerImpl: AttachmentManager {
             reference: referenceParams,
             tx: tx
         )
+
+        switch referenceParams.owner {
+        case .message(.sticker(let stickerInfo)):
+            // Only for stickers, schedule a high priority "download"
+            // from the local sticker pack if we have it.
+            let installedSticker = self.stickerManager.fetchInstalledSticker(
+                packId: stickerInfo.stickerPackId,
+                stickerId: stickerInfo.stickerId,
+                tx: tx
+            )
+            if installedSticker != nil {
+                guard let newAttachmentReference = attachmentStore.fetchFirstReference(
+                    owner: referenceParams.owner.id,
+                    tx: tx
+                ) else {
+                    throw OWSAssertionError("Missing attachment we just created")
+                }
+                attachmentDownloadManager.enqueueDownloadOfAttachment(
+                    id: newAttachmentReference.attachmentRowId,
+                    priority: .localClone,
+                    source: .transitTier,
+                    tx: tx
+                )
+            }
+        default:
+            break
+        }
     }
 
     private func _createAttachmentStream(
@@ -464,5 +494,27 @@ public class AttachmentManagerImpl: AttachmentManager {
                 )
             }
         }
+    }
+}
+
+extension AttachmentManagerImpl {
+    public enum Shims {
+        public typealias StickerManager = _AttachmentManagerImpl_StickerManagerShim
+    }
+
+    public enum Wrappers {
+        public typealias StickerManager = _AttachmentManagerImpl_StickerManagerWrapper
+    }
+}
+
+public protocol _AttachmentManagerImpl_StickerManagerShim {
+    func fetchInstalledSticker(packId: Data, stickerId: UInt32, tx: DBReadTransaction) -> InstalledSticker?
+}
+
+public class _AttachmentManagerImpl_StickerManagerWrapper: _AttachmentManagerImpl_StickerManagerShim {
+    public init() {}
+
+    public func fetchInstalledSticker(packId: Data, stickerId: UInt32, tx: DBReadTransaction) -> InstalledSticker? {
+        return StickerManager.fetchInstalledSticker(packId: packId, stickerId: stickerId, transaction: SDSDB.shimOnlyBridge(tx))
     }
 }
