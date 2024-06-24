@@ -40,6 +40,24 @@ public class AttachmentTransitPointer {
     }
 
     public func downloadState(tx: DBReadTransaction) -> AttachmentDownloadState {
-        fatalError("Unimplemented!")
+        if attachment.asStream() != nil {
+            owsFailDebug("Checking download state of stream")
+            return .enqueuedOrDownloading
+        }
+        do {
+            if try DependenciesBridge.shared.attachmentDownloadStore.isAttachmentEnqueuedForDownload(
+                id: attachment.id,
+                tx: tx
+            ) {
+                return .enqueuedOrDownloading
+            }
+        } catch {
+            owsFailDebug("Failed to look up download queue")
+            return .none
+        }
+        if lastDownloadAttemptTimestamp != nil {
+            return .failed
+        }
+        return .none
     }
 }

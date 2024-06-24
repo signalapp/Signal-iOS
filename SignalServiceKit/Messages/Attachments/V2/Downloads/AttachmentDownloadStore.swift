@@ -12,6 +12,11 @@ public protocol AttachmentDownloadStore {
         tx: DBReadTransaction
     ) throws -> QueuedAttachmentDownloadRecord?
 
+    func isAttachmentEnqueuedForDownload(
+        id: Attachment.IDType,
+        tx: DBReadTransaction
+    ) throws -> Bool
+
     /// Fetch the next N highest priority downloads off the queue in FIFO order.
     func peek(
         count: UInt,
