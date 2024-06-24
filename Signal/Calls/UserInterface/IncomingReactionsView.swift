@@ -14,8 +14,6 @@ class IncomingReactionsView: UIView, ReactionReceiver {
         fileprivate static let maxReactionsToDisplay = ReactionsModel.Constants.maxReactionsToDisplay
         fileprivate static let reactionSpacing: CGFloat = 12
         fileprivate static let reactionViewHeight: CGFloat = ReactionView.Constants.nameViewDimension
-        fileprivate static let alphaFifth = 0.7
-        fileprivate static let alphaFourth = 0.9
         fileprivate static let displayTime: TimeInterval = 4
         fileprivate static let animationDuration: TimeInterval = 0.2
     }
@@ -86,7 +84,6 @@ class IncomingReactionsView: UIView, ReactionReceiver {
                     bottommostOriginY: last.frame.origin.y - numSlotsToMove*(Constants.reactionSpacing + Constants.reactionViewHeight)
                 )
             }
-            self.setReactionAlphas(finalViewsDisplayed: finalReactionViewsDisplayed)
 
             // Removing reactions
             for viewToRemove in reactionViewsToRemove {
@@ -149,23 +146,6 @@ class IncomingReactionsView: UIView, ReactionReceiver {
                 x: 0,
                 y: origin.y - Constants.reactionSpacing - Constants.reactionViewHeight
             )
-        }
-    }
-
-    private func setReactionAlphas(finalViewsDisplayed: [ReactionView]) {
-        if finalViewsDisplayed.count == Constants.maxReactionsToDisplay {
-            if let fifth = finalViewsDisplayed[safe: 0] {
-                fifth.alpha = Constants.alphaFifth
-            }
-            if let fourth = finalViewsDisplayed[safe: 1] {
-                fourth.alpha = Constants.alphaFourth
-            }
-        }
-        if
-            finalViewsDisplayed.count == Constants.maxReactionsToDisplay-1,
-            let fourth = finalViewsDisplayed[safe: 0]
-        {
-            fourth.alpha = Constants.alphaFourth
         }
     }
 
@@ -236,16 +216,20 @@ class IncomingReactionsView: UIView, ReactionReceiver {
 
         private lazy var nameView: UIView = {
             let view = UIView()
-            view.backgroundColor = .ows_blackAlpha80
+            view.clipsToBounds = true
             view.layer.cornerRadius =  Constants.nameCornerRadius
             view.translatesAutoresizingMaskIntoConstraints = false
             view.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-            view.addSubview(nameLabel)
 
-            view.layer.shadowColor = UIColor.darkGray.cgColor
-            view.layer.shadowOpacity = 0.5
-            view.layer.shadowOffset = .zero
-            view.layer.shadowRadius = 0
+            if UIAccessibility.isReduceTransparencyEnabled {
+                view.backgroundColor = .ows_blackAlpha80
+            } else {
+                let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterialDark))
+                view.addSubview(blurView)
+                blurView.autoPinEdgesToSuperviewEdges()
+            }
+
+            view.addSubview(nameLabel)
 
             NSLayoutConstraint.activate([
                 view.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor, constant: -Constants.nameViewHInset),
