@@ -222,12 +222,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             try await withThrowingTaskGroup(of: Void.self) { taskGroup in
                 records.forEach { record in
                     taskGroup.addTask {
-                        do {
-                            try await self.downloadRecord(record)
-                            await self.didFinishDownloading(record)
-                        } catch let downloadError {
-                            await self.didFailToDownload(record, error: downloadError)
-                        }
+                        await self.downloadRecord(record)
                         // As soon as we finish any download, start downloading more.
                         try await self.loadFromQueueIfAble()
                     }
@@ -247,11 +242,14 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             }
         }
 
-        private func didFailToDownload(_ record: QueuedAttachmentDownloadRecord, error: Error) async {
+        private func didFailToDownload(
+            _ record: QueuedAttachmentDownloadRecord,
+            isRetryable: Bool
+        ) async {
             self.currentRecordIds.remove(record.id!)
-            // TODO: figure out retry time based on error.
-            let retryTime: TimeInterval? = nil
-            if let retryTime {
+            if isRetryable {
+                // TODO: figure out retry time based on error.
+                let retryTime: TimeInterval = 100
                 await db.awaitableWrite { tx in
                     try? self.attachmentDownloadStore.markQueuedDownloadFailed(
                         withId: record.id!,
@@ -277,9 +275,103 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             }
         }
 
-        private nonisolated func downloadRecord(_ record: QueuedAttachmentDownloadRecord) async throws {
-            // TODO: download, validate, etc
-            fatalError("Unimplemented")
+        private nonisolated func downloadRecord(_ record: QueuedAttachmentDownloadRecord) async {
+            guard let attachment = db.read(block: { tx in
+                attachmentStore.fetch(id: record.attachmentId, tx: tx)
+            }) else {
+                // Because of the foreign key relationship and cascading deletes, this should
+                // only happen if the attachment got deleted between when we fetched the
+                // download queue record and now. Regardless, the record should now be deleted.
+                owsFailDebug("Attempting to download an attachment that doesn't exist!")
+                return
+            }
+
+            guard attachment.asStream() == nil else {
+                // Already a stream! No need to download.
+                await self.didFinishDownloading(record)
+                return
+            }
+
+            // TODO: use the local sticker pack or original for quoted reply,
+            // if available. If not, and priority = localClone, re-enqueue at
+            // lower priority.
+
+            let downloadMetadata: DownloadMetadata
+            switch record.sourceType {
+            case .transitTier:
+                guard let transitTierInfo = attachment.transitTierInfo else {
+                    owsFailDebug("Attempting to download an attachment without cdn info")
+                    // Remove the download.
+                    await db.awaitableWrite { tx in
+                        try? self.attachmentDownloadStore.removeAttachmentFromQueue(
+                            withId: attachment.id,
+                            source: .transitTier,
+                            tx: tx
+                        )
+                    }
+                    return
+                }
+                downloadMetadata = .init(
+                    mimeType: attachment.mimeType,
+                    cdnNumber: transitTierInfo.cdnNumber,
+                    cdnKey: transitTierInfo.cdnKey,
+                    encryptionKey: transitTierInfo.encryptionKey,
+                    digest: transitTierInfo.digestSHA256Ciphertext,
+                    plaintextLength: transitTierInfo.unencryptedByteCount
+                )
+            }
+
+            let downloadedFileUrl: URL
+            do {
+                downloadedFileUrl = try await downloadQueue.enqueueDownload(
+                    downloadState: .init(type: .attachment(downloadMetadata, id: attachment.id)),
+                    maxDownloadSizeBytes: RemoteConfig.maxAttachmentDownloadSizeBytes
+                )
+            } catch let error {
+                Logger.error("Failed to download: \(error)")
+                // We retry all network-level errors (with an exponential backoff).
+                // Even if we get e.g. a 404, the file may not be available _yet_
+                // but might be in the future.
+                await self.didFailToDownload(record, isRetryable: true)
+                return
+            }
+
+            let pendingAttachment: PendingAttachment
+            do {
+                pendingAttachment = try await decrypter.validateAndPrepare(
+                    encryptedFileUrl: downloadedFileUrl,
+                    metadata: downloadMetadata
+                )
+            } catch let error {
+                Logger.error("Failed to validate: \(error)")
+                await self.didFailToDownload(record, isRetryable: false)
+                return
+            }
+
+            let attachmentStream: AttachmentStream
+            do {
+                attachmentStream = try await attachmentUpdater.updateAttachmentAsDownloaded(
+                    attachmentId: attachment.id,
+                    pendingAttachment: pendingAttachment,
+                    source: record.sourceType
+                )
+            } catch let error {
+                Logger.error("Failed to update attachment: \(error)")
+                await self.didFailToDownload(record, isRetryable: true)
+                return
+            }
+
+            do {
+                try await attachmentUpdater.copyThumbnailForQuotedReplyIfNeeded(
+                    attachmentStream
+                )
+            } catch let error {
+                // Log error but don't block finishing; the thumbnails
+                // can update themselves later.
+                Logger.error("Failed to update thumbnails: \(error)")
+            }
+
+            await self.didFinishDownloading(record)
         }
     }
 
@@ -663,7 +755,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             self.orphanedAttachmentStore = orphanedAttachmentStore
         }
 
-        private func updateAttachmentAsDownloaded(
+        func updateAttachmentAsDownloaded(
             attachmentId: Attachment.IDType,
             pendingAttachment: PendingAttachment,
             source: QueuedAttachmentDownloadRecord.SourceType
