@@ -17,10 +17,13 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private enum Constants {
         static let keyValueStoreCollectionName = "MessageBackupManager"
         static let keyValueStoreHasReservedBackupKey = "HasReservedBackupKey"
+
+        static let supportedBackupVersion: UInt64 = 1
     }
 
     private class NotImplementedError: Error {}
     private class BackupError: Error {}
+    private class BackupVersionNotSupportedError: Error {}
 
     private let accountDataArchiver: MessageBackupAccountDataArchiver
     private let attachmentDownloadManager: AttachmentDownloadManager
@@ -266,7 +269,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
 
     private func writeHeader(stream: MessageBackupProtoOutputStream, tx: DBWriteTransaction) throws {
         let backupInfo = BackupProto.BackupInfo(
-            version: 1,
+            version: Constants.supportedBackupVersion,
             backupTimeMs: dateProvider().ows_millisecondsSince1970
         )
         switch stream.writeHeader(backupInfo) {
@@ -379,6 +382,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         }
 
         Logger.info("Reading backup with version: \(backupInfo.version) backed up at \(backupInfo.backupTimeMs)")
+
+        guard backupInfo.version == Constants.supportedBackupVersion else {
+            throw BackupVersionNotSupportedError()
+        }
 
         let recipientContext = MessageBackup.RecipientRestoringContext(localIdentifiers: localIdentifiers)
         let chatContext = MessageBackup.ChatRestoringContext(
