@@ -9,11 +9,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
     private let attachmentDownloadStore: AttachmentDownloadStore
     private let attachmentStore: AttachmentStore
-    private let attachmentValidator: AttachmentContentValidator
+    private let attachmentUpdater: AttachmentUpdater
     private let db: DB
+    private let decrypter: Decrypter
     private let downloadQueue: DownloadQueue
-    private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
-    private let orphanedAttachmentStore: OrphanedAttachmentStore
     private let progressStates: ProgressStates
     private let queueLoader: PersistedQueueLoader
 
@@ -29,20 +28,29 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     ) {
         self.attachmentDownloadStore = attachmentDownloadStore
         self.attachmentStore = attachmentStore
-        self.attachmentValidator = attachmentValidator
         self.db = db
+        self.decrypter = Decrypter(
+            attachmentValidator: attachmentValidator
+        )
         self.progressStates = ProgressStates()
         self.downloadQueue = DownloadQueue(
             progressStates: progressStates,
             signalService: signalService
         )
-        self.orphanedAttachmentCleaner = orphanedAttachmentCleaner
-        self.orphanedAttachmentStore = orphanedAttachmentStore
+        self.attachmentUpdater = AttachmentUpdater(
+            attachmentStore: attachmentStore,
+            db: db,
+            decrypter: decrypter,
+            orphanedAttachmentCleaner: orphanedAttachmentCleaner,
+            orphanedAttachmentStore: orphanedAttachmentStore
+        )
         self.queueLoader = PersistedQueueLoader(
             attachmentDownloadStore: attachmentDownloadStore,
             attachmentStore: attachmentStore,
+            attachmentUpdater: attachmentUpdater,
             dateProvider: dateProvider,
             db: db,
+            decrypter: decrypter,
             downloadQueue: downloadQueue
         )
     }
@@ -68,7 +76,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 downloadState: downloadState,
                 maxDownloadSizeBytes: maxDownloadSize
             )
-            return try await self.decryptTransientAttachment(encryptedFileUrl: encryptedFileUrl, metadata: metadata)
+            return try await self.decrypter.decryptTransientAttachment(encryptedFileUrl: encryptedFileUrl, metadata: metadata)
         }
     }
 
@@ -160,21 +168,27 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
         private let attachmentDownloadStore: AttachmentDownloadStore
         private let attachmentStore: AttachmentStore
+        private let attachmentUpdater: AttachmentUpdater
         private let dateProvider: DateProvider
         private let db: DB
+        private let decrypter: Decrypter
         private let downloadQueue: DownloadQueue
 
         init(
             attachmentDownloadStore: AttachmentDownloadStore,
             attachmentStore: AttachmentStore,
+            attachmentUpdater: AttachmentUpdater,
             dateProvider: @escaping DateProvider,
             db: DB,
+            decrypter: Decrypter,
             downloadQueue: DownloadQueue
         ) {
             self.attachmentDownloadStore = attachmentDownloadStore
             self.attachmentStore = attachmentStore
+            self.attachmentUpdater = attachmentUpdater
             self.dateProvider = dateProvider
             self.db = db
+            self.decrypter = decrypter
             self.downloadQueue = downloadQueue
         }
 
@@ -530,130 +544,289 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         }
     }
 
-    // Use serialQueue to ensure that we only load into memory
-    // & decrypt a single attachment at a time.
-    private let decryptionQueue = SerialTaskQueue()
+    private class Decrypter {
 
-    private func decryptTransientAttachment(
-        encryptedFileUrl: URL,
-        metadata: DownloadMetadata
-    ) async throws -> URL {
-        return try await decryptionQueue.enqueue(operation: {
-            do {
-                // Transient attachments decrypt to a tmp file.
-                let outputUrl = OWSFileSystem.temporaryFileUrl()
+        private let attachmentValidator: AttachmentContentValidator
 
-                try Cryptography.decryptAttachment(
-                    at: encryptedFileUrl,
-                    metadata: EncryptionMetadata(
-                        key: metadata.encryptionKey,
-                        digest: metadata.digest,
-                        plaintextLength: metadata.plaintextLength.map(Int.init)
-                    ),
-                    output: outputUrl
-                )
+        init(
+            attachmentValidator: AttachmentContentValidator
+        ) {
+            self.attachmentValidator = attachmentValidator
+        }
 
-                return outputUrl
-            } catch let error {
+        // Use serialQueue to ensure that we only load into memory
+        // & decrypt a single attachment at a time.
+        private let decryptionQueue = SerialTaskQueue()
+
+        func decryptTransientAttachment(
+            encryptedFileUrl: URL,
+            metadata: DownloadMetadata
+        ) async throws -> URL {
+            return try await decryptionQueue.enqueue(operation: {
                 do {
-                    try OWSFileSystem.deleteFileIfExists(url: encryptedFileUrl)
-                } catch let deleteFileError {
-                    owsFailDebug("Error: \(deleteFileError).")
-                }
-                throw error
-            }
-        }).value
-    }
+                    // Transient attachments decrypt to a tmp file.
+                    let outputUrl = OWSFileSystem.temporaryFileUrl()
 
-    private func validateAndPrepare(
-        encryptedFileUrl: URL,
-        metadata: DownloadMetadata
-    ) async throws -> PendingAttachment {
-        let attachmentValidator = self.attachmentValidator
-        return try await decryptionQueue.enqueue(operation: {
-            // AttachmentValidator runs synchronously _and_ opens write transactions
-            // internally. We can't block on the write lock in the cooperative thread
-            // pool, so bridge out of structured concurrency to run the validation.
-            return try await withCheckedThrowingContinuation { continuation in
-                DispatchQueue.global().async {
+                    try Cryptography.decryptAttachment(
+                        at: encryptedFileUrl,
+                        metadata: EncryptionMetadata(
+                            key: metadata.encryptionKey,
+                            digest: metadata.digest,
+                            plaintextLength: metadata.plaintextLength.map(Int.init)
+                        ),
+                        output: outputUrl
+                    )
+
+                    return outputUrl
+                } catch let error {
                     do {
-                        let pendingAttachment = try attachmentValidator.validateContents(
-                            ofEncryptedFileAt: encryptedFileUrl,
-                            encryptionKey: metadata.encryptionKey,
-                            plaintextLength: metadata.plaintextLength,
-                            digestSHA256Ciphertext: metadata.digest,
-                            mimeType: metadata.mimeType,
-                            renderingFlag: .default,
-                            sourceFilename: nil
-                        )
-                        continuation.resume(with: .success(pendingAttachment))
-                    } catch let error {
-                        continuation.resume(throwing: error)
+                        try OWSFileSystem.deleteFileIfExists(url: encryptedFileUrl)
+                    } catch let deleteFileError {
+                        owsFailDebug("Error: \(deleteFileError).")
+                    }
+                    throw error
+                }
+            }).value
+        }
+
+        func validateAndPrepare(
+            encryptedFileUrl: URL,
+            metadata: DownloadMetadata
+        ) async throws -> PendingAttachment {
+            let attachmentValidator = self.attachmentValidator
+            return try await decryptionQueue.enqueue(operation: {
+                // AttachmentValidator runs synchronously _and_ opens write transactions
+                // internally. We can't block on the write lock in the cooperative thread
+                // pool, so bridge out of structured concurrency to run the validation.
+                return try await withCheckedThrowingContinuation { continuation in
+                    DispatchQueue.global().async {
+                        do {
+                            let pendingAttachment = try attachmentValidator.validateContents(
+                                ofEncryptedFileAt: encryptedFileUrl,
+                                encryptionKey: metadata.encryptionKey,
+                                plaintextLength: metadata.plaintextLength,
+                                digestSHA256Ciphertext: metadata.digest,
+                                mimeType: metadata.mimeType,
+                                renderingFlag: .default,
+                                sourceFilename: nil
+                            )
+                            continuation.resume(with: .success(pendingAttachment))
+                        } catch let error {
+                            continuation.resume(throwing: error)
+                        }
                     }
                 }
-            }
-        }).value
+            }).value
+        }
+
+        func prepareQuotedReplyThumbnail(originalAttachmentStream: AttachmentStream) async throws -> PendingAttachment {
+            let attachmentValidator = self.attachmentValidator
+            return try await decryptionQueue.enqueue(operation: {
+                // AttachmentValidator runs synchronously _and_ opens write transactions
+                // internally. We can't block on the write lock in the cooperative thread
+                // pool, so bridge out of structured concurrency to run the validation.
+                return try await withCheckedThrowingContinuation { continuation in
+                    DispatchQueue.global().async {
+                        do {
+                            let pendingAttachment = try attachmentValidator.prepareQuotedReplyThumbnail(
+                                fromOriginalAttachmentStream: originalAttachmentStream
+                            )
+                            continuation.resume(with: .success(pendingAttachment))
+                        } catch let error {
+                            continuation.resume(throwing: error)
+                        }
+                    }
+                }
+            }).value
+        }
     }
 
-    private func updateAttachmentAsDownloaded(
-        attachmentId: Attachment.IDType,
-        pendingAttachment: PendingAttachment,
-        source: QueuedAttachmentDownloadRecord.SourceType
-    ) async throws -> AttachmentStream {
-        return try await db.awaitableWrite { tx in
-            guard let existingAttachment = self.attachmentStore.fetch(id: attachmentId, tx: tx) else {
-                throw OWSAssertionError("Missing attachment!")
-            }
-            if let stream = existingAttachment.asStream() {
-                // Its already a stream?
-                return stream
-            }
+    private class AttachmentUpdater {
 
-            do {
-                guard self.orphanedAttachmentStore.orphanAttachmentExists(with: pendingAttachment.orphanRecordId, tx: tx) else {
-                    throw OWSAssertionError("Attachment file deleted before creation")
+        private let attachmentStore: AttachmentStore
+        private let db: DB
+        private let decrypter: Decrypter
+        private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
+        private let orphanedAttachmentStore: OrphanedAttachmentStore
+
+        public init(
+            attachmentStore: AttachmentStore,
+            db: DB,
+            decrypter: Decrypter,
+            orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
+            orphanedAttachmentStore: OrphanedAttachmentStore
+        ) {
+            self.attachmentStore = attachmentStore
+            self.db = db
+            self.decrypter = decrypter
+            self.orphanedAttachmentCleaner = orphanedAttachmentCleaner
+            self.orphanedAttachmentStore = orphanedAttachmentStore
+        }
+
+        private func updateAttachmentAsDownloaded(
+            attachmentId: Attachment.IDType,
+            pendingAttachment: PendingAttachment,
+            source: QueuedAttachmentDownloadRecord.SourceType
+        ) async throws -> AttachmentStream {
+            return try await db.awaitableWrite { tx in
+                guard let existingAttachment = self.attachmentStore.fetch(id: attachmentId, tx: tx) else {
+                    throw OWSAssertionError("Missing attachment!")
+                }
+                if let stream = existingAttachment.asStream() {
+                    // Its already a stream?
+                    return stream
                 }
 
-                // Try and update the attachment.
-                try self.attachmentStore.updateAttachmentAsDownloaded(
-                    from: source,
-                    id: attachmentId,
-                    streamInfo: .init(
-                        sha256ContentHash: pendingAttachment.sha256ContentHash,
-                        encryptedByteCount: pendingAttachment.encryptedByteCount,
-                        unencryptedByteCount: pendingAttachment.unencryptedByteCount,
-                        contentType: pendingAttachment.validatedContentType,
-                        digestSHA256Ciphertext: pendingAttachment.digestSHA256Ciphertext,
-                        localRelativeFilePath: pendingAttachment.localRelativeFilePath
-                    ),
+                do {
+                    guard self.orphanedAttachmentStore.orphanAttachmentExists(with: pendingAttachment.orphanRecordId, tx: tx) else {
+                        throw OWSAssertionError("Attachment file deleted before creation")
+                    }
+
+                    // Try and update the attachment.
+                    try self.attachmentStore.updateAttachmentAsDownloaded(
+                        from: source,
+                        id: attachmentId,
+                        streamInfo: .init(
+                            sha256ContentHash: pendingAttachment.sha256ContentHash,
+                            encryptedByteCount: pendingAttachment.encryptedByteCount,
+                            unencryptedByteCount: pendingAttachment.unencryptedByteCount,
+                            contentType: pendingAttachment.validatedContentType,
+                            digestSHA256Ciphertext: pendingAttachment.digestSHA256Ciphertext,
+                            localRelativeFilePath: pendingAttachment.localRelativeFilePath
+                        ),
+                        tx: tx
+                    )
+                    // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
+                    try self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
+
+                    guard let stream = self.attachmentStore.fetch(id: attachmentId, tx: tx)?.asStream() else {
+                        throw OWSAssertionError("Not a stream")
+                    }
+                    return stream
+
+                } catch let AttachmentInsertError.duplicatePlaintextHash(existingAttachmentId) {
+                    // Already have an attachment with the same plaintext hash!
+                    // Move all existing references to that copy, instead.
+                    // Doing so should delete the original attachment pointer.
+
+                    // Just hold all refs in memory; this is a pointer so really there
+                    // should only ever be one reference as we don't dedupe pointers.
+                    var references = [AttachmentReference]()
+                    try self.attachmentStore.enumerateAllReferences(
+                        toAttachmentId: attachmentId,
+                        tx: tx
+                    ) { reference in
+                        references.append(reference)
+                    }
+                    try references.forEach { reference in
+                        try self.attachmentStore.removeOwner(
+                            reference.owner.id,
+                            for: attachmentId,
+                            tx: tx
+                        )
+                        let newOwnerParams = AttachmentReference.ConstructionParams(
+                            owner: reference.owner,
+                            sourceFilename: reference.sourceFilename,
+                            sourceUnencryptedByteCount: reference.sourceUnencryptedByteCount,
+                            sourceMediaSizePixels: reference.sourceMediaSizePixels
+                        )
+                        try self.attachmentStore.addOwner(
+                            newOwnerParams,
+                            for: existingAttachmentId,
+                            tx: tx
+                        )
+                    }
+
+                    guard let stream = self.attachmentStore.fetch(id: existingAttachmentId, tx: tx)?.asStream() else {
+                        throw OWSAssertionError("Not a stream")
+                    }
+                    return stream
+                } catch let error {
+                    throw error
+                }
+            }
+        }
+
+        func copyThumbnailForQuotedReplyIfNeeded(_ downloadedAttachment: AttachmentStream) async throws {
+            let thumbnailAttachments = try db.read { tx in
+                return try self.attachmentStore.allQuotedReplyAttachments(
+                    forOriginalAttachmentId: downloadedAttachment.attachment.id,
                     tx: tx
                 )
-                // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
-                try self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
+            }
+            guard thumbnailAttachments.contains(where: { $0.asStream() == nil }) else {
+                // all the referencing thumbnails already have their own streams, nothing to do.
+                return
+            }
+            let pendingThumbnailAttachment = try await self.decrypter.prepareQuotedReplyThumbnail(
+                originalAttachmentStream: downloadedAttachment
+            )
 
-                guard let stream = self.attachmentStore.fetch(id: attachmentId, tx: tx)?.asStream() else {
-                    throw OWSAssertionError("Not a stream")
+            try await db.awaitableWrite { tx in
+                let thumbnailAttachments = try self.attachmentStore
+                    .allQuotedReplyAttachments(
+                        forOriginalAttachmentId: downloadedAttachment.attachment.id,
+                        tx: tx
+                    )
+                    .filter({ $0.asStream() == nil })
+
+                // Arbitrarily pick the first thumbnail as the one we will promote to
+                // a stream. The others' references will be re-pointed to this one.
+                guard let firstThumbnailAttachment = thumbnailAttachments.first else {
+                    // Nothing to update.
+                    return
                 }
-                return stream
 
-            } catch let AttachmentInsertError.duplicatePlaintextHash(existingAttachmentId) {
-                // Already have an attachment with the same plaintext hash!
-                // Move all existing references to that copy, instead.
-                // Doing so should delete the original attachment pointer.
-
-                // Just hold all refs in memory; this is a pointer so really there
-                // should only ever be one reference as we don't dedupe pointers.
-                var references = [AttachmentReference]()
-                try self.attachmentStore.enumerateAllReferences(
-                    toAttachmentId: attachmentId,
-                    tx: tx
-                ) { reference in
-                    references.append(reference)
+                let references = try thumbnailAttachments.flatMap { attachment in
+                    var refs = [AttachmentReference]()
+                    try self.attachmentStore.enumerateAllReferences(toAttachmentId: attachment.id, tx: tx) {
+                        refs.append($0)
+                    }
+                    return refs
                 }
+
+                let thumbnailAttachmentId: Attachment.IDType
+                do {
+                    guard self.orphanedAttachmentStore.orphanAttachmentExists(with: pendingThumbnailAttachment.orphanRecordId, tx: tx) else {
+                        throw OWSAssertionError("Attachment file deleted before creation")
+                    }
+
+                    // Try and promote the attachment to a stream.
+                    try self.attachmentStore.updateAttachmentAsDownloaded(
+                        from: .transitTier,
+                        id: firstThumbnailAttachment.id,
+                        streamInfo: .init(
+                            sha256ContentHash: pendingThumbnailAttachment.sha256ContentHash,
+                            encryptedByteCount: pendingThumbnailAttachment.encryptedByteCount,
+                            unencryptedByteCount: pendingThumbnailAttachment.unencryptedByteCount,
+                            contentType: pendingThumbnailAttachment.validatedContentType,
+                            digestSHA256Ciphertext: pendingThumbnailAttachment.digestSHA256Ciphertext,
+                            localRelativeFilePath: pendingThumbnailAttachment.localRelativeFilePath
+                        ),
+                        tx: tx
+                    )
+                    // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
+                    try self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingThumbnailAttachment.orphanRecordId, tx: tx)
+
+                    thumbnailAttachmentId = firstThumbnailAttachment.id
+                } catch let AttachmentInsertError.duplicatePlaintextHash(existingAttachmentId) {
+                    // Already have an attachment with the same plaintext hash!
+                    // We will instead re-point all references to this attachment.
+                    thumbnailAttachmentId = existingAttachmentId
+                } catch let error {
+                    throw error
+                }
+
+                // Move all existing references to the new thumbnail stream.
                 try references.forEach { reference in
+                    if reference.attachmentRowId == thumbnailAttachmentId {
+                        // No need to update references already pointing at the right spot.
+                        return
+                    }
+
                     try self.attachmentStore.removeOwner(
                         reference.owner.id,
-                        for: attachmentId,
+                        for: reference.attachmentRowId,
                         tx: tx
                     )
                     let newOwnerParams = AttachmentReference.ConstructionParams(
@@ -664,129 +837,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     )
                     try self.attachmentStore.addOwner(
                         newOwnerParams,
-                        for: existingAttachmentId,
+                        for: thumbnailAttachmentId,
                         tx: tx
                     )
                 }
-
-                guard let stream = self.attachmentStore.fetch(id: existingAttachmentId, tx: tx)?.asStream() else {
-                    throw OWSAssertionError("Not a stream")
-                }
-                return stream
-            } catch let error {
-                throw error
-            }
-        }
-    }
-
-    func copyThumbnailForQuotedReplyIfNeeded(_ downloadedAttachment: AttachmentStream) async throws {
-        let thumbnailAttachments = try db.read { tx in
-            return try self.attachmentStore.allQuotedReplyAttachments(
-                forOriginalAttachmentId: downloadedAttachment.attachment.id,
-                tx: tx
-            )
-        }
-        guard thumbnailAttachments.contains(where: { $0.asStream() == nil }) else {
-            // all the referencing thumbnails already have their own streams, nothing to do.
-            return
-        }
-        let attachmentValidator = self.attachmentValidator
-        let pendingThumbnailAttachment = try await decryptionQueue.enqueue(operation: {
-            // AttachmentValidator runs synchronously _and_ opens write transactions
-            // internally. We can't block on the write lock in the cooperative thread
-            // pool, so bridge out of structured concurrency to run the validation.
-            return try await withCheckedThrowingContinuation { continuation in
-                DispatchQueue.global().async {
-                    do {
-                        let pendingAttachment = try attachmentValidator.prepareQuotedReplyThumbnail(
-                            fromOriginalAttachmentStream: downloadedAttachment
-                        )
-                        continuation.resume(with: .success(pendingAttachment))
-                    } catch let error {
-                        continuation.resume(throwing: error)
-                    }
-                }
-            }
-        }).value
-
-        try await db.awaitableWrite { tx in
-            let thumbnailAttachments = try self.attachmentStore
-                .allQuotedReplyAttachments(
-                    forOriginalAttachmentId: downloadedAttachment.attachment.id,
-                    tx: tx
-                )
-                .filter({ $0.asStream() == nil })
-
-            // Arbitrarily pick the first thumbnail as the one we will promote to
-            // a stream. The others' references will be re-pointed to this one.
-            guard let firstThumbnailAttachment = thumbnailAttachments.first else {
-                // Nothing to update.
-                return
-            }
-
-            let references = try thumbnailAttachments.flatMap { attachment in
-                var refs = [AttachmentReference]()
-                try self.attachmentStore.enumerateAllReferences(toAttachmentId: attachment.id, tx: tx) {
-                    refs.append($0)
-                }
-                return refs
-            }
-
-            let thumbnailAttachmentId: Attachment.IDType
-            do {
-                guard self.orphanedAttachmentStore.orphanAttachmentExists(with: pendingThumbnailAttachment.orphanRecordId, tx: tx) else {
-                    throw OWSAssertionError("Attachment file deleted before creation")
-                }
-
-                // Try and promote the attachment to a stream.
-                try self.attachmentStore.updateAttachmentAsDownloaded(
-                    from: .transitTier,
-                    id: firstThumbnailAttachment.id,
-                    streamInfo: .init(
-                        sha256ContentHash: pendingThumbnailAttachment.sha256ContentHash,
-                        encryptedByteCount: pendingThumbnailAttachment.encryptedByteCount,
-                        unencryptedByteCount: pendingThumbnailAttachment.unencryptedByteCount,
-                        contentType: pendingThumbnailAttachment.validatedContentType,
-                        digestSHA256Ciphertext: pendingThumbnailAttachment.digestSHA256Ciphertext,
-                        localRelativeFilePath: pendingThumbnailAttachment.localRelativeFilePath
-                    ),
-                    tx: tx
-                )
-                // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
-                try self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingThumbnailAttachment.orphanRecordId, tx: tx)
-
-                thumbnailAttachmentId = firstThumbnailAttachment.id
-            } catch let AttachmentInsertError.duplicatePlaintextHash(existingAttachmentId) {
-                // Already have an attachment with the same plaintext hash!
-                // We will instead re-point all references to this attachment.
-                thumbnailAttachmentId = existingAttachmentId
-            } catch let error {
-                throw error
-            }
-
-            // Move all existing references to the new thumbnail stream.
-            try references.forEach { reference in
-                if reference.attachmentRowId == thumbnailAttachmentId {
-                    // No need to update references already pointing at the right spot.
-                    return
-                }
-
-                try self.attachmentStore.removeOwner(
-                    reference.owner.id,
-                    for: reference.attachmentRowId,
-                    tx: tx
-                )
-                let newOwnerParams = AttachmentReference.ConstructionParams(
-                    owner: reference.owner,
-                    sourceFilename: reference.sourceFilename,
-                    sourceUnencryptedByteCount: reference.sourceUnencryptedByteCount,
-                    sourceMediaSizePixels: reference.sourceMediaSizePixels
-                )
-                try self.attachmentStore.addOwner(
-                    newOwnerParams,
-                    for: thumbnailAttachmentId,
-                    tx: tx
-                )
             }
         }
     }
