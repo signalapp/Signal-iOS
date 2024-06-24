@@ -7,15 +7,18 @@ import SignalCoreKit
 
 public class AttachmentManagerImpl: AttachmentManager {
 
+    private let attachmentDownloadManager: AttachmentDownloadManager
     private let attachmentStore: AttachmentStore
     private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
     private let orphanedAttachmentStore: OrphanedAttachmentStore
 
     public init(
+        attachmentDownloadManager: AttachmentDownloadManager,
         attachmentStore: AttachmentStore,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
         orphanedAttachmentStore: OrphanedAttachmentStore
     ) {
+        self.attachmentDownloadManager = attachmentDownloadManager
         self.attachmentStore = attachmentStore
         self.orphanedAttachmentCleaner = orphanedAttachmentCleaner
         self.orphanedAttachmentStore = orphanedAttachmentStore
@@ -437,6 +440,29 @@ public class AttachmentManagerImpl: AttachmentManager {
                 sourceUnencryptedByteCount: originalAttachmentSource.sourceUnencryptedByteCount,
                 sourceMediaSizePixels: originalAttachmentSource.sourceMediaSizePixels
             )
+
+            try attachmentStore.insert(
+                attachmentParams,
+                reference: referenceParams,
+                tx: tx
+            )
+
+            // If we know we have a stream, enqueue the download at high priority
+            // so that copy happens ASAP.
+            if originalAttachment.asStream() != nil {
+                guard let newAttachmentReference = attachmentStore.fetchFirstReference(
+                    owner: referenceParams.owner.id,
+                    tx: tx
+                ) else {
+                    throw OWSAssertionError("Missing attachment we just created")
+                }
+                attachmentDownloadManager.enqueueDownloadOfAttachment(
+                    id: newAttachmentReference.attachmentRowId,
+                    priority: .localClone,
+                    source: .transitTier,
+                    tx: tx
+                )
+            }
         }
     }
 }

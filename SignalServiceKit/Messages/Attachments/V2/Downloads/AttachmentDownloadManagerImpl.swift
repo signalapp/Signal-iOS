@@ -140,6 +140,23 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         }
     }
 
+    public func enqueueDownloadOfAttachment(
+        id: Attachment.IDType,
+        priority: AttachmentDownloadPriority,
+        source: QueuedAttachmentDownloadRecord.SourceType,
+        tx: DBWriteTransaction
+    ) {
+        try? attachmentDownloadStore.enqueueDownloadOfAttachment(
+            withId: id,
+            source: source,
+            priority: priority,
+            tx: tx
+        )
+        tx.addAsyncCompletion(on: SyncScheduler()) { [weak self] in
+            self?.beginDownloadingIfNecessary()
+        }
+    }
+
     public func beginDownloadingIfNecessary() {
         Task { [weak self] in
             try await self?.queueLoader.loadFromQueueIfAble()
@@ -301,9 +318,22 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return
             }
 
-            // TODO: use the local sticker pack or original for quoted reply,
-            // if available. If not, and priority = localClone, re-enqueue at
-            // lower priority.
+            // TODO: use the local sticker pack, if available
+            // If not, and priority = localClone, re-enqueue at lower priority.
+
+            if let originalAttachmentIdForQuotedReply = attachment.originalAttachmentIdForQuotedReply {
+                let didCopyFromOriginal = await quoteUnquoteDownloadQuotedReplyFromOriginalStream(
+                    originalAttachmentIdForQuotedReply: originalAttachmentIdForQuotedReply,
+                    record: record
+                )
+                if didCopyFromOriginal {
+                    return
+                } else if record.priority == .localClone {
+                    // If we were trying for a local clone and failed, fail the whole thing.
+                    await self.didFailToDownload(record, isRetryable: false)
+                    return
+                }
+            }
 
             let downloadMetadata: DownloadMetadata
             switch record.sourceType {
@@ -381,6 +411,27 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             }
 
             await self.didFinishDownloading(record)
+        }
+
+        private nonisolated func quoteUnquoteDownloadQuotedReplyFromOriginalStream(
+            originalAttachmentIdForQuotedReply: Attachment.IDType,
+            record: QueuedAttachmentDownloadRecord
+        ) async -> Bool {
+            let originalAttachmentStream = db.read { tx in
+                attachmentStore.fetch(id: originalAttachmentIdForQuotedReply, tx: tx)?.asStream()
+            }
+            guard let originalAttachmentStream else {
+                return false
+            }
+            do {
+                try await attachmentUpdater.copyThumbnailForQuotedReplyIfNeeded(
+                    originalAttachmentStream
+                )
+                return true
+            } catch let error {
+                Logger.error("Failed to update thumbnails: \(error)")
+                return false
+            }
         }
     }
 

@@ -240,7 +240,19 @@ public class AppSetup {
         )
         let attachmentStore = AttachmentStoreImpl()
         let orphanedAttachmentStore = OrphanedAttachmentStoreImpl()
+        let attachmentDownloadStore = AttachmentDownloadStoreImpl(dateProvider: dateProvider)
+        let attachmentDownloadManager = AttachmentDownloadManagerImpl(
+            attachmentDownloadStore: attachmentDownloadStore,
+            attachmentStore: attachmentStore,
+            attachmentValidator: attachmentContentValidator,
+            dateProvider: dateProvider,
+            db: db,
+            orphanedAttachmentCleaner: orphanedAttachmentCleaner,
+            orphanedAttachmentStore: orphanedAttachmentStore,
+            signalService: signalService
+        )
         let attachmentManager = AttachmentManagerImpl(
+            attachmentDownloadManager: attachmentDownloadManager,
             attachmentStore: attachmentStore,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
             orphanedAttachmentStore: orphanedAttachmentStore
@@ -262,17 +274,7 @@ public class AppSetup {
             tsResourceStore: tsResourceStore
         )
         let videoDurationHelper = VideoDurationHelperImpl()
-        let attachmentDownloadStore = AttachmentDownloadStoreImpl(dateProvider: dateProvider)
-        let attachmentDownloadManager = AttachmentDownloadManagerImpl(
-            attachmentDownloadStore: attachmentDownloadStore,
-            attachmentStore: attachmentStore,
-            attachmentValidator: attachmentContentValidator,
-            dateProvider: dateProvider,
-            db: db,
-            orphanedAttachmentCleaner: orphanedAttachmentCleaner,
-            orphanedAttachmentStore: orphanedAttachmentStore,
-            signalService: signalService
-        )
+
         let tsResourceDownloadManager = TSResourceDownloadManagerImpl(
             attachmentDownloadManager: attachmentDownloadManager,
             tsResourceStore: tsResourceStore

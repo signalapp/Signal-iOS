@@ -35,6 +35,15 @@ open class AttachmentDownloadManagerMock: AttachmentDownloadManager {
         // Do nothing
     }
 
+    open func enqueueDownloadOfAttachment(
+        id: Attachment.IDType,
+        priority: AttachmentDownloadPriority,
+        source: QueuedAttachmentDownloadRecord.SourceType,
+        tx: DBWriteTransaction
+    ) {
+        // Do nothing
+    }
+
     open func beginDownloadingIfNecessary() {
         // Do nothing
     }
