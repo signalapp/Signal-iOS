@@ -15,11 +15,13 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
     private let orphanedAttachmentStore: OrphanedAttachmentStore
     private let progressStates: ProgressStates
+    private let queueLoader: PersistedQueueLoader
 
     public init(
         attachmentDownloadStore: AttachmentDownloadStore,
         attachmentStore: AttachmentStore,
         attachmentValidator: AttachmentContentValidator,
+        dateProvider: @escaping DateProvider,
         db: DB,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
         orphanedAttachmentStore: OrphanedAttachmentStore,
@@ -36,6 +38,13 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         )
         self.orphanedAttachmentCleaner = orphanedAttachmentCleaner
         self.orphanedAttachmentStore = orphanedAttachmentStore
+        self.queueLoader = PersistedQueueLoader(
+            attachmentDownloadStore: attachmentDownloadStore,
+            attachmentStore: attachmentStore,
+            dateProvider: dateProvider,
+            db: db,
+            downloadQueue: downloadQueue
+        )
     }
 
     public func downloadBackup(metadata: MessageBackupRemoteInfo, authHeaders: [String: String]) -> Promise<URL> {
@@ -68,7 +77,29 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         priority: AttachmentDownloadPriority,
         tx: DBWriteTransaction
     ) {
-        fatalError("Unimplemented")
+        guard let messageRowId = message.sqliteRowId else {
+            owsFailDebug("Downloading attachments for uninserted message!")
+            return
+        }
+        let attachmentIds = attachmentStore
+            .fetchReferences(
+                owners: AttachmentReference.MessageOwnerTypeRaw.allCases.map {
+                    $0.with(messageRowId: messageRowId)
+                },
+                tx: tx
+            )
+            .map(\.attachmentRowId)
+        attachmentIds.forEach { attachmentId in
+            try? attachmentDownloadStore.enqueueDownloadOfAttachment(
+                withId: attachmentId,
+                source: .transitTier,
+                priority: priority,
+                tx: tx
+            )
+        }
+        tx.addAsyncCompletion(on: SyncScheduler()) { [weak self] in
+            self?.beginDownloadingIfNecessary()
+        }
     }
 
     public func enqueueDownloadOfAttachmentsForStoryMessage(
@@ -76,11 +107,35 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         priority: AttachmentDownloadPriority,
         tx: DBWriteTransaction
     ) {
-        fatalError("Unimplemented")
+        guard let storyMessageRowId = message.id else {
+            owsFailDebug("Downloading attachments for uninserted message!")
+            return
+        }
+        let attachmentIds = attachmentStore
+            .fetchReferences(
+                owners: AttachmentReference.StoryMessageOwnerTypeRaw.allCases.map {
+                    $0.with(storyMessageRowId: storyMessageRowId)
+                },
+                tx: tx
+            )
+            .map(\.attachmentRowId)
+        attachmentIds.forEach { attachmentId in
+            try? attachmentDownloadStore.enqueueDownloadOfAttachment(
+                withId: attachmentId,
+                source: .transitTier,
+                priority: priority,
+                tx: tx
+            )
+        }
+        tx.addAsyncCompletion(on: SyncScheduler()) { [weak self] in
+            self?.beginDownloadingIfNecessary()
+        }
     }
 
     public func beginDownloadingIfNecessary() {
-        fatalError("Unimplemented")
+        Task { [weak self] in
+            try await self?.queueLoader.loadFromQueueIfAble()
+        }
     }
 
     public func cancelDownload(for attachmentId: Attachment.IDType, tx: DBWriteTransaction) {
@@ -97,6 +152,121 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
     public func downloadProgress(for attachmentId: Attachment.IDType, tx: DBReadTransaction) -> CGFloat? {
         return progressStates.states[attachmentId].map { CGFloat($0) }
+    }
+
+    // MARK: - Persisted Queue
+
+    private actor PersistedQueueLoader {
+
+        private let attachmentDownloadStore: AttachmentDownloadStore
+        private let attachmentStore: AttachmentStore
+        private let dateProvider: DateProvider
+        private let db: DB
+        private let downloadQueue: DownloadQueue
+
+        init(
+            attachmentDownloadStore: AttachmentDownloadStore,
+            attachmentStore: AttachmentStore,
+            dateProvider: @escaping DateProvider,
+            db: DB,
+            downloadQueue: DownloadQueue
+        ) {
+            self.attachmentDownloadStore = attachmentDownloadStore
+            self.attachmentStore = attachmentStore
+            self.dateProvider = dateProvider
+            self.db = db
+            self.downloadQueue = downloadQueue
+        }
+
+        private let maxConcurrentDownloads: UInt = 4
+        private var currentRecordIds = Set<Int64>()
+
+        /// Load the next N enqueued downloads, and begin downloading any
+        /// that are not already downloading.
+        /// (N = max concurrent downloads)
+        func loadFromQueueIfAble() async throws {
+            try Task.checkCancellation()
+
+            if currentRecordIds.count >= maxConcurrentDownloads {
+                return
+            }
+
+            let recordCandidates = try db.read { tx in
+                try attachmentDownloadStore.peek(count: self.maxConcurrentDownloads, tx: tx)
+            }
+
+            let records = recordCandidates.filter { record in
+                !currentRecordIds.contains(record.id!)
+            }
+            guard !records.isEmpty else {
+                return
+            }
+            records.lazy.compactMap(\.id).forEach {
+                currentRecordIds.insert($0)
+            }
+
+            try await withThrowingTaskGroup(of: Void.self) { taskGroup in
+                records.forEach { record in
+                    taskGroup.addTask {
+                        do {
+                            try await self.downloadRecord(record)
+                            await self.didFinishDownloading(record)
+                        } catch let downloadError {
+                            await self.didFailToDownload(record, error: downloadError)
+                        }
+                        // As soon as we finish any download, start downloading more.
+                        try await self.loadFromQueueIfAble()
+                    }
+                }
+                try await taskGroup.waitForAll()
+            }
+        }
+
+        private func didFinishDownloading(_ record: QueuedAttachmentDownloadRecord) async {
+            self.currentRecordIds.remove(record.id!)
+            await db.awaitableWrite { tx in
+                try? self.attachmentDownloadStore.removeAttachmentFromQueue(
+                    withId: record.attachmentId,
+                    source: record.sourceType,
+                    tx: tx
+                )
+            }
+        }
+
+        private func didFailToDownload(_ record: QueuedAttachmentDownloadRecord, error: Error) async {
+            self.currentRecordIds.remove(record.id!)
+            // TODO: figure out retry time based on error.
+            let retryTime: TimeInterval? = nil
+            if let retryTime {
+                await db.awaitableWrite { tx in
+                    try? self.attachmentDownloadStore.markQueuedDownloadFailed(
+                        withId: record.id!,
+                        minRetryTimestamp: Date().addingTimeInterval(retryTime).ows_millisecondsSince1970,
+                        tx: tx
+                    )
+                }
+            } else {
+                // Not retrying; just delete.
+                await db.awaitableWrite { tx in
+                    try? self.attachmentDownloadStore.removeAttachmentFromQueue(
+                        withId: record.attachmentId,
+                        source: record.sourceType,
+                        tx: tx
+                    )
+                    try? self.attachmentStore.updateAttachmentAsFailedToDownload(
+                        from: record.sourceType,
+                        id: record.attachmentId,
+                        timestamp: self.dateProvider().ows_millisecondsSince1970,
+                        tx: tx
+                    )
+                }
+            }
+        }
+
+        private nonisolated func downloadRecord(_ record: QueuedAttachmentDownloadRecord) async throws {
+            // TODO: download, validate, etc
+            fatalError("Unimplemented")
+        }
     }
 
     // MARK: - Downloads

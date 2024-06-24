@@ -119,6 +119,21 @@ public class AttachmentStoreImpl: AttachmentStore {
         )
     }
 
+    public func updateAttachmentAsFailedToDownload(
+        from source: QueuedAttachmentDownloadRecord.SourceType,
+        id: Attachment.IDType,
+        timestamp: UInt64,
+        tx: DBWriteTransaction
+    ) throws {
+        try self.updateAttachmentAsFailedToDownload(
+            from: source,
+            id: id,
+            timestamp: timestamp,
+            db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
+            tx: tx
+        )
+    }
+
     public func addOwner(
         _ reference: AttachmentReference.ConstructionParams,
         for attachmentId: Attachment.IDType,
@@ -419,6 +434,36 @@ public class AttachmentStoreImpl: AttachmentStore {
                     attachment: existingAttachment,
                     streamInfo: streamInfo,
                     mediaName: Attachment.mediaName(digestSHA256Ciphertext: streamInfo.digestSHA256Ciphertext)
+                )
+            )
+        }
+        newRecord.sqliteId = id
+        try newRecord.checkAllUInt64FieldsFitInInt64()
+        try newRecord.update(db)
+    }
+
+    private func updateAttachmentAsFailedToDownload(
+        from source: QueuedAttachmentDownloadRecord.SourceType,
+        id: Attachment.IDType,
+        timestamp: UInt64,
+        db: GRDB.Database,
+        tx: DBWriteTransaction
+    ) throws {
+        let existingAttachment = fetch(ids: [id], db: db, tx: tx).first
+        guard let existingAttachment else {
+            throw OWSAssertionError("Attachment does not exist")
+        }
+        guard existingAttachment.asStream() == nil else {
+            throw OWSAssertionError("Attachment already a stream")
+        }
+
+        var newRecord: Attachment.Record
+        switch source {
+        case .transitTier:
+            newRecord = Attachment.Record(
+                params: .forUpdatingAsFailedDownlodFromTransitTier(
+                    attachment: existingAttachment,
+                    timestamp: timestamp
                 )
             )
         }

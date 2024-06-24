@@ -165,5 +165,34 @@ extension Attachment {
                 originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
             )
         }
+
+        public static func forUpdatingAsFailedDownlodFromTransitTier(
+            attachment: Attachment,
+            timestamp: UInt64
+        ) -> ConstructionParams {
+            let transitTierInfo = attachment.transitTierInfo.map {
+                return Attachment.TransitTierInfo(
+                    cdnNumber: $0.cdnNumber,
+                    cdnKey: $0.cdnKey,
+                    uploadTimestamp: $0.uploadTimestamp,
+                    encryptionKey: $0.encryptionKey,
+                    unencryptedByteCount: $0.unencryptedByteCount,
+                    digestSHA256Ciphertext: $0.digestSHA256Ciphertext,
+                    lastDownloadAttemptTimestamp: timestamp
+                )
+            }
+            return .init(
+                blurHash: attachment.blurHash,
+                mimeType: attachment.mimeType,
+                encryptionKey: attachment.encryptionKey,
+                streamInfo: attachment.streamInfo,
+                transitTierInfo: transitTierInfo,
+                mediaName: attachment.mediaName,
+                mediaTierInfo: attachment.mediaTierInfo,
+                thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo,
+                localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
+            )
+        }
     }
 }

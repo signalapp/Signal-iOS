@@ -82,6 +82,15 @@ open class AttachmentStoreMock: AttachmentStore {
         // do nothing
     }
 
+    open func updateAttachmentAsFailedToDownload(
+        from source: QueuedAttachmentDownloadRecord.SourceType,
+        id: Attachment.IDType,
+        timestamp: UInt64,
+        tx: DBWriteTransaction
+    ) throws {
+        // do nothing
+    }
+
     open func addOwner(
         _ reference: AttachmentReference.ConstructionParams,
         for attachmentId: Attachment.IDType,
