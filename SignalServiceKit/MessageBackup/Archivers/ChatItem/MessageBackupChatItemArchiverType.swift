@@ -65,6 +65,10 @@ extension BackupProto.ChatItem {
             switch chatUpdateMessage.update {
             case .groupChange:
                 return .groupUpdateInfoMessage
+            case .individualCall:
+                return .individualCall
+            case .groupCall:
+                return .groupCall
             default:
                 break
             }
