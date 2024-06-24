@@ -242,6 +242,7 @@ public class AppSetup {
         let orphanedAttachmentStore = OrphanedAttachmentStoreImpl()
         let attachmentDownloadStore = AttachmentDownloadStoreImpl(dateProvider: dateProvider)
         let attachmentDownloadManager = AttachmentDownloadManagerImpl(
+            appReadiness: AttachmentDownloadManagerImpl.Wrappers.AppReadiness(),
             attachmentDownloadStore: attachmentDownloadStore,
             attachmentStore: attachmentStore,
             attachmentValidator: attachmentContentValidator,

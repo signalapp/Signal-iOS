@@ -17,6 +17,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     private let queueLoader: PersistedQueueLoader
 
     public init(
+        appReadiness: Shims.AppReadiness,
         attachmentDownloadStore: AttachmentDownloadStore,
         attachmentStore: AttachmentStore,
         attachmentValidator: AttachmentContentValidator,
@@ -53,6 +54,13 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             decrypter: decrypter,
             downloadQueue: downloadQueue
         )
+
+        appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
+            guard FeatureFlags.newAttachmentsUseV2 else {
+                return
+            }
+            self?.beginDownloadingIfNecessary()
+        }
     }
 
     public func downloadBackup(metadata: MessageBackupRemoteInfo, authHeaders: [String: String]) -> Promise<URL> {
@@ -1020,5 +1028,29 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
         let pkcs7PaddingLength = 16 - (paddedSize % 16)
         return paddedSize + pkcs7PaddingLength + encryptionOverheadByteLength
+    }
+}
+
+extension AttachmentDownloadManagerImpl {
+    public enum Shims {
+        public typealias AppReadiness = _AttachmentDownloadManagerImpl_AppReadinessShim
+    }
+
+    public enum Wrappers {
+        public typealias AppReadiness = _AttachmentDownloadManagerImpl_AppReadinessWrapper
+    }
+}
+
+public protocol _AttachmentDownloadManagerImpl_AppReadinessShim {
+
+    func runNowOrWhenMainAppDidBecomeReadyAsync(_ block: @escaping () -> Void)
+}
+
+public class _AttachmentDownloadManagerImpl_AppReadinessWrapper: _AttachmentDownloadManagerImpl_AppReadinessShim {
+
+    public init() {}
+
+    public func runNowOrWhenMainAppDidBecomeReadyAsync(_ block: @escaping () -> Void) {
+        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync(block)
     }
 }
