@@ -35,7 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super initWithThread:thread
                        timestamp:0
                       serverGuid:nil
-                     messageType:TSInfoMessageTypeDisappearingMessagesUpdate];
+                     messageType:TSInfoMessageTypeDisappearingMessagesUpdate
+             infoMessageUserInfo:nil];
     if (!self) {
         return self;
     }

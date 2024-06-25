@@ -14,12 +14,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) BOOL configurationIsEnabled;
 
-- (instancetype)initWithThread:(TSThread *)contact messageType:(TSInfoMessageType)infoMessage NS_UNAVAILABLE;
+- (instancetype)initWithThread:(TSThread *)thread messageType:(TSInfoMessageType)infoMessage NS_UNAVAILABLE;
+
+- (instancetype)initWithThread:(TSThread *)thread
+                   messageType:(TSInfoMessageType)messageType
+           infoMessageUserInfo:(NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo NS_UNAVAILABLE;
 
 - (instancetype)initWithThread:(TSThread *)thread
                      timestamp:(uint64_t)timestamp
                     serverGuid:(nullable NSString *)serverGuid
-                   messageType:(TSInfoMessageType)infoMessage NS_UNAVAILABLE;
+                   messageType:(TSInfoMessageType)infoMessage
+           infoMessageUserInfo:(nullable NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo NS_UNAVAILABLE;
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                         uniqueId:(NSString *)uniqueId

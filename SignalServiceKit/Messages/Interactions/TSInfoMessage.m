@@ -76,24 +76,30 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
     return self;
 }
 
-- (instancetype)initWithThread:(TSThread *)thread messageType:(TSInfoMessageType)infoMessage
+- (instancetype)initWithThread:(TSThread *)thread messageType:(TSInfoMessageType)messageType
 {
-    self = [self initWithThread:thread timestamp:0 messageType:infoMessage];
+    self = [self initWithThread:thread timestamp:0 serverGuid:nil messageType:messageType infoMessageUserInfo:nil];
     return self;
 }
 
 - (instancetype)initWithThread:(TSThread *)thread
-                     timestamp:(uint64_t)timestamp
-                   messageType:(TSInfoMessageType)infoMessage
+                   messageType:(TSInfoMessageType)messageType
+           infoMessageUserInfo:(NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
 {
-    self = [self initWithThread:thread timestamp:0 serverGuid:nil messageType:infoMessage];
+    self = [self initWithThread:thread
+                      timestamp:0
+                     serverGuid:nil
+                    messageType:messageType
+            infoMessageUserInfo:infoMessageUserInfo];
+
     return self;
 }
 
 - (instancetype)initWithThread:(TSThread *)thread
                      timestamp:(uint64_t)timestamp
                     serverGuid:(nullable NSString *)serverGuid
-                   messageType:(TSInfoMessageType)infoMessage
+                   messageType:(TSInfoMessageType)messageType
+           infoMessageUserInfo:(nullable NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
 {
     TSMessageBuilder *builder;
     if (timestamp > 0) {
@@ -107,7 +113,8 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
     }
 
     _serverGuid = serverGuid;
-    _messageType = infoMessage;
+    _messageType = messageType;
+    _infoMessageUserInfo = infoMessageUserInfo;
     _infoMessageSchemaVersion = TSInfoMessageSchemaVersion;
 
     if (self.isDynamicInteraction) {
@@ -118,68 +125,6 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         self.read = YES;
     }
 
-    return self;
-}
-
-- (instancetype)initWithThread:(TSThread *)thread
-                   messageType:(TSInfoMessageType)infoMessage
-                 customMessage:(NSString *)customMessage
-{
-    self = [self initWithThread:thread messageType:infoMessage];
-    if (self) {
-        _customMessage = customMessage;
-    }
-    return self;
-}
-
-- (instancetype)initWithThread:(TSThread *)thread
-                   messageType:(TSInfoMessageType)infoMessageType
-           infoMessageUserInfo:(NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
-{
-    self = [self initWithThread:thread timestamp:0 messageType:infoMessageType infoMessageUserInfo:infoMessageUserInfo];
-    return self;
-}
-
-- (instancetype)initWithThread:(TSThread *)thread
-                     timestamp:(uint64_t)timestamp
-                   messageType:(TSInfoMessageType)infoMessageType
-           infoMessageUserInfo:(NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
-{
-    self = [self initWithThread:thread timestamp:timestamp messageType:infoMessageType];
-    if (!self) {
-        return self;
-    }
-
-    _infoMessageUserInfo = infoMessageUserInfo;
-
-    return self;
-}
-
-- (instancetype)initWithThread:(TSThread *)thread
-                     timestamp:(uint64_t)timestamp
-                    serverGuid:(nullable NSString *)serverGuid
-                   messageType:(TSInfoMessageType)infoMessageType
-           infoMessageUserInfo:(NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
-{
-    self = [self initWithThread:thread timestamp:timestamp serverGuid:serverGuid messageType:infoMessageType];
-    if (!self) {
-        return self;
-    }
-
-    _infoMessageUserInfo = infoMessageUserInfo;
-
-    return self;
-}
-
-
-- (instancetype)initWithThread:(TSThread *)thread
-                   messageType:(TSInfoMessageType)infoMessage
-           unregisteredAddress:(SignalServiceAddress *)unregisteredAddress
-{
-    self = [self initWithThread:thread messageType:infoMessage];
-    if (self) {
-        _unregisteredAddress = unregisteredAddress;
-    }
     return self;
 }
 
@@ -267,14 +212,6 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
 // clang-format on
 
 // --- CODE GENERATION MARKER
-
-+ (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread address:(SignalServiceAddress *)address
-{
-    OWSAssertDebug(thread);
-    OWSAssertDebug(address.isValid);
-
-    return [[self alloc] initWithThread:thread messageType:TSInfoMessageUserNotRegistered unregisteredAddress:address];
-}
 
 - (OWSInteractionType)interactionType
 {

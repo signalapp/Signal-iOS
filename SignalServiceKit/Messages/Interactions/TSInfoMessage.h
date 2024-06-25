@@ -56,8 +56,6 @@ extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyPaymentActivatedAci;
 extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyThreadMergePhoneNumber;
 extern InfoMessageUserInfoKey const InfoMessageUserInfoKeySessionSwitchoverPhoneNumber;
 
-+ (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread address:(SignalServiceAddress *)address;
-
 @property (nonatomic, readonly) TSInfoMessageType messageType;
 @property (nonatomic, readonly, nullable) NSString *customMessage;
 @property (nonatomic, readonly, nullable) SignalServiceAddress *unregisteredAddress;
@@ -96,40 +94,18 @@ extern InfoMessageUserInfoKey const InfoMessageUserInfoKeySessionSwitchoverPhone
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithThread:(TSThread *)contact messageType:(TSInfoMessageType)infoMessage;
+- (instancetype)initWithThread:(TSThread *)thread messageType:(TSInfoMessageType)infoMessage;
+
+- (instancetype)initWithThread:(TSThread *)thread
+                   messageType:(TSInfoMessageType)messageType
+           infoMessageUserInfo:(NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo;
 
 - (instancetype)initWithThread:(TSThread *)thread
                      timestamp:(uint64_t)timestamp
                     serverGuid:(nullable NSString *)serverGuid
-                   messageType:(TSInfoMessageType)infoMessage NS_DESIGNATED_INITIALIZER;
-
-// Convenience initializer which is neither "designated" nor "unavailable".
-- (instancetype)initWithThread:(TSThread *)thread
-                   messageType:(TSInfoMessageType)infoMessage
-                 customMessage:(NSString *)customMessage;
-
-// Convenience initializer which is neither "designated" nor "unavailable".
-- (instancetype)initWithThread:(TSThread *)thread
-                   messageType:(TSInfoMessageType)infoMessage
-           infoMessageUserInfo:(NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo;
-
-// Convenience initializer which is neither "designated" nor "unavailable".
-- (instancetype)initWithThread:(TSThread *)thread
-                     timestamp:(uint64_t)timestamp
-                   messageType:(TSInfoMessageType)infoMessage
-           infoMessageUserInfo:(NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo;
-
-// Convenience initializer which is neither "designated" nor "unavailable".
-- (instancetype)initWithThread:(TSThread *)thread
-                     timestamp:(uint64_t)timestamp
-                    serverGuid:(nullable NSString *)serverGuid
-                   messageType:(TSInfoMessageType)infoMessage
-           infoMessageUserInfo:(NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo;
-
-// Convenience initializer which is neither "designated" nor "unavailable".
-- (instancetype)initWithThread:(TSThread *)thread
-                   messageType:(TSInfoMessageType)infoMessage
-           unregisteredAddress:(SignalServiceAddress *)unregisteredAddress;
+                   messageType:(TSInfoMessageType)messageType
+           infoMessageUserInfo:(nullable NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
+    NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 

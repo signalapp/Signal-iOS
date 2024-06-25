@@ -1195,8 +1195,6 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         ))
 
         results += [
-            TSInfoMessage.userNotRegisteredMessage(in: thread, address: incomingSenderAddress),
-
             TSInfoMessage(thread: thread, messageType: .typeSessionDidEnd),
             // TODO: customMessage?
             TSInfoMessage(thread: thread, messageType: .typeGroupUpdate),
