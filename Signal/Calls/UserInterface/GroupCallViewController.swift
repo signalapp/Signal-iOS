@@ -52,8 +52,9 @@ class GroupCallViewController: UIViewController {
     }
 
     private let bottomVStack = PassthroughStackView()
-    private lazy var videoOverflow = GroupCallVideoOverflow(call: call, groupCall: groupCall, delegate: self)
+    private let videoOverflowContainer = UIView()
     private let raisedHandsToastContainer = UIView()
+    private lazy var videoOverflow = GroupCallVideoOverflow(call: call, groupCall: groupCall, delegate: self)
     private lazy var raisedHandsToast = RaisedHandsToast(call: self.groupCall)
 
     private let localMemberView: CallMemberView
@@ -276,14 +277,16 @@ class GroupCallViewController: UIViewController {
         // TODO: Update
         self.bottomVStack.spacing = 24
 
-        let videoOverflowContainer = UIView()
         videoOverflowContainer.addSubview(self.videoOverflow)
         self.bottomVStack.addArrangedSubview(videoOverflowContainer)
         self.bottomVStack.ignoredViews.append(videoOverflowContainer)
         self.videoOverflow.autoPinHeightToSuperview()
         self.videoOverflow.autoPinEdge(toSuperviewEdge: .leading)
 
+        raisedHandsToastContainer.layoutMargins = .init(margin: 0)
+        raisedHandsToastContainer.preservesSuperviewLayoutMargins = true
         raisedHandsToastContainer.addSubview(raisedHandsToast)
+        raisedHandsToastContainer.isHiddenInStackView = true
         self.bottomVStack.insertArrangedSubview(raisedHandsToastContainer, at: 0)
         self.bottomVStack.ignoredViews.append(raisedHandsToastContainer)
         raisedHandsToast.autoPinEdges(toSuperviewMarginsExcludingEdge: .leading)
@@ -382,8 +385,6 @@ class GroupCallViewController: UIViewController {
 
     // MARK: Call members
 
-    private var hasOverflowMembers: Bool { videoGrid.maxItems < ringRtcCall.remoteDeviceStates.count }
-
     private func updateScrollViewFrames(size: CGSize? = nil, controlsAreHidden: Bool) {
         view.layoutIfNeeded()
 
@@ -403,6 +404,9 @@ class GroupCallViewController: UIViewController {
             scrollView.isScrollEnabled = false
         } else {
             let wasVideoGridHidden = videoGrid.isHidden
+            let controlsHeight = controlsAreHidden ? 16 : callControls.height
+            let hasOverflowMembersInGridView = videoGrid.maxItems < ringRtcCall.remoteDeviceStates.count
+            let overflowGridHeight = hasOverflowMembersInGridView ? videoOverflow.height + 27 : 0
 
             scrollView.isScrollEnabled = true
             videoGrid.isHidden = false
@@ -410,7 +414,7 @@ class GroupCallViewController: UIViewController {
                 x: 0,
                 y: view.safeAreaInsets.top,
                 width: size.width,
-                height: size.height - view.safeAreaInsets.top - (controlsAreHidden ? 16 : callControls.height) - (hasOverflowMembers ? videoOverflow.height + 32 : 0)
+                height: size.height - view.safeAreaInsets.top - controlsHeight - overflowGridHeight
             )
             speakerPage.frame = CGRect(
                 x: 0,
@@ -433,6 +437,39 @@ class GroupCallViewController: UIViewController {
         }
         videoOverflowTrailingConstraint.constant = trailingConstraintConstant
         view.layoutIfNeeded()
+    }
+
+    private func updateBottomVStackItems() {
+        guard FeatureFlags.callRaiseHandToastSupport else {
+            self.raisedHandsToastContainer.isHidden = true
+            return
+        }
+
+        self.raisedHandsToastContainer.isHiddenInStackView = self.raisedHandsToast.raisedHands.isEmpty
+
+        func moveToTopIfNotAlready(_ view: UIView) {
+            guard self.bottomVStack.arrangedSubviews.last == view else { return }
+            self.bottomVStack.removeArrangedSubview(view)
+            self.bottomVStack.insertArrangedSubview(view, at: 0)
+        }
+
+        let hasOverflowMembers = !self.videoOverflow.overflowedRemoteDeviceStates.isEmpty
+
+        if hasOverflowMembers {
+            moveToTopIfNotAlready(self.raisedHandsToastContainer)
+        } else {
+            moveToTopIfNotAlready(self.videoOverflowContainer)
+        }
+
+        let isOnGridView = scrollView.contentOffset.y == 0
+        if
+            hasOverflowMembers,
+            isOnGridView
+        {
+            self.bottomVStack.spacing = 24
+        } else {
+            self.bottomVStack.spacing = 12
+        }
     }
 
     private func updateMemberViewFrames(size: CGSize? = nil, controlsAreHidden: Bool) {
@@ -480,48 +517,33 @@ class GroupCallViewController: UIViewController {
                     expandedPipFrame: self.expandedPipFrame,
                     remoteDeviceCount: ringRtcCall.remoteDeviceStates.count
                 )
-                if ringRtcCall.remoteDeviceStates.count > 1 {
-                    let y: CGFloat
-                    if nil != expandedPipFrame {
-                        // Necessary because when the pip is expanded, the
-                        // pip height will not follow along with that of
-                        // the video overflow, which is tiny.
-                        y = yMax - pipSize.height
-                    } else {
-                        y = videoOverflow.convert(videoOverflow.bounds.origin, to: self.view).y
-                    }
-                    localMemberView.applyChangesToCallMemberViewAndVideoView { view in
-                        view.frame = CGRect(
-                            x: size.width - pipSize.width - 16,
-                            y: y,
-                            width: pipSize.width,
-                            height: pipSize.height
-                        )
-                    }
-                    flipCameraTooltipManager.presentTooltipIfNecessary(
-                        fromView: self.view,
-                        widthReferenceView: self.view,
-                        tailReferenceView: localMemberView,
-                        tailDirection: .down,
-                        isVideoMuted: call.isOutgoingVideoMuted
-                    )
+
+                let y: CGFloat
+                if nil != expandedPipFrame {
+                    // Necessary because when the pip is expanded, the
+                    // pip height will not follow along with that of
+                    // the video overflow, which is tiny.
+                    y = yMax - pipSize.height
                 } else {
-                    localMemberView.applyChangesToCallMemberViewAndVideoView { view in
-                        view.frame = CGRect(
-                            x: size.width - pipSize.width - 16,
-                            y: yMax - pipSize.height,
-                            width: pipSize.width,
-                            height: pipSize.height
-                        )
-                    }
-                    flipCameraTooltipManager.presentTooltipIfNecessary(
-                        fromView: self.view,
-                        widthReferenceView: self.view,
-                        tailReferenceView: localMemberView,
-                        tailDirection: .down,
-                        isVideoMuted: call.isOutgoingVideoMuted
+                    let overflowY = videoOverflow.convert(videoOverflow.bounds.origin, to: self.view).y
+                    let overflowPipHeightDifference = pipSize.height - videoOverflow.height
+                    y = overflowY - overflowPipHeightDifference
+                }
+                localMemberView.applyChangesToCallMemberViewAndVideoView { view in
+                    view.frame = CGRect(
+                        x: size.width - pipSize.width - 16,
+                        y: y,
+                        width: pipSize.width,
+                        height: pipSize.height
                     )
                 }
+                flipCameraTooltipManager.presentTooltipIfNecessary(
+                    fromView: self.view,
+                    widthReferenceView: self.view,
+                    tailReferenceView: localMemberView,
+                    tailDirection: .down,
+                    isVideoMuted: call.isOutgoingVideoMuted
+                )
             } else {
                 localMemberView.applyChangesToCallMemberViewAndVideoView { view in
                     speakerPage.addSubview(view)
@@ -594,15 +616,12 @@ class GroupCallViewController: UIViewController {
 
     private var flipCameraTooltipManager = FlipCameraTooltipManager(db: DependenciesBridge.shared.db)
 
-    private func updateCallUI(size: CGSize? = nil) {
+    private func updateCallUI(
+        size: CGSize? = nil,
+        shouldAnimateViewFrames: Bool = false
+    ) {
         // Force load the view if it hasn't been yet.
         _ = self.view
-
-        if FeatureFlags.callRaiseHandToastSupport {
-            self.raisedHandsToastContainer.isHiddenInStackView = self.raisedHandsToast.raisedHands.isEmpty
-        } else {
-            self.raisedHandsToastContainer.isHidden = true
-        }
 
         let localDevice = ringRtcCall.localDeviceState
 
@@ -656,13 +675,15 @@ class GroupCallViewController: UIViewController {
             self.callControlDisplayStateDidChange(
                 oldState: .callControlsAndOverflow,
                 newState: self.callControlsDisplayState,
-                size: size
+                size: size,
+                shouldAnimateViewFrames: shouldAnimateViewFrames
             )
         } else if !callControlsAreHidden {
             self.callControlDisplayStateDidChange(
                 oldState: .callControlsOnly,
                 newState: self.callControlsDisplayState,
-                size: size
+                size: size,
+                shouldAnimateViewFrames: shouldAnimateViewFrames
             )
         } else if !callControlsOverflowContentIsHidden {
             owsFailDebug("Call Controls Overflow content should never be visible while Call Controls are hidden. Desired new state: \(self.callControlsDisplayState).")
@@ -674,7 +695,8 @@ class GroupCallViewController: UIViewController {
             self.callControlDisplayStateDidChange(
                 oldState: .none,
                 newState: self.callControlsDisplayState,
-                size: size
+                size: size,
+                shouldAnimateViewFrames: shouldAnimateViewFrames
             )
         }
 
@@ -709,11 +731,22 @@ class GroupCallViewController: UIViewController {
     private func callControlDisplayStateDidChange(
         oldState: CallControlsDisplayState,
         newState: CallControlsDisplayState,
-        size: CGSize?
+        size: CGSize?,
+        shouldAnimateViewFrames: Bool
     ) {
         func updateFrames(controlsAreHidden: Bool) {
-            updateMemberViewFrames(size: size, controlsAreHidden: controlsAreHidden)
-            updateScrollViewFrames(size: size, controlsAreHidden: controlsAreHidden)
+            let action: () -> Void = {
+                self.updateBottomVStackItems()
+                self.updateMemberViewFrames(size: size, controlsAreHidden: controlsAreHidden)
+                self.updateScrollViewFrames(size: size, controlsAreHidden: controlsAreHidden)
+            }
+            if shouldAnimateViewFrames {
+                let animator = UIViewPropertyAnimator(duration: 0.3, springDamping: 1, springResponse: 0.3)
+                animator.addAnimations(action)
+                animator.startAnimation()
+            } else {
+                action()
+            }
         }
 
         switch oldState {
@@ -723,6 +756,7 @@ class GroupCallViewController: UIViewController {
                 updateFrames(controlsAreHidden: false)
             case .callControlsOnly:
                 self.callControlsOverflowView.animateOut()
+                updateFrames(controlsAreHidden: false)
             case .none:
                 // This can happen if you tap the root view fast enough in succession.
                 animateCallControls(
@@ -735,6 +769,7 @@ class GroupCallViewController: UIViewController {
             switch newState {
             case .callControlsAndOverflow:
                 self.callControlsOverflowView.animateIn()
+                updateFrames(controlsAreHidden: false)
             case .callControlsOnly:
                 updateFrames(controlsAreHidden: false)
             case .none:
@@ -774,12 +809,16 @@ class GroupCallViewController: UIViewController {
             self.callControls.alpha = hideCallControls ? 0 : 1
             self.callHeader.alpha = hideCallControls ? 0 : 1
 
+            self.updateBottomVStackItems()
             self.updateMemberViewFrames(size: size, controlsAreHidden: hideCallControls)
             self.updateScrollViewFrames(size: size, controlsAreHidden: hideCallControls)
             self.view.layoutIfNeeded()
         }) { _ in
             self.callControls.isHidden = hideCallControls
             self.callHeader.isHidden = hideCallControls
+            // If a hand is raised during this animation, the toast will be
+            // positioned wrong unless this is called again in the completion.
+            self.updateBottomVStackItems()
         }
     }
 
@@ -1258,12 +1297,7 @@ extension GroupCallViewController: GroupCallObserver {
 
     func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [DemuxId]) {
         self.raisedHandsToast.raisedHands = raisedHands
-
-        let animator = UIViewPropertyAnimator(duration: 0.3, springDamping: 1, springResponse: 0.3)
-        animator.addAnimations {
-            self.updateCallUI()
-        }
-        animator.startAnimation()
+        self.updateCallUI(shouldAnimateViewFrames: true)
     }
 
     func callMessageSendFailedUntrustedIdentity(_ call: GroupCall) {
@@ -1329,8 +1363,7 @@ extension GroupCallViewController: UIScrollViewDelegate {
         // If we changed pages, update the overflow view.
         if scrollView.contentOffset.y == 0 || scrollView.contentOffset.y == view.height {
             videoOverflow.reloadData()
-            updateCallUI()
-            // TODO: Conditionally swap overflow and raised hand toast
+            updateCallUI(shouldAnimateViewFrames: true)
         }
 
         if isAutoScrollingToScreenShare {

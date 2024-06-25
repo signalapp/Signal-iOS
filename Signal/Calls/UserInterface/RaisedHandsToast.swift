@@ -73,6 +73,7 @@ class RaisedHandsToast: UIView {
         raisedHandIcon.contentMode = .scaleAspectFit
         raisedHandIcon.tintColor = .white
         raisedHandIcon.setContentHuggingHorizontalHigh()
+        raisedHandIcon.setCompressionResistanceVerticalHigh()
         iconLabelHStack.addArrangedSubview(raisedHandIcon)
 
         labelContainer.addSubview(label)
@@ -84,6 +85,7 @@ class RaisedHandsToast: UIView {
         label.contentMode = .topLeft
         label.textColor = .white
         label.setContentHuggingHorizontalLow()
+        label.setCompressionResistanceVerticalHigh()
         iconLabelHStack.addArrangedSubview(labelContainer)
 
         outerHStack.addArrangedSubview(button)
