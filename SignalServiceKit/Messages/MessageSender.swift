@@ -750,6 +750,7 @@ public class MessageSender: Dependencies {
             thread: TSThread,
             serviceIds: [ServiceId],
             udAccess: [ServiceId: OWSUDSendingAccess],
+            senderCertificate: SenderCertificate,
             localIdentifiers: LocalIdentifiers
         )
     }
@@ -849,6 +850,7 @@ public class MessageSender: Dependencies {
                 thread: thread,
                 serviceIds: serviceIds,
                 udAccess: udAccessMap,
+                senderCertificate: senderCertificate,
                 localIdentifiers: localIdentifiers
             )
         }
@@ -859,7 +861,7 @@ public class MessageSender: Dependencies {
         case .lookUpPhoneNumbersAndTryAgain(let phoneNumbers):
             try await lookUpPhoneNumbers(phoneNumbers)
             try await sendPreparedMessage(message, canLookUpPhoneNumbers: false, senderCertificates: senderCertificates)
-        case .sendPreparedMessage(let serializedMessage, let thread, let serviceIds, let udAccess, let localIdentifiers):
+        case .sendPreparedMessage(let serializedMessage, let thread, let serviceIds, let udAccess, let senderCertificate, let localIdentifiers):
             let allErrors = AtomicArray<(serviceId: ServiceId, error: Error)>(lock: .init())
             do {
                 try await sendPreparedMessage(
@@ -869,7 +871,7 @@ public class MessageSender: Dependencies {
                     to: serviceIds,
                     udAccess: udAccess,
                     localIdentifiers: localIdentifiers,
-                    senderCertificates: senderCertificates,
+                    senderCertificate: senderCertificate,
                     sendErrorBlock: { serviceId, error in
                         allErrors.append((serviceId, error))
                     }
@@ -888,7 +890,7 @@ public class MessageSender: Dependencies {
         to serviceIds: [ServiceId],
         udAccess sendingAccessMap: [ServiceId: OWSUDSendingAccess],
         localIdentifiers: LocalIdentifiers,
-        senderCertificates: SenderCertificates,
+        senderCertificate: SenderCertificate,
         sendErrorBlock: @escaping (ServiceId, Error) -> Void
     ) async throws {
         // 3. If we have any participants that support sender key, build a promise
@@ -907,7 +909,7 @@ public class MessageSender: Dependencies {
                         thread: thread,
                         status: senderKeyStatus,
                         udAccessMap: sendingAccessMap,
-                        senderCertificates: senderCertificates,
+                        senderCertificate: senderCertificate,
                         localIdentifiers: localIdentifiers,
                         sendErrorBlock: sendErrorBlock
                     )

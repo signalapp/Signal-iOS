@@ -172,7 +172,7 @@ extension MessageSender {
         thread: TSThread,
         status: SenderKeyStatus,
         udAccessMap: [ServiceId: OWSUDSendingAccess],
-        senderCertificates: SenderCertificates,
+        senderCertificate: SenderCertificate,
         localIdentifiers: LocalIdentifiers,
         sendErrorBlock: @escaping (ServiceId, NSError) -> Void
     ) async throws {
@@ -220,7 +220,7 @@ extension MessageSender {
                     thread: thread,
                     serviceIds: senderKeyRecipients,
                     udAccessMap: udAccessMap,
-                    senderCertificates: senderCertificates
+                    senderCertificate: senderCertificate
                 )
 
                 Logger.info("Sender key message with timestamp \(message.timestamp) sent! Recipients: \(sendResult.successServiceIds). Unregistered: \(sendResult.unregisteredServiceIds)")
@@ -278,15 +278,6 @@ extension MessageSender {
             // MessageSender just uses this error as a sentinel to consult the per-recipient errors. The
             // actual error doesn't matter.
             throw OWSGenericError("Failed to send to at least one SenderKey participant")
-        }
-    }
-
-    private static func senderCertificate(from senderCertificates: SenderCertificates, tx: SDSAnyReadTransaction) -> SenderCertificate {
-        switch udManager.phoneNumberSharingMode(tx: tx.asV2Read).orDefault {
-        case .everybody:
-            return senderCertificates.defaultCert
-        case .nobody:
-            return senderCertificates.uuidOnlyCert
         }
     }
 
@@ -462,12 +453,11 @@ extension MessageSender {
         thread: TSThread,
         serviceIds: [ServiceId],
         udAccessMap: [ServiceId: OWSUDSendingAccess],
-        senderCertificates: SenderCertificates
+        senderCertificate: SenderCertificate
     ) async throws -> SenderKeySendResult {
         let recipients: [Recipient]
         let ciphertext: Data
         (recipients, ciphertext) = try await self.databaseStorage.awaitableWrite { tx in
-            let senderCertificate = Self.senderCertificate(from: senderCertificates, tx: tx)
             let recipients = serviceIds.map { Recipient(serviceId: $0, transaction: tx) }
             let ciphertext = try self.senderKeyMessageBody(
                 plaintext: plaintext,
