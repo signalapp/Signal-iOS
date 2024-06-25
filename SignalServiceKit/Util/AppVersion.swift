@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 public protocol AppVersion {
 
@@ -43,14 +44,61 @@ public protocol AppVersion {
     func nseLaunchDidComplete()
 }
 
-public struct AppVersionNumber: Equatable, Comparable {
+extension AppVersion {
+    var currentAppVersion4: AppVersionNumber4 {
+        return try! AppVersionNumber4(AppVersionNumber(currentAppVersion))
+    }
+}
+
+public struct AppVersionNumber: Comparable, CustomDebugStringConvertible, Decodable, Equatable {
     public var rawValue: String
     public init(_ rawValue: String) {
         self.rawValue = rawValue
     }
 
+    public init(from decoder: any Decoder) throws {
+        self.init(try decoder.singleValueContainer().decode(String.self))
+    }
+
     public static func < (lhs: Self, rhs: Self) -> Bool {
         return lhs.rawValue.compare(rhs.rawValue, options: .numeric) == .orderedAscending
+    }
+
+    public var debugDescription: String {
+        return formatForLogging(rawValue)
+    }
+}
+
+public struct AppVersionNumber4: Comparable, CustomDebugStringConvertible, Decodable, Equatable {
+    public let wrappedValue: AppVersionNumber
+    public init(_ wrappedValue: AppVersionNumber) throws {
+        let components = wrappedValue.rawValue.components(separatedBy: ".")
+        guard components.count == 4, components.lazy.compactMap(Int.init(_:)).count == 4 else {
+            throw OWSGenericError("Version number doesn't have 4 integer parts.")
+        }
+        self.wrappedValue = wrappedValue
+    }
+
+    public init(from decoder: any Decoder) throws {
+        try self.init(decoder.singleValueContainer().decode(AppVersionNumber.self))
+    }
+
+    public static func < (lhs: Self, rhs: Self) -> Bool {
+        return lhs.wrappedValue < rhs.wrappedValue
+    }
+
+    public var debugDescription: String {
+        return wrappedValue.debugDescription
+    }
+}
+
+private func formatForLogging(_ versionNumber: String?) -> String {
+    if let versionNumber {
+        // The long version string looks like an IPv4 address. To prevent the log
+        // scrubber from scrubbing it, we replace `.` with `_`.
+        return versionNumber.replacingOccurrences(of: ".", with: "_")
+    } else {
+        return "none"
     }
 }
 
@@ -173,16 +221,6 @@ public class AppVersionImpl: AppVersion {
             userDefaults.set(currentAppVersion, forKey: firstVersionKey)
         }
         userDefaults.set(currentAppVersion, forKey: lastVersionKey)
-    }
-
-    private func formatForLogging(_ versionNumber: String?) -> String {
-        if let versionNumber {
-            // The long version string looks like an IPv4 address. To prevent the log
-            // scrubber from scrubbing it, we replace `.` with `_`.
-            return versionNumber.replacingOccurrences(of: ".", with: "_")
-        } else {
-            return "none"
-        }
     }
 
     private func startupLogging() {

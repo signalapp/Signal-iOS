@@ -1000,97 +1000,50 @@ public class RemoteConfigManagerImpl: RemoteConfigManager {
 
     // MARK: - Client Expiration
 
-    private struct DecodedMinimumVersion: Codable {
-        let string: String?
-        let enforcementDate: Date?
-
-        enum CodingKeys: String, CodingKey {
-            case string = "minVersion"
-            case enforcementDate = "iso8601"
-        }
-    }
-
-    private struct MinimumVersion: Equatable, CustomStringConvertible {
-        let string: String
+    private struct MinimumVersion: Decodable, CustomDebugStringConvertible {
+        let mustBeAtLeastVersion: AppVersionNumber4
         let enforcementDate: Date
 
-        var description: String {
-            // We filter things like look like an ip address, but we don't want to
-            // filter the version string so we replace the dots before logging.
-            return "<MinimumVersion: \(string.replacingOccurrences(of: ".", with: "_")), \(enforcementDate)>"
+        enum CodingKeys: String, CodingKey {
+            case mustBeAtLeastVersion = "minVersion"
+            case enforcementDate = "iso8601"
+        }
+
+        var debugDescription: String {
+            return "<MinimumVersion \(mustBeAtLeastVersion) @ \(enforcementDate)>"
         }
     }
 
     private func checkClientExpiration(valueFlags: [String: String]) {
-        var minimumVersions: [MinimumVersion]?
-        defer {
-            if let minimumVersions {
-                appExpiry.setExpirationDateForCurrentVersion(remoteExpirationDate(minimumVersions: minimumVersions), db: db)
-            }
-        }
-
-        guard let jsonString = valueFlags[ValueFlag.clientExpiration.rawValue] else {
-            Logger.info("Received empty clientExpiration, clearing cached value.")
-            minimumVersions = []
-            return
-        }
-
-        guard let valueData = jsonString.data(using: .utf8) else {
-            owsFailDebug("Failed to convert client expiration string to data, ignoring.")
-            return
-        }
-
-        let jsonDecoder = JSONDecoder()
-        jsonDecoder.dateDecodingStrategy = .iso8601
-
-        do {
-            let decodedValues = try jsonDecoder.decode([DecodedMinimumVersion].self, from: valueData)
-
-            minimumVersions = decodedValues.compactMap { decodedValue in
-                // If the string or enforcement date are nil, the JSON provided in the
-                // remote config is in some way invalid. Probably, someone typoed a key. We
-                // don't want to ignore all client expiration because one value was wrong,
-                // so we just throw away that specific minimum version.
-                guard let string = decodedValue.string, let enforcementDate = decodedValue.enforcementDate else {
-                    owsFailDebug("Received improperly formatted clientExpiration: \(jsonString)")
-                    return nil
-                }
-
-                // The version should always be a complete long version (eg 3.16.0.1). If
-                // it's not, we throw it away but still make sure to maintain all the valid
-                // minimum versions we received.
-                guard string.components(separatedBy: ".").count == 4 else {
-                    owsFailDebug("Received invalid version string for clientExpiration: \(string)")
-                    return nil
-                }
-
-                return MinimumVersion(string: string, enforcementDate: enforcementDate)
-            }
-        } catch {
-            owsFailDebug("Failed to decode client expiration (\(jsonString), \(error)), ignoring.")
+        if let minimumVersions = parseClientExpiration(valueFlags: valueFlags) {
+            appExpiry.setExpirationDateForCurrentVersion(remoteExpirationDate(from: minimumVersions), db: db)
+        } else {
+            // If it's not valid, there's a typo in the config, err on the safe side
+            // and leave it alone.
         }
     }
 
-    private func remoteExpirationDate(minimumVersions: [MinimumVersion]) -> Date? {
-        var oldestEnforcementDate: Date?
-        let currentVersion = AppVersionNumber(AppVersionImpl.shared.currentAppVersion)
-        for minimumVersion in minimumVersions {
-            // We only are interested in minimum versions greater than our current version.
-            // Note: This method of comparison will only work as long as we always use
-            // *long* version strings (x.x.x.x). We enforce that `MinimumVersion` only
-            // uses long versions while decoding.
-            let minimumVersionNumber = AppVersionNumber(minimumVersion.string)
-            guard minimumVersionNumber > currentVersion else {
-                continue
-            }
-
-            if let enforcementDate = oldestEnforcementDate {
-                oldestEnforcementDate = min(enforcementDate, minimumVersion.enforcementDate)
-            } else {
-                oldestEnforcementDate = minimumVersion.enforcementDate
-            }
+    private func parseClientExpiration(valueFlags: [String: String]) -> [MinimumVersion]? {
+        let valueFlag = valueFlags[ValueFlag.clientExpiration.rawValue]
+        guard let valueFlag, let dataValue = valueFlag.nilIfEmpty?.data(using: .utf8) else {
+            return []
         }
-        return oldestEnforcementDate
+
+        do {
+            let jsonDecoder = JSONDecoder()
+            jsonDecoder.dateDecodingStrategy = .iso8601
+            return try jsonDecoder.decode([MinimumVersion].self, from: dataValue)
+        } catch {
+            owsFailDebug("Failed to decode client expiration (\(valueFlag), \(error)), ignoring.")
+            return nil
+        }
+    }
+
+    private func remoteExpirationDate(from minimumVersions: [MinimumVersion]) -> Date? {
+        let currentVersion = AppVersionImpl.shared.currentAppVersion4
+        // We only consider the requirements we don't already satisfy.
+        return minimumVersions.lazy
+            .filter { currentVersion < $0.mustBeAtLeastVersion }.map { $0.enforcementDate }.min()
     }
 }
 
