@@ -192,13 +192,6 @@ extension MessageSender {
             }
         }
 
-        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-        guard let localIdentifiers = self.databaseStorage.read(block: { tx in
-            tsAccountManager.localIdentifiers(tx: tx.asV2Read)
-        }) else {
-            throw OWSAssertionError("Not registered.")
-        }
-
         let senderKeyRecipients: [ServiceId]
         // If none of our recipients need an SKDM let's just skip the database write.
         if status.participantsNeedingSKDM.count > 0 {
