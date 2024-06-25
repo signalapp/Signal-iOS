@@ -567,11 +567,13 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         appContext.appUserDefaults().removeObject(forKey: Constants.appLaunchesAttemptedKey)
 
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
         let tsRegistrationState: TSRegistrationState = databaseStorage.read { tx in
             let registrationState = tsAccountManager.registrationState(tx: tx.asV2Read)
             if registrationState.isRegistered, let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx.asV2Read) {
                 let deviceId = tsAccountManager.storedDeviceId(tx: tx.asV2Read)
-                let deviceCount = OWSDevice.anyCount(transaction: tx)
+                let localRecipient = recipientDatabaseTable.fetchRecipient(serviceId: localIdentifiers.aci, transaction: tx.asV2Read)
+                let deviceCount = localRecipient?.deviceIds.count ?? 0
                 let linkedDeviceMessage = deviceCount > 1 ? "\(deviceCount) devices including the primary" : "no linked devices"
                 Logger.info("localAci: \(localIdentifiers.aci), deviceId: \(deviceId) (\(linkedDeviceMessage))")
             }
