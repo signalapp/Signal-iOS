@@ -162,12 +162,12 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
 
     func restoreChatItem(
         _ chatItem: BackupProto.ChatItem,
-        thread: MessageBackup.ChatThread,
+        chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         let groupThread: TSGroupThread
-        switch thread {
+        switch chatThread {
         case .contact:
             return .messageFailure([.restoreFrameError(
                 .invalidProtoData(.groupUpdateMessageInNonGroupChat),

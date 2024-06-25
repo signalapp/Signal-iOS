@@ -268,7 +268,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> RestoreFrameResult {
-        let thread: MessageBackup.ChatThread
+        let chatThread: MessageBackup.ChatThread
         switch context.recipientContext[chat.typedRecipientId] {
         case .none:
             return .failure([.restoreFrameError(
@@ -280,7 +280,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
                 with: context.recipientContext.localIdentifiers.aciAddress,
                 tx: tx
             )
-            thread = .contact(noteToSelfThread)
+            chatThread = .contact(noteToSelfThread)
         case .group(let groupId):
             // We don't create the group thread here; that happened when parsing the Group Recipient.
             // Instead, just set metadata.
@@ -293,10 +293,10 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
                     chat.chatId
                 )])
             }
-            thread = .groupV2(groupThread)
+            chatThread = .groupV2(groupThread)
         case .contact(let address):
             let contactThread = threadStore.getOrCreateContactThread(with: address.asInteropAddress(), tx: tx)
-            thread = .contact(contactThread)
+            chatThread = .contact(contactThread)
         case .distributionList:
             return .failure([
                 .restoreFrameError(
@@ -304,7 +304,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
                     chat.chatId)])
         }
 
-        context.mapChatId(chat.chatId, to: thread)
+        context.mapChatId(chat.chatId, to: chatThread)
 
         var associatedDataNeedsUpdate = false
         var isArchived: Bool?
@@ -326,7 +326,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         }
 
         if associatedDataNeedsUpdate {
-            let threadAssociatedData = threadStore.fetchOrDefaultAssociatedData(for: thread.thread, tx: tx)
+            let threadAssociatedData = threadStore.fetchOrDefaultAssociatedData(for: chatThread.tsThread, tx: tx)
             threadStore.updateAssociatedData(
                 threadAssociatedData,
                 isArchived: isArchived,
@@ -339,7 +339,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
 
         if chat.pinnedOrder != 0 {
             let newPinnedThreadIds = context.pinnedThreadOrder(
-                newPinnedThreadId: thread.uniqueId,
+                newPinnedThreadId: chatThread.uniqueId,
                 newPinnedThreadIndex: chat.pinnedOrder
             )
             pinnedThreadManager.updatePinnedThreadIds(newPinnedThreadIds.map(\.value), updateStorageService: false, tx: tx)
@@ -348,7 +348,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         if chat.expirationTimerMs != 0 {
             dmConfigurationStore.set(
                 token: .init(isEnabled: true, durationSeconds: UInt32(chat.expirationTimerMs / 1000)),
-                for: .thread(thread.thread),
+                for: .thread(chatThread.tsThread),
                 tx: tx
             )
         }
@@ -356,7 +356,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         if chat.dontNotifyForMentionsIfMuted {
             // We only need to set if its not the default.
             threadStore.update(
-                thread: thread.thread,
+                thread: chatThread.tsThread,
                 withMentionNotificationMode: .never,
                 // Don't trigger a storage service update.
                 wasLocallyInitiated: false,

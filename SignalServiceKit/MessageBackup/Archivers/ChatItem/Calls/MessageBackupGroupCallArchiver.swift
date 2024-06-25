@@ -112,14 +112,14 @@ final class MessageBackupGroupCallArchiver: MessageBackupInteractionArchiver {
 
     func restoreChatItem(
         _ chatItem: BackupProto.ChatItem,
-        thread: MessageBackup.ChatThread,
+        chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         let groupThread: TSGroupThread
         let groupCall: BackupProto.GroupCall
         do {
-            switch thread {
+            switch chatThread {
             case .groupV2(let _groupThread): groupThread = _groupThread
             case .contact:
                 return .messageFailure([.restoreFrameError(

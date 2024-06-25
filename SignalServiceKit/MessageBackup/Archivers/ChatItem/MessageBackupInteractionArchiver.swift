@@ -98,7 +98,7 @@ internal protocol MessageBackupInteractionArchiver: MessageBackupProtoArchiver {
 
     func restoreChatItem(
         _ chatItem: BackupProto.ChatItem,
-        thread: MessageBackup.ChatThread,
+        chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> MessageBackup.RestoreInteractionResult<Void>

@@ -298,7 +298,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
 
         let result = archiver.restoreChatItem(
             chatItem,
-            thread: thread,
+            chatThread: thread,
             context: context,
             tx: tx
         )

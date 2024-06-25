@@ -233,7 +233,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
     func restoreContents(
         _ chatItemType: ChatItemType,
         chatItemId: MessageBackup.ChatItemId,
-        thread: MessageBackup.ChatThread,
+        chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> RestoreResult {
@@ -242,7 +242,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
             return restoreStandardMessage(
                 standardMessage,
                 chatItemId: chatItemId,
-                thread: thread,
+                chatThread: chatThread,
                 context: context,
                 tx: tx
             )
@@ -288,7 +288,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
     private func restoreStandardMessage(
         _ standardMessage: BackupProto.StandardMessage,
         chatItemId: MessageBackup.ChatItemId,
-        thread: MessageBackup.ChatThread,
+        chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: DBReadTransaction
     ) -> RestoreResult {
@@ -300,7 +300,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
                 let quoteResult = restoreQuote(
                     quoteProto,
                     chatItemId: chatItemId,
-                    thread: thread,
+                    thread: chatThread,
                     context: context,
                     tx: tx
                 ).unwrap(partialErrors: &partialErrors)

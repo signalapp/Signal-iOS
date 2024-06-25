@@ -31,13 +31,13 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
         contents: MessageBackup.RestoredMessageContents,
         outgoingDetails: BackupProto.ChatItem.OutgoingMessageDetails,
         context: MessageBackup.ChatRestoringContext,
-        thread: MessageBackup.ChatThread
+        chatThread: MessageBackup.ChatThread
     ) -> MessageBackup.RestoreInteractionResult<RestoredSentMessageTranscript> {
 
         let expirationToken: DisappearingMessageToken = .token(forProtoExpireTimerMillis: chatItem.expiresInMs)
 
         let target: SentMessageTranscriptTarget
-        switch thread {
+        switch chatThread {
         case .contact(let contactThread):
             target = .contact(contactThread, expirationToken)
         case .groupV2(let groupThread):

@@ -36,7 +36,7 @@ extension MessageBackup {
         /// Instantiators are expected to validate the group is gv2.
         case groupV2(TSGroupThread)
 
-        public var thread: TSThread {
+        public var tsThread: TSThread {
             switch self {
             case .contact(let thread):
                 return thread
@@ -66,7 +66,7 @@ extension MessageBackup {
         }
 
         fileprivate init(chatThread: ChatThread) {
-            self.init(thread: chatThread.thread)
+            self.init(thread: chatThread.tsThread)
         }
 
         // MARK: MessageBackupLoggableId

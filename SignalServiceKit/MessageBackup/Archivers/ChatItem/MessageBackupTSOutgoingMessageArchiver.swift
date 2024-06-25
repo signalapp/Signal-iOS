@@ -179,7 +179,7 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
 
     func restoreChatItem(
         _ chatItem: BackupProto.ChatItem,
-        thread: MessageBackup.ChatThread,
+        chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> MessageBackup.RestoreInteractionResult<Void> {
@@ -205,7 +205,7 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
         let contentsResult = contentsArchiver.restoreContents(
             chatItemType,
             chatItemId: chatItem.id,
-            thread: thread,
+            chatThread: chatThread,
             context: context,
             tx: tx
         )
@@ -219,7 +219,7 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
             contents: contents,
             outgoingDetails: outgoingDetails,
             context: context,
-            thread: thread
+            chatThread: chatThread
         )
 
         guard let transcript = transcriptResult.unwrap(partialErrors: &partialErrors) else {
