@@ -299,7 +299,7 @@
 "ARCHIVE_ACTION" = "আর্কাইভ";
 
 /* Button to try to join a call. The admin may need to approve the request before the user can join. */
-"ASK_TO_JOIN_CALL" = "Ask to Join Call";
+"ASK_TO_JOIN_CALL" = "কলে যোগ দিতে অনুরোধ পাঠান";
 
 /* One of the choices for pre-defined aspect ratio of a photo in media editor. */
 "ASPECT_RATIO_ORIGINAL" = "আসল";
@@ -788,7 +788,7 @@
 "CALL_VIEW_UNMUTE_LABEL" = "আনমিউট করুন";
 
 /* Shown in the header below the name of the call while waiting for the host to allow you to enter the call. */
-"CALL_WAITING_TO_BE_LET_IN" = "Waiting to be let in…";
+"CALL_WAITING_TO_BE_LET_IN" = "প্রবেশ করার জন্য অপেক্ষা চলছে…";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "ফিরতি কল করুন";
@@ -7166,7 +7166,7 @@
 "SHOW_THREAD_BUTTON_TITLE" = "চ্যাট দেখান";
 
 /* Shown in the header when the user hasn't provided a custom name for a call. */
-"SIGNAL_CALL" = "Signal Call";
+"SIGNAL_CALL" = "Signal কল";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "আমি আপনাকে Signal ইনস্টল করার জন্য আমন্ত্রণ করছি! লিঙ্কটি এখানে:";

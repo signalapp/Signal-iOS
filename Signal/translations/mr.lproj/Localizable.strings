@@ -299,7 +299,7 @@
 "ARCHIVE_ACTION" = "आर्काइव्ह";
 
 /* Button to try to join a call. The admin may need to approve the request before the user can join. */
-"ASK_TO_JOIN_CALL" = "Ask to Join Call";
+"ASK_TO_JOIN_CALL" = "कॉलमध्ये सामील होण्यास सांगा";
 
 /* One of the choices for pre-defined aspect ratio of a photo in media editor. */
 "ASPECT_RATIO_ORIGINAL" = "मूळ";
@@ -788,7 +788,7 @@
 "CALL_VIEW_UNMUTE_LABEL" = "अनम्यूट करा";
 
 /* Shown in the header below the name of the call while waiting for the host to allow you to enter the call. */
-"CALL_WAITING_TO_BE_LET_IN" = "Waiting to be let in…";
+"CALL_WAITING_TO_BE_LET_IN" = "आत येण्याची वाट पाहत आहे…";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "परत कॉल करा";
@@ -7166,7 +7166,7 @@
 "SHOW_THREAD_BUTTON_TITLE" = "चॅट दाखवा";
 
 /* Shown in the header when the user hasn't provided a custom name for a call. */
-"SIGNAL_CALL" = "Signal Call";
+"SIGNAL_CALL" = "Signal कॉल";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "मी आपल्याला Signal स्थापन करण्यासाठी आमंत्रित करत आहे! हा आहे दुवा:";

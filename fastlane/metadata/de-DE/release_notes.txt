@@ -1,1 +1,1 @@
-• Now when you view a thread with a missed call on one device, that missed call will be marked as read on your other linked devices too. Feel the bliss of the synchronized dismiss while you reminisce about all of the calls you didn't miss.
+• Wenn du dir jetzt einen Thread mit einem verpassten Anruf auf einem Gerät ansiehst, wird dieser verpasste Anruf auch auf deinen anderen gekoppelten Geräten als gelesen markiert. So musst du nichts weiter tun und kannst in Erinnerungen an die Anrufe schwelgen, die du nicht verpasst hast.

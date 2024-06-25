@@ -299,7 +299,7 @@
 "ARCHIVE_ACTION" = "Archivar";
 
 /* Button to try to join a call. The admin may need to approve the request before the user can join. */
-"ASK_TO_JOIN_CALL" = "Ask to Join Call";
+"ASK_TO_JOIN_CALL" = "Solicitar unirse a la llamada";
 
 /* One of the choices for pre-defined aspect ratio of a photo in media editor. */
 "ASPECT_RATIO_ORIGINAL" = "Original";
@@ -788,7 +788,7 @@
 "CALL_VIEW_UNMUTE_LABEL" = "No silenciar";
 
 /* Shown in the header below the name of the call while waiting for the host to allow you to enter the call. */
-"CALL_WAITING_TO_BE_LET_IN" = "Waiting to be let in…";
+"CALL_WAITING_TO_BE_LET_IN" = "Esperando para entrar…";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Devolver llamada";
@@ -4784,7 +4784,7 @@
 "PAYMENT_DETAILS_CARD_TITLE" = "Tarjeta de crédito o débito";
 
 /* Format for indicator of a payment amount converted to fiat currency with the freshness of the conversion rate. Embeds: {{ %1$@ the payment amount, %2$@ the freshness of the currency conversion rate }}. */
-"PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ por %2$@";
+"PAYMENTS_CURRENCY_CONVERSION_FRESHNESS_FORMAT" = "%1$@ a %2$@";
 
 /* Indicator for unknown currency. */
 "PAYMENTS_CURRENCY_UNKNOWN" = "¿?";
@@ -6509,7 +6509,7 @@
 "SETTINGS_PAYMENTS_ALL_RECORDS" = "Todos los pagos";
 
 /* Format string for the 'local balance converted into local currency' indicator. Embeds: {{ %1$@ the local balance in the local currency, %2$@ the local currency code, %3$@ the date the currency conversion rate was obtained. }}.. */
-"SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ el %3$@";
+"SETTINGS_PAYMENTS_BALANCE_CONVERSION_FORMAT" = "%1$@ %2$@ el %3$@";
 
 /* Error message indicating that payments could not be activated because the feature is not currently available. */
 "SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Los pagos en Signal no están disponibles. Todavía puedes transferir tus fondos a un «exchange» pero no podrás recibir o enviar más pagos a través de Signal.";
@@ -7166,7 +7166,7 @@
 "SHOW_THREAD_BUTTON_TITLE" = "Ver chat";
 
 /* Shown in the header when the user hasn't provided a custom name for a call. */
-"SIGNAL_CALL" = "Signal Call";
+"SIGNAL_CALL" = "Llamada de Signal";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "¡Instala Signal en tu teléfono! Toca aquí:";

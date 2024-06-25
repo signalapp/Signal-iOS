@@ -69,7 +69,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>other</key>
-			<string>%1$ld people</string>
+			<string>%1$ld人</string>
 		</dict>
 	</dict>
 	<key>CALL_PEOPLE_WAITING</key>
@@ -83,7 +83,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>other</key>
-			<string>%1$ld people waiting</string>
+			<string>%1$ld 人が待機中です</string>
 		</dict>
 	</dict>
 	<key>CAMERA_VO_N_ITEMS</key>
@@ -358,7 +358,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>other</key>
-			<string>%1$ld people are in this call</string>
+			<string>%1$ld人のユーザーが通話に参加しています</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -414,7 +414,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>other</key>
-			<string>%2$@ and %1$ld others are in this call</string>
+			<string>%2$@と%1$ld人が参加中</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d</key>

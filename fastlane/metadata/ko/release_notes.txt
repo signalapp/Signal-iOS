@@ -1,1 +1,1 @@
-• Now when you view a thread with a missed call on one device, that missed call will be marked as read on your other linked devices too. Feel the bliss of the synchronized dismiss while you reminisce about all of the calls you didn't miss.
+• 이제 기기에서 부재중 통화가 있는 대화를 확인할 때 해당 부재중 통화가 다른 연결된 기기에서도 읽음으로 표시됩니다.

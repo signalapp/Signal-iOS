@@ -299,7 +299,7 @@
 "ARCHIVE_ACTION" = "Заархівувати";
 
 /* Button to try to join a call. The admin may need to approve the request before the user can join. */
-"ASK_TO_JOIN_CALL" = "Ask to Join Call";
+"ASK_TO_JOIN_CALL" = "Попросити приєднатися";
 
 /* One of the choices for pre-defined aspect ratio of a photo in media editor. */
 "ASPECT_RATIO_ORIGINAL" = "Оригінал";
@@ -476,7 +476,7 @@
 "BADGE_CONFIGURATION_TITLE" = "Значки";
 
 /* When viewing someone else's badge, you'll see a sheet. If they got the badge by donating, a \"Donate to Signal\" button will be shown. This is the text in that button. */
-"BADGE_DETAILS_DONATE_TO_SIGNAL" = "Задонатити";
+"BADGE_DETAILS_DONATE_TO_SIGNAL" = "Підтримати";
 
 /* When viewing someone else's donor badge, you'll see a sheet. This is the title on that sheet. Embeds {badge owner's short name} */
 "BADGE_DETAILS_TITLE_FOR_SUPPORTER" = "%1$@ підтримує Signal";
@@ -491,7 +491,7 @@
 "BADGE_EXPIRED_BOOST_TITLE" = "Строк дії емблеми сплив";
 
 /* Button text when a badge expires, asking users to donate */
-"BADGE_EXPIRED_DONATE_BUTTON" = "Задонатити";
+"BADGE_EXPIRED_DONATE_BUTTON" = "Підтримати";
 
 /* Text for the 'learn more' link in a sheet explaining there's been an issue with your badge. */
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "Дізнатися більше.";
@@ -719,7 +719,7 @@
 "CALL_RAISE_HAND_BUTTON_LABEL" = "Підняти руку";
 
 /* Button to return to the current call */
-"CALL_RETURN_BUTTON" = "Повернутись до виклику";
+"CALL_RETURN_BUTTON" = "Повернутися до виклику";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Відповіді немає";
@@ -788,7 +788,7 @@
 "CALL_VIEW_UNMUTE_LABEL" = "Сповіщати";
 
 /* Shown in the header below the name of the call while waiting for the host to allow you to enter the call. */
-"CALL_WAITING_TO_BE_LET_IN" = "Waiting to be let in…";
+"CALL_WAITING_TO_BE_LET_IN" = "Чекайте на дозвіл…";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Передзвонити";
@@ -989,7 +989,7 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Вибрати країну";
 
 /* Button label to allow user to change avatar */
-"CHANGE_AVATAR_BUTTON_LABEL" = "Редагувати фото";
+"CHANGE_AVATAR_BUTTON_LABEL" = "Змінити фото";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
 "CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Новий номер телефону повинен відрізнятися від старого. Будь ласка, введіть новий номер телефону для зміни.";
@@ -1004,10 +1004,10 @@
 "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD" = "Недійсний старий номер телефону. Будь ласка, введіть дійсний номер телефону для зміни.";
 
 /* The incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE" = "Ось таким буде колір чату.";
+"CHAT_COLOR_INCOMING_MESSAGE" = "Таким буде колір чату.";
 
 /* The first incoming bubble text when setting a chat color. */
-"CHAT_COLOR_INCOMING_MESSAGE_1" = "Ось таким буде колір чату.";
+"CHAT_COLOR_INCOMING_MESSAGE_1" = "Таким буде колір чату.";
 
 /* The second incoming bubble text when setting a chat color. */
 "CHAT_COLOR_INCOMING_MESSAGE_2" = "Ще одне бульбашкове повідомлення";
@@ -1928,7 +1928,7 @@
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Не бачите підказок на своєму старому пристрої?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Сканувати QR код";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "Зіскануйте QR-код";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Тримайте обидва пристрої поруч один з одним. Не вимикайте ні один з пристроїв і залишайте Signal відкритим. Перенесення захищені наскрізним шифруванням.";
@@ -2234,7 +2234,7 @@
 "DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "Якщо ви маєте можливість, будь ласка, підтримайте нас донатом, щоб Signal залишався цікавим, надійним і доступним для всіх.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the title of that screen. */
-"DONATION_READ_MORE_SCREEN_TITLE" = "Signal вирізняється.";
+"DONATION_READ_MORE_SCREEN_TITLE" = "Signal інакший.";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Сума";
@@ -2876,7 +2876,7 @@
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%1$@ бере участь у цьому виклику";
 
 /* Text explaining that a member is presenting. Embeds {member name} */
-"GROUP_CALL_PRESENTING_FORMAT" = "%1$@ поширює свій екран";
+"GROUP_CALL_PRESENTING_FORMAT" = "%1$@ демонструє свій екран";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "Перепідключення";
@@ -3275,7 +3275,7 @@
 "GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "Користувач %1$@ приєднався до групи за допомогою посилання.";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%1$@ покинув (-а) групу.";
+"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "Користувач %1$@ покинув групу.";
 
 /* Message indicating that a remote user was removed from the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "Ви видалили %1$@.";
@@ -3308,7 +3308,7 @@
 "GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "Запит на приєднання до групи від %1$@ було відхилено.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%1$@ бажає приєднатись за допомогою посилання.";
+"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%1$@ хоче приєднатися до групи за допомогою посилання.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "Привілеї адміністратора у %1$@ були відкликані.";
@@ -5297,7 +5297,7 @@
 "PIN_CREATION_RECREATION_EXPLANATION" = "Ви можете змінити свій PIN-код, поки цей пристрій зареєстровано.";
 
 /* Action of the 'pin disable' reglock action sheet. */
-"PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Відключити";
+"PIN_CREATION_REGLOCK_CONFIRMATION_ACTION" = "Вимкнути";
 
 /* Message of the 'pin disable' reglock action sheet. */
 "PIN_CREATION_REGLOCK_CONFIRMATION_MESSAGE" = "Щоб вимкнути PIN-код, спочатку потрібно вимкнути блокування реєстрації.";
@@ -5594,7 +5594,7 @@
 "QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Реакція на вашу історію";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Реакція на історію користувача %1$@";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Ваша реакція на історію користувача %1$@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · Історія";
@@ -5612,7 +5612,7 @@
 "QUOTED_REPLY_TYPE_IMAGE" = "Зображення";
 
 /* Indicates this message is a quoted reply to a photo file. */
-"QUOTED_REPLY_TYPE_PHOTO" = "Світлина";
+"QUOTED_REPLY_TYPE_PHOTO" = "Фото";
 
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "Відео";
@@ -5978,7 +5978,7 @@
 "SCAN_CODE_INSTRUCTIONS" = "Відскануйте QR-код на пристрої вашого контакту.";
 
 /* Title for the 'scan QR code' view. */
-"SCAN_QR_CODE_VIEW_TITLE" = "Сканувати QR код";
+"SCAN_QR_CODE_VIEW_TITLE" = "Зіскануйте QR-код";
 
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Миттєво";
@@ -6116,10 +6116,10 @@
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Ніколи Не Зберігати Медіа";
 
 /* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_CAMERA" = "Повернутись до камери";
+"SEND_MEDIA_RETURN_TO_CAMERA" = "Повернутися до камери";
 
 /* In-app camera: confirmation button in the prompt to turn off multi-mode. */
-"SEND_MEDIA_TURN_OFF_MM_BUTTON" = "Відключити";
+"SEND_MEDIA_TURN_OFF_MM_BUTTON" = "Вимкнути";
 
 /* In-app camera: message for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
 "SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "Ви втратите усі зроблені фото та відео.";
@@ -6350,7 +6350,7 @@
 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Споживати менше даних";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Використання функції збереження даних може допомогти покращити якість дзвінків у мережах з поганим зв'язком.";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Економія даних може підвищити якість викликів у разі слабкого зв'язку.";
 
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Виклики";
@@ -6371,7 +6371,7 @@
 "SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Оберіть якість відправлених фото та відео.";
 
 /* Section header for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Надіслані медіа";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Медіафайли";
 
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "Споживання даних";
@@ -7025,7 +7025,7 @@
 "SETTINGS_READ_RECEIPT" = "Відмітки про читання";
 
 /* Action to turn off registration lock */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Відключити";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Вимкнути";
 
 /* Title for the alert confirming that the user wants to turn off registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Вимкнути блокування реєстрації?";
@@ -7166,7 +7166,7 @@
 "SHOW_THREAD_BUTTON_TITLE" = "Показати чат";
 
 /* Shown in the header when the user hasn't provided a custom name for a call. */
-"SIGNAL_CALL" = "Signal Call";
+"SIGNAL_CALL" = "Виклик у Signal";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Пропоную встановити Signal! Завантажуй за цим посиланням:";
@@ -7436,19 +7436,19 @@
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Реакція на вашу історію: %1$@";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "Реакція на історію: %1$@";
+"STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "Ваша реакція на історію: %1$@";
 
 /* quote text for a reaction to a story by some other user (the header on the bubble says their name, e.g. \"Bob\"). Embeds {{reaction emoji}} */
 "STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON" = "Реакція на історію: %1$@";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Реакція на історію користувача %2$@: %1$@";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Ваша реакція на історію користувача %2$@: %1$@";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "Відповісти";
 
 /* Text indicating you reacted to a story (the header on the bubble says \"You\") */
-"STORY_REPLY_REACTION_SECOND_PERSON" = "Реакція на історію";
+"STORY_REPLY_REACTION_SECOND_PERSON" = "Ваша реакція на історію";
 
 /* Text indicating someone else reacted to a story (the header on the bubble says their name, e.g. \"Bob\") */
 "STORY_REPLY_REACTION_THIRD_PERSON" = "Реакція на історію";

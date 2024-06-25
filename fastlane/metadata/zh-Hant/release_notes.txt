@@ -1,1 +1,1 @@
-• Now when you view a thread with a missed call on one device, that missed call will be marked as read on your other linked devices too. Feel the bliss of the synchronized dismiss while you reminisce about all of the calls you didn't miss.
+• 現在，當你在一部裝置上檢視包含未接來電的話題時，該未接來電也會在你的其他已連結裝置上標記為已讀。同步功能的好處就是讓你不會感到混亂。

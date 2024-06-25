@@ -299,7 +299,7 @@
 "ARCHIVE_ACTION" = "Archivovat";
 
 /* Button to try to join a call. The admin may need to approve the request before the user can join. */
-"ASK_TO_JOIN_CALL" = "Ask to Join Call";
+"ASK_TO_JOIN_CALL" = "Požádat o připojení k hovoru";
 
 /* One of the choices for pre-defined aspect ratio of a photo in media editor. */
 "ASPECT_RATIO_ORIGINAL" = "Původní";
@@ -788,7 +788,7 @@
 "CALL_VIEW_UNMUTE_LABEL" = "Zapnout zvuk";
 
 /* Shown in the header below the name of the call while waiting for the host to allow you to enter the call. */
-"CALL_WAITING_TO_BE_LET_IN" = "Waiting to be let in…";
+"CALL_WAITING_TO_BE_LET_IN" = "Čeká se na vpuštění…";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Zavolat zpět";
@@ -7166,7 +7166,7 @@
 "SHOW_THREAD_BUTTON_TITLE" = "Zobrazit chat";
 
 /* Shown in the header when the user hasn't provided a custom name for a call. */
-"SIGNAL_CALL" = "Signal Call";
+"SIGNAL_CALL" = "Hovor Signal";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Zvu tě do aplikace Signal! Tady je odkaz:";

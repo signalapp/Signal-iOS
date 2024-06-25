@@ -299,7 +299,7 @@
 "ARCHIVE_ACTION" = "存档";
 
 /* Button to try to join a call. The admin may need to approve the request before the user can join. */
-"ASK_TO_JOIN_CALL" = "Ask to Join Call";
+"ASK_TO_JOIN_CALL" = "申请加入通话";
 
 /* One of the choices for pre-defined aspect ratio of a photo in media editor. */
 "ASPECT_RATIO_ORIGINAL" = "原始";
@@ -788,7 +788,7 @@
 "CALL_VIEW_UNMUTE_LABEL" = "取消静音";
 
 /* Shown in the header below the name of the call while waiting for the host to allow you to enter the call. */
-"CALL_WAITING_TO_BE_LET_IN" = "Waiting to be let in…";
+"CALL_WAITING_TO_BE_LET_IN" = "正在等待批准……";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "回拨";
@@ -7166,7 +7166,7 @@
 "SHOW_THREAD_BUTTON_TITLE" = "显示对话";
 
 /* Shown in the header when the user hasn't provided a custom name for a call. */
-"SIGNAL_CALL" = "Signal Call";
+"SIGNAL_CALL" = "Signal 通话";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "请你下载Signal加密通讯软件！链接：";

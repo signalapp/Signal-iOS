@@ -109,17 +109,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>zero</key>
-			<string>%1$ld people</string>
+			<string>لا أحد (%1$ld)</string>
 			<key>one</key>
-			<string>%1$ld person</string>
+			<string>شخص واحد (%1$ld)</string>
 			<key>two</key>
-			<string>%1$ld people</string>
+			<string>شخصان (%1$ld)</string>
 			<key>few</key>
-			<string>%1$ld people</string>
+			<string>%1$ld أفراد</string>
 			<key>many</key>
-			<string>%1$ld people</string>
+			<string>%1$ld فردا</string>
 			<key>other</key>
-			<string>%1$ld people</string>
+			<string>%1$ld فرد</string>
 		</dict>
 	</dict>
 	<key>CALL_PEOPLE_WAITING</key>
@@ -133,17 +133,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>zero</key>
-			<string>%1$ld people waiting</string>
+			<string>%1$ld شخص ينتظر</string>
 			<key>one</key>
-			<string>%1$ld person waiting</string>
+			<string>%1$ld شخص ينتظر</string>
 			<key>two</key>
-			<string>%1$ld people waiting</string>
+			<string>%1$ld شخصان ينتظران</string>
 			<key>few</key>
-			<string>%1$ld people waiting</string>
+			<string>%1$ld أشخاص ينتظرون</string>
 			<key>many</key>
-			<string>%1$ld people waiting</string>
+			<string>%1$ld شخصًا ينتظر</string>
 			<key>other</key>
-			<string>%1$ld people waiting</string>
+			<string>%1$ld شخص ينتظر</string>
 		</dict>
 	</dict>
 	<key>CAMERA_VO_N_ITEMS</key>
@@ -608,17 +608,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>zero</key>
-			<string>%1$ld people are in this call</string>
+			<string>%1$ld أشخاص في هذه المكالمة</string>
 			<key>one</key>
-			<string>%1$ld person is in this call</string>
+			<string>%1$ld شخص في هذه المكالمة</string>
 			<key>two</key>
-			<string>%1$ld people are in this call</string>
+			<string>%1$ld شخصان في هذه المكالمة</string>
 			<key>few</key>
-			<string>%1$ld people are in this call</string>
+			<string>%1$ld أشخاص في هذه المكالمة</string>
 			<key>many</key>
-			<string>%1$ld people are in this call</string>
+			<string>%1$ld شخصًا في هذه المكالمة</string>
 			<key>other</key>
-			<string>%1$ld people are in this call</string>
+			<string>%1$ld شخص في هذه المكالمة</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -704,17 +704,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>zero</key>
-			<string>%2$@ and %1$ld others are in this call</string>
+			<string>%2$@ و %1$ld آخرون في هذه المكالمة</string>
 			<key>one</key>
-			<string>%2$@ and %1$ld other person are in this call</string>
+			<string>%2$@ و %1$ld آخر في هذه المكالمة</string>
 			<key>two</key>
-			<string>%2$@ and %1$ld others are in this call</string>
+			<string>%2$@ و %1$ld آخرين في هذه المكالمة</string>
 			<key>few</key>
-			<string>%2$@ and %1$ld others are in this call</string>
+			<string>%2$@ و %1$ld آخرون في هذه المكالمة</string>
 			<key>many</key>
-			<string>%2$@ and %1$ld others are in this call</string>
+			<string>%2$@ و %1$ld آخرون في هذه المكالمة</string>
 			<key>other</key>
-			<string>%2$@ and %1$ld others are in this call</string>
+			<string>%2$@ و %1$ld آخرون في هذه المكالمة</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d</key>

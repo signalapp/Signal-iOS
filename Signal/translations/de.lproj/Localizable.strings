@@ -299,7 +299,7 @@
 "ARCHIVE_ACTION" = "Archivieren";
 
 /* Button to try to join a call. The admin may need to approve the request before the user can join. */
-"ASK_TO_JOIN_CALL" = "Ask to Join Call";
+"ASK_TO_JOIN_CALL" = "Anruf-Beitritt anfragen";
 
 /* One of the choices for pre-defined aspect ratio of a photo in media editor. */
 "ASPECT_RATIO_ORIGINAL" = "Original";
@@ -788,7 +788,7 @@
 "CALL_VIEW_UNMUTE_LABEL" = "Nicht stumm";
 
 /* Shown in the header below the name of the call while waiting for the host to allow you to enter the call. */
-"CALL_WAITING_TO_BE_LET_IN" = "Waiting to be let in…";
+"CALL_WAITING_TO_BE_LET_IN" = "Warten auf Einlass…";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Rückruf";
@@ -1250,7 +1250,7 @@
 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT" = "Etwas funktioniert nicht";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal konnte deine Supportanfrage nicht abschließen.";
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal konnte deine Support-Anfrage nicht abschließen.";
 
 /* button text */
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Erneut versuchen";
@@ -2441,7 +2441,7 @@
 "EMAIL_INVITE_SUBJECT" = "Lass uns zu Signal wechseln";
 
 /* Description for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_MESSAGE" = "Dein Gerät ist nicht zum Senden von E-Mails konfiguriert. Um eine Supportanfrage zu senden, richte den E-Mail-Versand auf deinem Gerät ein oder sende eine E-Mail an support@signal.org";
+"EMAIL_SIGNAL_MESSAGE" = "Dein Gerät ist nicht zum Senden von E-Mails konfiguriert. Um eine Support-Anfrage zu senden, richte den E-Mail-Versand auf deinem Gerät ein oder sende eine E-Mail an support@signal.org";
 
 /* Title for the fallback support sheet if user cannot send email */
 "EMAIL_SIGNAL_TITLE" = "E-Mail nicht verfügbar";
@@ -2510,7 +2510,7 @@
 "ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "E-Mail-App konnte nicht geöffnet werden";
 
 /* Error indicating that a support mailto link could not be created. */
-"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Supportanfrage konnte nicht erstellt werden";
+"ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Support-Anfrage konnte nicht erstellt werden";
 
 /* Generic error indicating that log upload failed */
 "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED" = "Diagnoseprotokoll konnte nicht hochgeladen werden.";
@@ -3836,7 +3836,7 @@
 "LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Mitteilungen zulassen";
 
 /* Explanation in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_EXPLANATION" = "Durch das Zulassen von Mitteilungen erfährst du, wenn du Nachrichten, Anrufe oder Updates über neue Unterhaltungsaktivitäten erhältst.";
+"LINKED_ONBOARDING_PERMISSIONS_EXPLANATION" = "Durch das Zulassen von Mitteilungen wirst du bei neuen Nachrichten, Anrufen oder sonstigen Aktivitäten in deinen Chats benachrichtigt.";
 
 /* Title of the 'onboarding permissions' view. */
 "LINKED_ONBOARDING_PERMISSIONS_TITLE" = "Mitteilungen zulassen";
@@ -4610,7 +4610,7 @@
 "ONBOARDING_2FA_INVALID_PIN" = "Falsche PIN";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view, and you only have one more attempt */
-"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "Falsche PIN. 1 verbleibender Versuch.";
+"ONBOARDING_2FA_INVALID_PIN_LAST_ATTEMPT" = "Falsche PIN. Ein verbleibender Versuch.";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Überspringen und neue PIN erstellen";
@@ -4700,7 +4700,7 @@
 "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Code wird überprüft …";
 
 /* First bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "Sorge für den Empfang deiner SMS oder deines Anrufs dafür, dass dein Telefon Mobilfunkempfang hat.";
+"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "Stelle sicher, dass dein Telefon Mobilfunkempfang hat, um die SMS oder den Anruf zu erhalten.";
 
 /* Second bullet point for the explainer sheet for registering via verification code. */
 "ONBOARDING_VERIFICATION_HELP_BULLET_2" = "Stelle sicher, dass du unter dieser Telefonnummer einen Anruf erhalten kannst.";
@@ -7166,7 +7166,7 @@
 "SHOW_THREAD_BUTTON_TITLE" = "Chat anzeigen";
 
 /* Shown in the header when the user hasn't provided a custom name for a call. */
-"SIGNAL_CALL" = "Signal Call";
+"SIGNAL_CALL" = "Signal-Anruf";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Ich möchte dich einladen, »Signal« zu installieren! Hier ist der Link:";
@@ -7562,7 +7562,7 @@
 "SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Beschreib das Problem: ";
 
 /* Message for alert dialog presented when a support email failed to send */
-"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Bitte sende deine Supportanfrage per E-Mail an support@signal.org";
+"SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Bitte sende deine Support-Anfrage per E-Mail an support@signal.org";
 
 /* Localized label for support request email filter string. Embeds {{filter text}}. */
 "SUPPORT_EMAIL_FILTER_LABEL_FORMAT" = "Filter: %1$@";
@@ -7574,7 +7574,7 @@
 "SUPPORT_EMAIL_HID_LABEL_FORMAT" = "HID: %1$@";
 
 /* Localized divider for support request emails internal information */
-"SUPPORT_EMAIL_INFO_DIVIDER" = "Supportinformationen";
+"SUPPORT_EMAIL_INFO_DIVIDER" = "Support-Informationen";
 
 /* Localized label for support request email iOS Version string (e.g. 13.4). Embeds {{ios version}}. */
 "SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "iOS-Version: %1$@";
@@ -7589,7 +7589,7 @@
 "SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "Signal-Version: %1$@";
 
 /* Localized subject for support request emails */
-"SUPPORT_EMAIL_SUBJECT" = "Supportanfrage Signal iOS";
+"SUPPORT_EMAIL_SUBJECT" = "Support-Anfrage Signal iOS";
 
 /* Header for emoji mood selection */
 "SUPPORT_EMOJI_PROMPT" = "Wie fühlst du dich? (optional)";

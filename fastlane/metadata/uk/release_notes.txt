@@ -1,1 +1,1 @@
-• Now when you view a thread with a missed call on one device, that missed call will be marked as read on your other linked devices too. Feel the bliss of the synchronized dismiss while you reminisce about all of the calls you didn't miss.
+• Якщо в чаті є сповіщення про пропущений виклик і ви проглянули чат на одному зі своїх пристроїв, тепер таке сповіщення позначатиметься як прочитане на всіх зв'язаних пристроях. Відчуйте переваги синхронізації, коли хочеться триматись дистанції або ви не готові до комунікації.

@@ -1,1 +1,1 @@
-• Now when you view a thread with a missed call on one device, that missed call will be marked as read on your other linked devices too. Feel the bliss of the synchronized dismiss while you reminisce about all of the calls you didn't miss.
+• สะดวกยิ่งขึ้น! เพราะเมื่อคุณกดดูสายที่ไม่ได้รับจากในบทสนทนาบนอุปกรณ์เครื่องหนึ่ง สายนั้นจะเปลี่ยนสถานะเป็นอ่านแล้วโดยอัตโนมัติบนอุปกรณ์ที่เชื่อมโยงอยู่เครื่องอื่นๆ ด้วยเช่นกัน

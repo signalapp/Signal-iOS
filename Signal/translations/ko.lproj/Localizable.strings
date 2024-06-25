@@ -299,7 +299,7 @@
 "ARCHIVE_ACTION" = "보관";
 
 /* Button to try to join a call. The admin may need to approve the request before the user can join. */
-"ASK_TO_JOIN_CALL" = "Ask to Join Call";
+"ASK_TO_JOIN_CALL" = "통화 참여 요청";
 
 /* One of the choices for pre-defined aspect ratio of a photo in media editor. */
 "ASPECT_RATIO_ORIGINAL" = "원본";
@@ -788,7 +788,7 @@
 "CALL_VIEW_UNMUTE_LABEL" = "알림 켜기";
 
 /* Shown in the header below the name of the call while waiting for the host to allow you to enter the call. */
-"CALL_WAITING_TO_BE_LET_IN" = "Waiting to be let in…";
+"CALL_WAITING_TO_BE_LET_IN" = "승인을 기다리는 중…";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "다시 걸기";
@@ -7166,7 +7166,7 @@
 "SHOW_THREAD_BUTTON_TITLE" = "대화 표시";
 
 /* Shown in the header when the user hasn't provided a custom name for a call. */
-"SIGNAL_CALL" = "Signal Call";
+"SIGNAL_CALL" = "Signal 통화";
 
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "당신을 Signal로 초대합니다! 여기에 링크가 있습니다:";

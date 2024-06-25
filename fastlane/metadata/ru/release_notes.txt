@@ -1,1 +1,1 @@
-• Now when you view a thread with a missed call on one device, that missed call will be marked as read on your other linked devices too. Feel the bliss of the synchronized dismiss while you reminisce about all of the calls you didn't miss.
+• Теперь при просмотре треда с пропущенным звонком на одном устройстве этот пропущенный звонок будет помечен как прочитанный и на других связанных устройствах. Почувствуйте блаженство синхронного закрытия оповещений, вспоминая все звонки, которые вы не пропустили.

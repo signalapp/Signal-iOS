@@ -77,9 +77,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld person</string>
+			<string>%1$ld особа</string>
 			<key>other</key>
-			<string>%1$ld people</string>
+			<string>Њих %1$ld</string>
 		</dict>
 	</dict>
 	<key>CALL_PEOPLE_WAITING</key>
@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld person waiting</string>
+			<string>Њих %1$ld чека</string>
 			<key>other</key>
-			<string>%1$ld people waiting</string>
+			<string>Њих %1$ld чека</string>
 		</dict>
 	</dict>
 	<key>CAMERA_VO_N_ITEMS</key>
@@ -408,9 +408,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld person is in this call</string>
+			<string>Укупан број особа у овом позиву: %1$ld</string>
 			<key>other</key>
-			<string>%1$ld people are in this call</string>
+			<string>Укупан број особа у овом позиву: %1$ld</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -472,9 +472,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%2$@ and %1$ld other person are in this call</string>
+			<string>У овом позиву су %2$@ и још %1$ld особа</string>
 			<key>other</key>
-			<string>%2$@ and %1$ld others are in this call</string>
+			<string>У овом позиву су %2$@ и још њих %1$ld</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d</key>

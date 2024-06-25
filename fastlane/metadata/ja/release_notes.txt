@@ -1,1 +1,1 @@
-• Now when you view a thread with a missed call on one device, that missed call will be marked as read on your other linked devices too. Feel the bliss of the synchronized dismiss while you reminisce about all of the calls you didn't miss.
+• 1つのデバイスで不在着信のあるスレッドを表示すると、他のリンク済み端末でもその不在着信が既読としてマークされるようになります。

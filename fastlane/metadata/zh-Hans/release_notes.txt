@@ -1,1 +1,1 @@
-• Now when you view a thread with a missed call on one device, that missed call will be marked as read on your other linked devices too. Feel the bliss of the synchronized dismiss while you reminisce about all of the calls you didn't miss.
+• 现在当您在一台设备上查看未接来电的线程时，该未接来电在其他已链接设备上将会被同步标记为“已读”。
