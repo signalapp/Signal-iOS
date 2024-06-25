@@ -1704,13 +1704,6 @@ public final class MessageReceiver: Dependencies {
             Logger.info("Message received from unknown linked device; adding to local SignalRecipient: \(deviceId).")
             recipientManager.markAsRegisteredAndSave(recipient, deviceId: deviceId, shouldUpdateStorageService: true, tx: tx.asV2Write)
         }
-
-        // Check if OWSDevice (ie the "Linked Devices" UI) knows about this device.
-        let hasDevice = OWSDevice.anyFetchAll(transaction: tx).contains(where: { $0.deviceId == deviceId })
-        if !hasDevice {
-            Logger.info("Message received from unknown linked device; refreshing device list: \(deviceId).")
-            OWSDevicesService.refreshDevices()
-        }
     }
 
     private func handleIncomingEndSessionEnvelope(
