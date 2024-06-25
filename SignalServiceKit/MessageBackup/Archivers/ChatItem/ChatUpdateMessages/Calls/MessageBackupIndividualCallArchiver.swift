@@ -5,8 +5,11 @@
 
 import SignalCoreKit
 
-final class MessageBackupIndividualCallArchiver: MessageBackupInteractionArchiver {
-    static let archiverType: MessageBackup.ChatItemArchiverType = .individualCall
+final class MessageBackupIndividualCallArchiver {
+    typealias ArchiveChatUpdateMessageResult = MessageBackupChatUpdateMessageArchiver.ArchiveChatUpdateMessageResult
+    typealias RestoreChatUpdateMessageResult = MessageBackupChatUpdateMessageArchiver.RestoreChatUpdateMessageResult
+
+    private typealias Details = MessageBackup.InteractionArchiveDetails
 
     private let callRecordStore: CallRecordStore
     private let individualCallRecordManager: IndividualCallRecordManager
@@ -22,15 +25,11 @@ final class MessageBackupIndividualCallArchiver: MessageBackupInteractionArchive
         self.interactionStore = interactionStore
     }
 
-    func archiveInteraction(
-        _ interaction: TSInteraction,
+    func archiveIndividualCall(
+        _ individualCallInteraction: TSCall,
         context: MessageBackup.ChatArchivingContext,
         tx: DBReadTransaction
-    ) -> MessageBackup.ArchiveInteractionResult<Details> {
-        guard let individualCallInteraction = interaction as? TSCall else {
-            return .completeFailure(.fatalArchiveError(.developerError(OWSAssertionError("Invalid interaction type!"))))
-        }
-
+    ) -> ArchiveChatUpdateMessageResult {
         let associatedCallRecord: CallRecord? = callRecordStore.fetch(
             interactionRowId: individualCallInteraction.sqliteRowId!,
             tx: tx
@@ -106,40 +105,22 @@ final class MessageBackupIndividualCallArchiver: MessageBackupInteractionArchive
         return .success(interactionArchiveDetails)
     }
 
-    func restoreChatItem(
-        _ chatItem: BackupProto.ChatItem,
+    func restoreIndividualCall(
+        _ individualCall: BackupProto.IndividualCall,
+        chatItem: BackupProto.ChatItem,
         chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         let contactThread: TSContactThread
-        let individualCall: BackupProto.IndividualCall
-        do {
-            switch chatThread {
-            case .contact(let _contactThread): contactThread = _contactThread
-            case .groupV2:
-                return .messageFailure([.restoreFrameError(
-                    .invalidProtoData(.individualCallNotInContactThread),
-                    chatItem.id
-                )])
-            }
-
-            switch chatItem.item {
-            case .updateMessage(let updateMessage):
-                switch updateMessage.update {
-                case .individualCall(let _individualCall): individualCall = _individualCall
-                default:
-                    return .messageFailure([.restoreFrameError(
-                        .developerError(OWSAssertionError("Non-individual call update!")),
-                        chatItem.id
-                    )])
-                }
-            default:
-                return .messageFailure([.restoreFrameError(
-                    .developerError(OWSAssertionError("Non-chat update!")),
-                    chatItem.id
-                )])
-            }
+        switch chatThread {
+        case .contact(let _contactThread):
+            contactThread = _contactThread
+        case .groupV2:
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.individualCallNotInContactThread),
+                chatItem.id
+            )])
         }
 
         let callInteractionType: RPRecentCallType

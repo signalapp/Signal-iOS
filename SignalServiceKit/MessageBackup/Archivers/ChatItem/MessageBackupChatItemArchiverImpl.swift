@@ -61,22 +61,15 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
             interactionStore: interactionStore,
             sentMessageTranscriptReceiver: sentMessageTranscriptReceiver
         )
-    private lazy var groupUpdateMessageArchiver =
-        MessageBackupGroupUpdateMessageArchiver(
-            groupUpdateBuilder: groupUpdateItemBuilder,
+    private lazy var chatUpdateMessageArchiver =
+        MessageBackupChatUpdateMessageArchiver(
+            callRecordStore: callRecordStore,
+            groupCallRecordManager: groupCallRecordManager,
             groupUpdateHelper: groupUpdateHelper,
+            groupUpdateItemBuilder: groupUpdateItemBuilder,
+            individualCallRecordManager: individualCallRecordManager,
             interactionStore: interactionStore
         )
-    private lazy var individualCallArchiver = MessageBackupIndividualCallArchiver(
-        callRecordStore: callRecordStore,
-        individualCallRecordManager: individualCallRecordManager,
-        interactionStore: interactionStore
-    )
-    private lazy var groupCallArchiver = MessageBackupGroupCallArchiver(
-        callRecordStore: callRecordStore,
-        groupCallRecordManager: groupCallRecordManager,
-        interactionStore: interactionStore
-    )
     // TODO: need for info messages. not story messages, those are skipped.
     // are there other message types? what about e.g. payment messages?
     // anything that isnt a TSOutgoingMessage or TSIncomingMessage.
@@ -141,15 +134,12 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
             archiver = incomingMessageArchiver
         case .outgoingMessage:
             archiver = outgoingMessageArchiver
-        case .individualCall:
-            archiver = individualCallArchiver
-        case .groupCall:
-            archiver = groupCallArchiver
-        case .groupUpdateInfoMessage:
-            archiver = groupUpdateMessageArchiver
+        case .chatUpdateMessage:
+            archiver = chatUpdateMessageArchiver
         case .unimplemented:
             return nil
         }
+
         owsAssertDebug(archiverType == type(of: archiver).archiverType)
         return archiver
     }
@@ -170,11 +160,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
             return .partialSuccess(partialErrors)
         }
 
-        guard let archiver = self.archiver(
-            for: interaction.archiverType(
-                localIdentifiers: context.recipientContext.localIdentifiers
-            )
-        ) else {
+        guard let archiver = self.archiver(for: interaction.archiverType()) else {
             // TODO: when we have a complete set of archivers, this should
             // maybe be considered a catastrophic failure?
             // For now there's interactions we don't handle; just ignore it.

@@ -310,15 +310,15 @@ extension MessageBackup {
 
                 /// BackupProto.DistributionList.distributionId was not a valid UUID
                 case invalidDistributionListId
-
                 /// BackupProto.DistributionList.privacyMode was missing, or contained an unknown privacy mode
                 case invalidDistributionListPrivacyMode
-
                 /// The specified BackupProto.DistributionList.privacyMode was missing a list of associated member IDs
                 case invalidDistributionListPrivacyModeMissingRequiredMembers
-
                 /// BackupProto.DistributionListItem.deletionTimestamp was invalid
                 case invalidDistributionListDeletionTimestamp
+
+                /// A ``BackupProto/ChatUpdateMessage/update`` was empty.
+                case emptyChatUpdateMessage
             }
 
             /// The proto contained invalid or self-contradictory data, e.g an invalid ACI.
@@ -388,6 +388,7 @@ extension MessageBackup {
                         .invalidServiceId,
                         .invalidE164,
                         .invalidProfileKey,
+                        .invalidDistributionListMember,
                         .contactWithoutIdentifiers,
                         .unrecognizedRecipientType,
                         .otherContactWithLocalIdentifiers,
@@ -407,11 +408,6 @@ extension MessageBackup {
                         .sequenceOfRequestsAndCancelsWithLocalAci,
                         .unrecognizedGroupUpdate,
                         .frameMissingItem,
-                        .invalidDistributionListMember,
-                        .invalidDistributionListDeletionTimestamp,
-                        .invalidDistributionListId,
-                        .invalidDistributionListPrivacyMode,
-                        .invalidDistributionListPrivacyModeMissingRequiredMembers,
                         .invalidLocalProfileKey,
                         .invalidLocalUsernameLink,
                         .individualCallNotInContactThread,
@@ -420,7 +416,12 @@ extension MessageBackup {
                         .individualCallUnrecognizedState,
                         .groupCallNotInGroupThread,
                         .groupCallUnrecognizedState,
-                        .groupCallRecipientIdNotAnAci:
+                        .groupCallRecipientIdNotAnAci,
+                        .invalidDistributionListDeletionTimestamp,
+                        .invalidDistributionListId,
+                        .invalidDistributionListPrivacyMode,
+                        .invalidDistributionListPrivacyModeMissingRequiredMembers,
+                        .emptyChatUpdateMessage:
                     // Collapse all others by the id of the containing frame.
                     return idLogString
                 }

@@ -6,11 +6,12 @@
 import Foundation
 import LibSignalClient
 
-internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteractionArchiver {
+final class MessageBackupGroupUpdateMessageArchiver {
+    typealias ArchiveChatUpdateMessageResult = MessageBackupChatUpdateMessageArchiver.ArchiveChatUpdateMessageResult
+    typealias RestoreChatUpdateMessageResult = MessageBackupChatUpdateMessageArchiver.RestoreChatUpdateMessageResult
 
-    typealias PersistableGroupUpdateItem = TSInfoMessage.PersistableGroupUpdateItem
-
-    static let archiverType: MessageBackup.ChatItemArchiverType = .groupUpdateInfoMessage
+    private typealias PersistableGroupUpdateItem = TSInfoMessage.PersistableGroupUpdateItem
+    private typealias Details = MessageBackup.InteractionArchiveDetails
 
     private let groupUpdateBuilder: GroupUpdateItemBuilder
     private let groupUpdateHelper: GroupUpdateInfoMessageInserterBackupHelper
@@ -26,17 +27,11 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
         self.interactionStore = interactionStore
     }
 
-    func archiveInteraction(
-        _ interaction: TSInteraction,
+    func archiveGroupUpdate(
+        infoMessage: TSInfoMessage,
         context: MessageBackup.ChatArchivingContext,
         tx: DBReadTransaction
-    ) -> MessageBackup.ArchiveInteractionResult<Details> {
-        guard let infoMessage = interaction as? TSInfoMessage else {
-            // Should be impossible.
-            return .completeFailure(.fatalArchiveError(.developerError(
-                OWSAssertionError("Invalid interaction type")
-            )))
-        }
+    ) -> ArchiveChatUpdateMessageResult {
         let groupUpdateItems: [TSInfoMessage.PersistableGroupUpdateItem]
         switch infoMessage.groupUpdateMetadata(
             localIdentifiers: context.recipientContext.localIdentifiers
@@ -160,12 +155,13 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
         }
     }
 
-    func restoreChatItem(
-        _ chatItem: BackupProto.ChatItem,
+    func restoreGroupUpdate(
+        _ groupUpdate: BackupProto.GroupChangeChatUpdate,
+        chatItem: BackupProto.ChatItem,
         chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
-    ) -> MessageBackup.RestoreInteractionResult<Void> {
+    ) -> RestoreChatUpdateMessageResult {
         let groupThread: TSGroupThread
         switch chatThread {
         case .contact:
@@ -173,27 +169,8 @@ internal class MessageBackupGroupUpdateMessageArchiver: MessageBackupInteraction
                 .invalidProtoData(.groupUpdateMessageInNonGroupChat),
                 chatItem.id
             )])
-        case .groupV2(let tSGroupThread):
-            groupThread = tSGroupThread
-        }
-
-        let groupUpdate: BackupProto.GroupChangeChatUpdate
-        switch chatItem.item {
-        case .updateMessage(let chatUpdateMessage):
-            switch chatUpdateMessage.update {
-            case .groupChange(let groupChangeChatUpdate):
-                groupUpdate = groupChangeChatUpdate
-            default:
-                return .messageFailure([.restoreFrameError(
-                    .developerError(OWSAssertionError("Got non group change update message in GroupUpdate archiver!")),
-                    chatItem.id
-                )])
-            }
-        default:
-            return .messageFailure([.restoreFrameError(
-                .developerError(OWSAssertionError("Got non update message in GroupUpdate archiver!")),
-                chatItem.id
-            )])
+        case .groupV2(let _groupThread):
+            groupThread = _groupThread
         }
 
         var partialErrors = [MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>]()

@@ -6,8 +6,11 @@
 import LibSignalClient
 import SignalCoreKit
 
-final class MessageBackupGroupCallArchiver: MessageBackupInteractionArchiver {
-    static let archiverType: MessageBackup.ChatItemArchiverType = .groupCall
+final class MessageBackupGroupCallArchiver {
+    typealias ArchiveChatUpdateMessageResult = MessageBackupChatUpdateMessageArchiver.ArchiveChatUpdateMessageResult
+    typealias RestoreChatUpdateMessageResult = MessageBackupChatUpdateMessageArchiver.RestoreChatUpdateMessageResult
+
+    private typealias Details = MessageBackup.InteractionArchiveDetails
 
     private let callRecordStore: CallRecordStore
     private let groupCallRecordManager: GroupCallRecordManager
@@ -23,15 +26,11 @@ final class MessageBackupGroupCallArchiver: MessageBackupInteractionArchiver {
         self.interactionStore = interactionStore
     }
 
-    func archiveInteraction(
-        _ interaction: TSInteraction,
+    func archiveGroupCall(
+        _ groupCallInteraction: OWSGroupCallMessage,
         context: MessageBackup.ChatArchivingContext,
         tx: DBReadTransaction
-    ) -> MessageBackup.ArchiveInteractionResult<Details> {
-        guard let groupCallInteraction = interaction as? OWSGroupCallMessage else {
-            return .completeFailure(.fatalArchiveError(.developerError(OWSAssertionError("Invalid interaction type!"))))
-        }
-
+    ) -> ArchiveChatUpdateMessageResult {
         let associatedCallRecord: CallRecord? = callRecordStore.fetch(
             interactionRowId: groupCallInteraction.sqliteRowId!,
             tx: tx
@@ -110,40 +109,22 @@ final class MessageBackupGroupCallArchiver: MessageBackupInteractionArchiver {
         return .success(interactionArchiveDetails)
     }
 
-    func restoreChatItem(
-        _ chatItem: BackupProto.ChatItem,
+    func restoreGroupCall(
+        _ groupCall: BackupProto.GroupCall,
+        chatItem: BackupProto.ChatItem,
         chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         let groupThread: TSGroupThread
-        let groupCall: BackupProto.GroupCall
-        do {
-            switch chatThread {
-            case .groupV2(let _groupThread): groupThread = _groupThread
-            case .contact:
-                return .messageFailure([.restoreFrameError(
-                    .invalidProtoData(.groupCallNotInGroupThread),
-                    chatItem.id
-                )])
-            }
-
-            switch chatItem.item {
-            case .updateMessage(let updateMessage):
-                switch updateMessage.update {
-                case .groupCall(let _groupCall): groupCall = _groupCall
-                default:
-                    return .messageFailure([.restoreFrameError(
-                        .developerError(OWSAssertionError("Non-group call update!")),
-                        chatItem.id
-                    )])
-                }
-            default:
-                return .messageFailure([.restoreFrameError(
-                    .developerError(OWSAssertionError("Non-chat update!")),
-                    chatItem.id
-                )])
-            }
+        switch chatThread {
+        case .groupV2(let _groupThread):
+            groupThread = _groupThread
+        case .contact:
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.groupCallNotInGroupThread),
+                chatItem.id
+            )])
         }
 
         let startedCallAci: Aci?

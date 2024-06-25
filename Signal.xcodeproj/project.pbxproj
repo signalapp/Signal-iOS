@@ -1890,6 +1890,7 @@
 		D9E8EDED2C0EAFE700923E3C /* DeleteForMeOutgoingSyncMessageManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E8EDEC2C0EAFE700923E3C /* DeleteForMeOutgoingSyncMessageManagerTest.swift */; };
 		D9E8EDF12C0FCB3000923E3C /* DeleteForMeSyncMessageInfoSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E8EDF02C0FCB3000923E3C /* DeleteForMeSyncMessageInfoSheet.swift */; };
 		D9E8EDF32C0FD8C800923E3C /* DeleteForMeInfoSheetCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E8EDF22C0FD8C800923E3C /* DeleteForMeInfoSheetCoordinator.swift */; };
+		D9EA2A872C2B609800B367DF /* MessageBackupChatUpdateMessageArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EA2A862C2B609800B367DF /* MessageBackupChatUpdateMessageArchiver.swift */; };
 		D9EB221E2A4B636C00C73E1D /* Bitmaps+LineDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB22192A4B636B00C73E1D /* Bitmaps+LineDrawing.swift */; };
 		D9EB221F2A4B636C00C73E1D /* Bitmaps+Shapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221A2A4B636B00C73E1D /* Bitmaps+Shapes.swift */; };
 		D9EB22202A4B636C00C73E1D /* Bitmaps+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221B2A4B636B00C73E1D /* Bitmaps+Image.swift */; };
@@ -4856,6 +4857,7 @@
 		D9E8EDEC2C0EAFE700923E3C /* DeleteForMeOutgoingSyncMessageManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteForMeOutgoingSyncMessageManagerTest.swift; sourceTree = "<group>"; };
 		D9E8EDF02C0FCB3000923E3C /* DeleteForMeSyncMessageInfoSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteForMeSyncMessageInfoSheet.swift; sourceTree = "<group>"; };
 		D9E8EDF22C0FD8C800923E3C /* DeleteForMeInfoSheetCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeInfoSheetCoordinator.swift; sourceTree = "<group>"; };
+		D9EA2A862C2B609800B367DF /* MessageBackupChatUpdateMessageArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupChatUpdateMessageArchiver.swift; sourceTree = "<group>"; };
 		D9EB22192A4B636B00C73E1D /* Bitmaps+LineDrawing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bitmaps+LineDrawing.swift"; sourceTree = "<group>"; };
 		D9EB221A2A4B636B00C73E1D /* Bitmaps+Shapes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bitmaps+Shapes.swift"; sourceTree = "<group>"; };
 		D9EB221B2A4B636B00C73E1D /* Bitmaps+Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bitmaps+Image.swift"; sourceTree = "<group>"; };
@@ -7421,12 +7423,14 @@
 			path = ImageMetadata;
 			sourceTree = "<group>";
 		};
-		662590C82B599467001FDCDD /* InfoMessages */ = {
+		662590C82B599467001FDCDD /* ChatUpdateMessages */ = {
 			isa = PBXGroup;
 			children = (
+				D9C0AE702BDC6B4000FCB05E /* Calls */,
 				662590C92B599474001FDCDD /* GroupUpdates */,
+				D9EA2A862C2B609800B367DF /* MessageBackupChatUpdateMessageArchiver.swift */,
 			);
-			path = InfoMessages;
+			path = ChatUpdateMessages;
 			sourceTree = "<group>";
 		};
 		662590C92B599474001FDCDD /* GroupUpdates */ = {
@@ -8131,8 +8135,7 @@
 		66CD255D2B06886800139E17 /* ChatItem */ = {
 			isa = PBXGroup;
 			children = (
-				D9C0AE702BDC6B4000FCB05E /* Calls */,
-				662590C82B599467001FDCDD /* InfoMessages */,
+				662590C82B599467001FDCDD /* ChatUpdateMessages */,
 				66CD25672B06960F00139E17 /* MessageBackupChatItemArchiver.swift */,
 				66CD25882B0EA39200139E17 /* MessageBackupChatItemArchiverImpl.swift */,
 				662590CE2B59BE64001FDCDD /* MessageBackupChatItemArchiverType.swift */,
@@ -13953,6 +13956,7 @@
 				66CD25682B06960F00139E17 /* MessageBackupChatItemArchiver.swift in Sources */,
 				66CD25892B0EA39200139E17 /* MessageBackupChatItemArchiverImpl.swift in Sources */,
 				662590CF2B59BE64001FDCDD /* MessageBackupChatItemArchiverType.swift in Sources */,
+				D9EA2A872C2B609800B367DF /* MessageBackupChatUpdateMessageArchiver.swift in Sources */,
 				66CD25912B0EC20800139E17 /* MessageBackupConstants.swift in Sources */,
 				6619A1CB2B2D176E004B38FE /* MessageBackupContactAddress.swift in Sources */,
 				66CD256E2B06E14F00139E17 /* MessageBackupContactRecipientArchiver.swift in Sources */,
