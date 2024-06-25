@@ -231,10 +231,6 @@ public class OWSChatConnection: NSObject {
                                                name: .registrationStateDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(localNumberDidChange),
-                                               name: .localNumberDidChange,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
                                                selector: #selector(isCensorshipCircumventionActiveDidChange),
                                                name: .isCensorshipCircumventionActiveDidChange,
                                                object: nil)
@@ -517,13 +513,6 @@ public class OWSChatConnection: NSObject {
         AssertIsOnMainThread()
 
         applyDesiredSocketState()
-    }
-
-    @objc
-    private func localNumberDidChange(_ notification: NSNotification) {
-        AssertIsOnMainThread()
-
-        cycleSocket()
     }
 
     @objc
