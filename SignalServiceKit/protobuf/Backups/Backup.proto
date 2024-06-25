@@ -670,7 +670,7 @@ message BackupProto {
       PAYMENT_ACTIVATION_REQUEST = 11;
     }
 
-    optional Type type = 1;
+    Type type = 1;
   }
 
   message GroupDescriptionChatUpdate {

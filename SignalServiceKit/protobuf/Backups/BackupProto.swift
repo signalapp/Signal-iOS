@@ -792,12 +792,11 @@ extension BackupProto {
 
     public struct SimpleChatUpdate {
 
-        @ProtoDefaulted
-        public var type: BackupProto.SimpleChatUpdate.Type_?
+        public var type: BackupProto.SimpleChatUpdate.Type_
         public var unknownFields: UnknownFields = .init()
 
-        public init(configure: (inout Self) -> Swift.Void = { _ in }) {
-            configure(&self)
+        public init(type: BackupProto.SimpleChatUpdate.Type_) {
+            self.type = type
         }
 
     }
@@ -8670,13 +8669,6 @@ extension BackupProto.SimpleChatUpdate : Hashable {
 extension BackupProto.SimpleChatUpdate : Sendable {
 }
 
-extension BackupProto.SimpleChatUpdate : ProtoDefaultedValue {
-
-    public static var defaultedValue: BackupProto.SimpleChatUpdate {
-        BackupProto.SimpleChatUpdate()
-    }
-}
-
 extension BackupProto.SimpleChatUpdate : ProtoMessage {
 
     public static func protoMessageTypeURL() -> String {
@@ -8699,7 +8691,7 @@ extension BackupProto.SimpleChatUpdate : Proto3Codable {
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
-        self._type.wrappedValue = try BackupProto.SimpleChatUpdate.Type_.defaultIfMissing(type)
+        self.type = try BackupProto.SimpleChatUpdate.Type_.defaultIfMissing(type)
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
@@ -8714,13 +8706,16 @@ extension BackupProto.SimpleChatUpdate : Codable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self._type.wrappedValue = try container.decodeIfPresent(BackupProto.SimpleChatUpdate.Type_.self, forKey: "type")
+        self.type = try container.decode(BackupProto.SimpleChatUpdate.Type_.self, forKey: "type")
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        try container.encodeIfPresent(self.type, forKey: "type")
+        if includeDefaults || self.type.rawValue != 0 {
+            try container.encode(self.type, forKey: "type")
+        }
     }
 
 }
