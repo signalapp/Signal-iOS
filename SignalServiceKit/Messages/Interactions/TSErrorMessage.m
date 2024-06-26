@@ -209,30 +209,6 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
     return OWSLocalizedString(@"ERROR_MESSAGE_UNKNOWN_ERROR", @"");
 }
 
-+ (instancetype)invalidVersionWithEnvelope:(SSKProtoEnvelope *)envelope
-                           withTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    return [[TSErrorMessageBuilder errorMessageBuilderWithErrorType:TSErrorMessageInvalidVersion
-                                                           envelope:envelope
-                                                        transaction:transaction] build];
-}
-
-+ (instancetype)invalidKeyExceptionWithEnvelope:(SSKProtoEnvelope *)envelope
-                                withTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    return [[TSErrorMessageBuilder errorMessageBuilderWithErrorType:TSErrorMessageInvalidKeyException
-                                                           envelope:envelope
-                                                        transaction:transaction] build];
-}
-
-+ (instancetype)missingSessionWithEnvelope:(SSKProtoEnvelope *)envelope
-                           withTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    return [[TSErrorMessageBuilder errorMessageBuilderWithErrorType:TSErrorMessageNoSession
-                                                           envelope:envelope
-                                                        transaction:transaction] build];
-}
-
 + (instancetype)sessionRefreshWithSourceAci:(AciObjC *)sourceAci withTransaction:(SDSAnyWriteTransaction *)transaction
 {
     return [[TSErrorMessageBuilder errorMessageBuilderWithErrorType:TSErrorMessageSessionRefresh

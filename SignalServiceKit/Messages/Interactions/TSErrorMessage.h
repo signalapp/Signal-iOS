@@ -14,25 +14,38 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSErrorMessageBuilder;
 
 typedef NS_CLOSED_ENUM(int32_t, TSErrorMessageType) {
+    /// - Note This case is deprecated, but may be persisted in legacy messages.
     TSErrorMessageNoSession,
-    /// This case is deprecated, but persisted legacy messages could contain it
-    /// indefinitely.
+    /// - Note This case is deprecated, but may be persisted in legacy messages.
     TSErrorMessageWrongTrustedIdentityKey,
+    /// - Note This case is deprecated, but may be persisted in legacy messages.
     TSErrorMessageInvalidKeyException,
-    /// This case is deprecated, but persisted legacy messages could contain it
-    /// indefinitely.
+    /// - Note This case is deprecated, but may be persisted in legacy messages.
     TSErrorMessageMissingKeyId,
-    /// This case is deprecated, but persisted legacy messages could contain it
-    /// indefinitely.
+    /// - Note This case is deprecated, but may be persisted in legacy messages.
     TSErrorMessageInvalidMessage,
-    /// This case is deprecated, but persisted legacy messages could contain it
-    /// indefinitely.
+    /// - Note This case is deprecated, but may be persisted in legacy messages.
     TSErrorMessageDuplicateMessage,
+    /// - Note This case is deprecated, but may be persisted in legacy messages.
     TSErrorMessageInvalidVersion,
+    /// Represents a "safety number change"; i.e, we learned that another user's
+    /// identity key has changed.
     TSErrorMessageNonBlockingIdentityChange,
+    /// - Note This case is deprecated, but may be persisted in legacy messages.
     TSErrorMessageUnknownContactBlockOffer,
+    /// - Note This case is deprecated, but may be persisted in legacy messages.
     TSErrorMessageGroupCreationFailed,
+    /// Represents that we performed a legacy session-reset with another user
+    /// because a message from them failed to decrypt and the automatic retry
+    /// system is disabled.
+    /// - Important
+    /// The automatic "request resend of message that failed to decrypt" system
+    /// should mean that these are never used. However, since that system can
+    /// be disabled via remote config these messages remain relevant.
     TSErrorMessageSessionRefresh,
+    /// Represents a message that has permanently failed to decrypt. For
+    /// example, this may represent a message for which we requested a resend
+    /// but didn't receive one in time.
     TSErrorMessageDecryptionFailure,
 };
 
@@ -119,15 +132,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 // clang-format on
 
 // --- CODE GENERATION MARKER
-
-+ (instancetype)invalidVersionWithEnvelope:(SSKProtoEnvelope *)envelope
-                           withTransaction:(SDSAnyWriteTransaction *)transaction;
-
-+ (instancetype)invalidKeyExceptionWithEnvelope:(SSKProtoEnvelope *)envelope
-                                withTransaction:(SDSAnyWriteTransaction *)transaction;
-
-+ (instancetype)missingSessionWithEnvelope:(SSKProtoEnvelope *)envelope
-                           withTransaction:(SDSAnyWriteTransaction *)transaction;
 
 + (instancetype)sessionRefreshWithSourceAci:(AciObjC *)sourceAci withTransaction:(SDSAnyWriteTransaction *)transaction;
 

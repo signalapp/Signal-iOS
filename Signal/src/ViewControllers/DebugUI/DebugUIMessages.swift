@@ -1237,10 +1237,6 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 isLocalChange: false
             ),
 
-            TSErrorMessage.missingSession(with: createEnvelopeForThread(thread), with: transaction),
-            TSErrorMessage.invalidKeyException(with: createEnvelopeForThread(thread), with: transaction),
-            TSErrorMessage.invalidVersion(with: createEnvelopeForThread(thread), with: transaction),
-
             TSErrorMessage.nonblockingIdentityChange(in: thread, address: incomingSenderAddress, wasIdentityVerified: false),
             TSErrorMessage.nonblockingIdentityChange(in: thread, address: incomingSenderAddress, wasIdentityVerified: true)
         ]

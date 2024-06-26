@@ -21,7 +21,7 @@ class InteractionFinderTest: SSKBaseTest {
                                                                      address: address1,
                                                                      wasIdentityVerified: false)
         let errorMessage2 = TSErrorMessageBuilder(thread: contactThread1,
-                                                  errorType: .groupCreationFailed).build()
+                                                  errorType: .decryptionFailure).build()
         // Non-message interactions
         let missedCall = TSCall(callType: .incomingMissed,
                                 offerType: .audio,

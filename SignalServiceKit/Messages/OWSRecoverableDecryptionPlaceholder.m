@@ -180,21 +180,6 @@ NS_ASSUME_NONNULL_BEGIN
                      transaction:transaction];
 }
 
-#pragma mark - Testing
-
-#if TESTABLE_BUILD
-- (instancetype)initFakePlaceholderWithTimestamp:(uint64_t)timestamp
-                                          thread:(TSThread *)thread
-                                          sender:(SignalServiceAddress *)sender
-{
-    TSErrorMessageBuilder *builder =
-        [TSErrorMessageBuilder errorMessageBuilderWithThread:thread errorType:TSErrorMessageDecryptionFailure];
-    builder.timestamp = timestamp;
-    builder.senderAddress = sender;
-    return [self initErrorMessageWithBuilder:builder];
-}
-#endif
-
 @end
 
 NS_ASSUME_NONNULL_END
