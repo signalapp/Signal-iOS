@@ -13,6 +13,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     private let db: DB
     private let decrypter: Decrypter
     private let downloadQueue: DownloadQueue
+    private let downloadabilityChecker: DownloadabilityChecker
     private let progressStates: ProgressStates
     private let queueLoader: PersistedQueueLoader
 
@@ -56,19 +57,24 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             storyStore: storyStore,
             threadStore: threadStore
         )
+        self.downloadabilityChecker = DownloadabilityChecker(
+            attachmentStore: attachmentStore,
+            currentCallProvider: currentCallProvider,
+            db: db,
+            mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
+            profileManager: profileManager,
+            threadStore: threadStore
+        )
         self.queueLoader = PersistedQueueLoader(
             attachmentDownloadStore: attachmentDownloadStore,
             attachmentStore: attachmentStore,
             attachmentUpdater: attachmentUpdater,
-            currentCallProvider: currentCallProvider,
             dateProvider: dateProvider,
             db: db,
             decrypter: decrypter,
             downloadQueue: downloadQueue,
-            mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
-            profileManager: profileManager,
-            stickerManager: stickerManager,
-            threadStore: threadStore
+            downloadabilityChecker: downloadabilityChecker,
+            stickerManager: stickerManager
         )
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
@@ -113,29 +119,14 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             owsFailDebug("Downloading attachments for uninserted message!")
             return
         }
-        let references = attachmentStore
-            .fetchReferences(
+        let referencedAttachments = attachmentStore
+            .fetchReferencedAttachments(
                 owners: AttachmentReference.MessageOwnerTypeRaw.allCases.map {
                     $0.with(messageRowId: messageRowId)
                 },
                 tx: tx
             )
-        references.forEach { reference in
-            try? attachmentDownloadStore.enqueueDownloadOfAttachment(
-                withId: reference.attachmentRowId,
-                source: .transitTier,
-                priority: priority,
-                tx: tx
-            )
-        }
-        tx.addAsyncCompletion(on: SyncScheduler()) { [weak self] in
-            self?.db.asyncWrite { tx in
-                references.forEach { reference in
-                    self?.attachmentUpdater.touchOwner(reference.owner, tx: tx)
-                }
-            }
-            self?.beginDownloadingIfNecessary()
-        }
+        enqueueDownloadOfAttachments(referencedAttachments, priority: priority, tx: tx)
     }
 
     public func enqueueDownloadOfAttachmentsForStoryMessage(
@@ -147,29 +138,55 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             owsFailDebug("Downloading attachments for uninserted message!")
             return
         }
-        let references = attachmentStore
-            .fetchReferences(
+        let referencedAttachments = attachmentStore
+            .fetchReferencedAttachments(
                 owners: AttachmentReference.StoryMessageOwnerTypeRaw.allCases.map {
                     $0.with(storyMessageRowId: storyMessageRowId)
                 },
                 tx: tx
             )
-        references.forEach { reference in
-            try? attachmentDownloadStore.enqueueDownloadOfAttachment(
-                withId: reference.attachmentRowId,
-                source: .transitTier,
+        enqueueDownloadOfAttachments(referencedAttachments, priority: priority, tx: tx)
+    }
+
+    private func enqueueDownloadOfAttachments(
+        _ referencedAttachments: [ReferencedAttachment],
+        priority: AttachmentDownloadPriority,
+        tx: DBWriteTransaction
+    ) {
+        var didEnqueueAnyDownloads = false
+        referencedAttachments.forEach { referencedAttachment in
+            let downloadability = downloadabilityChecker.downloadability(
+                of: referencedAttachment.reference,
                 priority: priority,
+                mimeType: referencedAttachment.attachment.mimeType,
                 tx: tx
             )
-        }
-
-        tx.addAsyncCompletion(on: SyncScheduler()) { [weak self] in
-            self?.db.asyncWrite { tx in
-                references.forEach { reference in
-                    self?.attachmentUpdater.touchOwner(reference.owner, tx: tx)
-                }
+            switch downloadability {
+            case .downloadable:
+                didEnqueueAnyDownloads = true
+                try? attachmentDownloadStore.enqueueDownloadOfAttachment(
+                    withId: referencedAttachment.reference.attachmentRowId,
+                    source: .transitTier,
+                    priority: priority,
+                    tx: tx
+                )
+            case .blockedByActiveCall:
+                Logger.info("Skipping enqueue of download during active call")
+            case .blockedByPendingMessageRequest:
+                Logger.info("Skipping enqueue of download due to pending message request")
+            case .blockedByAutoDownloadSettings:
+                Logger.info("Skipping enqueue of download due to auto download settings")
             }
-            self?.beginDownloadingIfNecessary()
+        }
+        if didEnqueueAnyDownloads {
+            tx.addAsyncCompletion(on: SyncScheduler()) { [weak self] in
+                self?.db.asyncWrite { tx in
+                    referencedAttachments.forEach { referencedAttachment in
+                        self?.attachmentUpdater.touchOwner(referencedAttachment.reference.owner, tx: tx)
+                    }
+                }
+                self?.beginDownloadingIfNecessary()
+            }
         }
     }
 
@@ -219,42 +236,33 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         private let attachmentDownloadStore: AttachmentDownloadStore
         private let attachmentStore: AttachmentStore
         private let attachmentUpdater: AttachmentUpdater
-        private let currentCallProvider: CurrentCallProvider
         private let dateProvider: DateProvider
         private let db: DB
         private let decrypter: Decrypter
+        private let downloadabilityChecker: DownloadabilityChecker
         private let downloadQueue: DownloadQueue
-        private let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
-        private let profileManager: Shims.ProfileManager
         private let stickerManager: Shims.StickerManager
-        private let threadStore: ThreadStore
 
         init(
             attachmentDownloadStore: AttachmentDownloadStore,
             attachmentStore: AttachmentStore,
             attachmentUpdater: AttachmentUpdater,
-            currentCallProvider: CurrentCallProvider,
             dateProvider: @escaping DateProvider,
             db: DB,
             decrypter: Decrypter,
             downloadQueue: DownloadQueue,
-            mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
-            profileManager: Shims.ProfileManager,
-            stickerManager: Shims.StickerManager,
-            threadStore: ThreadStore
+            downloadabilityChecker: DownloadabilityChecker,
+            stickerManager: Shims.StickerManager
         ) {
             self.attachmentDownloadStore = attachmentDownloadStore
             self.attachmentStore = attachmentStore
             self.attachmentUpdater = attachmentUpdater
-            self.currentCallProvider = currentCallProvider
             self.dateProvider = dateProvider
             self.db = db
             self.decrypter = decrypter
             self.downloadQueue = downloadQueue
-            self.mediaBandwidthPreferenceStore = mediaBandwidthPreferenceStore
-            self.profileManager = profileManager
+            self.downloadabilityChecker = downloadabilityChecker
             self.stickerManager = stickerManager
-            self.threadStore = threadStore
         }
 
         private let maxConcurrentDownloads: UInt = 4
@@ -376,7 +384,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return
             }
 
-            switch self.downloadability(record, attachment: attachment) {
+            switch self.downloadabilityChecker.downloadability(record, attachment: attachment) {
             case .downloadable:
                 break
             case .blockedByActiveCall:
@@ -578,19 +586,47 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
             return true
         }
+    }
 
-        private enum Downloadability: Equatable {
+    // MARK: - Downloadability
+
+    private class DownloadabilityChecker {
+
+        private let attachmentStore: AttachmentStore
+        private let currentCallProvider: CurrentCallProvider
+        private let db: DB
+        private let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
+        private let profileManager: Shims.ProfileManager
+        private let threadStore: ThreadStore
+
+        init(
+            attachmentStore: AttachmentStore,
+            currentCallProvider: CurrentCallProvider,
+            db: DB,
+            mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
+            profileManager: Shims.ProfileManager,
+            threadStore: ThreadStore
+        ) {
+            self.attachmentStore = attachmentStore
+            self.currentCallProvider = currentCallProvider
+            self.db = db
+            self.mediaBandwidthPreferenceStore = mediaBandwidthPreferenceStore
+            self.profileManager = profileManager
+            self.threadStore = threadStore
+        }
+
+        enum Downloadability: Equatable {
             case downloadable
             case blockedByActiveCall
             case blockedByPendingMessageRequest
             case blockedByAutoDownloadSettings
         }
 
-        private nonisolated func downloadability(
+        func downloadability(
             _ record: QueuedAttachmentDownloadRecord,
             attachment: Attachment
         ) -> Downloadability {
-
+            // Check priority before opening a read.
             switch record.priority {
             case .userInitiated, .localClone:
                 // Always download at these priorities.
@@ -598,9 +634,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case .default:
                 break
             }
-
             return db.read { tx in
-
                 var downloadability: Downloadability?
 
                 try? self.attachmentStore.enumerateAllReferences(
@@ -611,43 +645,13 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     if downloadability == .downloadable {
                         return
                     }
-
-                    let blockedByCall = self.isDownloadBlockedByActiveCall(
-                        record,
-                        owner: reference.owner,
-                        tx: tx
-                    )
-                    if blockedByCall {
-                        downloadability = .blockedByActiveCall
-                        return
-                    }
-
-                    let blockedByAutoDownloadSettings = self.isDownloadBlockedByAutoDownloadSettings(
-                        record,
-                        owner: reference.owner,
-                        renderingFlag: reference.renderingFlag,
+                    downloadability = self.downloadability(
+                        of: reference,
+                        priority: record.priority,
                         mimeType: attachment.mimeType,
                         tx: tx
                     )
-                    if blockedByAutoDownloadSettings {
-                        downloadability = .blockedByAutoDownloadSettings
-                        return
-                    }
-
-                    let blockedByPendingMessageRequest = self.isDownloadBlockedByPendingMessageRequest(
-                        record,
-                        owner: reference.owner,
-                        tx: tx
-                    )
-                    if blockedByPendingMessageRequest {
-                        downloadability = .blockedByPendingMessageRequest
-                        return
-                    }
-
-                    // If we made it this far, its downloadable.
-                    downloadability = .downloadable
                 }
-
                 guard let downloadability else {
                     owsFailDebug("Downloading attachment with no references")
                     return .downloadable
@@ -656,12 +660,52 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             }
         }
 
-        private nonisolated func isDownloadBlockedByActiveCall(
-            _ record: QueuedAttachmentDownloadRecord,
+        func downloadability(
+            of reference: AttachmentReference,
+            priority: AttachmentDownloadPriority,
+            mimeType: String,
+            tx: DBReadTransaction
+        ) -> Downloadability {
+
+            let blockedByCall = self.isDownloadBlockedByActiveCall(
+                priority: priority,
+                owner: reference.owner,
+                tx: tx
+            )
+            if blockedByCall {
+                return .blockedByActiveCall
+            }
+
+            let blockedByAutoDownloadSettings = self.isDownloadBlockedByAutoDownloadSettings(
+                priority: priority,
+                owner: reference.owner,
+                renderingFlag: reference.renderingFlag,
+                mimeType: mimeType,
+                tx: tx
+            )
+            if blockedByAutoDownloadSettings {
+                return .blockedByAutoDownloadSettings
+            }
+
+            let blockedByPendingMessageRequest = self.isDownloadBlockedByPendingMessageRequest(
+                priority: priority,
+                owner: reference.owner,
+                tx: tx
+            )
+            if blockedByPendingMessageRequest {
+                return .blockedByPendingMessageRequest
+            }
+
+            // If we made it this far, its downloadable.
+            return .downloadable
+        }
+
+        private func isDownloadBlockedByActiveCall(
+            priority: AttachmentDownloadPriority,
             owner: AttachmentReference.Owner,
             tx: DBReadTransaction
         ) -> Bool {
-            switch record.priority {
+            switch priority {
             case .userInitiated, .localClone:
                 // Always download at these priorities.
                 return false
@@ -683,12 +727,12 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             return currentCallProvider.hasCurrentCall
         }
 
-        private nonisolated func isDownloadBlockedByPendingMessageRequest(
-            _ record: QueuedAttachmentDownloadRecord,
+        private func isDownloadBlockedByPendingMessageRequest(
+            priority: AttachmentDownloadPriority,
             owner: AttachmentReference.Owner,
             tx: DBReadTransaction
         ) -> Bool {
-            switch record.priority {
+            switch priority {
             case .userInitiated, .localClone:
                 // Always download at these priorities.
                 return false
@@ -730,14 +774,14 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             return threadStore.hasPendingMessageRequest(thread: thread, tx: tx)
         }
 
-        private nonisolated func isDownloadBlockedByAutoDownloadSettings(
-            _ record: QueuedAttachmentDownloadRecord,
+        private func isDownloadBlockedByAutoDownloadSettings(
+            priority: AttachmentDownloadPriority,
             owner: AttachmentReference.Owner,
             renderingFlag: AttachmentReference.RenderingFlag,
             mimeType: String,
             tx: DBReadTransaction
         ) -> Bool {
-            switch record.priority {
+            switch priority {
             case .userInitiated, .localClone:
                 // Always download at these priorities.
                 return false
