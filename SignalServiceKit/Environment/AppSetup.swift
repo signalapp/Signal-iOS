@@ -234,6 +234,9 @@ public class AppSetup {
             schedulers: schedulers
         )
 
+        let interactionStore = InteractionStoreImpl()
+        let storyStore = StoryStoreImpl()
+
         let audioWaveformManager = AudioWaveformManagerImpl()
         let orphanedAttachmentCleaner = OrphanedAttachmentCleanerImpl(db: databaseStorage)
         let attachmentContentValidator = AttachmentContentValidatorImpl(
@@ -254,12 +257,14 @@ public class AppSetup {
             currentCallProvider: currentCallProvider,
             dateProvider: dateProvider,
             db: db,
+            interactionStore: interactionStore,
             mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
             orphanedAttachmentStore: orphanedAttachmentStore,
             profileManager: AttachmentDownloadManagerImpl.Wrappers.ProfileManager(profileManager),
             signalService: signalService,
             stickerManager: AttachmentDownloadManagerImpl.Wrappers.StickerManager(),
+            storyStore: storyStore,
             threadStore: threadStore
         )
         let attachmentManager = AttachmentManagerImpl(
@@ -436,8 +441,6 @@ public class AppSetup {
             tsConstants: tsConstants,
             twoFAManager: SVR2.Wrappers.OWS2FAManager(ows2FAManager)
         )
-
-        let interactionStore = InteractionStoreImpl()
 
         let chatColorSettingStore = ChatColorSettingStore(keyValueStoreFactory: keyValueStoreFactory)
         let groupMemberStore = GroupMemberStoreImpl()
@@ -827,7 +830,6 @@ public class AppSetup {
 
         let messageBackupKeyMaterial = MessageBackupKeyMaterialImpl(svr: svr)
         let preferences = Preferences()
-        let storyStore = StoryStoreImpl()
         let subscriptionManager = testDependencies.subscriptionManager ?? SubscriptionManagerImpl()
         let systemStoryManager = testDependencies.systemStoryManager ?? SystemStoryManager()
         let typingIndicators = TypingIndicatorsImpl()

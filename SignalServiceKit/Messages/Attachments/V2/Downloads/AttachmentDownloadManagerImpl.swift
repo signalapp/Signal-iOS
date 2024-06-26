@@ -24,12 +24,14 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         currentCallProvider: CurrentCallProvider,
         dateProvider: @escaping DateProvider,
         db: DB,
+        interactionStore: InteractionStore,
         mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
         orphanedAttachmentStore: OrphanedAttachmentStore,
         profileManager: Shims.ProfileManager,
         signalService: OWSSignalServiceProtocol,
         stickerManager: Shims.StickerManager,
+        storyStore: StoryStore,
         threadStore: ThreadStore
     ) {
         self.attachmentDownloadStore = attachmentDownloadStore
@@ -48,8 +50,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             attachmentStore: attachmentStore,
             db: db,
             decrypter: decrypter,
+            interactionStore: interactionStore,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
-            orphanedAttachmentStore: orphanedAttachmentStore
+            orphanedAttachmentStore: orphanedAttachmentStore,
+            storyStore: storyStore,
+            threadStore: threadStore
         )
         self.queueLoader = PersistedQueueLoader(
             attachmentDownloadStore: attachmentDownloadStore,
@@ -108,23 +113,27 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             owsFailDebug("Downloading attachments for uninserted message!")
             return
         }
-        let attachmentIds = attachmentStore
+        let references = attachmentStore
             .fetchReferences(
                 owners: AttachmentReference.MessageOwnerTypeRaw.allCases.map {
                     $0.with(messageRowId: messageRowId)
                 },
                 tx: tx
             )
-            .map(\.attachmentRowId)
-        attachmentIds.forEach { attachmentId in
+        references.forEach { reference in
             try? attachmentDownloadStore.enqueueDownloadOfAttachment(
-                withId: attachmentId,
+                withId: reference.attachmentRowId,
                 source: .transitTier,
                 priority: priority,
                 tx: tx
             )
         }
         tx.addAsyncCompletion(on: SyncScheduler()) { [weak self] in
+            self?.db.asyncWrite { tx in
+                references.forEach { reference in
+                    self?.attachmentUpdater.touchOwner(reference.owner, tx: tx)
+                }
+            }
             self?.beginDownloadingIfNecessary()
         }
     }
@@ -138,23 +147,28 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             owsFailDebug("Downloading attachments for uninserted message!")
             return
         }
-        let attachmentIds = attachmentStore
+        let references = attachmentStore
             .fetchReferences(
                 owners: AttachmentReference.StoryMessageOwnerTypeRaw.allCases.map {
                     $0.with(storyMessageRowId: storyMessageRowId)
                 },
                 tx: tx
             )
-            .map(\.attachmentRowId)
-        attachmentIds.forEach { attachmentId in
+        references.forEach { reference in
             try? attachmentDownloadStore.enqueueDownloadOfAttachment(
-                withId: attachmentId,
+                withId: reference.attachmentRowId,
                 source: .transitTier,
                 priority: priority,
                 tx: tx
             )
         }
+
         tx.addAsyncCompletion(on: SyncScheduler()) { [weak self] in
+            self?.db.asyncWrite { tx in
+                references.forEach { reference in
+                    self?.attachmentUpdater.touchOwner(reference.owner, tx: tx)
+                }
+            }
             self?.beginDownloadingIfNecessary()
         }
     }
@@ -320,6 +334,16 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         timestamp: self.dateProvider().ows_millisecondsSince1970,
                         tx: tx
                     )
+
+                    tx.addAsyncCompletion(on: SyncScheduler()) { [weak self] in
+                        guard let self else { return }
+                        self.db.asyncWrite { tx in
+                            self.attachmentUpdater.touchAllOwners(
+                                attachmentId: record.attachmentId,
+                                tx: tx
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -1168,21 +1192,30 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         private let attachmentStore: AttachmentStore
         private let db: DB
         private let decrypter: Decrypter
+        private let interactionStore: InteractionStore
         private let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
         private let orphanedAttachmentStore: OrphanedAttachmentStore
+        private let storyStore: StoryStore
+        private let threadStore: ThreadStore
 
         public init(
             attachmentStore: AttachmentStore,
             db: DB,
             decrypter: Decrypter,
+            interactionStore: InteractionStore,
             orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
-            orphanedAttachmentStore: OrphanedAttachmentStore
+            orphanedAttachmentStore: OrphanedAttachmentStore,
+            storyStore: StoryStore,
+            threadStore: ThreadStore
         ) {
             self.attachmentStore = attachmentStore
             self.db = db
             self.decrypter = decrypter
+            self.interactionStore = interactionStore
             self.orphanedAttachmentCleaner = orphanedAttachmentCleaner
             self.orphanedAttachmentStore = orphanedAttachmentStore
+            self.storyStore = storyStore
+            self.threadStore = threadStore
         }
 
         func updateAttachmentAsDownloaded(
@@ -1225,6 +1258,14 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     guard let stream = self.attachmentStore.fetch(id: attachmentId, tx: tx)?.asStream() else {
                         throw OWSAssertionError("Not a stream")
                     }
+
+                    tx.addAsyncCompletion(on: SyncScheduler()) { [weak self] in
+                        guard let self else { return }
+                        self.db.asyncWrite { tx in
+                            self.touchAllOwners(attachmentId: attachmentId, tx: tx)
+                        }
+                    }
+
                     return stream
 
                 } catch let AttachmentInsertError.duplicatePlaintextHash(existingAttachmentId) {
@@ -1263,6 +1304,15 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     guard let stream = self.attachmentStore.fetch(id: existingAttachmentId, tx: tx)?.asStream() else {
                         throw OWSAssertionError("Not a stream")
                     }
+
+                    let attachmentId = stream.attachment.id
+                    tx.addAsyncCompletion(on: SyncScheduler()) { [weak self] in
+                        guard let self else { return }
+                        self.db.asyncWrite { tx in
+                            self.touchAllOwners(attachmentId: attachmentId, tx: tx)
+                        }
+                    }
+
                     return stream
                 } catch let error {
                     throw error
@@ -1364,7 +1414,49 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         for: thumbnailAttachmentId,
                         tx: tx
                     )
+
+                    // Its ok to point at the old owner here; its the same message id
+                    // or story message id etc, which is what we use for this.
+                    self.touchOwner(reference.owner, tx: tx)
                 }
+            }
+        }
+
+        func touchAllOwners(attachmentId: Attachment.IDType, tx: DBWriteTransaction) {
+            try? self.attachmentStore.enumerateAllReferences(
+                toAttachmentId: attachmentId,
+                tx: tx
+            ) { reference in
+                touchOwner(reference.owner, tx: tx)
+            }
+        }
+
+        func touchOwner(_ owner: AttachmentReference.Owner, tx: DBWriteTransaction) {
+            switch owner {
+            case .thread:
+                // TODO: perhaps a mechanism to update a thread once wallpaper is loaded?
+                break
+
+            case .message(let messageSource):
+                guard
+                    let interaction = interactionStore.fetchInteraction(
+                        rowId: messageSource.messageRowId,
+                        tx: tx
+                    )
+                else {
+                    break
+                }
+                db.touch(interaction, shouldReindex: false, tx: tx)
+            case .storyMessage(let storyMessageSource):
+                guard
+                    let storyMessage = storyStore.fetchStoryMessage(
+                        rowId: storyMessageSource.storyMsessageRowId,
+                        tx: tx
+                    )
+                else {
+                    break
+                }
+                db.touch(storyMessage, tx: tx)
             }
         }
     }
