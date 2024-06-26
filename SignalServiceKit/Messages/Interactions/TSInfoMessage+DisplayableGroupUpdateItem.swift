@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 /// Represents a specific update made to a group that can be presented to the
 /// user as part of a ``TSInfoMessage``.

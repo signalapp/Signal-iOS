@@ -5,6 +5,7 @@
 
 import UIKit
 import PureLayout
+import SignalServiceKit
 import SignalUI
 
 class SAELoadViewController: UIViewController {

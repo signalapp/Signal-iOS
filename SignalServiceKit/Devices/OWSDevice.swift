@@ -5,7 +5,6 @@
 
 import Foundation
 import GRDB
-import SignalCoreKit
 
 @available(swift, obsoleted: 1.0)
 @objcMembers

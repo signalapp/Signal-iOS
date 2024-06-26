@@ -4,7 +4,6 @@
 //
 
 import LibSignalClient
-import SignalCoreKit
 
 /// Represents an identifier for a conversation used in multiple sync messages
 /// related to calls.

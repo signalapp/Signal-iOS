@@ -5,7 +5,6 @@
 
 import Foundation
 import libPhoneNumber_iOS
-import SignalCoreKit
 
 public class PhoneNumberUtilSwiftValues {
     fileprivate let nbPhoneNumberUtil = NBPhoneNumberUtil()

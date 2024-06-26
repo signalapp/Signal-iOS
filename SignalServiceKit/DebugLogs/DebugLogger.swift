@@ -6,7 +6,6 @@
 import AudioToolbox
 import CocoaLumberjack
 import LibSignalClient
-import SignalCoreKit
 import SignalRingRTC
 
 private final class DebugLogFileManager: DDLogFileManagerDefault {

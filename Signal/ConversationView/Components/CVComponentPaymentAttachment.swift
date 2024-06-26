@@ -8,7 +8,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 import SignalServiceKit
 import SignalUI
 

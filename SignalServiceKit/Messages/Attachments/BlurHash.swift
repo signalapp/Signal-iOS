@@ -5,7 +5,6 @@
 
 import blurhash
 import Foundation
-import SignalCoreKit
 
 @objc
 public class BlurHash: NSObject {

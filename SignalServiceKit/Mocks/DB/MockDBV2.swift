@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 // TODO: [DBV2] Ideally, these would live in a test target.
 //

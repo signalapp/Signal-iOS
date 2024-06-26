@@ -75,9 +75,9 @@ extension CGDataProvider {
 
     // Class-bound wrapper around EncryptedFileHandle
     class EncryptedFileHandleWrapper {
-        let fileHandle: SignalCoreKit.EncryptedFileHandle
+        let fileHandle: SignalServiceKit.EncryptedFileHandle
 
-        init(_ fileHandle: SignalCoreKit.EncryptedFileHandle) {
+        init(_ fileHandle: SignalServiceKit.EncryptedFileHandle) {
             self.fileHandle = fileHandle
         }
     }

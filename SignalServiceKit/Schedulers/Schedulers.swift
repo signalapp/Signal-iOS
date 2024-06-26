@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 /// In production code, transparent wrapper around `DispatchQueue` static methods
 /// of the same name.

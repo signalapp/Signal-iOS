@@ -6,7 +6,6 @@
 import Accelerate
 import AVFoundation
 import Foundation
-import SignalCoreKit
 
 public protocol AudioWaveformSamplingObserver: AnyObject {
     func audioWaveformDidFinishSampling(_ audioWaveform: AudioWaveform)

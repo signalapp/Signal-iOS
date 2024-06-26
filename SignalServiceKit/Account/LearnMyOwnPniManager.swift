@@ -4,7 +4,6 @@
 //
 
 import LibSignalClient
-import SignalCoreKit
 
 /// It is possible that a user does not know their own PNI. However, in order to
 /// be PNP-compatible, a user's PNI and PNI identity key must be synced between

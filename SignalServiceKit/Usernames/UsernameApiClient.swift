@@ -4,7 +4,6 @@
 //
 
 import LibSignalClient
-import SignalCoreKit
 
 /// Manages usernames-related API calls.
 public protocol UsernameApiClient {

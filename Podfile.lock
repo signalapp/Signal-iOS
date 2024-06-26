@@ -30,10 +30,6 @@ PODS:
     - Logging (~> 1.4)
   - PureLayout (3.1.4)
   - Reachability (3.7.6)
-  - SignalCoreKit (1.0.0):
-    - CocoaLumberjack (~> 3.7.4)
-  - SignalCoreKit/Tests (1.0.0):
-    - CocoaLumberjack (~> 3.7.4)
   - SignalRingRTC (2.44.0):
     - SignalRingRTC/WebRTC (= 2.44.0)
   - SignalRingRTC/WebRTC (2.44.0)
@@ -67,8 +63,6 @@ DEPENDENCIES:
   - MobileCoin/CoreHTTP (from `https://github.com/mobilecoinofficial/MobileCoin-Swift`, tag `v6.0.0`)
   - PureLayout
   - Reachability
-  - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit`)
-  - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit`)
   - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.44.0`)
   - SQLCipher (from `https://github.com/signalapp/sqlcipher.git`, tag `v4.6.0-f_barrierfsync`)
   - SSZipArchive (from `ThirdParty/SSZipArchive.podspec`)
@@ -110,8 +104,6 @@ EXTERNAL SOURCES:
   MobileCoin:
     :git: https://github.com/mobilecoinofficial/MobileCoin-Swift
     :tag: v6.0.0
-  SignalCoreKit:
-    :git: https://github.com/signalapp/SignalCoreKit
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
     :tag: v2.44.0
@@ -143,9 +135,6 @@ CHECKOUT OPTIONS:
   MobileCoin:
     :git: https://github.com/mobilecoinofficial/MobileCoin-Swift
     :tag: v6.0.0
-  SignalCoreKit:
-    :commit: 52afaa82ef9a123ddf1fa219b71619fefa35c67e
-    :git: https://github.com/signalapp/SignalCoreKit
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
     :tag: v2.44.0
@@ -171,7 +160,6 @@ SPEC CHECKSUMS:
   MobileCoin: 3df783a5cc278a328635ea1f5c7124c5e924648d
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   Reachability: fd0ecd23705e2599e4cceeb943222ae02296cbc6
-  SignalCoreKit: 7658a72244fa81858df4618e92044b0db0dcf59e
   SignalRingRTC: 433014da641c83234d3119a207c584c2b406f20e
   SQLCipher: 30a8e81afa6128e600b17ffa77d0f92fa05ed208
   SSZipArchive: 8c3485528a87fa6f90afdbfc33682eb61d985ae5
@@ -179,6 +167,6 @@ SPEC CHECKSUMS:
   Wire: f5fe13fcad476bfd248f23a45a2004167c0ebae2
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: 84615243afbf899e8bcd7f41dabfb6a968d0d894
+PODFILE CHECKSUM: 48192bd39b7b2a468aee09ad8928c7dafb863df6
 
 COCOAPODS: 1.15.2

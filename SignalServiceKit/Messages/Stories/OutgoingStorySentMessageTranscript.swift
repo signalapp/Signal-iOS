@@ -5,7 +5,6 @@
 
 import Foundation
 import LibSignalClient
-import SignalCoreKit
 
 public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
     // Exposed to ObjC and made optional for MTLModel serialization

@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalCoreKit
-
 #if TESTABLE_BUILD
 
 /// A mock value standing in for a promise. Useful when mocking APIs that return

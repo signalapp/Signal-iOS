@@ -4,8 +4,8 @@
 //
 
 import SignalUI
-import SignalServiceKit
 import SignalRingRTC
+import SignalServiceKit
 
 // MARK: - CallCellDelegate
 

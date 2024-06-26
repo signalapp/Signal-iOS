@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 #if TESTABLE_BUILD
 

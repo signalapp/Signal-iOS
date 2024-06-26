@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 import SwiftProtobuf
 
 // WARNING: This code is generated. Only edit within the markers.

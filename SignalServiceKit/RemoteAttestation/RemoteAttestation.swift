@@ -5,7 +5,6 @@
 
 import Foundation
 import LibSignalClient
-import SignalCoreKit
 
 public enum RemoteAttestation {}
 

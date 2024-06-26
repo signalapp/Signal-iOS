@@ -33,17 +33,17 @@ public extension DebugLogger {
 
             switch level {
             case .trace:
-                SignalCoreKit.Logger.verbose(message, file: file, function: function, line: line)
+                SignalServiceKit.Logger.verbose(message, file: file, function: function, line: line)
             case .debug:
-                SignalCoreKit.Logger.debug(message, file: file, function: function, line: line)
+                SignalServiceKit.Logger.debug(message, file: file, function: function, line: line)
             case .info,
                  .notice:
-                SignalCoreKit.Logger.info(message, file: file, function: function, line: line)
+                SignalServiceKit.Logger.info(message, file: file, function: function, line: line)
             case .warning:
-                SignalCoreKit.Logger.warn(message, file: file, function: function, line: line)
+                SignalServiceKit.Logger.warn(message, file: file, function: function, line: line)
             case .error,
                  .critical:
-                SignalCoreKit.Logger.error(message, file: file, function: function, line: line)
+                SignalServiceKit.Logger.error(message, file: file, function: function, line: line)
             }
         }
 

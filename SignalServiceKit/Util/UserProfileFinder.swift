@@ -5,7 +5,6 @@
 
 import GRDB
 import LibSignalClient
-import SignalCoreKit
 
 @objc
 public class UserProfileFinder: NSObject {

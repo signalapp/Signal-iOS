@@ -4,7 +4,7 @@
 //
 
 import LibSignalClient
-import SignalCoreKit
+import SignalServiceKit
 
 struct SelfSignedIdentity {
     private static let temporaryIdentityKeychainIdentifier = "org.signal.temporaryIdentityKeychainIdentifier"

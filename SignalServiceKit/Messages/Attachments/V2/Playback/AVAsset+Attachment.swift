@@ -5,7 +5,6 @@
 
 import AVFoundation
 import Foundation
-import SignalCoreKit
 
 extension AVAsset {
 

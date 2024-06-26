@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 private let networkManagerQueue = DispatchQueue(
     label: "org.signal.network-manager",

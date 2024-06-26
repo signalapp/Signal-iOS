@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import SignalCoreKit
 import SignalRingRTC
+import SignalServiceKit
 
 struct CallLink {
     // MARK: -

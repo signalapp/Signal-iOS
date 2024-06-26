@@ -5,7 +5,6 @@
 
 import Foundation
 import MultipeerConnectivity
-import SignalCoreKit
 import SignalServiceKit
 
 extension DeviceTransferService: MCNearbyServiceBrowserDelegate {

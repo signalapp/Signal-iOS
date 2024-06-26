@@ -4,7 +4,6 @@
 //
 
 import LibSignalClient
-import SignalCoreKit
 
 extension DeleteForMeSyncMessage {
     public enum Outgoing {

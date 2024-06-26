@@ -4,7 +4,7 @@
 //
 
 import Lottie
-import SignalCoreKit
+import SignalServiceKit
 import SignalUI
 
 // MARK: - RegistrationPermissionsState

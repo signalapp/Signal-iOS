@@ -4,7 +4,7 @@
 //
 
 import PureLayout
-import SignalCoreKit
+import SignalServiceKit
 
 public class ToastController: NSObject, ToastViewDelegate {
 

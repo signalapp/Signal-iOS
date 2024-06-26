@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 @testable import SignalServiceKit
 import XCTest
 

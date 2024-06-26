@@ -4,7 +4,6 @@
 //
 
 import LibSignalClient
-import SignalCoreKit
 
 public class UsernameApiClientImpl: UsernameApiClient {
     private let networkManager: Shims.NetworkManager

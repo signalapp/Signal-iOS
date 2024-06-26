@@ -4,7 +4,6 @@
 //
 
 import GRDB
-import SignalCoreKit
 
 extension SDSCodableModelDatabaseInterfaceImpl {
     /// Fetch a persisted model with the given rowid if it exists.

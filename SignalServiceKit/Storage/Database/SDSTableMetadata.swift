@@ -5,7 +5,6 @@
 
 import Foundation
 import GRDB
-import SignalCoreKit
 
 // TODO: We need to revise this.
 @objc

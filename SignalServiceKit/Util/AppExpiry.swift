@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 // MARK: - AppExpiry protocol
 

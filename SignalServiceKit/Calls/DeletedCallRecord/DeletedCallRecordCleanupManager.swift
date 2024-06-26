@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalCoreKit
-
 /// Responsible for cleaning up expired ``DeletedCallRecord``s.
 ///
 /// ``DeletedCallRecord``s are only intended to exist on-disk for as long as is

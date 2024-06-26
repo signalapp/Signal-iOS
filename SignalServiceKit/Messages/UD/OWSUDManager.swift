@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 import LibSignalClient
 
 public enum OWSUDError: Error {

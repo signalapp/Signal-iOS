@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalCoreKit
-
 /// A cursor over the most recent "addressable messages", or those that were
 /// sent to or received from other users and can therefore be located across
 /// devices.

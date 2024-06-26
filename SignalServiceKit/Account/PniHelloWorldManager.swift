@@ -4,7 +4,6 @@
 //
 
 import LibSignalClient
-import SignalCoreKit
 
 public protocol PniHelloWorldManager {
     /// Perform a "PNI Hello World" operation, if necessary. PNI Hello World

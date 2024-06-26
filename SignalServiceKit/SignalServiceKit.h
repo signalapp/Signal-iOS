@@ -16,8 +16,10 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/BaseModel.h>
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/ContactsManagerProtocol.h>
+#import <SignalServiceKit/Cryptography.h>
 #import <SignalServiceKit/DarwinNotificationCenter.h>
 #import <SignalServiceKit/DataSource.h>
+#import <SignalServiceKit/DebuggerUtils.h>
 #import <SignalServiceKit/FunctionalUtil.h>
 #import <SignalServiceKit/IncomingGroupsV2MessageJob.h>
 #import <SignalServiceKit/InstalledSticker.h>
@@ -29,9 +31,14 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/LegacySendingChain.h>
 #import <SignalServiceKit/LegacySessionRecord.h>
 #import <SignalServiceKit/LegacySessionState.h>
+#import <SignalServiceKit/NSData+OWS.h>
+#import <SignalServiceKit/NSDate+OWS.h>
+#import <SignalServiceKit/NSObject+OWS.h>
+#import <SignalServiceKit/NSString+OWS.h>
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
 #import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
+#import <SignalServiceKit/OWSAsserts.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSBlockedPhoneNumbersMessage.h>
 #import <SignalServiceKit/OWSCensorshipConfiguration.h>
@@ -50,6 +57,7 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSIdentity.h>
 #import <SignalServiceKit/OWSIncomingPaymentMessage.h>
 #import <SignalServiceKit/OWSLinkedDeviceReadReceipt.h>
+#import <SignalServiceKit/OWSLogs.h>
 #import <SignalServiceKit/OWSMessageContentJob.h>
 #import <SignalServiceKit/OWSMessageHandler.h>
 #import <SignalServiceKit/OWSMultipart.h>
@@ -95,6 +103,8 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/PreKeyRecord.h>
 #import <SignalServiceKit/ProfileManagerProtocol.h>
 #import <SignalServiceKit/ProtoUtils.h>
+#import <SignalServiceKit/Randomness.h>
+#import <SignalServiceKit/SCKExceptionWrapper.h>
 #import <SignalServiceKit/SDSCrossProcess.h>
 #import <SignalServiceKit/SDSDatabaseStorage+Objc.h>
 #import <SignalServiceKit/SDSKeyValueStore+ObjC.h>
@@ -130,4 +140,9 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/TSUnreadIndicatorInteraction.h>
 #import <SignalServiceKit/TSYapDatabaseObject.h>
+#import <SignalServiceKit/Threading.h>
+#import <SignalServiceKit/UnfairLock.h>
 #import <SignalServiceKit/YDBStorage.h>
+
+#define OWSLocalizedString(key, comment)                                                                               \
+    [[NSBundle mainBundle].appBundle localizedStringForKey:(key) value:@"" table:nil]

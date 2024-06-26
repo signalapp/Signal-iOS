@@ -5,7 +5,6 @@
 
 import Foundation
 import LibSignalClient
-import SignalCoreKit
 
 internal class SVR2WebsocketConfigurator: SgxWebsocketConfigurator {
 

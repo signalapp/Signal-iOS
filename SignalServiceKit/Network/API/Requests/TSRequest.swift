@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 // TODO: Rework to _not_ extend NSMutableURLRequest.
 @objcMembers

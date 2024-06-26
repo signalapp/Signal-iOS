@@ -5,7 +5,6 @@
 
 import Foundation
 import Reachability
-import SignalCoreKit
 
 @objc(SSKReachabilityType)
 public enum ReachabilityType: Int {

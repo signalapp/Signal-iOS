@@ -7,7 +7,6 @@
 
 import Foundation
 import LibSignalClient
-import SignalCoreKit
 
 public class TSConstants {
 

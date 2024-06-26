@@ -5,7 +5,6 @@
 
 import Foundation
 import GRDB
-import SignalCoreKit
 
 // Sentinel protocol used to convey that a Codable type should be encoded/decoded to database storage
 // using Swift.Codable instead of NS(Secure)Coding.

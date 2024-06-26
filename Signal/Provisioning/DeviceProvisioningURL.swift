@@ -4,7 +4,7 @@
 //
 
 import LibSignalClient
-import SignalCoreKit
+import SignalServiceKit
 
 class DeviceProvisioningURL {
 

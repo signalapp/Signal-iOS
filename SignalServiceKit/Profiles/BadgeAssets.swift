@@ -6,7 +6,6 @@
 import CoreServices
 import Foundation
 import ImageIO
-import SignalCoreKit
 
 @objc
 public class BadgeAssets: NSObject {

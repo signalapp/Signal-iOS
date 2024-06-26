@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 public extension SDSAnyReadTransaction {
     /// Bridging from a SDS transaction to a DB transaction can be done at the seams;

@@ -6,8 +6,8 @@
 #import "OWSFakeProfileManager.h"
 #import "FunctionalUtil.h"
 #import "TSThread.h"
-#import <SignalCoreKit/Cryptography.h>
-#import <SignalCoreKit/NSData+OWS.h>
+#import <SignalServiceKit/Cryptography.h>
+#import <SignalServiceKit/NSData+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

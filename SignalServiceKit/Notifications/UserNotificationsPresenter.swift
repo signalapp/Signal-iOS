@@ -5,7 +5,6 @@
 
 import Foundation
 import Intents
-import SignalCoreKit
 import UserNotifications
 
 public class UserNotificationConfig {

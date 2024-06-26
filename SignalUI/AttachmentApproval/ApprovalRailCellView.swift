@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalCoreKit
+import SignalServiceKit
 
 protocol ApprovalRailCellViewDelegate: AnyObject {
     func approvalRailCellView(_ approvalRailCellView: ApprovalRailCellView,

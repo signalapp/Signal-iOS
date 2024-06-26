@@ -5,7 +5,6 @@
 
 import AVFoundation
 import Foundation
-import SignalCoreKit
 import YYImage
 
 /// When presenting a view-once message, we:

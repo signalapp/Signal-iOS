@@ -5,7 +5,6 @@
 
 import Foundation
 import LibSignalClient
-import SignalCoreKit
 
 class UserProfileMerger: RecipientMergeObserver {
     private let userProfileStore: UserProfileStore

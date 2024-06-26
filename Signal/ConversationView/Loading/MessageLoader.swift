@@ -5,7 +5,6 @@
 
 import Foundation
 import SignalServiceKit
-import SignalCoreKit
 
 private enum Constants {
     /// The maximum number of interactions to keep in memory. We start dropping

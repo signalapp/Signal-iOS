@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalCoreKit
-
 /// Represents an "inactive" linked device.
 /// - SeeAlso ``InactiveLinkedDeviceFinder``
 public struct InactiveLinkedDevice: Equatable {

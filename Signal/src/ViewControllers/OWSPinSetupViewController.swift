@@ -4,7 +4,6 @@
 //
 
 import SafariServices
-import SignalCoreKit
 import SignalServiceKit
 import SignalUI
 

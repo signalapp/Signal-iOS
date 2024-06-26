@@ -5,8 +5,8 @@
 
 import AVFoundation
 import LibSignalClient
-import SignalServiceKit
 import SignalRingRTC
+import SignalServiceKit
 import SignalUI
 import WebRTC
 

@@ -7,7 +7,6 @@ import AVFoundation
 import CoreMotion
 import CoreServices
 import Foundation
-import SignalCoreKit
 import SignalServiceKit
 import SignalUI
 import UIKit

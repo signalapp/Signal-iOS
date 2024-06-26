@@ -458,7 +458,6 @@ class FileContext(BaseContext):
 //
 
 import Foundation
-import SignalCoreKit
 import SwiftProtobuf"""
         )
 

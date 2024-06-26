@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 public protocol DBChangeDelegate: AnyObject {
     func dbChangesDidUpdateExternally()

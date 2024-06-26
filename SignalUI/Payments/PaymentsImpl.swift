@@ -6,7 +6,6 @@
 import Foundation
 import LibSignalClient
 import MobileCoin
-import SignalCoreKit
 import SignalServiceKit
 
 public class PaymentsImpl: NSObject, PaymentsSwift {

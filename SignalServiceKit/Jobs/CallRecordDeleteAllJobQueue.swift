@@ -4,7 +4,6 @@
 //
 
 import LibSignalClient
-import SignalCoreKit
 
 /// Manages durable jobs for deleting all ``CallRecord``s.
 ///

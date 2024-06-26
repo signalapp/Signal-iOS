@@ -5,7 +5,6 @@
 
 import CocoaLumberjack
 import Foundation
-import SignalCoreKit
 
 class ScrubbingLogFormatter: NSObject, DDLogFormatter {
     private struct Replacement {

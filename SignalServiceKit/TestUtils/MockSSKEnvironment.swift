@@ -5,7 +5,6 @@
 
 import Foundation
 import GRDB
-import SignalCoreKit
 
 #if TESTABLE_BUILD
 

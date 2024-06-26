@@ -4,7 +4,6 @@
 //
 
 import LibSignalClient
-import SignalCoreKit
 
 /// An ObjC wrapper around UnidentifiedSenderMessageContent.ContentHint
 @objc

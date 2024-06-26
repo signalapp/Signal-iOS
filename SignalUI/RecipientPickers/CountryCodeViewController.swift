@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import SignalCoreKit
+import SignalServiceKit
 
 public protocol CountryCodeViewControllerDelegate: AnyObject {
     func countryCodeViewController(_ vc: CountryCodeViewController,

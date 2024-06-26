@@ -5,7 +5,6 @@
 
 import Contacts
 import Foundation
-import SignalCoreKit
 
 public enum DisplayName {
     case nickname(ProfileName)

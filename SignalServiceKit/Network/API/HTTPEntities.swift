@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 // This file contains common interfaces for dealing with
 // HTTP request responses, failures and errors in a consistent

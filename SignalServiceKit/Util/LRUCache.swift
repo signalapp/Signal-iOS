@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 // An @objc wrapper around LRUCache.
 @objc

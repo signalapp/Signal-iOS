@@ -5,7 +5,6 @@
 
 import Foundation
 import PassKit
-import SignalCoreKit
 
 public class DonationUtilities: Dependencies {
     public static var sendGiftBadgeJobQueue: SendGiftBadgeJobQueue { smJobQueues.sendGiftBadgeJobQueue }

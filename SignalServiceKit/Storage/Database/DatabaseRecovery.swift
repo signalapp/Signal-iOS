@@ -5,7 +5,6 @@
 
 import Foundation
 import GRDB
-import SignalCoreKit
 
 public enum DatabaseRecoveryError: Error {
     case ranOutOfDiskSpace

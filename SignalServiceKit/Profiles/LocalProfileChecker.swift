@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 final class LocalProfileChecker {
     private let db: any DB

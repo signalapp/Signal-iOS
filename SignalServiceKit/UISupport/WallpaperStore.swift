@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 public class WallpaperStore {
     public static let wallpaperDidChangeNotification = NSNotification.Name("wallpaperDidChangeNotification")

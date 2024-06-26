@@ -5,7 +5,6 @@
 
 import Foundation
 import LibSignalClient
-import SignalCoreKit
 
 @objc
 public protocol TSPaymentBaseModel: AnyObject {

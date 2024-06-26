@@ -5,7 +5,6 @@
 
 import Foundation
 import GRDB
-import SignalCoreKit
 import SignalServiceKit
 
 final class AuthorMergeHelperBuilder {

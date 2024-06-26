@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 // We often want to enqueue work that should only be performed
 // once a certain milestone is reached. e.g. when the app

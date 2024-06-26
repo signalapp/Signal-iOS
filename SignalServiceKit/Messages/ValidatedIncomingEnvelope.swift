@@ -5,7 +5,6 @@
 
 import Foundation
 import LibSignalClient
-import SignalCoreKit
 
 /// Represents an incoming envelope that's been validated but not decrypted.
 ///

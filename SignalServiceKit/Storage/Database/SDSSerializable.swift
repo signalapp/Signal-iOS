@@ -5,7 +5,6 @@
 
 import Foundation
 import GRDB
-import SignalCoreKit
 
 func convertDateForGrdb(_ value: Date) -> Double {
     return value.timeIntervalSince1970

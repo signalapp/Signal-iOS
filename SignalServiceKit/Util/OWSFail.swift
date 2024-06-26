@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 /// Log an error message. Additionally, crashes in prerelease builds.
 @inlinable

@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 enum FeatureBuild: Int {
     case dev

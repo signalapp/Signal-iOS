@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 public protocol DeepCopyable {
     func deepCopy() throws -> AnyObject

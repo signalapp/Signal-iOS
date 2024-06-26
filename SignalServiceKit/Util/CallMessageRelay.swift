@@ -5,7 +5,6 @@
 
 import Foundation
 import LibSignalClient
-import SignalCoreKit
 
 public class CallMessagePushPayload: CustomStringConvertible {
     private static let identifierKey = "CallMessageRelayPayload"

@@ -4,7 +4,6 @@
 //
 
 import GRDB
-import SignalCoreKit
 
 public enum CallRecordQuerierFetchOrdering {
     case descending

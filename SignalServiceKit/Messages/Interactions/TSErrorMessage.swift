@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 // Every time we add a new property to TSErrorMessage, we should:
 //

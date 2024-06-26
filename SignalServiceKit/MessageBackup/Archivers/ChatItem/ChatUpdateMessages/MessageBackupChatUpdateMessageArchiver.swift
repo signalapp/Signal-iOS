@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalCoreKit
-
 final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArchiver {
     typealias ArchiveChatUpdateMessageResult = MessageBackup.ArchiveInteractionResult<Details>
     typealias RestoreChatUpdateMessageResult = MessageBackup.RestoreInteractionResult<Void>

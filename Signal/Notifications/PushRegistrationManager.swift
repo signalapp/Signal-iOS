@@ -5,7 +5,6 @@
 
 import Foundation
 import PushKit
-import SignalCoreKit
 import SignalServiceKit
 
 public enum PushRegistrationError: Error {

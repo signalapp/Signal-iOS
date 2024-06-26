@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 @objc
 open class OWSDevicesService: NSObject {

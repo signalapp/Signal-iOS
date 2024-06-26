@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 extension OWSDisappearingMessagesJob {
     /// Is the database corrupted? If so, we don't want to start the job.

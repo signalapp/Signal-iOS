@@ -10,9 +10,9 @@
 #import "OWSReceiptsForSenderMessage.h"
 #import "TSContactThread.h"
 #import "TSIncomingMessage.h"
-#import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalCoreKit/Threading.h>
+#import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/Threading.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

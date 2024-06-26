@@ -4,7 +4,6 @@
 //
 
 import LibSignalClient
-import SignalCoreKit
 
 public enum BackupValidationError: Error {
     case unknownFields([String])

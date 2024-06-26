@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 public enum EditSendValidationError: Error {
     case messageTypeNotSupported

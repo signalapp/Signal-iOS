@@ -4,7 +4,6 @@
 //
 
 import LibSignalClient
-import SignalCoreKit
 
 final class MessageBackupGroupCallArchiver {
     typealias ArchiveChatUpdateMessageResult = MessageBackupChatUpdateMessageArchiver.ArchiveChatUpdateMessageResult

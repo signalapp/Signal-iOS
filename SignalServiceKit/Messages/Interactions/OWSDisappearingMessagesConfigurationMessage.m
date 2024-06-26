@@ -5,7 +5,7 @@
 
 #import "OWSDisappearingMessagesConfigurationMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
-#import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

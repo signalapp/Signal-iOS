@@ -5,7 +5,6 @@
 
 import Foundation
 import Contacts
-import SignalCoreKit
 
 public enum ExperienceUpgradeManifest: Dependencies {
     /// Prompts the user to create a PIN, if they did not create one during

@@ -6,7 +6,6 @@
 import GRDB
 import Foundation
 import LibSignalClient
-import SignalCoreKit
 
 // MARK: -
 

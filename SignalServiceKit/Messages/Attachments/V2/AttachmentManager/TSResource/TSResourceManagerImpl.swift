@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 public class TSResourceManagerImpl: TSResourceManager {
 

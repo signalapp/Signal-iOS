@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalCoreKit
-
 /// Represents an interaction that may be associated with a ``CallRecord``.
 public protocol CallRecordAssociatedInteraction: TSInteraction {}
 

@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 public class FailedAttachmentDownloadsJob {
     public init() {}

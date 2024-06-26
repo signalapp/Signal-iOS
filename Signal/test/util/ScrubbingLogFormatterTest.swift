@@ -4,7 +4,6 @@
 //
 
 import CocoaLumberjack
-import SignalCoreKit
 import XCTest
 
 @testable import SignalServiceKit

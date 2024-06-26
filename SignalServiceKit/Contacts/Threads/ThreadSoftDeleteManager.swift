@@ -5,7 +5,6 @@
 
 import Intents
 import LibSignalClient
-import SignalCoreKit
 
 /// Responsible for "soft-deleting" threads, or removing their contents without
 /// removing the `TSThread` record itself. The app's architecture is to never\*

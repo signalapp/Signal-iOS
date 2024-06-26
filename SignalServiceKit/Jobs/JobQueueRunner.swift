@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 public enum JobAttemptResult {
     /// The Job has succeeded or reached a terminal error. A retryable error may

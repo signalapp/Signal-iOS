@@ -6,7 +6,6 @@
 import Foundation
 import GRDB
 import LibSignalClient
-import SignalCoreKit
 
 struct ReceiptForLinkedDevice: Codable {
     let senderAddress: SignalServiceAddress

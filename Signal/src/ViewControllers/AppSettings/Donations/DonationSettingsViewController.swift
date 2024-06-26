@@ -5,7 +5,6 @@
 
 import Foundation
 import SafariServices
-import SignalCoreKit
 import SignalServiceKit
 import SignalUI
 import UIKit

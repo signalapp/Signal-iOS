@@ -5,8 +5,8 @@
 
 import AVFoundation
 import Foundation
-import SignalServiceKit
 import SignalRingRTC
+import SignalServiceKit
 
 class CallMemberVideoView: UIView, CallMemberComposableView {
     private let type: CallMemberView.MemberType

@@ -4,7 +4,7 @@
 //
 
 import SignalUI
-import SignalCoreKit
+import SignalServiceKit
 
 protocol AvatarViewPresentationContextProvider: MediaPresentationContextProvider {
     var conversationAvatarView: ConversationAvatarView? { get }

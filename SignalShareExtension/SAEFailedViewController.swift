@@ -4,6 +4,7 @@
 //
 
 import PureLayout
+import SignalServiceKit
 import SignalUI
 
 // All Observer methods will be invoked from the main thread.

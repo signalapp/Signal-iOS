@@ -5,7 +5,6 @@
 
 import Foundation
 import LibSignalClient
-import SignalCoreKit
 import SwiftProtobuf
 
 /// Defines configuration for a websocket connection to an `SgxClient`-compliant server.

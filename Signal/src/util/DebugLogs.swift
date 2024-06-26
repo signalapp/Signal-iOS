@@ -6,7 +6,6 @@
 import Foundation
 import SSZipArchive
 import zlib
-import SignalCoreKit
 import SignalServiceKit
 import SignalUI
 

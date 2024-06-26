@@ -5,7 +5,6 @@
 
 import Foundation
 import os
-import SignalCoreKit
 
 @objc
 public class OutageDetection: NSObject {

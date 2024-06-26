@@ -4,7 +4,6 @@
 //
 
 import LibSignalClient
-import SignalCoreKit
 
 public protocol ThreadStore {
     /// Covers contact and group threads.

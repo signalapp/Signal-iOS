@@ -5,7 +5,6 @@
 
 import Foundation
 import GRDB
-import SignalCoreKit
 
 public struct SDSError: Error, CustomStringConvertible {
     private let descriptor: StaticString

@@ -6,7 +6,7 @@
 #import "DataSource.h"
 #import "OWSError.h"
 #import "OWSFileSystem.h"
-#import <SignalCoreKit/NSString+OWS.h>
+#import <SignalServiceKit/NSString+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

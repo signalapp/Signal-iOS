@@ -5,7 +5,6 @@
 
 import Foundation
 import GRDB
-import SignalCoreKit
 
 public protocol ThreadAssociatedDataStore {
     func fetch(for threadUniqueId: String, tx: DBReadTransaction) -> ThreadAssociatedData?

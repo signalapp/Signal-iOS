@@ -6,7 +6,6 @@
 import Foundation
 import GRDB
 import LibSignalClient
-import SignalCoreKit
 
 public class MessageProcessor: NSObject {
     public static let messageProcessorDidDrainQueue = Notification.Name("messageProcessorDidDrainQueue")

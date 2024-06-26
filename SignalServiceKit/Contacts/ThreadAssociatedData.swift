@@ -5,7 +5,6 @@
 
 import Foundation
 import GRDB
-import SignalCoreKit
 
 @objc
 public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, PersistableRecord {

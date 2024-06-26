@@ -6,7 +6,6 @@
 import Foundation
 import GRDB
 import LibSignalClient
-import SignalCoreKit
 
 /// We create SignalRecipient records for accounts we know about.
 ///

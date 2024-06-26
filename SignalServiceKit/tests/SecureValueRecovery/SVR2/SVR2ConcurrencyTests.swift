@@ -406,27 +406,27 @@ class SVR2ConcurrencyTests: XCTestCase {
             self.scheduler = AlwaysAsyncScheduler(queue)
         }
 
-        var sync: SignalCoreKit.Scheduler { SyncScheduler() }
+        var sync: SignalServiceKit.Scheduler { SyncScheduler() }
 
-        var main: SignalCoreKit.Scheduler { scheduler }
+        var main: SignalServiceKit.Scheduler { scheduler }
 
-        var sharedUserInteractive: SignalCoreKit.Scheduler { scheduler }
+        var sharedUserInteractive: SignalServiceKit.Scheduler { scheduler }
 
-        var sharedUserInitiated: SignalCoreKit.Scheduler { scheduler }
+        var sharedUserInitiated: SignalServiceKit.Scheduler { scheduler }
 
-        var sharedUtility: SignalCoreKit.Scheduler { scheduler }
+        var sharedUtility: SignalServiceKit.Scheduler { scheduler }
 
-        var sharedBackground: SignalCoreKit.Scheduler { scheduler }
+        var sharedBackground: SignalServiceKit.Scheduler { scheduler }
 
-        func sharedQueue(at qos: DispatchQoS) -> SignalCoreKit.Scheduler {
+        func sharedQueue(at qos: DispatchQoS) -> SignalServiceKit.Scheduler {
             return scheduler
         }
 
-        func global(qos: DispatchQoS.QoSClass) -> SignalCoreKit.Scheduler {
+        func global(qos: DispatchQoS.QoSClass) -> SignalServiceKit.Scheduler {
             return scheduler
         }
 
-        func queue(label: String, qos: DispatchQoS, attributes: DispatchQueue.Attributes, autoreleaseFrequency: DispatchQueue.AutoreleaseFrequency, target: DispatchQueue?) -> SignalCoreKit.Scheduler {
+        func queue(label: String, qos: DispatchQoS, attributes: DispatchQueue.Attributes, autoreleaseFrequency: DispatchQueue.AutoreleaseFrequency, target: DispatchQueue?) -> SignalServiceKit.Scheduler {
             return scheduler
         }
     }

@@ -5,7 +5,6 @@
 
 import Contacts
 import Foundation
-import SignalCoreKit
 
 public struct SystemContact {
     private enum Constants {

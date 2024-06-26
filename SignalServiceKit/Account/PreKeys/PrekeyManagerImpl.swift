@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 /// Boradly speaking, this class does not perform PreKey operations. It just manages scheduling
 /// them (they must occur in serial), including deciding which need to happen in the first place.

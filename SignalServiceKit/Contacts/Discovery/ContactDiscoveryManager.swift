@@ -5,7 +5,6 @@
 
 import Foundation
 import LibSignalClient
-import SignalCoreKit
 
 /// A ContactDiscoveryManager coordinates CDS lookup requests.
 ///

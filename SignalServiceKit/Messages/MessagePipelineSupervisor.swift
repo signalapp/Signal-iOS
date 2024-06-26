@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 @objc(OWSMessagePipelineSupervisor)
 public class MessagePipelineSupervisor: NSObject {

@@ -4,7 +4,6 @@
 //
 
 import LibSignalClient
-import SignalCoreKit
 
 public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelper {
 

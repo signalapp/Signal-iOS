@@ -6,7 +6,6 @@
 import AVFoundation
 import Foundation
 import MobileCoreServices
-import SignalCoreKit
 import YYImage
 
 public enum SignalAttachmentError: Error {

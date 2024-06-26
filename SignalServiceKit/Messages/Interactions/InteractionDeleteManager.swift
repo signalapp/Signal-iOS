@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalCoreKit
-
 public enum InteractionDelete {
     /// Specifies the desired side effects of deleting interactions.
     public struct SideEffects {

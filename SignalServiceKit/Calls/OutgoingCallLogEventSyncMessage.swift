@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalCoreKit
-
 /// Represents a sync message an event related to the Calls Tab (also known on
 /// other platforms as the "call log").
 ///

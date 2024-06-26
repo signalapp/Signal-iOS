@@ -4,7 +4,6 @@
 //
 
 import SignalUI
-import SignalCoreKit
 import SignalServiceKit
 
 protocol NewCallViewControllerDelegate: AnyObject {

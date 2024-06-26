@@ -5,7 +5,6 @@
 
 import Foundation
 import LibSignalClient
-import SignalCoreKit
 
 /// The primary interface for discovering contacts through the CDS service.
 protocol ContactDiscoveryTaskQueue {

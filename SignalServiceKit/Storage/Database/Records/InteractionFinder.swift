@@ -5,7 +5,6 @@
 
 import GRDB
 import LibSignalClient
-import SignalCoreKit
 
 public enum EditMessageQueryMode {
     case includeAllEdits

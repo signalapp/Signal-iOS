@@ -5,7 +5,6 @@
 
 import Foundation
 import LocalAuthentication
-import SignalCoreKit
 
 public class ScreenLock: NSObject {
 

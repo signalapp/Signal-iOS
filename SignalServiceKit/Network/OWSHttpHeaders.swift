@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 // This class can be used to build "outgoing" headers for requests
 // or to parse "incoming" headers for responses.

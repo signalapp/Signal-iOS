@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 /// Temporary bridge between [legacy code that uses global accessors for manager instances]
 /// and [new code that expects references to instances to be explicitly passed around].

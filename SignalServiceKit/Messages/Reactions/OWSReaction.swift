@@ -6,7 +6,6 @@
 import Foundation
 import GRDB
 import LibSignalClient
-import SignalCoreKit
 
 @objc(OWSReaction) // Named explicitly to preserve NSKeyedUnarchiving compatability
 public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCoding {

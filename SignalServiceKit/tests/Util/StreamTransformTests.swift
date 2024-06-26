@@ -5,7 +5,6 @@
 
 import XCTest
 @testable import SignalServiceKit
-import SignalCoreKit
 
 final class ChunkedStreamTransformTests: XCTestCase {
 

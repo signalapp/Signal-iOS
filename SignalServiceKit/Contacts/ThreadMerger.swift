@@ -5,7 +5,6 @@
 
 import Foundation
 import LibSignalClient
-import SignalCoreKit
 
 final class ThreadMerger {
     private let callRecordStore: CallRecordStore

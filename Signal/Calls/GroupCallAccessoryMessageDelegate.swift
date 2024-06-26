@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import SignalServiceKit
 import SignalRingRTC
+import SignalServiceKit
 
 /// A delegate for managing "accessory" messages in response to change in group
 /// call state on the local device.

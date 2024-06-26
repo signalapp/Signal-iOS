@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalCoreKit
-
 /// Represents an error encountered while making a receipt credential request.
 ///
 /// These are persisted in the ``SubscriptionReceiptCredentialRequestResultStore``

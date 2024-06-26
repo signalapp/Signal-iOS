@@ -4,7 +4,6 @@
 //
 
 import LibSignalClient
-import SignalCoreKit
 import SignalServiceKit
 import SignalUI
 

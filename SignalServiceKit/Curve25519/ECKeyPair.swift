@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 import LibSignalClient
 
 @objc(ECKeyPair)

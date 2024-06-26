@@ -8,8 +8,8 @@
 #import "OWSFileSystem.h"
 #import "TSAttachmentPointer.h"
 #import <AVFoundation/AVFoundation.h>
-#import <SignalCoreKit/Threading.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/Threading.h>
 #import <YYImage/YYImage.h>
 
 NS_ASSUME_NONNULL_BEGIN

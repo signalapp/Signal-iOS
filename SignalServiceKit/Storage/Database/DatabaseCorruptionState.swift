@@ -5,7 +5,6 @@
 
 import Foundation
 import GRDB
-import SignalCoreKit
 
 public final class DatabaseCorruptionState: Codable, Equatable, CustomStringConvertible {
     public enum DatabaseCorruptionStatus: Int, Codable, CustomStringConvertible {

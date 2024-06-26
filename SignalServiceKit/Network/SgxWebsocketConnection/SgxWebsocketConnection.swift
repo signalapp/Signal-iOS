@@ -5,7 +5,6 @@
 
 import Foundation
 import LibSignalClient
-import SignalCoreKit
 import SwiftProtobuf
 
 /// Exposes a SgxClient-conformant server communication channel.

@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalCoreKit
-
 protocol DeleteForMeAddressableMessageFinder {
     func findLocalMessage(
         threadUniqueId: String,

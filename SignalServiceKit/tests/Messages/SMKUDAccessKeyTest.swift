@@ -5,7 +5,6 @@
 
 import XCTest
 import SignalServiceKit
-import SignalCoreKit
 
 class SMKUDAccessKeyTest: XCTestCase {
     func testUDAccessKeyForProfileKey() {

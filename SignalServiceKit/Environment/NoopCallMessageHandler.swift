@@ -4,7 +4,6 @@
 //
 
 import LibSignalClient
-import SignalCoreKit
 
 public class NoopCallMessageHandler: CallMessageHandler {
     public init() {}

@@ -5,7 +5,6 @@
 
 import Photos
 import PureLayout
-import SignalCoreKit
 import SignalServiceKit
 import SignalUI
 

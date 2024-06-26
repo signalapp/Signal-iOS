@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalCoreKit
+import SignalServiceKit
 
 /// Represents a type that contains one or more identifiers, which may refer to
 /// itself or any other type.

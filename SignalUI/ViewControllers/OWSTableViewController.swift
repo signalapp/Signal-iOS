@@ -4,7 +4,7 @@
 //
 
 import PureLayout
-import SignalCoreKit
+import SignalServiceKit
 
 public protocol OWSTableViewControllerDelegate: AnyObject {
     func tableViewWillBeginDragging(_ tableView: UITableView)

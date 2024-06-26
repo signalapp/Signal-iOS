@@ -5,7 +5,6 @@
 
 import Foundation
 import LibSignalClient
-import SignalCoreKit
 
 // Every time we add a new property to TSOutgoingMessage, we should:
 //

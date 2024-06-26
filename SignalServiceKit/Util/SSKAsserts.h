@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import <SignalCoreKit/NSObject+OWS.h>
-#import <SignalCoreKit/OWSAsserts.h>
+#import <SignalServiceKit/NSObject+OWS.h>
+#import <SignalServiceKit/OWSAsserts.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

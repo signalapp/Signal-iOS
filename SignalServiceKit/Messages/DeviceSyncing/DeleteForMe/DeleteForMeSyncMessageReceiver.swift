@@ -4,7 +4,6 @@
 //
 
 import LibSignalClient
-import SignalCoreKit
 
 protocol DeleteForMeSyncMessageReceiver {
     func handleDeleteForMeProto(

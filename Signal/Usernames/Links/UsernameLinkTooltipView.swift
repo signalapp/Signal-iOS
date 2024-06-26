@@ -4,7 +4,6 @@
 //
 
 import SignalServiceKit
-import SignalCoreKit
 import SignalUI
 
 class UsernameLinkTooltipView: TooltipView {

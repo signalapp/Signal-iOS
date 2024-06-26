@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 public protocol ProvisioningSocketDelegate: AnyObject {
     func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didReceiveDeviceId deviceID: String)

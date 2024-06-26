@@ -4,11 +4,11 @@
 //
 
 #import "OWSProfileManager.h"
-#import <SignalCoreKit/Cryptography.h>
-#import <SignalCoreKit/NSData+OWS.h>
-#import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalServiceKit/AppReadiness.h>
+#import <SignalServiceKit/Cryptography.h>
+#import <SignalServiceKit/NSData+OWS.h>
+#import <SignalServiceKit/NSDate+OWS.h>
+#import <SignalServiceKit/NSString+OWS.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSProfileKeyMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>

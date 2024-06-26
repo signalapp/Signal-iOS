@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 // This token can be used to observe the completion of a given fetch cycle.
 public struct MessageFetchCycle: Hashable, Equatable {

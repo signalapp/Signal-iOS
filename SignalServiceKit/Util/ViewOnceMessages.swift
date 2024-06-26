@@ -5,7 +5,6 @@
 
 import Foundation
 import LibSignalClient
-import SignalCoreKit
 
 @objc
 public class ViewOnceMessages: NSObject {

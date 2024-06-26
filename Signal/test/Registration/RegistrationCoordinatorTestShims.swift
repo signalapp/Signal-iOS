@@ -5,7 +5,6 @@
 
 import Foundation
 import LibSignalClient
-import SignalCoreKit
 @testable import SignalServiceKit
 @testable import Signal
 

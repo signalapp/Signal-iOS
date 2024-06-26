@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 private struct IncomingGroupsV2MessageJobInfo {
     let job: IncomingGroupsV2MessageJob

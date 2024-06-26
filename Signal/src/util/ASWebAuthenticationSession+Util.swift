@@ -4,7 +4,7 @@
 //
 
 import AuthenticationServices
-import SignalCoreKit
+import SignalServiceKit
 
 extension ASWebAuthenticationSession {
     /// Convert an ``ASWebAuthenticationSession`` completion's arguments into a single ``Result``.

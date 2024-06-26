@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalCoreKit
-
 public extension Usernames {
     /// Represents a Signal Dot Me link allowing access to a user's username.
     ///

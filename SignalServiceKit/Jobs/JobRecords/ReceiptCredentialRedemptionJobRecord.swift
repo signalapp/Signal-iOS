@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalCoreKit
-
 public final class ReceiptCredentialRedemptionJobRecord: JobRecord, FactoryInitializableFromRecordType {
     override class var jobRecordType: JobRecordType { .receiptCredentialRedemption }
 

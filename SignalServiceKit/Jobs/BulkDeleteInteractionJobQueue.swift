@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalCoreKit
-
 public final class BulkDeleteInteractionJobQueue {
     private let jobRunnerFactory: BulkDeleteInteractionJobRunnerFactory
     private let jobQueueRunner: JobQueueRunner<

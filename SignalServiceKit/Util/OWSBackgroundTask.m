@@ -4,8 +4,8 @@
 //
 
 #import "OWSBackgroundTask.h"
-#import <SignalCoreKit/Threading.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/Threading.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

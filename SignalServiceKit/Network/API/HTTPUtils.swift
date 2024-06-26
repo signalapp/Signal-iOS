@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 import CFNetwork
 
 /// This extension sacrifices Dictionary performance in order to ignore http

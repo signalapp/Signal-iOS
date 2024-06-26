@@ -5,6 +5,7 @@
 
 import UIKit
 import Foundation
+import SignalServiceKit
 import SignalUI
 
 class SharingThreadPickerViewController: ConversationPickerViewController {

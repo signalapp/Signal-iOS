@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalCoreKit
-
 /// Used by ``PreKeyManagerImpl`` to actually execute prekey tasks.
 /// Stateless! All state exists within each task function. The only instance vars are dependencies.
 ///

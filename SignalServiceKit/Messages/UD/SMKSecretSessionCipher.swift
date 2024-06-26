@@ -5,7 +5,6 @@
 
 import Foundation
 import LibSignalClient
-import SignalCoreKit
 
 public struct SecretSessionKnownSenderError: Error {
     public let senderAci: Aci

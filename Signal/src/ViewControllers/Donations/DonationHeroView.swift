@@ -4,7 +4,7 @@
 //
 
 import BonMot
-import SignalCoreKit
+import SignalServiceKit
 import SignalUI
 
 protocol DonationHeroViewDelegate: AnyObject {

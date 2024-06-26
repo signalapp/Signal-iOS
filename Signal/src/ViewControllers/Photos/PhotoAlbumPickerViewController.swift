@@ -4,7 +4,7 @@
 //
 
 import Photos
-import SignalCoreKit
+import SignalServiceKit
 import SignalUI
 
 protocol PhotoAlbumPickerDelegate: AnyObject {

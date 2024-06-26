@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalCoreKit
-
 public protocol LinkedDevicePniKeyManager {
     /// Records that we encountered an issue we suspect is due to a problem with
     /// our PNI identity key.

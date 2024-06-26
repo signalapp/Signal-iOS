@@ -4,7 +4,6 @@
 //
 
 import GRDB
-import SignalCoreKit
 
 public class ThreadFinder: Dependencies {
     public init() {}

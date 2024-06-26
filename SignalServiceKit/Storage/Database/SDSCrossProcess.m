@@ -5,7 +5,7 @@
 
 #import "SDSCrossProcess.h"
 #import "DarwinNotificationCenter.h"
-#import <SignalCoreKit/OWSAsserts.h>
+#import <SignalServiceKit/OWSAsserts.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

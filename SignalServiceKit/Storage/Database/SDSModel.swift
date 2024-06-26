@@ -5,7 +5,6 @@
 
 import Foundation
 import GRDB
-import SignalCoreKit
 
 public protocol SDSModel: TSYapDatabaseObject, SDSIdentifiableModel {
     var sdsTableName: String { get }

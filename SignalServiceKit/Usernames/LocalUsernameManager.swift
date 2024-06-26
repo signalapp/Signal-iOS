@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalCoreKit
-
 /// Manages the local username and username link.
 public protocol LocalUsernameManager {
 

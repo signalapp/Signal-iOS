@@ -5,7 +5,6 @@
 
 import Foundation
 import PassKit
-import SignalCoreKit
 import SignalServiceKit
 import SignalUI
 

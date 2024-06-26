@@ -5,7 +5,6 @@
 
 import GRDB
 import LibSignalClient
-import SignalCoreKit
 
 /// Represents the result of a ``CallRecordStore`` fetch where a record having
 /// been deleted is distinguishable from it never having been created.

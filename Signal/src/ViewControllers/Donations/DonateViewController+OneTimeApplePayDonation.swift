@@ -5,9 +5,8 @@
 
 import Foundation
 import PassKit
-import SignalCoreKit
-import SignalUI
 import SignalServiceKit
+import SignalUI
 
 extension DonateViewController {
     /// Handle Apple Pay authorization for a one-time payment.

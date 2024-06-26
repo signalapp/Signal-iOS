@@ -5,7 +5,6 @@
 
 import Foundation
 import GRDB
-import SignalCoreKit
 
 /// A bucket for SQLite utilities.
 public enum SqliteUtil {

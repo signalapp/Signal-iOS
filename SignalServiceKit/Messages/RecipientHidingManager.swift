@@ -6,7 +6,6 @@
 import Foundation
 import Intents
 import GRDB
-import SignalCoreKit
 
 // Recipient hiding (also called "contact hiding," "contact management," or
 // "contact removal/deletion" by Product) is a feature that allows users to

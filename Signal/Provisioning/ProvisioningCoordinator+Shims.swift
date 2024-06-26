@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 import SignalServiceKit
 
 extension ProvisioningCoordinatorImpl {

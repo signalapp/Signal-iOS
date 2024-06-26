@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 public struct MessageStickerDataSource {
     public let info: StickerInfo

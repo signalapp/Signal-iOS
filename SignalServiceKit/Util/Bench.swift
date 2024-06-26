@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 /// Benchmark time for async code by calling the passed in block parameter when the work
 /// is done.

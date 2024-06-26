@@ -4,7 +4,6 @@
 //
 
 import LibSignalClient
-import SignalCoreKit
 
 public enum PniDistribution {
     enum ParameterGenerationResult {

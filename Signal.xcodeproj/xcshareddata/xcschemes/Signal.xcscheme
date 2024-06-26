@@ -55,13 +55,6 @@
          </BuildableReference>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "565B5AF44894619B799AA0D7B08B8331"
-            BuildableName = "SignalCoreKit.framework"
-            BlueprintName = "SignalCoreKit"
-            ReferencedContainer = "container:Pods/Pods.xcodeproj">
-         </BuildableReference>
-         <BuildableReference
-            BuildableIdentifier = "primary"
             BlueprintIdentifier = "F9C5C896289451B900548EEE"
             BuildableName = "SignalServiceKit.framework"
             BlueprintName = "SignalServiceKit"

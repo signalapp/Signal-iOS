@@ -12,9 +12,9 @@
 #import "TSInteraction.h"
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
 #import "TSOutgoingMessage.h"
-#import <SignalCoreKit/Cryptography.h>
-#import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalCoreKit/NSString+OWS.h>
+#import <SignalServiceKit/Cryptography.h>
+#import <SignalServiceKit/NSDate+OWS.h>
+#import <SignalServiceKit/NSString+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 @import Intents;

@@ -4,7 +4,6 @@
 //
 
 import GRDB
-import SignalCoreKit
 
 protocol DeletedCallRecordStore {
     /// Fetches a deleted call record with the given identifying properties, if

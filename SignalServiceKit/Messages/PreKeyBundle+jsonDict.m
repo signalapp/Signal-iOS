@@ -4,7 +4,7 @@
 //
 
 #import "PreKeyBundle+jsonDict.h"
-#import <SignalCoreKit/NSData+OWS.h>
+#import <SignalServiceKit/NSData+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

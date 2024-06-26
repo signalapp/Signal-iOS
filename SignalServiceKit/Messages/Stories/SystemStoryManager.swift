@@ -5,7 +5,6 @@
 
 import Foundation
 import GRDB
-import SignalCoreKit
 
 // TODO: Support stubbing out OWSFileSystem more generally. This is a temporary
 // SystemStoryManager-scoped wrapper to avoid refactoring all usages of OWSFileSystem.

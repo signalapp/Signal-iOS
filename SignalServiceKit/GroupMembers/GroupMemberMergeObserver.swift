@@ -5,7 +5,6 @@
 
 import Foundation
 import LibSignalClient
-import SignalCoreKit
 
 class GroupMemberMergeObserverImpl: RecipientMergeObserver {
     private let threadStore: ThreadStore

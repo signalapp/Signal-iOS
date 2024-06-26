@@ -6,7 +6,6 @@
 import Foundation
 import LibSignalClient
 import MessageUI
-import SignalCoreKit
 import SignalServiceKit
 import SignalUI
 

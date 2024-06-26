@@ -6,7 +6,6 @@
 import Foundation
 import Intents
 import LibSignalClient
-import SignalCoreKit
 
 /// There are two primary components in our system notification integration:
 ///

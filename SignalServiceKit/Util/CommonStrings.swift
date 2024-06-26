@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 /**
  * Strings re-used in multiple places should be added here.

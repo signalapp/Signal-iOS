@@ -5,7 +5,6 @@
 
 import AVFoundation
 import MediaPlayer
-import SignalCoreKit
 import SignalServiceKit
 
 public enum AudioBehavior {

@@ -4,7 +4,6 @@
 //
 
 import XCTest
-import SignalCoreKit
 import SignalServiceKit
 import SignalUI
 

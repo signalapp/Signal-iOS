@@ -5,7 +5,6 @@
 
 import Foundation
 import GRDB
-import SignalCoreKit
 
 public protocol DatabaseChangeDelegate: AnyObject {
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges)

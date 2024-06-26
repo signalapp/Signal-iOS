@@ -377,7 +377,6 @@ extension EmojiGenerator {
         ]
 
         writeBlock(fileName: "Emoji+Category.swift") { fileHandle in
-            fileHandle.writeLine("import SignalCoreKit")
             fileHandle.writeLine("")
 
             fileHandle.writeLine("extension Emoji {")

@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalCoreKit
-
 /// Represents a call event that occurred on this device that we want to
 /// communicate to our linked devices.
 @objc(OutgoingCallEvent)

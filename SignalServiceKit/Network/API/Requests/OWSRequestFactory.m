@@ -7,8 +7,8 @@
 #import "OWS2FAManager.h"
 #import "ProfileManagerProtocol.h"
 #import "SignedPrekeyRecord.h"
-#import <SignalCoreKit/Cryptography.h>
-#import <SignalCoreKit/NSData+OWS.h>
+#import <SignalServiceKit/Cryptography.h>
+#import <SignalServiceKit/NSData+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 static NSString *const kSenderKeySendRequestBodyContentType = @"application/vnd.signal-messenger.mrm";

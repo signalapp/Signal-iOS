@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 public enum KeychainError: Error {
     case notFound

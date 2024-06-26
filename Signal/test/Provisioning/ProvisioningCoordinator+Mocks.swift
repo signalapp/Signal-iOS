@@ -5,7 +5,6 @@
 
 import Foundation
 @testable import Signal
-@testable import SignalCoreKit
 @testable import SignalServiceKit
 
 extension ProvisioningCoordinatorImpl {

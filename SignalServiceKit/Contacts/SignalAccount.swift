@@ -5,7 +5,6 @@
 
 import GRDB
 import LibSignalClient
-import SignalCoreKit
 
 @objc(SignalAccount)
 public final class SignalAccount: NSObject, SDSCodableModel, Decodable {

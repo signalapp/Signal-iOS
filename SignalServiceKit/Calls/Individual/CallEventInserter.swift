@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 /// Inserts & updates `TSCall` and `CallRecord` objects for a single call.
 ///

@@ -14,7 +14,7 @@ internal class ContactDiscoveryV2WebsocketConfigurator: SgxWebsocketConfigurator
 
     internal init() {}
 
-    internal func fetchAuth() -> SignalCoreKit.Promise<RemoteAttestation.Auth> {
+    internal func fetchAuth() -> SignalServiceKit.Promise<RemoteAttestation.Auth> {
         return RemoteAttestation.authForCDSI()
     }
 

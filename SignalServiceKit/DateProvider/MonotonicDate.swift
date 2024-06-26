@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 /// A Date-esque type that's not impacted by changes to the user's clock.
 ///

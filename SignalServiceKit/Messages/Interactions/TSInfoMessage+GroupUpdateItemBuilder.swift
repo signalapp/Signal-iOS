@@ -5,7 +5,6 @@
 
 import Foundation
 import LibSignalClient
-import SignalCoreKit
 
 public protocol GroupUpdateItemBuilder {
     /// Build a list of group updates using the given precomputed, persisted

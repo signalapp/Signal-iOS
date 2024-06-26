@@ -5,7 +5,6 @@
 
 import GRDB
 import LibSignalClient
-import SignalCoreKit
 
 /// Represents a record of a call, either 1:1 or in a group.
 ///
