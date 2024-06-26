@@ -90,12 +90,12 @@ extension Attachment {
             case .video:
                 guard
                     let cachedVideoDurationSeconds,
-                    let cachedVideoDurationSeconds = Int(exactly: cachedVideoDurationSeconds)
+                    let cachedVideoDurationSeconds = Double(exactly: cachedVideoDurationSeconds)
                 else {
                     throw OWSAssertionError("Missing video duration")
                 }
                 self = .video(
-                    duration: TimeInterval(cachedVideoDurationSeconds),
+                    duration: cachedVideoDurationSeconds,
                     pixelSize: try requirePixelSize(),
                     stillFrameRelativeFilePath: videoStillFrameRelativeFilePath
                 )
@@ -104,12 +104,12 @@ extension Attachment {
             case .audio:
                 guard
                     let cachedAudioDurationSeconds,
-                    let cachedAudioDurationSeconds = Int(exactly: cachedAudioDurationSeconds)
+                    let cachedAudioDurationSeconds = Double(exactly: cachedAudioDurationSeconds)
                 else {
                     throw OWSAssertionError("Missing audio duration")
                 }
                 self = .audio(
-                    duration: TimeInterval(cachedAudioDurationSeconds),
+                    duration: cachedAudioDurationSeconds,
                     waveformRelativeFilePath: audioWaveformRelativeFilePath
                 )
             }

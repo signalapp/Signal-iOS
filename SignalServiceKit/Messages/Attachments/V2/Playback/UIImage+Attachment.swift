@@ -114,13 +114,10 @@ extension CGDataProvider {
             getBytePointer: nil,
             releaseBytePointer: nil,
             getBytesAtPosition: { info, buffer, offset, byteCount in
-                guard
-                    let unmanagedFileHandle = info?.assumingMemoryBound(
-                        to: Unmanaged<EncryptedFileHandleWrapper>.self
-                    ).pointee
-                else {
+                guard let info else {
                     return 0
                 }
+                let unmanagedFileHandle = Unmanaged<EncryptedFileHandleWrapper>.fromOpaque(info)
                 let fileHandle = unmanagedFileHandle.takeUnretainedValue().fileHandle
                 do {
                     if offset != fileHandle.offset() {
@@ -136,21 +133,18 @@ extension CGDataProvider {
                 }
             },
             releaseInfo: { info in
-                guard
-                    let unmanagedFileHandle = info?.assumingMemoryBound(
-                        to: Unmanaged<EncryptedFileHandleWrapper>.self
-                    ).pointee
-                else {
+                guard let info else {
                     return
                 }
+                let unmanagedFileHandle = Unmanaged<EncryptedFileHandleWrapper>.fromOpaque(info)
                 unmanagedFileHandle.release()
             }
         )
 
-        var unmanagedFileHandle = Unmanaged.passRetained(fileHandle)
+        let unmanagedFileHandle = Unmanaged.passRetained(fileHandle)
 
         guard let dataProvider = CGDataProvider(
-            directInfo: &unmanagedFileHandle,
+            directInfo: unmanagedFileHandle.toOpaque(),
             size: Int64(fileHandle.fileHandle.plaintextLength),
             callbacks: &callbacks
         ) else {

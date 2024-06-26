@@ -693,6 +693,14 @@ public class MessageSender: Dependencies {
     }
 
     private func areAttachmentsUploadedWithSneakyTransaction(for message: TSOutgoingMessage) -> Bool {
+        if message.shouldBeSaved == false {
+            // Unsaved attachments come in two types:
+            // * no attachments
+            // * contact sync, already-uploaded attachment required on init
+            // So checking for upload state for unsaved attachments is pointless
+            // (and will, in fact, fail, because of foreign key constraints).
+            return true
+        }
         return databaseStorage.read { tx in
             for attachment in message.allAttachments(transaction: tx) {
                 guard attachment.isUploadedToTransitTier else {

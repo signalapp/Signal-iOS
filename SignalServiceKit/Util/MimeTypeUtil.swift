@@ -2377,6 +2377,15 @@ extension MimeTypeUtil {
     }
 }
 
+// MARK: - Thumbnail Handling
+extension MimeTypeUtil {
+
+    public static func thumbnailMimetype(fullsizeMimeType: String) -> String {
+        let isWebp = fullsizeMimeType == MimeType.imageWebp.rawValue
+        return isWebp ? MimeType.imagePng.rawValue : MimeType.imageJpeg.rawValue
+    }
+}
+
 // MARK: - TSAttachmentStream Extension Migrated from MIMETypeUtil.h/m
 // TODO: Move this to TSAttachmentStream once it is converted to Swift
 extension TSAttachmentStream {

@@ -112,11 +112,6 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
         }
     }
 
-    private func thumbnailMimetype(fullsizeMimeType: String) -> String {
-        let isWebp = fullsizeMimeType == MimeType.imageWebp.rawValue
-        return isWebp ? MimeType.imagePng.rawValue : MimeType.imageJpeg.rawValue
-    }
-
     private func cachedThumbnail(
         for attachmentStream: AttachmentStream,
         quality: AttachmentThumbnailQuality
@@ -133,7 +128,7 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
                     // thumbnails have no special padding;
                     // therefore no plaintext length needed.
                     plaintextLength: nil,
-                    mimeType: thumbnailMimetype(fullsizeMimeType: attachmentStream.mimeType)
+                    mimeType: MimeTypeUtil.thumbnailMimetype(fullsizeMimeType: attachmentStream.mimeType)
                 )
             } catch {
                 Logger.error("Failed to read cached attachment.")
@@ -156,7 +151,7 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
         )
         do {
             try OWSFileSystem.deleteFileIfExists(url: cacheUrl)
-            let thumbnailMimeType = self.thumbnailMimetype(fullsizeMimeType: attachmentStream.mimeType)
+            let thumbnailMimeType = MimeTypeUtil.thumbnailMimetype(fullsizeMimeType: attachmentStream.mimeType)
 
             let imageData: Data?
             switch thumbnailMimeType{

@@ -931,7 +931,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 guard fileSize.int64Value <= maxDownloadSizeBytes else {
                     throw OWSGenericError("Attachment download length exceeds max size.")
                 }
-                return downloadUrl
+                let tmpFile = OWSFileSystem.temporaryFileUrl()
+                try OWSFileSystem.copyFile(from: downloadUrl, to: tmpFile)
+                return tmpFile
             } catch let error {
                 Logger.warn("Error: \(error)")
 

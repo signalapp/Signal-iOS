@@ -149,7 +149,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 }
             default:
                 sourceOrder = nil
-                if inputArray.count > 0 {
+                if inputArray.count > 1 {
                     // Only allow multiple attachments in the case of message body attachments.
                     owsFailDebug("Can't have multiple attachments under the same owner reference!")
                 }
@@ -453,7 +453,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             let attachmentParams = Attachment.ConstructionParams.forQuotedReplyThumbnailPointer(
                 originalAttachment: originalAttachment,
                 thumbnailBlurHash: originalAttachment.blurHash,
-                thumbnailMimeType: originalAttachment.mimeType,
+                thumbnailMimeType: MimeTypeUtil.thumbnailMimetype(fullsizeMimeType: originalAttachment.mimeType),
                 thumbnailEncryptionKey: originalAttachment.encryptionKey,
                 thumbnailTransitTierInfo: originalAttachment.transitTierInfo
             )
