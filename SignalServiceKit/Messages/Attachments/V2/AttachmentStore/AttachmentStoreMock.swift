@@ -76,6 +76,7 @@ open class AttachmentStoreMock: AttachmentStore {
     open func updateAttachmentAsDownloaded(
         from source: QueuedAttachmentDownloadRecord.SourceType,
         id: Attachment.IDType,
+        validatedMimeType: String,
         streamInfo: Attachment.StreamInfo,
         tx: DBWriteTransaction
     ) throws {

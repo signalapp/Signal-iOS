@@ -1208,6 +1208,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     try self.attachmentStore.updateAttachmentAsDownloaded(
                         from: source,
                         id: attachmentId,
+                        validatedMimeType: pendingAttachment.mimeType,
                         streamInfo: .init(
                             sha256ContentHash: pendingAttachment.sha256ContentHash,
                             encryptedByteCount: pendingAttachment.encryptedByteCount,
@@ -1317,6 +1318,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     try self.attachmentStore.updateAttachmentAsDownloaded(
                         from: .transitTier,
                         id: firstThumbnailAttachment.id,
+                        validatedMimeType: pendingThumbnailAttachment.mimeType,
                         streamInfo: .init(
                             sha256ContentHash: pendingThumbnailAttachment.sha256ContentHash,
                             encryptedByteCount: pendingThumbnailAttachment.encryptedByteCount,

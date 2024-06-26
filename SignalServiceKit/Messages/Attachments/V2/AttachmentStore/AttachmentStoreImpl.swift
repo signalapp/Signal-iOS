@@ -107,12 +107,14 @@ public class AttachmentStoreImpl: AttachmentStore {
     public func updateAttachmentAsDownloaded(
         from source: QueuedAttachmentDownloadRecord.SourceType,
         id: Attachment.IDType,
+        validatedMimeType: String,
         streamInfo: Attachment.StreamInfo,
         tx: DBWriteTransaction
     ) throws {
         try self.updateAttachmentAsDownloaded(
             from: source,
             id: id,
+            validatedMimeType: validatedMimeType,
             streamInfo: streamInfo,
             db: SDSDB.shimOnlyBridge(tx).unwrapGrdbWrite.database,
             tx: tx
@@ -403,6 +405,7 @@ public class AttachmentStoreImpl: AttachmentStore {
     private func updateAttachmentAsDownloaded(
         from source: QueuedAttachmentDownloadRecord.SourceType,
         id: Attachment.IDType,
+        validatedMimeType: String,
         streamInfo: Attachment.StreamInfo,
         db: GRDB.Database,
         tx: DBWriteTransaction
@@ -432,6 +435,7 @@ public class AttachmentStoreImpl: AttachmentStore {
             newRecord = Attachment.Record(
                 params: .forUpdatingAsDownlodedFromTransitTier(
                     attachment: existingAttachment,
+                    validatedMimeType: validatedMimeType,
                     streamInfo: streamInfo,
                     mediaName: Attachment.mediaName(digestSHA256Ciphertext: streamInfo.digestSHA256Ciphertext)
                 )

@@ -137,6 +137,7 @@ extension Attachment {
 
         public static func forUpdatingAsDownlodedFromTransitTier(
             attachment: Attachment,
+            validatedMimeType: String,
             streamInfo: Attachment.StreamInfo,
             mediaName: String
         ) -> ConstructionParams {
@@ -154,7 +155,7 @@ extension Attachment {
             }
             return .init(
                 blurHash: attachment.blurHash,
-                mimeType: attachment.mimeType,
+                mimeType: validatedMimeType,
                 encryptionKey: attachment.encryptionKey,
                 streamInfo: streamInfo,
                 transitTierInfo: transitTierInfo,

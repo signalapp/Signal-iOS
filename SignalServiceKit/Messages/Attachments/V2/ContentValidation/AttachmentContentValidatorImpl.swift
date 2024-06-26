@@ -219,10 +219,11 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?
     ) throws -> PendingAttachment {
+        var mimeType = mimeType
         let contentTypeResult = try validateContentType(
             input: input,
             encryptionKey: encryptionKey,
-            mimeType: mimeType
+            mimeType: &mimeType
         )
         return try prepareAttachmentFiles(
             input: input,
@@ -315,7 +316,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
     private func validateContentType(
         input: Input,
         encryptionKey: Data,
-        mimeType: String
+        mimeType: inout String
     ) throws -> ContentTypeResult {
         let contentType: Attachment.ContentType
         let blurHash: String?
@@ -333,7 +334,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             audioWaveformFile = nil
             videoStillFrameFile = nil
         case .image, .animatedImage:
-            (contentType, blurHash) = try validateImageContentType(input, mimeType: mimeType)
+            (contentType, blurHash) = try validateImageContentType(input, mimeType: &mimeType)
             audioWaveformFile = nil
             videoStillFrameFile = nil
         case .video:
@@ -365,7 +366,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
     // Includes static and animated image validation.
     private func validateImageContentType(
         _ input: Input,
-        mimeType: String
+        mimeType: inout String
     ) throws -> (Attachment.ContentType, blurHash: String?) {
         let imageSource: OWSImageSource = try {
             switch input {
@@ -401,7 +402,8 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             // and introducing a new failure mode should be done carefully
             // as it may cause us to blow up for attachments we previously "handled"
             // even if the contents didn't match the mime type.
-            owsFailDebug("MIME type mismatch")
+            Logger.error("MIME type mismatch")
+            mimeType = metadata.mimeType ?? mimeType
             imageMetadata = metadata
         }
 

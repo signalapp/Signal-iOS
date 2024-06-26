@@ -89,6 +89,7 @@ public protocol AttachmentStore {
     func updateAttachmentAsDownloaded(
         from source: QueuedAttachmentDownloadRecord.SourceType,
         id: Attachment.IDType,
+        validatedMimeType: String,
         streamInfo: Attachment.StreamInfo,
         tx: DBWriteTransaction
     ) throws
