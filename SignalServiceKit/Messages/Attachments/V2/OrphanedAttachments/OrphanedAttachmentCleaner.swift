@@ -305,9 +305,21 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
             }
         }
 
-        func databaseDidChange(with event: DatabaseEvent) {}
+        /// `observes(eventsOfKind:)` filtering _only_ applies to `databaseDidChange`,  _not_ `databaseDidCommit`.
+        /// We want to filter, but only want to _do_ anything after the changes commit.
+        /// Use this bool to track when the filter is passed (didChange) so we know whether to do anything on didCommit .
+        private var shouldRunOnNextCommit = false
+
+        func databaseDidChange(with event: DatabaseEvent) {
+            shouldRunOnNextCommit = true
+        }
 
         func databaseDidCommit(_ db: GRDB.Database) {
+            guard shouldRunOnNextCommit else {
+                return
+            }
+            shouldRunOnNextCommit = false
+
             // When we get a matching event, run the next job _after_ committing.
             // The job should pick up whatever new row(s) got added to the table.
             taskScheduler.task { [jobRunner] in
