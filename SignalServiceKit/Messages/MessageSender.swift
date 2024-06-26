@@ -1312,11 +1312,11 @@ public class MessageSender: Dependencies {
             return false
         }
 
-        let mayHaveLinkedDevices = databaseStorage.read { tx in
-            DependenciesBridge.shared.deviceManager.mayHaveLinkedDevices(transaction: tx.asV2Read)
+        let mightHaveUnknownLinkedDevice = databaseStorage.read { tx in
+            DependenciesBridge.shared.deviceManager.mightHaveUnknownLinkedDevice(transaction: tx.asV2Read)
         }
 
-        if mayHaveLinkedDevices {
+        if mightHaveUnknownLinkedDevice {
             // We may have just linked a new secondary device which is not yet
             // reflected in the SignalRecipient that corresponds to ourself. Continue
             // sending, where we expect to learn about new devices via a 409 response.
@@ -1542,7 +1542,7 @@ public class MessageSender: Dependencies {
 
                 Logger.info("Sent a message with no device messages. Recording no linked devices.")
 
-                DependenciesBridge.shared.deviceManager.setMayHaveLinkedDevices(
+                DependenciesBridge.shared.deviceManager.setMightHaveUnknownLinkedDevice(
                     false,
                     transaction: transaction.asV2Write
                 )
@@ -1767,13 +1767,6 @@ public class MessageSender: Dependencies {
     ) {
         AssertNotOnMainThread()
         owsAssertDebug(Set(devicesToAdd).isDisjoint(with: devicesToRemove))
-
-        if !devicesToAdd.isEmpty, SignalServiceAddress(serviceId).isLocalAddress {
-            DependenciesBridge.shared.deviceManager.setMayHaveLinkedDevices(
-                true,
-                transaction: transaction.asV2Write
-            )
-        }
 
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
         let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: transaction.asV2Write)

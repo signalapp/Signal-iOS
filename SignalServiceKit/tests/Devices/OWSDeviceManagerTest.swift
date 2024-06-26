@@ -40,24 +40,13 @@ class OWSDeviceManagerTest: XCTestCase {
 
     func testMayHaveLinkedDevices() {
         db.write { transaction in
-            XCTAssertTrue(deviceManager.mayHaveLinkedDevices(transaction: transaction))
+            XCTAssertTrue(deviceManager.mightHaveUnknownLinkedDevice(transaction: transaction))
 
-            deviceManager.setMayHaveLinkedDevices(false, transaction: transaction)
-            XCTAssertFalse(deviceManager.mayHaveLinkedDevices(transaction: transaction))
+            deviceManager.setMightHaveUnknownLinkedDevice(false, transaction: transaction)
+            XCTAssertFalse(deviceManager.mightHaveUnknownLinkedDevice(transaction: transaction))
 
-            deviceManager.setMayHaveLinkedDevices(true, transaction: transaction)
-            XCTAssertTrue(deviceManager.mayHaveLinkedDevices(transaction: transaction))
-        }
-    }
-
-    func testRecordingSyncMessageSetsMayHaveLinkedDevices() {
-        db.write { transaction in
-            deviceManager.setMayHaveLinkedDevices(false, transaction: transaction)
-            XCTAssertFalse(deviceManager.mayHaveLinkedDevices(transaction: transaction))
-
-            deviceManager.setHasReceivedSyncMessage(transaction: transaction)
-
-            XCTAssertTrue(deviceManager.mayHaveLinkedDevices(transaction: transaction))
+            deviceManager.setMightHaveUnknownLinkedDevice(true, transaction: transaction)
+            XCTAssertTrue(deviceManager.mightHaveUnknownLinkedDevice(transaction: transaction))
         }
     }
 }

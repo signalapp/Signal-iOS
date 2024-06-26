@@ -28,7 +28,7 @@ open class OWSDevicesService: NSObject {
                 // Setting this flag here shouldn't be necessary, but we do so
                 // because the "cost" is low and it will improve robustness.
                 if !devices.isEmpty {
-                    DependenciesBridge.shared.deviceManager.setMayHaveLinkedDevices(
+                    DependenciesBridge.shared.deviceManager.setMightHaveUnknownLinkedDevice(
                         true,
                         transaction: transaction.asV2Write
                     )

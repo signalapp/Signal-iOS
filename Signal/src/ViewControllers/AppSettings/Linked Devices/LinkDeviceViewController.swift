@@ -129,7 +129,7 @@ class LinkDeviceViewController: OWSViewController {
     private func provisionWithUrl(_ deviceProvisioningUrl: DeviceProvisioningURL) {
         databaseStorage.write { transaction in
             // Optimistically set this flag.
-            DependenciesBridge.shared.deviceManager.setMayHaveLinkedDevices(
+            DependenciesBridge.shared.deviceManager.setMightHaveUnknownLinkedDevice(
                 true,
                 transaction: transaction.asV2Write
             )

@@ -20,12 +20,12 @@ public protocol OWSDeviceManager {
 
     // MARK: May have linked devices
 
-    func setMayHaveLinkedDevices(
-        _ mayHaveLinkedDevices: Bool,
+    func setMightHaveUnknownLinkedDevice(
+        _ mightHaveUnknownLinkedDevice: Bool,
         transaction: DBWriteTransaction
     )
 
-    func mayHaveLinkedDevices(transaction: DBReadTransaction) -> Bool
+    func mightHaveUnknownLinkedDevice(transaction: DBReadTransaction) -> Bool
 }
 
 extension OWSDeviceManager {
@@ -37,7 +37,7 @@ extension OWSDeviceManager {
 class OWSDeviceManagerImpl: OWSDeviceManager {
     private enum Constants {
         static let keyValueStoreCollectionName = "kTSStorageManager_OWSDeviceCollection"
-        static let mayHaveLinkedDevicesKey = "kTSStorageManager_MayHaveLinkedDevices"
+        static let mightHaveUnknownLinkedDeviceKey = "kTSStorageManager_MayHaveLinkedDevices"
         static let lastReceivedSyncMessageKey = "kLastReceivedSyncMessage"
     }
 
@@ -91,32 +91,36 @@ class OWSDeviceManagerImpl: OWSDeviceManager {
             key: Constants.lastReceivedSyncMessageKey,
             transaction: transaction
         )
-
-        setMayHaveLinkedDevices(true, transaction: transaction)
     }
 
     // MARK: May have linked devices
 
-    /// Returns whether or not we may have linked devices.
+    /// Returns true if there might be an unknown linked device.
     ///
-    /// By default, returns `true`. If we confirm we have no linked devices,
-    /// we should set this flag to `false` via ``setMayHaveLinkedDevices`` so
-    /// as to avoid unnecessary sync message sending.
-    func mayHaveLinkedDevices(transaction: DBReadTransaction) -> Bool {
+    /// Don't read this value if the local SignalRecipient indicates that there
+    /// are linked devices (because you MUST send sync messages to those linked
+    /// devices). If the local SignalRecipient indicates that there aren't any
+    /// linked devices, you MUST send sync messages iff this value is true (this
+    /// will confirm whether or not there are linked devices and update
+    /// `mightHaveUnknownLinkedDevice` accordingly).
+    ///
+    /// This situation may occur after linking a new device on the primary
+    /// before we've had a chance to update the local user's SignalRecipient.
+    func mightHaveUnknownLinkedDevice(transaction: DBReadTransaction) -> Bool {
         return keyValueStore.getBool(
-            Constants.mayHaveLinkedDevicesKey,
+            Constants.mightHaveUnknownLinkedDeviceKey,
             defaultValue: true,
             transaction: transaction
         )
     }
 
-    func setMayHaveLinkedDevices(
-        _ mayHaveLinkedDevices: Bool,
+    func setMightHaveUnknownLinkedDevice(
+        _ mightHaveUnknownLinkedDevice: Bool,
         transaction: DBWriteTransaction
     ) {
         keyValueStore.setBool(
-            mayHaveLinkedDevices,
-            key: Constants.mayHaveLinkedDevicesKey,
+            mightHaveUnknownLinkedDevice,
+            key: Constants.mightHaveUnknownLinkedDeviceKey,
             transaction: transaction
         )
     }
