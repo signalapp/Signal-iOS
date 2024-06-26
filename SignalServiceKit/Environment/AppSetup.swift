@@ -228,6 +228,12 @@ public class AppSetup {
         let aciProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .aci)
         let pniProtocolStore = signalProtocolStoreManager.signalProtocolStore(for: .pni)
 
+        let mediaBandwidthPreferenceStore = MediaBandwidthPreferenceStoreImpl(
+            keyValueStoreFactory: keyValueStoreFactory,
+            reachabilityManager: reachabilityManager,
+            schedulers: schedulers
+        )
+
         let audioWaveformManager = AudioWaveformManagerImpl()
         let orphanedAttachmentCleaner = OrphanedAttachmentCleanerImpl(db: databaseStorage)
         let attachmentContentValidator = AttachmentContentValidatorImpl(
@@ -245,12 +251,16 @@ public class AppSetup {
             attachmentDownloadStore: attachmentDownloadStore,
             attachmentStore: attachmentStore,
             attachmentValidator: attachmentContentValidator,
+            currentCallProvider: currentCallProvider,
             dateProvider: dateProvider,
             db: db,
+            mediaBandwidthPreferenceStore: mediaBandwidthPreferenceStore,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
             orphanedAttachmentStore: orphanedAttachmentStore,
+            profileManager: AttachmentDownloadManagerImpl.Wrappers.ProfileManager(profileManager),
             signalService: signalService,
-            stickerManager: AttachmentDownloadManagerImpl.Wrappers.StickerManager()
+            stickerManager: AttachmentDownloadManagerImpl.Wrappers.StickerManager(),
+            threadStore: threadStore
         )
         let attachmentManager = AttachmentManagerImpl(
             attachmentDownloadManager: attachmentDownloadManager,
@@ -261,12 +271,6 @@ public class AppSetup {
         )
 
         let attachmentThumbnailService = AttachmentThumbnailServiceImpl()
-
-        let mediaBandwidthPreferenceStore = MediaBandwidthPreferenceStoreImpl(
-            keyValueStoreFactory: keyValueStoreFactory,
-            reachabilityManager: reachabilityManager,
-            schedulers: schedulers
-        )
 
         let tsResourceStore = TSResourceStoreImpl(attachmentStore: attachmentStore)
         let tsResourceManager = TSResourceManagerImpl(

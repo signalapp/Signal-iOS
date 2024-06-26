@@ -27,6 +27,8 @@ public protocol ThreadStore {
     func fetchContactThreads(phoneNumber: String, tx: DBReadTransaction) -> [TSContactThread]
     func fetchGroupThread(groupId: Data, tx: DBReadTransaction) -> TSGroupThread?
 
+    func hasPendingMessageRequest(thread: TSThread, tx: DBReadTransaction) -> Bool
+
     func getOrCreateLocalThread(tx: DBWriteTransaction) -> TSContactThread?
     func getOrCreateContactThread(with address: SignalServiceAddress, tx: DBWriteTransaction) -> TSContactThread
     func createGroupThread(groupModel: TSGroupModelV2, tx: DBWriteTransaction) -> TSGroupThread
@@ -155,6 +157,10 @@ public class ThreadStoreImpl: ThreadStore {
 
     public func fetchGroupThread(groupId: Data, tx: DBReadTransaction) -> TSGroupThread? {
         TSGroupThread.fetch(groupId: groupId, transaction: SDSDB.shimOnlyBridge(tx))
+    }
+
+    public func hasPendingMessageRequest(thread: TSThread, tx: DBReadTransaction) -> Bool {
+        ThreadFinder().hasPendingMessageRequest(thread: thread, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
     public func getOrCreateLocalThread(tx: DBWriteTransaction) -> TSContactThread? {
@@ -330,6 +336,10 @@ public class MockThreadStore: ThreadStore {
         threads
             .first { $0.groupModelIfGroupThread?.groupId == groupId }
             .map { $0 as! TSGroupThread }
+    }
+
+    public func hasPendingMessageRequest(thread: TSThread, tx: DBReadTransaction) -> Bool {
+        return false
     }
 
     public func getOrCreateLocalThread(tx: DBWriteTransaction) -> TSContactThread? {
