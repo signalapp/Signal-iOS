@@ -59,7 +59,7 @@ jobs:
             || formatFailures
 
       - name: Upload build logs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: Logs
