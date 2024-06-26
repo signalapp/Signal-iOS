@@ -323,8 +323,9 @@ extension ChatListViewController {
                         )
                     }
                 }
-
-                modal.dismiss()
+                DispatchQueue.main.async {
+                    modal.dismiss()
+                }
             }
 
             self.done()
