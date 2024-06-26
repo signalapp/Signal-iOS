@@ -687,19 +687,30 @@ extension CVComponentSystemMessage {
         if let errorMessage = interaction as? TSErrorMessage {
             return errorMessage.previewText(transaction: transaction)
         } else if let verificationMessage = interaction as? OWSVerificationStateChangeMessage {
-            let isVerified = verificationMessage.verificationState == .verified
+            let format = switch (verificationMessage.isLocalChange, verificationMessage.isVerified()) {
+            case (true, true):
+                OWSLocalizedString(
+                    "VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL",
+                    comment: "Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}."
+                )
+            case (true, false):
+                OWSLocalizedString(
+                    "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL",
+                    comment: "Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}."
+                )
+            case (false, true):
+                OWSLocalizedString(
+                    "VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE",
+                    comment: "Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}."
+                )
+            case (false, false):
+                OWSLocalizedString(
+                    "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE",
+                    comment: "Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}."
+                )
+            }
+
             let displayName = contactsManager.displayName(for: verificationMessage.recipientAddress, tx: transaction).resolvedValue()
-            let format = (isVerified
-                            ? (verificationMessage.isLocalChange
-                                ? OWSLocalizedString("VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL",
-                                                    comment: "Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}.")
-                                : OWSLocalizedString("VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE",
-                                                    comment: "Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}."))
-                            : (verificationMessage.isLocalChange
-                                ? OWSLocalizedString("VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL",
-                                                    comment: "Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}.")
-                                : OWSLocalizedString("VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE",
-                                                    comment: "Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}.")))
             return String(format: format, displayName)
         } else if let infoMessage = interaction as? TSInfoMessage {
             return infoMessage.conversationSystemMessageComponentText(with: transaction)
@@ -786,10 +797,11 @@ extension CVComponentSystemMessage {
                     owsFailDebug("Invalid interaction.")
                     return nil
                 }
-                guard message.verificationState == .verified else {
+                if message.isVerified() {
+                    return Theme.iconImage(.check16)
+                } else {
                     return nil
                 }
-                return Theme.iconImage(.check16)
             case .userJoinedSignal:
                 return Theme.iconImage(.heart16)
             case .syncedThread:

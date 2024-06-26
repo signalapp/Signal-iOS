@@ -17,6 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSVerificationState verificationState;
 @property (nonatomic, readonly) BOOL isLocalChange;
 
+/// Whether or not this message is reporting the user to be verified.
+- (bool)isVerified;
+
 - (instancetype)initWithThread:(TSThread *)thread messageType:(TSInfoMessageType)infoMessage NS_UNAVAILABLE;
 
 - (instancetype)initWithThread:(TSThread *)thread
