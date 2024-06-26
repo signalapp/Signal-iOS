@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1320"
+   LastUpgradeVersion = "1540"
    wasCreatedForAppExtension = "YES"
    version = "2.0">
    <BuildAction
@@ -95,15 +95,6 @@
          BundleIdentifier = "com.google.Authenticator"
          RemotePath = "/var/containers/Bundle/Application/82827351-64BE-4367-BC08-48F4DBD3A035/otpauth_app_rc.app">
       </RemoteRunnable>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "342FFE8727245850000AC89F"
-            BuildableName = "SignalNSE.appex"
-            BlueprintName = "SignalNSE"
-            ReferencedContainer = "container:Signal.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
