@@ -129,6 +129,10 @@ class NotificationService: UNNotificationServiceExtension {
         }
 
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+            self.messageFetcherJob.prepareToFetchViaREST()
+        }
+
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             globalEnvironment.askMainAppToHandleReceipt(logger: logger) { [weak self] mainAppHandledReceipt in
                 guard !mainAppHandledReceipt else {
                     logger.info("Received notification handled by main application, memoryUsage: \(LocalDevice.memoryUsageString).")
@@ -175,7 +179,7 @@ class NotificationService: UNNotificationServiceExtension {
         globalEnvironment.processingMessageCounter.increment()
 
         firstly {
-            messageFetcherJob.run().promise
+            messageFetcherJob.run()
         }.then(on: DispatchQueue.global()) { [weak self] () -> Promise<Void> in
             guard let self = self else { return Promise.value(()) }
 

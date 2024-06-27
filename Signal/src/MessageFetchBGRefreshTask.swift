@@ -102,7 +102,7 @@ public class MessageFetchBGRefreshTask {
     private func performTask(_ task: BGTask) {
         Logger.info("performing background fetch")
         AppReadiness.runNowOrWhenUIDidBecomeReadySync {
-            self.messageFetcherJob.run().promise
+            self.messageFetcherJob.run()
                 .timeout(seconds: 10)
                 .then {
                     // HACK: Call completion handler after 5 seconds.

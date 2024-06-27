@@ -386,7 +386,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             DarwinNotificationCenter.post(.mainAppHandledNotification)
 
             AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-                self.messageFetcherJob.run()
+                _ = self.messageFetcherJob.run()
             }
         }
     }
@@ -1104,7 +1104,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
                 // TODO: Should we run this immediately even if we would like to process
                 // already decrypted envelopes handed to us by the NSE?
-                self.messageFetcherJob.run()
+                _ = self.messageFetcherJob.run()
 
                 if !UIApplication.shared.isRegisteredForRemoteNotifications {
                     Logger.info("Retrying to register for remote notifications since user hasn't registered yet.")
@@ -1217,7 +1217,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                     Logger.info("Ignoring remote notification; user is not registered.")
                     return
                 }
-                self.messageFetcherJob.run()
+                _ = self.messageFetcherJob.run()
                 // If the main app gets woken to process messages in the background, check
                 // for any pending NSE requests to fulfill.
                 _ = self.syncManager.syncAllContactsIfFullSyncRequested()

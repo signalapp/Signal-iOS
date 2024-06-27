@@ -5,31 +5,10 @@
 
 import Foundation
 
-// This token can be used to observe the completion of a given fetch cycle.
-public struct MessageFetchCycle: Hashable, Equatable {
-    public let uuid = UUID()
-    public let promise: Promise<Void>
-
-    // MARK: Hashable
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(uuid)
-    }
-
-    // MARK: Equatable
-
-    public static func == (lhs: MessageFetchCycle, rhs: MessageFetchCycle) -> Bool {
-        return lhs.uuid == rhs.uuid
-    }
-}
-
 // MARK: -
 
 public class MessageFetcherJob: NSObject {
 
-    private var timer: Timer?
-
-    @objc
     public override init() {
         super.init()
 
@@ -41,7 +20,7 @@ public class MessageFetcherJob: NSObject {
                 // launching from the background, without this, we end up waiting some extra
                 // seconds before receiving an actionable push notification.
                 if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered {
-                    firstly(on: DispatchQueue.global()) {
+                    firstly(on: DispatchQueue.main) {
                         self.run()
                     }.catch(on: DispatchQueue.global()) { error in
                         owsFailDebugUnlessNetworkFailure(error)
@@ -51,147 +30,81 @@ public class MessageFetcherJob: NSObject {
         }
     }
 
+    private static let didChangeStateNotificationName = Notification.Name("MessageFetcherJob.didChangeStateNotificationName")
+
     // MARK: -
 
-    // This operation queue ensures that only one fetch operation is
-    // running at a given time.
-    private let fetchOperationQueue: OperationQueue = {
-        let operationQueue = OperationQueue()
-        operationQueue.name = "MessageFetcherJob-Fetch"
-        operationQueue.maxConcurrentOperationCount = 1
-        return operationQueue
-    }()
+    private var isFetching = false
+    private var pendingFetch: (Promise<Void>, Future<Void>)?
 
-    private let unfairLock = UnfairLock()
+    public func run() -> Promise<Void> {
+        AssertIsOnMainThread()
+        if let (fetchPromise, _) = self.pendingFetch {
+            return fetchPromise
+        }
+        let (fetchPromise, fetchFuture) = Promise<Void>.pending()
+        self.pendingFetch = (fetchPromise, fetchFuture)
+        self.startFetchingIfNeeded()
+        return fetchPromise
+    }
 
-    private let completionQueue = DispatchQueue(label: "org.signal.message-fetcher.completion")
+    private func startFetchingIfNeeded() {
+        AssertIsOnMainThread()
 
-    // This property should only be accessed with unfairLock acquired.
-    private var activeFetchCycles = Set<UUID>()
-
-    // This property should only be accessed with unfairLock acquired.
-    private var completedFetchCyclesCounter: UInt = 0
-
-    @objc
-    public static let didChangeStateNotificationName = Notification.Name("MessageFetcherJob.didChangeStateNotificationName")
-
-    @discardableResult
-    public func run() -> MessageFetchCycle {
-        // Use an operation queue to ensure that only one fetch cycle is done
-        // at a time.
-        let fetchOperation = MessageFetchOperation()
-        let promise = fetchOperation.promise
-        let fetchCycle = MessageFetchCycle(promise: promise)
-
-        _ = self.unfairLock.withLock {
-            activeFetchCycles.insert(fetchCycle.uuid)
+        if self.isFetching {
+            return
         }
 
-        // We don't want to re-fetch any messages that have
-        // already been processed, so fetch operations should
-        // block on "message ack" operations.  We accomplish
-        // this by having our message fetch operations depend
-        // on a no-op operation that flushes the "message ack"
-        // operation queue.
-        let shouldFlush = !FeatureFlags.deprecateREST
-        if shouldFlush {
-            let flushAckOperation = Operation()
-            flushAckOperation.queuePriority = .normal
-            ackOperationQueue.addOperation(flushAckOperation)
-
-            fetchOperation.addDependency(flushAckOperation)
+        guard let (_, fetchFuture) = self.pendingFetch else {
+            return
         }
+        self.pendingFetch = nil
 
-        fetchOperationQueue.addOperation(fetchOperation)
-
-        completionQueue.async {
-            self.fetchOperationQueue.waitUntilAllOperationsAreFinished()
-
-            self.unfairLock.withLock {
-                self.activeFetchCycles.remove(fetchCycle.uuid)
-                self.completedFetchCyclesCounter += 1
+        self.isFetching = true
+        Task { @MainActor in
+            defer {
+                self.isFetching = false
+                self.startFetchingIfNeeded()
             }
-
-            self.postDidChangeState()
-        }
-
-        self.postDidChangeState()
-
-        return fetchCycle
-    }
-
-    @objc
-    @discardableResult
-    public func runObjc() -> AnyPromise {
-        AnyPromise(run().promise)
-    }
-
-    private func postDidChangeState() {
-        NotificationCenter.default.postNotificationNameAsync(MessageFetcherJob.didChangeStateNotificationName, object: nil)
-    }
-
-    public func isFetchCycleComplete(fetchCycle: MessageFetchCycle) -> Bool {
-        unfairLock.withLock {
-            self.activeFetchCycles.contains(fetchCycle.uuid)
+            do {
+                try await self.pendingAcksPromise().awaitable()
+                try await self.fetchMessages()
+                fetchFuture.resolve()
+            } catch {
+                fetchFuture.reject(error)
+            }
         }
     }
 
-    public var areAllFetchCyclesComplete: Bool {
-        unfairLock.withLock {
-            self.activeFetchCycles.isEmpty
-        }
+    private var shouldUseWebSocket: Bool {
+        return OWSChatConnection.canAppUseSocketsToMakeRequests
     }
 
-    public var completedRestFetches: UInt {
-        unfairLock.withLock {
-            self.completedFetchCyclesCounter
-        }
-    }
-
-    private class var shouldUseWebSocket: Bool {
-        OWSChatConnection.canAppUseSocketsToMakeRequests
-    }
-
-    @objc
     public var hasCompletedInitialFetch: Bool {
-        if Self.shouldUseWebSocket {
-            let isWebsocketDrained = (
+        if shouldUseWebSocket {
+            return (
                 DependenciesBridge.shared.chatConnectionManager.identifiedConnectionState == .open &&
                 DependenciesBridge.shared.chatConnectionManager.hasEmptiedInitialQueue
             )
-            guard isWebsocketDrained else { return false }
         } else {
-            guard completedRestFetches > 0 else { return false }
+            return self.didFinishFetchingViaREST.get()
         }
-        return true
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func waitForFetchingComplete() -> AnyPromise {
-        AnyPromise(waitForFetchingComplete())
     }
 
     public func waitForFetchingComplete() -> Guarantee<Void> {
         guard CurrentAppContext().shouldProcessIncomingMessages else {
             return Guarantee.value(())
         }
-
-        if Self.shouldUseWebSocket {
-            guard !hasCompletedInitialFetch else {
-                return Guarantee.value(())
-            }
-
+        if hasCompletedInitialFetch {
+            return Guarantee.value(())
+        }
+        if shouldUseWebSocket {
             return NotificationCenter.default.observe(
                 once: OWSChatConnection.chatConnectionStateDidChange
             ).then { _ in
                 self.waitForFetchingComplete()
             }.asVoid()
         } else {
-            guard !areAllFetchCyclesComplete || !hasCompletedInitialFetch else {
-                return Guarantee.value(())
-            }
-
             return NotificationCenter.default.observe(
                 once: Self.didChangeStateNotificationName
             ).then { _ in
@@ -202,7 +115,7 @@ public class MessageFetcherJob: NSObject {
 
     // MARK: -
 
-    fileprivate class func fetchMessages() async throws {
+    private func fetchMessages() async throws {
         guard CurrentAppContext().shouldProcessIncomingMessages else {
             throw OWSAssertionError("This extension should not fetch messages.")
         }
@@ -256,7 +169,13 @@ public class MessageFetcherJob: NSObject {
         let completion: (Error?) -> Void
     }
 
-    private class func fetchMessagesViaRest() async throws {
+    private let didFinishFetchingViaREST = AtomicBool(false, lock: .init())
+
+    public func prepareToFetchViaREST() {
+        self.didFinishFetchingViaREST.set(false)
+    }
+
+    private func fetchMessagesViaRest() async throws {
         let batch = try await fetchBatchViaRest()
 
         let envelopeJobs: [EnvelopeJob] = batch.envelopes.map { envelope in
@@ -284,19 +203,19 @@ public class MessageFetcherJob: NSObject {
         if batch.hasMore {
             Logger.info("fetching more messages.")
             try await fetchMessagesViaRestWhenReady()
+        } else {
+            self.didFinishFetchingViaREST.set(true)
+            NotificationCenter.default.postNotificationNameAsync(MessageFetcherJob.didChangeStateNotificationName, object: nil)
         }
     }
 
-    private class func fetchMessagesViaRestWhenReady() async throws {
-        try await Promise<Void>.waitUntil { isReadyToFetchMessagesViaRest }.awaitable()
+    private func fetchMessagesViaRestWhenReady() async throws {
+        try await Promise<Void>.waitUntil { self.isReadyToFetchMessagesViaRest }.awaitable()
         try await fetchMessagesViaRest()
     }
 
-    private class var isReadyToFetchMessagesViaRest: Bool {
-        guard CurrentAppContext().isNSE else {
-            // If not NSE, fetch more immediately.
-            return true
-        }
+    private var isReadyToFetchMessagesViaRest: Bool {
+        owsAssert(CurrentAppContext().isNSE)
 
         // The NSE has tight memory constraints.
         // For perf reasons, MessageProcessor keeps its queue in memory.
@@ -317,35 +236,7 @@ public class MessageFetcherJob: NSObject {
         let pendingAcksCount = MessageAckOperation.pendingAcksCount
         let incompleteEnvelopeCount = queuedContentCount + pendingAcksCount
         let maxIncompleteEnvelopeCount: Int = 20
-        guard incompleteEnvelopeCount < maxIncompleteEnvelopeCount else {
-            if DebugFlags.internalLogging,
-               incompleteEnvelopeCount != Self.lastIncompleteEnvelopeCount.get() {
-                Logger.info("queuedContentCount: \(queuedContentCount) + pendingAcksCount: \(pendingAcksCount) = \(incompleteEnvelopeCount)")
-                Self.lastIncompleteEnvelopeCount.set(incompleteEnvelopeCount)
-            }
-            return false
-        }
-
-        return true
-    }
-
-    private static let lastIncompleteEnvelopeCount = AtomicValue<Int>(0, lock: .sharedGlobal)
-
-    // MARK: - Run Loop
-
-    // use in DEBUG or wherever you can't receive push notifications to poll for messages.
-    // Do not use in production.
-    public func startRunLoop(timeInterval: Double) {
-        Logger.error("Starting message fetch polling. This should not be used in production.")
-        timer = WeakTimer.scheduledTimer(timeInterval: timeInterval, target: self, userInfo: nil, repeats: true) {[weak self] _ in
-            _ = self?.run()
-            return
-        }
-    }
-
-    public func stopRunLoop() {
-        timer?.invalidate()
-        timer = nil
+        return incompleteEnvelopeCount < maxIncompleteEnvelopeCount
     }
 
     // MARK: -
@@ -434,7 +325,7 @@ public class MessageFetcherJob: NSObject {
         let hasMore: Bool
     }
 
-    private class func fetchBatchViaRest() async throws -> RESTBatch {
+    private func fetchBatchViaRest() async throws -> RESTBatch {
         let request = OWSRequestFactory.getMessagesRequest()
         let response = try await networkManager.makePromise(request: request).awaitable()
         guard let json = response.responseBodyJson else {
@@ -446,7 +337,7 @@ public class MessageFetcherJob: NSObject {
         else {
             throw OWSAssertionError("Unable to parse server delivery timestamp.")
         }
-        guard let (envelopes, more) = parseMessagesResponse(responseObject: json) else {
+        guard let (envelopes, more) = Self.parseMessagesResponse(responseObject: json) else {
             throw OWSAssertionError("Invalid response.")
         }
         return RESTBatch(envelopes: envelopes, serverDeliveryTimestamp: serverDeliveryTimestamp, hasMore: more)
@@ -464,29 +355,6 @@ public class MessageFetcherJob: NSObject {
                      serverGuid: envelope.serverGuid,
                      timestamp: envelope.timestamp,
                      serviceTimestamp: envelope.serverTimestamp)
-    }
-}
-
-// MARK: -
-
-private class MessageFetchOperation: OWSOperation {
-
-    let promise: Promise<Void>
-    let future: Future<Void>
-
-    override init() {
-        let (promise, future) = Promise<Void>.pending()
-        self.promise = promise
-        self.future = future
-        super.init()
-    }
-
-    public override func run() {
-        Task {
-            try? await MessageFetcherJob.fetchMessages()
-            future.resolve(())
-            reportSuccess()
-        }
     }
 }
 

@@ -186,7 +186,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
         Logger.info("Fetching messages.")
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "Push fetch.")
         firstly { () -> Promise<Void> in
-            self.messageFetcherJob.run().promise
+            self.messageFetcherJob.run()
         }.done(on: DispatchQueue.main) {
             owsAssertDebug(backgroundTask != nil)
             backgroundTask = nil
