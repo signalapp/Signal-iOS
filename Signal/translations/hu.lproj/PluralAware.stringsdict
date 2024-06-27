@@ -173,9 +173,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>A csevegés ezen az eszközön törlésre kerül.</string>
+			<string>This chat will be deleted from all your devices.</string>
 			<key>other</key>
-			<string>Ezek a csevegések ezen az eszközön törlésre kerülnek.</string>
+			<string>These chats will be deleted from all your devices.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>

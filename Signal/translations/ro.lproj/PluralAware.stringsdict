@@ -193,11 +193,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Această conversație va fi ștearsă de pe acest dispozitiv.</string>
+			<string>This chat will be deleted from all your devices.</string>
 			<key>few</key>
-			<string>Aceste conversații vor fi șterse de pe acest dispozitiv.</string>
+			<string>These chats will be deleted from all your devices.</string>
 			<key>other</key>
-			<string>Aceste conversații vor fi șterse de pe acest dispozitiv.</string>
+			<string>These chats will be deleted from all your devices.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>

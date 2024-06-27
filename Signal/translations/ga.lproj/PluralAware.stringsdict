@@ -233,15 +233,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Scriosfar an comhrá seo ón ngléas seo.</string>
+			<string>This chat will be deleted from all your devices.</string>
 			<key>two</key>
-			<string>Scriosfar na comhráite seo ón ngléas seo.</string>
+			<string>These chats will be deleted from all your devices.</string>
 			<key>few</key>
-			<string>Scriosfar na comhráite seo ón ngléas seo.</string>
+			<string>These chats will be deleted from all your devices.</string>
 			<key>many</key>
-			<string>Scriosfar na comhráite seo ón ngléas seo.</string>
+			<string>These chats will be deleted from all your devices.</string>
 			<key>other</key>
-			<string>Scriosfar na comhráite seo ón ngléas seo.</string>
+			<string>These chats will be deleted from all your devices.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>

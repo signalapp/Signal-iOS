@@ -173,9 +173,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Den här chatten kommer att tas bort från den här enheten.</string>
+			<string>This chat will be deleted from all your devices.</string>
 			<key>other</key>
-			<string>De här chattarna kommer att tas bort från den här enheten.</string>
+			<string>These chats will be deleted from all your devices.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
