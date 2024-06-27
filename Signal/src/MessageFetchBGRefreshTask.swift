@@ -101,20 +101,12 @@ public class MessageFetchBGRefreshTask {
 
     private func performTask(_ task: BGTask) {
         Logger.info("performing background fetch")
-        AppReadiness.runNowOrWhenUIDidBecomeReadySync {
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             self.messageFetcherJob.run()
-                .timeout(seconds: 10)
                 .then {
-                    // HACK: Call completion handler after 5 seconds.
-                    //
-                    // We don't currently have a convenient API to know when message fetching is *done* when
-                    // working with the websocket.
-                    //
-                    // We *could* substantially rewrite the ChatConnectionManager to take advantage of the `empty` message
-                    // But once our REST endpoint is fixed to properly de-enqueue fallback notifications, we can easily
-                    // use the rest endpoint here rather than the websocket and circumvent making changes to critical code.
-                    return Guarantee.after(seconds: 5)
+                    return NSObject.messageProcessor.waitForFetchingAndProcessing()
                 }
+                .timeout(seconds: 10)
                 .observe { result in
                     switch result {
                     case .success:
