@@ -12,15 +12,17 @@ class OWSDeviceManagerTest: XCTestCase {
 
     override func setUp() {
         deviceManager = OWSDeviceManagerImpl(
-            databaseStorage: db,
             keyValueStoreFactory: InMemoryKeyValueStoreFactory()
         )
     }
 
     func testHasReceivedSyncMessage() {
-        XCTAssertFalse(deviceManager.hasReceivedSyncMessage(
-            inLastSeconds: 60
-        ))
+        db.read { tx in
+            XCTAssertFalse(deviceManager.hasReceivedSyncMessage(
+                inLastSeconds: 60,
+                transaction: tx
+            ))
+        }
 
         db.write { transaction in
             deviceManager.setHasReceivedSyncMessage(
@@ -29,13 +31,19 @@ class OWSDeviceManagerTest: XCTestCase {
             )
         }
 
-        XCTAssertFalse(deviceManager.hasReceivedSyncMessage(
-            inLastSeconds: 4
-        ))
+        db.read { tx in
+            XCTAssertFalse(deviceManager.hasReceivedSyncMessage(
+                inLastSeconds: 4,
+                transaction: tx
+            ))
+        }
 
-        XCTAssertTrue(deviceManager.hasReceivedSyncMessage(
-            inLastSeconds: 6
-        ))
+        db.read { tx in
+            XCTAssertTrue(deviceManager.hasReceivedSyncMessage(
+                inLastSeconds: 6,
+                transaction: tx
+            ))
+        }
     }
 
     func testMayHaveLinkedDevices() {

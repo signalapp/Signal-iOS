@@ -966,10 +966,7 @@ public class AppSetup {
             db: db
         )
 
-        let deviceManager = OWSDeviceManagerImpl(
-            databaseStorage: db,
-            keyValueStoreFactory: keyValueStoreFactory
-        )
+        let deviceManager = OWSDeviceManagerImpl(keyValueStoreFactory: keyValueStoreFactory)
         let deviceStore = OWSDeviceStoreImpl()
         let inactiveLinkedDeviceFinder = InactiveLinkedDeviceFinderImpl(
             dateProvider: dateProvider,

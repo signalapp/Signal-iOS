@@ -6,19 +6,15 @@
 import Foundation
 
 public protocol OWSDeviceManager {
-
-    func warmCaches()
-
-    // MARK: Has received sync message
-
     func setHasReceivedSyncMessage(
         lastReceivedAt: Date,
         transaction: DBWriteTransaction
     )
 
-    func hasReceivedSyncMessage(inLastSeconds seconds: UInt) -> Bool
-
-    // MARK: May have linked devices
+    func hasReceivedSyncMessage(
+        inLastSeconds seconds: UInt,
+        transaction: DBReadTransaction
+    ) -> Bool
 
     func setMightHaveUnknownLinkedDevice(
         _ mightHaveUnknownLinkedDevice: Bool,
@@ -41,37 +37,23 @@ class OWSDeviceManagerImpl: OWSDeviceManager {
         static let lastReceivedSyncMessageKey = "kLastReceivedSyncMessage"
     }
 
-    private let databaseStorage: DB
     private let keyValueStore: KeyValueStore
 
-    private var lastReceivedSyncMessageAt: AtomicOptional<Date> = .init(nil, lock: .init())
-
-    init(
-        databaseStorage: DB,
-        keyValueStoreFactory: KeyValueStoreFactory
-    ) {
-        self.databaseStorage = databaseStorage
-
-        keyValueStore = keyValueStoreFactory.keyValueStore(
+    init(keyValueStoreFactory: KeyValueStoreFactory) {
+        self.keyValueStore = keyValueStoreFactory.keyValueStore(
             collection: Constants.keyValueStoreCollectionName
         )
     }
 
-    func warmCaches() {
-        databaseStorage.read { transaction in
-            if let lastReceived = keyValueStore.getDate(
-                Constants.lastReceivedSyncMessageKey,
-                transaction: transaction
-            ) {
-                _ = lastReceivedSyncMessageAt.tryToSetIfNil(lastReceived)
-            }
-        }
-    }
-
     // MARK: Has received sync message
 
-    func hasReceivedSyncMessage(inLastSeconds lastSeconds: UInt) -> Bool {
-        guard let lastReceivedSyncMessageAt = lastReceivedSyncMessageAt.get() else {
+    func hasReceivedSyncMessage(inLastSeconds lastSeconds: UInt, transaction tx: DBReadTransaction) -> Bool {
+        let lastReceivedSyncMessageAt = keyValueStore.getDate(
+            Constants.lastReceivedSyncMessageKey,
+            transaction: tx
+        )
+
+        guard let lastReceivedSyncMessageAt else {
             return false
         }
 
@@ -84,8 +66,6 @@ class OWSDeviceManagerImpl: OWSDeviceManager {
         lastReceivedAt: Date,
         transaction: DBWriteTransaction
     ) {
-        self.lastReceivedSyncMessageAt.set(lastReceivedAt)
-
         keyValueStore.setDate(
             lastReceivedAt,
             key: Constants.lastReceivedSyncMessageKey,

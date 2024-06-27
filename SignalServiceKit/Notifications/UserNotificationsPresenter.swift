@@ -173,10 +173,12 @@ class UserNotificationPresenter: Dependencies {
         Self.notificationCenter.setNotificationCategories(UserNotificationConfig.allNotificationCategories)
     }
 
-    var hasReceivedSyncMessageRecently: Bool {
-        return DependenciesBridge.shared.deviceManager.hasReceivedSyncMessage(
-            inLastSeconds: 60
-        )
+    var hasReceivedSyncMessageRecentlyWithSneakyTransaction: Bool {
+        let db = DependenciesBridge.shared.db
+        let deviceManager = DependenciesBridge.shared.deviceManager
+        return db.read { tx in
+            return deviceManager.hasReceivedSyncMessage(inLastSeconds: 60, transaction: tx)
+        }
     }
 
     // MARK: - Notify
@@ -224,7 +226,7 @@ class UserNotificationPresenter: Dependencies {
             || category == .incomingReactionWithActions_CanReply
             || category == .incomingReactionWithActions_CannotReply
         )
-        if checkForCancel && hasReceivedSyncMessageRecently {
+        if checkForCancel && hasReceivedSyncMessageRecentlyWithSneakyTransaction {
             assert(userInfo[AppNotificationUserInfoKey.threadId] != nil)
             trigger = UNTimeIntervalNotificationTrigger(timeInterval: kNotificationDelayForRemoteRead, repeats: false)
         } else {
