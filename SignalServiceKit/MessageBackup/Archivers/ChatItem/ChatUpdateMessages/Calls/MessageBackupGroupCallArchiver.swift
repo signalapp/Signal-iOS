@@ -6,10 +6,9 @@
 import LibSignalClient
 
 final class MessageBackupGroupCallArchiver {
-    typealias ArchiveChatUpdateMessageResult = MessageBackupChatUpdateMessageArchiver.ArchiveChatUpdateMessageResult
-    typealias RestoreChatUpdateMessageResult = MessageBackupChatUpdateMessageArchiver.RestoreChatUpdateMessageResult
-
-    private typealias Details = MessageBackup.InteractionArchiveDetails
+    typealias Details = MessageBackup.InteractionArchiveDetails
+    typealias ArchiveChatUpdateMessageResult = MessageBackup.ArchiveInteractionResult<Details>
+    typealias RestoreChatUpdateMessageResult = MessageBackup.RestoreInteractionResult<Void>
 
     private let callRecordStore: CallRecordStore
     private let groupCallRecordManager: GroupCallRecordManager
@@ -114,7 +113,7 @@ final class MessageBackupGroupCallArchiver {
         chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
-    ) -> MessageBackup.RestoreInteractionResult<Void> {
+    ) -> RestoreChatUpdateMessageResult {
         let groupThread: TSGroupThread
         switch chatThread {
         case .groupV2(let _groupThread):

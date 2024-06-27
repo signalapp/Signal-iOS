@@ -15,6 +15,7 @@ public protocol MessageBackupRecipientArchiver: MessageBackupProtoArchiver {
     typealias RecipientAppId = MessageBackup.RecipientArchivingContext.Address
 
     typealias ArchiveMultiFrameResult = MessageBackup.ArchiveMultiFrameResult<RecipientAppId>
+    typealias RestoreFrameResult = MessageBackup.RestoreFrameResult<RecipientId>
 
     /// Archive all recipients.
     ///
@@ -30,8 +31,6 @@ public protocol MessageBackupRecipientArchiver: MessageBackupProtoArchiver {
         tx: DBReadTransaction
     ) -> ArchiveMultiFrameResult
 
-    typealias RestoreFrameResult = MessageBackup.RestoreFrameResult<RecipientId>
-
     /// Restore a single ``BackupProto.Recipient`` frame.
     ///
     /// - Returns: ``RestoreFrameResult.success`` if all frames were read without error.
@@ -45,6 +44,7 @@ public protocol MessageBackupRecipientArchiver: MessageBackupProtoArchiver {
 }
 
 internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchiver {
+    private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<RecipientAppId>
 
     private let blockingManager: MessageBackup.Shims.BlockingManager
     private let disappearingMessageConfigStore: DisappearingMessagesConfigurationStore
@@ -119,7 +119,7 @@ internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchive
         context: MessageBackup.RecipientArchivingContext,
         tx: DBReadTransaction
     ) -> ArchiveMultiFrameResult {
-        var partialErrors = [ArchiveMultiFrameResult.ArchiveFrameError]()
+        var partialErrors = [ArchiveFrameError]()
         for archiver in destinationArchivers {
             let archiverResults = archiver.archiveRecipients(
                 stream: stream,

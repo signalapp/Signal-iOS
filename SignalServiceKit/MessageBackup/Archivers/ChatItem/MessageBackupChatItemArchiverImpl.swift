@@ -7,6 +7,7 @@ import Foundation
 import LibSignalClient
 
 public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
+    private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>
 
     private let callRecordStore: CallRecordStore
     private let dateProvider: DateProvider
@@ -80,7 +81,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         tx: DBReadTransaction
     ) -> ArchiveMultiFrameResult {
         var completeFailureError: MessageBackup.FatalArchivingError?
-        var partialFailures = [ArchiveMultiFrameResult.ArchiveFrameError]()
+        var partialFailures = [ArchiveFrameError]()
 
         func archiveInteraction(
             _ interaction: TSInteraction,
@@ -150,7 +151,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         context: MessageBackup.ChatArchivingContext,
         tx: DBReadTransaction
     ) -> ArchiveMultiFrameResult {
-        var partialErrors = [ArchiveMultiFrameResult.ArchiveFrameError]()
+        var partialErrors = [ArchiveFrameError]()
 
         guard let chatId = context[interaction.uniqueThreadIdentifier] else {
             partialErrors.append(.archiveFrameError(
@@ -178,7 +179,10 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         case .success(let deets):
             details = deets
 
-        case .isPastRevision, .skippableGroupUpdate, .notYetImplemented:
+        case
+                .isPastRevision,
+                .skippableGroupUpdate,
+                .notYetImplemented:
             // Skip! Say it succeeded so we ignore it.
             return .success
 

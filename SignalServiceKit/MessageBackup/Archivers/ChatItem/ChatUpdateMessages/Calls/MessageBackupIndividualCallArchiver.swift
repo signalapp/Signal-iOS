@@ -4,10 +4,9 @@
 //
 
 final class MessageBackupIndividualCallArchiver {
-    typealias ArchiveChatUpdateMessageResult = MessageBackupChatUpdateMessageArchiver.ArchiveChatUpdateMessageResult
-    typealias RestoreChatUpdateMessageResult = MessageBackupChatUpdateMessageArchiver.RestoreChatUpdateMessageResult
-
-    private typealias Details = MessageBackup.InteractionArchiveDetails
+    typealias Details = MessageBackup.InteractionArchiveDetails
+    typealias ArchiveChatUpdateMessageResult = MessageBackup.ArchiveInteractionResult<Details>
+    typealias RestoreChatUpdateMessageResult = MessageBackup.RestoreInteractionResult<Void>
 
     private let callRecordStore: CallRecordStore
     private let individualCallRecordManager: IndividualCallRecordManager
@@ -109,7 +108,7 @@ final class MessageBackupIndividualCallArchiver {
         chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
-    ) -> MessageBackup.RestoreInteractionResult<Void> {
+    ) -> RestoreChatUpdateMessageResult {
         let contactThread: TSContactThread
         switch chatThread {
         case .contact(let _contactThread):

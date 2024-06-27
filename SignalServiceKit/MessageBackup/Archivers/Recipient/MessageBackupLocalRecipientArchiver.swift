@@ -10,10 +10,8 @@ extension MessageBackup {
         public var idLogString: String { "" }
     }
 
-    public enum ArchiveLocalRecipientResult {
-        case success(RecipientId)
-        case failure(ArchiveFrameError<LocalRecipientId>)
-    }
+    public typealias ArchiveLocalRecipientResult = ArchiveSingleFrameResult<RecipientId, LocalRecipientId>
+    public typealias RestoreLocalRecipientResult = RestoreFrameResult<RecipientId>
 }
 
 /**
@@ -25,9 +23,9 @@ public protocol MessageBackupLocalRecipientArchiver: MessageBackupProtoArchiver 
     typealias RecipientId = MessageBackup.RecipientId
 
     /// Archive the local recipient.
-    func archiveLocalRecipient(stream: MessageBackupProtoOutputStream) -> MessageBackup.ArchiveLocalRecipientResult
-
-    typealias RestoreFrameResult = MessageBackup.RestoreFrameResult<RecipientId>
+    func archiveLocalRecipient(
+        stream: MessageBackupProtoOutputStream
+    ) -> MessageBackup.ArchiveLocalRecipientResult
 
     /// Restore a single ``BackupProto.Recipient`` frame for the local recipient.
     ///
@@ -38,7 +36,7 @@ public protocol MessageBackupLocalRecipientArchiver: MessageBackupProtoArchiver 
         _ recipient: BackupProto.Recipient,
         context: MessageBackup.RecipientRestoringContext,
         tx: DBWriteTransaction
-    ) -> RestoreFrameResult
+    ) -> MessageBackup.RestoreLocalRecipientResult
 
     /// Determines whether the given recipient is the local recipient.
     static func canRestore(_ recipient: BackupProto.Recipient) -> Bool
@@ -70,20 +68,11 @@ public class MessageBackupLocalRecipientArchiverImpl: MessageBackupLocalRecipien
         }
     }
 
-    public static func canRestore(_ recipient: BackupProto.Recipient) -> Bool {
-        switch recipient.destination {
-        case .selfRecipient:
-            return true
-        case nil, .contact, .group, .distributionList, .releaseNotes:
-            return false
-        }
-    }
-
     public func restore(
         _ recipient: BackupProto.Recipient,
         context: MessageBackup.RecipientRestoringContext,
         tx: DBWriteTransaction
-    ) -> RestoreFrameResult {
+    ) -> MessageBackup.RestoreLocalRecipientResult {
         switch recipient.destination {
         case .selfRecipient:
             break
@@ -96,5 +85,14 @@ public class MessageBackupLocalRecipientArchiverImpl: MessageBackupLocalRecipien
 
         context[recipient.recipientId] = .localAddress
         return .success
+    }
+
+    public static func canRestore(_ recipient: BackupProto.Recipient) -> Bool {
+        switch recipient.destination {
+        case .selfRecipient:
+            return true
+        case nil, .contact, .group, .distributionList, .releaseNotes:
+            return false
+        }
     }
 }

@@ -12,6 +12,8 @@ public protocol MessageBackupChatArchiver: MessageBackupProtoArchiver {
 
     typealias ArchiveMultiFrameResult = MessageBackup.ArchiveMultiFrameResult<MessageBackup.ThreadUniqueId>
 
+    typealias RestoreFrameResult = MessageBackup.RestoreFrameResult<ChatId>
+
     /// Archive all ``TSThread``s (they map to ``BackupProto.Chat``).
     ///
     /// - Returns: ``ArchiveMultiFrameResult.success`` if all frames were written without error, or either
@@ -26,8 +28,6 @@ public protocol MessageBackupChatArchiver: MessageBackupProtoArchiver {
         tx: DBReadTransaction
     ) -> ArchiveMultiFrameResult
 
-    typealias RestoreFrameResult = MessageBackup.RestoreFrameResult<ChatId>
-
     /// Restore a single ``BackupProto.Chat`` frame.
     ///
     /// - Returns: ``RestoreFrameResult.success`` if all frames were read without error.
@@ -41,6 +41,7 @@ public protocol MessageBackupChatArchiver: MessageBackupProtoArchiver {
 }
 
 public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
+    private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<MessageBackup.ThreadUniqueId>
 
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
     private let pinnedThreadManager: PinnedThreadManager
@@ -64,7 +65,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         tx: DBReadTransaction
     ) -> ArchiveMultiFrameResult {
         var completeFailureError: MessageBackup.FatalArchivingError?
-        var partialErrors = [ArchiveMultiFrameResult.ArchiveFrameError]()
+        var partialErrors = [ArchiveFrameError]()
 
         func archiveThread(_ thread: TSThread, stop: inout Bool) {
             let result: ArchiveMultiFrameResult
@@ -128,7 +129,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.ChatArchivingContext,
         tx: DBReadTransaction
-    ) -> MessageBackupChatArchiver.ArchiveMultiFrameResult {
+    ) -> ArchiveMultiFrameResult {
         let chatId = context.assignChatId(to: MessageBackup.ChatThread.contact(thread).uniqueId)
 
         return archiveThread(
@@ -146,7 +147,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.ChatArchivingContext,
         tx: DBReadTransaction
-    ) -> MessageBackupChatArchiver.ArchiveMultiFrameResult {
+    ) -> ArchiveMultiFrameResult {
         let chatId = context.assignChatId(to: MessageBackup.ChatThread.contact(thread).uniqueId)
 
         let contactServiceId: ServiceId? = thread.contactUUID.flatMap { try? ServiceId.parseFrom(serviceIdString: $0) }
@@ -184,7 +185,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.ChatArchivingContext,
         tx: DBReadTransaction
-    ) -> MessageBackupChatArchiver.ArchiveMultiFrameResult {
+    ) -> ArchiveMultiFrameResult {
         let chatId = context.assignChatId(to: MessageBackup.ChatThread.groupV2(thread).uniqueId)
 
         let recipientAddress = MessageBackup.RecipientArchivingContext.Address.group(thread.groupId)
@@ -212,7 +213,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.ChatArchivingContext,
         tx: DBReadTransaction
-    ) -> MessageBackupChatArchiver.ArchiveMultiFrameResult {
+    ) -> ArchiveMultiFrameResult {
         let threadAssociatedData = threadStore.fetchOrDefaultAssociatedData(for: thread, tx: tx)
 
         let thisThreadPinnedOrder: UInt32

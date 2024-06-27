@@ -19,18 +19,14 @@ extension MessageBackup {
         public var idLogString: String { "localUser" }
     }
 
-    public enum ArchiveAccountDataResult {
-        case success
-        case failure(ArchiveFrameError<AccountDataId>)
-    }
+    public typealias ArchiveAccountDataResult = ArchiveSingleFrameResult<Void, AccountDataId>
+    public typealias RestoreAccountDataResult = RestoreFrameResult<MessageBackup.AccountDataId>
 }
 
 /**
  * Archives the ``BackupProto.AccountData`` frame
  */
 public protocol MessageBackupAccountDataArchiver: MessageBackupProtoArchiver {
-    typealias RestoreFrameResult = MessageBackup.RestoreFrameResult<MessageBackup.AccountDataId>
-
     func archiveAccountData(
         stream: MessageBackupProtoOutputStream,
         tx: DBReadTransaction
@@ -39,7 +35,7 @@ public protocol MessageBackupAccountDataArchiver: MessageBackupProtoArchiver {
     func restore(
         _ accountData: BackupProto.AccountData,
         tx: DBWriteTransaction
-    ) -> RestoreFrameResult
+    ) -> MessageBackup.RestoreAccountDataResult
 }
 
 public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchiver {
@@ -129,7 +125,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         if let error {
             return .failure(error)
         } else {
-            return .success
+            return .success(())
         }
     }
 
@@ -223,7 +219,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
     public func restore(
         _ accountData: BackupProto.AccountData,
         tx: DBWriteTransaction
-    ) -> RestoreFrameResult {
+    ) -> MessageBackup.RestoreAccountDataResult {
         guard let profileKey = OWSAES256Key(data: accountData.profileKey) else {
             return .failure([.restoreFrameError(
                 .invalidProtoData(.invalidLocalProfileKey),

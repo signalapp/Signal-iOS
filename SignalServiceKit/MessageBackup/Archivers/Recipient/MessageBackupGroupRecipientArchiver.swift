@@ -16,6 +16,7 @@ import LibSignalClient
  * in the proto.
  */
 public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinationArchiver {
+    private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<RecipientAppId>
 
     private let disappearingMessageConfigStore: DisappearingMessagesConfigurationStore
     private let groupsV2: GroupsV2
@@ -44,7 +45,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
         context: MessageBackup.RecipientArchivingContext,
         tx: DBReadTransaction
     ) -> ArchiveMultiFrameResult {
-        var errors = [ArchiveMultiFrameResult.ArchiveFrameError]()
+        var errors = [ArchiveFrameError]()
 
         do {
             try threadStore.enumerateGroupThreads(tx: tx) { groupThread, _ in
@@ -72,7 +73,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
         _ groupThread: TSGroupThread,
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.RecipientArchivingContext,
-        errors: inout [ArchiveMultiFrameResult.ArchiveFrameError],
+        errors: inout [ArchiveFrameError],
         tx: DBReadTransaction
     ) {
         guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {

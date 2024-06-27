@@ -7,6 +7,7 @@ import Foundation
 import LibSignalClient
 
 internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionArchiver {
+    private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>
 
     static let archiverType: MessageBackup.ChatItemArchiverType = .incomingMessage
 
@@ -35,7 +36,7 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
             )))
         }
 
-        var partialErrors = [MessageBackupChatItemArchiver.ArchiveMultiFrameResult.ArchiveFrameError]()
+        var partialErrors = [ArchiveFrameError]()
 
         let directionalDetails: Details.DirectionalDetails
         switch buildIncomingMessageDetails(message).bubbleUp(Details.self, partialErrors: &partialErrors) {

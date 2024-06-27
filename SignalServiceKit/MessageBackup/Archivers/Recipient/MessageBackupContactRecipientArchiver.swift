@@ -11,6 +11,8 @@ import LibSignalClient
  * ``BackupProto.Recipient``.
  */
 public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestinationArchiver {
+    private typealias ArchivingAddress = MessageBackup.RecipientArchivingContext.Address
+    private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<RecipientAppId>
 
     private let blockingManager: MessageBackup.Shims.BlockingManager
     private let profileManager: MessageBackup.Shims.ProfileManager
@@ -44,8 +46,6 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         self.usernameLookupManager = usernameLookupManager
     }
 
-    private typealias ArchivingAddress = MessageBackup.RecipientArchivingContext.Address
-
     public func archiveRecipients(
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.RecipientArchivingContext,
@@ -54,7 +54,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         let whitelistedAddresses = Set(profileManager.allWhitelistedAddresses(tx: tx))
         let blockedAddresses = blockingManager.blockedAddresses(tx: tx)
 
-        var errors = [ArchiveMultiFrameResult.ArchiveFrameError]()
+        var errors = [ArchiveFrameError]()
 
         recipientDatabaseTable.enumerateAll(tx: tx) { recipient in
             guard

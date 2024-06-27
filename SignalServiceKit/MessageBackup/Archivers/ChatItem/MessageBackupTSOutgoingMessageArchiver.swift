@@ -7,6 +7,7 @@ import Foundation
 import LibSignalClient
 
 internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionArchiver {
+    private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>
 
     static let archiverType: MessageBackup.ChatItemArchiverType = .outgoingMessage
 
@@ -38,7 +39,7 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
             )))
         }
 
-        var partialErrors = [MessageBackupChatItemArchiver.ArchiveMultiFrameResult.ArchiveFrameError]()
+        var partialErrors = [ArchiveFrameError]()
 
         let wasAnySendSealedSender: Bool
         let directionalDetails: Details.DirectionalDetails
@@ -90,7 +91,7 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
         _ message: TSOutgoingMessage,
         recipientContext: MessageBackup.RecipientArchivingContext
     ) -> MessageBackup.ArchiveInteractionResult<OutgoingMessageDetails> {
-        var perRecipientErrors = [MessageBackup.ArchiveInteractionResult<Details.DirectionalDetails>.ArchiveFrameError]()
+        var perRecipientErrors = [ArchiveFrameError]()
 
         var wasAnySendSealedSender = false
         var outgoingMessage = BackupProto.ChatItem.OutgoingMessageDetails()

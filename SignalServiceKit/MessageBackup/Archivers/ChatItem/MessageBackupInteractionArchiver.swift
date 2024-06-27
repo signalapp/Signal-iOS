@@ -45,8 +45,6 @@ extension MessageBackup {
     }
 
     internal enum ArchiveInteractionResult<Component> {
-        typealias ArchiveFrameError = MessageBackupChatItemArchiver.ArchiveMultiFrameResult.ArchiveFrameError
-
         case success(Component)
 
         // MARK: Skips
@@ -65,10 +63,10 @@ extension MessageBackup {
 
         /// Some portion of the interaction failed to archive, but we can still archive the rest of it.
         /// e.g. some recipient details are missing, so we archive without that recipient.
-        case partialFailure(Component, [ArchiveFrameError])
+        case partialFailure(Component, [ArchiveFrameError<InteractionUniqueId>])
         /// The entire message failed and should be skipped.
         /// Other messages are unaffected.
-        case messageFailure([ArchiveFrameError])
+        case messageFailure([ArchiveFrameError<InteractionUniqueId>])
         /// Catastrophic failure, which should stop _all_ message archiving.
         case completeFailure(FatalArchivingError)
     }
@@ -142,7 +140,7 @@ extension MessageBackup.ArchiveInteractionResult {
     /// }
     func bubbleUp<ErrorResultType>(
         _ resultType: ErrorResultType.Type = ErrorResultType.self,
-        partialErrors: inout [ArchiveFrameError]
+        partialErrors: inout [MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>]
     ) -> BubbleUp<Component, ErrorResultType> {
         switch self {
         case .success(let value):

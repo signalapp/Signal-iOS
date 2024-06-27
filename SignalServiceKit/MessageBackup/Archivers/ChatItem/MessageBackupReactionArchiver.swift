@@ -7,12 +7,11 @@ import Foundation
 import LibSignalClient
 
 internal class MessageBackupReactionArchiver: MessageBackupProtoArchiver {
+    private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>
 
     private let reactionStore: ReactionStore
 
-    init(
-        reactionStore: ReactionStore
-    ) {
+    init(reactionStore: ReactionStore) {
         self.reactionStore = reactionStore
     }
 
@@ -25,7 +24,7 @@ internal class MessageBackupReactionArchiver: MessageBackupProtoArchiver {
     ) -> MessageBackup.ArchiveInteractionResult<[BackupProto.Reaction]> {
         let reactions = reactionStore.allReactions(messageId: message.uniqueId, tx: tx)
 
-        var errors = [MessageBackupChatItemArchiver.ArchiveMultiFrameResult.ArchiveFrameError]()
+        var errors = [ArchiveFrameError]()
         var reactionProtos = [BackupProto.Reaction]()
 
         for reaction in reactions {

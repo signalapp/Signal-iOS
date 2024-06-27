@@ -15,20 +15,27 @@ public protocol MessageBackupLoggableId {
 
 extension MessageBackup {
 
-    /// Note the "multi"; covers the archiving of multiple frames, typically
-    /// batched by type.
-    public enum ArchiveMultiFrameResult<AppIdType: MessageBackupLoggableId> {
-        public typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<AppIdType>
+    /// Represents the result of archiving a single frame.
+    public enum ArchiveSingleFrameResult<SuccessType, AppIdType: MessageBackupLoggableId> {
+        case success(SuccessType)
+        case failure(ArchiveFrameError<AppIdType>)
+    }
 
+    /// Represents the result of archiving multiple frames of the same type at
+    /// once.
+    public enum ArchiveMultiFrameResult<AppIdType: MessageBackupLoggableId> {
         case success
         /// We managed to write some frames, but failed for others.
         /// Note that some errors _may_ be terminal; the caller should check.
-        case partialSuccess([ArchiveFrameError])
+        case partialSuccess([ArchiveFrameError<AppIdType>])
         /// Catastrophic failure, e.g. we failed to read from the database at all
         /// for an entire category of frame.
         case completeFailure(FatalArchivingError)
     }
 
+    /// Represents the result of restoring a single frame.
+    /// - Note
+    /// Frames are always restored individually.
     public enum RestoreFrameResult<ProtoIdType: MessageBackupLoggableId> {
         case success
         /// We managed to restore some part of the frame, meaning it is represented in our database.

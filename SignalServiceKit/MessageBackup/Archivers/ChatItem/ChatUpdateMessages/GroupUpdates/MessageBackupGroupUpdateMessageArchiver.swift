@@ -7,11 +7,12 @@ import Foundation
 import LibSignalClient
 
 final class MessageBackupGroupUpdateMessageArchiver {
-    typealias ArchiveChatUpdateMessageResult = MessageBackupChatUpdateMessageArchiver.ArchiveChatUpdateMessageResult
-    typealias RestoreChatUpdateMessageResult = MessageBackupChatUpdateMessageArchiver.RestoreChatUpdateMessageResult
+    typealias Details = MessageBackup.InteractionArchiveDetails
+    typealias ArchiveChatUpdateMessageResult = MessageBackup.ArchiveInteractionResult<Details>
+    typealias RestoreChatUpdateMessageResult = MessageBackup.RestoreInteractionResult<Void>
 
+    private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>
     private typealias PersistableGroupUpdateItem = TSInfoMessage.PersistableGroupUpdateItem
-    private typealias Details = MessageBackup.InteractionArchiveDetails
 
     private let groupUpdateBuilder: GroupUpdateItemBuilder
     private let groupUpdateHelper: GroupUpdateInfoMessageInserterBackupHelper
@@ -65,7 +66,7 @@ final class MessageBackupGroupUpdateMessageArchiver {
             groupUpdateItems = persistableGroupUpdateItemsWrapper.updateItems
         }
 
-        var partialErrors = [MessageBackupChatItemArchiver.ArchiveMultiFrameResult.ArchiveFrameError]()
+        var partialErrors = [ArchiveFrameError]()
 
         let contentsResult = Self.archiveGroupUpdates(
             groupUpdates: groupUpdateItems,
@@ -106,7 +107,7 @@ final class MessageBackupGroupUpdateMessageArchiver {
         groupUpdates: [TSInfoMessage.PersistableGroupUpdateItem],
         interactionId: MessageBackup.InteractionUniqueId,
         localIdentifiers: LocalIdentifiers,
-        partialErrors: inout [MessageBackupChatItemArchiver.ArchiveMultiFrameResult.ArchiveFrameError]
+        partialErrors: inout [ArchiveFrameError]
     ) -> MessageBackup.ArchiveInteractionResult<BackupProto.GroupChangeChatUpdate> {
         var updates = [BackupProto.GroupChangeChatUpdate.Update]()
 

@@ -6,6 +6,7 @@
 import Foundation
 
 public class MessageBackupDistributionListRecipientArchiver: MessageBackupRecipientDestinationArchiver {
+    private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<RecipientAppId>
 
     private let storyStore: StoryStore
     private let threadStore: ThreadStore
@@ -23,7 +24,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupRecipi
         context: MessageBackup.RecipientArchivingContext,
         tx: DBReadTransaction
     ) -> ArchiveMultiFrameResult {
-        var errors = [ArchiveMultiFrameResult.ArchiveFrameError]()
+        var errors = [ArchiveFrameError]()
 
         do {
             // enumerate deleted threads
@@ -61,7 +62,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupRecipi
         _ storyThread: TSPrivateStoryThread,
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.RecipientArchivingContext,
-        errors: inout [ArchiveMultiFrameResult.ArchiveFrameError],
+        errors: inout [ArchiveFrameError],
         tx: DBReadTransaction
     ) {
         // Skip deleted distribution lists
@@ -146,7 +147,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupRecipi
         distributionId: Data,
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.RecipientArchivingContext,
-        errors: inout [ArchiveMultiFrameResult.ArchiveFrameError],
+        errors: inout [ArchiveFrameError],
         tx: DBReadTransaction
     ) {
         let distributionListAppId: RecipientAppId = .distributionList(distributionId)
