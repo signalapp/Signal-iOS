@@ -85,11 +85,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld person</string>
+			<string>%1$ld persoană</string>
 			<key>few</key>
-			<string>%1$ld people</string>
+			<string>%1$ld persoane</string>
 			<key>other</key>
-			<string>%1$ld people</string>
+			<string>%1$ld persoane</string>
 		</dict>
 	</dict>
 	<key>CALL_PEOPLE_WAITING</key>
@@ -103,11 +103,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld person waiting</string>
+			<string>%1$ld persoană în așteptare</string>
 			<key>few</key>
-			<string>%1$ld people waiting</string>
+			<string>%1$ld persoane în așteptare</string>
 			<key>other</key>
-			<string>%1$ld people waiting</string>
+			<string>%1$ld de persoane în așteptare</string>
 		</dict>
 	</dict>
 	<key>CAMERA_VO_N_ITEMS</key>
@@ -458,11 +458,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld person is in this call</string>
+			<string>%1$ld persoană este în acest apel</string>
 			<key>few</key>
-			<string>%1$ld people are in this call</string>
+			<string>%1$ld persoane sunt în acest apel</string>
 			<key>other</key>
-			<string>%1$ld people are in this call</string>
+			<string>%1$ld de persoane sunt în acest apel</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -530,11 +530,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%2$@ and %1$ld other person are in this call</string>
+			<string>%2$@ și încă %1$ld altă persoană sunt în acest apel</string>
 			<key>few</key>
-			<string>%2$@ and %1$ld others are in this call</string>
+			<string>%2$@ și alte %1$ld persoane sunt în acest apel</string>
 			<key>other</key>
-			<string>%2$@ and %1$ld others are in this call</string>
+			<string>%2$@ și alte %1$ld de persoane sunt în acest apel</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d</key>

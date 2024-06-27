@@ -77,9 +77,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld person</string>
+			<string>%1$ld persona</string>
 			<key>other</key>
-			<string>%1$ld people</string>
+			<string>%1$ld personas</string>
 		</dict>
 	</dict>
 	<key>CALL_PEOPLE_WAITING</key>
@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld person waiting</string>
+			<string>%1$ld persona esperando</string>
 			<key>other</key>
-			<string>%1$ld people waiting</string>
+			<string>%1$ld personas esperando</string>
 		</dict>
 	</dict>
 	<key>CAMERA_VO_N_ITEMS</key>
@@ -408,9 +408,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld person is in this call</string>
+			<string>%1$ld persona participa en esta llamada</string>
 			<key>other</key>
-			<string>%1$ld people are in this call</string>
+			<string>%1$ld personas participan en esta llamada</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -472,9 +472,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%2$@ and %1$ld other person are in this call</string>
+			<string>%2$@ y %1$ld persona más participan en esta llamada</string>
 			<key>other</key>
-			<string>%2$@ and %1$ld others are in this call</string>
+			<string>%2$@ y %1$ld personas más participan en esta llamada</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d</key>
@@ -536,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d participante usa el mismo nombre.</string>
+			<string>%1$d participante tiene el mismo nombre.</string>
 			<key>other</key>
-			<string>%1$d participantes usan el mismo nombre.</string>
+			<string>%1$d participantes tienen el mismo nombre.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_MULTIPLE_COLLISIONS_BANNER_TITLE_%d</key>
@@ -584,9 +584,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Se encontró %1$d conflicto de nombre en este grupo. Revisa los participantes más abajo o elige tomar medidas.</string>
+			<string>Se encontró %1$d conflicto de nombre en este grupo. Revisa la lista de participantes debajo y selecciona la opción adecuada.</string>
 			<key>other</key>
-			<string>Se encontraron %1$d conflictos de nombre en este grupo. Revisa los participantes más abajo o elige tomar medidas.</string>
+			<string>Se encontraron %1$d conflictos de nombre en este grupo. Revisa la lista de participantes debajo y selecciona la opción adecuada.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -600,9 +600,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d participante del grupo usa el mismo nombre. Revisa la lista de participantes debajo y selecciona la opción adecuada.</string>
+			<string>%1$d participante del grupo tiene el mismo nombre. Revisa la lista de participantes debajo y selecciona la opción adecuada.</string>
 			<key>other</key>
-			<string>%1$d participantes del grupo usan el mismo nombre. Revisa la lista de participantes debajo y selecciona la opción adecuada.</string>
+			<string>%1$d participantes del grupo tienen el mismo nombre. Revisa la lista de participantes debajo y selecciona la opción adecuada.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -744,9 +744,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>No se puede añadir automáticamente a esta persona al nuevo grupo y se la ha eliminado.</string>
+			<string>No se ha podido añadir automáticamente a %1$d persona al nuevo grupo y se la ha eliminado.</string>
 			<key>other</key>
-			<string>No se pueden añadir automáticamente %1$d personas al nuevo grupo y se las ha eliminado.</string>
+			<string>No se ha podido añadir automáticamente a %1$d personas al nuevo grupo y se las ha eliminado.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -760,9 +760,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>No se puede añadir automáticamente a esta persona al nuevo grupo. Se le ha enviado una invitación para unirse.</string>
+			<string>No se ha podido añadir automáticamente a %1$d persona al nuevo grupo. Se le ha enviado una invitación para unirse.</string>
 			<key>other</key>
-			<string>No se puede añadir automáticamente a %1$d personas al nuevo grupo. Se les ha enviado una invitación para unirse.</string>
+			<string>No se ha podido añadir automáticamente a %1$d personas al nuevo grupo. Se les ha enviado una invitación para unirse.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -792,9 +792,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Para mantener &quot;%2$@&quot; enlazado, abre Signal en ese dispositivo dentro de %1$d día.</string>
+			<string>Para mantener «%2$@» vinculado, abre Signal en ese dispositivo en el plazo de %1$d día.</string>
 			<key>other</key>
-			<string>Para mantener &quot;%2$@&quot; enlazado, abre Signal en ese dispositivo dentro de %1$d días.</string>
+			<string>Para mantener «%2$@» vinculado, abre Signal en ese dispositivo en el plazo de %1$d días.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -1320,9 +1320,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Un alias debe empezar con al menos %1$d carácter.</string>
+			<string>Los alias deben empezar con al menos %1$d carácter</string>
 			<key>other</key>
-			<string>Un alias debe empezar con al menos %1$d caracteres.</string>
+			<string>Los alias deben empezar con al menos %1$d caracteres</string>
 		</dict>
 	</dict>
 </dict>

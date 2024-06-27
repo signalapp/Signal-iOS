@@ -93,13 +93,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld person</string>
+			<string>%1$ld osoba</string>
 			<key>few</key>
-			<string>%1$ld people</string>
+			<string>%1$ld osoby</string>
 			<key>many</key>
-			<string>%1$ld people</string>
+			<string>%1$ld osob</string>
 			<key>other</key>
-			<string>%1$ld people</string>
+			<string>%1$ld osob</string>
 		</dict>
 	</dict>
 	<key>CALL_PEOPLE_WAITING</key>
@@ -113,13 +113,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld person waiting</string>
+			<string>Čeká %1$ld osoba</string>
 			<key>few</key>
-			<string>%1$ld people waiting</string>
+			<string>Čekají %1$ld osoby</string>
 			<key>many</key>
-			<string>%1$ld people waiting</string>
+			<string>Čeká %1$ld osob</string>
 			<key>other</key>
-			<string>%1$ld people waiting</string>
+			<string>Čeká %1$ld osob</string>
 		</dict>
 	</dict>
 	<key>CAMERA_VO_N_ITEMS</key>
@@ -508,13 +508,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%1$ld person is in this call</string>
+			<string>%1$ld osoba se účastní tohoto hovoru</string>
 			<key>few</key>
-			<string>%1$ld people are in this call</string>
+			<string>%1$ld osoby se účastní tohoto hovoru</string>
 			<key>many</key>
-			<string>%1$ld people are in this call</string>
+			<string>%1$ld osob se účastní tohoto hovoru</string>
 			<key>other</key>
-			<string>%1$ld people are in this call</string>
+			<string>%1$ld osob se účastní tohoto hovoru</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -588,13 +588,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%2$@ and %1$ld other person are in this call</string>
+			<string>%2$@ a %1$ld další osoba se účastní tohoto hovoru</string>
 			<key>few</key>
-			<string>%2$@ and %1$ld others are in this call</string>
+			<string>%2$@ a %1$ld další osoby se účastní tohoto hovoru</string>
 			<key>many</key>
-			<string>%2$@ and %1$ld others are in this call</string>
+			<string>%2$@ a %1$ld dalších osob se účastní tohoto hovoru</string>
 			<key>other</key>
-			<string>%2$@ and %1$ld others are in this call</string>
+			<string>%2$@ a %1$ld dalších osob se účastní tohoto hovoru</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d</key>
