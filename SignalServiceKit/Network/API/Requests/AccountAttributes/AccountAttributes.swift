@@ -124,9 +124,7 @@ public struct AccountAttributes: Codable {
         public let hasSVRBackups: Bool
         public let pni = true
         public let paymentActivation = true
-
-        // TODO: [DeleteForMe] Toggle on once rollout plan is finalized.
-        public let deleteSyncSendSupport = FeatureFlags.enableDeleteSyncCapability
+        public let deleteSyncSendSupport = true
 
         public enum CodingKeys: String, CodingKey {
             case transfer
