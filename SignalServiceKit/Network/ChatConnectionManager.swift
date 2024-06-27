@@ -76,6 +76,7 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
     public typealias RequestFailure = OWSChatConnection.RequestFailure
 
     public func waitForIdentifiedConnectionToOpen() async throws {
+        owsAssertBeta(OWSChatConnection.canAppUseSocketsToMakeRequests)
         try await self.connectionIdentified.waitForOpen()
     }
 

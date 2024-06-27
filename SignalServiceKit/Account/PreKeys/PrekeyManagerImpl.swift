@@ -219,7 +219,14 @@ public class PreKeyManagerImpl: PreKeyManager {
         let shouldPerformPniOp = db.read(block: hasPniIdentityKey(tx:))
 
         return await Self.taskQueue.enqueue { [chatConnectionManager, taskManager, targets] in
-            try await chatConnectionManager.waitForIdentifiedConnectionToOpen()
+            if OWSChatConnection.canAppUseSocketsToMakeRequests {
+                try await chatConnectionManager.waitForIdentifiedConnectionToOpen()
+            } else {
+                // TODO: Migrate the NSE to use web sockets.
+                // The NSE generally launches only when network is available, and we try to
+                // run this only when we have network, but it's not harmful if that's not
+                // true, so this is fine.
+            }
             try Task.checkCancellation()
             try await taskManager.rotate(identity: .aci, targets: targets, auth: .implicit())
             if shouldPerformPniOp {
@@ -294,7 +301,14 @@ public class PreKeyManagerImpl: PreKeyManager {
         var retryInterval: TimeInterval = 0.5
         while db.read(block: tsAccountManager.registrationState(tx:)).isRegistered {
             do {
-                try await chatConnectionManager.waitForIdentifiedConnectionToOpen()
+                if OWSChatConnection.canAppUseSocketsToMakeRequests {
+                    try await chatConnectionManager.waitForIdentifiedConnectionToOpen()
+                } else {
+                    // TODO: Migrate the NSE to use web sockets.
+                    // The NSE generally launches only when network is available, and we try to
+                    // run this only when we have network, but it's not harmful if that's not
+                    // true, so this is fine.
+                }
                 try await _refreshOneTimePreKeys(forIdentity: identity, alsoRefreshSignedPreKey: true)
                 break
             } catch {
