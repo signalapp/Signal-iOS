@@ -44,7 +44,7 @@ public class SenderKeyStore: NSObject {
         for thread: TSThread,
         serviceIds: [ServiceId],
         readTx: SDSAnyReadTransaction
-    ) -> [ServiceId] {
+    ) -> Set<ServiceId> {
         var serviceIdsNeedingSenderKey = Set(serviceIds)
 
         storageLock.withLock {
@@ -83,7 +83,7 @@ public class SenderKeyStore: NSObject {
                 }
             }
         }
-        return Array(serviceIdsNeedingSenderKey)
+        return serviceIdsNeedingSenderKey
     }
 
     /// Records that the current sender key for the `thread` has been sent to `participant`

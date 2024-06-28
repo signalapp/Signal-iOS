@@ -870,23 +870,17 @@ public class MessageSender: Dependencies {
             try await lookUpPhoneNumbers(phoneNumbers)
             try await sendPreparedMessage(message, canLookUpPhoneNumbers: false, senderCertificates: senderCertificates)
         case .sendPreparedMessage(let serializedMessage, let thread, let serviceIds, let udAccess, let senderCertificate, let localIdentifiers):
-            let allErrors = AtomicArray<(serviceId: ServiceId, error: Error)>(lock: .init())
-            do {
-                try await sendPreparedMessage(
-                    message,
-                    serializedMessage: serializedMessage,
-                    in: thread,
-                    to: serviceIds,
-                    udAccess: udAccess,
-                    localIdentifiers: localIdentifiers,
-                    senderCertificate: senderCertificate,
-                    sendErrorBlock: { serviceId, error in
-                        allErrors.append((serviceId, error))
-                    }
-                )
-            } catch {
-                // We ignore the thrown error & consult `allErrors` instead.
-                try await handleSendFailure(message: message, thread: thread, perRecipientErrors: allErrors.get())
+            let perRecipientErrors = await sendPreparedMessage(
+                message,
+                serializedMessage: serializedMessage,
+                in: thread,
+                to: serviceIds,
+                udAccess: udAccess,
+                localIdentifiers: localIdentifiers,
+                senderCertificate: senderCertificate
+            )
+            if !perRecipientErrors.isEmpty {
+                try await handleSendFailure(message: message, thread: thread, perRecipientErrors: perRecipientErrors)
             }
         }
     }
@@ -898,28 +892,31 @@ public class MessageSender: Dependencies {
         to serviceIds: [ServiceId],
         udAccess sendingAccessMap: [ServiceId: OWSUDSendingAccess],
         localIdentifiers: LocalIdentifiers,
-        senderCertificate: SenderCertificate,
-        sendErrorBlock: @escaping (ServiceId, Error) -> Void
-    ) async throws {
+        senderCertificate: SenderCertificate
+    ) async -> [(ServiceId, any Error)] {
         // 3. If we have any participants that support sender key, build a promise
         // for their send.
         let senderKeyStatus = senderKeyStatus(for: thread, intendedRecipients: serviceIds, udAccessMap: sendingAccessMap)
 
-        try await withThrowingTaskGroup(of: Void.self, returning: Void.self) { taskGroup in
+        // Both types are Arrays because Sender Key Tasks may return N errors when
+        // sending to N participants. (Fanout Tasks always send to one recipient
+        // and will therefore return either no error or exactly one error.)
+        return await withTaskGroup(
+            of: [(ServiceId, any Error)].self,
+            returning: [(ServiceId, any Error)].self
+        ) { taskGroup in
             var senderKeyServiceIds: [ServiceId] = senderKeyStatus.allSenderKeyParticipants
             var fanoutServiceIds: [ServiceId] = senderKeyStatus.fanoutParticipants
             if thread.usesSenderKey, senderKeyServiceIds.count >= 2, message.canSendWithSenderKey {
                 taskGroup.addTask {
-                    try await self.sendSenderKeyMessage(
+                    return await self.sendSenderKeyMessage(
                         message: message,
-                        plaintextContent: serializedMessage.plaintextData,
-                        payloadId: serializedMessage.payloadId,
+                        serializedMessage: serializedMessage,
                         thread: thread,
                         status: senderKeyStatus,
                         udAccessMap: sendingAccessMap,
                         senderCertificate: senderCertificate,
-                        localIdentifiers: localIdentifiers,
-                        sendErrorBlock: sendErrorBlock
+                        localIdentifiers: localIdentifiers
                     )
                 }
             } else {
@@ -947,23 +944,14 @@ public class MessageSender: Dependencies {
                 taskGroup.addTask {
                     do {
                         try await self.performMessageSend(messageSend, sealedSenderParameters: sealedSenderParameters)
+                        return []
                     } catch {
-                        sendErrorBlock(serviceId, error)
-                        throw error
+                        return [(messageSend.serviceId, error)]
                     }
                 }
             }
 
-            // Wait for everything to finish, and *then* throw an arbitrary error b/c
-            // the caller doesn't care *what* error is thrown as long as *some* error
-            // is thrown when a problem occurs.
-            var results = [Result<Void, Error>]()
-            while let result = await taskGroup.nextResult() {
-                results.append(result)
-            }
-            for result in results {
-                try result.get()
-            }
+            return await taskGroup.reduce(into: [], { $0.append(contentsOf: $1) })
         }
     }
 
@@ -996,7 +984,7 @@ public class MessageSender: Dependencies {
     private func handleSendFailure(
         message: TSOutgoingMessage,
         thread: TSThread,
-        perRecipientErrors allErrors: [(serviceId: ServiceId, error: Error)]
+        perRecipientErrors allErrors: [(serviceId: ServiceId, error: any Error)]
     ) async throws {
         // Some errors should be ignored when sending messages to non 1:1 threads.
         // See discussion on NSError (MessageSender) category.
@@ -1006,7 +994,7 @@ public class MessageSender: Dependencies {
 
         // Record the individual error for each "failed" recipient.
         await databaseStorage.awaitableWrite { tx in
-            for (serviceId, error) in Dictionary(allErrors, uniquingKeysWith: { _, new in new }) {
+            for (serviceId, error) in allErrors {
                 if shouldIgnoreError(error) {
                     continue
                 }
