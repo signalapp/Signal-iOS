@@ -320,20 +320,25 @@ extension ConversationViewController: CVComponentDelegate {
     public func didTapLinkPreview(_ linkPreview: OWSLinkPreview) {
         AssertIsOnMainThread()
 
-        guard let urlString = linkPreview.urlString,
-              let url = URL(string: urlString) else {
+        guard
+            let urlString = linkPreview.urlString,
+            let url = URL(string: urlString)
+        else {
             owsFailDebug("Invalid link preview URL.")
             return
         }
 
+        self.handleUrl(url)
+    }
+
+    func handleUrl(_ url: URL) {
         if StickerPackInfo.isStickerPackShare(url) {
             if let stickerPackInfo = StickerPackInfo.parseStickerPackShare(url) {
-                let packView = StickerPackViewController(stickerPackInfo: stickerPackInfo)
-                packView.present(from: self, animated: true)
-                return
+                didTapStickerPack(stickerPackInfo)
             } else {
                 owsFailDebug("Could not parse sticker pack share URL: \(url)")
             }
+            return
         }
 
         if GroupManager.isPossibleGroupInviteLink(url) {
@@ -347,9 +352,13 @@ extension ConversationViewController: CVComponentDelegate {
         }
 
         if SignalDotMePhoneNumberLink.isPossibleUrl(url) {
-            return cvc_didTapSignalMeLink(url: url)
-        } else if let usernameLink = Usernames.UsernameLink(usernameLinkUrl: url) {
-            return didTapUsernameLink(usernameLink: usernameLink)
+            cvc_didTapSignalMeLink(url: url)
+            return
+        }
+
+        if let usernameLink = Usernames.UsernameLink(usernameLinkUrl: url) {
+            didTapUsernameLink(usernameLink: usernameLink)
+            return
         }
 
         UIApplication.shared.open(url, options: [:], completionHandler: nil)

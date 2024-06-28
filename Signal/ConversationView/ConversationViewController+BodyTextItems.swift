@@ -40,7 +40,7 @@ extension ConversationViewController {
         case .dataItem(let dataItem):
             switch dataItem.dataType {
             case .link:
-                didTapLink(dataItem: dataItem)
+                openLink(dataItem: dataItem)
             case .address:
                 // Treat taps and long-press the same.
                 didLongPressAddress(dataItem: dataItem)
@@ -386,35 +386,15 @@ extension ConversationViewController {
         presentActionSheet(actionSheet)
     }
 
-    private func didTapLink(dataItem: TextCheckingDataItem) {
-        AssertIsOnMainThread()
-
-        openLink(dataItem: dataItem)
-    }
-
     private func openLink(dataItem: TextCheckingDataItem) {
         AssertIsOnMainThread()
 
-        if StickerPackInfo.isStickerPackShare(dataItem.url) {
-            guard let stickerPackInfo = StickerPackInfo.parseStickerPackShare(dataItem.url) else {
-                owsFailDebug("Invalid URL: \(dataItem.url)")
-                return
-            }
-            didTapStickerPack(stickerPackInfo)
-        } else if GroupManager.isPossibleGroupInviteLink(dataItem.url) {
-            didTapGroupInviteLink(url: dataItem.url)
-        } else if SignalProxy.isValidProxyLink(dataItem.url) {
-            didTapProxyLink(url: dataItem.url)
-        } else if SignalDotMePhoneNumberLink.isPossibleUrl(dataItem.url) {
-            cvc_didTapSignalMeLink(url: dataItem.url)
-        } else if let usernameLink = Usernames.UsernameLink(usernameLinkUrl: dataItem.url) {
-            didTapUsernameLink(usernameLink: usernameLink)
-        } else if isMailtoUrl(dataItem.url) {
+        if isMailtoUrl(dataItem.url) {
             didTapEmail(dataItem: dataItem)
-        } else {
-            // Open in Safari.
-            UIApplication.shared.open(dataItem.url, options: [:], completionHandler: nil)
+            return
         }
+
+        self.handleUrl(dataItem.url)
     }
 
     private func isMailtoUrl(_ url: URL) -> Bool {
