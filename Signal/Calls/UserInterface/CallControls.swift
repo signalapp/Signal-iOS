@@ -434,9 +434,9 @@ private class CallControlsViewModel {
             // controller (currently GroupCallViewController) is not yet complete.
             return startCallText()
         case .groupThread(let call):
-            return call.ringRestrictions.contains(.callInProgress) ? joinCallText() : startCallText()
+            return call.ringRestrictions.contains(.callInProgress) ? CallStrings.joinGroupCall : startCallText()
         case .callLink(let call):
-            return call.mayNeedToAskToJoin ? askToJoinText() : joinCallText()
+            return call.mayNeedToAskToJoin ? askToJoinText() : CallStrings.joinGroupCall
         }
     }
 
@@ -444,13 +444,6 @@ private class CallControlsViewModel {
         return OWSLocalizedString(
             "CALL_START_BUTTON",
             comment: "Button to start a call"
-        )
-    }
-
-    private static func joinCallText() -> String {
-        return OWSLocalizedString(
-            "GROUP_CALL_JOIN_BUTTON",
-            comment: "Button to join an ongoing group call"
         )
     }
 

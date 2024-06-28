@@ -1355,9 +1355,8 @@ extension CVComponentSystemMessage {
         // TODO: We need to touch thread whenever current call changes.
         let isCurrentCallForThread = currentGroupCallThreadUniqueId == thread.uniqueId
 
-        let joinTitle = OWSLocalizedString("GROUP_CALL_JOIN_BUTTON", comment: "Button to join an ongoing group call")
         let returnTitle = OWSLocalizedString("CALL_RETURN_BUTTON", comment: "Button to return to the current call")
-        let title = isCurrentCallForThread ? returnTitle : joinTitle
+        let title = isCurrentCallForThread ? returnTitle : CallStrings.joinGroupCall
 
         return Action(title: title,
                       accessibilityIdentifier: "group_call_button",

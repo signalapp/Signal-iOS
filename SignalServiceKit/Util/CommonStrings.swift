@@ -461,42 +461,13 @@ public class NotificationStrings: NSObject {
 
 // MARK: -
 
-public class CallStrings: NSObject {
-    static public var confirmAndCallButtonTitle: String {
-        OWSLocalizedString("SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION",
-                          comment: "alert button text to confirm placing an outgoing call after the recipients Safety Number has changed.")
+public enum CallStrings {
+    static var callBackButtonTitle: String {
+        return OWSLocalizedString("CALLBACK_BUTTON_TITLE", comment: "notification action")
     }
 
-    static public var callBackAlertTitle: String {
-        OWSLocalizedString("CALL_USER_ALERT_TITLE",
-                          comment: "Title for alert offering to call a user.")
-    }
-
-    static public var callBackAlertMessageFormat: String {
-        OWSLocalizedString("CALL_USER_ALERT_MESSAGE_FORMAT",
-                          comment: "Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}.")
-    }
-
-    static public var callBackAlertCallButton: String {
-        OWSLocalizedString("CALL_USER_ALERT_CALL_BUTTON",
-                          comment: "Label for call button for alert offering to call a user.")
-    }
-
-    static public var lowerHandButton: String {
-        OWSLocalizedString(
-            "RAISED_HANDS_LOWER_HAND_BUTTON",
-            comment: "Label for a button to lower your raised hand in a call."
-        )
-    }
-
-    // MARK: - Notification actions
-
-    static public var callBackButtonTitle: String {
-        OWSLocalizedString("CALLBACK_BUTTON_TITLE", comment: "notification action")
-    }
-
-    static public var showThreadButtonTitle: String {
-        OWSLocalizedString("SHOW_THREAD_BUTTON_TITLE", comment: "notification action")
+    static var showThreadButtonTitle: String {
+        return OWSLocalizedString("SHOW_THREAD_BUTTON_TITLE", comment: "notification action")
     }
 }
 

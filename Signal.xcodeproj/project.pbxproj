@@ -647,6 +647,7 @@
 		50A5AA992A7449A100CF2ECC /* DecryptedIncomingEnvelope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A5AA982A7449A100CF2ECC /* DecryptedIncomingEnvelope.swift */; };
 		50A5AA9B2A7449D000CF2ECC /* ServerReceiptEnvelope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A5AA9A2A7449D000CF2ECC /* ServerReceiptEnvelope.swift */; };
 		50A5AA9D2A7475A900CF2ECC /* OutgoingReactionMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A5AA9C2A7475A900CF2ECC /* OutgoingReactionMessage.swift */; };
+		50A616C02C2F11AA00F1F210 /* CallStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A616BF2C2F11AA00F1F210 /* CallStrings.swift */; };
 		50A76F562AF573CE00FCF02D /* AppActivePrecondition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A76F552AF573CE00FCF02D /* AppActivePrecondition.swift */; };
 		50A76F582AF5765000FCF02D /* FullTextSearchOptimizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F0B53E2982D7800012C590 /* FullTextSearchOptimizer.swift */; };
 		50A7830E2C0128D70008030E /* CallLinkCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A7830D2C0128D70008030E /* CallLinkCall.swift */; };
@@ -3646,6 +3647,7 @@
 		50A5AA982A7449A100CF2ECC /* DecryptedIncomingEnvelope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecryptedIncomingEnvelope.swift; sourceTree = "<group>"; };
 		50A5AA9A2A7449D000CF2ECC /* ServerReceiptEnvelope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerReceiptEnvelope.swift; sourceTree = "<group>"; };
 		50A5AA9C2A7475A900CF2ECC /* OutgoingReactionMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingReactionMessage.swift; sourceTree = "<group>"; };
+		50A616BF2C2F11AA00F1F210 /* CallStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallStrings.swift; sourceTree = "<group>"; };
 		50A76F522AF565AC00FCF02D /* Preconditions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preconditions.swift; sourceTree = "<group>"; };
 		50A76F552AF573CE00FCF02D /* AppActivePrecondition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppActivePrecondition.swift; sourceTree = "<group>"; };
 		50A7830D2C0128D70008030E /* CallLinkCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallLinkCall.swift; sourceTree = "<group>"; };
@@ -9223,6 +9225,7 @@
 				88588D25252E59CE00405414 /* CallService.swift */,
 				50DC0D9A2BE56EF0003C57D3 /* CallServiceState.swift */,
 				B98D24692B8D2A2A00B1A8CC /* CallStarter.swift */,
+				50A616BF2C2F11AA00F1F210 /* CallStrings.swift */,
 				50E42FE32C1B6E2100554BD6 /* CallTarget.swift */,
 				500978442BF41D6800941B1E /* CommonCallState.swift */,
 				5077B5B32BBC687C00EF399E /* CurrentCall.swift */,
@@ -13139,6 +13142,7 @@
 				D9F122542B7EDF4C0008164A /* CallsListViewController+ViewModelLoader.swift in Sources */,
 				B93955E32B06D47000F35940 /* CallsListViewController.swift in Sources */,
 				B98D246A2B8D2A2A00B1A8CC /* CallStarter.swift in Sources */,
+				50A616C02C2F11AA00F1F210 /* CallStrings.swift in Sources */,
 				50E42FE42C1B6E2100554BD6 /* CallTarget.swift in Sources */,
 				88D23D2623CEC0C700B0E74B /* CallUIAdapter.swift in Sources */,
 				4C21D5D8223AC60F00EF8A77 /* CameraCaptureSession.swift in Sources */,
