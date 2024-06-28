@@ -12,19 +12,18 @@ public extension GroupsV2Impl {
     // A list of all groups we've learned of from the storage service.
     //
     // Values are irrelevant (bools).
-    private static let groupsFromStorageService_All = SDSKeyValueStore(collection: "GroupsV2Impl.groupsFromStorageService_All")
+    private static let allStorageServiceGroupIds = SDSKeyValueStore(collection: "GroupsV2Impl.groupsFromStorageService_All")
 
     // A list of the groups we need to try to restore. Values are serialized GroupV2Records.
-    private static let groupsFromStorageService_EnqueuedRecordForRestore = SDSKeyValueStore(collection: "GroupsV2Impl.groupsFromStorageService_EnqueuedRecordForRestore")
+    private static let storageServiceGroupsToRestore = SDSKeyValueStore(collection: "GroupsV2Impl.groupsFromStorageService_EnqueuedRecordForRestore")
 
     // A deprecated list of the groups we need to restore. Values are master keys.
-    // TODO: This can be deleted Jan 2023
-    private static let groupsFromStorageService_LegacyEnqueuedForRestore = SDSKeyValueStore(collection: "GroupsV2Impl.groupsFromStorageService_EnqueuedForRestore")
+    private static let legacyStorageServiceGroupsToRestore = SDSKeyValueStore(collection: "GroupsV2Impl.groupsFromStorageService_EnqueuedForRestore")
 
     // A list of the groups we failed to restore.
     //
     // Values are irrelevant (bools).
-    private static let groupsFromStorageService_Failed = SDSKeyValueStore(collection: "GroupsV2Impl.groupsFromStorageService_Failed")
+    private static let failedStorageServiceGroupIds = SDSKeyValueStore(collection: "GroupsV2Impl.groupsFromStorageService_Failed")
 
     private static let restoreGroupsOperationQueue: OperationQueue = {
         let queue = OperationQueue()
@@ -33,12 +32,11 @@ public extension GroupsV2Impl {
         return queue
     }()
 
-    static func isGroupKnownToStorageService(groupModel: TSGroupModelV2,
-                                             transaction: SDSAnyReadTransaction) -> Bool {
+    static func isGroupKnownToStorageService(groupModel: TSGroupModelV2, transaction: SDSAnyReadTransaction) -> Bool {
         do {
             let masterKeyData = try groupsV2.masterKeyData(forGroupModel: groupModel)
             let key = restoreGroupKey(forMasterKeyData: masterKeyData)
-            return groupsFromStorageService_All.hasValue(forKey: key, transaction: transaction)
+            return allStorageServiceGroupIds.hasValue(forKey: key, transaction: transaction)
         } catch {
             owsFailDebug("Error: \(error)")
             return false
@@ -50,7 +48,9 @@ public extension GroupsV2Impl {
         transaction: SDSAnyReadTransaction
     ) -> StorageServiceProtoGroupV2Record? {
         let key = restoreGroupKey(forMasterKeyData: masterKeyData)
-        guard let recordData = groupsFromStorageService_EnqueuedRecordForRestore.getData(key, transaction: transaction) else { return nil }
+        guard let recordData = storageServiceGroupsToRestore.getData(key, transaction: transaction) else {
+            return nil
+        }
         return try? .init(serializedData: recordData)
     }
 
@@ -67,11 +67,11 @@ public extension GroupsV2Impl {
 
         let key = restoreGroupKey(forMasterKeyData: groupRecord.masterKey)
 
-        if !groupsFromStorageService_All.hasValue(forKey: key, transaction: transaction) {
-            groupsFromStorageService_All.setBool(true, key: key, transaction: transaction)
+        if !allStorageServiceGroupIds.hasValue(forKey: key, transaction: transaction) {
+            allStorageServiceGroupIds.setBool(true, key: key, transaction: transaction)
         }
 
-        guard !groupsFromStorageService_Failed.hasValue(forKey: key, transaction: transaction) else {
+        guard !failedStorageServiceGroupIds.hasValue(forKey: key, transaction: transaction) else {
             // Past restore attempts failed in an unrecoverable way.
             return
         }
@@ -82,10 +82,10 @@ public extension GroupsV2Impl {
         }
 
         // Clear any legacy restore info.
-        groupsFromStorageService_LegacyEnqueuedForRestore.removeValue(forKey: key, transaction: transaction)
+        legacyStorageServiceGroupsToRestore.removeValue(forKey: key, transaction: transaction)
 
         // Store the record for restoration.
-        groupsFromStorageService_EnqueuedRecordForRestore.setData(serializedData, key: key, transaction: transaction)
+        storageServiceGroupsToRestore.setData(serializedData, key: key, transaction: transaction)
 
         transaction.addAsyncCompletionOffMain {
             self.enqueueRestoreGroupPass(account: account)
@@ -99,8 +99,10 @@ public extension GroupsV2Impl {
     private static func canProcessGroupRestore(account: AuthedAccount) -> Bool {
         // CurrentAppContext().isMainAppAndActive should
         // only be called on the main thread.
-        guard CurrentAppContext().isMainApp,
-            CurrentAppContext().isAppForegroundAndActive() else {
+        guard
+            CurrentAppContext().isMainApp,
+            CurrentAppContext().isAppForegroundAndActive()
+        else {
             return false
         }
         guard reachabilityManager.isReachable else {
@@ -151,7 +153,9 @@ public extension GroupsV2Impl {
     }
 
     private static func anyEnqueuedGroupRecord(transaction: SDSAnyReadTransaction) -> StorageServiceProtoGroupV2Record? {
-        guard let serializedData = groupsFromStorageService_EnqueuedRecordForRestore.anyDataValue(transaction: transaction) else { return nil }
+        guard let serializedData = storageServiceGroupsToRestore.anyDataValue(transaction: transaction) else {
+            return nil
+        }
         return try? .init(serializedData: serializedData)
     }
 
@@ -169,7 +173,7 @@ public extension GroupsV2Impl {
                         return (groupRecord.masterKey, groupRecord)
                     } else {
                         // Make sure we don't have any legacy master key only enqueued groups
-                        return (groupsFromStorageService_LegacyEnqueuedForRestore.anyDataValue(transaction: transaction), nil)
+                        return (legacyStorageServiceGroupsToRestore.anyDataValue(transaction: transaction), nil)
                     }
                 }
 
@@ -183,9 +187,9 @@ public extension GroupsV2Impl {
                 // next time that storage service prods us to try.
                 let markAsFailed = {
                     databaseStorage.write { transaction in
-                        self.groupsFromStorageService_EnqueuedRecordForRestore.removeValue(forKey: key, transaction: transaction)
-                        self.groupsFromStorageService_LegacyEnqueuedForRestore.removeValue(forKey: key, transaction: transaction)
-                        self.groupsFromStorageService_Failed.setBool(true, key: key, transaction: transaction)
+                        self.storageServiceGroupsToRestore.removeValue(forKey: key, transaction: transaction)
+                        self.legacyStorageServiceGroupsToRestore.removeValue(forKey: key, transaction: transaction)
+                        self.failedStorageServiceGroupIds.setBool(true, key: key, transaction: transaction)
                     }
                 }
                 let markAsComplete = {
@@ -209,8 +213,8 @@ public extension GroupsV2Impl {
                             _ = recordUpdater.mergeRecord(groupRecord, transaction: transaction)
                         }
 
-                        self.groupsFromStorageService_EnqueuedRecordForRestore.removeValue(forKey: key, transaction: transaction)
-                        self.groupsFromStorageService_LegacyEnqueuedForRestore.removeValue(forKey: key, transaction: transaction)
+                        self.storageServiceGroupsToRestore.removeValue(forKey: key, transaction: transaction)
+                        self.legacyStorageServiceGroupsToRestore.removeValue(forKey: key, transaction: transaction)
                     }
                 }
 
@@ -236,10 +240,12 @@ public extension GroupsV2Impl {
                 // failover to using a "snapshot".
                 let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionAfterMessageProcessWithThrottling
                 firstly {
-                    self.groupV2Updates.tryToRefreshV2GroupThread(groupId: groupContextInfo.groupId,
-                                                                  spamReportingMetadata: .learnedByLocallyInitatedRefresh,
-                                                                  groupSecretParamsData: groupContextInfo.groupSecretParamsData,
-                                                                  groupUpdateMode: groupUpdateMode)
+                    self.groupV2Updates.tryToRefreshV2GroupThread(
+                        groupId: groupContextInfo.groupId,
+                        spamReportingMetadata: .learnedByLocallyInitatedRefresh,
+                        groupSecretParamsData: groupContextInfo.groupSecretParamsData,
+                        groupUpdateMode: groupUpdateMode
+                    )
                 }.done { _ in
                     markAsComplete()
                     future.resolve(.success)

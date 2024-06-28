@@ -47,23 +47,25 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
     // MARK: - Notifications
 
     private func observeNotifications() {
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(reachabilityChanged),
-                                               name: SSKReachability.owsReachabilityDidChange,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didBecomeActive),
-                                               name: .OWSApplicationDidBecomeActive,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(reachabilityChanged),
+            name: SSKReachability.owsReachabilityDidChange,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didBecomeActive),
+            name: .OWSApplicationDidBecomeActive,
+            object: nil
+        )
     }
 
     @objc
     private func didBecomeActive() {
         AssertIsOnMainThread()
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            GroupsV2Impl.enqueueRestoreGroupPass(account: .implicit())
-        }
+        GroupsV2Impl.enqueueRestoreGroupPass(account: .implicit())
     }
 
     @objc
