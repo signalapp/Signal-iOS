@@ -231,12 +231,15 @@ extension MessageBackup {
                 /// An invalid member (group, distribution list, etc) was specified as a distribution list member.  Includes the offending proto
                 case invalidDistributionListMember(protoClass: Any.Type)
 
-                /// A BackupProto.Contact with no aci, pni, or e164.
+                /// A ``BackupProto/Contact`` with no aci, pni, or e164.
                 case contactWithoutIdentifiers
-                /// A BackupProto.Recipient with an unrecognized sub-type.
+                /// A ``BackupProto/Recipient`` with an unrecognized sub-type.
                 case unrecognizedRecipientType
-                /// A BackupProto.Contact for the local user. This shouldn't exist.
+                /// A ``BackupProto/Contact`` for the local user. This shouldn't exist.
                 case otherContactWithLocalIdentifiers
+                /// A ``BackupProto/Contact`` missing info as to whether or not
+                /// it is registered.
+                case contactWithoutRegistrationInfo
 
                 /// A message must come from either an Aci or an E164.
                 /// One in the backup did not.
@@ -390,6 +393,7 @@ extension MessageBackup {
                         .contactWithoutIdentifiers,
                         .unrecognizedRecipientType,
                         .otherContactWithLocalIdentifiers,
+                        .contactWithoutRegistrationInfo,
                         .incomingMessageNotFromAciOrE164,
                         .outgoingNonContactMessageRecipient,
                         .unrecognizedMessageSendStatus,

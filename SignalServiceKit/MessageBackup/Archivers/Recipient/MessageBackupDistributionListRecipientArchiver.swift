@@ -185,7 +185,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupRecipi
         switch recipient.destination {
         case .distributionList(let backupProtoDistributionListItem):
             distributionListItemProto = backupProtoDistributionListItem
-        case nil, .contact, .group, .releaseNotes, .selfRecipient:
+        case nil, .contact, .group, .releaseNotes, .selfRecipient, .callLink:
             return .failure([.restoreFrameError(
                 .developerError(OWSAssertionError("Invalid proto for class")),
                 recipient.recipientId
@@ -332,7 +332,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupRecipi
         switch recipient.destination {
         case .distributionList:
             return true
-        case nil, .contact, .group, .selfRecipient, .releaseNotes:
+        case nil, .contact, .group, .selfRecipient, .releaseNotes, .callLink:
             return false
         }
     }

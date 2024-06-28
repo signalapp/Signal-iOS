@@ -21,6 +21,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
     private let recipientManager: any SignalRecipientManager
     private let signalServiceAddressCache: SignalServiceAddressCache
     private let storyStore: StoryStore
+    private let threadStore: ThreadStore
     private let tsAccountManager: TSAccountManager
     private let usernameLookupManager: UsernameLookupManager
 
@@ -32,6 +33,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         recipientManager: any SignalRecipientManager,
         signalServiceAddressCache: SignalServiceAddressCache,
         storyStore: StoryStore,
+        threadStore: ThreadStore,
         tsAccountManager: TSAccountManager,
         usernameLookupManager: UsernameLookupManager
     ) {
@@ -42,6 +44,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         self.recipientManager = recipientManager
         self.signalServiceAddressCache = signalServiceAddressCache
         self.storyStore = storyStore
+        self.threadStore = threadStore
         self.tsAccountManager = tsAccountManager
         self.usernameLookupManager = usernameLookupManager
     }
@@ -82,24 +85,39 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
 
             let recipientId = context.assignRecipientId(to: recipientAddress)
 
-            var unregisteredAtTimestamp: UInt64 = 0
-            if !recipient.isRegistered {
-                unregisteredAtTimestamp = (
-                    recipient.unregisteredAtTimestamp ?? SignalRecipient.Constants.distantPastUnregisteredTimestamp
-                )
-            }
-
             let storyContext = recipient.aci.map { self.storyStore.getOrCreateStoryContextAssociatedData(for: $0, tx: tx) }
 
             var contact = BackupProto.Contact(
                 blocked: blockedAddresses.contains(recipient.address),
-                hidden: self.recipientHidingManager.isHiddenRecipient(recipient, tx: tx),
-                unregisteredTimestamp: unregisteredAtTimestamp,
+                visibility: { () -> BackupProto.Contact.Visibility in
+                    if self.recipientHidingManager.isHiddenRecipient(recipient, tx: tx) {
+                        if
+                            let contactThread = threadStore.fetchContactThread(recipient: recipient, tx: tx),
+                            threadStore.hasPendingMessageRequest(thread: contactThread, tx: tx)
+                        {
+                            return .HIDDEN_MESSAGE_REQUEST
+                        }
+
+                        return .HIDDEN
+                    } else {
+                        return .VISIBLE
+                    }
+                }(),
                 profileSharing: whitelistedAddresses.contains(recipient.address),
                 hideStory: storyContext?.isHidden ?? false
             )
+            contact.registration = { () -> BackupProto.Contact.Registration in
+                if !recipient.isRegistered {
+                    let unregisteredAtTimestamp = recipient.unregisteredAtTimestamp ?? SignalRecipient.Constants.distantPastUnregisteredTimestamp
 
-            contact.registered = recipient.isRegistered ? .REGISTERED : .NOT_REGISTERED
+                    return .notRegistered(BackupProto.Contact.NotRegistered(
+                        unregisteredTimestamp: unregisteredAtTimestamp
+                    ))
+                }
+
+                return .registered(BackupProto.Contact.Registered())
+            }()
+
             contact.aci = recipient.aci.map(\.rawUUID.data)
             contact.pni = recipient.pni.map(\.rawUUID.data)
             contact.e164 = { () -> UInt64? in
@@ -144,7 +162,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         switch recipient.destination {
         case .contact:
             return true
-        case nil, .group, .distributionList, .selfRecipient, .releaseNotes:
+        case nil, .group, .distributionList, .selfRecipient, .releaseNotes, .callLink:
             return false
         }
     }
@@ -158,25 +176,27 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         switch recipientProto.destination {
         case .contact(let backupProtoContact):
             contactProto = backupProtoContact
-        case nil, .group, .distributionList, .selfRecipient, .releaseNotes:
+        case nil, .group, .distributionList, .selfRecipient, .releaseNotes, .callLink:
             return .failure([.restoreFrameError(
                 .developerError(OWSAssertionError("Invalid proto for class")),
                 recipientProto.recipientId
             )])
         }
 
-        let isRegistered: Bool?
+        let isRegistered: Bool
         let unregisteredTimestamp: UInt64?
-        switch contactProto.registered {
-        case nil, .UNKNOWN:
-            isRegistered = nil
-            unregisteredTimestamp = nil
-        case .REGISTERED:
+        switch contactProto.registration {
+        case nil:
+            return .failure([.restoreFrameError(
+                .invalidProtoData(.contactWithoutRegistrationInfo),
+                recipientProto.recipientId
+            )])
+        case .notRegistered(let notRegisteredProto):
+            isRegistered = false
+            unregisteredTimestamp = notRegisteredProto.unregisteredTimestamp
+        case .registered:
             isRegistered = true
             unregisteredTimestamp = nil
-        case .NOT_REGISTERED:
-            isRegistered = false
-            unregisteredTimestamp = contactProto.unregisteredTimestamp
         }
 
         let aci: Aci?
@@ -264,12 +284,19 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
             blockingManager.addBlockedAddress(recipient.address, tx: tx)
         }
 
-        if contactProto.hidden {
+        switch contactProto.visibility {
+        case .HIDDEN, .HIDDEN_MESSAGE_REQUEST:
+            /// Message-request state for hidden recipients isn't explicitly
+            /// tracked on iOS, and instead is derived from their hidden state
+            /// and the most-recent interactions in their 1:1 chat. So, for both
+            /// of these cases all we need to do is hide the recipient.
             do {
                 try recipientHidingManager.addHiddenRecipient(recipient, wasLocallyInitiated: false, tx: tx)
             } catch let error {
                 return .failure([.restoreFrameError(.databaseInsertionFailed(error), recipientProto.recipientId)])
             }
+        case .VISIBLE:
+            break
         }
 
         // We only need to active hide, since unhidden is the default.

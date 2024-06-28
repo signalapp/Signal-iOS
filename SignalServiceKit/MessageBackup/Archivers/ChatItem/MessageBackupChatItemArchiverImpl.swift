@@ -212,17 +212,12 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
             chatId: chatId.value,
             authorId: details.author.value,
             dateSent: interaction.timestamp,
+            expireStartDate: details.expireStartDate ?? 0,
+            expiresInMs: details.expiresInMs ?? 0,
             sms: details.isSms
         )
-
         chatItem.item = details.chatItemType
         chatItem.directionalDetails = details.directionalDetails
-        if let expireStartDate = details.expireStartDate, expireStartDate > 0 {
-            chatItem.expireStartDate = expireStartDate
-        }
-        if let expiresInMs = details.expiresInMs, expiresInMs > 0 {
-            chatItem.expiresInMs = expiresInMs
-        }
         chatItem.revisions = details.revisions
 
         let error = Self.writeFrameToStream(

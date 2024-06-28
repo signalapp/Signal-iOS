@@ -471,7 +471,15 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 // TODO: Not yet implemented.
                 try processRestoreFrameErrors(errors: [.restoreFrameError(
                     .unimplemented,
-                    MessageBackup.StickerPackId(backupProtoStickerPack.id)
+                    MessageBackup.StickerPackId(backupProtoStickerPack.packId)
+                )])
+            case .adHocCall(let backupProtoAdHocCall):
+                try processRestoreFrameErrors(errors: [.restoreFrameError(
+                    .unimplemented,
+                    MessageBackup.AdHocCallId(
+                        backupProtoAdHocCall.callId,
+                        recipientId: backupProtoAdHocCall.recipientId
+                    )
                 )])
             case nil:
                 owsFailDebug("Frame missing item!")

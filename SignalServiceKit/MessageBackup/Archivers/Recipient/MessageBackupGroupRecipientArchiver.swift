@@ -105,15 +105,15 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
             ),
             hideStory: storyStore.getOrCreateStoryContextAssociatedData(
                 forGroupThread: groupThread, tx: tx
-            ).isHidden
+            ).isHidden,
+            storySendMode: { () -> BackupProto.Group.StorySendMode in
+                switch groupThread.storyViewMode {
+                case .disabled: return .DISABLED
+                case .explicit, .blockList: return .ENABLED
+                case .default: return .DEFAULT
+                }
+            }()
         )
-        group.storySendMode = { () -> BackupProto.Group.StorySendMode in
-            switch groupThread.storyViewMode {
-            case .disabled: return .DISABLED
-            case .explicit: return .ENABLED
-            default: return .DEFAULT
-            }
-        }()
         group.snapshot = { () -> BackupProto.Group.GroupSnapshot in
             var groupSnapshot = BackupProto.Group.GroupSnapshot(
                 publicKey: groupPublicKey,
@@ -209,7 +209,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
         switch recipient.destination {
         case .group:
             return true
-        case nil, .contact, .distributionList, .selfRecipient, .releaseNotes:
+        case nil, .contact, .distributionList, .selfRecipient, .releaseNotes, .callLink:
             return false
         }
     }
@@ -223,7 +223,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
         switch recipient.destination {
         case .group(let backupProtoGroup):
             groupProto = backupProtoGroup
-        case nil, .contact, .distributionList, .selfRecipient, .releaseNotes:
+        case nil, .contact, .distributionList, .selfRecipient, .releaseNotes, .callLink:
             return .failure([.restoreFrameError(
                 .developerError(OWSAssertionError("Invalid proto for class")),
                 recipient.recipientId
@@ -362,7 +362,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
 
         let isStorySendEnabled: Bool? = {
             switch groupProto.storySendMode {
-            case nil, .DEFAULT:
+            case .DEFAULT:
                 // No explicit setting.
                 return nil
             case .DISABLED:

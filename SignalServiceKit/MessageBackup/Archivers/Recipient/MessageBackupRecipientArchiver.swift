@@ -96,6 +96,7 @@ internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchive
             recipientManager: recipientManager,
             signalServiceAddressCache: signalServiceAddressCache,
             storyStore: storyStore,
+            threadStore: threadStore,
             tsAccountManager: tsAccountManager,
             usernameLookupManager: usernameLookupManager
         ),

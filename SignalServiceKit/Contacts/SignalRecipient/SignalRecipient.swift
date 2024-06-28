@@ -101,11 +101,11 @@ public final class SignalRecipient: NSObject, NSCopying, SDSCodableModel, Decoda
 
     public static func fromBackup(
         _ backupContact: MessageBackup.ContactAddress,
-        isRegistered: Bool?,
+        isRegistered: Bool,
         unregisteredAtTimestamp: UInt64?
     ) -> Self {
         let deviceIds: [UInt32]
-        if isRegistered == true {
+        if isRegistered {
             // If we think they are registered, just add the primary device id.
             // When we try and send a message, the server will tell us about
             // any other device ids.

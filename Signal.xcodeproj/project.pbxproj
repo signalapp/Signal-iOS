@@ -1915,6 +1915,7 @@
 		D9C964172BE56DFB0058F143 /* MessageBackupIntegrationTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C964162BE56DFB0058F143 /* MessageBackupIntegrationTestCase.swift */; };
 		D9C964192BE59E270058F143 /* MessageBackupIntegrationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C964182BE59E270058F143 /* MessageBackupIntegrationTest.swift */; };
 		D9CA5BF729B3F61E00D9AAD1 /* LegacyChangePhoneNumber+ChangeTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CA5BF629B3F61E00D9AAD1 /* LegacyChangePhoneNumber+ChangeTokens.swift */; };
+		D9CA61482C2E2D0000F99EA3 /* MessageBackupAdHocCallArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CA61472C2E2D0000F99EA3 /* MessageBackupAdHocCallArchiver.swift */; };
 		D9CA8AB02B698DFF00787167 /* DeletedCallRecordCleanupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CA8AAF2B698DFF00787167 /* DeletedCallRecordCleanupManager.swift */; };
 		D9CA8AB32B6ACC0600787167 /* DeletedCallRecordCleanupManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CA8AB22B6ACC0600787167 /* DeletedCallRecordCleanupManagerTest.swift */; };
 		D9CA8AB72B6AE77200787167 /* CallRecordDeleteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CA8AB62B6AE77200787167 /* CallRecordDeleteManager.swift */; };
@@ -4926,6 +4927,7 @@
 		D9C964162BE56DFB0058F143 /* MessageBackupIntegrationTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupIntegrationTestCase.swift; sourceTree = "<group>"; };
 		D9C964182BE59E270058F143 /* MessageBackupIntegrationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupIntegrationTest.swift; sourceTree = "<group>"; };
 		D9CA5BF629B3F61E00D9AAD1 /* LegacyChangePhoneNumber+ChangeTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LegacyChangePhoneNumber+ChangeTokens.swift"; sourceTree = "<group>"; };
+		D9CA61472C2E2D0000F99EA3 /* MessageBackupAdHocCallArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupAdHocCallArchiver.swift; sourceTree = "<group>"; };
 		D9CA8AAF2B698DFF00787167 /* DeletedCallRecordCleanupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletedCallRecordCleanupManager.swift; sourceTree = "<group>"; };
 		D9CA8AB22B6ACC0600787167 /* DeletedCallRecordCleanupManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletedCallRecordCleanupManagerTest.swift; sourceTree = "<group>"; };
 		D9CA8AB62B6AE77200787167 /* CallRecordDeleteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordDeleteManager.swift; sourceTree = "<group>"; };
@@ -8306,6 +8308,7 @@
 			isa = PBXGroup;
 			children = (
 				66CD255B2B06885400139E17 /* AccountData */,
+				D9CA61462C2E2CF100F99EA3 /* AdHocCall */,
 				66CD255C2B06885F00139E17 /* Chat */,
 				66CD255D2B06886800139E17 /* ChatItem */,
 				66CD255A2B06884700139E17 /* Recipient */,
@@ -10045,6 +10048,14 @@
 				D9C964162BE56DFB0058F143 /* MessageBackupIntegrationTestCase.swift */,
 			);
 			path = MessageBackup;
+			sourceTree = "<group>";
+		};
+		D9CA61462C2E2CF100F99EA3 /* AdHocCall */ = {
+			isa = PBXGroup;
+			children = (
+				D9CA61472C2E2D0000F99EA3 /* MessageBackupAdHocCallArchiver.swift */,
+			);
+			path = AdHocCall;
 			sourceTree = "<group>";
 		};
 		D9CA8AAD2B698B2400787167 /* DeletedCallRecord */ = {
@@ -14209,6 +14220,7 @@
 				5052AF5E2ACB0E9700D7EE9F /* MergePair.swift in Sources */,
 				66BB4D592AD8BF6200A84219 /* MergingDict.swift in Sources */,
 				66CD25642B06949C00139E17 /* MessageBackupAccountDataArchiver.swift in Sources */,
+				D9CA61482C2E2D0000F99EA3 /* MessageBackupAdHocCallArchiver.swift in Sources */,
 				C18806342BD8080B0024044A /* MessageBackupAuthCredentialManager.swift in Sources */,
 				66CD25662B0695F400139E17 /* MessageBackupChatArchiver.swift in Sources */,
 				66CD25682B06960F00139E17 /* MessageBackupChatItemArchiver.swift in Sources */,

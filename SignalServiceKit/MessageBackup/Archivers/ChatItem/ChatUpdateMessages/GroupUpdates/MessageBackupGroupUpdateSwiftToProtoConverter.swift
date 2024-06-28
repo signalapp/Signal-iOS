@@ -304,54 +304,44 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             )
         case .membersAccessChangedByLocalUser(let newAccess):
             setUpdate(
-                BackupProto.GroupMembershipAccessLevelChangeUpdate(),
+                BackupProto.GroupMembershipAccessLevelChangeUpdate(accessLevel: newAccess.backupAccessLevel),
                 setOptionalFields: {
                     $0.updaterAci = localAciData
-                    $0.accessLevel = newAccess.backupAccessLevel
                 },
                 asUpdate: { .groupMembershipAccessLevelChangeUpdate($0) }
             )
         case .membersAccessChangedByOtherUser(let updaterAci, let newAccess):
             setUpdate(
-                BackupProto.GroupMembershipAccessLevelChangeUpdate(),
+                BackupProto.GroupMembershipAccessLevelChangeUpdate(accessLevel: newAccess.backupAccessLevel),
                 setOptionalFields: {
                     $0.updaterAci = aciData(updaterAci)
-                    $0.accessLevel = newAccess.backupAccessLevel
                 },
                 asUpdate: { .groupMembershipAccessLevelChangeUpdate($0) }
             )
         case .membersAccessChangedByUnknownUser(let newAccess):
             setUpdate(
-                BackupProto.GroupMembershipAccessLevelChangeUpdate(),
-                setOptionalFields: {
-                    $0.accessLevel = newAccess.backupAccessLevel
-                },
+                BackupProto.GroupMembershipAccessLevelChangeUpdate(accessLevel: newAccess.backupAccessLevel),
                 asUpdate: { .groupMembershipAccessLevelChangeUpdate($0) }
             )
         case .attributesAccessChangedByLocalUser(let newAccess):
             setUpdate(
-                BackupProto.GroupAttributesAccessLevelChangeUpdate(),
+                BackupProto.GroupAttributesAccessLevelChangeUpdate(accessLevel: newAccess.backupAccessLevel),
                 setOptionalFields: {
                     $0.updaterAci = localAciData
-                    $0.accessLevel = newAccess.backupAccessLevel
                 },
                 asUpdate: { .groupAttributesAccessLevelChangeUpdate($0) }
             )
         case .attributesAccessChangedByOtherUser(let updaterAci, let newAccess):
             setUpdate(
-                BackupProto.GroupAttributesAccessLevelChangeUpdate(),
+                BackupProto.GroupAttributesAccessLevelChangeUpdate(accessLevel: newAccess.backupAccessLevel),
                 setOptionalFields: {
                     $0.updaterAci = aciData(updaterAci)
-                    $0.accessLevel = newAccess.backupAccessLevel
                 },
                 asUpdate: { .groupAttributesAccessLevelChangeUpdate($0) }
             )
         case .attributesAccessChangedByUnknownUser(let newAccess):
             setUpdate(
-                BackupProto.GroupAttributesAccessLevelChangeUpdate(),
-                setOptionalFields: {
-                    $0.accessLevel = newAccess.backupAccessLevel
-                },
+                BackupProto.GroupAttributesAccessLevelChangeUpdate(accessLevel: newAccess.backupAccessLevel),
                 asUpdate: { .groupAttributesAccessLevelChangeUpdate($0) }
             )
         case .announcementOnlyEnabledByLocalUser:

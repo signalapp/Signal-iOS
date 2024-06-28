@@ -91,6 +91,20 @@ extension BackupProto {
 
     }
 
+    /**
+     * Frames must follow in the following ordering rules:
+     *
+     * 1. There is exactly one AccountData and it is the first frame.
+     * 2. A frame referenced by ID must come before the referencing frame.
+     *    e.g. a Recipient must come before any Chat referencing it.
+     * 3. All ChatItems must appear in global Chat rendering order.
+     *    (The order in which they were received by the client.)
+     *
+     * Recipients, Chats, StickerPacks, and AdHocCalls can be in any order.
+     * (But must respect rule 2.)
+     * For example, Chats may all be together at the beginning,
+     * or may each immediately precede its first ChatItem.
+     */
     public struct Frame {
 
         public var item: BackupProto.Frame.Item?
@@ -111,9 +125,8 @@ extension BackupProto {
         public var givenName: String
         public var familyName: String
         public var avatarUrlPath: String
-        public var subscriberId: Foundation.Data
-        public var subscriberCurrencyCode: String
-        public var subscriptionManuallyCancelled: Bool
+        public var donationSubscriberData: BackupProto.AccountData.SubscriberData?
+        public var backupsSubscriberData: BackupProto.AccountData.SubscriberData?
         public var accountSettings: BackupProto.AccountData.AccountSettings?
         public var unknownFields: UnknownFields = .init()
 
@@ -122,18 +135,12 @@ extension BackupProto {
             givenName: String,
             familyName: String,
             avatarUrlPath: String,
-            subscriberId: Foundation.Data,
-            subscriberCurrencyCode: String,
-            subscriptionManuallyCancelled: Bool,
             configure: (inout Self) -> Swift.Void = { _ in }
         ) {
             self.profileKey = profileKey
             self.givenName = givenName
             self.familyName = familyName
             self.avatarUrlPath = avatarUrlPath
-            self.subscriberId = subscriberId
-            self.subscriberCurrencyCode = subscriberCurrencyCode
-            self.subscriptionManuallyCancelled = subscriptionManuallyCancelled
             configure(&self)
         }
 
@@ -172,10 +179,7 @@ extension BackupProto {
         @ProtoDefaulted
         public var e164: UInt64?
         public var blocked: Bool
-        public var hidden: Bool
-        @ProtoDefaulted
-        public var registered: BackupProto.Contact.Registered?
-        public var unregisteredTimestamp: UInt64
+        public var visibility: BackupProto.Contact.Visibility
         @ProtoDefaulted
         public var profileKey: Foundation.Data?
         public var profileSharing: Bool
@@ -184,19 +188,18 @@ extension BackupProto {
         @ProtoDefaulted
         public var profileFamilyName: String?
         public var hideStory: Bool
+        public var registration: BackupProto.Contact.Registration?
         public var unknownFields: UnknownFields = .init()
 
         public init(
             blocked: Bool,
-            hidden: Bool,
-            unregisteredTimestamp: UInt64,
+            visibility: BackupProto.Contact.Visibility,
             profileSharing: Bool,
             hideStory: Bool,
             configure: (inout Self) -> Swift.Void = { _ in }
         ) {
             self.blocked = blocked
-            self.hidden = hidden
-            self.unregisteredTimestamp = unregisteredTimestamp
+            self.visibility = visibility
             self.profileSharing = profileSharing
             self.hideStory = hideStory
             configure(&self)
@@ -209,8 +212,7 @@ extension BackupProto {
         public var masterKey: Foundation.Data
         public var whitelisted: Bool
         public var hideStory: Bool
-        @ProtoDefaulted
-        public var storySendMode: BackupProto.Group.StorySendMode?
+        public var storySendMode: BackupProto.Group.StorySendMode
         public var snapshot: BackupProto.Group.GroupSnapshot?
         public var unknownFields: UnknownFields = .init()
 
@@ -218,11 +220,13 @@ extension BackupProto {
             masterKey: Foundation.Data,
             whitelisted: Bool,
             hideStory: Bool,
+            storySendMode: BackupProto.Group.StorySendMode,
             configure: (inout Self) -> Swift.Void = { _ in }
         ) {
             self.masterKey = masterKey
             self.whitelisted = whitelisted
             self.hideStory = hideStory
+            self.storySendMode = storySendMode
             configure(&self)
         }
 
@@ -265,8 +269,7 @@ extension BackupProto {
         public var muteUntilMs: UInt64
         public var markedUnread: Bool
         public var dontNotifyForMentionsIfMuted: Bool
-        @ProtoDefaulted
-        public var wallpaper: BackupProto.FilePointer?
+        public var style: BackupProto.ChatStyle?
         public var unknownFields: UnknownFields = .init()
 
         public init(
@@ -289,6 +292,68 @@ extension BackupProto {
             self.markedUnread = markedUnread
             self.dontNotifyForMentionsIfMuted = dontNotifyForMentionsIfMuted
             configure(&self)
+        }
+
+    }
+
+    /**
+     * Call Links have some associated data including a call, but unlike other recipients
+     * are not tied to threads because they do not have messages associated with them.
+     *
+     * note:
+     * - room id can be derived from the root key
+     * - the presence of an admin key means this user is a call admin
+     */
+    public struct CallLink {
+
+        public var rootKey: Foundation.Data
+        /**
+         * Only present if the user is an admin
+         */
+        @ProtoDefaulted
+        public var adminKey: Foundation.Data?
+        public var name: String
+        public var restrictions: BackupProto.CallLink.Restrictions
+        public var expirationMs: UInt64
+        public var unknownFields: UnknownFields = .init()
+
+        public init(
+            rootKey: Foundation.Data,
+            name: String,
+            restrictions: BackupProto.CallLink.Restrictions,
+            expirationMs: UInt64,
+            configure: (inout Self) -> Swift.Void = { _ in }
+        ) {
+            self.rootKey = rootKey
+            self.name = name
+            self.restrictions = restrictions
+            self.expirationMs = expirationMs
+            configure(&self)
+        }
+
+    }
+
+    public struct AdHocCall {
+
+        public var callId: UInt64
+        /**
+         * Refers to a `CallLink` recipient.
+         */
+        public var recipientId: UInt64
+        public var state: BackupProto.AdHocCall.State
+        public var callTimestamp: UInt64
+        public var unknownFields: UnknownFields = .init()
+
+        public init(
+            callId: UInt64,
+            recipientId: UInt64,
+            state: BackupProto.AdHocCall.State,
+            callTimestamp: UInt64
+        ) {
+            self.callId = callId
+            self.recipientId = recipientId
+            self.state = state
+            self.callTimestamp = callTimestamp
         }
 
     }
@@ -334,34 +399,6 @@ extension BackupProto {
 
     }
 
-    public struct Identity {
-
-        public var serviceId: Foundation.Data
-        public var identityKey: Foundation.Data
-        public var timestamp: UInt64
-        public var firstUse: Bool
-        public var verified: Bool
-        public var nonblockingApproval: Bool
-        public var unknownFields: UnknownFields = .init()
-
-        public init(
-            serviceId: Foundation.Data,
-            identityKey: Foundation.Data,
-            timestamp: UInt64,
-            firstUse: Bool,
-            verified: Bool,
-            nonblockingApproval: Bool
-        ) {
-            self.serviceId = serviceId
-            self.identityKey = identityKey
-            self.timestamp = timestamp
-            self.firstUse = firstUse
-            self.verified = verified
-            self.nonblockingApproval = nonblockingApproval
-        }
-
-    }
-
     public struct ChatItem {
 
         /**
@@ -376,13 +413,11 @@ extension BackupProto {
         /**
          * timestamp of when expiration timer started ticking down
          */
-        @ProtoDefaulted
-        public var expireStartDate: UInt64?
+        public var expireStartDate: UInt64
         /**
          * how long timer of message is (ms)
          */
-        @ProtoDefaulted
-        public var expiresInMs: UInt64?
+        public var expiresInMs: UInt64
         /**
          * ordered from oldest to newest
          */
@@ -396,12 +431,16 @@ extension BackupProto {
             chatId: UInt64,
             authorId: UInt64,
             dateSent: UInt64,
+            expireStartDate: UInt64,
+            expiresInMs: UInt64,
             sms: Bool,
             configure: (inout Self) -> Swift.Void = { _ in }
         ) {
             self.chatId = chatId
             self.authorId = authorId
             self.dateSent = dateSent
+            self.expireStartDate = expireStartDate
+            self.expiresInMs = expiresInMs
             self.sms = sms
             configure(&self)
         }
@@ -411,8 +450,7 @@ extension BackupProto {
     public struct SendStatus {
 
         public var recipientId: UInt64
-        @ProtoDefaulted
-        public var deliveryStatus: BackupProto.SendStatus.Status?
+        public var deliveryStatus: BackupProto.SendStatus.Status
         public var networkFailure: Bool
         public var identityKeyMismatch: Bool
         public var sealedSender: Bool
@@ -424,18 +462,18 @@ extension BackupProto {
 
         public init(
             recipientId: UInt64,
+            deliveryStatus: BackupProto.SendStatus.Status,
             networkFailure: Bool,
             identityKeyMismatch: Bool,
             sealedSender: Bool,
-            lastStatusUpdateTimestamp: UInt64,
-            configure: (inout Self) -> Swift.Void = { _ in }
+            lastStatusUpdateTimestamp: UInt64
         ) {
             self.recipientId = recipientId
+            self.deliveryStatus = deliveryStatus
             self.networkFailure = networkFailure
             self.identityKeyMismatch = identityKeyMismatch
             self.sealedSender = sealedSender
             self.lastStatusUpdateTimestamp = lastStatusUpdateTimestamp
-            configure(&self)
         }
 
     }
@@ -457,7 +495,7 @@ extension BackupProto {
 
         public var quote: BackupProto.Quote?
         public var text: BackupProto.Text?
-        public var attachments: [BackupProto.FilePointer] = []
+        public var attachments: [BackupProto.MessageAttachment] = []
         public var linkPreview: [BackupProto.LinkPreview] = []
         @ProtoDefaulted
         public var longText: BackupProto.FilePointer?
@@ -505,6 +543,19 @@ extension BackupProto {
 
     }
 
+    public struct GiftBadge {
+
+        public var receiptCredentialPresentation: Foundation.Data
+        public var state: BackupProto.GiftBadge.State
+        public var unknownFields: UnknownFields = .init()
+
+        public init(receiptCredentialPresentation: Foundation.Data, state: BackupProto.GiftBadge.State) {
+            self.receiptCredentialPresentation = receiptCredentialPresentation
+            self.state = state
+        }
+
+    }
+
     public struct ContactAttachment {
 
         @ProtoDefaulted
@@ -513,37 +564,9 @@ extension BackupProto {
         public var email: [BackupProto.ContactAttachment.Email] = []
         public var address: [BackupProto.ContactAttachment.PostalAddress] = []
         @ProtoDefaulted
-        public var avatar: BackupProto.ContactAttachment.Avatar?
+        public var avatar: BackupProto.FilePointer?
         @ProtoDefaulted
         public var organization: String?
-        public var unknownFields: UnknownFields = .init()
-
-        public init(configure: (inout Self) -> Swift.Void = { _ in }) {
-            configure(&self)
-        }
-
-    }
-
-    public struct DocumentMessage {
-
-        public var text: BackupProto.Text?
-        @ProtoDefaulted
-        public var document: BackupProto.FilePointer?
-        public var reactions: [BackupProto.Reaction] = []
-        public var unknownFields: UnknownFields = .init()
-
-        public init(configure: (inout Self) -> Swift.Void = { _ in }) {
-            configure(&self)
-        }
-
-    }
-
-    public struct VoiceMessage {
-
-        public var quote: BackupProto.Quote?
-        @ProtoDefaulted
-        public var audio: BackupProto.FilePointer?
-        public var reactions: [BackupProto.Reaction] = []
         public var unknownFields: UnknownFields = .init()
 
         public init(configure: (inout Self) -> Swift.Void = { _ in }) {
@@ -583,6 +606,14 @@ extension BackupProto {
         public var stickerId: UInt32
         @ProtoDefaulted
         public var emoji: String?
+        /**
+         * Stickers are uploaded to be sent as attachments; we also
+         * back them up as normal attachments when they are in messages.
+         * DO NOT treat this as the definitive source of a sticker in
+         * an installed StickerPack that shares the same packId.
+         */
+        @ProtoDefaulted
+        public var data: BackupProto.FilePointer?
         public var unknownFields: UnknownFields = .init()
 
         public init(
@@ -619,26 +650,46 @@ extension BackupProto {
 
     }
 
+    /**
+     * A FilePointer on a message that has additional
+     * metadata that applies only to message attachments.
+     */
+    public struct MessageAttachment {
+
+        @ProtoDefaulted
+        public var pointer: BackupProto.FilePointer?
+        public var flag: BackupProto.MessageAttachment.Flag
+        public var wasDownloaded: Bool
+        /**
+         * Cross-client identifier for this attachment among all attachments on the
+         * owning message. See: SignalService.AttachmentPointer.clientUuid.
+         */
+        @ProtoDefaulted
+        public var clientUuid: Foundation.Data?
+        public var unknownFields: UnknownFields = .init()
+
+        public init(
+            flag: BackupProto.MessageAttachment.Flag,
+            wasDownloaded: Bool,
+            configure: (inout Self) -> Swift.Void = { _ in }
+        ) {
+            self.flag = flag
+            self.wasDownloaded = wasDownloaded
+            configure(&self)
+        }
+
+    }
+
     public struct FilePointer {
 
         @ProtoDefaulted
-        public var key: Foundation.Data?
-        @ProtoDefaulted
         public var contentType: String?
-        /**
-         * Size of fullsize decrypted media blob in bytes.
-         * Can be ignored if unset/unavailable.
-         */
-        @ProtoDefaulted
-        public var size: UInt32?
         @ProtoDefaulted
         public var incrementalMac: Foundation.Data?
         @ProtoDefaulted
-        public var incrementalMacChunkSize: Foundation.Data?
+        public var incrementalMacChunkSize: UInt32?
         @ProtoDefaulted
         public var fileName: String?
-        @ProtoDefaulted
-        public var flags: UInt32?
         @ProtoDefaulted
         public var width: UInt32?
         @ProtoDefaulted
@@ -668,12 +719,16 @@ extension BackupProto {
         public var text: String?
         public var attachments: [BackupProto.Quote.QuotedAttachment] = []
         public var bodyRanges: [BackupProto.BodyRange] = []
-        @ProtoDefaulted
-        public var type: BackupProto.Quote.Type_?
+        public var type: BackupProto.Quote.Type_
         public var unknownFields: UnknownFields = .init()
 
-        public init(authorId: UInt64, configure: (inout Self) -> Swift.Void = { _ in }) {
+        public init(
+            authorId: UInt64,
+            type: BackupProto.Quote.Type_,
+            configure: (inout Self) -> Swift.Void = { _ in }
+        ) {
             self.authorId = authorId
+            self.type = type
             configure(&self)
         }
 
@@ -801,17 +856,6 @@ extension BackupProto {
 
     }
 
-    public struct GroupDescriptionChatUpdate {
-
-        public var newDescription: String
-        public var unknownFields: UnknownFields = .init()
-
-        public init(newDescription: String) {
-            self.newDescription = newDescription
-        }
-
-    }
-
     /**
      * For 1:1 chat updates only.
      * For group thread updates use GroupExpirationTimerUpdate.
@@ -839,6 +883,17 @@ extension BackupProto {
         public init(previousName: String, newName: String) {
             self.previousName = previousName
             self.newName = newName
+        }
+
+    }
+
+    public struct LearnedProfileChatUpdate {
+
+        public var previousName: BackupProto.LearnedProfileChatUpdate.PreviousName?
+        public var unknownFields: UnknownFields = .init()
+
+        public init(configure: (inout Self) -> Swift.Void = { _ in }) {
+            configure(&self)
         }
 
     }
@@ -979,11 +1034,11 @@ extension BackupProto {
 
         @ProtoDefaulted
         public var updaterAci: Foundation.Data?
-        @ProtoDefaulted
-        public var accessLevel: BackupProto.GroupV2AccessLevel?
+        public var accessLevel: BackupProto.GroupV2AccessLevel
         public var unknownFields: UnknownFields = .init()
 
-        public init(configure: (inout Self) -> Swift.Void = { _ in }) {
+        public init(accessLevel: BackupProto.GroupV2AccessLevel, configure: (inout Self) -> Swift.Void = { _ in }) {
+            self.accessLevel = accessLevel
             configure(&self)
         }
 
@@ -993,11 +1048,11 @@ extension BackupProto {
 
         @ProtoDefaulted
         public var updaterAci: Foundation.Data?
-        @ProtoDefaulted
-        public var accessLevel: BackupProto.GroupV2AccessLevel?
+        public var accessLevel: BackupProto.GroupV2AccessLevel
         public var unknownFields: UnknownFields = .init()
 
-        public init(configure: (inout Self) -> Swift.Void = { _ in }) {
+        public init(accessLevel: BackupProto.GroupV2AccessLevel, configure: (inout Self) -> Swift.Void = { _ in }) {
+            self.accessLevel = accessLevel
             configure(&self)
         }
 
@@ -1405,7 +1460,7 @@ extension BackupProto {
     public struct GroupExpirationTimerUpdate {
 
         /**
-         * 0 means the expiration timer was disabled.
+         * 0 means the expiration timer was disabled
          */
         public var expiresInMs: UInt32
         @ProtoDefaulted
@@ -1421,41 +1476,24 @@ extension BackupProto {
 
     public struct StickerPack {
 
-        public var id: Foundation.Data
-        public var key: Foundation.Data
-        public var title: String
-        public var author: String
-        /**
-         * First one should be cover sticker.
-         */
-        public var stickers: [BackupProto.StickerPackSticker] = []
+        public var packId: Foundation.Data
+        public var packKey: Foundation.Data
         public var unknownFields: UnknownFields = .init()
 
-        public init(
-            id: Foundation.Data,
-            key: Foundation.Data,
-            title: String,
-            author: String,
-            configure: (inout Self) -> Swift.Void = { _ in }
-        ) {
-            self.id = id
-            self.key = key
-            self.title = title
-            self.author = author
-            configure(&self)
+        public init(packId: Foundation.Data, packKey: Foundation.Data) {
+            self.packId = packId
+            self.packKey = packKey
         }
 
     }
 
-    public struct StickerPackSticker {
+    public struct ChatStyle {
 
-        @ProtoDefaulted
-        public var data: BackupProto.FilePointer?
-        public var emoji: String
+        public var wallpaper: BackupProto.ChatStyle.Wallpaper?
+        public var bubbleColor: BackupProto.ChatStyle.BubbleColor?
         public var unknownFields: UnknownFields = .init()
 
-        public init(emoji: String, configure: (inout Self) -> Swift.Void = { _ in }) {
-            self.emoji = emoji
+        public init(configure: (inout Self) -> Swift.Void = { _ in }) {
             configure(&self)
         }
 
@@ -1577,6 +1615,7 @@ extension BackupProto.Frame : Proto3Codable {
             case 3: item = .chat(try protoReader.decode(BackupProto.Chat.self))
             case 4: item = .chatItem(try protoReader.decode(BackupProto.ChatItem.self))
             case 5: item = .stickerPack(try protoReader.decode(BackupProto.StickerPack.self))
+            case 6: item = .adHocCall(try protoReader.decode(BackupProto.AdHocCall.self))
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -1609,6 +1648,8 @@ extension BackupProto.Frame : Codable {
             self.item = .chatItem(chatItem)
         } else if let stickerPack = try container.decodeIfPresent(BackupProto.StickerPack.self, forKey: "stickerPack") {
             self.item = .stickerPack(stickerPack)
+        } else if let adHocCall = try container.decodeIfPresent(BackupProto.AdHocCall.self, forKey: "adHocCall") {
+            self.item = .adHocCall(adHocCall)
         } else {
             self.item = nil
         }
@@ -1623,6 +1664,7 @@ extension BackupProto.Frame : Codable {
         case .chat(let chat): try container.encode(chat, forKey: "chat")
         case .chatItem(let chatItem): try container.encode(chatItem, forKey: "chatItem")
         case .stickerPack(let stickerPack): try container.encode(stickerPack, forKey: "stickerPack")
+        case .adHocCall(let adHocCall): try container.encode(adHocCall, forKey: "adHocCall")
         case Optional.none: break
         }
     }
@@ -1642,6 +1684,7 @@ extension BackupProto.Frame {
         case chat(BackupProto.Chat)
         case chatItem(BackupProto.ChatItem)
         case stickerPack(BackupProto.StickerPack)
+        case adHocCall(BackupProto.AdHocCall)
 
         fileprivate func encode(to protoWriter: ProtoWriter) throws {
             switch self {
@@ -1650,6 +1693,7 @@ extension BackupProto.Frame {
             case .chat(let chat): try protoWriter.encode(tag: 3, value: chat)
             case .chatItem(let chatItem): try protoWriter.encode(tag: 4, value: chatItem)
             case .stickerPack(let stickerPack): try protoWriter.encode(tag: 5, value: stickerPack)
+            case .adHocCall(let adHocCall): try protoWriter.encode(tag: 6, value: adHocCall)
             }
         }
 
@@ -1700,9 +1744,8 @@ extension BackupProto.AccountData : Proto3Codable {
         var givenName: String = ""
         var familyName: String = ""
         var avatarUrlPath: String = ""
-        var subscriberId: Foundation.Data = .init()
-        var subscriberCurrencyCode: String = ""
-        var subscriptionManuallyCancelled: Bool = false
+        var donationSubscriberData: BackupProto.AccountData.SubscriberData? = nil
+        var backupsSubscriberData: BackupProto.AccountData.SubscriberData? = nil
         var accountSettings: BackupProto.AccountData.AccountSettings? = nil
 
         let token = try protoReader.beginMessage()
@@ -1714,10 +1757,9 @@ extension BackupProto.AccountData : Proto3Codable {
             case 4: givenName = try protoReader.decode(String.self)
             case 5: familyName = try protoReader.decode(String.self)
             case 6: avatarUrlPath = try protoReader.decode(String.self)
-            case 7: subscriberId = try protoReader.decode(Foundation.Data.self)
-            case 8: subscriberCurrencyCode = try protoReader.decode(String.self)
-            case 9: subscriptionManuallyCancelled = try protoReader.decode(Bool.self)
-            case 10: accountSettings = try protoReader.decode(BackupProto.AccountData.AccountSettings.self)
+            case 7: donationSubscriberData = try protoReader.decode(BackupProto.AccountData.SubscriberData.self)
+            case 8: backupsSubscriberData = try protoReader.decode(BackupProto.AccountData.SubscriberData.self)
+            case 9: accountSettings = try protoReader.decode(BackupProto.AccountData.AccountSettings.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -1729,9 +1771,8 @@ extension BackupProto.AccountData : Proto3Codable {
         self.givenName = givenName
         self.familyName = familyName
         self.avatarUrlPath = avatarUrlPath
-        self.subscriberId = subscriberId
-        self.subscriberCurrencyCode = subscriberCurrencyCode
-        self.subscriptionManuallyCancelled = subscriptionManuallyCancelled
+        self.donationSubscriberData = donationSubscriberData
+        self.backupsSubscriberData = backupsSubscriberData
         self.accountSettings = accountSettings
     }
 
@@ -1742,10 +1783,9 @@ extension BackupProto.AccountData : Proto3Codable {
         try protoWriter.encode(tag: 4, value: self.givenName)
         try protoWriter.encode(tag: 5, value: self.familyName)
         try protoWriter.encode(tag: 6, value: self.avatarUrlPath)
-        try protoWriter.encode(tag: 7, value: self.subscriberId)
-        try protoWriter.encode(tag: 8, value: self.subscriberCurrencyCode)
-        try protoWriter.encode(tag: 9, value: self.subscriptionManuallyCancelled)
-        try protoWriter.encode(tag: 10, value: self.accountSettings)
+        try protoWriter.encode(tag: 7, value: self.donationSubscriberData)
+        try protoWriter.encode(tag: 8, value: self.backupsSubscriberData)
+        try protoWriter.encode(tag: 9, value: self.accountSettings)
         try protoWriter.writeUnknownFields(unknownFields)
     }
 
@@ -1762,9 +1802,8 @@ extension BackupProto.AccountData : Codable {
         self.givenName = try container.decode(String.self, forKey: "givenName")
         self.familyName = try container.decode(String.self, forKey: "familyName")
         self.avatarUrlPath = try container.decode(String.self, forKey: "avatarUrlPath")
-        self.subscriberId = try container.decode(stringEncoded: Foundation.Data.self, forKey: "subscriberId")
-        self.subscriberCurrencyCode = try container.decode(String.self, forKey: "subscriberCurrencyCode")
-        self.subscriptionManuallyCancelled = try container.decode(Bool.self, forKey: "subscriptionManuallyCancelled")
+        self.donationSubscriberData = try container.decodeIfPresent(BackupProto.AccountData.SubscriberData.self, forKey: "donationSubscriberData")
+        self.backupsSubscriberData = try container.decodeIfPresent(BackupProto.AccountData.SubscriberData.self, forKey: "backupsSubscriberData")
         self.accountSettings = try container.decodeIfPresent(BackupProto.AccountData.AccountSettings.self, forKey: "accountSettings")
     }
 
@@ -1786,15 +1825,8 @@ extension BackupProto.AccountData : Codable {
         if includeDefaults || !self.avatarUrlPath.isEmpty {
             try container.encode(self.avatarUrlPath, forKey: "avatarUrlPath")
         }
-        if includeDefaults || !self.subscriberId.isEmpty {
-            try container.encode(stringEncoded: self.subscriberId, forKey: "subscriberId")
-        }
-        if includeDefaults || !self.subscriberCurrencyCode.isEmpty {
-            try container.encode(self.subscriberCurrencyCode, forKey: "subscriberCurrencyCode")
-        }
-        if includeDefaults || self.subscriptionManuallyCancelled != false {
-            try container.encode(self.subscriptionManuallyCancelled, forKey: "subscriptionManuallyCancelled")
-        }
+        try container.encodeIfPresent(self.donationSubscriberData, forKey: "donationSubscriberData")
+        try container.encodeIfPresent(self.backupsSubscriberData, forKey: "backupsSubscriberData")
         try container.encodeIfPresent(self.accountSettings, forKey: "accountSettings")
     }
 
@@ -1835,18 +1867,17 @@ extension BackupProto.AccountData {
          * 16 bytes of encoded UUID provided by the server
          */
         public var serverId: Foundation.Data
-        @ProtoDefaulted
-        public var color: BackupProto.AccountData.UsernameLink.Color?
+        public var color: BackupProto.AccountData.UsernameLink.Color
         public var unknownFields: UnknownFields = .init()
 
         public init(
             entropy: Foundation.Data,
             serverId: Foundation.Data,
-            configure: (inout Self) -> Swift.Void = { _ in }
+            color: BackupProto.AccountData.UsernameLink.Color
         ) {
             self.entropy = entropy
             self.serverId = serverId
-            configure(&self)
+            self.color = color
         }
 
     }
@@ -1998,12 +2029,20 @@ extension BackupProto.AccountData {
                 storage.hasCompletedUsernameOnboarding = newValue
             }
         }
-        public var phoneNumberSharingMode: BackupProto.AccountData.PhoneNumberSharingMode? {
+        public var phoneNumberSharingMode: BackupProto.AccountData.PhoneNumberSharingMode {
             get {
                 storage.phoneNumberSharingMode
             }
             set {
                 storage.phoneNumberSharingMode = newValue
+            }
+        }
+        public var defaultChatStyle: BackupProto.ChatStyle? {
+            get {
+                storage.defaultChatStyle
+            }
+            set {
+                storage.defaultChatStyle = newValue
             }
         }
         public var unknownFields: UnknownFields {
@@ -2030,6 +2069,7 @@ extension BackupProto.AccountData {
             storiesDisabled: Bool,
             hasSeenGroupStoryEducationSheet: Bool,
             hasCompletedUsernameOnboarding: Bool,
+            phoneNumberSharingMode: BackupProto.AccountData.PhoneNumberSharingMode,
             configure: (inout Self.Storage) -> Swift.Void = { _ in }
         ) {
             self.storage = BackupProto.AccountData.AccountSettings.Storage(
@@ -2047,8 +2087,28 @@ extension BackupProto.AccountData {
                     storiesDisabled: storiesDisabled,
                     hasSeenGroupStoryEducationSheet: hasSeenGroupStoryEducationSheet,
                     hasCompletedUsernameOnboarding: hasCompletedUsernameOnboarding,
+                    phoneNumberSharingMode: phoneNumberSharingMode,
                     configure: configure
                     )
+        }
+
+    }
+
+    public struct SubscriberData {
+
+        public var subscriberId: Foundation.Data
+        public var currencyCode: String
+        public var manuallyCancelled: Bool
+        public var unknownFields: UnknownFields = .init()
+
+        public init(
+            subscriberId: Foundation.Data,
+            currencyCode: String,
+            manuallyCancelled: Bool
+        ) {
+            self.subscriberId = subscriberId
+            self.currencyCode = currencyCode
+            self.manuallyCancelled = manuallyCancelled
         }
 
     }
@@ -2099,7 +2159,7 @@ extension BackupProto.AccountData.UsernameLink : Proto3Codable {
 
         self.entropy = entropy
         self.serverId = serverId
-        self._color.wrappedValue = try BackupProto.AccountData.UsernameLink.Color.defaultIfMissing(color)
+        self.color = try BackupProto.AccountData.UsernameLink.Color.defaultIfMissing(color)
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
@@ -2118,7 +2178,7 @@ extension BackupProto.AccountData.UsernameLink : Codable {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.entropy = try container.decode(stringEncoded: Foundation.Data.self, forKey: "entropy")
         self.serverId = try container.decode(stringEncoded: Foundation.Data.self, forKey: "serverId")
-        self._color.wrappedValue = try container.decodeIfPresent(BackupProto.AccountData.UsernameLink.Color.self, forKey: "color")
+        self.color = try container.decode(BackupProto.AccountData.UsernameLink.Color.self, forKey: "color")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -2131,7 +2191,9 @@ extension BackupProto.AccountData.UsernameLink : Codable {
         if includeDefaults || !self.serverId.isEmpty {
             try container.encode(stringEncoded: self.serverId, forKey: "serverId")
         }
-        try container.encodeIfPresent(self.color, forKey: "color")
+        if includeDefaults || self.color.rawValue != 0 {
+            try container.encode(self.color, forKey: "color")
+        }
     }
 
 }
@@ -2243,8 +2305,8 @@ extension BackupProto.AccountData.AccountSettings {
         public var storyViewReceiptsEnabled: Bool?
         public var hasSeenGroupStoryEducationSheet: Bool
         public var hasCompletedUsernameOnboarding: Bool
-        @ProtoDefaulted
-        public var phoneNumberSharingMode: BackupProto.AccountData.PhoneNumberSharingMode?
+        public var phoneNumberSharingMode: BackupProto.AccountData.PhoneNumberSharingMode
+        public var defaultChatStyle: BackupProto.ChatStyle?
         public var unknownFields: UnknownFields = .init()
 
         public init(
@@ -2262,6 +2324,7 @@ extension BackupProto.AccountData.AccountSettings {
             storiesDisabled: Bool,
             hasSeenGroupStoryEducationSheet: Bool,
             hasCompletedUsernameOnboarding: Bool,
+            phoneNumberSharingMode: BackupProto.AccountData.PhoneNumberSharingMode,
             configure: (inout Self) -> Swift.Void = { _ in }
         ) {
             self.readReceipts = readReceipts
@@ -2278,6 +2341,7 @@ extension BackupProto.AccountData.AccountSettings {
             self.storiesDisabled = storiesDisabled
             self.hasSeenGroupStoryEducationSheet = hasSeenGroupStoryEducationSheet
             self.hasCompletedUsernameOnboarding = hasCompletedUsernameOnboarding
+            self.phoneNumberSharingMode = phoneNumberSharingMode
             configure(&self)
         }
 
@@ -2326,6 +2390,7 @@ extension BackupProto.AccountData.AccountSettings.Storage : Proto3Codable {
         var hasSeenGroupStoryEducationSheet: Bool = false
         var hasCompletedUsernameOnboarding: Bool = false
         var phoneNumberSharingMode: BackupProto.AccountData.PhoneNumberSharingMode? = nil
+        var defaultChatStyle: BackupProto.ChatStyle? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
@@ -2347,6 +2412,7 @@ extension BackupProto.AccountData.AccountSettings.Storage : Proto3Codable {
             case 15: hasSeenGroupStoryEducationSheet = try protoReader.decode(Bool.self)
             case 16: hasCompletedUsernameOnboarding = try protoReader.decode(Bool.self)
             case 17: phoneNumberSharingMode = try protoReader.decode(BackupProto.AccountData.PhoneNumberSharingMode.self)
+            case 18: defaultChatStyle = try protoReader.decode(BackupProto.ChatStyle.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -2368,7 +2434,8 @@ extension BackupProto.AccountData.AccountSettings.Storage : Proto3Codable {
         self._storyViewReceiptsEnabled.wrappedValue = storyViewReceiptsEnabled
         self.hasSeenGroupStoryEducationSheet = hasSeenGroupStoryEducationSheet
         self.hasCompletedUsernameOnboarding = hasCompletedUsernameOnboarding
-        self._phoneNumberSharingMode.wrappedValue = try BackupProto.AccountData.PhoneNumberSharingMode.defaultIfMissing(phoneNumberSharingMode)
+        self.phoneNumberSharingMode = try BackupProto.AccountData.PhoneNumberSharingMode.defaultIfMissing(phoneNumberSharingMode)
+        self.defaultChatStyle = defaultChatStyle
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
@@ -2389,6 +2456,7 @@ extension BackupProto.AccountData.AccountSettings.Storage : Proto3Codable {
         try protoWriter.encode(tag: 15, value: self.hasSeenGroupStoryEducationSheet)
         try protoWriter.encode(tag: 16, value: self.hasCompletedUsernameOnboarding)
         try protoWriter.encode(tag: 17, value: self.phoneNumberSharingMode)
+        try protoWriter.encode(tag: 18, value: self.defaultChatStyle)
         try protoWriter.writeUnknownFields(unknownFields)
     }
 
@@ -2415,7 +2483,8 @@ extension BackupProto.AccountData.AccountSettings.Storage : Codable {
         self._storyViewReceiptsEnabled.wrappedValue = try container.decodeIfPresent(Bool.self, forKey: "storyViewReceiptsEnabled")
         self.hasSeenGroupStoryEducationSheet = try container.decode(Bool.self, forKey: "hasSeenGroupStoryEducationSheet")
         self.hasCompletedUsernameOnboarding = try container.decode(Bool.self, forKey: "hasCompletedUsernameOnboarding")
-        self._phoneNumberSharingMode.wrappedValue = try container.decodeIfPresent(BackupProto.AccountData.PhoneNumberSharingMode.self, forKey: "phoneNumberSharingMode")
+        self.phoneNumberSharingMode = try container.decode(BackupProto.AccountData.PhoneNumberSharingMode.self, forKey: "phoneNumberSharingMode")
+        self.defaultChatStyle = try container.decodeIfPresent(BackupProto.ChatStyle.self, forKey: "defaultChatStyle")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -2468,7 +2537,91 @@ extension BackupProto.AccountData.AccountSettings.Storage : Codable {
         if includeDefaults || self.hasCompletedUsernameOnboarding != false {
             try container.encode(self.hasCompletedUsernameOnboarding, forKey: "hasCompletedUsernameOnboarding")
         }
-        try container.encodeIfPresent(self.phoneNumberSharingMode, forKey: "phoneNumberSharingMode")
+        if includeDefaults || self.phoneNumberSharingMode.rawValue != 0 {
+            try container.encode(self.phoneNumberSharingMode, forKey: "phoneNumberSharingMode")
+        }
+        try container.encodeIfPresent(self.defaultChatStyle, forKey: "defaultChatStyle")
+    }
+
+}
+#endif
+
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.AccountData.SubscriberData : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.AccountData.SubscriberData : Hashable {
+}
+#endif
+
+extension BackupProto.AccountData.SubscriberData : Sendable {
+}
+
+extension BackupProto.AccountData.SubscriberData : ProtoMessage {
+
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/BackupProto.BackupProto.AccountData.SubscriberData"
+    }
+
+}
+
+extension BackupProto.AccountData.SubscriberData : Proto3Codable {
+
+    public init(from protoReader: ProtoReader) throws {
+        var subscriberId: Foundation.Data = .init()
+        var currencyCode: String = ""
+        var manuallyCancelled: Bool = false
+
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
+            switch tag {
+            case 1: subscriberId = try protoReader.decode(Foundation.Data.self)
+            case 2: currencyCode = try protoReader.decode(String.self)
+            case 3: manuallyCancelled = try protoReader.decode(Bool.self)
+            default: try protoReader.readUnknownField(tag: tag)
+            }
+        }
+        self.unknownFields = try protoReader.endMessage(token: token)
+
+        self.subscriberId = subscriberId
+        self.currencyCode = currencyCode
+        self.manuallyCancelled = manuallyCancelled
+    }
+
+    public func encode(to protoWriter: ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.subscriberId)
+        try protoWriter.encode(tag: 2, value: self.currencyCode)
+        try protoWriter.encode(tag: 3, value: self.manuallyCancelled)
+        try protoWriter.writeUnknownFields(unknownFields)
+    }
+
+}
+
+#if !WIRE_REMOVE_CODABLE
+extension BackupProto.AccountData.SubscriberData : Codable {
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.subscriberId = try container.decode(stringEncoded: Foundation.Data.self, forKey: "subscriberId")
+        self.currencyCode = try container.decode(String.self, forKey: "currencyCode")
+        self.manuallyCancelled = try container.decode(Bool.self, forKey: "manuallyCancelled")
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
+
+        if includeDefaults || !self.subscriberId.isEmpty {
+            try container.encode(stringEncoded: self.subscriberId, forKey: "subscriberId")
+        }
+        if includeDefaults || !self.currencyCode.isEmpty {
+            try container.encode(self.currencyCode, forKey: "currencyCode")
+        }
+        if includeDefaults || self.manuallyCancelled != false {
+            try container.encode(self.manuallyCancelled, forKey: "manuallyCancelled")
+        }
     }
 
 }
@@ -2510,6 +2663,7 @@ extension BackupProto.Recipient : Proto3Codable {
             case 4: destination = .distributionList(try protoReader.decode(BackupProto.DistributionListItem.self))
             case 5: destination = .selfRecipient(try protoReader.decode(BackupProto.SelfRecipient.self))
             case 6: destination = .releaseNotes(try protoReader.decode(BackupProto.ReleaseNotes.self))
+            case 7: destination = .callLink(try protoReader.decode(BackupProto.CallLink.self))
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -2545,6 +2699,8 @@ extension BackupProto.Recipient : Codable {
             self.destination = .selfRecipient(selfRecipient)
         } else if let releaseNotes = try container.decodeIfPresent(BackupProto.ReleaseNotes.self, forKey: "releaseNotes") {
             self.destination = .releaseNotes(releaseNotes)
+        } else if let callLink = try container.decodeIfPresent(BackupProto.CallLink.self, forKey: "callLink") {
+            self.destination = .callLink(callLink)
         } else {
             self.destination = nil
         }
@@ -2563,6 +2719,7 @@ extension BackupProto.Recipient : Codable {
         case .distributionList(let distributionList): try container.encode(distributionList, forKey: "distributionList")
         case .selfRecipient(let selfRecipient): try container.encode(selfRecipient, forKey: "selfRecipient")
         case .releaseNotes(let releaseNotes): try container.encode(releaseNotes, forKey: "releaseNotes")
+        case .callLink(let callLink): try container.encode(callLink, forKey: "callLink")
         case Optional.none: break
         }
     }
@@ -2582,6 +2739,7 @@ extension BackupProto.Recipient {
         case distributionList(BackupProto.DistributionListItem)
         case selfRecipient(BackupProto.SelfRecipient)
         case releaseNotes(BackupProto.ReleaseNotes)
+        case callLink(BackupProto.CallLink)
 
         fileprivate func encode(to protoWriter: ProtoWriter) throws {
             switch self {
@@ -2590,6 +2748,7 @@ extension BackupProto.Recipient {
             case .distributionList(let distributionList): try protoWriter.encode(tag: 4, value: distributionList)
             case .selfRecipient(let selfRecipient): try protoWriter.encode(tag: 5, value: selfRecipient)
             case .releaseNotes(let releaseNotes): try protoWriter.encode(tag: 6, value: releaseNotes)
+            case .callLink(let callLink): try protoWriter.encode(tag: 7, value: callLink)
             }
         }
 
@@ -2639,14 +2798,13 @@ extension BackupProto.Contact : Proto3Codable {
         var username: String? = nil
         var e164: UInt64? = nil
         var blocked: Bool = false
-        var hidden: Bool = false
-        var registered: BackupProto.Contact.Registered? = nil
-        var unregisteredTimestamp: UInt64 = 0
+        var visibility: BackupProto.Contact.Visibility? = nil
         var profileKey: Foundation.Data? = nil
         var profileSharing: Bool = false
         var profileGivenName: String? = nil
         var profileFamilyName: String? = nil
         var hideStory: Bool = false
+        var registration: BackupProto.Contact.Registration? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
@@ -2656,14 +2814,14 @@ extension BackupProto.Contact : Proto3Codable {
             case 3: username = try protoReader.decode(String.self)
             case 4: e164 = try protoReader.decode(UInt64.self)
             case 5: blocked = try protoReader.decode(Bool.self)
-            case 6: hidden = try protoReader.decode(Bool.self)
-            case 7: registered = try protoReader.decode(BackupProto.Contact.Registered.self)
-            case 8: unregisteredTimestamp = try protoReader.decode(UInt64.self)
+            case 6: visibility = try protoReader.decode(BackupProto.Contact.Visibility.self)
             case 9: profileKey = try protoReader.decode(Foundation.Data.self)
             case 10: profileSharing = try protoReader.decode(Bool.self)
             case 11: profileGivenName = try protoReader.decode(String.self)
             case 12: profileFamilyName = try protoReader.decode(String.self)
             case 13: hideStory = try protoReader.decode(Bool.self)
+            case 7: registration = .registered(try protoReader.decode(BackupProto.Contact.Registered.self))
+            case 8: registration = .notRegistered(try protoReader.decode(BackupProto.Contact.NotRegistered.self))
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -2674,14 +2832,13 @@ extension BackupProto.Contact : Proto3Codable {
         self._username.wrappedValue = username
         self._e164.wrappedValue = e164
         self.blocked = blocked
-        self.hidden = hidden
-        self._registered.wrappedValue = try BackupProto.Contact.Registered.defaultIfMissing(registered)
-        self.unregisteredTimestamp = unregisteredTimestamp
+        self.visibility = try BackupProto.Contact.Visibility.defaultIfMissing(visibility)
         self._profileKey.wrappedValue = profileKey
         self.profileSharing = profileSharing
         self._profileGivenName.wrappedValue = profileGivenName
         self._profileFamilyName.wrappedValue = profileFamilyName
         self.hideStory = hideStory
+        self.registration = registration
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
@@ -2690,14 +2847,15 @@ extension BackupProto.Contact : Proto3Codable {
         try protoWriter.encode(tag: 3, value: self.username)
         try protoWriter.encode(tag: 4, value: self.e164)
         try protoWriter.encode(tag: 5, value: self.blocked)
-        try protoWriter.encode(tag: 6, value: self.hidden)
-        try protoWriter.encode(tag: 7, value: self.registered)
-        try protoWriter.encode(tag: 8, value: self.unregisteredTimestamp)
+        try protoWriter.encode(tag: 6, value: self.visibility)
         try protoWriter.encode(tag: 9, value: self.profileKey)
         try protoWriter.encode(tag: 10, value: self.profileSharing)
         try protoWriter.encode(tag: 11, value: self.profileGivenName)
         try protoWriter.encode(tag: 12, value: self.profileFamilyName)
         try protoWriter.encode(tag: 13, value: self.hideStory)
+        if let registration = self.registration {
+            try registration.encode(to: protoWriter)
+        }
         try protoWriter.writeUnknownFields(unknownFields)
     }
 
@@ -2713,14 +2871,19 @@ extension BackupProto.Contact : Codable {
         self._username.wrappedValue = try container.decodeIfPresent(String.self, forKey: "username")
         self._e164.wrappedValue = try container.decodeIfPresent(stringEncoded: UInt64.self, forKey: "e164")
         self.blocked = try container.decode(Bool.self, forKey: "blocked")
-        self.hidden = try container.decode(Bool.self, forKey: "hidden")
-        self._registered.wrappedValue = try container.decodeIfPresent(BackupProto.Contact.Registered.self, forKey: "registered")
-        self.unregisteredTimestamp = try container.decode(stringEncoded: UInt64.self, forKey: "unregisteredTimestamp")
+        self.visibility = try container.decode(BackupProto.Contact.Visibility.self, forKey: "visibility")
         self._profileKey.wrappedValue = try container.decodeIfPresent(stringEncoded: Foundation.Data.self, forKey: "profileKey")
         self.profileSharing = try container.decode(Bool.self, forKey: "profileSharing")
         self._profileGivenName.wrappedValue = try container.decodeIfPresent(String.self, forKey: "profileGivenName")
         self._profileFamilyName.wrappedValue = try container.decodeIfPresent(String.self, forKey: "profileFamilyName")
         self.hideStory = try container.decode(Bool.self, forKey: "hideStory")
+        if let registered = try container.decodeIfPresent(BackupProto.Contact.Registered.self, forKey: "registered") {
+            self.registration = .registered(registered)
+        } else if let notRegistered = try container.decodeIfPresent(BackupProto.Contact.NotRegistered.self, forKey: "notRegistered") {
+            self.registration = .notRegistered(notRegistered)
+        } else {
+            self.registration = nil
+        }
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -2734,12 +2897,8 @@ extension BackupProto.Contact : Codable {
         if includeDefaults || self.blocked != false {
             try container.encode(self.blocked, forKey: "blocked")
         }
-        if includeDefaults || self.hidden != false {
-            try container.encode(self.hidden, forKey: "hidden")
-        }
-        try container.encodeIfPresent(self.registered, forKey: "registered")
-        if includeDefaults || self.unregisteredTimestamp != 0 {
-            try container.encode(stringEncoded: self.unregisteredTimestamp, forKey: "unregisteredTimestamp")
+        if includeDefaults || self.visibility.rawValue != 0 {
+            try container.encode(self.visibility, forKey: "visibility")
         }
         try container.encodeIfPresent(stringEncoded: self.profileKey, forKey: "profileKey")
         if includeDefaults || self.profileSharing != false {
@@ -2749,6 +2908,11 @@ extension BackupProto.Contact : Codable {
         try container.encodeIfPresent(self.profileFamilyName, forKey: "profileFamilyName")
         if includeDefaults || self.hideStory != false {
             try container.encode(self.hideStory, forKey: "hideStory")
+        }
+        switch self.registration {
+        case .registered(let registered): try container.encode(registered, forKey: "registered")
+        case .notRegistered(let notRegistered): try container.encode(notRegistered, forKey: "notRegistered")
+        case Optional.none: break
         }
     }
 
@@ -2760,20 +2924,54 @@ extension BackupProto.Contact : Codable {
  */
 extension BackupProto.Contact {
 
-    public enum Registered : Int32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
+    public enum Registration {
 
-        case UNKNOWN = 0
-        case REGISTERED = 1
-        case NOT_REGISTERED = 2
+        case registered(BackupProto.Contact.Registered)
+        case notRegistered(BackupProto.Contact.NotRegistered)
 
-        public static var defaultedValue: BackupProto.Contact.Registered {
-            BackupProto.Contact.Registered.UNKNOWN
+        fileprivate func encode(to protoWriter: ProtoWriter) throws {
+            switch self {
+            case .registered(let registered): try protoWriter.encode(tag: 7, value: registered)
+            case .notRegistered(let notRegistered): try protoWriter.encode(tag: 8, value: notRegistered)
+            }
+        }
+
+    }
+
+    public struct Registered {
+
+        public var unknownFields: UnknownFields = .init()
+
+        public init() {
+        }
+
+    }
+
+    public struct NotRegistered {
+
+        public var unregisteredTimestamp: UInt64
+        public var unknownFields: UnknownFields = .init()
+
+        public init(unregisteredTimestamp: UInt64) {
+            self.unregisteredTimestamp = unregisteredTimestamp
+        }
+
+    }
+
+    public enum Visibility : Int32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
+
+        case VISIBLE = 0
+        case HIDDEN = 1
+        case HIDDEN_MESSAGE_REQUEST = 2
+
+        public static var defaultedValue: BackupProto.Contact.Visibility {
+            BackupProto.Contact.Visibility.VISIBLE
         }
         public var description: String {
             switch self {
-            case .UNKNOWN: return "UNKNOWN"
-            case .REGISTERED: return "REGISTERED"
-            case .NOT_REGISTERED: return "NOT_REGISTERED"
+            case .VISIBLE: return "VISIBLE"
+            case .HIDDEN: return "HIDDEN"
+            case .HIDDEN_MESSAGE_REQUEST: return "HIDDEN_MESSAGE_REQUEST"
             }
         }
 
@@ -2781,7 +2979,141 @@ extension BackupProto.Contact {
 
 }
 
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.Contact.Registration : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.Contact.Registration : Hashable {
+}
+#endif
+
+extension BackupProto.Contact.Registration : Sendable {
+}
+
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.Contact.Registered : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.Contact.Registered : Hashable {
+}
+#endif
+
 extension BackupProto.Contact.Registered : Sendable {
+}
+
+extension BackupProto.Contact.Registered : ProtoDefaultedValue {
+
+    public static var defaultedValue: BackupProto.Contact.Registered {
+        BackupProto.Contact.Registered()
+    }
+}
+
+extension BackupProto.Contact.Registered : ProtoMessage {
+
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/BackupProto.BackupProto.Contact.Registered"
+    }
+
+}
+
+extension BackupProto.Contact.Registered : Proto3Codable {
+
+    public init(from protoReader: ProtoReader) throws {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
+            switch tag {
+            default: try protoReader.readUnknownField(tag: tag)
+            }
+        }
+        self.unknownFields = try protoReader.endMessage(token: token)
+
+    }
+
+    public func encode(to protoWriter: ProtoWriter) throws {
+        try protoWriter.writeUnknownFields(unknownFields)
+    }
+
+}
+
+#if !WIRE_REMOVE_CODABLE
+extension BackupProto.Contact.Registered : Codable {
+
+    public enum CodingKeys : CodingKey {
+    }
+
+}
+#endif
+
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.Contact.NotRegistered : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.Contact.NotRegistered : Hashable {
+}
+#endif
+
+extension BackupProto.Contact.NotRegistered : Sendable {
+}
+
+extension BackupProto.Contact.NotRegistered : ProtoMessage {
+
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/BackupProto.BackupProto.Contact.NotRegistered"
+    }
+
+}
+
+extension BackupProto.Contact.NotRegistered : Proto3Codable {
+
+    public init(from protoReader: ProtoReader) throws {
+        var unregisteredTimestamp: UInt64 = 0
+
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
+            switch tag {
+            case 1: unregisteredTimestamp = try protoReader.decode(UInt64.self)
+            default: try protoReader.readUnknownField(tag: tag)
+            }
+        }
+        self.unknownFields = try protoReader.endMessage(token: token)
+
+        self.unregisteredTimestamp = unregisteredTimestamp
+    }
+
+    public func encode(to protoWriter: ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.unregisteredTimestamp)
+        try protoWriter.writeUnknownFields(unknownFields)
+    }
+
+}
+
+#if !WIRE_REMOVE_CODABLE
+extension BackupProto.Contact.NotRegistered : Codable {
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.unregisteredTimestamp = try container.decode(stringEncoded: UInt64.self, forKey: "unregisteredTimestamp")
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
+
+        if includeDefaults || self.unregisteredTimestamp != 0 {
+            try container.encode(stringEncoded: self.unregisteredTimestamp, forKey: "unregisteredTimestamp")
+        }
+    }
+
+}
+#endif
+
+extension BackupProto.Contact.Visibility : Sendable {
 }
 
 #if !WIRE_REMOVE_EQUATABLE
@@ -2830,7 +3162,7 @@ extension BackupProto.Group : Proto3Codable {
         self.masterKey = masterKey
         self.whitelisted = whitelisted
         self.hideStory = hideStory
-        self._storySendMode.wrappedValue = try BackupProto.Group.StorySendMode.defaultIfMissing(storySendMode)
+        self.storySendMode = try BackupProto.Group.StorySendMode.defaultIfMissing(storySendMode)
         self.snapshot = snapshot
     }
 
@@ -2853,7 +3185,7 @@ extension BackupProto.Group : Codable {
         self.masterKey = try container.decode(stringEncoded: Foundation.Data.self, forKey: "masterKey")
         self.whitelisted = try container.decode(Bool.self, forKey: "whitelisted")
         self.hideStory = try container.decode(Bool.self, forKey: "hideStory")
-        self._storySendMode.wrappedValue = try container.decodeIfPresent(BackupProto.Group.StorySendMode.self, forKey: "storySendMode")
+        self.storySendMode = try container.decode(BackupProto.Group.StorySendMode.self, forKey: "storySendMode")
         self.snapshot = try container.decodeIfPresent(BackupProto.Group.GroupSnapshot.self, forKey: "snapshot")
     }
 
@@ -2870,7 +3202,9 @@ extension BackupProto.Group : Codable {
         if includeDefaults || self.hideStory != false {
             try container.encode(self.hideStory, forKey: "hideStory")
         }
-        try container.encodeIfPresent(self.storySendMode, forKey: "storySendMode")
+        if includeDefaults || self.storySendMode.rawValue != 0 {
+            try container.encode(self.storySendMode, forKey: "storySendMode")
+        }
         try container.encodeIfPresent(self.snapshot, forKey: "snapshot")
     }
 
@@ -2902,8 +3236,11 @@ extension BackupProto.Group {
     }
 
     /**
-     * A copy of the static Group state defined in `Groups.proto`, with all
-     * plaintext fields (contrasted with that proto's encrypted fields).
+     * These are simply plaintext copies of the groups proto from Groups.proto.
+     * They should be kept completely in-sync with Groups.proto.
+     * These exist to allow us to have the latest snapshot of a group during restoration without having to hit the network.
+     * We would use Groups.proto if we could, but we want a plaintext version to improve export readability.
+     * For documentation, defer to Groups.proto. The only name change is Group -> GroupSnapshot to avoid the naming conflict.
      */
     public struct GroupSnapshot {
 
@@ -3938,7 +4275,7 @@ extension BackupProto.Chat : Proto3Codable {
         var muteUntilMs: UInt64 = 0
         var markedUnread: Bool = false
         var dontNotifyForMentionsIfMuted: Bool = false
-        var wallpaper: BackupProto.FilePointer? = nil
+        var style: BackupProto.ChatStyle? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
@@ -3951,7 +4288,7 @@ extension BackupProto.Chat : Proto3Codable {
             case 6: muteUntilMs = try protoReader.decode(UInt64.self)
             case 7: markedUnread = try protoReader.decode(Bool.self)
             case 8: dontNotifyForMentionsIfMuted = try protoReader.decode(Bool.self)
-            case 9: wallpaper = try protoReader.decode(BackupProto.FilePointer.self)
+            case 9: style = try protoReader.decode(BackupProto.ChatStyle.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -3965,7 +4302,7 @@ extension BackupProto.Chat : Proto3Codable {
         self.muteUntilMs = muteUntilMs
         self.markedUnread = markedUnread
         self.dontNotifyForMentionsIfMuted = dontNotifyForMentionsIfMuted
-        self._wallpaper.wrappedValue = wallpaper
+        self.style = style
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
@@ -3977,7 +4314,7 @@ extension BackupProto.Chat : Proto3Codable {
         try protoWriter.encode(tag: 6, value: self.muteUntilMs)
         try protoWriter.encode(tag: 7, value: self.markedUnread)
         try protoWriter.encode(tag: 8, value: self.dontNotifyForMentionsIfMuted)
-        try protoWriter.encode(tag: 9, value: self.wallpaper)
+        try protoWriter.encode(tag: 9, value: self.style)
         try protoWriter.writeUnknownFields(unknownFields)
     }
 
@@ -3996,7 +4333,7 @@ extension BackupProto.Chat : Codable {
         self.muteUntilMs = try container.decode(stringEncoded: UInt64.self, forKey: "muteUntilMs")
         self.markedUnread = try container.decode(Bool.self, forKey: "markedUnread")
         self.dontNotifyForMentionsIfMuted = try container.decode(Bool.self, forKey: "dontNotifyForMentionsIfMuted")
-        self._wallpaper.wrappedValue = try container.decodeIfPresent(BackupProto.FilePointer.self, forKey: "wallpaper")
+        self.style = try container.decodeIfPresent(BackupProto.ChatStyle.self, forKey: "style")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -4027,11 +4364,251 @@ extension BackupProto.Chat : Codable {
         if includeDefaults || self.dontNotifyForMentionsIfMuted != false {
             try container.encode(self.dontNotifyForMentionsIfMuted, forKey: "dontNotifyForMentionsIfMuted")
         }
-        try container.encodeIfPresent(self.wallpaper, forKey: "wallpaper")
+        try container.encodeIfPresent(self.style, forKey: "style")
     }
 
 }
 #endif
+
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.CallLink : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.CallLink : Hashable {
+}
+#endif
+
+extension BackupProto.CallLink : Sendable {
+}
+
+extension BackupProto.CallLink : ProtoMessage {
+
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/BackupProto.BackupProto.CallLink"
+    }
+
+}
+
+extension BackupProto.CallLink : Proto3Codable {
+
+    public init(from protoReader: ProtoReader) throws {
+        var rootKey: Foundation.Data = .init()
+        var adminKey: Foundation.Data? = nil
+        var name: String = ""
+        var restrictions: BackupProto.CallLink.Restrictions? = nil
+        var expirationMs: UInt64 = 0
+
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
+            switch tag {
+            case 1: rootKey = try protoReader.decode(Foundation.Data.self)
+            case 2: adminKey = try protoReader.decode(Foundation.Data.self)
+            case 3: name = try protoReader.decode(String.self)
+            case 4: restrictions = try protoReader.decode(BackupProto.CallLink.Restrictions.self)
+            case 5: expirationMs = try protoReader.decode(UInt64.self)
+            default: try protoReader.readUnknownField(tag: tag)
+            }
+        }
+        self.unknownFields = try protoReader.endMessage(token: token)
+
+        self.rootKey = rootKey
+        self._adminKey.wrappedValue = adminKey
+        self.name = name
+        self.restrictions = try BackupProto.CallLink.Restrictions.defaultIfMissing(restrictions)
+        self.expirationMs = expirationMs
+    }
+
+    public func encode(to protoWriter: ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.rootKey)
+        try protoWriter.encode(tag: 2, value: self.adminKey)
+        try protoWriter.encode(tag: 3, value: self.name)
+        try protoWriter.encode(tag: 4, value: self.restrictions)
+        try protoWriter.encode(tag: 5, value: self.expirationMs)
+        try protoWriter.writeUnknownFields(unknownFields)
+    }
+
+}
+
+#if !WIRE_REMOVE_CODABLE
+extension BackupProto.CallLink : Codable {
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.rootKey = try container.decode(stringEncoded: Foundation.Data.self, forKey: "rootKey")
+        self._adminKey.wrappedValue = try container.decodeIfPresent(stringEncoded: Foundation.Data.self, forKey: "adminKey")
+        self.name = try container.decode(String.self, forKey: "name")
+        self.restrictions = try container.decode(BackupProto.CallLink.Restrictions.self, forKey: "restrictions")
+        self.expirationMs = try container.decode(stringEncoded: UInt64.self, forKey: "expirationMs")
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
+
+        if includeDefaults || !self.rootKey.isEmpty {
+            try container.encode(stringEncoded: self.rootKey, forKey: "rootKey")
+        }
+        try container.encodeIfPresent(stringEncoded: self.adminKey, forKey: "adminKey")
+        if includeDefaults || !self.name.isEmpty {
+            try container.encode(self.name, forKey: "name")
+        }
+        if includeDefaults || self.restrictions.rawValue != 0 {
+            try container.encode(self.restrictions, forKey: "restrictions")
+        }
+        if includeDefaults || self.expirationMs != 0 {
+            try container.encode(stringEncoded: self.expirationMs, forKey: "expirationMs")
+        }
+    }
+
+}
+#endif
+
+/**
+ * Subtypes within BackupProto.CallLink
+ */
+extension BackupProto.CallLink {
+
+    public enum Restrictions : Int32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
+
+        case UNKNOWN = 0
+        case NONE = 1
+        case ADMIN_APPROVAL = 2
+
+        public static var defaultedValue: BackupProto.CallLink.Restrictions {
+            BackupProto.CallLink.Restrictions.UNKNOWN
+        }
+        public var description: String {
+            switch self {
+            case .UNKNOWN: return "UNKNOWN"
+            case .NONE: return "NONE"
+            case .ADMIN_APPROVAL: return "ADMIN_APPROVAL"
+            }
+        }
+
+    }
+
+}
+
+extension BackupProto.CallLink.Restrictions : Sendable {
+}
+
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.AdHocCall : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.AdHocCall : Hashable {
+}
+#endif
+
+extension BackupProto.AdHocCall : Sendable {
+}
+
+extension BackupProto.AdHocCall : ProtoMessage {
+
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/BackupProto.BackupProto.AdHocCall"
+    }
+
+}
+
+extension BackupProto.AdHocCall : Proto3Codable {
+
+    public init(from protoReader: ProtoReader) throws {
+        var callId: UInt64 = 0
+        var recipientId: UInt64 = 0
+        var state: BackupProto.AdHocCall.State? = nil
+        var callTimestamp: UInt64 = 0
+
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
+            switch tag {
+            case 1: callId = try protoReader.decode(UInt64.self)
+            case 2: recipientId = try protoReader.decode(UInt64.self)
+            case 3: state = try protoReader.decode(BackupProto.AdHocCall.State.self)
+            case 4: callTimestamp = try protoReader.decode(UInt64.self)
+            default: try protoReader.readUnknownField(tag: tag)
+            }
+        }
+        self.unknownFields = try protoReader.endMessage(token: token)
+
+        self.callId = callId
+        self.recipientId = recipientId
+        self.state = try BackupProto.AdHocCall.State.defaultIfMissing(state)
+        self.callTimestamp = callTimestamp
+    }
+
+    public func encode(to protoWriter: ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.callId)
+        try protoWriter.encode(tag: 2, value: self.recipientId)
+        try protoWriter.encode(tag: 3, value: self.state)
+        try protoWriter.encode(tag: 4, value: self.callTimestamp)
+        try protoWriter.writeUnknownFields(unknownFields)
+    }
+
+}
+
+#if !WIRE_REMOVE_CODABLE
+extension BackupProto.AdHocCall : Codable {
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.callId = try container.decode(stringEncoded: UInt64.self, forKey: "callId")
+        self.recipientId = try container.decode(stringEncoded: UInt64.self, forKey: "recipientId")
+        self.state = try container.decode(BackupProto.AdHocCall.State.self, forKey: "state")
+        self.callTimestamp = try container.decode(stringEncoded: UInt64.self, forKey: "callTimestamp")
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
+
+        if includeDefaults || self.callId != 0 {
+            try container.encode(stringEncoded: self.callId, forKey: "callId")
+        }
+        if includeDefaults || self.recipientId != 0 {
+            try container.encode(stringEncoded: self.recipientId, forKey: "recipientId")
+        }
+        if includeDefaults || self.state.rawValue != 0 {
+            try container.encode(self.state, forKey: "state")
+        }
+        if includeDefaults || self.callTimestamp != 0 {
+            try container.encode(stringEncoded: self.callTimestamp, forKey: "callTimestamp")
+        }
+    }
+
+}
+#endif
+
+/**
+ * Subtypes within BackupProto.AdHocCall
+ */
+extension BackupProto.AdHocCall {
+
+    public enum State : Int32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
+
+        case UNKNOWN_STATE = 0
+        case GENERIC = 1
+
+        public static var defaultedValue: BackupProto.AdHocCall.State {
+            BackupProto.AdHocCall.State.UNKNOWN_STATE
+        }
+        public var description: String {
+            switch self {
+            case .UNKNOWN_STATE: return "UNKNOWN_STATE"
+            case .GENERIC: return "GENERIC"
+            }
+        }
+
+    }
+
+}
+
+extension BackupProto.AdHocCall.State : Sendable {
+}
 
 #if !WIRE_REMOVE_EQUATABLE
 extension BackupProto.DistributionListItem : Equatable {
@@ -4272,111 +4849,6 @@ extension BackupProto.DistributionList.PrivacyMode : Sendable {
 }
 
 #if !WIRE_REMOVE_EQUATABLE
-extension BackupProto.Identity : Equatable {
-}
-#endif
-
-#if !WIRE_REMOVE_HASHABLE
-extension BackupProto.Identity : Hashable {
-}
-#endif
-
-extension BackupProto.Identity : Sendable {
-}
-
-extension BackupProto.Identity : ProtoMessage {
-
-    public static func protoMessageTypeURL() -> String {
-        return "type.googleapis.com/BackupProto.BackupProto.Identity"
-    }
-
-}
-
-extension BackupProto.Identity : Proto3Codable {
-
-    public init(from protoReader: ProtoReader) throws {
-        var serviceId: Foundation.Data = .init()
-        var identityKey: Foundation.Data = .init()
-        var timestamp: UInt64 = 0
-        var firstUse: Bool = false
-        var verified: Bool = false
-        var nonblockingApproval: Bool = false
-
-        let token = try protoReader.beginMessage()
-        while let tag = try protoReader.nextTag(token: token) {
-            switch tag {
-            case 1: serviceId = try protoReader.decode(Foundation.Data.self)
-            case 2: identityKey = try protoReader.decode(Foundation.Data.self)
-            case 3: timestamp = try protoReader.decode(UInt64.self)
-            case 4: firstUse = try protoReader.decode(Bool.self)
-            case 5: verified = try protoReader.decode(Bool.self)
-            case 6: nonblockingApproval = try protoReader.decode(Bool.self)
-            default: try protoReader.readUnknownField(tag: tag)
-            }
-        }
-        self.unknownFields = try protoReader.endMessage(token: token)
-
-        self.serviceId = serviceId
-        self.identityKey = identityKey
-        self.timestamp = timestamp
-        self.firstUse = firstUse
-        self.verified = verified
-        self.nonblockingApproval = nonblockingApproval
-    }
-
-    public func encode(to protoWriter: ProtoWriter) throws {
-        try protoWriter.encode(tag: 1, value: self.serviceId)
-        try protoWriter.encode(tag: 2, value: self.identityKey)
-        try protoWriter.encode(tag: 3, value: self.timestamp)
-        try protoWriter.encode(tag: 4, value: self.firstUse)
-        try protoWriter.encode(tag: 5, value: self.verified)
-        try protoWriter.encode(tag: 6, value: self.nonblockingApproval)
-        try protoWriter.writeUnknownFields(unknownFields)
-    }
-
-}
-
-#if !WIRE_REMOVE_CODABLE
-extension BackupProto.Identity : Codable {
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.serviceId = try container.decode(stringEncoded: Foundation.Data.self, forKey: "serviceId")
-        self.identityKey = try container.decode(stringEncoded: Foundation.Data.self, forKey: "identityKey")
-        self.timestamp = try container.decode(stringEncoded: UInt64.self, forKey: "timestamp")
-        self.firstUse = try container.decode(Bool.self, forKey: "firstUse")
-        self.verified = try container.decode(Bool.self, forKey: "verified")
-        self.nonblockingApproval = try container.decode(Bool.self, forKey: "nonblockingApproval")
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
-        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
-
-        if includeDefaults || !self.serviceId.isEmpty {
-            try container.encode(stringEncoded: self.serviceId, forKey: "serviceId")
-        }
-        if includeDefaults || !self.identityKey.isEmpty {
-            try container.encode(stringEncoded: self.identityKey, forKey: "identityKey")
-        }
-        if includeDefaults || self.timestamp != 0 {
-            try container.encode(stringEncoded: self.timestamp, forKey: "timestamp")
-        }
-        if includeDefaults || self.firstUse != false {
-            try container.encode(self.firstUse, forKey: "firstUse")
-        }
-        if includeDefaults || self.verified != false {
-            try container.encode(self.verified, forKey: "verified")
-        }
-        if includeDefaults || self.nonblockingApproval != false {
-            try container.encode(self.nonblockingApproval, forKey: "nonblockingApproval")
-        }
-    }
-
-}
-#endif
-
-#if !WIRE_REMOVE_EQUATABLE
 extension BackupProto.ChatItem : Equatable {
 }
 #endif
@@ -4403,8 +4875,8 @@ extension BackupProto.ChatItem : Proto3Codable {
         var chatId: UInt64 = 0
         var authorId: UInt64 = 0
         var dateSent: UInt64 = 0
-        var expireStartDate: UInt64? = nil
-        var expiresInMs: UInt64? = nil
+        var expireStartDate: UInt64 = 0
+        var expiresInMs: UInt64 = 0
         var revisions: [BackupProto.ChatItem] = []
         var sms: Bool = false
         var directionalDetails: BackupProto.ChatItem.DirectionalDetails? = nil
@@ -4429,6 +4901,7 @@ extension BackupProto.ChatItem : Proto3Codable {
             case 14: item = .remoteDeletedMessage(try protoReader.decode(BackupProto.RemoteDeletedMessage.self))
             case 15: item = .updateMessage(try protoReader.decode(BackupProto.ChatUpdateMessage.self))
             case 16: item = .paymentNotification(try protoReader.decode(BackupProto.PaymentNotification.self))
+            case 17: item = .giftBadge(try protoReader.decode(BackupProto.GiftBadge.self))
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -4437,8 +4910,8 @@ extension BackupProto.ChatItem : Proto3Codable {
         self.chatId = chatId
         self.authorId = authorId
         self.dateSent = dateSent
-        self._expireStartDate.wrappedValue = expireStartDate
-        self._expiresInMs.wrappedValue = expiresInMs
+        self.expireStartDate = expireStartDate
+        self.expiresInMs = expiresInMs
         self.revisions = revisions
         self.sms = sms
         self.directionalDetails = directionalDetails
@@ -4472,8 +4945,8 @@ extension BackupProto.ChatItem : Codable {
         self.chatId = try container.decode(stringEncoded: UInt64.self, forKey: "chatId")
         self.authorId = try container.decode(stringEncoded: UInt64.self, forKey: "authorId")
         self.dateSent = try container.decode(stringEncoded: UInt64.self, forKey: "dateSent")
-        self._expireStartDate.wrappedValue = try container.decodeIfPresent(stringEncoded: UInt64.self, forKey: "expireStartDate")
-        self._expiresInMs.wrappedValue = try container.decodeIfPresent(stringEncoded: UInt64.self, forKey: "expiresInMs")
+        self.expireStartDate = try container.decode(stringEncoded: UInt64.self, forKey: "expireStartDate")
+        self.expiresInMs = try container.decode(stringEncoded: UInt64.self, forKey: "expiresInMs")
         self.revisions = try container.decodeProtoArray(BackupProto.ChatItem.self, forKey: "revisions")
         self.sms = try container.decode(Bool.self, forKey: "sms")
         if let incoming = try container.decodeIfPresent(BackupProto.ChatItem.IncomingMessageDetails.self, forKey: "incoming") {
@@ -4497,6 +4970,8 @@ extension BackupProto.ChatItem : Codable {
             self.item = .updateMessage(updateMessage)
         } else if let paymentNotification = try container.decodeIfPresent(BackupProto.PaymentNotification.self, forKey: "paymentNotification") {
             self.item = .paymentNotification(paymentNotification)
+        } else if let giftBadge = try container.decodeIfPresent(BackupProto.GiftBadge.self, forKey: "giftBadge") {
+            self.item = .giftBadge(giftBadge)
         } else {
             self.item = nil
         }
@@ -4515,8 +4990,12 @@ extension BackupProto.ChatItem : Codable {
         if includeDefaults || self.dateSent != 0 {
             try container.encode(stringEncoded: self.dateSent, forKey: "dateSent")
         }
-        try container.encodeIfPresent(stringEncoded: self.expireStartDate, forKey: "expireStartDate")
-        try container.encodeIfPresent(stringEncoded: self.expiresInMs, forKey: "expiresInMs")
+        if includeDefaults || self.expireStartDate != 0 {
+            try container.encode(stringEncoded: self.expireStartDate, forKey: "expireStartDate")
+        }
+        if includeDefaults || self.expiresInMs != 0 {
+            try container.encode(stringEncoded: self.expiresInMs, forKey: "expiresInMs")
+        }
         if includeDefaults || !self.revisions.isEmpty {
             try container.encodeProtoArray(self.revisions, forKey: "revisions")
         }
@@ -4536,6 +5015,7 @@ extension BackupProto.ChatItem : Codable {
         case .remoteDeletedMessage(let remoteDeletedMessage): try container.encode(remoteDeletedMessage, forKey: "remoteDeletedMessage")
         case .updateMessage(let updateMessage): try container.encode(updateMessage, forKey: "updateMessage")
         case .paymentNotification(let paymentNotification): try container.encode(paymentNotification, forKey: "paymentNotification")
+        case .giftBadge(let giftBadge): try container.encode(giftBadge, forKey: "giftBadge")
         case Optional.none: break
         }
     }
@@ -4572,6 +5052,7 @@ extension BackupProto.ChatItem {
         case remoteDeletedMessage(BackupProto.RemoteDeletedMessage)
         case updateMessage(BackupProto.ChatUpdateMessage)
         case paymentNotification(BackupProto.PaymentNotification)
+        case giftBadge(BackupProto.GiftBadge)
 
         fileprivate func encode(to protoWriter: ProtoWriter) throws {
             switch self {
@@ -4581,6 +5062,7 @@ extension BackupProto.ChatItem {
             case .remoteDeletedMessage(let remoteDeletedMessage): try protoWriter.encode(tag: 14, value: remoteDeletedMessage)
             case .updateMessage(let updateMessage): try protoWriter.encode(tag: 15, value: updateMessage)
             case .paymentNotification(let paymentNotification): try protoWriter.encode(tag: 16, value: paymentNotification)
+            case .giftBadge(let giftBadge): try protoWriter.encode(tag: 17, value: giftBadge)
             }
         }
 
@@ -4919,7 +5401,7 @@ extension BackupProto.SendStatus : Proto3Codable {
         self.unknownFields = try protoReader.endMessage(token: token)
 
         self.recipientId = recipientId
-        self._deliveryStatus.wrappedValue = try BackupProto.SendStatus.Status.defaultIfMissing(deliveryStatus)
+        self.deliveryStatus = try BackupProto.SendStatus.Status.defaultIfMissing(deliveryStatus)
         self.networkFailure = networkFailure
         self.identityKeyMismatch = identityKeyMismatch
         self.sealedSender = sealedSender
@@ -4944,7 +5426,7 @@ extension BackupProto.SendStatus : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.recipientId = try container.decode(stringEncoded: UInt64.self, forKey: "recipientId")
-        self._deliveryStatus.wrappedValue = try container.decodeIfPresent(BackupProto.SendStatus.Status.self, forKey: "deliveryStatus")
+        self.deliveryStatus = try container.decode(BackupProto.SendStatus.Status.self, forKey: "deliveryStatus")
         self.networkFailure = try container.decode(Bool.self, forKey: "networkFailure")
         self.identityKeyMismatch = try container.decode(Bool.self, forKey: "identityKeyMismatch")
         self.sealedSender = try container.decode(Bool.self, forKey: "sealedSender")
@@ -4958,7 +5440,9 @@ extension BackupProto.SendStatus : Codable {
         if includeDefaults || self.recipientId != 0 {
             try container.encode(stringEncoded: self.recipientId, forKey: "recipientId")
         }
-        try container.encodeIfPresent(self.deliveryStatus, forKey: "deliveryStatus")
+        if includeDefaults || self.deliveryStatus.rawValue != 0 {
+            try container.encode(self.deliveryStatus, forKey: "deliveryStatus")
+        }
         if includeDefaults || self.networkFailure != false {
             try container.encode(self.networkFailure, forKey: "networkFailure")
         }
@@ -5124,7 +5608,7 @@ extension BackupProto.StandardMessage : Proto3Codable {
     public init(from protoReader: ProtoReader) throws {
         var quote: BackupProto.Quote? = nil
         var text: BackupProto.Text? = nil
-        var attachments: [BackupProto.FilePointer] = []
+        var attachments: [BackupProto.MessageAttachment] = []
         var linkPreview: [BackupProto.LinkPreview] = []
         var longText: BackupProto.FilePointer? = nil
         var reactions: [BackupProto.Reaction] = []
@@ -5170,7 +5654,7 @@ extension BackupProto.StandardMessage : Codable {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.quote = try container.decodeIfPresent(BackupProto.Quote.self, forKey: "quote")
         self.text = try container.decodeIfPresent(BackupProto.Text.self, forKey: "text")
-        self.attachments = try container.decodeProtoArray(BackupProto.FilePointer.self, forKey: "attachments")
+        self.attachments = try container.decodeProtoArray(BackupProto.MessageAttachment.self, forKey: "attachments")
         self.linkPreview = try container.decodeProtoArray(BackupProto.LinkPreview.self, forKey: "linkPreview")
         self._longText.wrappedValue = try container.decodeIfPresent(BackupProto.FilePointer.self, forKey: "longText")
         self.reactions = try container.decodeProtoArray(BackupProto.Reaction.self, forKey: "reactions")
@@ -5871,6 +6355,110 @@ extension BackupProto.PaymentNotification.TransactionDetails.Transaction.Status 
 }
 
 #if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.GiftBadge : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.GiftBadge : Hashable {
+}
+#endif
+
+extension BackupProto.GiftBadge : Sendable {
+}
+
+extension BackupProto.GiftBadge : ProtoMessage {
+
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/BackupProto.BackupProto.GiftBadge"
+    }
+
+}
+
+extension BackupProto.GiftBadge : Proto3Codable {
+
+    public init(from protoReader: ProtoReader) throws {
+        var receiptCredentialPresentation: Foundation.Data = .init()
+        var state: BackupProto.GiftBadge.State? = nil
+
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
+            switch tag {
+            case 1: receiptCredentialPresentation = try protoReader.decode(Foundation.Data.self)
+            case 2: state = try protoReader.decode(BackupProto.GiftBadge.State.self)
+            default: try protoReader.readUnknownField(tag: tag)
+            }
+        }
+        self.unknownFields = try protoReader.endMessage(token: token)
+
+        self.receiptCredentialPresentation = receiptCredentialPresentation
+        self.state = try BackupProto.GiftBadge.State.defaultIfMissing(state)
+    }
+
+    public func encode(to protoWriter: ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.receiptCredentialPresentation)
+        try protoWriter.encode(tag: 2, value: self.state)
+        try protoWriter.writeUnknownFields(unknownFields)
+    }
+
+}
+
+#if !WIRE_REMOVE_CODABLE
+extension BackupProto.GiftBadge : Codable {
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.receiptCredentialPresentation = try container.decode(stringEncoded: Foundation.Data.self, forKey: "receiptCredentialPresentation")
+        self.state = try container.decode(BackupProto.GiftBadge.State.self, forKey: "state")
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
+
+        if includeDefaults || !self.receiptCredentialPresentation.isEmpty {
+            try container.encode(stringEncoded: self.receiptCredentialPresentation, forKey: "receiptCredentialPresentation")
+        }
+        if includeDefaults || self.state.rawValue != 0 {
+            try container.encode(self.state, forKey: "state")
+        }
+    }
+
+}
+#endif
+
+/**
+ * Subtypes within BackupProto.GiftBadge
+ */
+extension BackupProto.GiftBadge {
+
+    public enum State : Int32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
+
+        case UNOPENED = 0
+        case OPENED = 1
+        case REDEEMED = 2
+        case FAILED = 3
+
+        public static var defaultedValue: BackupProto.GiftBadge.State {
+            BackupProto.GiftBadge.State.UNOPENED
+        }
+        public var description: String {
+            switch self {
+            case .UNOPENED: return "UNOPENED"
+            case .OPENED: return "OPENED"
+            case .REDEEMED: return "REDEEMED"
+            case .FAILED: return "FAILED"
+            }
+        }
+
+    }
+
+}
+
+extension BackupProto.GiftBadge.State : Sendable {
+}
+
+#if !WIRE_REMOVE_EQUATABLE
 extension BackupProto.ContactAttachment : Equatable {
 }
 #endif
@@ -5905,7 +6493,7 @@ extension BackupProto.ContactAttachment : Proto3Codable {
         var number: [BackupProto.ContactAttachment.Phone] = []
         var email: [BackupProto.ContactAttachment.Email] = []
         var address: [BackupProto.ContactAttachment.PostalAddress] = []
-        var avatar: BackupProto.ContactAttachment.Avatar? = nil
+        var avatar: BackupProto.FilePointer? = nil
         var organization: String? = nil
 
         let token = try protoReader.beginMessage()
@@ -5915,7 +6503,7 @@ extension BackupProto.ContactAttachment : Proto3Codable {
             case 3: try protoReader.decode(into: &number)
             case 4: try protoReader.decode(into: &email)
             case 5: try protoReader.decode(into: &address)
-            case 6: avatar = try protoReader.decode(BackupProto.ContactAttachment.Avatar.self)
+            case 6: avatar = try protoReader.decode(BackupProto.FilePointer.self)
             case 7: organization = try protoReader.decode(String.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
@@ -5951,7 +6539,7 @@ extension BackupProto.ContactAttachment : Codable {
         self.number = try container.decodeProtoArray(BackupProto.ContactAttachment.Phone.self, forKey: "number")
         self.email = try container.decodeProtoArray(BackupProto.ContactAttachment.Email.self, forKey: "email")
         self.address = try container.decodeProtoArray(BackupProto.ContactAttachment.PostalAddress.self, forKey: "address")
-        self._avatar.wrappedValue = try container.decodeIfPresent(BackupProto.ContactAttachment.Avatar.self, forKey: "avatar")
+        self._avatar.wrappedValue = try container.decodeIfPresent(BackupProto.FilePointer.self, forKey: "avatar")
         self._organization.wrappedValue = try container.decodeIfPresent(String.self, forKey: "organization")
     }
 
@@ -6055,18 +6643,6 @@ extension BackupProto.ContactAttachment {
         public var postcode: String?
         @ProtoDefaulted
         public var country: String?
-        public var unknownFields: UnknownFields = .init()
-
-        public init(configure: (inout Self) -> Swift.Void = { _ in }) {
-            configure(&self)
-        }
-
-    }
-
-    public struct Avatar {
-
-        @ProtoDefaulted
-        public var avatar: BackupProto.FilePointer?
         public var unknownFields: UnknownFields = .init()
 
         public init(configure: (inout Self) -> Swift.Void = { _ in }) {
@@ -6553,243 +7129,6 @@ extension BackupProto.ContactAttachment.PostalAddress.Type_ : Sendable {
 }
 
 #if !WIRE_REMOVE_EQUATABLE
-extension BackupProto.ContactAttachment.Avatar : Equatable {
-}
-#endif
-
-#if !WIRE_REMOVE_HASHABLE
-extension BackupProto.ContactAttachment.Avatar : Hashable {
-}
-#endif
-
-extension BackupProto.ContactAttachment.Avatar : Sendable {
-}
-
-extension BackupProto.ContactAttachment.Avatar : ProtoDefaultedValue {
-
-    public static var defaultedValue: BackupProto.ContactAttachment.Avatar {
-        BackupProto.ContactAttachment.Avatar()
-    }
-}
-
-extension BackupProto.ContactAttachment.Avatar : ProtoMessage {
-
-    public static func protoMessageTypeURL() -> String {
-        return "type.googleapis.com/BackupProto.BackupProto.ContactAttachment.Avatar"
-    }
-
-}
-
-extension BackupProto.ContactAttachment.Avatar : Proto3Codable {
-
-    public init(from protoReader: ProtoReader) throws {
-        var avatar: BackupProto.FilePointer? = nil
-
-        let token = try protoReader.beginMessage()
-        while let tag = try protoReader.nextTag(token: token) {
-            switch tag {
-            case 1: avatar = try protoReader.decode(BackupProto.FilePointer.self)
-            default: try protoReader.readUnknownField(tag: tag)
-            }
-        }
-        self.unknownFields = try protoReader.endMessage(token: token)
-
-        self._avatar.wrappedValue = avatar
-    }
-
-    public func encode(to protoWriter: ProtoWriter) throws {
-        try protoWriter.encode(tag: 1, value: self.avatar)
-        try protoWriter.writeUnknownFields(unknownFields)
-    }
-
-}
-
-#if !WIRE_REMOVE_CODABLE
-extension BackupProto.ContactAttachment.Avatar : Codable {
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self._avatar.wrappedValue = try container.decodeIfPresent(BackupProto.FilePointer.self, forKey: "avatar")
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
-
-        try container.encodeIfPresent(self.avatar, forKey: "avatar")
-    }
-
-}
-#endif
-
-#if !WIRE_REMOVE_EQUATABLE
-extension BackupProto.DocumentMessage : Equatable {
-}
-#endif
-
-#if !WIRE_REMOVE_HASHABLE
-extension BackupProto.DocumentMessage : Hashable {
-}
-#endif
-
-extension BackupProto.DocumentMessage : Sendable {
-}
-
-extension BackupProto.DocumentMessage : ProtoDefaultedValue {
-
-    public static var defaultedValue: BackupProto.DocumentMessage {
-        BackupProto.DocumentMessage()
-    }
-}
-
-extension BackupProto.DocumentMessage : ProtoMessage {
-
-    public static func protoMessageTypeURL() -> String {
-        return "type.googleapis.com/BackupProto.BackupProto.DocumentMessage"
-    }
-
-}
-
-extension BackupProto.DocumentMessage : Proto3Codable {
-
-    public init(from protoReader: ProtoReader) throws {
-        var text: BackupProto.Text? = nil
-        var document: BackupProto.FilePointer? = nil
-        var reactions: [BackupProto.Reaction] = []
-
-        let token = try protoReader.beginMessage()
-        while let tag = try protoReader.nextTag(token: token) {
-            switch tag {
-            case 1: text = try protoReader.decode(BackupProto.Text.self)
-            case 2: document = try protoReader.decode(BackupProto.FilePointer.self)
-            case 3: try protoReader.decode(into: &reactions)
-            default: try protoReader.readUnknownField(tag: tag)
-            }
-        }
-        self.unknownFields = try protoReader.endMessage(token: token)
-
-        self.text = text
-        self._document.wrappedValue = document
-        self.reactions = reactions
-    }
-
-    public func encode(to protoWriter: ProtoWriter) throws {
-        try protoWriter.encode(tag: 1, value: self.text)
-        try protoWriter.encode(tag: 2, value: self.document)
-        try protoWriter.encode(tag: 3, value: self.reactions)
-        try protoWriter.writeUnknownFields(unknownFields)
-    }
-
-}
-
-#if !WIRE_REMOVE_CODABLE
-extension BackupProto.DocumentMessage : Codable {
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.text = try container.decodeIfPresent(BackupProto.Text.self, forKey: "text")
-        self._document.wrappedValue = try container.decodeIfPresent(BackupProto.FilePointer.self, forKey: "document")
-        self.reactions = try container.decodeProtoArray(BackupProto.Reaction.self, forKey: "reactions")
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
-        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
-
-        try container.encodeIfPresent(self.text, forKey: "text")
-        try container.encodeIfPresent(self.document, forKey: "document")
-        if includeDefaults || !self.reactions.isEmpty {
-            try container.encodeProtoArray(self.reactions, forKey: "reactions")
-        }
-    }
-
-}
-#endif
-
-#if !WIRE_REMOVE_EQUATABLE
-extension BackupProto.VoiceMessage : Equatable {
-}
-#endif
-
-#if !WIRE_REMOVE_HASHABLE
-extension BackupProto.VoiceMessage : Hashable {
-}
-#endif
-
-extension BackupProto.VoiceMessage : Sendable {
-}
-
-extension BackupProto.VoiceMessage : ProtoDefaultedValue {
-
-    public static var defaultedValue: BackupProto.VoiceMessage {
-        BackupProto.VoiceMessage()
-    }
-}
-
-extension BackupProto.VoiceMessage : ProtoMessage {
-
-    public static func protoMessageTypeURL() -> String {
-        return "type.googleapis.com/BackupProto.BackupProto.VoiceMessage"
-    }
-
-}
-
-extension BackupProto.VoiceMessage : Proto3Codable {
-
-    public init(from protoReader: ProtoReader) throws {
-        var quote: BackupProto.Quote? = nil
-        var audio: BackupProto.FilePointer? = nil
-        var reactions: [BackupProto.Reaction] = []
-
-        let token = try protoReader.beginMessage()
-        while let tag = try protoReader.nextTag(token: token) {
-            switch tag {
-            case 1: quote = try protoReader.decode(BackupProto.Quote.self)
-            case 2: audio = try protoReader.decode(BackupProto.FilePointer.self)
-            case 3: try protoReader.decode(into: &reactions)
-            default: try protoReader.readUnknownField(tag: tag)
-            }
-        }
-        self.unknownFields = try protoReader.endMessage(token: token)
-
-        self.quote = quote
-        self._audio.wrappedValue = audio
-        self.reactions = reactions
-    }
-
-    public func encode(to protoWriter: ProtoWriter) throws {
-        try protoWriter.encode(tag: 1, value: self.quote)
-        try protoWriter.encode(tag: 2, value: self.audio)
-        try protoWriter.encode(tag: 3, value: self.reactions)
-        try protoWriter.writeUnknownFields(unknownFields)
-    }
-
-}
-
-#if !WIRE_REMOVE_CODABLE
-extension BackupProto.VoiceMessage : Codable {
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.quote = try container.decodeIfPresent(BackupProto.Quote.self, forKey: "quote")
-        self._audio.wrappedValue = try container.decodeIfPresent(BackupProto.FilePointer.self, forKey: "audio")
-        self.reactions = try container.decodeProtoArray(BackupProto.Reaction.self, forKey: "reactions")
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
-        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
-
-        try container.encodeIfPresent(self.quote, forKey: "quote")
-        try container.encodeIfPresent(self.audio, forKey: "audio")
-        if includeDefaults || !self.reactions.isEmpty {
-            try container.encodeProtoArray(self.reactions, forKey: "reactions")
-        }
-    }
-
-}
-#endif
-
-#if !WIRE_REMOVE_EQUATABLE
 extension BackupProto.StickerMessage : Equatable {
 }
 #endif
@@ -6951,6 +7290,7 @@ extension BackupProto.Sticker : Proto3Codable {
         var packKey: Foundation.Data = .init()
         var stickerId: UInt32 = 0
         var emoji: String? = nil
+        var data: BackupProto.FilePointer? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
@@ -6959,6 +7299,7 @@ extension BackupProto.Sticker : Proto3Codable {
             case 2: packKey = try protoReader.decode(Foundation.Data.self)
             case 3: stickerId = try protoReader.decode(UInt32.self)
             case 4: emoji = try protoReader.decode(String.self)
+            case 5: data = try protoReader.decode(BackupProto.FilePointer.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -6968,6 +7309,7 @@ extension BackupProto.Sticker : Proto3Codable {
         self.packKey = packKey
         self.stickerId = stickerId
         self._emoji.wrappedValue = emoji
+        self._data.wrappedValue = data
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
@@ -6975,6 +7317,7 @@ extension BackupProto.Sticker : Proto3Codable {
         try protoWriter.encode(tag: 2, value: self.packKey)
         try protoWriter.encode(tag: 3, value: self.stickerId)
         try protoWriter.encode(tag: 4, value: self.emoji)
+        try protoWriter.encode(tag: 5, value: self.data)
         try protoWriter.writeUnknownFields(unknownFields)
     }
 
@@ -6989,6 +7332,7 @@ extension BackupProto.Sticker : Codable {
         self.packKey = try container.decode(stringEncoded: Foundation.Data.self, forKey: "packKey")
         self.stickerId = try container.decode(UInt32.self, forKey: "stickerId")
         self._emoji.wrappedValue = try container.decodeIfPresent(String.self, forKey: "emoji")
+        self._data.wrappedValue = try container.decodeIfPresent(BackupProto.FilePointer.self, forKey: "data")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -7005,6 +7349,7 @@ extension BackupProto.Sticker : Codable {
             try container.encode(self.stickerId, forKey: "stickerId")
         }
         try container.encodeIfPresent(self.emoji, forKey: "emoji")
+        try container.encodeIfPresent(self.data, forKey: "data")
     }
 
 }
@@ -7100,6 +7445,127 @@ extension BackupProto.LinkPreview : Codable {
 #endif
 
 #if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.MessageAttachment : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.MessageAttachment : Hashable {
+}
+#endif
+
+extension BackupProto.MessageAttachment : Sendable {
+}
+
+extension BackupProto.MessageAttachment : ProtoMessage {
+
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/BackupProto.BackupProto.MessageAttachment"
+    }
+
+}
+
+extension BackupProto.MessageAttachment : Proto3Codable {
+
+    public init(from protoReader: ProtoReader) throws {
+        var pointer: BackupProto.FilePointer? = nil
+        var flag: BackupProto.MessageAttachment.Flag? = nil
+        var wasDownloaded: Bool = false
+        var clientUuid: Foundation.Data? = nil
+
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
+            switch tag {
+            case 1: pointer = try protoReader.decode(BackupProto.FilePointer.self)
+            case 2: flag = try protoReader.decode(BackupProto.MessageAttachment.Flag.self)
+            case 3: wasDownloaded = try protoReader.decode(Bool.self)
+            case 4: clientUuid = try protoReader.decode(Foundation.Data.self)
+            default: try protoReader.readUnknownField(tag: tag)
+            }
+        }
+        self.unknownFields = try protoReader.endMessage(token: token)
+
+        self._pointer.wrappedValue = pointer
+        self.flag = try BackupProto.MessageAttachment.Flag.defaultIfMissing(flag)
+        self.wasDownloaded = wasDownloaded
+        self._clientUuid.wrappedValue = clientUuid
+    }
+
+    public func encode(to protoWriter: ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.pointer)
+        try protoWriter.encode(tag: 2, value: self.flag)
+        try protoWriter.encode(tag: 3, value: self.wasDownloaded)
+        try protoWriter.encode(tag: 4, value: self.clientUuid)
+        try protoWriter.writeUnknownFields(unknownFields)
+    }
+
+}
+
+#if !WIRE_REMOVE_CODABLE
+extension BackupProto.MessageAttachment : Codable {
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self._pointer.wrappedValue = try container.decodeIfPresent(BackupProto.FilePointer.self, forKey: "pointer")
+        self.flag = try container.decode(BackupProto.MessageAttachment.Flag.self, forKey: "flag")
+        self.wasDownloaded = try container.decode(Bool.self, forKey: "wasDownloaded")
+        self._clientUuid.wrappedValue = try container.decodeIfPresent(stringEncoded: Foundation.Data.self, forKey: "clientUuid")
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
+
+        try container.encodeIfPresent(self.pointer, forKey: "pointer")
+        if includeDefaults || self.flag.rawValue != 0 {
+            try container.encode(self.flag, forKey: "flag")
+        }
+        if includeDefaults || self.wasDownloaded != false {
+            try container.encode(self.wasDownloaded, forKey: "wasDownloaded")
+        }
+        try container.encodeIfPresent(stringEncoded: self.clientUuid, forKey: "clientUuid")
+    }
+
+}
+#endif
+
+/**
+ * Subtypes within BackupProto.MessageAttachment
+ */
+extension BackupProto.MessageAttachment {
+
+    /**
+     * Similar to SignalService.AttachmentPointer.Flags,
+     * but explicitly mutually exclusive. Note the different raw values
+     * (non-zero starting values are not supported in proto3.)
+     */
+    public enum Flag : Int32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
+
+        case NONE = 0
+        case VOICE_MESSAGE = 1
+        case BORDERLESS = 2
+        case GIF = 3
+
+        public static var defaultedValue: BackupProto.MessageAttachment.Flag {
+            BackupProto.MessageAttachment.Flag.NONE
+        }
+        public var description: String {
+            switch self {
+            case .NONE: return "NONE"
+            case .VOICE_MESSAGE: return "VOICE_MESSAGE"
+            case .BORDERLESS: return "BORDERLESS"
+            case .GIF: return "GIF"
+            }
+        }
+
+    }
+
+}
+
+extension BackupProto.MessageAttachment.Flag : Sendable {
+}
+
+#if !WIRE_REMOVE_EQUATABLE
 extension BackupProto.FilePointer : Equatable {
 }
 #endif
@@ -7130,13 +7596,10 @@ extension BackupProto.FilePointer : ProtoMessage {
 extension BackupProto.FilePointer : Proto3Codable {
 
     public init(from protoReader: ProtoReader) throws {
-        var key: Foundation.Data? = nil
         var contentType: String? = nil
-        var size: UInt32? = nil
         var incrementalMac: Foundation.Data? = nil
-        var incrementalMacChunkSize: Foundation.Data? = nil
+        var incrementalMacChunkSize: UInt32? = nil
         var fileName: String? = nil
-        var flags: UInt32? = nil
         var width: UInt32? = nil
         var height: UInt32? = nil
         var caption: String? = nil
@@ -7146,33 +7609,26 @@ extension BackupProto.FilePointer : Proto3Codable {
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 5: key = try protoReader.decode(Foundation.Data.self)
-            case 6: contentType = try protoReader.decode(String.self)
-            case 7: size = try protoReader.decode(UInt32.self)
-            case 8: incrementalMac = try protoReader.decode(Foundation.Data.self)
-            case 9: incrementalMacChunkSize = try protoReader.decode(Foundation.Data.self)
-            case 10: fileName = try protoReader.decode(String.self)
-            case 11: flags = try protoReader.decode(UInt32.self)
-            case 12: width = try protoReader.decode(UInt32.self)
-            case 13: height = try protoReader.decode(UInt32.self)
-            case 14: caption = try protoReader.decode(String.self)
-            case 15: blurHash = try protoReader.decode(String.self)
+            case 4: contentType = try protoReader.decode(String.self)
+            case 5: incrementalMac = try protoReader.decode(Foundation.Data.self)
+            case 6: incrementalMacChunkSize = try protoReader.decode(UInt32.self)
+            case 7: fileName = try protoReader.decode(String.self)
+            case 8: width = try protoReader.decode(UInt32.self)
+            case 9: height = try protoReader.decode(UInt32.self)
+            case 10: caption = try protoReader.decode(String.self)
+            case 11: blurHash = try protoReader.decode(String.self)
             case 1: locator = .backupLocator(try protoReader.decode(BackupProto.FilePointer.BackupLocator.self))
             case 2: locator = .attachmentLocator(try protoReader.decode(BackupProto.FilePointer.AttachmentLocator.self))
-            case 3: locator = .legacyAttachmentLocator(try protoReader.decode(BackupProto.FilePointer.LegacyAttachmentLocator.self))
-            case 4: locator = .undownloadedBackupLocator(try protoReader.decode(BackupProto.FilePointer.UndownloadedBackupLocator.self))
+            case 3: locator = .invalidAttachmentLocator(try protoReader.decode(BackupProto.FilePointer.InvalidAttachmentLocator.self))
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
-        self._key.wrappedValue = key
         self._contentType.wrappedValue = contentType
-        self._size.wrappedValue = size
         self._incrementalMac.wrappedValue = incrementalMac
         self._incrementalMacChunkSize.wrappedValue = incrementalMacChunkSize
         self._fileName.wrappedValue = fileName
-        self._flags.wrappedValue = flags
         self._width.wrappedValue = width
         self._height.wrappedValue = height
         self._caption.wrappedValue = caption
@@ -7181,17 +7637,14 @@ extension BackupProto.FilePointer : Proto3Codable {
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
-        try protoWriter.encode(tag: 5, value: self.key)
-        try protoWriter.encode(tag: 6, value: self.contentType)
-        try protoWriter.encode(tag: 7, value: self.size)
-        try protoWriter.encode(tag: 8, value: self.incrementalMac)
-        try protoWriter.encode(tag: 9, value: self.incrementalMacChunkSize)
-        try protoWriter.encode(tag: 10, value: self.fileName)
-        try protoWriter.encode(tag: 11, value: self.flags)
-        try protoWriter.encode(tag: 12, value: self.width)
-        try protoWriter.encode(tag: 13, value: self.height)
-        try protoWriter.encode(tag: 14, value: self.caption)
-        try protoWriter.encode(tag: 15, value: self.blurHash)
+        try protoWriter.encode(tag: 4, value: self.contentType)
+        try protoWriter.encode(tag: 5, value: self.incrementalMac)
+        try protoWriter.encode(tag: 6, value: self.incrementalMacChunkSize)
+        try protoWriter.encode(tag: 7, value: self.fileName)
+        try protoWriter.encode(tag: 8, value: self.width)
+        try protoWriter.encode(tag: 9, value: self.height)
+        try protoWriter.encode(tag: 10, value: self.caption)
+        try protoWriter.encode(tag: 11, value: self.blurHash)
         if let locator = self.locator {
             try locator.encode(to: protoWriter)
         }
@@ -7205,13 +7658,10 @@ extension BackupProto.FilePointer : Codable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self._key.wrappedValue = try container.decodeIfPresent(stringEncoded: Foundation.Data.self, forKey: "key")
         self._contentType.wrappedValue = try container.decodeIfPresent(String.self, forKey: "contentType")
-        self._size.wrappedValue = try container.decodeIfPresent(UInt32.self, forKey: "size")
         self._incrementalMac.wrappedValue = try container.decodeIfPresent(stringEncoded: Foundation.Data.self, forKey: "incrementalMac")
-        self._incrementalMacChunkSize.wrappedValue = try container.decodeIfPresent(stringEncoded: Foundation.Data.self, forKey: "incrementalMacChunkSize")
+        self._incrementalMacChunkSize.wrappedValue = try container.decodeIfPresent(UInt32.self, forKey: "incrementalMacChunkSize")
         self._fileName.wrappedValue = try container.decodeIfPresent(String.self, forKey: "fileName")
-        self._flags.wrappedValue = try container.decodeIfPresent(UInt32.self, forKey: "flags")
         self._width.wrappedValue = try container.decodeIfPresent(UInt32.self, forKey: "width")
         self._height.wrappedValue = try container.decodeIfPresent(UInt32.self, forKey: "height")
         self._caption.wrappedValue = try container.decodeIfPresent(String.self, forKey: "caption")
@@ -7220,10 +7670,8 @@ extension BackupProto.FilePointer : Codable {
             self.locator = .backupLocator(backupLocator)
         } else if let attachmentLocator = try container.decodeIfPresent(BackupProto.FilePointer.AttachmentLocator.self, forKey: "attachmentLocator") {
             self.locator = .attachmentLocator(attachmentLocator)
-        } else if let legacyAttachmentLocator = try container.decodeIfPresent(BackupProto.FilePointer.LegacyAttachmentLocator.self, forKey: "legacyAttachmentLocator") {
-            self.locator = .legacyAttachmentLocator(legacyAttachmentLocator)
-        } else if let undownloadedBackupLocator = try container.decodeIfPresent(BackupProto.FilePointer.UndownloadedBackupLocator.self, forKey: "undownloadedBackupLocator") {
-            self.locator = .undownloadedBackupLocator(undownloadedBackupLocator)
+        } else if let invalidAttachmentLocator = try container.decodeIfPresent(BackupProto.FilePointer.InvalidAttachmentLocator.self, forKey: "invalidAttachmentLocator") {
+            self.locator = .invalidAttachmentLocator(invalidAttachmentLocator)
         } else {
             self.locator = nil
         }
@@ -7232,13 +7680,10 @@ extension BackupProto.FilePointer : Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
 
-        try container.encodeIfPresent(stringEncoded: self.key, forKey: "key")
         try container.encodeIfPresent(self.contentType, forKey: "contentType")
-        try container.encodeIfPresent(self.size, forKey: "size")
         try container.encodeIfPresent(stringEncoded: self.incrementalMac, forKey: "incrementalMac")
-        try container.encodeIfPresent(stringEncoded: self.incrementalMacChunkSize, forKey: "incrementalMacChunkSize")
+        try container.encodeIfPresent(self.incrementalMacChunkSize, forKey: "incrementalMacChunkSize")
         try container.encodeIfPresent(self.fileName, forKey: "fileName")
-        try container.encodeIfPresent(self.flags, forKey: "flags")
         try container.encodeIfPresent(self.width, forKey: "width")
         try container.encodeIfPresent(self.height, forKey: "height")
         try container.encodeIfPresent(self.caption, forKey: "caption")
@@ -7246,8 +7691,7 @@ extension BackupProto.FilePointer : Codable {
         switch self.locator {
         case .backupLocator(let backupLocator): try container.encode(backupLocator, forKey: "backupLocator")
         case .attachmentLocator(let attachmentLocator): try container.encode(attachmentLocator, forKey: "attachmentLocator")
-        case .legacyAttachmentLocator(let legacyAttachmentLocator): try container.encode(legacyAttachmentLocator, forKey: "legacyAttachmentLocator")
-        case .undownloadedBackupLocator(let undownloadedBackupLocator): try container.encode(undownloadedBackupLocator, forKey: "undownloadedBackupLocator")
+        case .invalidAttachmentLocator(let invalidAttachmentLocator): try container.encode(invalidAttachmentLocator, forKey: "invalidAttachmentLocator")
         case Optional.none: break
         }
     }
@@ -7264,103 +7708,105 @@ extension BackupProto.FilePointer {
 
         case backupLocator(BackupProto.FilePointer.BackupLocator)
         case attachmentLocator(BackupProto.FilePointer.AttachmentLocator)
-        case legacyAttachmentLocator(BackupProto.FilePointer.LegacyAttachmentLocator)
-        case undownloadedBackupLocator(BackupProto.FilePointer.UndownloadedBackupLocator)
+        case invalidAttachmentLocator(BackupProto.FilePointer.InvalidAttachmentLocator)
 
         fileprivate func encode(to protoWriter: ProtoWriter) throws {
             switch self {
             case .backupLocator(let backupLocator): try protoWriter.encode(tag: 1, value: backupLocator)
             case .attachmentLocator(let attachmentLocator): try protoWriter.encode(tag: 2, value: attachmentLocator)
-            case .legacyAttachmentLocator(let legacyAttachmentLocator): try protoWriter.encode(tag: 3, value: legacyAttachmentLocator)
-            case .undownloadedBackupLocator(let undownloadedBackupLocator): try protoWriter.encode(tag: 4, value: undownloadedBackupLocator)
+            case .invalidAttachmentLocator(let invalidAttachmentLocator): try protoWriter.encode(tag: 3, value: invalidAttachmentLocator)
             }
-        }
-
-    }
-
-    public struct BackupLocator {
-
-        public var mediaName: String
-        public var cdnNumber: UInt32
-        public var unknownFields: UnknownFields = .init()
-
-        public init(mediaName: String, cdnNumber: UInt32) {
-            self.mediaName = mediaName
-            self.cdnNumber = cdnNumber
-        }
-
-    }
-
-    public struct AttachmentLocator {
-
-        public var cdnKey: String
-        public var cdnNumber: UInt32
-        public var uploadTimestamp: UInt64
-        public var unknownFields: UnknownFields = .init()
-
-        public init(
-            cdnKey: String,
-            cdnNumber: UInt32,
-            uploadTimestamp: UInt64
-        ) {
-            self.cdnKey = cdnKey
-            self.cdnNumber = cdnNumber
-            self.uploadTimestamp = uploadTimestamp
-        }
-
-    }
-
-    public struct LegacyAttachmentLocator {
-
-        public var cdnId: UInt64
-        public var unknownFields: UnknownFields = .init()
-
-        public init(cdnId: UInt64) {
-            self.cdnId = cdnId
         }
 
     }
 
     /**
-     * An attachment that was backed up without being downloaded.
-     * Its MediaName should be generated as “{sender_aci}_{cdn_attachment_key}”,
-     * but should eventually transition to a BackupLocator with mediaName
-     * being the content hash once it is downloaded.
+     * References attachments in the backup (media) storage tier.
      */
-    public struct UndownloadedBackupLocator {
+    public struct BackupLocator {
 
-        public var senderAci: Foundation.Data
-        public var cdnKey: String
-        public var cdnNumber: UInt32
+        public var mediaName: String
+        /**
+         * If present, the cdn number of the succesful upload.
+         * If empty/0, may still have been uploaded, and clients
+         * can discover the cdn number via the list endpoint.
+         */
+        @ProtoDefaulted
+        public var cdnNumber: UInt32?
+        public var key: Foundation.Data
+        public var digest: Foundation.Data
+        public var size: UInt32
+        /**
+         * Fallback in case backup tier upload failed.
+         */
+        @ProtoDefaulted
+        public var transitCdnKey: String?
+        @ProtoDefaulted
+        public var transitCdnNumber: UInt32?
         public var unknownFields: UnknownFields = .init()
 
         public init(
-            senderAci: Foundation.Data,
-            cdnKey: String,
-            cdnNumber: UInt32
+            mediaName: String,
+            key: Foundation.Data,
+            digest: Foundation.Data,
+            size: UInt32,
+            configure: (inout Self) -> Swift.Void = { _ in }
         ) {
-            self.senderAci = senderAci
-            self.cdnKey = cdnKey
-            self.cdnNumber = cdnNumber
+            self.mediaName = mediaName
+            self.key = key
+            self.digest = digest
+            self.size = size
+            configure(&self)
         }
 
     }
 
-    public enum Flags : Int32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
+    /**
+     * References attachments in the transit storage tier.
+     * May be downloaded or not when the backup is generated;
+     * primarily for free-tier users who cannot copy the
+     * attachments to the backup (media) storage tier.
+     */
+    public struct AttachmentLocator {
 
-        case VOICE_MESSAGE = 0
-        case BORDERLESS = 1
-        case GIF = 2
+        public var cdnKey: String
+        public var cdnNumber: UInt32
+        public var uploadTimestamp: UInt64
+        public var key: Foundation.Data
+        public var digest: Foundation.Data
+        public var size: UInt32
+        public var unknownFields: UnknownFields = .init()
 
-        public static var defaultedValue: BackupProto.FilePointer.Flags {
-            BackupProto.FilePointer.Flags.VOICE_MESSAGE
+        public init(
+            cdnKey: String,
+            cdnNumber: UInt32,
+            uploadTimestamp: UInt64,
+            key: Foundation.Data,
+            digest: Foundation.Data,
+            size: UInt32
+        ) {
+            self.cdnKey = cdnKey
+            self.cdnNumber = cdnNumber
+            self.uploadTimestamp = uploadTimestamp
+            self.key = key
+            self.digest = digest
+            self.size = size
         }
-        public var description: String {
-            switch self {
-            case .VOICE_MESSAGE: return "VOICE_MESSAGE"
-            case .BORDERLESS: return "BORDERLESS"
-            case .GIF: return "GIF"
-            }
+
+    }
+
+    /**
+     * References attachments that are invalid in such a way where download
+     * cannot be attempted. Could range from missing digests to missing
+     * CDN keys or anything else that makes download attempts impossible.
+     * This serves as a 'tombstone' so that the UX can show that an attachment
+     * did exist, but for whatever reason it's not retrievable.
+     */
+    public struct InvalidAttachmentLocator {
+
+        public var unknownFields: UnknownFields = .init()
+
+        public init() {
         }
 
     }
@@ -7405,25 +7851,45 @@ extension BackupProto.FilePointer.BackupLocator : Proto3Codable {
 
     public init(from protoReader: ProtoReader) throws {
         var mediaName: String = ""
-        var cdnNumber: UInt32 = 0
+        var cdnNumber: UInt32? = nil
+        var key: Foundation.Data = .init()
+        var digest: Foundation.Data = .init()
+        var size: UInt32 = 0
+        var transitCdnKey: String? = nil
+        var transitCdnNumber: UInt32? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
             case 1: mediaName = try protoReader.decode(String.self)
             case 2: cdnNumber = try protoReader.decode(UInt32.self)
+            case 3: key = try protoReader.decode(Foundation.Data.self)
+            case 4: digest = try protoReader.decode(Foundation.Data.self)
+            case 5: size = try protoReader.decode(UInt32.self)
+            case 6: transitCdnKey = try protoReader.decode(String.self)
+            case 7: transitCdnNumber = try protoReader.decode(UInt32.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
         self.mediaName = mediaName
-        self.cdnNumber = cdnNumber
+        self._cdnNumber.wrappedValue = cdnNumber
+        self.key = key
+        self.digest = digest
+        self.size = size
+        self._transitCdnKey.wrappedValue = transitCdnKey
+        self._transitCdnNumber.wrappedValue = transitCdnNumber
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
         try protoWriter.encode(tag: 1, value: self.mediaName)
         try protoWriter.encode(tag: 2, value: self.cdnNumber)
+        try protoWriter.encode(tag: 3, value: self.key)
+        try protoWriter.encode(tag: 4, value: self.digest)
+        try protoWriter.encode(tag: 5, value: self.size)
+        try protoWriter.encode(tag: 6, value: self.transitCdnKey)
+        try protoWriter.encode(tag: 7, value: self.transitCdnNumber)
         try protoWriter.writeUnknownFields(unknownFields)
     }
 
@@ -7435,7 +7901,12 @@ extension BackupProto.FilePointer.BackupLocator : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self.mediaName = try container.decode(String.self, forKey: "mediaName")
-        self.cdnNumber = try container.decode(UInt32.self, forKey: "cdnNumber")
+        self._cdnNumber.wrappedValue = try container.decodeIfPresent(UInt32.self, forKey: "cdnNumber")
+        self.key = try container.decode(stringEncoded: Foundation.Data.self, forKey: "key")
+        self.digest = try container.decode(stringEncoded: Foundation.Data.self, forKey: "digest")
+        self.size = try container.decode(UInt32.self, forKey: "size")
+        self._transitCdnKey.wrappedValue = try container.decodeIfPresent(String.self, forKey: "transitCdnKey")
+        self._transitCdnNumber.wrappedValue = try container.decodeIfPresent(UInt32.self, forKey: "transitCdnNumber")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -7445,9 +7916,18 @@ extension BackupProto.FilePointer.BackupLocator : Codable {
         if includeDefaults || !self.mediaName.isEmpty {
             try container.encode(self.mediaName, forKey: "mediaName")
         }
-        if includeDefaults || self.cdnNumber != 0 {
-            try container.encode(self.cdnNumber, forKey: "cdnNumber")
+        try container.encodeIfPresent(self.cdnNumber, forKey: "cdnNumber")
+        if includeDefaults || !self.key.isEmpty {
+            try container.encode(stringEncoded: self.key, forKey: "key")
         }
+        if includeDefaults || !self.digest.isEmpty {
+            try container.encode(stringEncoded: self.digest, forKey: "digest")
+        }
+        if includeDefaults || self.size != 0 {
+            try container.encode(self.size, forKey: "size")
+        }
+        try container.encodeIfPresent(self.transitCdnKey, forKey: "transitCdnKey")
+        try container.encodeIfPresent(self.transitCdnNumber, forKey: "transitCdnNumber")
     }
 
 }
@@ -7480,6 +7960,9 @@ extension BackupProto.FilePointer.AttachmentLocator : Proto3Codable {
         var cdnKey: String = ""
         var cdnNumber: UInt32 = 0
         var uploadTimestamp: UInt64 = 0
+        var key: Foundation.Data = .init()
+        var digest: Foundation.Data = .init()
+        var size: UInt32 = 0
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
@@ -7487,6 +7970,9 @@ extension BackupProto.FilePointer.AttachmentLocator : Proto3Codable {
             case 1: cdnKey = try protoReader.decode(String.self)
             case 2: cdnNumber = try protoReader.decode(UInt32.self)
             case 3: uploadTimestamp = try protoReader.decode(UInt64.self)
+            case 4: key = try protoReader.decode(Foundation.Data.self)
+            case 5: digest = try protoReader.decode(Foundation.Data.self)
+            case 6: size = try protoReader.decode(UInt32.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -7495,12 +7981,18 @@ extension BackupProto.FilePointer.AttachmentLocator : Proto3Codable {
         self.cdnKey = cdnKey
         self.cdnNumber = cdnNumber
         self.uploadTimestamp = uploadTimestamp
+        self.key = key
+        self.digest = digest
+        self.size = size
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
         try protoWriter.encode(tag: 1, value: self.cdnKey)
         try protoWriter.encode(tag: 2, value: self.cdnNumber)
         try protoWriter.encode(tag: 3, value: self.uploadTimestamp)
+        try protoWriter.encode(tag: 4, value: self.key)
+        try protoWriter.encode(tag: 5, value: self.digest)
+        try protoWriter.encode(tag: 6, value: self.size)
         try protoWriter.writeUnknownFields(unknownFields)
     }
 
@@ -7514,6 +8006,9 @@ extension BackupProto.FilePointer.AttachmentLocator : Codable {
         self.cdnKey = try container.decode(String.self, forKey: "cdnKey")
         self.cdnNumber = try container.decode(UInt32.self, forKey: "cdnNumber")
         self.uploadTimestamp = try container.decode(stringEncoded: UInt64.self, forKey: "uploadTimestamp")
+        self.key = try container.decode(stringEncoded: Foundation.Data.self, forKey: "key")
+        self.digest = try container.decode(stringEncoded: Foundation.Data.self, forKey: "digest")
+        self.size = try container.decode(UInt32.self, forKey: "size")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -7529,70 +8024,14 @@ extension BackupProto.FilePointer.AttachmentLocator : Codable {
         if includeDefaults || self.uploadTimestamp != 0 {
             try container.encode(stringEncoded: self.uploadTimestamp, forKey: "uploadTimestamp")
         }
-    }
-
-}
-#endif
-
-#if !WIRE_REMOVE_EQUATABLE
-extension BackupProto.FilePointer.LegacyAttachmentLocator : Equatable {
-}
-#endif
-
-#if !WIRE_REMOVE_HASHABLE
-extension BackupProto.FilePointer.LegacyAttachmentLocator : Hashable {
-}
-#endif
-
-extension BackupProto.FilePointer.LegacyAttachmentLocator : Sendable {
-}
-
-extension BackupProto.FilePointer.LegacyAttachmentLocator : ProtoMessage {
-
-    public static func protoMessageTypeURL() -> String {
-        return "type.googleapis.com/BackupProto.BackupProto.FilePointer.LegacyAttachmentLocator"
-    }
-
-}
-
-extension BackupProto.FilePointer.LegacyAttachmentLocator : Proto3Codable {
-
-    public init(from protoReader: ProtoReader) throws {
-        var cdnId: UInt64 = 0
-
-        let token = try protoReader.beginMessage()
-        while let tag = try protoReader.nextTag(token: token) {
-            switch tag {
-            case 1: cdnId = try protoReader.decode(UInt64.self, encoding: .fixed)
-            default: try protoReader.readUnknownField(tag: tag)
-            }
+        if includeDefaults || !self.key.isEmpty {
+            try container.encode(stringEncoded: self.key, forKey: "key")
         }
-        self.unknownFields = try protoReader.endMessage(token: token)
-
-        self.cdnId = cdnId
-    }
-
-    public func encode(to protoWriter: ProtoWriter) throws {
-        try protoWriter.encode(tag: 1, value: self.cdnId, encoding: .fixed)
-        try protoWriter.writeUnknownFields(unknownFields)
-    }
-
-}
-
-#if !WIRE_REMOVE_CODABLE
-extension BackupProto.FilePointer.LegacyAttachmentLocator : Codable {
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.cdnId = try container.decode(stringEncoded: UInt64.self, forKey: "cdnId")
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
-        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
-
-        if includeDefaults || self.cdnId != 0 {
-            try container.encode(stringEncoded: self.cdnId, forKey: "cdnId")
+        if includeDefaults || !self.digest.isEmpty {
+            try container.encode(stringEncoded: self.digest, forKey: "digest")
+        }
+        if includeDefaults || self.size != 0 {
+            try container.encode(self.size, forKey: "size")
         }
     }
 
@@ -7600,88 +8039,60 @@ extension BackupProto.FilePointer.LegacyAttachmentLocator : Codable {
 #endif
 
 #if !WIRE_REMOVE_EQUATABLE
-extension BackupProto.FilePointer.UndownloadedBackupLocator : Equatable {
+extension BackupProto.FilePointer.InvalidAttachmentLocator : Equatable {
 }
 #endif
 
 #if !WIRE_REMOVE_HASHABLE
-extension BackupProto.FilePointer.UndownloadedBackupLocator : Hashable {
+extension BackupProto.FilePointer.InvalidAttachmentLocator : Hashable {
 }
 #endif
 
-extension BackupProto.FilePointer.UndownloadedBackupLocator : Sendable {
+extension BackupProto.FilePointer.InvalidAttachmentLocator : Sendable {
 }
 
-extension BackupProto.FilePointer.UndownloadedBackupLocator : ProtoMessage {
+extension BackupProto.FilePointer.InvalidAttachmentLocator : ProtoDefaultedValue {
+
+    public static var defaultedValue: BackupProto.FilePointer.InvalidAttachmentLocator {
+        BackupProto.FilePointer.InvalidAttachmentLocator()
+    }
+}
+
+extension BackupProto.FilePointer.InvalidAttachmentLocator : ProtoMessage {
 
     public static func protoMessageTypeURL() -> String {
-        return "type.googleapis.com/BackupProto.BackupProto.FilePointer.UndownloadedBackupLocator"
+        return "type.googleapis.com/BackupProto.BackupProto.FilePointer.InvalidAttachmentLocator"
     }
 
 }
 
-extension BackupProto.FilePointer.UndownloadedBackupLocator : Proto3Codable {
+extension BackupProto.FilePointer.InvalidAttachmentLocator : Proto3Codable {
 
     public init(from protoReader: ProtoReader) throws {
-        var senderAci: Foundation.Data = .init()
-        var cdnKey: String = ""
-        var cdnNumber: UInt32 = 0
-
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: senderAci = try protoReader.decode(Foundation.Data.self)
-            case 2: cdnKey = try protoReader.decode(String.self)
-            case 3: cdnNumber = try protoReader.decode(UInt32.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
-        self.senderAci = senderAci
-        self.cdnKey = cdnKey
-        self.cdnNumber = cdnNumber
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
-        try protoWriter.encode(tag: 1, value: self.senderAci)
-        try protoWriter.encode(tag: 2, value: self.cdnKey)
-        try protoWriter.encode(tag: 3, value: self.cdnNumber)
         try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }
 
 #if !WIRE_REMOVE_CODABLE
-extension BackupProto.FilePointer.UndownloadedBackupLocator : Codable {
+extension BackupProto.FilePointer.InvalidAttachmentLocator : Codable {
 
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.senderAci = try container.decode(stringEncoded: Foundation.Data.self, forKey: "senderAci")
-        self.cdnKey = try container.decode(String.self, forKey: "cdnKey")
-        self.cdnNumber = try container.decode(UInt32.self, forKey: "cdnNumber")
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
-        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
-
-        if includeDefaults || !self.senderAci.isEmpty {
-            try container.encode(stringEncoded: self.senderAci, forKey: "senderAci")
-        }
-        if includeDefaults || !self.cdnKey.isEmpty {
-            try container.encode(self.cdnKey, forKey: "cdnKey")
-        }
-        if includeDefaults || self.cdnNumber != 0 {
-            try container.encode(self.cdnNumber, forKey: "cdnNumber")
-        }
+    public enum CodingKeys : CodingKey {
     }
 
 }
 #endif
-
-extension BackupProto.FilePointer.Flags : Sendable {
-}
 
 #if !WIRE_REMOVE_EQUATABLE
 extension BackupProto.Quote : Equatable {
@@ -7733,7 +8144,7 @@ extension BackupProto.Quote : Proto3Codable {
         self._text.wrappedValue = text
         self.attachments = attachments
         self.bodyRanges = bodyRanges
-        self._type.wrappedValue = try BackupProto.Quote.Type_.defaultIfMissing(type)
+        self.type = try BackupProto.Quote.Type_.defaultIfMissing(type)
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
@@ -7758,7 +8169,7 @@ extension BackupProto.Quote : Codable {
         self._text.wrappedValue = try container.decodeIfPresent(String.self, forKey: "text")
         self.attachments = try container.decodeProtoArray(BackupProto.Quote.QuotedAttachment.self, forKey: "attachments")
         self.bodyRanges = try container.decodeProtoArray(BackupProto.BodyRange.self, forKey: "bodyRanges")
-        self._type.wrappedValue = try container.decodeIfPresent(BackupProto.Quote.Type_.self, forKey: "type")
+        self.type = try container.decode(BackupProto.Quote.Type_.self, forKey: "type")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -7776,7 +8187,9 @@ extension BackupProto.Quote : Codable {
         if includeDefaults || !self.bodyRanges.isEmpty {
             try container.encodeProtoArray(self.bodyRanges, forKey: "bodyRanges")
         }
-        try container.encodeIfPresent(self.type, forKey: "type")
+        if includeDefaults || self.type.rawValue != 0 {
+            try container.encode(self.type, forKey: "type")
+        }
     }
 
 }
@@ -7812,8 +8225,7 @@ extension BackupProto.Quote {
         public var contentType: String?
         @ProtoDefaulted
         public var fileName: String?
-        @ProtoDefaulted
-        public var thumbnail: BackupProto.FilePointer?
+        public var thumbnail: BackupProto.MessageAttachment?
         public var unknownFields: UnknownFields = .init()
 
         public init(configure: (inout Self) -> Swift.Void = { _ in }) {
@@ -7860,14 +8272,14 @@ extension BackupProto.Quote.QuotedAttachment : Proto3Codable {
     public init(from protoReader: ProtoReader) throws {
         var contentType: String? = nil
         var fileName: String? = nil
-        var thumbnail: BackupProto.FilePointer? = nil
+        var thumbnail: BackupProto.MessageAttachment? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
             case 1: contentType = try protoReader.decode(String.self)
             case 2: fileName = try protoReader.decode(String.self)
-            case 3: thumbnail = try protoReader.decode(BackupProto.FilePointer.self)
+            case 3: thumbnail = try protoReader.decode(BackupProto.MessageAttachment.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -7875,7 +8287,7 @@ extension BackupProto.Quote.QuotedAttachment : Proto3Codable {
 
         self._contentType.wrappedValue = contentType
         self._fileName.wrappedValue = fileName
-        self._thumbnail.wrappedValue = thumbnail
+        self.thumbnail = thumbnail
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
@@ -7894,7 +8306,7 @@ extension BackupProto.Quote.QuotedAttachment : Codable {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self._contentType.wrappedValue = try container.decodeIfPresent(String.self, forKey: "contentType")
         self._fileName.wrappedValue = try container.decodeIfPresent(String.self, forKey: "fileName")
-        self._thumbnail.wrappedValue = try container.decodeIfPresent(BackupProto.FilePointer.self, forKey: "thumbnail")
+        self.thumbnail = try container.decodeIfPresent(BackupProto.MessageAttachment.self, forKey: "thumbnail")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -8203,6 +8615,7 @@ extension BackupProto.ChatUpdateMessage : Proto3Codable {
             case 6: update = .sessionSwitchover(try protoReader.decode(BackupProto.SessionSwitchoverChatUpdate.self))
             case 7: update = .individualCall(try protoReader.decode(BackupProto.IndividualCall.self))
             case 8: update = .groupCall(try protoReader.decode(BackupProto.GroupCall.self))
+            case 9: update = .learnedProfileChange(try protoReader.decode(BackupProto.LearnedProfileChatUpdate.self))
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -8241,6 +8654,8 @@ extension BackupProto.ChatUpdateMessage : Codable {
             self.update = .individualCall(individualCall)
         } else if let groupCall = try container.decodeIfPresent(BackupProto.GroupCall.self, forKey: "groupCall") {
             self.update = .groupCall(groupCall)
+        } else if let learnedProfileChange = try container.decodeIfPresent(BackupProto.LearnedProfileChatUpdate.self, forKey: "learnedProfileChange") {
+            self.update = .learnedProfileChange(learnedProfileChange)
         } else {
             self.update = nil
         }
@@ -8258,6 +8673,7 @@ extension BackupProto.ChatUpdateMessage : Codable {
         case .sessionSwitchover(let sessionSwitchover): try container.encode(sessionSwitchover, forKey: "sessionSwitchover")
         case .individualCall(let individualCall): try container.encode(individualCall, forKey: "individualCall")
         case .groupCall(let groupCall): try container.encode(groupCall, forKey: "groupCall")
+        case .learnedProfileChange(let learnedProfileChange): try container.encode(learnedProfileChange, forKey: "learnedProfileChange")
         case Optional.none: break
         }
     }
@@ -8280,6 +8696,7 @@ extension BackupProto.ChatUpdateMessage {
         case sessionSwitchover(BackupProto.SessionSwitchoverChatUpdate)
         case individualCall(BackupProto.IndividualCall)
         case groupCall(BackupProto.GroupCall)
+        case learnedProfileChange(BackupProto.LearnedProfileChatUpdate)
 
         fileprivate func encode(to protoWriter: ProtoWriter) throws {
             switch self {
@@ -8291,6 +8708,7 @@ extension BackupProto.ChatUpdateMessage {
             case .sessionSwitchover(let sessionSwitchover): try protoWriter.encode(tag: 6, value: sessionSwitchover)
             case .individualCall(let individualCall): try protoWriter.encode(tag: 7, value: individualCall)
             case .groupCall(let groupCall): try protoWriter.encode(tag: 8, value: groupCall)
+            case .learnedProfileChange(let learnedProfileChange): try protoWriter.encode(tag: 9, value: learnedProfileChange)
             }
         }
 
@@ -8737,12 +9155,14 @@ extension BackupProto.SimpleChatUpdate {
          */
         case IDENTITY_DEFAULT = 4
         case CHANGE_NUMBER = 5
-        case BOOST_REQUEST = 6
+        case RELEASE_CHANNEL_DONATION_REQUEST = 6
         case END_SESSION = 7
         case CHAT_SESSION_REFRESH = 8
         case BAD_DECRYPT = 9
         case PAYMENTS_ACTIVATED = 10
         case PAYMENT_ACTIVATION_REQUEST = 11
+        case UNSUPPORTED_PROTOCOL_MESSAGE = 12
+        case REPORTED_SPAM = 13
 
         public static var defaultedValue: BackupProto.SimpleChatUpdate.Type_ {
             BackupProto.SimpleChatUpdate.Type_.UNKNOWN
@@ -8755,12 +9175,14 @@ extension BackupProto.SimpleChatUpdate {
             case .IDENTITY_VERIFIED: return "IDENTITY_VERIFIED"
             case .IDENTITY_DEFAULT: return "IDENTITY_DEFAULT"
             case .CHANGE_NUMBER: return "CHANGE_NUMBER"
-            case .BOOST_REQUEST: return "BOOST_REQUEST"
+            case .RELEASE_CHANNEL_DONATION_REQUEST: return "RELEASE_CHANNEL_DONATION_REQUEST"
             case .END_SESSION: return "END_SESSION"
             case .CHAT_SESSION_REFRESH: return "CHAT_SESSION_REFRESH"
             case .BAD_DECRYPT: return "BAD_DECRYPT"
             case .PAYMENTS_ACTIVATED: return "PAYMENTS_ACTIVATED"
             case .PAYMENT_ACTIVATION_REQUEST: return "PAYMENT_ACTIVATION_REQUEST"
+            case .UNSUPPORTED_PROTOCOL_MESSAGE: return "UNSUPPORTED_PROTOCOL_MESSAGE"
+            case .REPORTED_SPAM: return "REPORTED_SPAM"
             }
         }
 
@@ -8770,71 +9192,6 @@ extension BackupProto.SimpleChatUpdate {
 
 extension BackupProto.SimpleChatUpdate.Type_ : Sendable {
 }
-
-#if !WIRE_REMOVE_EQUATABLE
-extension BackupProto.GroupDescriptionChatUpdate : Equatable {
-}
-#endif
-
-#if !WIRE_REMOVE_HASHABLE
-extension BackupProto.GroupDescriptionChatUpdate : Hashable {
-}
-#endif
-
-extension BackupProto.GroupDescriptionChatUpdate : Sendable {
-}
-
-extension BackupProto.GroupDescriptionChatUpdate : ProtoMessage {
-
-    public static func protoMessageTypeURL() -> String {
-        return "type.googleapis.com/BackupProto.BackupProto.GroupDescriptionChatUpdate"
-    }
-
-}
-
-extension BackupProto.GroupDescriptionChatUpdate : Proto3Codable {
-
-    public init(from protoReader: ProtoReader) throws {
-        var newDescription: String = ""
-
-        let token = try protoReader.beginMessage()
-        while let tag = try protoReader.nextTag(token: token) {
-            switch tag {
-            case 1: newDescription = try protoReader.decode(String.self)
-            default: try protoReader.readUnknownField(tag: tag)
-            }
-        }
-        self.unknownFields = try protoReader.endMessage(token: token)
-
-        self.newDescription = newDescription
-    }
-
-    public func encode(to protoWriter: ProtoWriter) throws {
-        try protoWriter.encode(tag: 1, value: self.newDescription)
-        try protoWriter.writeUnknownFields(unknownFields)
-    }
-
-}
-
-#if !WIRE_REMOVE_CODABLE
-extension BackupProto.GroupDescriptionChatUpdate : Codable {
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.newDescription = try container.decode(String.self, forKey: "newDescription")
-    }
-
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
-        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
-
-        if includeDefaults || !self.newDescription.isEmpty {
-            try container.encode(self.newDescription, forKey: "newDescription")
-        }
-    }
-
-}
-#endif
 
 #if !WIRE_REMOVE_EQUATABLE
 extension BackupProto.ExpirationTimerChatUpdate : Equatable {
@@ -8973,6 +9330,122 @@ extension BackupProto.ProfileChangeChatUpdate : Codable {
 
 }
 #endif
+
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.LearnedProfileChatUpdate : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.LearnedProfileChatUpdate : Hashable {
+}
+#endif
+
+extension BackupProto.LearnedProfileChatUpdate : Sendable {
+}
+
+extension BackupProto.LearnedProfileChatUpdate : ProtoDefaultedValue {
+
+    public static var defaultedValue: BackupProto.LearnedProfileChatUpdate {
+        BackupProto.LearnedProfileChatUpdate()
+    }
+}
+
+extension BackupProto.LearnedProfileChatUpdate : ProtoMessage {
+
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/BackupProto.BackupProto.LearnedProfileChatUpdate"
+    }
+
+}
+
+extension BackupProto.LearnedProfileChatUpdate : Proto3Codable {
+
+    public init(from protoReader: ProtoReader) throws {
+        var previousName: BackupProto.LearnedProfileChatUpdate.PreviousName? = nil
+
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
+            switch tag {
+            case 1: previousName = .e164(try protoReader.decode(UInt64.self))
+            case 2: previousName = .username(try protoReader.decode(String.self))
+            default: try protoReader.readUnknownField(tag: tag)
+            }
+        }
+        self.unknownFields = try protoReader.endMessage(token: token)
+
+        self.previousName = previousName
+    }
+
+    public func encode(to protoWriter: ProtoWriter) throws {
+        if let previousName = self.previousName {
+            try previousName.encode(to: protoWriter)
+        }
+        try protoWriter.writeUnknownFields(unknownFields)
+    }
+
+}
+
+#if !WIRE_REMOVE_CODABLE
+extension BackupProto.LearnedProfileChatUpdate : Codable {
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        if let e164 = try container.decodeIfPresent(UInt64.self, forKey: "e164") {
+            self.previousName = .e164(e164)
+        } else if let username = try container.decodeIfPresent(String.self, forKey: "username") {
+            self.previousName = .username(username)
+        } else {
+            self.previousName = nil
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+
+        switch self.previousName {
+        case .e164(let e164): try container.encode(e164, forKey: "e164")
+        case .username(let username): try container.encode(username, forKey: "username")
+        case Optional.none: break
+        }
+    }
+
+}
+#endif
+
+/**
+ * Subtypes within BackupProto.LearnedProfileChatUpdate
+ */
+extension BackupProto.LearnedProfileChatUpdate {
+
+    public enum PreviousName {
+
+        case e164(UInt64)
+        case username(String)
+
+        fileprivate func encode(to protoWriter: ProtoWriter) throws {
+            switch self {
+            case .e164(let e164): try protoWriter.encode(tag: 1, value: e164)
+            case .username(let username): try protoWriter.encode(tag: 2, value: username)
+            }
+        }
+
+    }
+
+}
+
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.LearnedProfileChatUpdate.PreviousName : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.LearnedProfileChatUpdate.PreviousName : Hashable {
+}
+#endif
+
+extension BackupProto.LearnedProfileChatUpdate.PreviousName : Sendable {
+}
 
 #if !WIRE_REMOVE_EQUATABLE
 extension BackupProto.ThreadMergeChatUpdate : Equatable {
@@ -9880,13 +10353,6 @@ extension BackupProto.GroupMembershipAccessLevelChangeUpdate : Hashable {
 extension BackupProto.GroupMembershipAccessLevelChangeUpdate : Sendable {
 }
 
-extension BackupProto.GroupMembershipAccessLevelChangeUpdate : ProtoDefaultedValue {
-
-    public static var defaultedValue: BackupProto.GroupMembershipAccessLevelChangeUpdate {
-        BackupProto.GroupMembershipAccessLevelChangeUpdate()
-    }
-}
-
 extension BackupProto.GroupMembershipAccessLevelChangeUpdate : ProtoMessage {
 
     public static func protoMessageTypeURL() -> String {
@@ -9912,7 +10378,7 @@ extension BackupProto.GroupMembershipAccessLevelChangeUpdate : Proto3Codable {
         self.unknownFields = try protoReader.endMessage(token: token)
 
         self._updaterAci.wrappedValue = updaterAci
-        self._accessLevel.wrappedValue = try BackupProto.GroupV2AccessLevel.defaultIfMissing(accessLevel)
+        self.accessLevel = try BackupProto.GroupV2AccessLevel.defaultIfMissing(accessLevel)
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
@@ -9929,14 +10395,17 @@ extension BackupProto.GroupMembershipAccessLevelChangeUpdate : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self._updaterAci.wrappedValue = try container.decodeIfPresent(stringEncoded: Foundation.Data.self, forKey: "updaterAci")
-        self._accessLevel.wrappedValue = try container.decodeIfPresent(BackupProto.GroupV2AccessLevel.self, forKey: "accessLevel")
+        self.accessLevel = try container.decode(BackupProto.GroupV2AccessLevel.self, forKey: "accessLevel")
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         try container.encodeIfPresent(stringEncoded: self.updaterAci, forKey: "updaterAci")
-        try container.encodeIfPresent(self.accessLevel, forKey: "accessLevel")
+        if includeDefaults || self.accessLevel.rawValue != 0 {
+            try container.encode(self.accessLevel, forKey: "accessLevel")
+        }
     }
 
 }
@@ -9953,13 +10422,6 @@ extension BackupProto.GroupAttributesAccessLevelChangeUpdate : Hashable {
 #endif
 
 extension BackupProto.GroupAttributesAccessLevelChangeUpdate : Sendable {
-}
-
-extension BackupProto.GroupAttributesAccessLevelChangeUpdate : ProtoDefaultedValue {
-
-    public static var defaultedValue: BackupProto.GroupAttributesAccessLevelChangeUpdate {
-        BackupProto.GroupAttributesAccessLevelChangeUpdate()
-    }
 }
 
 extension BackupProto.GroupAttributesAccessLevelChangeUpdate : ProtoMessage {
@@ -9987,7 +10449,7 @@ extension BackupProto.GroupAttributesAccessLevelChangeUpdate : Proto3Codable {
         self.unknownFields = try protoReader.endMessage(token: token)
 
         self._updaterAci.wrappedValue = updaterAci
-        self._accessLevel.wrappedValue = try BackupProto.GroupV2AccessLevel.defaultIfMissing(accessLevel)
+        self.accessLevel = try BackupProto.GroupV2AccessLevel.defaultIfMissing(accessLevel)
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
@@ -10004,14 +10466,17 @@ extension BackupProto.GroupAttributesAccessLevelChangeUpdate : Codable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
         self._updaterAci.wrappedValue = try container.decodeIfPresent(stringEncoded: Foundation.Data.self, forKey: "updaterAci")
-        self._accessLevel.wrappedValue = try container.decodeIfPresent(BackupProto.GroupV2AccessLevel.self, forKey: "accessLevel")
+        self.accessLevel = try container.decode(BackupProto.GroupV2AccessLevel.self, forKey: "accessLevel")
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+        let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         try container.encodeIfPresent(stringEncoded: self.updaterAci, forKey: "updaterAci")
-        try container.encodeIfPresent(self.accessLevel, forKey: "accessLevel")
+        if includeDefaults || self.accessLevel.rawValue != 0 {
+            try container.encode(self.accessLevel, forKey: "accessLevel")
+        }
     }
 
 }
@@ -12023,38 +12488,26 @@ extension BackupProto.StickerPack : ProtoMessage {
 extension BackupProto.StickerPack : Proto3Codable {
 
     public init(from protoReader: ProtoReader) throws {
-        var id: Foundation.Data = .init()
-        var key: Foundation.Data = .init()
-        var title: String = ""
-        var author: String = ""
-        var stickers: [BackupProto.StickerPackSticker] = []
+        var packId: Foundation.Data = .init()
+        var packKey: Foundation.Data = .init()
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: id = try protoReader.decode(Foundation.Data.self)
-            case 2: key = try protoReader.decode(Foundation.Data.self)
-            case 3: title = try protoReader.decode(String.self)
-            case 4: author = try protoReader.decode(String.self)
-            case 5: try protoReader.decode(into: &stickers)
+            case 1: packId = try protoReader.decode(Foundation.Data.self)
+            case 2: packKey = try protoReader.decode(Foundation.Data.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
-        self.id = id
-        self.key = key
-        self.title = title
-        self.author = author
-        self.stickers = stickers
+        self.packId = packId
+        self.packKey = packKey
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
-        try protoWriter.encode(tag: 1, value: self.id)
-        try protoWriter.encode(tag: 2, value: self.key)
-        try protoWriter.encode(tag: 3, value: self.title)
-        try protoWriter.encode(tag: 4, value: self.author)
-        try protoWriter.encode(tag: 5, value: self.stickers)
+        try protoWriter.encode(tag: 1, value: self.packId)
+        try protoWriter.encode(tag: 2, value: self.packKey)
         try protoWriter.writeUnknownFields(unknownFields)
     }
 
@@ -12065,31 +12518,19 @@ extension BackupProto.StickerPack : Codable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.id = try container.decode(stringEncoded: Foundation.Data.self, forKey: "id")
-        self.key = try container.decode(stringEncoded: Foundation.Data.self, forKey: "key")
-        self.title = try container.decode(String.self, forKey: "title")
-        self.author = try container.decode(String.self, forKey: "author")
-        self.stickers = try container.decodeProtoArray(BackupProto.StickerPackSticker.self, forKey: "stickers")
+        self.packId = try container.decode(stringEncoded: Foundation.Data.self, forKey: "packId")
+        self.packKey = try container.decode(stringEncoded: Foundation.Data.self, forKey: "packKey")
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        if includeDefaults || !self.id.isEmpty {
-            try container.encode(stringEncoded: self.id, forKey: "id")
+        if includeDefaults || !self.packId.isEmpty {
+            try container.encode(stringEncoded: self.packId, forKey: "packId")
         }
-        if includeDefaults || !self.key.isEmpty {
-            try container.encode(stringEncoded: self.key, forKey: "key")
-        }
-        if includeDefaults || !self.title.isEmpty {
-            try container.encode(self.title, forKey: "title")
-        }
-        if includeDefaults || !self.author.isEmpty {
-            try container.encode(self.author, forKey: "author")
-        }
-        if includeDefaults || !self.stickers.isEmpty {
-            try container.encodeProtoArray(self.stickers, forKey: "stickers")
+        if includeDefaults || !self.packKey.isEmpty {
+            try container.encode(stringEncoded: self.packKey, forKey: "packKey")
         }
     }
 
@@ -12097,72 +12538,466 @@ extension BackupProto.StickerPack : Codable {
 #endif
 
 #if !WIRE_REMOVE_EQUATABLE
-extension BackupProto.StickerPackSticker : Equatable {
+extension BackupProto.ChatStyle : Equatable {
 }
 #endif
 
 #if !WIRE_REMOVE_HASHABLE
-extension BackupProto.StickerPackSticker : Hashable {
+extension BackupProto.ChatStyle : Hashable {
 }
 #endif
 
-extension BackupProto.StickerPackSticker : Sendable {
+extension BackupProto.ChatStyle : Sendable {
 }
 
-extension BackupProto.StickerPackSticker : ProtoMessage {
+extension BackupProto.ChatStyle : ProtoDefaultedValue {
+
+    public static var defaultedValue: BackupProto.ChatStyle {
+        BackupProto.ChatStyle()
+    }
+}
+
+extension BackupProto.ChatStyle : ProtoMessage {
 
     public static func protoMessageTypeURL() -> String {
-        return "type.googleapis.com/BackupProto.BackupProto.StickerPackSticker"
+        return "type.googleapis.com/BackupProto.BackupProto.ChatStyle"
     }
 
 }
 
-extension BackupProto.StickerPackSticker : Proto3Codable {
+extension BackupProto.ChatStyle : Proto3Codable {
 
     public init(from protoReader: ProtoReader) throws {
-        var data: BackupProto.FilePointer? = nil
-        var emoji: String = ""
+        var wallpaper: BackupProto.ChatStyle.Wallpaper? = nil
+        var bubbleColor: BackupProto.ChatStyle.BubbleColor? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: data = try protoReader.decode(BackupProto.FilePointer.self)
-            case 2: emoji = try protoReader.decode(String.self)
+            case 1: wallpaper = (try protoReader.decode(BackupProto.ChatStyle.WallpaperPreset.self)).flatMap { .wallpaperPreset($0) }
+            case 2: wallpaper = .wallpaperPhoto(try protoReader.decode(BackupProto.FilePointer.self))
+            case 3: bubbleColor = (try protoReader.decode(BackupProto.ChatStyle.BubbleColorPreset.self)).flatMap { .bubbleColorPreset($0) }
+            case 4: bubbleColor = .bubbleGradient(try protoReader.decode(BackupProto.ChatStyle.Gradient.self))
+            case 5: bubbleColor = .bubbleSolidColor(try protoReader.decode(UInt32.self))
+            case 6: bubbleColor = .autoBubbleColor(try protoReader.decode(BackupProto.ChatStyle.AutomaticBubbleColor.self))
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
         self.unknownFields = try protoReader.endMessage(token: token)
 
-        self._data.wrappedValue = data
-        self.emoji = emoji
+        self.wallpaper = wallpaper
+        self.bubbleColor = bubbleColor
     }
 
     public func encode(to protoWriter: ProtoWriter) throws {
-        try protoWriter.encode(tag: 1, value: self.data)
-        try protoWriter.encode(tag: 2, value: self.emoji)
+        if let wallpaper = self.wallpaper {
+            try wallpaper.encode(to: protoWriter)
+        }
+        if let bubbleColor = self.bubbleColor {
+            try bubbleColor.encode(to: protoWriter)
+        }
         try protoWriter.writeUnknownFields(unknownFields)
     }
 
 }
 
 #if !WIRE_REMOVE_CODABLE
-extension BackupProto.StickerPackSticker : Codable {
+extension BackupProto.ChatStyle : Codable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self._data.wrappedValue = try container.decodeIfPresent(BackupProto.FilePointer.self, forKey: "data")
-        self.emoji = try container.decode(String.self, forKey: "emoji")
+        if let wallpaperPreset = try container.decodeIfPresent(BackupProto.ChatStyle.WallpaperPreset.self, forKey: "wallpaperPreset") {
+            self.wallpaper = .wallpaperPreset(wallpaperPreset)
+        } else if let wallpaperPhoto = try container.decodeIfPresent(BackupProto.FilePointer.self, forKey: "wallpaperPhoto") {
+            self.wallpaper = .wallpaperPhoto(wallpaperPhoto)
+        } else {
+            self.wallpaper = nil
+        }
+        if let bubbleColorPreset = try container.decodeIfPresent(BackupProto.ChatStyle.BubbleColorPreset.self, forKey: "bubbleColorPreset") {
+            self.bubbleColor = .bubbleColorPreset(bubbleColorPreset)
+        } else if let bubbleGradient = try container.decodeIfPresent(BackupProto.ChatStyle.Gradient.self, forKey: "bubbleGradient") {
+            self.bubbleColor = .bubbleGradient(bubbleGradient)
+        } else if let bubbleSolidColor = try container.decodeIfPresent(UInt32.self, forKey: "bubbleSolidColor") {
+            self.bubbleColor = .bubbleSolidColor(bubbleSolidColor)
+        } else if let autoBubbleColor = try container.decodeIfPresent(BackupProto.ChatStyle.AutomaticBubbleColor.self, forKey: "autoBubbleColor") {
+            self.bubbleColor = .autoBubbleColor(autoBubbleColor)
+        } else {
+            self.bubbleColor = nil
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
+
+        switch self.wallpaper {
+        case .wallpaperPreset(let wallpaperPreset): try container.encode(wallpaperPreset, forKey: "wallpaperPreset")
+        case .wallpaperPhoto(let wallpaperPhoto): try container.encode(wallpaperPhoto, forKey: "wallpaperPhoto")
+        case Optional.none: break
+        }
+        switch self.bubbleColor {
+        case .bubbleColorPreset(let bubbleColorPreset): try container.encode(bubbleColorPreset, forKey: "bubbleColorPreset")
+        case .bubbleGradient(let bubbleGradient): try container.encode(bubbleGradient, forKey: "bubbleGradient")
+        case .bubbleSolidColor(let bubbleSolidColor): try container.encode(bubbleSolidColor, forKey: "bubbleSolidColor")
+        case .autoBubbleColor(let autoBubbleColor): try container.encode(autoBubbleColor, forKey: "autoBubbleColor")
+        case Optional.none: break
+        }
+    }
+
+}
+#endif
+
+/**
+ * Subtypes within BackupProto.ChatStyle
+ */
+extension BackupProto.ChatStyle {
+
+    public enum Wallpaper {
+
+        case wallpaperPreset(BackupProto.ChatStyle.WallpaperPreset)
+        case wallpaperPhoto(BackupProto.FilePointer)
+
+        fileprivate func encode(to protoWriter: ProtoWriter) throws {
+            switch self {
+            case .wallpaperPreset(let wallpaperPreset): try protoWriter.encode(tag: 1, value: wallpaperPreset)
+            case .wallpaperPhoto(let wallpaperPhoto): try protoWriter.encode(tag: 2, value: wallpaperPhoto)
+            }
+        }
+
+    }
+
+    public enum BubbleColor {
+
+        case bubbleColorPreset(BackupProto.ChatStyle.BubbleColorPreset)
+        case bubbleGradient(BackupProto.ChatStyle.Gradient)
+        case bubbleSolidColor(UInt32)
+        /**
+         * Bubble setting is automatically determined based on the wallpaper setting.
+         */
+        case autoBubbleColor(BackupProto.ChatStyle.AutomaticBubbleColor)
+
+        fileprivate func encode(to protoWriter: ProtoWriter) throws {
+            switch self {
+            case .bubbleColorPreset(let bubbleColorPreset): try protoWriter.encode(tag: 3, value: bubbleColorPreset)
+            case .bubbleGradient(let bubbleGradient): try protoWriter.encode(tag: 4, value: bubbleGradient)
+            case .bubbleSolidColor(let bubbleSolidColor): try protoWriter.encode(tag: 5, value: bubbleSolidColor)
+            case .autoBubbleColor(let autoBubbleColor): try protoWriter.encode(tag: 6, value: autoBubbleColor)
+            }
+        }
+
+    }
+
+    public struct Gradient {
+
+        /**
+         * degrees
+         */
+        public var angle: UInt32
+        public var colors: [UInt32] = []
+        /**
+         * percent from 0 to 1
+         */
+        public var positions: [Float] = []
+        public var unknownFields: UnknownFields = .init()
+
+        public init(angle: UInt32, configure: (inout Self) -> Swift.Void = { _ in }) {
+            self.angle = angle
+            configure(&self)
+        }
+
+    }
+
+    public struct AutomaticBubbleColor {
+
+        public var unknownFields: UnknownFields = .init()
+
+        public init() {
+        }
+
+    }
+
+    public enum WallpaperPreset : Int32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
+
+        case UNKNOWN_WALLPAPER_PRESET = 0
+        case SOLID_BLUSH = 1
+        case SOLID_COPPER = 2
+        case SOLID_DUST = 3
+        case SOLID_CELADON = 4
+        case SOLID_RAINFOREST = 5
+        case SOLID_PACIFIC = 6
+        case SOLID_FROST = 7
+        case SOLID_NAVY = 8
+        case SOLID_LILAC = 9
+        case SOLID_PINK = 10
+        case SOLID_EGGPLANT = 11
+        case SOLID_SILVER = 12
+        case GRADIENT_SUNSET = 13
+        case GRADIENT_NOIR = 14
+        case GRADIENT_HEATMAP = 15
+        case GRADIENT_AQUA = 16
+        case GRADIENT_IRIDESCENT = 17
+        case GRADIENT_MONSTERA = 18
+        case GRADIENT_BLISS = 19
+        case GRADIENT_SKY = 20
+        case GRADIENT_PEACH = 21
+
+        public static var defaultedValue: BackupProto.ChatStyle.WallpaperPreset {
+            BackupProto.ChatStyle.WallpaperPreset.UNKNOWN_WALLPAPER_PRESET
+        }
+        public var description: String {
+            switch self {
+            case .UNKNOWN_WALLPAPER_PRESET: return "UNKNOWN_WALLPAPER_PRESET"
+            case .SOLID_BLUSH: return "SOLID_BLUSH"
+            case .SOLID_COPPER: return "SOLID_COPPER"
+            case .SOLID_DUST: return "SOLID_DUST"
+            case .SOLID_CELADON: return "SOLID_CELADON"
+            case .SOLID_RAINFOREST: return "SOLID_RAINFOREST"
+            case .SOLID_PACIFIC: return "SOLID_PACIFIC"
+            case .SOLID_FROST: return "SOLID_FROST"
+            case .SOLID_NAVY: return "SOLID_NAVY"
+            case .SOLID_LILAC: return "SOLID_LILAC"
+            case .SOLID_PINK: return "SOLID_PINK"
+            case .SOLID_EGGPLANT: return "SOLID_EGGPLANT"
+            case .SOLID_SILVER: return "SOLID_SILVER"
+            case .GRADIENT_SUNSET: return "GRADIENT_SUNSET"
+            case .GRADIENT_NOIR: return "GRADIENT_NOIR"
+            case .GRADIENT_HEATMAP: return "GRADIENT_HEATMAP"
+            case .GRADIENT_AQUA: return "GRADIENT_AQUA"
+            case .GRADIENT_IRIDESCENT: return "GRADIENT_IRIDESCENT"
+            case .GRADIENT_MONSTERA: return "GRADIENT_MONSTERA"
+            case .GRADIENT_BLISS: return "GRADIENT_BLISS"
+            case .GRADIENT_SKY: return "GRADIENT_SKY"
+            case .GRADIENT_PEACH: return "GRADIENT_PEACH"
+            }
+        }
+
+    }
+
+    public enum BubbleColorPreset : Int32, CaseIterable, ProtoEnum, ProtoDefaultedValue {
+
+        case UNKNOWN_BUBBLE_COLOR_PRESET = 0
+        case SOLID_ULTRAMARINE = 1
+        case SOLID_CRIMSON = 2
+        case SOLID_VERMILION = 3
+        case SOLID_BURLAP = 4
+        case SOLID_FOREST = 5
+        case SOLID_WINTERGREEN = 6
+        case SOLID_TEAL = 7
+        case SOLID_BLUE = 8
+        case SOLID_INDIGO = 9
+        case SOLID_VIOLET = 10
+        case SOLID_PLUM = 11
+        case SOLID_TAUPE = 12
+        case SOLID_STEEL = 13
+        case GRADIENT_EMBER = 14
+        case GRADIENT_MIDNIGHT = 15
+        case GRADIENT_INFRARED = 16
+        case GRADIENT_LAGOON = 17
+        case GRADIENT_FLUORESCENT = 18
+        case GRADIENT_BASIL = 19
+        case GRADIENT_SUBLIME = 20
+        case GRADIENT_SEA = 21
+        case GRADIENT_TANGERINE = 22
+
+        public static var defaultedValue: BackupProto.ChatStyle.BubbleColorPreset {
+            BackupProto.ChatStyle.BubbleColorPreset.UNKNOWN_BUBBLE_COLOR_PRESET
+        }
+        public var description: String {
+            switch self {
+            case .UNKNOWN_BUBBLE_COLOR_PRESET: return "UNKNOWN_BUBBLE_COLOR_PRESET"
+            case .SOLID_ULTRAMARINE: return "SOLID_ULTRAMARINE"
+            case .SOLID_CRIMSON: return "SOLID_CRIMSON"
+            case .SOLID_VERMILION: return "SOLID_VERMILION"
+            case .SOLID_BURLAP: return "SOLID_BURLAP"
+            case .SOLID_FOREST: return "SOLID_FOREST"
+            case .SOLID_WINTERGREEN: return "SOLID_WINTERGREEN"
+            case .SOLID_TEAL: return "SOLID_TEAL"
+            case .SOLID_BLUE: return "SOLID_BLUE"
+            case .SOLID_INDIGO: return "SOLID_INDIGO"
+            case .SOLID_VIOLET: return "SOLID_VIOLET"
+            case .SOLID_PLUM: return "SOLID_PLUM"
+            case .SOLID_TAUPE: return "SOLID_TAUPE"
+            case .SOLID_STEEL: return "SOLID_STEEL"
+            case .GRADIENT_EMBER: return "GRADIENT_EMBER"
+            case .GRADIENT_MIDNIGHT: return "GRADIENT_MIDNIGHT"
+            case .GRADIENT_INFRARED: return "GRADIENT_INFRARED"
+            case .GRADIENT_LAGOON: return "GRADIENT_LAGOON"
+            case .GRADIENT_FLUORESCENT: return "GRADIENT_FLUORESCENT"
+            case .GRADIENT_BASIL: return "GRADIENT_BASIL"
+            case .GRADIENT_SUBLIME: return "GRADIENT_SUBLIME"
+            case .GRADIENT_SEA: return "GRADIENT_SEA"
+            case .GRADIENT_TANGERINE: return "GRADIENT_TANGERINE"
+            }
+        }
+
+    }
+
+}
+
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.ChatStyle.Wallpaper : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.ChatStyle.Wallpaper : Hashable {
+}
+#endif
+
+extension BackupProto.ChatStyle.Wallpaper : Sendable {
+}
+
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.ChatStyle.BubbleColor : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.ChatStyle.BubbleColor : Hashable {
+}
+#endif
+
+extension BackupProto.ChatStyle.BubbleColor : Sendable {
+}
+
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.ChatStyle.Gradient : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.ChatStyle.Gradient : Hashable {
+}
+#endif
+
+extension BackupProto.ChatStyle.Gradient : Sendable {
+}
+
+extension BackupProto.ChatStyle.Gradient : ProtoMessage {
+
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/BackupProto.BackupProto.ChatStyle.Gradient"
+    }
+
+}
+
+extension BackupProto.ChatStyle.Gradient : Proto3Codable {
+
+    public init(from protoReader: ProtoReader) throws {
+        var angle: UInt32 = 0
+        var colors: [UInt32] = []
+        var positions: [Float] = []
+
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
+            switch tag {
+            case 1: angle = try protoReader.decode(UInt32.self)
+            case 2: try protoReader.decode(into: &colors)
+            case 3: try protoReader.decode(into: &positions)
+            default: try protoReader.readUnknownField(tag: tag)
+            }
+        }
+        self.unknownFields = try protoReader.endMessage(token: token)
+
+        self.angle = angle
+        self.colors = colors
+        self.positions = positions
+    }
+
+    public func encode(to protoWriter: ProtoWriter) throws {
+        try protoWriter.encode(tag: 1, value: self.angle)
+        try protoWriter.encode(tag: 2, value: self.colors, packed: true)
+        try protoWriter.encode(tag: 3, value: self.positions, packed: true)
+        try protoWriter.writeUnknownFields(unknownFields)
+    }
+
+}
+
+#if !WIRE_REMOVE_CODABLE
+extension BackupProto.ChatStyle.Gradient : Codable {
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
+        self.angle = try container.decode(UInt32.self, forKey: "angle")
+        self.colors = try container.decodeProtoArray(UInt32.self, forKey: "colors")
+        self.positions = try container.decodeProtoArray(Float.self, forKey: "positions")
     }
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: StringLiteralCodingKeys.self)
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
-        try container.encodeIfPresent(self.data, forKey: "data")
-        if includeDefaults || !self.emoji.isEmpty {
-            try container.encode(self.emoji, forKey: "emoji")
+        if includeDefaults || self.angle != 0 {
+            try container.encode(self.angle, forKey: "angle")
+        }
+        if includeDefaults || !self.colors.isEmpty {
+            try container.encodeProtoArray(self.colors, forKey: "colors")
+        }
+        if includeDefaults || !self.positions.isEmpty {
+            try container.encodeProtoArray(self.positions, forKey: "positions")
         }
     }
 
 }
 #endif
+
+#if !WIRE_REMOVE_EQUATABLE
+extension BackupProto.ChatStyle.AutomaticBubbleColor : Equatable {
+}
+#endif
+
+#if !WIRE_REMOVE_HASHABLE
+extension BackupProto.ChatStyle.AutomaticBubbleColor : Hashable {
+}
+#endif
+
+extension BackupProto.ChatStyle.AutomaticBubbleColor : Sendable {
+}
+
+extension BackupProto.ChatStyle.AutomaticBubbleColor : ProtoDefaultedValue {
+
+    public static var defaultedValue: BackupProto.ChatStyle.AutomaticBubbleColor {
+        BackupProto.ChatStyle.AutomaticBubbleColor()
+    }
+}
+
+extension BackupProto.ChatStyle.AutomaticBubbleColor : ProtoMessage {
+
+    public static func protoMessageTypeURL() -> String {
+        return "type.googleapis.com/BackupProto.BackupProto.ChatStyle.AutomaticBubbleColor"
+    }
+
+}
+
+extension BackupProto.ChatStyle.AutomaticBubbleColor : Proto3Codable {
+
+    public init(from protoReader: ProtoReader) throws {
+        let token = try protoReader.beginMessage()
+        while let tag = try protoReader.nextTag(token: token) {
+            switch tag {
+            default: try protoReader.readUnknownField(tag: tag)
+            }
+        }
+        self.unknownFields = try protoReader.endMessage(token: token)
+
+    }
+
+    public func encode(to protoWriter: ProtoWriter) throws {
+        try protoWriter.writeUnknownFields(unknownFields)
+    }
+
+}
+
+#if !WIRE_REMOVE_CODABLE
+extension BackupProto.ChatStyle.AutomaticBubbleColor : Codable {
+
+    public enum CodingKeys : CodingKey {
+    }
+
+}
+#endif
+
+extension BackupProto.ChatStyle.WallpaperPreset : Sendable {
+}
+
+extension BackupProto.ChatStyle.BubbleColorPreset : Sendable {
+}

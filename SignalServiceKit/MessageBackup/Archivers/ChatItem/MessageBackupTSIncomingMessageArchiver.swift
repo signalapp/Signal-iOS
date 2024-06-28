@@ -176,8 +176,8 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
             bodyRanges: messageBody?.ranges,
             // [Backups] TODO: handle edit states
             editState: .none,
-            expiresInSeconds: chatItem.expiresInMs.map { UInt32($0 / 1000) } ?? 0,
-            expireStartedAt: chatItem.expireStartDate ?? 0,
+            expiresInSeconds: UInt32(chatItem.expiresInMs / 1000),
+            expireStartedAt: chatItem.expireStartDate,
             read: incomingDetails.read,
             serverTimestamp: nil,
             serverDeliveryTimestamp: chatItem.dateSent,

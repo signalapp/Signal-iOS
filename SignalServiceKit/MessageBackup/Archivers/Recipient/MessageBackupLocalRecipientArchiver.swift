@@ -76,7 +76,7 @@ public class MessageBackupLocalRecipientArchiverImpl: MessageBackupLocalRecipien
         switch recipient.destination {
         case .selfRecipient:
             break
-        case nil, .contact, .group, .distributionList, .releaseNotes:
+        case nil, .contact, .group, .distributionList, .releaseNotes, .callLink:
             return .failure([.restoreFrameError(
                 .developerError(OWSAssertionError("Non self recipient sent to local recipient archiver")),
                 recipient.recipientId
@@ -91,7 +91,7 @@ public class MessageBackupLocalRecipientArchiverImpl: MessageBackupLocalRecipien
         switch recipient.destination {
         case .selfRecipient:
             return true
-        case nil, .contact, .group, .distributionList, .releaseNotes:
+        case nil, .contact, .group, .distributionList, .releaseNotes, .callLink:
             return false
         }
     }

@@ -103,11 +103,15 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
             profileKey: profileKeyData,
             givenName: localProfile.givenName ?? "",
             familyName: localProfile.familyName ?? "",
-            avatarUrlPath: localProfile.avatarUrlPath ?? "",
-            subscriberId: subscriptionManager.getSubscriberID(tx: tx) ?? .init(),
-            subscriberCurrencyCode: subscriptionManager.getSubscriberCurrencyCode(tx: tx) ?? "",
-            subscriptionManuallyCancelled: subscriptionManager.userManuallyCancelledSubscription(tx: tx)
+            avatarUrlPath: localProfile.avatarUrlPath ?? ""
         )
+        if let donationSubscriberId = subscriptionManager.getSubscriberID(tx: tx) {
+            accountData.donationSubscriberData = BackupProto.AccountData.SubscriberData(
+                subscriberId: donationSubscriberId,
+                currencyCode: subscriptionManager.getSubscriberCurrencyCode(tx: tx) ?? "",
+                manuallyCancelled: subscriptionManager.userManuallyCancelledSubscription(tx: tx)
+            )
+        }
 
         if let result = buildUsernameLinkProto(tx: tx) {
             accountData.username = result.username
@@ -134,19 +138,11 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         case .unset, .linkCorrupted, .usernameAndLinkCorrupted:
             return nil
         case .available(let username, let usernameLink):
-            var usernameLink = BackupProto.AccountData.UsernameLink(
+            return (username, BackupProto.AccountData.UsernameLink(
                 entropy: usernameLink.entropy,
-                serverId: usernameLink.handle.data
-            )
-
-            let linkColor = localUsernameManager.usernameLinkQRCodeColor(tx: tx)
-            switch linkColor {
-            case .unknown:
-                usernameLink.color = .UNKNOWN
-            case .blue, .grey, .green, .olive, .orange, .pink, .purple, .white:
-                usernameLink.color = linkColor.backupProtoColor
-            }
-            return (username, usernameLink)
+                serverId: usernameLink.handle.data,
+                color: localUsernameManager.usernameLinkQRCodeColor(tx: tx).backupProtoColor
+            ))
         }
     }
 
@@ -178,7 +174,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         // Optional settings
         let preferredReactionEmoji = reactionManager.customEmojiSet(tx: tx)
         let storyViewReceiptsEnabled = storyManager.areViewReceiptsEnabled(tx: tx)
-        let phoneNumberSharingMode: BackupProto.AccountData.PhoneNumberSharingMode? = {
+        let phoneNumberSharingMode: BackupProto.AccountData.PhoneNumberSharingMode = {
             switch udManager.phoneNumberSharingMode(tx: tx) {
             case .everybody:
                 return .EVERYBODY
@@ -204,14 +200,13 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
             hasViewedOnboardingStory: hasViewedOnboardingStory,
             storiesDisabled: storiesDisabled,
             hasSeenGroupStoryEducationSheet: hasSeenGroupStoryEducationSheet,
-            hasCompletedUsernameOnboarding: hasCompletedUsernameOnboarding
+            hasCompletedUsernameOnboarding: hasCompletedUsernameOnboarding,
+            phoneNumberSharingMode: phoneNumberSharingMode
         )
-
         if let preferredReactionEmoji {
             accountSettings.preferredReactionEmoji = preferredReactionEmoji
         }
         accountSettings.storyViewReceiptsEnabled = storyViewReceiptsEnabled
-        accountSettings.phoneNumberSharingMode = phoneNumberSharingMode
 
         return accountSettings
     }
@@ -237,12 +232,12 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
             tx: tx
         )
 
-        // Restore Subscription data, if nod a default value
-        if accountData.subscriberId.count > 0, accountData.subscriberCurrencyCode.count > 0 {
-            subscriptionManager.setSubscriberID(subscriberID: accountData.subscriberId, tx: tx)
-            subscriptionManager.setSubscriberCurrencyCode(currencyCode: accountData.subscriberCurrencyCode, tx: tx)
+        // Restore donation subscription data, if present.
+        if let donationSubscriberData = accountData.donationSubscriberData {
+            subscriptionManager.setSubscriberID(subscriberID: donationSubscriberData.subscriberId, tx: tx)
+            subscriptionManager.setSubscriberCurrencyCode(currencyCode: donationSubscriberData.currencyCode, tx: tx)
+            subscriptionManager.setUserManuallyCancelledSubscription(value: donationSubscriberData.manuallyCancelled, tx: tx)
         }
-        subscriptionManager.setUserManuallyCancelledSubscription(value: accountData.subscriptionManuallyCancelled, tx: tx)
 
         // Restore local settings
         if let settings = accountData.accountSettings {
@@ -282,7 +277,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
 
             let phoneNumberSharingMode: PhoneNumberSharingMode = {
                 switch settings.phoneNumberSharingMode {
-                case .UNKNOWN, .none:
+                case .UNKNOWN:
                     return .defaultValue
                 case .EVERYBODY:
                     return .everybody

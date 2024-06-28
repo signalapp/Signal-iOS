@@ -636,11 +636,11 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
     }
 }
 
-extension Optional where Wrapped == BackupProto.GroupV2AccessLevel {
+extension BackupProto.GroupV2AccessLevel {
 
     fileprivate var swiftAccessLevel: GroupV2Access {
         switch self {
-        case nil, .UNKNOWN:
+        case .UNKNOWN:
             return .unknown
         case .ANY:
             return .any

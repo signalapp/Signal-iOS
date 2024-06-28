@@ -135,15 +135,17 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
                 context: context,
                 tx: tx
             )
-        case .simpleUpdate(let simpleChatUpdate):
+        case .simpleUpdate(let simpleChatUpdateProto):
             owsFail("Not yet implemented!")
-        case .expirationTimerChange(let expirationTimerUpdate):
+        case .expirationTimerChange(let expirationTimerUpdateProto):
             owsFail("Not yet implemented!")
-        case .profileChange(let profileChangeUpdate):
+        case .profileChange(let profileChangeUpdateProto):
             owsFail("Not yet implemented!")
-        case .threadMerge(let threadMergeUpdate):
+        case .threadMerge(let threadMergeUpdateProto):
             owsFail("Not yet implemented!")
-        case .sessionSwitchover(let sessionSwitchoverUpdate):
+        case .sessionSwitchover(let sessionSwitchoverUpdateProto):
+            owsFail("Not yet implemented!")
+        case .learnedProfileChange(let learnedProfileChangeProto):
             owsFail("Not yet implemented!")
         }
     }

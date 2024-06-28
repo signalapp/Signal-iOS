@@ -198,9 +198,11 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
             )])
         }
 
-        var quote = BackupProto.Quote(authorId: authorId.value)
+        var quote = BackupProto.Quote(
+            authorId: authorId.value,
+            type: quotedMessage.isGiftBadge ? .GIFTBADGE : .NORMAL
+        )
         quote.targetSentTimestamp = quotedMessage.timestampValue?.uint64Value
-        quote.type = quotedMessage.isGiftBadge ? .GIFTBADGE : .NORMAL
 
         if let body = quotedMessage.body {
             let textResult = archiveText(
@@ -255,7 +257,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
                 .developerError(OWSAssertionError("Chat update has no contents to restore!")),
                 chatItemId
             )])
-        case .contactMessage, .stickerMessage, .remoteDeletedMessage, .paymentNotification:
+        case .contactMessage, .stickerMessage, .remoteDeletedMessage, .paymentNotification, .giftBadge:
             // Other types not supported yet.
             return .messageFailure([.restoreFrameError(.unimplemented, chatItemId)])
         }
@@ -499,7 +501,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
 
         let isGiftBadge: Bool
         switch quote.type {
-        case nil, .UNKNOWN, .NORMAL:
+        case .UNKNOWN, .NORMAL:
             isGiftBadge = false
         case .GIFTBADGE:
             isGiftBadge = true

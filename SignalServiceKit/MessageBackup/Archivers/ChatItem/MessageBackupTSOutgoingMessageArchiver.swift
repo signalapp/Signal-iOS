@@ -146,12 +146,12 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
 
             var sendStatus = BackupProto.SendStatus(
                 recipientId: recipientId.value,
+                deliveryStatus: protoDeliveryStatus,
                 networkFailure: isNetworkFailure,
                 identityKeyMismatch: isIdentityKeyMismatchFailure,
                 sealedSender: sendState.wasSentByUD.negated,
                 lastStatusUpdateTimestamp: statusTimestamp
             )
-            sendStatus.deliveryStatus = protoDeliveryStatus
 
             outgoingMessage.sendStatus.append(sendStatus)
 
