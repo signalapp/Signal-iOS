@@ -811,8 +811,10 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
     public func notifyTestPopulation(ofErrorMessage errorString: String) {
         // Fail debug on all devices. External devices should still log the error string.
-        owsFailDebug("Fatal error occurred: \(errorString).")
-        guard DebugFlags.testPopulationErrorAlerts else { return }
+        Logger.error("Fatal error occurred: \(errorString).")
+        guard DebugFlags.testPopulationErrorAlerts else {
+            return
+        }
 
         let title = OWSLocalizedString(
             "ERROR_NOTIFICATION_TITLE",
