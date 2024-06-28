@@ -30,9 +30,9 @@ PODS:
     - Logging (~> 1.4)
   - PureLayout (3.1.4)
   - Reachability (3.7.6)
-  - SignalRingRTC (2.44.1):
-    - SignalRingRTC/WebRTC (= 2.44.1)
-  - SignalRingRTC/WebRTC (2.44.1)
+  - SignalRingRTC (2.44.2):
+    - SignalRingRTC/WebRTC (= 2.44.2)
+  - SignalRingRTC/WebRTC (2.44.2)
   - SQLCipher (4.6.0):
     - SQLCipher/standard (= 4.6.0)
   - SQLCipher/common (4.6.0)
@@ -63,7 +63,7 @@ DEPENDENCIES:
   - MobileCoin/CoreHTTP (from `https://github.com/mobilecoinofficial/MobileCoin-Swift`, tag `v6.0.0`)
   - PureLayout
   - Reachability
-  - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.44.1`)
+  - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.44.2`)
   - SQLCipher (from `https://github.com/signalapp/sqlcipher.git`, tag `v4.6.0-f_barrierfsync`)
   - SSZipArchive (from `ThirdParty/SSZipArchive.podspec`)
   - SwiftProtobuf (>= 1.14.0)
@@ -106,7 +106,7 @@ EXTERNAL SOURCES:
     :tag: v6.0.0
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
-    :tag: v2.44.1
+    :tag: v2.44.2
   SQLCipher:
     :git: https://github.com/signalapp/sqlcipher.git
     :tag: v4.6.0-f_barrierfsync
@@ -137,7 +137,7 @@ CHECKOUT OPTIONS:
     :tag: v6.0.0
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
-    :tag: v2.44.1
+    :tag: v2.44.2
   SQLCipher:
     :git: https://github.com/signalapp/sqlcipher.git
     :tag: v4.6.0-f_barrierfsync
@@ -160,13 +160,13 @@ SPEC CHECKSUMS:
   MobileCoin: 3df783a5cc278a328635ea1f5c7124c5e924648d
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   Reachability: fd0ecd23705e2599e4cceeb943222ae02296cbc6
-  SignalRingRTC: 7d81fb5d91db0f24e1745cbdc66b5fb53552ca66
+  SignalRingRTC: 62275ff5be5afcd3fed09900c02490491e67dded
   SQLCipher: 30a8e81afa6128e600b17ffa77d0f92fa05ed208
   SSZipArchive: 8c3485528a87fa6f90afdbfc33682eb61d985ae5
   SwiftProtobuf: 5e8349171e7c2f88f5b9e683cb3cb79d1dc780b3
   Wire: f5fe13fcad476bfd248f23a45a2004167c0ebae2
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: 69fb5fb20d7a2dcf4b395bd46d0b120c4142e4c0
+PODFILE CHECKSUM: 8a9e067e79e5a40ecf0a9d180a6b708cfcd857a3
 
 COCOAPODS: 1.15.2
