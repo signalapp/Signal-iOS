@@ -91,11 +91,15 @@ public extension UIStackView {
 
 public extension UIView {
 
-    // This works around a UIStackView bug where hidden subviews sometimes re-appear.
+    /// A Boolean value that determines whether the view is hidden while working
+    /// around a UIStackView bug where hidden subviews sometimes re-appear.
     var isHiddenInStackView: Bool {
         get { isHidden }
         set {
-            isHidden = newValue
+            // Setting isHidden to true when already hidden can cause layout issues
+            if isHidden != newValue {
+                isHidden = newValue
+            }
             alpha = newValue ? 0 : 1
         }
     }

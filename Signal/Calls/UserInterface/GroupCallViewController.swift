@@ -274,8 +274,6 @@ class GroupCallViewController: UIViewController {
         self.bottomVStack.autoPinWidthToSuperview()
         self.bottomVStack.axis = .vertical
         self.bottomVStack.preservesSuperviewLayoutMargins = true
-        // TODO: Update
-        self.bottomVStack.spacing = 24
 
         videoOverflowContainer.addSubview(self.videoOverflow)
         self.bottomVStack.addArrangedSubview(videoOverflowContainer)
@@ -1360,6 +1358,10 @@ extension GroupCallViewController: CallHeaderDelegate {
 extension GroupCallViewController: RaisedHandsToastDelegate {
     func didTapViewRaisedHands() {
         self.didTapMembersButton()
+    }
+
+    func raisedHandsToastDidChangeHeight(withAnimation: Bool) {
+        self.updateCallUI(shouldAnimateViewFrames: withAnimation)
     }
 }
 

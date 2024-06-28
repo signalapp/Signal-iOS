@@ -276,7 +276,7 @@ public extension TSInfoMessage {
             }
             return contactsManager.displayName(for: address, tx: tx).resolvedValue()
         }()
-        return result ?? OWSLocalizedString("UNKNOWN_USER", comment: "Label indicating an unknown user.")
+        return result ?? CommonStrings.unknownUser
     }
 
     var profileChangeAddress: SignalServiceAddress? {

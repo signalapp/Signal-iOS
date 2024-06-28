@@ -5614,6 +5614,9 @@
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
 
+/* Label for a button to lower your raised hand in a call. */
+"RAISED_HANDS_LOWER_HAND_BUTTON" = "Lower";
+
 /* A message appearing on the call view's raised hands toast indicating that another named member has raised their hand. */
 "RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%@ has raised a hand";
 

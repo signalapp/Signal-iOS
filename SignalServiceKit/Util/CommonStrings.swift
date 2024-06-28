@@ -246,6 +246,10 @@ public class CommonStrings: NSObject {
         OWSLocalizedString("INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER", comment: "Search")
     }
 
+    static public var unknownUser: String {
+        OWSLocalizedString("UNKNOWN_USER", comment: "Label indicating an unknown user.")
+    }
+
     @objc
     static public var you: String {
         OWSLocalizedString("YOU", comment: "Second person pronoun to represent the local user.")
@@ -476,6 +480,13 @@ public class CallStrings: NSObject {
     static public var callBackAlertCallButton: String {
         OWSLocalizedString("CALL_USER_ALERT_CALL_BUTTON",
                           comment: "Label for call button for alert offering to call a user.")
+    }
+
+    static public var lowerHandButton: String {
+        OWSLocalizedString(
+            "RAISED_HANDS_LOWER_HAND_BUTTON",
+            comment: "Label for a button to lower your raised hand in a call."
+        )
     }
 
     // MARK: - Notification actions

@@ -68,7 +68,7 @@ public enum DisplayName {
         case .deletedAccount:
             return OWSLocalizedString("DELETED_USER", comment: "Label indicating a user who deleted their account.")
         case .unknown:
-            return OWSLocalizedString("UNKNOWN_USER", comment: "Label indicating an unknown user.")
+            return CommonStrings.unknownUser
         }
     }
 

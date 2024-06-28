@@ -428,10 +428,7 @@ public extension TSMessage {
                 ).resolvedValue(useShortNameIfAvailable: true)
             } else {
                 owsFailDebug("[Gifting] Expected exactly 1 recipient but got \(recipients.count)")
-                recipientShortName = OWSLocalizedString(
-                    "UNKNOWN_USER",
-                    comment: "Label indicating an unknown user."
-                )
+                recipientShortName = CommonStrings.unknownUser
             }
             let format = OWSLocalizedString(
                 "DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_OUTGOING",
