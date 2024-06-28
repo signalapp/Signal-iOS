@@ -361,6 +361,11 @@ extension ConversationViewController: CVComponentDelegate {
             return
         }
 
+        if let callLink = CallLink(url: url) {
+            didTapCallLink(callLink)
+            return
+        }
+
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
 
@@ -420,6 +425,11 @@ extension ConversationViewController: CVComponentDelegate {
         AssertIsOnMainThread()
         guard let vc = ProxyLinkSheetViewController(url: url) else { return }
         present(vc, animated: true)
+    }
+
+    func didTapCallLink(_ callLink: CallLink) {
+        AssertIsOnMainThread()
+        GroupCallViewController.presentLobby(for: callLink)
     }
 
     public func cvc_didTapSignalMeLink(url: URL) {

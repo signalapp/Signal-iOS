@@ -159,6 +159,14 @@ extension ConversationViewController {
                     self?.didTapProxyLink(url: dataItem.url)
                 }
             ))
+        } else if let callLink = CallLink(url: dataItem.url) {
+            actionSheet.addAction(ActionSheetAction(
+                title: CallStrings.joinGroupCall,
+                style: .default,
+                handler: { [weak self] _ in
+                    self?.didTapCallLink(callLink)
+                }
+            ))
         } else {
             actionSheet.addAction(ActionSheetAction(
                 title: OWSLocalizedString("MESSAGE_ACTION_LINK_OPEN_LINK", comment: "Label for button to open a link."),
