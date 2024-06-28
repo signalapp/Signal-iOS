@@ -57,6 +57,8 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
     ) { [weak self] tableView, indexPath, id -> UITableViewCell? in
         guard let cell = tableView.dequeueReusableCell(GroupCallMemberCell.self, for: indexPath) else { return nil }
 
+        cell.ringRtcCall = self?.ringRtcCall
+
         guard let viewModel = self?.viewModelsByID[id.memberID] else {
             owsFailDebug("missing view model")
             return cell
@@ -153,6 +155,7 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
         let displayName: String
         let comparableName: DisplayName.ComparableValue
         let demuxID: DemuxId?
+        let isLocalUser: Bool
         let isAudioMuted: Bool?
         let isVideoMuted: Bool?
         let isPresenting: Bool?
@@ -207,6 +210,7 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
                         displayName: resolvedName,
                         comparableName: comparableName,
                         demuxID: member.demuxId,
+                        isLocalUser: false,
                         isAudioMuted: member.audioMuted,
                         isVideoMuted: member.videoMuted,
                         isPresenting: member.presenting
@@ -230,6 +234,7 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
                     displayName: displayName,
                     comparableName: comparableName,
                     demuxID: demuxId,
+                    isLocalUser: true,
                     isAudioMuted: self.ringRtcCall.isOutgoingAudioMuted,
                     isVideoMuted: self.ringRtcCall.isOutgoingVideoMuted,
                     isPresenting: false
@@ -247,6 +252,7 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
                         displayName: displayName.resolvedValue(config: config.displayNameConfig),
                         comparableName: displayName.comparableValue(config: config),
                         demuxID: nil,
+                        isLocalUser: false,
                         isAudioMuted: nil,
                         isVideoMuted: nil,
                         isPresenting: nil
@@ -359,6 +365,7 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
 
         let aci: Aci
         let name: String
+        let isLocalUser: Bool
 
         @Published var shouldShowAudioMutedIcon = false
         @Published var shouldShowVideoMutedIcon = false
@@ -367,6 +374,7 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
         init(member: Member) {
             self.aci = member.aci
             self.name = member.displayName
+            self.isLocalUser = member.isLocalUser
             self.update(using: member)
         }
 
@@ -382,16 +390,30 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
 
     static let reuseIdentifier = "GroupCallMemberCell"
 
-    let avatarView = ConversationAvatarView(
+    var ringRtcCall: SignalRingRTC.GroupCall?
+
+    private let avatarView = ConversationAvatarView(
         sizeClass: .thirtySix,
         localUserDisplayMode: .asUser,
         badged: false
     )
-    let nameLabel = UILabel()
-    let videoMutedIndicator = UIImageView()
-    let audioMutedIndicator = UIImageView()
-    let presentingIndicator = UIImageView()
-    let raisedHandIndicator = UIImageView()
+
+    private let nameLabel = UILabel()
+
+    private lazy var lowerHandButton = OWSButton(
+        title: CallStrings.lowerHandButton,
+        tintColor: .ows_white,
+        dimsWhenHighlighted: true
+    ) { [weak self] in
+        self?.ringRtcCall?.raiseHand(raise: false)
+    }
+
+    private let leadingWrapper = UIView()
+    private let videoMutedIndicator = UIImageView()
+    private let presentingIndicator = UIImageView()
+
+    private let audioMutedIndicator = UIImageView()
+    private let raisedHandIndicator = UIImageView()
 
     private var subscriptions = Set<AnyCancellable>()
 
@@ -403,6 +425,8 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
         nameLabel.textColor = Theme.darkThemePrimaryColor
         nameLabel.font = .dynamicTypeBody
 
+        lowerHandButton.titleLabel?.font = .dynamicTypeBody
+
         func setup(iconView: UIImageView, withImageNamed imageName: String, in wrapper: UIView) {
             iconView.setTemplateImageName(imageName, tintColor: Theme.darkThemeSecondaryTextAndIconColor)
             wrapper.addSubview(iconView)
@@ -413,23 +437,24 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
         setup(iconView: audioMutedIndicator, withImageNamed: "mic-slash", in: trailingWrapper)
         setup(iconView: raisedHandIndicator, withImageNamed: Theme.iconName(.raiseHand), in: trailingWrapper)
 
-        let leadingWrapper = UIView()
         setup(iconView: videoMutedIndicator, withImageNamed: "video-slash", in: leadingWrapper)
         setup(iconView: presentingIndicator, withImageNamed: "share_screen", in: leadingWrapper)
 
         let stackView = UIStackView(arrangedSubviews: [
             avatarView,
-            UIView.spacer(withWidth: 12),
             nameLabel,
-            UIView.spacer(withWidth: 16),
+            lowerHandButton,
             leadingWrapper,
-            UIView.spacer(withWidth: 16),
             trailingWrapper
         ])
         stackView.axis = .horizontal
         stackView.alignment = .center
         contentView.addSubview(stackView)
         stackView.autoPinEdgesToSuperviewMargins()
+
+        stackView.spacing = 16
+        stackView.setCustomSpacing(12, after: avatarView)
+        stackView.setCustomSpacing(8, after: nameLabel)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -445,11 +470,13 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
 
         if isHandRaised {
             self.raisedHandIndicator.isHidden = false
+            self.lowerHandButton.isHiddenInStackView = !viewModel.isLocalUser
             self.audioMutedIndicator.isHidden = true
-            self.videoMutedIndicator.isHidden = true
-            self.presentingIndicator.isHidden = true
+            self.leadingWrapper.isHiddenInStackView = true
         } else {
             self.raisedHandIndicator.isHidden = true
+            self.lowerHandButton.isHiddenInStackView = true
+            self.leadingWrapper.isHiddenInStackView = false
             self.subscribe(to: viewModel.$shouldShowAudioMutedIcon, showing: self.audioMutedIndicator)
             self.subscribe(to: viewModel.$shouldShowVideoMutedIcon, showing: self.videoMutedIndicator)
             self.subscribe(to: viewModel.$shouldShowPresentingIcon, showing: self.presentingIndicator)
