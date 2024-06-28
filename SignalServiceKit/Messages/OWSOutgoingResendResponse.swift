@@ -6,7 +6,38 @@
 import Foundation
 import LibSignalClient
 
-extension OWSOutgoingResendResponse {
+@objc(OWSOutgoingResendResponse) // for Mantle
+final class OWSOutgoingResendResponse: TSOutgoingMessage {
+    @objc // for Mantle
+    private(set) var originalMessagePlaintext: Data?
+
+    @objc // for Mantle
+    private(set) var originalThreadId: String?
+
+    @objc // for Mantle
+    private(set) var originalGroupId: Data?
+
+    @objc // for Mantle
+    private var derivedContentHint: SealedSenderContentHint = .default
+
+    @objc // for Mantle
+    private(set) var didAppendSKDM: Bool = false
+
+    private init(
+        outgoingMessageBuilder: TSOutgoingMessageBuilder,
+        originalMessagePlaintext: Data?,
+        originalThreadId: String?,
+        originalGroupId: Data?,
+        derivedContentHint: SealedSenderContentHint,
+        tx: SDSAnyWriteTransaction
+    ) {
+        super.init(outgoingMessageWithBuilder: outgoingMessageBuilder, transaction: tx)
+        self.originalMessagePlaintext = originalMessagePlaintext
+        self.originalThreadId = originalThreadId
+        self.originalGroupId = originalGroupId
+        self.derivedContentHint = derivedContentHint
+    }
+
     convenience init?(
         aci: Aci,
         deviceId: UInt32,
@@ -43,8 +74,8 @@ extension OWSOutgoingResendResponse {
                 originalMessagePlaintext: payloadRecord.plaintextContent,
                 originalThreadId: payloadRecord.uniqueThreadId,
                 originalGroupId: (originalThread as? TSGroupThread)?.groupId,
-                derivedContentHint: payloadRecord.contentHint.rawValue,
-                transaction: tx
+                derivedContentHint: payloadRecord.contentHint,
+                tx: tx
             )
         } else if didResetSession {
             Logger.info("Failed to find MSL record for resend request: \(failedTimestamp). Will reply with Null message")
@@ -53,12 +84,101 @@ extension OWSOutgoingResendResponse {
                 originalMessagePlaintext: nil,
                 originalThreadId: nil,
                 originalGroupId: nil,
-                derivedContentHint: SealedSenderContentHint.implicit.rawValue,
-                transaction: tx
+                derivedContentHint: .implicit,
+                tx: tx
             )
         } else {
             Logger.warn("Failed to find MSL record for resend request: \(failedTimestamp). Declining to respond.")
             return nil
+        }
+    }
+
+    required init!(coder: NSCoder) {
+        super.init(coder: coder)
+        // Discard invalid SealedSenderContentHint values.
+        self.derivedContentHint = SealedSenderContentHint(rawValue: self.derivedContentHint.rawValue) ?? .default
+    }
+
+    required init(dictionary dictionaryValue: [String: Any]!) throws {
+        try super.init(dictionary: dictionaryValue)
+    }
+
+    override var shouldRecordSendLog: Bool { false }
+
+    override func shouldSyncTranscript() -> Bool { false }
+
+    override var shouldBeSaved: Bool { false }
+
+    override var contentHint: SealedSenderContentHint { self.derivedContentHint }
+
+    override func envelopeGroupIdWithTransaction(_ transaction: SDSAnyReadTransaction) -> Data? { self.originalGroupId }
+
+    override func buildPlainTextData(_ thread: TSThread, transaction tx: SDSAnyWriteTransaction) -> Data? {
+        owsAssertDebug(self.recipientAddresses().count == 1)
+
+        let contentBuilder: SSKProtoContentBuilder = {
+            if let originalMessagePlaintext {
+                do {
+                    return try resentProtoBuilder(from: originalMessagePlaintext)
+                } catch {
+                    owsFailDebug("Failed to build resent content: \(error)")
+                    // fallthrough
+                }
+            }
+            return nullMessageProtoBuilder()
+        }()
+
+        if
+            let originalThreadId,
+            let originalThread = TSThread.anyFetch(uniqueId: originalThreadId, transaction: tx),
+            originalThread.usesSenderKey,
+            let recipientAddress = self.recipientAddresses().first,
+            originalThread.recipientAddresses(with: tx).contains(recipientAddress)
+        {
+            let skdmData = self.senderKeyStore.skdmBytesForThread(originalThread, tx: tx)
+            if let skdmData {
+                contentBuilder.setSenderKeyDistributionMessage(skdmData)
+            }
+            self.didAppendSKDM = skdmData != nil
+        }
+
+        do {
+            return try contentBuilder.buildSerializedData()
+        } catch {
+            owsFailDebug("Failed to build plaintext message: \(error)")
+            return nil
+        }
+    }
+
+    private func resentProtoBuilder(from plaintextData: Data) throws -> SSKProtoContentBuilder {
+        return try SSKProtoContent(serializedData: plaintextData).asBuilder()
+    }
+
+    private func nullMessageProtoBuilder() -> SSKProtoContentBuilder {
+        let contentBuilder = SSKProtoContent.builder()
+        contentBuilder.setNullMessage(SSKProtoNullMessage.builder().buildInfallibly())
+        return contentBuilder
+    }
+
+    override func update(withSentRecipient serviceId: ServiceIdObjC, wasSentByUD: Bool, transaction tx: SDSAnyWriteTransaction) {
+        super.update(withSentRecipient: serviceId, wasSentByUD: wasSentByUD, transaction: tx)
+
+        if
+            self.didAppendSKDM,
+            let originalThreadId,
+            let originalThread = TSThread.anyFetch(uniqueId: originalThreadId, transaction: tx),
+            originalThread.usesSenderKey
+        {
+            do {
+                try self.senderKeyStore.recordSenderKeySent(
+                    for: originalThread,
+                    to: serviceId,
+                    timestamp: self.timestamp,
+                    writeTx: tx
+                )
+            } catch {
+                owsFailDebug("Couldn't update sender key after resend: \(error)")
+            }
         }
     }
 }
