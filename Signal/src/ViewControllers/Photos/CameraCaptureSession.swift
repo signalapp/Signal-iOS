@@ -1062,6 +1062,10 @@ class CapturePreviewView: UIView {
 
 extension CameraCaptureSession: VolumeButtonObserver {
 
+    var capturePreviewView: CapturePreviewView? {
+        return previewView
+    }
+
     func didPressVolumeButton(with identifier: VolumeButtons.Identifier) {
         delegate?.beginCaptureButtonAnimation(0.5)
     }

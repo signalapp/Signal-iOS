@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import AVKit
 import SignalServiceKit
 import SignalUI
 
@@ -635,6 +636,12 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
 }
 
 extension StoryPageViewController: VolumeButtonObserver {
+
+    var capturePreviewView: CapturePreviewView? {
+        // Volume button observation doesn't work here without
+        // a CapturePreviewView on iOS 17.2+
+        return nil
+    }
 
     func didPressVolumeButton(with identifier: VolumeButtons.Identifier) {
         VolumeButtons.shared?.incrementSystemVolume(for: identifier)

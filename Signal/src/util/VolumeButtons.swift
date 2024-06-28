@@ -3,10 +3,17 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import AVKit
 import MediaPlayer
 import SignalServiceKit
 
 protocol VolumeButtonObserver: AnyObject {
+
+    /// On iOS versions greater than 17.2, an AVCaptureVideoPreviewLayer (which CapturePreviewView uses)
+    /// must be on screen for volume button observation to work. Its size can be zero and/or alpha 0.01
+    /// but it must be present and "visible". If it is not (or this value is nil) observers won't be updated.
+    var capturePreviewView: CapturePreviewView? { get }
+
     func didPressVolumeButton(with identifier: VolumeButtons.Identifier)
     func didReleaseVolumeButton(with identifier: VolumeButtons.Identifier)
 
@@ -211,14 +218,22 @@ class VolumeButtons {
     }
 
     private static func setEventRegistration(_ active: Bool) {
-        typealias Type = @convention(c) (AnyObject, Selector, Bool) -> Void
-        let implementation = class_getMethodImplementation(UIApplication.self, volumeEventsSelector)
-        let setRegistration = unsafeBitCast(implementation, to: Type.self)
-        setRegistration(UIApplication.shared, volumeEventsSelector, active)
+        if #available(iOS 17.2, *) {
+            return
+        } else {
+            typealias Type = @convention(c) (AnyObject, Selector, Bool) -> Void
+            let implementation = class_getMethodImplementation(UIApplication.self, volumeEventsSelector)
+            let setRegistration = unsafeBitCast(implementation, to: Type.self)
+            setRegistration(UIApplication.shared, volumeEventsSelector, active)
+        }
     }
 
     private static var supportsListeningToEvents: Bool {
-        return UIApplication.shared.responds(to: volumeEventsSelector)
+        if #available(iOS 17.2, *) {
+            return true
+        } else {
+            return UIApplication.shared.responds(to: volumeEventsSelector)
+        }
     }
 
     // MARK: Notification Handling
@@ -237,57 +252,111 @@ class VolumeButtons {
 
     private let longPressDuration: TimeInterval = 0.5
 
+    // Stored properties can't have @available conditions;
+    // store as Any and do casting in a computed var.
+    private var _eventInteraction: Any?
+
+    @available(iOS 17.2, *)
+    private var eventInteraction: AVCaptureEventInteraction? {
+        get { _eventInteraction as? AVCaptureEventInteraction }
+        set { _eventInteraction = newValue }
+    }
+
     private func registerForNotifications() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(didPressVolumeUp),
-            name: upDownNotificationName,
-            object: nil
-        )
+        if #available(iOS 17.2, *) {
+            let eventInteraction = AVCaptureEventInteraction(
+                primary: { [weak self] volumeDownEvent in
+                    switch volumeDownEvent.phase {
+                    case .began:
+                        self?.didPressVolumeDown()
+                    case .ended:
+                        self?.didReleaseVolumeDown()
+                    case .cancelled:
+                        fallthrough
+                    @unknown default:
+                        return
+                    }
+                },
+                secondary: { [weak self] volumeUpEvent in
+                    switch volumeUpEvent.phase {
+                    case .began:
+                        self?.didPressVolumeUp()
+                    case .ended:
+                        self?.didReleaseVolumeUp()
+                    case .cancelled:
+                        fallthrough
+                    @unknown default:
+                        return
+                    }
+                }
+            )
+            eventInteraction.isEnabled = true
+            // TODO: someday, refactor this class to have an instance per-observer
+            // rather than a global instance. Having one event interaction that is
+            // added to multiple observers is not correct, but the global approach
+            // was created for the pre-iOS 17.2 implementation below.
+            observers.forEach { $0.value?.capturePreviewView?.addInteraction(eventInteraction) }
+            self.eventInteraction = eventInteraction
+        } else {
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(didPressVolumeUp),
+                name: upDownNotificationName,
+                object: nil
+            )
 
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(didReleaseVolumeUp),
-            name: upUpNotificationName,
-            object: nil
-        )
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(didReleaseVolumeUp),
+                name: upUpNotificationName,
+                object: nil
+            )
 
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(didPressVolumeDown),
-            name: downDownNotificationName,
-            object: nil
-        )
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(didPressVolumeDown),
+                name: downDownNotificationName,
+                object: nil
+            )
 
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(didReleaseVolumeDown),
-            name: downUpNotificationName,
-            object: nil
-        )
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(didReleaseVolumeDown),
+                name: downUpNotificationName,
+                object: nil
+            )
+        }
     }
 
     private func unregisterForNotifications() {
-        NotificationCenter.default.removeObserver(self)
+        if #available(iOS 17.2, *) {
+            self.eventInteraction?.isEnabled = false
+            if let eventInteraction {
+                observers.forEach { $0.value?.capturePreviewView?.removeInteraction(eventInteraction) }
+            }
+            self.eventInteraction = nil
+        } else {
+            NotificationCenter.default.removeObserver(self)
+        }
     }
 
     @objc
-    private func didPressVolumeUp(_ notification: Notification) {
+    private func didPressVolumeUp() {
         didPressButton(with: .up)
     }
 
     @objc
-    private func didReleaseVolumeUp(_ notification: Notification) {
+    private func didReleaseVolumeUp() {
         didReleaseButton(with: .up)
     }
 
     @objc
-    private func didPressVolumeDown(_ notification: Notification) {
+    private func didPressVolumeDown() {
         didPressButton(with: .down)
     }
 
     @objc
-    private func didReleaseVolumeDown(_ notification: Notification) {
+    private func didReleaseVolumeDown() {
         didReleaseButton(with: .down)
     }
 }
