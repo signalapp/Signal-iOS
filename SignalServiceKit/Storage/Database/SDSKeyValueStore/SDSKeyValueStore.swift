@@ -510,15 +510,15 @@ public class SDSKeyValueStore: NSObject {
 
     @objc
     public func anyDataValue(transaction: SDSAnyReadTransaction) -> Data? {
-        let keys = allKeys(transaction: transaction).shuffled()
-        guard let firstKey = keys.first else {
+        let randomKey = allKeys(transaction: transaction).randomElement()
+        guard let randomKey else {
             return nil
         }
-        guard let data = self.getData(firstKey, transaction: transaction) else {
-            owsFailDebug("Missing data for key: \(firstKey)")
+        guard let dataValue = self.getData(randomKey, transaction: transaction) else {
+            owsFailDebug("Couldn't fetch random element")
             return nil
         }
-        return data
+        return dataValue
     }
 
     @objc
@@ -646,7 +646,7 @@ public class SDSKeyValueStore: NSObject {
             return nil
         }
         guard let object = rawObject as? T else {
-            owsFailDebug("Value for key: \(key) has unexpected type: \(type(of: rawObject)).")
+            owsFailDebug("Couldn't parse value with unexpected type: \(type(of: rawObject)).")
             return nil
         }
         return object
