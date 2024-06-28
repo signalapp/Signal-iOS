@@ -209,6 +209,9 @@ class GroupCallViewController: UIViewController {
     }
 
     static func presentLobby(for callLink: CallLink) {
+        guard RemoteConfig.callLinkJoin else {
+            return
+        }
         Task {
             do {
                 try await self._presentLobby(shouldAskForCameraPermission: true) {

@@ -74,7 +74,7 @@ class UrlOpener {
         if let donationType = Stripe.parseStripeIDEALCallback(url) {
             return .completeIDEALDonation(donationType)
         }
-        if let callLink = CallLink(url: url), RemoteConfig.callLinkJoin {
+        if let callLink = CallLink(url: url) {
             return .callLink(callLink)
         }
         owsFailDebug("Couldn't parse URL")
