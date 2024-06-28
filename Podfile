@@ -15,8 +15,8 @@ ENV['LIBSIGNAL_FFI_PREBUILD_CHECKSUM'] = '188f43a4369a9980c6c116bf9230d26d51ea7b
 pod 'LibSignalClient', git: 'https://github.com/signalapp/libsignal.git', tag: 'v0.51.0', testspecs: ["Tests"]
 # pod 'LibSignalClient', path: '../libsignal-client', testspecs: ["Tests"]
 
-ENV['RINGRTC_PREBUILD_CHECKSUM'] = 'b10b043cbaa6ea7132d03784e826dd0ecf29a044b68a905b1d3fff6560f72f30'
-pod 'SignalRingRTC', git: 'https://github.com/signalapp/ringrtc', tag: 'v2.44.1', inhibit_warnings: true
+ENV['RINGRTC_PREBUILD_CHECKSUM'] = '7df592a5b261d843596687ee9344893dec5f192e6e57c76d47c48f9631735dcb'
+pod 'SignalRingRTC', git: 'https://github.com/signalapp/ringrtc', tag: 'v2.44.2', inhibit_warnings: true
 # pod 'SignalRingRTC', path: '../ringrtc', testspecs: ["Tests"]
 
 pod 'GRDB.swift/SQLCipher'
