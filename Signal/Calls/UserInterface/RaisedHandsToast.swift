@@ -42,7 +42,7 @@ class RaisedHandsToast: UIView {
 
     var raisedHands: [DemuxId] = [] {
         didSet {
-            self.updateRaisedHands(raisedHands)
+            self.updateRaisedHands(raisedHands, oldValue: oldValue)
         }
     }
 
@@ -81,8 +81,7 @@ class RaisedHandsToast: UIView {
         label.autoPinEdges(toSuperviewEdgesExcludingEdge: .bottom)
         // TODO: Set font
         label.numberOfLines = 0
-        // TODO: Localize
-        label.contentMode = .topLeft
+        label.contentMode = CurrentAppContext().isRTL ? .topRight : .topLeft
         label.textColor = .white
         label.setContentHuggingHorizontalLow()
         label.setCompressionResistanceVerticalHigh()
@@ -117,11 +116,32 @@ class RaisedHandsToast: UIView {
 
     // MARK: State
 
+    private var autoCollapseTimer: Timer?
+
+    /// Called by a parent when a hide animation is completed. Sets
+    /// `isCollapsed` to `false` so it is expanded for its next presentation.
+    func wasHidden() {
+        self.isCollapsed = false
+        self.updateExpansionState(animated: false)
+    }
+
     @objc
     private func toggleExpanded() {
-        // TODO: Automatically collapse after a timer
         self.isCollapsed.toggle()
-        updateExpansionState(animated: true)
+        self.updateExpansionState(animated: true)
+
+        guard !self.isCollapsed else { return }
+        self.queueCollapse()
+    }
+
+    private func queueCollapse() {
+        self.autoCollapseTimer?.invalidate()
+        self.autoCollapseTimer = Timer.scheduledTimer(withTimeInterval: 4, repeats: false) { [weak self] _ in
+            guard let self else { return }
+            self.isCollapsed = true
+            self.updateExpansionState(animated: true)
+            self.autoCollapseTimer = nil
+        }
     }
 
     private func updateExpansionState(animated: Bool) {
@@ -147,9 +167,13 @@ class RaisedHandsToast: UIView {
         }
     }
 
-    private func updateRaisedHands(_ raisedHands: [DemuxId]) {
+    private func updateRaisedHands(_ raisedHands: [DemuxId], oldValue: [DemuxId]) {
+        guard raisedHands != oldValue else { return }
+
         guard let firstRaisedHandDemuxID = raisedHands.first else {
-            // Parent handles hiding. Don't update.
+            // Parent handles hiding. Don't update state.
+            // Prevent auto collapse while it's disappearing.
+            self.autoCollapseTimer?.invalidate()
             return
         }
 
@@ -164,10 +188,8 @@ class RaisedHandsToast: UIView {
         (self.collapsedText, self.expandedText) = databaseStorage.read { tx -> (String, String) in
             let yourHandIsRaised = self.call.ringRtcCall.localDeviceState.demuxId.map(raisedHands.contains) ?? false
             let collapsedText: String = if yourHandIsRaised, raisedHands.count > 1 {
-                // TODO: Localize
-                "You + \(raisedHands.count - 1)"
+                "\(CommonStrings.you) + \(raisedHands.count - 1)"
             } else if yourHandIsRaised {
-                // TODO: Unique localization to make sure it matches the above?
                 CommonStrings.you
             } else {
                 "\(raisedHands.count)"
@@ -177,8 +199,10 @@ class RaisedHandsToast: UIView {
 
             let expandedText: String
             if youAreFirstInQueue, raisedHands.count == 1 {
-                // TODO: Localize
-                expandedText = "You raised your hand"
+                expandedText = OWSLocalizedString(
+                    "RAISED_HANDS_TOAST_YOUR_HAND_MESSAGE",
+                    comment: "A message appearing on the call view's raised hands toast indicating that you raised your own hand."
+                )
             } else {
                 let firstRaisedHandMemberName = if youAreFirstInQueue {
                     CommonStrings.you
@@ -191,17 +215,33 @@ class RaisedHandsToast: UIView {
 
                 if raisedHands.count > 1 {
                     let otherMembersCount = raisedHands.count - 1
-                    // TODO: Localize
-                    expandedText = "\(firstRaisedHandMemberName) and \(otherMembersCount) more have raised a hand"
+                    expandedText = String(
+                        format: OWSLocalizedString(
+                            "RAISED_HANDS_TOAST_MULTIPLE_HANDS_MESSAGE_%d",
+                            tableName: "PluralAware",
+                            comment: "A message appearing on the call view's raised hands toast indicating that multiple members have raised their hands."
+                        ),
+                        firstRaisedHandMemberName, otherMembersCount
+                    )
                 } else {
-                    // TODO: Localize
-                    expandedText = "\(firstRaisedHandMemberName) has raised a hand"
+                    expandedText = String(
+                        format: OWSLocalizedString(
+                            "RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE",
+                            comment: "A message appearing on the call view's raised hands toast indicating that another named member has raised their hand."
+                        ),
+                        firstRaisedHandMemberName
+                    )
                 }
             }
 
             return (collapsedText, expandedText)
         }
 
+        if oldValue.isEmpty {
+            self.isCollapsed = false
+        }
+
         self.updateExpansionState(animated: true)
+        self.queueCollapse()
     }
 }

@@ -735,17 +735,32 @@ class GroupCallViewController: UIViewController {
         shouldAnimateViewFrames: Bool
     ) {
         func updateFrames(controlsAreHidden: Bool) {
+            let raisedHandsToastWasAlreadyHidden = self.raisedHandsToastContainer.isHidden
+
             let action: () -> Void = {
                 self.updateBottomVStackItems()
                 self.updateMemberViewFrames(size: size, controlsAreHidden: controlsAreHidden)
                 self.updateScrollViewFrames(size: size, controlsAreHidden: controlsAreHidden)
             }
+            let completion: () -> Void = {
+                if
+                    self.raisedHandsToast.raisedHands.isEmpty,
+                    !raisedHandsToastWasAlreadyHidden
+                {
+                    self.raisedHandsToast.wasHidden()
+                }
+            }
+
             if shouldAnimateViewFrames {
                 let animator = UIViewPropertyAnimator(duration: 0.3, springDamping: 1, springResponse: 0.3)
                 animator.addAnimations(action)
+                animator.addCompletion { _ in
+                    completion()
+                }
                 animator.startAnimation()
             } else {
                 action()
+                completion()
             }
         }
 
@@ -819,6 +834,10 @@ class GroupCallViewController: UIViewController {
             // If a hand is raised during this animation, the toast will be
             // positioned wrong unless this is called again in the completion.
             self.updateBottomVStackItems()
+
+            if self.raisedHandsToast.raisedHands.isEmpty {
+                self.raisedHandsToast.wasHidden()
+            }
         }
     }
 
