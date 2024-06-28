@@ -756,7 +756,8 @@ public class MessageSender: Dependencies {
         case sendPreparedMessage(
             serializedMessage: SerializedMessage,
             thread: TSThread,
-            serviceIds: [ServiceId],
+            fanoutRecipients: [ServiceId],
+            sendViaSenderKey: (@Sendable () async -> [(ServiceId, any Error)])?,
             udAccess: [ServiceId: OWSUDSendingAccess],
             senderCertificate: SenderCertificate,
             localIdentifiers: LocalIdentifiers
@@ -853,10 +854,33 @@ public class MessageSender: Dependencies {
                 tx: tx
             )
 
+            let senderKeyRecipients: [ServiceId]
+            let sendViaSenderKey: (@Sendable () async -> [(ServiceId, any Error)])?
+            if !message.canSendWithSenderKey {
+                Logger.warn("Fanning out \(message.timestamp) because of a prior error")
+                senderKeyRecipients = []
+                sendViaSenderKey = nil
+            } else if thread.usesSenderKey {
+                (senderKeyRecipients, sendViaSenderKey) = self.prepareSenderKeyMessageSend(
+                    for: serviceIds,
+                    in: thread,
+                    message: message,
+                    serializedMessage: serializedMessage,
+                    udAccessMap: udAccessMap,
+                    senderCertificate: senderCertificate,
+                    localIdentifiers: localIdentifiers,
+                    tx: tx
+                )
+            } else {
+                senderKeyRecipients = []
+                sendViaSenderKey = nil
+            }
+
             return .sendPreparedMessage(
                 serializedMessage: serializedMessage,
                 thread: thread,
-                serviceIds: serviceIds,
+                fanoutRecipients: Array(Set(serviceIds).subtracting(senderKeyRecipients)),
+                sendViaSenderKey: sendViaSenderKey,
                 udAccess: udAccessMap,
                 senderCertificate: senderCertificate,
                 localIdentifiers: localIdentifiers
@@ -869,15 +893,15 @@ public class MessageSender: Dependencies {
         case .lookUpPhoneNumbersAndTryAgain(let phoneNumbers):
             try await lookUpPhoneNumbers(phoneNumbers)
             try await sendPreparedMessage(message, canLookUpPhoneNumbers: false, senderCertificates: senderCertificates)
-        case .sendPreparedMessage(let serializedMessage, let thread, let serviceIds, let udAccess, let senderCertificate, let localIdentifiers):
+        case .sendPreparedMessage(let serializedMessage, let thread, let fanoutRecipients, let sendViaSenderKey, let udAccess, let senderCertificate, let localIdentifiers):
             let perRecipientErrors = await sendPreparedMessage(
-                message,
+                message: message,
                 serializedMessage: serializedMessage,
                 in: thread,
-                to: serviceIds,
+                viaFanoutTo: fanoutRecipients,
+                viaSenderKey: sendViaSenderKey,
                 udAccess: udAccess,
-                localIdentifiers: localIdentifiers,
-                senderCertificate: senderCertificate
+                localIdentifiers: localIdentifiers
             )
             if !perRecipientErrors.isEmpty {
                 try await handleSendFailure(message: message, thread: thread, perRecipientErrors: perRecipientErrors)
@@ -886,18 +910,14 @@ public class MessageSender: Dependencies {
     }
 
     private func sendPreparedMessage(
-        _ message: TSOutgoingMessage,
+        message: TSOutgoingMessage,
         serializedMessage: SerializedMessage,
         in thread: TSThread,
-        to serviceIds: [ServiceId],
+        viaFanoutTo fanoutRecipients: [ServiceId],
+        viaSenderKey sendViaSenderKey: (@Sendable () async -> [(ServiceId, any Error)])?,
         udAccess sendingAccessMap: [ServiceId: OWSUDSendingAccess],
-        localIdentifiers: LocalIdentifiers,
-        senderCertificate: SenderCertificate
+        localIdentifiers: LocalIdentifiers
     ) async -> [(ServiceId, any Error)] {
-        // 3. If we have any participants that support sender key, build a promise
-        // for their send.
-        let senderKeyStatus = senderKeyStatus(for: thread, intendedRecipients: serviceIds, udAccessMap: sendingAccessMap)
-
         // Both types are Arrays because Sender Key Tasks may return N errors when
         // sending to N participants. (Fanout Tasks always send to one recipient
         // and will therefore return either no error or exactly one error.)
@@ -905,31 +925,12 @@ public class MessageSender: Dependencies {
             of: [(ServiceId, any Error)].self,
             returning: [(ServiceId, any Error)].self
         ) { taskGroup in
-            var senderKeyServiceIds: [ServiceId] = senderKeyStatus.allSenderKeyParticipants
-            var fanoutServiceIds: [ServiceId] = senderKeyStatus.fanoutParticipants
-            if thread.usesSenderKey, senderKeyServiceIds.count >= 2, message.canSendWithSenderKey {
-                taskGroup.addTask {
-                    return await self.sendSenderKeyMessage(
-                        message: message,
-                        serializedMessage: serializedMessage,
-                        thread: thread,
-                        status: senderKeyStatus,
-                        udAccessMap: sendingAccessMap,
-                        senderCertificate: senderCertificate,
-                        localIdentifiers: localIdentifiers
-                    )
-                }
-            } else {
-                senderKeyServiceIds = []
-                fanoutServiceIds = serviceIds
-                if !message.canSendWithSenderKey {
-                    Logger.info("Last sender key send attempt failed for message \(message.timestamp). Fanning out")
-                }
+            if let sendViaSenderKey {
+                taskGroup.addTask(operation: sendViaSenderKey)
             }
-            owsAssertDebug(fanoutServiceIds.count + senderKeyServiceIds.count == serviceIds.count)
 
             // Perform an "OWSMessageSend" for each non-senderKey recipient.
-            for serviceId in fanoutServiceIds {
+            for serviceId in fanoutRecipients {
                 let messageSend = OWSMessageSend(
                     message: message,
                     plaintextContent: serializedMessage.plaintextData,

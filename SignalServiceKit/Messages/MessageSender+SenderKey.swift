@@ -66,177 +66,144 @@ extension MessageSender {
         }
     }
 
-    class SenderKeyStatus {
-        enum ParticipantState {
-            case SenderKeyReady
-            case NeedsSKDM
-            case FanoutOnly
-        }
-        var participants: [ServiceId: ParticipantState]
-        init(numberOfParticipants: Int) {
-            self.participants = Dictionary(minimumCapacity: numberOfParticipants)
-        }
-
-        convenience init(fanoutOnlyParticipants: [ServiceId]) {
-            self.init(numberOfParticipants: fanoutOnlyParticipants.count)
-            fanoutOnlyParticipants.forEach { self.participants[$0] = .FanoutOnly }
-        }
-
-        var fanoutParticipants: [ServiceId] {
-            Array(participants.lazy.filter { $0.value == .FanoutOnly }.map { $0.key })
-        }
-
-        var allSenderKeyParticipants: [ServiceId] {
-            Array(participants.lazy.filter { $0.value != .FanoutOnly }.map { $0.key })
-        }
-
-        var participantsNeedingSKDM: [ServiceId] {
-            Array(participants.lazy.filter { $0.value == .NeedsSKDM }.map { $0.key })
-        }
-
-        var readyParticipants: [ServiceId] {
-            Array(participants.lazy.filter { $0.value == .SenderKeyReady }.map { $0.key })
-        }
-    }
-
-    /// Filters the list of participants for a thread that support SenderKey
-    func senderKeyStatus(
-        for thread: TSThread,
-        intendedRecipients: [ServiceId],
-        udAccessMap: [ServiceId: OWSUDSendingAccess]
-    ) -> SenderKeyStatus {
-        guard thread.usesSenderKey else {
-            return .init(fanoutOnlyParticipants: intendedRecipients)
-        }
-
-        return databaseStorage.read { readTx in
-            let isCurrentKeyValid = senderKeyStore.isKeyValid(for: thread, readTx: readTx)
-            let recipientsWithoutSenderKey = senderKeyStore.recipientsInNeedOfSenderKey(
-                for: thread,
-                serviceIds: intendedRecipients,
-                readTx: readTx
-            )
-
-            let senderKeyStatus = SenderKeyStatus(numberOfParticipants: intendedRecipients.count)
-            let threadRecipients = thread.recipientAddresses(with: readTx).compactMap { $0.serviceId }
-            intendedRecipients.forEach { candidate in
-                // Sender key requires that you're a full member of the group and you support UD
-                guard
-                    threadRecipients.contains(candidate),
-                    [.enabled, .unrestricted].contains(udAccessMap[candidate]?.udAccess.udAccessMode)
-                else {
-                    senderKeyStatus.participants[candidate] = .FanoutOnly
-                    return
-                }
-
-                guard !SignalServiceAddress(candidate).isLocalAddress else {
-                    senderKeyStatus.participants[candidate] = .FanoutOnly
-                    owsFailBeta("Callers must not provide UD access for the local ACI.")
-                    return
-                }
-
-                // If all registrationIds aren't valid, we should fallback to fanout
-                // This should be removed once we've sorted out why there are invalid
-                // registrationIds
-                let registrationIdStatus = Self.registrationIdStatus(for: candidate, transaction: readTx)
-                switch registrationIdStatus {
-                case .valid:
-                    // All good, keep going.
-                    break
-                case .invalid:
-                    // Don't bother with SKDM, fall back to fanout.
-                    senderKeyStatus.participants[candidate] = .FanoutOnly
-                    return
-                case .noSession:
-                    // This recipient has no session; thats ok, just fall back to SKDM.
-                    senderKeyStatus.participants[candidate] = .NeedsSKDM
-                    return
-                }
-
-                // The recipient is good to go for sender key! Though, they need an SKDM
-                // if they don't have a current valid sender key.
-                if recipientsWithoutSenderKey.contains(candidate) || !isCurrentKeyValid {
-                    senderKeyStatus.participants[candidate] = .NeedsSKDM
-                } else {
-                    senderKeyStatus.participants[candidate] = .SenderKeyReady
-                }
-            }
-            return senderKeyStatus
-        }
-    }
-
-    /// Sends a message via the Sender Key mechanism.
+    /// Prepares to send a message via the Sender Key mechanism.
     ///
     /// - Parameters:
+    ///   - recipients: The recipients to consider.
+    ///   - thread: The thread containing the message.
     ///   - message: The message to send.
     ///   - serializedMessage: The result from `buildAndRecordMessage`.
-    ///   - thread: The thread containing the message.
-    ///   - status: The result of calling `senderKeyStatus`.
-    ///   - udAccessMap: The result of calling `fetchSealedSenderAccess`.
+    ///   - udAccessMap: The result from `fetchSealedSenderAccess`.
     ///   - senderCertificate: The SenderCertificate that should be used
     ///   (depends on whether or not we've chosen to share our phone number).
     ///
-    /// - Returns: Per-recipients errors for anyone who wasn't sent the Sender
-    /// Key message. If the result is empty, it means the Sender Key message was
+    /// - Returns: A filtered list of Sender Key-eligible recipients; the caller
+    /// shouldn't perform fanout sends to these recipients. Also returns a block
+    /// that, when invoked, performs the actual Sender Key send. That block
+    /// returns per-recipients errors for anyone who wasn't sent the Sender Key
+    /// message. If that result is empty, it means the Sender Key message was
     /// sent to everyone (including any required Sender Key Distribution
     /// Messages). If an SKDM fails to send, an error will be returned for that
     /// recipient, but the rest of the operation will continue with the
     /// remaining recipients. If the Sender Key message fails to send, the error
     /// from that request will be duplicated and returned for each recipient.
-    func sendSenderKeyMessage(
+    func prepareSenderKeyMessageSend(
+        for recipients: [ServiceId],
+        in thread: TSThread,
         message: TSOutgoingMessage,
         serializedMessage: SerializedMessage,
-        thread: TSThread,
-        status: SenderKeyStatus,
         udAccessMap: [ServiceId: OWSUDSendingAccess],
         senderCertificate: SenderCertificate,
-        localIdentifiers: LocalIdentifiers
-    ) async -> [(ServiceId, any Error)] {
-        let failedRecipients = await self._sendSenderKeyMessage(
-            message: message,
-            serializedMessage: serializedMessage,
-            thread: thread,
-            status: status,
-            udAccessMap: udAccessMap,
-            senderCertificate: senderCertificate,
-            localIdentifiers: localIdentifiers
-        )
-        return failedRecipients.map { serviceId, error in
-            return (serviceId, {
-                if let error = error as? SenderKeyError {
-                    return error.asSSKError
-                } else {
-                    return error
-                }
-            }())
-        }
-    }
+        localIdentifiers: LocalIdentifiers,
+        tx: SDSAnyWriteTransaction
+    ) -> (
+        senderKeyRecipients: [ServiceId],
+        sendSenderKeyMessage: (@Sendable () async -> [(ServiceId, any Error)])?
+    ) {
+        self.senderKeyStore.expireSendingKeyIfNecessary(for: thread, writeTx: tx)
 
-    private func _sendSenderKeyMessage(
-        message: TSOutgoingMessage,
-        serializedMessage: SerializedMessage,
-        thread: TSThread,
-        status: SenderKeyStatus,
-        udAccessMap: [ServiceId: OWSUDSendingAccess],
-        senderCertificate: SenderCertificate,
-        localIdentifiers: LocalIdentifiers
-    ) async -> [(ServiceId, any Error)] {
-        let readyRecipients: [ServiceId]
-        var failedRecipients: [(ServiceId, any Error)]
-        // If none of our recipients need an SKDM let's just skip the database write.
-        if status.participantsNeedingSKDM.isEmpty {
-            readyRecipients = status.readyParticipants
-            failedRecipients = []
-        } else {
-            (readyRecipients, failedRecipients) = await sendSenderKeyDistributionMessages(
-                recipients: status.allSenderKeyParticipants,
-                thread: thread,
+        let threadRecipients = thread.recipientAddresses(with: tx).compactMap { $0.serviceId }
+        let senderKeyRecipients = recipients.filter { serviceId in
+            // Sender key requires that you're currently a full member of the group.
+            guard threadRecipients.contains(serviceId) else {
+                return false
+            }
+
+            // You also must support Sealed Sender.
+            switch udAccessMap[serviceId]?.udAccess.udAccessMode {
+            case .disabled, .unknown, nil:
+                return false
+            case .enabled, .unrestricted:
+                break
+            }
+
+            if localIdentifiers.contains(serviceId: serviceId) {
+                owsFailBeta("Callers must not provide UD access for the local ACI.")
+                return false
+            }
+
+            // TODO: Remove this & handle SignalError.invalidRegistrationId.
+            // If all registrationIds aren't valid, we should fallback to fanout
+            // This should be removed once we've sorted out why there are invalid
+            // registrationIds
+            let registrationIdStatus = Self.registrationIdStatus(for: serviceId, transaction: tx)
+            switch registrationIdStatus {
+            case .valid:
+                // All good, keep going.
+                break
+            case .invalid:
+                // Don't bother with SKDM, fall back to fanout.
+                return false
+            case .noSession:
+                // This recipient has no session; thats ok, just fall back to SKDM.
+                break
+            }
+
+            return true
+        }
+
+        if senderKeyRecipients.count < 2 {
+            return ([], nil)
+        }
+
+        let preparedDistributionMessages: PrepareDistributionResult
+        do {
+            preparedDistributionMessages = try prepareSenderKeyDistributionMessages(
+                for: senderKeyRecipients,
+                in: thread,
                 originalMessage: message,
                 udAccessMap: udAccessMap,
-                localIdentifiers: localIdentifiers
+                localIdentifiers: localIdentifiers,
+                tx: tx
             )
+        } catch {
+            // We should always be able to prepare SKDMs (sending them may fail though).
+            // TODO: If we can't, the state is probably corrupt and should be reset.
+            Logger.warn("Fanning out because we couldn't prepare SKDMs: \(error)")
+            return ([], nil)
         }
 
+        return (
+            senderKeyRecipients,
+            { () async -> [(ServiceId, any Error)] in
+                let readyRecipients: [ServiceId]
+                var failedRecipients: [(ServiceId, any Error)]
+                (readyRecipients, failedRecipients) = await self.sendPreparedSenderKeyDistributionMessages(
+                    preparedDistributionMessages,
+                    in: thread,
+                    onBehalfOf: message
+                )
+                failedRecipients += await self.sendSenderKeyMessage(
+                    to: readyRecipients,
+                    in: thread,
+                    message: message,
+                    serializedMessage: serializedMessage,
+                    udAccessMap: udAccessMap,
+                    senderCertificate: senderCertificate,
+                    localIdentifiers: localIdentifiers
+                )
+                return failedRecipients.map { serviceId, error in
+                    return (serviceId, {
+                        if let error = error as? SenderKeyError {
+                            return error.asSSKError
+                        } else {
+                            return error
+                        }
+                    }())
+                }
+            }
+        )
+    }
+
+    private func sendSenderKeyMessage(
+        to readyRecipients: [ServiceId],
+        in thread: TSThread,
+        message: TSOutgoingMessage,
+        serializedMessage: SerializedMessage,
+        udAccessMap: [ServiceId: OWSUDSendingAccess],
+        senderCertificate: SenderCertificate,
+        localIdentifiers: LocalIdentifiers
+    ) async -> [(ServiceId, any Error)] {
         let sendResult: SenderKeySendResult
         do {
             sendResult = try await self.sendSenderKeyRequest(
@@ -251,14 +218,13 @@ extension MessageSender {
             // If the sender key message failed to send, fail each recipient that we
             // hoped to send it to.
             Logger.warn("Sender key send failed: \(error)")
-            failedRecipients.append(contentsOf: readyRecipients.lazy.map { ($0, error) })
-            return failedRecipients
+            return readyRecipients.lazy.map { ($0, error) }
         }
 
         return await self.databaseStorage.awaitableWrite { tx in
-            sendResult.unregisteredServiceIds.forEach { serviceId in
+            let failedRecipients = sendResult.unregisteredServiceIds.map { serviceId in
                 self.markAsUnregistered(serviceId: serviceId, message: message, thread: thread, transaction: tx)
-                failedRecipients.append((serviceId, MessageSenderNoSuchSignalRecipientError()))
+                return (serviceId, MessageSenderNoSuchSignalRecipientError())
             }
 
             sendResult.success.forEach { recipient in
@@ -319,14 +285,8 @@ extension MessageSender {
         localIdentifiers: LocalIdentifiers,
         tx writeTx: SDSAnyWriteTransaction
     ) throws -> PrepareDistributionResult {
-        // Here we fetch all of the recipients that need an SKDM
+        // Here we fetch all of the recipients that need an SKDM.
         // We then construct an OWSMessageSend for each recipient that needs an SKDM.
-
-        // Even though we earlier checked key expiration/who needs an SKDM, we must
-        // check again since it may no longer be valid. e.g. The key expired since
-        // we last checked. Now *all* recipients need the current SKDM, not just
-        // the ones that needed it when we last checked.
-        self.senderKeyStore.expireSendingKeyIfNecessary(for: thread, writeTx: writeTx)
 
         let recipientsInNeedOfSenderKey = self.senderKeyStore.recipientsInNeedOfSenderKey(
             for: thread,
@@ -394,33 +354,11 @@ extension MessageSender {
     ///
     /// - Returns: Participants that are ready to receive Sender Key messages,
     /// as well as participants that couldn't be sent a copy of our Sender Key.
-    private func sendSenderKeyDistributionMessages(
-        recipients: [ServiceId],
-        thread: TSThread,
-        originalMessage: TSOutgoingMessage,
-        udAccessMap: [ServiceId: OWSUDSendingAccess],
-        localIdentifiers: LocalIdentifiers
+    private func sendPreparedSenderKeyDistributionMessages(
+        _ prepareResult: PrepareDistributionResult,
+        in thread: TSThread,
+        onBehalfOf originalMessage: TSOutgoingMessage
     ) async -> (readyRecipients: [ServiceId], failedRecipients: [(ServiceId, SenderKeyError)]) {
-        let prepareResult: PrepareDistributionResult
-        do {
-            prepareResult = try await databaseStorage.awaitableWrite { tx in
-                return try self.prepareSenderKeyDistributionMessages(
-                    for: recipients,
-                    in: thread,
-                    originalMessage: originalMessage,
-                    udAccessMap: udAccessMap,
-                    localIdentifiers: localIdentifiers,
-                    tx: tx
-                )
-            }
-        } catch {
-            // TODO: Evaluate & consider changing this behavior.
-            // Even if some recipients already have a Sender Key distribution message,
-            // fail the entire operation if we need to distribute it to additional
-            // recipients but can't.
-            return ([], recipients.map { ($0, SenderKeyError.recipientSKDMFailed(error)) })
-        }
-
         if prepareResult.senderKeyDistributionMessageSends.isEmpty {
             return (prepareResult.readyRecipients, prepareResult.failedRecipients)
         }
@@ -498,6 +436,7 @@ extension MessageSender {
         let recipients: [Recipient]
         let ciphertext: Data
         (recipients, ciphertext) = try await self.databaseStorage.awaitableWrite { tx in
+            // TODO: Pass Recipients into this method.
             let recipients = serviceIds.map { Recipient(serviceId: $0, transaction: tx) }
             let ciphertext = try self.senderKeyMessageBody(
                 plaintext: plaintext,
