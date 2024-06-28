@@ -113,62 +113,77 @@ extension ConversationViewController {
     private func didLongPressLink(dataItem: TextCheckingDataItem) {
         AssertIsOnMainThread()
 
-        var title: String? = dataItem.snippet.strippedOrNil
-        if StickerPackInfo.isStickerPackShare(dataItem.url) {
-            title = OWSLocalizedString("MESSAGE_ACTION_TITLE_STICKER_PACK",
-                                      comment: "Title for message actions for a sticker pack.")
-        } else if GroupManager.isPossibleGroupInviteLink(dataItem.url) {
-            title = OWSLocalizedString("MESSAGE_ACTION_TITLE_GROUP_INVITE",
-                                                  comment: "Title for message actions for a group invite link.")
-        }
+        let title = { () -> String? in
+            if StickerPackInfo.isStickerPackShare(dataItem.url) {
+                return OWSLocalizedString(
+                    "MESSAGE_ACTION_TITLE_STICKER_PACK",
+                    comment: "Title for message actions for a sticker pack."
+                )
+            }
+            if GroupManager.isPossibleGroupInviteLink(dataItem.url) {
+                return OWSLocalizedString(
+                    "MESSAGE_ACTION_TITLE_GROUP_INVITE",
+                    comment: "Title for message actions for a group invite link."
+                )
+            }
+            return dataItem.snippet.strippedOrNil
+        }()
 
         let actionSheet = ActionSheetController(title: title)
 
         if StickerPackInfo.isStickerPackShare(dataItem.url) {
             if let stickerPackInfo = StickerPackInfo.parseStickerPackShare(dataItem.url) {
-                actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("MESSAGE_ACTION_LINK_OPEN_STICKER_PACK",
-                                                                                 comment: "Label for button to open a sticker pack."),
-                                                        accessibilityIdentifier: "link_open_sticker_pack",
-                                                        style: .default) { [weak self] _ in
-                    self?.didTapStickerPack(stickerPackInfo)
-                })
+                actionSheet.addAction(ActionSheetAction(
+                    title: OWSLocalizedString("MESSAGE_ACTION_LINK_OPEN_STICKER_PACK", comment: "Label for button to open a sticker pack."),
+                    style: .default,
+                    handler: { [weak self] _ in
+                        self?.didTapStickerPack(stickerPackInfo)
+                    }
+                ))
             } else {
                 owsFailDebug("Invalid URL: \(dataItem.url)")
             }
         } else if GroupManager.isPossibleGroupInviteLink(dataItem.url) {
-            actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE",
-                                                                             comment: "Label for button to open a group invite."),
-                                                    accessibilityIdentifier: "link_open_group_invite",
-                                                    style: .default) { [weak self] _ in
-                self?.didTapGroupInviteLink(url: dataItem.url)
-            })
+            actionSheet.addAction(ActionSheetAction(
+                title: OWSLocalizedString("MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE", comment: "Label for button to open a group invite."),
+                style: .default,
+                handler: { [weak self] _ in
+                    self?.didTapGroupInviteLink(url: dataItem.url)
+                }
+            ))
         } else if SignalProxy.isValidProxyLink(dataItem.url) {
-            actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("MESSAGE_ACTION_LINK_OPEN_PROXY",
-                                                                             comment: "Label for button to open a signal proxy."),
-                                                    accessibilityIdentifier: "link_open_proxy",
-                                                    style: .default) { [weak self] _ in
-                self?.didTapProxyLink(url: dataItem.url)
-            })
+            actionSheet.addAction(ActionSheetAction(
+                title: OWSLocalizedString("MESSAGE_ACTION_LINK_OPEN_PROXY", comment: "Label for button to open a signal proxy."),
+                style: .default,
+                handler: { [weak self] _ in
+                    self?.didTapProxyLink(url: dataItem.url)
+                }
+            ))
         } else {
-            actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("MESSAGE_ACTION_LINK_OPEN_LINK",
-                                                                             comment: "Label for button to open a link."),
-                                                    accessibilityIdentifier: "link_open_link",
-                                                    style: .default) { [weak self] _ in
-                self?.openLink(dataItem: dataItem)
-            })
+            actionSheet.addAction(ActionSheetAction(
+                title: OWSLocalizedString("MESSAGE_ACTION_LINK_OPEN_LINK", comment: "Label for button to open a link."),
+                style: .default,
+                handler: { [weak self] _ in
+                    self?.openLink(dataItem: dataItem)
+                }
+            ))
         }
 
-        actionSheet.addAction(ActionSheetAction(title: CommonStrings.copyButton,
-                                                accessibilityIdentifier: "link_copy",
-                                                style: .default) { _ in
-            UIPasteboard.general.string = dataItem.snippet
-            // TODO: Show toast?
-        })
-        actionSheet.addAction(ActionSheetAction(title: CommonStrings.shareButton,
-                                                accessibilityIdentifier: "link_share",
-                                                style: .default) { _ in
-            AttachmentSharing.showShareUI(for: dataItem.url, sender: self)
-        })
+        actionSheet.addAction(ActionSheetAction(
+            title: CommonStrings.copyButton,
+            style: .default,
+            handler: { _ in
+                UIPasteboard.general.string = dataItem.snippet
+                // TODO: Show toast?
+            }
+        ))
+        actionSheet.addAction(ActionSheetAction(
+            title: CommonStrings.shareButton,
+            style: .default,
+            handler: { _ in
+                AttachmentSharing.showShareUI(for: dataItem.url, sender: self)
+            }
+        ))
         actionSheet.addAction(OWSActionSheets.cancelAction)
 
         presentActionSheet(actionSheet)
@@ -254,7 +269,6 @@ extension ConversationViewController {
             actionSheet.addAction(
                 ActionSheetAction(
                     title: OWSLocalizedString("BLOCK_LIST_UNBLOCK_BUTTON", comment: "Button label for the 'unblock' button"),
-                    accessibilityIdentifier: "phone_number_unblock",
                     style: .default
                 ) { [weak self] _ in
                     guard let self = self else { return }
@@ -342,18 +356,21 @@ extension ConversationViewController {
     private func didLongPressEmail(dataItem: TextCheckingDataItem) {
         let actionSheet = ActionSheetController(title: dataItem.snippet.strippedOrNil)
 
-        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE",
-                                                                         comment: "Label for button to compose a new email."),
-                                                accessibilityIdentifier: "email_new_mail_message",
-                                                style: .default) { [weak self] _ in
-            self?.composeEmail(dataItem: dataItem)
-        })
-        actionSheet.addAction(ActionSheetAction(title: CommonStrings.copyButton,
-                                                accessibilityIdentifier: "email_copy",
-                                                style: .default) { _ in
-            UIPasteboard.general.string = dataItem.snippet
-            // TODO: Show toast?
-        })
+        actionSheet.addAction(ActionSheetAction(
+            title: OWSLocalizedString("MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE", comment: "Label for button to compose a new email."),
+            style: .default,
+            handler: { [weak self] _ in
+                self?.composeEmail(dataItem: dataItem)
+            }
+        ))
+        actionSheet.addAction(ActionSheetAction(
+            title: CommonStrings.copyButton,
+            style: .default,
+            handler: { _ in
+                UIPasteboard.general.string = dataItem.snippet
+                // TODO: Show toast?
+            }
+        ))
 
         // TODO: We could show (facetime audio/facetime video/iMessage) actions for this email address.
         //       Ideally we could detect whether this email address supported these actions.
@@ -414,8 +431,10 @@ extension ConversationViewController {
 
         guard UIApplication.shared.canOpenURL(dataItem.url) else {
             Logger.info("Device cannot send mail")
-            OWSActionSheets.showErrorAlert(message: OWSLocalizedString("MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED",
-                                                                      comment: "Error show when user tries to send email without email being configured."))
+            OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
+                "MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED",
+                comment: "Error show when user tries to send email without email being configured."
+            ))
             return
         }
         UIApplication.shared.open(dataItem.url, options: [:], completionHandler: nil)
