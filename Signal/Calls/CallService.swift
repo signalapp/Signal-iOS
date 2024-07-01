@@ -569,7 +569,9 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         createCall: () -> (SignalCall, T)?
     ) -> (SignalCall, T)? {
         AssertIsOnMainThread()
-        guard callServiceState.currentCall == nil else { return nil }
+        guard callServiceState.currentCall == nil else {
+            return nil
+        }
 
         guard let (call, groupCall) = createCall() else {
             owsFailDebug("Failed to create call")
@@ -668,13 +670,17 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     private func initiateIndividualCall(thread: TSContactThread, isVideo: Bool) async {
         let untrustedThreshold = Date(timeIntervalSinceNow: -OWSIdentityManagerImpl.Constants.defaultUntrustedInterval)
 
-        guard let viewController = await CallStarter.prepareToStartCall(shouldAskForCameraPermission: isVideo) else {
+        guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
+            owsFail("Can't start a call if there's no view controller")
+        }
+
+        guard await CallStarter.prepareToStartCall(from: frontmostViewController, shouldAskForCameraPermission: isVideo) else {
             return
         }
 
         guard await SafetyNumberConfirmationSheet.presentRepeatedlyAsNecessary(
             for: { [thread.contactAddress] },
-            from: viewController,
+            from: frontmostViewController,
             confirmationText: CallStrings.confirmAndCallButtonTitle,
             untrustedThreshold: untrustedThreshold
         ) else {

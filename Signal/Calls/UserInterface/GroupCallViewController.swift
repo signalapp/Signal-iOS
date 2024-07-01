@@ -189,8 +189,8 @@ class GroupCallViewController: UIViewController {
     }
 
     static func presentLobby(thread: TSGroupThread, videoMuted: Bool = false) {
-        Task {
-            await self._presentLobby(shouldAskForCameraPermission: !videoMuted) {
+        self._presentLobby { viewController in
+            let result = await self._prepareLobby(from: viewController, shouldAskForCameraPermission: !videoMuted) {
                 let callService = AppEnvironment.shared.callService!
                 return callService.buildAndConnectGroupCall(for: thread, isVideoMuted: videoMuted)
             }
@@ -198,6 +198,7 @@ class GroupCallViewController: UIViewController {
                 // Dismiss the group call tooltip
                 self.preferences.setWasGroupCallTooltipShown(tx: tx)
             }
+            return result
         }
     }
 
@@ -205,9 +206,9 @@ class GroupCallViewController: UIViewController {
         guard RemoteConfig.callLinkJoin else {
             return
         }
-        Task {
+        self._presentLobby { viewController in
             do {
-                try await self._presentLobby(shouldAskForCameraPermission: true) {
+                return try await self._prepareLobby(from: viewController, shouldAskForCameraPermission: true) {
                     let callService = AppEnvironment.shared.callService!
                     return try await callService.buildAndConnectCallLinkCall(callLink: callLink)
                 }
@@ -218,21 +219,46 @@ class GroupCallViewController: UIViewController {
     }
 
     private static func _presentLobby(
+        prepareLobby: @escaping @MainActor (UIViewController) async -> (() -> Void)?
+    ) {
+        guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
+            owsFail("Can't start a call if there's no view controller")
+        }
+
+        // [CallLink] TODO: Check if `canCancel` should be true.
+        // Gotchas:
+        // - Incoming group calls that are ringing.
+        // - Disconnecting calls that the user cancels.
+        ModalActivityIndicatorViewController.present(
+            fromViewController: frontmostViewController,
+            canCancel: false,
+            presentationDelay: 0.25,
+            asyncBlock: { modal in
+                let presentLobby = await prepareLobby(frontmostViewController)
+                modal.dismissIfNotCanceled(completionIfNotCanceled: presentLobby ?? {})
+            }
+        )
+    }
+
+    private static func _prepareLobby(
+        from viewController: UIViewController,
         shouldAskForCameraPermission: Bool,
         buildAndStartConnecting: () async throws -> (SignalCall, GroupCall)?
-    ) async rethrows {
-        guard await CallStarter.prepareToStartCall(shouldAskForCameraPermission: shouldAskForCameraPermission) != nil else {
-            return
+    ) async rethrows -> (() -> Void)? {
+        guard await CallStarter.prepareToStartCall(from: viewController, shouldAskForCameraPermission: shouldAskForCameraPermission) else {
+            return nil
         }
 
         guard let (call, groupCall) = try await buildAndStartConnecting() else {
             owsFailDebug("Can't show lobby if the call can't start")
-            return
+            return nil
         }
 
         let vc = GroupCallViewController(call: call, groupCall: groupCall)
-        vc.modalTransitionStyle = .crossDissolve
-        WindowManager.shared.startCall(viewController: vc)
+        return {
+            vc.modalTransitionStyle = .crossDissolve
+            WindowManager.shared.startCall(viewController: vc)
+        }
     }
 
     required init?(coder: NSCoder) {

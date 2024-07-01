@@ -145,33 +145,29 @@ struct CallStarter {
     }
 
     @MainActor
-    static func prepareToStartCall(shouldAskForCameraPermission: Bool) async -> UIViewController? {
+    static func prepareToStartCall(from viewController: UIViewController, shouldAskForCameraPermission: Bool) async -> Bool {
         guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             Logger.warn("Can't start a call unless you're registered")
             OWSActionSheets.showActionSheet(title: OWSLocalizedString(
                 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING",
                 comment: "alert body shown when trying to use features in the app before completing registration-related setup."
             ))
-            return nil
+            return false
         }
 
-        guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
-            owsFail("Can't start a call if there's no view controller")
-        }
-
-        guard await frontmostViewController.askForMicrophonePermissions() else {
+        guard await viewController.askForMicrophonePermissions() else {
             Logger.warn("aborting due to missing microphone permissions.")
-            frontmostViewController.ows_showNoMicrophonePermissionActionSheet()
-            return nil
+            viewController.ows_showNoMicrophonePermissionActionSheet()
+            return false
         }
 
         if shouldAskForCameraPermission {
-            guard await frontmostViewController.askForCameraPermissions() else {
+            guard await viewController.askForCameraPermissions() else {
                 Logger.warn("aborting due to missing camera permissions.")
-                return nil
+                return false
             }
         }
 
-        return frontmostViewController
+        return true
     }
 }
