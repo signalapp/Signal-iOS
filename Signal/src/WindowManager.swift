@@ -127,15 +127,15 @@ class WindowManager {
         //
         // Note that we always "hide" before we "show".
         if isScreenBlockActive {
+            ensureScreenBlockWindowShown()
             ensureRootWindowHidden()
             ensureReturnToCallWindowHidden()
             ensureCallViewWindowHidden()
-            ensureScreenBlockWindowShown()
         }
         // Show Call View
         else if shouldShowCallView && callViewController != nil {
-            ensureRootWindowHidden()
             ensureCallViewWindowShown()
+            ensureRootWindowHidden()
             ensureReturnToCallWindowHidden()
             ensureScreenBlockWindowHidden()
         }
@@ -146,7 +146,7 @@ class WindowManager {
 
             // Add "Return to Call" banner
             if callViewController != nil {
-               ensureReturnToCallWindowShown()
+                ensureReturnToCallWindowShown()
             } else {
                 ensureReturnToCallWindowHidden()
             }
