@@ -1369,7 +1369,7 @@ extension GroupCallViewController: GroupCallObserver {
         self.updateCallUI(shouldAnimateViewFrames: true)
     }
 
-    func callMessageSendFailedUntrustedIdentity(_ call: GroupCall) {
+    func handleUntrustedIdentityError(_ call: GroupCall) {
         AssertIsOnMainThread()
         owsAssert(self.groupCall === call)
 

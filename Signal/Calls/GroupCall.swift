@@ -18,7 +18,7 @@ protocol GroupCallObserver: AnyObject {
 
     /// Invoked if a call message failed to send because of a safety number change
     /// UI observing call state may choose to alert the user (e.g. presenting a SafetyNumberConfirmationSheet)
-    func callMessageSendFailedUntrustedIdentity(_ call: GroupCall)
+    func handleUntrustedIdentityError(_ call: GroupCall)
 }
 
 extension GroupCallObserver {
@@ -28,7 +28,7 @@ extension GroupCallObserver {
     func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason) {}
     func groupCallReceivedReactions(_ call: GroupCall, reactions: [SignalRingRTC.Reaction]) {}
     func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [DemuxId]) {}
-    func callMessageSendFailedUntrustedIdentity(_ call: GroupCall) {}
+    func handleUntrustedIdentityError(_ call: GroupCall) {}
 }
 
 class GroupCall: SignalRingRTC.GroupCallDelegate {
@@ -109,8 +109,8 @@ class GroupCall: SignalRingRTC.GroupCallDelegate {
         observers.removeAll(where: { $0 === observer })
     }
 
-    func publishSendFailureUntrustedParticipantIdentity() {
-        observers.elements.forEach { $0.callMessageSendFailedUntrustedIdentity(self) }
+    func handleUntrustedIdentityError() {
+        observers.elements.forEach { $0.handleUntrustedIdentityError(self) }
     }
 
     // MARK: - GroupCallDelegate

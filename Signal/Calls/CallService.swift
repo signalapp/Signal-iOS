@@ -1075,8 +1075,7 @@ extension CallService: CallManagerDelegate {
         AssertIsOnMainThread()
         Logger.info("")
 
-        let currentCall = self.callServiceState.currentCall
-
+        let callAtStart = self.callServiceState.currentCall
         Task {
             let opaqueBuilder = SSKProtoCallMessageOpaque.builder()
             opaqueBuilder.setData(message)
@@ -1084,7 +1083,7 @@ extension CallService: CallManagerDelegate {
             await self.sendCallMessage(
                 opaqueBuilder.buildInfallibly(),
                 to: Aci(fromUUID: recipientUuid),
-                callAtStart: currentCall
+                callAtStart: callAtStart
             )
         }
     }
@@ -1120,19 +1119,8 @@ extension CallService: CallManagerDelegate {
             try await sendPromise.awaitable()
             // TODO: Tell RingRTC we succeeded in sending the message. API TBD
         } catch {
-            if error is UntrustedIdentityError {
-                switch callAtStart?.mode {
-                case nil:
-                    owsFailDebug("We can't send messages to inactive group calls.")
-                case .individual:
-                    owsFailDebug("We don't send messages for 1:1 calls.")
-                case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
-                    // [CallLink] TODO: Check if this callback is used.
-                    call.publishSendFailureUntrustedParticipantIdentity()
-                }
-            } else {
-                Logger.warn("Failed to send opaque message \(error)")
-            }
+            self.publishUntrustedIdentityErrorIfNeeded(error, callAtStart: callAtStart)
+            Logger.warn("Failed to send opaque message \(error)")
             // TODO: Tell RingRTC something went wrong. API TBD
         }
     }
@@ -1153,6 +1141,7 @@ extension CallService: CallManagerDelegate {
         overrideRecipients: [UUID]
     ) {
         Logger.info("")
+        let callAtStart = self.callServiceState.currentCall
         Task {
             let opaqueBuilder = SSKProtoCallMessageOpaque.builder()
             opaqueBuilder.setData(message)
@@ -1160,7 +1149,8 @@ extension CallService: CallManagerDelegate {
             await self.sendCallMessageToGroup(
                 opaqueBuilder.buildInfallibly(),
                 groupId: groupId,
-                overrideRecipients: overrideRecipients
+                overrideRecipients: overrideRecipients,
+                callAtStart: callAtStart
             )
         }
     }
@@ -1169,7 +1159,8 @@ extension CallService: CallManagerDelegate {
     private func sendCallMessageToGroup(
         _ opaqueMessage: SSKProtoCallMessageOpaque,
         groupId: Data,
-        overrideRecipients: [UUID]
+        overrideRecipients: [UUID],
+        callAtStart: SignalCall?
     ) async {
         do {
             let sendPromise = try await self.databaseStorage.awaitableWrite { transaction in
@@ -1199,8 +1190,24 @@ extension CallService: CallManagerDelegate {
             try await sendPromise.awaitable()
             // TODO: Tell RingRTC we succeeded in sending the message. API TBD
         } catch {
+            self.publishUntrustedIdentityErrorIfNeeded(error, callAtStart: callAtStart)
             Logger.warn("Failed to send opaque message \(error)")
             // TODO: Tell RingRTC something went wrong. API TBD
+        }
+    }
+
+    @MainActor
+    private func publishUntrustedIdentityErrorIfNeeded(_ error: any Error, callAtStart: SignalCall?) {
+        guard error is UntrustedIdentityError else {
+            return
+        }
+        switch callAtStart?.mode {
+        case nil:
+            Logger.warn("The relevant call has already ended.")
+        case .individual:
+            owsFailDebug("This method isn't implemented for 1:1 calls.")
+        case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
+            call.handleUntrustedIdentityError()
         }
     }
 
