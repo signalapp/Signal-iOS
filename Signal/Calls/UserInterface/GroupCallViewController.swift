@@ -441,7 +441,7 @@ class GroupCallViewController: UIViewController {
 
         let size = size ?? view.frame.size
 
-        if ringRtcCall.remoteDeviceStates.count < 2 || ringRtcCall.localDeviceState.joinState != .joined {
+        if !self.hasAtLeastTwoOthers {
             videoGrid.frame = .zero
             videoGrid.isHidden = true
             speakerPage.frame = CGRect(
@@ -552,67 +552,59 @@ class GroupCallViewController: UIViewController {
         speakerView.applyChangesToCallMemberViewAndVideoView { view in
             view.removeFromSuperview()
         }
-        switch ringRtcCall.localDeviceState.joinState {
-        case .joined:
-            if ringRtcCall.remoteDeviceStates.count > 0 {
-                speakerView.applyChangesToCallMemberViewAndVideoView { view in
-                    speakerPage.addSubview(view)
-                    view.autoPinEdgesToSuperviewEdges()
-                }
-
-                localMemberView.applyChangesToCallMemberViewAndVideoView { aView in
-                    view.insertSubview(aView, belowSubview: callControlsConfirmationToastContainerView)
-                }
-
-                let pipSize = CallMemberView.pipSize(
-                    expandedPipFrame: self.expandedPipFrame,
-                    remoteDeviceCount: ringRtcCall.remoteDeviceStates.count
-                )
-
-                let y: CGFloat
-                if nil != expandedPipFrame {
-                    // Necessary because when the pip is expanded, the
-                    // pip height will not follow along with that of
-                    // the video overflow, which is tiny.
-                    y = yMax - pipSize.height
-                } else {
-                    let overflowY = videoOverflow.convert(videoOverflow.bounds.origin, to: self.view).y
-                    let overflowPipHeightDifference = pipSize.height - videoOverflow.height
-                    y = overflowY - overflowPipHeightDifference
-                }
-                localMemberView.applyChangesToCallMemberViewAndVideoView { view in
-                    view.frame = CGRect(
-                        x: size.width - pipSize.width - 16,
-                        y: y,
-                        width: pipSize.width,
-                        height: pipSize.height
-                    )
-                }
-                flipCameraTooltipManager.presentTooltipIfNecessary(
-                    fromView: self.view,
-                    widthReferenceView: self.view,
-                    tailReferenceView: localMemberView,
-                    tailDirection: .down,
-                    isVideoMuted: call.isOutgoingVideoMuted
-                )
-            } else {
-                localMemberView.applyChangesToCallMemberViewAndVideoView { view in
-                    speakerPage.addSubview(view)
-                    view.frame = CGRect(origin: .zero, size: size)
-                }
-            }
-        case .notJoined, .joining, .pending:
+        if self.isJustMe {
             localMemberView.applyChangesToCallMemberViewAndVideoView { view in
                 speakerPage.addSubview(view)
                 view.frame = CGRect(origin: .zero, size: size)
             }
+        } else {
+            speakerView.applyChangesToCallMemberViewAndVideoView { view in
+                speakerPage.addSubview(view)
+                view.autoPinEdgesToSuperviewEdges()
+            }
+
+            localMemberView.applyChangesToCallMemberViewAndVideoView { aView in
+                view.insertSubview(aView, belowSubview: callControlsConfirmationToastContainerView)
+            }
+
+            let pipSize = CallMemberView.pipSize(
+                expandedPipFrame: self.expandedPipFrame,
+                remoteDeviceCount: ringRtcCall.remoteDeviceStates.count
+            )
+
+            let y: CGFloat
+            if nil != expandedPipFrame {
+                // Necessary because when the pip is expanded, the
+                // pip height will not follow along with that of
+                // the video overflow, which is tiny.
+                y = yMax - pipSize.height
+            } else {
+                let overflowY = videoOverflow.convert(videoOverflow.bounds.origin, to: self.view).y
+                let overflowPipHeightDifference = pipSize.height - videoOverflow.height
+                y = overflowY - overflowPipHeightDifference
+            }
+            localMemberView.applyChangesToCallMemberViewAndVideoView { view in
+                view.frame = CGRect(
+                    x: size.width - pipSize.width - 16,
+                    y: y,
+                    width: pipSize.width,
+                    height: pipSize.height
+                )
+            }
+            flipCameraTooltipManager.presentTooltipIfNecessary(
+                fromView: self.view,
+                widthReferenceView: self.view,
+                tailReferenceView: localMemberView,
+                tailDirection: .down,
+                isVideoMuted: call.isOutgoingVideoMuted
+            )
         }
     }
 
     // MARK: Other UI
 
     func updateSwipeToastView() {
-        let isSpeakerViewAvailable = ringRtcCall.remoteDeviceStates.count >= 2 && ringRtcCall.localDeviceState.joinState == .joined
+        let isSpeakerViewAvailable = self.hasAtLeastTwoOthers
         guard isSpeakerViewAvailable else {
             swipeToastView.isHidden = true
             return
@@ -673,9 +665,7 @@ class GroupCallViewController: UIViewController {
     ) {
         owsAssertDebug(self.isReadyToUpdateUI)
 
-        let localDevice = ringRtcCall.localDeviceState
-
-        let isFullScreen = localDevice.joinState != .joined || ringRtcCall.remoteDeviceStates.isEmpty
+        let isFullScreen = self.isJustMe
         localMemberView.configure(
             call: call,
             isFullScreen: isFullScreen
@@ -933,6 +923,24 @@ class GroupCallViewController: UIViewController {
         return true
     }
 
+    private var isJustMe: Bool {
+        switch ringRtcCall.localDeviceState.joinState {
+        case .notJoined, .joining, .pending:
+            return true
+        case .joined:
+            return ringRtcCall.remoteDeviceStates.isEmpty
+        }
+    }
+
+    private var hasAtLeastTwoOthers: Bool {
+        switch ringRtcCall.localDeviceState.joinState {
+        case .notJoined, .joining, .pending:
+            return false
+        case .joined:
+            return ringRtcCall.remoteDeviceStates.count >= 2
+        }
+    }
+
     // MARK: - Call controls timeout
 
     @objc
@@ -949,7 +957,7 @@ class GroupCallViewController: UIViewController {
     }
 
     private var callControlsMustBeVisible: Bool {
-        return ringRtcCall.remoteDeviceStates.isEmpty
+        return self.isJustMe
     }
 
     private var controlTimeoutTimer: Timer?
