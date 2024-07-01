@@ -31,7 +31,6 @@ class RaisedHandsToast: UIView {
     )
 
     private let outerHStack = UIStackView()
-    private let iconLabelHStack = UIStackView()
     private let labelContainer = UIView()
     private let label = UILabel()
     private lazy var viewButton = OWSButton(
@@ -78,25 +77,21 @@ class RaisedHandsToast: UIView {
         outerHStack.axis = .horizontal
         outerHStack.alignment = .center
         outerHStack.autoPinEdgesToSuperviewEdges()
-
-        outerHStack.addArrangedSubview(iconLabelHStack)
-        iconLabelHStack.axis = .horizontal
-        iconLabelHStack.alignment = .top
-        iconLabelHStack.spacing = 12
-        iconLabelHStack.layoutMargins = .init(margin: 12)
-        iconLabelHStack.isLayoutMarginsRelativeArrangement = true
-
         outerHStack.addBackgroundBlurView(blur: .dark, accessibilityFallbackColor: .ows_gray80)
         outerHStack.layer.cornerRadius = 10
         outerHStack.clipsToBounds = true
 
-        let raisedHandIcon = UIImageView(image: UIImage(named: "raise_hand"))
+        let raisedHandIcon = UILabel()
+        raisedHandIcon.attributedText = .with(
+            image: UIImage(named: "raise_hand")!,
+            font: .dynamicTypeTitle3,
+            attributes: [.foregroundColor: UIColor.white]
+        )
         raisedHandIcon.setContentCompressionResistancePriority(.required, for: .horizontal)
         raisedHandIcon.contentMode = .scaleAspectFit
         raisedHandIcon.tintColor = .white
         raisedHandIcon.setContentHuggingHorizontalHigh()
         raisedHandIcon.setCompressionResistanceVerticalHigh()
-        iconLabelHStack.addArrangedSubview(raisedHandIcon)
 
         labelContainer.addSubview(label)
         labelContainer.heightAnchor.constraint(greaterThanOrEqualTo: label.heightAnchor, multiplier: 1).isActive = true
@@ -107,7 +102,21 @@ class RaisedHandsToast: UIView {
         label.textColor = .white
         label.setContentHuggingHorizontalLow()
         label.setCompressionResistanceVerticalHigh()
-        iconLabelHStack.addArrangedSubview(labelContainer)
+
+        let iconLabelContainer = UIView()
+        outerHStack.addArrangedSubview(iconLabelContainer)
+        iconLabelContainer.layoutMargins = .init(margin: 12)
+        iconLabelContainer.addSubview(raisedHandIcon)
+        iconLabelContainer.addSubview(labelContainer)
+
+        let lineHeight = label.font.lineHeight
+        raisedHandIcon.centerYAnchor.constraint(equalTo: labelContainer.topAnchor, constant: lineHeight / 2).isActive = true
+        raisedHandIcon.autoPinEdge(toSuperviewMargin: .top)
+        raisedHandIcon.autoPinEdge(toSuperviewMargin: .leading)
+
+        labelContainer.autoPinEdge(toSuperviewMargin: .trailing)
+        labelContainer.autoVCenterInSuperview()
+        labelContainer.autoPinEdge(.leading, to: .trailing, of: raisedHandIcon, withOffset: 12)
 
         for button in [self.viewButton, self.lowerHandButton] {
             outerHStack.addArrangedSubview(button)
