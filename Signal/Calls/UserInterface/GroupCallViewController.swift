@@ -34,8 +34,6 @@ class GroupCallViewController: UIViewController {
     private lazy var callHeader = CallHeader(groupCall: groupCall, delegate: self)
     private lazy var notificationView = GroupCallNotificationView(groupCall: groupCall)
 
-    private lazy var videoGrid = GroupCallVideoGrid(call: call, groupCall: groupCall)
-
     /// A UIStackView which allows taps on its subviews, but passes taps outside of those or in explicitly ignored views through to the parent.
     private class PassthroughStackView: UIStackView {
         var ignoredViews: WeakArray<UIView> = []
@@ -54,11 +52,32 @@ class GroupCallViewController: UIViewController {
     private let bottomVStack = PassthroughStackView()
     private let videoOverflowContainer = UIView()
     private let raisedHandsToastContainer = UIView()
-    private lazy var videoOverflow = GroupCallVideoOverflow(call: call, groupCall: groupCall, delegate: self)
     private lazy var raisedHandsToast = RaisedHandsToast(call: self.groupCall)
 
-    private let localMemberView: CallMemberView
-    private let speakerView: CallMemberView
+    private lazy var videoGrid: GroupCallVideoGrid = {
+        let result = GroupCallVideoGrid(call: call, groupCall: groupCall)
+        result.memberViewErrorPresenter = self
+        return result
+    }()
+
+    private lazy var videoOverflow: GroupCallVideoOverflow = {
+        let result = GroupCallVideoOverflow(call: call, groupCall: groupCall, delegate: self)
+        result.memberViewErrorPresenter = self
+        return result
+    }()
+
+    private lazy var speakerView: CallMemberView = {
+        let result = CallMemberView(type: .remoteInGroup(.speaker))
+        result.errorPresenter = self
+        return result
+    }()
+
+    private lazy var localMemberView: CallMemberView = {
+        let result = CallMemberView(type: .local)
+        result.errorPresenter = self
+        result.animatableLocalMemberViewDelegate = self
+        return result
+    }()
 
     private var didUserEverSwipeToSpeakerView = true
     private var didUserEverSwipeToScreenShare = true
@@ -155,44 +174,18 @@ class GroupCallViewController: UIViewController {
     init(call: SignalCall, groupCall: GroupCall) {
         // TODO: Eventually unify UI for group and individual calls
 
-        let type = CallMemberView.MemberType.remoteInGroup(.speaker)
-        speakerView = CallMemberView(type: type)
-        localMemberView = CallMemberView(type: CallMemberView.MemberType.local)
-
         self.call = call
         self.groupCall = groupCall
         self.ringRtcCall = groupCall.ringRtcCall
 
         super.init(nibName: nil, bundle: nil)
 
-        self.localMemberView.animatableLocalMemberViewDelegate = self
-
-        groupCall.addObserverAndSyncState(self)
-
-        videoGrid.memberViewErrorPresenter = self
-        videoOverflow.memberViewErrorPresenter = self
-        speakerView.errorPresenter = self
-        localMemberView.errorPresenter = self
-
-        SDSDatabaseStorage.shared.asyncRead { readTx in
-            self.didUserEverSwipeToSpeakerView = Self.keyValueStore.getBool(
-                Self.didUserSwipeToSpeakerViewKey,
-                defaultValue: false,
-                transaction: readTx
-            )
-            self.didUserEverSwipeToScreenShare = Self.keyValueStore.getBool(
-                Self.didUserSwipeToScreenShareKey,
-                defaultValue: false,
-                transaction: readTx
-            )
-        } completion: {
-            self.updateSwipeToastView()
-        }
-
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didBecomeActive),
-                                               name: UIApplication.didBecomeActiveNotification,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didBecomeActive),
+            name: UIApplication.didBecomeActiveNotification,
+            object: nil
+        )
     }
 
     static func presentLobby(thread: TSGroupThread, videoMuted: Bool = false) {
@@ -326,8 +319,25 @@ class GroupCallViewController: UIViewController {
         reactionsBurstView.autoPinEdgesToSuperviewEdges()
 
         view.addGestureRecognizer(tapGesture)
+    }
 
-        updateCallUI()
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        SDSDatabaseStorage.shared.asyncRead { readTx in
+            self.didUserEverSwipeToSpeakerView = Self.keyValueStore.getBool(
+                Self.didUserSwipeToSpeakerViewKey,
+                defaultValue: false,
+                transaction: readTx
+            )
+            self.didUserEverSwipeToScreenShare = Self.keyValueStore.getBool(
+                Self.didUserSwipeToScreenShareKey,
+                defaultValue: false,
+                transaction: readTx
+            )
+        } completion: {
+            self.updateSwipeToastView()
+        }
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -366,6 +376,20 @@ class GroupCallViewController: UIViewController {
                 splitViewSnapshot.removeFromSuperview()
             }
         }
+    }
+
+    private var isReadyToUpdateUI = false
+    private var didAddObserver = false
+    override func viewIsAppearing(_ animated: Bool) {
+        super.viewIsAppearing(animated)
+
+        if !didAddObserver {
+            groupCall.addObserver(self)
+            didAddObserver = true
+        }
+
+        isReadyToUpdateUI = true
+        updateCallUI()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -621,8 +645,7 @@ class GroupCallViewController: UIViewController {
         size: CGSize? = nil,
         shouldAnimateViewFrames: Bool = false
     ) {
-        // Force load the view if it hasn't been yet.
-        _ = self.view
+        owsAssertDebug(self.isReadyToUpdateUI)
 
         let localDevice = ringRtcCall.localDeviceState
 

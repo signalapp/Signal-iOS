@@ -62,7 +62,7 @@ class GroupCallVideoOverflow: UICollectionView {
         dataSource = self
         self.delegate = self
 
-        groupCall.addObserverAndSyncState(self)
+        groupCall.addObserver(self, syncStateImmediately: true)
         hasInitialized = true
 
         NotificationCenter.default.addObserver(

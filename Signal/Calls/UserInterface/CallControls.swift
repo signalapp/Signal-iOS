@@ -283,7 +283,7 @@ private class CallControlsViewModel {
         case .individual(let call):
             call.addObserverAndSyncState(self)
         case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
-            call.addObserverAndSyncState(self)
+            call.addObserver(self, syncStateImmediately: true)
         }
         callService.audioService.delegate = self
     }

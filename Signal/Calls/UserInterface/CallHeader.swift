@@ -178,7 +178,7 @@ class CallHeader: UIView {
 
         vStack.addArrangedSubview(callStatusLabel)
 
-        groupCall.addObserverAndSyncState(self)
+        groupCall.addObserver(self, syncStateImmediately: true)
     }
 
     override func didMoveToSuperview() {

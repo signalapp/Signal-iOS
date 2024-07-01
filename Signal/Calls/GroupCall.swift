@@ -93,14 +93,16 @@ class GroupCall: SignalRingRTC.GroupCallDelegate {
 
     private var observers: WeakArray<any GroupCallObserver> = []
 
-    func addObserverAndSyncState(_ observer: any GroupCallObserver) {
+    func addObserver(_ observer: any GroupCallObserver, syncStateImmediately: Bool = false) {
         AssertIsOnMainThread()
 
         observers.append(observer)
 
-        // Synchronize observer with current call state
-        observer.groupCallLocalDeviceStateChanged(self)
-        observer.groupCallRemoteDeviceStatesChanged(self)
+        if syncStateImmediately {
+            // Synchronize observer with current call state
+            observer.groupCallLocalDeviceStateChanged(self)
+            observer.groupCallRemoteDeviceStatesChanged(self)
+        }
     }
 
     func removeObserver(_ observer: any GroupCallObserver) {

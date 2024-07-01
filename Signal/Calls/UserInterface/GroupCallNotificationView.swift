@@ -26,7 +26,7 @@ class GroupCallNotificationView: UIView {
         self.ringRtcCall = groupCall.ringRtcCall
         super.init(frame: .zero)
 
-        groupCall.addObserverAndSyncState(self)
+        groupCall.addObserver(self, syncStateImmediately: true)
 
         isUserInteractionEnabled = false
     }

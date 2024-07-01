@@ -120,7 +120,7 @@ extension GroupCallRemoteVideoManager: CallServiceStateObserver {
         case nil, .individual:
             break
         case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
-            call.addObserverAndSyncState(self)
+            call.addObserver(self, syncStateImmediately: true)
         }
     }
 }

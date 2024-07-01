@@ -187,7 +187,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         case .individual(let call):
             call.addObserverAndSyncState(self)
         case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
-            call.addObserverAndSyncState(self)
+            call.addObserver(self, syncStateImmediately: true)
         }
 
         updateIsVideoEnabled()

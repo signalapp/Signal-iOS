@@ -21,7 +21,7 @@ class GroupCallVideoGrid: UICollectionView {
 
         super.init(frame: .zero, collectionViewLayout: layout)
 
-        groupCall.addObserverAndSyncState(self)
+        groupCall.addObserver(self, syncStateImmediately: true)
         layout.delegate = self
         backgroundColor = .clear
 

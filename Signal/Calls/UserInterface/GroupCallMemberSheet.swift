@@ -34,7 +34,7 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
         super.init(blurEffect: nil)
 
         self.overrideUserInterfaceStyle = .dark
-        groupThreadCall.addObserverAndSyncState(self)
+        groupThreadCall.addObserver(self, syncStateImmediately: true)
     }
 
     // MARK: - Table setup
