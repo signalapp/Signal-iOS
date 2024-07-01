@@ -68,7 +68,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         }
     }
 
-    private var jobFutures = AtomicDictionary<String, Future<Void>>(lock: .sharedGlobal)
+    private let jobFutures = AtomicDictionary<String, Future<Void>>(lock: .init())
     private func add(
         message: PreparedOutgoingMessage,
         exclusiveToCurrentProcessIdentifier: Bool,
@@ -79,17 +79,20 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         assert(AppReadiness.isAppReady || CurrentAppContext().isRunningTests)
         // Mark as sending now so the UI updates immediately.
         message.updateAllUnsentRecipientsAsSending(tx: transaction)
+        let jobRecord: MessageSenderJobRecord
         do {
-            let jobRecord = try message.asMessageSenderJobRecord(isHighPriority: isHighPriority, tx: transaction)
-            if exclusiveToCurrentProcessIdentifier {
-                jobRecord.flagAsExclusiveForCurrentProcessIdentifier()
-            }
-            self.add(jobRecord: jobRecord, transaction: transaction)
-            if let future = future {
-                jobFutures[jobRecord.uniqueId] = future
-            }
+            jobRecord = try message.asMessageSenderJobRecord(isHighPriority: isHighPriority, tx: transaction)
         } catch {
             message.updateWithSendingError(error, tx: transaction)
+            future?.reject(error)
+            return
+        }
+        if exclusiveToCurrentProcessIdentifier {
+            jobRecord.flagAsExclusiveForCurrentProcessIdentifier()
+        }
+        self.add(jobRecord: jobRecord, transaction: transaction)
+        if let future {
+            jobFutures[jobRecord.uniqueId] = future
         }
     }
 
