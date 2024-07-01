@@ -1461,6 +1461,9 @@ public class MessageSender: Dependencies {
                 let aciSessionStore = signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
                 aciSessionStore.archiveSession(for: serviceId, deviceId: deviceId, tx: tx.asV2Write)
                 throw OWSRetryableMessageSenderError()
+            } catch SignalError.untrustedIdentity {
+                Logger.warn("Found untrusted identity on outgoing message to \(serviceId). Wrapping error and throwing...")
+                throw UntrustedIdentityError(serviceId: serviceId)
             } catch {
                 Logger.warn("Failed to encrypt message \(error)")
                 throw error
