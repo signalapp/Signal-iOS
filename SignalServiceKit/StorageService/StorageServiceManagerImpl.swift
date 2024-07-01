@@ -919,9 +919,14 @@ class StorageServiceOperation: OWSOperation {
             }
 
             // Deleted Private Stories
-            for distributionListId in TSPrivateStoryThread.allDeletedIdentifiers(transaction: transaction) {
-                createRecord(localId: distributionListId, stateUpdater: storyDistributionListUpdater)
-            }
+            DependenciesBridge.shared.privateStoryThreadDeletionManager
+                .allDeletedIdentifiers(tx: transaction.asV2Read)
+                .forEach { deletedDistributionListIdentifier in
+                    createRecord(
+                        localId: deletedDistributionListIdentifier,
+                        stateUpdater: storyDistributionListUpdater
+                    )
+                }
         }
 
         let identifiers = allItems.map { $0.identifier }
@@ -1637,6 +1642,7 @@ class StorageServiceOperation: OWSOperation {
     private func buildStoryDistributionListUpdater() -> MultipleElementStateUpdater<StorageServiceStoryDistributionListRecordUpdater> {
         return MultipleElementStateUpdater(
             recordUpdater: StorageServiceStoryDistributionListRecordUpdater(
+                privateStoryThreadDeletionManager: DependenciesBridge.shared.privateStoryThreadDeletionManager,
                 threadRemover: DependenciesBridge.shared.threadRemover
             ),
             changeState: \.storyDistributionListChangeMap,

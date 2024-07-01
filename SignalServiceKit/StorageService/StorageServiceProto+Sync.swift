@@ -1710,9 +1710,14 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
     typealias IdType = Data
     typealias RecordType = StorageServiceProtoStoryDistributionListRecord
 
-    private let threadRemover: ThreadRemover
+    private let privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager
+    private let threadRemover: any ThreadRemover
 
-    init(threadRemover: ThreadRemover) {
+    init(
+        privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager,
+        threadRemover: any ThreadRemover
+    ) {
+        self.privateStoryThreadDeletionManager = privateStoryThreadDeletionManager
         self.threadRemover = threadRemover
     }
 
@@ -1735,9 +1740,9 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
         var builder = StorageServiceProtoStoryDistributionListRecord.builder()
         builder.setIdentifier(distributionListIdentifier)
 
-        if let deletedAtTimestamp = TSPrivateStoryThread.deletedAtTimestamp(
+        if let deletedAtTimestamp = privateStoryThreadDeletionManager.deletedAtTimestamp(
             forDistributionListIdentifier: distributionListIdentifier,
-            transaction: transaction
+            tx: transaction.asV2Read
         ) {
             builder.setDeletedAtTimestamp(deletedAtTimestamp)
         } else if let story = TSPrivateStoryThread.anyFetchPrivateStoryThread(
@@ -1781,10 +1786,10 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
             if let existingStory {
                 threadRemover.remove(existingStory, tx: transaction.asV2Write)
             }
-            TSPrivateStoryThread.recordDeletedAtTimestamp(
+            privateStoryThreadDeletionManager.recordDeletedAtTimestamp(
                 record.deletedAtTimestamp,
                 forDistributionListIdentifier: identifier,
-                transaction: transaction
+                tx: transaction.asV2Write
             )
             return .merged(needsUpdate: false, identifier)
         }

@@ -5,21 +5,24 @@
 
 import Foundation
 
-public class MessageBackupDistributionListRecipientArchiver: MessageBackupRecipientDestinationArchiver {
+class MessageBackupDistributionListRecipientArchiver: MessageBackupRecipientDestinationArchiver {
     private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<RecipientAppId>
 
-    private let storyStore: StoryStore
-    private let threadStore: ThreadStore
+    private let privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager
+    private let storyStore: any StoryStore
+    private let threadStore: any ThreadStore
 
-    public init(
-        storyStore: StoryStore,
-        threadStore: ThreadStore
+    init(
+        privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager,
+        storyStore: any StoryStore,
+        threadStore: any ThreadStore
     ) {
+        self.privateStoryThreadDeletionManager = privateStoryThreadDeletionManager
         self.storyStore = storyStore
         self.threadStore = threadStore
     }
 
-    public func archiveRecipients(
+    func archiveRecipients(
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.RecipientArchivingContext,
         tx: DBReadTransaction
@@ -28,7 +31,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupRecipi
 
         do {
             // enumerate deleted threads
-            for item in storyStore.getAllDeletedStories(tx: tx) {
+            for item in privateStoryThreadDeletionManager.allDeletedIdentifiers(tx: tx) {
                 self.archiveDeletedStoryList(
                     distributionId: item,
                     stream: stream,
@@ -152,7 +155,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupRecipi
     ) {
         let distributionListAppId: RecipientAppId = .distributionList(distributionId)
 
-        guard let deletionTimestamp = storyStore.getDeletedAtTimestamp(
+        guard let deletionTimestamp = privateStoryThreadDeletionManager.deletedAtTimestamp(
             forDistributionListIdentifier: distributionId,
             tx: tx
         ) else {
@@ -175,7 +178,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupRecipi
         }.map { errors.append($0) }
     }
 
-    public func restore(
+    func restore(
         _ recipient: BackupProto.Recipient,
         context: MessageBackup.RecipientRestoringContext,
         tx: any DBWriteTransaction
@@ -210,9 +213,9 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupRecipi
             // be filtered by the `setDeletedAtTimestamp` method, so filtering isn't
             // necessary here.
             if deletionTimestamp > 0 {
-                storyStore.setDeletedAtTimestamp(
+                privateStoryThreadDeletionManager.recordDeletedAtTimestamp(
+                    deletionTimestamp,
                     forDistributionListIdentifier: distributionId.data,
-                    timestamp: deletionTimestamp,
                     tx: tx
                 )
                 result = .success
@@ -328,7 +331,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupRecipi
         return .success
     }
 
-    public static func canRestore(_ recipient: BackupProto.Recipient) -> Bool {
+    static func canRestore(_ recipient: BackupProto.Recipient) -> Bool {
         switch recipient.destination {
         case .distributionList:
             return true

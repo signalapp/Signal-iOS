@@ -132,26 +132,22 @@ final class MessageBackupContactTest: MessageBackupIntegrationTestCase {
 final class MessageBackupDistributionListTest: MessageBackupIntegrationTestCase {
     typealias ListValidationBlock = ((TSPrivateStoryThread) -> Void)
 
-    let storyStore = StoryStoreImpl()
-    let threadStore = ThreadStoreImpl()
+    private var privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager { depBridge.privateStoryThreadDeletionManager }
+    private var threadStore: ThreadStore { depBridge.threadStore }
 
     func testDistributionList() async throws {
-        func skipTest() throws {
-            /// This test is failing because the `.binproto` hardcodes a
-            /// timestamp, and these assertions care about the time between
-            /// "now" and that timestamp, which is not stable.
-            ///
-            /// Disabling for now to unblock CI – we can re-enable once we have
-            /// a plan for timestamp-agnosticism in Backup tests.
-            throw XCTSkip()
-        }
-
-        /// Can't do a direct `throw` here, because the compiler complains that
-        /// the code below won't be executed. Who's smarter now, compiler??
-        try skipTest()
-
-        try await runTest(backupName: "story-distribution-list") { sdsTx, tx in
-            let deletedStories = storyStore.getAllDeletedStories(tx: tx)
+        try await runTest(
+            backupName: "story-distribution-list",
+            dateProvider: {
+                /// "Deleted distribution list" logic relies on the distance
+                /// between timestamps in the Backup binary and the "current
+                /// time". To keep this test stable over time, we need to
+                /// hardcode the "current time"; the timestamp below is from the
+                /// time this test was originally committed.
+                return Date(millisecondsSince1970: 1717631700000)
+            }
+        ) { sdsTx, tx in
+            let deletedStories = privateStoryThreadDeletionManager.allDeletedIdentifiers(tx: tx)
             XCTAssertEqual(deletedStories.count, 2)
 
             let validationBlocks: [UUID: ListValidationBlock] = [

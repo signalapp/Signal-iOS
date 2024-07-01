@@ -1918,6 +1918,7 @@
 		D9C964192BE59E270058F143 /* MessageBackupIntegrationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C964182BE59E270058F143 /* MessageBackupIntegrationTest.swift */; };
 		D9CA5BF729B3F61E00D9AAD1 /* LegacyChangePhoneNumber+ChangeTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CA5BF629B3F61E00D9AAD1 /* LegacyChangePhoneNumber+ChangeTokens.swift */; };
 		D9CA61482C2E2D0000F99EA3 /* MessageBackupAdHocCallArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CA61472C2E2D0000F99EA3 /* MessageBackupAdHocCallArchiver.swift */; };
+		D9CA614B2C2F675E00F99EA3 /* PrivateStoryThreadDeletionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CA614A2C2F675E00F99EA3 /* PrivateStoryThreadDeletionManager.swift */; };
 		D9CA8AB02B698DFF00787167 /* DeletedCallRecordCleanupManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CA8AAF2B698DFF00787167 /* DeletedCallRecordCleanupManager.swift */; };
 		D9CA8AB32B6ACC0600787167 /* DeletedCallRecordCleanupManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CA8AB22B6ACC0600787167 /* DeletedCallRecordCleanupManagerTest.swift */; };
 		D9CA8AB72B6AE77200787167 /* CallRecordDeleteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CA8AB62B6AE77200787167 /* CallRecordDeleteManager.swift */; };
@@ -4930,6 +4931,7 @@
 		D9C964182BE59E270058F143 /* MessageBackupIntegrationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupIntegrationTest.swift; sourceTree = "<group>"; };
 		D9CA5BF629B3F61E00D9AAD1 /* LegacyChangePhoneNumber+ChangeTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LegacyChangePhoneNumber+ChangeTokens.swift"; sourceTree = "<group>"; };
 		D9CA61472C2E2D0000F99EA3 /* MessageBackupAdHocCallArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupAdHocCallArchiver.swift; sourceTree = "<group>"; };
+		D9CA614A2C2F675E00F99EA3 /* PrivateStoryThreadDeletionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivateStoryThreadDeletionManager.swift; sourceTree = "<group>"; };
 		D9CA8AAF2B698DFF00787167 /* DeletedCallRecordCleanupManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletedCallRecordCleanupManager.swift; sourceTree = "<group>"; };
 		D9CA8AB22B6ACC0600787167 /* DeletedCallRecordCleanupManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletedCallRecordCleanupManagerTest.swift; sourceTree = "<group>"; };
 		D9CA8AB62B6AE77200787167 /* CallRecordDeleteManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordDeleteManager.swift; sourceTree = "<group>"; };
@@ -10059,6 +10061,18 @@
 			path = AdHocCall;
 			sourceTree = "<group>";
 		};
+		D9CA61492C2F670300F99EA3 /* StoryThreads */ = {
+			isa = PBXGroup;
+			children = (
+				D9CA614A2C2F675E00F99EA3 /* PrivateStoryThreadDeletionManager.swift */,
+				F9C5C9E4289453B100548EEE /* TSPrivateStoryThread+SDS.swift */,
+				F9C5C9E6289453B100548EEE /* TSPrivateStoryThread.h */,
+				F9C5C9ED289453B100548EEE /* TSPrivateStoryThread.m */,
+				F9C5C9E5289453B100548EEE /* TSPrivateStoryThread.swift */,
+			);
+			path = StoryThreads;
+			sourceTree = "<group>";
+		};
 		D9CA8AAD2B698B2400787167 /* DeletedCallRecord */ = {
 			isa = PBXGroup;
 			children = (
@@ -11171,6 +11185,7 @@
 		F9C5C9E3289453B100548EEE /* Threads */ = {
 			isa = PBXGroup;
 			children = (
+				D9CA61492C2F670300F99EA3 /* StoryThreads */,
 				502D45432A05A34B00B8BCE0 /* ThreadRemover.swift */,
 				D9F9A63E2C013EF100EF13EC /* ThreadSoftDeleteManager.swift */,
 				5033D46029D638FD007FEADA /* ThreadStore.swift */,
@@ -11183,10 +11198,6 @@
 				F9C5C9EC289453B100548EEE /* TSGroupThread.h */,
 				F9C5C9E7289453B100548EEE /* TSGroupThread.m */,
 				880FB40528CD205F00FA1C10 /* TSGroupThread.swift */,
-				F9C5C9E4289453B100548EEE /* TSPrivateStoryThread+SDS.swift */,
-				F9C5C9E6289453B100548EEE /* TSPrivateStoryThread.h */,
-				F9C5C9ED289453B100548EEE /* TSPrivateStoryThread.m */,
-				F9C5C9E5289453B100548EEE /* TSPrivateStoryThread.swift */,
 				F9C5C9E9289453B100548EEE /* TSThread+OWS.swift */,
 			);
 			path = Threads;
@@ -14556,6 +14567,7 @@
 				6681AB652B7AE53B0099D187 /* PreloadedTextAttachment.swift in Sources */,
 				7254653B2BA01FCC00EABFD2 /* PreparedGiftPayment.swift in Sources */,
 				664BA8452BB5CE12005638E0 /* PreparedOutgoingMessage.swift in Sources */,
+				D9CA614B2C2F675E00F99EA3 /* PrivateStoryThreadDeletionManager.swift in Sources */,
 				725465452BA01FCC00EABFD2 /* ProfileBadgesSnapshot+Constructors.swift in Sources */,
 				D995546F2AF5668E0001E15C /* ProfileBadgesSnapshot.swift in Sources */,
 				F9C5CE39289453B400548EEE /* ProfileFetcher.swift in Sources */,

@@ -37,13 +37,6 @@ public protocol StoryStore {
 
     func getOrCreateMyStory(tx: DBWriteTransaction) -> TSPrivateStoryThread
 
-    func getDeletedAtTimestamp(forDistributionListIdentifier: Data, tx: DBReadTransaction) -> UInt64?
-
-    func setDeletedAtTimestamp(forDistributionListIdentifier: Data, timestamp: UInt64, tx: DBWriteTransaction)
-
-    /// Returns an array of distribution list identifiers for all deleted story distribution lists.
-    func getAllDeletedStories(tx: any DBReadTransaction) -> [Data]
-
     func update(
         storyThread: TSPrivateStoryThread,
         name: String,
@@ -127,32 +120,6 @@ public class StoryStoreImpl: StoryStore {
 
     public func getOrCreateMyStory(tx: any DBWriteTransaction) -> TSPrivateStoryThread {
         return TSPrivateStoryThread.getOrCreateMyStory(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func getDeletedAtTimestamp(
-        forDistributionListIdentifier identifier: Data,
-        tx: any DBReadTransaction
-    ) -> UInt64? {
-        return TSPrivateStoryThread.deletedAtTimestamp(
-            forDistributionListIdentifier: identifier,
-            transaction: SDSDB.shimOnlyBridge(tx)
-        )
-    }
-
-    public func getAllDeletedStories(tx: any DBReadTransaction) -> [Data] {
-        return TSPrivateStoryThread.allDeletedIdentifiers(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
-    public func setDeletedAtTimestamp(
-        forDistributionListIdentifier identifier: Data,
-        timestamp: UInt64,
-        tx: any DBWriteTransaction
-    ) {
-        TSPrivateStoryThread.recordDeletedAtTimestamp(
-            timestamp,
-            forDistributionListIdentifier: identifier,
-            transaction: SDSDB.shimOnlyBridge(tx)
-        )
     }
 
     public func update(

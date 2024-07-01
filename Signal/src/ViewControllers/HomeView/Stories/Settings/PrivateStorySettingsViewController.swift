@@ -225,10 +225,10 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
                 // up records from storage service.
                 self.thread.updateWithStoryViewMode(.disabled, transaction: transaction)
 
-                TSPrivateStoryThread.recordDeletedAtTimestamp(
+                DependenciesBridge.shared.privateStoryThreadDeletionManager.recordDeletedAtTimestamp(
                     Date.ows_millisecondTimestamp(),
                     forDistributionListIdentifier: dlistIdentifier,
-                    transaction: transaction
+                    tx: transaction.asV2Write
                 )
 
                 transaction.addAsyncCompletionOnMain {

@@ -23,6 +23,7 @@ public class AppSetup {
     public struct TestDependencies {
         let accountServiceClient: AccountServiceClient?
         let contactManager: (any ContactManager)?
+        let dateProvider: DateProvider?
         let groupV2Updates: (any GroupV2Updates)?
         let groupsV2: (any GroupsV2)?
         let keyValueStoreFactory: (any KeyValueStoreFactory)?
@@ -46,6 +47,7 @@ public class AppSetup {
         public init(
             accountServiceClient: AccountServiceClient? = nil,
             contactManager: (any ContactManager)? = nil,
+            dateProvider: DateProvider? = nil,
             groupV2Updates: (any GroupV2Updates)? = nil,
             groupsV2: (any GroupsV2)? = nil,
             keyValueStoreFactory: (any KeyValueStoreFactory)? = nil,
@@ -68,6 +70,7 @@ public class AppSetup {
         ) {
             self.accountServiceClient = accountServiceClient
             self.contactManager = contactManager
+            self.dateProvider = dateProvider
             self.groupV2Updates = groupV2Updates
             self.groupsV2 = groupsV2
             self.keyValueStoreFactory = keyValueStoreFactory
@@ -143,7 +146,7 @@ public class AppSetup {
             recipientIdFinder: recipientIdFinder
         )
         let blockingManager = BlockingManager()
-        let dateProvider = Date.provider
+        let dateProvider = testDependencies.dateProvider ?? Date.provider
         let earlyMessageManager = EarlyMessageManager()
         let messageProcessor = MessageProcessor()
         let messageSender = testDependencies.messageSender ?? MessageSender()
@@ -847,6 +850,14 @@ public class AppSetup {
             storyStore: storyStore
         )
 
+        let privateStoryThreadDeletionManager = PrivateStoryThreadDeletionManagerImpl(
+            dateProvider: dateProvider,
+            keyValueStoreFactory: keyValueStoreFactory,
+            storageServiceManager: storageServiceManager,
+            threadRemover: threadRemover,
+            threadStore: threadStore
+        )
+
         let messageBackupManager = MessageBackupManagerImpl(
             accountDataArchiver: MessageBackupAccountDataArchiverImpl(
                 disappearingMessageConfigurationStore: disappearingMessagesConfigurationStore,
@@ -909,6 +920,7 @@ public class AppSetup {
                 recipientDatabaseTable: recipientDatabaseTable,
                 recipientHidingManager: recipientHidingManager,
                 recipientManager: recipientManager,
+                privateStoryThreadDeletionManager: privateStoryThreadDeletionManager,
                 signalServiceAddressCache: signalServiceAddressCache,
                 storyStore: storyStore,
                 threadStore: threadStore,
@@ -1046,6 +1058,7 @@ public class AppSetup {
             pinnedThreadStore: pinnedThreadStore,
             pniHelloWorldManager: pniHelloWorldManager,
             preKeyManager: preKeyManager,
+            privateStoryThreadDeletionManager: privateStoryThreadDeletionManager,
             quotedReplyManager: quotedReplyManager,
             receiptCredentialResultStore: receiptCredentialResultStore,
             recipientDatabaseTable: recipientDatabaseTable,

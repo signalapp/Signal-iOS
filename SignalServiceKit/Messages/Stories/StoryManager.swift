@@ -21,7 +21,8 @@ public class StoryManager: NSObject {
                 TSPrivateStoryThread.getOrCreateMyStory(transaction: transaction)
 
                 if CurrentAppContext().isMainApp {
-                    TSPrivateStoryThread.cleanupDeletedTimestamps(transaction: transaction)
+                    DependenciesBridge.shared.privateStoryThreadDeletionManager
+                        .cleanUpDeletedTimestamps(tx: transaction.asV2Write)
                 }
             }
         }

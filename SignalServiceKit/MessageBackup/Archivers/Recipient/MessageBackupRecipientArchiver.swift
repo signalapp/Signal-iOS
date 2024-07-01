@@ -46,32 +46,34 @@ public protocol MessageBackupRecipientArchiver: MessageBackupProtoArchiver {
 internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchiver {
     private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<RecipientAppId>
 
-    private let blockingManager: MessageBackup.Shims.BlockingManager
-    private let disappearingMessageConfigStore: DisappearingMessagesConfigurationStore
+    private let blockingManager: any MessageBackup.Shims.BlockingManager
+    private let disappearingMessageConfigStore: any DisappearingMessagesConfigurationStore
     private let groupsV2: GroupsV2
-    private let profileManager: MessageBackup.Shims.ProfileManager
+    private let profileManager: any MessageBackup.Shims.ProfileManager
     private let recipientDatabaseTable: any RecipientDatabaseTable
-    private let recipientHidingManager: RecipientHidingManager
+    private let recipientHidingManager: any RecipientHidingManager
     private let recipientManager: any SignalRecipientManager
+    private let privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager
     private let signalServiceAddressCache: SignalServiceAddressCache
-    private let storyStore: StoryStore
-    private let threadStore: ThreadStore
-    private let tsAccountManager: TSAccountManager
-    private let usernameLookupManager: UsernameLookupManager
+    private let storyStore: any StoryStore
+    private let threadStore: any ThreadStore
+    private let tsAccountManager: any TSAccountManager
+    private let usernameLookupManager: any UsernameLookupManager
 
     public init(
-        blockingManager: MessageBackup.Shims.BlockingManager,
+        blockingManager: any MessageBackup.Shims.BlockingManager,
         disappearingMessageConfigStore: DisappearingMessagesConfigurationStore,
         groupsV2: GroupsV2,
-        profileManager: MessageBackup.Shims.ProfileManager,
+        profileManager: any MessageBackup.Shims.ProfileManager,
         recipientDatabaseTable: any RecipientDatabaseTable,
-        recipientHidingManager: RecipientHidingManager,
+        recipientHidingManager: any RecipientHidingManager,
         recipientManager: any SignalRecipientManager,
+        privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager,
         signalServiceAddressCache: SignalServiceAddressCache,
-        storyStore: StoryStore,
-        threadStore: ThreadStore,
-        tsAccountManager: TSAccountManager,
-        usernameLookupManager: UsernameLookupManager
+        storyStore: any StoryStore,
+        threadStore: any ThreadStore,
+        tsAccountManager: any TSAccountManager,
+        usernameLookupManager: any UsernameLookupManager
     ) {
         self.blockingManager = blockingManager
         self.disappearingMessageConfigStore = disappearingMessageConfigStore
@@ -80,6 +82,7 @@ internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchive
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientHidingManager = recipientHidingManager
         self.recipientManager = recipientManager
+        self.privateStoryThreadDeletionManager = privateStoryThreadDeletionManager
         self.signalServiceAddressCache = signalServiceAddressCache
         self.storyStore = storyStore
         self.threadStore = threadStore
@@ -108,6 +111,7 @@ internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchive
             threadStore: threadStore
         ),
         MessageBackupDistributionListRecipientArchiver(
+            privateStoryThreadDeletionManager: privateStoryThreadDeletionManager,
             storyStore: storyStore,
             threadStore: threadStore
         )

@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class SignalServiceAddress;
 
+/// Represents a story distribution list.
 @interface TSPrivateStoryThread : TSThread
 
 @property (nonatomic, readonly) BOOL allowsReplies;

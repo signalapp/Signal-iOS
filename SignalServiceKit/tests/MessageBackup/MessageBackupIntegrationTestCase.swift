@@ -32,11 +32,13 @@ class MessageBackupIntegrationTestCase: XCTestCase {
 
     func runTest(
         backupName: String,
+        dateProvider: DateProvider? = nil,
         assertionsBlock: (SDSAnyReadTransaction, DBReadTransaction) throws -> Void
     ) async throws {
         try await importAndAssert(
-            localIdentifiers: localIdentifiers,
             backupUrl: backupFileUrl(named: backupName),
+            dateProvider: dateProvider,
+            localIdentifiers: localIdentifiers,
             assertionsBlock: assertionsBlock
         )
 
@@ -44,8 +46,9 @@ class MessageBackupIntegrationTestCase: XCTestCase {
             .exportPlaintextBackup(localIdentifiers: localIdentifiers)
 
         try await importAndAssert(
-            localIdentifiers: localIdentifiers,
             backupUrl: exportedBackupUrl,
+            dateProvider: dateProvider,
+            localIdentifiers: localIdentifiers,
             assertionsBlock: assertionsBlock
         )
     }
@@ -56,11 +59,12 @@ class MessageBackupIntegrationTestCase: XCTestCase {
     }
 
     private func importAndAssert(
-        localIdentifiers: LocalIdentifiers,
         backupUrl: URL,
+        dateProvider: DateProvider?,
+        localIdentifiers: LocalIdentifiers,
         assertionsBlock: (SDSAnyReadTransaction, DBReadTransaction) throws -> Void
     ) async throws {
-        await initializeApp()
+        await initializeApp(dateProvider: dateProvider)
 
         try await messageBackupManager.importPlaintextBackup(
             fileUrl: backupUrl,
@@ -75,7 +79,7 @@ class MessageBackupIntegrationTestCase: XCTestCase {
     // MARK: -
 
     @MainActor
-    final func initializeApp() async {
+    final func initializeApp(dateProvider: DateProvider?) async {
         let testAppContext = TestAppContext()
         SetCurrentAppContext(testAppContext)
 
@@ -103,6 +107,7 @@ class MessageBackupIntegrationTestCase: XCTestCase {
             currentCallProvider: CrashyMocks.MockCurrentCallThreadProvider(),
             notificationPresenter: CrashyMocks.MockNotificationPresenter(),
             testDependencies: AppSetup.TestDependencies(
+                dateProvider: dateProvider,
                 networkManager: CrashyMocks.MockNetworkManager(libsignalNet: nil),
                 webSocketFactory: CrashyMocks.MockWebSocketFactory()
             )
