@@ -759,7 +759,6 @@ public class MessageSender: Dependencies {
             fanoutRecipients: [ServiceId],
             sendViaSenderKey: (@Sendable () async -> [(ServiceId, any Error)])?,
             udAccess: [ServiceId: OWSUDSendingAccess],
-            senderCertificate: SenderCertificate,
             localIdentifiers: LocalIdentifiers
         )
     }
@@ -882,7 +881,6 @@ public class MessageSender: Dependencies {
                 fanoutRecipients: Array(Set(serviceIds).subtracting(senderKeyRecipients)),
                 sendViaSenderKey: sendViaSenderKey,
                 udAccess: udAccessMap,
-                senderCertificate: senderCertificate,
                 localIdentifiers: localIdentifiers
             )
         }
@@ -893,7 +891,7 @@ public class MessageSender: Dependencies {
         case .lookUpPhoneNumbersAndTryAgain(let phoneNumbers):
             try await lookUpPhoneNumbers(phoneNumbers)
             try await sendPreparedMessage(message, canLookUpPhoneNumbers: false, senderCertificates: senderCertificates)
-        case .sendPreparedMessage(let serializedMessage, let thread, let fanoutRecipients, let sendViaSenderKey, let udAccess, let senderCertificate, let localIdentifiers):
+        case .sendPreparedMessage(let serializedMessage, let thread, let fanoutRecipients, let sendViaSenderKey, let udAccess, let localIdentifiers):
             let perRecipientErrors = await sendPreparedMessage(
                 message: message,
                 serializedMessage: serializedMessage,
