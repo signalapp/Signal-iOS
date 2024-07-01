@@ -410,7 +410,7 @@ class DebugUIMessagesAssetLoader {
             return
         }
 
-        let data = Randomness.generateRandomBytes(Int32(dataLength))
+        let data = Randomness.generateRandomBytes(dataLength)
         owsAssertDebug(data.count > 0)
 
         let filePath = OWSFileSystem.temporaryFilePath(fileExtension: fileExtension)

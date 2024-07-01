@@ -22,7 +22,7 @@ public class SMKUDAccessKey: NSObject {
 
     @objc
     public init(randomKeyData: ()) {
-        self.keyData = Randomness.generateRandomBytes(Int32(SMKUDAccessKey.kUDAccessKeyLength))
+        self.keyData = Randomness.generateRandomBytes(UInt(SMKUDAccessKey.kUDAccessKeyLength))
     }
 
     private init(keyData: Data) {

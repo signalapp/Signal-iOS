@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (StickerInfo *)defaultValue
 {
     return [[StickerInfo alloc] initWithPackId:[Randomness generateRandomBytes:16]
-                                       packKey:[Randomness generateRandomBytes:(int)StickerManager.packKeyLength]
+                                       packKey:[Randomness generateRandomBytes:StickerManager.packKeyLength]
                                      stickerId:0];
 }
 

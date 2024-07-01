@@ -12,8 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class GroupMembership;
 @class SignalServiceAddress;
 
-extern const int32_t kGroupIdLengthV1;
-extern const int32_t kGroupIdLengthV2;
+extern const NSUInteger kGroupIdLengthV1;
+extern const NSUInteger kGroupIdLengthV2;
 
 typedef NS_CLOSED_ENUM(uint32_t, GroupsVersion) {
     GroupsVersionV1 = 0,

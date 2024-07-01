@@ -105,7 +105,7 @@ public struct StorageService: Dependencies {
     /// An identifier representing a given storage item.
     /// This can be used to fetch specific items from the service.
     public struct StorageIdentifier: Hashable, Codable {
-        public static let identifierLength: Int32 = 16
+        public static let identifierLength: UInt = 16
         public let data: Data
         public let type: StorageServiceProtoManifestRecordKeyType
 

@@ -24,7 +24,7 @@ public extension OutgoingPaymentSyncMessage {
                 ledgerBlockIndex = 0
                 spentKeyImages = []
                 outputPublicKeys = []
-                receiptData = Randomness.generateRandomBytes(Int32(receiptData.count))
+                receiptData = Randomness.generateRandomBytes(UInt(receiptData.count))
             }
             let mobileCoinBuilder = SSKProtoSyncMessageOutgoingPaymentMobileCoin.builder(amountPicoMob: amountPicoMob,
                                                                                          feePicoMob: feePicoMob,

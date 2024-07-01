@@ -44,7 +44,7 @@ double _CurrentStackUsage(void)
 #if TARGET_CPU_X86 || TARGET_CPU_X86_64 || TARGET_CPU_ARM || TARGET_CPU_ARM64
     pthread_t _Nullable currentThread = pthread_self();
     if (!currentThread) {
-        OWSCAssertDebug("No current thread");
+        OWSCFailDebug(@"No current thread");
         return NAN;
     }
 
@@ -55,11 +55,11 @@ double _CurrentStackUsage(void)
     // The local var address should always be less than our stack base.
     ptrdiff_t usedBytes = baseAddr - ((void *)&baseAddr);
 
-    if (stackSize > 0 && baseAddr > 0 && usedBytes > 0 && usedBytes < stackSize) {
+    if (stackSize > 0 && baseAddr > 0 && usedBytes > 0 && (size_t)usedBytes < stackSize) {
         double result = ((double)usedBytes / (double)stackSize);
         return MAX(0.0, MIN(result, 1.0));
     } else {
-        OWSCAssertDebug("Unexpected stack format");
+        OWSCFailDebug(@"Unexpected stack format");
         return NAN;
     }
 #else /* !x86(_64) && !arm(64) */

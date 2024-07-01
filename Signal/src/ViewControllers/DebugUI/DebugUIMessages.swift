@@ -2106,7 +2106,7 @@ lorem, in rhoncus nisi.
     private static func createRandomDataOfSize(_ size: UInt32) -> Data {
         owsAssertDebug(size % 4 == 0)
         owsAssertDebug(size < Int.max)
-        return Randomness.generateRandomBytes(Int32(size))
+        return Randomness.generateRandomBytes(UInt(size))
     }
 }
 

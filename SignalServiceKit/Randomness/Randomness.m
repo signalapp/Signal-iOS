@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation Randomness
 
-+ (NSData *)generateRandomBytes:(int)numberBytes
++ (NSData *)generateRandomBytes:(NSUInteger)numberBytes
 {
     NSMutableData *_Nullable randomBytes = [NSMutableData dataWithLength:numberBytes];
     if (!randomBytes) {

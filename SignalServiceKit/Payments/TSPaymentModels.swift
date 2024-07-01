@@ -165,7 +165,7 @@ extension TSPaymentNotification: TSPaymentBaseModel {
 
         var mcReceiptData = self.mcReceiptData
         if DebugFlags.paymentsMalformedMessages.get() {
-            mcReceiptData = Randomness.generateRandomBytes(Int32(mcReceiptData.count))
+            mcReceiptData = Randomness.generateRandomBytes(UInt(mcReceiptData.count))
         }
         let mobileCoinBuilder = SSKProtoDataMessagePaymentNotificationMobileCoin.builder(receipt: mcReceiptData)
         let builder = SSKProtoDataMessagePaymentNotification.builder()

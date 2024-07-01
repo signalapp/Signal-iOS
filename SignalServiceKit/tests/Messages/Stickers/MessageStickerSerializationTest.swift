@@ -52,10 +52,10 @@ class MessageStickerSerializationTest: XCTestCase {
 extension MessageSticker {
 
     static let packId1 = Randomness.generateRandomBytes(16)
-    static let packKey1 = Randomness.generateRandomBytes(Int32(StickerManager.packKeyLength))
+    static let packKey1 = Randomness.generateRandomBytes(StickerManager.packKeyLength)
 
     static let packId2 = Randomness.generateRandomBytes(16)
-    static let packKey2 = Randomness.generateRandomBytes(Int32(StickerManager.packKeyLength))
+    static let packKey2 = Randomness.generateRandomBytes(StickerManager.packKeyLength)
 
     static let constants: [(MessageSticker, base64NSArchiverData: Data)] = [
         // A simple one

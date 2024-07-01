@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
  *  @return Random Bytes.
  */
 
-+ (NSData *)generateRandomBytes:(int)numberBytes;
++ (NSData *)generateRandomBytes:(NSUInteger)numberBytes;
 
 @end
 

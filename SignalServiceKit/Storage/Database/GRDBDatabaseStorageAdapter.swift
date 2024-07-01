@@ -889,7 +889,7 @@ public struct GRDBKeyFetcher {
     }
 
     func generateAndStore() throws {
-        let keyData = Randomness.generateRandomBytes(Constants.kSQLCipherKeySpecLength)
+        let keyData = Randomness.generateRandomBytes(UInt(Constants.kSQLCipherKeySpecLength))
         try store(data: keyData)
     }
 

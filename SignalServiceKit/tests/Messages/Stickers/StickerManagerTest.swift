@@ -132,7 +132,7 @@ class StickerManagerTest: SSKBaseTest {
 
     func testInfos() {
         let packId = Randomness.generateRandomBytes(16)
-        let packKey = Randomness.generateRandomBytes(Int32(StickerManager.packKeyLength))
+        let packKey = Randomness.generateRandomBytes(StickerManager.packKeyLength)
         let stickerId: UInt32 = 0
 
         XCTAssertEqual(StickerPackInfo(packId: packId, packKey: packKey),

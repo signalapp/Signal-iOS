@@ -39,7 +39,7 @@ class MobileCoinHelperSDKTests: XCTestCase {
         XCTAssertTrue(helperSDK.isValidMobileCoinPublicAddress(addressData))
         XCTAssertTrue(helperMinimal.isValidMobileCoinPublicAddress(addressData))
 
-        let randomData = Randomness.generateRandomBytes(Int32(addressData.count))
+        let randomData = Randomness.generateRandomBytes(UInt(addressData.count))
         XCTAssertFalse(helperSDK.isValidMobileCoinPublicAddress(randomData))
         XCTAssertFalse(helperMinimal.isValidMobileCoinPublicAddress(randomData))
     }

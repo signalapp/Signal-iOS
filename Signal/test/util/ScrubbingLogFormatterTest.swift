@@ -160,7 +160,7 @@ final class ScrubbingLogFormatterTest: XCTestCase {
 
     func testThingsThatLookLikeGroupIdNotScrubbed() {
         for _ in 1...1024 {
-            let fakeGroupIdCount = Int32.random(in: 1...(kGroupIdLengthV2 * 2))
+            let fakeGroupIdCount = UInt.random(in: 1...(kGroupIdLengthV2 * 2))
             let fakeGroupId = Randomness.generateRandomBytes(fakeGroupIdCount)
             let fakeGroupIdString = TSGroupThread.defaultThreadId(forGroupId: fakeGroupId)
             let input = "Hello \(fakeGroupIdString)!"

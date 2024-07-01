@@ -46,7 +46,7 @@ public class GroupManager: NSObject {
 
     // MARK: - Group IDs
 
-    static func groupIdLength(for groupsVersion: GroupsVersion) -> Int32 {
+    static func groupIdLength(for groupsVersion: GroupsVersion) -> UInt {
         switch groupsVersion {
         case .V1:
             return kGroupIdLengthV1

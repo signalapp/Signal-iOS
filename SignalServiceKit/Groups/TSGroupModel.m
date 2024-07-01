@@ -17,8 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 // a better solution.
 const NSUInteger kMaxAvatarSize = 500 * 1000;
 const CGFloat kMaxAvatarDimension = 1024;
-const int32_t kGroupIdLengthV1 = 16;
-const int32_t kGroupIdLengthV2 = 32;
+const NSUInteger kGroupIdLengthV1 = 16;
+const NSUInteger kGroupIdLengthV2 = 32;
 
 NSUInteger const TSGroupModelSchemaVersion = 2;
 
