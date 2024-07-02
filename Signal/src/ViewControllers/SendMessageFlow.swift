@@ -37,7 +37,6 @@ enum SendMessageUnapprovedContent {
     case text(messageBody: MessageBody)
     case contactShare(contactShare: ContactShareViewModel)
     // stickerAttachment is required if the sticker is not installed.
-    case sticker(stickerMetadata: any StickerMetadata, stickerAttachment: TSAttachmentStream?)
     case genericAttachment(signalAttachmentProvider: SignalAttachmentProvider)
     case media(signalAttachmentProviders: [SignalAttachmentProvider], messageBody: MessageBody?)
 
@@ -47,8 +46,6 @@ enum SendMessageUnapprovedContent {
             return true
         case .contactShare:
             return true
-        case .sticker:
-            return false
         case .genericAttachment:
             return false
         case .media:
@@ -79,18 +76,6 @@ enum SendMessageUnapprovedContent {
         case .contactShare:
             owsAssertDebug(needsApproval)
             return nil
-        case .sticker(let stickerMetadata, let stickerAttachment):
-            owsAssertDebug(!needsApproval)
-            let stickerInfo = stickerMetadata.stickerInfo
-            if StickerManager.isStickerInstalled(stickerInfo: stickerInfo) {
-                return .installedSticker(stickerMetadata: stickerMetadata)
-            } else {
-                guard let stickerAttachment = stickerAttachment else {
-                    throw SendMessageFlowError.invalidContent
-                }
-                let stickerData = try stickerAttachment.readDataFromFile()
-                return .uninstalledSticker(stickerMetadata: stickerMetadata, stickerData: stickerData)
-            }
         case .genericAttachment(let signalAttachmentProvider):
             owsAssertDebug(!needsApproval)
             return .genericAttachment(signalAttachmentProvider: signalAttachmentProvider)

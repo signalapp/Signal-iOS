@@ -531,12 +531,6 @@ extension ForwardMessageViewController: ConversationPickerDelegate {
 
 // MARK: -
 
-extension TSAttachmentStream {
-
-}
-
-// MARK: -
-
 extension ForwardMessageViewController {
     public static func finalizeForward(items: [Item],
                                        recipientThreads: [TSThread],

@@ -28,11 +28,6 @@ public class BlurHash: NSObject {
         return blurHash.unicodeScalars.allSatisfy { validCharacterSet.contains($0) }
     }
 
-    @objc(ensureBlurHashForAttachmentStream:)
-    public class func ensureBlurHashObjc(for attachmentStream: TSAttachmentStream) -> AnyPromise {
-        return AnyPromise(ensureBlurHash(for: attachmentStream))
-    }
-
     public class func ensureBlurHash(for attachmentStream: TSAttachmentStream) -> Promise<Void> {
         let (promise, future) = Promise<Void>.pending()
 
