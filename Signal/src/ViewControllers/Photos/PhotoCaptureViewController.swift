@@ -63,10 +63,10 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
             guard isCameraReady != oldValue else { return }
 
             if isCameraReady {
-                VolumeButtons.shared?.addObserver(observer: cameraCaptureSession)
+                cameraCaptureSession.beginObservingVolumeButtons()
                 UIApplication.shared.isIdleTimerDisabled = true
             } else {
-                VolumeButtons.shared?.removeObserver(cameraCaptureSession)
+                cameraCaptureSession.stopObservingVolumeButtons()
                 UIApplication.shared.isIdleTimerDisabled = false
             }
         }

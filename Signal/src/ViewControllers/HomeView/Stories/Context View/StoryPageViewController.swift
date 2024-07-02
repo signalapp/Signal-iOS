@@ -223,7 +223,6 @@ class StoryPageViewController: UIPageViewController {
     }
 
     private var isAudioSessionActive = false
-    private var isObservingVolumeButtons = false
 
     private func updateVolumeObserversIfNeeded() {
         // Set audio session only if on screen.
@@ -282,14 +281,17 @@ class StoryPageViewController: UIPageViewController {
         isAudioSessionActive = false
     }
 
+    private var volumeButtonsObservation: PassiveVolumeButtonObservation?
+    private var isObservingVolumeButtons: Bool { volumeButtonsObservation != nil }
+
     private func observeVolumeButtons() {
-        VolumeButtons.shared?.addObserver(observer: self)
-        isObservingVolumeButtons = true
+        if volumeButtonsObservation != nil { return }
+        let observation = PassiveVolumeButtonObservation(observer: self)
+        self.volumeButtonsObservation = observation
     }
 
     private func stopObservingVolumeButtons() {
-        VolumeButtons.shared?.removeObserver(self)
-        isObservingVolumeButtons = false
+        volumeButtonsObservation = nil
     }
 }
 
@@ -635,17 +637,9 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
     }
 }
 
-extension StoryPageViewController: VolumeButtonObserver {
+extension StoryPageViewController: PassiveVolumeButtonObserver {
 
-    var capturePreviewView: CapturePreviewView? {
-        // Volume button observation doesn't work here without
-        // a CapturePreviewView on iOS 17.2+
-        return nil
-    }
-
-    func didPressVolumeButton(with identifier: VolumeButtons.Identifier) {
-        VolumeButtons.shared?.incrementSystemVolume(for: identifier)
-
+    func didTapSomeVolumeButton() {
         guard isMuted else {
             // Already unmuted, no need to do anything.
             return

@@ -7,12 +7,90 @@ import AVKit
 import MediaPlayer
 import SignalServiceKit
 
-protocol VolumeButtonObserver: AnyObject {
+protocol PassiveVolumeButtonObserver: AnyObject {
 
-    /// On iOS versions greater than 17.2, an AVCaptureVideoPreviewLayer (which CapturePreviewView uses)
-    /// must be on screen for volume button observation to work. Its size can be zero and/or alpha 0.01
-    /// but it must be present and "visible". If it is not (or this value is nil) observers won't be updated.
-    var capturePreviewView: CapturePreviewView? { get }
+    /// Does not say which volume button was tapped (because we may not know),
+    /// just that the system volume was changed by tapping one of the buttons.
+    /// Observing this does _not_ override the default volume button behavior.
+    func didTapSomeVolumeButton()
+}
+
+class PassiveVolumeButtonObservation {
+
+    private weak var observer: PassiveVolumeButtonObserver?
+
+    public init(observer: PassiveVolumeButtonObserver) {
+        self.observer = observer
+        if #available(iOS 17.2, *) {
+            beginObservation()
+        } else {
+            beginLegacyObservation()
+        }
+    }
+
+    deinit {
+        if #available(iOS 17.2, *) {
+            stopObservation()
+        } else {
+            stopLegacyObservation()
+        }
+    }
+
+    // let encodedUpUpNotificationName = "SystemVolumeDidChange".encodedForSelector
+    private let volumeChangeNotificationName = Notification.Name("ZAsFBnZ+ZwF9B352VXp1VHlyAHh2".decodedForSelector!)
+
+    /// Without an MPVolumeView (or, maybe, its usage of the private class MPVolumeControllerSystemDataSource)
+    /// instance in memory, SystemVolumeDidChange notifications are not fired.
+    private var volumeViewForObservation: MPVolumeView?
+
+    @available(iOS 17.2, *)
+    private func beginObservation() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(systemVolumeDidChange(_:)),
+            name: volumeChangeNotificationName,
+            object: nil
+        )
+        volumeViewForObservation = MPVolumeView()
+    }
+
+    private func beginLegacyObservation() {
+        LegacyGlobalVolumeButtonObserver.shared?.addObserver(observer: self)
+    }
+
+    @available(iOS 17.2, *)
+    private func stopObservation() {
+        NotificationCenter.default.removeObserver(self)
+        volumeViewForObservation = nil
+    }
+
+    private func stopLegacyObservation() {
+        LegacyGlobalVolumeButtonObserver.shared?.removeObserver(self)
+    }
+
+    @objc
+    private func systemVolumeDidChange(_ notification: NSNotification) {
+        guard notification.userInfo?["Reason"] as? String == "ExplicitVolumeChange" else {
+            return
+        }
+        didTapSomeVolumeButton()
+    }
+
+    fileprivate func didTapSomeVolumeButton() {
+        observer?.didTapSomeVolumeButton()
+    }
+}
+
+// Namespace for types and constants
+enum VolumeButtons {
+    enum Identifier {
+        case up, down
+    }
+
+    fileprivate static let longPressDuration: TimeInterval = 0.5
+}
+
+protocol AVVolumeButtonObserver: AnyObject {
 
     func didPressVolumeButton(with identifier: VolumeButtons.Identifier)
     func didReleaseVolumeButton(with identifier: VolumeButtons.Identifier)
@@ -24,30 +102,200 @@ protocol VolumeButtonObserver: AnyObject {
     func didCancelLongPressVolumeButton(with identifier: VolumeButtons.Identifier)
 }
 
-// Make the methods optional.
+class AVVolumeButtonObservation {
 
-extension VolumeButtonObserver {
-    func didPressVolumeButton(with identifier: VolumeButtons.Identifier) {}
-    func didReleaseVolumeButton(with identifier: VolumeButtons.Identifier) {}
+    private weak var observer: AVVolumeButtonObserver?
+    private weak var capturePreviewView: CapturePreviewView?
 
-    func didTapVolumeButton(with identifier: VolumeButtons.Identifier) {}
-
-    func didBeginLongPressVolumeButton(with identifier: VolumeButtons.Identifier) {}
-    func didCompleteLongPressVolumeButton(with identifier: VolumeButtons.Identifier) {}
-    func didCancelLongPressVolumeButton(with identifier: VolumeButtons.Identifier) {}
-}
-
-class VolumeButtons {
-    static let shared = VolumeButtons()
-
-    enum Identifier {
-        case up, down
+    public var isEnabled = true {
+        didSet {
+            if #available(iOS 17.2, *) {
+                eventInteraction?.isEnabled = isEnabled
+            } else {
+                if isEnabled && !oldValue {
+                    beginLegacyObservation()
+                } else if !isEnabled && oldValue {
+                    stopLegacyObservation()
+                }
+            }
+        }
     }
 
-    private init?() {
-        // If for some reason the API we’re using goes away (for example, in
-        // a future iOS version) this class will never instantiate.
-        guard VolumeButtons.supportsListeningToEvents else { return nil }
+    /// On iOS versions greater than 17.2, an AVCaptureVideoPreviewLayer (which CapturePreviewView uses)
+    /// must be on screen for volume button observation to work. Its size can be zero and/or alpha 0.01
+    /// but it must be present and "visible". If it is not observers won't be updated.
+    public init(observer: AVVolumeButtonObserver, capturePreviewView: CapturePreviewView) {
+        self.observer = observer
+        self.capturePreviewView = capturePreviewView
+
+        if #available(iOS 17.2, *) {
+            beginObservation()
+        } else {
+            beginLegacyObservation()
+        }
+    }
+
+    deinit {
+        if #available(iOS 17.2, *) {
+            stopObservation()
+        } else {
+            stopLegacyObservation()
+        }
+    }
+
+    // Stored properties can't have @available conditions;
+    // store as Any and do casting in a computed var.
+    private var _eventInteraction: Any?
+
+    @available(iOS 17.2, *)
+    private var eventInteraction: AVCaptureEventInteraction? {
+        get { _eventInteraction as? AVCaptureEventInteraction }
+        set { _eventInteraction = newValue }
+    }
+
+    @available(iOS 17.2, *)
+    private func beginObservation() {
+        let eventInteraction = AVCaptureEventInteraction(
+            primary: { [weak self] volumeDownEvent in
+                switch volumeDownEvent.phase {
+                case .began:
+                    self?.didPressVolumeButton(with: .down)
+                case .ended:
+                    self?.didReleaseVolumeButton(with: .down)
+                case .cancelled:
+                    fallthrough
+                @unknown default:
+                    return
+                }
+            },
+            secondary: { [weak self] volumeUpEvent in
+                switch volumeUpEvent.phase {
+                case .began:
+                    self?.didPressVolumeButton(with: .up)
+                case .ended:
+                    self?.didReleaseVolumeButton(with: .up)
+                case .cancelled:
+                    fallthrough
+                @unknown default:
+                    return
+                }
+            }
+        )
+        eventInteraction.isEnabled = isEnabled
+        capturePreviewView?.addInteraction(eventInteraction)
+        self.eventInteraction = eventInteraction
+    }
+
+    private func beginLegacyObservation() {
+        LegacyGlobalVolumeButtonObserver.shared?.addObserver(observer: self)
+    }
+
+    @available(iOS 17.2, *)
+    private func stopObservation() {
+        self.eventInteraction?.isEnabled = false
+        if let eventInteraction {
+            capturePreviewView?.removeInteraction(eventInteraction)
+        }
+        self.eventInteraction = nil
+
+        if let longPressingButton {
+            observer?.didCancelLongPressVolumeButton(with: longPressingButton)
+            resetLongPress()
+        }
+    }
+
+    private func stopLegacyObservation() {
+        LegacyGlobalVolumeButtonObserver.shared?.removeObserver(self)
+
+        if let longPressingButton {
+            observer?.didCancelLongPressVolumeButton(with: longPressingButton)
+            resetLongPress()
+        }
+    }
+
+    // MARK: Tap / long press handling
+
+    private var longPressTimer: Timer?
+    private var longPressingButton: VolumeButtons.Identifier?
+
+    // It's not possible for up and down to be pressed simultaneously
+    // (if you press the second button, the OS will end the press on
+    // the first), so it allows for simplified handling here.
+    fileprivate func didPressVolumeButton(with identifier: VolumeButtons.Identifier) {
+        longPressingButton = nil
+
+        longPressTimer?.invalidate()
+        longPressTimer = WeakTimer.scheduledTimer(
+            timeInterval: VolumeButtons.longPressDuration,
+            target: self,
+            userInfo: nil,
+            repeats: false
+        ) { [weak self] _ in
+            self?.longPressingButton = identifier
+            self?.observer?.didBeginLongPressVolumeButton(with: identifier)
+            self?.longPressTimer?.invalidate()
+            self?.longPressTimer = nil
+        }
+
+        observer?.didPressVolumeButton(with: identifier)
+    }
+
+    fileprivate func didReleaseVolumeButton(with identifier: VolumeButtons.Identifier) {
+        if longPressingButton == identifier {
+            observer?.didCompleteLongPressVolumeButton(with: identifier)
+        } else {
+            observer?.didTapVolumeButton(with: identifier)
+        }
+
+        resetLongPress()
+
+        observer?.didReleaseVolumeButton(with: identifier)
+    }
+
+    private func resetLongPress() {
+        longPressTimer?.invalidate()
+        longPressTimer = nil
+        longPressingButton = nil
+    }
+}
+
+// MARK: - Legacy
+
+private protocol LegacyVolumeButtonObserver: AnyObject {
+
+    func didPressVolumeButton(with identifier: VolumeButtons.Identifier)
+    func didReleaseVolumeButton(with identifier: VolumeButtons.Identifier)
+}
+
+extension AVVolumeButtonObservation: LegacyVolumeButtonObserver {}
+
+extension PassiveVolumeButtonObservation: LegacyVolumeButtonObserver {
+
+    func didPressVolumeButton(with identifier: VolumeButtons.Identifier) {
+        // We _don't_ want to interrupt the system from changing the volume
+        LegacyGlobalVolumeButtonObserver.shared?.incrementSystemVolume(for: identifier)
+
+        didTapSomeVolumeButton()
+    }
+
+    func didReleaseVolumeButton(with identifier: VolumeButtons.Identifier) {
+        // We _don't_ want to interrupt the system from changing the volume
+        LegacyGlobalVolumeButtonObserver.shared?.incrementSystemVolume(for: identifier)
+
+        didTapSomeVolumeButton()
+    }
+}
+
+// MARK: - Legacy Global observer
+
+private class LegacyGlobalVolumeButtonObserver {
+    static let shared = LegacyGlobalVolumeButtonObserver()
+
+    fileprivate init?() {
+        if #available(iOS 17.2, *) {
+            // Should NOT be used after iOS 17.2
+            return nil
+        }
     }
 
     deinit {
@@ -63,7 +311,7 @@ class VolumeButtons {
     /// Incremenets the system volume, displaying the system UI when doing so.
     /// NOTE: this method is asynchronous (a limitation of somewhat illicit use of APIs), do not
     /// expect the volume to change immediately
-    public func incrementSystemVolume(for identifier: Identifier) {
+    public func incrementSystemVolume(for identifier: VolumeButtons.Identifier) {
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.01) {
             var volume = AVAudioSession.sharedInstance().outputVolume
             let increment: Float = 1 / 16 // Number of increments apple uses.
@@ -89,8 +337,8 @@ class VolumeButtons {
 
     // MARK: Observer Management
 
-    private var observers: [Weak<VolumeButtonObserver>] = []
-    func addObserver(observer: VolumeButtonObserver) {
+    private var observers: [Weak<LegacyVolumeButtonObserver>] = []
+    func addObserver(observer: LegacyVolumeButtonObserver) {
         AssertIsOnMainThread()
 
         if observers.firstIndex(where: { $0.value === observer }) == nil {
@@ -101,7 +349,7 @@ class VolumeButtons {
         startObservation()
     }
 
-    func removeObserver(_ observer: VolumeButtonObserver) {
+    func removeObserver(_ observer: LegacyVolumeButtonObserver) {
         AssertIsOnMainThread()
 
         observers = observers.filter { $0.value !== observer }
@@ -111,99 +359,26 @@ class VolumeButtons {
     }
 
     private func startObservation() {
-        guard !VolumeButtons.isRegisteredForEvents else { return }
-        VolumeButtons.isRegisteredForEvents = true
+        guard !Self.isRegisteredForEvents else { return }
+        Self.isRegisteredForEvents = true
         registerForNotifications()
     }
 
     private func stopObservation() {
-        VolumeButtons.isRegisteredForEvents = false
+        Self.isRegisteredForEvents = false
         unregisterForNotifications()
-
-        defer { resetLongPress() }
-        guard let longPressingButton = longPressingButton else { return }
-        notifyObserversOfCancelLongPress(with: longPressingButton)
     }
 
-    private func notifyObserversOfTap(with identifier: Identifier) {
-        observers.forEach { observer in
-            observer.value?.didTapVolumeButton(with: identifier)
-        }
-    }
-
-    private func notifyObserversOfBeginLongPress(with identifier: Identifier) {
-        observers.forEach { observer in
-            observer.value?.didBeginLongPressVolumeButton(with: identifier)
-        }
-    }
-
-    private func notifyObserversOfCompleteLongPress(with identifier: Identifier) {
-        observers.forEach { observer in
-            observer.value?.didCompleteLongPressVolumeButton(with: identifier)
-        }
-    }
-
-    private func notifyObserversOfCancelLongPress(with identifier: Identifier) {
-        observers.forEach { observer in
-            observer.value?.didCancelLongPressVolumeButton(with: identifier)
-        }
-    }
-
-    private func notifyObserversOfPress(with identifier: Identifier) {
+    private func notifyObserversOfPress(with identifier: VolumeButtons.Identifier) {
         observers.forEach { observer in
             observer.value?.didPressVolumeButton(with: identifier)
         }
     }
 
-    private func notifyObserversOfRelease(with identifier: Identifier) {
+    private func notifyObserversOfRelease(with identifier: VolumeButtons.Identifier) {
         observers.forEach { observer in
             observer.value?.didReleaseVolumeButton(with: identifier)
         }
-    }
-
-    // MARK: Tap / long press handling
-
-    private var longPressTimer: Timer?
-    private var longPressingButton: Identifier?
-
-    // It's not possible for up and down to be pressed simultaneously
-    // (if you press the second button, the OS will end the press on
-    // the first), so it allows for simplified handling here.
-    private func didPressButton(with identifier: Identifier) {
-        longPressingButton = nil
-
-        longPressTimer?.invalidate()
-        longPressTimer = WeakTimer.scheduledTimer(
-            timeInterval: longPressDuration,
-            target: self,
-            userInfo: nil,
-            repeats: false
-        ) { [weak self] _ in
-            self?.longPressingButton = identifier
-            self?.notifyObserversOfBeginLongPress(with: identifier)
-            self?.longPressTimer?.invalidate()
-            self?.longPressTimer = nil
-        }
-
-        notifyObserversOfPress(with: identifier)
-    }
-
-    private func didReleaseButton(with identifier: Identifier) {
-        if longPressingButton == identifier {
-            notifyObserversOfCompleteLongPress(with: identifier)
-        } else {
-            notifyObserversOfTap(with: identifier)
-        }
-
-        resetLongPress()
-
-        notifyObserversOfRelease(with: identifier)
-    }
-
-    private func resetLongPress() {
-        longPressTimer?.invalidate()
-        longPressTimer = nil
-        longPressingButton = nil
     }
 
     // MARK: Volume Event Registration
@@ -218,22 +393,14 @@ class VolumeButtons {
     }
 
     private static func setEventRegistration(_ active: Bool) {
-        if #available(iOS 17.2, *) {
-            return
-        } else {
-            typealias Type = @convention(c) (AnyObject, Selector, Bool) -> Void
-            let implementation = class_getMethodImplementation(UIApplication.self, volumeEventsSelector)
-            let setRegistration = unsafeBitCast(implementation, to: Type.self)
-            setRegistration(UIApplication.shared, volumeEventsSelector, active)
-        }
+        typealias Type = @convention(c) (AnyObject, Selector, Bool) -> Void
+        let implementation = class_getMethodImplementation(UIApplication.self, volumeEventsSelector)
+        let setRegistration = unsafeBitCast(implementation, to: Type.self)
+        setRegistration(UIApplication.shared, volumeEventsSelector, active)
     }
 
     private static var supportsListeningToEvents: Bool {
-        if #available(iOS 17.2, *) {
-            return true
-        } else {
-            return UIApplication.shared.responds(to: volumeEventsSelector)
-        }
+        return UIApplication.shared.responds(to: volumeEventsSelector)
     }
 
     // MARK: Notification Handling
@@ -250,114 +417,58 @@ class VolumeButtons {
     // let encodedUpUpNotificationName = "_UIApplicationVolumeUpButtonUpNotification".encodedForSelector
     private let upUpNotificationName = Notification.Name("cGZaUgICfXp0cgZ6AQBnAX0HfnZmAlMHBgYBAGYCXwEGend6dHIGegEA".decodedForSelector!)
 
-    private let longPressDuration: TimeInterval = 0.5
-
-    // Stored properties can't have @available conditions;
-    // store as Any and do casting in a computed var.
-    private var _eventInteraction: Any?
-
-    @available(iOS 17.2, *)
-    private var eventInteraction: AVCaptureEventInteraction? {
-        get { _eventInteraction as? AVCaptureEventInteraction }
-        set { _eventInteraction = newValue }
-    }
-
     private func registerForNotifications() {
-        if #available(iOS 17.2, *) {
-            let eventInteraction = AVCaptureEventInteraction(
-                primary: { [weak self] volumeDownEvent in
-                    switch volumeDownEvent.phase {
-                    case .began:
-                        self?.didPressVolumeDown()
-                    case .ended:
-                        self?.didReleaseVolumeDown()
-                    case .cancelled:
-                        fallthrough
-                    @unknown default:
-                        return
-                    }
-                },
-                secondary: { [weak self] volumeUpEvent in
-                    switch volumeUpEvent.phase {
-                    case .began:
-                        self?.didPressVolumeUp()
-                    case .ended:
-                        self?.didReleaseVolumeUp()
-                    case .cancelled:
-                        fallthrough
-                    @unknown default:
-                        return
-                    }
-                }
-            )
-            eventInteraction.isEnabled = true
-            // TODO: someday, refactor this class to have an instance per-observer
-            // rather than a global instance. Having one event interaction that is
-            // added to multiple observers is not correct, but the global approach
-            // was created for the pre-iOS 17.2 implementation below.
-            observers.forEach { $0.value?.capturePreviewView?.addInteraction(eventInteraction) }
-            self.eventInteraction = eventInteraction
-        } else {
-            NotificationCenter.default.addObserver(
-                self,
-                selector: #selector(didPressVolumeUp),
-                name: upDownNotificationName,
-                object: nil
-            )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didPressVolumeUp),
+            name: upDownNotificationName,
+            object: nil
+        )
 
-            NotificationCenter.default.addObserver(
-                self,
-                selector: #selector(didReleaseVolumeUp),
-                name: upUpNotificationName,
-                object: nil
-            )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didReleaseVolumeUp),
+            name: upUpNotificationName,
+            object: nil
+        )
 
-            NotificationCenter.default.addObserver(
-                self,
-                selector: #selector(didPressVolumeDown),
-                name: downDownNotificationName,
-                object: nil
-            )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didPressVolumeDown),
+            name: downDownNotificationName,
+            object: nil
+        )
 
-            NotificationCenter.default.addObserver(
-                self,
-                selector: #selector(didReleaseVolumeDown),
-                name: downUpNotificationName,
-                object: nil
-            )
-        }
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didReleaseVolumeDown),
+            name: downUpNotificationName,
+            object: nil
+        )
     }
 
     private func unregisterForNotifications() {
-        if #available(iOS 17.2, *) {
-            self.eventInteraction?.isEnabled = false
-            if let eventInteraction {
-                observers.forEach { $0.value?.capturePreviewView?.removeInteraction(eventInteraction) }
-            }
-            self.eventInteraction = nil
-        } else {
-            NotificationCenter.default.removeObserver(self)
-        }
+        NotificationCenter.default.removeObserver(self)
     }
 
     @objc
     private func didPressVolumeUp() {
-        didPressButton(with: .up)
+        notifyObserversOfPress(with: .up)
     }
 
     @objc
     private func didReleaseVolumeUp() {
-        didReleaseButton(with: .up)
+        notifyObserversOfRelease(with: .up)
     }
 
     @objc
     private func didPressVolumeDown() {
-        didPressButton(with: .down)
+        notifyObserversOfPress(with: .down)
     }
 
     @objc
     private func didReleaseVolumeDown() {
-        didReleaseButton(with: .down)
+        notifyObserversOfRelease(with: .down)
     }
 }
 

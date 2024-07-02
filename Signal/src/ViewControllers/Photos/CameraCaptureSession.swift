@@ -937,6 +937,25 @@ class CameraCaptureSession: NSObject {
 
         audioSession.endAudioActivity(recordingAudioActivity)
     }
+
+    // MARK: Volume Button observation
+
+    private var volumeButtonObservation: AVVolumeButtonObservation?
+
+    public func beginObservingVolumeButtons() {
+        let volumeButtonObservation =
+            self.volumeButtonObservation
+            ?? AVVolumeButtonObservation(
+                observer: self,
+                capturePreviewView: previewView
+            )
+        self.volumeButtonObservation = volumeButtonObservation
+        volumeButtonObservation.isEnabled = true
+    }
+
+    public func stopObservingVolumeButtons() {
+        volumeButtonObservation?.isEnabled = false
+    }
 }
 
 // MARK: -
@@ -1060,11 +1079,7 @@ class CapturePreviewView: UIView {
 
 // MARK: -
 
-extension CameraCaptureSession: VolumeButtonObserver {
-
-    var capturePreviewView: CapturePreviewView? {
-        return previewView
-    }
+extension CameraCaptureSession: AVVolumeButtonObserver {
 
     func didPressVolumeButton(with identifier: VolumeButtons.Identifier) {
         delegate?.beginCaptureButtonAnimation(0.5)
