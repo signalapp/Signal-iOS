@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 static void logUnconditionally(
     DDLogFlag flag, const char *file, BOOL shouldTrimFilePath, NSUInteger line, const char *function, NSString *message)
 {
-    OWSCAssert(ShouldLogFlag(flag));
+    OWSCPrecondition(ShouldLogFlag(flag));
     NSString *fileObj = [NSString stringWithFormat:@"%s", file];
     fileObj = shouldTrimFilePath ? fileObj.lastPathComponent : fileObj;
     DDLogMessage *logMessage = [[DDLogMessage alloc] initWithMessage:message

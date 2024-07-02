@@ -60,7 +60,7 @@ final class DeleteForMeAddressableMessageFinderImpl: DeleteForMeAddressableMessa
                 threadUniqueId: threadUniqueId,
                 sdsTx: SDSDB.shimOnlyBridge(tx)
             ).iterate { interaction in
-                owsAssert(
+                owsPrecondition(
                     interaction is TSIncomingMessage || interaction is TSOutgoingMessage,
                     "Unexpected interaction type! \(type(of: interaction))"
                 )

@@ -10,7 +10,7 @@ public class AppEnvironment: NSObject {
     private static var _shared: AppEnvironment?
 
     static func setSharedEnvironment(_ appEnvironment: AppEnvironment) {
-        owsAssert(self._shared == nil)
+        owsPrecondition(self._shared == nil)
         self._shared = appEnvironment
     }
 

@@ -40,7 +40,7 @@ void SCKRaiseIfExceptionWrapperError(NSError *_Nullable error)
     if (error && [error.domain isEqualToString:SCKExceptionWrapperErrorDomain]
         && error.code == SCKExceptionWrapperErrorThrown) {
         NSException *_Nullable exception = error.userInfo[SCKExceptionWrapperUnderlyingExceptionKey];
-        OWSCAssert(exception);
+        OWSCPrecondition(exception);
         @throw exception;
     }
 }

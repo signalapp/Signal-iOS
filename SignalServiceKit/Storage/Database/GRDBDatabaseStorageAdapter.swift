@@ -327,8 +327,8 @@ extension GRDBDatabaseStorageAdapter {
             // We're already in an unexpected (but recoverable) state. However if the currently active transfer
             // path is a file or a non-empty directory, we're too close to losing data and we should fail.
             if FileManager.default.fileExists(atPath: transferDatabaseDir.path, isDirectory: &isDirectory) {
-                owsAssert(isDirectory.boolValue)
-                owsAssert(try! FileManager.default.contentsOfDirectory(atPath: transferDatabaseDir.path).isEmpty)
+                owsPrecondition(isDirectory.boolValue)
+                owsPrecondition(try! FileManager.default.contentsOfDirectory(atPath: transferDatabaseDir.path).isEmpty)
             }
             OWSFileSystem.deleteFileIfExists(transferDatabaseDir.path)
             clearTransferDirectory()
@@ -346,7 +346,7 @@ extension GRDBDatabaseStorageAdapter {
     }
 
     public static func promoteTransferDirectoryToPrimary() {
-        owsAssert(CurrentAppContext().isMainApp, "Only the main app can swap databases")
+        owsPrecondition(CurrentAppContext().isMainApp, "Only the main app can swap databases")
 
         // Ordering matters here. We should be able to crash and recover without issue
         // A prior run may have already performed the swap but crashed, so we should not expect a transfer folder
@@ -904,7 +904,7 @@ public struct GRDBKeyFetcher {
     /// - Note: Will fatally assert if not running in a debug or test build.
     /// - Returns: The key data, if available.
     public func debugOnly_keyData() -> Data? {
-        owsAssert(DebugFlags.internalSettings)
+        owsPrecondition(DebugFlags.internalSettings)
         return try? fetchData()
     }
 }

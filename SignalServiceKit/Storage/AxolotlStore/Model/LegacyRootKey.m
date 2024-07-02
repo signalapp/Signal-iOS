@@ -35,7 +35,7 @@ static NSString *const kCoderData = @"kCoderData";
 {
     self = [super init];
 
-    OWSAssert(data.length == 32);
+    OWSPrecondition(data.length == 32);
 
     if (self) {
         _keyData = data;

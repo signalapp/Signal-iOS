@@ -40,7 +40,7 @@ class RESTNetworkManager {
         let isUdRequest = request.isUDRequest
         let label = isUdRequest ? "UD request" : "Non-UD request"
         if (isUdRequest) {
-            owsAssert(!request.shouldHaveAuthorizationHeaders)
+            owsPrecondition(!request.shouldHaveAuthorizationHeaders)
         }
         Logger.info("Making \(label): \(request)")
 

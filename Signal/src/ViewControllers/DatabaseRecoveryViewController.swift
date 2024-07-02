@@ -161,7 +161,7 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
 
     @objc
     private func didTapToExportDatabase() {
-        owsAssert(DebugFlags.internalSettings, "Only internal users can export databases")
+        owsPrecondition(DebugFlags.internalSettings, "Only internal users can export databases")
         SignalApp.showExportDatabaseUI(from: self)
     }
 

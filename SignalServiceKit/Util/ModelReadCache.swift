@@ -313,7 +313,7 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType>: Dependencies, Ca
     func add(lease: ModelReadCacheSizeLease) {
         performSync {
             // It's a bug to add an already-added lease.
-            owsAssert(!leases.contains(lease))
+            owsPrecondition(!leases.contains(lease))
 
             leases.add(lease)
             updateMaxSize()

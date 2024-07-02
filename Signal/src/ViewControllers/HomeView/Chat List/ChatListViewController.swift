@@ -619,7 +619,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     @objc
     private func pullToRefreshPerformed(_ refreshControl: UIRefreshControl) {
         AssertIsOnMainThread()
-        owsAssert(DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == false)
+        owsPrecondition(DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == false)
 
         syncManager.sendAllSyncRequestMessages(timeout: 20).ensure {
             refreshControl.endRefreshing()

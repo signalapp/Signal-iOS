@@ -160,23 +160,23 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     BOOL didAvatarChange = ![NSObject isNullableObject:newGroupModel.avatarHash equalTo:self.groupModel.avatarHash];
     BOOL didNameChange = ![newGroupModel.groupNameOrDefault isEqualToString:self.groupModel.groupNameOrDefault];
 
-    [self anyUpdateGroupThreadWithTransaction:transaction
-                                        block:^(TSGroupThread *thread) {
-                                            if ([thread.groupModel isKindOfClass:TSGroupModelV2.class]) {
-                                                if (![newGroupModel isKindOfClass:TSGroupModelV2.class]) {
-                                                    // Can't downgrade a v2 group to a v1 group.
-                                                    OWSFail(@"Invalid group model.");
-                                                } else {
-                                                    // Can't downgrade a v2 group to an earlier revision.
-                                                    TSGroupModelV2 *oldGroupModelV2
-                                                        = (TSGroupModelV2 *)thread.groupModel;
-                                                    TSGroupModelV2 *newGroupModelV2 = (TSGroupModelV2 *)newGroupModel;
-                                                    OWSAssert(oldGroupModelV2.revision <= newGroupModelV2.revision);
-                                                }
-                                            }
+    [self
+        anyUpdateGroupThreadWithTransaction:transaction
+                                      block:^(TSGroupThread *thread) {
+                                          if ([thread.groupModel isKindOfClass:TSGroupModelV2.class]) {
+                                              if (![newGroupModel isKindOfClass:TSGroupModelV2.class]) {
+                                                  // Can't downgrade a v2 group to a v1 group.
+                                                  OWSFail(@"Invalid group model.");
+                                              } else {
+                                                  // Can't downgrade a v2 group to an earlier revision.
+                                                  TSGroupModelV2 *oldGroupModelV2 = (TSGroupModelV2 *)thread.groupModel;
+                                                  TSGroupModelV2 *newGroupModelV2 = (TSGroupModelV2 *)newGroupModel;
+                                                  OWSPrecondition(oldGroupModelV2.revision <= newGroupModelV2.revision);
+                                              }
+                                          }
 
-                                            thread.groupModel = [newGroupModel copy];
-                                        }];
+                                          thread.groupModel = [newGroupModel copy];
+                                      }];
     [self updateGroupMemberRecordsWithTransaction:transaction];
 
     // We only need to re-index the group if the group name changed.

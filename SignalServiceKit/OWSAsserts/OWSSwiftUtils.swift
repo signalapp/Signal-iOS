@@ -76,15 +76,18 @@ public func owsAssertDebug(
     }
 }
 
+/// Like `Swift.precondition(_:)`, this will trap if `condition` evaluates to
+/// `false`. Also performs additional logging before terminating the process.
+/// See `owsFail(_:)` for more information about logging.
 @inlinable
-public func owsAssert(
-    _ condition: Bool,
+public func owsPrecondition(
+    _ condition: @autoclosure () -> Bool,
     _ message: @autoclosure () -> String = String(),
     file: String = #fileID,
     function: String = #function,
     line: Int = #line
 ) {
-    if !condition {
+    if !condition() {
         let message: String = message()
         owsFail(message.isEmpty ? "Assertion failed." : message, file: file, function: function, line: line)
     }

@@ -201,7 +201,7 @@ public class ContactShareViewController: OWSTableViewController2 {
         }
 
         let filteredContactShare = filteredContactShare()
-        owsAssert(filteredContactShare.ows_isValid)
+        owsPrecondition(filteredContactShare.ows_isValid)
         shareDelegate.contactShareViewController(self, didApproveContactShare: filteredContactShare)
     }
 

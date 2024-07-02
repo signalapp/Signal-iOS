@@ -619,7 +619,7 @@ private struct ProcessingRequestBuilder {
         for decryptedEnvelope: DecryptedIncomingEnvelope,
         tx: SDSAnyWriteTransaction
     ) -> ProcessingRequest.State {
-        owsAssert(CurrentAppContext().shouldProcessIncomingMessages)
+        owsPrecondition(CurrentAppContext().shouldProcessIncomingMessages)
 
         // Pre-processing has to happen during the same transaction that performed
         // decryption.

@@ -79,7 +79,7 @@ public class IndividualCall: CustomDebugStringConvertible {
 
     func setOutgoingCallIdAndUpdateCallRecord(_ callId: UInt64) {
         AssertIsOnMainThread()
-        owsAssert(self.direction == .outgoing)
+        owsPrecondition(self.direction == .outgoing)
         Logger.info("")
 
         self.callId = callId

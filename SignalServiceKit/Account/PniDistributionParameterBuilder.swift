@@ -62,7 +62,7 @@ public enum PniDistribution {
             registrationId: UInt32,
             deviceMessage: DeviceMessage
         ) {
-            owsAssert(deviceId == deviceMessage.destinationDeviceId)
+            owsPrecondition(deviceId == deviceMessage.destinationDeviceId)
 
             devicePniSignedPreKeys["\(deviceId)"] = signedPreKey
             devicePniPqLastResortPreKeys["\(deviceId)"] = pqLastResortPreKey

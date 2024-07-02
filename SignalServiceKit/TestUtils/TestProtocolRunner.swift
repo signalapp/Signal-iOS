@@ -116,7 +116,7 @@ public struct TestProtocolRunner {
                         recipientClient: TestSignalClient,
                         sender: ProtocolAddress,
                         context: StoreContext) throws -> Data {
-        owsAssert(cipherMessage.messageType == .whisper, "only bare SignalMessages are supported")
+        owsPrecondition(cipherMessage.messageType == .whisper, "only bare SignalMessages are supported")
         let message = try SignalMessage(bytes: cipherMessage.serialize())
         return Data(try signalDecrypt(message: message,
                                       from: sender,

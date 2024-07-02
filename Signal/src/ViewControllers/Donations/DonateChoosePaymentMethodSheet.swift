@@ -292,7 +292,7 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
                 .filter(supportedPaymentMethods.contains)
                 .map(createButtonFor(paymentMethod:))
 
-            owsAssert(!paymentMethodButtons.isEmpty, "Expected at least one payment method")
+            owsPrecondition(!paymentMethodButtons.isEmpty, "Expected at least one payment method")
 
             let stackView = UIStackView(arrangedSubviews: paymentMethodButtons)
             stackView.axis = .vertical

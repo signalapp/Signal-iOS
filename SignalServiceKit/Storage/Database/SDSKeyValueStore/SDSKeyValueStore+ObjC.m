@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     id _Nullable value = [self.keyValueStore getObjectForKey:key transaction:transaction];
 
-    OWSAssert(!value || [value isKindOfClass:klass]);
+    OWSPrecondition(!value || [value isKindOfClass:klass]);
     return value;
 }
 
@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
        transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(key.length > 0);
-    OWSAssert([object isKindOfClass:klass]);
+    OWSPrecondition([object isKindOfClass:klass]);
     [self.keyValueStore setObject:object key:key transaction:transaction];
 }
 

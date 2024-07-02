@@ -1354,7 +1354,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
 extension GroupCallViewController: GroupCallObserver {
     func groupCallLocalDeviceStateChanged(_ call: GroupCall) {
         AssertIsOnMainThread()
-        owsAssert(self.groupCall === call)
+        owsPrecondition(self.groupCall === call)
         guard self.isReadyToHandleObserver else {
             return
         }
@@ -1373,7 +1373,7 @@ extension GroupCallViewController: GroupCallObserver {
 
     func groupCallRemoteDeviceStatesChanged(_ call: GroupCall) {
         AssertIsOnMainThread()
-        owsAssert(self.groupCall === call)
+        owsPrecondition(self.groupCall === call)
         guard self.isReadyToHandleObserver else {
             return
         }
@@ -1388,7 +1388,7 @@ extension GroupCallViewController: GroupCallObserver {
 
     func groupCallPeekChanged(_ call: GroupCall) {
         AssertIsOnMainThread()
-        owsAssert(self.groupCall === call)
+        owsPrecondition(self.groupCall === call)
         guard self.isReadyToHandleObserver else {
             return
         }
@@ -1398,7 +1398,7 @@ extension GroupCallViewController: GroupCallObserver {
 
     func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason) {
         AssertIsOnMainThread()
-        owsAssert(self.groupCall === call)
+        owsPrecondition(self.groupCall === call)
         guard self.isReadyToHandleObserver else {
             return
         }
@@ -1470,7 +1470,7 @@ extension GroupCallViewController: GroupCallObserver {
 
     func groupCallReceivedReactions(_ call: GroupCall, reactions: [SignalRingRTC.Reaction]) {
         AssertIsOnMainThread()
-        owsAssert(self.groupCall === call)
+        owsPrecondition(self.groupCall === call)
         guard self.isReadyToHandleObserver else {
             return
         }
@@ -1508,7 +1508,7 @@ extension GroupCallViewController: GroupCallObserver {
 
     func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [DemuxId]) {
         AssertIsOnMainThread()
-        owsAssert(self.groupCall === call)
+        owsPrecondition(self.groupCall === call)
         guard self.isReadyToHandleObserver else {
             return
         }
@@ -1518,7 +1518,7 @@ extension GroupCallViewController: GroupCallObserver {
 
     func handleUntrustedIdentityError(_ call: GroupCall) {
         AssertIsOnMainThread()
-        owsAssert(self.groupCall === call)
+        owsPrecondition(self.groupCall === call)
         guard self.isReadyToHandleObserver else {
             return
         }

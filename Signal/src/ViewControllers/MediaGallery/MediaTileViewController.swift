@@ -40,7 +40,7 @@ extension MediaTileViewController: MediaGalleryCollectionViewUpdaterDelegate {
 
     func updaterDidFinish(numberOfSectionsBefore: Int, numberOfSectionsAfter: Int) {
         Logger.debug("\(numberOfSectionsBefore) -> \(numberOfSectionsAfter)")
-        owsAssert(numberOfSectionsAfter == mediaGallery.galleryDates.count)
+        owsPrecondition(numberOfSectionsAfter == mediaGallery.galleryDates.count)
         if numberOfSectionsBefore == 0 && numberOfSectionsAfter > 0 {
             // Adding a "load newer" section. It goes at the end.
             collectionView?.insertSections(IndexSet(integer: localSection(numberOfSectionsAfter)))

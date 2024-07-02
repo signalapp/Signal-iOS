@@ -291,7 +291,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     private func updateIsLocalAudioMutedWithMicrophonePermission(call: SignalCall, isLocalAudioMuted: Bool) {
         AssertIsOnMainThread()
-        owsAssert(call === callServiceState.currentCall)
+        owsPrecondition(call === callServiceState.currentCall)
 
         switch call.mode {
         case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
@@ -346,7 +346,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
 
     private func updateIsLocalVideoMutedWithCameraPermissions(call: SignalCall, isLocalVideoMuted: Bool) {
         AssertIsOnMainThread()
-        owsAssert(call === callServiceState.currentCall)
+        owsPrecondition(call === callServiceState.currentCall)
 
         switch call.mode {
         case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
@@ -949,7 +949,7 @@ extension CallService: GroupCallObserver {
         case nil, .individual:
             owsFail("Can't receive callback without an active group call")
         case .groupThread(let currentCall as GroupCall), .callLink(let currentCall as GroupCall):
-            owsAssert(currentCall === groupCall)
+            owsPrecondition(currentCall === groupCall)
             if currentCall.shouldTerminateOnEndEvent {
                 callServiceState.terminateCall(call!)
             }

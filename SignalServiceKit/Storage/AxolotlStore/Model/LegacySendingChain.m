@@ -41,8 +41,8 @@ static NSString *const kCoderSenderRatchet = @"kCoderSenderRatchet";
 {
     self = [super init];
 
-    OWSAssert(chainKey.key.length == 32);
-    OWSAssert(keyPair);
+    OWSPrecondition(chainKey.key.length == 32);
+    OWSPrecondition(keyPair);
 
     if (self) {
         _chainKey = chainKey;

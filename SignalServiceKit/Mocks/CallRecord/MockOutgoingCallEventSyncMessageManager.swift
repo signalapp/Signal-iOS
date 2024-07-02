@@ -16,7 +16,7 @@ class MockOutgoingCallEventSyncMessageManager: OutgoingCallEventSyncMessageManag
         callEventTimestamp: UInt64,
         tx: DBWriteTransaction
     ) {
-        owsAssert(expectedCallEvent == callEvent)
+        owsPrecondition(expectedCallEvent == callEvent)
         syncMessageSendCount += 1
     }
 
@@ -26,7 +26,7 @@ class MockOutgoingCallEventSyncMessageManager: OutgoingCallEventSyncMessageManag
         callEvent: CallEvent,
         tx: DBWriteTransaction
     ) {
-        owsAssert(expectedCallEvent == callEvent)
+        owsPrecondition(expectedCallEvent == callEvent)
         syncMessageSendCount += 1
     }
 }

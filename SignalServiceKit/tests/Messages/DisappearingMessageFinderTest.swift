@@ -38,7 +38,7 @@ final class DisappearingMessageFinderTest: SSKBaseTest {
         write { transaction -> TSIncomingMessage in
             // It only makes sense to "mark as read" if expiration hasn't started,
             // since we don't start expiration for unread incoming messages.
-            owsAssert(!markAsRead || expireStartedAt == 0)
+            owsPrecondition(!markAsRead || expireStartedAt == 0)
 
             let thread = self.thread(with: transaction)
 

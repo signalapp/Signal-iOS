@@ -54,7 +54,7 @@ public class MockSSKEnvironment: NSObject {
             backgroundScheduler: SyncScheduler(),
             mainScheduler: SyncScheduler()
         )
-        owsAssert(finalContinuation.isSealed)
+        owsPrecondition(finalContinuation.isSealed)
     }
 
     @objc

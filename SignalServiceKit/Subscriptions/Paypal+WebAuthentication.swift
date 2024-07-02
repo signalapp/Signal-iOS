@@ -26,7 +26,7 @@ public extension Paypal {
         )
 
         session.presentationContextProvider = presentationContext
-        owsAssert(
+        owsPrecondition(
             session.start(),
             "[Donations] Failed to start PayPal authentication session. Was it set up correctly?"
         )

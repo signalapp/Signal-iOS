@@ -1124,7 +1124,7 @@ final class IndividualCallService: CallServiceStateObserver {
      */
     private func handleConnected(call: SignalCall) {
         AssertIsOnMainThread()
-        owsAssert(call === callServiceState.currentCall)
+        owsPrecondition(call === callServiceState.currentCall)
         Logger.info("call: \(call)")
 
         // End the background task.

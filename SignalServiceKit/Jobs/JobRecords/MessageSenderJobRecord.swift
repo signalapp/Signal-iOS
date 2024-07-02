@@ -150,7 +150,7 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
         transientMessage: TSOutgoingMessage,
         isHighPriority: Bool
     ) {
-        owsAssert(
+        owsPrecondition(
             transientMessage.shouldBeSaved.negated
             && !(transientMessage is OutgoingStoryMessage)
             && !(transientMessage is OWSSyncContactsMessage),

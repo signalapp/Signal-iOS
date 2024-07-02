@@ -207,7 +207,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     private func setAppIsReady() {
         Logger.debug("")
         AssertIsOnMainThread()
-        owsAssert(!AppReadiness.isAppReady)
+        owsPrecondition(!AppReadiness.isAppReady)
 
         // We don't need to use LaunchJobs in the SAE.
 

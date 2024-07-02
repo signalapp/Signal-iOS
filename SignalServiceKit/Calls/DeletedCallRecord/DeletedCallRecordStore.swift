@@ -202,7 +202,7 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
                 equalityClauses.append("\(column.rawValue) = ?")
                 equalityArgs.append(value)
             case .ascending(let column):
-                owsAssert(
+                owsPrecondition(
                     orderingClause == nil,
                     "Multiple ordering clauses! How did that happen?"
                 )

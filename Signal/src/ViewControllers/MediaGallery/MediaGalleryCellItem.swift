@@ -108,7 +108,7 @@ class MediaGalleryCellItemPhotoVideo: PhotoGridItem {
     }
 
     private var videoDurationPromise: Promise<TimeInterval> {
-        owsAssert(galleryItem.isVideo)
+        owsPrecondition(galleryItem.isVideo)
         switch galleryItem.attachmentStream.attachmentStream.concreteStreamType {
         case .legacy(let tSAttachment):
             return TSAttachmentVideoDurationHelper.shared.promisedDuration(

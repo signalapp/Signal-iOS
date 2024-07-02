@@ -31,8 +31,8 @@ public class SMKUDAccessKey: NSObject {
 
     /// Used to compose multiple Unidentified-Access-Keys for the multiRecipient endpoint
     public static func ^ (lhs: SMKUDAccessKey, rhs: SMKUDAccessKey) -> SMKUDAccessKey {
-        owsAssert(lhs.keyData.count == SMKUDAccessKey.kUDAccessKeyLength)
-        owsAssert(rhs.keyData.count == SMKUDAccessKey.kUDAccessKeyLength)
+        owsPrecondition(lhs.keyData.count == SMKUDAccessKey.kUDAccessKeyLength)
+        owsPrecondition(rhs.keyData.count == SMKUDAccessKey.kUDAccessKeyLength)
 
         let xoredBytes = zip(lhs.keyData, rhs.keyData).map(^)
         return .init(keyData: Data(xoredBytes))

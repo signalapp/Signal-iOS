@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSData *)join:(NSArray<NSData *> *)datas
 {
-    OWSAssert(datas);
+    OWSPrecondition(datas);
 
     NSMutableData *result = [NSMutableData new];
     for (NSData *data in datas) {

@@ -33,7 +33,7 @@ public extension TSInfoMessage {
         groupThread: TSGroupThread,
         updateItems: [PersistableGroupUpdateItem]
     ) -> TSInfoMessage {
-        owsAssert(!updateItems.isEmpty)
+        owsPrecondition(!updateItems.isEmpty)
 
         var userInfoForNewMessage: [InfoMessageUserInfoKey: Any] = [:]
 

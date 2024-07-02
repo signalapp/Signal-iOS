@@ -47,7 +47,7 @@ public struct ReceiptCredentialRequestError: Codable, Equatable {
         amount: FiatMoney,
         paymentMethod: DonationPaymentMethod
     ) {
-        owsAssert(
+        owsPrecondition(
             chargeFailureCodeIfPaymentFailed == nil || errorCode == .paymentFailed,
             "Charge failure must only be populated if the error code is payment failed!"
         )

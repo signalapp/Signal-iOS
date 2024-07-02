@@ -100,7 +100,7 @@ NS_ASSUME_NONNULL_BEGIN
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         NSArray<NSString *> *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-        OWSAssert(paths.count >= 1);
+        OWSPrecondition(paths.count >= 1);
         result = paths[0];
     });
     return result;
@@ -267,7 +267,7 @@ NSString *OWSTemporaryDirectory(void)
         NSString *dirName = [NSString stringWithFormat:@"ows_temp_%@", NSUUID.UUID.UUIDString];
         dirPath = [NSTemporaryDirectory() stringByAppendingPathComponent:dirName];
         BOOL success = [OWSFileSystem ensureDirectoryExists:dirPath fileProtectionType:NSFileProtectionComplete];
-        OWSCAssert(success);
+        OWSCPrecondition(success);
     });
     return dirPath;
 }
@@ -277,7 +277,7 @@ NSString *OWSTemporaryDirectoryAccessibleAfterFirstAuth(void)
     NSString *dirPath = NSTemporaryDirectory();
     BOOL success = [OWSFileSystem ensureDirectoryExists:dirPath
                                      fileProtectionType:NSFileProtectionCompleteUntilFirstUserAuthentication];
-    OWSCAssert(success);
+    OWSCPrecondition(success);
     return dirPath;
 }
 

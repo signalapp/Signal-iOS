@@ -196,7 +196,7 @@ class GroupUpdateInfoMessageInserterImpl: GroupUpdateInfoMessageInserter {
         /// compute above will never be empty. Even if we get a strange group
         /// update that somehow doesn't produce a diff, we'll get back a list
         /// with a single "generic group update" item in it.
-        owsAssert(!updateItemsForNewMessage.isEmpty)
+        owsPrecondition(!updateItemsForNewMessage.isEmpty)
         let infoMessage = TSInfoMessage.newGroupUpdateInfoMessage(
             timestamp: dateProvider().ows_millisecondsSince1970,
             spamReportingMetadata: spamReportingMetadata,

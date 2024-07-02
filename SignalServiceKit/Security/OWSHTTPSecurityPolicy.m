@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSData *data = [NSData dataWithContentsOfFile:path];
-    OWSAssert(data.length > 0);
+    OWSPrecondition(data.length > 0);
 
     return data;
 }
@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSData *certificateData = [self dataFromCertificateFileForService:service];
     SecCertificateRef certRef = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)(certificateData));
-    OWSAssert(certRef);
+    OWSPrecondition(certRef);
     return certRef;
 }
 

@@ -93,7 +93,7 @@ extension AddToBlockListViewController: RecipientPickerDelegate, UsernameLinkSca
         case .address(let address):
             #if DEBUG
             let isBlocked = blockingManager.isAddressBlocked(address, transaction: transaction)
-            owsAssert(!isBlocked, "It should be impossible to see a blocked connection in this view")
+            owsPrecondition(!isBlocked, "It should be impossible to see a blocked connection in this view")
             #endif
             return nil
         case .group(let thread):

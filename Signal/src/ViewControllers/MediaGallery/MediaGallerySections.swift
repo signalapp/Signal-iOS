@@ -234,7 +234,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
         }
 
         internal mutating func loadInitialSection(for date: GalleryDate, transaction: SDSAnyReadTransaction) {
-            owsAssert(itemsBySection.isEmpty, "already has sections, use loadEarlierSections or loadLaterSections")
+            owsPrecondition(itemsBySection.isEmpty, "already has sections, use loadEarlierSections or loadLaterSections")
             let rowids = loader.rowIdsAndDatesOfItemsInSection(
                 for: date,
                 offset: 0,
@@ -474,7 +474,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
         ///
         /// This is essentially a more powerful version of `indexPath(after:)`.
         internal func resolveNaiveEndIndex(_ naiveIndex: Int, relativeToSection initialSectionIndex: Int) -> MediaGalleryIndexPath? {
-            owsAssert(naiveIndex >= 0, "should not be used for indexes before the current section")
+            owsPrecondition(naiveIndex >= 0, "should not be used for indexes before the current section")
 
             var currentSectionIndex = initialSectionIndex
             var limitInCurrentSection = naiveIndex
@@ -632,7 +632,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
             guard let naiveRange = resolveLoadItemsRequest(request) else {
                 return IndexSet()
             }
-            owsAssert(!naiveRange.range.isEmpty)
+            owsPrecondition(!naiveRange.range.isEmpty)
 
             var numNewlyLoadedEarlierSections: Int = 0
             var numNewlyLoadedLaterSections: Int = 0
@@ -694,7 +694,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
 
                 var slot = slots[itemIndex]
                 if let loadedItem = slot.item {
-                    owsAssert(loadedItem.attachmentId == resourceId)
+                    owsPrecondition(loadedItem.attachmentId == resourceId)
                     return
                 }
 
@@ -1164,7 +1164,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
     ///
     /// `path` must be a valid path for the items currently loaded.
     internal func loadedItem(at path: MediaGalleryIndexPath) -> Item? {
-        owsAssert(path.count == 2)
+        owsPrecondition(path.count == 2)
         guard let slot = state.itemsBySection[safe: path.section]?.value[safe: path.item] else {
             owsFailDebug("invalid path \(path)")
             return nil
@@ -1193,7 +1193,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
     ///
     /// If `path` refers to the last item in the loaded sections, returns `nil`.
     internal func indexPath(after path: MediaGalleryIndexPath) -> MediaGalleryIndexPath? {
-        owsAssert(path.count == 2)
+        owsPrecondition(path.count == 2)
         var result = path
 
         // Next item?
@@ -1218,7 +1218,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
     ///
     /// If `path` refers to the first item in the loaded sections, returns `nil`.
     internal func indexPath(before path: MediaGalleryIndexPath) -> MediaGalleryIndexPath? {
-        owsAssert(path.count == 2)
+        owsPrecondition(path.count == 2)
         var result = path
 
         // Previous item?

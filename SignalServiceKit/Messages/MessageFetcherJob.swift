@@ -215,7 +215,7 @@ public class MessageFetcherJob: NSObject {
     }
 
     private var isReadyToFetchMessagesViaRest: Bool {
-        owsAssert(CurrentAppContext().isNSE)
+        owsPrecondition(CurrentAppContext().isNSE)
 
         // The NSE has tight memory constraints.
         // For perf reasons, MessageProcessor keeps its queue in memory.

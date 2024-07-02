@@ -33,14 +33,14 @@ class ScrubbingLogFormatter: NSObject, DDLogFormatter {
             // It's important to have some padding because we use that to mark the end
             // of the groupId. If we don't have padding, then we need to sort the
             // groupId Replacements from longest to shortest.
-            owsAssert(base64Padding != 0)
+            owsPrecondition(base64Padding != 0)
 
             let unredactedLength = 3
             let redactedLength = base64Length - base64Padding - unredactedLength
 
             // This assertion exists to prevent someone from updating the values and forgetting to
             // update things here.
-            owsAssert(prefix == "g" && redactedLength >= 1)
+            owsPrecondition(prefix == "g" && redactedLength >= 1)
 
             let base64Character = "A-Za-z0-9+/"
             let paddingCharacter = "="

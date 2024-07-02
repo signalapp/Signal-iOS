@@ -85,7 +85,7 @@ final class WebSocketPromise: SSKWebSocketDelegate {
     func waitForResponse() -> Promise<Data> {
         let (promise, future) = Promise<Data>.pending()
         updateState { state in
-            owsAssert(state.waitingState == nil)
+            owsPrecondition(state.waitingState == nil)
             state.waitingState = .waitingForResponse(future)
         }
         return promise
@@ -107,7 +107,7 @@ final class WebSocketPromise: SSKWebSocketDelegate {
     func waitForAllResponses() -> Promise<[Data]> {
         let (promise, future) = Promise<[Data]>.pending()
         updateState { state in
-            owsAssert(state.waitingState == nil)
+            owsPrecondition(state.waitingState == nil)
             state.waitingState = .waitingForAllResponses(future)
         }
         return promise

@@ -34,8 +34,8 @@ static NSString *const kCoderIndex = @"kCoderIndex";
 
 - (instancetype)initWithData:(NSData *)chainKey index:(int)index
 {
-    OWSAssert(chainKey.length == 32);
-    OWSAssert(index >= 0);
+    OWSPrecondition(chainKey.length == 32);
+    OWSPrecondition(index >= 0);
 
     self = [super init];
 

@@ -485,7 +485,7 @@ private extension IncomingCallEventSyncMessageManagerImpl {
         syncMessageTimestamp: UInt64,
         tx: DBWriteTransaction
     ) {
-        owsAssert(callInteraction.uniqueThreadId == thread.uniqueId)
+        owsPrecondition(callInteraction.uniqueThreadId == thread.uniqueId)
 
         markAsReadShims.markThingsAsReadForIncomingSyncMessage(
             callInteraction: callInteraction,

@@ -25,7 +25,7 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
         qrCodeTemplateImage: UIImage,
         delegate: UsernameLinkQRCodeColorPickerDelegate
     ) {
-        owsAssert(qrCodeTemplateImage.renderingMode == .alwaysTemplate)
+        owsPrecondition(qrCodeTemplateImage.renderingMode == .alwaysTemplate)
 
         self.startingColor = currentColor
         self.currentColor = currentColor

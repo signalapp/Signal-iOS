@@ -392,7 +392,7 @@ public struct GroupV2Change {
     public init(snapshot: GroupV2Snapshot?,
                 changeActionsProto: GroupsProtoGroupChangeActions?,
                 downloadedAvatars: GroupV2DownloadedAvatars) {
-        owsAssert(snapshot != nil || changeActionsProto != nil)
+        owsPrecondition(snapshot != nil || changeActionsProto != nil)
         self.snapshot = snapshot
         self.changeActionsProto = changeActionsProto
         self.downloadedAvatars = downloadedAvatars
@@ -578,7 +578,7 @@ public class MockGroupsV2: GroupsV2 {
 
     public func groupId(forGroupSecretParamsData groupSecretParamsData: Data) throws -> Data {
         if CurrentAppContext().isRunningTests {
-            owsAssert(groupSecretParamsData.count >= 32)
+            owsPrecondition(groupSecretParamsData.count >= 32)
             return groupSecretParamsData.subdata(in: Int(0)..<Int(32))
         }
         owsFail("Not implemented.")
@@ -586,8 +586,8 @@ public class MockGroupsV2: GroupsV2 {
 
     public func v2GroupId(forV1GroupId v1GroupId: Data) -> Data? {
         let v2GroupId = v1GroupId + v1GroupId
-        owsAssert(GroupManager.isV1GroupId(v1GroupId))
-        owsAssert(GroupManager.isV2GroupId(v2GroupId))
+        owsPrecondition(GroupManager.isV1GroupId(v1GroupId))
+        owsPrecondition(GroupManager.isV2GroupId(v2GroupId))
         return v2GroupId
     }
 

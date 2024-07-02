@@ -22,7 +22,7 @@ static NSString *const kCoderBaseKey = @"kCoderBaseKey";
 
 - (instancetype)initWithBaseKey:(NSData *)baseKey preKeyId:(int)preKeyId signedPreKeyId:(int)signedPrekeyId
 {
-    OWSAssert(baseKey);
+    OWSPrecondition(baseKey);
 
     self = [super init];
     if (self) {
@@ -143,8 +143,8 @@ static NSString *const kCoderPendingPrekey = @"kCoderPendingPrekey";
 
 - (void)setSenderChain:(ECKeyPair *)senderRatchetKeyPair chainKey:(LegacyChainKey *)chainKey
 {
-    OWSAssert(senderRatchetKeyPair);
-    OWSAssert(chainKey);
+    OWSPrecondition(senderRatchetKeyPair);
+    OWSPrecondition(chainKey);
 
     self.sendingChain = [[LegacySendingChain alloc] initWithChainKey:chainKey
                                                 senderRatchetKeyPair:senderRatchetKeyPair];
@@ -157,7 +157,7 @@ static NSString *const kCoderPendingPrekey = @"kCoderPendingPrekey";
 
 - (void)setUnacknowledgedPreKeyMessage:(int)preKeyId signedPreKey:(int)signedPreKeyId baseKey:(NSData *)baseKey
 {
-    OWSAssert(baseKey);
+    OWSPrecondition(baseKey);
 
     LegacyPendingPreKey *pendingPreKey = [[LegacyPendingPreKey alloc] initWithBaseKey:baseKey
                                                                              preKeyId:preKeyId

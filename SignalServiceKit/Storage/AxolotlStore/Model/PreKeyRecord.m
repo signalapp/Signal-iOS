@@ -21,7 +21,7 @@ static NSString *const kCoderCreatedAt = @"kCoderCreatedAt";
 
 - (instancetype)initWithId:(int)identifier keyPair:(ECKeyPair *)keyPair createdAt:(NSDate *)createdAt
 {
-    OWSAssert(keyPair);
+    OWSPrecondition(keyPair);
 
     self = [super init];
 

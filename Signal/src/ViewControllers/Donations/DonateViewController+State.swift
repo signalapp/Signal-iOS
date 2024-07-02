@@ -310,7 +310,7 @@ extension DonateViewController {
             }
 
             fileprivate func selectSubscriptionLevel(_ newValue: SubscriptionLevel) -> MonthlyState {
-                owsAssert(subscriptionLevels.contains(newValue), "Subscription level not found")
+                owsPrecondition(subscriptionLevels.contains(newValue), "Subscription level not found")
                 return MonthlyState(
                     subscriptionLevels: subscriptionLevels,
                     selectedCurrencyCode: selectedCurrencyCode,

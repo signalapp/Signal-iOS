@@ -61,10 +61,10 @@ extension DeleteForMeSyncMessage {
             func registerMessageDeletedFromThread(_ message: TSMessage) {
                 do {
                     let messageRowId = message.sqliteRowId!
-                    owsAssert(messageRowId < lastAddedMessageRowId)
+                    owsPrecondition(messageRowId < lastAddedMessageRowId)
                     lastAddedMessageRowId = messageRowId
 
-                    owsAssert(message.uniqueThreadId == threadUniqueId)
+                    owsPrecondition(message.uniqueThreadId == threadUniqueId)
                 }
 
                 guard let addressableMessage: AddressableMessage = .addressing(

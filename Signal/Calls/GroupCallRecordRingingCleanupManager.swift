@@ -131,7 +131,7 @@ class GroupCallRecordRingingCleanupManager {
         groupThread: TSGroupThread,
         callRecords: [CallRecord]
     ) async throws {
-        owsAssert(callRecords.allSatisfy { $0.threadRowId == groupThread.sqliteRowId! })
+        owsPrecondition(callRecords.allSatisfy { $0.threadRowId == groupThread.sqliteRowId! })
 
         let peekInfo = try await self.groupCallPeekClient.fetchPeekInfo(
             groupThread: groupThread

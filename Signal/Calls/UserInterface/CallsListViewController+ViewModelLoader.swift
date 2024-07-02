@@ -58,7 +58,7 @@ extension CallsListViewController {
             maxCachedViewModelCount: Int = 150,
             maxCoalescedCallsInOneViewModel: UInt = 50
         ) {
-            owsAssert(
+            owsPrecondition(
                 maxCachedViewModelCount >= viewModelPageSize,
                 "Must be able to cache at least one page of view models!"
             )
@@ -265,7 +265,7 @@ extension CallsListViewController {
                 tx: tx
             )
 
-            owsAssert(rehydratedCount <= viewModelsToLoadCount)
+            owsPrecondition(rehydratedCount <= viewModelsToLoadCount)
             viewModelsToLoadCount -= rehydratedCount
 
             if viewModelsToLoadCount == 0 {
@@ -325,7 +325,7 @@ extension CallsListViewController {
 
                     return true
                 case .loaded(let newViewModels):
-                    owsAssert(newViewModels.count > 0)
+                    owsPrecondition(newViewModels.count > 0)
 
                     loadedViewModelReferences.prepend(
                         newElements: newViewModels.map { $0.reference }
@@ -456,7 +456,7 @@ extension CallsListViewController {
             maxCount: UInt,
             tx: DBReadTransaction
         ) -> [CallViewModel] {
-            owsAssert(
+            owsPrecondition(
                 cachedViewModels.isEmpty || cachedViewModels.last!.reference == loadedViewModelReferences.last!,
                 "Unexpectedly loading brand new view models, but last loaded view model reference does not have a cached view model!"
             )
@@ -513,7 +513,7 @@ extension CallsListViewController {
                 }
             }
 
-            owsAssert(
+            owsPrecondition(
                 groupedCallRecordsForViewModels.allSatisfy { !$0.isEmpty },
                 "Had an empty grouping for a view model. How did this happen?"
             )
@@ -583,7 +583,7 @@ extension CallsListViewController {
             currentNewestViewModel: CallViewModel,
             tx: DBReadTransaction
         ) -> LoadBrandNewViewModelsNewerResult {
-            owsAssert(currentNewestViewModel.reference == loadedViewModelReferences.first)
+            owsPrecondition(currentNewestViewModel.reference == loadedViewModelReferences.first)
 
             let newCallRecordsCursor: CallRecordCursor = callRecordLoader.loadCallRecords(
                 loadDirection: .newerThan(
@@ -604,7 +604,7 @@ extension CallsListViewController {
             ///
             /// We'll reverse them here, and return them ordered descending, to
             /// make things easier on our callers.
-            owsAssert(pageOfNewCallRecordsAsc.isSortedByTimestamp(.ascending))
+            owsPrecondition(pageOfNewCallRecordsAsc.isSortedByTimestamp(.ascending))
             let pageOfNewCallRecords = pageOfNewCallRecordsAsc.reversed()
 
             if pageOfNewCallRecords.isEmpty {

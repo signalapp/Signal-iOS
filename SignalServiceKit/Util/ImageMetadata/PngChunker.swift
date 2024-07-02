@@ -183,7 +183,7 @@ public class PngChunker {
 
 extension Data {
     func asPngUInt32() throws -> UInt32 {
-        owsAssert(count == 4)
+        owsPrecondition(count == 4)
         var result: UInt32 = 0
         for (i, byte) in reversed().enumerated() {
             result += UInt32(byte) * (1 << (8 * i))

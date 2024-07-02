@@ -30,7 +30,7 @@ public struct OrderedDictionary<KeyType: Hashable, ValueType> {
     }
 
     public mutating func insert(key: KeyType, at index: Int, value: ValueType) {
-        owsAssert(keyValueMap[key] == nil, "Key already in dictionary: \(key)")
+        owsPrecondition(keyValueMap[key] == nil, "Key already in dictionary: \(key)")
         owsAssertDebug(!orderedKeys.contains(key), "Unexpected duplicate key in key list: \(key)")
 
         keyValueMap[key] = value
@@ -125,7 +125,7 @@ extension OrderedDictionary: RandomAccessCollection {
     public var endIndex: Int { self.orderedKeys.count }
 
     public subscript(position: Int) -> (key: KeyType, value: ValueType) {
-        owsAssert(indices.contains(position))
+        owsPrecondition(indices.contains(position))
         let key = orderedKeys[position]
         guard let value = keyValueMap[key] else {
             owsFail("Missing value")

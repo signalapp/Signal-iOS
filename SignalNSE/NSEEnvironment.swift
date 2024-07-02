@@ -164,7 +164,7 @@ class NSEEnvironment: Dependencies {
 
     private func setAppIsReady() {
         AssertIsOnMainThread()
-        owsAssert(!AppReadiness.isAppReady)
+        owsPrecondition(!AppReadiness.isAppReady)
 
         // Note that this does much more than set a flag; it will also run all deferred blocks.
         AppReadiness.setAppIsReady()

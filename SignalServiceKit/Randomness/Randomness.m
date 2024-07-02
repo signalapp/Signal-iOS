@@ -22,8 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
     NSData *copy = [randomBytes copy];
 
-    OWSAssert(copy != nil);
-    OWSAssert(copy.length == numberBytes);
+    OWSPrecondition(copy != nil);
+    OWSPrecondition(copy.length == numberBytes);
     return copy;
 }
 

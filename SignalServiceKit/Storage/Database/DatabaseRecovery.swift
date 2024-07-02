@@ -481,7 +481,7 @@ public extension DatabaseRecovery {
             from: SDSDatabaseStorage,
             to: SDSDatabaseStorage
         ) -> TableCopyResult {
-            owsAssert(SqliteUtil.isSafe(sqlName: tableName))
+            owsPrecondition(SqliteUtil.isSafe(sqlName: tableName))
 
             do {
                 return try from.readThrows { fromTransaction -> TableCopyResult in
@@ -554,7 +554,7 @@ public extension DatabaseRecovery {
         }
 
         private static func getColumnNames(db: Database, tableName: String) throws -> [String] {
-            owsAssert(SqliteUtil.isSafe(sqlName: tableName))
+            owsPrecondition(SqliteUtil.isSafe(sqlName: tableName))
 
             var result = [String]()
             let cursor = try Row.fetchCursor(db, sql: "PRAGMA table_info(\(tableName))")
@@ -568,9 +568,9 @@ public extension DatabaseRecovery {
         }
 
         private static func insertSql(tableName: String, columnNames: [String]) -> String {
-            owsAssert(SqliteUtil.isSafe(sqlName: tableName))
+            owsPrecondition(SqliteUtil.isSafe(sqlName: tableName))
             for columnName in columnNames {
-                owsAssert(SqliteUtil.isSafe(sqlName: columnName))
+                owsPrecondition(SqliteUtil.isSafe(sqlName: columnName))
             }
 
             let columnNamesSql = columnNames.joined(separator: ", ")

@@ -642,7 +642,7 @@ public class SubscriptionManagerImpl: NSObject {
             errorCode: ReceiptCredentialRequestError.ErrorCode,
             chargeFailureCodeIfPaymentFailed: String? = nil
         ) {
-            owsAssert(
+            owsPrecondition(
                 chargeFailureCodeIfPaymentFailed == nil || errorCode == .paymentFailed,
                 "Must only provide a charge failure if payment failed!"
             )

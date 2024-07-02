@@ -815,19 +815,19 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         deps: Dependencies,
         tx: SDSAnyReadTransaction
     ) -> CallViewModel {
-        owsAssert(
+        owsPrecondition(
             coalescedCallRecords.allSatisfy { $0.threadRowId == primaryCallRecord.threadRowId },
             "Coalesced call records were for a different thread than the primary!"
         )
-        owsAssert(
+        owsPrecondition(
             coalescedCallRecords.allSatisfy { $0.callDirection == primaryCallRecord.callDirection },
             "Coalesced call records were of a different direction than the primary!"
         )
-        owsAssert(
+        owsPrecondition(
             coalescedCallRecords.allSatisfy { $0.callStatus.isMissedCall == primaryCallRecord.callStatus.isMissedCall },
             "Coalesced call records were of a different missed status than the primary!"
         )
-        owsAssert(
+        owsPrecondition(
             ([primaryCallRecord] + coalescedCallRecords).isSortedByTimestamp(.descending),
             "Primary and coalesced call records were not ordered descending by timestamp!"
         )
@@ -1308,7 +1308,7 @@ extension CallsListViewController: UITableViewDelegate {
     private func viewModel(
         forIndexPathThatShouldHaveOne indexPath: IndexPath
     ) -> CallViewModel? {
-        owsAssert(
+        owsPrecondition(
             indexPath.section == Section.existingCalls.rawValue,
             "Unexpected section for index path: \(indexPath.section)"
         )

@@ -119,7 +119,7 @@ extension Bitmaps.Image {
         dimensionPercentage percentage: CGFloat,
         paddingPoints: Int
     ) -> Bitmaps.Rect {
-        owsAssert(
+        owsPrecondition(
             percentage < 0.5, // Roughly the dimension percentage for deadzoning 30% of the surface area
             "Deadzoning too much of a QR code means it might not scan!"
         )

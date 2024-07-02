@@ -15,7 +15,7 @@ public class StickerPackInfo: MTLModel {
 
     @objc
     public init(packId: Data, packKey: Data) {
-        owsAssert(!packId.isEmpty && packKey.count == StickerManager.packKeyLength)
+        owsPrecondition(!packId.isEmpty && packKey.count == StickerManager.packKeyLength)
         self.packId = packId
         self.packKey = packKey
 

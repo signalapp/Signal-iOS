@@ -38,7 +38,7 @@ class ContactShareFieldBase<ContactFieldType: OWSContactField>: ContactShareFiel
 class ContactSharePhoneNumber: ContactShareFieldBase<OWSContactPhoneNumber> {
 
     override func applyToContact(contact: ContactShareDraft) {
-        owsAssert(isIncluded)
+        owsPrecondition(isIncluded)
 
         var values = [OWSContactPhoneNumber]()
         values += contact.phoneNumbers
@@ -50,7 +50,7 @@ class ContactSharePhoneNumber: ContactShareFieldBase<OWSContactPhoneNumber> {
 class ContactShareEmail: ContactShareFieldBase<OWSContactEmail> {
 
     override func applyToContact(contact: ContactShareDraft) {
-        owsAssert(isIncluded)
+        owsPrecondition(isIncluded)
 
         var values = [OWSContactEmail]()
         values += contact.emails
@@ -62,7 +62,7 @@ class ContactShareEmail: ContactShareFieldBase<OWSContactEmail> {
 class ContactShareAddress: ContactShareFieldBase<OWSContactAddress> {
 
     override func applyToContact(contact: ContactShareDraft) {
-        owsAssert(isIncluded)
+        owsPrecondition(isIncluded)
 
         var values = [OWSContactAddress]()
         values += contact.addresses
@@ -94,7 +94,7 @@ class OWSContactAvatar: NSObject, OWSContactField {
 class ContactShareAvatarField: ContactShareFieldBase<OWSContactAvatar> {
 
     override func applyToContact(contact: ContactShareDraft) {
-        owsAssert(isIncluded)
+        owsPrecondition(isIncluded)
 
         contact.avatarImageData = value.avatarData
         contact.existingAvatarAttachment = value.existingAttachment

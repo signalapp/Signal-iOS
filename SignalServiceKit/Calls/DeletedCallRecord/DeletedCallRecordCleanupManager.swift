@@ -54,7 +54,7 @@ final class DeletedCallRecordCleanupManagerImpl: DeletedCallRecordCleanupManager
 
         func release() {
             let isUnlocked = lock.tryToClearFlag()
-            owsAssert(isUnlocked)
+            owsPrecondition(isUnlocked)
         }
     }
 
@@ -151,7 +151,7 @@ final class DeletedCallRecordCleanupManagerImpl: DeletedCallRecordCleanupManager
     private func scheduleCleanup(
         beginningWith recordToScheduleExpiration: DeletedCallRecord
     ) {
-        owsAssert(cleanupLock.get())
+        owsPrecondition(cleanupLock.get())
 
         let secondsUntilNextCleanupPass: TimeInterval = max(
             recordToScheduleExpiration.secondsUntilExpiration(

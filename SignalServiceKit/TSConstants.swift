@@ -147,7 +147,7 @@ public struct MrEnclave: Equatable {
         // This is a constant -- it should never fail to parse.
         self.dataValue = Data.data(fromHex: self.stringValue)!
         // All of our MrEnclave values are currently 32 bytes.
-        owsAssert(self.dataValue.count == 32)
+        owsPrecondition(self.dataValue.count == 32)
     }
 
     public static func == (lhs: Self, rhs: Self) -> Bool {

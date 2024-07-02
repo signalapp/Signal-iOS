@@ -18,7 +18,7 @@ final class SignedPreKeyDeletionTests: SSKBaseTest {
         var justUploadedRecord: SignedPreKeyRecord!
         for daysAgo in stride(from: 0, through: maxDaysAgo, by: 5) {
             let secondsAgo: TimeInterval = Double(daysAgo - maxDaysAgo) * kDayInterval
-            owsAssert(secondsAgo <= 0, "Time in past must be negative!")
+            owsPrecondition(secondsAgo <= 0, "Time in past must be negative!")
 
             let record = SignedPreKeyRecord(
                 id: Int32(daysAgo),
@@ -62,7 +62,7 @@ final class SignedPreKeyDeletionTests: SSKBaseTest {
             // All these keys will be considered "old", since they were created
             // more than 30 days ago.
             let secondsAgo: TimeInterval = Double(idx - 40) * kDayInterval
-            owsAssert(secondsAgo <= 0, "Time in past must be negative!")
+            owsPrecondition(secondsAgo <= 0, "Time in past must be negative!")
 
             let record = SignedPreKeyRecord(
                 id: Int32(idx),

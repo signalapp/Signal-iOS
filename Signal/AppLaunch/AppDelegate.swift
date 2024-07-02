@@ -463,8 +463,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     ) {
         Logger.info("")
         AssertIsOnMainThread()
-        owsAssert(!AppReadiness.isAppReady)
-        owsAssert(!CurrentAppContext().isRunningTests)
+        owsPrecondition(!AppReadiness.isAppReady)
+        owsPrecondition(!CurrentAppContext().isRunningTests)
 
         let appContext = launchContext.appContext
 

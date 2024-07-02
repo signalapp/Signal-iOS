@@ -37,7 +37,7 @@ public struct Currency {
         shouldSort: Bool
     ) -> [Info] {
         #if TESTABLE_BUILD
-        owsAssert(Array(codes).count == Set(codes).count)
+        owsPrecondition(Array(codes).count == Set(codes).count)
         #endif
         var infos = codes.compactMap { Info(code: $0, ignoreMissingName: ignoreMissingNames) }
         if shouldSort { infos.sort { $0.name < $1.name } }

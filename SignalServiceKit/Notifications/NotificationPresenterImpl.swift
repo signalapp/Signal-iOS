@@ -660,7 +660,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         guard previewType == .namePreview else {
             return
         }
-        owsAssert(Self.shouldShowActions(for: previewType))
+        owsPrecondition(Self.shouldShowActions(for: previewType))
 
         let senderName = contactManager.displayName(for: reaction.reactor, tx: transaction).resolvedValue()
 

@@ -124,8 +124,8 @@ public class AppSetup {
         // is locked, the download will fail if the temporary directory is
         // NSFileProtectionComplete.
         let temporaryDirectory = NSTemporaryDirectory()
-        owsAssert(OWSFileSystem.ensureDirectoryExists(temporaryDirectory))
-        owsAssert(OWSFileSystem.protectFileOrFolder(atPath: temporaryDirectory, fileProtectionType: .completeUntilFirstUserAuthentication))
+        owsPrecondition(OWSFileSystem.ensureDirectoryExists(temporaryDirectory))
+        owsPrecondition(OWSFileSystem.protectFileOrFolder(atPath: temporaryDirectory, fileProtectionType: .completeUntilFirstUserAuthentication))
 
         let tsConstants = TSConstants.shared
         let keyValueStoreFactory = testDependencies.keyValueStoreFactory ?? SDSKeyValueStoreFactory()

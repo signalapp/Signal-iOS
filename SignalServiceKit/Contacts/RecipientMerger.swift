@@ -216,7 +216,7 @@ class RecipientMergerImpl: RecipientMerger {
     ) -> SignalRecipient {
         // The caller checks this, but we assert here to maintain consistency with
         // all the other merging methods that check this themselves.
-        owsAssert(!localIdentifiers.containsAnyOf(aci: serviceIds.aci, phoneNumber: phoneNumber, pni: serviceIds.pni))
+        owsPrecondition(!localIdentifiers.containsAnyOf(aci: serviceIds.aci, phoneNumber: phoneNumber, pni: serviceIds.pni))
 
         let updatedValues = { () -> (phoneNumber: E164, pni: Pni)? in
             let pni = serviceIds.pni

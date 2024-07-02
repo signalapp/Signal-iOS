@@ -306,7 +306,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
 
     public func setIdentityKeyPair(_ keyPair: ECKeyPair?, for identity: OWSIdentity, tx: DBWriteTransaction) {
         // Under no circumstances may we *clear* our *ACI* identity key.
-        owsAssert(keyPair != nil || identity != .aci)
+        owsPrecondition(keyPair != nil || identity != .aci)
         ownIdentityKeyValueStore.setObject(keyPair, key: identity.persistenceKey, transaction: tx)
     }
 

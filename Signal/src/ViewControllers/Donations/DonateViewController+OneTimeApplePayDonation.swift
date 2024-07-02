@@ -37,7 +37,7 @@ extension DonateViewController {
                 for: .applePay(payment: payment)
             )
         }.done(on: DispatchQueue.main) { confirmedIntent -> Void in
-            owsAssert(
+            owsPrecondition(
                 confirmedIntent.redirectToUrl == nil,
                 "[Donations] There shouldn't be a 3DS redirect for Apple Pay"
             )

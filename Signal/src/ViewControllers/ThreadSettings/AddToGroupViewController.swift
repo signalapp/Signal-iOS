@@ -139,7 +139,7 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
     private func addToGroup(_ groupThread: TSGroupThread, shortName: String) {
         AssertIsOnMainThread()
-        owsAssert(groupThread.isGroupV2Thread)  // non-gv2 filtered above when fetching groups
+        owsPrecondition(groupThread.isGroupV2Thread)  // non-gv2 filtered above when fetching groups
 
         guard let serviceId = self.address.serviceId else {
             GroupViewUtils.showInvalidGroupMemberAlert(fromViewController: self)

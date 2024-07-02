@@ -10,7 +10,7 @@ public enum AccountAttributesRequestFactory {
     /// If you are updating capabilities for a secondary device, use `updateLinkedDeviceCapabilitiesRequest` instead
     public static func updatePrimaryDeviceAttributesRequest(_ attributes: AccountAttributes) -> TSRequest {
 
-        owsAssert(
+        owsPrecondition(
             DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? true,
             "Trying to set primary device attributes from secondary/linked device"
         )
@@ -36,7 +36,7 @@ public enum AccountAttributesRequestFactory {
         _ capabilities: AccountAttributes.Capabilities,
         tsAccountManager: TSAccountManager
     ) -> TSRequest {
-        owsAssert(
+        owsPrecondition(
             (tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? false).negated,
             "Trying to set seconday device attributes from primary device"
         )

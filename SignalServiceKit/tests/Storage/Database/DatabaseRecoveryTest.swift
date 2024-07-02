@@ -371,7 +371,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         let db = transaction.unwrapGrdbRead.database
         let sql = "SELECT name FROM sqlite_schema WHERE type IS 'table'"
         let allTableNames = Set((try? String.fetchAll(db, sql: sql)) ?? [])
-        owsAssert(!allTableNames.isEmpty, "No tables were found!")
+        owsPrecondition(!allTableNames.isEmpty, "No tables were found!")
 
         let tableNamesToSkip: Set<String> = ["grdb_migrations", "sqlite_sequence"]
         return allTableNames.filter { tableName in

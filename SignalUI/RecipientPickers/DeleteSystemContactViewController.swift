@@ -74,7 +74,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
 
         // This screen is for primary devices only. If a non primary
         // manages to get here bad things could happen.
-        owsAssert(DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice)
+        owsPrecondition(DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice)
 
         self.navigationItem.leftBarButtonItem = .cancelButton(dismissingFrom: self)
     }

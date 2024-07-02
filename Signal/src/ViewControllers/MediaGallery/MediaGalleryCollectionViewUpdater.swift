@@ -18,7 +18,7 @@ extension IndexSet {
     ///
     /// For example, if `self`  contains { 5, 6, 7 } then `nthIndex(1)` returns `6`.
     func nthIndex(_ n: Int) -> Element? {
-        owsAssert(n >= 0)
+        owsPrecondition(n >= 0)
         guard n < count else {
             return nil
         }
@@ -98,7 +98,7 @@ struct MediaGalleryCollectionViewUpdater {
         let originalNumberOfItems: Int
 
         mutating func remove(at i: Int) {
-            owsAssert(i < survivors.count)
+            owsPrecondition(i < survivors.count)
             if let index = survivors.nthIndex(i) {
                 // Delete an original item.
                 survivors.remove(index)

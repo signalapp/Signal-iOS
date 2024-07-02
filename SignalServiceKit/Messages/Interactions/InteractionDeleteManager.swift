@@ -213,7 +213,7 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
     ) {
         switch sideEffects.deleteForMeSyncMessage {
         case .sendSyncMessage(let interactionsThread):
-            owsAssert(
+            owsPrecondition(
                 interactions.allSatisfy { $0.uniqueThreadId == interactionsThread.uniqueId },
                 "Thread did not match interaction!"
             )

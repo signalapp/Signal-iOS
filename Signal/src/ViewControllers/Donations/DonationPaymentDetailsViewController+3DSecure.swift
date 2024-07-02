@@ -9,7 +9,7 @@ import SignalServiceKit
 
 extension DonationPaymentDetailsViewController {
     func show3DS(for redirectUrl: URL) -> Promise<String> {
-        owsAssert(
+        owsPrecondition(
             threeDSecureAuthenticationSession == nil,
             "[Donations] Unexpectedly already had a 3DS authentication session going"
         )
@@ -53,7 +53,7 @@ extension DonationPaymentDetailsViewController {
 
         session.presentationContextProvider = self
 
-        owsAssert(
+        owsPrecondition(
             session.start(),
             "[Donations] Failed to start 3DS authentication session. Was it set up correctly?"
         )

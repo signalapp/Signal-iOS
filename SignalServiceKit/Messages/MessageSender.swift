@@ -1212,7 +1212,7 @@ public class MessageSender: Dependencies {
     ) async throws -> [SentDeviceMessage] {
         // The caller has access to the error, so they must throw it if no more
         // retries are allowed.
-        owsAssert(remainingAttempts > 0)
+        owsPrecondition(remainingAttempts > 0)
 
         let message = messageSend.message
         let serviceId = messageSend.serviceId

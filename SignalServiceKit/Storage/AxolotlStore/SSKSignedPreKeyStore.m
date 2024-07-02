@@ -90,7 +90,7 @@ NSString *const kLastPreKeyRotationDate = @"lastKeyRotationDate";
 - (SignedPreKeyRecord *)generateRandomSignedRecord
 {
     ECKeyPair *_Nullable identityKeyPair = [OWSIdentityManagerObjCBridge identityKeyPairForIdentity:_identity];
-    OWSAssert(identityKeyPair);
+    OWSPrecondition(identityKeyPair);
 
     return [SSKSignedPreKeyStore generateSignedPreKeyWithSignedBy:identityKeyPair];
 }

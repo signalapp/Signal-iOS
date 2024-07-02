@@ -33,7 +33,7 @@ public struct E164: Equatable, Hashable, Codable, CustomDebugStringConvertible {
     }
 
     public var uint64Value: UInt64 {
-        owsAssert(stringValue.first == "+")
+        owsPrecondition(stringValue.first == "+")
         return UInt64(stringValue.dropFirst())!
     }
 

@@ -1457,7 +1457,7 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
     }
 
     internal init(libsignalNet: Net, type: OWSChatConnectionType, appExpiry: AppExpiry, db: DB, shadowingFrequency: Double) {
-        owsAssert((0.0...1.0).contains(shadowingFrequency))
+        owsPrecondition((0.0...1.0).contains(shadowingFrequency))
         self.libsignalNet = libsignalNet
         self.chatService = Self.makeChatService(libsignalNet: libsignalNet)
         self._shadowingFrequency = shadowingFrequency
@@ -1487,7 +1487,7 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
     }
 
     internal func updateShadowingFrequency(_ newFrequency: Double) {
-        owsAssert((0.0...1.0).contains(newFrequency))
+        owsPrecondition((0.0...1.0).contains(newFrequency))
         serialQueue.async {
             self.shadowingFrequency = newFrequency
         }

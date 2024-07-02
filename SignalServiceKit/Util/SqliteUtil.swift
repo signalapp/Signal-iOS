@@ -154,7 +154,7 @@ public enum SqliteUtil {
             ftsTableName: String,
             compareToExternalContentTable: Bool
         ) throws -> IntegrityCheckResult {
-            owsAssert(SqliteUtil.isSafe(sqlName: ftsTableName))
+            owsPrecondition(SqliteUtil.isSafe(sqlName: ftsTableName))
 
             let sql: String
             if compareToExternalContentTable {
@@ -187,7 +187,7 @@ public enum SqliteUtil {
         ///
         /// [rebuild command]: https://www.sqlite.org/fts5.html#the_rebuild_command
         public static func rebuild(db: Database, ftsTableName: String) throws {
-            owsAssert(SqliteUtil.isSafe(sqlName: ftsTableName))
+            owsPrecondition(SqliteUtil.isSafe(sqlName: ftsTableName))
 
             try db.execute(
                 sql: "INSERT INTO \(ftsTableName) (\(ftsTableName)) VALUES ('rebuild')"
@@ -217,7 +217,7 @@ public enum SqliteUtil {
         ) throws -> MergeResult {
             let totalChangesBefore = db.totalChangesCount
 
-            owsAssert(SqliteUtil.isSafe(sqlName: ftsTableName))
+            owsPrecondition(SqliteUtil.isSafe(sqlName: ftsTableName))
             try db.execute(
                 sql: "INSERT INTO \(ftsTableName) (\(ftsTableName), rank) VALUES ('merge', ?)",
                 arguments: [isFirstBatch ? -numberOfPages : numberOfPages]
