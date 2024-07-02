@@ -1387,13 +1387,6 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     )
                     .filter({ $0.asStream() == nil })
 
-                // Arbitrarily pick the first thumbnail as the one we will promote to
-                // a stream. The others' references will be re-pointed to this one.
-                guard let firstThumbnailAttachment = thumbnailAttachments.first else {
-                    // Nothing to update.
-                    return
-                }
-
                 let references = try thumbnailAttachments.flatMap { attachment in
                     var refs = [AttachmentReference]()
                     try self.attachmentStore.enumerateAllReferences(toAttachmentId: attachment.id, tx: tx) {
@@ -1401,6 +1394,18 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     }
                     return refs
                 }
+                // Arbitrarily pick the first thumbnail as the one we will use as the initial ref to
+                // the new stream. The others' references will be re-pointed to the new stream afterwards.
+                guard let firstReference = references.first else {
+                    // Nothing to update.
+                    return
+                }
+
+                try self.attachmentStore.removeOwner(
+                    firstReference.owner.id,
+                    for: firstReference.attachmentRowId,
+                    tx: tx
+                )
 
                 let thumbnailAttachmentId: Attachment.IDType
                 do {
@@ -1408,11 +1413,23 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         throw OWSAssertionError("Attachment file deleted before creation")
                     }
 
-                    // Try and promote the attachment to a stream.
-                    try self.attachmentStore.updateAttachmentAsDownloaded(
-                        from: .transitTier,
-                        id: firstThumbnailAttachment.id,
-                        validatedMimeType: pendingThumbnailAttachment.mimeType,
+                    let mediaSizePixels: CGSize?
+                    switch pendingThumbnailAttachment.validatedContentType {
+                    case .invalid, .file, .audio:
+                        mediaSizePixels = nil
+                    case .image(let pixelSize), .video(_, let pixelSize, _), .animatedImage(let pixelSize):
+                        mediaSizePixels = pixelSize
+                    }
+                    let referenceParams = AttachmentReference.ConstructionParams(
+                        owner: firstReference.owner,
+                        sourceFilename: firstReference.sourceFilename,
+                        sourceUnencryptedByteCount: pendingThumbnailAttachment.unencryptedByteCount,
+                        sourceMediaSizePixels: mediaSizePixels
+                    )
+                    let attachmentParams = Attachment.ConstructionParams.fromStream(
+                        blurHash: pendingThumbnailAttachment.blurHash,
+                        mimeType: pendingThumbnailAttachment.mimeType,
+                        encryptionKey: pendingThumbnailAttachment.encryptionKey,
                         streamInfo: .init(
                             sha256ContentHash: pendingThumbnailAttachment.sha256ContentHash,
                             encryptedByteCount: pendingThumbnailAttachment.encryptedByteCount,
@@ -1421,12 +1438,25 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             digestSHA256Ciphertext: pendingThumbnailAttachment.digestSHA256Ciphertext,
                             localRelativeFilePath: pendingThumbnailAttachment.localRelativeFilePath
                         ),
+                        mediaName: Attachment.mediaName(digestSHA256Ciphertext: pendingThumbnailAttachment.digestSHA256Ciphertext)
+                    )
+
+                    try self.attachmentStore.insert(
+                        attachmentParams,
+                        reference: referenceParams,
                         tx: tx
                     )
+
                     // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
                     try self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingThumbnailAttachment.orphanRecordId, tx: tx)
 
-                    thumbnailAttachmentId = firstThumbnailAttachment.id
+                    guard let attachment = self.attachmentStore.fetchFirst(
+                        owner: referenceParams.owner.id,
+                        tx: tx
+                    ) else {
+                        throw OWSAssertionError("Missing attachment we just created")
+                    }
+                    thumbnailAttachmentId = attachment.id
                 } catch let AttachmentInsertError.duplicatePlaintextHash(existingAttachmentId) {
                     // Already have an attachment with the same plaintext hash!
                     // We will instead re-point all references to this attachment.
@@ -1436,12 +1466,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 }
 
                 // Move all existing references to the new thumbnail stream.
-                try references.forEach { reference in
-                    if reference.attachmentRowId == thumbnailAttachmentId {
-                        // No need to update references already pointing at the right spot.
-                        return
-                    }
-
+                try references.suffix(max(references.count - 1, 0)).forEach { reference in
                     try self.attachmentStore.removeOwner(
                         reference.owner.id,
                         for: reference.attachmentRowId,
@@ -1458,7 +1483,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         for: thumbnailAttachmentId,
                         tx: tx
                     )
-
+                }
+                references.forEach { reference in
                     // Its ok to point at the old owner here; its the same message id
                     // or story message id etc, which is what we use for this.
                     self.touchOwner(reference.owner, tx: tx)
