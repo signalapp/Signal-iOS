@@ -8,8 +8,37 @@ import SignalRingRTC
 import SignalServiceKit
 import WebRTC
 
+@objc
+class _RTCCameraPreviewView: RTCCameraPreviewView {
+    // This overrides a private method in RTCCameraPreviewView to correct its
+    // behavior. We should remove this once the issue is resolved upstream.
+    @objc
+    func setCorrectVideoOrientation() {
+        guard
+            let previewLayerConnection = previewLayer?.connection,
+            previewLayerConnection.isVideoOrientationSupported
+        else {
+            return
+        }
+        let videoOrientation: AVCaptureVideoOrientation
+        switch UIDevice.current.orientation {
+        case .portrait:
+            videoOrientation = .portrait
+        case .portraitUpsideDown:
+            videoOrientation = .portraitUpsideDown
+        case .landscapeLeft:
+            videoOrientation = .landscapeRight
+        case .landscapeRight:
+            videoOrientation = .landscapeLeft
+        default:
+            return
+        }
+        previewLayerConnection.videoOrientation = videoOrientation
+    }
+}
+
 class LocalVideoView: UIView {
-    private let localVideoCapturePreview = RTCCameraPreviewView()
+    private let localVideoCapturePreview = _RTCCameraPreviewView()
 
     var captureSession: AVCaptureSession? {
         get { localVideoCapturePreview.captureSession }
