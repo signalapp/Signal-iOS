@@ -564,10 +564,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
             let attachmentStream: AttachmentStream
             do {
-                attachmentStream = try await attachmentUpdater.updateAttachmentAsDownloaded(
+                attachmentStream = try await attachmentUpdater.updateAttachmentFromInstalledSticker(
                     attachmentId: record.attachmentId,
-                    pendingAttachment: pendingAttachment,
-                    source: record.sourceType
+                    pendingAttachment: pendingAttachment
                 )
             } catch let error {
                 Logger.error("Failed to update attachment: \(error)")
@@ -1361,6 +1360,129 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 } catch let error {
                     throw error
                 }
+            }
+        }
+
+        func updateAttachmentFromInstalledSticker(
+            attachmentId: Attachment.IDType,
+            pendingAttachment: PendingAttachment
+        ) async throws -> AttachmentStream {
+            return try await db.awaitableWrite { tx -> AttachmentStream in
+                guard let existingAttachment = self.attachmentStore.fetch(id: attachmentId, tx: tx) else {
+                    throw OWSAssertionError("Missing attachment!")
+                }
+                if let stream = existingAttachment.asStream() {
+                    // Its already a stream?
+                    return stream
+                }
+
+                var references = [AttachmentReference]()
+                try self.attachmentStore.enumerateAllReferences(
+                    toAttachmentId: attachmentId,
+                    tx: tx
+                ) {
+                    references.append($0)
+                }
+                // Arbitrarily pick the first reference as the one we will use as the initial ref to
+                // the new stream. The others' references will be re-pointed to the new stream afterwards.
+                guard let firstReference = references.first else {
+                    throw OWSAssertionError("Attachments should never have zero references")
+                }
+
+                try self.attachmentStore.removeOwner(
+                    firstReference.owner.id,
+                    for: firstReference.attachmentRowId,
+                    tx: tx
+                )
+
+                let newAttachment: AttachmentStream
+                do {
+                    guard self.orphanedAttachmentStore.orphanAttachmentExists(with: pendingAttachment.orphanRecordId, tx: tx) else {
+                        throw OWSAssertionError("Attachment file deleted before creation")
+                    }
+
+                    let mediaSizePixels: CGSize?
+                    switch pendingAttachment.validatedContentType {
+                    case .invalid, .file, .audio:
+                        mediaSizePixels = nil
+                    case .image(let pixelSize), .video(_, let pixelSize, _), .animatedImage(let pixelSize):
+                        mediaSizePixels = pixelSize
+                    }
+                    let referenceParams = AttachmentReference.ConstructionParams(
+                        owner: firstReference.owner,
+                        sourceFilename: firstReference.sourceFilename,
+                        sourceUnencryptedByteCount: pendingAttachment.unencryptedByteCount,
+                        sourceMediaSizePixels: mediaSizePixels
+                    )
+                    let attachmentParams = Attachment.ConstructionParams.fromStream(
+                        blurHash: pendingAttachment.blurHash,
+                        mimeType: pendingAttachment.mimeType,
+                        encryptionKey: pendingAttachment.encryptionKey,
+                        streamInfo: .init(
+                            sha256ContentHash: pendingAttachment.sha256ContentHash,
+                            encryptedByteCount: pendingAttachment.encryptedByteCount,
+                            unencryptedByteCount: pendingAttachment.unencryptedByteCount,
+                            contentType: pendingAttachment.validatedContentType,
+                            digestSHA256Ciphertext: pendingAttachment.digestSHA256Ciphertext,
+                            localRelativeFilePath: pendingAttachment.localRelativeFilePath
+                        ),
+                        mediaName: Attachment.mediaName(digestSHA256Ciphertext: pendingAttachment.digestSHA256Ciphertext)
+                    )
+
+                    try self.attachmentStore.insert(
+                        attachmentParams,
+                        reference: referenceParams,
+                        tx: tx
+                    )
+
+                    // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
+                    try self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
+
+                    guard let attachment = self.attachmentStore.fetchFirst(
+                        owner: referenceParams.owner.id,
+                        tx: tx
+                    )?.asStream() else {
+                        throw OWSAssertionError("Missing attachment we just created")
+                    }
+                    newAttachment = attachment
+                } catch let AttachmentInsertError.duplicatePlaintextHash(existingAttachmentId) {
+                    // Already have an attachment with the same plaintext hash!
+                    // We will instead re-point all references to this attachment.
+                    guard
+                        let attachment = self.attachmentStore.fetch(id: existingAttachmentId, tx: tx)?.asStream()
+                    else {
+                        throw OWSAssertionError("Missing attachment we just matched against")
+                    }
+                    newAttachment = attachment
+                } catch let error {
+                    throw error
+                }
+
+                // Move all existing references to the new thumbnail stream.
+                try references.suffix(max(references.count - 1, 0)).forEach { reference in
+                    try self.attachmentStore.removeOwner(
+                        reference.owner.id,
+                        for: reference.attachmentRowId,
+                        tx: tx
+                    )
+                    let newOwnerParams = AttachmentReference.ConstructionParams(
+                        owner: reference.owner,
+                        sourceFilename: reference.sourceFilename,
+                        sourceUnencryptedByteCount: reference.sourceUnencryptedByteCount,
+                        sourceMediaSizePixels: reference.sourceMediaSizePixels
+                    )
+                    try self.attachmentStore.addOwner(
+                        newOwnerParams,
+                        for: newAttachment.attachment.id,
+                        tx: tx
+                    )
+                }
+                references.forEach { reference in
+                    // Its ok to point at the old owner here; its the same message id
+                    // or story message id etc, which is what we use for this.
+                    self.touchOwner(reference.owner, tx: tx)
+                }
+                return newAttachment
             }
         }
 
