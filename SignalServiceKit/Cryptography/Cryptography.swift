@@ -847,7 +847,7 @@ public extension Cryptography {
                 if bufferByteLength > upToCount {
                     // the buffer has what we need, return and update the offset.
                     virtualOffset += upToCount
-                    let subRange = Range<Data.Index>(uncheckedBounds: (Int(offsetInBuffer), Int(upToCount)))
+                    let subRange = Range<Data.Index>(uncheckedBounds: (Int(offsetInBuffer), Int(offsetInBuffer) + Int(upToCount)))
                     return plaintextBuffer.subdata(in: subRange)
                 }
 
@@ -861,30 +861,34 @@ public extension Cryptography {
             }
             plaintextBytes.reserveCapacity(Int(upToCount))
 
-            while plaintextBytes.count < upToCount {
-                // Read another block.
-                let (plaintextBlock, reachedEnd) = try self.readNextPlaintextBlock(
-                    ciphertextHandler: ciphertextHandler
-                )
+            let maxOffsetInFile = ciphertextLength + UInt32(aescbcIVLength)
+            // Don't keep reading if we are already at the end.
+            if file.offsetInFile < maxOffsetInFile {
+                while plaintextBytes.count < upToCount {
+                    // Read another block.
+                    let (plaintextBlock, reachedEnd) = try self.readNextPlaintextBlock(
+                        ciphertextHandler: ciphertextHandler
+                    )
 
-                // Did we get more bytes than we need?
-                if plaintextBytes.count + plaintextBlock.count > upToCount {
-                    // Put the block into the buffer.
-                    self.plaintextBuffer = plaintextBlock
+                    // Did we get more bytes than we need?
+                    if plaintextBytes.count + plaintextBlock.count > upToCount {
+                        // Put the block into the buffer.
+                        self.plaintextBuffer = plaintextBlock
 
-                    let incrementalLength = Int(upToCount) - plaintextBytes.count
-                    plaintextBytes.append(plaintextBlock.prefix(incrementalLength))
+                        let incrementalLength = Int(upToCount) - plaintextBytes.count
+                        plaintextBytes.append(plaintextBlock.prefix(incrementalLength))
 
-                    virtualOffset += UInt32(incrementalLength)
-                    break
-                }
+                        virtualOffset += UInt32(incrementalLength)
+                        break
+                    }
 
-                // Add the block to our data so far.
-                plaintextBytes.append(plaintextBlock)
-                virtualOffset += UInt32(plaintextBlock.count)
+                    // Add the block to our data so far.
+                    plaintextBytes.append(plaintextBlock)
+                    virtualOffset += UInt32(plaintextBlock.count)
 
-                if reachedEnd {
-                    break
+                    if reachedEnd {
+                        break
+                    }
                 }
             }
 
