@@ -7702,6 +7702,7 @@
 		664E8D8D2BD72FF900C4968A /* VideoDuration */ = {
 			isa = PBXGroup;
 			children = (
+				665C758A2C34677F00D2E4BA /* TSResource */,
 				664E8D8E2BD7301A00C4968A /* VideoDurationHelper.swift */,
 			);
 			path = VideoDuration;
@@ -7767,6 +7768,22 @@
 				C17310A62BD9D45400B7A151 /* MessageBackupServiceAuth.swift */,
 			);
 			path = MessageBackup;
+			sourceTree = "<group>";
+		};
+		665C75892C34674000D2E4BA /* TSResource */ = {
+			isa = PBXGroup;
+			children = (
+				F9C5C98D289453B100548EEE /* OWSThumbnailService.swift */,
+			);
+			path = TSResource;
+			sourceTree = "<group>";
+		};
+		665C758A2C34677F00D2E4BA /* TSResource */ = {
+			isa = PBXGroup;
+			children = (
+				45A66115299EDF3000632EE2 /* VideoAttachmentDetection.swift */,
+			);
+			path = TSResource;
 			sourceTree = "<group>";
 		};
 		665CC7C32BF2BF7400E3A00B /* TSResource */ = {
@@ -8063,6 +8080,7 @@
 		669572F82C1A1DD10092B755 /* Thumbnails */ = {
 			isa = PBXGroup;
 			children = (
+				665C75892C34674000D2E4BA /* TSResource */,
 				669572FF2C1A37020092B755 /* AttachmentThumbnailQuality.swift */,
 				669572F92C1A1DE00092B755 /* AttachmentThumbnailService.swift */,
 				669572FB2C1A1DF30092B755 /* AttachmentThumbnailServiceImpl.swift */,
@@ -11023,7 +11041,6 @@
 				66C102F02B61E36E00B47EC2 /* V2 */,
 				F9C5C987289453B100548EEE /* BlurHash.swift */,
 				F9C5C988289453B100548EEE /* OWSMediaUtils.swift */,
-				F9C5C98D289453B100548EEE /* OWSThumbnailService.swift */,
 				F9C5C98A289453B100548EEE /* TSAttachment+SDS.swift */,
 				F9C5C986289453B100548EEE /* TSAttachment.h */,
 				F9C5C98F289453B100548EEE /* TSAttachment.m */,
@@ -11035,7 +11052,6 @@
 				F9C5C991289453B100548EEE /* TSAttachmentStream.h */,
 				F9C5C989289453B100548EEE /* TSAttachmentStream.m */,
 				667DEE602BC71C3300EFF32D /* TSAttachmentStream.swift */,
-				45A66115299EDF3000632EE2 /* VideoAttachmentDetection.swift */,
 			);
 			path = Attachments;
 			sourceTree = "<group>";
