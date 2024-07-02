@@ -137,12 +137,24 @@ public class OnboardingStoryManagerStoryMessageFactoryMock: OnboardingStoryManag
         dataSource: any DataSource,
         mimeType: String
     ) throws -> TSResourceDataSource {
-        return TSAttachmentDataSource(
+        struct FakePendingAttachment: PendingAttachment {
+            let blurHash: String? = nil
+            let sha256ContentHash: Data = Data()
+            let encryptedByteCount: UInt32 = 100
+            let unencryptedByteCount: UInt32 = 100
+            let mimeType: String
+            let encryptionKey: Data = Data()
+            let digestSHA256Ciphertext: Data = Data()
+            let localRelativeFilePath: String = ""
+            let renderingFlag: AttachmentReference.RenderingFlag = .default
+            let sourceFilename: String?
+            let validatedContentType: Attachment.ContentType = .file
+            let orphanRecordId: OrphanedAttachmentRecord.IDType = 1
+        }
+
+        return AttachmentDataSource.pendingAttachment(FakePendingAttachment(
             mimeType: mimeType,
-            caption: nil,
-            renderingFlag: .default,
-            sourceFilename: dataSource.sourceFilename,
-            dataSource: .dataSource(dataSource, shouldCopy: false)
-        ).tsDataSource
+            sourceFilename: dataSource.sourceFilename
+        )).tsDataSource
     }
 }
