@@ -68,7 +68,7 @@ class CallControls: UIView {
     private lazy var joinButtonActivityIndicator = UIActivityIndicatorView(style: .medium)
 
     private lazy var joinButton: UIButton = {
-        let height: CGFloat = 56
+        let height: CGFloat = HeightConstants.joinButtonHeight
 
         let button = OWSButton()
         button.setTitleColor(.ows_white, for: .normal)
@@ -143,12 +143,16 @@ class CallControls: UIView {
             joinButtonContainer
         ])
         controlsStack.axis = .vertical
-        controlsStack.spacing = 40
+        controlsStack.spacing = HeightConstants.stackSpacing
         controlsStack.alignment = .center
 
         addSubview(controlsStack)
         controlsStack.autoPinWidthToSuperview()
-        controlsStack.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 40, relation: .lessThanOrEqual)
+        controlsStack.autoPinEdge(
+            toSuperviewSafeArea: .bottom,
+            withInset: HeightConstants.bottomPadding,
+            relation: .lessThanOrEqual
+        )
         NSLayoutConstraint.autoSetPriority(.defaultHigh - 1) {
             controlsStack.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 56)
         }
@@ -240,6 +244,10 @@ class CallControls: UIView {
         videoButton.accessibilityLabel = viewModel.videoButtonAccessibilityLabel
         flipCameraButton.accessibilityLabel = viewModel.flipCameraButtonAccessibilityLabel
         moreButton.accessibilityLabel = viewModel.moreButtonAccessibilityLabel
+
+        callControlsHeightObservers.elements.forEach {
+            $0.callControlsHeightDidChange(newHeight: currentHeight)
+        }
     }
 
     required init(coder: NSCoder) {
@@ -261,7 +269,40 @@ class CallControls: UIView {
         button.alpha = 0.9
         return button
     }
+
+    // MARK: Height Observing
+
+    private var callControlsHeightObservers: WeakArray<any CallControlsHeightObserver> = []
+
+    func addHeightObserver(_ observer: CallControlsHeightObserver) {
+        callControlsHeightObservers.append(observer)
+    }
+
+    var currentHeight: CGFloat {
+        var height = self.buttonRowHeight + HeightConstants.bottomPadding
+        if !viewModel.joinButtonIsHidden {
+            height += HeightConstants.joinButtonHeight
+            height += HeightConstants.stackSpacing
+        }
+        return height
+    }
+
+    private var buttonRowHeight: CGFloat {
+        self.muteButton.currentIconSize
+    }
+
+    private enum HeightConstants {
+        static let joinButtonHeight: CGFloat = 56
+        static let stackSpacing: CGFloat = 40
+        static let bottomPadding: CGFloat = 40
+    }
 }
+
+protocol CallControlsHeightObserver {
+    func callControlsHeightDidChange(newHeight: CGFloat)
+}
+
+// MARK: - View Model
 
 private class CallControlsViewModel {
     private let call: SignalCall
@@ -517,9 +558,19 @@ private class CallControlsViewModel {
     var gradientViewIsHidden: Bool {
         switch call.mode {
         case .individual:
-            return call.joinState != .joined
+            if FeatureFlags.callDrawerSupport {
+                // TODO: Put call controls in drawer in individual calls,
+                // at which point the gradient view will no longer be needed.
+                return false
+            } else {
+                return call.joinState != .joined
+            }
         case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
-            return !call.hasJoinedOrIsWaitingForAdminApproval
+            if FeatureFlags.callDrawerSupport {
+                return true
+            } else {
+                return !call.hasJoinedOrIsWaitingForAdminApproval
+            }
         }
     }
 

@@ -1539,7 +1539,7 @@
 		88ABB8B7253421F200229EAA /* GroupCallVideoGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABB8B6253421F200229EAA /* GroupCallVideoGrid.swift */; };
 		88ABB8B925349F6C00229EAA /* GroupCallVideoGridLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABB8B825349F6C00229EAA /* GroupCallVideoGridLayout.swift */; };
 		88ABB8BB2535066100229EAA /* GroupCallVideoOverflow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABB8BA2535066000229EAA /* GroupCallVideoOverflow.swift */; };
-		88ABB8BD25352B8300229EAA /* GroupCallMemberSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABB8BC25352B8200229EAA /* GroupCallMemberSheet.swift */; };
+		88ABB8BD25352B8300229EAA /* GroupCallSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABB8BC25352B8200229EAA /* GroupCallSheet.swift */; };
 		88B00D4B28A32DB600BC9CA0 /* StoryGroupReplyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B00D4A28A32DB600BC9CA0 /* StoryGroupReplyViewController.swift */; };
 		88B00D4D28A3346100BC9CA0 /* StoryViewsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B00D4C28A3346000BC9CA0 /* StoryViewsViewController.swift */; };
 		88B00D4F28A33B5800BC9CA0 /* StoryPrivateViewsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B00D4E28A33B5800BC9CA0 /* StoryPrivateViewsSheet.swift */; };
@@ -4513,7 +4513,7 @@
 		88ABB8B6253421F200229EAA /* GroupCallVideoGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallVideoGrid.swift; sourceTree = "<group>"; };
 		88ABB8B825349F6C00229EAA /* GroupCallVideoGridLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallVideoGridLayout.swift; sourceTree = "<group>"; };
 		88ABB8BA2535066000229EAA /* GroupCallVideoOverflow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallVideoOverflow.swift; sourceTree = "<group>"; };
-		88ABB8BC25352B8200229EAA /* GroupCallMemberSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallMemberSheet.swift; sourceTree = "<group>"; };
+		88ABB8BC25352B8200229EAA /* GroupCallSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallSheet.swift; sourceTree = "<group>"; };
 		88B00D4A28A32DB600BC9CA0 /* StoryGroupReplyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryGroupReplyViewController.swift; sourceTree = "<group>"; };
 		88B00D4C28A3346000BC9CA0 /* StoryViewsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryViewsViewController.swift; sourceTree = "<group>"; };
 		88B00D4E28A33B5800BC9CA0 /* StoryPrivateViewsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPrivateViewsSheet.swift; sourceTree = "<group>"; };
@@ -9287,8 +9287,8 @@
 				50733B1F2BAD03E400CEEC1F /* CreateCallLinkViewController.swift */,
 				E1DB073C2BA4FEDD00181E4C /* FlipCameraTooltip.swift */,
 				32B2A433256CDC42001D66C7 /* GroupCallErrorView.swift */,
-				88ABB8BC25352B8200229EAA /* GroupCallMemberSheet.swift */,
 				88D6E93B254CE317003142D9 /* GroupCallNotificationView.swift */,
+				88ABB8BC25352B8200229EAA /* GroupCallSheet.swift */,
 				328EF3DB25782A6A00D5C31D /* GroupCallSwipeToastView.swift */,
 				88CB462125843758001900F2 /* GroupCallTooltip.swift */,
 				88ABB8B6253421F200229EAA /* GroupCallVideoGrid.swift */,
@@ -13431,10 +13431,10 @@
 				50A783102C012FEF0008030E /* GroupCall.swift in Sources */,
 				32AC5CF1255F875C00829BD8 /* GroupCallAccessoryMessageDelegate.swift in Sources */,
 				32B2A434256CDC42001D66C7 /* GroupCallErrorView.swift in Sources */,
-				88ABB8BD25352B8300229EAA /* GroupCallMemberSheet.swift in Sources */,
 				88D6E93C254CE317003142D9 /* GroupCallNotificationView.swift in Sources */,
 				D95777BE2B472AA100CFE3AE /* GroupCallRecordRingingCleanupManager.swift in Sources */,
 				8814D9662564A33E00A472E3 /* GroupCallRemoteVideoManager.swift in Sources */,
+				88ABB8BD25352B8300229EAA /* GroupCallSheet.swift in Sources */,
 				328EF3DC25782A6A00D5C31D /* GroupCallSwipeToastView.swift in Sources */,
 				88CB462225843758001900F2 /* GroupCallTooltip.swift in Sources */,
 				88ABB8B7253421F200229EAA /* GroupCallVideoGrid.swift in Sources */,

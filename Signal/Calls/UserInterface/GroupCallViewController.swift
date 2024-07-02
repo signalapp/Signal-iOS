@@ -22,12 +22,27 @@ class GroupCallViewController: UIViewController {
     private lazy var callControlsConfirmationToastManager = CallControlsConfirmationToastManager(
         presentingContainerView: callControlsConfirmationToastContainerView
     )
+    /// TODO: Remove when removing `FeatureFlags.callDrawerSupport`
     private lazy var callControls = CallControls(
         call: call,
         callService: callService,
         confirmationToastManager: callControlsConfirmationToastManager,
         delegate: self
     )
+    private lazy var bottomSheet: GroupCallSheet = {
+        switch groupCall.concreteType {
+        case .groupThread(let groupThreadCall):
+            return GroupCallSheet(
+                call: call,
+                groupThreadCall: groupThreadCall,
+                callService: callService,
+                confirmationToastManager: callControlsConfirmationToastManager,
+                callControlsDelegate: self
+            )
+        case .callLink:
+            owsFail("[CallLink] TODO: Make bottom sheet for Call Link calls")
+        }
+    }()
     private lazy var callControlsConfirmationToastContainerView = UIView()
     private var callService: CallService { AppEnvironment.shared.callService }
     private var incomingCallControls: IncomingCallControls?
@@ -171,6 +186,9 @@ class GroupCallViewController: UIViewController {
         )
     }()
 
+    private var callControlsOverflowBottomConstraint: NSLayoutConstraint?
+    private var callControlsConfirmationToastContainerViewBottomConstraint: NSLayoutConstraint?
+
     init(call: SignalCall, groupCall: GroupCall) {
         // TODO: Eventually unify UI for group and individual calls
 
@@ -288,9 +306,11 @@ class GroupCallViewController: UIViewController {
         view.addSubview(notificationView)
         notificationView.autoPinEdgesToSuperviewEdges()
 
-        view.addSubview(callControls)
-        callControls.autoPinWidthToSuperview()
-        callControls.autoPinEdge(toSuperviewEdge: .bottom)
+        if !FeatureFlags.callDrawerSupport {
+            view.addSubview(callControls)
+            callControls.autoPinWidthToSuperview()
+            callControls.autoPinEdge(toSuperviewEdge: .bottom)
+        }
 
         view.addSubview(self.bottomVStack)
         self.bottomVStack.autoPinWidthToSuperview()
@@ -330,16 +350,46 @@ class GroupCallViewController: UIViewController {
         swipeToastView.autoPinEdge(toSuperviewMargin: .trailing, relation: .greaterThanOrEqual)
 
         view.addSubview(callControlsConfirmationToastContainerView)
-        callControlsConfirmationToastContainerView.autoPinEdge(.bottom, to: .top, of: callControls, withOffset: -30)
         callControlsConfirmationToastContainerView.autoHCenterInSuperview()
-
         view.addSubview(callControlsOverflowView)
         if UIDevice.current.isIPad {
-            callControlsOverflowView.centerXAnchor.constraint(equalTo: callControls.centerXAnchor).isActive = true
+            callControlsOverflowView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
         } else {
-            callControlsOverflowView.autoPinEdge(.trailing, to: .trailing, of: view, withOffset: -12)
+            callControlsOverflowView.autoPinEdge(
+                .trailing,
+                to: .trailing,
+                of: view,
+                withOffset: -12
+            )
         }
-        callControlsOverflowView.autoPinEdge(.bottom, to: .top, of: callControls, withOffset: -12)
+
+        if FeatureFlags.callDrawerSupport {
+            self.callControlsConfirmationToastContainerViewBottomConstraint = callControlsConfirmationToastContainerView.autoPinEdge(
+                .bottom,
+                to: .bottom,
+                of: self.view,
+                withOffset: callControlsConfirmationToastContainerViewBottomConstraintConstant
+            )
+            self.callControlsOverflowBottomConstraint = self.callControlsOverflowView.autoPinEdge(
+                .bottom,
+                to: .bottom,
+                of: self.view,
+                withOffset: callControlsOverflowBottomConstraintConstant
+            )
+        } else {
+            callControlsConfirmationToastContainerView.autoPinEdge(
+                .bottom,
+                to: .top,
+                of: callControls,
+                withOffset: -30
+            )
+            callControlsOverflowView.autoPinEdge(
+                .bottom,
+                to: .top,
+                of: callControls,
+                withOffset: -12
+            )
+        }
 
         view.addSubview(reactionsBurstView)
         reactionsBurstView.autoPinEdgesToSuperviewEdges()
@@ -421,10 +471,25 @@ class GroupCallViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
+        if FeatureFlags.callDrawerSupport {
+            self.presentBottomSheet()
+        }
+
         if hasUnresolvedSafetyNumberMismatch && CurrentAppContext().isAppForegroundAndActive() {
             // If we're not active yet, this will be handled by the `didBecomeActive` callback.
             resolveSafetyNumberMismatch()
         }
+    }
+
+    private func presentBottomSheet() {
+        guard FeatureFlags.callDrawerSupport else { return }
+        bottomSheet.setBottomSheetMinimizedHeight()
+        present(self.bottomSheet, animated: true)
+    }
+
+    private func dismissBottomSheet(animated: Bool = true) {
+        guard FeatureFlags.callDrawerSupport else { return }
+        bottomSheet.dismiss(animated: animated)
     }
 
     @objc
@@ -455,17 +520,24 @@ class GroupCallViewController: UIViewController {
             scrollView.isScrollEnabled = false
         } else {
             let wasVideoGridHidden = videoGrid.isHidden
-            let controlsHeight = controlsAreHidden ? 16 : callControls.height
             let hasOverflowMembersInGridView = videoGrid.maxItems < ringRtcCall.remoteDeviceStates.count
             let overflowGridHeight = hasOverflowMembersInGridView ? videoOverflow.height + 27 : 0
 
             scrollView.isScrollEnabled = true
             videoGrid.isHidden = false
+            let height: CGFloat
+            if FeatureFlags.callDrawerSupport {
+                let controlsHeight = controlsAreHidden ? 16 : bottomSheet.sheetHeight
+                height = size.height - view.safeAreaInsets.top - controlsHeight - overflowGridHeight
+            } else {
+                let controlsHeight = controlsAreHidden ? 16 : callControls.height
+                height = size.height - view.safeAreaInsets.top - controlsHeight - overflowGridHeight
+            }
             videoGrid.frame = CGRect(
                 x: 0,
                 y: view.safeAreaInsets.top,
                 width: size.width,
-                height: size.height - view.safeAreaInsets.top - controlsHeight - overflowGridHeight
+                height: height
             )
             speakerPage.frame = CGRect(
                 x: 0,
@@ -539,7 +611,12 @@ class GroupCallViewController: UIViewController {
 
         let size = size ?? view.frame.size
 
-        let yMax = (controlsAreHidden ? size.height - 16 : callControls.frame.minY) - 16
+        let yMax: CGFloat
+        if FeatureFlags.callDrawerSupport {
+            yMax = (controlsAreHidden ? size.height - 16 : size.height - bottomSheet.sheetHeight) - 16
+        } else {
+            yMax = (controlsAreHidden ? size.height - 16 : callControls.frame.minY) - 16
+        }
 
         bottomVStackTopConstraint.constant = yMax
 
@@ -694,7 +771,11 @@ class GroupCallViewController: UIViewController {
             case .groupThread(let groupThreadCall) = groupCall.concreteType,
             groupThreadCall.groupCallRingState.isIncomingRing
         {
-            callControls.isHidden = true
+            if FeatureFlags.callDrawerSupport {
+                dismissBottomSheet(animated: false)
+            } else {
+                callControls.isHidden = true
+            }
             createIncomingCallControlsIfNeeded().isHidden = false
             // These views aren't visible at this point, but we need them to be configured anyway.
             updateMemberViewFrames(size: size, controlsAreHidden: true)
@@ -705,11 +786,21 @@ class GroupCallViewController: UIViewController {
         if let incomingCallControls, !incomingCallControls.isHidden {
             // We were showing the incoming call controls, but now we don't want to.
             // To make sure all views transition properly, pretend we were showing the regular controls all along.
-            callControls.isHidden = false
+            if FeatureFlags.callDrawerSupport {
+                presentBottomSheet()
+            } else {
+                callControls.isHidden = false
+            }
+
             incomingCallControls.isHidden = true
         }
 
-        let callControlsAreHidden = callControls.isHidden && callHeader.isHidden
+        let callControlsAreHidden: Bool
+        if FeatureFlags.callDrawerSupport {
+            callControlsAreHidden = !bottomSheet.isPresentingCallControls() && callHeader.isHidden
+        } else {
+            callControlsAreHidden = callControls.isHidden && callHeader.isHidden
+        }
         let callControlsOverflowContentIsHidden = self.callControlsOverflowView.isHidden
         if !callControlsAreHidden && !callControlsOverflowContentIsHidden {
             self.callControlDisplayStateDidChange(
@@ -740,7 +831,19 @@ class GroupCallViewController: UIViewController {
             )
         }
 
+        // Update constraints that hug call controls sheet
+        callControlsOverflowBottomConstraint?.constant = callControlsOverflowBottomConstraintConstant
+        callControlsConfirmationToastContainerViewBottomConstraint?.constant = callControlsConfirmationToastContainerViewBottomConstraintConstant
+
         updateSwipeToastView()
+    }
+
+    private var callControlsOverflowBottomConstraintConstant: CGFloat {
+        -self.bottomSheet.sheetHeight - 12
+    }
+
+    private var callControlsConfirmationToastContainerViewBottomConstraintConstant: CGFloat {
+        -self.bottomSheet.sheetHeight - 30
     }
 
     // Theoretically, we should never show the call controls overflow _only_, without call controls
@@ -858,10 +961,20 @@ class GroupCallViewController: UIViewController {
         hideCallControls: Bool,
         size: CGSize?
     ) {
-        callControls.isHidden = false
+        if FeatureFlags.callDrawerSupport {
+            if hideCallControls {
+                dismissBottomSheet()
+            } else {
+                presentBottomSheet()
+            }
+        } else {
+            callControls.isHidden = false
+        }
         callHeader.isHidden = false
         UIView.animate(withDuration: 0.15, animations: {
-            self.callControls.alpha = hideCallControls ? 0 : 1
+            if !FeatureFlags.callDrawerSupport {
+                self.callControls.alpha = hideCallControls ? 0 : 1
+            }
             self.callHeader.alpha = hideCallControls ? 0 : 1
 
             self.updateBottomVStackItems()
@@ -869,7 +982,9 @@ class GroupCallViewController: UIViewController {
             self.updateScrollViewFrames(size: size, controlsAreHidden: hideCallControls)
             self.view.layoutIfNeeded()
         }) { _ in
-            self.callControls.isHidden = hideCallControls
+            if !FeatureFlags.callDrawerSupport {
+                self.callControls.isHidden = hideCallControls
+            }
             self.callHeader.isHidden = hideCallControls
             // If a hand is raised during this animation, the toast will be
             // positioned wrong unless this is called again in the completion.
@@ -882,6 +997,10 @@ class GroupCallViewController: UIViewController {
     }
 
     private func dismissCall(shouldHangUp: Bool = true) {
+        if FeatureFlags.callDrawerSupport {
+            bottomSheet.dismiss(animated: false)
+        }
+
         if shouldHangUp {
             callService.callUIAdapter.localHangupCall(call)
         }
@@ -982,8 +1101,7 @@ class GroupCallViewController: UIViewController {
         }()
 
         guard shouldAutomaticallyHideCallControls else {
-            controlTimeoutTimer?.invalidate()
-            controlTimeoutTimer = nil
+            cancelControlTimeout()
             return
         }
 
@@ -996,6 +1114,11 @@ class GroupCallViewController: UIViewController {
     private func timeoutControls() {
         self.controlTimeoutTimer = nil
         self.callControlsDisplayState = .none
+    }
+
+    private func cancelControlTimeout() {
+        controlTimeoutTimer?.invalidate()
+        controlTimeoutTimer = nil
     }
 
     private func showCallControlsIfTheyMustBeVisible() {
@@ -1404,9 +1527,8 @@ extension GroupCallViewController: CallHeaderDelegate {
 
     func didTapMembersButton() {
         switch groupCall.concreteType {
-        case .groupThread(let groupThreadCall):
-            let sheet = GroupCallMemberSheet(call: call, groupThreadCall: groupThreadCall)
-            present(sheet, animated: true)
+        case .groupThread:
+            present(bottomSheet, animated: true)
         case .callLink:
             owsFail("[CallLink] TODO: Add Info button for Call Link calls")
         }
@@ -1582,8 +1704,7 @@ extension GroupCallViewController: AnimatableLocalMemberViewDelegate {
 
 extension GroupCallViewController: CallControlsOverflowPresenter {
     func callControlsOverflowWillAppear() {
-        self.controlTimeoutTimer?.invalidate()
-        self.controlTimeoutTimer = nil
+        self.cancelControlTimeout()
     }
 
     func callControlsOverflowDidDisappear() {

@@ -43,6 +43,14 @@ open class InteractiveSheetViewController: OWSViewController {
         return (sheetContainerView as? UIVisualEffectView)?.contentView ?? sheetContainerView
     }
 
+    // Do yourself a favor and do not expose the sheet view and try to
+    // constrain to it from another ViewController, even if said
+    // ViewController is presenting this one.
+    public var sheetHeight: CGFloat {
+        let sheet = (sheetContainerView as? UIVisualEffectView)?.contentView ?? sheetContainerView
+        return sheet.height
+    }
+
     private let sheetStackView: UIStackView = {
         let view = UIStackView()
         view.axis = .vertical
@@ -56,6 +64,8 @@ open class InteractiveSheetViewController: OWSViewController {
     open var dismissesWithHighVelocitySwipe: Bool { false }
     open var shrinksWithHighVelocitySwipe: Bool { false }
     open var canBeDismissed: Bool { true }
+    /// Allows taps above the sheet to pass through to the parent.
+    open var canInteractWithParent: Bool { false }
 
     open var sheetBackgroundColor: UIColor { Theme.actionSheetBackgroundColor }
 
@@ -82,8 +92,55 @@ open class InteractiveSheetViewController: OWSViewController {
 
     // MARK: -
 
+    public class SheetView: UIView {
+        weak var interactiveSheetViewController: InteractiveSheetViewController?
+
+        private let canInteractWithParent: Bool
+
+        init(
+            canInteractWithParent: Bool,
+            interactiveSheetViewController: InteractiveSheetViewController
+        ) {
+            self.canInteractWithParent = canInteractWithParent
+            self.interactiveSheetViewController = interactiveSheetViewController
+            super.init(frame: .zero)
+        }
+
+        public override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+            guard self.canInteractWithParent else {
+                return super.hitTest(point, with: event)
+            }
+
+            guard
+                let interactiveSheetViewController,
+                let presentingView = interactiveSheetViewController.presentingViewController?.view
+            else {
+                owsFailDebug("A parent view controller is missing")
+                return super.hitTest(point, with: event)
+            }
+
+            let sheetContent = interactiveSheetViewController.sheetContainerView
+            let pointInSheet = self.convert(point, to: sheetContent)
+            if sheetContent.bounds.contains(pointInSheet) {
+                // Hit in sheet
+                return super.hitTest(point, with: event)
+            }
+
+            // Hit in parent
+            return presentingView.hitTest(point, with: event)
+        }
+
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+    }
+
     public override func loadView() {
-        view = UIView()
+        let sheetView = SheetView(
+            canInteractWithParent: self.canInteractWithParent,
+            interactiveSheetViewController: self
+        )
+        view = sheetView
         view.backgroundColor = .clear
 
         view.addSubview(sheetContainerView)

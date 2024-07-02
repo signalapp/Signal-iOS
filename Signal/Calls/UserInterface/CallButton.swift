@@ -41,7 +41,7 @@ class CallButton: UIButton {
 
     private var currentConstraints = [NSLayoutConstraint]()
 
-    private var currentIconSize: CGFloat { isSmall ? 48 : 56 }
+    var currentIconSize: CGFloat { isSmall ? 48 : 56 }
     private var currentIconInsets: UIEdgeInsets {
         var insets: UIEdgeInsets
         if isSmall {

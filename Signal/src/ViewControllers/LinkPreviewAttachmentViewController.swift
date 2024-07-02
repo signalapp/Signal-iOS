@@ -121,17 +121,17 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
 
     override var sheetBackgroundColor: UIColor { Theme.darkThemeTableView2PresentedBackgroundColor }
 
-    private var sheetHeight: CGFloat = 0
+    private var _sheetHeight: CGFloat = 0
     private func updateSheetHeight() {
         guard let sheetView = contentView.superview else { return }
 
         let sheetSize = sheetView.systemLayoutSizeFitting(.init(width: maxWidth, height: view.height),
                                                           withHorizontalFittingPriority: .required,
                                                           verticalFittingPriority: .fittingSizeLevel)
-        if sheetHeight != sheetSize.height {
-            sheetHeight = sheetSize.height
-            if sheetHeight > 0 {
-                minimizedHeight = sheetHeight
+        if _sheetHeight != sheetSize.height {
+            _sheetHeight = sheetSize.height
+            if _sheetHeight > 0 {
+                minimizedHeight = _sheetHeight
             } else {
                 minimizedHeight = InteractiveSheetViewController.Constants.defaultMinHeight
             }

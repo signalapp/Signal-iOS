@@ -9,13 +9,20 @@ import SignalServiceKit
 import SignalUI
 import Combine
 
-// MARK: - GroupCallMemberSheet
+// MARK: - GroupCallSheet
 
-class GroupCallMemberSheet: InteractiveSheetViewController {
+class GroupCallSheet: InteractiveSheetViewController {
+    private let callControls: CallControls
 
     // MARK: Properties
 
     override var interactiveScrollViews: [UIScrollView] { [tableView] }
+    override var canBeDismissed: Bool {
+        return !FeatureFlags.callDrawerSupport
+    }
+    override var canInteractWithParent: Bool {
+        return FeatureFlags.callDrawerSupport
+    }
 
     private let tableView = UITableView(frame: .zero, style: .insetGrouped)
     private let call: SignalCall
@@ -26,15 +33,33 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
         self.tableView.backgroundColor ?? .systemGroupedBackground
     }
 
-    init(call: SignalCall, groupThreadCall: GroupThreadCall) {
+    init(
+        call: SignalCall,
+        groupThreadCall: GroupThreadCall,
+        callService: CallService,
+        confirmationToastManager: CallControlsConfirmationToastManager,
+        callControlsDelegate: CallControlsDelegate
+    ) {
         self.call = call
         self.ringRtcCall = groupThreadCall.ringRtcCall
         self.groupThreadCall = groupThreadCall
+        self.callControls = CallControls(
+            call: call,
+            callService: callService,
+            confirmationToastManager: confirmationToastManager,
+            delegate: callControlsDelegate
+        )
 
         super.init(blurEffect: nil)
 
         self.overrideUserInterfaceStyle = .dark
         groupThreadCall.addObserver(self, syncStateImmediately: true)
+        if FeatureFlags.callDrawerSupport {
+            callControls.addHeightObserver(self)
+            self.tableView.isHidden = true
+            // Don't add a dim visual effect to the call when the sheet is open.
+            self.backdropColor = .clear
+        }
     }
 
     // MARK: - Table setup
@@ -126,6 +151,10 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
     private let raisedHandsHeader = HeaderView(section: .raisedHands)
     private let inCallHeader = HeaderView(section: .inCall)
 
+    func setBottomSheetMinimizedHeight() {
+        minimizedHeight = callControls.currentHeight + HeightConstants.bottomPadding
+    }
+
     override public func viewDidLoad() {
         super.viewDidLoad()
 
@@ -137,6 +166,15 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
         tableView.register(GroupCallMemberCell.self, forCellReuseIdentifier: GroupCallMemberCell.reuseIdentifier)
 
         tableView.dataSource = self.dataSource
+
+        if FeatureFlags.callDrawerSupport {
+            callControls.translatesAutoresizingMaskIntoConstraints = false
+            contentView.addSubview(callControls)
+            NSLayoutConstraint.activate([
+                callControls.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+                callControls.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10)
+            ])
+        }
 
         updateMembers()
     }
@@ -307,7 +345,7 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
 
 // MARK: UITableViewDelegate
 
-extension GroupCallMemberSheet: UITableViewDelegate {
+extension GroupCallSheet: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         if section == 0, !groupThreadCall.raisedHands.isEmpty {
             return raisedHandsHeader
@@ -327,7 +365,7 @@ extension GroupCallMemberSheet: UITableViewDelegate {
 
 // MARK: CallObserver
 
-extension GroupCallMemberSheet: GroupCallObserver {
+extension GroupCallSheet: GroupCallObserver {
     func groupCallLocalDeviceStateChanged(_ call: GroupCall) {
         AssertIsOnMainThread()
         updateMembers()
@@ -354,6 +392,12 @@ extension GroupCallMemberSheet: GroupCallObserver {
     }
 }
 
+extension GroupCallSheet {
+    func isPresentingCallControls() -> Bool {
+        return self.presentingViewController != nil && callControls.alpha == 1
+    }
+}
+
 // MARK: - GroupCallMemberCell
 
 private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
@@ -361,7 +405,7 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
     // MARK: ViewModel
 
     class ViewModel {
-        typealias Member = GroupCallMemberSheet.JoinedMember
+        typealias Member = GroupCallSheet.JoinedMember
 
         let aci: Aci
         let name: String
@@ -497,4 +541,15 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
             .store(in: &self.subscriptions)
     }
 
+}
+
+extension GroupCallSheet: CallControlsHeightObserver {
+    func callControlsHeightDidChange(newHeight: CGFloat) {
+        guard FeatureFlags.callDrawerSupport else { return }
+        self.setBottomSheetMinimizedHeight()
+    }
+
+    private enum HeightConstants {
+        static let bottomPadding: CGFloat = 48
+    }
 }
