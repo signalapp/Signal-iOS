@@ -1525,8 +1525,18 @@ extension GroupCallViewController: CallHeaderDelegate {
 
     func didTapMembersButton() {
         switch groupCall.concreteType {
-        case .groupThread:
-            present(bottomSheet, animated: true)
+        case .groupThread(let groupThreadCall):
+            if FeatureFlags.callDrawerSupport {
+                present(bottomSheet, animated: true)
+            } else {
+                present(
+                    GroupCallMemberSheet(
+                        call: self.call,
+                        groupThreadCall: groupThreadCall
+                    ),
+                    animated: true
+                )
+            }
         case .callLink:
             owsFail("[CallLink] TODO: Add Info button for Call Link calls")
         }
