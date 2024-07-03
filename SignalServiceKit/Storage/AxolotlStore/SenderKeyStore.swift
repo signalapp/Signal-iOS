@@ -17,29 +17,13 @@ public class SenderKeyStore {
         "\(authorAci.serviceIdUppercaseString).\(distributionId.uuidString)"
     }
 
-    // MARK: - Storage properties
-    private let storageLock = UnfairLock()
-    private var sendingDistributionIdCache: LRUCache<ThreadUniqueId, DistributionId> = LRUCache(maxSize: 100)
-    private var keyCache: LRUCache<KeyId, KeyMetadata> = LRUCache(maxSize: 100)
-
     public init() {
         SwiftSingletons.register(self)
-
-        // We need to clear the key cache on cross-process database writes,
-        // because other processes might have received a new SKDM or generated a new chain...
-        NotificationCenter.default.addObserver(keyCache,
-                                               selector: #selector(keyCache.clear),
-                                               name: SDSDatabaseStorage.didReceiveCrossProcessNotificationAlwaysSync,
-                                               object: nil)
-        // ...but we don't need to clear the sending distribution ID cache, since values in that table don't change once
-        // set (unless the user clears all their sender key state, which only happens when re-registering).
     }
 
     /// Returns the distributionId the current device uses to tag senderKey messages sent to the thread.
     public func distributionIdForSendingToThread(_ thread: TSThread, writeTx: SDSAnyWriteTransaction) -> DistributionId {
-        storageLock.withLock {
-            distributionIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx)
-        }
+        distributionIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx)
     }
 
     /// Returns a list of addresses that may not have the current device's sender key for the thread.
@@ -50,42 +34,41 @@ public class SenderKeyStore {
     ) -> Set<ServiceId> {
         var serviceIdsNeedingSenderKey = Set(serviceIds)
 
-        storageLock.withLock {
-            // If we haven't saved a distributionId yet, then there's no way we have any keyMetadata cached
-            // All intended recipients will certainly need an SKDM (if they even support sender key)
-            guard
-                let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, readTx: readTx),
-                let keyMetadata = getKeyMetadata(for: keyId, readTx: readTx)
-            else {
-                return
+        // If we haven't saved a distributionId yet, then there's no way we have any keyMetadata cached
+        // All intended recipients will certainly need an SKDM (if they even support sender key)
+        guard
+            let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, readTx: readTx),
+            let keyMetadata = getKeyMetadata(for: keyId, readTx: readTx)
+        else {
+            return serviceIdsNeedingSenderKey
+        }
+
+        // Iterate over each cached recipient. If no new devices or reregistrations have occurred since
+        // we last recorded an SKDM send, we can skip sending to them.
+        for (address, sendInfo) in keyMetadata.sentKeyInfo {
+            guard let serviceId = address.serviceId else {
+                continue
             }
+            do {
+                let priorSendRecipientState = sendInfo.keyRecipient
 
-            // Iterate over each cached recipient. If no new devices or reregistrations have occurred since
-            // we last recorded an SKDM send, we can skip sending to them.
-            for (address, sendInfo) in keyMetadata.sentKeyInfo {
-                guard let serviceId = address.serviceId else {
-                    continue
+                // Only remove the recipient in question from our send targets if the cached state contains
+                // every device from the current state. Any new devices mean we need to re-send.
+                let currentRecipientState = try KeyRecipient.currentState(for: serviceId, transaction: readTx)
+                if priorSendRecipientState.containsEveryDevice(from: currentRecipientState) {
+                    serviceIdsNeedingSenderKey.remove(serviceId)
                 }
-                do {
-                    let priorSendRecipientState = sendInfo.keyRecipient
-
-                    // Only remove the recipient in question from our send targets if the cached state contains
-                    // every device from the current state. Any new devices mean we need to re-send.
-                    let currentRecipientState = try KeyRecipient.currentState(for: serviceId, transaction: readTx)
-                    if priorSendRecipientState.containsEveryDevice(from: currentRecipientState) {
-                        serviceIdsNeedingSenderKey.remove(serviceId)
-                    }
-                } catch {
-                    // It's likely there's no session for the current recipient. Maybe it was cleared?
-                    // In this case, we just assume we need to send a new SKDM
-                    if case SignalError.invalidState(_) = error {
-                        Logger.warn("Invalid session state. Cannot build recipient state for \(serviceId). \(error)")
-                    } else {
-                        owsFailDebug("Failed to fetch current recipient state for \(serviceId): \(error)")
-                    }
+            } catch {
+                // It's likely there's no session for the current recipient. Maybe it was cleared?
+                // In this case, we just assume we need to send a new SKDM
+                if case SignalError.invalidState(_) = error {
+                    Logger.warn("Invalid session state. Cannot build recipient state for \(serviceId). \(error)")
+                } else {
+                    owsFailDebug("Failed to fetch current recipient state for \(serviceId): \(error)")
                 }
             }
         }
+
         return serviceIdsNeedingSenderKey
     }
 
@@ -93,24 +76,23 @@ public class SenderKeyStore {
     func recordSentSenderKeys(
         _ sentSenderKeys: [SentSenderKey],
         for thread: TSThread,
-        writeTx: SDSAnyWriteTransaction) throws {
-        try storageLock.withLock {
-            guard
-                let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx),
-                let existingMetadata = getKeyMetadata(for: keyId, readTx: writeTx)
-            else {
-                throw OWSAssertionError("Failed to look up key metadata")
-            }
-            var updatedMetadata = existingMetadata
-            for sentSenderKey in sentSenderKeys {
-                try updatedMetadata.recordSKDMSent(
-                    at: sentSenderKey.timestamp,
-                    serviceId: sentSenderKey.recipient,
-                    transaction: writeTx
-                )
-            }
-            setMetadata(updatedMetadata, writeTx: writeTx)
+        writeTx: SDSAnyWriteTransaction
+    ) throws {
+        guard
+            let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx),
+            let existingMetadata = getKeyMetadata(for: keyId, readTx: writeTx)
+        else {
+            throw OWSAssertionError("Failed to look up key metadata")
         }
+        var updatedMetadata = existingMetadata
+        for sentSenderKey in sentSenderKeys {
+            try updatedMetadata.recordSKDMSent(
+                at: sentSenderKey.timestamp,
+                serviceId: sentSenderKey.recipient,
+                transaction: writeTx
+            )
+        }
+        setMetadata(updatedMetadata, writeTx: writeTx)
     }
 
     public func resetSenderKeyDeliveryRecord(
@@ -118,25 +100,29 @@ public class SenderKeyStore {
         serviceId: ServiceId,
         writeTx: SDSAnyWriteTransaction
     ) {
-        storageLock.withLock {
-            guard let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx),
-                  let existingMetadata = getKeyMetadata(for: keyId, readTx: writeTx) else {
-                Logger.info("Failed to look up senderkey metadata")
-                return
-            }
-            var updatedMetadata = existingMetadata
-            updatedMetadata.resetDeliveryRecord(for: serviceId)
-            setMetadata(updatedMetadata, writeTx: writeTx)
+        guard
+            let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx),
+            let existingMetadata = getKeyMetadata(for: keyId, readTx: writeTx)
+        else {
+            Logger.info("Failed to look up senderkey metadata")
+            return
         }
+        var updatedMetadata = existingMetadata
+        updatedMetadata.resetDeliveryRecord(for: serviceId)
+        setMetadata(updatedMetadata, writeTx: writeTx)
     }
 
     private func _locked_isKeyValid(for thread: TSThread, readTx: SDSAnyReadTransaction) -> Bool {
-        storageLock.assertOwner()
+        guard
+            let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, readTx: readTx),
+            let keyMetadata = getKeyMetadata(for: keyId, readTx: readTx)
+        else {
+            return false
+        }
 
-        guard let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, readTx: readTx),
-              let keyMetadata = getKeyMetadata(for: keyId, readTx: readTx) else { return false }
-
-        guard keyMetadata.isValid else { return false }
+        guard keyMetadata.isValid else {
+            return false
+        }
 
         let currentRecipients = thread.recipientAddresses(with: readTx)
         let wasRecipientRemovedFromThread = keyMetadata.currentRecipients.subtracting(currentRecipients).count > 0
@@ -145,29 +131,25 @@ public class SenderKeyStore {
     }
 
     public func expireSendingKeyIfNecessary(for thread: TSThread, writeTx: SDSAnyWriteTransaction) {
-        storageLock.withLock {
-            guard let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, readTx: writeTx) else { return }
-
-            if !_locked_isKeyValid(for: thread, readTx: writeTx) {
-                setMetadata(nil, for: keyId, writeTx: writeTx)
-            }
+        guard let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, readTx: writeTx) else {
+            return
         }
-    }
 
-    public func resetSenderKeySession(for thread: TSThread, transaction writeTx: SDSAnyWriteTransaction) {
-        storageLock.withLock {
-            guard let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx) else { return }
+        if !_locked_isKeyValid(for: thread, readTx: writeTx) {
             setMetadata(nil, for: keyId, writeTx: writeTx)
         }
     }
 
-    public func resetSenderKeyStore(transaction writeTx: SDSAnyWriteTransaction) {
-        storageLock.withLock {
-            sendingDistributionIdCache.clear()
-            keyCache.clear()
-            keyMetadataStore.removeAll(transaction: writeTx)
-            sendingDistributionIdStore.removeAll(transaction: writeTx)
+    public func resetSenderKeySession(for thread: TSThread, transaction writeTx: SDSAnyWriteTransaction) {
+        guard let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx) else {
+            return
         }
+        setMetadata(nil, for: keyId, writeTx: writeTx)
+    }
+
+    public func resetSenderKeyStore(transaction writeTx: SDSAnyWriteTransaction) {
+        keyMetadataStore.removeAll(transaction: writeTx)
+        sendingDistributionIdStore.removeAll(transaction: writeTx)
     }
 
     public func skdmBytesForThread(_ thread: TSThread, tx: SDSAnyWriteTransaction) -> Data? {
@@ -224,25 +206,23 @@ extension SenderKeyStore: LibSignalClient.SenderKeyStore {
             throw OWSAssertionError("Not registered.")
         }
 
-        return storageLock.withLock {
-            let keyId = Self.buildKeyId(authorAci: senderAci, distributionId: distributionId)
+        let keyId = Self.buildKeyId(authorAci: senderAci, distributionId: distributionId)
 
-            var updatedValue: KeyMetadata
-            if let existingMetadata = getKeyMetadata(for: keyId, readTx: tx) {
-                updatedValue = existingMetadata
-            } else {
-                updatedValue = KeyMetadata(
-                    record: record,
-                    senderAci: senderAci,
-                    senderDeviceId: sender.deviceId,
-                    localIdentifiers: localIdentifiers,
-                    localDeviceId: DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: tx.asV2Read),
-                    distributionId: distributionId
-                )
-            }
-            updatedValue.record = record
-            setMetadata(updatedValue, writeTx: tx)
+        var updatedValue: KeyMetadata
+        if let existingMetadata = getKeyMetadata(for: keyId, readTx: tx) {
+            updatedValue = existingMetadata
+        } else {
+            updatedValue = KeyMetadata(
+                record: record,
+                senderAci: senderAci,
+                senderDeviceId: sender.deviceId,
+                localIdentifiers: localIdentifiers,
+                localDeviceId: DependenciesBridge.shared.tsAccountManager.storedDeviceId(tx: tx.asV2Read),
+                distributionId: distributionId
+            )
         }
+        updatedValue.record = record
+        setMetadata(updatedValue, writeTx: tx)
     }
 
     public func loadSenderKey(
@@ -254,12 +234,10 @@ extension SenderKeyStore: LibSignalClient.SenderKeyStore {
             throw OWSAssertionError("Invalid protocol address: must have ACI")
         }
 
-        return storageLock.withLock {
-            let readTx = context.asTransaction
-            let keyId = Self.buildKeyId(authorAci: senderAci, distributionId: distributionId)
-            let metadata = getKeyMetadata(for: keyId, readTx: readTx)
-            return metadata?.record
-        }
+        let readTx = context.asTransaction
+        let keyId = Self.buildKeyId(authorAci: senderAci, distributionId: distributionId)
+        let metadata = getKeyMetadata(for: keyId, readTx: readTx)
+        return metadata?.record
     }
 }
 
@@ -272,18 +250,14 @@ extension SenderKeyStore {
     private var keyMetadataStore: SDSKeyValueStore { Self.keyMetadataStore }
 
     fileprivate func getKeyMetadata(for keyId: KeyId, readTx: SDSAnyReadTransaction) -> KeyMetadata? {
-        storageLock.assertOwner()
-        return keyCache[keyId] ?? {
-            let persisted: KeyMetadata?
-            do {
-                persisted = try keyMetadataStore.getCodableValue(forKey: keyId, transaction: readTx)
-            } catch {
-                owsFailDebug("Failed to deserialize sender key: \(error)")
-                persisted = nil
-            }
-            keyCache[keyId] = persisted
-            return persisted
-        }()
+        let persisted: KeyMetadata?
+        do {
+            persisted = try keyMetadataStore.getCodableValue(forKey: keyId, transaction: readTx)
+        } catch {
+            owsFailDebug("Failed to deserialize sender key: \(error)")
+            persisted = nil
+        }
+        return persisted
     }
 
     fileprivate func setMetadata(_ metadata: KeyMetadata, writeTx: SDSAnyWriteTransaction) {
@@ -291,7 +265,6 @@ extension SenderKeyStore {
     }
 
     fileprivate func setMetadata(_ metadata: KeyMetadata?, for keyId: KeyId, writeTx: SDSAnyWriteTransaction) {
-        storageLock.assertOwner()
         do {
             if let metadata = metadata {
                 owsAssertDebug(metadata.keyId == keyId)
@@ -299,20 +272,16 @@ extension SenderKeyStore {
             } else {
                 keyMetadataStore.removeValue(forKey: keyId, transaction: writeTx)
             }
-            keyCache[keyId] = metadata
         } catch {
             owsFailDebug("Failed to persist sender key: \(error)")
         }
     }
 
     fileprivate func distributionIdForSendingToThreadId(_ threadId: ThreadUniqueId, readTx: SDSAnyReadTransaction) -> DistributionId? {
-        storageLock.assertOwner()
-
-        if let cachedValue = sendingDistributionIdCache[threadId] {
-            return cachedValue
-        } else if let persistedString: String = sendingDistributionIdStore.getString(threadId, transaction: readTx),
-                  let persistedUUID = UUID(uuidString: persistedString) {
-            sendingDistributionIdCache[threadId] = persistedUUID
+        if
+            let persistedString: String = sendingDistributionIdStore.getString(threadId, transaction: readTx),
+            let persistedUUID = UUID(uuidString: persistedString)
+        {
             return persistedUUID
         } else {
             // No distributionId yet. Return nil.
@@ -321,8 +290,6 @@ extension SenderKeyStore {
     }
 
     fileprivate func keyIdForSendingToThreadId(_ threadId: ThreadUniqueId, readTx: SDSAnyReadTransaction) -> KeyId? {
-        storageLock.assertOwner()
-
         guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: readTx.asV2Read)?.aci else {
             owsFailDebug("Not registered.")
             return nil
@@ -334,21 +301,16 @@ extension SenderKeyStore {
     }
 
     fileprivate func distributionIdForSendingToThreadId(_ threadId: ThreadUniqueId, writeTx: SDSAnyWriteTransaction) -> DistributionId {
-        storageLock.assertOwner()
-
         if let existingId = distributionIdForSendingToThreadId(threadId, readTx: writeTx) {
             return existingId
         } else {
             let distributionId = UUID()
             sendingDistributionIdStore.setString(distributionId.uuidString, key: threadId, transaction: writeTx)
-            sendingDistributionIdCache[threadId] = distributionId
             return distributionId
         }
     }
 
     fileprivate func keyIdForSendingToThreadId(_ threadId: ThreadUniqueId, writeTx: SDSAnyWriteTransaction) -> KeyId? {
-        storageLock.assertOwner()
-
         guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: writeTx.asV2Read)?.aci else {
             owsFailDebug("Not registered.")
             return nil
@@ -380,7 +342,7 @@ extension SenderKeyStore {
 
     // MARK: Logging
 
-    static private var logThrottleExpiration = AtomicValue<Date>(Date.distantPast, lock: .sharedGlobal)
+    private static let logThrottleExpiration = AtomicValue<Date>(.distantPast, lock: .init())
 
     // This method traverses all groups where `recipient` is a member and logs out information on any sent
     // sender key distribution messages.
