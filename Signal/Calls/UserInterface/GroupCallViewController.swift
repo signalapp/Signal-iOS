@@ -198,7 +198,7 @@ class GroupCallViewController: UIViewController {
 
         super.init(nibName: nil, bundle: nil)
 
-        _ = videoOverflow
+        groupCall.addObserver(self)
 
         NotificationCenter.default.addObserver(
             self,
@@ -397,8 +397,6 @@ class GroupCallViewController: UIViewController {
         reactionsBurstView.autoPinEdgesToSuperviewEdges()
 
         view.addGestureRecognizer(tapGesture)
-
-        updateCallUI()
     }
 
     override func viewDidLoad() {
@@ -458,14 +456,13 @@ class GroupCallViewController: UIViewController {
         }
     }
 
-    private var didAddObserver = false
+    private var isReadyToHandleObserver = false
     override func viewIsAppearing(_ animated: Bool) {
         super.viewIsAppearing(animated)
 
-        if !didAddObserver {
-            groupCall.addObserver(self)
-            didAddObserver = true
-        }
+        self.isReadyToHandleObserver = true
+
+        updateCallUI()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -1358,6 +1355,9 @@ extension GroupCallViewController: GroupCallObserver {
     func groupCallLocalDeviceStateChanged(_ call: GroupCall) {
         AssertIsOnMainThread()
         owsAssert(self.groupCall === call)
+        guard self.isReadyToHandleObserver else {
+            return
+        }
 
         updateCallUI()
 
@@ -1374,6 +1374,9 @@ extension GroupCallViewController: GroupCallObserver {
     func groupCallRemoteDeviceStatesChanged(_ call: GroupCall) {
         AssertIsOnMainThread()
         owsAssert(self.groupCall === call)
+        guard self.isReadyToHandleObserver else {
+            return
+        }
 
         isAnyRemoteDeviceScreenSharing = ringRtcCall.remoteDeviceStates.values.first { $0.sharingScreen == true } != nil
 
@@ -1386,6 +1389,9 @@ extension GroupCallViewController: GroupCallObserver {
     func groupCallPeekChanged(_ call: GroupCall) {
         AssertIsOnMainThread()
         owsAssert(self.groupCall === call)
+        guard self.isReadyToHandleObserver else {
+            return
+        }
 
         updateCallUI()
     }
@@ -1393,6 +1399,9 @@ extension GroupCallViewController: GroupCallObserver {
     func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason) {
         AssertIsOnMainThread()
         owsAssert(self.groupCall === call)
+        guard self.isReadyToHandleObserver else {
+            return
+        }
 
         let title: String
 
@@ -1460,7 +1469,11 @@ extension GroupCallViewController: GroupCallObserver {
     }
 
     func groupCallReceivedReactions(_ call: GroupCall, reactions: [SignalRingRTC.Reaction]) {
+        AssertIsOnMainThread()
         owsAssert(self.groupCall === call)
+        guard self.isReadyToHandleObserver else {
+            return
+        }
         let localAci = databaseStorage.read { tx in
             return DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci
         }
@@ -1494,6 +1507,11 @@ extension GroupCallViewController: GroupCallObserver {
     }
 
     func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [DemuxId]) {
+        AssertIsOnMainThread()
+        owsAssert(self.groupCall === call)
+        guard self.isReadyToHandleObserver else {
+            return
+        }
         self.raisedHandsToast.raisedHands = raisedHands
         self.updateCallUI(shouldAnimateViewFrames: true)
     }
@@ -1501,7 +1519,9 @@ extension GroupCallViewController: GroupCallObserver {
     func handleUntrustedIdentityError(_ call: GroupCall) {
         AssertIsOnMainThread()
         owsAssert(self.groupCall === call)
-
+        guard self.isReadyToHandleObserver else {
+            return
+        }
         if !hasUnresolvedSafetyNumberMismatch {
             hasUnresolvedSafetyNumberMismatch = true
             resolveSafetyNumberMismatch()
