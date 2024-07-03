@@ -253,17 +253,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>These chats will be deleted from all your devices.</string>
+			<string>ستُحذَف هذه الدردشات من جميع أجهزتك.</string>
 			<key>one</key>
-			<string>This chat will be deleted from all your devices.</string>
+			<string>ستُحذَف هذه الدردشة من جميع أجهزتك.</string>
 			<key>two</key>
-			<string>These chats will be deleted from all your devices.</string>
+			<string>ستُحذَف هاتان الدردشتان من جميع أجهزتك.</string>
 			<key>few</key>
-			<string>These chats will be deleted from all your devices.</string>
+			<string>ستُحذَف هذه الدردشات من جميع أجهزتك.</string>
 			<key>many</key>
-			<string>These chats will be deleted from all your devices.</string>
+			<string>ستُحذَف هذه الدردشات من جميع أجهزتك.</string>
 			<key>other</key>
-			<string>These chats will be deleted from all your devices.</string>
+			<string>ستُحذَف هذه الدردشات من جميع أجهزتك.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>

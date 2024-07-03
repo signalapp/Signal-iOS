@@ -1313,7 +1313,7 @@
 "CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "Stopp";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This chat will be deleted from all your devices.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Dieser Chat wird von all deinen Geräten gelöscht.";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Chat löschen?";
@@ -1793,7 +1793,7 @@
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ wurde aus den Kontakten gelöscht und entfernt.";
 
 /* Title for an action sheet button explaining that a message will be deleted. */
-"DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_BUTTON_TITLE" = "Delete";
+"DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_BUTTON_TITLE" = "Löschen";
 
 /* Header text for an action sheet confirming deleting a message in Note to Self. */
 "DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_HEADER" = "Nachricht löschen?";
@@ -2918,10 +2918,10 @@
 "GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ und %2$@ werden benachrichtigt";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal ruft %1$@ an";
+"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal wird bei %1$@ klingeln";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal ruft %1$@ und %2$@ an";
+"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal wird bei %1$@ und %2$@ klingeln";
 
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "Du nimmst am Gruppenanruf teil";

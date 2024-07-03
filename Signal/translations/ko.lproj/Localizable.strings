@@ -1313,7 +1313,7 @@
 "CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "중지";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This chat will be deleted from all your devices.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "내 모든 기기에서 이 대화를 삭제합니다.";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "대화를 삭제할까요?";
@@ -1793,7 +1793,7 @@
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "내 연락처에서 %1$@ 님을 삭제하고 제거했습니다.";
 
 /* Title for an action sheet button explaining that a message will be deleted. */
-"DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_BUTTON_TITLE" = "Delete";
+"DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_BUTTON_TITLE" = "삭제";
 
 /* Header text for an action sheet confirming deleting a message in Note to Self. */
 "DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_HEADER" = "메시지를 삭제하시겠습니까?";

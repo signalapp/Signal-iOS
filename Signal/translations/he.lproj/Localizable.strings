@@ -1313,7 +1313,7 @@
 "CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "עצירה";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This chat will be deleted from all your devices.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "צ'אט זה יימחק מכל המכשירים שלך.";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "למחוק צ'אט?";
@@ -1793,7 +1793,7 @@
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "מחקת והסרת את %1$@ מאנשי הקשר.";
 
 /* Title for an action sheet button explaining that a message will be deleted. */
-"DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_BUTTON_TITLE" = "Delete";
+"DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_BUTTON_TITLE" = "מחיקה";
 
 /* Header text for an action sheet confirming deleting a message in Note to Self. */
 "DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_HEADER" = "למחוק הודעה?";

@@ -1313,7 +1313,7 @@
 "CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "Stop";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This chat will be deleted from all your devices.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Scriosfar an comhrá seo ó do ghléasanna uile.";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Scrios Comhrá?";
@@ -1793,7 +1793,7 @@
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "Scriosadh %1$@ ó do theagmhálaithe agus baineadh é/í.";
 
 /* Title for an action sheet button explaining that a message will be deleted. */
-"DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_BUTTON_TITLE" = "Delete";
+"DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_BUTTON_TITLE" = "Scrios";
 
 /* Header text for an action sheet confirming deleting a message in Note to Self. */
 "DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_HEADER" = "Scrios an teachtaireacht?";

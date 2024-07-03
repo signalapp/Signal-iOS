@@ -1313,7 +1313,7 @@
 "CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "Stoppen";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This chat will be deleted from all your devices.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Deze chat zal op al je apparaten worden verwijderd.";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Chat verwijderen?";
@@ -1793,7 +1793,7 @@
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "%1$@ is verwijderd uit je contacten en van je apparaat.";
 
 /* Title for an action sheet button explaining that a message will be deleted. */
-"DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_BUTTON_TITLE" = "Delete";
+"DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_BUTTON_TITLE" = "Verwijderen";
 
 /* Header text for an action sheet confirming deleting a message in Note to Self. */
 "DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_HEADER" = "Bericht verwijderen?";
@@ -3560,7 +3560,7 @@
 "IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "Bevestig je donatie";
 
 /* Message confirming recurring donation with bank. This message confirms with the user that they will see a small confirmation charge with their bank before the donation. */
-"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "Om je maandelijkse donatie in te stellen, tik op doorgaan om dit met een afschrijving van € 0,01 bij je bank te bevestigen. Dit bedrag wordt automatisch teruggestort en maakt het mogelijk om je donatie van %1$@/maand van je rekening af te schrijven.";
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "Om je maandelijkse donatie in te stellen, tik op Doorgaan om dit met een afschrijving van € 0,01 bij je bank te bevestigen. Dit bedrag wordt automatisch teruggestort en maakt het mogelijk om je donatie van %1$@/maand van je rekening af te schrijven.";
 
 /* Title confirming recurring donation with bank. */
 "IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "Bevestig je donatie via %1$@";

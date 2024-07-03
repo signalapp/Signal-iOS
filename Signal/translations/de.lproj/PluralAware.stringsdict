@@ -173,9 +173,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This chat will be deleted from all your devices.</string>
+			<string>Dieser Chat wird von all deinen Geräten gelöscht.</string>
 			<key>other</key>
-			<string>These chats will be deleted from all your devices.</string>
+			<string>Diese Chats werden von all deinen Geräten gelöscht.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -504,9 +504,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Signal ruft %2$@, %3$@ und %1$d weitere Person an</string>
+			<string>Signal wird bei %2$@, %3$@ und %1$d weiteren Person klingeln</string>
 			<key>other</key>
-			<string>Signal ruft %2$@, %3$@ und %1$d weitere Personen an</string>
+			<string>Signal wird bei %2$@, %3$@ und %1$d weiteren Personen klingeln</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>

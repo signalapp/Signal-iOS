@@ -440,7 +440,7 @@
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Mensaje de voz";
 
 /* A string indicating that an audio message is playing. */
-"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Nota de voz";
+"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Mensaje de voz";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Altavoz";
@@ -494,7 +494,7 @@
 "BADGE_EXPIRED_DONATE_BUTTON" = "Donar";
 
 /* Text for the 'learn more' link in a sheet explaining there's been an issue with your badge. */
-"BADGE_EXPIRED_LEARN_MORE_LINK" = "Más información";
+"BADGE_EXPIRED_LEARN_MORE_LINK" = "Más información.";
 
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Donación mensual cancelada";
@@ -1202,7 +1202,7 @@
 "CONTACT_SHARING_NO_ACCESS_TITLE" = "Permitir acesso a contactos";
 
 /* Button text to initiate an email to signal support staff */
-"CONTACT_SUPPORT" = "Contactar con el servicio de asistencia";
+"CONTACT_SUPPORT" = "Contactar con asistencia";
 
 /* The localized representation of the 'Donations & Badges' support filter. */
 "CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Donaciones e insignias";
@@ -1217,7 +1217,7 @@
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT" = "Solicitar función nueva";
 
 /* The localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK" = "Tengo una sugerencia para la app";
+"CONTACT_SUPPORT_FILTER_FEEDBACK" = "Tengo una sugerencia para la aplicación";
 
 /* A brief localized representation of the 'feedback' support filter. */
 "CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "Sugerencia";
@@ -1313,7 +1313,7 @@
 "CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "Dejar de hablar";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This chat will be deleted from all your devices.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Este chat se eliminará de todos tus dispositivos.";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "¿Eliminar chat?";
@@ -1370,7 +1370,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Añadir a contactos del teléfono";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Selecciona quién puede modificar el nombre, descripción e imagen del grupo y la desaparición de mensajes.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Selecciona quién puede modificar el nombre, la descripción, la imagen y la duración de los mensajes temporales del grupo.";
 
 /* Footer string for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "Apoya a Signal y consigue insignias para mostrar en tu perfil. Toca sobre una insignia para saber más.";
@@ -1415,7 +1415,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Añadir participantes";
 
 /* Description for the 'edit membership access'. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_FOOTER" = "Selecciona quién puede modificar la lista de participantes.";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_FOOTER" = "Elige quién puede editar la lista de participantes.";
 
 /* Label for 'group link' action in conversation settings view. */
 "CONVERSATION_SETTINGS_GROUP_LINK" = "Enlace al grupo";
@@ -1700,10 +1700,10 @@
 "DATE_YESTERDAY" = "Ayer";
 
 /* Error indicating that the debug logs could not be packaged. */
-"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "No se ha podido preparar el archivo con el registro de depuración.";
+"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "No se han podido comprimir los archivos.";
 
 /* Error indicating that a debug log could not be uploaded. */
-"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "No se ha podido enviar el archivo con el registro de depuración.";
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "No se han podido cargar los archivos.";
 
 /* Message of the debug log alert. */
 "DEBUG_LOG_ALERT_MESSAGE" = "¿Qué deseas hacer con el enlace al archivo del registro de depuración?";
@@ -1715,10 +1715,10 @@
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Copiar enlace";
 
 /* Label for the 'email debug log' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Contactar con el servicio de asistencia";
+"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Contactar con asistencia";
 
 /* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
-"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Exportar registro de depuración";
+"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Exportar registro";
 
 /* Label for the 'Share' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "Compartir";
@@ -1793,7 +1793,7 @@
 "DELETE_CONTACT_CONFIRMATION_TOAST" = "Se ha eliminado a %1$@ de tus contactos.";
 
 /* Title for an action sheet button explaining that a message will be deleted. */
-"DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_BUTTON_TITLE" = "Delete";
+"DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_BUTTON_TITLE" = "Eliminar";
 
 /* Header text for an action sheet confirming deleting a message in Note to Self. */
 "DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_HEADER" = "¿Eliminar mensaje?";
@@ -1895,10 +1895,10 @@
 "DEVICE_TRANSFER_ERROR_GENERIC" = "No se ha podido completar la transferencia. Asegúrate de que tus dispositivos están cerca e inténtalo de nuevo.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Para configurar este iPad como dispositivo vinculado, debes escanear el código QR con el iPad que tenías enlazado anteriormente";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Para configurar este iPad como dispositivo vinculado, debes escanear el código con el iPad que tenías enlazado anteriormente";
 
 /* An error indicating the user must scan this code with a primary device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "Para transferir tu cuenta, debes escanear el código QR con tu iPhone";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "Para transferir tu cuenta, debes escanear el código con tu iPhone";
 
 /* An error indicating that the user does not have enough free space on their device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "No hay suficiente espacio de almacenamiento para completar la transferencia";
@@ -1949,7 +1949,7 @@
 "DEVICE_TRANSFER_TRANSFERRING_TITLE" = "Transfiriendo datos";
 
 /* table cell label in conversation settings */
-"DISAPPEARING_MESSAGES" = "Desaparición de mensajes";
+"DISAPPEARING_MESSAGES" = "Mensajes temporales";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Los mensajes en este chat desaparecerán tras %1$@.";
@@ -1970,7 +1970,7 @@
 "DISAPPEARING_MESSAGES_HOURS" = "horas";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "Ajustes de desaparición de mensajes";
+"DISAPPEARING_MESSAGES_LABEL" = "Ajustes de mensajes temporales";
 
 /* The unit for a number of minutes */
 "DISAPPEARING_MESSAGES_MINUTES" = "minutos";
@@ -2435,7 +2435,7 @@
 "EMAIL_INVITE_BODY" = "Hola:\n\nÚltimamente uso Signal para chats privados desde mi iPhone. Me gustaría que también lo instalases y así estar segur@s que solo tú y yo podemos leer nuestros mensajes.\n\nSignal está disponible para iPhone y Android. Consíguela aquí: %1$@\n\nSignal funciona como tu aplicación de mensajes de toda la vida. Podemos enviarnos fotos y vídeos, hacer (vídeo)llamadas y crear grupos. Lo mejor es que nadie puede ver el contenido de nuestro chat ¡ni siquiera la gente de Signal!\n\nPuedes leer más sobre Open Whisper Systems (quien desarrolla Signal) aquí: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "¿Usamos Signal para chatear de forma segura?";
+"EMAIL_INVITE_SUBJECT" = "Pasémonos a Signal";
 
 /* Description for the fallback support sheet if user cannot send email */
 "EMAIL_SIGNAL_MESSAGE" = "Tu dispositivo no está configurado para enviar correos. Para enviar una solicitud de asistencia, configura una cuenta de correo electrónico en tu dispositivo o escríbenos a support@signal.org.";
@@ -2675,7 +2675,7 @@
 "FINISH_GROUP_CREATION_LABEL" = "Terminar de crear el grupo";
 
 /* Tooltip notifying users that the flip camera button moved to the picture-in-picture view of themselves in a call */
-"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "El botón para cambiar de cámara se ha movido para aquí. Toca el vídeo para probarlo.";
+"FLIP_CAMERA_BUTTON_MOVED_TO_PIP_TOOLTIP" = "El botón para cambiar de cámara ahora está aquí. Toca el vídeo para probarlo.";
 
 /* Label and title for 'contact forwarding' views. */
 "FORWARD_CONTACT" = "Reenviar contacto";
@@ -2756,10 +2756,10 @@
 "GO_TO_SETTINGS_BUTTON" = "Ir a Ajustes";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Has actualizado quién puede editar los detalles del grupo a «%1$@».";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Has cambiado quién puede editar los detalles del grupo a «%1$@».";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ ha actualizado quien puede editar los detalles del grupo a «%2$@».";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ ha cambiado quién puede editar los detalles del grupo a «%2$@».";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Quién puede editar los detalles del grupo: «%1$@».";
@@ -2780,16 +2780,16 @@
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "Desactivada";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Has actualizado quién puede modificar la lista de participantes del grupo a «%1$@».";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Has cambiado quién puede editar la lista de participantes del grupo a «%1$@».";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ ha actualizado quién puede modificar la lista de participantes del grupo a «%2$@».";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ ha cambiado quién puede editar la lista de participantes del grupo a «%2$@».";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Quién puede modificar la lista de participantes del grupo: «%1$@».";
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Quién puede editar la lista de participantes del grupo: «%1$@».";
 
 /* Message indicating that a feature can only be used by group admins. */
-"GROUP_ADMIN_ONLY_WARNING" = "Solo admins pueden modificar esta opción.";
+"GROUP_ADMIN_ONLY_WARNING" = "Solo admins pueden cambiar esta opción.";
 
 /* Message body for alert explaining that a group call participant is blocked */
 "GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "No recibirás el audio ni el vídeo de esta persona y ella no recibirá los tuyos.";
@@ -2810,13 +2810,13 @@
 "GROUP_CALL_CONTINUE_BUTTON" = "Continuar llamada";
 
 /* Text in conversation view for a group call that has since ended */
-"GROUP_CALL_ENDED_MESSAGE" = "La llamada en grupo ha terminado";
+"GROUP_CALL_ENDED_MESSAGE" = "La llamada de grupo ha terminado";
 
 /* A button to receive more info about not seeing a participant in group call grid */
 "GROUP_CALL_ERROR_DETAILS" = "Más detalles";
 
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
-"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Se alcanzó el número máximo de participantes para esta llamada. Inténtalo más tarde.";
+"GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Se alcanzó el número máximo de participantes para esta llamada. Inténtalo de nuevo más tarde.";
 
 /* Text explaining that someone has sent a ring to the group. Embeds {ring sender name} */
 "GROUP_CALL_INCOMING_RING_FORMAT" = "%1$@ está llamando al grupo";
@@ -2846,13 +2846,13 @@
 "GROUP_CALL_MEMBER_LIST_SECTION_HEADER_MEMBER_COUNT" = "(%1$d)";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
-"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "No se puede recibir ni audio ni vídeo de %1$@";
+"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "No se puede recibir audio ni vídeo de %1$@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
 "GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "Esto se puede deber a que no han verificado el cambio de tus cifras de seguridad, hay un problema con su dispositivo, o te han bloqueado.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
-"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "No se puede recibir ni audio ni vídeo de %1$@";
+"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "No se puede recibir audio ni vídeo de %1$@";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "No hay nadie más";
@@ -2870,7 +2870,7 @@
 "GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%1$@ y %2$@ han abandonado la llamada";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
-"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%1$@ en esta llamada";
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%1$@ está en esta llamada";
 
 /* Text explaining that a member is presenting. Embeds {member name} */
 "GROUP_CALL_PRESENTING_FORMAT" = "%1$@ está presentando";
@@ -2888,25 +2888,25 @@
 "GROUP_CALL_SCREEN_SHARE_TOAST" = "Desliza hacia arriba para ver la pantalla compartida";
 
 /* Text in conversation view for a group call that someone started. We don't know who */
-"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Alguien ha iniciado una llamada en grupo";
+"GROUP_CALL_SOMEONE_STARTED_MESSAGE" = "Alguien ha iniciado una llamada de grupo";
 
 /* Toast view text informing user about swiping to speaker view */
 "GROUP_CALL_SPEAKER_VIEW_TOAST" = "Desliza hacia arriba para cambiar la vista";
 
 /* Tooltip highlighting group calls. */
-"GROUP_CALL_START_TOOLTIP" = "Toca aquí para iniciar una llamada en grupo";
+"GROUP_CALL_START_TOOLTIP" = "Toca aquí para iniciar una llamada de grupo";
 
 /* Text explaining that you started a group call. */
-"GROUP_CALL_STARTED_BY_YOU" = "Has iniciado una llamada en grupo";
+"GROUP_CALL_STARTED_BY_YOU" = "Has iniciado una llamada de grupo";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
-"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%1$@ ha(s) iniciado una llamada en grupo";
+"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%1$@ ha iniciado una llamada de grupo";
 
 /* Text displayed when trying to turn on ringing when calling a large group. */
 "GROUP_CALL_TOO_LARGE_TO_RING" = "El grupo es demasiado grande para notificar a todos los participantes.";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ y %2$@ en esta llamada";
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ y %2$@ están en esta llamada";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "Desconexión en la llamada. Comprueba tu conexión e inténtalo de nuevo.";
@@ -2936,7 +2936,7 @@
 "GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%1$@ ha creado el grupo.";
 
 /* Message indicating that group was created by an unknown user. */
-"GROUP_CREATED_BY_UNKNOWN_USER" = "El grupo se ha creado.";
+"GROUP_CREATED_BY_UNKNOWN_USER" = "Se ha creado el grupo.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "No se ha podido añadir a todos los participantes al grupo. Toca para intentarlo de nuevo.";
@@ -2945,10 +2945,10 @@
 "GROUP_DESCRIPTION_MORE" = "más";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Añade una descripción del grupo…";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "Añadir descripción del grupo…";
 
 /* Footer text when editing the group description */
-"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "La descripción del grupo será visible para participantes en este grupo y gente que ha sido invitada.";
+"GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "La descripción del grupo será visible para participantes del grupo y para las personas que han sido invitadas.";
 
 /* Title for the group description view. */
 "GROUP_DESCRIPTION_VIEW_TITLE" = "Descripción del grupo";
@@ -2993,22 +2993,22 @@
 "GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%1$@ ha restablecido el enlace para unirse al grupo.";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Se ha desactivado la confirmación de admin para unirse al grupo vía enlace.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Se ha desactivado la confirmación de admin para unirse al grupo mediante enlace.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Has desactivado la confirmación de admin para unirse al grupo vía enlace.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Has desactivado la confirmación de admin para unirse al grupo mediante enlace.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ ha desactivado la confirmación de admin para unirse al grupo vía enlace.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ ha desactivado la confirmación de admin para unirse al grupo mediante enlace.";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Se ha activado la confirmación de admin para unirse al grupo vía enlace.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Se ha activado la confirmación de admin para unirse al grupo mediante enlace.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Has activado la confirmación de admin para unirse al grupo vía enlace.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Has activado la confirmación de admin para unirse al grupo mediante enlace.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ ha activado la confirmación de admin para unirse al grupo vía enlace.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ ha activado la confirmación de admin para unirse al grupo mediante enlace.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the name of the member. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "No se puede añadir automáticamente a %1$@ al grupo. Ha recibido una invitación y no podrá ver ningún mensaje hasta que la acepte.";
@@ -3017,31 +3017,31 @@
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "No se puede añadir automáticamente a estas personas al grupo. Han recibido una invitación y no podrán ver ningún mensaje hasta que la acepten.";
 
 /* Message indicating that 'announcement-only' mode was disabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "Los ajustes del grupo han cambiado para permitir a cualquiera enviar mensajes.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED" = "Los ajustes del grupo han cambiado para que cualquiera pueda enviar mensajes.";
 
 /* Message indicating that 'announcement-only' mode was disabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "Has modificado los ajustes del grupo para permitir a cualquiera enviar mensajes.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "Has modificado los ajustes del grupo para que cualquiera pueda enviar mensajes.";
 
 /* Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%1$@ ha modificado los ajustes del grupo para permitir a cualquiera enviar mensajes.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%1$@ ha modificado los ajustes del grupo para que cualquiera pueda enviar mensajes.";
 
 /* Message indicating that 'announcement-only' mode was enabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "Se han modificado los ajustes del grupo para permitir a cualquiera enviar mensajes.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "Se han modificado los ajustes del grupo para que solo admins puedan enviar mensajes.";
 
 /* Message indicating that 'announcement-only' mode was enabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "Has modificado los ajustes del grupo para permitir solo a admins enviar mensajes.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "Has modificado los ajustes del grupo para que solo admins puedan enviar mensajes.";
 
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%1$@ ha modificado los ajustes del grupo para permitir solo a admins enviar mensajes.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%1$@ ha modificado los ajustes del grupo para que solo admins puedan enviar mensajes.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
 "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "No puedes volver a unirte a este grupo vía enlace porque un admin te ha vetado.";
 
 /* Title indicating that you cannot join a group in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "Imposible unirse al grupo";
+"GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "No es posible unirse al grupo";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Este enlace de grupo es inválido.";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "El enlace a este grupo no es válido.";
 
 /* Indicator for group conversations in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "Grupo";
@@ -3056,16 +3056,16 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "¿Deseas unirte a este grupo y compartir tu nombre y foto con sus participantes?";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
-"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "Combrueba que estás online e inténtalo de nuevo.";
+"GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "Combrueba que tengas conexión e inténtalo de nuevo.";
 
 /* Error message the attempt to request to join the group failed. */
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Inténtalo de nuevo.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Enlace de grupo inválido. Asegúrate que el enlace es correcto antes de intentar unirte.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "El enlace a este grupo no es válido. Asegúrate de que el enlace sea correcto antes de intentar unirte.";
 
 /* Title for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Enlace inválido";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Enlace no válido";
 
 /* Error message indicating that the local user does not support groups v2. */
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Actualiza Signal en este dispositivo para poder unirte al grupo.";
@@ -3083,13 +3083,13 @@
 "GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Compartir enlace";
 
 /* Subtitle for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Comparte este enlace con tus amistades para que se unan rápidamente a este grupo.";
+"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Comparte este enlace con quienes quieras para que se unan al grupo.";
 
 /* Title for the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_TITLE" = "Invitar personas";
 
 /* Suggestion to invite more group members via the group invite link. */
-"GROUP_LINK_PROMOTION_UPDATE" = "Invita más personas a tu grupo vía enlace";
+"GROUP_LINK_PROMOTION_UPDATE" = "Invita más personas a tu grupo mediante enlace";
 
 /* Description text in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Las personas que escaneen este código podrán unirse al grupo. Aun así, los admins deben aceptar a nuevos participantes si esa opción está activa.";
@@ -3143,7 +3143,7 @@
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "Ahora eres admin del grupo.";
 
 /* Message indicating that the local user was granted administrator role by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ te ha promovido a admin.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ te ha designado como admin.";
 
 /* Message indicating that the local user accepted an invite to the group. */
 "GROUP_LOCAL_USER_INVITE_ACCEPTED" = "Has aceptado una invitación para participar en el grupo.";
@@ -3155,7 +3155,7 @@
 "GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "Has rechazado la invitación para participar en el grupo.";
 
 /* Message indicating that the local user declined an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "Has rechazado la invitación para el grupo de %1$@.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "Has rechazado la invitación de %1$@ para participar en el grupo.";
 
 /* Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%1$@ ha retirado tu invitación al grupo.";
@@ -3560,7 +3560,7 @@
 "IDEAL_DONATION_CONFIRM_DONATION_TITLE" = "Confirma tu donación";
 
 /* Message confirming recurring donation with bank. This message confirms with the user that they will see a small confirmation charge with their bank before the donation. */
-"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "Para configurar tu donación recurrente, toca «Continuar» para confirmar un cargo de 0,01 € con tu banco. Esto se reembolsará automáticamente y permitirá que tu donación de %1$@/mes se cargue a tu cuenta.";
+"IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE" = "Si quieres configurar tu donación recurrente, toca «Continuar» para confirmar un cargo de 0,01 € con tu banco. Esto se reembolsará automáticamente y permitirá que tu donación de %1$@/mes se cargue a tu cuenta.";
 
 /* Title confirming recurring donation with bank. */
 "IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_TITLE" = "Confirma tu donación con %1$@";
@@ -5159,7 +5159,7 @@
 "PHONE_NUMBER_SHARING_EVERYBODY" = "Cualquiera";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Tu número de teléfono será visible para las personas y los grupos a quienes envíes mensajes.";
+"PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Tu número de teléfono será visible para las personas y los grupos a los que envíes mensajes.";
 
 /* A user friendly name for the 'nobody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_NOBODY" = "Nadie";
@@ -6962,7 +6962,7 @@
 "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL" = "Dirección de tu cartera";
 
 /* A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed. */
-"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "Para cambiar esto, selecciona la opción «Nadie» en el ajuste «Quién puede ver mi número».";
+"SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST" = "Para cambiar este ajuste, selecciona la opción «Nadie» en «Quién puede ver mi número».";
 
 /* The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'. */
 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION" = "Si configuras la opción «¿Quién puede encontrarme con mi número?» a «Nadie», será más difícil que las personas te encuentren en Signal.";
@@ -7121,7 +7121,7 @@
 "SHARE_ACTION_MESSAGE" = "Mensaje de texto";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Tu número de seguridad con %1$@ ha cambiado. Te recomendamos verificar su identidad en la app principal antes de reenviar este mensaje.";
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Tu número de seguridad con %1$@ ha cambiado. Te recomendamos verificar su identidad en la aplicación principal antes de reenviar este mensaje.";
 
 /* Indicates that the share extension is still loading. */
 "SHARE_EXTENSION_LOADING" = "Cargando…";
@@ -7547,7 +7547,7 @@
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Tu número de seguridad con %1$@ coincide. Puedes marcar su identidad como verificada.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "El número de seguridad coincide.";
+"SUCCESSFUL_VERIFICATION_TITLE" = "¡El número de seguridad coincide!";
 
 /* Header of support description field */
 "SUPPORT_CONTACT_US_HEADER" = "Contáctanos";
@@ -8105,7 +8105,7 @@
 "VOICE_MESSAGE_TOO_SHORT_TOOLTIP" = "Toca y mantén pulsado para grabar.";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
-"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Completa la configuración en la app de escritorio Signal Desktop.";
+"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Completa la configuración en la aplicación de escritorio Signal Desktop.";
 
 /* Accessibility label for gradient wallpaper swatch, naming the two colors in the gradient. {{ Embeds the names of the two colors in the gradient }} */
 "WALLPAPER_GRADIENT_COLORS_ACCESSIBILITY_LABEL" = "Degradado con %1$@ y %2$@";

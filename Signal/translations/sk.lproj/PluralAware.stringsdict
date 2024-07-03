@@ -213,13 +213,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This chat will be deleted from all your devices.</string>
+			<string>Tento čet sa vymaže zo všetkých vašich zariadení.</string>
 			<key>few</key>
-			<string>These chats will be deleted from all your devices.</string>
+			<string>Tieto čety sa vymažú zo všetkých vašich zariadení.</string>
 			<key>many</key>
-			<string>These chats will be deleted from all your devices.</string>
+			<string>Tieto čety sa vymažú zo všetkých vašich zariadení.</string>
 			<key>other</key>
-			<string>These chats will be deleted from all your devices.</string>
+			<string>Tieto čety sa vymažú zo všetkých vašich zariadení.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
