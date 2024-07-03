@@ -170,10 +170,9 @@ final class OWSOutgoingResendResponse: TSOutgoingMessage {
             originalThread.usesSenderKey
         {
             do {
-                try self.senderKeyStore.recordSenderKeySent(
+                try self.senderKeyStore.recordSentSenderKeys(
+                    [SentSenderKey(recipient: serviceId.wrappedValue, timestamp: self.timestamp)],
                     for: originalThread,
-                    to: serviceId.wrappedValue,
-                    timestamp: self.timestamp,
                     writeTx: tx
                 )
             } catch {

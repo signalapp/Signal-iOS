@@ -383,16 +383,11 @@ extension MessageSender {
         return await self.databaseStorage.awaitableWrite { tx in
             var readyRecipients = prepareResult.readyRecipients
             var failedRecipients = prepareResult.failedRecipients
+            var sentSenderKeys = [SentSenderKey]()
             for (serviceId, distributionResult) in distributionResults {
                 do {
                     let timestamp = try distributionResult.get()
-                    try self.senderKeyStore.recordSenderKeySent(
-                        for: thread,
-                        to: serviceId,
-                        timestamp: timestamp,
-                        writeTx: tx
-                    )
-                    readyRecipients.append(serviceId)
+                    sentSenderKeys.append(SentSenderKey(recipient: serviceId, timestamp: timestamp))
                 } catch {
                     if error is MessageSenderNoSuchSignalRecipientError {
                         self.markAsUnregistered(
@@ -404,6 +399,18 @@ extension MessageSender {
                     }
                     failedRecipients.append((serviceId, SenderKeyError.recipientSKDMFailed(error)))
                 }
+            }
+            do {
+                try self.senderKeyStore.recordSentSenderKeys(
+                    sentSenderKeys,
+                    for: thread,
+                    writeTx: tx
+                )
+                readyRecipients.append(contentsOf: sentSenderKeys.lazy.map(\.recipient))
+            } catch {
+                failedRecipients.append(contentsOf: sentSenderKeys.lazy.map {
+                    return ($0.recipient, SenderKeyError.recipientSKDMFailed(error))
+                })
             }
             return (readyRecipients, failedRecipients)
         }

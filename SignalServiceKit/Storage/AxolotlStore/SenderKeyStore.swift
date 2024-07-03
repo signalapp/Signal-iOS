@@ -5,6 +5,11 @@
 
 import LibSignalClient
 
+struct SentSenderKey {
+    var recipient: ServiceId
+    var timestamp: UInt64
+}
+
 public class SenderKeyStore {
     public typealias DistributionId = UUID
     fileprivate typealias KeyId = String
@@ -85,10 +90,9 @@ public class SenderKeyStore {
     }
 
     /// Records that the current sender key for the `thread` has been sent to `participant`
-    public func recordSenderKeySent(
+    func recordSentSenderKeys(
+        _ sentSenderKeys: [SentSenderKey],
         for thread: TSThread,
-        to serviceId: ServiceId,
-        timestamp: UInt64,
         writeTx: SDSAnyWriteTransaction) throws {
         try storageLock.withLock {
             guard
@@ -98,7 +102,13 @@ public class SenderKeyStore {
                 throw OWSAssertionError("Failed to look up key metadata")
             }
             var updatedMetadata = existingMetadata
-            try updatedMetadata.recordSKDMSent(at: timestamp, serviceId: serviceId, transaction: writeTx)
+            for sentSenderKey in sentSenderKeys {
+                try updatedMetadata.recordSKDMSent(
+                    at: sentSenderKey.timestamp,
+                    serviceId: sentSenderKey.recipient,
+                    transaction: writeTx
+                )
+            }
             setMetadata(updatedMetadata, writeTx: writeTx)
         }
     }
