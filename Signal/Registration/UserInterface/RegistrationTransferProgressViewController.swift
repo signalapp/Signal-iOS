@@ -211,7 +211,7 @@ private class TransferRelaunchSheet: InteractiveSheetViewController {
         let exitButton = UIButton()
         exitButton.backgroundColor = .ows_accentBlue
         exitButton.layer.cornerRadius = 8
-        exitButton.titleEdgeInsets = UIEdgeInsets(hMargin: 0, vMargin: 18)
+        exitButton.ows_titleEdgeInsets = UIEdgeInsets(hMargin: 0, vMargin: 18)
         exitButton.setTitleColor(.ows_white, for: .normal)
         exitButton.setTitle(
             OWSLocalizedString(

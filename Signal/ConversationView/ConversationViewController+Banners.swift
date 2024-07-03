@@ -438,7 +438,7 @@ private class NameCollisionBanner: UIView {
         button.dimsWhenHighlighted = true
 
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.contentEdgeInsets = .init(hMargin: 12, vMargin: 6)
+        button.ows_contentEdgeInsets = .init(hMargin: 12, vMargin: 6)
         button.setCompressionResistanceHigh()
         button.setContentHuggingLow()
 

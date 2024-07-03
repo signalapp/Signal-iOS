@@ -94,7 +94,7 @@ class RegistrationPinAttemptsExhaustedAndMustCreateNewPinViewController: OWSView
         result.backgroundColor = .ows_accentBlue
         result.titleLabel?.font = UIFont.dynamicTypeBody.semibold()
         result.titleLabel?.numberOfLines = 0
-        result.contentEdgeInsets = .init(margin: 14)
+        result.ows_contentEdgeInsets = .init(margin: 14)
         result.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
         return result
     }()

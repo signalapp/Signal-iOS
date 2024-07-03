@@ -241,7 +241,7 @@ private extension UsernameLinkQRCodeColorPickerViewController {
 
             setImage(selected: selected)
 
-            adjustsImageWhenHighlighted = false
+            ows_adjustsImageWhenHighlighted = false
             autoPinToSquareAspectRatio()
             autoSetDimension(.width, toSize: size)
 

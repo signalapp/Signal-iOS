@@ -206,7 +206,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                     default: break
                     }
                 }
-                button.contentEdgeInsets = buttonContentEdgeInsets
+                button.ows_contentEdgeInsets = buttonContentEdgeInsets
                 button.layer.cornerRadius = actionButtonSize.height / 2
                 button.isUserInteractionEnabled = false
                 innerVStackViews.append(button)

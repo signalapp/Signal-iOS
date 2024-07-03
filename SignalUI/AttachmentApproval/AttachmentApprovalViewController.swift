@@ -1333,7 +1333,7 @@ extension AddMoreRailItem: GalleryRailItem {
         )
         button.isUserInteractionEnabled = false
         button.layoutMargins = .zero
-        button.contentEdgeInsets = .zero
+        button.ows_contentEdgeInsets = .zero
         return button
     }
 }

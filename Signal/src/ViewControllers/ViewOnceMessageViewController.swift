@@ -92,7 +92,7 @@ class ViewOnceMessageViewController: OWSViewController {
         dismissButton.layer.shadowOpacity = 0.7
         dismissButton.layer.shadowRadius = 3.0
 
-        dismissButton.contentEdgeInsets = UIEdgeInsets(top: vMargin, leading: hMargin, bottom: vMargin, trailing: hMargin)
+        dismissButton.ows_contentEdgeInsets = UIEdgeInsets(top: vMargin, leading: hMargin, bottom: vMargin, trailing: hMargin)
         view.addSubview(dismissButton)
         dismissButton.autoPinEdge(.leading, to: .leading, of: mediaView)
         dismissButton.autoPinEdge(.top, to: .top, of: mediaView)

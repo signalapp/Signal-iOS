@@ -671,7 +671,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         lazy var sendButton: UIButton = {
             let button = UIButton(type: .system)
             button.accessibilityLabel = MessageStrings.sendButton
-            button.adjustsImageWhenDisabled = true
+            button.ows_adjustsImageWhenDisabled = true
             button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "sendButton")
             button.setImage(UIImage(imageLiteralResourceName: "send-blue-28"), for: .normal)
             button.bounds.size = CGSize(width: 48, height: LayoutMetrics.minToolbarItemHeight)

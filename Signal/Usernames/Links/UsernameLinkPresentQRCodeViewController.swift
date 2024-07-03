@@ -165,7 +165,7 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
             )
 
             button.imageView!.autoSetDimensions(to: .square(24))
-            button.titleEdgeInsets = UIEdgeInsets(top: 0, leading: 6, bottom: 0, trailing: 0)
+            button.ows_titleEdgeInsets = UIEdgeInsets(top: 0, leading: 6, bottom: 0, trailing: 0)
             button.configureForMultilineTitle()
 
             button.dimsWhenHighlighted = true
@@ -421,7 +421,7 @@ class UsernameLinkPresentQRCodeViewController: OWSTableViewController2 {
 
         button.setTitle(resetButtonString, for: .normal)
 
-        button.contentEdgeInsets = UIEdgeInsets(hMargin: 16, vMargin: 6)
+        button.ows_contentEdgeInsets = UIEdgeInsets(hMargin: 16, vMargin: 6)
         button.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_whiteAlpha70
         button.titleLabel!.font = .dynamicTypeBody2.bold()
         button.setTitleColor(Theme.primaryTextColor, for: .normal)

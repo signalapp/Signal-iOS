@@ -177,7 +177,7 @@ class StoryContextOnboardingOverlayView: UIView, Dependencies {
         confirmButton.titleLabel?.font = .dynamicTypeSubheadlineClamped.semibold()
         confirmButton.backgroundColor = .ows_white
         confirmButton.setTitleColor(.ows_black, for: .normal)
-        confirmButton.contentEdgeInsets = UIEdgeInsets(hMargin: 23, vMargin: 8)
+        confirmButton.ows_contentEdgeInsets = UIEdgeInsets(hMargin: 23, vMargin: 8)
         confirmButton.block = { [weak self] in
             self?.dismiss()
         }

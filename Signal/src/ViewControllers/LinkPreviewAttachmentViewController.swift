@@ -57,7 +57,7 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
     private let doneButton: UIButton = {
         let button = RoundMediaButton(image: Theme.iconImage(.checkmark), backgroundStyle: .solid(.ows_accentBlue))
         button.layoutMargins = .zero
-        button.contentEdgeInsets = UIEdgeInsets(margin: 10)
+        button.ows_contentEdgeInsets = UIEdgeInsets(margin: 10)
         button.layoutMargins = UIEdgeInsets(margin: 4)
         button.setContentHuggingHigh()
         return button

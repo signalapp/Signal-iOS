@@ -126,7 +126,7 @@ class RaisedHandsToast: UIView {
             // far as the superview's margins, so if we had
             // isLayoutMarginsRelativeArrangement on outerHStack, the button wouldn't
             // slide all the way off, so instead set margins on the button itself.
-            button.contentEdgeInsets = .init(top: 8, leading: 8, bottom: 8, trailing: 12)
+            button.ows_contentEdgeInsets = .init(top: 8, leading: 8, bottom: 8, trailing: 12)
             button.titleLabel?.font = .dynamicTypeBody2.bold()
         }
 

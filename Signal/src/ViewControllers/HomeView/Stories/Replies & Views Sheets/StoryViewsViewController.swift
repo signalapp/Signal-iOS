@@ -142,7 +142,7 @@ class StoryViewsViewController: OWSViewController {
             settingsButton.setTitle(CommonStrings.goToSettingsButton, for: .normal)
             settingsButton.titleLabel?.font = UIFont.dynamicTypeCaption1.semibold()
             settingsButton.setTitleColor(.ows_gray25, for: .normal)
-            settingsButton.contentEdgeInsets = UIEdgeInsets(hMargin: 14, vMargin: 6)
+            settingsButton.ows_contentEdgeInsets = UIEdgeInsets(hMargin: 14, vMargin: 6)
             settingsButton.layer.borderWidth = 1.5
             settingsButton.layer.borderColor = UIColor.ows_gray25.cgColor
 

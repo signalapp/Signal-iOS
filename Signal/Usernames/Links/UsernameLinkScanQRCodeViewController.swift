@@ -82,7 +82,7 @@ class UsernameLinkScanQRCodeViewController: OWSViewController, OWSNavigationChil
             self?.didTapUploadPhotoButton()
         }
 
-        button.contentEdgeInsets = UIEdgeInsets(margin: 14)
+        button.ows_contentEdgeInsets = UIEdgeInsets(margin: 14)
 
         // Always use dark theming since it sits over the scan mask.
         button.setTemplateImageName(

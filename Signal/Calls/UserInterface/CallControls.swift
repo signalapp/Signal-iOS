@@ -79,7 +79,7 @@ class CallControls: UIView {
         button.block = { [weak self, unowned button] in
             self?.viewModel.didPressJoin()
         }
-        button.contentEdgeInsets = UIEdgeInsets(top: 17, leading: 17, bottom: 17, trailing: 17)
+        button.ows_contentEdgeInsets = UIEdgeInsets(top: 17, leading: 17, bottom: 17, trailing: 17)
         button.addSubview(joinButtonActivityIndicator)
         joinButtonActivityIndicator.autoCenterInSuperview()
 
@@ -229,7 +229,7 @@ class CallControls: UIView {
             let joinButtonConfig = viewModel.joinButtonConfig
             joinButton.setTitle(joinButtonConfig.label, for: .normal)
             joinButton.setTitleColor(joinButtonConfig.color, for: .normal)
-            joinButton.adjustsImageWhenHighlighted = joinButtonConfig.adjustsImageWhenHighlighted
+            joinButton.ows_adjustsImageWhenHighlighted = joinButtonConfig.adjustsImageWhenHighlighted
             joinButton.isUserInteractionEnabled = joinButtonConfig.isUserInteractionEnabled
             if viewModel.shouldJoinButtonActivityIndicatorBeAnimating {
                 joinButtonActivityIndicator.startAnimating()

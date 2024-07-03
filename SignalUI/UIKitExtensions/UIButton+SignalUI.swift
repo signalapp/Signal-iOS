@@ -15,29 +15,29 @@ public extension UIButton {
     /// [0]: https://github.com/noahsark769/NGUIButtonInsetsExample
     func setPaddingBetweenImageAndText(to padding: CGFloat, isRightToLeft: Bool) {
         if isRightToLeft {
-            contentEdgeInsets = .init(
-                top: contentEdgeInsets.top,
+            ows_contentEdgeInsets = .init(
+                top: ows_contentEdgeInsets.top,
                 left: padding,
-                bottom: contentEdgeInsets.bottom,
-                right: contentEdgeInsets.right
+                bottom: ows_contentEdgeInsets.bottom,
+                right: ows_contentEdgeInsets.right
             )
-            titleEdgeInsets = .init(
-                top: titleEdgeInsets.top,
+            ows_titleEdgeInsets = .init(
+                top: ows_titleEdgeInsets.top,
                 left: -padding,
-                bottom: titleEdgeInsets.bottom,
+                bottom: ows_titleEdgeInsets.bottom,
                 right: padding
             )
         } else {
-            contentEdgeInsets = .init(
-                top: contentEdgeInsets.top,
-                left: contentEdgeInsets.left,
-                bottom: contentEdgeInsets.bottom,
+            ows_contentEdgeInsets = .init(
+                top: ows_contentEdgeInsets.top,
+                left: ows_contentEdgeInsets.left,
+                bottom: ows_contentEdgeInsets.bottom,
                 right: padding
             )
-            titleEdgeInsets = .init(
-                top: titleEdgeInsets.top,
+            ows_titleEdgeInsets = .init(
+                top: ows_titleEdgeInsets.top,
                 left: padding,
-                bottom: titleEdgeInsets.bottom,
+                bottom: ows_titleEdgeInsets.bottom,
                 right: -padding
             )
         }

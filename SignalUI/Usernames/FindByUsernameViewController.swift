@@ -98,7 +98,7 @@ public class FindByUsernameViewController: OWSTableViewController2 {
                 button.setAttributedTitle(title, for: .normal)
                 button.backgroundColor = Theme.tableCell2PresentedBackgroundColor
                 button.dimsWhenHighlighted = true
-                button.contentEdgeInsets = .init(hMargin: 16, vMargin: 6)
+                button.ows_contentEdgeInsets = .init(hMargin: 16, vMargin: 6)
                 cell.addSubview(button)
                 button.autoPinEdge(toSuperviewMargin: .top)
                 button.autoPinEdge(toSuperviewMargin: .bottom)

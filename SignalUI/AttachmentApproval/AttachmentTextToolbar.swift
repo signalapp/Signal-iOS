@@ -263,7 +263,7 @@ class AttachmentTextToolbar: UIView {
         }
         let visibleButtonSize = kMinTextViewHeight
         doneButton.layoutMargins = UIEdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 0)
-        doneButton.contentEdgeInsets = doneButton.layoutMargins
+        doneButton.ows_contentEdgeInsets = doneButton.layoutMargins
         doneButton.accessibilityLabel = CommonStrings.doneButton
         let blueCircle = CircleView(diameter: visibleButtonSize)
         blueCircle.backgroundColor = .ows_accentBlue

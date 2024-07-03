@@ -185,10 +185,12 @@ private class NewMemberCell: UICollectionViewCell {
         let removeButton = UIButton(type: .custom)
         removeButton.setTemplateImage(Theme.iconImage(.buttonX), tintColor: Theme.primaryTextColor)
         // Extend the hot area of the remove button.
-        removeButton.imageEdgeInsets = UIEdgeInsets(top: Self.removeButtonInset,
-                                                    left: Self.removeButtonInset,
-                                                    bottom: Self.removeButtonInset,
-                                                    right: Self.removeButtonInset)
+        removeButton.ows_imageEdgeInsets = UIEdgeInsets(
+            top: Self.removeButtonInset,
+            left: Self.removeButtonInset,
+            bottom: Self.removeButtonInset,
+            right: Self.removeButtonInset
+        )
         removeButton.addTarget(self, action: #selector(removeButtonWasPressed), for: .touchUpInside)
         let buttonSize = Self.removeButtonXSize + 2 * Self.removeButtonInset
         removeButton.autoSetDimensions(to: CGSize(square: buttonSize))

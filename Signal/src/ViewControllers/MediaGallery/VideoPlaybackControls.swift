@@ -83,7 +83,7 @@ class VideoPlaybackControlView: UIView {
         let buttons = [ buttonRewind, buttonPlay, buttonPause, buttonFastForward ]
         buttons.forEach { button in
             button.translatesAutoresizingMaskIntoConstraints = false
-            button.contentEdgeInsets = UIEdgeInsets(margin: 8)
+            button.ows_contentEdgeInsets = UIEdgeInsets(margin: 8)
             addSubview(button)
         }
 

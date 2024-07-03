@@ -66,7 +66,7 @@ class CallHeader: UIView {
         let backButton = UIButton()
         backButton.setTemplateImage(UIImage(imageLiteralResourceName: "NavBarBack"), tintColor: .ows_white)
         backButton.autoSetDimensions(to: CGSize(square: 40))
-        backButton.imageEdgeInsets = UIEdgeInsets(top: -12, leading: -18, bottom: 0, trailing: 0)
+        backButton.ows_imageEdgeInsets = UIEdgeInsets(top: -12, leading: -18, bottom: 0, trailing: 0)
         backButton.addTarget(delegate, action: #selector(CallHeaderDelegate.didTapBackButton), for: .touchUpInside)
         addShadow(to: backButton)
 

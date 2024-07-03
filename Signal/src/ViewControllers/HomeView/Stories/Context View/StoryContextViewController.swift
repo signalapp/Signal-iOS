@@ -266,7 +266,7 @@ class StoryContextViewController: OWSViewController {
             self?.dismiss(animated: true)
         }
         closeButton.setShadow()
-        closeButton.imageEdgeInsets = UIEdgeInsets(hMargin: 16, vMargin: 16)
+        closeButton.ows_imageEdgeInsets = UIEdgeInsets(hMargin: 16, vMargin: 16)
         view.addSubview(closeButton)
         closeButton.autoSetDimensions(to: CGSize(square: 56))
         closeButton.autoPinEdge(toSuperviewSafeArea: .top)
@@ -562,11 +562,11 @@ class StoryContextViewController: OWSViewController {
 
             if let leadingIcon = leadingIcon {
                 repliesAndViewsButton.setImage(leadingIcon.asTintedImage(color: Theme.darkThemePrimaryColor), for: .normal)
-                repliesAndViewsButton.imageEdgeInsets = UIEdgeInsets(top: 2, leading: 0, bottom: 0, trailing: 16)
+                repliesAndViewsButton.ows_imageEdgeInsets = UIEdgeInsets(top: 2, leading: 0, bottom: 0, trailing: 16)
             } else if let trailingIcon = trailingIcon {
                 repliesAndViewsButton.setImage(trailingIcon.asTintedImage(color: Theme.darkThemePrimaryColor), for: .normal)
                 repliesAndViewsButton.semanticContentAttribute = CurrentAppContext().isRTL ? .forceLeftToRight : .forceRightToLeft
-                repliesAndViewsButton.imageEdgeInsets = UIEdgeInsets(top: 3, leading: 0, bottom: 0, trailing: 0)
+                repliesAndViewsButton.ows_imageEdgeInsets = UIEdgeInsets(top: 3, leading: 0, bottom: 0, trailing: 0)
             } else {
                 repliesAndViewsButton.setImage(nil, for: .normal)
                 repliesAndViewsButton.contentHorizontalAlignment = .center

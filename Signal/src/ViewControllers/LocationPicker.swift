@@ -69,7 +69,7 @@ public class LocationPicker: UIViewController {
 
         // This icon doesn't look right when it's actually centered due to its odd shape.
         currentLocationButton.setTemplateImageName("location", tintColor: .white)
-        currentLocationButton.contentEdgeInsets = UIEdgeInsets(top: 2, left: 0, bottom: 0, right: 2)
+        currentLocationButton.ows_contentEdgeInsets = UIEdgeInsets(top: 2, left: 0, bottom: 0, right: 2)
 
         view.addSubview(currentLocationButton)
         currentLocationButton.autoSetDimensions(to: CGSize(square: 48))

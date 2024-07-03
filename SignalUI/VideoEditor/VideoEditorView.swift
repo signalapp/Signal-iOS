@@ -38,9 +38,9 @@ class VideoEditorView: UIView {
         playButton.accessibilityLabel = OWSLocalizedString("PLAY_BUTTON_ACCESSABILITY_LABEL",
                                                            comment: "Accessibility label for button to start media playback")
         // this makes the blur circle 72 pts in diameter
-        playButton.contentEdgeInsets = UIEdgeInsets(margin: 26)
+        playButton.ows_contentEdgeInsets = UIEdgeInsets(margin: 26)
         // play button must be slightly off-center to appear centered
-        playButton.imageEdgeInsets = UIEdgeInsets(top: 0, leading: 3, bottom: 0, trailing: -3)
+        playButton.ows_imageEdgeInsets = UIEdgeInsets(top: 0, leading: 3, bottom: 0, trailing: -3)
         playButton.addTarget(self, action: #selector(playButtonTapped), for: .touchUpInside)
         return playButton
     }()

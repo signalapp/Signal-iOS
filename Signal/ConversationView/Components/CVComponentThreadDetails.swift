@@ -217,7 +217,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 let safetyButtonLabelConfig = safetyTipsConfig()
                 safetyButtonLabelConfig.applyForRendering(button: showTipsButton)
                 showTipsButton.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray60 : .ows_gray05
-                showTipsButton.contentEdgeInsets = .init(hMargin: 12.0, vMargin: 8.0)
+                showTipsButton.ows_contentEdgeInsets = .init(hMargin: 12.0, vMargin: 8.0)
                 showTipsButton.dimsWhenHighlighted = true
                 showTipsButton.block = { [weak self] in
                     self?.didShowTips()

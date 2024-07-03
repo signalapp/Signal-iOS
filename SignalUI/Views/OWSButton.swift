@@ -131,9 +131,9 @@ open class OWSButton: UIButton {
     /// Does so by modifying `contentEdgeInsets` and `titleEdgeInsets`,
     /// so call this after setting those.
     public func addImageTitleSpacing(_ spacing: CGFloat) {
-        contentEdgeInsets.trailing += spacing
-        titleEdgeInsets.leading += spacing
-        titleEdgeInsets.trailing -= spacing
+        ows_contentEdgeInsets.trailing += spacing
+        ows_titleEdgeInsets.leading += spacing
+        ows_titleEdgeInsets.trailing -= spacing
     }
 
     // MARK: - Common Style Reuse

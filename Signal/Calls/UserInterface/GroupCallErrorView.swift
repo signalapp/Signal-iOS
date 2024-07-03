@@ -55,7 +55,7 @@ class GroupCallErrorView: UIView {
         let button = UIButton()
         button.backgroundColor = .ows_gray75
 
-        button.contentEdgeInsets = UIEdgeInsets(top: 3, leading: 12, bottom: 3, trailing: 12)
+        button.ows_contentEdgeInsets = UIEdgeInsets(top: 3, leading: 12, bottom: 3, trailing: 12)
         button.layer.cornerRadius = 12
         button.clipsToBounds = true
 

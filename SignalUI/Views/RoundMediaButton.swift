@@ -51,7 +51,7 @@ open class RoundMediaButton: UIButton {
 
         super.init(frame: CGRect(origin: .zero, size: .square(Self.visibleButtonSize + 2*Self.defaultInset)))
 
-        contentEdgeInsets = UIEdgeInsets(margin: Self.defaultContentInset)
+        ows_contentEdgeInsets = UIEdgeInsets(margin: Self.defaultContentInset)
         layoutMargins = UIEdgeInsets(margin: Self.defaultInset)
         tintColor = Theme.darkThemePrimaryColor
         insetsLayoutMarginsFromSafeArea = false

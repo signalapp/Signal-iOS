@@ -29,7 +29,7 @@ class ImageEditorTopBar: MediaTopBar {
         OWSLocalizedString("MEDIA_EDITOR_CLEAR_ALL",
                            comment: "Title for the button that discards all edits in media editor.")
         clearAllButton.setTitle(clearAllButtonTitle, for: .normal)
-        clearAllButton.contentEdgeInsets = UIEdgeInsets(hMargin: 26, vMargin: 15)
+        clearAllButton.ows_contentEdgeInsets = UIEdgeInsets(hMargin: 26, vMargin: 15)
 
         let stackView = UIStackView(arrangedSubviews: [ undoButton, UIView.hStretchingSpacer(), clearAllButton ])
         for button in stackView.arrangedSubviews {

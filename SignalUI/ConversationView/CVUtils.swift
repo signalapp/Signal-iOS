@@ -63,8 +63,8 @@ open class CVButton: OWSButton, CVView {
         self.block = {}
         self.dimsWhenDisabled = false
         self.dimsWhenHighlighted = false
-        self.contentEdgeInsets = .zero
-        self.titleEdgeInsets = .zero
+        self.ows_contentEdgeInsets = .zero
+        self.ows_titleEdgeInsets = .zero
         [
             UIControl.State.normal,
             .highlighted,

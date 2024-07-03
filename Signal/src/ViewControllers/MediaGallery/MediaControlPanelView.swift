@@ -88,7 +88,7 @@ class MediaControlPanelView: UIView {
         button.addTarget(self, action: #selector(didPressForward), for: .touchUpInside)
         button.contentVerticalAlignment = .center
         button.contentHorizontalAlignment = .center
-        button.contentEdgeInsets = UIEdgeInsets(margin: 8)
+        button.ows_contentEdgeInsets = UIEdgeInsets(margin: 8)
         button.autoPin(toAspectRatio: 1)
         return button
     }()
@@ -99,7 +99,7 @@ class MediaControlPanelView: UIView {
         button.addTarget(self, action: #selector(didPressShare), for: .touchUpInside)
         button.contentVerticalAlignment = .center
         button.contentHorizontalAlignment = .center
-        button.contentEdgeInsets = UIEdgeInsets(margin: 8)
+        button.ows_contentEdgeInsets = UIEdgeInsets(margin: 8)
         button.autoPin(toAspectRatio: 1)
         return button
     }()

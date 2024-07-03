@@ -1472,7 +1472,7 @@ private class MediaGalleryEmptyContentView: UICollectionReusableView {
 
         override init(frame: CGRect) {
             super.init(frame: frame)
-            contentEdgeInsets = UIEdgeInsets(hMargin: 22, vMargin: 12)
+            ows_contentEdgeInsets = UIEdgeInsets(hMargin: 22, vMargin: 12)
             addSubview(backgroundPillView)
             sendSubviewToBack(backgroundPillView)
             backgroundPillView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(margin: 8))

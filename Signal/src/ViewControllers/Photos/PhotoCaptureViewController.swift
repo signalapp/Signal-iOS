@@ -401,7 +401,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
     private lazy var textBackgroundSelectionButton = RoundGradientButton()
     private lazy var textViewAttachLinkButton: UIButton = {
         let button = RoundMediaButton(image: UIImage(imageLiteralResourceName: "link"), backgroundStyle: .blur)
-        button.contentEdgeInsets = UIEdgeInsets(margin: 3)
+        button.ows_contentEdgeInsets = UIEdgeInsets(margin: 3)
         button.layoutMargins = .zero
         return button
     }()
@@ -936,7 +936,7 @@ extension PhotoCaptureViewController {
 
             super.init(image: nil, backgroundStyle: .blur, customView: gradientCircleView)
 
-            contentEdgeInsets = .zero
+            ows_contentEdgeInsets = .zero
             layoutMargins = .zero
         }
 
@@ -1883,7 +1883,7 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
     private lazy var deleteLinkPreviewButton: UIButton = {
         let button = RoundMediaButton(image: Theme.iconImage(.buttonX), backgroundStyle: .blurLight)
         button.tintColor = Theme.lightThemePrimaryColor
-        button.contentEdgeInsets = UIEdgeInsets(margin: 8)
+        button.ows_contentEdgeInsets = UIEdgeInsets(margin: 8)
         button.layoutMargins = UIEdgeInsets(margin: 2)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addTarget(self, action: #selector(didTapDeleteLinkPreviewButton), for: .touchUpInside)

@@ -22,7 +22,7 @@ class DonationReceiptViewController: OWSTableViewController2 {
         button.titleLabel?.font = .dynamicTypeBodyClamped.semibold()
         button.clipsToBounds = true
         button.layer.cornerRadius = 8
-        button.contentEdgeInsets = UIEdgeInsets(top: 13, leading: 13, bottom: 13, trailing: 13)
+        button.ows_contentEdgeInsets = UIEdgeInsets(top: 13, leading: 13, bottom: 13, trailing: 13)
         button.dimsWhenHighlighted = true
         button.backgroundColor = .ows_accentBlue
 

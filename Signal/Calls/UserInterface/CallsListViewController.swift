@@ -1772,8 +1772,8 @@ private extension CallsListViewController {
                 self?.detailsTapped()
             }
             // The info icon is the button's own image and should be `horizontalMargin` from the edge
-            button.contentEdgeInsets.trailing = Self.horizontalMargin
-            button.contentEdgeInsets.leading = 8
+            button.ows_contentEdgeInsets.trailing = Self.horizontalMargin
+            button.ows_contentEdgeInsets.leading = 8
             // The join button is a separate subview and should be `joinButtonMargin` from the edge
             button.layoutMargins.trailing = Self.joinButtonMargin
             return button
@@ -1819,7 +1819,7 @@ private extension CallsListViewController {
             )
             button.setAttributedTitle(title, for: .normal)
             button.backgroundColor = .ows_accentGreen
-            button.contentEdgeInsets = .init(hMargin: 12, vMargin: 4)
+            button.ows_contentEdgeInsets = .init(hMargin: 12, vMargin: 4)
             button.setCompressionResistanceHigh()
             button.isUserInteractionEnabled = false
             return button

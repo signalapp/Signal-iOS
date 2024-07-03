@@ -1216,7 +1216,7 @@ class MediaPickerThumbnailButton: UIButton {
     private static let contentMargin: CGFloat = 8
 
     func configure() {
-        contentEdgeInsets = UIEdgeInsets(margin: MediaPickerThumbnailButton.contentMargin)
+        ows_contentEdgeInsets = UIEdgeInsets(margin: MediaPickerThumbnailButton.contentMargin)
 
         let placeholderView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
         placeholderView.layer.cornerRadius = 10
@@ -1225,7 +1225,7 @@ class MediaPickerThumbnailButton: UIButton {
         placeholderView.clipsToBounds = true
         placeholderView.isUserInteractionEnabled = false
         insertSubview(placeholderView, at: 0)
-        placeholderView.autoPinEdgesToSuperviewEdges(with: contentEdgeInsets)
+        placeholderView.autoPinEdgesToSuperviewEdges(with: ows_contentEdgeInsets)
 
         var authorizationStatus: PHAuthorizationStatus
         authorizationStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
@@ -1260,8 +1260,10 @@ class MediaPickerThumbnailButton: UIButton {
     }
 
     override var intrinsicContentSize: CGSize {
-        return CGSize(width: contentEdgeInsets.leading + Self.visibleSize + contentEdgeInsets.trailing,
-                      height: contentEdgeInsets.top + Self.visibleSize + contentEdgeInsets.bottom)
+        return CGSize(
+            width: ows_contentEdgeInsets.leading + Self.visibleSize + ows_contentEdgeInsets.trailing,
+            height: ows_contentEdgeInsets.top + Self.visibleSize + ows_contentEdgeInsets.bottom
+        )
     }
 }
 
@@ -1406,7 +1408,7 @@ class CameraBottomBar: UIView {
     let proceedButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(imageLiteralResourceName: "chevron-right-colored-42"), for: .normal)
-        button.contentEdgeInsets = UIEdgeInsets(margin: 8)
+        button.ows_contentEdgeInsets = UIEdgeInsets(margin: 8)
         button.sizeToFit()
         return button
     }()

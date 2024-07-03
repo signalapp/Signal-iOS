@@ -73,7 +73,7 @@ public class StickerPackViewController: OWSViewController {
 
         dismissButton.setTemplateImage(Theme.iconImage(.buttonX), tintColor: Theme.darkThemePrimaryColor)
         dismissButton.addTarget(self, action: #selector(dismissButtonPressed(sender:)), for: .touchUpInside)
-        dismissButton.contentEdgeInsets = UIEdgeInsets(top: 20, leading: hMargin, bottom: 20, trailing: hMargin)
+        dismissButton.ows_contentEdgeInsets = UIEdgeInsets(top: 20, leading: hMargin, bottom: 20, trailing: hMargin)
         dismissButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "dismissButton")
 
         coverView.autoSetDimensions(to: CGSize(square: 64))

@@ -42,19 +42,19 @@ public class OWSFlatButton: UIView {
 
     public var titleEdgeInsets: UIEdgeInsets {
         get {
-            return button.titleEdgeInsets
+            return button.ows_titleEdgeInsets
         }
         set {
-            button.titleEdgeInsets = newValue
+            button.ows_titleEdgeInsets = newValue
         }
     }
 
     public var contentEdgeInsets: UIEdgeInsets {
         get {
-            return button.contentEdgeInsets
+            return button.ows_contentEdgeInsets
         }
         set {
-            button.contentEdgeInsets = newValue
+            button.ows_contentEdgeInsets = newValue
         }
     }
 

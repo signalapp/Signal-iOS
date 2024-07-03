@@ -564,9 +564,9 @@ public class ActionSheetAction: NSObject {
 
         private func updateEdgeInsets() {
             if !leadingIconView.isHidden || !trailingIconView.isHidden || contentAlignment != .center {
-                contentEdgeInsets = UIEdgeInsets(top: 16, leading: 56, bottom: 16, trailing: 56)
+                ows_contentEdgeInsets = UIEdgeInsets(top: 16, leading: 56, bottom: 16, trailing: 56)
             } else {
-                contentEdgeInsets = UIEdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
+                ows_contentEdgeInsets = UIEdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
             }
         }
 

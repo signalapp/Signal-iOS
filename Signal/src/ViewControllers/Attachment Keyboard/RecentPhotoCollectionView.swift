@@ -266,7 +266,7 @@ class RecentPhotosCollectionView: UICollectionView {
         let highlightedBgColor = Theme.isDarkThemeEnabled ? UIColor(white: 1, alpha: 0.26) : UIColor(white: 0, alpha: 0.18)
         button.setBackgroundImage(UIImage.image(color: highlightedBgColor), for: .highlighted)
 
-        button.contentEdgeInsets = UIEdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16)
+        button.ows_contentEdgeInsets = UIEdgeInsets(top: 7, leading: 16, bottom: 7, trailing: 16)
         button.heightAnchor.constraint(greaterThanOrEqualToConstant: 32).isActive = true
         button.layer.masksToBounds = true
         button.layer.cornerRadius = 16

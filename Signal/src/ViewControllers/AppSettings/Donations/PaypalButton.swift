@@ -28,8 +28,8 @@ class PaypalButton: UIButton {
 
     private func configureStyling() {
         setImage(UIImage(named: "paypal-logo"), for: .normal)
-        adjustsImageWhenDisabled = false
-        adjustsImageWhenHighlighted = false
+        ows_adjustsImageWhenDisabled = false
+        ows_adjustsImageWhenHighlighted = false
         layer.cornerRadius = 12
         layer.borderWidth = 0
 

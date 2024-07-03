@@ -91,7 +91,7 @@ class ImageEditorCropViewController: OWSViewController {
         let button = RoundMediaButton(image: nil, backgroundStyle: .blur)
         let buttonTitle = OWSLocalizedString("MEDIA_EDITOR_RESET", comment: "Title for the button that resets photo to its initial state.")
         button.setTitle(buttonTitle, for: .normal)
-        button.contentEdgeInsets = UIEdgeInsets(hMargin: 26, vMargin: 15) // Make button 36pts tall at default text size.
+        button.ows_contentEdgeInsets = UIEdgeInsets(hMargin: 26, vMargin: 15) // Make button 36pts tall at default text size.
         button.addTarget(self, action: #selector(didTapReset), for: .touchUpInside)
         return button
     }()

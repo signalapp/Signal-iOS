@@ -51,7 +51,7 @@ class ContactReminderTableViewCell: UITableViewCell {
         button.setTitleColor(textColor, for: .normal)
         button.titleLabel!.font = .dynamicTypeBody2.semibold()
         button.addTarget(self, action: #selector(didTapLearnMore), for: .touchUpInside)
-        button.contentEdgeInsets = UIEdgeInsets(top: 6, left: 0, bottom: 3, right: 0)
+        button.ows_contentEdgeInsets = UIEdgeInsets(top: 6, left: 0, bottom: 3, right: 0)
         button.setCompressionResistanceHigh()
         return button
     }()
