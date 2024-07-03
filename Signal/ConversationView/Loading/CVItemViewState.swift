@@ -686,11 +686,8 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             case .phoneNumberChange:
                 // Only collapse if the previous message was a change number for the same user
                 guard
-                    case .phoneNumberChange = previousInfoMessage.messageType,
-                    let previousAciString = previousInfoMessage.infoMessageUserInfo?[.changePhoneNumberAciString] as? String,
-                    let previousAci = Aci.parseFrom(aciString: previousAciString),
-                    let currentAciString = infoMessage.infoMessageUserInfo?[.changePhoneNumberAciString] as? String,
-                    let currentAci = Aci.parseFrom(aciString: currentAciString)
+                    let previousAci = previousInfoMessage.phoneNumberChangeInfo()?.aci,
+                    let currentAci = infoMessage.phoneNumberChangeInfo()?.aci
                 else {
                     return
                 }

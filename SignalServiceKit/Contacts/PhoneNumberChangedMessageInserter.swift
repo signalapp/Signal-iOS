@@ -52,11 +52,12 @@ class PhoneNumberChangedMessageInserter: RecipientMergeObserver {
                 // Skip if thread is archived.
                 return
             }
-            let infoMessage = TSInfoMessage(thread: thread, messageType: .phoneNumberChange, infoMessageUserInfo: [
-                .changePhoneNumberAciString: aci.serviceIdUppercaseString,
-                .changePhoneNumberOld: oldPhoneNumber,
-                .changePhoneNumberNew: newPhoneNumber.stringValue
-            ])
+            let infoMessage = TSInfoMessage(thread: thread, messageType: .phoneNumberChange)
+            infoMessage.setPhoneNumberChangeInfo(
+                aci: aci,
+                oldNumber: oldPhoneNumber,
+                newNumber: newPhoneNumber
+            )
             infoMessage.wasRead = true
             interactionStore.insertInteraction(infoMessage, tx: tx)
         }

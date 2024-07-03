@@ -223,6 +223,59 @@ public extension TSInfoMessage {
 // MARK: -
 
 public extension TSInfoMessage {
+    struct PhoneNumberChangeInfo {
+        public let aci: Aci
+        /// This may be missing, for example on info messages from a backup.
+        public let oldNumber: String?
+        /// This may be missing, for example on info messages from a backup.
+        public let newNumber: String?
+
+        fileprivate init(aci: Aci, oldNumber: String?, newNumber: String?) {
+            self.aci = aci
+            self.oldNumber = oldNumber
+            self.newNumber = newNumber
+        }
+    }
+
+    func phoneNumberChangeInfo() -> PhoneNumberChangeInfo? {
+        guard
+            let infoMessageUserInfo,
+            let aciString = infoMessageUserInfo[.changePhoneNumberAciString] as? String,
+            let aci = Aci.parseFrom(aciString: aciString)
+        else { return nil }
+
+        return PhoneNumberChangeInfo(
+            aci: aci,
+            oldNumber: infoMessageUserInfo[.changePhoneNumberOld] as? String,
+            newNumber: infoMessageUserInfo[.changePhoneNumberNew] as? String
+        )
+    }
+
+    @objc
+    func phoneNumberChangeInfoAci() -> AciObjC? {
+        guard let aci = phoneNumberChangeInfo()?.aci else { return nil }
+        return AciObjC(aci)
+    }
+
+    func setPhoneNumberChangeInfo(
+        aci: Aci,
+        oldNumber: String?,
+        newNumber: E164?
+    ) {
+        setInfoMessageValue(aci.serviceIdUppercaseString, forKey: .changePhoneNumberAciString)
+
+        if let oldNumber {
+            setInfoMessageValue(oldNumber, forKey: .changePhoneNumberOld)
+        }
+        if let newNumber {
+            setInfoMessageValue(newNumber.stringValue, forKey: .changePhoneNumberNew)
+        }
+    }
+}
+
+// MARK: -
+
+public extension TSInfoMessage {
     @objc
     func profileChangeDescription(transaction: SDSAnyReadTransaction) -> String {
         guard let profileChanges = profileChanges,

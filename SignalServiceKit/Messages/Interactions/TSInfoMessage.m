@@ -286,12 +286,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         case TSInfoMessageProfileUpdate:
             return [self profileChangeDescriptionWithTransaction:transaction];
         case TSInfoMessagePhoneNumberChange: {
-            NSString *_Nullable aciString = self.infoMessageUserInfo[InfoMessageUserInfoKeyChangePhoneNumberAciString];
-            if (aciString == nil) {
-                OWSFailDebug(@"Invalid info message");
-                return @"";
-            }
-            AciObjC *aci = [[AciObjC alloc] initWithAciString:aciString];
+            AciObjC *_Nullable aci = [self phoneNumberChangeInfoAci];
             if (aci == nil) {
                 OWSFailDebug(@"Invalid info message");
                 return @"";

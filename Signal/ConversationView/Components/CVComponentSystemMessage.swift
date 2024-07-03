@@ -1202,13 +1202,12 @@ extension CVComponentSystemMessage {
 
         case .phoneNumberChange:
             guard
-                let userInfo = infoMessage.infoMessageUserInfo,
-                let aciString = userInfo[.changePhoneNumberAciString] as? String,
-                let aci = Aci.parseFrom(aciString: aciString),
-                let phoneNumberOld = userInfo[.changePhoneNumberOld] as? String,
-                let phoneNumberNew = userInfo[.changePhoneNumberNew] as? String
+                let phoneNumberChangeInfo = infoMessage.phoneNumberChangeInfo(),
+                let phoneNumberOld = phoneNumberChangeInfo.oldNumber,
+                let phoneNumberNew = phoneNumberChangeInfo.newNumber
             else {
-                owsFailDebug("Invalid info message.")
+                // This might be missing, for example on info messages coming
+                // from a backup.
                 return nil
             }
 
@@ -1230,7 +1229,11 @@ extension CVComponentSystemMessage {
             return Action(
                 title: OWSLocalizedString("UPDATE_CONTACT_ACTION", comment: "Action sheet item"),
                 accessibilityIdentifier: "update_contact",
-                action: .didTapPhoneNumberChange(aci: aci, phoneNumberOld: phoneNumberOld, phoneNumberNew: phoneNumberNew)
+                action: .didTapPhoneNumberChange(
+                    aci: phoneNumberChangeInfo.aci,
+                    phoneNumberOld: phoneNumberOld,
+                    phoneNumberNew: phoneNumberNew
+                )
             )
         case .paymentsActivationRequest:
             if
