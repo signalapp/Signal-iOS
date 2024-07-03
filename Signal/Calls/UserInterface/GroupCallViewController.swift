@@ -198,6 +198,8 @@ class GroupCallViewController: UIViewController {
 
         super.init(nibName: nil, bundle: nil)
 
+        _ = videoOverflow
+
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(didBecomeActive),
@@ -395,6 +397,8 @@ class GroupCallViewController: UIViewController {
         reactionsBurstView.autoPinEdgesToSuperviewEdges()
 
         view.addGestureRecognizer(tapGesture)
+
+        updateCallUI()
     }
 
     override func viewDidLoad() {
@@ -454,7 +458,6 @@ class GroupCallViewController: UIViewController {
         }
     }
 
-    private var isReadyToUpdateUI = false
     private var didAddObserver = false
     override func viewIsAppearing(_ animated: Bool) {
         super.viewIsAppearing(animated)
@@ -463,9 +466,6 @@ class GroupCallViewController: UIViewController {
             groupCall.addObserver(self)
             didAddObserver = true
         }
-
-        isReadyToUpdateUI = true
-        updateCallUI()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -740,8 +740,6 @@ class GroupCallViewController: UIViewController {
         size: CGSize? = nil,
         shouldAnimateViewFrames: Bool = false
     ) {
-        owsAssertDebug(self.isReadyToUpdateUI)
-
         let isFullScreen = self.isJustMe
         localMemberView.configure(
             call: call,
