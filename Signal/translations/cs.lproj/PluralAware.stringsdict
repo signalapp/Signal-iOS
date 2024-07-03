@@ -213,13 +213,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tento chat bude z tohoto zařízení odstraněn.</string>
+			<string>Tento chat bude odstraněn ze všech vašich zařízení.</string>
 			<key>few</key>
-			<string>Tyto chaty budou z tohoto zařízení odstraněny.</string>
+			<string>Tyto chaty budou odstraněny ze všech vašich zařízení.</string>
 			<key>many</key>
-			<string>Tyto chaty budou z tohoto zařízení odstraněny.</string>
+			<string>Těchto chatů bude odstraněno ze všech vašich zařízení.</string>
 			<key>other</key>
-			<string>Tyto chaty budou z tohoto zařízení odstraněny.</string>
+			<string>Těchto chatů bude odstraněno ze všech vašich zařízení.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -1475,6 +1475,26 @@
 			<string>Vlastní příběh · %1$d sledujících</string>
 			<key>other</key>
 			<string>Vlastní příběh · %1$d sledujících</string>
+		</dict>
+	</dict>
+	<key>RAISED_HANDS_TOAST_MULTIPLE_HANDS_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$@ and %2$d more have raised a hand</string>
+			<key>few</key>
+			<string>%1$@ and %2$d more have raised a hand</string>
+			<key>many</key>
+			<string>%1$@ and %2$d more have raised a hand</string>
+			<key>other</key>
+			<string>%1$@ and %2$d more have raised a hand</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>

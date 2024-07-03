@@ -253,17 +253,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>ستُحذَف هذه الدردشة من هذا الجهاز.</string>
+			<string>ستُحذَف هذه الدردشات من جميع أجهزتك.</string>
 			<key>one</key>
-			<string>ستُحذَف هذه الدردشة من هذا الجهاز.</string>
+			<string>ستُحذَف هذه الدردشة من جميع أجهزتك.</string>
 			<key>two</key>
-			<string>ستُحذَف هاتيْن الدردشتين من هذا الجهاز.</string>
+			<string>ستُحذَف هاتان الدردشتان من جميع أجهزتك.</string>
 			<key>few</key>
-			<string>ستُحذَف هذه الدردشات من هذا الجهاز.</string>
+			<string>ستُحذَف هذه الدردشات من جميع أجهزتك.</string>
 			<key>many</key>
-			<string>ستُحذَف هذه الدردشات من هذا الجهاز.</string>
+			<string>ستُحذَف هذه الدردشات من جميع أجهزتك.</string>
 			<key>other</key>
-			<string>ستُحذَف هذه الدردشات من هذا الجهاز.</string>
+			<string>ستُحذَف هذه الدردشات من جميع أجهزتك.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -1771,6 +1771,30 @@
 			<string>قصة مخصصة · %1$d مشاهدًا</string>
 			<key>other</key>
 			<string>قصة مخصصة · %1$d مشاهد</string>
+		</dict>
+	</dict>
+	<key>RAISED_HANDS_TOAST_MULTIPLE_HANDS_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>zero</key>
+			<string>%1$@ and %2$d more have raised a hand</string>
+			<key>one</key>
+			<string>%1$@ and %2$d more have raised a hand</string>
+			<key>two</key>
+			<string>%1$@ and %2$d more have raised a hand</string>
+			<key>few</key>
+			<string>%1$@ and %2$d more have raised a hand</string>
+			<key>many</key>
+			<string>%1$@ and %2$d more have raised a hand</string>
+			<key>other</key>
+			<string>%1$@ and %2$d more have raised a hand</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>
