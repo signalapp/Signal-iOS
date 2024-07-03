@@ -5,8 +5,7 @@
 
 import LibSignalClient
 
-@objc
-public class SenderKeyStore: NSObject {
+public class SenderKeyStore {
     public typealias DistributionId = UUID
     fileprivate typealias KeyId = String
     fileprivate static func buildKeyId(authorAci: Aci, distributionId: DistributionId) -> KeyId {
@@ -18,8 +17,7 @@ public class SenderKeyStore: NSObject {
     private var sendingDistributionIdCache: LRUCache<ThreadUniqueId, DistributionId> = LRUCache(maxSize: 100)
     private var keyCache: LRUCache<KeyId, KeyMetadata> = LRUCache(maxSize: 100)
 
-    public override init() {
-        super.init()
+    public init() {
         SwiftSingletons.register(self)
 
         // We need to clear the key cache on cross-process database writes,
@@ -87,10 +85,9 @@ public class SenderKeyStore: NSObject {
     }
 
     /// Records that the current sender key for the `thread` has been sent to `participant`
-    @objc
     public func recordSenderKeySent(
         for thread: TSThread,
-        to serviceId: ServiceIdObjC,
+        to serviceId: ServiceId,
         timestamp: UInt64,
         writeTx: SDSAnyWriteTransaction) throws {
         try storageLock.withLock {
@@ -101,7 +98,7 @@ public class SenderKeyStore: NSObject {
                 throw OWSAssertionError("Failed to look up key metadata")
             }
             var updatedMetadata = existingMetadata
-            try updatedMetadata.recordSKDMSent(at: timestamp, serviceId: serviceId.wrappedValue, transaction: writeTx)
+            try updatedMetadata.recordSKDMSent(at: timestamp, serviceId: serviceId, transaction: writeTx)
             setMetadata(updatedMetadata, writeTx: writeTx)
         }
     }
@@ -147,7 +144,6 @@ public class SenderKeyStore: NSObject {
         }
     }
 
-    @objc
     public func resetSenderKeySession(for thread: TSThread, transaction writeTx: SDSAnyWriteTransaction) {
         storageLock.withLock {
             guard let keyId = keyIdForSendingToThreadId(thread.threadUniqueId, writeTx: writeTx) else { return }
@@ -155,7 +151,6 @@ public class SenderKeyStore: NSObject {
         }
     }
 
-    @objc
     public func resetSenderKeyStore(transaction writeTx: SDSAnyWriteTransaction) {
         storageLock.withLock {
             sendingDistributionIdCache.clear()
@@ -165,7 +160,6 @@ public class SenderKeyStore: NSObject {
         }
     }
 
-    @objc
     public func skdmBytesForThread(_ thread: TSThread, tx: SDSAnyWriteTransaction) -> Data? {
         guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
             return nil

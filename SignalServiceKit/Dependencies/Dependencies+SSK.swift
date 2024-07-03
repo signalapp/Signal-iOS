@@ -334,10 +334,12 @@ public extension NSObject {
         SSKEnvironment.shared.spamChallengeResolverRef
     }
 
+    @nonobjc
     final var senderKeyStore: SenderKeyStore {
         SSKEnvironment.shared.senderKeyStoreRef
     }
 
+    @nonobjc
     static var senderKeyStore: SenderKeyStore {
         SSKEnvironment.shared.senderKeyStoreRef
     }

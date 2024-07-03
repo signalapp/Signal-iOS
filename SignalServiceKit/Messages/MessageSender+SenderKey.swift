@@ -388,7 +388,7 @@ extension MessageSender {
                     let timestamp = try distributionResult.get()
                     try self.senderKeyStore.recordSenderKeySent(
                         for: thread,
-                        to: ServiceIdObjC.wrapValue(serviceId),
+                        to: serviceId,
                         timestamp: timestamp,
                         writeTx: tx
                     )
