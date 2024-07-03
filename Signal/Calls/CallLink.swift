@@ -14,6 +14,7 @@ struct CallLink {
         static let scheme = "https"
         static let host = "signal.link"
         static let path = "/call/"
+        static let legacyPath = "/call"
         static let key = "key"
     }
 
@@ -34,7 +35,7 @@ struct CallLink {
             components.password == nil,
             components.host == Constants.host,
             components.port == nil,
-            components.path == Constants.path,
+            components.path == Constants.path || components.path == Constants.legacyPath,
             components.query == nil
         else {
             return nil
