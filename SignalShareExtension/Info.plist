@@ -17,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>XPC!</string>
 	<key>CFBundleShortVersionString</key>
-	<string>7.19</string>
+	<string>7.20</string>
 	<key>CFBundleVersion</key>
 	<string>0</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
