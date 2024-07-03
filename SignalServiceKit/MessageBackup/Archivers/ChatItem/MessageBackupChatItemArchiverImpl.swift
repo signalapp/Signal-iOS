@@ -84,9 +84,8 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         var partialFailures = [ArchiveFrameError]()
 
         func archiveInteraction(
-            _ interaction: TSInteraction,
-            stop: inout Bool
-        ) {
+            _ interaction: TSInteraction
+        ) -> Bool {
             let result = self.archiveInteraction(
                 interaction,
                 stream: stream,
@@ -100,14 +99,16 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
                 partialFailures.append(contentsOf: errors)
             case .completeFailure(let error):
                 completeFailureError = error
-                stop = true
+                return false
             }
+
+            return true
         }
 
         do {
             try interactionStore.enumerateAllInteractions(
                 tx: tx,
-                block: archiveInteraction(_:stop:)
+                block: archiveInteraction(_:)
             )
         } catch let error {
             // Errors thrown here are from the iterator's SQL query,

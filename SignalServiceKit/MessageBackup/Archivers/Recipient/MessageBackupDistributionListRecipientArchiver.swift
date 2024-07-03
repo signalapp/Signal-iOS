@@ -40,7 +40,7 @@ class MessageBackupDistributionListRecipientArchiver: MessageBackupRecipientDest
                     tx: tx
                 )
             }
-            try threadStore.enumerateStoryThreads(tx: tx) { storyThread, _ in
+            try threadStore.enumerateStoryThreads(tx: tx) { storyThread in
                 self.archiveStoryThread(
                     storyThread,
                     stream: stream,
@@ -48,6 +48,8 @@ class MessageBackupDistributionListRecipientArchiver: MessageBackupRecipientDest
                     errors: &errors,
                     tx: tx
                 )
+
+                return true
             }
         } catch {
             // The enumeration of threads failed, not the processing of one single thread.

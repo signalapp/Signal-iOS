@@ -172,7 +172,7 @@ public class StorageServiceUnknownFieldMigrator {
                         recordMap[groupId] = $0.dontNotifyForMentionsIfMuted
                     }
                 }
-                try? ThreadFinder().enumerateGroupThreads(transaction: tx) { groupThread, _ in
+                try? ThreadFinder().enumerateGroupThreads(transaction: tx) { groupThread -> Bool in
                     let remoteValue: TSThreadMentionNotificationMode =
                         (recordMap[groupThread.groupId] ?? false) ? .never : .always
                     if isPrimaryDevice {
@@ -187,6 +187,8 @@ public class StorageServiceUnknownFieldMigrator {
                         // On secondaries, take the value from storage service.
                         groupThread.updateWithMentionNotificationMode(remoteValue, wasLocallyInitiated: false, transaction: tx)
                     }
+
+                    return true
                 }
             },
             interceptRemoteManifest: { record, recordBuilder, isPrimaryDevice, tx in

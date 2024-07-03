@@ -169,13 +169,15 @@ final class MessageBackupDistributionListTest: MessageBackupIntegrationTestCase 
                 }
             ]
 
-            try threadStore.enumerateStoryThreads(tx: tx) { thread, stop in
+            try threadStore.enumerateStoryThreads(tx: tx) { thread in
                 do {
                     let validationBlock = try XCTUnwrap(validationBlocks[UUID(thread.uniqueId)])
                     validationBlock(thread)
                 } catch {
                     XCTFail("Missing validation block")
                 }
+
+                return true
             }
         }
     }

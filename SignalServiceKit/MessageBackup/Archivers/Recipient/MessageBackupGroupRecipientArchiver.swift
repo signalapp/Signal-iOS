@@ -48,7 +48,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
         var errors = [ArchiveFrameError]()
 
         do {
-            try threadStore.enumerateGroupThreads(tx: tx) { groupThread, _ in
+            try threadStore.enumerateGroupThreads(tx: tx) { groupThread in
                 self.archiveGroupThread(
                     groupThread,
                     stream: stream,
@@ -56,6 +56,8 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
                     errors: &errors,
                     tx: tx
                 )
+
+                return true
             }
         } catch {
             // The enumeration of threads failed, not the processing of one single thread.

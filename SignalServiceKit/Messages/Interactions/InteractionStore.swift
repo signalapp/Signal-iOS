@@ -39,9 +39,14 @@ public protocol InteractionStore {
         tx: DBReadTransaction
     ) throws -> [TSInteraction]
 
+    /// Enumerate all interactions.
+    ///
+    /// - Parameter block
+    /// A block executed for each enumerated interaction. Returns `true` if
+    /// enumeration should continue, and `false` otherwise.
     func enumerateAllInteractions(
         tx: DBReadTransaction,
-        block: @escaping (TSInteraction, _ stop: inout Bool) -> Void
+        block: (TSInteraction) throws -> Bool
     ) throws
 
     func insertedMessageHasRenderableContent(
@@ -169,19 +174,16 @@ public class InteractionStoreImpl: InteractionStore {
 
     public func enumerateAllInteractions(
         tx: DBReadTransaction,
-        block: @escaping (TSInteraction, _ stop: inout Bool) -> Void
+        block: (TSInteraction) throws -> Bool
     ) throws {
         let cursor = TSInteraction.grdbFetchCursor(
             transaction: SDSDB.shimOnlyBridge(tx).unwrapGrdbRead
         )
 
-        var stop = false
-        while let interaction = try cursor.next() {
-            block(interaction, &stop)
-            if stop {
-                break
-            }
-        }
+        while
+            let interaction = try cursor.next(),
+            try block(interaction)
+        {}
     }
 
     public func insertedMessageHasRenderableContent(
@@ -348,13 +350,11 @@ open class MockInteractionStore: InteractionStore {
 
     open func enumerateAllInteractions(
         tx: DBReadTransaction,
-        block: @escaping (TSInteraction, _ stop: inout Bool) -> Void
+        block: (TSInteraction) throws -> Bool
     ) throws {
-        var stop = false
         for interaction in insertedInteractions {
-            block(interaction, &stop)
-            if stop {
-                break
+            if !(try block(interaction)) {
+                return
             }
         }
     }

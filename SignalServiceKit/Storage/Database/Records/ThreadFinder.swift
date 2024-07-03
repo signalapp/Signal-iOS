@@ -36,9 +36,12 @@ public class ThreadFinder: Dependencies {
     }
 
     /// Enumerates through all story thread (distribution lists)
+    /// - Parameter block
+    /// A block executed for each enumerated thread. Returns `true` if
+    /// enumeration should continue, and `false` otherwise.
     public func enumerateStoryThreads(
         transaction: SDSAnyReadTransaction,
-        block: (TSPrivateStoryThread, _ stop: inout Bool) -> Void
+        block: (TSPrivateStoryThread) throws -> Bool
     ) throws {
         let sql = """
             SELECT *
@@ -50,20 +53,20 @@ public class ThreadFinder: Dependencies {
             transaction.unwrapGrdbRead.database,
             sql: sql
         )
-        while let threadRecord = try cursor.next() {
-            let thread = try TSThread.fromRecord(threadRecord)
-            guard let storyThread = thread as? TSPrivateStoryThread else { continue }
-            block(storyThread, &stop)
-            if stop {
-                return
-            }
-        }
+        while
+            let threadRecord = try cursor.next(),
+            let storyThread = (try TSThread.fromRecord(threadRecord)) as? TSPrivateStoryThread,
+            try block(storyThread)
+        {}
     }
 
     /// Enumerates group threads in "last interaction" order.
+    /// - Parameter block
+    /// A block executed for each enumerated thread. Returns `true` if
+    /// enumeration should continue, and `false` otherwise.
     public func enumerateGroupThreads(
         transaction: SDSAnyReadTransaction,
-        block: (TSGroupThread, _ stop: inout Bool) -> Void
+        block: (TSGroupThread) throws -> Bool
     ) throws {
         let sql = """
             SELECT *
@@ -77,20 +80,20 @@ public class ThreadFinder: Dependencies {
             transaction.unwrapGrdbRead.database,
             sql: sql
         )
-        while let threadRecord = try cursor.next() {
-            let thread = try TSThread.fromRecord(threadRecord)
-            guard let groupThread = thread as? TSGroupThread else { continue }
-            block(groupThread, &stop)
-            if stop {
-                return
-            }
-        }
+        while
+            let threadRecord = try cursor.next(),
+            let groupThread = (try TSThread.fromRecord(threadRecord)) as? TSGroupThread,
+            try block(groupThread)
+        {}
     }
 
     /// Enumerates all non-story threads in arbitrary order.
+    /// - Parameter block
+    /// A block executed for each enumerated thread. Returns `true` if
+    /// enumeration should continue, and `false` otherwise.
     public func enumerateNonStoryThreads(
         transaction: SDSAnyReadTransaction,
-        block: (TSThread, _ stop: inout Bool) -> Void
+        block: (TSThread) throws -> Bool
     ) throws {
         let sql = """
             SELECT *
@@ -104,13 +107,10 @@ public class ThreadFinder: Dependencies {
             sql: sql,
             arguments: [SDSRecordType.privateStoryThread]
         )
-        while let threadRecord = try cursor.next() {
-            let thread = try TSThread.fromRecord(threadRecord)
-            block(thread, &stop)
-            if stop {
-                return
-            }
-        }
+        while
+            let thread = try cursor.next().map({ try TSThread.fromRecord($0) }),
+            try block(thread)
+        {}
     }
 
     public func visibleThreadCount(

@@ -7,19 +7,28 @@ import LibSignalClient
 
 public protocol ThreadStore {
     /// Covers contact and group threads.
+    /// - Parameter block
+    /// A block executed for each enumerated thread. Returns `true` if
+    /// enumeration should continue, and `false` otherwise.
     func enumerateNonStoryThreads(
         tx: DBReadTransaction,
-        block: @escaping (TSThread, _ stop: inout Bool) -> Void
+        block: (TSThread) throws -> Bool
     ) throws
     /// Enumerates story distribution lists
+    /// - Parameter block
+    /// A block executed for each enumerated thread. Returns `true` if
+    /// enumeration should continue, and `false` otherwise.
     func enumerateStoryThreads(
         tx: DBReadTransaction,
-        block: @escaping (TSPrivateStoryThread, _ stop: inout Bool) -> Void
+        block: (TSPrivateStoryThread) throws -> Bool
     ) throws
     /// Enumerates group threads in "last interaction" order.
+    /// - Parameter block
+    /// A block executed for each enumerated thread. Returns `true` if
+    /// enumeration should continue, and `false` otherwise.
     func enumerateGroupThreads(
         tx: DBReadTransaction,
-        block: @escaping (TSGroupThread, _ stop: inout Bool) -> Void
+        block: (TSGroupThread) throws -> Bool
     ) throws
     func fetchThread(rowId: Int64, tx: DBReadTransaction) -> TSThread?
     func fetchThread(uniqueId: String, tx: DBReadTransaction) -> TSThread?
@@ -127,15 +136,15 @@ public class ThreadStoreImpl: ThreadStore {
 
     public init() {}
 
-    public func enumerateNonStoryThreads(tx: DBReadTransaction, block: @escaping (TSThread, inout Bool) -> Void) throws {
+    public func enumerateNonStoryThreads(tx: DBReadTransaction, block: (TSThread) throws -> Bool) throws {
         return try ThreadFinder().enumerateNonStoryThreads(transaction: SDSDB.shimOnlyBridge(tx), block: block)
     }
 
-    public func enumerateStoryThreads(tx: DBReadTransaction, block: @escaping (TSPrivateStoryThread, inout Bool) -> Void) throws {
+    public func enumerateStoryThreads(tx: DBReadTransaction, block: (TSPrivateStoryThread) throws -> Bool) throws {
         return try ThreadFinder().enumerateStoryThreads(transaction: SDSDB.shimOnlyBridge(tx), block: block)
     }
 
-    public func enumerateGroupThreads(tx: DBReadTransaction, block: @escaping (TSGroupThread, inout Bool) -> Void) throws {
+    public func enumerateGroupThreads(tx: DBReadTransaction, block: (TSGroupThread) throws -> Bool) throws {
         return try ThreadFinder().enumerateGroupThreads(transaction: SDSDB.shimOnlyBridge(tx), block: block)
     }
 
@@ -257,40 +266,36 @@ public class MockThreadStore: ThreadStore {
     private(set) var threads = [TSThread]()
     public var nextRowId: Int64 = 1
 
-    public func enumerateNonStoryThreads(tx: DBReadTransaction, block: @escaping (TSThread, inout Bool) -> Void) throws {
-        var stop = false
+    public func enumerateNonStoryThreads(tx: DBReadTransaction, block: (TSThread) throws -> Bool) throws {
         for thread in threads {
             guard !(thread is TSPrivateStoryThread) else {
                 continue
             }
-            block(thread, &stop)
-            if stop {
+            if !(try block(thread)) {
                 return
             }
         }
     }
 
-    public func enumerateStoryThreads(tx: any DBReadTransaction, block: @escaping (TSPrivateStoryThread, inout Bool) -> Void) throws {
+    public func enumerateStoryThreads(tx: any DBReadTransaction, block: (TSPrivateStoryThread) throws -> Bool) throws {
         var stop = false
         for thread in threads {
             guard let storyThread = thread as? TSPrivateStoryThread else {
                 continue
             }
-            block(storyThread, &stop)
-            if stop {
+            if !(try block(storyThread)) {
                 return
             }
         }
     }
 
-    public func enumerateGroupThreads(tx: DBReadTransaction, block: @escaping (TSGroupThread, inout Bool) -> Void) throws {
+    public func enumerateGroupThreads(tx: DBReadTransaction, block: (TSGroupThread) throws -> Bool) throws {
         var stop = false
         for thread in threads {
             guard let groupThread = thread as? TSGroupThread else {
                 continue
             }
-            block(groupThread, &stop)
-            if stop {
+            if !(try block(groupThread)) {
                 return
             }
         }

@@ -67,7 +67,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         var completeFailureError: MessageBackup.FatalArchivingError?
         var partialErrors = [ArchiveFrameError]()
 
-        func archiveThread(_ thread: TSThread, stop: inout Bool) {
+        func archiveThread(_ thread: TSThread) -> Bool {
             let result: ArchiveMultiFrameResult
             if let thread = thread as? TSContactThread {
                 // Check address directly; isNoteToSelf uses global state.
@@ -94,8 +94,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
                     tx: tx
                 )
             } else {
-                completeFailureError = .fatalArchiveError(.unrecognizedThreadType)
-                return
+                result = .completeFailure(.fatalArchiveError(.unrecognizedThreadType))
             }
 
             switch result {
@@ -103,14 +102,16 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
                 break
             case .completeFailure(let error):
                 completeFailureError = error
-                stop = true
+                return false
             case .partialSuccess(let errors):
                 partialErrors.append(contentsOf: errors)
             }
+
+            return true
         }
 
         do {
-            try threadStore.enumerateNonStoryThreads(tx: tx, block: archiveThread(_:stop:))
+            try threadStore.enumerateNonStoryThreads(tx: tx, block: archiveThread(_:))
         } catch let error {
             return .completeFailure(.fatalArchiveError(.threadIteratorError(error)))
         }
