@@ -160,9 +160,7 @@ final class OWSOutgoingResendResponse: TSOutgoingMessage {
         return contentBuilder
     }
 
-    override func update(withSentRecipient serviceId: ServiceIdObjC, wasSentByUD: Bool, transaction tx: SDSAnyWriteTransaction) {
-        super.update(withSentRecipient: serviceId, wasSentByUD: wasSentByUD, transaction: tx)
-
+    func didPerformMessageSend(_ sentMessages: [SentDeviceMessage], to serviceId: ServiceId, tx: SDSAnyWriteTransaction) {
         if
             self.didAppendSKDM,
             let originalThreadId,
@@ -171,7 +169,7 @@ final class OWSOutgoingResendResponse: TSOutgoingMessage {
         {
             do {
                 try self.senderKeyStore.recordSentSenderKeys(
-                    [SentSenderKey(recipient: serviceId.wrappedValue, timestamp: self.timestamp)],
+                    [SentSenderKey(recipient: serviceId, timestamp: self.timestamp, messages: sentMessages)],
                     for: originalThread,
                     writeTx: tx
                 )

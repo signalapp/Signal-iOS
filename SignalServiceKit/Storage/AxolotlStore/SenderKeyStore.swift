@@ -8,6 +8,7 @@ import LibSignalClient
 struct SentSenderKey {
     var recipient: ServiceId
     var timestamp: UInt64
+    var messages: [SentDeviceMessage]
 }
 
 public class SenderKeyStore {
@@ -86,11 +87,7 @@ public class SenderKeyStore {
         }
         var updatedMetadata = existingMetadata
         for sentSenderKey in sentSenderKeys {
-            try updatedMetadata.recordSKDMSent(
-                at: sentSenderKey.timestamp,
-                serviceId: sentSenderKey.recipient,
-                transaction: writeTx
-            )
+            updatedMetadata.recordSentSenderKey(sentSenderKey)
         }
         setMetadata(updatedMetadata, writeTx: writeTx)
     }
@@ -440,7 +437,7 @@ private struct KeyRecipient: Codable, Dependencies {
 
     let devices: Set<Device>
 
-    private init(devices: Set<Device>) {
+    fileprivate init(devices: Set<Device>) {
         self.devices = devices
     }
 
@@ -540,10 +537,12 @@ private struct KeyMetadata {
         sentKeyInfo[SignalServiceAddress(serviceId)] = nil
     }
 
-    mutating func recordSKDMSent(at timestamp: UInt64, serviceId: ServiceId, transaction: SDSAnyReadTransaction) throws {
-        let recipient = try KeyRecipient.currentState(for: serviceId, transaction: transaction)
-        let sendInfo = SKDMSendInfo(skdmTimestamp: timestamp, keyRecipient: recipient)
-        sentKeyInfo[SignalServiceAddress(serviceId)] = sendInfo
+    mutating func recordSentSenderKey(_ sentSenderKey: SentSenderKey) {
+        let recipient = KeyRecipient(devices: Set(sentSenderKey.messages.map {
+            return KeyRecipient.Device(deviceId: $0.destinationDeviceId, registrationId: $0.destinationRegistrationId)
+        }))
+        let sendInfo = SKDMSendInfo(skdmTimestamp: sentSenderKey.timestamp, keyRecipient: recipient)
+        sentKeyInfo[SignalServiceAddress(sentSenderKey.recipient)] = sendInfo
     }
 }
 

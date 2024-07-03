@@ -364,14 +364,18 @@ extension MessageSender {
         }
 
         let distributionResults = await withTaskGroup(
-            of: (ServiceId, Result<UInt64, any Error>).self,
-            returning: [(ServiceId, Result<UInt64, any Error>)].self
+            of: (ServiceId, Result<SentSenderKey, any Error>).self,
+            returning: [(ServiceId, Result<SentSenderKey, any Error>)].self
         ) { taskGroup in
             for (messageSend, sealedSenderParameters) in prepareResult.senderKeyDistributionMessageSends {
                 taskGroup.addTask {
                     do {
-                        try await self.performMessageSend(messageSend, sealedSenderParameters: sealedSenderParameters)
-                        return (messageSend.serviceId, .success(messageSend.message.timestamp))
+                        let sentMessages = try await self.performMessageSend(messageSend, sealedSenderParameters: sealedSenderParameters)
+                        return (messageSend.serviceId, .success(SentSenderKey(
+                            recipient: messageSend.serviceId,
+                            timestamp: messageSend.message.timestamp,
+                            messages: sentMessages
+                        )))
                     } catch {
                         return (messageSend.serviceId, .failure(error))
                     }
@@ -386,8 +390,7 @@ extension MessageSender {
             var sentSenderKeys = [SentSenderKey]()
             for (serviceId, distributionResult) in distributionResults {
                 do {
-                    let timestamp = try distributionResult.get()
-                    sentSenderKeys.append(SentSenderKey(recipient: serviceId, timestamp: timestamp))
+                    sentSenderKeys.append(try distributionResult.get())
                 } catch {
                     if error is MessageSenderNoSuchSignalRecipientError {
                         self.markAsUnregistered(

@@ -31,3 +31,8 @@ class DeviceMessage: NSObject {
         self.serializedMessage = serializedMessage
     }
 }
+
+struct SentDeviceMessage {
+    var destinationDeviceId: UInt32
+    var destinationRegistrationId: UInt32
+}

@@ -1177,11 +1177,12 @@ public class MessageSender: Dependencies {
         return SerializedMessage(plaintextData: plaintextData, payloadId: payloadId)
     }
 
+    @discardableResult
     func performMessageSend(
         _ messageSend: OWSMessageSend,
         sealedSenderParameters: SealedSenderParameters?
-    ) async throws {
-        try await performMessageSendAttempt(
+    ) async throws -> [SentDeviceMessage] {
+        return try await performMessageSendAttempt(
             messageSend,
             sealedSenderParameters: sealedSenderParameters,
             remainingAttempts: 3
@@ -1193,11 +1194,11 @@ public class MessageSender: Dependencies {
         remainingAttempts: Int,
         orThrow error: Error,
         sealedSenderParameters: SealedSenderParameters?
-    ) async throws {
+    ) async throws -> [SentDeviceMessage] {
         guard remainingAttempts > 1 else {
             throw error
         }
-        try await performMessageSendAttempt(
+        return try await performMessageSendAttempt(
             messageSend,
             sealedSenderParameters: sealedSenderParameters,
             remainingAttempts: remainingAttempts - 1
@@ -1208,7 +1209,7 @@ public class MessageSender: Dependencies {
         _ messageSend: OWSMessageSend,
         sealedSenderParameters: SealedSenderParameters?,
         remainingAttempts: Int
-    ) async throws {
+    ) async throws -> [SentDeviceMessage] {
         // The caller has access to the error, so they must throw it if no more
         // retries are allowed.
         owsAssert(remainingAttempts > 0)
@@ -1227,13 +1228,12 @@ public class MessageSender: Dependencies {
         } catch {
             switch error {
             case RequestMakerUDAuthError.udAuthFailure:
-                try await retryMessageSend(
+                return try await retryMessageSend(
                     messageSend,
                     remainingAttempts: remainingAttempts,
                     orThrow: error,
                     sealedSenderParameters: nil  // Retry as an unsealed send.
                 )
-                return
             default:
                 break
             }
@@ -1245,7 +1245,7 @@ public class MessageSender: Dependencies {
             await self.databaseStorage.awaitableWrite { tx in
                 message.update(withSkippedRecipient: messageSend.localIdentifiers.aciAddress, transaction: tx)
             }
-            return
+            return []
         }
 
         for deviceMessage in deviceMessages {
@@ -1265,7 +1265,7 @@ public class MessageSender: Dependencies {
             }
         }
 
-        try await sendDeviceMessages(
+        return try await sendDeviceMessages(
             deviceMessages,
             messageSend: messageSend,
             sealedSenderParameters: sealedSenderParameters,
@@ -1474,7 +1474,7 @@ public class MessageSender: Dependencies {
         messageSend: OWSMessageSend,
         sealedSenderParameters: SealedSenderParameters?,
         remainingAttempts: Int
-    ) async throws {
+    ) async throws -> [SentDeviceMessage] {
         let message: TSOutgoingMessage = messageSend.message
 
         let requestMaker = RequestMaker(
@@ -1498,14 +1498,14 @@ public class MessageSender: Dependencies {
 
         do {
             let result = try await requestMaker.makeRequest().awaitable()
-            await messageSendDidSucceed(
+            return await messageSendDidSucceed(
                 messageSend,
                 deviceMessages: deviceMessages,
                 wasSentByUD: result.wasSentByUD,
                 wasSentByWebsocket: result.wasSentByWebsocket
             )
         } catch {
-            try await messageSendDidFail(
+            return try await messageSendDidFail(
                 messageSend,
                 responseError: error,
                 sealedSenderParameters: sealedSenderParameters,
@@ -1519,10 +1519,17 @@ public class MessageSender: Dependencies {
         deviceMessages: [DeviceMessage],
         wasSentByUD: Bool,
         wasSentByWebsocket: Bool
-    ) async {
+    ) async -> [SentDeviceMessage] {
         let message: TSOutgoingMessage = messageSend.message
 
         Logger.info("Successfully sent message: \(type(of: message)), serviceId: \(messageSend.serviceId), timestamp: \(message.timestamp), wasSentByUD: \(wasSentByUD), wasSentByWebsocket: \(wasSentByWebsocket)")
+
+        let sentDeviceMessages = deviceMessages.map {
+            return SentDeviceMessage(
+                destinationDeviceId: $0.destinationDeviceId,
+                destinationRegistrationId: $0.destinationRegistrationId
+            )
+        }
 
         await databaseStorage.awaitableWrite { transaction in
             if deviceMessages.isEmpty, messageSend.localIdentifiers.contains(serviceId: messageSend.serviceId) {
@@ -1553,6 +1560,10 @@ public class MessageSender: Dependencies {
 
             message.update(withSentRecipient: ServiceIdObjC.wrapValue(messageSend.serviceId), wasSentByUD: wasSentByUD, transaction: transaction)
 
+            if let resendResponse = message as? OWSOutgoingResendResponse {
+                resendResponse.didPerformMessageSend(sentDeviceMessages, to: messageSend.serviceId, tx: transaction)
+            }
+
             // If we've just delivered a message to a user, we know they have a valid
             // Signal account. However, if we're sending a story, the server will
             // always tell us the recipient is registered, so we can't use this as an
@@ -1576,6 +1587,8 @@ public class MessageSender: Dependencies {
                 tx: transaction.asV2Write
             )
         }
+
+        return sentDeviceMessages
     }
 
     private struct MessageSendFailureResponse: Decodable {
@@ -1602,7 +1615,7 @@ public class MessageSender: Dependencies {
         responseError: Error,
         sealedSenderParameters: SealedSenderParameters?,
         remainingAttempts: Int
-    ) async throws {
+    ) async throws -> [SentDeviceMessage] {
         let message: TSOutgoingMessage = messageSend.message
 
         Logger.warn("\(type(of: message)) to \(messageSend.serviceId), timestamp: \(message.timestamp), error: \(responseError)")
@@ -1610,13 +1623,12 @@ public class MessageSender: Dependencies {
         let httpError: OWSHTTPError?
         switch responseError {
         case RequestMakerUDAuthError.udAuthFailure:
-            try await retryMessageSend(
+            return try await retryMessageSend(
                 messageSend,
                 remainingAttempts: remainingAttempts,
                 orThrow: responseError,
                 sealedSenderParameters: nil  // Retry as an unsealed send.
             )
-            return
         case let responseError as OWSHTTPError:
             httpError = responseError
         default:
@@ -1660,7 +1672,7 @@ public class MessageSender: Dependencies {
             break
         }
 
-        try await retryMessageSend(
+        return try await retryMessageSend(
             messageSend,
             remainingAttempts: remainingAttempts,
             orThrow: responseError,
