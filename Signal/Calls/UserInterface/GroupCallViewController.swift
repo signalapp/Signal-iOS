@@ -1062,13 +1062,13 @@ class GroupCallViewController: UIViewController {
 
     @objc
     private func didTouchRootView(sender: UIGestureRecognizer) {
-        if callControlsMustBeVisible {
-            return
-        }
         switch self.callControlsDisplayState {
         case .callControlsAndOverflow, .none:
             self.callControlsDisplayState = .callControlsOnly
         case .callControlsOnly:
+            if callControlsMustBeVisible {
+                return
+            }
             self.callControlsDisplayState = .none
         }
     }
