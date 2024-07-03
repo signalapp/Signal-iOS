@@ -1,1 +1,1 @@
-• We added a subtle blur effect to improve the display of emoji reactions during Signal group calls. If there are ever so many reactions that it starts to feel like a blur, now that's even more thematically appropriate.
+• Ми додали ефект легкого розмиття для реакцій з емоджі під час групових викликів у Signal. Якщо реакцій настільки багато, що в очах усе розпливається, тепер цьому є технічне пояснення.

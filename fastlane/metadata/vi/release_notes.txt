@@ -1,1 +1,1 @@
-• We added a subtle blur effect to improve the display of emoji reactions during Signal group calls. If there are ever so many reactions that it starts to feel like a blur, now that's even more thematically appropriate.
+• Chúng tôi đã thêm hiệu ứng làm mờ để hiển thị tốt hơn emoji bày tỏ cảm xúc trong các cuộc gọi nhóm của Signal.

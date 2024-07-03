@@ -1,1 +1,1 @@
-• We added a subtle blur effect to improve the display of emoji reactions during Signal group calls. If there are ever so many reactions that it starts to feel like a blur, now that's even more thematically appropriate.
+• Nous avons ajouté un effet de flou subtil pour améliorer l’affichage des réactions émoji pendant les appels de groupe Signal. Pratique si une vague de réactions vous met un peu dans le flou !
