@@ -48,13 +48,24 @@ public extension UIStackView {
         return backgroundView
     }
 
+    /// Adds a `UIVisualEffectView` with a `UIBlurEffect` as a background to the view.
+    /// - Parameters:
+    ///   - blur: The blur effect style to use.
+    ///   - accessibilityFallbackColor: An optional fallback color when the
+    ///   system "Reduce Transparency" accessibility feature is enabled. If this
+    ///   is not set, the system automatically calculates a color to use.
+    ///   - cornerRadius: The corner radius the background view should have.
+    /// - Returns: The background subview which has been added and pinned to the superview.
     @discardableResult
     func addBackgroundBlurView(
         blur: UIBlurEffect.Style,
-        accessibilityFallbackColor: UIColor,
+        accessibilityFallbackColor: UIColor? = nil,
         cornerRadius: CGFloat = 0
     ) -> UIView {
-        if UIAccessibility.isReduceTransparencyEnabled {
+        if
+            UIAccessibility.isReduceTransparencyEnabled,
+            let accessibilityFallbackColor
+        {
             return self.addBackgroundView(
                 withBackgroundColor: accessibilityFallbackColor,
                 cornerRadius: cornerRadius

@@ -77,7 +77,7 @@ class RaisedHandsToast: UIView {
         outerHStack.axis = .horizontal
         outerHStack.alignment = .center
         outerHStack.autoPinEdgesToSuperviewEdges()
-        outerHStack.addBackgroundBlurView(blur: .dark, accessibilityFallbackColor: .ows_gray80)
+        outerHStack.addBackgroundBlurView(blur: .systemMaterialDark, accessibilityFallbackColor: .ows_gray75)
         outerHStack.layer.cornerRadius = 10
         outerHStack.clipsToBounds = true
 
