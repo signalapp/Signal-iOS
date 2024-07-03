@@ -34,7 +34,9 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
              infoMessageUserInfo:nil];
 
     if (self) {
-        OWSAssertDebug(sender.isValid);
+        if (sender) {
+            OWSAssertDebug(sender.isValid);
+        }
 
         _protocolVersion = protocolVersion;
         _sender = sender;

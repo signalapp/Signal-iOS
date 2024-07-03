@@ -69,7 +69,8 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
             groupUpdateHelper: groupUpdateHelper,
             groupUpdateItemBuilder: groupUpdateItemBuilder,
             individualCallRecordManager: individualCallRecordManager,
-            interactionStore: interactionStore
+            interactionStore: interactionStore,
+            threadStore: threadStore
         )
     // TODO: need for info messages. not story messages, those are skipped.
     // are there other message types? what about e.g. payment messages?
@@ -182,7 +183,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
 
         case
                 .isPastRevision,
-                .skippableGroupUpdate,
+                .skippableChatUpdate,
                 .notYetImplemented:
             // Skip! Say it succeeded so we ignore it.
             return .success
@@ -250,6 +251,17 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
             // maybe be considered a catastrophic failure?
             // For now there's interactions we don't handle; just ignore it.
             return .success
+        }
+
+        switch context.recipientContext[chatItem.authorRecipientId] {
+        case .releaseNotesChannel:
+            // The release notes channel doesn't exist yet, so for the time
+            // being we'll drop all chat items destined for it.
+            //
+            // TODO: [Backups] Implement restoring chat items into the release notes channel chat.
+            return .success
+        default:
+            break
         }
 
         guard let threadUniqueId = context[chatItem.typedChatId] else {

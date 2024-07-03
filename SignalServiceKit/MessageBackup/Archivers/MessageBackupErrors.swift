@@ -70,17 +70,48 @@ extension MessageBackup {
 
             /// A distributionListIdentifier memberRecipientId was invalid
             case invalidDistributionListMemberAddress
-
             /// The story distribution list contained memberRecipientIds for a privacy mode
             /// that didn't expect any.
             case distributionListUnexpectedRecipients
-
             /// The story distribution list was marked as deleted but missing a deletion timestamp
             case distributionListMissingDeletionTimestamp
-
             /// The story distribution list was missing memberRecipiendIds for a privacy mode
             /// where they should be present.
             case distributionListMissingRecipients
+
+            /// An interaction used to create a verification-state update was
+            /// missing info as to its author.
+            case verificationStateUpdateInteractionMissingAuthor
+            /// An interaction used to create a phone number change was missing
+            /// info as to its author.
+            case phoneNumberChangeInteractionMissingAuthor
+            /// An interaction used to create a payment activation request was
+            /// missing info as to its author.
+            case paymentActivationRequestInteractionMissingAuthor
+            /// An interaction used to create a payments-activated request was
+            /// missing info as to its author.
+            case paymentsActivatedInteractionMissingAuthor
+            /// An interaction used to create an identity-key change was missing
+            /// info as to its author.
+            case identityKeyChangeInteractionMissingAuthor
+            /// An interaction used to create a session-refresh update was
+            /// missing info as to its author.
+            case sessionRefreshInteractionMissingAuthor
+            /// An interaction used to create a decryption error update was
+            /// missing info as to its author.
+            case decryptionErrorInteractionMissingAuthor
+            /// We found a non-simple chat update type when expecting a simple
+            /// chat update.
+            case foundComplexChatUpdateTypeWhenExpectingSimple
+            /// A "verification state change" info message was not of the
+            /// expected SDS record type, ``OWSVerificationStateChangeMessage``.
+            case verificationStateChangeNotExpectedSDSRecordType
+            /// An "unknown protocol version" info message was not of the
+            /// expected SDS record type, ``OWSUnknownProtocolVersionMessage``.
+            case unknownProtocolVersionNotExpectedSDSRecordType
+            /// A simple chat update message that was expected to be in a 1:1
+            /// thread was not, in fact, in a 1:1 thread.
+            case simpleChatUpdateMessageNotInContactThread
         }
 
         private let type: ErrorType
@@ -97,9 +128,9 @@ extension MessageBackup {
         public static func archiveFrameError(
             _ type: ErrorType,
             _ id: AppIdType,
-            _ file: StaticString = #file,
-            _ function: StaticString = #function,
-            _ line: UInt = #line
+            file: StaticString = #file,
+            function: StaticString = #function,
+            line: UInt = #line
         ) -> ArchiveFrameError {
             return ArchiveFrameError(type: type, id: id, file: file, function: function, line: line)
         }
@@ -143,7 +174,18 @@ extension MessageBackup {
                     .missingLocalProfile,
                     .missingLocalProfileKey,
                     .missingRequiredGroupMemberParams,
-                    .groupCallRecordHadIndividualCallStatus:
+                    .groupCallRecordHadIndividualCallStatus,
+                    .verificationStateUpdateInteractionMissingAuthor,
+                    .phoneNumberChangeInteractionMissingAuthor,
+                    .identityKeyChangeInteractionMissingAuthor,
+                    .sessionRefreshInteractionMissingAuthor,
+                    .decryptionErrorInteractionMissingAuthor,
+                    .paymentActivationRequestInteractionMissingAuthor,
+                    .paymentsActivatedInteractionMissingAuthor,
+                    .foundComplexChatUpdateTypeWhenExpectingSimple,
+                    .verificationStateChangeNotExpectedSDSRecordType,
+                    .unknownProtocolVersionNotExpectedSDSRecordType,
+                    .simpleChatUpdateMessageNotInContactThread:
                 // Log any others as we see them.
                 return nil
             }
@@ -320,6 +362,29 @@ extension MessageBackup {
 
                 /// A ``BackupProto/ChatUpdateMessage/update`` was empty.
                 case emptyChatUpdateMessage
+                /// A ``BackupProto/SimpleChatUpdate/type`` was unrecognized.
+                case unrecognizedSimpleChatUpdate
+                /// A "verification state change" simple chat update was
+                /// associated with a non-contact recipient.
+                case verificationStateChangeNotFromContact
+                /// A "phone number chnaged" simple chat update was associated
+                /// with a non-contact recipient.
+                case phoneNumberChangeNotFromContact
+                /// An "identity key changed" simple chat update was associated
+                /// with a non-contact recipient.
+                case identityKeyChangeNotFromContact
+                /// A "decryption error" simple chat update was associated with
+                /// a non-contact recipient.
+                case decryptionErrorNotFromContact
+                /// A "payments activation request" simple chat update was
+                /// associated with a recipient with no ACI.
+                case paymentsActivationRequestNotFromAci
+                /// A "payments activated" simple chat update was associated
+                /// with a recipient with no ACI.
+                case paymentsActivatedNotFromAci
+                /// An "unsupported protocol version" simple chat update was
+                /// associated with a recipient with no ACI.
+                case unsupportedProtocolVersionNotFromAci
             }
 
             /// The proto contained invalid or self-contradictory data, e.g an invalid ACI.
@@ -339,7 +404,7 @@ extension MessageBackup {
             /// the proto; its the iOS code that has a bug somewhere.
             case developerError(OWSAssertionError)
 
-            // [Backups] TODO: remove once all known types are handled.
+            // TODO: [Backups] remove once all known types are handled.
             case unimplemented
         }
 
@@ -357,9 +422,9 @@ extension MessageBackup {
         public static func restoreFrameError(
             _ type: ErrorType,
             _ id: ProtoIdType,
-            _ file: StaticString = #file,
-            _ function: StaticString = #function,
-            _ line: UInt = #line
+            file: StaticString = #file,
+            function: StaticString = #function,
+            line: UInt = #line
         ) -> RestoreFrameError {
             return RestoreFrameError(type: type, id: id, file: file, function: function, line: line)
         }
@@ -423,7 +488,15 @@ extension MessageBackup {
                         .invalidDistributionListId,
                         .invalidDistributionListPrivacyMode,
                         .invalidDistributionListPrivacyModeMissingRequiredMembers,
-                        .emptyChatUpdateMessage:
+                        .emptyChatUpdateMessage,
+                        .unrecognizedSimpleChatUpdate,
+                        .verificationStateChangeNotFromContact,
+                        .phoneNumberChangeNotFromContact,
+                        .identityKeyChangeNotFromContact,
+                        .decryptionErrorNotFromContact,
+                        .paymentsActivationRequestNotFromAci,
+                        .paymentsActivatedNotFromAci,
+                        .unsupportedProtocolVersionNotFromAci:
                     // Collapse all others by the id of the containing frame.
                     return idLogString
                 }

@@ -362,12 +362,9 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
             transaction: transaction
         )
         // Insert the info message to display in chat.
-        let infoMessage = TSInfoMessage(
+        let infoMessage: TSInfoMessage = .paymentsActivationRequestMessage(
             thread: thread,
-            messageType: .paymentsActivationRequest,
-            infoMessageUserInfo: [
-                .paymentActivationRequestSenderAci: senderAci.serviceIdString
-            ]
+            senderAci: senderAci.wrappedAciValue
         )
         infoMessage.anyInsert(transaction: transaction)
     }
@@ -378,12 +375,9 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
         transaction: SDSAnyWriteTransaction
     ) {
         Logger.info("")
-        let infoMessage = TSInfoMessage(
+        let infoMessage: TSInfoMessage = .paymentsActivatedMessage(
             thread: thread,
-            messageType: .paymentsActivated,
-            infoMessageUserInfo: [
-                .paymentActivatedAci: senderAci.wrappedAciValue.serviceIdString
-            ]
+            senderAci: senderAci.wrappedAciValue
         )
         infoMessage.anyInsert(transaction: transaction)
 

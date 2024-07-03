@@ -133,7 +133,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 // --- CODE GENERATION MARKER
 
-+ (instancetype)sessionRefreshWithSourceAci:(AciObjC *)sourceAci withTransaction:(SDSAnyWriteTransaction *)transaction;
++ (instancetype)sessionRefreshInThread:(TSThread *)thread;
 
 + (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread
                                           address:(SignalServiceAddress *)address
@@ -146,8 +146,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 + (instancetype)failedDecryptionForSender:(nullable SignalServiceAddress *)sender
                                    thread:(TSThread *)thread
-                                timestamp:(uint64_t)timestamp
-                              transaction:(SDSAnyWriteTransaction *)transaction;
+                                timestamp:(uint64_t)timestamp;
 
 @property (nonatomic, readonly) TSErrorMessageType errorType;
 @property (nullable, nonatomic, readonly) SignalServiceAddress *sender;

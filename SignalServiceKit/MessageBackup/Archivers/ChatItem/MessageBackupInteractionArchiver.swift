@@ -35,13 +35,74 @@ extension MessageBackup {
         let chatItemType: ChatItemType
     }
 
-    enum SkippableGroupUpdate {
-        /// This is a group update from back when we kept raw strings on disk, instead
-        /// of metadata required to construct the string. We knowingly drop these.
-        case legacyRawString
-        /// In backups, we collapse the `inviteFriendsToNewlyCreatedGroup` into
-        /// the `createdByLocalUser`; the former is just omitted from backups.
-        case inviteFriendsToNewlyCreatedGroup
+    enum SkippableChatUpdate {
+        enum SkippableGroupUpdate {
+            /// This is a group update from back when we kept raw strings on
+            /// disk, instead of metadata required to construct the string. We
+            /// knowingly drop these.
+            case legacyRawString
+
+            /// In backups, we collapse the `inviteFriendsToNewlyCreatedGroup`
+            /// into the `createdByLocalUser`; the former is just omitted from
+            /// backups.
+            case inviteFriendsToNewlyCreatedGroup
+        }
+
+        /// Represents types of ``TSErrorMessage``s (as described by
+        /// ``TSErrorMessageType``) that are legacy and exclued from backups.
+        enum LegacyErrorMessageType {
+            /// See: `TSErrorMessageType/noSession`
+            case noSession
+            /// See: `TSErrorMessageType/wrongTrustedIdentityKey`
+            case wrongTrustedIdentityKey
+            /// See: `TSErrorMessageType/invalidKeyException`
+            case invalidKeyException
+            /// See: `TSErrorMessageType/missingKeyId`
+            case missingKeyId
+            /// See: `TSErrorMessageType/invalidMessage`
+            case invalidMessage
+            /// See: `TSErrorMessageType/duplicateMessage`
+            case duplicateMessage
+            /// See: `TSErrorMessageType/invalidVersion`
+            case invalidVersion
+            /// See: `TSErrorMessageType/unknownContactBlockOffer`
+            case unknownContactBlockOffer
+            /// See: `TSErrorMessageType/groupCreationFailed`
+            case groupCreationFailed
+        }
+
+        enum LegacyInfoMessageType {
+            /// See: `TSInfoMessageType/userNotRegistered`
+            case userNotRegistered
+            /// See: `TSInfoMessageType/typeUnsupportedMessage`
+            case typeUnsupportedMessage
+            /// See: `TSInfoMessageType/typeGroupQuit`
+            case typeGroupQuit
+            /// See: `TSInfoMessageType/addToContactsOffer`
+            case addToContactsOffer
+            /// See: `TSInfoMessageType/addUserToProfileWhitelistOffer`
+            case addUserToProfileWhitelistOffer
+            /// See: `TSInfoMessageType/addGroupToProfileWhitelistOffer`
+            case addGroupToProfileWhitelistOffer
+            /// See: `TSInfoMessageType/syncedThread`
+            case syncedThread
+        }
+
+        /// Some group updates are deliberately skipped.
+        case skippableGroupUpdate(SkippableGroupUpdate)
+
+        /// This is a legacy ``TSErrorMessage`` that we no longer support, and
+        /// is correspondingly dropped when creating a backup.
+        case legacyErrorMessage(LegacyErrorMessageType)
+
+        /// This is a legacy ``TSInfoMessage`` that we no longer support, and
+        /// is correspondingly dropped when creating a backup.
+        case legacyInfoMessage(LegacyInfoMessageType)
+
+        /// This is a ``TSInfoMessage`` telling us about a contact being hidden,
+        /// which doesn't go into the backup. Instead, we track and handle info
+        /// messages for recipient hidden state separately.
+        case contactHiddenInfoMessage
     }
 
     internal enum ArchiveInteractionResult<Component> {
@@ -53,8 +114,8 @@ extension MessageBackup {
         /// contents will be represented in the latest revision.
         case isPastRevision
 
-        /// Some group updates are deliberately skipped; see sub-enum for reasons.
-        case skippableGroupUpdate(SkippableGroupUpdate)
+        /// We intentionally skip archiving some chat-update interactions.
+        case skippableChatUpdate(SkippableChatUpdate)
 
         // TODO: remove this once we flesh out implementation for all interactions.
         case notYetImplemented
@@ -154,8 +215,8 @@ extension MessageBackup.ArchiveInteractionResult {
         // These types are just bubbled up as-is
         case .isPastRevision:
             return .bubbleUpError(.isPastRevision)
-        case .skippableGroupUpdate(let groupUpdate):
-            return .bubbleUpError(.skippableGroupUpdate(groupUpdate))
+        case .skippableChatUpdate(let skippableChatUpdate):
+            return .bubbleUpError(.skippableChatUpdate(skippableChatUpdate))
         case .notYetImplemented:
             return .bubbleUpError(.notYetImplemented)
         case .completeFailure(let error):

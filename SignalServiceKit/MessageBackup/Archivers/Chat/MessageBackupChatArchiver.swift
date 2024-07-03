@@ -283,6 +283,9 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
                 tx: tx
             )
             chatThread = .contact(noteToSelfThread)
+        case .releaseNotesChannel:
+            // TODO: [Backups] Implement restoring the Release Notes channel chat.
+            return .success
         case .group(let groupId):
             // We don't create the group thread here; that happened when parsing the Group Recipient.
             // Instead, just set metadata.

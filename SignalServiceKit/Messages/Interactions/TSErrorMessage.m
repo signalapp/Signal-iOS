@@ -209,11 +209,9 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
     return OWSLocalizedString(@"ERROR_MESSAGE_UNKNOWN_ERROR", @"");
 }
 
-+ (instancetype)sessionRefreshWithSourceAci:(AciObjC *)sourceAci withTransaction:(SDSAnyWriteTransaction *)transaction
++ (instancetype)sessionRefreshInThread:(TSThread *)thread
 {
-    return [[TSErrorMessageBuilder errorMessageBuilderWithErrorType:TSErrorMessageSessionRefresh
-                                                          sourceAci:sourceAci
-                                                                 tx:transaction] build];
+    return [[TSErrorMessageBuilder errorMessageBuilderWithThread:thread errorType:TSErrorMessageSessionRefresh] build];
 }
 
 + (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread
@@ -230,7 +228,6 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
 + (instancetype)failedDecryptionForSender:(nullable SignalServiceAddress *)sender
                                    thread:(TSThread *)thread
                                 timestamp:(uint64_t)timestamp
-                              transaction:(SDSAnyWriteTransaction *)transaction
 {
     TSErrorMessageBuilder *builder =
         [TSErrorMessageBuilder errorMessageBuilderWithThread:thread errorType:TSErrorMessageDecryptionFailure];
@@ -262,7 +259,7 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
     if (!thread) {
         return nil;
     }
-    return [self failedDecryptionForSender:sender thread:thread timestamp:timestamp transaction:transaction];
+    return [self failedDecryptionForSender:sender thread:thread timestamp:timestamp];
 }
 
 #pragma mark - OWSReadTracking

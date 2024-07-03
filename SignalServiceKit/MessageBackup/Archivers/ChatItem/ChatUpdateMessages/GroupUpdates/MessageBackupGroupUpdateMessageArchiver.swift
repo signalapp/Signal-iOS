@@ -43,7 +43,7 @@ final class MessageBackupGroupUpdateMessageArchiver {
                 OWSAssertionError("Invalid interaction type")
             )))
         case .legacyRawString:
-            return .skippableGroupUpdate(.legacyRawString)
+            return .skippableChatUpdate(.skippableGroupUpdate(.legacyRawString))
         case .newGroup(let groupModel, let updateMetadata):
             groupUpdateItems = groupUpdateBuilder.precomputedUpdateItemsForNewGroup(
                 newGroupModel: groupModel.groupModel,
@@ -112,7 +112,7 @@ final class MessageBackupGroupUpdateMessageArchiver {
         var updates = [BackupProto.GroupChangeChatUpdate.Update]()
 
         var skipCount = 0
-        var latestSkipError: MessageBackup.SkippableGroupUpdate?
+        var latestSkipError: MessageBackup.SkippableChatUpdate.SkippableGroupUpdate?
         for groupUpdate in groupUpdates {
             let result = MessageBackupGroupUpdateSwiftToProtoConverter
                 .archiveGroupUpdate(
@@ -128,7 +128,7 @@ final class MessageBackupGroupUpdateMessageArchiver {
                 updates.append(update)
             case .bubbleUpError(let errorResult):
                 switch errorResult {
-                case .skippableGroupUpdate(let skipError):
+                case .skippableChatUpdate(.skippableGroupUpdate(let skipError)):
                     // Don't stop when we encounter a skippable update.
                     skipCount += 1
                     latestSkipError = skipError
@@ -141,7 +141,7 @@ final class MessageBackupGroupUpdateMessageArchiver {
         guard updates.isEmpty.negated else {
             if groupUpdates.count == skipCount, let latestSkipError {
                 // Its ok; we just skipped everything.
-                return .skippableGroupUpdate(latestSkipError)
+                return .skippableChatUpdate(.skippableGroupUpdate(latestSkipError))
             }
             return .messageFailure(partialErrors + [.archiveFrameError(.emptyGroupUpdate, interactionId)])
         }

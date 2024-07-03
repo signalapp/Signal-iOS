@@ -19,7 +19,7 @@ class MessageBackupIntegrationTestCase: XCTestCase {
         DependenciesBridge.shared.messageBackupManager
     }
 
-    private var localIdentifiers: LocalIdentifiers {
+    var localIdentifiers: LocalIdentifiers {
         /// A backup doesn't contain our own local identifiers. Rather, those
         /// are determined as part of registration for a backup import, and are
         /// already-known for a backup export.

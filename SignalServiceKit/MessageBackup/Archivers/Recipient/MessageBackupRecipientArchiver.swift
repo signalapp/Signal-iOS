@@ -114,9 +114,8 @@ internal class MessageBackupRecipientArchiverImpl: MessageBackupRecipientArchive
             privateStoryThreadDeletionManager: privateStoryThreadDeletionManager,
             storyStore: storyStore,
             threadStore: threadStore
-        )
-        // TODO: add missing archivers:
-        // * release notes thread (BackupReleaseNotes)
+        ),
+        MessageBackupReleaseNotesRecipientArchiver()
     ]
 
     func archiveRecipients(

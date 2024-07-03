@@ -1823,6 +1823,7 @@
 		D962346B2C0E937500DAF6CB /* InterleavingCompositeCursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D931080A2B338CE5006A034E /* InterleavingCompositeCursor.swift */; };
 		D962346D2C0E957800DAF6CB /* DeleteForMeMostRecentAddressableMessageCursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D962346C2C0E957800DAF6CB /* DeleteForMeMostRecentAddressableMessageCursor.swift */; };
 		D96234702C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D962346F2C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift */; };
+		D968F71E2C34884B00AB318B /* MessageBackupReleaseNotesRecipientArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D968F71D2C34884B00AB318B /* MessageBackupReleaseNotesRecipientArchiver.swift */; };
 		D96A94A72954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96A94A62954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift */; };
 		D96BE42E292EF04200E4FE1A /* PaypalButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96BE42D292EF04200E4FE1A /* PaypalButton.swift */; };
 		D9708B5C29E4CCCB004306FA /* OWSDeviceManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9708B5B29E4CCCB004306FA /* OWSDeviceManagerTest.swift */; };
@@ -1955,6 +1956,7 @@
 		D9E8EDF12C0FCB3000923E3C /* DeleteForMeSyncMessageInfoSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E8EDF02C0FCB3000923E3C /* DeleteForMeSyncMessageInfoSheet.swift */; };
 		D9E8EDF32C0FD8C800923E3C /* DeleteForMeInfoSheetCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E8EDF22C0FD8C800923E3C /* DeleteForMeInfoSheetCoordinator.swift */; };
 		D9EA2A872C2B609800B367DF /* MessageBackupChatUpdateMessageArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EA2A862C2B609800B367DF /* MessageBackupChatUpdateMessageArchiver.swift */; };
+		D9EA2A892C2B929400B367DF /* MessageBackupSimpleChatUpdateArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EA2A882C2B929400B367DF /* MessageBackupSimpleChatUpdateArchiver.swift */; };
 		D9EB221E2A4B636C00C73E1D /* Bitmaps+LineDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB22192A4B636B00C73E1D /* Bitmaps+LineDrawing.swift */; };
 		D9EB221F2A4B636C00C73E1D /* Bitmaps+Shapes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221A2A4B636B00C73E1D /* Bitmaps+Shapes.swift */; };
 		D9EB22202A4B636C00C73E1D /* Bitmaps+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9EB221B2A4B636B00C73E1D /* Bitmaps+Image.swift */; };
@@ -4836,6 +4838,7 @@
 		D962346C2C0E957800DAF6CB /* DeleteForMeMostRecentAddressableMessageCursor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeMostRecentAddressableMessageCursor.swift; sourceTree = "<group>"; };
 		D962346F2C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeMostRecentAddressableMessageCursorTest.swift; sourceTree = "<group>"; };
 		D9668B34291B088200665298 /* SignalMessagingJobQueues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalMessagingJobQueues.swift; sourceTree = "<group>"; };
+		D968F71D2C34884B00AB318B /* MessageBackupReleaseNotesRecipientArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupReleaseNotesRecipientArchiver.swift; sourceTree = "<group>"; };
 		D96A94A62954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonateViewController+MonthlyPaypalDonation.swift"; sourceTree = "<group>"; };
 		D96A94A82955270D004EA434 /* Stripe+Subscriptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Stripe+Subscriptions.swift"; sourceTree = "<group>"; };
 		D96BE42D292EF04200E4FE1A /* PaypalButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaypalButton.swift; sourceTree = "<group>"; };
@@ -4984,6 +4987,7 @@
 		D9E8EDF02C0FCB3000923E3C /* DeleteForMeSyncMessageInfoSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteForMeSyncMessageInfoSheet.swift; sourceTree = "<group>"; };
 		D9E8EDF22C0FD8C800923E3C /* DeleteForMeInfoSheetCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeInfoSheetCoordinator.swift; sourceTree = "<group>"; };
 		D9EA2A862C2B609800B367DF /* MessageBackupChatUpdateMessageArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupChatUpdateMessageArchiver.swift; sourceTree = "<group>"; };
+		D9EA2A882C2B929400B367DF /* MessageBackupSimpleChatUpdateArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupSimpleChatUpdateArchiver.swift; sourceTree = "<group>"; };
 		D9EB22192A4B636B00C73E1D /* Bitmaps+LineDrawing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bitmaps+LineDrawing.swift"; sourceTree = "<group>"; };
 		D9EB221A2A4B636B00C73E1D /* Bitmaps+Shapes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bitmaps+Shapes.swift"; sourceTree = "<group>"; };
 		D9EB221B2A4B636B00C73E1D /* Bitmaps+Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Bitmaps+Image.swift"; sourceTree = "<group>"; };
@@ -7556,6 +7560,7 @@
 				D9C0AE702BDC6B4000FCB05E /* Calls */,
 				662590C92B599474001FDCDD /* GroupUpdates */,
 				D9EA2A862C2B609800B367DF /* MessageBackupChatUpdateMessageArchiver.swift */,
+				D9EA2A882C2B929400B367DF /* MessageBackupSimpleChatUpdateArchiver.swift */,
 			);
 			path = ChatUpdateMessages;
 			sourceTree = "<group>";
@@ -8363,6 +8368,7 @@
 				66CD25782B0832A400139E17 /* MessageBackupLocalRecipientArchiver.swift */,
 				66CD25612B06948900139E17 /* MessageBackupRecipientArchiver.swift */,
 				66CD256F2B06E29B00139E17 /* MessageBackupRecipientDestinationArchiver.swift */,
+				D968F71D2C34884B00AB318B /* MessageBackupReleaseNotesRecipientArchiver.swift */,
 				66CD257C2B0C1DAA00139E17 /* RecipientContexts.swift */,
 			);
 			path = Recipient;
@@ -14302,9 +14308,11 @@
 				6605B9822B19547C00E8A68A /* MessageBackupReactionArchiver.swift in Sources */,
 				66CD25622B06948900139E17 /* MessageBackupRecipientArchiver.swift in Sources */,
 				66CD25702B06E29B00139E17 /* MessageBackupRecipientDestinationArchiver.swift in Sources */,
+				D968F71E2C34884B00AB318B /* MessageBackupReleaseNotesRecipientArchiver.swift in Sources */,
 				C17310A52BD9D43D00B7A151 /* MessageBackupRemoteInfo.swift in Sources */,
 				C14391132BD1C0DF00ED6FCB /* MessageBackupRequestManager.swift in Sources */,
 				C17310A72BD9D45400B7A151 /* MessageBackupServiceAuth.swift in Sources */,
+				D9EA2A892C2B929400B367DF /* MessageBackupSimpleChatUpdateArchiver.swift in Sources */,
 				66CD256A2B06963200139E17 /* MessageBackupStickerPackArchiver.swift in Sources */,
 				66CD258F2B0EB4AC00139E17 /* MessageBackupTSIncomingMessageArchiver.swift in Sources */,
 				66CD25932B0EC55100139E17 /* MessageBackupTSMessageContentsArchiver.swift in Sources */,

@@ -252,7 +252,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
                 if didReset {
                     // Always notify the user that we have performed an automatic archive.
-                    errorMessage = TSErrorMessage.sessionRefresh(withSourceAci: AciObjC(sourceAci), with: transaction)
+                    errorMessage = TSErrorMessage.sessionRefresh(in: contactThread)
                 } else {
                     errorMessage = nil
                 }
@@ -756,8 +756,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                     let errorMessage = TSErrorMessage.failedDecryption(
                         forSender: placeholder.sender,
                         thread: thread,
-                        timestamp: NSDate.ows_millisecondTimeStamp(),
-                        transaction: tx
+                        timestamp: NSDate.ows_millisecondTimeStamp()
                     )
                     errorMessage.anyInsert(transaction: tx)
                     self.notificationPresenter.notifyUser(forErrorMessage: errorMessage, thread: thread, transaction: tx)

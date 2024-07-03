@@ -133,7 +133,7 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
             // This specific one is ignored for purposes of backups.
             // At restore time, it is created alongside the `createdByLocalUser`
             // case if we find that in the backup.
-            return .skippableGroupUpdate(.inviteFriendsToNewlyCreatedGroup)
+            return .skippableChatUpdate(.skippableGroupUpdate(.inviteFriendsToNewlyCreatedGroup))
         case .wasMigrated:
             setUpdate(
                 BackupProto.GroupV2MigrationUpdate(),

@@ -261,7 +261,7 @@ class MessageBackupDistributionListRecipientArchiver: MessageBackupRecipientDest
                 switch context[RecipientId(value: $0)] {
                 case .contact(let contactAddress):
                     return contactAddress.asInteropAddress()
-                case .distributionList, .group, .localAddress, .none:
+                case .distributionList, .group, .localAddress, .releaseNotesChannel, .none:
                     error = .failure([.restoreFrameError(
                         .invalidProtoData(.invalidDistributionListMember(protoClass: BackupProto.DistributionList.self)),
                         recipientId

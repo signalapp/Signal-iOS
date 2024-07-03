@@ -14,15 +14,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_CLOSED_ENUM(NSInteger, TSInfoMessageType) {
     TSInfoMessageTypeSessionDidEnd,
+    /// - Note This case is deprecated, but may be persisted in legacy messages.
     TSInfoMessageUserNotRegistered,
-    // TSInfoMessageTypeUnsupportedMessage appears to be obsolete.
+    /// - Note This case is deprecated, but may be persisted in legacy messages.
     TSInfoMessageTypeUnsupportedMessage,
     TSInfoMessageTypeGroupUpdate,
+    /// - Note This case is deprecated, but may be persisted in legacy messages.
     TSInfoMessageTypeGroupQuit,
     TSInfoMessageTypeDisappearingMessagesUpdate,
+    /// - Note This case is deprecated, but may be persisted in legacy messages.
     TSInfoMessageAddToContactsOffer,
     TSInfoMessageVerificationStateChange,
+    /// - Note This case is deprecated, but may be persisted in legacy messages.
     TSInfoMessageAddUserToProfileWhitelistOffer,
+    /// - Note This case is deprecated, but may be persisted in legacy messages.
     TSInfoMessageAddGroupToProfileWhitelistOffer,
     TSInfoMessageUnknownProtocolVersion,
     TSInfoMessageUserJoinedSignal,

@@ -174,7 +174,7 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
             authorE164: authorE164,
             messageBody: messageBody?.text,
             bodyRanges: messageBody?.ranges,
-            // [Backups] TODO: handle edit states
+            // TODO: [Backups] handle edit states
             editState: .none,
             expiresInSeconds: UInt32(chatItem.expiresInMs / 1000),
             expireStartedAt: chatItem.expireStartDate,

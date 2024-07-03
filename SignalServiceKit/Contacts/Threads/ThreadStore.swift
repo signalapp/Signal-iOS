@@ -111,6 +111,13 @@ extension ThreadStore {
         ).first
     }
 
+    public func fetchThreadForInteraction(
+        _ interaction: TSInteraction,
+        tx: any DBReadTransaction
+    ) -> TSThread? {
+        return fetchThread(uniqueId: interaction.uniqueThreadId, tx: tx)
+    }
+
     public func updateAssociatedData(
         _ threadAssociatedData: ThreadAssociatedData,
         isArchived: Bool? = nil,

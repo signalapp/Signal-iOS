@@ -12,6 +12,7 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
     private let groupCallArchiver: MessageBackupGroupCallArchiver
     private let groupUpdateMessageArchiver: MessageBackupGroupUpdateMessageArchiver
     private let individualCallArchiver: MessageBackupIndividualCallArchiver
+    private let simpleChatUpdateArchiver: MessageBackupSimpleChatUpdateArchiver
 
     init(
         callRecordStore: any CallRecordStore,
@@ -19,7 +20,8 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
         groupUpdateHelper: any GroupUpdateInfoMessageInserterBackupHelper,
         groupUpdateItemBuilder: any GroupUpdateItemBuilder,
         individualCallRecordManager: any IndividualCallRecordManager,
-        interactionStore: any InteractionStore
+        interactionStore: any InteractionStore,
+        threadStore: any ThreadStore
     ) {
         groupCallArchiver = MessageBackupGroupCallArchiver(
             callRecordStore: callRecordStore,
@@ -35,6 +37,10 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
             callRecordStore: callRecordStore,
             individualCallRecordManager: individualCallRecordManager,
             interactionStore: interactionStore
+        )
+        simpleChatUpdateArchiver = MessageBackupSimpleChatUpdateArchiver(
+            interactionStore: interactionStore,
+            threadStore: threadStore
         )
     }
 
@@ -74,9 +80,55 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
                 break
             }
 
-            owsFail("Generic TSInfoMessage archive not yet implemented!")
+            switch infoMessage.messageType {
+            case .userNotRegistered:
+                return .skippableChatUpdate(.legacyInfoMessage(.userNotRegistered))
+            case .typeUnsupportedMessage:
+                return .skippableChatUpdate(.legacyInfoMessage(.typeUnsupportedMessage))
+            case .typeGroupQuit:
+                return .skippableChatUpdate(.legacyInfoMessage(.typeGroupQuit))
+            case .addToContactsOffer:
+                return .skippableChatUpdate(.legacyInfoMessage(.addToContactsOffer))
+            case .addUserToProfileWhitelistOffer:
+                return .skippableChatUpdate(.legacyInfoMessage(.addUserToProfileWhitelistOffer))
+            case .addGroupToProfileWhitelistOffer:
+                return .skippableChatUpdate(.legacyInfoMessage(.addGroupToProfileWhitelistOffer))
+            case .syncedThread:
+                return .skippableChatUpdate(.legacyInfoMessage(.syncedThread))
+            case .recipientHidden:
+                /// This info message type is handled specially.
+                return .skippableChatUpdate(.contactHiddenInfoMessage)
+            case
+                    .verificationStateChange,
+                    .typeSessionDidEnd,
+                    .unknownProtocolVersion,
+                    .userJoinedSignal,
+                    .phoneNumberChange,
+                    .paymentsActivationRequest,
+                    .paymentsActivated,
+                    .reportedSpam:
+                /// These info message types map to simple chat updates.
+                return simpleChatUpdateArchiver.archiveSimpleChatUpdate(
+                    infoMessage: infoMessage,
+                    context: context,
+                    tx: tx
+                )
+            case
+                    .typeGroupUpdate,
+                    .typeDisappearingMessagesUpdate,
+                    .profileUpdate,
+                    .threadMerge,
+                    .sessionSwitchover:
+                // TODO: [Backups] Add support for "non-simple" chat updates.
+                return .notYetImplemented
+            }
         } else if let errorMessage = interaction as? TSErrorMessage {
-            owsFail("Generic TSErrorMessage archive not yet implemented!")
+            /// All `TSErrorMessage`s map to simple chat updates.
+            return simpleChatUpdateArchiver.archiveSimpleChatUpdate(
+                errorMessage: errorMessage,
+                context: context,
+                tx: tx
+            )
         } else {
             return .completeFailure(.fatalArchiveError(
                 .developerError(OWSAssertionError("Invalid interaction type!"))
@@ -136,17 +188,23 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
                 tx: tx
             )
         case .simpleUpdate(let simpleChatUpdateProto):
-            owsFail("Not yet implemented!")
+            return simpleChatUpdateArchiver.restoreSimpleChatUpdate(
+                simpleChatUpdateProto,
+                chatItem: chatItem,
+                chatThread: chatThread,
+                context: context,
+                tx: tx
+            )
         case .expirationTimerChange(let expirationTimerUpdateProto):
-            owsFail("Not yet implemented!")
+            return .messageFailure([.restoreFrameError(.unimplemented, chatItem.id)])
         case .profileChange(let profileChangeUpdateProto):
-            owsFail("Not yet implemented!")
+            return .messageFailure([.restoreFrameError(.unimplemented, chatItem.id)])
         case .threadMerge(let threadMergeUpdateProto):
-            owsFail("Not yet implemented!")
+            return .messageFailure([.restoreFrameError(.unimplemented, chatItem.id)])
         case .sessionSwitchover(let sessionSwitchoverUpdateProto):
-            owsFail("Not yet implemented!")
+            return .messageFailure([.restoreFrameError(.unimplemented, chatItem.id)])
         case .learnedProfileChange(let learnedProfileChangeProto):
-            owsFail("Not yet implemented!")
+            return .messageFailure([.restoreFrameError(.unimplemented, chatItem.id)])
         }
     }
 }

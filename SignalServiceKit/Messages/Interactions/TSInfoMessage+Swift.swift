@@ -391,49 +391,108 @@ public extension TSInfoMessage {
 // MARK: Payments
 
 extension TSInfoMessage {
+    static func paymentsActivatedMessage(
+        thread: TSThread,
+        senderAci: Aci
+    ) -> TSInfoMessage {
+        return TSInfoMessage(
+            thread: thread,
+            messageType: .paymentsActivated,
+            infoMessageUserInfo: [
+                .paymentActivatedAci: senderAci.serviceIdString
+            ]
+        )
+    }
+
+    static func paymentsActivationRequestMessage(
+        thread: TSThread,
+        senderAci: Aci
+    ) -> TSInfoMessage {
+        return TSInfoMessage(
+            thread: thread,
+            messageType: .paymentsActivationRequest,
+            infoMessageUserInfo: [
+                .paymentActivationRequestSenderAci: senderAci.serviceIdString
+            ]
+        )
+    }
+}
+
+extension TSInfoMessage {
+    public enum PaymentsInfoMessageAuthor: Hashable, Equatable {
+        case localUser
+        case otherUser(Aci)
+    }
+
+    public func paymentsActivationRequestAuthor(localIdentifiers: LocalIdentifiers) -> PaymentsInfoMessageAuthor? {
+        return paymentsInfoMessageAuthor(
+            identifyingAci: paymentActivationRequestSenderAci,
+            localIdentifiers: localIdentifiers
+        )
+    }
+
+    public func paymentsActivatedAuthor(localIdentifiers: LocalIdentifiers) -> PaymentsInfoMessageAuthor? {
+        return paymentsInfoMessageAuthor(
+            identifyingAci: paymentActivatedAci,
+            localIdentifiers: localIdentifiers
+        )
+    }
+
+    private func paymentsInfoMessageAuthor(
+        identifyingAci: Aci?,
+        localIdentifiers: LocalIdentifiers
+    ) -> PaymentsInfoMessageAuthor? {
+        guard let identifyingAci else { return nil }
+
+        if identifyingAci == localIdentifiers.aci {
+            return .localUser
+        } else {
+            return .otherUser(identifyingAci)
+        }
+    }
+
+    // MARK: -
 
     private enum PaymentsInfoMessageType {
         case incoming(from: Aci)
         case outgoing(to: Aci)
     }
 
-    private func paymentsActivationRequestType(transaction: SDSAnyReadTransaction) -> PaymentsInfoMessageType? {
-        guard
-            let paymentActivationRequestSenderAci,
-            let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aci
-        else {
-            return nil
-        }
-        if paymentActivationRequestSenderAci == localAci {
-            guard let peerAci = TSContactThread.contactAddress(
-                fromThreadId: self.uniqueThreadId,
-                transaction: transaction
-            )?.aci else {
-                return nil
-            }
-            return .outgoing(to: peerAci)
-        } else {
-            return .incoming(from: paymentActivationRequestSenderAci)
-        }
+    private func paymentsActivationRequestType(transaction tx: SDSAnyReadTransaction) -> PaymentsInfoMessageType? {
+        return paymentsInfoMessageType(
+            authorBlock: self.paymentsActivationRequestAuthor(localIdentifiers:),
+            tx: tx.asV2Read
+        )
     }
 
-    private func paymentsActivatedType(transaction: SDSAnyReadTransaction) -> PaymentsInfoMessageType? {
-        guard
-            let paymentActivatedAci,
-            let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aci
-        else {
+    private func paymentsActivatedType(transaction tx: SDSAnyReadTransaction) -> PaymentsInfoMessageType? {
+        return paymentsInfoMessageType(
+            authorBlock: self.paymentsActivatedAuthor(localIdentifiers:),
+            tx: tx.asV2Read
+        )
+    }
+
+    private func paymentsInfoMessageType(
+        authorBlock: (LocalIdentifiers) -> PaymentsInfoMessageAuthor?,
+        tx: any DBReadTransaction
+    ) -> PaymentsInfoMessageType? {
+        guard let localIdentiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx) else {
             return nil
         }
-        if paymentActivatedAci == localAci {
-            guard let peerAci = TSContactThread.contactAddress(
-                fromThreadId: self.uniqueThreadId,
-                transaction: transaction
-            )?.aci else {
-                return nil
-            }
-            return .outgoing(to: peerAci)
-        } else {
-            return .incoming(from: paymentActivatedAci)
+
+        switch authorBlock(localIdentiers) {
+        case nil:
+            return nil
+        case .localUser:
+            guard
+                let contactThread = DependenciesBridge.shared.threadStore
+                    .fetchThreadForInteraction(self, tx: tx) as? TSContactThread,
+                let contactAci = contactThread.contactAddress.aci
+            else { return nil }
+
+            return .outgoing(to: contactAci)
+        case .otherUser(let authorAci):
+            return .incoming(from: authorAci)
         }
     }
 

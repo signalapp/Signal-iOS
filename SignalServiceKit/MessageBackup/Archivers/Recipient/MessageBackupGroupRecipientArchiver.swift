@@ -390,7 +390,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
         }
 
         if groupModel.avatarUrlPath != nil {
-            // [Backups] TODO: Enqueue download of the group avatar.
+            // TODO: [Backups] Enqueue download of the group avatar.
         }
 
         // MARK: Return successfully!

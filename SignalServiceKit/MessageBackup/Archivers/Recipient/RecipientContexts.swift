@@ -143,6 +143,7 @@ extension MessageBackup {
     public class RecipientRestoringContext {
         public enum Address {
             case localAddress
+            case releaseNotesChannel
             case contact(ContactAddress)
             case group(GroupId)
             case distributionList(DistributionId)
