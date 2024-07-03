@@ -129,7 +129,7 @@ public class MimeTypeUtil: NSObject {
     public static let supportedInputImageUtiTypes: Set<String> = Set(utiTypesForMimeTypes(supportedImageMimeTypesToExtensionTypes.keys))
     public static let supportedOutputImageUtiTypes: Set<String> = Set(utiTypesForMimeTypes(supportedImageMimeTypesToExtensionTypes.keys,
                                                                                            excluding: [MimeType.imageWebp.rawValue, MimeType.imageHeic.rawValue, MimeType.imageHeif.rawValue]))
-    public static let supportedAnimatedImageUtiTypes: Set<String> = Set(utiTypesForMimeTypes(utiTypesForMimeTypes(supportedMaybeAnimatedMimeTypesToExtensionTypes.keys)))
+    public static let supportedAnimatedImageUtiTypes: Set<String> = Set(utiTypesForMimeTypes(supportedMaybeAnimatedMimeTypesToExtensionTypes.keys))
     private static func utiTypesForMimeTypes<S: Sequence<String>>(_ mimeTypes: S, excluding excludedMimeTypes: Set<String>? = nil) -> Set<String> {
         var result = Set<String>()
         for mimeType in mimeTypes {
