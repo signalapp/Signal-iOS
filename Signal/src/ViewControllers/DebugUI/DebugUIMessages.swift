@@ -7,6 +7,7 @@ import CoreServices
 import LibSignalClient
 import SignalServiceKit
 import SignalUI
+import UniformTypeIdentifiers
 
 #if USE_DEBUG_UI
 
@@ -101,7 +102,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                     DebugUIMessages.sendRandomAttachmentInThread(thread, uti: MimeTypeUtil.unknownTestAttachmentUti)
                 }),
                 OWSTableItem(title: "Send pdf", actionBlock: {
-                    DebugUIMessages.sendRandomAttachmentInThread(thread, uti: kUTTypePDF as String)
+                    DebugUIMessages.sendRandomAttachmentInThread(thread, uti: UTType.pdf.identifier)
                 }),
                 OWSTableItem(title: "Create all system messages", actionBlock: {
                     DebugUIMessages.createSystemMessagesInThread(thread)
@@ -1739,12 +1740,12 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         sendUnsafeFile = {
             guard let filename = filenames.popLast() else { return }
 
-            let utiType = kUTTypeData as String
+            let type = UTType.data
             let dataLength: UInt32 = 32
-            guard let dataSource = DataSourceValue.dataSource(with: createRandomDataOfSize(dataLength), utiType: utiType) else { return }
+            guard let dataSource = DataSourceValue.dataSource(with: createRandomDataOfSize(dataLength), utiType: type.identifier) else { return }
 
             dataSource.sourceFilename = filename
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: utiType)
+            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: type.identifier)
 
             guard attachment.hasError else {
                 Logger.error("attachment[\(String(describing: attachment.sourceFilename))]: \(String(describing: attachment.errorName))")

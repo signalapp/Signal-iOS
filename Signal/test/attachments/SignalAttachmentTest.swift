@@ -6,6 +6,7 @@
 import XCTest
 import CoreServices
 import SignalServiceKit
+import UniformTypeIdentifiers
 
 class SignalAttachmentTest: SignalBaseTest {
     // MARK: - Utilities
@@ -16,7 +17,7 @@ class SignalAttachmentTest: SignalBaseTest {
         let dataSource = try DataSourcePath.dataSource(with: url, shouldDeleteOnDeallocation: false)
         let attachment = SignalAttachment.attachment(
             dataSource: dataSource,
-            dataUTI: kUTTypeJPEG as String
+            dataUTI: UTType.jpeg.identifier
         )
         let newSize = attachment.data.imageMetadata(withPath: nil, mimeType: "image/jpeg").pixelSize
 
@@ -60,7 +61,7 @@ class SignalAttachmentTest: SignalBaseTest {
 
         let attachment = SignalAttachment.attachment(
             dataSource: dataSource,
-            dataUTI: kUTTypePNG as String
+            dataUTI: UTType.png.identifier
         )
 
         XCTAssertEqual(
@@ -98,7 +99,7 @@ class SignalAttachmentTest: SignalBaseTest {
 
         let attachment = SignalAttachment.attachment(
             dataSource: dataSource,
-            dataUTI: kUTTypePNG as String
+            dataUTI: UTType.png.identifier
         )
 
         XCTAssert(

@@ -433,10 +433,7 @@ public class SignalAttachment: NSObject {
         if dataUTI == MimeTypeUtil.unknownTestAttachmentUti {
             return MimeType.unknownMimetype.rawValue
         }
-        guard let mimeType = UTTypeCopyPreferredTagWithClass(dataUTI as CFString, kUTTagClassMIMEType) else {
-            return MimeType.applicationOctetStream.rawValue
-        }
-        return mimeType.takeRetainedValue() as String
+        return UTType(dataUTI)?.preferredMIMEType ?? MimeType.applicationOctetStream.rawValue
     }
 
     // Use the filename if known. If not, e.g. if the attachment was copy/pasted, we'll generate a filename
@@ -502,7 +499,7 @@ public class SignalAttachment: NSObject {
     }
 
     private class var outputVideoUTISet: Set<String> {
-        return Set([kUTTypeMPEG4 as String])
+        [UTType.mpeg4Movie.identifier]
     }
 
     // Returns the set of UTIs that correspond to valid animated image formats
@@ -557,11 +554,12 @@ public class SignalAttachment: NSObject {
     }
 
     public var isText: Bool {
-        return UTTypeConformsTo(dataUTI as CFString, kUTTypeText) || isOversizeText
+        let isText = UTType(dataUTI)?.conforms(to: .text) ?? false
+        return isText || isOversizeText
     }
 
     public var isUrl: Bool {
-        return UTTypeConformsTo(dataUTI as CFString, kUTTypeURL)
+        UTType(dataUTI)?.conforms(to: .url) ?? false
     }
 
     public class func pasteboardHasPossibleAttachment() -> Bool {
@@ -608,13 +606,13 @@ public class SignalAttachment: NSObject {
         var hasTextUTIType = false
         var hasNonTextUTIType = false
         for utiType in pasteboardUTISet {
-            if UTTypeConformsTo(utiType as CFString, kUTTypeText) {
+            if let type = UTType(utiType), type.conforms(to: .text) {
                 hasTextUTIType = true
             } else if mediaUTISet.contains(utiType) {
                 hasNonTextUTIType = true
             }
         }
-        if pasteboardUTISet.contains(kUTTypeURL as String) {
+        if pasteboardUTISet.contains(UTType.url.identifier) {
             // Treat URL as a textual UTI type.
             hasTextUTIType = true
         }
@@ -659,8 +657,8 @@ public class SignalAttachment: NSObject {
         //  and png uti types when sending memoji stickers and
         // `inputImageUTISet` is unordered, so without this check there
         // is a 50/50 chance that we'd pick the jpg.
-        if pasteboardUTISet.isSuperset(of: [kUTTypeJPEG as String, kUTTypePNG as String]) {
-            pasteboardUTISet.remove(kUTTypeJPEG as String)
+        if pasteboardUTISet.isSuperset(of: [UTType.jpeg.identifier, UTType.png.identifier]) {
+            pasteboardUTISet.remove(UTType.jpeg.identifier)
         }
 
         for dataUTI in inputImageUTISet {
@@ -762,7 +760,7 @@ public class SignalAttachment: NSObject {
             }
 
             // Never re-encode animated images (i.e. GIFs) as JPEGs.
-            if dataUTI == (kUTTypePNG as String) {
+            if dataUTI == UTType.png.identifier {
                 do {
                     return try attachment.removingImageMetadata()
                 } catch {
@@ -777,7 +775,7 @@ public class SignalAttachment: NSObject {
             if let sourceFilename = dataSource.sourceFilename,
                 let sourceFileExtension = sourceFilename.fileExtension,
                 ["heic", "heif"].contains(sourceFileExtension.lowercased()),
-                dataUTI == kUTTypeJPEG as String {
+                dataUTI == UTType.jpeg.identifier as String {
 
                 // If a .heic file actually contains jpeg data, update the extension to match.
                 //
@@ -822,7 +820,7 @@ public class SignalAttachment: NSObject {
         // JPEGs and instead go through the recompresing step.
         // This is an iOS bug (FB13285956) still present in iOS 17 and should
         // be revisitied in the future to see if JPEG support can be reenabled.
-        guard dataUTI != (kUTTypeJPEG as String) else { return false }
+        guard dataUTI != UTType.jpeg.identifier else { return false }
 
         guard SignalAttachment.outputImageUTISet.contains(dataUTI) else { return false }
         guard dataSource.dataLength <= imageQuality.maxFileSize else { return false }
@@ -909,7 +907,7 @@ public class SignalAttachment: NSObject {
             // so we can keep the image out of memory.
 
             let dataFileExtension: String
-            let dataUTI: CFString
+            let dataType: UTType
 
             // We convert everything that's not sticker-like to jpg, because
             // often images with alpha channels don't actually have any
@@ -918,15 +916,15 @@ public class SignalAttachment: NSObject {
             // are any transparent pixels in an image.
             if dataSource.hasStickerLikeProperties {
                 dataFileExtension = "png"
-                dataUTI = kUTTypePNG
+                dataType = .png
             } else {
                 dataFileExtension = "jpg"
-                dataUTI = kUTTypeJPEG
+                dataType = .jpeg
                 imageProperties[kCGImageDestinationLossyCompressionQuality] = compressionQuality(for: pixelSize)
             }
 
             let tempFileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: dataFileExtension)
-            guard let destination = CGImageDestinationCreateWithURL(tempFileUrl as CFURL, dataUTI, 1, nil) else {
+            guard let destination = CGImageDestinationCreateWithURL(tempFileUrl as CFURL, dataType.identifier as CFString, 1, nil) else {
                 owsFailDebug("Failed to create CGImageDestination for attachment")
                 return .error(error: .couldNotConvertImage)
             }
@@ -950,7 +948,7 @@ public class SignalAttachment: NSObject {
             outputDataSource.sourceFilename = newFilenameWithExtension
 
             if outputDataSource.dataLength <= imageQuality.maxFileSize, outputDataSource.dataLength <= kMaxFileSizeImage {
-                let recompressedAttachment = attachment.replacingDataSource(with: outputDataSource, dataUTI: dataUTI as String)
+                let recompressedAttachment = attachment.replacingDataSource(with: outputDataSource, dataUTI: dataType.identifier)
                 return .signalAttachment(signalAttachment: recompressedAttachment)
             }
 
@@ -1065,7 +1063,7 @@ public class SignalAttachment: NSObject {
     private func removingImageMetadata() throws -> SignalAttachment {
         owsAssertDebug(isImage)
 
-        if dataUTI == (kUTTypePNG as String) {
+        if dataUTI == UTType.png.identifier {
             let cleanedData = try Self.removeMetadata(fromPng: data)
             guard let dataSource = DataSourceValue.dataSource(with: cleanedData, utiType: dataUTI) else {
                 throw SignalAttachmentError.couldNotRemoveMetadata
@@ -1234,7 +1232,7 @@ public class SignalAttachment: NSObject {
                                                            shouldDeleteOnDeallocation: true)
             dataSource.sourceFilename = mp4Filename
 
-            return SignalAttachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
+            return SignalAttachment(dataSource: dataSource, dataUTI: UTType.mpeg4Movie.identifier)
         } catch {
             owsFailDebug("Failed to build data source for exported video URL")
             let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
@@ -1323,8 +1321,7 @@ public class SignalAttachment: NSObject {
     }
 
     public class func empty() -> SignalAttachment {
-        return SignalAttachment.attachment(dataSource: DataSourceValue.emptyDataSource(),
-                                           dataUTI: kUTTypeContent as String)
+        SignalAttachment.attachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: UTType.content.identifier)
     }
 
     // MARK: Helper Methods

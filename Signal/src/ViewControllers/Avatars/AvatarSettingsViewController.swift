@@ -6,6 +6,7 @@
 import CoreServices
 import SignalServiceKit
 import SignalUI
+import UniformTypeIdentifiers
 
 class AvatarSettingsViewController: OWSTableViewController2 {
     let context: AvatarContext
@@ -334,7 +335,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
                         picker.delegate = self
                         picker.allowsEditing = false
                         picker.sourceType = .camera
-                        picker.mediaTypes = [kUTTypeImage as String]
+                        picker.mediaTypes = [UTType.image.identifier]
                         self.present(picker, animated: true)
                     }
                 }
@@ -352,7 +353,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
                         let picker = OWSImagePickerController()
                         picker.delegate = self
                         picker.sourceType = .photoLibrary
-                        picker.mediaTypes = [kUTTypeImage as String]
+                        picker.mediaTypes = [UTType.image.identifier]
                         self.present(picker, animated: true)
                     }
                 }

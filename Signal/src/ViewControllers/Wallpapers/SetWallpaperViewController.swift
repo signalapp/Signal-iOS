@@ -6,6 +6,7 @@
 import CoreServices
 import SignalServiceKit
 import SignalUI
+import UniformTypeIdentifiers
 
 class SetWallpaperViewController: OWSTableViewController2 {
     lazy var collectionView = WallpaperCollectionView(container: self, shouldDimInDarkMode: shouldDimInDarkMode) { [weak self] wallpaper in
@@ -84,7 +85,7 @@ class SetWallpaperViewController: OWSTableViewController2 {
             let vc = UIImagePickerController()
             vc.delegate = self
             vc.sourceType = .photoLibrary
-            vc.mediaTypes = [kUTTypeImage as String]
+            vc.mediaTypes = [UTType.image.identifier]
             self.presentFormSheet(vc, animated: true)
         }
         photosSection.add(choosePhotoItem)

@@ -8,6 +8,7 @@ import Intents
 import PureLayout
 import SignalServiceKit
 import SignalUI
+import UniformTypeIdentifiers
 
 public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailedViewDelegate {
 
@@ -574,8 +575,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // Handle safari sharing images and PDFs as two separate items one with the object to share and the other as the URL of the data.
         for extensionItem in extensionItems {
             for attachment in extensionItem.attachments ?? [] {
-                if attachment.hasItemConformingToTypeIdentifier(kUTTypeData as String)
-                    || attachment.hasItemConformingToTypeIdentifier(kUTTypeFileURL as String)
+                if attachment.hasItemConformingToTypeIdentifier(UTType.data.identifier)
+                    || attachment.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier)
                     || attachment.hasItemConformingToTypeIdentifier("com.apple.pkpass") {
                     return extensionItem
                 }
@@ -599,23 +600,23 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             var typeIdentifier: String {
                 switch self {
                 case .movie:
-                    return kUTTypeMovie as String
+                    return UTType.movie.identifier
                 case .image:
-                    return kUTTypeImage as String
+                    return UTType.image.identifier
                 case .webUrl:
-                    return kUTTypeURL as String
+                    return UTType.url.identifier
                 case .fileUrl:
-                    return kUTTypeFileURL as String
+                    return UTType.fileURL.identifier
                 case .contact:
-                    return kUTTypeVCard as String
+                    return UTType.vCard.identifier
                 case .text:
-                    return kUTTypeText as String
+                    return UTType.text.identifier
                 case .pdf:
-                    return kUTTypePDF as String
+                    return UTType.pdf.identifier
                 case .pkPass:
                     return "com.apple.pkpass"
                 case .data:
-                    return kUTTypeData as String
+                    return UTType.data.identifier
                 }
             }
         }
@@ -710,9 +711,9 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             let url: NSURL = try await Self.loadObjectWithKeyedUnarchiverFallback(fromItemProvider: itemProvider, forTypeIdentifier: typedItemProvider.itemType.typeIdentifier, cannotLoadError: .cannotLoadURLObject, failedLoadError: .loadURLObjectFailed)
             return try Self.createAttachment(withText: (url as URL).absoluteString)
         case .contact:
-            let contactData = try await Self.loadDataRepresentation(fromItemProvider: itemProvider, forTypeIdentifier: kUTTypeContact as String)
-            let dataSource = DataSourceValue.dataSource(with: contactData, utiType: kUTTypeContact as String)
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeContact as String)
+            let contactData = try await Self.loadDataRepresentation(fromItemProvider: itemProvider, forTypeIdentifier: UTType.contact.identifier)
+            let dataSource = DataSourceValue.dataSource(with: contactData, utiType: UTType.contact.identifier)
+            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: UTType.contact.identifier)
             attachment.isConvertibleToContactShare = true
             if let attachmentError = attachment.error {
                 throw attachmentError
@@ -733,7 +734,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }
     }
 
-    nonisolated private static func copyAttachment(fromUrl url: URL, defaultTypeIdentifier: String = kUTTypeData as String) throws -> SignalAttachment {
+    nonisolated private static func copyAttachment(fromUrl url: URL, defaultTypeIdentifier: String = UTType.data.identifier) throws -> SignalAttachment {
         guard let dataSource = try? DataSourcePath.dataSource(with: url, shouldDeleteOnDeallocation: false) else {
             throw ShareViewControllerError.nonFileUrl
         }
@@ -843,7 +844,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
     nonisolated private static func createAttachment(withText text: String) throws -> SignalAttachment {
         let dataSource = DataSourceValue.dataSource(withOversizeText: text)
-        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeText as String)
+        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: UTType.text.identifier)
         if let attachmentError = attachment.error {
             throw attachmentError
         }
@@ -855,9 +856,9 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         guard let imagePng = image.pngData() else {
             throw ShareViewControllerError.uiImageMissingOrCorruptImageData
         }
-        let typeIdentifier = kUTTypePNG as String
-        let dataSource = DataSourceValue.dataSource(with: imagePng, utiType: typeIdentifier)
-        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: typeIdentifier)
+        let type = UTType.png
+        let dataSource = DataSourceValue.dataSource(with: imagePng, utiType: type.identifier)
+        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: type.identifier)
         if let attachmentError = attachment.error {
             throw attachmentError
         }

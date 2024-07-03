@@ -14,6 +14,7 @@ import CoreServices
 import MapKit
 import SignalServiceKit
 import SignalUI
+import UniformTypeIdentifiers
 
 public protocol LocationPickerDelegate: AnyObject {
     func didPickLocation(_ locationPicker: LocationPicker, location: Location)
@@ -496,8 +497,8 @@ public class Location: NSObject {
                 throw LocationError.assertion
             }
 
-            let dataSource = DataSourceValue.dataSource(with: jpegData, utiType: kUTTypeJPEG as String)
-            return SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeJPEG as String)
+            let dataSource = DataSourceValue.dataSource(with: jpegData, utiType: UTType.jpeg.identifier)
+            return SignalAttachment.attachment(dataSource: dataSource, dataUTI: UTType.jpeg.identifier)
         }
     }
 

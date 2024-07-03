@@ -4,7 +4,7 @@
 //
 
 import Foundation
-import CoreServices
+import UniformTypeIdentifiers
 
 public class GiphyAsset: ProxiedContentAssetDescription {
     let rendition: Rendition
@@ -114,9 +114,9 @@ extension GiphyAsset {
 
         public var utiType: String {
             switch self {
-            case .jpg: return kUTTypeJPEG as String
-            case .gif: return kUTTypeGIF as String
-            case .mp4: return kUTTypeMPEG4 as String
+            case .jpg: return UTType.jpeg.identifier
+            case .gif: return UTType.gif.identifier
+            case .mp4: return UTType.mpeg4Movie.identifier
             }
         }
     }

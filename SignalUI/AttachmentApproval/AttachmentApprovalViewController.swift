@@ -684,21 +684,21 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             }
             return dstImage
         }.map(on: DispatchQueue.global()) { (dstImage: UIImage) -> SignalAttachment in
-            var dataUTI = kUTTypeImage as String
+            var dataType = UTType.image
             guard let dstData: Data = {
                 let isLossy: Bool = attachmentApprovalItem.attachment.mimeType.caseInsensitiveCompare(MimeType.imageJpeg.rawValue) == .orderedSame
                 if isLossy {
-                    dataUTI = kUTTypeJPEG as String
+                    dataType = .jpeg
                     return dstImage.jpegData(compressionQuality: 0.9)
                 } else {
-                    dataUTI = kUTTypePNG as String
+                    dataType = .png
                     return dstImage.pngData()
                 }
                 }() else {
                     owsFailDebug("Could not export for output.")
                     return attachmentApprovalItem.attachment
             }
-            guard let dataSource = DataSourceValue.dataSource(with: dstData, utiType: dataUTI) else {
+            guard let dataSource = DataSourceValue.dataSource(with: dstData, utiType: dataType.identifier) else {
                 owsFailDebug("Could not prepare data source for output.")
                 return attachmentApprovalItem.attachment
             }
@@ -706,13 +706,13 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             // Rewrite the filename's extension to reflect the output file format.
             var filename: String? = attachmentApprovalItem.attachment.sourceFilename
             if let sourceFilename = attachmentApprovalItem.attachment.sourceFilename {
-                if let fileExtension: String = MimeTypeUtil.fileExtensionForUtiType(dataUTI) {
+                if let fileExtension: String = MimeTypeUtil.fileExtensionForUtiType(dataType.identifier) {
                     filename = (sourceFilename as NSString).deletingPathExtension.appendingFileExtension(fileExtension)
                 }
             }
             dataSource.sourceFilename = filename
 
-            let dstAttachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI)
+            let dstAttachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataType.identifier)
             if let attachmentError = dstAttachment.error {
                 owsFailDebug("Could not prepare attachment for output: \(attachmentError).")
                 return attachmentApprovalItem.attachment

@@ -5,6 +5,7 @@
 
 import CoreServices
 import Foundation
+import UniformTypeIdentifiers
 
 public enum MimeType: String {
     case applicationJson = "application/json"
@@ -164,12 +165,14 @@ public class MimeTypeUtil: NSObject {
 
     // MARK: - Conversion Functions for UTI Type / MIME Type / File Extension
     public static func utiTypeForMimeType(_ mimeType: String) -> String? {
-        UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, mimeType as CFString, nil)?.takeRetainedValue() as String?
+        UTType(mimeType: mimeType)?.identifier
     }
+
     public static func utiTypeForFileExtension(_ fileExtension: String) -> String? {
         owsAssertDebug(!fileExtension.isEmpty)
-        return UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension as CFString, nil)?.takeRetainedValue() as String?
+        return UTType(filenameExtension: fileExtension)?.identifier
     }
+
     @objc
     public static func mimeTypeForFileExtension(_ fileExtension: String) -> String? {
         owsAssertDebug(!fileExtension.isEmpty)
@@ -183,7 +186,7 @@ public class MimeTypeUtil: NSObject {
         if utiType == "public.aac-audio" {
             return "m4a"
         } else {
-            return UTTypeCopyPreferredTagWithClass(utiType as CFString, kUTTagClassFilenameExtension)?.takeRetainedValue() as String?
+            return UTType(utiType)?.preferredFilenameExtension
         }
     }
     @objc

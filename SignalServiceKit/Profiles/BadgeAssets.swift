@@ -6,6 +6,7 @@
 import CoreServices
 import Foundation
 import ImageIO
+import UniformTypeIdentifiers
 
 @objc
 public class BadgeAssets: NSObject {
@@ -148,7 +149,7 @@ public class BadgeAssets: NSObject {
             guard !OWSFileSystem.fileOrFolderExists(url: destinationUrl) else { return }
 
             guard let spriteImage = spriteParser.copySprite(variant: variant),
-                  let imageDestination = CGImageDestinationCreateWithURL(destinationUrl as CFURL, kUTTypePNG, 1, nil) else {
+                  let imageDestination = CGImageDestinationCreateWithURL(destinationUrl as CFURL, UTType.png.identifier as CFString, 1, nil) else {
                       throw OWSAssertionError("Couldn't load image")
                   }
             CGImageDestinationAddImage(imageDestination, spriteImage, nil)

@@ -193,7 +193,7 @@ class PhotoAlbumContents {
                 let baseFilename: String?
                 if let onDiskVideo = video as? AVURLAsset {
                     let url = onDiskVideo.url
-                    dataUTI = MimeTypeUtil.utiTypeForFileExtension(url.pathExtension) ?? kUTTypeVideo as String
+                    dataUTI = MimeTypeUtil.utiTypeForFileExtension(url.pathExtension) ?? UTType.video.identifier
 
                     if let dataSource = try? DataSourcePath.dataSource(with: url, shouldDeleteOnDeallocation: false) {
                         if !SignalAttachment.isVideoThatNeedsCompression(dataSource: dataSource, dataUTI: dataUTI) {
@@ -204,7 +204,7 @@ class PhotoAlbumContents {
 
                     baseFilename = url.lastPathComponent
                 } else {
-                    dataUTI = kUTTypeVideo as String
+                    dataUTI = UTType.video.identifier
                     baseFilename = nil
                 }
 

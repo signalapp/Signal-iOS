@@ -7,6 +7,7 @@ import CoreServices
 import Photos
 import SignalServiceKit
 import SignalUI
+import UniformTypeIdentifiers
 
 extension ConversationViewController: ConversationInputToolbarDelegate {
 
@@ -729,19 +730,17 @@ extension ConversationViewController: UIDocumentPickerDelegate {
     public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentAt url: URL) {
         Logger.debug("Picked document at url: \(url)")
 
-        let typeIdentifier: String = {
+        let contentType: UTType = {
             do {
-                let resourceValues = try url.resourceValues(forKeys: Set([
-                    .typeIdentifierKey
-                ]))
-                guard let typeIdentifier = resourceValues.typeIdentifier else {
-                    owsFailDebug("Missing typeIdentifier.")
-                    return kUTTypeData as String
+                let resourceValues = try url.resourceValues(forKeys: [.contentTypeKey])
+                guard let contentType = resourceValues.contentType else {
+                    owsFailDebug("Missing contentType.")
+                    return .data
                 }
-                return typeIdentifier
+                return contentType
             } catch {
                 owsFailDebug("Error: \(error)")
-                return kUTTypeData as String
+                return .data
             }
         }()
         let isDirectory: Bool = {
@@ -802,12 +801,12 @@ extension ConversationViewController: UIDocumentPickerDelegate {
         // Although we want to be able to send higher quality attachments through the document picker
         // it's more important that we ensure the sent format is one all clients can accept (e.g. *not* quicktime .mov)
         if SignalAttachment.isVideoThatNeedsCompression(dataSource: dataSource,
-                                                        dataUTI: typeIdentifier) {
+                                                        dataUTI: contentType.identifier) {
             self.showApprovalDialogAfterProcessingVideoURL(url, filename: filename)
             return
         }
 
-        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: typeIdentifier)
+        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: contentType.identifier)
         showApprovalDialog(forAttachment: attachment)
     }
 
@@ -831,7 +830,7 @@ extension ConversationViewController: UIDocumentPickerDelegate {
             dataSource.sourceFilename = filename
             let promise = Promise.wrapAsync({
                 return try await SignalAttachment.compressVideoAsMp4(dataSource: dataSource,
-                                                                     dataUTI: kUTTypeMPEG4 as String)
+                                                                     dataUTI: UTType.mpeg4Movie.identifier)
             })
             promise.done(on: DispatchQueue.main) { (attachment: SignalAttachment) in
                 if modalActivityIndicator.wasCancelled {

@@ -6,6 +6,7 @@
 import CoreServices
 import Foundation
 import SignalServiceKit
+import UniformTypeIdentifiers
 
 protocol VoiceMessageSendableDraft {
     func prepareForSending() throws -> URL
@@ -27,7 +28,7 @@ extension VoiceMessageSendableDraft {
         let dataSource = try DataSourcePath.dataSource(with: attachmentUrl, shouldDeleteOnDeallocation: true)
         dataSource.sourceFilename = userVisibleFilename(currentDate: Date())
 
-        let attachment = SignalAttachment.voiceMessageAttachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4Audio as String)
+        let attachment = SignalAttachment.voiceMessageAttachment(dataSource: dataSource, dataUTI: UTType.mpeg4Audio.identifier)
         guard !attachment.hasError else {
             throw OWSAssertionError("Failed to create voice message attachment: \(attachment.errorName ?? "Unknown Error")")
         }

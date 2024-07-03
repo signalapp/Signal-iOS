@@ -844,7 +844,7 @@ class CameraCaptureSession: NSObject {
             return handleVideoCaptureError(PhotoCaptureError.captureFailed)
         }
 
-        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
+        let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: UTType.mpeg4Movie.identifier)
         delegate.cameraCaptureSession(self, didFinishProcessing: attachment)
     }
 
@@ -1010,9 +1010,9 @@ extension CameraCaptureSession: PhotoCaptureDelegate {
         case .failure(let error):
             delegate.cameraCaptureSession(self, didFailWith: error)
         case .success(let photoData):
-            let dataSource = DataSourceValue.dataSource(with: photoData, utiType: kUTTypeJPEG as String)
+            let dataSource = DataSourceValue.dataSource(with: photoData, utiType: UTType.jpeg.identifier)
 
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: kUTTypeJPEG as String)
+            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: UTType.jpeg.identifier)
             delegate.cameraCaptureSession(self, didFinishProcessing: attachment)
         }
     }
