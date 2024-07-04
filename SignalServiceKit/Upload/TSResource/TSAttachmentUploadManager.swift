@@ -71,7 +71,7 @@ public actor TSAttachmentUploadManagerImpl: TSAttachmentUploadManager {
         }
 
         do {
-            try await blurHash.ensureBlurHash(attachmentStream: attachmentStream)
+            try await self.ensureBlurHash(for: attachmentStream)
         } catch {
             // Swallow these errors; blurHashes are strictly optional.
             logger.warn("Error generating blurHash.")
@@ -114,6 +114,29 @@ public actor TSAttachmentUploadManagerImpl: TSAttachmentUploadManager {
                 }
             }
             throw error
+        }
+    }
+
+    private nonisolated func ensureBlurHash(for attachmentStream: TSAttachmentStream) async throws {
+        guard attachmentStream.blurHash == nil else {
+            // Attachment already has a blurHash.
+            return
+        }
+        guard attachmentStream.isVisualMediaMimeType else {
+            // We only generate a blurHash for visual media.
+            return
+        }
+        guard blurHash.isValidVisualMedia(attachmentStream) else {
+            throw OWSAssertionError("Invalid attachment.")
+        }
+        // Use the smallest available thumbnail; quality doesn't matter.
+        // This is important for perf.
+        guard let thumbnail: UIImage = blurHash.thumbnailImageSmallSync(attachmentStream) else {
+            throw OWSAssertionError("Could not load small thumbnail.")
+        }
+        let blurHash = try self.blurHash.computeBlurHashSync(for: thumbnail)
+        await self.db.awaitableWrite { tx in
+            self.blurHash.update(attachmentStream, withBlurHash: blurHash, tx: tx)
         }
     }
 

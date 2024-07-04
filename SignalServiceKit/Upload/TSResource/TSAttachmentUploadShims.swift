@@ -18,15 +18,32 @@ extension TSAttachmentUpload {
 // MARK: - Shims
 
 public protocol _TSAttachmentUpload_BlurHashShim {
-    func ensureBlurHash(attachmentStream: TSAttachmentStream) async throws
+    func isValidVisualMedia(_ attachment: TSAttachmentStream) -> Bool
+
+    func thumbnailImageSmallSync(_ attachment: TSAttachmentStream) -> UIImage?
+
+    func computeBlurHashSync(for image: UIImage) throws -> String
+
+    func update(_ attachment: TSAttachment, withBlurHash: String, tx: DBWriteTransaction)
 }
 
 // MARK: - Wrappers
 
 public struct _TSAttachmentUpload_BlurHashWrapper: TSAttachmentUpload.Shims.BlurHash {
-    public func ensureBlurHash(attachmentStream: TSAttachmentStream) async throws {
-        try await BlurHash
-            .ensureBlurHash(for: attachmentStream)
-            .awaitable()
+
+    public func isValidVisualMedia(_ attachment: TSAttachmentStream) -> Bool {
+        return attachment.isValidVisualMedia
+    }
+
+    public func thumbnailImageSmallSync(_ attachment: TSAttachmentStream) -> UIImage? {
+        return attachment.thumbnailImageSmallSync()
+    }
+
+    public func computeBlurHashSync(for image: UIImage) throws -> String {
+        return try BlurHash.computeBlurHashSync(for: image)
+    }
+
+    public func update(_ attachment: TSAttachment, withBlurHash blurHash: String, tx: DBWriteTransaction) {
+        attachment.update(withBlurHash: blurHash, transaction: SDSDB.shimOnlyBridge(tx))
     }
 }

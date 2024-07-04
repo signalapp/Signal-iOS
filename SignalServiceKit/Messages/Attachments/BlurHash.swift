@@ -28,55 +28,6 @@ public class BlurHash: NSObject {
         return blurHash.unicodeScalars.allSatisfy { validCharacterSet.contains($0) }
     }
 
-    public class func ensureBlurHash(for attachmentStream: TSAttachmentStream) -> Promise<Void> {
-        let (promise, future) = Promise<Void>.pending()
-
-        DispatchQueue.global().async {
-            guard attachmentStream.blurHash == nil else {
-                // Attachment already has a blurHash.
-                future.resolve()
-                return
-            }
-            guard attachmentStream.isVisualMediaMimeType else {
-                // We only generate a blurHash for visual media.
-                future.resolve()
-                return
-            }
-            guard attachmentStream.isValidVisualMedia else {
-                future.reject(OWSAssertionError("Invalid attachment."))
-                return
-            }
-            // Use the smallest available thumbnail; quality doesn't matter.
-            // This is important for perf.
-            guard let thumbnail: UIImage = attachmentStream.thumbnailImageSmallSync() else {
-                future.reject(OWSAssertionError("Could not load small thumbnail."))
-                return
-            }
-            guard let normalized = normalize(image: thumbnail, backgroundColor: .white) else {
-                future.reject(OWSAssertionError("Could not normalize thumbnail."))
-                return
-            }
-            // blurHash uses a DCT transform, so these are AC and DC components.
-            // We use 4x3.
-            //
-            // https://github.com/woltapp/blurhash/blob/master/Algorithm.md
-            guard let blurHash = normalized.blurHash(numberOfComponents: (4, 3)) else {
-                future.reject(OWSAssertionError("Could not generate blurHash."))
-                return
-            }
-            guard self.isValidBlurHash(blurHash) else {
-                future.reject(OWSAssertionError("Generated invalid blurHash."))
-                return
-            }
-            self.databaseStorage.write { transaction in
-                attachmentStream.update(withBlurHash: blurHash, transaction: transaction)
-            }
-            future.resolve()
-        }
-
-        return promise
-    }
-
     public class func computeBlurHashSync(for image: UIImage) throws -> String {
         // Use a small thumbnail size; quality doesn't matter. This is important for perf.
         var thumbnail: UIImage

@@ -13,7 +13,20 @@ extension TSAttachmentUpload {
 }
 
 class _TSAttachmentUpload_BlurHashMock: TSAttachmentUpload.Shims.BlurHash {
-    func ensureBlurHash(attachmentStream: TSAttachmentStream) async throws {
+
+    func isValidVisualMedia(_ attachment: TSAttachmentStream) -> Bool {
+        return true
+    }
+
+    func thumbnailImageSmallSync(_ attachment: TSAttachmentStream) -> UIImage? {
+        return UIImage()
+    }
+
+    func computeBlurHashSync(for image: UIImage) throws -> String {
+        return ""
+    }
+
+    func update(_ attachment: TSAttachment, withBlurHash: String, tx: DBWriteTransaction) {
         return
     }
 }
