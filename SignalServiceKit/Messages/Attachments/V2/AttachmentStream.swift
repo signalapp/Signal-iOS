@@ -58,12 +58,22 @@ public class AttachmentStream {
         return "\(id.prefix(2))/\(id)"
     }
 
+    private static func attachmentsDirectory() -> URL {
+        return OWSFileSystem.appSharedDataDirectoryURL().appendingPathComponent("attachment_files")
+    }
+
     /// Given a relative "attachment file" path, returns the absolute path.
     /// "Attachment files" include fullsize files (localRelativeFilePath), thumbnails, audio waveforms, video still frames.
     /// All files related to attachments are in the same root directory, with subdirectories only based off the first few characters of their filename.
     public static func absoluteAttachmentFileURL(relativeFilePath: String) -> URL {
-        let directory = OWSFileSystem.appSharedDataDirectoryURL().appendingPathComponent("attachment_files")
-        return directory.appendingPathComponent(relativeFilePath)
+        return attachmentsDirectory().appendingPathComponent(relativeFilePath)
+    }
+
+    /// WARNING: deletes all files in the attachments directory _without_ deleting their owning Attachments.
+    /// Should ONLY be used after deleting all attachments, to quickly delete all files without waiting for
+    /// OrphanedAttachmentCleaner to get around to them (but the cleaner should handle the files already being gone).
+    public static func deleteAllAttachmentFiles() {
+        OWSFileSystem.deleteContents(ofDirectory: attachmentsDirectory().path)
     }
 
     public var fileURL: URL {
