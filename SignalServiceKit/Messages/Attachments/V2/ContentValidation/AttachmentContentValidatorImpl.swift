@@ -472,7 +472,10 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             switch input {
             case .inMemory(let data):
                 // We have to write to disk to load an AVAsset.
-                let tmpFile = OWSFileSystem.temporaryFileUrl(fileExtension: MimeTypeUtil.fileExtensionForMimeType(mimeType))
+                let tmpFile = OWSFileSystem.temporaryFileUrl(
+                    fileExtension: MimeTypeUtil.fileExtensionForMimeType(mimeType),
+                    isAvailableWhileDeviceLocked: true
+                )
                 try data.write(to: tmpFile)
                 return AVAsset(url: tmpFile)
             case .unencryptedFile(let fileUrl):
@@ -507,7 +510,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             // compression applied to the source video, and we want a high fidelity still frame.
             .jpegData(compressionQuality: 1)
             .map { thumbnailData in
-                let thumbnailTmpFile = OWSFileSystem.temporaryFileUrl()
+                let thumbnailTmpFile = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
                 let (encryptedThumbnail, _) = try Cryptography.encrypt(thumbnailData, encryptionKey: encryptionKey)
                 try encryptedThumbnail.write(to: thumbnailTmpFile)
                 return PendingFile(tmpFileUrl: thumbnailTmpFile, isTmpFileEncrypted: true)
@@ -607,7 +610,10 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         case .inMemory(let data):
             // We have to write the data to a temporary file.
             // AVAsset needs a file on disk to read from.
-            let fileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: MimeTypeUtil.fileExtensionForMimeType(mimeType))
+            let fileUrl = OWSFileSystem.temporaryFileUrl(
+                fileExtension: MimeTypeUtil.fileExtensionForMimeType(mimeType),
+                isAvailableWhileDeviceLocked: true
+            )
             try data.write(to: fileUrl)
             waveform = try audioWaveformManager.audioWaveformSync(forAudioPath: fileUrl.path)
 
@@ -622,7 +628,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             )
         }
 
-        let outputWaveformFile = OWSFileSystem.temporaryFileUrl()
+        let outputWaveformFile = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
 
         let waveformData = try waveform.archive()
         let (encryptedWaveform, _) = try Cryptography.encrypt(waveformData, encryptionKey: encryptionKey)
@@ -764,7 +770,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             guard encryptionMetadata.digest != nil else {
                 throw OWSAssertionError("No digest in output")
             }
-            let outputFile = OWSFileSystem.temporaryFileUrl()
+            let outputFile = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
             try encryptedData.write(to: outputFile)
             return (
                 PendingFile(
@@ -774,7 +780,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 encryptionMetadata
             )
         case .unencryptedFile(let fileUrl):
-            let outputFile = OWSFileSystem.temporaryFileUrl()
+            let outputFile = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
             let encryptionMetadata = try Cryptography.encryptAttachment(
                 at: fileUrl,
                 output: outputFile,
@@ -813,7 +819,7 @@ extension AttachmentContentValidatorImpl.PendingFile {
             return self
         }
 
-        let outputFile = OWSFileSystem.temporaryFileUrl()
+        let outputFile = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
         // Encrypt _without_ custom padding; we never send these files
         // and just use them locally, so no need for custom padding
         // that later requires out-of-band plaintext length tracking
