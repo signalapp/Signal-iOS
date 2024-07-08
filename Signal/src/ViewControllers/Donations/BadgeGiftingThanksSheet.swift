@@ -19,7 +19,7 @@ class BadgeGiftingThanksSheet: OWSTableViewController2 {
 
         self.defaultSpacingBetweenSections = 16
 
-        if #available(iOS 15.0, *), let presentationController = presentationController as? UISheetPresentationController {
+        if let presentationController = sheetPresentationController {
             presentationController.detents = [.medium()]
             presentationController.prefersGrabberVisible = true
             presentationController.preferredCornerRadius = 16

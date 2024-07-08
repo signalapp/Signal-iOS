@@ -47,17 +47,10 @@ class ChatsSettingsViewController: OWSTableViewController2 {
         contents.add(linkPreviewSection)
 
         let sharingSuggestionsSection = OWSTableSection()
-        if #available(iOS 15, *) {
-            sharingSuggestionsSection.footerTitle = OWSLocalizedString(
-                "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER",
-                comment: "Footer for setting for enabling & disabling contact and notification sharing with iOS."
-            )
-        } else {
-            sharingSuggestionsSection.footerTitle = OWSLocalizedString(
-                "SETTINGS_SHARING_SUGGESTIONS_FOOTER",
-                comment: "Footer for setting for enabling & disabling contact sharing with iOS."
-            )
-        }
+        sharingSuggestionsSection.footerTitle = OWSLocalizedString(
+            "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER",
+            comment: "Footer for setting for enabling & disabling contact and notification sharing with iOS."
+        )
 
         sharingSuggestionsSection.add(.switch(
             withText: OWSLocalizedString(

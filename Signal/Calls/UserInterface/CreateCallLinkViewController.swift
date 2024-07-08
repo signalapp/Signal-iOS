@@ -53,10 +53,7 @@ class CreateCallLinkViewController: OWSTableViewController2 {
     private func presentAfterCreatingCallLinkOnServer(fromViewController: UIViewController) {
         let navigationController = OWSNavigationController(rootViewController: self)
         navigationController.modalPresentationStyle = .pageSheet
-        if
-            #available(iOS 15.0, *),
-            let sheetPresentationController = navigationController.presentationController as? UISheetPresentationController
-        {
+        if let sheetPresentationController = navigationController.sheetPresentationController {
             sheetPresentationController.detents = [.medium()]
             sheetPresentationController.preferredCornerRadius = 16
             sheetPresentationController.prefersGrabberVisible = true

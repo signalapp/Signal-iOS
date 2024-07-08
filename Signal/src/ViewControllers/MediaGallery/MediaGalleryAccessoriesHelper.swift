@@ -229,31 +229,17 @@ public class MediaGalleryAccessoriesHelper {
     }
 
     private lazy var filterButton: UIBarButtonItem = {
-        let chevronImage = UIImage(imageLiteralResourceName: "chevron-down-compact-bold")
-        let button: UIButton
-
         let (buttonTitle, menuItems) = filterMenuItemsAndCurrentValue()
 
-        if #available(iOS 15, *) {
-            var configuration = UIButton.Configuration.plain()
-            configuration.imagePlacement = .trailing
-            configuration.image = chevronImage
-            configuration.imagePadding = 4
-            configuration.attributedTitle = AttributedString(buttonTitle)
+        var configuration = UIButton.Configuration.plain()
+        configuration.imagePlacement = .trailing
+        configuration.image = UIImage(imageLiteralResourceName: "chevron-down-compact-bold")
+        configuration.imagePadding = 4
+        configuration.attributedTitle = AttributedString(buttonTitle)
 
-            button = UIButton(configuration: configuration, primaryAction: nil)
-            button.menu = menuItems.menu(with: .singleSelection)
-            button.showsMenuAsPrimaryAction = true
-        } else {
-            button = UIButton(type: .system)
-            button.setAttributedTitle(buttonTitle, for: .normal)
-            button.titleLabel?.adjustsFontForContentSizeCategory = true
-            button.setImage(chevronImage, for: .normal)
-            button.setPaddingBetweenImageAndText(to: 4, isRightToLeft: !CurrentAppContext().isRTL)
-            button.semanticContentAttribute = CurrentAppContext().isRTL ? .forceLeftToRight : .forceRightToLeft
-            button.menu = menuItems.menu()
-            button.showsMenuAsPrimaryAction = true
-        }
+        let button = UIButton(configuration: configuration, primaryAction: nil)
+        button.menu = menuItems.menu(with: .singleSelection)
+        button.showsMenuAsPrimaryAction = true
         return UIBarButtonItem(customView: button)
     }()
 
@@ -291,15 +277,11 @@ public class MediaGalleryAccessoriesHelper {
     }
 
     private func createLayoutPickerMenu(checkedLayout: Layout) -> UIMenu {
-        var options = UIMenu.Options()
-        if #available(iOS 15, *) {
-            options = .singleSelection
-        }
         let menuItems = [
             gridMenuItem(isChecked: checkedLayout == .grid),
             listMenuItem(isChecked: checkedLayout == .list)
         ]
-        return menuItems.menu(with: options)
+        return menuItems.menu(with: .singleSelection)
     }
 
     private lazy var listViewButton: UIBarButtonItem = UIBarButtonItem(

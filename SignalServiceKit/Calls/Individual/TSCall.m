@@ -199,14 +199,8 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
             }
         }
         case RPRecentCallTypeIncomingMissedBecauseOfDoNotDisturb:
-            if (@available(iOS 15, *)) {
-                return OWSLocalizedString(@"MISSED_CALL_FOCUS_MODE",
-                    @"info message text in conversation view (use Apple's name for 'Focus')");
-            } else {
-                return OWSLocalizedString(@"MISSED_CALL_DO_NOT_DISTURB",
-                    @"info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and "
-                    @"older)");
-            }
+            return OWSLocalizedString(
+                @"MISSED_CALL_FOCUS_MODE", @"info message text in conversation view (use Apple's name for 'Focus')");
         case RPRecentCallTypeIncomingMissedBecauseBlockedSystemContact:
             return OWSLocalizedString(@"MISSED_CALL_BLOCKED_SYSTEM_CONTACT",
                 @"info message text in conversation view for when a call was dropped because the contact is blocked in "

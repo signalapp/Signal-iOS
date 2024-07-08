@@ -299,20 +299,13 @@ public class DonationUtilities: Dependencies {
 
         let paymentSummaryItem: PKPaymentSummaryItem
         if isRecurring {
-            if #available(iOS 15, *) {
-                let recurringSummaryItem = PKRecurringPaymentSummaryItem(
-                    label: donationToSignal(),
-                    amount: nsValue
-                )
-                recurringSummaryItem.intervalUnit = .month
-                recurringSummaryItem.intervalCount = 1  // once per month
-                paymentSummaryItem = recurringSummaryItem
-            } else {
-                paymentSummaryItem = PKPaymentSummaryItem(
-                    label: monthlyDonationToSignal(),
-                    amount: nsValue
-                )
-            }
+            let recurringSummaryItem = PKRecurringPaymentSummaryItem(
+                label: donationToSignal(),
+                amount: nsValue
+            )
+            recurringSummaryItem.intervalUnit = .month
+            recurringSummaryItem.intervalCount = 1  // once per month
+            paymentSummaryItem = recurringSummaryItem
         } else {
             paymentSummaryItem = PKPaymentSummaryItem(label: donationToSignal(), amount: nsValue)
         }

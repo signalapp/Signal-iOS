@@ -30,45 +30,41 @@ public class UserNotificationConfig {
     class func notificationAction(_ action: AppNotificationAction) -> UNNotificationAction? {
         switch action {
         case .callBack:
-            return notificationActionWithIdentifier(
-                action.identifier,
+            return UNNotificationAction(
+                identifier: action.identifier,
                 title: CallStrings.callBackButtonTitle,
-                options: [.foreground],
-                systemImage: "phone"
+                options: .foreground,
+                icon: UNNotificationActionIcon(systemImageName: "phone")
             )
         case .markAsRead:
-            return notificationActionWithIdentifier(
-                action.identifier,
+            return UNNotificationAction(
+                identifier: action.identifier,
                 title: MessageStrings.markAsReadNotificationAction,
-                options: [],
-                systemImage: "message"
+                icon: UNNotificationActionIcon(systemImageName: "message")
             )
         case .reply:
-            return textInputNotificationActionWithIdentifier(
-                action.identifier,
+            return UNTextInputNotificationAction(
+                identifier: action.identifier,
                 title: MessageStrings.replyNotificationAction,
-                options: [],
+                icon: UNNotificationActionIcon(systemImageName: "arrowshape.turn.up.left"),
                 textInputButtonTitle: MessageStrings.sendButton,
-                textInputPlaceholder: "",
-                systemImage: "arrowshape.turn.up.left"
+                textInputPlaceholder: ""
             )
         case .showThread:
-            return notificationActionWithIdentifier(
-                action.identifier,
+            return UNNotificationAction(
+                identifier: action.identifier,
                 title: CallStrings.showThreadButtonTitle,
-                options: [],
-                systemImage: "bubble.left.and.bubble.right"
+                icon: UNNotificationActionIcon(systemImageName: "bubble.left.and.bubble.right")
             )
         case .showMyStories:
             // Currently, .showMyStories is only used as a default action.
             owsFailDebug("Show my stories not supported as a UNNotificationAction")
             return nil
         case .reactWithThumbsUp:
-            return notificationActionWithIdentifier(
-                action.identifier,
+            return UNNotificationAction(
+                identifier: action.identifier,
                 title: MessageStrings.reactWithThumbsUpNotificationAction,
-                options: [],
-                systemImage: "hand.thumbsup"
+                icon: UNNotificationActionIcon(systemImageName: "hand.thumbsup")
             )
         case .showCallLobby:
             // Currently, .showCallLobby is only used as a default action.
@@ -89,58 +85,9 @@ public class UserNotificationConfig {
         }
     }
 
-    private class func notificationActionWithIdentifier(
-        _ identifier: String,
-        title: String,
-        options: UNNotificationActionOptions,
-        systemImage: String?
-    ) -> UNNotificationAction {
-        if #available(iOS 15, *), let systemImage = systemImage {
-            let actionIcon = UNNotificationActionIcon(systemImageName: systemImage)
-            return UNNotificationAction(
-                identifier: identifier,
-                title: title,
-                options: options,
-                icon: actionIcon
-            )
-        } else {
-            return UNNotificationAction(identifier: identifier, title: title, options: options)
-        }
-    }
-
-    private class func textInputNotificationActionWithIdentifier(
-        _ identifier: String,
-        title: String,
-        options: UNNotificationActionOptions,
-        textInputButtonTitle: String,
-        textInputPlaceholder: String,
-        systemImage: String?
-    ) -> UNNotificationAction {
-        if #available(iOS 15, *), let systemImage = systemImage {
-            let actionIcon = UNNotificationActionIcon(systemImageName: systemImage)
-            return UNTextInputNotificationAction(
-                identifier: identifier,
-                title: title,
-                options: options,
-                icon: actionIcon,
-                textInputButtonTitle: textInputButtonTitle,
-                textInputPlaceholder: textInputPlaceholder
-            )
-        } else {
-            return UNTextInputNotificationAction(
-                identifier: identifier,
-                title: title,
-                options: options,
-                textInputButtonTitle: textInputButtonTitle,
-                textInputPlaceholder: textInputPlaceholder
-            )
-        }
-    }
-
     public class func action(identifier: String) -> AppNotificationAction? {
         return AppNotificationAction.allCases.first { notificationAction($0)?.identifier == identifier }
     }
-
 }
 
 // MARK: -
@@ -247,7 +194,7 @@ class UserNotificationPresenter: Dependencies {
         }
 
         var contentToUse: UNNotificationContent = content
-        if #available(iOS 15, *), let interaction = interaction {
+        if let interaction {
             interaction.donate(completion: { error in
                 if let error = error {
                     owsFailDebug("Failed to donate incoming message intent \(error)")

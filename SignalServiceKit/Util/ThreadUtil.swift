@@ -379,18 +379,16 @@ extension TSThread {
         )
 
         if isGroupThread {
-            if #available(iOS 15, *) {
-                let donationMetadata = INSendMessageIntentDonationMetadata()
-                donationMetadata.recipientCount = recipientAddresses(with: transaction).count
+            let donationMetadata = INSendMessageIntentDonationMetadata()
+            donationMetadata.recipientCount = recipientAddresses(with: transaction).count
 
-                if let message = message {
-                    let mentionedAddresses = MentionFinder.mentionedAddresses(for: message, transaction: transaction.unwrapGrdbRead)
-                    donationMetadata.mentionsCurrentUser = mentionedAddresses.contains(localAddress)
-                    donationMetadata.isReplyToCurrentUser = message.quotedMessage?.authorAddress.isEqualToAddress(localAddress) ?? false
-                }
-
-                sendMessageIntent.donationMetadata = donationMetadata
+            if let message = message {
+                let mentionedAddresses = MentionFinder.mentionedAddresses(for: message, transaction: transaction.unwrapGrdbRead)
+                donationMetadata.mentionsCurrentUser = mentionedAddresses.contains(localAddress)
+                donationMetadata.isReplyToCurrentUser = message.quotedMessage?.authorAddress.isEqualToAddress(localAddress) ?? false
             }
+
+            sendMessageIntent.donationMetadata = donationMetadata
 
             if let image = intentThreadAvatarImage(transaction: transaction) {
                 sendMessageIntent.setImage(image, forParameterNamed: \.speakableGroupName)
@@ -463,11 +461,7 @@ extension TSThread {
 
         // Generate avatar
         let image = intentRecipientAvatarImage(recipient: recipient, transaction: transaction)
-        if #available(iOS 15, *) {
-            return INPerson(personHandle: handle, nameComponents: nameComponents, displayName: displayName.resolvedValue(), image: image, contactIdentifier: nil, customIdentifier: nil, isMe: false, suggestionType: suggestionType)
-        } else {
-            return INPerson(personHandle: handle, nameComponents: nameComponents, displayName: displayName.resolvedValue(), image: image, contactIdentifier: nil, customIdentifier: nil, isMe: false)
-        }
+        return INPerson(personHandle: handle, nameComponents: nameComponents, displayName: displayName.resolvedValue(), image: image, contactIdentifier: nil, customIdentifier: nil, isMe: false, suggestionType: suggestionType)
     }
 
     // Use the same point size as chat list avatars, so it's likely cached and ready for the NSE.

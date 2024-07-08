@@ -55,7 +55,6 @@ public class ToastController: NSObject, ToastViewDelegate {
         self.viewToPinTo = view
         self.offset = offset
         if
-            #available(iOS 15, *),
             edge == .bottom,
             // If keyboard is closed, its layout guide height is equivalent to the bottom safe area inset.
             view.keyboardLayoutGuide.layoutFrame.height > view.safeAreaInsets.totalHeight
@@ -92,7 +91,6 @@ public class ToastController: NSObject, ToastViewDelegate {
     private var viewToPinTo: UIView?
     private var offset: CGFloat?
 
-    @available(iOS 15, *)
     private func keyboardConstraint(toastView: ToastView, viewOwningKeyboard: UIView) -> NSLayoutConstraint {
         return NSLayoutConstraint(
             item: toastView,
@@ -117,7 +115,6 @@ public class ToastController: NSObject, ToastViewDelegate {
 
     private func keyboardPresenceDidChange(isPresent: Bool) {
         if
-            #available(iOS 15, *),
             let constraint = self.toastBottomConstraint,
             let view = self.viewToPinTo,
             let offset = offset,

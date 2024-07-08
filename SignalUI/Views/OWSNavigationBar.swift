@@ -63,19 +63,17 @@ public class OWSNavigationBar: UINavigationBar {
     public override func didAddSubview(_ subview: UIView) {
         super.didAddSubview(subview)
 
-        if #available(iOS 15, *) {
-            if String(describing: type(of: subview)) == "_UIBarBackground" {
-                // The background gets created before the UIVisualEffectView that gets added
-                // as a subview of it, not of the root. This gives us a hook to know
-                // when the UIVisualEffectView gets added.
-                backgroundSublayerObservation?.invalidate()
-                backgroundSublayerObservation = subview.layer.observe(\.sublayers) { [weak self] _, _ in
-                    self?.setAppearanceBlurViewIfExists()
-                }
+        if String(describing: type(of: subview)) == "_UIBarBackground" {
+            // The background gets created before the UIVisualEffectView that gets added
+            // as a subview of it, not of the root. This gives us a hook to know
+            // when the UIVisualEffectView gets added.
+            backgroundSublayerObservation?.invalidate()
+            backgroundSublayerObservation = subview.layer.observe(\.sublayers) { [weak self] _, _ in
+                self?.setAppearanceBlurViewIfExists()
             }
-
-            setAppearanceBlurViewIfExists()
         }
+
+        setAppearanceBlurViewIfExists()
     }
 
     public override var barPosition: UIBarPosition {

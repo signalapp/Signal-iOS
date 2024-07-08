@@ -924,8 +924,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // Prevent dismissal.
         recoveryViewController.isModalInPresentation = true
 
-        // Show as a half-sheet on iOS 15+. On older versions, the sheet fills the screen, which is okay.
-        if #available(iOS 15, *), let presentationController = recoveryViewController.presentationController as? UISheetPresentationController {
+        if let presentationController = recoveryViewController.sheetPresentationController {
             presentationController.detents = [.medium()]
             presentationController.prefersEdgeAttachedInCompactHeight = true
             presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = true

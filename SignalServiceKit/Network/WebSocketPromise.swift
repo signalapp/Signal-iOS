@@ -160,10 +160,6 @@ final class WebSocketPromise: SSKWebSocketDelegate {
                 let receivedMessages = state.receivedMessages
                 state.receivedMessages = []
                 return { future.resolve(receivedMessages) }
-            case .some(let socketError) where isNormalClosureOnOldOS(state, error: socketError):
-                let receivedMessages = state.receivedMessages
-                state.receivedMessages = []
-                return { future.resolve(receivedMessages) }
             case .some(let socketError):
                 return { future.reject(socketError) }
             case .none:
@@ -172,36 +168,6 @@ final class WebSocketPromise: SSKWebSocketDelegate {
             // Keep waiting until the socket is closed.
             return nil
         }
-    }
-
-    /// Checks if this is a "normalClosure" on iOS 13 & 14.
-    ///
-    /// On iOS 13 & 14, we get back a "Socket is not connected" error instead of
-    /// a callback to `urlSession(_:webSocketTask:didCloseWith:reason:)` when
-    /// the web socket is closed normally (ie, with a closeCode of 1000).
-    /// However, if the web socket is closed *abnormally*, the delegate method
-    /// is called. As a result, we interpret "Socket is not connected" as a
-    /// normal teardown on iOS 13 & 14 in some scenarios.
-    ///
-    /// Importantly, this heuristic behaves correctly since we expect exactly
-    /// one response when calling waitForAllResponses(). If we have a response,
-    /// it's successful. If we don't, it's a failure. In the future, if we
-    /// expect an arbitrary number of responses, we'll need a different
-    /// heuristic (it becomes impossible to know if we're still waiting for
-    /// additional responses or if we've received them all -- that EOF behavior
-    /// is exactly what the closeCode provides in the general case).
-    private func isNormalClosureOnOldOS(_ state: State, error: Error) -> Bool {
-        guard #unavailable(iOS 15) else {
-            return false
-        }
-        let nsError = error as NSError
-        guard nsError.domain == kNWErrorDomainPOSIX as String && nsError.code == ENOTCONN else {
-            return false
-        }
-        guard state.receivedMessages.count == 1 else {
-            return false
-        }
-        return true
     }
 
     // MARK: - SSKWebSocketDelegate

@@ -1071,30 +1071,16 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
         let handle = INPersonHandle(value: nil, type: .unknown)
         let image = thread.intentStoryAvatarImage(tx: transaction)
-        let person: INPerson = {
-            if #available(iOS 15, *) {
-                return INPerson(
-                    personHandle: handle,
-                    nameComponents: nil,
-                    displayName: storyName,
-                    image: image,
-                    contactIdentifier: nil,
-                    customIdentifier: nil,
-                    isMe: false,
-                    suggestionType: .none
-                )
-            } else {
-                return INPerson(
-                    personHandle: handle,
-                    nameComponents: nil,
-                    displayName: storyName,
-                    image: image,
-                    contactIdentifier: nil,
-                    customIdentifier: nil,
-                    isMe: false
-                )
-            }
-        }()
+        let person = INPerson(
+            personHandle: handle,
+            nameComponents: nil,
+            displayName: storyName,
+            image: image,
+            contactIdentifier: nil,
+            customIdentifier: nil,
+            isMe: false,
+            suggestionType: .none
+        )
 
         let sendMessageIntent = INSendMessageIntent(
             recipients: nil,
