@@ -20,6 +20,12 @@ class RaisedHandsToast: UIView {
 
     // MARK: Properties
 
+    private enum Constants {
+        static let hMarginCollapsed: CGFloat = 16
+        static let hMarginExpanded: CGFloat = 12
+        static let vMargin: CGFloat = 12
+    }
+
     struct Dependencies {
         let db: SDSDatabaseStorage
         let contactsManager: any ContactManager
@@ -31,6 +37,7 @@ class RaisedHandsToast: UIView {
     )
 
     private let outerHStack = UIStackView()
+    private let iconLabelContainer = UIView()
     private let labelContainer = UIView()
     private let label = UILabel()
     private lazy var viewButton = OWSButton(
@@ -78,7 +85,6 @@ class RaisedHandsToast: UIView {
         outerHStack.alignment = .center
         outerHStack.autoPinEdgesToSuperviewEdges()
         outerHStack.addBackgroundBlurView(blur: .systemMaterialDark, accessibilityFallbackColor: .ows_gray75)
-        outerHStack.layer.cornerRadius = 10
         outerHStack.clipsToBounds = true
 
         let raisedHandIcon = UILabel()
@@ -103,9 +109,7 @@ class RaisedHandsToast: UIView {
         label.setContentHuggingHorizontalLow()
         label.setCompressionResistanceVerticalHigh()
 
-        let iconLabelContainer = UIView()
         outerHStack.addArrangedSubview(iconLabelContainer)
-        iconLabelContainer.layoutMargins = .init(margin: 12)
         iconLabelContainer.addSubview(raisedHandIcon)
         iconLabelContainer.addSubview(labelContainer)
 
@@ -126,7 +130,12 @@ class RaisedHandsToast: UIView {
             // far as the superview's margins, so if we had
             // isLayoutMarginsRelativeArrangement on outerHStack, the button wouldn't
             // slide all the way off, so instead set margins on the button itself.
-            button.ows_contentEdgeInsets = .init(top: 8, leading: 8, bottom: 8, trailing: 12)
+            button.ows_contentEdgeInsets = .init(
+                top: 8,
+                leading: 8,
+                bottom: 8,
+                trailing: Constants.hMarginExpanded
+            )
             button.titleLabel?.font = .dynamicTypeBody2.bold()
         }
 
@@ -194,6 +203,10 @@ class RaisedHandsToast: UIView {
             self.horizontalPinConstraint?.isActive = !self.isCollapsed
             self.layoutIfNeeded()
             self.outerHStack.layer.cornerRadius = self.isCollapsed ? self.outerHStack.height / 2 : 10
+            self.iconLabelContainer.layoutMargins = .init(
+                hMargin: self.isCollapsed ? Constants.hMarginCollapsed : Constants.hMarginExpanded,
+                vMargin: Constants.vMargin
+            )
         }
 
         if animated {
@@ -220,7 +233,7 @@ class RaisedHandsToast: UIView {
         }
 
         self.collapsedText = if self.yourHandIsRaised, raisedHands.count > 1 {
-            "\(CommonStrings.you) + \(raisedHands.count - 1)"
+            "\(CommonStrings.you) +\(raisedHands.count - 1)"
         } else if self.yourHandIsRaised {
             CommonStrings.you
         } else {
@@ -254,9 +267,8 @@ class RaisedHandsToast: UIView {
                 let otherMembersCount = raisedHands.count - 1
                 return String(
                     format: OWSLocalizedString(
-                        "RAISED_HANDS_TOAST_MULTIPLE_HANDS_MESSAGE_%d",
-                        tableName: "PluralAware",
-                        comment: "A message appearing on the call view's raised hands toast indicating that multiple members have raised their hands."
+                        "RAISED_HANDS_TOAST_MULTIPLE_HANDS_MESSAGE",
+                        comment: "A message appearing on the call view's raised hands toast indicating that multiple members have raised their hands. Embeds {{name}}, {{number of other users}}"
                     ),
                     firstRaisedHandMemberName, otherMembersCount
                 )
