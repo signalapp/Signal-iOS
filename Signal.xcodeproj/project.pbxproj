@@ -869,7 +869,6 @@
 		664E8D842BD6D71C00C4968A /* SignalTSAttachmentCloner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664E8D832BD6D71C00C4968A /* SignalTSAttachmentCloner.swift */; };
 		664E8D882BD6D87700C4968A /* SignalAttachmentCloner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664E8D872BD6D87700C4968A /* SignalAttachmentCloner.swift */; };
 		664E8D8A2BD6DACB00C4968A /* SignalTSResourceCloner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664E8D892BD6DACB00C4968A /* SignalTSResourceCloner.swift */; };
-		664E8D8F2BD7301A00C4968A /* VideoDurationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664E8D8E2BD7301A00C4968A /* VideoDurationHelper.swift */; };
 		664E8D942BD86AFB00C4968A /* AttachmentDownloadState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664E8D932BD86AFB00C4968A /* AttachmentDownloadState.swift */; };
 		664E8D962BD86C3000C4968A /* TSAttachmentPointerState+AttachmentDownloadState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664E8D952BD86C3000C4968A /* TSAttachmentPointerState+AttachmentDownloadState.swift */; };
 		6652DF672A04494200EF90E7 /* StyleOnlyMessageBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6652DF662A04494200EF90E7 /* StyleOnlyMessageBody.swift */; };
@@ -3886,7 +3885,6 @@
 		664E8D832BD6D71C00C4968A /* SignalTSAttachmentCloner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalTSAttachmentCloner.swift; sourceTree = "<group>"; };
 		664E8D872BD6D87700C4968A /* SignalAttachmentCloner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalAttachmentCloner.swift; sourceTree = "<group>"; };
 		664E8D892BD6DACB00C4968A /* SignalTSResourceCloner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalTSResourceCloner.swift; sourceTree = "<group>"; };
-		664E8D8E2BD7301A00C4968A /* VideoDurationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDurationHelper.swift; sourceTree = "<group>"; };
 		664E8D932BD86AFB00C4968A /* AttachmentDownloadState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDownloadState.swift; sourceTree = "<group>"; };
 		664E8D952BD86C3000C4968A /* TSAttachmentPointerState+AttachmentDownloadState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentPointerState+AttachmentDownloadState.swift"; sourceTree = "<group>"; };
 		6652DF662A04494200EF90E7 /* StyleOnlyMessageBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleOnlyMessageBody.swift; sourceTree = "<group>"; };
@@ -7739,7 +7737,6 @@
 			isa = PBXGroup;
 			children = (
 				665C758A2C34677F00D2E4BA /* TSResource */,
-				664E8D8E2BD7301A00C4968A /* VideoDurationHelper.swift */,
 			);
 			path = VideoDuration;
 			sourceTree = "<group>";
@@ -15099,7 +15096,6 @@
 				F9C5CE3B289453B400548EEE /* VersionedProfiles.swift in Sources */,
 				724D47B92B97C301001BE973 /* VersionedProfilesImpl.swift in Sources */,
 				45A66116299EDF3000632EE2 /* VideoAttachmentDetection.swift in Sources */,
-				664E8D8F2BD7301A00C4968A /* VideoDurationHelper.swift in Sources */,
 				66B78E132BE5AB7E0022580E /* ViewOnceContent.swift in Sources */,
 				F9C5CDD5289453B400548EEE /* ViewOnceMessages.swift in Sources */,
 				7255A4C92B98DF5500E95368 /* VoiceMessageConstants.swift in Sources */,

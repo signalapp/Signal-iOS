@@ -139,7 +139,6 @@ public class DependenciesBridge {
     public let usernameLinkManager: UsernameLinkManager
     public let usernameLookupManager: UsernameLookupManager
     public let usernameValidationManager: UsernameValidationManager
-    public let videoDurationHelper: VideoDurationHelper
     public let wallpaperImageStore: WallpaperImageStore
     public let wallpaperStore: WallpaperStore
 
@@ -245,7 +244,6 @@ public class DependenciesBridge {
         usernameLinkManager: UsernameLinkManager,
         usernameLookupManager: UsernameLookupManager,
         usernameValidationManager: UsernameValidationManager,
-        videoDurationHelper: VideoDurationHelper,
         wallpaperImageStore: WallpaperImageStore,
         wallpaperStore: WallpaperStore
     ) {
@@ -350,7 +348,6 @@ public class DependenciesBridge {
         self.usernameLinkManager = usernameLinkManager
         self.usernameLookupManager = usernameLookupManager
         self.usernameValidationManager = usernameValidationManager
-        self.videoDurationHelper = videoDurationHelper
         self.wallpaperImageStore = wallpaperImageStore
         self.wallpaperStore = wallpaperStore
     }

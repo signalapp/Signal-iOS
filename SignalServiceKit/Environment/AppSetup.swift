@@ -287,7 +287,6 @@ public class AppSetup {
             threadStore: threadStore,
             tsResourceStore: tsResourceStore
         )
-        let videoDurationHelper = VideoDurationHelperImpl()
 
         let tsResourceDownloadManager = TSResourceDownloadManagerImpl(
             attachmentDownloadManager: attachmentDownloadManager,
@@ -1093,7 +1092,6 @@ public class AppSetup {
             usernameLinkManager: usernameLinkManager,
             usernameLookupManager: usernameLookupManager,
             usernameValidationManager: usernameValidationManager,
-            videoDurationHelper: videoDurationHelper,
             wallpaperImageStore: wallpaperImageStore,
             wallpaperStore: wallpaperStore
         )

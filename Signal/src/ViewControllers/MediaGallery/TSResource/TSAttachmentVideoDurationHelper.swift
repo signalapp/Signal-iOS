@@ -269,21 +269,8 @@ class TSAttachmentVideoDurationHelper {
         }
     }
 }
-
-/// AVURLAsset has no ability to do error checking prior to iOS 15. This extention makes it easy to
-/// get the duration with good error checking on modern iOS and hacky error checking on legacy
-/// versions. Please delete this when we drop iOS 14.
 extension AVURLAsset {
     static func loadDuration(url: URL, completion: @escaping (TimeInterval?) -> Void) {
-        if #available(iOS 15.0, *) {
-            modernDuration(url: url, completion: completion)
-            return
-        }
-        legacyDuration(url: url, completion: completion)
-    }
-
-    @available(iOS 15, *)
-    private static func modernDuration(url: URL, completion: @escaping (TimeInterval?) -> Void) {
         Task {
             let sourceAsset = AVURLAsset(url: url)
             do {
@@ -292,16 +279,6 @@ extension AVURLAsset {
             } catch {
                 completion(nil)
             }
-        }
-    }
-
-    private static func legacyDuration(url: URL, completion: @escaping (TimeInterval?) -> Void) {
-        let sourceAsset = AVURLAsset(url: url)
-        let duration = CMTimeGetSeconds(sourceAsset.duration)
-        if duration == 0 {
-            completion(nil)
-        } else {
-            completion(duration)
         }
     }
 }
