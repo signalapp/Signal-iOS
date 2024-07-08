@@ -1824,6 +1824,8 @@
 		D962346D2C0E957800DAF6CB /* DeleteForMeMostRecentAddressableMessageCursor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D962346C2C0E957800DAF6CB /* DeleteForMeMostRecentAddressableMessageCursor.swift */; };
 		D96234702C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D962346F2C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift */; };
 		D968F71E2C34884B00AB318B /* MessageBackupReleaseNotesRecipientArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D968F71D2C34884B00AB318B /* MessageBackupReleaseNotesRecipientArchiver.swift */; };
+		D968F71B2C3355AB00AB318B /* simple-chat-update-message.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D968F7192C3355AA00AB318B /* simple-chat-update-message.binproto */; };
+		D968F71C2C3355AB00AB318B /* simple-chat-update-message.jsonproto in Resources */ = {isa = PBXBuildFile; fileRef = D968F71A2C3355AB00AB318B /* simple-chat-update-message.jsonproto */; };
 		D96A94A72954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96A94A62954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift */; };
 		D96BE42E292EF04200E4FE1A /* PaypalButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D96BE42D292EF04200E4FE1A /* PaypalButton.swift */; };
 		D9708B5C29E4CCCB004306FA /* OWSDeviceManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9708B5B29E4CCCB004306FA /* OWSDeviceManagerTest.swift */; };
@@ -4839,6 +4841,8 @@
 		D962346F2C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeMostRecentAddressableMessageCursorTest.swift; sourceTree = "<group>"; };
 		D9668B34291B088200665298 /* SignalMessagingJobQueues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalMessagingJobQueues.swift; sourceTree = "<group>"; };
 		D968F71D2C34884B00AB318B /* MessageBackupReleaseNotesRecipientArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupReleaseNotesRecipientArchiver.swift; sourceTree = "<group>"; };
+		D968F7192C3355AA00AB318B /* simple-chat-update-message.binproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "simple-chat-update-message.binproto"; path = "Signal-Message-Backup-Tests/test-cases/simple-chat-update-message.binproto"; sourceTree = "<group>"; };
+		D968F71A2C3355AB00AB318B /* simple-chat-update-message.jsonproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "simple-chat-update-message.jsonproto"; path = "Signal-Message-Backup-Tests/test-cases/simple-chat-update-message.jsonproto"; sourceTree = "<group>"; };
 		D96A94A62954E57F004EA434 /* DonateViewController+MonthlyPaypalDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonateViewController+MonthlyPaypalDonation.swift"; sourceTree = "<group>"; };
 		D96A94A82955270D004EA434 /* Stripe+Subscriptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Stripe+Subscriptions.swift"; sourceTree = "<group>"; };
 		D96BE42D292EF04200E4FE1A /* PaypalButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaypalButton.swift; sourceTree = "<group>"; };
@@ -9769,6 +9773,8 @@
 				D9247E9A2BFBED2A00DFEF6F /* account-data.jsonproto */,
 				D9247E9D2BFBED2A00DFEF6F /* registered-blocked-contact.binproto */,
 				D9247E982BFBED2A00DFEF6F /* registered-blocked-contact.jsonproto */,
+				D968F7192C3355AA00AB318B /* simple-chat-update-message.binproto */,
+				D968F71A2C3355AB00AB318B /* simple-chat-update-message.jsonproto */,
 				C1D381482C08D34900E46008 /* story-distribution-list.binproto */,
 				C1D381492C08D34900E46008 /* story-distribution-list.jsonproto */,
 				D9247E9C2BFBED2A00DFEF6F /* unregistered-contact.binproto */,
@@ -12502,6 +12508,8 @@
 				D9247E9E2BFBED2A00DFEF6F /* registered-blocked-contact.jsonproto in Resources */,
 				F942628B289B1B5600460798 /* sample-sticker.encrypted in Resources */,
 				F942628C289B1B5600460798 /* sample-sticker.webp in Resources */,
+				D968F71B2C3355AB00AB318B /* simple-chat-update-message.binproto in Resources */,
+				D968F71C2C3355AB00AB318B /* simple-chat-update-message.jsonproto in Resources */,
 				C1D3814C2C08D3FB00E46008 /* story-distribution-list.binproto in Resources */,
 				C1D3814D2C08D3FB00E46008 /* story-distribution-list.jsonproto in Resources */,
 				F908AA7D28CE629700472E68 /* test-apng.png in Resources */,
