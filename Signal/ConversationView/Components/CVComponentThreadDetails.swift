@@ -318,7 +318,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         }
 
         button.dimsWhenHighlighted = true
-        button.block = {
+        button.block = { [weak delegate] in
             delegate?.didTapContactName(thread: contactThread)
         }
         button.isEnabled = true

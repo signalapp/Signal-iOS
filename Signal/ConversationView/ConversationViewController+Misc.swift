@@ -348,6 +348,11 @@ extension ConversationViewController {
                 timer.invalidate()
                 return
             }
+            guard self.view.window != nil else {
+                owsFailDebug("Read timer fired when ConversationViewController is not in a view hierarchy")
+                timer.invalidate()
+                return
+            }
             self.readTimerDidFire()
         }
         self.readTimer = readTimer
