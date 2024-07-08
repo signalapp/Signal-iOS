@@ -183,13 +183,15 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
                             beforeDate: dateInterval?.end,
                             afterDate: nil,
                             excluding: exclusionSet,
-                            count: limit
+                            count: limit,
+                            ascending: false
                         ))
                         queries.append(finder.enumerateTimestampsQuery(
                             beforeDate: nil,
                             afterDate: dateInterval?.start,
                             excluding: exclusionSet,
-                            count: limit
+                            count: limit,
+                            ascending: true
                         ))
                     }
                 }

@@ -36,6 +36,8 @@ extension MediaGalleryRecordFinder {
 
     public typealias EnumerationCompletion = MediaGalleryAttachmentFinder.EnumerationCompletion
 
+    public typealias TSAttachmentUniqueId = String
+
     private enum Order: String, CustomStringConvertible {
         case ascending = "ASC"
         case descending = "DESC"
@@ -49,7 +51,7 @@ extension MediaGalleryRecordFinder {
         let rangeClauses: String
 
         init(in dateInterval: DateInterval? = nil,
-             excluding deletedAttachmentIds: Set<MediaGalleryResourceId>,
+             excluding deletedAttachmentIds: Set<TSAttachmentUniqueId>,
              order: Order = .ascending,
              limit: Int? = nil,
              offset: Int? = nil,
@@ -98,15 +100,6 @@ extension MediaGalleryRecordFinder {
                 return clauses.joined(separator: " ")
             } ?? ""
 
-            let deletedAttachmentIds = deletedAttachmentIds.compactMap {
-                switch $0 {
-                case .legacy(let uniqueId):
-                    return uniqueId
-                case .v2:
-                    owsFailDebug("v2 attachments not supported yet!")
-                    return nil
-                }
-            }
             let deletedAttachmentIdList = "(\"\(deletedAttachmentIds.joined(separator: "\",\""))\")"
 
             let limitModifier = "LIMIT \(limit ?? Int.max)"
@@ -154,7 +147,7 @@ extension MediaGalleryRecordFinder {
     /// Contains one query parameter: the thread ID.
     private static func itemsQuery(result: String = "\(AttachmentRecord.databaseTableName).*",
                                    in dateInterval: DateInterval? = nil,
-                                   excluding deletedAttachmentIds: Set<MediaGalleryResourceId> = Set(),
+                                   excluding deletedAttachmentIds: Set<TSAttachmentUniqueId> = Set(),
                                    order: Order = .ascending,
                                    limit: Int? = nil,
                                    offset: Int? = nil,
@@ -169,7 +162,7 @@ extension MediaGalleryRecordFinder {
     }
 
     public func rowIds(in givenInterval: DateInterval? = nil,
-                       excluding deletedAttachmentIds: Set<MediaGalleryResourceId>,
+                       excluding deletedAttachmentIds: Set<TSAttachmentUniqueId>,
                        offset: Int,
                        ascending: Bool,
                        transaction: GRDBReadTransaction) -> [Int64] {
@@ -193,7 +186,7 @@ extension MediaGalleryRecordFinder {
     }
 
     public func rowIdsAndDates(in givenInterval: DateInterval? = nil,
-                               excluding deletedAttachmentIds: Set<MediaGalleryResourceId>,
+                               excluding deletedAttachmentIds: Set<TSAttachmentUniqueId>,
                                offset: Int,
                                ascending: Bool,
                                transaction: GRDBReadTransaction) -> [DatedMediaGalleryRecordId] {
@@ -216,26 +209,21 @@ extension MediaGalleryRecordFinder {
         }
     }
 
-    public func recentMediaAttachments(limit: Int, transaction: GRDBReadTransaction) -> [ReferencedTSResource] {
+    public func recentMediaAttachments(limit: Int, transaction: GRDBReadTransaction) -> [TSAttachment] {
         let sql = Self.itemsQuery(order: .descending, limit: limit, filter: filter)
         let cursor = TSAttachment.grdbFetchCursor(sql: sql, arguments: [threadId], transaction: transaction)
         var attachments = [TSAttachment]()
         while let next = try! cursor.next() {
             attachments.append(next)
         }
-        return attachments.map {
-            return ReferencedTSResource(
-                reference: TSAttachmentReference(uniqueId: $0.uniqueId, attachment: $0),
-                attachment: $0
-            )
-        }
+        return attachments
     }
 
     public func enumerateMediaAttachments(in dateInterval: DateInterval,
-                                          excluding deletedAttachmentIds: Set<MediaGalleryResourceId>,
+                                          excluding deletedAttachmentIds: Set<TSAttachmentUniqueId>,
                                           range: NSRange,
                                           transaction: GRDBReadTransaction,
-                                          block: (Int, ReferencedTSResource) -> Void) {
+                                          block: (Int, TSAttachment) -> Void) {
         let sql = Self.itemsQuery(in: dateInterval,
                                   excluding: deletedAttachmentIds,
                                   limit: range.length,
@@ -246,14 +234,14 @@ extension MediaGalleryRecordFinder {
         var index = range.lowerBound
         while let next = try! cursor.next() {
             owsAssertDebug(range.contains(index))
-            block(index, .init(reference: TSAttachmentReference(uniqueId: next.uniqueId, attachment: next), attachment: next))
+            block(index, next)
             index += 1
         }
     }
 
     private func enumerateTimestamps(
         in interval: DateInterval,
-        excluding deletedAttachmentIds: Set<MediaGalleryResourceId>,
+        excluding deletedAttachmentIds: Set<TSAttachmentUniqueId>,
         order: Order,
         count: Int,
         transaction: GRDBReadTransaction,
@@ -299,7 +287,7 @@ extension MediaGalleryRecordFinder {
 
     public func enumerateTimestamps(
         before date: Date,
-        excluding deletedAttachmentIds: Set<MediaGalleryResourceId>,
+        excluding deletedAttachmentIds: Set<TSAttachmentUniqueId>,
         count: Int,
         transaction: GRDBReadTransaction,
         block: (DatedMediaGalleryRecordId) -> Void
@@ -317,7 +305,7 @@ extension MediaGalleryRecordFinder {
 
     public func enumerateTimestamps(
         after date: Date,
-        excluding deletedAttachmentIds: Set<MediaGalleryResourceId>,
+        excluding deletedAttachmentIds: Set<TSAttachmentUniqueId>,
         count: Int,
         transaction: GRDBReadTransaction,
         block: (DatedMediaGalleryRecordId) -> Void
@@ -334,20 +322,12 @@ extension MediaGalleryRecordFinder {
     }
 
     // Disregards filter.
-    public func rowid(of attachment: ReferencedTSResourceStream,
+    public func rowid(of attachment: TSAttachmentStream,
                       in interval: DateInterval,
-                      excluding deletedAttachmentIds: Set<MediaGalleryResourceId>,
+                      excluding deletedAttachmentIds: Set<TSAttachmentUniqueId>,
                       transaction: GRDBReadTransaction) -> Int64? {
-        let legacyAttachmentRowId: NSNumber
-        switch attachment.attachmentStream.concreteStreamType {
-        case .legacy(let tsAttachmentStream):
-            guard let rowId = tsAttachmentStream.grdbId else {
-                owsFailDebug("attachment.grdbId was unexpectedly nil")
-                return nil
-            }
-            legacyAttachmentRowId = rowId
-        case .v2:
-            owsFailDebug("v2 attachments not supported yet!")
+        guard let attachmentRowId = attachment.grdbId else {
+            owsFailDebug("attachment.grdbId was unexpectedly nil")
             return nil
         }
 
@@ -362,7 +342,7 @@ extension MediaGalleryRecordFinder {
         """
 
         do {
-            return try Int64.fetchOne(transaction.database, sql: sql, arguments: [threadId, legacyAttachmentRowId])
+            return try Int64.fetchOne(transaction.database, sql: sql, arguments: [threadId, attachmentRowId])
         } catch {
             DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
                 userDefaults: CurrentAppContext().appUserDefaults(),

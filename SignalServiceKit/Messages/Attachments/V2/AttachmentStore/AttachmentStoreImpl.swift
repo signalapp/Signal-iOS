@@ -526,16 +526,20 @@ public class AttachmentStoreImpl: AttachmentStore {
         // lack a primary id column. Just use manual SQL.
         var sql = "DELETE FROM \(recordType.databaseTableName) WHERE "
         var arguments = StatementArguments()
+
+        sql += "\(recordType.attachmentRowIdColumn.name) = ? "
+        _ = arguments.append(contentsOf: [attachmentId])
+
         switch recordType.columnFilters(for: owner) {
         case .nonMatchingOwnerType:
             return
         case .nullOwnerRowId:
-            sql += "\(recordType.ownerRowIdColumn.name) IS NULL"
+            sql += "AND \(recordType.ownerRowIdColumn.name) IS NULL"
         case .ownerRowId(let ownerRowId):
-            sql += "\(recordType.ownerRowIdColumn.name) = ?"
+            sql += "AND \(recordType.ownerRowIdColumn.name) = ?"
             _ = arguments.append(contentsOf: [ownerRowId])
         case let .ownerTypeAndRowId(ownerRowId, ownerType, typeColumn):
-            sql += "(\(typeColumn.name) = ? AND \(recordType.ownerRowIdColumn.name) = ?)"
+            sql += "AND (\(typeColumn.name) = ? AND \(recordType.ownerRowIdColumn.name) = ?)"
             _ = arguments.append(contentsOf: [ownerType, ownerRowId])
         }
         sql += ";"

@@ -186,6 +186,7 @@ public struct MediaGalleryAttachmentFinder {
             afterDate: nil,
             excluding: deletedAttachmentIds,
             count: count,
+            ascending: false,
             tx: tx,
             block: block
         )
@@ -203,6 +204,7 @@ public struct MediaGalleryAttachmentFinder {
             afterDate: date,
             excluding: deletedAttachmentIds,
             count: count,
+            ascending: true,
             tx: tx,
             block: block
         )
@@ -213,6 +215,7 @@ public struct MediaGalleryAttachmentFinder {
         afterDate: Date?,
         excluding deletedAttachmentIds: Set<AttachmentReferenceId>,
         count: Int,
+        ascending: Bool,
         tx: DBReadTransaction,
         block: (DatedAttachmentReferenceId) -> Void
     ) -> EnumerationCompletion {
@@ -220,7 +223,8 @@ public struct MediaGalleryAttachmentFinder {
             beforeDate: beforeDate,
             afterDate: afterDate,
             excluding: deletedAttachmentIds,
-            count: count
+            count: count,
+            ascending: ascending
         )
 
         do {
@@ -326,10 +330,14 @@ public struct MediaGalleryAttachmentFinder {
         to query: QueryInterfaceRequest<RecordType>
     ) -> QueryInterfaceRequest<RecordType> {
         if let dateInterval {
+            // Both DateInterval and SQL BETWEEN are closed ranges, but rounding to millisecond precision loses range
+            // at the boundaries, leading to the first millisecond of a month being considered part of the previous
+            // month as well. Subtract 1ms from the end timestamp to avoid this.
+            let endMillis = dateInterval.end.ows_millisecondsSince1970 - 1
             let dateColumn = Column(RecordType.CodingKeys.receivedAtTimestamp)
             return query
                 .filter(dateColumn >= dateInterval.start.ows_millisecondsSince1970)
-                .filter(dateColumn <= dateInterval.end.ows_millisecondsSince1970)
+                .filter(dateColumn <= endMillis)
         } else {
             return query
         }
@@ -405,7 +413,7 @@ public struct MediaGalleryAttachmentFinder {
     ) -> QueryInterfaceRequest<RecordType> {
         var query = baseQuery()
             .limit(limit)
-        query = applySort(to: query)
+        query = applySort(ascending: false, to: query)
         return query
     }
 
@@ -428,7 +436,8 @@ public struct MediaGalleryAttachmentFinder {
         beforeDate: Date?,
         afterDate: Date?,
         excluding deletedAttachmentIds: Set<AttachmentReferenceId>,
-        count: Int
+        count: Int,
+        ascending: Bool
     ) -> QueryInterfaceRequest<RecordType> {
         let dateColumn = Column(RecordType.CodingKeys.receivedAtTimestamp)
 
@@ -442,7 +451,7 @@ public struct MediaGalleryAttachmentFinder {
             query = query.filter(dateColumn >= afterDate.ows_millisecondsSince1970)
         }
 
-        query = applySort(to: query)
+        query = applySort(ascending: ascending, to: query)
         query = filterOut(attachmentIds: deletedAttachmentIds, on: query)
 
         return query
