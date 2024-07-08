@@ -149,8 +149,6 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     NSMutableDictionary *parameters = [@{ @"apnRegistrationId" : identifier } mutableCopy];
     if (voipId.length > 0) {
         parameters[@"voipRegistrationId"] = voipId;
-    } else {
-        OWSAssertDebug(SSKFeatureFlags.notificationServiceExtension);
     }
 
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];

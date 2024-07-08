@@ -41,8 +41,6 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
     private var vanillaTokenFuture: Future<Data>?
 
     private var voipRegistry: PKPushRegistry?
-    private var voipTokenPromise: Promise<Data?>?
-    private var voipTokenFuture: Future<Data?>?
 
     private var preauthChallengeGuarantee: Guarantee<String>
     private var preauthChallengeFuture: GuaranteeFuture<String>
@@ -77,10 +75,10 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
                 .registerForVanillaPushToken(
                     forceRotation: forceRotation,
                     timeOutEventually: timeOutEventually
-                ).then { vanillaPushToken -> Promise<ApnRegistrationId> in
-                    self.registerForVoipPushToken().map { voipPushToken in
-                        return ApnRegistrationId(apnsToken: vanillaPushToken, voipToken: voipPushToken)
-                    }
+                ).map { [self] vanillaPushToken in
+                    // We need the voip registry to handle voip pushes relayed from the NSE.
+                    createVoipRegistryIfNecessary()
+                    return ApnRegistrationId(apnsToken: vanillaPushToken, voipToken: nil)
                 }
         }
     }
@@ -194,20 +192,13 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
             owsFailDebug("Error: \(error)")
         }
 
-        if FeatureFlags.notificationServiceExtension {
-            Self.handleUnexpectedVoipPush()
-        }
+        Self.handleUnexpectedVoipPush()
     }
 
     private static func handleUnexpectedVoipPush() {
         assertOnQueue(calloutQueue)
 
         Logger.info("")
-
-        guard #available(iOS 15, *) else {
-            owsFailDebug("Voip push is expected.")
-            return
-        }
 
         // If the main app receives an unexpected VOIP push on iOS 15,
         // we need to:
@@ -238,19 +229,13 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
     }
 
     public func pushRegistry(_ registry: PKPushRegistry, didUpdate credentials: PKPushCredentials, for type: PKPushType) {
-        assertOnQueue(calloutQueue)
-        Logger.info("")
-        owsAssertDebug(type == .voIP)
-        owsAssertDebug(credentials.type == .voIP)
-        guard let voipTokenFuture = self.voipTokenFuture else { return }
-
-        voipTokenFuture.resolve(credentials.token)
+        // voip tokens are no longer supported
+        owsFailDebug("Unexpected voip token")
     }
 
     public func pushRegistry(_ registry: PKPushRegistry, didInvalidatePushTokenFor type: PKPushType) {
         // It's not clear when this would happen. We've never previously handled it, but we should at
         // least start learning if it happens.
-        assertOnQueue(calloutQueue)
         owsFailDebug("Invalid state")
     }
 
@@ -370,58 +355,6 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
         self.voipRegistry  = voipRegistry
         voipRegistry.desiredPushTypes = [.voIP]
         voipRegistry.delegate = self
-    }
-
-    private func registerForVoipPushToken() -> Promise<String?> {
-        AssertIsOnMainThread()
-
-        // We never populate voip tokens with the service when
-        // using the notification service extension.
-        guard !FeatureFlags.notificationServiceExtension else {
-            // We still must create the voip registry to handle voip
-            // pushes relayed from the NSE.
-            createVoipRegistryIfNecessary()
-            return Promise.value(nil)
-        }
-
-        guard self.voipTokenPromise == nil else {
-            let promise = self.voipTokenPromise!
-            owsAssertDebug(!promise.isSealed)
-            return promise.map { $0?.hexEncodedString }
-        }
-
-        // No pending voip token yet. Create a new promise
-        let (promise, future) = Promise<Data?>.pending()
-        self.voipTokenPromise = promise
-        self.voipTokenFuture = future
-
-        // We don't create the voip registry in init, because it immediately requests the voip token,
-        // potentially before we're ready to handle it.
-        createVoipRegistryIfNecessary()
-
-        guard let voipRegistry = self.voipRegistry else {
-            owsFailDebug("failed to initialize voipRegistry")
-            future.reject(PushRegistrationError.assertionError(description: "failed to initialize voipRegistry"))
-            return promise.map { _ in
-                // coerce expected type of returned promise - we don't really care about the value,
-                // since this promise has been rejected. In practice this shouldn't happen
-                String()
-            }
-        }
-
-        // If we've already completed registering for a voip token, resolve it immediately,
-        // rather than waiting for the delegate method to be called.
-        if let voipTokenData = voipRegistry.pushToken(for: .voIP) {
-            Logger.info("using pre-registered voIP token")
-            future.resolve(voipTokenData)
-        }
-
-        return promise.map { (voipTokenData: Data?) -> String? in
-            Logger.info("successfully registered for voip push notifications")
-            return voipTokenData?.hexEncodedString
-        }.ensure {
-            self.voipTokenPromise = nil
-        }
     }
 }
 

@@ -66,15 +66,6 @@ public class FeatureFlags: NSObject {
 
     public static let isPrerelease = build.includes(.beta)
 
-    @objc
-    public static var notificationServiceExtension: Bool {
-        // The CallKit APIs for the NSE are only available from iOS 14.5 and on,
-        // however there is a significant bug in iOS 14 where the NSE will not
-        // launch properly after a crash so we only support it in iOS 15.
-        if #available(iOS 15, *) { return true }
-        return false
-    }
-
     /// If we ever need to internally detect database corruption again in the
     /// future, we can re-enable this.
     public static let periodicallyCheckDatabaseIntegrity: Bool = false
