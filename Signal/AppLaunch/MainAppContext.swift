@@ -152,11 +152,6 @@ class MainAppContext: NSObject, AppContext {
 
     var frame: CGRect { self.mainWindow?.frame ?? .zero }
 
-    var interfaceOrientation: UIInterfaceOrientation {
-        AssertIsOnMainThread()
-        return UIApplication.shared.statusBarOrientation
-    }
-
     var mainWindow: UIWindow?
 
     private var appActiveBlocks = [AppActiveBlock]()

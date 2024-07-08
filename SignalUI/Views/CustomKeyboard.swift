@@ -72,34 +72,40 @@ open class CustomKeyboard: UIInputView {
     private struct SystemKeyboardHeight {
         var landscape: CGFloat?
         var portrait: CGFloat?
-        var current: CGFloat? {
-            get {
-                return CurrentAppContext().interfaceOrientation.isLandscape ? landscape : portrait
+    }
+    private var cachedSystemKeyboardHeight = SystemKeyboardHeight()
+
+    private var currentKeyboardHeight: CGFloat? {
+        get {
+            let interfaceOrientation = window?.windowScene?.interfaceOrientation ?? .unknown
+            return interfaceOrientation.isLandscape ? cachedSystemKeyboardHeight.landscape : cachedSystemKeyboardHeight.portrait
+        }
+        set {
+            // App frame height changes based on orientation (i.e. its the smaller dimension when landscape)
+            // Cap the height for custom keyboard because our layout breaks if we extend too tall.
+            let newValue = newValue.map { newValue in
+                let maxHeight = window.map { $0.frame.height * 0.75 } ?? 0
+                return min(newValue, maxHeight)
             }
-            set {
-                // App frame height changes based on orientation (i.e. its the smaller dimension when landscape)
-                // Cap the height for custom keyboard because our layout breaks if we extend too tall.
-                let newValue = newValue.map { min($0, CurrentAppContext().frame.height * 0.75) }
-                if CurrentAppContext().interfaceOrientation.isLandscape {
-                    landscape = newValue
-                } else {
-                    portrait = newValue
-                }
+            let interfaceOrientation = window?.windowScene?.interfaceOrientation ?? .unknown
+            if interfaceOrientation.isLandscape {
+                cachedSystemKeyboardHeight.landscape = newValue
+            } else {
+                cachedSystemKeyboardHeight.portrait = newValue
             }
         }
     }
-    private var cachedSystemKeyboardHeight = SystemKeyboardHeight()
 
     public func updateSystemKeyboardHeight(_ height: CGFloat) {
         // Only respect this height if it's reasonable, we don't want
         // to have a tiny keyboard.
         guard height > 170 else { return }
-        cachedSystemKeyboardHeight.current = height
+        currentKeyboardHeight = height
         resizeToSystemKeyboard()
     }
 
     open func resizeToSystemKeyboard() {
-        guard let cachedHeight = cachedSystemKeyboardHeight.current else {
+        guard let cachedHeight = currentKeyboardHeight else {
             // We don't have a cached height for this orientation,
             // let the auto sizing do its best guess at what the
             // system keyboard height might be.

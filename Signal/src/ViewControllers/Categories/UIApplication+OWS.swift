@@ -41,8 +41,4 @@ public extension UIApplication {
     var statusBarFrame: CGRect {
         return keyWindow?.windowScene?.statusBarManager?.statusBarFrame ?? .zero
     }
-
-    var statusBarOrientation: UIInterfaceOrientation {
-        return keyWindow?.windowScene?.interfaceOrientation ?? .unknown
-    }
 }

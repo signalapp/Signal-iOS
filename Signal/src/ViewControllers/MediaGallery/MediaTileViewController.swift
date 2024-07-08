@@ -442,9 +442,11 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
         // the fact that the scrollbar's exact location is not exposed, nor is the minimum
         // height of the indicator.
 
+        let interfaceOrientation = view.window?.windowScene?.interfaceOrientation ?? .unknown
+
         let scrollbarInsets = {
             // This code is cursed and I'm sorry.
-            switch UIApplication.shared.statusBarOrientation {
+            switch interfaceOrientation {
             case .portrait, .portraitUpsideDown, .unknown, .landscapeRight:
                 // Note that adjustedContentInset is used because it seems to include the
                 // rounded corners of the device, whereas safeAreaInsets is not enough.
@@ -476,6 +478,7 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
                 return collectionView.adjustedContentInset
             }
         }()
+
         // If iOS had a scrollbar, `scrollbarHeight` is how tall it would be. The scroll
         // indicator moves through an area of this height.
         let scrollbarHeight = collectionView.frame.height - scrollbarInsets.top - scrollbarInsets.bottom

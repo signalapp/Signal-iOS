@@ -67,7 +67,6 @@ public class TestAppContext: NSObject, AppContext {
     public let isRunningTests: Bool = true
     /// Pretend to be a small device.
     public let frame: CGRect = CGRect(x: 0, y: 0, width: 300, height: 400)
-    public let interfaceOrientation: UIInterfaceOrientation = .portrait
 
     // MARK: -
 

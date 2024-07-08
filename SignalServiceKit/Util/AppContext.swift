@@ -24,7 +24,6 @@ public protocol AppContext: NSObjectProtocol {
     var isRunningTests: Bool { get }
     var mainWindow: UIWindow? { get set }
     var frame: CGRect { get }
-    var interfaceOrientation: UIInterfaceOrientation { get }
 
     /// Unlike UIApplication.applicationState, this is thread-safe.
     /// It contains the "last known" application state.

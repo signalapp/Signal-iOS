@@ -74,7 +74,6 @@ class NSEContext: NSObject, AppContext {
 
     var mainWindow: UIWindow?
     let frame: CGRect = .zero
-    let interfaceOrientation: UIInterfaceOrientation = .unknown
     let reportedApplicationState: UIApplication.State = .background
     let statusBarHeight: CGFloat = .zero
 

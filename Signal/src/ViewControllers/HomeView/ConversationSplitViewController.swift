@@ -16,7 +16,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
 
     private var chatListNavController: OWSNavigationController { homeVC.chatListNavController }
     private lazy var detailNavController = OWSNavigationController()
-    private lazy var lastActiveInterfaceOrientation = CurrentAppContext().interfaceOrientation
+    private var lastActiveInterfaceOrientation = UIInterfaceOrientation.unknown
 
     private(set) weak var selectedConversationViewController: ConversationViewController?
 
@@ -90,14 +90,19 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
     @objc
     private func orientationDidChange() {
         AssertIsOnMainThread()
-        guard UIApplication.shared.applicationState == .active else { return }
-        lastActiveInterfaceOrientation = CurrentAppContext().interfaceOrientation
+
+        if let windowScene = view.window?.windowScene, windowScene.activationState == .foregroundActive {
+            lastActiveInterfaceOrientation = windowScene.interfaceOrientation
+        }
     }
 
     @objc
     private func didBecomeActive() {
         AssertIsOnMainThread()
-        lastActiveInterfaceOrientation = CurrentAppContext().interfaceOrientation
+
+        if let windowScene = view.window?.windowScene {
+            lastActiveInterfaceOrientation = windowScene.interfaceOrientation
+        }
     }
 
     func closeSelectedConversation(animated: Bool) {
@@ -124,10 +129,10 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         // This results in conversations opening up in the wrong pane when you were in portrait and then
         // try and open the app in landscape. We work around this by dispatching to the next runloop
         // at which point things have stabilized.
-        if UIApplication.shared.applicationState != .active, lastActiveInterfaceOrientation != CurrentAppContext().interfaceOrientation {
+        if let windowScene = view.window?.windowScene, windowScene.activationState != .foregroundActive, lastActiveInterfaceOrientation != windowScene.interfaceOrientation {
             owsFailDebug("check if this still happens")
             // Reset this to avoid getting stuck in a loop. We're becoming active.
-            lastActiveInterfaceOrientation = CurrentAppContext().interfaceOrientation
+            lastActiveInterfaceOrientation = windowScene.interfaceOrientation
             DispatchQueue.main.async { self.presentThread(thread, action: action, focusMessageId: focusMessageId, animated: animated) }
             return
         }
@@ -190,10 +195,10 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         // This results in conversations opening up in the wrong pane when you were in portrait and then
         // try and open the app in landscape. We work around this by dispatching to the next runloop
         // at which point things have stabilized.
-        if UIApplication.shared.applicationState != .active, lastActiveInterfaceOrientation != CurrentAppContext().interfaceOrientation {
+        if let windowScene = view.window?.windowScene, windowScene.activationState != .foregroundActive, lastActiveInterfaceOrientation != windowScene.interfaceOrientation {
             owsFailDebug("check if this still happens")
             // Reset this to avoid getting stuck in a loop. We're becoming active.
-            lastActiveInterfaceOrientation = CurrentAppContext().interfaceOrientation
+            lastActiveInterfaceOrientation = windowScene.interfaceOrientation
             DispatchQueue.main.async { self.showMyStoriesController(animated: animated) }
             return
         }
@@ -659,6 +664,14 @@ extension ConversationSplitViewController: DeviceTransferServiceObserver {
 
         deviceTransferService.addObserver(self)
         deviceTransferService.startListeningForNewDevices()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        if let windowScene = view.window?.windowScene, windowScene.activationState == .foregroundActive {
+            lastActiveInterfaceOrientation = windowScene.interfaceOrientation
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {

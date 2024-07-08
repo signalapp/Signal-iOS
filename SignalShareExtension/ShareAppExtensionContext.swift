@@ -113,8 +113,6 @@ extension ShareAppExtensionContext: AppContext {
 
     var frame: CGRect { rootViewController.view.frame }
 
-    var interfaceOrientation: UIInterfaceOrientation { .portrait }
-
     var reportedApplicationState: UIApplication.State {
         internalReportedApplicationState
     }
