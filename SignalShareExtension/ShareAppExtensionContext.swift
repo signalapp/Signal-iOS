@@ -134,8 +134,6 @@ extension ShareAppExtensionContext: AppContext {
         Logger.debug("Ignoring request to block sleep.")
     }
 
-    var statusBarHeight: CGFloat { 20 }
-
     func frontmostViewController() -> UIViewController? {
         return rootViewController.findFrontmostViewController(ignoringAlerts: true)
     }

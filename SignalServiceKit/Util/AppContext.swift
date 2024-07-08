@@ -64,8 +64,6 @@ public protocol AppContext: NSObjectProtocol {
     /// Should be a NOOP if isMainApp is NO.
     func ensureSleepBlocking(_ shouldBeBlocking: Bool, blockingObjectsDescription: String)
 
-    var statusBarHeight: CGFloat { get }
-
     /// Returns the VC that should be used to present alerts, modals, etc.
     func frontmostViewController() -> UIViewController?
     func openSystemSettings()

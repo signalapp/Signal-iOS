@@ -55,7 +55,6 @@ public class TestAppContext: NSObject, AppContext {
     public let isNSE: Bool = false
     public func mainApplicationStateOnLaunch() -> UIApplication.State { .inactive }
     public let isRTL: Bool = false
-    public let statusBarHeight: CGFloat = 20
     public func isInBackground() -> Bool { false }
     public func isAppForegroundAndActive() -> Bool { true }
     public func beginBackgroundTask(with expirationHandler: BackgroundTaskExpirationHandler) -> UIBackgroundTaskIdentifier { .invalid }

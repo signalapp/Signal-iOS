@@ -33,12 +33,4 @@ public extension UIApplication {
     func openSystemSettings() {
         open(URL(string: UIApplication.openSettingsURLString)!, options: [:])
     }
-
-    var keyWindow: UIWindow? {
-        return windows.first(where: { $0.isKeyWindow })
-    }
-
-    var statusBarFrame: CGRect {
-        return keyWindow?.windowScene?.statusBarManager?.statusBarFrame ?? .zero
-    }
 }

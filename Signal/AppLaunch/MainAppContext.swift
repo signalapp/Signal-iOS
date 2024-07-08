@@ -117,8 +117,6 @@ class MainAppContext: NSObject, AppContext {
 
     let isRTL: Bool = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft
 
-    var statusBarHeight: CGFloat { UIApplication.shared.statusBarFrame.size.height }
-
     func isInBackground() -> Bool { reportedApplicationState == .background }
 
     func isAppForegroundAndActive() -> Bool { reportedApplicationState == .active }

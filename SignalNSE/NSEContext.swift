@@ -75,7 +75,6 @@ class NSEContext: NSObject, AppContext {
     var mainWindow: UIWindow?
     let frame: CGRect = .zero
     let reportedApplicationState: UIApplication.State = .background
-    let statusBarHeight: CGFloat = .zero
 
     func beginBackgroundTask(with expirationHandler: BackgroundTaskExpirationHandler) -> UIBackgroundTaskIdentifier { .invalid }
     func endBackgroundTask(_ backgroundTaskIdentifier: UIBackgroundTaskIdentifier) {}

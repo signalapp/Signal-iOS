@@ -135,7 +135,6 @@ public class OWSNavigationBar: UINavigationBar {
 
     // MARK: - iOS >15 blur hacks
 
-    @available(iOS 15, *)
     fileprivate func setAppearanceBlurViewIfExists() {
         var subviews: [UIView] = [self]
         while let subview = subviews.popLast() {
@@ -148,7 +147,6 @@ public class OWSNavigationBar: UINavigationBar {
         }
     }
 
-    @available(iOS 15, *)
     fileprivate func updateAppearanceBlurView() {
         guard let appearanceBlurEffectView else {
             appearanceBlurEffectView = nil
@@ -178,56 +176,6 @@ public class OWSNavigationBar: UINavigationBar {
                 self?.updateAppearanceBlurView()
             }
         })
-    }
-
-    // MARK: - iOS <=14 blur hacks
-
-    fileprivate func updateBlurView(_ effect: UIVisualEffect?) {
-        if #available(iOS 15, *) {
-            owsFailDebug("Shouldn't use a UIVisualEffectView on iOS 15+, use appearance instead")
-            return
-        }
-        guard let effect else {
-            manualBlurEffectView?.isHidden = true
-            return
-        }
-        let blurEffectView: UIVisualEffectView = {
-            if let existingBlurEffectView = self.manualBlurEffectView {
-                existingBlurEffectView.removeFromSuperview()
-                self.manualBlurEffectView = nil
-            }
-
-            let blurEffectView = UIVisualEffectView()
-            blurEffectView.isUserInteractionEnabled = false
-
-            self.manualBlurEffectView = blurEffectView
-            self.insertSubview(blurEffectView, at: 0)
-
-            // navbar frame doesn't account for statusBar, so, same as the built-in navbar background, we need to exceed
-            // the navbar bounds to have the blur extend up and behind the status bar.
-            let statusBarHeight = CurrentAppContext().statusBarHeight
-            blurEffectView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: -statusBarHeight, left: 0, bottom: 0, right: 0))
-
-            return blurEffectView
-        }()
-
-        blurEffectView.effect = effect
-
-        // remove hairline below bar.
-        self.shadowImage = UIImage()
-
-        // On iOS11, despite inserting the blur at 0, other views are later inserted into the navbar behind the blur,
-        // so we have to set a zindex to avoid obscuring navbar title/buttons.
-        blurEffectView.layer.zPosition = -1
-
-        let bgColor = navbarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
-        if !blurEffectView.matchBackgroundColor(bgColor) {
-            // If we can't find the tinting subview (e.g. a new iOS version changed the behavior)
-            // We'll make the navbar more translucent by setting a background color.
-            let color = navbarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
-            let backgroundImage = UIImage.image(color: color)
-            self.setBackgroundImage(backgroundImage, for: .default)
-        }
     }
 }
 
@@ -299,24 +247,6 @@ internal struct OWSNavigationBarAppearance: Equatable {
     }
 
     func apply(to navigationBar: OWSNavigationBar) {
-        if #available(iOS 15, *) {
-            applyForiOS15(to: navigationBar)
-        } else {
-            applyForiOS13(to: navigationBar)
-        }
-
-        // Apply the common properties
-        navigationBar.isTranslucent = isTranslucent
-        navigationBar.clipsToBounds = clipsToBounds
-        navigationBar.barStyle = barStyle
-        navigationBar.tintColor = tintColor
-        navigationBar.barTintColor = backgroundColor
-    }
-
-    // We use appearance APIs on iOS 15+. They only exist in iOS 13+,
-    // but are buggy on iOS 13 and 14, so we only use them on iOS 15+.
-    @available(iOS 15, *)
-    private func applyForiOS15(to navigationBar: OWSNavigationBar) {
         let appearance = UINavigationBarAppearance()
         appearance.backgroundEffect = blurEffect
         appearance.backgroundColor = backgroundColor
@@ -331,18 +261,14 @@ internal struct OWSNavigationBarAppearance: Equatable {
         navigationBar.compactAppearance = appearance
         navigationBar.compactScrollEdgeAppearance = appearance
 
-        // navigationBar.setAppearanceBlurViewIfExists()
         navigationBar.updateAppearanceBlurView()
-    }
 
-    // On iOS 14 and earlier we don't use appearance APIs and instead
-    // set our own UIVisualEffectView.
-    private func applyForiOS13(to navigationBar: OWSNavigationBar) {
-        navigationBar.backgroundColor = backgroundColor
-        navigationBar.setBackgroundImage(backgroundImage, for: .default)
-        navigationBar.titleTextAttributes = titleTextAttributes
-        navigationBar.shadowImage = shadowImage
-        navigationBar.updateBlurView(blurEffect)
+        // Apply the common properties
+        navigationBar.isTranslucent = isTranslucent
+        navigationBar.clipsToBounds = clipsToBounds
+        navigationBar.barStyle = barStyle
+        navigationBar.tintColor = tintColor
+        navigationBar.barTintColor = backgroundColor
     }
 
     private var backgroundImage: UIImage? {
