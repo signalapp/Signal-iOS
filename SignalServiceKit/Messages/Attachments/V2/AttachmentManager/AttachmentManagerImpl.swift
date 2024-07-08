@@ -72,14 +72,21 @@ public class AttachmentManagerImpl: AttachmentManager {
         consuming dataSource: OwnedQuotedReplyAttachmentDataSource,
         tx: DBWriteTransaction
     ) throws {
-        if let originalMessageRowId = dataSource.source.originalMessageRowId {
-            guard
-                let info = _quotedReplyAttachmentInfo(originalMessageRowId: originalMessageRowId, tx: tx),
-                // Not a stub! Stubs would be .unset
-                info.info.info.attachmentType == .V2
-            else {
-                return
+        switch dataSource.source.source {
+        case .originalAttachment:
+            // If the goal is to capture the original message's attachment,
+            // ensure we can actually capture its info.
+            if let originalMessageRowId = dataSource.source.originalMessageRowId {
+                guard
+                    let info = _quotedReplyAttachmentInfo(originalMessageRowId: originalMessageRowId, tx: tx),
+                    // Not a stub! Stubs would be .unset
+                    info.info.info.attachmentType == .V2
+                else {
+                    return
+                }
             }
+        case .pendingAttachment, .pointer:
+            break
         }
         try _createQuotedReplyMessageThumbnail(
             dataSource: dataSource,
