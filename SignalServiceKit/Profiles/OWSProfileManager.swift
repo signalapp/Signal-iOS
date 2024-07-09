@@ -621,7 +621,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
         authedAccount: AuthedAccount,
         tx: DBWriteTransaction
     ) {
-        let address = OWSUserProfile.insertableAddress(for: serviceId, localIdentifiers: localIdentifiers)
+        let address = OWSUserProfile.insertableAddress(serviceId: serviceId, localIdentifiers: localIdentifiers)
 
         guard let profileKey = OWSAES256Key(data: profileKeyData) else {
             owsFailDebug("Invalid profile key data for \(serviceId).")
@@ -1234,12 +1234,14 @@ extension OWSProfileManager: ProfileManager, Dependencies {
     ) {
         let userProfileWriter: UserProfileWriter = .metadataUpdate
 
-        let address = OWSUserProfile.insertableAddress(for: serviceId, localIdentifiers: localIdentifiers)
+        let address = OWSUserProfile.insertableAddress(serviceId: serviceId, localIdentifiers: localIdentifiers)
         switch address {
         case .localUser:
             return
         case .otherUser:
             break
+        case .legacyUserPhoneNumberFromBackupRestore:
+            owsFail("Impossible: could not get this case when constructing an insertable address from a service ID.")
         }
         let userProfile = OWSUserProfile.getOrBuildUserProfile(
             for: address,

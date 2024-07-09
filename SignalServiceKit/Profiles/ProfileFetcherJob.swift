@@ -332,7 +332,7 @@ public class ProfileFetcherJob {
             }
 
             self.profileManager.updateProfile(
-                address: OWSUserProfile.insertableAddress(for: serviceId, localIdentifiers: localIdentifiers),
+                address: OWSUserProfile.insertableAddress(serviceId: serviceId, localIdentifiers: localIdentifiers),
                 decryptedProfile: fetchedProfile.decryptedProfile,
                 avatarUrlPath: avatarDownloadResult.remoteRelativePath,
                 avatarFileName: avatarFilename,

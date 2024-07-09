@@ -142,9 +142,19 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     public static let databaseTableName = "model_OWSUserProfile"
     public static var recordType: UInt { SDSRecordType.userProfile.rawValue }
 
+    /// An address used to identify an ``OWSUserProfile``.
     public enum Address: Hashable {
         case localUser
         case otherUser(SignalServiceAddress)
+    }
+
+    /// An address used to insert or update an ``OWSUserProfile``.
+    public enum InsertableAddress {
+        case localUser
+        case otherUser(ServiceId)
+        /// Describes a legacy user for whom no service ID is available, found
+        /// while restoring from a backup.
+        case legacyUserPhoneNumberFromBackupRestore(E164)
     }
 
     // MARK: - Constants
@@ -453,7 +463,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         return profileKey
     }
 
-    // MARK: - Profile Addresses
+    // MARK: -
 
     /// Converts a "public" address to an "internal" one.
     public static func internalAddress(for publicAddress: SignalServiceAddress, localIdentifiers: LocalIdentifiers) -> Address {
@@ -474,11 +484,28 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         }
     }
 
+    // MARK: -
+
     static func insertableAddress(
-        for serviceId: ServiceId,
+        serviceId: ServiceId,
         localIdentifiers: LocalIdentifiers
     ) -> InsertableAddress {
-        return localIdentifiers.contains(serviceId: serviceId) ? .localUser : .otherUser(serviceId)
+        if localIdentifiers.contains(serviceId: serviceId) {
+            return .localUser
+        }
+
+        return .otherUser(serviceId)
+    }
+
+    static func insertableAddress(
+        legacyPhoneNumberFromBackupRestore phoneNumber: E164,
+        localIdentifiers: LocalIdentifiers
+    ) -> InsertableAddress {
+        if localIdentifiers.contains(phoneNumber: phoneNumber) {
+            return .localUser
+        }
+
+        return .legacyUserPhoneNumberFromBackupRestore(phoneNumber)
     }
 
     // MARK: - Avatar
@@ -783,11 +810,6 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         return UserProfileFinder().userProfile(for: .localUser, transaction: tx) != nil
     }
 
-    public enum InsertableAddress {
-        case localUser
-        case otherUser(ServiceId)
-    }
-
     @objc
     public class func getOrBuildUserProfileForLocalUser(
         userProfileWriter: UserProfileWriter,
@@ -816,6 +838,8 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
             address = .localUser
         case .otherUser(let serviceId):
             address = .otherUser(SignalServiceAddress(serviceId))
+        case .legacyUserPhoneNumberFromBackupRestore(let phoneNumber):
+            address = .otherUser(SignalServiceAddress(phoneNumber: phoneNumber.stringValue))
         }
 
         // Otherwise, create & return a new profile for this address.
@@ -846,6 +870,8 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
             userProfiles = UserProfileFinder().fetchUserProfiles(phoneNumber: Constants.localProfilePhoneNumber, tx: tx)
         case .otherUser(let serviceId):
             userProfiles = UserProfileFinder().fetchUserProfiles(serviceId: serviceId, tx: tx)
+        case .legacyUserPhoneNumberFromBackupRestore(let phoneNumber):
+            userProfiles = UserProfileFinder().fetchUserProfiles(phoneNumber: phoneNumber.stringValue, tx: tx)
         }
 
         // Get rid of any duplicates -- these shouldn't exist.
@@ -1342,6 +1368,49 @@ extension OWSUserProfile {
         )
     }
 }
+
+// MARK: - Update without side effects
+
+extension OWSUserProfile {
+    /// Updates the given properties for this model on disk with no other
+    /// side-effects, such as triggering profile fetches, updating storage
+    /// service, or posting local notifications.
+    ///
+    /// - Important
+    /// Only callers who are updating the profile in a vacuum, and are very sure
+    /// they have the most up-to-date info about this profile, should call this.
+    public func upsertWithNoSideEffects(
+        givenName: String?,
+        familyName: String?,
+        avatarUrlPath: String?,
+        profileKey: OWSAES256Key?,
+        tx: SDSAnyWriteTransaction
+    ) {
+        self.givenName = givenName
+        self.familyName = familyName
+        self.avatarUrlPath = avatarUrlPath
+        self.profileKey = profileKey
+
+        anyUpsert(transaction: tx)
+    }
+
+    /// Updates the profile key for this model on disk with no other
+    /// side-effects, such as triggering profile fetches, updating storage
+    /// service, or posting local notifications.
+    ///
+    /// - Important
+    /// Only callers who are updating the profile in a vacuum should call this.
+    public func upsertProfileKeyWithNoSideEffects(
+        _ profileKey: OWSAES256Key,
+        tx: SDSAnyWriteTransaction
+    ) {
+        self.profileKey = profileKey
+
+        anyUpsert(transaction: tx)
+    }
+}
+
+// MARK: -
 
 extension OWSUserProfile {
     static func getUserProfiles(for addresses: [Address], tx: SDSAnyReadTransaction) -> [OWSUserProfile?] {

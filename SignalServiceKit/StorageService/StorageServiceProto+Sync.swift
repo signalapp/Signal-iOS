@@ -520,7 +520,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
                 }
             } else {
                 let profileAddress = OWSUserProfile.insertableAddress(
-                    for: serviceIds.aciOrElsePni,
+                    serviceId: serviceIds.aciOrElsePni,
                     localIdentifiers: localIdentifiers
                 )
                 let localUserProfile = OWSUserProfile.getOrBuildUserProfile(

@@ -65,13 +65,6 @@ public protocol _MessageBackup_ProfileManagerShim {
 
     func addToWhitelist(_ thread: TSGroupThread, tx: DBWriteTransaction)
 
-    func setProfileKeyIfMissing(
-        _ profileKey: OWSAES256Key,
-        forAci aci: Aci,
-        localIdentifiers: LocalIdentifiers,
-        tx: DBWriteTransaction
-    )
-
     func insertLocalUserProfile(
         givenName: String,
         familyName: String?,
@@ -80,11 +73,18 @@ public protocol _MessageBackup_ProfileManagerShim {
         tx: DBWriteTransaction
     )
 
-    func insertOtherUserProfile(
+    func upsertOtherUserProfile(
+        insertableAddress: OWSUserProfile.InsertableAddress,
         givenName: String?,
         familyName: String?,
         profileKey: OWSAES256Key?,
-        address: OWSUserProfile.Address,
+        tx: DBWriteTransaction
+    )
+
+    func setProfileKeyIfMissing(
+        _ profileKey: OWSAES256Key,
+        forAci aci: Aci,
+        localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
     )
 }
@@ -128,24 +128,6 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
         profileManager.addThread(toProfileWhitelist: thread, transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    public func setProfileKeyIfMissing(
-        _ profileKey: OWSAES256Key,
-        forAci aci: Aci,
-        localIdentifiers: LocalIdentifiers,
-        tx: DBWriteTransaction
-    ) {
-        profileManager.setProfileKeyData(
-            profileKey.keyData,
-            for: aci,
-            onlyFillInIfMissing: true,
-            shouldFetchProfile: false,
-            userProfileWriter: .messageBackupRestore,
-            localIdentifiers: localIdentifiers,
-            authedAccount: .implicit(),
-            tx: tx
-        )
-    }
-
     public func insertLocalUserProfile(
         givenName: String,
         familyName: String?,
@@ -155,38 +137,82 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
     ) {
         let sdsTx = SDSDB.shimOnlyBridge(tx)
 
+        /// We can't simply insert a local-user profile here, because
+        /// `OWSProfileManager` will create one itself during its `warmCaches`
+        /// initialization dance. So, we'll grab the one that was created and
+        /// simply overwrite its fields.
         let localUserProfile = OWSUserProfile.getOrBuildUserProfileForLocalUser(
             userProfileWriter: .messageBackupRestore,
             tx: sdsTx
         )
 
-        localUserProfile.update(
-            givenName: .setTo(givenName),
-            familyName: .setTo(familyName),
-            avatarUrlPath: .setTo(avatarUrlPath),
-            profileKey: .setTo(profileKey),
-            userProfileWriter: .messageBackupRestore,
-            transaction: sdsTx,
-            completion: nil
+        localUserProfile.upsertWithNoSideEffects(
+            givenName: givenName,
+            familyName: familyName,
+            avatarUrlPath: avatarUrlPath,
+            profileKey: profileKey,
+            tx: sdsTx
         )
+
+        profileManager.localProfileWasUpdated(localUserProfile)
     }
 
-    public func insertOtherUserProfile(
+    public func upsertOtherUserProfile(
+        insertableAddress: OWSUserProfile.InsertableAddress,
         givenName: String?,
         familyName: String?,
         profileKey: OWSAES256Key?,
-        address: OWSUserProfile.Address,
         tx: DBWriteTransaction
     ) {
-        guard case .otherUser = address else {
-            owsFail("Must pass .otherUser to this method.")
+        if case .localUser = insertableAddress {
+            owsFailDebug("Cannot use this method for the local user's profile!")
+            return
         }
-        OWSUserProfile(
-            address: address,
+
+        let sdsTx: SDSAnyWriteTransaction = SDSDB.shimOnlyBridge(tx)
+
+        /// We can't simply insert a profile here, because we might have created
+        /// a profile through another flow (e.g., by setting a "missing" profile
+        /// key).
+        let profile = OWSUserProfile.getOrBuildUserProfile(
+            for: insertableAddress,
+            userProfileWriter: .messageBackupRestore,
+            tx: sdsTx
+        )
+
+        profile.upsertWithNoSideEffects(
             givenName: givenName,
             familyName: familyName,
-            profileKey: profileKey
-        ).anyInsert(transaction: SDSDB.shimOnlyBridge(tx))
+            avatarUrlPath: nil,
+            profileKey: profileKey,
+            tx: sdsTx
+        )
+    }
+
+    public func setProfileKeyIfMissing(
+        _ profileKey: OWSAES256Key,
+        forAci aci: Aci,
+        localIdentifiers: LocalIdentifiers,
+        tx: DBWriteTransaction
+    ) {
+        let sdsTx: SDSAnyWriteTransaction = SDSDB.shimOnlyBridge(tx)
+
+        let profileAddress: OWSUserProfile.InsertableAddress = OWSUserProfile.insertableAddress(
+            serviceId: aci,
+            localIdentifiers: localIdentifiers
+        )
+
+        /// We can't simply insert a profile here, because we might have created
+        /// a profile through another flow.
+        let profile = OWSUserProfile.getOrBuildUserProfile(
+            for: profileAddress,
+            userProfileWriter: .messageBackupRestore,
+            tx: sdsTx
+        )
+
+        if profile.profileKey == nil {
+            profile.upsertProfileKeyWithNoSideEffects(profileKey, tx: sdsTx)
+        }
     }
 }
 

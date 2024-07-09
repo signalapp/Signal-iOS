@@ -236,29 +236,44 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
             profileKey = nil
         }
 
-        guard
-            let address = MessageBackup.ContactAddress(aci: aci, pni: pni, e164: e164)
-        else {
-            // Need at least one identifier!
+        /// This check will fail if all these identifiers are `nil`.
+        guard let backupContactAddress = MessageBackup.ContactAddress(
+            aci: aci,
+            pni: pni,
+            e164: e164
+        ) else {
             return .failure([.restoreFrameError(.invalidProtoData(.contactWithoutIdentifiers), recipientProto.recipientId)])
         }
-        context[recipientProto.recipientId] = .contact(address)
+        context[recipientProto.recipientId] = .contact(backupContactAddress)
 
         let recipient = SignalRecipient.fromBackup(
-            address,
+            backupContactAddress,
             isRegistered: isRegistered,
             unregisteredAtTimestamp: unregisteredTimestamp
         )
 
         // Stop early if this is the local user. That shouldn't happen.
-        let profileAddress = OWSUserProfile.internalAddress(
-            for: recipient.address,
-            localIdentifiers: context.localIdentifiers
-        )
-        switch profileAddress {
+        let profileInsertableAddress: OWSUserProfile.InsertableAddress
+        if let serviceId = backupContactAddress.aci ?? backupContactAddress.pni {
+            profileInsertableAddress = OWSUserProfile.insertableAddress(
+                serviceId: serviceId,
+                localIdentifiers: context.localIdentifiers
+            )
+        } else if let phoneNumber = backupContactAddress.e164 {
+            profileInsertableAddress = OWSUserProfile.insertableAddress(
+                legacyPhoneNumberFromBackupRestore: phoneNumber,
+                localIdentifiers: context.localIdentifiers
+            )
+        } else {
+            return .failure([.restoreFrameError(
+                .developerError(OWSAssertionError("How did we have no identifiers after constructing a backup contact address?")),
+                recipientProto.recipientId
+            )])
+        }
+        switch profileInsertableAddress {
         case .localUser:
             return .failure([.restoreFrameError(.invalidProtoData(.otherContactWithLocalIdentifiers), recipientProto.recipientId)])
-        case .otherUser:
+        case .otherUser, .legacyUserPhoneNumberFromBackupRestore:
             break
         }
 
@@ -300,16 +315,16 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         }
 
         // We only need to active hide, since unhidden is the default.
-        if contactProto.hideStory, let aci = address.aci {
+        if contactProto.hideStory, let aci = backupContactAddress.aci {
             let storyContext = storyStore.getOrCreateStoryContextAssociatedData(for: aci, tx: tx)
             storyStore.updateStoryContext(storyContext, updateStorageService: false, isHidden: true, tx: tx)
         }
 
-        profileManager.insertOtherUserProfile(
+        profileManager.upsertOtherUserProfile(
+            insertableAddress: profileInsertableAddress,
             givenName: contactProto.profileGivenName,
             familyName: contactProto.profileFamilyName,
             profileKey: profileKey,
-            address: profileAddress,
             tx: tx
         )
 
