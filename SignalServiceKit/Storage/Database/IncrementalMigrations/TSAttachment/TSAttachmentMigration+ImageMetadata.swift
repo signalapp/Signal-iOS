@@ -40,6 +40,17 @@ extension TSAttachmentMigration {
             }
         }
 
+        func isValid(source: TSAttachmentMigration.OWSImageSource) -> Bool {
+            switch self {
+            case .unknown:
+                return false
+            case .png, .tiff, .jpeg, .bmp, .webp, .heic, .heif:
+                return true
+            case .gif:
+                return source.ows_hasValidGifSize
+            }
+        }
+
         func isValid(mimeType: String?) -> Bool {
             owsAssertDebug(!(mimeType?.isEmpty ?? true))
 

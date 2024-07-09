@@ -1012,6 +1012,7 @@
 		669379EF2C3C5E5800EED7A0 /* TSAttachmentMigration+AudioWaveformManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669379EE2C3C5E5800EED7A0 /* TSAttachmentMigration+AudioWaveformManager.swift */; };
 		669379F12C3C79E800EED7A0 /* TSAttachmentMigration+OWSMediaUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669379F02C3C79E800EED7A0 /* TSAttachmentMigration+OWSMediaUtils.swift */; };
 		669379F52C3C7EA800EED7A0 /* TSAttachmentMigration+ImageMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669379F42C3C7EA800EED7A0 /* TSAttachmentMigration+ImageMetadata.swift */; };
+		669379F32C3C7C3B00EED7A0 /* TSAttachmentMigration+OWSImageSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669379F22C3C7C3B00EED7A0 /* TSAttachmentMigration+OWSImageSource.swift */; };
 		6694BF682B36484900B18764 /* PinnedThreadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6694BF672B36484800B18764 /* PinnedThreadManager.swift */; };
 		6694BF6A2B3650E400B18764 /* PinnedThreadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6694BF692B3650E400B18764 /* PinnedThreadStore.swift */; };
 		6694BF6C2B3656D500B18764 /* MockPinnedThreadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6694BF6B2B3656D500B18764 /* MockPinnedThreadManager.swift */; };
@@ -4028,6 +4029,7 @@
 		669379EE2C3C5E5800EED7A0 /* TSAttachmentMigration+AudioWaveformManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentMigration+AudioWaveformManager.swift"; sourceTree = "<group>"; };
 		669379F02C3C79E800EED7A0 /* TSAttachmentMigration+OWSMediaUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentMigration+OWSMediaUtils.swift"; sourceTree = "<group>"; };
 		669379F42C3C7EA800EED7A0 /* TSAttachmentMigration+ImageMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentMigration+ImageMetadata.swift"; sourceTree = "<group>"; };
+		669379F22C3C7C3B00EED7A0 /* TSAttachmentMigration+OWSImageSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentMigration+OWSImageSource.swift"; sourceTree = "<group>"; };
 		6694BF672B36484800B18764 /* PinnedThreadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedThreadManager.swift; sourceTree = "<group>"; };
 		6694BF692B3650E400B18764 /* PinnedThreadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedThreadStore.swift; sourceTree = "<group>"; };
 		6694BF6B2B3656D500B18764 /* MockPinnedThreadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPinnedThreadManager.swift; sourceTree = "<group>"; };
@@ -8183,6 +8185,7 @@
 			children = (
 				669379EE2C3C5E5800EED7A0 /* TSAttachmentMigration+AudioWaveformManager.swift */,
 				669379F42C3C7EA800EED7A0 /* TSAttachmentMigration+ImageMetadata.swift */,
+				669379F22C3C7C3B00EED7A0 /* TSAttachmentMigration+OWSImageSource.swift */,
 				669379F02C3C79E800EED7A0 /* TSAttachmentMigration+OWSMediaUtils.swift */,
 				669379EC2C3C5B2C00EED7A0 /* TSAttachmentMigration+Records.swift */,
 				66A1ABE12C3311B40033C5EB /* TSAttachmentMigration.swift */,
@@ -14929,6 +14932,7 @@
 				66E1AD962B91437B00C56B7B /* TSAttachmentManager.swift in Sources */,
 				669379EF2C3C5E5800EED7A0 /* TSAttachmentMigration+AudioWaveformManager.swift in Sources */,
 				669379F52C3C7EA800EED7A0 /* TSAttachmentMigration+ImageMetadata.swift in Sources */,
+				669379F32C3C7C3B00EED7A0 /* TSAttachmentMigration+OWSImageSource.swift in Sources */,
 				669379F12C3C79E800EED7A0 /* TSAttachmentMigration+OWSMediaUtils.swift in Sources */,
 				669379ED2C3C5B2C00EED7A0 /* TSAttachmentMigration+Records.swift in Sources */,
 				66A1ABE22C3311B40033C5EB /* TSAttachmentMigration.swift in Sources */,

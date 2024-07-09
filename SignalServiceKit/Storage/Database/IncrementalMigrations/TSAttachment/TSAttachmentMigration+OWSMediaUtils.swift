@@ -8,6 +8,12 @@ import Foundation
 
 extension TSAttachmentMigration {
 
+    static let kMaxAnimatedImageDimensions: UInt = 12 * 1024
+    static let kMaxStillImageDimensions: UInt = 12 * 1024
+    static let kMaxFileSizeAnimatedImage = UInt(25 * 1024 * 1024)
+    static let kMaxFileSizeImage = UInt(8 * 1024 * 1024)
+    static let kMaxFileSizeGeneric = UInt(95 * 1000 * 1000)
+
     enum OWSMediaUtils {
         // This size is large enough to render full screen.
         static func thumbnailDimensionPointsLarge() -> CGFloat {
