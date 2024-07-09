@@ -1293,7 +1293,7 @@ public class InteractionFinder: NSObject {
     ) -> TSInteractionCursor {
         return buildInteractionCursor(
             rowIdFilter: rowIdFilter,
-            additionalFiltering: .filterForIncomingMessages,
+            additionalFiltering: .filterForOutgoingMessages,
             limit: nil,
             tx: tx
         )
