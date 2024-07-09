@@ -117,8 +117,8 @@ extension TSAttachmentMigration {
             self.id = rowID
         }
 
-        static func newRelativeFilePath() -> String {
-            let id = UUID().uuidString
+        static func relativeFilePath(reservedUUID: UUID) -> String {
+            let id = reservedUUID.uuidString
             return "\(id.prefix(2))/\(id)"
         }
 

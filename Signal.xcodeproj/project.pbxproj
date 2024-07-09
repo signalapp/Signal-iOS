@@ -1011,8 +1011,9 @@
 		669379ED2C3C5B2C00EED7A0 /* TSAttachmentMigration+Records.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669379EC2C3C5B2C00EED7A0 /* TSAttachmentMigration+Records.swift */; };
 		669379EF2C3C5E5800EED7A0 /* TSAttachmentMigration+AudioWaveformManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669379EE2C3C5E5800EED7A0 /* TSAttachmentMigration+AudioWaveformManager.swift */; };
 		669379F12C3C79E800EED7A0 /* TSAttachmentMigration+OWSMediaUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669379F02C3C79E800EED7A0 /* TSAttachmentMigration+OWSMediaUtils.swift */; };
-		669379F52C3C7EA800EED7A0 /* TSAttachmentMigration+ImageMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669379F42C3C7EA800EED7A0 /* TSAttachmentMigration+ImageMetadata.swift */; };
 		669379F32C3C7C3B00EED7A0 /* TSAttachmentMigration+OWSImageSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669379F22C3C7C3B00EED7A0 /* TSAttachmentMigration+OWSImageSource.swift */; };
+		669379F52C3C7EA800EED7A0 /* TSAttachmentMigration+ImageMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669379F42C3C7EA800EED7A0 /* TSAttachmentMigration+ImageMetadata.swift */; };
+		669379F72C3C847000EED7A0 /* TSAttachmentMigration+AttachmentValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669379F62C3C847000EED7A0 /* TSAttachmentMigration+AttachmentValidator.swift */; };
 		6694BF682B36484900B18764 /* PinnedThreadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6694BF672B36484800B18764 /* PinnedThreadManager.swift */; };
 		6694BF6A2B3650E400B18764 /* PinnedThreadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6694BF692B3650E400B18764 /* PinnedThreadStore.swift */; };
 		6694BF6C2B3656D500B18764 /* MockPinnedThreadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6694BF6B2B3656D500B18764 /* MockPinnedThreadManager.swift */; };
@@ -4028,8 +4029,9 @@
 		669379EC2C3C5B2C00EED7A0 /* TSAttachmentMigration+Records.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentMigration+Records.swift"; sourceTree = "<group>"; };
 		669379EE2C3C5E5800EED7A0 /* TSAttachmentMigration+AudioWaveformManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentMigration+AudioWaveformManager.swift"; sourceTree = "<group>"; };
 		669379F02C3C79E800EED7A0 /* TSAttachmentMigration+OWSMediaUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentMigration+OWSMediaUtils.swift"; sourceTree = "<group>"; };
-		669379F42C3C7EA800EED7A0 /* TSAttachmentMigration+ImageMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentMigration+ImageMetadata.swift"; sourceTree = "<group>"; };
 		669379F22C3C7C3B00EED7A0 /* TSAttachmentMigration+OWSImageSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentMigration+OWSImageSource.swift"; sourceTree = "<group>"; };
+		669379F42C3C7EA800EED7A0 /* TSAttachmentMigration+ImageMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentMigration+ImageMetadata.swift"; sourceTree = "<group>"; };
+		669379F62C3C847000EED7A0 /* TSAttachmentMigration+AttachmentValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentMigration+AttachmentValidator.swift"; sourceTree = "<group>"; };
 		6694BF672B36484800B18764 /* PinnedThreadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedThreadManager.swift; sourceTree = "<group>"; };
 		6694BF692B3650E400B18764 /* PinnedThreadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedThreadStore.swift; sourceTree = "<group>"; };
 		6694BF6B2B3656D500B18764 /* MockPinnedThreadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPinnedThreadManager.swift; sourceTree = "<group>"; };
@@ -8183,6 +8185,7 @@
 		66A1ABE02C33118A0033C5EB /* TSAttachment */ = {
 			isa = PBXGroup;
 			children = (
+				669379F62C3C847000EED7A0 /* TSAttachmentMigration+AttachmentValidator.swift */,
 				669379EE2C3C5E5800EED7A0 /* TSAttachmentMigration+AudioWaveformManager.swift */,
 				669379F42C3C7EA800EED7A0 /* TSAttachmentMigration+ImageMetadata.swift */,
 				669379F22C3C7C3B00EED7A0 /* TSAttachmentMigration+OWSImageSource.swift */,
@@ -14930,6 +14933,7 @@
 				669FAE152B75968D009EE2FE /* TSAttachmentDownloadJob.swift in Sources */,
 				F9C5CC72289453B300548EEE /* TSAttachmentDownloadManager.swift in Sources */,
 				66E1AD962B91437B00C56B7B /* TSAttachmentManager.swift in Sources */,
+				669379F72C3C847000EED7A0 /* TSAttachmentMigration+AttachmentValidator.swift in Sources */,
 				669379EF2C3C5E5800EED7A0 /* TSAttachmentMigration+AudioWaveformManager.swift in Sources */,
 				669379F52C3C7EA800EED7A0 /* TSAttachmentMigration+ImageMetadata.swift in Sources */,
 				669379F32C3C7C3B00EED7A0 /* TSAttachmentMigration+OWSImageSource.swift in Sources */,

@@ -418,7 +418,7 @@ extension TSAttachmentMigration {
 
         // MARK: - Image Metadata
 
-        private func imageMetadata(
+        func imageMetadata(
             mimeTypeForValidation declaredMimeType: String?
         ) -> TSAttachmentMigration.ImageMetadata? {
             guard byteLength < TSAttachmentMigration.kMaxFileSizeGeneric else {
