@@ -153,10 +153,12 @@ class CallControls: UIView {
             withInset: HeightConstants.bottomPadding,
             relation: .lessThanOrEqual
         )
+        let insetFromBottom: CGFloat = FeatureFlags.callDrawerSupport ? 56 : 32
+        let insetFromTop: CGFloat = FeatureFlags.callDrawerSupport ? 0 : 16
         NSLayoutConstraint.autoSetPriority(.defaultHigh - 1) {
-            controlsStack.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 32)
+            controlsStack.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: insetFromBottom)
         }
-        controlsStack.autoPinEdge(toSuperviewEdge: .top, withInset: 16)
+        controlsStack.autoPinEdge(toSuperviewEdge: .top, withInset: insetFromTop)
 
         updateControls()
     }
