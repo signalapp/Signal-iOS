@@ -1,1 +1,1 @@
-• Signal grup aramaları boyunca emoji tepkilerinin görüntülenmesini iyileştirmek için bir bulanıklık efekti ekledik. Çok fazla tepki alındığında, bulanıklık belirmeye başlayacak.
+• Grup aramaları sırasında iletişim kurmak için başka bir yol arıyorsan elini kaldır. Yeni El Kaldırma özelliği; birinin dikkatini çekmenin veya grup aramalarında soru sormanın basit bir yoludur.

@@ -1,1 +1,1 @@
-• Vi har tilføjet en subtil sløringseffekt for at forbedre visningen af emojireaktioner under Signal-gruppeopkald. Hvis der nogensinde er så mange reaktioner, at det begynder at føles som en sløring, er det nu endnu mere tematisk passende.
+• Ræk hånden op, hvis du har ledt efter en anden måde at kommunikere på under gruppeopkald. Den nye Ræk hånden op-funktion er en enkel måde at få nogens opmærksomhed på, stille et spørgsmål eller enstemmigt stemme på et gruppeforslag, når din ven spørger "hvem er for?"

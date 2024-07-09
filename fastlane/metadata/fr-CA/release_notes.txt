@@ -1,1 +1,1 @@
-• Nous avons ajouté un effet de flou subtil pour améliorer l’affichage des réactions émoji pendant les appels de groupe Signal. Pratique si une vague de réactions vous met un peu dans le flou !
+• Vous rêviez d’un autre moyen de communiquer lors des appels de groupe ? La nouvelle fonctionnalité « Lever la main » est faite pour vous : elle vous permet d’attirer l’attention des participants, de poser des questions et même de voter pour prendre une décision en groupe.

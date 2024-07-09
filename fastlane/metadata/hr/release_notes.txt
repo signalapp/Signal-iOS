@@ -1,1 +1,1 @@
-• Dodali smo efekt zamagljivanja kako bismo poboljšali prikaz emoji reakcija tijekom grupnih poziva na Signalu.
+• Nova značajka podizanja ruke jednostavan je način da privučete pozornost ili postavite pitanje tijekom grupnih poziva.

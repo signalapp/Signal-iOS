@@ -1,1 +1,1 @@
-• Adicionamos um efeito de desfoque sutil para melhorar a exibição das reações de emojis durante as chamadas de grupo no Signal. Temos tantas reações que você pode se confundir e achar que não está vendo bem. Não dá pra dizer que a gente fugiu ao tema com o desfoque 😏
+• Levante a mão se você estiver procurando outra maneira de se comunicar durante as chamadas em grupo. O recurso "Levantar a Mão" é perfeito para chamar a atenção de alguém, tirar dúvidas ou votar em grupo de forma unânime quando um amigo perguntar: 'Todos a favor?'

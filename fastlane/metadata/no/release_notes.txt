@@ -1,1 +1,1 @@
-• Vi har lagt til litt skygger for å sikre at emoji-reaksjoner kommer tydeligere frem i gruppesamtaler på Signal.
+• Nå kan du rekke opp hånden for å stille spørsmål eller be om oppmerksomheten i gruppesamtaler.

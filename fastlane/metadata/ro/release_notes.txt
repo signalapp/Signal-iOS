@@ -1,1 +1,1 @@
-• Am adăugat un efect subtil de estompare pentru a îmbunătăți afișarea reacțiilor emoji în timpul apelurilor de grup Signal. Dacă există vreodată atât de multe reacții încât totul începe să pară confuz, atunci acest lucru este și mai potrivit din punct de vedere tematic.
+• Ridică mâna dacă ai căutat o altă modalitate de a comunica în timpul apelurilor de grup. Noua funcție Ridică mâna este o modalitate simplă de a atrage atenția cuiva, de a pune o întrebare sau de a vota în unanimitate pentru o propunere de grup atunci când prietenul tău întreabă "cine e pentru?"

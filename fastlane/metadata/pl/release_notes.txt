@@ -1,1 +1,1 @@
-• Dodaliśmy subtelny efekt rozmycia, który poprawi wyświetlanie emoji podczas połączeń grupowych Signal. Jeśli więc od ilości emocji mieni Ci się w oczach, to już wiesz, czyja to sprawka.
+• Podnieś rękę, jeśli szukasz innego sposobu komunikowania się podczas rozmów grupowych. Nowa funkcja podnoszenia ręki to prosty sposób na przyciągnięcie uwagi, zadanie pytania lub szybkie głosowanie na hasło „wszyscy za?”.

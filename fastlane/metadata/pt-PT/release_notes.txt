@@ -1,1 +1,1 @@
-• Adicionámos um efeito de desfocado subtil para melhorar a exibição de emojis durante chamadas de grupo do Signal.
+• A nova funcionalidade de levantar a mão é uma forma simples de chamar a atenção de alguém ou fazer uma pergunta durante chamadas de grupo.

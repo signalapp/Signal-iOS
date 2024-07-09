@@ -1,1 +1,1 @@
-• Lisäsimme sumennustehosteen parantaaksemme emoji-reaktioiden näyttämistä Signal-ryhmäpuheluiden aikana.
+• Uusi Nosta käsi -ominaisuus on helppo tapa kiinnittää jonkun huomio tai esittää kysymys ryhmäpuhelussa.

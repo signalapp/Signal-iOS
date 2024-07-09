@@ -1,1 +1,1 @@
-• Hem afegit un subtil efecte de desenfocament perquè les reaccions amb emojis puguin veure's millor durant les trucades grupals de Signal.
+• La nova funció Aixecar la mà és una manera senzilla de cridar l'atenció d'algú o fer una pregunta durant les trucades grupals.

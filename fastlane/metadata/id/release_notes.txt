@@ -1,1 +1,1 @@
-• Kami menambahkan efek buram untuk meningkatkan tampilan tanggapan emoji selama panggilan grup Signal.
+• Fitur baru "Angkat Tangan" memudahkan pengguna saat ingin mendapatkan perhatian seseorang atau menyampaikan pertanyaan selama panggilan grup.

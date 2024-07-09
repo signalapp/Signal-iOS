@@ -1,1 +1,1 @@
-• Pridali sme efekt rozmazania pre lepšie zobrazenie emoji reakcií počas skupinových hovorov Signal.
+• Zdvihnite ruku všetci tí, čo hľadáte iný spôsob komunikácie počas skupinových hovorov. Nová funkcia Zdvihnúť ruku je jednoduchý spôsob, ako upútať niekoho pozornosť, položiť otázku alebo jednomyseľne zahlasovať za skupinový návrh, keď sa niekto spýta „všetci za?“

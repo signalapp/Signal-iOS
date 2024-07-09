@@ -1,1 +1,1 @@
-• Homályos effektust adtunk hozzá, hogy javítsuk a hangulatjeles reakciók megjelenítését a csoportos Signal-hívások során.
+• Az új Felemelt kéz funkció egyszerű módja annak, hogy felhívd valaki figyelmét vagy kérdést tegyél fel csoportos hívások során.

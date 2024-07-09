@@ -1,1 +1,1 @@
-• Vi har lagt till en effekt för oskärpa för att förbättra visningen av emoji-reaktioner under Signal-gruppsamtal.
+• Den nya funktionen Räck upp handen är ett enkelt sätt att få någons uppmärksamhet eller ställa en fråga under gruppsamtal.

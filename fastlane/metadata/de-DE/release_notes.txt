@@ -1,1 +1,1 @@
-• Wir haben einen subtilen Unschärfe-Effekt hinzugefügt, um die Anzeige von Emoji-Reaktionen während Signal-Gruppenanrufen zu verbessern. Wenn es so viele Reaktionen gibt, dass es sich anfühlt, als würde alles verschwimmen, dann passt das jetzt auch bildlich viel besser.
+• Hebe die Hand, wenn auch du nach einer weiteren Möglichkeit gesucht hast, bei Gruppenanrufen zu kommunizieren. Dank der neuen Funktion »Hand heben« kannst du ganz einfach auf dich aufmerksam machen, eine Frage stellen oder für einen Gruppenvorschlag stimmen, wenn jemand »Sind alle dafür?« fragt.

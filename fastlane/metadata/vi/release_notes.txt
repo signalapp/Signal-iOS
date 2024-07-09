@@ -1,1 +1,1 @@
-• Chúng tôi đã thêm hiệu ứng làm mờ để hiển thị tốt hơn emoji bày tỏ cảm xúc trong các cuộc gọi nhóm của Signal.
+• Tính năng Giơ Tay mới là một phương thức đơn giản để thu hút sự chú ý của một người hoặc hỏi câu hỏi trong các cuộc gọi nhóm.

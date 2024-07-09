@@ -1,1 +1,1 @@
-• Přidali jsme efekt rozmazání pro lepší zobrazení emoji reakcí během skupinových hovorů Signal.
+• Zvedněte ruku, pokud hledáte jiný způsob komunikace během skupinových hovorů. Nová funkce Zvedni ruku představuje jednoduchý způsob, jak upoutat něčí pozornost nebo položit otázku během skupinových hovorů.

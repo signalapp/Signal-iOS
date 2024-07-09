@@ -1,1 +1,1 @@
-• We added a subtle blur effect to improve the display of emoji reactions during Signal group calls. If there are ever so many reactions that it starts to feel like a blur, now that's even more thematically appropriate.
+• Raise your hand if you've been looking for another way to communicate during group calls. The new Raise Hand feature is a simple way to get someone's attention, ask a question, or unanimously vote for a group proposal when your friend asks "all those in favor?"

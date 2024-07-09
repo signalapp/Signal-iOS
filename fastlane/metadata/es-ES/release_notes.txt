@@ -1,1 +1,1 @@
-• Hemos añadido un sutil efecto de desenfoque para que las reacciones con emojis puedan verse mejor durante las llamadas grupales de Signal. Así, si alguna vez hay tantas reacciones simultáneas que te cuesta enfocarte en una, al menos sabrás que estás en buena compañía.
+• La nueva función Levantar la mano es una forma sencilla de llamar la atención de alguien o hacer una pregunta durante las llamadas grupales.
