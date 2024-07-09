@@ -246,7 +246,7 @@ final class MessageBackupSimpleChatUpdateTest: MessageBackupIntegrationTestCase 
                 if let verificationStateChange = interaction as? OWSVerificationStateChangeMessage {
                     /// Info messages for verification state changes are all
                     /// this subclass, rather than a generic info message.
-                    owsAssert(verificationStateChange.messageType == .verificationStateChange)
+                    owsPrecondition(verificationStateChange.messageType == .verificationStateChange)
 
                     XCTAssertTrue(verificationStateChange.isLocalChange)
                     XCTAssertEqual(verificationStateChange.recipientAddress.aci, expectedAci)
@@ -257,7 +257,7 @@ final class MessageBackupSimpleChatUpdateTest: MessageBackupIntegrationTestCase 
                 } else if let unknownProtocolVersion = interaction as? OWSUnknownProtocolVersionMessage {
                     /// Info messages for unknown protocol versions are all this
                     /// subclass, rather than a generic info message.
-                    owsAssert(unknownProtocolVersion.messageType == .unknownProtocolVersion)
+                    owsPrecondition(unknownProtocolVersion.messageType == .unknownProtocolVersion)
 
                     XCTAssertTrue(unknownProtocolVersion.isProtocolVersionUnknown)
                     try insertAndAssert(
