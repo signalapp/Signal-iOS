@@ -11,7 +11,7 @@ import SignalServiceKit
 
 protocol RaisedHandsToastDelegate: AnyObject {
     func didTapViewRaisedHands()
-    func raisedHandsToastDidChangeHeight(withAnimation: Bool)
+    func raisedHandsToastDidChangeHeight()
 }
 
 // MARK: - RaisedHandsToast
@@ -187,6 +187,11 @@ class RaisedHandsToast: UIView {
         }
     }
 
+    /// Updates the view contents and constraints based on the value of `isCollapsed`.
+    /// - Parameter animated: Whether the change should be animated.
+    /// Note that changes in view height will result in a
+    /// `delegate?.raisedHandsToastDidChangeHeight` call which will animate the
+    /// superview, regardless of this value.
     private func updateExpansionState(animated: Bool) {
         let oldHeight = self.height
 
@@ -218,7 +223,7 @@ class RaisedHandsToast: UIView {
         }
 
         if self.height != oldHeight {
-            self.delegate?.raisedHandsToastDidChangeHeight(withAnimation: animated)
+            self.delegate?.raisedHandsToastDidChangeHeight()
         }
     }
 
@@ -283,11 +288,17 @@ class RaisedHandsToast: UIView {
             )
         }()
 
-        if oldValue.isEmpty {
+        var youJustRaisedYourHand: Bool {
+            self.call.ringRtcCall.localDeviceState.demuxId.map({ yourDemuxID in
+                raisedHands.contains(yourDemuxID) && !oldValue.contains(yourDemuxID)
+            }) ?? false
+        }
+
+        if oldValue.isEmpty || youJustRaisedYourHand {
             self.isCollapsed = false
         }
 
-        self.updateExpansionState(animated: true)
+        self.updateExpansionState(animated: !oldValue.isEmpty)
         self.queueCollapse()
     }
 

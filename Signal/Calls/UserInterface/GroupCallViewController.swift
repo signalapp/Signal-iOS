@@ -1576,8 +1576,8 @@ extension GroupCallViewController: RaisedHandsToastDelegate {
         self.didTapMembersButton()
     }
 
-    func raisedHandsToastDidChangeHeight(withAnimation: Bool) {
-        self.updateCallUI(shouldAnimateViewFrames: withAnimation)
+    func raisedHandsToastDidChangeHeight() {
+        self.updateCallUI(shouldAnimateViewFrames: true)
     }
 }
 
