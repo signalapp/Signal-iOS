@@ -992,10 +992,6 @@ class GroupCallViewController: UIViewController {
     }
 
     private func dismissCall(shouldHangUp: Bool = true) {
-        if FeatureFlags.callDrawerSupport {
-            bottomSheet.dismiss(animated: false)
-        }
-
         if shouldHangUp {
             callService.callUIAdapter.localHangupCall(call)
         }
@@ -1021,6 +1017,16 @@ class GroupCallViewController: UIViewController {
 
         splitViewSnapshot.autoPinEdgesToSuperviewEdges()
 
+        if FeatureFlags.callDrawerSupport {
+            bottomSheet.dismiss(animated: true) { [self] in
+                dismissSelf(splitViewSnapshot: splitViewSnapshot)
+            }
+        } else {
+            self.dismissSelf(splitViewSnapshot: splitViewSnapshot)
+        }
+    }
+
+    private func dismissSelf(splitViewSnapshot: UIView) {
         UIView.animate(withDuration: 0.2, animations: {
             self.view.alpha = 0
         }) { _ in
