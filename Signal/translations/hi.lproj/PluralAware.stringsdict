@@ -1192,9 +1192,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$@ and %2$d more have raised a hand</string>
+			<string>%1$@ और %2$d ने और भी हाथ उठाया है</string>
 			<key>other</key>
-			<string>%1$@ and %2$d more have raised a hand</string>
+			<string>%1$@ और %2$d ने और भी हाथ उठाया है</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>

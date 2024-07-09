@@ -1488,13 +1488,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$@ and %2$d more have raised a hand</string>
+			<string>%1$@ a %2$d další mají zvednutou ruku</string>
 			<key>few</key>
-			<string>%1$@ and %2$d more have raised a hand</string>
+			<string>%1$@ a %2$d další mají zvednutou ruku</string>
 			<key>many</key>
-			<string>%1$@ and %2$d more have raised a hand</string>
+			<string>%1$@ a %2$d dalších mají zvednutou ruku</string>
 			<key>other</key>
-			<string>%1$@ and %2$d more have raised a hand</string>
+			<string>%1$@ a %2$d dalších mají zvednutou ruku</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>

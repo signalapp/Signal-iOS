@@ -212,7 +212,7 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Onbekende database-versie.";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Er ging iets mis met Signal toen je het probeerde te openen. Stuur alsjeblieft een foutopsporingslog naar support@signal.org om ons te helpen het probleem te begrijpen en op te lossen.";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Er ging iets mis bij het openen van Signal. Stuur alsjeblieft een foutopsporingslog naar support@signal.org om ons te helpen het probleem te begrijpen en op te lossen.";
 
 /* Error indicating that the app crashed during the previous launch. */
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Kon Signal niet openen";
@@ -572,7 +572,7 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Deblokkeren";
 
 /* An explanation of what unblocking a contact means. */
-"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Jullie zullen weer berichten aan elkaar kunnen verzenden en elkaar weer kunnen bellen via Signal.";
+"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Jullie zullen weer berichten naar elkaar kunnen sturen en met elkaar kunnen bellen.";
 
 /* Action sheet body when confirming you want to unblock a group */
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Huidige leden van de groep zullen jou weer aan de groep kunnen toevoegen.";
@@ -695,7 +695,7 @@
 "CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Gemiste spraakoproep op %1$@";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Je kunt microfoontoegang inschakelen in de iOS-instellingenapp om te kunnen bellen en spraakberichten op te kunnen nemen met Signal.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Je kunt microfoontoegang inschakelen in de iOS-instellingenapp om te kunnen bellen en spraakberichten te kunnen opnemen met Signal.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Toegang vereist tot microfoon";
@@ -785,7 +785,7 @@
 "CALL_VIEW_TURN_VIDEO_ON_LABEL" = "Camera inschakelen";
 
 /* Accessibility label for unmuting the microphone */
-"CALL_VIEW_UNMUTE_LABEL" = "Dempen opheffen";
+"CALL_VIEW_UNMUTE_LABEL" = "Microfoon niet langer dempen";
 
 /* Shown in the header below the name of the call while waiting for the host to allow you to enter the call. */
 "CALL_WAITING_TO_BE_LET_IN" = "Aan het wachten op toelating…";
@@ -1037,13 +1037,13 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "‘Auto’ betekent dat er automatisch een kleur wordt gekozen die past bij de achtergrond";
 
 /* Title for context menu action to disable chat list filter (e.g., Filter by Unread) */
-"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Clear Filter";
+"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Filter verwijderen";
 
 /* Title for the chat list's default mode. */
 "CHAT_LIST_TITLE_INBOX" = "Chats";
 
 /* Title for context menu action to enable Filter by Unread */
-"CHAT_LIST_UNREAD_FILTER_MENU_ACTION" = "Filter by Unread";
+"CHAT_LIST_UNREAD_FILTER_MENU_ACTION" = "Filteren op ongelezen";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Chatkleur & -achtergrond";
@@ -1454,7 +1454,7 @@
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Deze chat dempen voor…";
 
 /* Label for button to mute a thread forever. */
-"CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Voor altijd";
+"CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Altijd";
 
 /* Button to mute the chat */
 "CONVERSATION_SETTINGS_MUTE_BUTTON" = "dempen";
@@ -1484,10 +1484,10 @@
 "CONVERSATION_SETTINGS_MUTED_ALWAYS" = "Voor altijd";
 
 /* Indicates that this thread is muted forever. */
-"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Voor onbepaalde tijd gedempt";
+"CONVERSATION_SETTINGS_MUTED_ALWAYS_UNMUTE" = "Voor altijd gedempt";
 
 /* Button to unmute the chat */
-"CONVERSATION_SETTINGS_MUTED_BUTTON" = "Meldingen niet langer dempen";
+"CONVERSATION_SETTINGS_MUTED_BUTTON" = "dempen opheffen";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "tot %1$@";
@@ -1541,7 +1541,7 @@
 "CONVERSATION_SETTINGS_UNBLOCK_USER" = "Persoon deblokkeren";
 
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Niet langer dempen";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Dempen opheffen";
 
 /* Button to start a video call */
 "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "video";
@@ -2165,7 +2165,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "Verdwijnende berichten zijn ingeschakeld voor deze chat. Je donatiebericht verdwijnt over %1$@.";
 
 /* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, this error message is shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "Kan niet doneren. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "Kan niet doneren. Controleer je internetverbinding en probeer het opnieuw.";
 
 /* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, an error dialog is shown. This is the title of that dialog. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_TITLE" = "Kan niet doneren";
@@ -2372,7 +2372,7 @@
 "DONATION_VIEW_DONOR_FAQ" = "Veelgestelde vragen over doneren";
 
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
-"DONATION_VIEW_LOAD_FAILED" = "Netwerkfout. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
+"DONATION_VIEW_LOAD_FAILED" = "Netwerkfout. Controleer je internetverbinding en probeer het opnieuw.";
 
 /* Title for the 'Badges' button on the donation screen */
 "DONATION_VIEW_MANAGE_BADGES" = "Badges";
@@ -2492,7 +2492,7 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Oproep mislukt";
 
 /* Error indicating that a message could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Kan een bericht niet doorsturen";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Kan bericht niet doorsturen";
 
 /* Error indicating that a message could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Kan een bericht niet doorsturen omdat het niet langer beschikbaar is";
@@ -2501,7 +2501,7 @@
 "ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Kan sommige berichten niet doorsturen omdat die inmiddels niet langer beschikbaar zijn.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Kan bericht niet doorsturen";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Kan berichten niet doorsturen";
 
 /* Error indicating that 'save video' failed. */
 "ERROR_COULD_NOT_SAVE_VIDEO" = "Kan video niet opslaan.";
@@ -2522,7 +2522,7 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Kon bericht niet versturen, omdat je deze persoon hebt geblokkeerd.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
-"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Bericht kon niet verzonden worden wegens gebrek aan geldige ontvangers.";
+"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Bericht kon niet worden verzonden wegens gebrek aan geldige ontvangers.";
 
 /* Error indicating that a socket request failed. */
 "ERROR_DESCRIPTION_REQUEST_FAILED" = "Netwerkverzoek is mislukt.";
@@ -2639,13 +2639,13 @@
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Je veiligheidsnummer met %1$@ is recentelijk veranderd. Wellicht wil je het veiligheidsnummer verifiëren voordat je dit bericht verstuurt.";
 
 /* Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "Je donatie kan niet worden ingewisseld. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "Je donatie kan niet worden ingewisseld. Controleer je internetverbinding en probeer het opnieuw.";
 
 /* Shown as the title of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
 "FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "Kan donatie niet inwisselen";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Verifiëren van veiligheidsnummer mislukt!";
+"FAILED_VERIFICATION_TITLE" = "Verifiëren van veiligheidsnummer niet gelukt";
 
 /* Section header directing user to select a badge */
 "FEATURED_BADGE_SECTION_HEADER" = "Kies een badge";
@@ -2828,7 +2828,7 @@
 "GROUP_CALL_INCOMING_RING_FORMAT" = "%1$@ belt de groep";
 
 /* Text explaining the group call is full */
-"GROUP_CALL_IS_FULL" = "De oproep zit vol";
+"GROUP_CALL_IS_FULL" = "De oproep is vol";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
 "GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Bellen naar %1$@…";
@@ -2879,7 +2879,7 @@
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%1$@ is in deze oproep aanwezig";
 
 /* Text explaining that a member is presenting. Embeds {member name} */
-"GROUP_CALL_PRESENTING_FORMAT" = "%1$@ laat een scherm zien";
+"GROUP_CALL_PRESENTING_FORMAT" = "%1$@ deelt een scherm";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "Opnieuw verbinden";
@@ -2912,16 +2912,16 @@
 "GROUP_CALL_TOO_LARGE_TO_RING" = "De groep is te groot om de leden te bellen.";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ en %2$@ zijn in deze groepsoproep aanwezig";
+"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ en %2$@ zijn in deze oproep aanwezig";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
-"GROUP_CALL_UNEXPECTEDLY_ENDED" = "Je hebt de verbinding met de oproep verloren. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
+"GROUP_CALL_UNEXPECTEDLY_ENDED" = "Je hebt de verbinding met de oproep verloren. Controleer je internetverbinding en probeer het opnieuw.";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%1$@ krijgt hier een melding van";
+"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%1$@ zal een melding krijgen";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ en %2$@ krijgen hier een melding van";
+"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ en %2$@ zullen een melding krijgen";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
 "GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal zal %1$@ bellen";
@@ -3041,10 +3041,10 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de groepsinstellingen aangepast om uitsluitend beheerders de mogelijkheid te geven om berichten te verzenden en oproepen te beginnen.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "Je kunt niet door middel van een groepslink lid worden van deze groep omdat je door een beheerder uit deze groep bent verwijderd.";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "Je kunt niet via de groepslink lid worden van deze groep omdat je door een beheerder uit deze groep bent verwijderd.";
 
 /* Title indicating that you cannot join a group in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "Kan niet deelnemen aan de groep";
+"GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "Kan niet lid worden van de groep";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "De groepslink is niet langer geldig.";
@@ -3179,7 +3179,7 @@
 "GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Je bent lid geworden van de groep.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "Je bent via de deelbare groepslink lid geworden van de groep.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "Je bent via de groepslink lid geworden van de groep.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft je verwijderd.";
@@ -3215,7 +3215,7 @@
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Beheerder";
 
 /* Label indicating that a new group has no other members. */
-"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Je kunt na het maken van deze groep vrienden uitnodigen of toevoegen.";
+"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Je kunt na het maken van deze groep vrienden ervoor uitnodigen of eraan toevoegen.";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Leden";
@@ -3392,22 +3392,22 @@
 "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de groepsomschrijving aangepast.";
 
 /* Message indicating that the group's name was removed. */
-"GROUP_UPDATED_NAME_REMOVED" = "De naam van de groep is verwijderd.";
+"GROUP_UPDATED_NAME_REMOVED" = "De groepsnaam is verwijderd.";
 
 /* Message indicating that the group's name was removed by the local user. */
-"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "Je hebt de naam van de groep verwijderd.";
+"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "Je hebt de groepsnaam verwijderd.";
 
 /* Message indicating that the group's name was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de naam van de groep verwijderd.";
+"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de groepsnaam verwijderd.";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "Je hebt de naam van de groep gewijzigd naar ‘%1$@’.";
+"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "Je hebt de groepsnaam gewijzigd naar ‘%1$@’.";
 
 /* Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de naam van de groep gewijzigd naar ‘%2$@’.";
+"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de groepsnaam gewijzigd naar ‘%2$@’.";
 
 /* Message indicating that the group's name was changed. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "De naam van de groep is vanaf nu ‘%1$@’.";
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "De groepsnaam is vanaf nu ‘%1$@’.";
 
 /* Message indicating that the group was migrated. */
 "GROUP_WAS_MIGRATED" = "Deze groep is omgezet in een nieuwe-stijl groep.";
@@ -3818,7 +3818,7 @@
 "LINK_NEW_DEVICE_SUBTITLE" = "Scan een QR-code om een nieuw apparaat te koppelen.";
 
 /* Navigation title when scanning QR code to add new device. */
-"LINK_NEW_DEVICE_TITLE" = "Link a New Device";
+"LINK_NEW_DEVICE_TITLE" = "Een nieuw apparaat koppelen";
 
 /* Label for link previews with an unknown host. */
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Linkvoorbeeld";
@@ -4244,7 +4244,7 @@
 "MESSAGE_STATUS_FAILED_SHORT" = "Mislukt";
 
 /* Label indicating that a message was only sent to some recipients. */
-"MESSAGE_STATUS_PARTIALLY_SENT" = "Gedeeltelijk verzonden, tik hier voor details";
+"MESSAGE_STATUS_PARTIALLY_SENT" = "Gedeeltelijk verzonden, tik voor details";
 
 /* Label indicating that a message send was paused. */
 "MESSAGE_STATUS_PENDING" = "Verzenden is gepauzeerd";
@@ -4421,7 +4421,7 @@
 "NEW_GROUP_CREATION_FAILED" = "De nieuwe groep kon niet worden aangemaakt.";
 
 /* Error indicating that a new group could not be created due to network connectivity problems. */
-"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Een nieuwe groep kon niet worden aangemaakt. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
+"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "De nieuwe groep kon niet worden aangemaakt. Controleer je internetverbinding en probeer het opnieuw.";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "Een groepsnaam is vereist.";
@@ -4619,7 +4619,7 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Overslaan en nieuwe pincode aanmaken";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Als je je pincode niet kan herinneren, dan kun je een nieuwe pincode aanmaken. Je kunt je opnieuw registreren en je account gebruiken maar je verliest wel een aantal opgeslagen instellingen, zoals je profielinformatie.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Als je je pincode niet kunt herinneren, dan kun je een nieuwe pincode aanmaken. Je kunt je opnieuw registreren en je account gebruiken maar je verliest wel een aantal opgeslagen instellingen, zoals je profielinformatie.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Pincode invoeren overslaan?";
@@ -4919,7 +4919,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "Verificatiefout bij Betalingsvergrendeling.";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
-"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "De betaling kan niet worden voltooid. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
+"PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "De betaling kan niet worden voltooid. Controleer je internetverbinding en probeer het opnieuw.";
 
 /* Label for the 'payment estimated fee' indicator. */
 "PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "Netwerkkosten";
@@ -4973,7 +4973,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "Betaling succesvol afgerond";
 
 /* Status indicator for incoming payments which have not yet been verified. */
-"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "Nog niet geverifieerd";
+"PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED" = "Niet geverifieerd";
 
 /* Status indicator for incoming payments which have been verified. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_VERIFIED" = "Geverifieerd";
@@ -4991,7 +4991,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED" = "Aan het voorbereiden";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "Nog niet geverifieerd";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED" = "Niet geverifieerd";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_VERIFIED" = "Geverifieerd";
@@ -5003,7 +5003,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE" = "Voltooid";
 
 /* Status indicator for incoming payments which have not yet been verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "Nog niet geverifieerd";
+"PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED" = "Niet geverifieerd";
 
 /* Status indicator for incoming payments which have been verified. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_VERIFIED" = "Geverifieerd";
@@ -5021,7 +5021,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED" = "Aan het voorbereiden";
 
 /* Status indicator for outgoing payments which have been submitted but not yet verified. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "Nog niet geverifieerd";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED" = "Niet geverifieerd";
 
 /* Status indicator for outgoing payments which have been verified but not yet sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_VERIFIED" = "Geverifieerd";
@@ -5234,7 +5234,7 @@
 "PIN_ACTION" = "Vastzetten";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "Je nieuwe pincode kan niet worden aangemaakt. Je oude pincode is al wel ongeldig geworden. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
+"PIN_CHANGE_ERROR_MESSAGE" = "Je nieuwe pincode kan niet worden aangemaakt. Je oude pincode is al wel ongeldig geworden. Controleer je internetverbinding en probeer het opnieuw.";
 
 /* Error title indicating that the attempt to change a PIN failed. */
 "PIN_CHANGE_ERROR_TITLE" = "Het veranderen van je pincode is mislukt";
@@ -5261,7 +5261,7 @@
 "PIN_CREATION_DISABLE_CONFIRMATION_ACTION" = "Pincode uitschakelen";
 
 /* Message of the 'pin disable' action sheet. */
-"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Als je de pincode uitschakelt dan zul je alle gegevens kwijtraken wanneer je Signal opnieuw registreert, tenzij je de gegevens vanaf een ander iOS-apparaat overzet. Zolang de pincode is uitgeschakeld kun je geen registratievergrendeling inschakelen.";
+"PIN_CREATION_DISABLE_CONFIRMATION_MESSAGE" = "Als je de pincode uitschakelt zul je wanneer je Signal opnieuw registreert alle gegevens kwijtraken, tenzij je de gegevens vanaf een ander iOS-apparaat overzet. Zolang de pincode is uitgeschakeld kun je geen registratievergrendeling inschakelen.";
 
 /* Title of the 'pin disable' action sheet. */
 "PIN_CREATION_DISABLE_CONFIRMATION_TITLE" = "Waarschuwing";
@@ -5282,7 +5282,7 @@
 "PIN_CREATION_MISMATCH_ERROR" = "De pincodes komen niet overeen. Probeer het opnieuw.";
 
 /* Error body indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
+"PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Controleer je internetverbinding en probeer het opnieuw.";
 
 /* Error title indicating that the attempt to create a PIN failed due to network issues. */
 "PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "Geen internetverbinding";
@@ -5309,7 +5309,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Registratievergrendeling uitschakelen?";
 
 /* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "Het aanmaken van je pincode is geslaagd, maar de registratievergrendeling kan niet worden ingeschakeld. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "Het aanmaken van je pincode is geslaagd, maar de registratievergrendeling kan niet worden ingeschakeld. Controleer je internetverbinding en probeer het opnieuw.";
 
 /* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
 "PIN_CREATION_REGLOCK_ERROR_TITLE" = "Registratievergrendeling inschakelen is mislukt";
@@ -5339,7 +5339,7 @@
 "PIN_RECREATION_ERROR_TITLE" = "Pincode aanmaken mislukt";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "Het aanmaken van een pincode is mislukt. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
+"PIN_RECRETION_ERROR_MESSAGE" = "Je nieuwe pincode kan niet worden aangemaakt. Controleer je internetverbinding en probeer het opnieuw.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Om je te helpen je pincode te onthouden, vragen we je regelmatig om je pincode in te voeren. We zullen dit na verloop van tijd minder vaak vragen.";
@@ -5456,7 +5456,7 @@
 "PROCEED_BUTTON" = "Doorgaan";
 
 /* Placeholder text for the bio field of the profile bio view. */
-"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Schrijf iets over jezelf";
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Schrijf iets over jezelf…";
 
 /* The 'Be kind' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Wees lief voor me";
@@ -5621,13 +5621,13 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
 
 /* Label for a button to lower your raised hand in a call. */
-"RAISED_HANDS_LOWER_HAND_BUTTON" = "Lower";
+"RAISED_HANDS_LOWER_HAND_BUTTON" = "Omlaag doen";
 
 /* A message appearing on the call view's raised hands toast indicating that another named member has raised their hand. */
-"RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@ has raised a hand";
+"RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@ steekt een hand op";
 
 /* A message appearing on the call view's raised hands toast indicating that you raised your own hand. */
-"RAISED_HANDS_TOAST_YOUR_HAND_MESSAGE" = "You raised your hand";
+"RAISED_HANDS_TOAST_YOUR_HAND_MESSAGE" = "Je steekt een hand op";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
 "REACTION_DETAIL_ALL_FORMAT" = "Alle %1$@";
@@ -5924,7 +5924,7 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Toch verzenden";
 
 /* Message for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "De volgende personen hebben mogelijk de app opnieuw geïnstalleerd of hebben een ander apparaat in gebruik genomen. Verifieer jullie veiligheidsnummers om zeker te zijn dat je met de juiste personen communiceert.";
+"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "De volgende personen hebben Signal mogelijk opnieuw geïnstalleerd of kunnen van toestel zijn veranderd. Verifieer jullie veiligheidsnummers om zeker te zijn dat je met de juiste personen communiceert.";
 
 /* Text explaining that the given contact previously had their safety number verified. */
 "SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Was voorheen geverifieerd";
@@ -5942,7 +5942,7 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "Ons Signal-veiligheidsnummer:\n%1$@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Je veiligheidsnummer met %1$@ is veranderd. Het wordt aanbevolen het nieuwe veiligheidsnummer te verifiëren.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Je veiligheidsnummer met %1$@ is veranderd. Wellicht wil je het veiligheidsnummer verifiëren voordat je verder gaat.";
 
 /* Title for Safety Tips button in thread details. */
 "SAFETY_TIPS_BUTTON_ACTION_TITLE" = "Veiligheidstips";
@@ -6236,7 +6236,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Censuuromzeiling kan alleen worden ingeschakeld als je verbonden bent met het internet.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Censuuromzeiling is niet nodig, je bent al verbonden met Signals servers.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Censuuromzeiling is voor jou op dit moment niet nodig, want je bent al verbonden met Signals servers.";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Foutopsporingslog inschakelen";
@@ -6527,10 +6527,10 @@
 "SETTINGS_PAYMENTS_CANNOT_ACTIVATE_PAYMENTS_KILL_SWITCH" = "Betalingen via Signal zijn niet langer mogelijk. Je kunt nog wel je krediet overschrijven naar een andere beurs maar je kunt niet langer betalingen verzenden of ontvangen of krediet toevoegen.";
 
 /* Error message indicating that payments could not be deactivated because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Kan betalingen niet uitschakelen omdat je krediet niet beschikbaar is. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
+"SETTINGS_PAYMENTS_CANNOT_DEACTIVATE_PAYMENTS_NO_BALANCE" = "Kan betalingen niet uitschakelen omdat je krediet niet beschikbaar is. Controleer je internetverbinding en probeer het opnieuw.";
 
 /* Error message indicating that a payment could not be sent because the current balance is unavailable. */
-"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Kan de betaling niet uitvoeren omdat je krediet niet beschikbaar is. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
+"SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENT_NO_BALANCE" = "Kan de betaling niet uitvoeren omdat je krediet niet beschikbaar is. Controleer je internetverbinding en probeer het opnieuw.";
 
 /* Error message indicating that payments cannot be sent because the feature is not currently available. */
 "SETTINGS_PAYMENTS_CANNOT_SEND_PAYMENTS_KILL_SWITCH" = "Betalingen via Signal zijn niet langer mogelijk. Je kunt nog wel je krediet overschrijven naar een andere beurs maar je kunt niet langer betalingen verzenden of ontvangen of krediet toevoegen.";
@@ -6944,7 +6944,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD" = "Kopiëren naar klembord";
 
 /* Message for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "Als je er voor kiest om je herstelzin digitaal op te slaan, zorg er dan voor dat je het beveiligd / versleuteld opslaat op een plek waarvan je weet dat niemand anders er bij kan.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE" = "Als je ervoor kiest om je herstelzin digitaal op te slaan, zorg er dan voor dat je het beveiligd / versleuteld opslaat op een plek waarvan je weet dat niemand anders er bij kan.";
 
 /* Title for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE" = "Kopiëren naar klembord?";
@@ -7136,7 +7136,7 @@
 "SHARE_ACTION_MESSAGE" = "Bericht";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Je veiligheidsnummer met %1$@ is recentelijk veranderd. Het wordt aanbevolen om dit nieuwe nummer te verifiëren in de Signal-app.";
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Je veiligheidsnummer met %1$@ is recentelijk veranderd. Wellicht wil je het veiligheidsnummer verifiëren voordat je dit bericht verstuurt.";
 
 /* Indicates that the share extension is still loading. */
 "SHARE_EXTENSION_LOADING" = "Aan het laden…";
@@ -7199,19 +7199,19 @@
 "SPAM_CAPTCHA_COMPLETED_TOAST" = "Verificatie succesvol voltooid.";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Als je er voor kiest om de verificatie dat je echt een mens bent over te slaan, dan kan het zijn dat je sommige berichten niet ontvangt en dat het niet langer mogelijk is om berichten te verzenden en oproepen te beginnen.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Als je ervoor kiest om de verificatie over te slaan, dan kan het zijn dat je sommige berichten niet ontvangt en dat het niet langer mogelijk is om berichten te verzenden en oproepen te beginnen.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
 "SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Doorgaan zonder te verifiëren?";
 
 /* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "Om spamberichten op Signal te voorkomen moeten sommige gebruikers hun telefoonnummer opnieuw verifiëren, zo ook jij.\n\nNadat je je telefoonnummer hebt geverifieerd kun je doorgaan met het verzenden en ontvangen van berichten. Berichten waarvan aflevering gepauzeerd is zullen dan automatisch alsnog worden afgeleverd.";
+"SPAM_CAPTCHA_SHEET_BODY" = "Om Signal te helpen spam te voorkomen is het nodig dat je verifieert dat je geen robot bent.\n\nNa de verificatie kun je doorgaan met het verzenden en ontvangen van berichten. Enig bericht waarvan verzenden is gepauzeerd zal dan automatisch worden verzonden.";
 
 /* Title for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_TITLE" = "Verifieer je telefoonnummer";
+"SPAM_CAPTCHA_SHEET_TITLE" = "Verifieer om door te kunnen gaan met het verzenden van berichten";
 
 /* Action to skip verification */
-"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Verifiëren overslaan";
+"SPAM_CAPTCHA_SKIP_VERIFICATION_ACTION" = "Verificatie overslaan";
 
 /* Title for the captcha view controller */
 "SPAM_CAPTCHA_VIEW_CONTROLLER" = "Verificatie voltooien";
@@ -7238,7 +7238,7 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signals eigen stickerpakketten";
 
 /* Title for the 'available known stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Door jou ontvangen stickerpakketten";
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Ontvangen stickerpakketten";
 
 /* Label indicating that one or more known sticker packs failed to load. */
 "STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Het laden van sommige stickerpakketten is mislukt";
@@ -7505,7 +7505,7 @@
 "STORY_SEND_PARTIALLY_FAILED" = "Gedeeltelijk verstuurd";
 
 /* Text indicating that the story send has partially failed */
-"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Gedeeltelijk verstuurd. Tik voor meer informatie";
+"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Gedeeltelijk verzonden. Tik voor details";
 
 /* Text indicating that the story is currently sending */
 "STORY_SENDING" = "Versturen…";
@@ -7559,7 +7559,7 @@
 "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Donateur-ID naar klembord gekopieerd";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Je veiligheidsnummer met %1$@ komt overeen. Je kunt dit contact markeren als geverifieerd.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Je veiligheidsnummer met %1$@ komt overeen. Je kunt dit contact als geverifieerd markeren.";
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Veiligheidsnummer komt overeen!";
@@ -7883,7 +7883,7 @@
 "UNREAD_ACTION" = "Ongelezen";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_ATTACHMENT" = "Niet-ondersteund formaat van bijlage ontvangen.";
+"UNSUPPORTED_ATTACHMENT" = "Niet-ondersteund bestandstype ontvangen.";
 
 /* When inviting contacts to use Signal, this error is shown if the device doesn't support SMS or if there aren't any registered email accounts. */
 "UNSUPPORTED_FEATURE_ERROR" = "Je apparaat ondersteunt deze functie niet.";
@@ -7901,7 +7901,7 @@
 "UPDATE_GROUP_FAILED" = "De groep kan niet worden bijgewerkt.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "De groep kon niet aangepast worden. Ga na dat je apparaat met het internet is verbonden en probeer het opnieuw.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "De groep kon niet worden bijgewerkt. Controleer je internetverbinding en probeer het opnieuw.";
 
 /* Button to activate the signal proxy */
 "USE_PROXY_BUTTON" = "Proxy gebruiken";
@@ -7943,7 +7943,7 @@
 "USERNAME_LINK_QR_CODE_VIEW_DISCLAIMER_LABEL" = "Deel je QR-code en link alleen met mensen die je vertrouwt. Wanneer je deze deelt, kunnen anderen je gebruikersnaam zien en een chat met je starten.";
 
 /* Text presented in an action sheet notifying the user their qr code and link are not set. */
-"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QR-code en link niet ingesteld. Check je netwerkverbinding en probeer het opnieuw.";
+"USERNAME_LINK_QR_CODE_VIEW_LINK_NOT_SET" = "QR-code en link niet ingesteld. Controleer je internetverbinding en probeer het opnieuw.";
 
 /* Title for a button that allows users to reset their username link and QR code. */
 "USERNAME_LINK_QR_CODE_VIEW_RESET_BUTTON_TITLE" = "QR-code vernieuwen";
@@ -8060,10 +8060,10 @@
 "VALIDATION_ERROR_TOO_LONG" = "Apparaatnaam is te lang";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Je hebt %1$@ gemarkeerd als niet geverifieerd.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Je hebt %1$@ gemarkeerd als niet-geverifieerd.";
 
 /* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "Je hebt %1$@ vanaf een ander apparaat gemarkeerd als niet geverifieerd.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "Je hebt %1$@ vanaf een ander apparaat gemarkeerd als niet-geverifieerd.";
 
 /* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "Je hebt %1$@ gemarkeerd als geverifieerd.";

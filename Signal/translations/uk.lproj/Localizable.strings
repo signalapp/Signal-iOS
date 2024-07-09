@@ -1037,13 +1037,13 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "Автоматично припасувати колір до шпалер";
 
 /* Title for context menu action to disable chat list filter (e.g., Filter by Unread) */
-"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Clear Filter";
+"CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Скасувати фільтр";
 
 /* Title for the chat list's default mode. */
 "CHAT_LIST_TITLE_INBOX" = "Чати";
 
 /* Title for context menu action to enable Filter by Unread */
-"CHAT_LIST_UNREAD_FILTER_MENU_ACTION" = "Filter by Unread";
+"CHAT_LIST_UNREAD_FILTER_MENU_ACTION" = "Показати непрочитані";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Колір чату та шпалери";
@@ -2156,7 +2156,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "Донат за друга";
 
 /* Title on the screen where you choose who you're going to donate on behalf of. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "Оберіть отримувача";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "Оберіть одержувача";
 
 /* Users can donate on a friend's behalf. This is the title on the screen where users confirm the donation, and can write a message for the friend. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "Підтвердити донат";
@@ -3812,13 +3812,13 @@
 "LINK_DEVICE_RESTART" = "Повторити";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Відскануйте OR-код на пристрої, який ви хочете прив’язати.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Зіскануйте QR-код, що бачите на пристрої, який ви хочете зв'язати.";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Зіскануйте QR-код, щоб зв'язати новий пристрій.";
 
 /* Navigation title when scanning QR code to add new device. */
-"LINK_NEW_DEVICE_TITLE" = "Link a New Device";
+"LINK_NEW_DEVICE_TITLE" = "Зв'язати новий пристрій";
 
 /* Label for link previews with an unknown host. */
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Попередній вигляд вебсторінки";
@@ -4376,7 +4376,7 @@
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Пропустити";
 
 /* String representing only the cellular interface */
-"NETWORK_INTERFACE_SET_CELLULAR" = "Лише стільникові дані";
+"NETWORK_INTERFACE_SET_CELLULAR" = "Лише мобільний інтернет";
 
 /* String representing the 'never' condition of having no supported network interfaces */
 "NETWORK_INTERFACE_SET_NEVER" = "Ніколи";
@@ -4385,7 +4385,7 @@
 "NETWORK_INTERFACE_SET_WIFI" = "Лише Wi-Fi";
 
 /* String representing both wifi and cellular interfaces */
-"NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi та стільникові дані";
+"NETWORK_INTERFACE_SET_WIFI_CELLULAR" = "Wi-Fi та мобільний інтернет";
 
 /* Accessibility hint describing the action of the new call button on the Calls Tab */
 "NEW_CALL_HINT" = "Виберіть контакт або групу, щоб почати новий виклик.";
@@ -4958,7 +4958,7 @@
 "PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "Нових сповіщень про платіж: %1$@";
 
 /* Payment status context with contact name, failed. Embeds {{ Name of receiving contact }} */
-"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PAYMENT_TO" = "Отримувач платежу: %1$@";
+"PAYMENTS_PAYMENT_STATUS_IN_CHAT_PAYMENT_TO" = "Одержувач платежу: %1$@";
 
 /* Payment status context while sending */
 "PAYMENTS_PAYMENT_STATUS_IN_CHAT_PROCESSING" = "Обробка платежу…";
@@ -5621,13 +5621,13 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "Відео";
 
 /* Label for a button to lower your raised hand in a call. */
-"RAISED_HANDS_LOWER_HAND_BUTTON" = "Lower";
+"RAISED_HANDS_LOWER_HAND_BUTTON" = "Опустити";
 
 /* A message appearing on the call view's raised hands toast indicating that another named member has raised their hand. */
-"RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@ has raised a hand";
+"RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "Користувач %1$@ підняв руку";
 
 /* A message appearing on the call view's raised hands toast indicating that you raised your own hand. */
-"RAISED_HANDS_TOAST_YOUR_HAND_MESSAGE" = "You raised your hand";
+"RAISED_HANDS_TOAST_YOUR_HAND_MESSAGE" = "Ви підняли руку";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
 "REACTION_DETAIL_ALL_FORMAT" = "Всі · %1$@";
@@ -5987,7 +5987,7 @@
 "SAFETY_TIPS_VAGUE_MESSAGE_TITLE" = "Повідомлення загального або недоречного змісту";
 
 /* label presented once scanning (camera) view is visible. */
-"SCAN_CODE_INSTRUCTIONS" = "Відскануйте QR-код на пристрої вашого контакту.";
+"SCAN_CODE_INSTRUCTIONS" = "Зіскануйте QR-код з пристрою вашого контакту.";
 
 /* Title for the 'scan QR code' view. */
 "SCAN_QR_CODE_VIEW_TITLE" = "Зіскануйте QR-код";
@@ -6227,16 +6227,16 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Якщо увімкнено, Signal намагатиметься обійти цензуру. Не вмикайте цю функцію, якщо ви не в місці, де Signal заблоковано.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Обхід цензури було активовано враховуючи номер телефону цього акаунта.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Обхід цензури активовано на підставі номера телефону, на який зареєстровано цей акаунт.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Ви вручну відключили обхід цензури.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Ви вручну вимкнули обхід цензури.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Обхід цензури може бути активований лише при підключенні до інтернету.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Обхід цензури можна активувати лише за наявності з'єднання з інтернетом.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Обхід цензури не потрібен. З'єднання з Signal вже встановлено.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "В обході цензури немає потреби. З'єднання з Signal уже встановлено.";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Вести журнал налагодження";
@@ -6302,7 +6302,7 @@
 "SETTINGS_BLOCK_LIST_TITLE" = "Заблоковані";
 
 /* Table cell label */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Завжди ретранслювати дзвінки";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Завжди ретранслювати виклики";
 
 /* User settings section footer, a detailed explanation */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Ретранслювати усі виклики через сервери Signal, щоб не розкривати власну IP-адресу вашим контактам. Ввімкнення погіршить якість дзвінка.";
@@ -6359,10 +6359,10 @@
 "SETTINGS_DATA" = "Споживання даних";
 
 /* Item title for the low bandwidth call setting */
-"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Споживати менше даних";
+"SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Економити трафік";
 
 /* Section footer for the call section in data settings */
-"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Економія даних може підвищити якість викликів у разі слабкого зв'язку.";
+"SETTINGS_DATA_CALL_SECTION_FOOTER" = "Економія трафіку може підвищити якість викликів у разі слабкого зв'язку.";
 
 /* Section header for the call section in data settings */
 "SETTINGS_DATA_CALL_SECTION_HEADER" = "Виклики";
@@ -6380,7 +6380,7 @@
 "SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE" = "Якість медіафайлів, які ви надсилаєте";
 
 /* Section footer for the sent media section in data settings */
-"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Оберіть якість відправлених фото та відео.";
+"SETTINGS_DATA_SENT_MEDIA_SECTION_FOOTER" = "Оберіть якість, у якій надсилатимете фото та відео.";
 
 /* Section header for the sent media section in data settings */
 "SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Медіафайли";
@@ -6452,7 +6452,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "Ніколи";
 
 /* Label for the 'wifi and cellular' media attachment download behavior in the media download settings. */
-"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wi-Fi та стільникові дані";
+"SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_AND_CELLULAR" = "Wi-Fi та мобільний інтернет";
 
 /* Label for the 'wifi-only' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_WIFI_ONLY" = "Wi-Fi";
@@ -6803,7 +6803,7 @@
 "SETTINGS_PAYMENTS_REMOVE_BUTTON" = "Вилучити";
 
 /* Label for 'restore payments' button in the payments settings. */
-"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Відновити платіжний профіль";
+"SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Відновити профіль";
 
 /* Explanation of the 'review payments passphrase' step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION" = "Переконайтесь, що ви правильно ввели фразу.";
@@ -6860,7 +6860,7 @@
 "SETTINGS_PAYMENTS_SAVE_PASSPHRASE_START_TITLE" = "Зберегти кодову фразу";
 
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
-"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Відскануйте QR-код отримувача переказу.";
+"SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Відскануйте QR-код одержувача переказу.";
 
 /* Error indicating that a QR code does not contain a valid MobileCoin public address. */
 "SETTINGS_PAYMENTS_SCAN_QR_INVALID_PUBLIC_ADDRESS" = "Неправильна адреса";
@@ -6887,7 +6887,7 @@
 "SETTINGS_PAYMENTS_SEND_PAYMENT" = "Надіслати платіж";
 
 /* Label for the 'send payment to recipient' view in the payment settings. */
-"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "Обрати отримувача";
+"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "Оберіть одержувача";
 
 /* Title for the 'set currency' view in the app settings. */
 "SETTINGS_PAYMENTS_SET_CURRENCY" = "Курс обміну валюти";
@@ -7022,7 +7022,7 @@
 "SETTINGS_PINS_TITLE" = "PIN-код Signal";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Налаштування обходу цензури, проксі-сервера, викликів-ретрансляторів і захищеної відправки.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Налаштування обходу цензури, проксі-сервера, ретранслювання викликів і захищених відправників.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Додаткові функції";
@@ -7046,7 +7046,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Увімкнути";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Якщо під час повторної реєстрації в Signal ви забудете PIN-код, то втратите доступ до свого акаунту на 7 днів.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Якщо під час повторної реєстрації в Signal ви забудете PIN-код, то втратите доступ до свого акаунту на 7 днів.";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Увімкнути блокування реєстрації?";
@@ -7091,7 +7091,7 @@
 "SETTINGS_SECURITY_TITLE" = "Конфіденційність";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Відправлення медіа високої якості споживатиме більше даних.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Надсилання медіафайлів високої якості споживатиме більше трафіку.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Фото та відео";
@@ -7109,13 +7109,13 @@
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Блокувати реєстрацію";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Потребує вашого PIN-коду Signal задля повторної реєстрації цього номеру телефону у Signal.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Вимагати введення PIN-коду для повторної реєстрації номера телефону в Signal.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Індикатор набору тексту";
 
 /* table section label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Прихований відправник";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Захищений відправник";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Показувати іконку стану";
@@ -7124,7 +7124,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Дозволити від усіх";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Отримувати повідомлення від прихованих відправників не з вашого списку контактів, або з якими ви не поділились профілем.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Отримувати повідомлення від захищених відправників не з вашого списку контактів, або з якими ви не поділилися профілем.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Версія";
