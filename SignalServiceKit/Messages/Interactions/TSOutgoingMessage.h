@@ -295,11 +295,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 - (void)updateWithSkippedRecipient:(SignalServiceAddress *)recipientAddress
                        transaction:(SDSAnyWriteTransaction *)transaction;
 
-// This method is used to record a failed send to one recipient.
-- (void)updateWithFailedRecipient:(SignalServiceAddress *)recipientAddress
-                            error:(NSError *)error
-                      transaction:(SDSAnyWriteTransaction *)transaction;
-
 // On app launch, all "sending" recipients should be marked as "failed".
 - (void)updateWithAllSendingRecipientsMarkedAsFailedWithTransaction:(SDSAnyWriteTransaction *)transaction;
 

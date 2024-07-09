@@ -991,48 +991,45 @@ public class MessageSender: Dependencies {
             return !(thread is TSContactThread) && error.shouldBeIgnoredForNonContactThreads
         }
 
-        // Record the individual error for each "failed" recipient.
-        await databaseStorage.awaitableWrite { tx in
-            for (serviceId, error) in allErrors {
-                if shouldIgnoreError(error) {
-                    continue
-                }
-                message.update(withFailedRecipient: SignalServiceAddress(serviceId), error: error, transaction: tx)
+        let filteredErrors = allErrors.lazy.filter { !shouldIgnoreError($0.error) }
+
+        // If we only received errors that we should ignore, consider this send a
+        // success, unless the message could not be sent to any recipient.
+        guard let anyError = filteredErrors.first?.error else {
+            if message.sentRecipientsCount() == 0 {
+                throw MessageSenderErrorNoValidRecipients()
             }
-            self.normalizeRecipientStatesIfNeeded(message: message, recipientErrors: allErrors, tx: tx)
+            return
         }
 
-        let filteredErrors = allErrors.lazy.map { $0.error }.filter { !shouldIgnoreError($0) }
+        // Record the individual error for each "failed" recipient.
+        await databaseStorage.awaitableWrite { tx in
+            message.updateWithFailedRecipients(filteredErrors, tx: tx)
+            self.normalizeRecipientStatesIfNeeded(message: message, recipientErrors: filteredErrors, tx: tx)
+        }
 
         // Some errors should never be retried, in order to avoid hitting rate
         // limits, for example.  Unfortunately, since group send retry is
         // all-or-nothing, we need to fail immediately even if some of the other
         // recipients had retryable errors.
-        if let fatalError = filteredErrors.first(where: { $0.isFatalError }) {
+        if let fatalError = filteredErrors.map({ $0.error }).first(where: { $0.isFatalError }) {
             throw fatalError
         }
 
         // If any of the send errors are retryable, we want to retry. Therefore,
         // prefer to propagate a retryable error.
-        if let retryableError = filteredErrors.first(where: { $0.isRetryable }) {
+        if let retryableError = filteredErrors.map({ $0.error }).first(where: { $0.isRetryable }) {
             throw retryableError
         }
 
         // Otherwise, if we have any error at all, propagate it.
-        if let anyError = filteredErrors.first {
-            throw anyError
-        }
+        throw anyError
 
-        // If we only received errors that we should ignore, consider this send a
-        // success, unless the message could not be sent to any recipient.
-        if message.sentRecipientsCount() == 0 {
-            throw MessageSenderErrorNoValidRecipients()
-        }
     }
 
     private func normalizeRecipientStatesIfNeeded(
         message: TSOutgoingMessage,
-        recipientErrors: [(serviceId: ServiceId, error: Error)],
+        recipientErrors: some Sequence<(serviceId: ServiceId, error: Error)>,
         tx: SDSAnyWriteTransaction
     ) {
         guard recipientErrors.contains(where: {

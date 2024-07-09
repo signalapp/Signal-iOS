@@ -303,11 +303,6 @@ class SpamChallengeRequiredError: NSObject, CustomNSError, IsRetryableProvider, 
     public var errorCode: Int { OWSErrorCode.serverRejectedSuspectedSpam.rawValue }
 
     public var isRetryableProvider: Bool { false }
-
-    @objc
-    public class func isSpamChallengeRequiredError(_ error: Error) -> Bool {
-        error is SpamChallengeRequiredError
-    }
 }
 
 // MARK: -
@@ -333,11 +328,6 @@ class SpamChallengeResolvedError: NSObject, CustomNSError, IsRetryableProvider, 
     public var errorCode: Int { OWSErrorCode.serverRejectedSuspectedSpam.rawValue }
 
     public var isRetryableProvider: Bool { true }
-
-    @objc
-    public class func isSpamChallengeResolvedError(_ error: Error) -> Bool {
-        error is SpamChallengeResolvedError
-    }
 }
 
 // MARK: -

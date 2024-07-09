@@ -358,6 +358,39 @@ extension TSOutgoingMessage {
     }
 }
 
+// MARK: - Errors
+
+extension TSOutgoingMessage {
+    func updateWithFailedRecipients(_ recipientErrors: some Collection<(serviceId: ServiceId, error: Error)>, tx: SDSAnyWriteTransaction) {
+        let fatalErrors = recipientErrors.lazy.filter { !$0.error.isRetryable }
+        let retryableErrors = recipientErrors.lazy.filter { $0.error.isRetryable }
+
+        if fatalErrors.isEmpty {
+            Logger.warn("Couldn't send \(self.timestamp), but all errors are retryable: \(Array(retryableErrors))")
+        } else {
+            Logger.warn("Couldn't send \(self.timestamp): \(Array(fatalErrors)); retryable errors: \(Array(retryableErrors))")
+        }
+
+        self.anyUpdateOutgoingMessage(transaction: tx) {
+            for (serviceId, error) in recipientErrors {
+                guard let recipientState = $0.recipientAddressStates?[SignalServiceAddress(serviceId)] else {
+                    owsFailDebug("Missing recipient state for \(serviceId)")
+                    continue
+                }
+                if error.isRetryable, recipientState.state == .sending {
+                    // For retryable errors, we can just set the error code and leave the
+                    // state set as Sending
+                } else if error is SpamChallengeRequiredError || error is SpamChallengeResolvedError {
+                    recipientState.state = .pending
+                } else {
+                    recipientState.state = .failed
+                }
+                recipientState.errorCode = NSNumber(value: (error as NSError).code)
+            }
+        }
+    }
+}
+
 // MARK: - Receipts
 
 extension TSOutgoingMessage {
