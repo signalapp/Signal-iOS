@@ -381,9 +381,9 @@ class GroupCallViewController: UIViewController {
         } else {
             callControlsConfirmationToastContainerView.autoPinEdge(
                 .bottom,
-                to: .top,
-                of: callControls,
-                withOffset: -30
+                to: .bottom,
+                of: bottomVStack,
+                withOffset: 0
             )
             callControlsOverflowView.autoPinEdge(
                 .bottom,
