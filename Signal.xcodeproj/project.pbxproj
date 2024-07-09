@@ -1008,6 +1008,7 @@
 		6691E7EF2996E8FB0032A68A /* TSRequestOWSURLSessionMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6691E7EE2996E8FB0032A68A /* TSRequestOWSURLSessionMock.swift */; };
 		6691E7F22996E9BC0032A68A /* RegistrationSessionManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6691E7F12996E9BC0032A68A /* RegistrationSessionManagerMock.swift */; };
 		6691E7F72996EAD70032A68A /* SecureValueRecoveryMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6691E7F62996EAD70032A68A /* SecureValueRecoveryMock.swift */; };
+		669379ED2C3C5B2C00EED7A0 /* TSAttachmentMigration+Records.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669379EC2C3C5B2C00EED7A0 /* TSAttachmentMigration+Records.swift */; };
 		6694BF682B36484900B18764 /* PinnedThreadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6694BF672B36484800B18764 /* PinnedThreadManager.swift */; };
 		6694BF6A2B3650E400B18764 /* PinnedThreadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6694BF692B3650E400B18764 /* PinnedThreadStore.swift */; };
 		6694BF6C2B3656D500B18764 /* MockPinnedThreadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6694BF6B2B3656D500B18764 /* MockPinnedThreadManager.swift */; };
@@ -1037,6 +1038,7 @@
 		669E901028B57D6300043D28 /* SystemStoryManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */; };
 		669FAE152B75968D009EE2FE /* TSAttachmentDownloadJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669FAE142B75968D009EE2FE /* TSAttachmentDownloadJob.swift */; };
 		669FAE1B2B7AC919009EE2FE /* OWSLinkPreviewSerializationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669FAE1A2B7AC919009EE2FE /* OWSLinkPreviewSerializationTest.swift */; };
+		66A1ABE22C3311B40033C5EB /* TSAttachmentMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1ABE12C3311B40033C5EB /* TSAttachmentMigration.swift */; };
 		66A1DF73298C635E00C4E4A7 /* RegistrationRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1DF72298C635E00C4E4A7 /* RegistrationRequestFactory.swift */; };
 		66A1DF75298C73D900C4E4A7 /* RegistrationServiceResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1DF74298C73D900C4E4A7 /* RegistrationServiceResponses.swift */; };
 		66A22C0928A18D49007CD4F5 /* RingerSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */; };
@@ -4019,6 +4021,7 @@
 		6691E7EE2996E8FB0032A68A /* TSRequestOWSURLSessionMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSRequestOWSURLSessionMock.swift; sourceTree = "<group>"; };
 		6691E7F12996E9BC0032A68A /* RegistrationSessionManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationSessionManagerMock.swift; sourceTree = "<group>"; };
 		6691E7F62996EAD70032A68A /* SecureValueRecoveryMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureValueRecoveryMock.swift; sourceTree = "<group>"; };
+		669379EC2C3C5B2C00EED7A0 /* TSAttachmentMigration+Records.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentMigration+Records.swift"; sourceTree = "<group>"; };
 		6694BF672B36484800B18764 /* PinnedThreadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedThreadManager.swift; sourceTree = "<group>"; };
 		6694BF692B3650E400B18764 /* PinnedThreadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedThreadStore.swift; sourceTree = "<group>"; };
 		6694BF6B2B3656D500B18764 /* MockPinnedThreadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPinnedThreadManager.swift; sourceTree = "<group>"; };
@@ -4050,6 +4053,7 @@
 		669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStoryManagerMock.swift; sourceTree = "<group>"; };
 		669FAE142B75968D009EE2FE /* TSAttachmentDownloadJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAttachmentDownloadJob.swift; sourceTree = "<group>"; };
 		669FAE1A2B7AC919009EE2FE /* OWSLinkPreviewSerializationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSLinkPreviewSerializationTest.swift; sourceTree = "<group>"; };
+		66A1ABE12C3311B40033C5EB /* TSAttachmentMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAttachmentMigration.swift; sourceTree = "<group>"; };
 		66A1DF72298C635E00C4E4A7 /* RegistrationRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationRequestFactory.swift; sourceTree = "<group>"; };
 		66A1DF74298C73D900C4E4A7 /* RegistrationServiceResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationServiceResponses.swift; sourceTree = "<group>"; };
 		66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingerSwitch.swift; sourceTree = "<group>"; };
@@ -8160,6 +8164,23 @@
 			path = LinkPreview;
 			sourceTree = "<group>";
 		};
+		66A1ABDF2C3311800033C5EB /* IncrementalMigrations */ = {
+			isa = PBXGroup;
+			children = (
+				66A1ABE02C33118A0033C5EB /* TSAttachment */,
+			);
+			path = IncrementalMigrations;
+			sourceTree = "<group>";
+		};
+		66A1ABE02C33118A0033C5EB /* TSAttachment */ = {
+			isa = PBXGroup;
+			children = (
+				669379EC2C3C5B2C00EED7A0 /* TSAttachmentMigration+Records.swift */,
+				66A1ABE12C3311B40033C5EB /* TSAttachmentMigration.swift */,
+			);
+			path = TSAttachment;
+			sourceTree = "<group>";
+		};
 		66A1DF71298C634500C4E4A7 /* Registration */ = {
 			isa = PBXGroup;
 			children = (
@@ -11329,6 +11350,7 @@
 		F9C5CA31289453B100548EEE /* Database */ = {
 			isa = PBXGroup;
 			children = (
+				66A1ABDF2C3311800033C5EB /* IncrementalMigrations */,
 				F9C5CA35289453B100548EEE /* Records */,
 				D9F6553029D6530B002A330A /* SDSCodableModel */,
 				6673FF83297B666500F96CFD /* SDSDatabaseStorage */,
@@ -14896,6 +14918,8 @@
 				669FAE152B75968D009EE2FE /* TSAttachmentDownloadJob.swift in Sources */,
 				F9C5CC72289453B300548EEE /* TSAttachmentDownloadManager.swift in Sources */,
 				66E1AD962B91437B00C56B7B /* TSAttachmentManager.swift in Sources */,
+				669379ED2C3C5B2C00EED7A0 /* TSAttachmentMigration+Records.swift in Sources */,
+				66A1ABE22C3311B40033C5EB /* TSAttachmentMigration.swift in Sources */,
 				725464EC2B9F6EB900EABFD2 /* TSAttachmentMultisendJob.swift in Sources */,
 				D9AE0ACB29162C160063488B /* TSAttachmentMultisendJobRecord.swift in Sources */,
 				F9C5CC79289453B300548EEE /* TSAttachmentPointer+SDS.swift in Sources */,
