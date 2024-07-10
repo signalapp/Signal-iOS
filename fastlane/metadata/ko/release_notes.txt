@@ -1,1 +1,1 @@
-• 흐림 효과를 추가하여 Signal 그룹 통화 중 이모지 반응 표시를 개선했습니다.
+• We fixed a bug that made it impossible to dismiss the menu to raise your hand or react to a group call if you tapped those on those icons while you were waiting for other people to join the call or if you were the last person to hang up. The next time you're alone in a group call, make Madonna proud and express yourself. 

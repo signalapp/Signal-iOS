@@ -1,1 +1,1 @@
-• We hebben een subtiel vervagingseffect toegevoegd om de weergave van emoji-reacties tijdens Signal-groepsoproepen te verbeteren. Als er ooit zoveel reacties zijn dat het wazig voor je ogen wordt, dan is dat nu thematisch nog passender.
+• We fixed a bug that made it impossible to dismiss the menu to raise your hand or react to a group call if you tapped those on those icons while you were waiting for other people to join the call or if you were the last person to hang up. The next time you're alone in a group call, make Madonna proud and express yourself. 

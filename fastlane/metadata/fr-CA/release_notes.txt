@@ -1,1 +1,1 @@
-• Nous avons ajouté un effet de flou subtil pour améliorer l’affichage des réactions émoji pendant les appels de groupe Signal. Pratique si une vague de réactions vous met un peu dans le flou !
+• We fixed a bug that made it impossible to dismiss the menu to raise your hand or react to a group call if you tapped those on those icons while you were waiting for other people to join the call or if you were the last person to hang up. The next time you're alone in a group call, make Madonna proud and express yourself. 

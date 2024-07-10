@@ -1,1 +1,1 @@
-• Мы добавили эффект лёгкого размытия, чтобы улучшить отображение реакций с помощью эмодзи во время групповых звонков Signal. Если реакций так много, что они начинают застилать глаза, то теперь это ещё более в тему.
+• We fixed a bug that made it impossible to dismiss the menu to raise your hand or react to a group call if you tapped those on those icons while you were waiting for other people to join the call or if you were the last person to hang up. The next time you're alone in a group call, make Madonna proud and express yourself. 

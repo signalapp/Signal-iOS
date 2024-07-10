@@ -1,1 +1,1 @@
-• Vi har tilføjet en subtil sløringseffekt for at forbedre visningen af emojireaktioner under Signal-gruppeopkald. Hvis der nogensinde er så mange reaktioner, at det begynder at føles som en sløring, er det nu endnu mere tematisk passende.
+• We fixed a bug that made it impossible to dismiss the menu to raise your hand or react to a group call if you tapped those on those icons while you were waiting for other people to join the call or if you were the last person to hang up. The next time you're alone in a group call, make Madonna proud and express yourself. 

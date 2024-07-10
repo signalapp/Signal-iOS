@@ -1,1 +1,1 @@
-• हमने Signal ग्रुप कॉल के दौरान इमोजी प्रतिक्रियाओं के प्रदर्शन को बेहतर बनाने के लिए एक सूक्ष्म धुंधला प्रभाव जोड़ा। यदि कभी इतनी अधिक प्रतिक्रियाएं हों कि वह धुंधली सी लगने लगे, तो अब वह विषयगत रूप से और भी अधिक उपयुक्त है।
+• We fixed a bug that made it impossible to dismiss the menu to raise your hand or react to a group call if you tapped those on those icons while you were waiting for other people to join the call or if you were the last person to hang up. The next time you're alone in a group call, make Madonna proud and express yourself. 
