@@ -157,14 +157,14 @@ extension ChatListViewController {
             // Currently, no previewing the currently selected thread.
             // Though, in a scene-aware, multiwindow world, we may opt to permit this.
             // If only to allow the user to pick up and drag a conversation to a new window.
-            return thread(forIndexPath: indexPath)?.uniqueId != currentSelectedThreadId
+            return tableDataSource.thread(forIndexPath: indexPath)?.uniqueId != currentSelectedThreadId
         default:
             return false
         }
     }
 
     func createPreviewController(atIndexPath indexPath: IndexPath) -> UIViewController? {
-        guard let threadViewModel = threadViewModel(forIndexPath: indexPath) else {
+        guard let threadViewModel = tableDataSource.threadViewModel(forIndexPath: indexPath) else {
             owsFailDebug("Missing threadViewModel.")
             return nil
         }

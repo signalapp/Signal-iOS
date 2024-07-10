@@ -6,7 +6,6 @@
 import SignalServiceKit
 
 extension ChatListViewController {
-
     func selectPreviousConversation() {
         AssertIsOnMainThread()
 
@@ -20,7 +19,8 @@ extension ChatListViewController {
 
         let currentThread = self.conversationSplitViewController?.selectedThread
         if let previousIndexPath = renderState.indexPath(beforeThread: currentThread),
-           let thread = self.thread(forIndexPath: previousIndexPath) {
+           let thread = tableDataSource.thread(forIndexPath: previousIndexPath)
+        {
             presentThread(thread, action: .compose, animated: true)
         }
     }
@@ -38,7 +38,8 @@ extension ChatListViewController {
 
         let currentThread = self.conversationSplitViewController?.selectedThread
         if let nextIndexPath = renderState.indexPath(afterThread: currentThread),
-           let thread = self.thread(forIndexPath: nextIndexPath) {
+           let thread = tableDataSource.thread(forIndexPath: nextIndexPath)
+        {
             presentThread(thread, action: .compose, animated: true)
         }
     }
@@ -56,5 +57,4 @@ extension ChatListViewController {
             animated: animated
         )
     }
-
 }

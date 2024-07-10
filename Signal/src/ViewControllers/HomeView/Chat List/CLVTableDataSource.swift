@@ -542,51 +542,31 @@ extension CLVTableDataSource: UITableViewDelegate {
 // MARK: -
 
 extension CLVTableDataSource: UITableViewDataSource {
-
     public func numberOfSections(in tableView: UITableView) -> Int {
-        AssertIsOnMainThread()
-
-        return ChatListSection.allCases.count
+        renderState.sections.count
     }
 
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        AssertIsOnMainThread()
-
-        return numberOfRows(inSection: section)
+        numberOfRows(inSection: section)
     }
 
     fileprivate func numberOfRows(inSection section: Int) -> Int {
         AssertIsOnMainThread()
 
-        guard let viewController = self.viewController else {
-            owsFailDebug("Missing viewController.")
-            return 0
-        }
-
-        guard let section = ChatListSection(rawValue: section) else {
-            owsFailDebug("Invalid section: \(section).")
-            return 0
-        }
-        switch section {
+        switch renderState.sections[section] {
         case .reminders:
-            return viewController.hasVisibleReminders ? 1 : 0
+            return renderState.hasVisibleReminders ? 1 : 0
         case .pinned:
             return renderState.pinnedThreads.count
         case .unpinned:
             return renderState.unpinnedThreads.count
         case .archiveButton:
-            return viewController.hasArchivedThreadsRow ? 1 : 0
+            return renderState.hasArchivedThreadsRow ? 1 : 0
         }
     }
 
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        AssertIsOnMainThread()
-        guard let section = ChatListSection(rawValue: indexPath.section) else {
-            owsFailDebug("Invalid section: \(indexPath.section).")
-            return UITableView.automaticDimension
-        }
-
-        switch section {
+        switch renderState.sections[indexPath.section] {
         case .reminders:
             return UITableView.automaticDimension
         case .pinned, .unpinned:
@@ -597,16 +577,12 @@ extension CLVTableDataSource: UITableViewDataSource {
     }
 
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        AssertIsOnMainThread()
-
         guard let viewController = self.viewController else {
             owsFailDebug("Missing viewController.")
             return UITableViewCell()
         }
-        guard let section = ChatListSection(rawValue: indexPath.section) else {
-            owsFailDebug("Invalid section: \(indexPath.section).")
-            return UITableViewCell()
-        }
+
+        let section = renderState.sections[indexPath.section]
 
         let cell: UITableViewCell = {
             switch section {
@@ -692,22 +668,14 @@ extension CLVTableDataSource: UITableViewDataSource {
     // MARK: - Edit Actions
 
     public func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        AssertIsOnMainThread()
-
         // TODO: Is this method necessary?
     }
 
     public func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        AssertIsOnMainThread()
-
-        guard let section = ChatListSection(rawValue: indexPath.section) else {
-            owsFailDebug("Invalid section: \(indexPath.section).")
-            return nil
-        }
-
-        switch section {
+        switch renderState.sections[indexPath.section] {
         case .reminders, .archiveButton:
             return nil
+
         case .pinned, .unpinned:
             guard let threadViewModel = threadViewModel(forIndexPath: indexPath) else {
                 owsFailDebug("Missing threadViewModel.")
@@ -729,14 +697,7 @@ extension CLVTableDataSource: UITableViewDataSource {
     }
 
     public func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        AssertIsOnMainThread()
-
-        guard let section = ChatListSection(rawValue: indexPath.section) else {
-            owsFailDebug("Invalid section: \(indexPath.section).")
-            return false
-        }
-
-        switch section {
+        switch renderState.sections[indexPath.section] {
         case .reminders:
             return false
         case .pinned, .unpinned:
@@ -747,18 +708,13 @@ extension CLVTableDataSource: UITableViewDataSource {
     }
 
     public func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        AssertIsOnMainThread()
-
-        guard let section = ChatListSection(rawValue: indexPath.section) else {
-            owsFailDebug("Invalid section: \(indexPath.section).")
-            return nil
-        }
-
-        switch section {
+        switch renderState.sections[indexPath.section] {
         case .reminders:
             return nil
+
         case .archiveButton:
             return nil
+
         case .pinned, .unpinned:
             guard let threadViewModel = threadViewModel(forIndexPath: indexPath) else {
                 owsFailDebug("Missing threadViewModel.")
@@ -948,7 +904,6 @@ extension CLVTableDataSource {
 // MARK: -
 
 public class CLVTableView: UITableView {
-
     fileprivate var lastReloadDate: Date?
 
     public override func reloadData() {
@@ -966,22 +921,5 @@ public class CLVTableView: UITableView {
     @available(*, unavailable, message: "use other constructor instead.")
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-}
-
-// MARK: -
-
-extension ChatListViewController {
-
-    func threadViewModel(forThread thread: TSThread) -> ThreadViewModel {
-        tableDataSource.threadViewModel(forThread: thread)
-    }
-
-    func thread(forIndexPath indexPath: IndexPath) -> TSThread? {
-        tableDataSource.thread(forIndexPath: indexPath)
-    }
-
-    func threadViewModel(forIndexPath indexPath: IndexPath) -> ThreadViewModel? {
-        tableDataSource.threadViewModel(forIndexPath: indexPath)
     }
 }

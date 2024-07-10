@@ -682,7 +682,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     }
 
     private var shouldShowEmptyInboxView: Bool {
-        return viewState.chatListMode == .inbox && numberOfInboxThreads == 0 && numberOfArchivedThreads == 0 && !hasVisibleReminders
+        return viewState.chatListMode == .inbox && renderState.inboxCount == 0 && renderState.archiveCount == 0 && !renderState.hasVisibleReminders
     }
 
     func updateViewState() {

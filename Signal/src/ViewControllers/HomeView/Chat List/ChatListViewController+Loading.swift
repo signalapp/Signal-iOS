@@ -6,7 +6,6 @@
 import SignalServiceKit
 
 extension ChatListViewController {
-
     public var isViewVisible: Bool {
         get { viewState.isViewVisible }
         set {
@@ -30,14 +29,6 @@ extension ChatListViewController {
                 loadCoordinator.loadIfNecessary(suppressAnimations: true)
             }
         }
-    }
-
-    public var hasVisibleReminders: Bool {
-        renderState.hasVisibleReminders
-    }
-
-    public var hasArchivedThreadsRow: Bool {
-        renderState.hasArchivedThreadsRow
     }
 
     // MARK: -

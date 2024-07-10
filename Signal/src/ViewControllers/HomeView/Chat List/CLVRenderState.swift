@@ -6,9 +6,14 @@
 import SignalServiceKit
 
 struct CLVRenderState {
+    static var empty: CLVRenderState {
+        CLVRenderState(viewInfo: .empty, pinnedThreads: [], unpinnedThreads: [])
+    }
+
     let viewInfo: CLVViewInfo
     let pinnedThreads: [TSThread]
     let unpinnedThreads: [TSThread]
+    let sections: [ChatListSection] = ChatListSection.allCases
 
     var archiveCount: UInt {
         viewInfo.archiveCount
@@ -30,13 +35,11 @@ struct CLVRenderState {
         viewInfo.hasVisibleReminders
     }
 
-    static var empty: CLVRenderState {
-        CLVRenderState(viewInfo: .empty, pinnedThreads: [], unpinnedThreads: [])
-    }
-
     var hasPinnedAndUnpinnedThreads: Bool {
         !pinnedThreads.isEmpty && !unpinnedThreads.isEmpty
     }
+
+    // MARK: UITableViewDataSource
 
     func thread(forIndexPath indexPath: IndexPath) -> TSThread? {
         let section = ChatListSection(rawValue: indexPath.section)!

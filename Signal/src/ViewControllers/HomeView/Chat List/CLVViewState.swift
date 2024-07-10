@@ -88,9 +88,6 @@ extension ChatListViewController {
 
     var renderState: CLVRenderState { viewState.tableDataSource.renderState }
 
-    var numberOfInboxThreads: UInt { renderState.inboxCount }
-    var numberOfArchivedThreads: UInt { renderState.archiveCount }
-
     var hasEverAppeared: Bool {
         get { viewState.hasEverAppeared }
         set { viewState.hasEverAppeared = newValue }
