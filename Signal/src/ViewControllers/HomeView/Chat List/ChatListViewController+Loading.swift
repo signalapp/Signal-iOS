@@ -54,6 +54,11 @@ extension ChatListViewController {
         return CLVLoader.loadRenderStateForReset(viewInfo: viewInfo, transaction: transaction)
     }
 
+    fileprivate func copyRenderStateAndDiff(viewInfo: CLVViewInfo) -> CLVLoadResult {
+        AssertIsOnMainThread()
+        return CLVLoader.newRenderStateWithViewInfo(viewInfo, lastRenderState: renderState)
+    }
+
     fileprivate func loadNewRenderStateWithDiff(viewInfo: CLVViewInfo,
                                                 updatedThreadIds: Set<String>,
                                                 transaction: SDSAnyReadTransaction) -> CLVLoadResult {
@@ -99,11 +104,6 @@ extension ChatListViewController {
 
     fileprivate func applyRowChanges(_ rowChanges: [CLVRowChange], renderState: CLVRenderState, animated: Bool) {
         AssertIsOnMainThread()
-
-        guard !rowChanges.isEmpty else {
-            owsFailDebug("Empty rowChanges.")
-            return
-        }
 
         let sectionDifference = renderState.sections.difference(from: tableDataSource.renderState.sections, by: { $0.type == $1.type })
         let isChangingFilter = tableDataSource.renderState.viewInfo.inboxFilter != renderState.viewInfo.inboxFilter
@@ -212,7 +212,7 @@ extension ChatListViewController {
 private enum CLVLoadType {
     case resetAll
     case incrementalDiff(updatedThreadIds: Set<String>)
-    case reloadTableOnly
+    case incrementalWithoutThreadUpdates
     case none
 }
 
@@ -234,26 +234,27 @@ public class CLVLoadCoordinator: Dependencies {
         func build(
             chatListMode: ChatListMode,
             inboxFilter: InboxFilter?,
+            isMultiselectActive: Bool,
             lastSelectedThreadId: String?,
             hasVisibleReminders: Bool,
-            canApplyRowChanges: Bool,
             lastViewInfo: CLVViewInfo,
             transaction: SDSAnyReadTransaction
         ) -> CLVLoadInfo {
             let viewInfo = CLVViewInfo.build(
                 chatListMode: chatListMode,
                 inboxFilter: inboxFilter,
+                isMultiselectActive: isMultiselectActive,
                 lastSelectedThreadId: lastSelectedThreadId,
                 hasVisibleReminders: hasVisibleReminders,
                 transaction: transaction
             )
 
-            if shouldResetAll || !canApplyRowChanges {
+            if shouldResetAll {
                 return CLVLoadInfo(viewInfo: viewInfo, loadType: .resetAll)
             } else if !updatedThreadIds.isEmpty || viewInfo.inboxFilter != lastViewInfo.inboxFilter {
                 return CLVLoadInfo(viewInfo: viewInfo, loadType: .incrementalDiff(updatedThreadIds: updatedThreadIds))
             } else if viewInfo != lastViewInfo {
-                return CLVLoadInfo(viewInfo: viewInfo, loadType: .reloadTableOnly)
+                return CLVLoadInfo(viewInfo: viewInfo, loadType: .incrementalWithoutThreadUpdates)
             } else {
                 return CLVLoadInfo(viewInfo: viewInfo, loadType: .none)
             }
@@ -336,14 +337,12 @@ public class CLVLoadCoordinator: Dependencies {
 
         let loadResult: CLVLoadResult = databaseStorage.read { transaction in
             // Decide what kind of load we prefer.
-            let canApplyRowChanges = viewController.tableDataSource.renderState.visibleThreadCount > 0
-
             let loadInfo = loadInfoBuilder.build(
                 chatListMode: viewController.viewState.chatListMode,
                 inboxFilter: viewController.viewState.inboxFilter,
+                isMultiselectActive: viewController.viewState.multiSelectState.isActive,
                 lastSelectedThreadId: viewController.viewState.lastSelectedThreadId,
                 hasVisibleReminders: hasVisibleReminders,
-                canApplyRowChanges: canApplyRowChanges,
                 lastViewInfo: viewController.renderState.viewInfo,
                 transaction: transaction
             )
@@ -368,8 +367,8 @@ public class CLVLoadCoordinator: Dependencies {
                     transaction: transaction
                 )
 
-            case .reloadTableOnly:
-                return .reloadTable
+            case .incrementalWithoutThreadUpdates:
+                return viewController.copyRenderStateAndDiff(viewInfo: loadInfo.viewInfo)
 
             case .none:
                 return .noChanges

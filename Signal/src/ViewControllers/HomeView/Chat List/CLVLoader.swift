@@ -169,15 +169,22 @@ public class CLVLoader: Dependencies {
                                        lastRenderState: CLVRenderState,
                                        transaction: SDSAnyReadTransaction) -> CLVLoadResult {
         do {
-            return try loadRenderStateAndDiffInternal(viewInfo: viewInfo,
-                                                      updatedItemIds: updatedItemIds,
-                                                      lastRenderState: lastRenderState,
-                                                      transaction: transaction)
+            return try loadRenderStateAndDiffInternal(
+                viewInfo: viewInfo,
+                updatedItemIds: updatedItemIds,
+                lastRenderState: lastRenderState,
+                transaction: transaction
+            )
         } catch {
             owsFailDebug("Error: \(error)")
             // Fail over to reloading the table view with a new render state.
             return loadRenderStateForReset(viewInfo: viewInfo, transaction: transaction)
         }
+    }
+
+    static func newRenderStateWithViewInfo(_ viewInfo: CLVViewInfo, lastRenderState: CLVRenderState) -> CLVLoadResult {
+        let renderState = CLVRenderState(viewInfo: viewInfo, pinnedThreads: lastRenderState.pinnedThreads, unpinnedThreads: lastRenderState.unpinnedThreads)
+        return .renderStateWithRowChanges(renderState: renderState, rowChanges: [])
     }
 
     private static func loadRenderStateAndDiffInternal(viewInfo: CLVViewInfo,

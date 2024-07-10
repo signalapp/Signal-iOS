@@ -39,6 +39,7 @@ extension ChatListViewController {
         searchBar.alpha = 0.5
         viewState.multiSelectState.setIsActive(true, tableView: tableView, cancelCurrentEditAction: cancelCurrentEditAction)
         showToolbar()
+        loadCoordinator.loadIfNecessary(shouldForceLoad: true)
     }
 
     func leaveMultiselectMode() {
@@ -58,6 +59,7 @@ extension ChatListViewController {
         viewState.multiSelectState.setIsActive(false, tableView: tableView)
         title = viewState.multiSelectState.title
         hideToolbar()
+        loadCoordinator.loadIfNecessary(shouldForceLoad: true)
 
         if let lastViewedThread, isConversationActive(forThread: lastViewedThread) {
             ensureSelectedThread(lastViewedThread, animated: false)
