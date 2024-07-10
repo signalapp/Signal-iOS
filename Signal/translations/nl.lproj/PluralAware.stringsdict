@@ -360,9 +360,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Signal-groepen werken het best met %1$d lid. Het toevoegen van extra leden zal vertragingen veroorzaken in het versturen en ontvangen van berichten.</string>
+			<string>Signal-groepen werken het best met %1$d lid. Het toevoegen van extra leden zal vertragingen veroorzaken in het verzenden en ontvangen van berichten.</string>
 			<key>other</key>
-			<string>Signal-groepen werken het best met %1$d of minder leden. Het toevoegen van extra leden zal vertragingen veroorzaken in het versturen en ontvangen van berichten.</string>
+			<string>Signal-groepen werken het best met %1$d of minder leden. Het toevoegen van extra leden zal vertragingen veroorzaken in het verzenden en ontvangen van berichten.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
@@ -424,9 +424,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ en %1$d ander zijn in deze groepsoproep aanwezig</string>
+			<string>%2$@, %3$@ en %1$d ander zijn in deze oproep aanwezig</string>
 			<key>other</key>
-			<string>%2$@, %3$@ en %1$d anderen zijn in deze groepsoproep aanwezig</string>
+			<string>%2$@, %3$@ en %1$d anderen zijn in deze oproep aanwezig</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>
@@ -472,9 +472,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%2$@ en %1$ld andere persoon zijn in deze oproep aanwezig</string>
+			<string>%2$@ en %1$ld ander zijn in deze oproep aanwezig</string>
 			<key>other</key>
-			<string>%2$@ en %1$ld andere personen zijn in deze oproep aanwezig</string>
+			<string>%2$@ en %1$ld anderen zijn in deze oproep aanwezig</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d</key>
@@ -488,9 +488,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ en %1$d ander krijgen hier een melding van</string>
+			<string>%2$@, %3$@ en %1$d ander zal een melding krijgen</string>
 			<key>other</key>
-			<string>%2$@, %3$@en %1$d anderen krijgen hier een melding van</string>
+			<string>%2$@, %3$@ en %1$d anderen zullen een melding krijgen</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
@@ -1179,22 +1179,6 @@
 			<string>Aangepast verhaal · %1$d kijker</string>
 			<key>other</key>
 			<string>Aangepast verhaal · %1$d kijkers</string>
-		</dict>
-	</dict>
-	<key>RAISED_HANDS_TOAST_MULTIPLE_HANDS_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%1$@ and %2$d more have raised a hand</string>
-			<key>other</key>
-			<string>%1$@ and %2$d more have raised a hand</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>

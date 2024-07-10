@@ -1773,30 +1773,6 @@
 			<string>قصة مخصصة · %1$d مشاهد</string>
 		</dict>
 	</dict>
-	<key>RAISED_HANDS_TOAST_MULTIPLE_HANDS_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>zero</key>
-			<string>%1$@ and %2$d more have raised a hand</string>
-			<key>one</key>
-			<string>%1$@ and %2$d more have raised a hand</string>
-			<key>two</key>
-			<string>%1$@ and %2$d more have raised a hand</string>
-			<key>few</key>
-			<string>%1$@ and %2$d more have raised a hand</string>
-			<key>many</key>
-			<string>%1$@ and %2$d more have raised a hand</string>
-			<key>other</key>
-			<string>%1$@ and %2$d more have raised a hand</string>
-		</dict>
-	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
