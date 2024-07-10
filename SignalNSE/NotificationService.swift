@@ -140,7 +140,9 @@ class NotificationService: UNNotificationServiceExtension {
                     return
                 }
 
-                self?.fetchAndProcessMessages(logger: logger)
+                DispatchQueue.main.async {
+                    self?.fetchAndProcessMessages(logger: logger)
+                }
             }
         }
     }
