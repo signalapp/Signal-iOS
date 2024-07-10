@@ -1008,6 +1008,13 @@ class GroupCallViewController: UIViewController {
         }
         hasDismissed = true
 
+        guard self.isViewLoaded else {
+            // This can happen if the call is canceled before it's ever shown (ie a
+            // ring that's not answered).
+            WindowManager.shared.endCall(viewController: self)
+            return
+        }
+
         self.callControlsDisplayState = .callControlsOnly
 
         guard
@@ -1399,9 +1406,6 @@ extension GroupCallViewController: GroupCallObserver {
     func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason) {
         AssertIsOnMainThread()
         owsAssert(self.groupCall === call)
-        guard self.isReadyToHandleObserver else {
-            return
-        }
 
         let title: String
 
@@ -1464,8 +1468,10 @@ extension GroupCallViewController: GroupCallObserver {
         ))
         presentActionSheet(actionSheet)
 
-        showCallControlsIfTheyMustBeVisible()
-        updateCallUI()
+        if self.isReadyToHandleObserver {
+            showCallControlsIfTheyMustBeVisible()
+            updateCallUI()
+        }
     }
 
     func groupCallReceivedReactions(_ call: GroupCall, reactions: [SignalRingRTC.Reaction]) {
