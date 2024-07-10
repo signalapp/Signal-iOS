@@ -105,6 +105,7 @@ extension ChatListViewController {
             return
         }
 
+        let sectionDifference = renderState.sections.difference(from: tableDataSource.renderState.sections, by: { $0.type == $1.type })
         let isChangingFilter = tableDataSource.renderState.viewInfo.inboxFilter != renderState.viewInfo.inboxFilter
         tableDataSource.renderState = renderState
 
@@ -133,6 +134,24 @@ extension ChatListViewController {
         // anymore. All indexPaths are based on the old model (before any change was applied) and if we
         // animate move, insert and delete changes the indexPaths of the to be updated rows will differ.
         var useFallBackUpdateMechanism = false
+        var removedSections = IndexSet()
+        var insertedSections = IndexSet()
+
+        for change in sectionDifference {
+            switch change {
+            case let .insert(offset, element: _, associatedWith: _):
+                insertedSections.insert(offset)
+            case let .remove(offset, element: _, associatedWith: _):
+                removedSections.insert(offset)
+            }
+        }
+
+        if !removedSections.isEmpty {
+            checkAndSetTableUpdates()
+            tableView.deleteSections(removedSections, with: .middle)
+            useFallBackUpdateMechanism = true
+        }
+
         for rowChange in rowChanges {
             threadViewModelCache.removeObject(forKey: rowChange.threadUniqueId)
             cellContentCache.removeObject(forKey: rowChange.threadUniqueId)
@@ -176,6 +195,12 @@ extension ChatListViewController {
                 }
             }
         }
+
+        if !insertedSections.isEmpty {
+            checkAndSetTableUpdates()
+            tableView.insertSections(insertedSections, with: .top)
+        }
+
         if tableUpdatesPerformed {
             tableView.endUpdates()
         }
@@ -223,16 +248,10 @@ public class CLVLoadCoordinator: Dependencies {
                 transaction: transaction
             )
 
-            if shouldResetAll ||
-                viewInfo.hasArchivedThreadsRow != lastViewInfo.hasArchivedThreadsRow ||
-                viewInfo.hasVisibleReminders != lastViewInfo.hasVisibleReminders {
+            if shouldResetAll || !canApplyRowChanges {
                 return CLVLoadInfo(viewInfo: viewInfo, loadType: .resetAll)
             } else if !updatedThreadIds.isEmpty || viewInfo.inboxFilter != lastViewInfo.inboxFilter {
-                if canApplyRowChanges {
-                    return CLVLoadInfo(viewInfo: viewInfo, loadType: .incrementalDiff(updatedThreadIds: updatedThreadIds))
-                } else {
-                    return CLVLoadInfo(viewInfo: viewInfo, loadType: .resetAll)
-                }
+                return CLVLoadInfo(viewInfo: viewInfo, loadType: .incrementalDiff(updatedThreadIds: updatedThreadIds))
             } else if viewInfo != lastViewInfo {
                 return CLVLoadInfo(viewInfo: viewInfo, loadType: .reloadTableOnly)
             } else {

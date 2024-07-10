@@ -6,6 +6,11 @@
 import SignalServiceKit
 
 struct CLVRenderState {
+    struct Section {
+        var type: ChatListSectionType
+        var threads: KeyPath<CLVRenderState, [TSThread]>?
+    }
+
     static var empty: CLVRenderState {
         CLVRenderState(viewInfo: .empty, pinnedThreads: [], unpinnedThreads: [])
     }
@@ -13,7 +18,30 @@ struct CLVRenderState {
     let viewInfo: CLVViewInfo
     let pinnedThreads: [TSThread]
     let unpinnedThreads: [TSThread]
-    let sections: [ChatListSection] = ChatListSection.allCases
+    private(set) var sections: [Section] = []
+
+    init(viewInfo: CLVViewInfo, pinnedThreads: [TSThread], unpinnedThreads: [TSThread]) {
+        self.viewInfo = viewInfo
+        self.pinnedThreads = pinnedThreads
+        self.unpinnedThreads = unpinnedThreads
+
+        for sectionType in ChatListSectionType.allCases {
+            switch sectionType {
+            case .reminders:
+                if hasVisibleReminders {
+                    sections.append(Section(type: sectionType))
+                }
+            case .archiveButton:
+                if hasArchivedThreadsRow {
+                    sections.append(Section(type: sectionType))
+                }
+            case .pinned:
+                sections.append(Section(type: sectionType, threads: \.pinnedThreads))
+            case .unpinned:
+                sections.append(Section(type: sectionType, threads: \.unpinnedThreads))
+            }
+        }
+    }
 
     var archiveCount: UInt {
         viewInfo.archiveCount
@@ -41,78 +69,75 @@ struct CLVRenderState {
 
     // MARK: UITableViewDataSource
 
-    func thread(forIndexPath indexPath: IndexPath) -> TSThread? {
-        let section = ChatListSection(rawValue: indexPath.section)!
+    func sectionIndex(for sectionType: ChatListSectionType) -> Int? {
+        sections.firstIndex(where: { $0.type == sectionType })
+    }
 
-        switch section {
-        case .pinned:
-            return pinnedThreads[indexPath.row]
-        case .unpinned:
-            return unpinnedThreads[indexPath.row]
-        default:
-            return nil
-        }
+    func thread(forIndexPath indexPath: IndexPath) -> TSThread? {
+        let section = sections[indexPath.section]
+        guard let key = section.threads else { return nil }
+        return self[keyPath: key][indexPath.row]
     }
 
     func indexPath(forUniqueId uniqueId: String) -> IndexPath? {
-        if let index = (unpinnedThreads.firstIndex { $0.uniqueId == uniqueId}) {
-            return IndexPath(item: index, section: ChatListSection.unpinned.rawValue)
-        } else if let index = pinnedThreads.firstIndex(where: { $0.uniqueId == uniqueId }) {
-            return IndexPath(item: index, section: ChatListSection.pinned.rawValue)
+        if let index = pinnedThreads.firstIndex(where: { $0.uniqueId == uniqueId }) {
+            let section = sectionIndex(for: .pinned)!
+            return IndexPath(item: index, section: section)
+        } else if let index = unpinnedThreads.firstIndex(where: { $0.uniqueId == uniqueId }) {
+            let section = sectionIndex(for: .unpinned)!
+            return IndexPath(item: index, section: section)
         } else {
             return nil
         }
     }
 
     func indexPath(afterThread thread: TSThread?) -> IndexPath? {
-        let isPinnedThread: Bool
+        let section: (index: Int, threads: KeyPath<CLVRenderState, [TSThread]>)
+
         if let thread = thread, pinnedThreads.contains(where: { $0.uniqueId == thread.uniqueId }) {
-            isPinnedThread = true
+            let index = sectionIndex(for: .pinned)!
+            section = (index, sections[index].threads!)
         } else {
-            isPinnedThread = false
+            let index = sectionIndex(for: .unpinned)!
+            section = (index, sections[index].threads!)
         }
 
-        let section: ChatListSection = isPinnedThread ? .pinned : .unpinned
-        let threadsInSection = isPinnedThread ? pinnedThreads : unpinnedThreads
+        guard !self[keyPath: section.threads].isEmpty else { return nil }
 
-        guard !threadsInSection.isEmpty else { return nil }
+        let firstIndexPath = IndexPath(item: 0, section: section.index)
 
-        let firstIndexPath = IndexPath(item: 0, section: section.rawValue)
+        guard let thread,
+              let index = self[keyPath: section.threads].firstIndex(where: { $0.uniqueId == thread.uniqueId })
+        else { return firstIndexPath }
 
-        guard let thread = thread else { return firstIndexPath }
-        guard let index = threadsInSection.firstIndex(where: { $0.uniqueId == thread.uniqueId}) else {
-            return firstIndexPath
-        }
-
-        if index < (threadsInSection.count - 1) {
-            return IndexPath(item: index + 1, section: section.rawValue)
+        if index < (self[keyPath: section.threads].count - 1) {
+            return IndexPath(item: index + 1, section: section.index)
         } else {
             return nil
         }
     }
 
     func indexPath(beforeThread thread: TSThread?) -> IndexPath? {
-        let isPinnedThread: Bool
+        let section: (index: Int, threads: KeyPath<CLVRenderState, [TSThread]>)
+
         if let thread = thread, pinnedThreads.contains(where: { $0.uniqueId == thread.uniqueId }) {
-            isPinnedThread = true
+            let index = sectionIndex(for: .pinned)!
+            section = (index, sections[index].threads!)
         } else {
-            isPinnedThread = false
+            let index = sectionIndex(for: .unpinned)!
+            section = (index, sections[index].threads!)
         }
 
-        let section: ChatListSection = isPinnedThread ? .pinned : .unpinned
-        let threadsInSection = isPinnedThread ? pinnedThreads : unpinnedThreads
+        guard !self[keyPath: section.threads].isEmpty else { return nil }
 
-        guard !threadsInSection.isEmpty else { return nil }
+        let lastIndexPath = IndexPath(item: self[keyPath: section.threads].count - 1, section: section.index)
 
-        let lastIndexPath = IndexPath(item: threadsInSection.count - 1, section: section.rawValue)
-
-        guard let thread = thread else { return lastIndexPath }
-        guard let index = threadsInSection.firstIndex(where: { $0.uniqueId == thread.uniqueId}) else {
-            return lastIndexPath
-        }
+        guard let thread,
+              let index = self[keyPath: section.threads].firstIndex(where: { $0.uniqueId == thread.uniqueId })
+        else { return lastIndexPath }
 
         if index > 0 {
-            return IndexPath(item: index - 1, section: section.rawValue)
+            return IndexPath(item: index - 1, section: section.index)
         } else {
             return nil
         }
@@ -126,10 +151,13 @@ struct CLVViewInfo: Equatable {
     let archiveCount: UInt
     let inboxCount: UInt
     let inboxFilter: InboxFilter?
-    let hasArchivedThreadsRow: Bool
     let hasVisibleReminders: Bool
     let lastSelectedThreadId: String?
     let requiredVisibleThreadIds: Set<String>
+
+    var hasArchivedThreadsRow: Bool {
+        chatListMode == .inbox && inboxFilter == nil && archiveCount > 0
+    }
 
     static var empty: CLVViewInfo {
         CLVViewInfo(
@@ -137,7 +165,6 @@ struct CLVViewInfo: Equatable {
             archiveCount: 0,
             inboxCount: 0,
             inboxFilter: nil,
-            hasArchivedThreadsRow: false,
             hasVisibleReminders: false,
             lastSelectedThreadId: nil,
             requiredVisibleThreadIds: []
@@ -160,13 +187,11 @@ struct CLVViewInfo: Equatable {
             let threadFinder = ThreadFinder()
             let archiveCount = try threadFinder.visibleThreadCount(isArchived: true, transaction: transaction)
             let inboxCount = try threadFinder.visibleThreadCount(isArchived: false, transaction: transaction)
-            let hasArchivedThreadsRow = (chatListMode == .inbox && archiveCount > 0)
             return CLVViewInfo(
                 chatListMode: chatListMode,
                 archiveCount: archiveCount,
                 inboxCount: inboxCount,
                 inboxFilter: inboxFilter,
-                hasArchivedThreadsRow: hasArchivedThreadsRow,
                 hasVisibleReminders: hasVisibleReminders,
                 lastSelectedThreadId: lastSelectedThreadId,
                 requiredVisibleThreadIds: requiredThreadIds

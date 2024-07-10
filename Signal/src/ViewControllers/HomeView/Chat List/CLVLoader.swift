@@ -227,32 +227,33 @@ public class CLVLoader: Dependencies {
                                                                                  newValues: newUnpinnedValues,
                                                                                  changedValues: unpinnedChangedValues)
 
-        func rowChangeType(forBatchUpdateType batchUpdateType: BatchUpdateType,
-                           chatListSection: ChatListSection) -> CLVRowChangeType {
+        func rowChangeType(forBatchUpdateType batchUpdateType: BatchUpdateType, section: Int) -> CLVRowChangeType {
             switch batchUpdateType {
             case .delete(let oldIndex):
-                return .delete(oldIndexPath: IndexPath(row: oldIndex, section: chatListSection.rawValue))
+                return .delete(oldIndexPath: IndexPath(row: oldIndex, section: section))
             case .insert(let newIndex):
-                return .insert(newIndexPath: IndexPath(row: newIndex, section: chatListSection.rawValue))
+                return .insert(newIndexPath: IndexPath(row: newIndex, section: section))
             case .move(let oldIndex, let newIndex):
-                return .move(oldIndexPath: IndexPath(row: oldIndex, section: chatListSection.rawValue),
-                             newIndexPath: IndexPath(row: newIndex, section: chatListSection.rawValue))
+                return .move(oldIndexPath: IndexPath(row: oldIndex, section: section),
+                             newIndexPath: IndexPath(row: newIndex, section: section))
             case .update(let oldIndex, _):
-                return .update(oldIndexPath: IndexPath(row: oldIndex, section: chatListSection.rawValue))
+                return .update(oldIndexPath: IndexPath(row: oldIndex, section: section))
             }
         }
-        func rowChanges(forBatchUpdateItems batchUpdateItems: [BatchUpdate<CLVBatchUpdateValue>.Item],
-                        chatListSection: ChatListSection) -> [CLVRowChange] {
-            batchUpdateItems.map { batchUpdateItem in
-                CLVRowChange(type: rowChangeType(forBatchUpdateType: batchUpdateItem.updateType,
-                                                 chatListSection: chatListSection),
-                            threadUniqueId: batchUpdateItem.value.threadUniqueId)
+
+        func rowChanges(forBatchUpdateItems batchUpdateItems: [BatchUpdate<CLVBatchUpdateValue>.Item], section: Int) -> [CLVRowChange] {
+            batchUpdateItems.map { item in
+                CLVRowChange(
+                    type: rowChangeType(forBatchUpdateType: item.updateType, section: section),
+                    threadUniqueId: item.value.threadUniqueId
+                )
             }
         }
-        let pinnedRowChanges = rowChanges(forBatchUpdateItems: pinnedBatchUpdateItems,
-                                          chatListSection: .pinned)
-        let unpinnedRowChanges = rowChanges(forBatchUpdateItems: unpinnedBatchUpdateItems,
-                                            chatListSection: .unpinned)
+
+        let pinnedSectionIndex = newRenderState.sectionIndex(for: .pinned)!
+        let pinnedRowChanges = rowChanges(forBatchUpdateItems: pinnedBatchUpdateItems, section: pinnedSectionIndex)
+        let unpinnedSectionIndex = newRenderState.sectionIndex(for: .unpinned)!
+        let unpinnedRowChanges = rowChanges(forBatchUpdateItems: unpinnedBatchUpdateItems, section: unpinnedSectionIndex)
 
         var allRowChanges = pinnedRowChanges + unpinnedRowChanges
 

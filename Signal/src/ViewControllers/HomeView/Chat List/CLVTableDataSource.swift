@@ -84,15 +84,11 @@ class CLVTableDataSource: NSObject {
     }
 
     func threadViewModel(forIndexPath indexPath: IndexPath) -> ThreadViewModel? {
-        thread(forIndexPath: indexPath).map(threadViewModel(forThread:))
-    }
-
-    func thread(forIndexPath indexPath: IndexPath) -> TSThread? {
-        renderState.thread(forIndexPath: indexPath)
+        renderState.thread(forIndexPath: indexPath).map(threadViewModel(forThread:))
     }
 
     func selectedThreads(in tableView: UITableView) -> [TSThread]? {
-        tableView.indexPathsForSelectedRows?.compactMap(thread(forIndexPath:))
+        tableView.indexPathsForSelectedRows?.compactMap(renderState.thread(forIndexPath:))
     }
 
     private func preloadCellsIfNecessary() {
@@ -130,12 +126,7 @@ class CLVTableDataSource: NSObject {
             return
         }
         let conversationIndexPaths = visibleIndexPaths.compactMap { indexPath -> IndexPath? in
-            guard let section = ChatListSection(rawValue: indexPath.section) else {
-                owsFailDebug("Invalid section: \(indexPath.section).")
-                return nil
-            }
-
-            switch section {
+            switch renderState.sections[indexPath.section].type {
             case .reminders:
                 return nil
             case .pinned, .unpinned:
@@ -218,7 +209,7 @@ public enum ChatListMode: Int, CaseIterable {
 
 // MARK: -
 
-public enum ChatListSection: Int, CaseIterable {
+public enum ChatListSectionType: CaseIterable {
     case reminders
     case pinned
     case unpinned
@@ -228,7 +219,6 @@ public enum ChatListSection: Int, CaseIterable {
 // MARK: -
 
 extension CLVTableDataSource: UITableViewDelegate {
-
     public func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
         return UITableViewCell.EditingStyle.none
     }
@@ -265,20 +255,14 @@ extension CLVTableDataSource: UITableViewDelegate {
     }
 
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        AssertIsOnMainThread()
-
-        guard let section = ChatListSection(rawValue: section) else {
-            owsFailDebug("Invalid section: \(section).")
-            return 0
-        }
-
-        switch section {
+        switch renderState.sections[section].type {
         case .pinned, .unpinned:
             if !renderState.hasPinnedAndUnpinnedThreads {
                 return CGFloat.epsilon
             }
 
             return UITableView.automaticDimension
+
         default:
             // Without returning a header with a non-zero height, Grouped
             // table view will use a default spacing between sections. We
@@ -288,8 +272,6 @@ extension CLVTableDataSource: UITableViewDelegate {
     }
 
     public func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        AssertIsOnMainThread()
-
         // Without returning a footer with a non-zero height, Grouped
         // table view will use a default spacing between sections. We
         // do not want that spacing so we use the smallest possible height.
@@ -297,16 +279,12 @@ extension CLVTableDataSource: UITableViewDelegate {
     }
 
     public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        AssertIsOnMainThread()
+        let section = renderState.sections[section]
 
-        guard let section = ChatListSection(rawValue: section) else {
-            owsFailDebug("Invalid section: \(section).")
-            return nil
-        }
-
-        switch section {
+        switch section.type {
         case .pinned, .unpinned:
             let container = UIView()
+            container.backgroundColor = Theme.backgroundColor
             container.layoutMargins = UIEdgeInsets(top: 14, leading: 16, bottom: 8, trailing: 16)
 
             let label = UILabel()
@@ -314,42 +292,33 @@ extension CLVTableDataSource: UITableViewDelegate {
             label.autoPinEdgesToSuperviewMargins()
             label.font = UIFont.dynamicTypeBody.semibold()
             label.textColor = Theme.primaryTextColor
-            label.text = (section == .pinned
+            label.text = (section.type == .pinned
                             ? OWSLocalizedString("PINNED_SECTION_TITLE",
                                                 comment: "The title for pinned conversation section on the conversation list")
                             : OWSLocalizedString("UNPINNED_SECTION_TITLE",
                                                 comment: "The title for unpinned conversation section on the conversation list"))
 
             return container
+
         default:
             return UIView()
         }
     }
 
     public func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        AssertIsOnMainThread()
-
-        return UIView()
+        UIView()
     }
 
     public func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        AssertIsOnMainThread()
-
-        guard let section = ChatListSection(rawValue: indexPath.section) else {
-            owsFailDebug("Invalid section: \(indexPath.section)")
-            return nil
-        }
-
-        switch section {
-        case .reminders,
-             .archiveButton where viewState.multiSelectState.isActive:
+        switch renderState.sections[indexPath.section].type {
+        case .reminders:
             return nil
 
         case .archiveButton:
             return indexPath
 
         case .pinned, .unpinned:
-            guard let thread = thread(forIndexPath: indexPath) else {
+            guard let thread = renderState.thread(forIndexPath: indexPath) else {
                 owsFailDebug("Missing thread at index path: \(indexPath)")
                 return nil
             }
@@ -359,8 +328,6 @@ extension CLVTableDataSource: UITableViewDelegate {
     }
 
     public func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-        AssertIsOnMainThread()
-
         if threadIdBeingSelected == nil {
             viewState.lastSelectedThreadId = nil
         }
@@ -376,8 +343,6 @@ extension CLVTableDataSource: UITableViewDelegate {
     }
 
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        AssertIsOnMainThread()
-
         guard let viewController = self.viewController else {
             owsFailDebug("Missing viewController.")
             return
@@ -387,14 +352,12 @@ extension CLVTableDataSource: UITableViewDelegate {
             viewController.cancelSearch()
         }
 
-        let section = ChatListSection(rawValue: indexPath.section)!
-
-        switch section {
+        switch renderState.sections[indexPath.section].type {
         case .reminders:
             owsFailDebug("Can't select reminders")
 
         case .pinned, .unpinned:
-            guard let thread = thread(forIndexPath: indexPath) else {
+            guard let thread = renderState.thread(forIndexPath: indexPath) else {
                 owsFailDebug("Missing thread.")
                 return
             }
@@ -426,7 +389,7 @@ extension CLVTableDataSource: UITableViewDelegate {
         guard viewController.canPresentPreview(fromIndexPath: indexPath) else {
             return nil
         }
-        guard let thread = thread(forIndexPath: indexPath) else {
+        guard let thread = renderState.thread(forIndexPath: indexPath) else {
             return nil
         }
 
@@ -557,7 +520,7 @@ extension CLVTableDataSource: UITableViewDataSource {
     fileprivate func numberOfRows(inSection section: Int) -> Int {
         AssertIsOnMainThread()
 
-        switch renderState.sections[section] {
+        switch renderState.sections[section].type {
         case .reminders:
             return renderState.hasVisibleReminders ? 1 : 0
         case .pinned:
@@ -570,7 +533,7 @@ extension CLVTableDataSource: UITableViewDataSource {
     }
 
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        switch renderState.sections[indexPath.section] {
+        switch renderState.sections[indexPath.section].type {
         case .reminders:
             return UITableView.automaticDimension
         case .pinned, .unpinned:
@@ -589,7 +552,7 @@ extension CLVTableDataSource: UITableViewDataSource {
         let section = renderState.sections[indexPath.section]
 
         let cell: UITableViewCell = {
-            switch section {
+            switch section.type {
             case .reminders:
                 return viewController.reminderViewCell
             case .pinned, .unpinned:
@@ -676,7 +639,7 @@ extension CLVTableDataSource: UITableViewDataSource {
     }
 
     public func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        switch renderState.sections[indexPath.section] {
+        switch renderState.sections[indexPath.section].type {
         case .reminders, .archiveButton:
             return nil
 
@@ -701,7 +664,7 @@ extension CLVTableDataSource: UITableViewDataSource {
     }
 
     public func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        switch renderState.sections[indexPath.section] {
+        switch renderState.sections[indexPath.section].type {
         case .reminders:
             return false
         case .pinned, .unpinned:
@@ -712,7 +675,7 @@ extension CLVTableDataSource: UITableViewDataSource {
     }
 
     public func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        switch renderState.sections[indexPath.section] {
+        switch renderState.sections[indexPath.section].type {
         case .reminders:
             return nil
 
@@ -846,7 +809,7 @@ extension CLVTableDataSource {
         let cellContentCacheResetCount = cellContentCache.resetCount
         let threadViewModelCacheResetCount = threadViewModelCache.resetCount
 
-        guard let thread = self.thread(forIndexPath: indexPath) else {
+        guard let thread = renderState.thread(forIndexPath: indexPath) else {
             owsFailDebug("Missing thread.")
             return
         }

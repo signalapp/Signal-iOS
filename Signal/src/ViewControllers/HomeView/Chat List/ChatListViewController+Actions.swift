@@ -19,7 +19,7 @@ extension ChatListViewController {
 
         let currentThread = self.conversationSplitViewController?.selectedThread
         if let previousIndexPath = renderState.indexPath(beforeThread: currentThread),
-           let thread = tableDataSource.thread(forIndexPath: previousIndexPath)
+           let thread = renderState.thread(forIndexPath: previousIndexPath)
         {
             presentThread(thread, action: .compose, animated: true)
         }
@@ -38,7 +38,7 @@ extension ChatListViewController {
 
         let currentThread = self.conversationSplitViewController?.selectedThread
         if let nextIndexPath = renderState.indexPath(afterThread: currentThread),
-           let thread = tableDataSource.thread(forIndexPath: nextIndexPath)
+           let thread = renderState.thread(forIndexPath: nextIndexPath)
         {
             presentThread(thread, action: .compose, animated: true)
         }

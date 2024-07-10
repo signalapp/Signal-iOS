@@ -45,9 +45,7 @@ public extension ChatListViewController {
             return
         }
 
-        let currentlySelectedThread = currentSelection.first.flatMap {
-            self.tableDataSource.thread(forIndexPath: $0)
-        }
+        let currentlySelectedThread = currentSelection.first.flatMap(renderState.thread(forIndexPath:))
 
         if currentlySelectedThread?.uniqueId != targetThread.uniqueId {
             if let targetPath = tableDataSource.renderState.indexPath(forUniqueId: targetThread.uniqueId) {
@@ -147,17 +145,15 @@ extension ChatListViewController {
         guard !tableView.isEditing else {
             return false
         }
-        guard let section = ChatListSection(rawValue: indexPath.section) else {
-            owsFailDebug("Invalid section: \(indexPath.section).")
-            return false
-        }
-        switch section {
+
+        switch renderState.sections[indexPath.section].type {
         case .pinned, .unpinned:
             let currentSelectedThreadId = conversationSplitViewController?.selectedThread?.uniqueId
             // Currently, no previewing the currently selected thread.
             // Though, in a scene-aware, multiwindow world, we may opt to permit this.
             // If only to allow the user to pick up and drag a conversation to a new window.
-            return tableDataSource.thread(forIndexPath: indexPath)?.uniqueId != currentSelectedThreadId
+            return renderState.thread(forIndexPath: indexPath)?.uniqueId != currentSelectedThreadId
+
         default:
             return false
         }
