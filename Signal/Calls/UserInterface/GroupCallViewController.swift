@@ -325,12 +325,35 @@ class GroupCallViewController: UIViewController {
         self.videoOverflow.autoPinHeightToSuperview()
         self.videoOverflow.autoPinEdge(toSuperviewEdge: .leading)
 
-        raisedHandsToastContainer.layoutMargins = .init(margin: 0)
-        raisedHandsToastContainer.preservesSuperviewLayoutMargins = true
-        raisedHandsToastContainer.addSubview(raisedHandsToast)
-        raisedHandsToastContainer.isHiddenInStackView = true
+        // bottomVStack
+        // ↳ raisedHandsToastContainer
+        //     - Always full-width
+        //   ↳ raisedHandsToastInnerContainer
+        //       - Centered horizontally. Limited to 540px width
+        //     ↳ raisedHandsToast
+        //         - Pinned to right edge when collapsed.
+        //         - Pinned to both edges when expanded.
+
         self.bottomVStack.insertArrangedSubview(raisedHandsToastContainer, at: 0)
         self.bottomVStack.ignoredViews.append(raisedHandsToastContainer)
+
+        raisedHandsToastContainer.layoutMargins = .init(margin: 0)
+        raisedHandsToastContainer.preservesSuperviewLayoutMargins = true
+        raisedHandsToastContainer.isHiddenInStackView = true
+
+        let raisedHandsToastInnerContainer = UIView()
+        raisedHandsToastInnerContainer.layoutMargins = .init(margin: 0)
+        raisedHandsToastInnerContainer.preservesSuperviewLayoutMargins = true
+        raisedHandsToastInnerContainer.addSubview(raisedHandsToast)
+        raisedHandsToastContainer.addSubview(raisedHandsToastInnerContainer)
+
+        raisedHandsToastInnerContainer.autoPinVerticalEdges(toEdgesOf: raisedHandsToastContainer)
+        raisedHandsToastInnerContainer.autoHCenterInSuperview()
+        raisedHandsToastInnerContainer.widthAnchor.constraint(lessThanOrEqualToConstant: 540).isActive = true
+        raisedHandsToastInnerContainer.autoPinHorizontalEdges(toEdgesOf: raisedHandsToastContainer)
+            // Prioritize the 540px limit
+            .forEach { $0.priority = .defaultHigh }
+
         raisedHandsToast.autoPinEdges(toSuperviewMarginsExcludingEdge: .leading)
         raisedHandsToast.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
         raisedHandsToast.horizontalPinConstraint = raisedHandsToast.autoPinEdge(toSuperviewMargin: .leading)
