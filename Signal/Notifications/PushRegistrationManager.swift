@@ -230,7 +230,6 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
 
     public func pushRegistry(_ registry: PKPushRegistry, didUpdate credentials: PKPushCredentials, for type: PKPushType) {
         // voip tokens are no longer supported
-        owsFailDebug("Unexpected voip token")
     }
 
     public func pushRegistry(_ registry: PKPushRegistry, didInvalidatePushTokenFor type: PKPushType) {
