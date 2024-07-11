@@ -146,7 +146,13 @@ class MainAppContext: NSObject, AppContext {
 
     func open(_ url: URL, completion: ((Bool) -> Void)? = nil) { UIApplication.shared.open(url, completionHandler: completion) }
 
-    var isRunningTests: Bool { getenv("runningTests_dontStartApp") != nil }
+    var isRunningTests: Bool {
+        #if TESTABLE_BUILD
+        return getenv("runningTests_dontStartApp") != nil
+        #else
+        return false
+        #endif
+    }
 
     var frame: CGRect { self.mainWindow?.frame ?? .zero }
 
