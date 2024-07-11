@@ -607,8 +607,9 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
         }
         set {
             let oldValue = _currentWebSocket.swap(newValue)
-            if oldValue != nil || newValue != nil {
-                owsAssertDebug(oldValue?.id != newValue?.id)
+
+            if let oldValue, let newValue {
+                owsAssertDebug(oldValue.id != newValue.id)
             }
 
             oldValue?.reset()
