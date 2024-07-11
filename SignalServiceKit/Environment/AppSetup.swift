@@ -155,6 +155,7 @@ public class AppSetup {
         let networkManager = testDependencies.networkManager ?? NetworkManager(libsignalNet: libsignalNet)
         let ows2FAManager = OWS2FAManager()
         let paymentsHelper = testDependencies.paymentsHelper ?? PaymentsHelperImpl()
+        let archivedPaymentStore = ArchivedPaymentStoreImpl()
         let pniSignalProtocolStore = SignalProtocolStoreImpl(
             for: .pni,
             keyValueStoreFactory: keyValueStoreFactory,
@@ -1051,6 +1052,7 @@ public class AppSetup {
             messageStickerManager: messageStickerManager,
             nicknameManager: nicknameManager,
             orphanedAttachmentCleaner: orphanedAttachmentCleaner,
+            archivedPaymentStore: archivedPaymentStore,
             phoneNumberDiscoverabilityManager: phoneNumberDiscoverabilityManager,
             phoneNumberVisibilityFetcher: phoneNumberVisibilityFetcher,
             pinnedThreadManager: pinnedThreadManager,

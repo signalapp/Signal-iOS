@@ -270,6 +270,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addAttachmentDownloadQueue
         case attachmentAddCdnUnencryptedByteCounts
         case addArchivedPaymentInfoColumn
+        case createArchivedPaymentTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -331,7 +332,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 76
+    public static let grdbSchemaVersionLatest: UInt = 77
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3071,6 +3072,36 @@ public class GRDBSchemaMigrator: NSObject {
             try tx.database.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
                 table.add(column: "archivedPaymentInfo", .blob)
             }
+            return .success(())
+        }
+
+        migrator.registerMigration(.createArchivedPaymentTable) { tx in
+            try tx.database.execute(sql: "DROP TABLE IF EXISTS ArchivedPayment")
+            try tx.database.create(table: "ArchivedPayment") { table in
+                table.autoIncrementedPrimaryKey("id")
+                    .notNull()
+                table.column("amount", .text)
+                table.column("fee", .text)
+                table.column("note", .text)
+                table.column("mobileCoinIdentification", .blob)
+                table.column("status", .integer)
+                table.column("failureReason", .integer)
+                table.column("timestamp", .integer)
+                table.column("blockIndex", .integer)
+                table.column("blockTimestamp", .integer)
+                table.column("transaction", .blob)
+                table.column("receipt", .blob)
+                table.column("direction", .integer)
+                table.column("senderOrRecipientAci", .blob)
+                table.column("interactionUniqueId", .text)
+            }
+
+            try tx.database.create(
+                index: "index_archived_payment_on_interaction_unique_id",
+                on: "ArchivedPayment",
+                columns: ["interactionUniqueId"]
+            )
+
             return .success(())
         }
 

@@ -1940,3 +1940,30 @@ CREATE
 
 END
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "ArchivedPayment" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"amount" TEXT
+            ,"fee" TEXT
+            ,"note" TEXT
+            ,"mobileCoinIdentification" BLOB
+            ,"status" INTEGER
+            ,"failureReason" INTEGER
+            ,"timestamp" INTEGER
+            ,"blockIndex" INTEGER
+            ,"blockTimestamp" INTEGER
+            ,"transaction" BLOB
+            ,"receipt" BLOB
+            ,"direction" INTEGER
+            ,"senderOrRecipientAci" BLOB
+            ,"interactionUniqueId" TEXT
+        )
+;
+
+CREATE
+    INDEX "index_archived_payment_on_interaction_unique_id"
+        ON "ArchivedPayment"("interactionUniqueId"
+)
+;

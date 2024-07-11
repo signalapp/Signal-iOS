@@ -97,6 +97,7 @@ public class DependenciesBridge {
     public let messageStickerManager: MessageStickerManager
     public let nicknameManager: any NicknameManager
     public let orphanedAttachmentCleaner: OrphanedAttachmentCleaner
+    public let archivedPaymentStore: ArchivedPaymentStore
     public let phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager
     public let phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher
     public let pinnedThreadManager: PinnedThreadManager
@@ -203,6 +204,7 @@ public class DependenciesBridge {
         messageStickerManager: MessageStickerManager,
         nicknameManager: any NicknameManager,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
+        archivedPaymentStore: ArchivedPaymentStore,
         phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager,
         phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher,
         pinnedThreadManager: PinnedThreadManager,
@@ -306,6 +308,7 @@ public class DependenciesBridge {
         self.messageStickerManager = messageStickerManager
         self.nicknameManager = nicknameManager
         self.orphanedAttachmentCleaner = orphanedAttachmentCleaner
+        self.archivedPaymentStore = archivedPaymentStore
         self.phoneNumberDiscoverabilityManager = phoneNumberDiscoverabilityManager
         self.phoneNumberVisibilityFetcher = phoneNumberVisibilityFetcher
         self.pinnedThreadManager = pinnedThreadManager

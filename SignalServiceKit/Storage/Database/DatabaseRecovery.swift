@@ -277,7 +277,8 @@ public extension DatabaseRecovery {
             AttachmentReference.StoryMessageAttachmentReferenceRecord.databaseTableName,
             AttachmentReference.ThreadAttachmentReferenceRecord.databaseTableName,
             OrphanedAttachmentRecord.databaseTableName,
-            QueuedAttachmentDownloadRecord.databaseTableName
+            QueuedAttachmentDownloadRecord.databaseTableName,
+            ArchivedPayment.databaseTableName
         ]
 
         private static func prepareToCopyTablesWithBestEffort(

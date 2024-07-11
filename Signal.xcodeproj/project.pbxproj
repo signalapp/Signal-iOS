@@ -1719,6 +1719,8 @@
 		C1D3814D2C08D3FB00E46008 /* story-distribution-list.jsonproto in Resources */ = {isa = PBXBuildFile; fileRef = C1D381492C08D34900E46008 /* story-distribution-list.jsonproto */; };
 		C1D9B1532B7E949500D94595 /* SpamReportingUIUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D9B1522B7E949500D94595 /* SpamReportingUIUtils.swift */; };
 		C1D9B1552B7FA28200D94595 /* SafetyTipsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D9B1542B7FA28200D94595 /* SafetyTipsViewController.swift */; };
+		C1DAA7582C13C1E00078AE84 /* ArchivedPayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DAA7572C13C1E00078AE84 /* ArchivedPayment.swift */; };
+		C1DAA75A2C1742680078AE84 /* ArchivedPaymentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DAA7592C1742680078AE84 /* ArchivedPaymentStore.swift */; };
 		C1DB22C329C9F95500757380 /* EditManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DB22C229C9F95500757380 /* EditManager.swift */; };
 		C1DD78AB2BB1CEF80020F064 /* InputStreamable.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DD78AA2BB1CEF80020F064 /* InputStreamable.swift */; };
 		C1DD78AD2BB1CF110020F064 /* Streamable.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1DD78AC2BB1CF110020F064 /* Streamable.swift */; };
@@ -4746,6 +4748,8 @@
 		C1D5836E2B03DFED00EE8FD9 /* Stripe+IDEAL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Stripe+IDEAL.swift"; sourceTree = "<group>"; };
 		C1D9B1522B7E949500D94595 /* SpamReportingUIUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamReportingUIUtils.swift; sourceTree = "<group>"; };
 		C1D9B1542B7FA28200D94595 /* SafetyTipsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafetyTipsViewController.swift; sourceTree = "<group>"; };
+		C1DAA7572C13C1E00078AE84 /* ArchivedPayment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivedPayment.swift; sourceTree = "<group>"; };
+		C1DAA7592C1742680078AE84 /* ArchivedPaymentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivedPaymentStore.swift; sourceTree = "<group>"; };
 		C1DB22C229C9F95500757380 /* EditManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManager.swift; sourceTree = "<group>"; };
 		C1DD78AA2BB1CEF80020F064 /* InputStreamable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputStreamable.swift; sourceTree = "<group>"; };
 		C1DD78AC2BB1CF110020F064 /* Streamable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Streamable.swift; sourceTree = "<group>"; };
@@ -11002,6 +11006,8 @@
 		F9C5C911289453B100548EEE /* Payments */ = {
 			isa = PBXGroup;
 			children = (
+				C1DAA7572C13C1E00078AE84 /* ArchivedPayment.swift */,
+				C1DAA7592C1742680078AE84 /* ArchivedPaymentStore.swift */,
 				C190F8F62C1B484A00D1EAC9 /* OWSArchivedPaymentMessage.h */,
 				C13341102C221DAC00C26ED5 /* OWSIncomingArchivedPaymentMessage+SDS.swift */,
 				C190F8EE2C1B431900D1EAC9 /* OWSIncomingArchivedPaymentMessage.h */,
@@ -13954,6 +13960,8 @@
 				F9C5CE52289453B400548EEE /* AppReadiness.swift in Sources */,
 				725465642BA0369D00EABFD2 /* AppSetup.swift in Sources */,
 				F972180628DE37A200113D9F /* AppVersion.swift in Sources */,
+				C1DAA7582C13C1E00078AE84 /* ArchivedPayment.swift in Sources */,
+				C1DAA75A2C1742680078AE84 /* ArchivedPaymentStore.swift in Sources */,
 				F9C5CE0A289453B400548EEE /* Array+SSK.swift in Sources */,
 				F9C5CDF7289453B400548EEE /* Atomics.swift in Sources */,
 				6640132C2BFFB8F500F10FC4 /* Attachment+ConstructionParams.swift in Sources */,
