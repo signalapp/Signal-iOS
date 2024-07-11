@@ -1146,14 +1146,14 @@ private class RequestInfo {
     }
 
     @discardableResult
-    private func didFail(error: Error) -> Bool {
+    private func didFail(error: OWSHTTPError) -> Bool {
         // Ensure that we only complete once.
         switch status.swap(.complete) {
         case .complete:
             return false
         case .incomplete(_, let failure):
             Logger.warn("\(error)")
-            failure(error as! OWSHTTPError)
+            failure(error)
             return true
         }
     }
