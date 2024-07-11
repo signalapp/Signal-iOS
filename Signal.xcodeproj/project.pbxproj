@@ -363,7 +363,7 @@
 		34A95501271B503E00B05242 /* DisplayableText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95500271B503E00B05242 /* DisplayableText.swift */; };
 		34A955AE271B533000B05242 /* FullTextSearcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AD271B532F00B05242 /* FullTextSearcher.swift */; };
 		34A955B2271B53F600B05242 /* GroupManager+GroupInvites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955AF271B53F500B05242 /* GroupManager+GroupInvites.swift */; };
-		34A955B9271B553D00B05242 /* PaymentsFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955B8271B553D00B05242 /* PaymentsFormat.swift */; };
+		34A955B9271B553D00B05242 /* PaymentsFormat+MobileCoin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955B8271B553D00B05242 /* PaymentsFormat+MobileCoin.swift */; };
 		34ACA7D52733159600E47AD4 /* ProvisioningTransferChoiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7BC2733159600E47AD4 /* ProvisioningTransferChoiceViewController.swift */; };
 		34ACA7D62733159600E47AD4 /* ProvisioningTransferQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7BD2733159600E47AD4 /* ProvisioningTransferQRCodeViewController.swift */; };
 		34ACA7D72733159600E47AD4 /* ProvisioningTransferProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7BE2733159600E47AD4 /* ProvisioningTransferProgressViewController.swift */; };
@@ -1661,6 +1661,7 @@
 		B9F215612A94071F002DCAE0 /* ImageEditorTransformable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F215602A94071F002DCAE0 /* ImageEditorTransformable.swift */; };
 		B9F817642BA263A900EAEE23 /* SignalSymbols.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9F817632BA263A900EAEE23 /* SignalSymbols.swift */; };
 		B9FF37362B9286C6005ADDB8 /* UsernameLinkScanQRCodeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9FF37352B9286C6005ADDB8 /* UsernameLinkScanQRCodeSheet.swift */; };
+		C100E6822C33087C000C83B8 /* PaymentsFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = C100E6812C33087C000C83B8 /* PaymentsFormat.swift */; };
 		C10E9FAF2BB778E100A609B9 /* MessageBackupManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10E9FAE2BB778E100A609B9 /* MessageBackupManagerMock.swift */; };
 		C11C278129F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C11C278029F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift */; };
 		C13341122C221DAD00C26ED5 /* OWSIncomingArchivedPaymentMessage+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13341102C221DAC00C26ED5 /* OWSIncomingArchivedPaymentMessage+SDS.swift */; };
@@ -3306,7 +3307,7 @@
 		34A955AD271B532F00B05242 /* FullTextSearcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FullTextSearcher.swift; sourceTree = "<group>"; };
 		34A955AF271B53F500B05242 /* GroupManager+GroupInvites.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "GroupManager+GroupInvites.swift"; sourceTree = "<group>"; };
 		34A955B5271B54BC00B05242 /* UIColor+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+OWS.swift"; sourceTree = "<group>"; };
-		34A955B8271B553D00B05242 /* PaymentsFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsFormat.swift; sourceTree = "<group>"; };
+		34A955B8271B553D00B05242 /* PaymentsFormat+MobileCoin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "PaymentsFormat+MobileCoin.swift"; sourceTree = "<group>"; };
 		34A955BC271B560000B05242 /* NameCollisionFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NameCollisionFinder.swift; sourceTree = "<group>"; };
 		34ACA7BC2733159600E47AD4 /* ProvisioningTransferChoiceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProvisioningTransferChoiceViewController.swift; sourceTree = "<group>"; };
 		34ACA7BD2733159600E47AD4 /* ProvisioningTransferQRCodeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProvisioningTransferQRCodeViewController.swift; sourceTree = "<group>"; };
@@ -4685,6 +4686,7 @@
 		B9FF37352B9286C6005ADDB8 /* UsernameLinkScanQRCodeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkScanQRCodeSheet.swift; sourceTree = "<group>"; };
 		BA04179298647E71115FA4C1 /* Pods-SignalNSE.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.testable release.xcconfig"; path = "Target Support Files/Pods-SignalNSE/Pods-SignalNSE.testable release.xcconfig"; sourceTree = "<group>"; };
 		BAD74FE6EBEB10FF3426D809 /* Pods-SignalTests.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.testable release.xcconfig"; path = "Target Support Files/Pods-SignalTests/Pods-SignalTests.testable release.xcconfig"; sourceTree = "<group>"; };
+		C100E6812C33087C000C83B8 /* PaymentsFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentsFormat.swift; sourceTree = "<group>"; };
 		C10E9FAE2BB778E100A609B9 /* MessageBackupManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupManagerMock.swift; sourceTree = "<group>"; };
 		C11C278029F2D2CD006779B4 /* EditHistoryTableSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditHistoryTableSheetViewController.swift; sourceTree = "<group>"; };
 		C13341102C221DAC00C26ED5 /* OWSIncomingArchivedPaymentMessage+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSIncomingArchivedPaymentMessage+SDS.swift"; sourceTree = "<group>"; };
@@ -6719,7 +6721,7 @@
 				34BB78B6272C51B300DA0D04 /* MobileCoinHelperSDK.swift */,
 				34BB78B8272C51E800DA0D04 /* MobileCoinHelperSDKTest.swift */,
 				3465F4DC2728812A001663AF /* Payments.swift */,
-				34A955B8271B553D00B05242 /* PaymentsFormat.swift */,
+				34A955B8271B553D00B05242 /* PaymentsFormat+MobileCoin.swift */,
 				3465F4D327287675001663AF /* PaymentsImpl.swift */,
 				3465F4D127287674001663AF /* PaymentsProcessor.swift */,
 				3465F4D027287674001663AF /* PaymentsReconciliation.swift */,
@@ -11517,6 +11519,7 @@
 				F9C5CAA3289453B200548EEE /* PaymentsCurrencies.swift */,
 				3474C56D26111605006723D2 /* PaymentsCurrenciesImpl.swift */,
 				F9C5CAA0289453B200548EEE /* PaymentsEvents.swift */,
+				C100E6812C33087C000C83B8 /* PaymentsFormat.swift */,
 				F9C5CAA7289453B200548EEE /* PaymentsHelper.swift */,
 				3465F4DA27287858001663AF /* PaymentsHelperImpl.swift */,
 				F9C5CAAA289453B200548EEE /* TSPaymentModel+SDS.swift */,
@@ -13046,7 +13049,7 @@
 				6688E602298232A4004467C8 /* PaymentActionSheets.swift in Sources */,
 				66CE755F28C332AF00D5FA79 /* PaymentOnboarding.swift in Sources */,
 				3465F4DD2728812B001663AF /* Payments.swift in Sources */,
-				34A955B9271B553D00B05242 /* PaymentsFormat.swift in Sources */,
+				34A955B9271B553D00B05242 /* PaymentsFormat+MobileCoin.swift in Sources */,
 				3465F4D827287677001663AF /* PaymentsImpl.swift in Sources */,
 				3465F4D627287677001663AF /* PaymentsProcessor.swift in Sources */,
 				3465F4D527287677001663AF /* PaymentsReconciliation.swift in Sources */,
@@ -14643,6 +14646,7 @@
 				F9C5CD7D289453B300548EEE /* PaymentsCurrencies.swift in Sources */,
 				7254651F2BA014FC00EABFD2 /* PaymentsCurrenciesImpl.swift in Sources */,
 				F9C5CD7A289453B300548EEE /* PaymentsEvents.swift in Sources */,
+				C100E6822C33087C000C83B8 /* PaymentsFormat.swift in Sources */,
 				F9C5CD81289453B300548EEE /* PaymentsHelper.swift in Sources */,
 				7254652A2BA01B4800EABFD2 /* PaymentsHelperImpl.swift in Sources */,
 				725465402BA01FCC00EABFD2 /* Paypal+API.swift in Sources */,
