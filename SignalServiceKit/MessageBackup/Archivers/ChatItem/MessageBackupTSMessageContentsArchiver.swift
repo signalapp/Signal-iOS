@@ -831,6 +831,6 @@ extension BackupProto.PaymentNotification.TransactionDetails.Transaction.Status 
 
 extension BackupProto.PaymentNotification.TransactionDetails.MobileCoinTxoIdentification {
     var nilIfEmpty: Self? {
-        (publicKey.isEmpty || keyImages.isEmpty) ? nil : self
+        (publicKey.isEmpty && keyImages.isEmpty) ? nil : self
     }
 }
