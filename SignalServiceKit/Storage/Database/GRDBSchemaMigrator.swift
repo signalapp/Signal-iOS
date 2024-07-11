@@ -271,6 +271,7 @@ public class GRDBSchemaMigrator: NSObject {
         case attachmentAddCdnUnencryptedByteCounts
         case addArchivedPaymentInfoColumn
         case createArchivedPaymentTable
+        case removeDeadEndGroupThreadIdMappings
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -3101,6 +3102,96 @@ public class GRDBSchemaMigrator: NSObject {
                 on: "ArchivedPayment",
                 columns: ["interactionUniqueId"]
             )
+
+            return .success(())
+        }
+
+        /// Historically, we persisted a map of `[GroupId: ThreadUniqueId]` for
+        /// all group threads. For V1 groups that were migrated to V2 groups
+        /// this map would hold entries for both the V1 and V2 group ID to the
+        /// same group thread; this allowed us to find the same logical group
+        /// thread if we encountered either ID.
+        ///
+        /// However, it's possible that we could have persisted an entry for a
+        /// given group ID without having actually created a `TSGroupThread`,
+        /// since both the V2 group ID and the eventual `TSGroupThread/uniqueId`
+        /// were derivable from the V1 group ID. For example, code that was
+        /// removed in `72345f1` would have created a mapping when restoring a
+        /// record of a V1 group from Storage Service, but not actually have
+        /// created the `TSGroupThread`. A user who had run this code, but who
+        /// never had reason to create the `TSGroupThread` (e.g., because the
+        /// migrated group was inactive), would have a "dead-end" mapping of a
+        /// V1 group ID and its derived V2 group ID to a `uniqueId` that did not
+        /// actually belong to a `TSGroupThread`.
+        ///
+        /// Later, `f1f4e69` stopped checking for mappings when instantiating a
+        /// new `TSGroupThread` for a V2 group. However, other sites such as (at
+        /// the time of writing) `GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage`
+        /// would consult the mapping to get a `uniqueId` for a given group ID,
+        /// then check if a `TSGroupThread` exists for that `uniqueId`, and if
+        /// not create a new one. This is problematic, since that new
+        /// `TSGroupThread` will give itself a `uniqueId` derived from its V2
+        /// group ID, rather than using the `uniqueId` persisted in the mapping
+        /// that's based on the original V1 group ID. Phew.
+        ///
+        /// This in turn means that every time `GroupManager.tryToUpsert...` is
+        /// called it will fail to find the `TSGroupThread` that was previously
+        /// created, and will instead attempt to create a new `TSGroupThread`
+        /// each time (with the same derived `uniqueId`), which we believe is at
+        /// the root of an issue reported in the wild.
+        ///
+        /// This migration iterates through our persisted mappings and deletes
+        /// any of these "dead-end" mappings, since V1 group IDs are no longer
+        /// used anywhere and those mappings are therefore now useless.
+        migrator.registerMigration(.removeDeadEndGroupThreadIdMappings) { tx in
+            let mappingStoreCollection = "TSGroupThread.uniqueIdMappingStore"
+
+            let rows = try Row.fetchAll(
+                tx.database,
+                sql: "SELECT * FROM keyvalue WHERE collection = ?",
+                arguments: [mappingStoreCollection]
+            )
+
+            /// Group IDs that have a mapping to a thread ID, but for which the
+            /// thread ID has no actual thread.
+            var deadEndGroupIds = [String]()
+
+            for row in rows {
+                guard
+                    let groupIdKey = row["key"] as? String,
+                    let targetThreadIdData = row["value"] as? Data,
+                    let targetThreadId = (try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSString.self, from: targetThreadIdData)) as String?
+                else {
+                    continue
+                }
+
+                if try Bool.fetchOne(
+                    tx.database,
+                    sql: """
+                        SELECT EXISTS(
+                            SELECT 1
+                            FROM model_TSThread
+                            WHERE uniqueId = ?
+                            LIMIT 1
+                        )
+                    """,
+                    arguments: [targetThreadId]
+                ) != true {
+                    deadEndGroupIds.append(groupIdKey)
+                }
+            }
+
+            for deadEndGroupId in deadEndGroupIds {
+                try tx.database.execute(
+                    sql: """
+                        DELETE FROM keyvalue
+                        WHERE collection = ? AND key = ?
+                    """,
+                    arguments: [mappingStoreCollection, deadEndGroupId]
+                )
+
+                Logger.warn("Deleting dead-end group ID mapping: \(deadEndGroupId)")
+            }
 
             return .success(())
         }
