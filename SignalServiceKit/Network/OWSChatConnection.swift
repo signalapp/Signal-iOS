@@ -685,9 +685,8 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
                                requestInfo: requestInfo)
         let requestUrl = requestInfo.requestUrl
 
-        guard let currentWebSocket = currentWebSocket,
-              currentWebSocket.state == .open else {
-            owsFailDebug("\(label) Missing currentWebSocket.")
+        guard let currentWebSocket, currentWebSocket.state == .open else {
+            Logger.warn("\(label) Missing currentWebSocket.")
             failure(.networkFailure(requestUrl: requestUrl))
             return
         }
@@ -996,7 +995,7 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
         webSocket.connect()
 
         self.serialQueue.asyncAfter(deadline: .now() + 30) { [weak self, weak newWebSocket] in
-            guard let self, let newWebSocket, self.currentWebSocket?.id == newWebSocket.id else {
+            guard let self, let newWebSocket, self.currentWebSocket === newWebSocket else {
                 return
             }
 
@@ -1171,8 +1170,7 @@ extension OWSChatConnectionUsingSSKWebSocket: SSKWebSocketDelegate {
     public func websocketDidConnect(socket eventSocket: SSKWebSocket) {
         assertOnQueue(self.serialQueue)
 
-        guard let currentWebSocket = self.currentWebSocket,
-              currentWebSocket.id == eventSocket.id else {
+        guard let currentWebSocket, currentWebSocket.webSocket === eventSocket else {
             // Ignore events from obsolete web sockets.
             return
         }
@@ -1197,8 +1195,7 @@ extension OWSChatConnectionUsingSSKWebSocket: SSKWebSocketDelegate {
     public func websocketDidDisconnectOrFail(socket eventSocket: SSKWebSocket, error: Error) {
         assertOnQueue(self.serialQueue)
 
-        guard let currentWebSocket = self.currentWebSocket,
-              currentWebSocket.id == eventSocket.id else {
+        guard let currentWebSocket, currentWebSocket.webSocket === eventSocket else {
             // Ignore events from obsolete web sockets.
             return
         }
@@ -1234,8 +1231,7 @@ extension OWSChatConnectionUsingSSKWebSocket: SSKWebSocketDelegate {
             return
         }
 
-        guard let currentWebSocket = self.currentWebSocket,
-              currentWebSocket.id == eventSocket.id else {
+        guard let currentWebSocket, currentWebSocket.webSocket === eventSocket else {
             // Ignore events from obsolete web sockets.
             return
         }
@@ -1290,7 +1286,7 @@ private class WebSocketConnection {
 
     private let connectionType: OWSChatConnectionType
 
-    private let webSocket: SSKWebSocket
+    let webSocket: SSKWebSocket
 
     private let unfairLock = UnfairLock()
 
