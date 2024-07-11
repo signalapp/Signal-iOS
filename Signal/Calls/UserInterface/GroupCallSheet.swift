@@ -392,6 +392,12 @@ extension GroupCallSheet: GroupCallObserver {
     }
 }
 
+extension GroupCallSheet: EmojiPickerSheetPresenter {
+    func present(sheet: EmojiPickerSheet, animated: Bool) {
+        self.present(sheet, animated: animated)
+    }
+}
+
 extension GroupCallSheet {
     func isPresentingCallControls() -> Bool {
         return self.presentingViewController != nil && callControls.alpha == 1

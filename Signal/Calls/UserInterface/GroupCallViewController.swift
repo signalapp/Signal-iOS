@@ -181,7 +181,7 @@ class GroupCallViewController: UIViewController {
             reactionSender: self.ringRtcCall,
             reactionsSink: self.reactionsSink,
             raiseHandSender: self.ringRtcCall,
-            emojiPickerSheetPresenter: self,
+            emojiPickerSheetPresenter: FeatureFlags.callDrawerSupport ? self.bottomSheet : self,
             callControlsOverflowPresenter: self
         )
     }()
