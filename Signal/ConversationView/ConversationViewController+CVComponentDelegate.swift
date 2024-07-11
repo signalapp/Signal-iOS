@@ -401,15 +401,11 @@ extension ConversationViewController: CVComponentDelegate {
         packView.present(from: self, animated: true)
     }
 
-    public func didTapPayment(_ paymentModel: TSPaymentModel, displayName: String) {
+    public func didTapPayment(_ payment: PaymentsHistoryItem) {
         AssertIsOnMainThread()
 
-        let paymentHistoryItem = PaymentsHistoryItem(
-            paymentModel: paymentModel,
-            displayName: displayName
-        )
         let paymentsDetailViewController = PaymentsDetailViewController(
-            paymentItem: paymentHistoryItem
+            paymentItem: payment
         )
         navigationController?.pushViewController(paymentsDetailViewController, animated: true)
     }

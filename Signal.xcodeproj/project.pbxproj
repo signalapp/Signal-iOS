@@ -1671,11 +1671,15 @@
 		C13B9BB22A17BC32007F74C4 /* EditManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C182C4BD29E45D80007F7A7C /* EditManagerTests.swift */; };
 		C13B9BB62A1819C7007F74C4 /* OutgoingEditMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13B9BB52A1819C7007F74C4 /* OutgoingEditMessage.swift */; };
 		C14391132BD1C0DF00ED6FCB /* MessageBackupRequestManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14391122BD1C0DF00ED6FCB /* MessageBackupRequestManager.swift */; };
+		C14AEBDF2C1A482900FAA31D /* CVComponentArchivedPayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14AEBDE2C1A482900FAA31D /* CVComponentArchivedPayment.swift */; };
 		C14EC1A22BA891D200A4D064 /* TransformingInputStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14EC1A12BA891D200A4D064 /* TransformingInputStream.swift */; };
 		C14EC1A92BAA4B5F00A4D064 /* StreamTransformTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14EC1A82BAA4B5F00A4D064 /* StreamTransformTests.swift */; };
 		C14EC1AB2BAB57B900A4D064 /* DecryptingStreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14EC1AA2BAB57B900A4D064 /* DecryptingStreamTransform.swift */; };
 		C15837EF29A592BA00176927 /* UsernameValidationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C15837EE29A592BA00176927 /* UsernameValidationManager.swift */; };
 		C165F8B92C249622007BB812 /* OWSOutgoingArchivedPaymentMessageBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = C165F8B82C249622007BB812 /* OWSOutgoingArchivedPaymentMessageBuilder.swift */; };
+		C1661A1A2C3D939300AB887F /* ArchivedPaymentHistoryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1661A192C3D939300AB887F /* ArchivedPaymentHistoryItem.swift */; };
+		C1661A1C2C3D93AE00AB887F /* TSPaymentModelHistoryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1661A1B2C3D93AE00AB887F /* TSPaymentModelHistoryItem.swift */; };
+		C1661A1E2C3D942300AB887F /* PaymentHistoryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1661A1D2C3D942300AB887F /* PaymentHistoryItem.swift */; };
 		C167387529E8397B0068EA92 /* EditMessageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C167387429E8397B0068EA92 /* EditMessageStore.swift */; };
 		C167F1E52A7162D700D4A9AF /* SSKKyberPreKeyStoreTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C167F1E42A7162D700D4A9AF /* SSKKyberPreKeyStoreTest.swift */; };
 		C169095F2A4DE2A200B6A65D /* EditMessageWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C169095E2A4DE2A200B6A65D /* EditMessageWrapper.swift */; };
@@ -4697,11 +4701,15 @@
 		C13A484629B650BC00BA9005 /* UsernameValidationObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationObserver.swift; sourceTree = "<group>"; };
 		C13B9BB52A1819C7007F74C4 /* OutgoingEditMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingEditMessage.swift; sourceTree = "<group>"; };
 		C14391122BD1C0DF00ED6FCB /* MessageBackupRequestManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupRequestManager.swift; sourceTree = "<group>"; };
+		C14AEBDE2C1A482900FAA31D /* CVComponentArchivedPayment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVComponentArchivedPayment.swift; sourceTree = "<group>"; };
 		C14EC1A12BA891D200A4D064 /* TransformingInputStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformingInputStream.swift; sourceTree = "<group>"; };
 		C14EC1A82BAA4B5F00A4D064 /* StreamTransformTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamTransformTests.swift; sourceTree = "<group>"; };
 		C14EC1AA2BAB57B900A4D064 /* DecryptingStreamTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecryptingStreamTransform.swift; sourceTree = "<group>"; };
 		C15837EE29A592BA00176927 /* UsernameValidationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameValidationManager.swift; sourceTree = "<group>"; };
 		C165F8B82C249622007BB812 /* OWSOutgoingArchivedPaymentMessageBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingArchivedPaymentMessageBuilder.swift; sourceTree = "<group>"; };
+		C1661A192C3D939300AB887F /* ArchivedPaymentHistoryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArchivedPaymentHistoryItem.swift; sourceTree = "<group>"; };
+		C1661A1B2C3D93AE00AB887F /* TSPaymentModelHistoryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSPaymentModelHistoryItem.swift; sourceTree = "<group>"; };
+		C1661A1D2C3D942300AB887F /* PaymentHistoryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentHistoryItem.swift; sourceTree = "<group>"; };
 		C167387429E8397B0068EA92 /* EditMessageStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMessageStore.swift; sourceTree = "<group>"; };
 		C167F1E42A7162D700D4A9AF /* SSKKyberPreKeyStoreTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKKyberPreKeyStoreTest.swift; sourceTree = "<group>"; };
 		C169095E2A4DE2A200B6A65D /* EditMessageWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditMessageWrapper.swift; sourceTree = "<group>"; };
@@ -6292,6 +6300,7 @@
 			isa = PBXGroup;
 			children = (
 				348815C6255346A500D4F4C4 /* CVComponent.swift */,
+				C14AEBDE2C1A482900FAA31D /* CVComponentArchivedPayment.swift */,
 				348815C1255341F200D4F4C4 /* CVComponentAudioAttachment.swift */,
 				347C3840252CE6C900F3D941 /* CVComponentBodyMedia.swift */,
 				347C383C252CE6C900F3D941 /* CVComponentBodyText.swift */,
@@ -6360,6 +6369,8 @@
 		3498AC8C2518E92B00B1F315 /* Payments */ = {
 			isa = PBXGroup;
 			children = (
+				C1661A192C3D939300AB887F /* ArchivedPaymentHistoryItem.swift */,
+				C1661A1D2C3D942300AB887F /* PaymentHistoryItem.swift */,
 				34FB6A5425D2E17200E599B1 /* PaymentModelCell.swift */,
 				66FA2B1C28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift */,
 				347030C525F66C24006C3BF5 /* PaymentsDeactivateViewController.swift */,
@@ -6379,6 +6390,7 @@
 				3495FF0425F9091400959D6E /* PaymentsViewPassphraseGridViewController.swift */,
 				3495FF0E25F9538900959D6E /* PaymentsViewPassphraseSplashViewController.swift */,
 				34FB6A5225D2D10400E599B1 /* PaymentsViewUtils.swift */,
+				C1661A1B2C3D93AE00AB887F /* TSPaymentModelHistoryItem.swift */,
 			);
 			path = Payments;
 			sourceTree = "<group>";
@@ -13207,6 +13219,7 @@
 				F9BC0A2527FB8E730085B23D /* AppSettingsViewsUtil.swift in Sources */,
 				4CC1ECFB211A553000CC13BE /* AppUpdateNag.swift in Sources */,
 				1489ED0227A3D70200C7043A /* ArchivedConversationsCell.swift in Sources */,
+				C1661A1A2C3D939300AB887F /* ArchivedPaymentHistoryItem.swift in Sources */,
 				F9B3A92D293553930071EB95 /* ASWebAuthenticationSession+Util.swift in Sources */,
 				661AEE482C2088FD0046B1D8 /* AttachmentDownloadRetryRunner.swift in Sources */,
 				88A9729222FA5D4B004B4FBF /* AttachmentFormatPickerView.swift in Sources */,
@@ -13379,6 +13392,7 @@
 				347C3832252CE69400F3D941 /* CVCell.swift in Sources */,
 				3444E6BB264EDFF300B32E3B /* CVColorOrGradientView.swift in Sources */,
 				348815C9255346A500D4F4C4 /* CVComponent.swift in Sources */,
+				C14AEBDF2C1A482900FAA31D /* CVComponentArchivedPayment.swift in Sources */,
 				348815C2255341F300D4F4C4 /* CVComponentAudioAttachment.swift in Sources */,
 				347C3847252CE6C900F3D941 /* CVComponentBodyMedia.swift in Sources */,
 				347C3843252CE6C900F3D941 /* CVComponentBodyText.swift in Sources */,
@@ -13655,6 +13669,7 @@
 				881677C522DD2B21007BAF49 /* OWSPinReminderViewController.swift in Sources */,
 				881D85B822D92C2B00E118DF /* OWSPinSetupViewController.swift in Sources */,
 				F93461B9291ED28A00366682 /* PaymentDetailsValidity.swift in Sources */,
+				C1661A1E2C3D942300AB887F /* PaymentHistoryItem.swift in Sources */,
 				34FB6A5525D2E17200E599B1 /* PaymentModelCell.swift in Sources */,
 				66FA2B1D28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift in Sources */,
 				347030C625F66C24006C3BF5 /* PaymentsDeactivateViewController.swift in Sources */,
@@ -13829,6 +13844,7 @@
 				45B821F92981F7D400BB08BE /* TSAttachmentVideoDurationHelper.swift in Sources */,
 				50BF51052BB1FE7E00C2C309 /* TSInteraction+DeleteActionSheet.swift in Sources */,
 				660248F02BBCD29D009E2956 /* TSMessage+RenderableContent.swift in Sources */,
+				C1661A1C2C3D93AE00AB887F /* TSPaymentModelHistoryItem.swift in Sources */,
 				88D23D2823CEC0C700B0E74B /* TurnServerInfo.swift in Sources */,
 				34B6A905218B4C91007C4606 /* TypingIndicatorInteraction.swift in Sources */,
 				34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */,

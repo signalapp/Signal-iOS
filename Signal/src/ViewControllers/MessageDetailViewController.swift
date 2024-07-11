@@ -1127,7 +1127,7 @@ extension MessageDetailViewController: CVComponentDelegate {
         packView.present(from: self, animated: true)
     }
 
-    func didTapPayment(_ paymentModel: TSPaymentModel, displayName: String) { }
+    func didTapPayment(_ payment: PaymentsHistoryItem) {}
 
     func didTapGroupInviteLink(url: URL) {
         GroupInviteLinksUI.openGroupInviteLink(url, fromViewController: self)

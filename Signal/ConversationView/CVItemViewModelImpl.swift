@@ -94,6 +94,12 @@ public class CVItemViewModelImpl: CVComponentStateWrapper {
         return componentState.paymentAttachment
     }
 
+    public var archivedPaymentAttachment: CVComponentState.ArchivedPaymentAttachment? {
+        AssertIsOnMainThread()
+
+        return componentState.archivedPaymentAttachment
+    }
+
     public var reactionState: InteractionReactionState? {
         AssertIsOnMainThread()
 
@@ -250,7 +256,7 @@ extension CVItemViewModelImpl {
             return false
         case .textOnlyMessage, .audio, .genericAttachment, .contactShare, .bodyMedia, .viewOnce, .stickerMessage, .quoteOnlyMessage:
             return !hasUnloadedAttachments
-        case .paymentAttachment:
+        case .paymentAttachment, .archivedPaymentAttachment:
             return false
         }
     }

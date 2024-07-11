@@ -1069,8 +1069,10 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             config.dataSource = .address(address)
         }
 
-        let paymentsHistoryItem = PaymentsHistoryItem(paymentModel: paymentModel,
-                                                      displayName: shortName)
+        let paymentsHistoryItem = PaymentsHistoryModelItem(
+            paymentModel: paymentModel,
+            displayName: shortName
+        )
 
         configureUnreadPaymentsBanner(paymentsReminderView,
                                       title: title,

@@ -150,6 +150,22 @@ public class CVComponentState: Equatable, Dependencies {
     }
     var paymentAttachment: PaymentAttachment?
 
+    public struct ArchivedPaymentAttachment: Equatable {
+        let amount: String?
+        let fee: String?
+        let note: String?
+        let otherUserShortName: String
+        let archivedPayment: ArchivedPayment?
+
+        public static func == (lhs: Self, rhs: Self) -> Bool {
+            lhs.amount == rhs.amount
+            && lhs.fee == rhs.fee
+            && lhs.note == rhs.note
+            && lhs.otherUserShortName == rhs.otherUserShortName
+        }
+    }
+    var archivedPaymentAttachment: ArchivedPaymentAttachment?
+
     // It's not practical to reload the audio cell every time
     // playback state or progress changes.  Therefore we only
     // capture the stable state related to the audio. Dynamic
@@ -383,6 +399,7 @@ public class CVComponentState: Equatable, Dependencies {
                      bodyMedia: BodyMedia?,
                      genericAttachment: GenericAttachment?,
                      paymentAttachment: PaymentAttachment?,
+                     archivedPaymentAttachment: ArchivedPaymentAttachment?,
                      audioAttachment: AudioAttachment?,
                      viewOnce: ViewOnce?,
                      quotedReply: QuotedReply?,
@@ -411,6 +428,7 @@ public class CVComponentState: Equatable, Dependencies {
         self.bodyMedia = bodyMedia
         self.genericAttachment = genericAttachment
         self.paymentAttachment = paymentAttachment
+        self.archivedPaymentAttachment = archivedPaymentAttachment
         self.audioAttachment = audioAttachment
         self.viewOnce = viewOnce
         self.quotedReply = quotedReply
@@ -443,6 +461,7 @@ public class CVComponentState: Equatable, Dependencies {
                     lhs.bodyMedia == rhs.bodyMedia &&
                     lhs.genericAttachment == rhs.genericAttachment &&
                     lhs.paymentAttachment == rhs.paymentAttachment &&
+                    lhs.archivedPaymentAttachment == rhs.archivedPaymentAttachment &&
                     lhs.audioAttachment == rhs.audioAttachment &&
                     lhs.viewOnce == rhs.viewOnce &&
                     lhs.quotedReply == rhs.quotedReply &&
@@ -472,6 +491,7 @@ public class CVComponentState: Equatable, Dependencies {
         typealias BodyMedia = CVComponentState.BodyMedia
         typealias GenericAttachment = CVComponentState.GenericAttachment
         typealias PaymentAttachment = CVComponentState.PaymentAttachment
+        typealias ArchivedPaymentAttachment = CVComponentState.ArchivedPaymentAttachment
         typealias ViewOnce = CVComponentState.ViewOnce
         typealias QuotedReply = CVComponentState.QuotedReply
         typealias Sticker = CVComponentState.Sticker
@@ -503,6 +523,7 @@ public class CVComponentState: Equatable, Dependencies {
         var bodyMedia: BodyMedia?
         var genericAttachment: GenericAttachment?
         var paymentAttachment: PaymentAttachment?
+        var archivedPaymentAttachment: ArchivedPaymentAttachment?
         var audioAttachment: AudioAttachment?
         var viewOnce: ViewOnce?
         var quotedReply: QuotedReply?
@@ -545,6 +566,7 @@ public class CVComponentState: Equatable, Dependencies {
                                     bodyMedia: bodyMedia,
                                     genericAttachment: genericAttachment,
                                     paymentAttachment: paymentAttachment,
+                                    archivedPaymentAttachment: archivedPaymentAttachment,
                                     audioAttachment: audioAttachment,
                                     viewOnce: viewOnce,
                                     quotedReply: quotedReply,
@@ -617,6 +639,9 @@ public class CVComponentState: Equatable, Dependencies {
             if paymentAttachment != nil {
                 return .paymentAttachment
             }
+            if archivedPaymentAttachment != nil {
+                return .archivedPaymentAttachment
+            }
             if giftBadge != nil {
                 return .giftBadge
             }
@@ -662,6 +687,9 @@ public class CVComponentState: Equatable, Dependencies {
         }
         if paymentAttachment != nil {
             result.insert(.paymentAttachment)
+        }
+        if archivedPaymentAttachment != nil {
+            result.insert(.archivedPaymentAttachment)
         }
         if audioAttachment != nil {
             result.insert(.audioAttachment)
@@ -958,6 +986,17 @@ fileprivate extension CVComponentState.Builder {
         if let paymentMessage = message as? OWSPaymentMessage,
            let paymentNotification = paymentMessage.paymentNotification {
             return buildPaymentAttachment(paymentNotification: paymentNotification)
+        }
+
+        if let archivedPaymentMessage = message as? OWSArchivedPaymentMessage {
+            let archivedPayment = DependenciesBridge.shared.archivedPaymentStore.fetch(
+                for: archivedPaymentMessage,
+                tx: transaction.asV2Read
+            )
+            return buildArchivedPaymentAttachment(
+                archivedPaymentMessage: archivedPaymentMessage,
+                archivedPayment: archivedPayment
+            )
         }
 
         if let giftBadge = message.giftBadge {
@@ -1439,6 +1478,23 @@ fileprivate extension CVComponentState.Builder {
         return build()
     }
 
+    mutating func buildArchivedPaymentAttachment(
+        archivedPaymentMessage: OWSArchivedPaymentMessage,
+        archivedPayment: ArchivedPayment?
+    ) -> CVComponentState {
+
+        self.archivedPaymentAttachment = ArchivedPaymentAttachment(
+            amount: archivedPaymentMessage.archivedPaymentInfo.amount,
+            fee: archivedPaymentMessage.archivedPaymentInfo.fee,
+            note: archivedPaymentMessage.archivedPaymentInfo.note,
+            // Only used for 1:1 threads, but not enforced.
+            otherUserShortName: threadViewModel.shortName ?? threadViewModel.name,
+            archivedPayment: archivedPayment
+        )
+
+        return build()
+    }
+
     mutating func buildLinkPreview(message: TSMessage, linkPreview: OWSLinkPreview) throws {
         guard bodyText != nil else {
             owsFailDebug("Missing body text.")
@@ -1611,7 +1667,7 @@ public extension CVComponentState {
             case .quotedReply:
                 // Quoted replies are never forwarded.
                 break
-            case .paymentAttachment:
+            case .paymentAttachment, .archivedPaymentAttachment:
                 // Payments can't be forwarded.
                 break
             }

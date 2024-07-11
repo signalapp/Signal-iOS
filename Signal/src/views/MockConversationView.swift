@@ -447,7 +447,7 @@ extension MockConversationView: CVComponentDelegate {
         shouldAllowReply: Bool
     ) { }
 
-    func didTapPayment(_ paymentModel: TSPaymentModel, displayName: String) { }
+    func didTapPayment(_ payment: PaymentsHistoryItem) {}
 
     func didTapActivatePayments() {}
     func didTapSendPayment() {}

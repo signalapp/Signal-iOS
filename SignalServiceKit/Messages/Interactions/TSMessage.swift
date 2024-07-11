@@ -523,7 +523,7 @@ public extension TSMessage {
             return .infoMessage(infoMessage.infoMessagePreviewText(with: tx))
         }
 
-        if self is OWSPaymentMessage {
+        if (self is OWSPaymentMessage || self is OWSArchivedPaymentMessage) {
             return .paymentMessage(OWSLocalizedString(
                 "PAYMENTS_THREAD_PREVIEW_TEXT",
                 comment: "Payments Preview Text shown in chat list for payments."

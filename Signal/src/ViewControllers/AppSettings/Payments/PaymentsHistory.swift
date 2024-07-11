@@ -6,127 +6,6 @@
 import SignalServiceKit
 import SignalUI
 
-public struct PaymentsHistoryItem {
-    private let paymentModel: TSPaymentModel
-    let displayName: String
-
-    init(paymentModel: TSPaymentModel, displayName: String) {
-        self.paymentModel = paymentModel
-        self.displayName = displayName
-    }
-
-    var address: SignalServiceAddress? {
-        paymentModel.senderOrRecipientAci.map { SignalServiceAddress($0.wrappedAciValue) }
-    }
-
-    var isIncoming: Bool {
-        paymentModel.isIncoming
-    }
-
-    var isOutgoing: Bool {
-        paymentModel.isOutgoing
-    }
-
-    var isOutgoingTransfer: Bool {
-        paymentModel.isOutgoingTransfer
-    }
-
-    var isUnidentified: Bool {
-        paymentModel.isUnidentified
-    }
-
-    var isFailed: Bool {
-        paymentModel.isFailed
-    }
-
-    var isDefragmentation: Bool {
-        paymentModel.isDefragmentation
-    }
-
-    var receiptData: Data? {
-        paymentModel.mobileCoin?.receiptData
-    }
-
-    var paymentAmount: TSPaymentAmount? {
-        paymentModel.paymentAmount
-    }
-
-    var feeAmount: TSPaymentAmount? {
-        paymentModel.mobileCoin?.feeAmount
-    }
-
-    var paymentType: TSPaymentType {
-        paymentModel.paymentType
-    }
-
-    var paymentState: TSPaymentState {
-        paymentModel.paymentState
-    }
-
-    var sortDate: Date {
-        paymentModel.sortDate
-    }
-
-    var createdDate: Date {
-        paymentModel.createdDate
-    }
-
-    var ledgerBlockDate: Date? {
-        paymentModel.mcLedgerBlockDate
-    }
-
-    var ledgerBlockIndex: UInt64 {
-        paymentModel.mcLedgerBlockIndex
-    }
-
-    var isUnread: Bool {
-        paymentModel.isUnread
-    }
-
-    var memoMessage: String? {
-        paymentModel.memoMessage
-    }
-
-    var formattedPaymentAmount: String {
-        guard let paymentAmount = paymentModel.paymentAmount else { return "" }
-        var totalAmount = paymentAmount
-        if let feeAmount = paymentModel.mobileCoin?.feeAmount {
-            totalAmount = totalAmount.plus(feeAmount)
-        }
-        return PaymentsFormat.format(
-            paymentAmount: totalAmount,
-            isShortForm: true,
-            withCurrencyCode: true,
-            withSpace: false,
-            withPaymentType: paymentModel.paymentType
-        )
-    }
-
-    func statusDescription(isLongForm: Bool) -> String {
-        paymentModel.statusDescription(isLongForm: isLongForm)
-    }
-
-    func markAsRead(tx: SDSAnyWriteTransaction) {
-        PaymentsViewUtils.markPaymentAsRead(paymentModel, transaction: tx)
-    }
-
-    func reload(tx: SDSAnyReadTransaction) -> Self? {
-        guard let newPaymentModel = TSPaymentModel.anyFetch(
-            uniqueId: paymentModel.uniqueId,
-            transaction: tx
-        ) else { return nil }
-
-        return PaymentsHistoryItem(paymentModel: newPaymentModel, displayName: displayName)
-    }
-
-    func replaceAsUnidentified(tx: SDSAnyWriteTransaction) {
-        NSObject.payments.replaceAsUnidentified(
-            paymentModel: paymentModel,
-            transaction: tx
-        )
-    }
-}
-
 // MARK: -
 
 protocol PaymentsHistoryDataSourceDelegate: AnyObject {
@@ -227,7 +106,7 @@ class PaymentsHistoryDataSource: Dependencies {
                     displayName = OWSLocalizedString("PAYMENTS_UNKNOWN_PAYMENT",
                                                     comment: "Label for unknown payments.")
                 }
-                return PaymentsHistoryItem(paymentModel: paymentModel, displayName: displayName)
+                return PaymentsHistoryModelItem(paymentModel: paymentModel, displayName: displayName)
             }
         }
     }
@@ -277,5 +156,57 @@ extension PaymentsHistoryDataSource: DatabaseChangeDelegate {
         AssertIsOnMainThread()
 
         updateContent()
+    }
+}
+
+extension ArchivedPayment {
+    public func statusDescription(isOutgoing: Bool) -> String? {
+        if status.isFailure {
+            switch (failureReason, isOutgoing) {
+            case (.insufficientFundsFailure, true):
+                return OWSLocalizedString(
+                    "PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS",
+                    comment: "Status indicator for outgoing payments which failed due to insufficient funds."
+                )
+            case (.networkFailure, true):
+                return OWSLocalizedString(
+                    "PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED",
+                    comment: "Status indicator for outgoing payments for which the notification could not be sent."
+                )
+            case (_, true):
+                return OWSLocalizedString(
+                    "PAYMENTS_FAILURE_OUTGOING_FAILED",
+                    comment: "Status indicator for outgoing payments which failed."
+                )
+            case (_, false):
+                return OWSLocalizedString(
+                    "PAYMENTS_FAILURE_INCOMING_FAILED",
+                    comment: "Status indicator for incoming payments which failed."
+                )
+            }
+        } else {
+            switch (status, isOutgoing) {
+            case (.initial, true):
+                return OWSLocalizedString(
+                    "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED",
+                    comment: "Status indicator for outgoing payments which have not yet been submitted."
+                )
+            case (.submitted, true):
+                return OWSLocalizedString(
+                    "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING",
+                    comment: "Status indicator for outgoing payments which are being sent."
+                )
+            case (_, true):
+                return OWSLocalizedString(
+                    "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT",
+                    comment: "Status indicator for outgoing payments which have been sent."
+                )
+            case (_, false):
+                return OWSLocalizedString(
+                    "PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE",
+                    comment: "Status indicator for incoming payments which are complete."
+                )
+            }
+        }
     }
 }

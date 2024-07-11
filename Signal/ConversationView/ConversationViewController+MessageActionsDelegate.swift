@@ -247,11 +247,6 @@ extension ConversationViewController: MessageActionsDelegate {
     }
 
     func messageActionsShowPaymentDetails(_ itemViewModel: CVItemViewModelImpl) {
-        guard let model = itemViewModel.paymentAttachment?.model else {
-            owsFailDebug("We should have a matching TSPaymentModel at this point")
-            return
-        }
-
         guard let contactAddress = (thread as? TSContactThread)?.contactAddress else {
             owsFailDebug("Should be contact thread")
             return
@@ -260,10 +255,25 @@ extension ConversationViewController: MessageActionsDelegate {
             return self.contactsManager.displayName(for: contactAddress, tx: tx).resolvedValue()
         }
 
-        let paymentHistoryItem = PaymentsHistoryItem(paymentModel: model, displayName: contactName)
-        let paymentsDetailViewController = PaymentsDetailViewController(
-            paymentItem: paymentHistoryItem
-        )
+        let paymentHistoryItem: PaymentsHistoryItem
+        if
+            let archivedPayment = itemViewModel.archivedPaymentAttachment?.archivedPayment,
+            let item = ArchivedPaymentHistoryItem(
+                archivedPayment: archivedPayment,
+                address: contactAddress,
+                displayName: contactName,
+                interaction: itemViewModel.interaction
+            )
+        {
+            paymentHistoryItem = item
+        } else if let paymentModel = itemViewModel.paymentAttachment?.model {
+            paymentHistoryItem = PaymentsHistoryModelItem(paymentModel: paymentModel, displayName: contactName)
+        } else {
+            owsFailDebug("We should have a matching TSPaymentModel at this point")
+            return
+        }
+
+        let paymentsDetailViewController = PaymentsDetailViewController(paymentItem: paymentHistoryItem)
         navigationController?.pushViewController(paymentsDetailViewController, animated: true)
     }
 }

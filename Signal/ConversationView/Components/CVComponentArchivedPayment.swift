@@ -1,10 +1,6 @@
 //
-// Copyright 2022 Signal Messenger, LLC
+// Copyright 2024 Signal Messenger, LLC
 // SPDX-License-Identifier: AGPL-3.0-only
-//
-
-//
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -12,28 +8,19 @@ import SignalServiceKit
 import SignalUI
 
 @objc
-public class CVComponentPaymentAttachment: CVComponentBase, CVComponent {
+public class CVComponentArchivedPayment: CVComponentBase, CVComponent {
 
-    public var componentKey: CVComponentKey { .paymentAttachment }
+    public var componentKey: CVComponentKey { .archivedPaymentAttachment }
 
-    private let paymentAttachment: CVComponentState.PaymentAttachment
-    private let paymentModel: TSPaymentModel?
-    private let paymentAmount: UInt64?
-    private let contactName: String
+    private let archivedPaymentAttachment: CVComponentState.ArchivedPaymentAttachment
     private let messageStatus: MessageReceiptStatus
 
     init(
         itemModel: CVItemModel,
-        paymentAttachment: CVComponentState.PaymentAttachment,
-        paymentModel: TSPaymentModel?,
-        contactName: String,
-        paymentAmount: UInt64?,
+        archivedPaymentAttachment: CVComponentState.ArchivedPaymentAttachment,
         messageStatus: MessageReceiptStatus?
     ) {
-        self.paymentAttachment = paymentAttachment
-        self.paymentModel = paymentModel
-        self.contactName = contactName
-        self.paymentAmount = paymentAmount
+        self.archivedPaymentAttachment = archivedPaymentAttachment
 
         // If no messageStatus have different defaults for incoming vs outgoing
         switch (messageStatus, itemModel.interaction.interactionType) {
@@ -51,7 +38,7 @@ public class CVComponentPaymentAttachment: CVComponentBase, CVComponent {
     }
 
     public func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView {
-        CVComponentViewPaymentAttachment()
+        CVComponentViewArchivedPayment()
     }
 
     public func configureForRendering(
@@ -59,7 +46,7 @@ public class CVComponentPaymentAttachment: CVComponentBase, CVComponent {
         cellMeasurement: CVCellMeasurement,
         componentDelegate: CVComponentDelegate
     ) {
-        guard let componentView = componentViewParam as? CVComponentViewPaymentAttachment else {
+        guard let componentView = componentViewParam as? CVComponentViewArchivedPayment else {
             owsFailDebug("Unexpected componentView.")
             componentViewParam.reset()
             return
@@ -112,7 +99,7 @@ public class CVComponentPaymentAttachment: CVComponentBase, CVComponent {
         let vStackView = componentView.vStackView
 
         let vInnerSubviews: [UIView]
-        if paymentAttachment.notification.memoMessage != nil {
+        if archivedPaymentAttachment.note != nil {
             noteLabelConfig.applyForRendering(label: componentView.noteLabel)
             vInnerSubviews = [topLabel, hStackView, componentView.noteLabel]
         } else {
@@ -151,7 +138,7 @@ public class CVComponentPaymentAttachment: CVComponentBase, CVComponent {
     }
 
     private func formatPaymentAmount(status: MessageReceiptStatus) -> NSAttributedString {
-        guard let mob = paymentAmount else {
+        guard let amount = archivedPaymentAttachment.amount else {
             let text = OWSLocalizedString(
                 "PAYMENTS_INFO_UNAVAILABLE_MESSAGE",
                 comment: "Status indicator for invalid payments which could not be processed."
@@ -159,12 +146,11 @@ public class CVComponentPaymentAttachment: CVComponentBase, CVComponent {
             return NSAttributedString(string: text)
         }
 
-        let amount = TSPaymentAmount(currency: .mobileCoin, picoMob: mob)
         switch status {
         case .failed:
-            return PaymentsFormat.formatInChatFailure(paymentAmount: amount)
+            return PaymentsFormat.inChatFailureAmountBuilder(amount)
         default:
-            return PaymentsFormat.formatInChatSuccess(paymentAmount: amount)
+            return PaymentsFormat.inChatSuccessAmountBuilder(amount)
         }
     }
 
@@ -204,41 +190,33 @@ public class CVComponentPaymentAttachment: CVComponentBase, CVComponent {
 
     private var topLabelConfig: CVLabelConfig {
         let text: String
-        let paymentType = paymentModel?.paymentType
         let interactionType = itemModel.interaction.interactionType
-        switch (paymentType, interactionType, messageStatus) {
-        case (_, _, .sending):
-            text = OWSLocalizedString(
-                "PAYMENTS_PAYMENT_STATUS_IN_CHAT_PROCESSING",
-                comment: "Payment status context while sending"
-            )
-        case (_, .incomingMessage, _),
-            (.incomingPayment, _, _),
-            (.incomingUnidentified, _, _):
+        switch (interactionType, messageStatus) {
+        case (.incomingMessage, _):
             let format = OWSLocalizedString(
                 "PAYMENTS_PAYMENT_STATUS_IN_CHAT_SENT_YOU",
                 comment: "Payment status context with contact name, incoming. Embeds {{ Name of sending contact }}"
             )
-            text = String(format: format, contactName)
-        case (_, .outgoingMessage, .failed):
+            text = String(format: format, archivedPaymentAttachment.otherUserShortName)
+        case (.outgoingMessage, .failed):
             let format = OWSLocalizedString(
                 "PAYMENTS_PAYMENT_STATUS_IN_CHAT_PAYMENT_TO",
                 comment: "Payment status context with contact name, failed. Embeds {{ Name of receiving contact }}"
             )
-            text = String(format: format, contactName)
-        case (_, .outgoingMessage, _):
+            text = String(format: format, archivedPaymentAttachment.otherUserShortName)
+        case (.outgoingMessage, _):
             let format = OWSLocalizedString(
                 "PAYMENTS_PAYMENT_STATUS_IN_CHAT_YOU_SENT",
                 comment: "Payment status context with contact name, sent. Embeds {{ Name of receiving contact }}"
             )
-            text = String(format: format, contactName)
+            text = String(format: format, archivedPaymentAttachment.otherUserShortName)
         default:
             // default to failed text because it doesn't imply success
             let format = OWSLocalizedString(
                 "PAYMENTS_PAYMENT_STATUS_IN_CHAT_PAYMENT_TO",
                 comment: "Payment status context with contact name, failed. Embeds {{ Name of receiving contact }}"
             )
-            text = String(format: format, contactName)
+            text = String(format: format, archivedPaymentAttachment.otherUserShortName)
         }
 
         return CVLabelConfig(
@@ -255,7 +233,7 @@ public class CVComponentPaymentAttachment: CVComponentBase, CVComponent {
 
     private var noteLabelConfig: CVLabelConfig {
         CVLabelConfig(
-            text: .text(paymentAttachment.notification.memoMessage ?? ""),
+            text: .text(archivedPaymentAttachment.note ?? ""),
             displayConfig: .forUnstyledText(
                 font: .dynamicTypeBody,
                 textColor: conversationStyle.bubbleTextColor(isIncoming: isIncoming)
@@ -317,7 +295,7 @@ public class CVComponentPaymentAttachment: CVComponentBase, CVComponent {
         vSubviewInfos.append(topLabelSize.asManualSubviewInfo())
         vSubviewInfos.append(hStackMeasurement.measuredSize.asManualSubviewInfo)
 
-        if paymentAttachment.notification.memoMessage != nil {
+        if archivedPaymentAttachment.note != nil {
             vSubviewInfos.append(noteLabelSize.asManualSubviewInfo())
         }
 
@@ -335,10 +313,10 @@ public class CVComponentPaymentAttachment: CVComponentBase, CVComponent {
 
     // Used for rendering some portion of an Conversation View item.
     // It could be the entire item or some part thereof.
-    public class CVComponentViewPaymentAttachment: NSObject, CVComponentView {
+    public class CVComponentViewArchivedPayment: NSObject, CVComponentView {
 
-        fileprivate let hStackView = ManualStackView(name: "PaymentAttachment.hStackView")
-        fileprivate let vStackView = ManualStackView(name: "PaymentAttachment.vStackView")
+        fileprivate let hStackView = ManualStackView(name: "ArchivedPayment.hStackView")
+        fileprivate let vStackView = ManualStackView(name: "ArchivedPayment.vStackView")
 
         fileprivate var leftSpace = UIView()
         fileprivate var rightSpace = UIView()
@@ -374,12 +352,20 @@ public class CVComponentPaymentAttachment: CVComponentBase, CVComponent {
         componentView: CVComponentView,
         renderItem: CVRenderItem
     ) -> Bool {
-        guard let paymentModel = paymentModel else { return false }
-        let paymentHistoryItem = PaymentsHistoryModelItem(
-            paymentModel: paymentModel,
-            displayName: contactName
-        )
-        componentDelegate.didTapPayment(paymentHistoryItem)
+        guard let contactAddress = (thread as? TSContactThread)?.contactAddress else {
+            owsFailDebug("Should be contact thread")
+            return false
+        }
+        guard let archivedPayment = archivedPaymentAttachment.archivedPayment else { return false }
+        guard let item = ArchivedPaymentHistoryItem(
+            archivedPayment: archivedPayment,
+            address: contactAddress,
+            displayName: archivedPaymentAttachment.otherUserShortName,
+            interaction: interaction
+        ) else {
+            return false
+        }
+        componentDelegate.didTapPayment(item)
         return true
     }
 }
@@ -387,11 +373,11 @@ public class CVComponentPaymentAttachment: CVComponentBase, CVComponent {
 // MARK: - Constants & Utils
 
 fileprivate extension String {
-    static let measurementKey_hStack = "CVComponentPaymentAttachment.measurementKey_hStack"
-    static let measurementKey_vStack = "CVComponentPaymentAttachment.measurementKey_vStack"
+    static let measurementKey_hStack = "CVComponentArchivedPayment.measurementKey_hStack"
+    static let measurementKey_vStack = "CVComponentArchivedPayment.measurementKey_vStack"
 }
 
-extension CVComponentPaymentAttachment: CVAccessibilityComponent {
+extension CVComponentArchivedPayment: CVAccessibilityComponent {
     public var accessibilityDescription: String {
         return formatPaymentAmount(status: messageStatus).string
     }

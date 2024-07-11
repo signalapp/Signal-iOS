@@ -59,6 +59,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
     private var paymentAttachment: CVComponent?
 
+    private var archivedPaymentAttachment: CVComponent?
+
     private var contactShare: CVComponent?
 
     private var bottomButtons: CVComponent?
@@ -123,6 +125,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             return self.genericAttachment
         case .paymentAttachment:
             return self.paymentAttachment
+        case .archivedPaymentAttachment:
+            return self.archivedPaymentAttachment
         case .quotedReply:
             return self.quotedReply
         case .linkPreview:
@@ -271,6 +275,33 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 messageStatus: messageStatus
             )
 
+        }
+
+        if let archivedPaymentAttachment = componentState.archivedPaymentAttachment {
+            let messageStatus: MessageReceiptStatus? = {
+                guard let outgoingMessage = self.itemModel.interaction as? TSOutgoingMessage else {
+                    return nil
+                }
+                return MessageRecipientStatusUtils.recipientStatus(
+                    outgoingMessage: outgoingMessage,
+                    hasBodyAttachments: false
+                )
+            }()
+
+            if let footerState = itemViewState.footerState {
+                self.standaloneFooter = CVComponentFooter(
+                    itemModel: itemModel,
+                    footerState: footerState,
+                    isOverlayingMedia: false,
+                    isOutsideBubble: false
+                )
+            }
+
+            self.archivedPaymentAttachment = CVComponentArchivedPayment(
+                itemModel: itemModel,
+                archivedPaymentAttachment: archivedPaymentAttachment,
+                messageStatus: messageStatus
+            )
         }
 
         if let audioAttachmentState = componentState.audioAttachment {
@@ -873,7 +904,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     private static var topFullWidthCVComponentKeys: [CVComponentKey] { [.linkPreview] }
     private static var topNestedCVComponentKeys: [CVComponentKey] { [.senderName] }
     private static var bottomFullWidthCVComponentKeys: [CVComponentKey] { [.quotedReply, .bodyMedia] }
-    private static var bottomNestedShareCVComponentKeys: [CVComponentKey] { [.viewOnce, .audioAttachment, .genericAttachment, .paymentAttachment, .contactShare, .giftBadge] }
+    private static var bottomNestedShareCVComponentKeys: [CVComponentKey] { [.viewOnce, .audioAttachment, .genericAttachment, .paymentAttachment, .archivedPaymentAttachment, .contactShare, .giftBadge] }
     private static var bottomNestedTextCVComponentKeys: [CVComponentKey] { [.bodyText, .footer] }
 
     // The "message" contents of this component for most messages are vertically
@@ -1128,7 +1159,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             switch componentKey {
             case .bodyText:
                 return false
-            case .bodyMedia, .sticker, .quotedReply, .linkPreview, .viewOnce, .audioAttachment, .genericAttachment, .paymentAttachment, .contactShare:
+            case .bodyMedia, .sticker, .quotedReply, .linkPreview, .viewOnce, .audioAttachment, .genericAttachment, .paymentAttachment, .archivedPaymentAttachment, .contactShare:
                 return true
             case .giftBadge:
                 // TODO: (GB) Confirm that Gift Badges should use large component spacing.
@@ -1735,7 +1766,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             .audioAttachment: .media,
             .genericAttachment: .media,
             .quotedReply: .quotedReply,
-            .paymentAttachment: .paymentMessage
+            .paymentAttachment: .paymentMessage,
+            .archivedPaymentAttachment: .paymentMessage
             // TODO: linkPreview?
         ]
         // Recognize the correct message type when tapping next to the message itself
@@ -1928,6 +1960,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         var audioAttachmentView: CVComponentView?
         var genericAttachmentView: CVComponentView?
         var paymentAttachmentView: CVComponentView?
+        var archivedPaymentView: CVComponentView?
         var contactShareView: CVComponentView?
         var bottomButtonsView: CVComponentView?
 
@@ -1946,6 +1979,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 audioAttachmentView,
                 genericAttachmentView,
                 paymentAttachmentView,
+                archivedPaymentView,
                 contactShareView,
                 bottomButtonsView
             ].compactMap { $0 }
@@ -1979,6 +2013,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 return genericAttachmentView
             case .paymentAttachment:
                 return paymentAttachmentView
+            case .archivedPaymentAttachment:
+                return archivedPaymentView
             case .contactShare:
                 return contactShareView
             case .bottomButtons:
@@ -2022,6 +2058,8 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 genericAttachmentView = subcomponentView
             case .paymentAttachment:
                 paymentAttachmentView = subcomponentView
+            case .archivedPaymentAttachment:
+                archivedPaymentView = subcomponentView
             case .contactShare:
                 contactShareView = subcomponentView
             case .bottomButtons:

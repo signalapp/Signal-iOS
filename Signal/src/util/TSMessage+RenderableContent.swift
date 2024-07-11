@@ -21,7 +21,7 @@ extension TSMessage {
                 hasSticker: messageSticker != nil,
                 hasGiftBadge: giftBadge != nil,
                 isStoryReply: isStoryReply,
-                isPaymentMessage: self is OWSPaymentMessage,
+                isPaymentMessage: (self is OWSPaymentMessage || self is OWSArchivedPaymentMessage),
                 storyReactionEmoji: storyReactionEmoji
             )
         }

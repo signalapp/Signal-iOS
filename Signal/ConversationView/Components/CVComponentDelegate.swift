@@ -113,7 +113,7 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate {
 
     func didTapStickerPack(_ stickerPackInfo: StickerPackInfo)
 
-    func didTapPayment(_ paymentModel: TSPaymentModel, displayName: String)
+    func didTapPayment(_ payment: PaymentsHistoryItem)
 
     func didTapGroupInviteLink(url: URL)
 
