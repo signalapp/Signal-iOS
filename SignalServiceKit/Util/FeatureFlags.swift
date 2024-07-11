@@ -62,8 +62,6 @@ public class FeatureFlags: NSObject {
 
     public static let paymentsScrubDetails = false
 
-    public static let deprecateREST = false
-
     public static let isPrerelease = build.includes(.beta)
 
     /// If we ever need to internally detect database corruption again in the

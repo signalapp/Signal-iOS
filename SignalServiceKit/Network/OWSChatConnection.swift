@@ -334,10 +334,6 @@ public class OWSChatConnection: NSObject {
     // MARK: - Socket LifeCycle
 
     public static var canAppUseSocketsToMakeRequests: Bool {
-        if FeatureFlags.deprecateREST {
-            // When we deprecate REST, we will use web sockets in app extensions.
-            return true
-        }
         if !CurrentAppContext().isMainApp {
             return false
         }

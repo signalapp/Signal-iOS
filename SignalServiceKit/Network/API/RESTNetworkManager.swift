@@ -104,7 +104,6 @@ private class RESTSessionManager {
                                success: @escaping RESTNetworkManager.Success,
                                failure: @escaping RESTNetworkManager.Failure) {
         assertOnQueue(networkManagerQueue)
-        owsAssertDebug(!FeatureFlags.deprecateREST)
 
         // We should only use the RESTSessionManager for requests to the Signal main service.
         let urlSession = self.urlSession

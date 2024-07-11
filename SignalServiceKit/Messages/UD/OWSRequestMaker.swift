@@ -101,16 +101,11 @@ public final class RequestMaker: Dependencies {
         }
         owsAssertDebug(isUDRequest == request.isUDRequest)
 
-        let shouldUseWebsocket: Bool
-        if FeatureFlags.deprecateREST {
-            shouldUseWebsocket = true
-        } else {
-            let connectionType: OWSChatConnectionType = (isUDRequest ? .unidentified : .identified)
-            shouldUseWebsocket = (
-                OWSChatConnection.canAppUseSocketsToMakeRequests
-                && DependenciesBridge.shared.chatConnectionManager.canMakeRequests(connectionType: connectionType)
-            )
-        }
+        let connectionType: OWSChatConnectionType = (isUDRequest ? .unidentified : .identified)
+        let shouldUseWebsocket: Bool = (
+            OWSChatConnection.canAppUseSocketsToMakeRequests
+            && DependenciesBridge.shared.chatConnectionManager.canMakeRequests(connectionType: connectionType)
+        )
 
         if shouldUseWebsocket {
             return Promise.wrapAsync {
