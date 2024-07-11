@@ -2103,9 +2103,14 @@ class MessageReceiverRequest {
     }
 
     private static func isDuplicate(_ decryptedEnvelope: DecryptedIncomingEnvelope, tx: SDSAnyReadTransaction) -> Bool {
+        guard let serverGuid = decryptedEnvelope.envelope.serverGuid else {
+            return true
+        }
+    
         return InteractionFinder.existsIncomingMessage(
             timestamp: decryptedEnvelope.timestamp,
             sourceAci: decryptedEnvelope.sourceAci,
+            serverGuid: serverGuid,
             transaction: tx
         )
     }

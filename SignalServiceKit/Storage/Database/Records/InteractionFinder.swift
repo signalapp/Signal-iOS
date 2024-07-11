@@ -48,6 +48,7 @@ public class InteractionFinder: NSObject {
     public class func existsIncomingMessage(
         timestamp: UInt64,
         sourceAci: Aci,
+        serverGuid: String
         transaction: SDSAnyReadTransaction
     ) -> Bool {
         let sql = """
@@ -55,6 +56,7 @@ public class InteractionFinder: NSObject {
                 SELECT 1
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .timestamp) = ?
+                AND \(interactionColumn: .serverGuid) = ?
                 AND (
                     \(interactionColumn: .authorUUID) = ?
                     OR (
@@ -67,6 +69,7 @@ public class InteractionFinder: NSObject {
         let arguments: StatementArguments = [
             timestamp,
             sourceAci.serviceIdUppercaseString,
+            serverGuid,
             SignalServiceAddress(sourceAci).phoneNumber
         ]
         do {
