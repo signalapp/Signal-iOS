@@ -103,18 +103,18 @@ NSUInteger const RecipientIdentitySchemaVersion = 1;
     return self;
 }
 
-- (instancetype)initWithAccountId:(NSString *)accountId
-                      identityKey:(NSData *)identityKey
-                  isFirstKnownKey:(BOOL)isFirstKnownKey
-                        createdAt:(NSDate *)createdAt
-                verificationState:(OWSVerificationState)verificationState
+- (instancetype)initWithRecipientUniqueId:(NSString *)recipientUniqueId
+                              identityKey:(NSData *)identityKey
+                          isFirstKnownKey:(BOOL)isFirstKnownKey
+                                createdAt:(NSDate *)createdAt
+                        verificationState:(OWSVerificationState)verificationState
 {
-    self = [super initWithUniqueId:accountId];
+    self = [super initWithUniqueId:recipientUniqueId];
     if (!self) {
         return self;
     }
 
-    _accountId = accountId;
+    _accountId = recipientUniqueId;
     _identityKey = identityKey;
     _isFirstKnownKey = isFirstKnownKey;
     _createdAt = createdAt;
@@ -133,7 +133,7 @@ NSUInteger const RecipientIdentitySchemaVersion = 1;
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-                       accountId:(NSString *)accountId
+                       accountId:(NSString *)recipientUniqueId
                        createdAt:(NSDate *)createdAt
                      identityKey:(NSData *)identityKey
                  isFirstKnownKey:(BOOL)isFirstKnownKey
@@ -146,7 +146,7 @@ NSUInteger const RecipientIdentitySchemaVersion = 1;
         return self;
     }
 
-    _accountId = accountId;
+    _accountId = recipientUniqueId;
     _createdAt = createdAt;
     _identityKey = identityKey;
     _isFirstKnownKey = isFirstKnownKey;

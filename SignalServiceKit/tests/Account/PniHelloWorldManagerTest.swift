@@ -230,7 +230,7 @@ private class PniDistributionParamaterBuilderMock: PniDistributionParamaterBuild
 
     func buildPniDistributionParameters(
         localAci _: Aci,
-        localAccountId _: String,
+        localRecipientUniqueId _: String,
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32],
         localPniIdentityKeyPair: ECKeyPair,

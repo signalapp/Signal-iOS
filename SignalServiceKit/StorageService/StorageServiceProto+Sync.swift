@@ -136,8 +136,8 @@ struct StorageServiceContact {
         )
     }
 
-    static func fetch(for recipientId: AccountId, tx: SDSAnyReadTransaction) -> Self? {
-        SignalRecipient.anyFetch(uniqueId: recipientId, transaction: tx).flatMap { Self($0) }
+    static func fetch(for recipientUniqueId: RecipientUniqueId, tx: SDSAnyReadTransaction) -> Self? {
+        SignalRecipient.anyFetch(uniqueId: recipientUniqueId, transaction: tx).flatMap { Self($0) }
     }
 
     fileprivate init?(_ signalRecipient: SignalRecipient) {
@@ -172,7 +172,7 @@ struct StorageServiceContact {
 }
 
 class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
-    typealias IdType = AccountId
+    typealias IdType = RecipientUniqueId
     typealias RecordType = StorageServiceProtoContactRecord
 
     private let localIdentifiers: LocalIdentifiers
@@ -228,11 +228,11 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
     func unknownFields(for record: StorageServiceProtoContactRecord) -> UnknownStorage? { record.unknownFields }
 
     func buildRecord(
-        for accountId: AccountId,
+        for recipientUniqueId: RecipientUniqueId,
         unknownFields: UnknownStorage?,
         transaction tx: SDSAnyReadTransaction
     ) -> StorageServiceProtoContactRecord? {
-        guard let recipient = SignalRecipient.anyFetch(uniqueId: accountId, transaction: tx) else {
+        guard let recipient = SignalRecipient.anyFetch(uniqueId: recipientUniqueId, transaction: tx) else {
             return nil
         }
 
@@ -406,7 +406,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
     func mergeRecord(
         _ record: StorageServiceProtoContactRecord,
         transaction: SDSAnyWriteTransaction
-    ) -> StorageServiceMergeResult<AccountId> {
+    ) -> StorageServiceMergeResult<RecipientUniqueId> {
         guard let contact = StorageServiceContact(record) else {
             owsFailDebug("Can't merge record with invalid identifiers: hasAci? \(record.hasAci) hasPni? \(record.hasPni) hasPhoneNumber? \(record.hasE164)")
             return .invalid
@@ -479,7 +479,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         serviceIds: AtLeastOneServiceId,
         needsUpdate: Bool,
         tx: DBWriteTransaction
-    ) -> StorageServiceMergeResult<AccountId> {
+    ) -> StorageServiceMergeResult<RecipientUniqueId> {
         var needsUpdate = needsUpdate
 
         let anyAddress = SignalServiceAddress(serviceIds.aciOrElsePni)
@@ -679,7 +679,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             )
         }
 
-        return .merged(needsUpdate: needsUpdate, recipient.accountId)
+        return .merged(needsUpdate: needsUpdate, recipient.uniqueId)
     }
 
     /// Merge system contact names from this ContactRecord with local state.

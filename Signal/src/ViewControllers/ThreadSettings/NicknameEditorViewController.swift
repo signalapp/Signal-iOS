@@ -320,7 +320,7 @@ class NicknameEditorViewController: OWSTableViewController2 {
             // based only on `self.initialNicknameRecord`.
             context.nicknameManager.createOrUpdate(
                 nicknameRecord: nicknameRecord,
-                updateStorageServiceFor: self.recipient.accountId,
+                updateStorageServiceFor: self.recipient.uniqueId,
                 tx: tx
             )
         }
@@ -352,7 +352,7 @@ class NicknameEditorViewController: OWSTableViewController2 {
         self.context.db.write { tx in
             self.context.nicknameManager.deleteNickname(
                 recipientRowID: recipientRowID,
-                updateStorageServiceFor: self.recipient.accountId,
+                updateStorageServiceFor: self.recipient.uniqueId,
                 tx: tx
             )
         }

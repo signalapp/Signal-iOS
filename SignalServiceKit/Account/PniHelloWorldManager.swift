@@ -87,7 +87,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
             logger.warn("Skipping PNI Hello World, missing local account parameters!")
             return
         }
-        let localRecipientId = localRecipient.uniqueId
+        let localRecipientUniqueId = localRecipient.uniqueId
         let localDeviceIds = localRecipient.deviceIds
 
         let localPniIdentityKeyPair: ECKeyPair
@@ -118,7 +118,7 @@ class PniHelloWorldManagerImpl: PniHelloWorldManager {
 
             return self.pniDistributionParameterBuilder.buildPniDistributionParameters(
                 localAci: localIdentifiers.aci,
-                localAccountId: localRecipientId,
+                localRecipientUniqueId: localRecipientUniqueId,
                 localDeviceId: localDeviceId,
                 localUserAllDeviceIds: localDeviceIds,
                 localPniIdentityKeyPair: localPniIdentityKeyPair,

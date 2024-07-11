@@ -268,11 +268,11 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 let localRecipient = recipientDatabaseTable.fetchRecipient(
                     serviceId: localIdentifiers.aci,
                     transaction: transaction.asV2Read
-                ),
-                let localAccountId = localRecipient.accountId
+                )
             else {
                 return .disallowed
             }
+            let localRecipientUniqueId = localRecipient.uniqueId
             let localDeviceId = tsAccountManager.storedDeviceId(tx: transaction.asV2Read)
             let localUserAllDeviceIds = localRecipient.deviceIds
 
@@ -280,7 +280,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 oldE164: localE164,
                 oldAuthToken: authToken,
                 localAci: localIdentifiers.aci,
-                localAccountId: localAccountId,
+                localAccountId: localRecipientUniqueId,
                 localDeviceId: localDeviceId,
                 localUserAllDeviceIds: localUserAllDeviceIds
             ))

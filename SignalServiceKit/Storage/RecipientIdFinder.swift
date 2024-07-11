@@ -6,14 +6,7 @@
 import Foundation
 import LibSignalClient
 
-public typealias AccountId = String
-
-@objc
-public extension SignalRecipient {
-    var accountId: AccountId! {
-        return uniqueId
-    }
-}
+public typealias RecipientUniqueId = String
 
 public enum RecipientIdError: Error, IsRetryableProvider {
     /// We can't use the Pni because it's been replaced by an Aci.
@@ -37,26 +30,26 @@ public final class RecipientIdFinder {
         self.recipientDatabaseTable = recipientDatabaseTable
     }
 
-    public func recipientId(for serviceId: ServiceId, tx: DBReadTransaction) -> Result<AccountId, RecipientIdError>? {
+    public func recipientUniqueId(for serviceId: ServiceId, tx: DBReadTransaction) -> Result<RecipientUniqueId, RecipientIdError>? {
         guard let recipient = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx) else {
             return nil
         }
-        return recipientIdResult(for: serviceId, recipient: recipient)
+        return recipientUniqueIdResult(for: serviceId, recipient: recipient)
     }
 
-    public func recipientId(for address: SignalServiceAddress, tx: DBReadTransaction) -> Result<AccountId, RecipientIdError>? {
+    public func recipientUniqueId(for address: SignalServiceAddress, tx: DBReadTransaction) -> Result<RecipientUniqueId, RecipientIdError>? {
         guard let recipient = SignalRecipient.fetchRecipient(for: address, onlyIfRegistered: false, tx: SDSDB.shimOnlyBridge(tx)) else {
             return nil
         }
-        return recipientIdResult(for: address.serviceId, recipient: recipient)
+        return recipientUniqueIdResult(for: address.serviceId, recipient: recipient)
     }
 
-    public func ensureRecipientId(for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<AccountId, RecipientIdError> {
+    public func ensureRecipientUniqueId(for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<RecipientUniqueId, RecipientIdError> {
         let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
-        return recipientIdResult(for: serviceId, recipient: recipient)
+        return recipientUniqueIdResult(for: serviceId, recipient: recipient)
     }
 
-    private func recipientIdResult(for serviceId: ServiceId?, recipient: SignalRecipient) -> Result<AccountId, RecipientIdError> {
+    private func recipientUniqueIdResult(for serviceId: ServiceId?, recipient: SignalRecipient) -> Result<RecipientUniqueId, RecipientIdError> {
         if serviceId is Pni, recipient.aciString != nil {
             return .failure(.mustNotUsePniBecauseAciExists)
         }

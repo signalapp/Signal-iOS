@@ -59,11 +59,11 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithAddress(SignalServiceAddress *
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 - (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 
-- (instancetype)initWithAccountId:(NSString *)accountId
-                      identityKey:(NSData *)identityKey
-                  isFirstKnownKey:(BOOL)isFirstKnownKey
-                        createdAt:(NSDate *)createdAt
-                verificationState:(OWSVerificationState)verificationState NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithRecipientUniqueId:(NSString *)accountId
+                              identityKey:(NSData *)identityKey
+                          isFirstKnownKey:(BOOL)isFirstKnownKey
+                                createdAt:(NSDate *)createdAt
+                        verificationState:(OWSVerificationState)verificationState NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 

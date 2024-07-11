@@ -34,11 +34,11 @@ public final class SSKSessionStore: SignalSessionStore {
         deviceId: UInt32,
         tx: DBReadTransaction
     ) throws -> Data? {
-        switch recipientIdFinder.recipientId(for: serviceId, tx: tx) {
+        switch recipientIdFinder.recipientUniqueId(for: serviceId, tx: tx) {
         case .none:
             return nil
-        case .some(.success(let recipientId)):
-            return loadSerializedSession(for: recipientId, deviceId: deviceId, tx: tx)
+        case .some(.success(let recipientUniqueId)):
+            return loadSerializedSession(for: recipientUniqueId, deviceId: deviceId, tx: tx)
         case .some(.failure(let error)):
             switch error {
             case .mustNotUsePniBecauseAciExists:
@@ -65,14 +65,14 @@ public final class SSKSessionStore: SignalSessionStore {
     }
 
     private func loadSerializedSession(
-        for recipientId: String,
+        for recipientUniqueId: String,
         deviceId: UInt32,
         tx: DBReadTransaction
     ) -> Data? {
-        owsAssertDebug(!recipientId.isEmpty)
+        owsAssertDebug(!recipientUniqueId.isEmpty)
         owsAssertDebug(deviceId > 0)
 
-        let dictionary = keyValueStore.getObject(forKey: recipientId, transaction: tx) as! SessionsByDeviceDictionary?
+        let dictionary = keyValueStore.getObject(forKey: recipientUniqueId, transaction: tx) as! SessionsByDeviceDictionary?
         guard let entry = dictionary?[Int32(bitPattern: deviceId)] else {
             return nil
         }
@@ -85,29 +85,29 @@ public final class SSKSessionStore: SignalSessionStore {
         deviceId: UInt32,
         tx: DBWriteTransaction
     ) throws {
-        switch recipientIdFinder.ensureRecipientId(for: serviceId, tx: tx) {
+        switch recipientIdFinder.ensureRecipientUniqueId(for: serviceId, tx: tx) {
         case .failure(let error):
             switch error {
             case .mustNotUsePniBecauseAciExists:
                 throw error
             }
-        case .success(let recipientId):
-            storeSerializedSession(for: recipientId, deviceId: deviceId, sessionData: sessionData, tx: tx)
+        case .success(let recipientUniqueId):
+            storeSerializedSession(for: recipientUniqueId, deviceId: deviceId, sessionData: sessionData, tx: tx)
         }
     }
 
     private func storeSerializedSession(
-        for recipientId: String,
+        for recipientUniqueId: String,
         deviceId: UInt32,
         sessionData: Data,
         tx: DBWriteTransaction
     ) {
-        owsAssertDebug(!recipientId.isEmpty)
+        owsAssertDebug(!recipientUniqueId.isEmpty)
         owsAssertDebug(deviceId > 0)
 
-        var dictionary = (keyValueStore.getObject(forKey: recipientId, transaction: tx) as! SessionsByDeviceDictionary?) ?? [:]
+        var dictionary = (keyValueStore.getObject(forKey: recipientUniqueId, transaction: tx) as! SessionsByDeviceDictionary?) ?? [:]
         dictionary[Int32(bitPattern: deviceId)] = sessionData as NSData
-        keyValueStore.setObject(dictionary, key: recipientId, transaction: tx)
+        keyValueStore.setObject(dictionary, key: recipientUniqueId, transaction: tx)
     }
 
     public func mightContainSession(for recipient: SignalRecipient, tx: DBReadTransaction) -> Bool {
@@ -128,46 +128,46 @@ public final class SSKSessionStore: SignalSessionStore {
 
     public func deleteAllSessions(for serviceId: ServiceId, tx: DBWriteTransaction) {
         Logger.info("deleting all sessions for \(serviceId)")
-        switch recipientIdFinder.recipientId(for: serviceId, tx: tx) {
+        switch recipientIdFinder.recipientUniqueId(for: serviceId, tx: tx) {
         case .none, .some(.failure(.mustNotUsePniBecauseAciExists)):
             // There can't possibly be any sessions that need to be deleted.
             return
-        case .some(.success(let recipientId)):
-            owsAssertDebug(!recipientId.isEmpty)
-            deleteAllSessions(for: recipientId, tx: tx)
+        case .some(.success(let recipientUniqueId)):
+            owsAssertDebug(!recipientUniqueId.isEmpty)
+            deleteAllSessions(for: recipientUniqueId, tx: tx)
         }
     }
 
-    public func deleteAllSessions(for recipientId: AccountId, tx: DBWriteTransaction) {
-        keyValueStore.removeValue(forKey: recipientId, transaction: tx)
+    public func deleteAllSessions(for recipientUniqueId: RecipientUniqueId, tx: DBWriteTransaction) {
+        keyValueStore.removeValue(forKey: recipientUniqueId, transaction: tx)
     }
 
     public func archiveAllSessions(for serviceId: ServiceId, tx: DBWriteTransaction) {
         Logger.info("archiving all sessions for \(serviceId)")
-        switch recipientIdFinder.recipientId(for: serviceId, tx: tx) {
+        switch recipientIdFinder.recipientUniqueId(for: serviceId, tx: tx) {
         case .none, .some(.failure(.mustNotUsePniBecauseAciExists)):
             // There can't possibly be any sessions that need to be archived.
             return
-        case .some(.success(let recipientId)):
-            archiveAllSessions(for: recipientId, tx: tx)
+        case .some(.success(let recipientUniqueId)):
+            archiveAllSessions(for: recipientUniqueId, tx: tx)
         }
     }
 
     public func archiveAllSessions(for address: SignalServiceAddress, tx: DBWriteTransaction) {
         Logger.info("archiving all sessions for \(address)")
-        switch recipientIdFinder.recipientId(for: address, tx: tx) {
+        switch recipientIdFinder.recipientUniqueId(for: address, tx: tx) {
         case .none, .some(.failure(.mustNotUsePniBecauseAciExists)):
             // There can't possibly be any sessions that need to be archived.
             return
-        case .some(.success(let recipientId)):
-            archiveAllSessions(for: recipientId, tx: tx)
+        case .some(.success(let recipientUniqueId)):
+            archiveAllSessions(for: recipientUniqueId, tx: tx)
         }
     }
 
-    private func archiveAllSessions(for recipientId: AccountId, tx: DBWriteTransaction) {
-        owsAssertDebug(!recipientId.isEmpty)
+    private func archiveAllSessions(for recipientUniqueId: RecipientUniqueId, tx: DBWriteTransaction) {
+        owsAssertDebug(!recipientUniqueId.isEmpty)
 
-        guard let dictionary = keyValueStore.getObject(forKey: recipientId, transaction: tx) as! SessionsByDeviceDictionary? else {
+        guard let dictionary = keyValueStore.getObject(forKey: recipientUniqueId, transaction: tx) as! SessionsByDeviceDictionary? else {
             // We never had a session for this account in the first place.
             return
         }
@@ -188,7 +188,7 @@ public final class SSKSessionStore: SignalSessionStore {
             }
         }
 
-        keyValueStore.setObject(newDictionary, key: recipientId, transaction: tx)
+        keyValueStore.setObject(newDictionary, key: recipientUniqueId, transaction: tx)
     }
 
     public func resetSessionStore(tx: DBWriteTransaction) {

@@ -94,7 +94,7 @@ protocol PniDistributionParamaterBuilder {
     ///   new identity. Note that this message contains private key data.
     func buildPniDistributionParameters(
         localAci: Aci,
-        localAccountId: String,
+        localRecipientUniqueId: String,
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32],
         localPniIdentityKeyPair: ECKeyPair,
@@ -133,7 +133,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
 
     func buildPniDistributionParameters(
         localAci: Aci,
-        localAccountId: String,
+        localRecipientUniqueId: String,
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32],
         localPniIdentityKeyPair: ECKeyPair,
@@ -157,7 +157,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
         do {
             linkedDevicePromises = try buildLinkedDevicePniGenerationParams(
                 localAci: localAci,
-                localAccountId: localAccountId,
+                localRecipientUniqueId: localRecipientUniqueId,
                 localDeviceId: localDeviceId,
                 localUserAllDeviceIds: localUserAllDeviceIds,
                 pniIdentityKeyPair: localPniIdentityKeyPair,
@@ -213,7 +213,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
     /// device that is no longer valid, and was ignored.
     private func buildLinkedDevicePniGenerationParams(
         localAci: Aci,
-        localAccountId: String,
+        localRecipientUniqueId: String,
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32],
         pniIdentityKeyPair: ECKeyPair,
@@ -242,7 +242,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
             logger.info("Building device message for device with ID \(linkedDeviceId).")
 
             return encryptPniDistributionMessage(
-                recipientId: localAccountId,
+                recipientUniqueId: localRecipientUniqueId,
                 recipientAci: localAci,
                 recipientDeviceId: linkedDeviceId,
                 identityKeyPair: pniIdentityKeyPair,
@@ -279,7 +279,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
     /// The message for the linked device. If `nil`, indicates the device was
     /// invalid and should be skipped.
     private func encryptPniDistributionMessage(
-        recipientId: String,
+        recipientUniqueId: String,
         recipientAci: Aci,
         recipientDeviceId: UInt32,
         identityKeyPair: ECKeyPair,
@@ -307,7 +307,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
             return try await self.messageSender.buildDeviceMessage(
                 forMessagePlaintextContent: plaintextContent,
                 messageEncryptionStyle: .whisper,
-                recipientId: recipientId,
+                recipientUniqueId: recipientUniqueId,
                 serviceId: recipientAci,
                 deviceId: recipientDeviceId,
                 isOnlineMessage: false,
@@ -338,7 +338,7 @@ protocol _PniDistributionParameterBuilder_MessageSender_Shim {
     func buildDeviceMessage(
         forMessagePlaintextContent messagePlaintextContent: Data,
         messageEncryptionStyle: EncryptionStyle,
-        recipientId: String,
+        recipientUniqueId: String,
         serviceId: ServiceId,
         deviceId: UInt32,
         isOnlineMessage: Bool,
@@ -359,7 +359,7 @@ class _PniDistributionParameterBuilder_MessageSender_Wrapper: _PniDistributionPa
     func buildDeviceMessage(
         forMessagePlaintextContent messagePlaintextContent: Data,
         messageEncryptionStyle: EncryptionStyle,
-        recipientId: String,
+        recipientUniqueId: String,
         serviceId: ServiceId,
         deviceId: UInt32,
         isOnlineMessage: Bool,
@@ -371,7 +371,7 @@ class _PniDistributionParameterBuilder_MessageSender_Wrapper: _PniDistributionPa
         try await messageSender.buildDeviceMessage(
             messagePlaintextContent: messagePlaintextContent,
             messageEncryptionStyle: messageEncryptionStyle,
-            recipientId: recipientId,
+            recipientUniqueId: recipientUniqueId,
             serviceId: serviceId,
             deviceId: deviceId,
             isOnlineMessage: isOnlineMessage,

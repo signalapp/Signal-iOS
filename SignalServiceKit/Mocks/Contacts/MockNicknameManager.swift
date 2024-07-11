@@ -16,7 +16,7 @@ public class MockNicknameManager: NicknameManager {
 
     public func createOrUpdate(
         nicknameRecord: NicknameRecord,
-        updateStorageServiceFor accountId: AccountId?,
+        updateStorageServiceFor recipientUniqueId: RecipientUniqueId?,
         tx: DBWriteTransaction
     ) {
         self.insert(nicknameRecord, tx: tx)
@@ -28,7 +28,7 @@ public class MockNicknameManager: NicknameManager {
 
     public func deleteNickname(
         recipientRowID: Int64,
-        updateStorageServiceFor accountId: AccountId?,
+        updateStorageServiceFor recipientUniqueId: RecipientUniqueId?,
         tx: DBWriteTransaction
     ) {
         mockNicknames.removeValue(forKey: recipientRowID)

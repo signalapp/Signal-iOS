@@ -36,7 +36,7 @@ public protocol ChangePhoneNumberPniManager {
     func generatePniIdentity(
         forNewE164 newE164: E164,
         localAci: Aci,
-        localAccountId: String,
+        localRecipientUniqueId: String,
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32]
     ) -> Guarantee<ChangePhoneNumberPni.GeneratePniIdentityResult>
@@ -135,7 +135,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
     func generatePniIdentity(
         forNewE164 newE164: E164,
         localAci: Aci,
-        localAccountId: String,
+        localRecipientUniqueId: String,
         localDeviceId: UInt32,
         localUserAllDeviceIds: [UInt32]
     ) -> Guarantee<ChangePhoneNumberPni.GeneratePniIdentityResult> {
@@ -161,7 +161,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
         return firstly(on: schedulers.sync) { () -> Guarantee<PniDistribution.ParameterGenerationResult> in
             self.pniDistributionParameterBuilder.buildPniDistributionParameters(
                 localAci: localAci,
-                localAccountId: localAccountId,
+                localRecipientUniqueId: localRecipientUniqueId,
                 localDeviceId: localDeviceId,
                 localUserAllDeviceIds: localUserAllDeviceIds,
                 localPniIdentityKeyPair: pniIdentityKeyPair,

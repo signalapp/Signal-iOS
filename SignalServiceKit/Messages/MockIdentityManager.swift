@@ -15,19 +15,19 @@ open class MockIdentityManager: OWSIdentityManager {
         self.recipientIdFinder = recipientIdFinder
     }
 
-    var recipientIdentities: [AccountId: OWSRecipientIdentity]!
+    var recipientIdentities: [RecipientUniqueId: OWSRecipientIdentity]!
 
-    open func recipientIdentity(for recipientId: AccountId, tx: DBReadTransaction) -> OWSRecipientIdentity? {
-        return recipientIdentities[recipientId]
+    open func recipientIdentity(for recipientUniqueId: RecipientUniqueId, tx: DBReadTransaction) -> OWSRecipientIdentity? {
+        return recipientIdentities[recipientUniqueId]
     }
 
-    open func removeRecipientIdentity(for recipientId: AccountId, tx: DBWriteTransaction) {
-        recipientIdentities[recipientId] = nil
+    open func removeRecipientIdentity(for recipientUniqueId: RecipientUniqueId, tx: DBWriteTransaction) {
+        recipientIdentities[recipientUniqueId] = nil
     }
 
     open func identityKey(for serviceId: ServiceId, tx: DBReadTransaction) throws -> IdentityKey? {
-        guard let recipientId = try recipientIdFinder.recipientId(for: serviceId, tx: tx)?.get() else { return nil }
-        guard let recipientIdentity = recipientIdentities[recipientId] else { return nil}
+        guard let recipientUniqueId = try recipientIdFinder.recipientUniqueId(for: serviceId, tx: tx)?.get() else { return nil }
+        guard let recipientIdentity = recipientIdentities[recipientUniqueId] else { return nil }
         return try IdentityKey(publicKey: PublicKey(keyData: recipientIdentity.identityKey))
     }
 
@@ -47,7 +47,7 @@ open class MockIdentityManager: OWSIdentityManager {
         }
         if recipientIdentities[targetRecipient.uniqueId] == nil {
             recipientIdentities[targetRecipient.uniqueId] = OWSRecipientIdentity(
-                accountId: targetRecipient.uniqueId,
+                recipientUniqueId: targetRecipient.uniqueId,
                 identityKey: fromValue.identityKey,
                 isFirstKnownKey: fromValue.isFirstKnownKey,
                 createdAt: fromValue.createdAt,

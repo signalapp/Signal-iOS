@@ -9,7 +9,7 @@ import XCTest
 @testable import SignalServiceKit
 
 private class MockStorageServiceManager: StorageServiceManager {
-    func recordPendingUpdates(updatedAccountIds: [AccountId]) {}
+    func recordPendingUpdates(updatedRecipientUniqueIds: [RecipientUniqueId]) {}
     func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) {}
     func recordPendingUpdates(updatedGroupV2MasterKeys: [Data]) {}
     func recordPendingUpdates(updatedStoryDistributionListIds: [Data]) {}
@@ -233,7 +233,7 @@ class RecipientMergerTest: XCTestCase {
                     d.recipientDatabaseTable.insertRecipient(recipient, transaction: tx)
                     if let identityKey = initialState.identityKey {
                         d.identityManager.recipientIdentities[recipient.uniqueId] = OWSRecipientIdentity(
-                            accountId: recipient.uniqueId,
+                            recipientUniqueId: recipient.uniqueId,
                             identityKey: Data(identityKey.publicKey.keyBytes),
                             isFirstKnownKey: true,
                             createdAt: Date(),

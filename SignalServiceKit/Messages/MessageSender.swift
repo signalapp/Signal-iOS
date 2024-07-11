@@ -68,7 +68,7 @@ public class MessageSender: Dependencies {
 
     /// Establishes a session with the recipient if one doesn't already exist.
     private func ensureRecipientHasSession(
-        recipientId: AccountId,
+        recipientUniqueId: RecipientUniqueId,
         serviceId: ServiceId,
         deviceId: UInt32,
         isOnlineMessage: Bool,
@@ -84,7 +84,7 @@ public class MessageSender: Dependencies {
         }
 
         let preKeyBundle = try await makePrekeyRequest(
-            recipientId: recipientId,
+            recipientUniqueId: recipientUniqueId,
             serviceId: serviceId,
             deviceId: deviceId,
             isOnlineMessage: isOnlineMessage,
@@ -96,7 +96,7 @@ public class MessageSender: Dependencies {
         try await databaseStorage.awaitableWrite { tx in
             try self.createSession(
                 for: preKeyBundle,
-                recipientId: recipientId,
+                recipientUniqueId: recipientUniqueId,
                 serviceId: serviceId,
                 deviceId: deviceId,
                 transaction: tx
@@ -105,7 +105,7 @@ public class MessageSender: Dependencies {
     }
 
     private func makePrekeyRequest(
-        recipientId: AccountId?,
+        recipientUniqueId: RecipientUniqueId?,
         serviceId: ServiceId,
         deviceId: UInt32,
         isOnlineMessage: Bool,
@@ -124,15 +124,15 @@ public class MessageSender: Dependencies {
         }
 
         // As an optimization, skip the request if an error is likely.
-        if let recipientId, willLikelyHaveUntrustedIdentityKeyError(for: recipientId) {
+        if let recipientUniqueId, willLikelyHaveUntrustedIdentityKeyError(for: recipientUniqueId) {
             Logger.info("Skipping prekey request due to untrusted identity.")
             throw UntrustedIdentityError(serviceId: serviceId)
         }
 
-        if let recipientId, willLikelyHaveInvalidKeySignatureError(for: recipientId) {
+        if let recipientUniqueId, willLikelyHaveInvalidKeySignatureError(for: recipientUniqueId) {
             Logger.info("Skipping prekey request due to invalid prekey signature.")
 
-            // Check if this error is happening repeatedly for this recipientId.
+            // Check if this error is happening repeatedly for this recipientUniqueId.
             // If so, return an InvalidKeySignatureError as a terminal failure.
             throw InvalidKeySignatureError(serviceId: serviceId, isTerminalFailure: true)
         }
@@ -193,7 +193,7 @@ public class MessageSender: Dependencies {
 
     private func createSession(
         for preKeyBundle: SignalServiceKit.PreKeyBundle,
-        recipientId: String,
+        recipientUniqueId: String,
         serviceId: ServiceId,
         deviceId: UInt32,
         transaction: SDSAnyWriteTransaction
@@ -276,7 +276,7 @@ public class MessageSender: Dependencies {
             Logger.error("Found untrusted identity for \(serviceId)")
             handleUntrustedIdentityKeyError(
                 serviceId: serviceId,
-                recipientId: recipientId,
+                recipientUniqueId: recipientUniqueId,
                 preKeyBundle: preKeyBundle,
                 transaction: transaction
             )
@@ -291,7 +291,7 @@ public class MessageSender: Dependencies {
             // more than once and fail early.
             // The error thrown here is considered non-terminal which allows
             // the request to be retried.
-            hadInvalidKeySignatureError(for: recipientId)
+            hadInvalidKeySignatureError(for: recipientUniqueId)
             throw InvalidKeySignatureError(serviceId: serviceId, isTerminalFailure: false)
         }
         owsAssertDebug(try containsValidSession(for: serviceId, deviceId: deviceId, tx: transaction.asV2Write), "Couldn't create session.")
@@ -299,11 +299,11 @@ public class MessageSender: Dependencies {
 
     // MARK: - Untrusted Identities
 
-    private let staleIdentityCache = AtomicDictionary<AccountId, Date>(lock: .init())
+    private let staleIdentityCache = AtomicDictionary<RecipientUniqueId, Date>(lock: .init())
 
     private func handleUntrustedIdentityKeyError(
         serviceId: ServiceId,
-        recipientId: AccountId,
+        recipientUniqueId: RecipientUniqueId,
         preKeyBundle: SignalServiceKit.PreKeyBundle,
         transaction tx: SDSAnyWriteTransaction
     ) {
@@ -311,13 +311,13 @@ public class MessageSender: Dependencies {
             let identityManager = DependenciesBridge.shared.identityManager
             let newIdentityKey = try IdentityKey(bytes: preKeyBundle.identityKey)
             identityManager.saveIdentityKey(newIdentityKey, for: serviceId, tx: tx.asV2Write)
-            staleIdentityCache[recipientId] = Date()
+            staleIdentityCache[recipientUniqueId] = Date()
         } catch {
             owsFailDebug("Error: \(error)")
         }
     }
 
-    private func willLikelyHaveUntrustedIdentityKeyError(for recipientId: AccountId) -> Bool {
+    private func willLikelyHaveUntrustedIdentityKeyError(for recipientUniqueId: RecipientUniqueId) -> Bool {
         assert(!Thread.isMainThread)
 
         // Prekey rate limits are strict. Therefore, we want to avoid requesting
@@ -326,7 +326,7 @@ public class MessageSender: Dependencies {
         // therefore expect all subsequent fetches to fail until that key is
         // trusted, so we don't bother sending them unless the key is trusted.
 
-        guard let mostRecentErrorDate = staleIdentityCache[recipientId] else {
+        guard let mostRecentErrorDate = staleIdentityCache[recipientUniqueId] else {
             // We don't have a recent error, so a fetch will probably work.
             return false
         }
@@ -341,7 +341,7 @@ public class MessageSender: Dependencies {
 
         let identityManager = DependenciesBridge.shared.identityManager
         return databaseStorage.read { tx in
-            guard let recipient = SignalRecipient.anyFetch(uniqueId: recipientId, transaction: tx) else {
+            guard let recipient = SignalRecipient.anyFetch(uniqueId: recipientUniqueId, transaction: tx) else {
                 return false
             }
             // Otherwise, skip the request if we don't trust the identity.
@@ -356,28 +356,28 @@ public class MessageSender: Dependencies {
 
     // MARK: - Invalid Signatures
 
-    private typealias InvalidSignatureCache = [AccountId: InvalidSignatureCacheItem]
+    private typealias InvalidSignatureCache = [RecipientUniqueId: InvalidSignatureCacheItem]
     private struct InvalidSignatureCacheItem {
         let lastErrorDate: Date
         let errorCount: UInt32
     }
     private let invalidKeySignatureCache = AtomicValue(InvalidSignatureCache(), lock: .init())
 
-    private func hadInvalidKeySignatureError(for recipientId: AccountId) {
+    private func hadInvalidKeySignatureError(for recipientUniqueId: RecipientUniqueId) {
         invalidKeySignatureCache.update { cache in
             var errorCount: UInt32 = 1
-            if let mostRecentError = cache[recipientId] {
+            if let mostRecentError = cache[recipientUniqueId] {
                 errorCount = mostRecentError.errorCount + 1
             }
 
-            cache[recipientId] = InvalidSignatureCacheItem(
+            cache[recipientUniqueId] = InvalidSignatureCacheItem(
                 lastErrorDate: Date(),
                 errorCount: errorCount
             )
         }
     }
 
-    private func willLikelyHaveInvalidKeySignatureError(for recipientId: AccountId) -> Bool {
+    private func willLikelyHaveInvalidKeySignatureError(for recipientUniqueId: RecipientUniqueId) -> Bool {
         assert(!Thread.isMainThread)
 
         // Similar to untrusted identity errors, when an invalid signature for a prekey
@@ -392,7 +392,7 @@ public class MessageSender: Dependencies {
         // don't begin limiting the prekey request until after encounting the
         // second bad signature for a particular recipient.
 
-        guard let mostRecentError = invalidKeySignatureCache.get()[recipientId] else {
+        guard let mostRecentError = invalidKeySignatureCache.get()[recipientUniqueId] else {
             return false
         }
 
@@ -401,7 +401,7 @@ public class MessageSender: Dependencies {
 
             // Error has expired, remove it to reset the count
             invalidKeySignatureCache.update { cache in
-                _ = cache.removeValue(forKey: recipientId)
+                _ = cache.removeValue(forKey: recipientUniqueId)
             }
 
             return false
@@ -1338,7 +1338,7 @@ public class MessageSender: Dependencies {
             let deviceMessage = try await buildDeviceMessage(
                 messagePlaintextContent: messageSend.plaintextContent,
                 messageEncryptionStyle: messageSend.message.encryptionStyle,
-                recipientId: recipient.accountId,
+                recipientUniqueId: recipient.uniqueId,
                 serviceId: messageSend.serviceId,
                 deviceId: deviceId,
                 isOnlineMessage: messageSend.message.isOnline,
@@ -1361,7 +1361,7 @@ public class MessageSender: Dependencies {
     func buildDeviceMessage(
         messagePlaintextContent: Data,
         messageEncryptionStyle: EncryptionStyle,
-        recipientId: AccountId,
+        recipientUniqueId: RecipientUniqueId,
         serviceId: ServiceId,
         deviceId: UInt32,
         isOnlineMessage: Bool,
@@ -1374,7 +1374,7 @@ public class MessageSender: Dependencies {
 
         do {
             try await ensureRecipientHasSession(
-                recipientId: recipientId,
+                recipientUniqueId: recipientUniqueId,
                 serviceId: serviceId,
                 deviceId: deviceId,
                 isOnlineMessage: isOnlineMessage,

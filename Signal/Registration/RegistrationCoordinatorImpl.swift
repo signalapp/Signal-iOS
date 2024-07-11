@@ -3554,7 +3554,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             .generatePniIdentity(
                 forNewE164: e164,
                 localAci: changeNumberState.localAci,
-                localAccountId: changeNumberState.localAccountId,
+                localRecipientUniqueId: changeNumberState.localAccountId,
                 localDeviceId: changeNumberState.localDeviceId,
                 localUserAllDeviceIds: changeNumberState.localUserAllDeviceIds
             )

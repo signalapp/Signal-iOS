@@ -54,7 +54,7 @@ public protocol SignalSessionStore: LibSignalClient.SessionStore {
     )
 
     func deleteAllSessions(
-        for recipientId: AccountId,
+        for recipientUniqueId: RecipientUniqueId,
         tx: DBWriteTransaction
     )
 

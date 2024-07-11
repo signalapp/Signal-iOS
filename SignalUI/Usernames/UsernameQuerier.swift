@@ -263,7 +263,7 @@ public struct UsernameQuerier {
                 transaction: tx.asV2Write
             )
 
-            storageServiceManager.recordPendingUpdates(updatedAccountIds: [recipient.accountId])
+            storageServiceManager.recordPendingUpdates(updatedRecipientUniqueIds: [recipient.uniqueId])
         } else {
             // If we have a better identifier for this address, we can
             // throw away any stored username info for it.

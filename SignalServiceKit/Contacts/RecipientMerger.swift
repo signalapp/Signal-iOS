@@ -755,7 +755,7 @@ class RecipientMergerImpl: RecipientMerger {
             }
         }
 
-        storageServiceManager.recordPendingUpdates(updatedAccountIds: affectedRecipients.map { $0.uniqueId })
+        storageServiceManager.recordPendingUpdates(updatedRecipientUniqueIds: affectedRecipients.map { $0.uniqueId })
 
         let threadMergeEventCount = observers.didLearnAssociation(
             mergedRecipient: MergedRecipient(

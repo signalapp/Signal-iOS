@@ -83,13 +83,6 @@ class DebugUITableViewController: OWSTableViewController {
                 }
             ),
 
-            OWSTableItem.disclosureItem(
-                withText: "Data Store Reports",
-                actionBlock: {
-                    viewController.navigationController?.pushViewController(DebugUIReportsViewController(), animated: true)
-                }
-            ),
-
             itemForSubsection(DebugUIGroupsV2(), viewController: viewController, thread: thread),
             itemForSubsection(DebugUIPayments(), viewController: viewController, thread: thread),
             itemForSubsection(DebugUIMisc(), viewController: viewController, thread: thread)

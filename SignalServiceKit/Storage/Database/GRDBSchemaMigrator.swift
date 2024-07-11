@@ -4216,7 +4216,7 @@ public func dedupeSignalRecipients(transaction: SDSAnyWriteTransaction) throws {
         return
     }
 
-    for (address, recipientIds) in duplicatedRecipients {
+    for (address, recipientUniqueIds) in duplicatedRecipients {
         // Since we have duplicate recipients for an address, we want to keep the one returned by the
         // finder, since that is the one whose uniqueId is used as the `accountId` for the
         // accountId finder.
@@ -4229,8 +4229,8 @@ public func dedupeSignalRecipients(transaction: SDSAnyWriteTransaction) throws {
             continue
         }
 
-        let redundantRecipientIds = recipientIds.filter { $0 != primaryRecipient.uniqueId }
-        for redundantId in redundantRecipientIds {
+        let redundantRecipientUniqueIds = recipientUniqueIds.filter { $0 != primaryRecipient.uniqueId }
+        for redundantId in redundantRecipientUniqueIds {
             guard let redundantRecipient = SignalRecipient.anyFetch(uniqueId: redundantId, transaction: transaction) else {
                 owsFailDebug("redundantRecipient was unexpectedly nil")
                 continue

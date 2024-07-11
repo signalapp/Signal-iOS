@@ -786,14 +786,14 @@ extension OWSContactsManager: ContactManager {
             contentsOf: allSignalAccountsBeforeFetch.keys.lazy.compactMap { $0 }
         )
 
-        let updatedAccountIds = databaseStorage.read { tx in
+        let updatedRecipientUniqueIds = databaseStorage.read { tx in
             return phoneNumbersToUpdateInStorageService.compactMap {
                 let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
                 return recipientDatabaseTable.fetchRecipient(phoneNumber: $0, transaction: tx.asV2Read)?.uniqueId
             }
         }
 
-        storageServiceManager.recordPendingUpdates(updatedAccountIds: updatedAccountIds)
+        storageServiceManager.recordPendingUpdates(updatedRecipientUniqueIds: updatedRecipientUniqueIds)
     }
 
     private func updatePhoneNumberVisibilityIfNeeded(

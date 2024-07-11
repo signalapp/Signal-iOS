@@ -356,7 +356,7 @@ extension SignalRecipientManagerImpl {
         recipient.unregisteredAtTimestamp = unregisteredAtTimestamp
 
         if shouldUpdateStorageService {
-            storageServiceManager.recordPendingUpdates(updatedAccountIds: [recipient.uniqueId])
+            storageServiceManager.recordPendingUpdates(updatedRecipientUniqueIds: [recipient.uniqueId])
         }
     }
 }

@@ -266,14 +266,14 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         }
     }
 
-    public func recordPendingUpdates(updatedAccountIds: [AccountId]) {
-        if updatedAccountIds.isEmpty {
+    public func recordPendingUpdates(updatedRecipientUniqueIds: [RecipientUniqueId]) {
+        if updatedRecipientUniqueIds.isEmpty {
             return
         }
-        Logger.info("Recording pending update for account IDs: \(updatedAccountIds)")
+        Logger.info("Recording pending update for recipientUniqueIds: \(updatedRecipientUniqueIds)")
 
         updatePendingMutations {
-            $0.updatedAccountIds.formUnion(updatedAccountIds)
+            $0.updatedRecipientUniqueIds.formUnion(updatedRecipientUniqueIds)
         }
     }
 
@@ -407,7 +407,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 // MARK: - PendingMutations
 
 private struct PendingMutations {
-    var updatedAccountIds = Set<AccountId>()
+    var updatedRecipientUniqueIds = Set<RecipientUniqueId>()
     var updatedServiceIds = Set<ServiceId>()
     var updatedGroupV2MasterKeys = Set<Data>()
     var updatedStoryDistributionListIds = Set<Data>()
@@ -416,7 +416,7 @@ private struct PendingMutations {
     var hasChanges: Bool {
         return (
             updatedLocalAccount
-            || !updatedAccountIds.isEmpty
+            || !updatedRecipientUniqueIds.isEmpty
             || !updatedServiceIds.isEmpty
             || !updatedGroupV2MasterKeys.isEmpty
             || !updatedStoryDistributionListIds.isEmpty
@@ -523,12 +523,12 @@ class StorageServiceOperation: OWSOperation {
         // Coalesce addresses to account IDs. There may be duplicates among the
         // addresses and account IDs.
 
-        var allAccountIds = Set<AccountId>()
+        var allRecipientUniqueIds = Set<RecipientUniqueId>()
 
-        allAccountIds.formUnion(pendingMutations.updatedAccountIds)
+        allRecipientUniqueIds.formUnion(pendingMutations.updatedRecipientUniqueIds)
 
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-        allAccountIds.formUnion(pendingMutations.updatedServiceIds.lazy.compactMap { (serviceId: ServiceId) -> String? in
+        allRecipientUniqueIds.formUnion(pendingMutations.updatedServiceIds.lazy.compactMap { (serviceId: ServiceId) -> String? in
             return recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx.asV2Write).uniqueId
         })
 
@@ -538,7 +538,7 @@ class StorageServiceOperation: OWSOperation {
             """
             Recording pending mutations (\
             Account: \(pendingMutations.updatedLocalAccount); \
-            Contacts: \(allAccountIds.count); \
+            Contacts: \(allRecipientUniqueIds.count); \
             GV2: \(pendingMutations.updatedGroupV2MasterKeys.count); \
             DLists: \(pendingMutations.updatedStoryDistributionListIds.count))
             """
@@ -548,7 +548,7 @@ class StorageServiceOperation: OWSOperation {
             state.localAccountChangeState = .updated
         }
 
-        allAccountIds.forEach {
+        allRecipientUniqueIds.forEach {
             state.accountIdChangeMap[$0] = .updated
         }
 
@@ -569,10 +569,10 @@ class StorageServiceOperation: OWSOperation {
         }
         let localAci = localIdentifiers.aci
         let recipientIdFinder = DependenciesBridge.shared.recipientIdFinder
-        let localRecipientId = try? recipientIdFinder.recipientId(for: localAci, tx: transaction.asV2Read)?.get()
+        let localRecipientUniqueId = try? recipientIdFinder.recipientUniqueId(for: localAci, tx: transaction.asV2Read)?.get()
         // If we updated a recipient, and if that recipient is ourselves, move the
         // update over to the Account record type.
-        if let localRecipientId, state.accountIdChangeMap.removeValue(forKey: localRecipientId) != nil {
+        if let localRecipientUniqueId, state.accountIdChangeMap.removeValue(forKey: localRecipientUniqueId) != nil {
             state.localAccountChangeState = .updated
         }
     }
@@ -890,7 +890,7 @@ class StorageServiceOperation: OWSOperation {
                 if self.localIdentifiers.aci == recipient.aci {
                     createRecord(localId: (), stateUpdater: accountUpdater)
                 } else {
-                    createRecord(localId: recipient.accountId, stateUpdater: contactUpdater)
+                    createRecord(localId: recipient.uniqueId, stateUpdater: contactUpdater)
                 }
             }
 
@@ -1136,17 +1136,17 @@ class StorageServiceOperation: OWSOperation {
 
                 var orphanedAccountCount = 0
                 let currentDate = Date()
-                for (accountId, identifier) in mutableState.accountIdToIdentifierMap where !allManifestItems.contains(identifier) {
+                for (recipientUniqueId, identifier) in mutableState.accountIdToIdentifierMap where !allManifestItems.contains(identifier) {
                     // Only consider registered recipients as orphaned. If another client
                     // removes an unregistered recipient, allow it.
                     guard
-                        let storageServiceContact = StorageServiceContact.fetch(for: accountId, tx: transaction),
+                        let storageServiceContact = StorageServiceContact.fetch(for: recipientUniqueId, tx: transaction),
                         storageServiceContact.shouldBeInStorageService(currentDate: currentDate),
                         storageServiceContact.registrationStatus(currentDate: currentDate) == .registered
                     else {
                         continue
                     }
-                    mutableState.accountIdChangeMap[accountId] = .updated
+                    mutableState.accountIdChangeMap[recipientUniqueId] = .updated
                     orphanedAccountCount += 1
                 }
 
@@ -1496,19 +1496,19 @@ class StorageServiceOperation: OWSOperation {
         caller: String = #function,
         shouldUpdate: (StorageServiceContact?) -> Bool
     ) {
-        let accountIds = databaseStorage.read { tx in
+        let recipientUniqueIds = databaseStorage.read { tx in
             state.accountIdToIdentifierMap.keys.filter { shouldUpdate(StorageServiceContact.fetch(for: $0, tx: tx)) }
         }
 
-        if accountIds.isEmpty {
+        if recipientUniqueIds.isEmpty {
             return
         }
 
-        Logger.info("Marking \(accountIds.count) contact records as mutated via \(caller)")
+        Logger.info("Marking \(recipientUniqueIds.count) contact records as mutated via \(caller)")
 
         databaseStorage.write { tx in
             var pendingMutations = PendingMutations()
-            pendingMutations.updatedAccountIds.formUnion(accountIds)
+            pendingMutations.updatedRecipientUniqueIds.formUnion(recipientUniqueIds)
             Self.recordPendingMutations(pendingMutations, in: &state, transaction: tx)
             state.save(transaction: tx)
         }
@@ -1668,9 +1668,9 @@ class StorageServiceOperation: OWSOperation {
         fileprivate var localAccountIdentifier: StorageService.StorageIdentifier?
         fileprivate var localAccountRecordWithUnknownFields: StorageServiceProtoAccountRecord?
 
-        @BidirectionalLegacyDecoding fileprivate var accountIdToIdentifierMap: [AccountId: StorageService.StorageIdentifier] = [:]
-        private var _accountIdToRecordWithUnknownFields: [AccountId: StorageServiceProtoContactRecord]?
-        var accountIdToRecordWithUnknownFields: [AccountId: StorageServiceProtoContactRecord] {
+        @BidirectionalLegacyDecoding fileprivate var accountIdToIdentifierMap: [RecipientUniqueId: StorageService.StorageIdentifier] = [:]
+        private var _accountIdToRecordWithUnknownFields: [RecipientUniqueId: StorageServiceProtoContactRecord]?
+        var accountIdToRecordWithUnknownFields: [RecipientUniqueId: StorageServiceProtoContactRecord] {
             get { _accountIdToRecordWithUnknownFields ?? [:] }
             set { _accountIdToRecordWithUnknownFields = newValue }
         }
@@ -1727,7 +1727,7 @@ class StorageServiceOperation: OWSOperation {
         }
 
         fileprivate var localAccountChangeState: ChangeState = .unchanged
-        fileprivate var accountIdChangeMap: [AccountId: ChangeState] = [:]
+        fileprivate var accountIdChangeMap: [RecipientUniqueId: ChangeState] = [:]
         fileprivate var groupV2ChangeMap: [Data: ChangeState] = [:]
 
         /// We will no longer update this value, and want to also ignore this

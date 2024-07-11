@@ -186,12 +186,12 @@ class PniDistributionParameterBuilderTest: XCTestCase {
         localDevicePniRegistrationId: UInt32
     ) -> Guarantee<PniDistribution.ParameterGenerationResult> {
         let aci = Aci.randomForTesting()
-        let accountId = "what's up"
+        let recipientUniqueId = "what's up"
         let e164 = E164("+17735550199")!
 
         return pniDistributionParameterBuilder.buildPniDistributionParameters(
             localAci: aci,
-            localAccountId: accountId,
+            localRecipientUniqueId: recipientUniqueId,
             localDeviceId: localDeviceId,
             localUserAllDeviceIds: localUserAllDeviceIds,
             localPniIdentityKeyPair: localPniIdentityKeyPair,
@@ -240,7 +240,7 @@ private class MessageSenderMock: PniDistributionParameterBuilderImpl.Shims.Messa
     func buildDeviceMessage(
         forMessagePlaintextContent messagePlaintextContent: Data,
         messageEncryptionStyle: EncryptionStyle,
-        recipientId: String,
+        recipientUniqueId: String,
         serviceId: ServiceId,
         deviceId: UInt32,
         isOnlineMessage: Bool,

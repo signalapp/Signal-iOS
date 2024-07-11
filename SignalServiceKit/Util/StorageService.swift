@@ -7,7 +7,7 @@ import Foundation
 
 @objc
 public protocol StorageServiceManagerObjc {
-    func recordPendingUpdates(updatedAccountIds: [AccountId])
+    func recordPendingUpdates(updatedRecipientUniqueIds: [RecipientUniqueId])
     func recordPendingUpdates(updatedAddresses: [SignalServiceAddress])
     func recordPendingUpdates(updatedGroupV2MasterKeys: [Data])
     func recordPendingUpdates(updatedStoryDistributionListIds: [Data])

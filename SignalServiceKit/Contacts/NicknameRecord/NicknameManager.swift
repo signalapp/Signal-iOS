@@ -10,12 +10,12 @@ public protocol NicknameManager {
     func fetchNickname(for recipient: SignalRecipient, tx: DBReadTransaction) -> NicknameRecord?
     func createOrUpdate(
         nicknameRecord: NicknameRecord,
-        updateStorageServiceFor accountId: AccountId?,
+        updateStorageServiceFor recipientUniqueId: RecipientUniqueId?,
         tx: DBWriteTransaction
     )
     func deleteNickname(
         recipientRowID: Int64,
-        updateStorageServiceFor accountId: AccountId?,
+        updateStorageServiceFor recipientUniqueId: RecipientUniqueId?,
         tx: DBWriteTransaction
     )
 }
@@ -57,7 +57,7 @@ public struct NicknameManagerImpl: NicknameManager {
 
     public func createOrUpdate(
         nicknameRecord: NicknameRecord,
-        updateStorageServiceFor accountId: AccountId?,
+        updateStorageServiceFor recipientUniqueId: RecipientUniqueId?,
         tx: DBWriteTransaction
     ) {
         if self.nicknameRecordStore.nicknameExists(
@@ -69,8 +69,8 @@ public struct NicknameManagerImpl: NicknameManager {
             self.insert(nicknameRecord, tx: tx)
         }
 
-        if let accountId {
-            self.storageServiceManager.recordPendingUpdates(updatedAccountIds: [accountId])
+        if let recipientUniqueId {
+            self.storageServiceManager.recordPendingUpdates(updatedRecipientUniqueIds: [recipientUniqueId])
         }
     }
 
@@ -88,7 +88,7 @@ public struct NicknameManagerImpl: NicknameManager {
 
     public func deleteNickname(
         recipientRowID: Int64,
-        updateStorageServiceFor accountId: AccountId?,
+        updateStorageServiceFor recipientUniqueId: RecipientUniqueId?,
         tx: DBWriteTransaction
     ) {
         guard let nicknameRecord = self.nicknameRecordStore.fetch(
@@ -97,8 +97,8 @@ public struct NicknameManagerImpl: NicknameManager {
         ) else { return }
         self.delete(nicknameRecord, tx: tx)
 
-        if let accountId {
-            self.storageServiceManager.recordPendingUpdates(updatedAccountIds: [accountId])
+        if let recipientUniqueId {
+            self.storageServiceManager.recordPendingUpdates(updatedRecipientUniqueIds: [recipientUniqueId])
         }
     }
 
