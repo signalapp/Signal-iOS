@@ -213,6 +213,9 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
 
         return firstly { () -> Promise<(URLSessionTask, Data?)> in
             taskState.promise
+        }.recover(on: DispatchQueue.global()) { error -> Promise<(URLSessionTask, Data?)> in
+            Logger.warn("\(error)")
+            throw error
         }.then(on: DispatchQueue.global()) { (_, responseData: Data?) -> Promise<HTTPResponse> in
             guard let requestConfig = requestConfig else {
                 throw OWSAssertionError("Missing requestConfig.")
@@ -597,6 +600,9 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
 
         return firstly { () -> Promise<(URLSessionTask, Data?)> in
             taskState.promise
+        }.recover(on: DispatchQueue.global()) { error -> Promise<(URLSessionTask, Data?)> in
+            Logger.warn("\(error)")
+            throw error
         }.then(on: DispatchQueue.global()) { (_, responseData: Data?) -> Promise<HTTPResponse> in
             guard let requestConfig = requestConfig else {
                 throw OWSAssertionError("Missing requestConfig.")
@@ -624,6 +630,9 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
 
         return firstly { () -> Promise<(URLSessionTask, URL)> in
             taskState.promise
+        }.recover(on: DispatchQueue.global()) { error -> Promise<(URLSessionTask, URL)> in
+            Logger.warn("\(error)")
+            throw error
         }.then(on: DispatchQueue.global()) { (_: URLSessionTask, downloadUrl: URL) -> Promise<OWSUrlDownloadResponse> in
             guard let requestConfig = requestConfig else {
                 throw OWSAssertionError("Missing requestConfig.")
@@ -735,8 +744,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
 extension OWSURLSession: URLSessionDelegate {
 
     public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        if let error = error {
-            Logger.info("Error: \(error)")
+        if let error {
             taskDidFail(task, error: error)
         }
     }

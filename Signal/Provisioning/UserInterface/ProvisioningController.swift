@@ -450,6 +450,7 @@ extension ProvisioningController: ProvisioningSocketDelegate {
     }
 
     public func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didError error: Error) {
+        Logger.warn("\(error)")
         deviceIdFuture.reject(error)
         provisionEnvelopeFuture.reject(error)
     }

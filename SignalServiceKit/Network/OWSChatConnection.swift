@@ -1196,7 +1196,12 @@ extension OWSChatConnectionUsingSSKWebSocket: SSKWebSocketDelegate {
             return
         }
 
-        Logger.warn("Websocket did fail \(logPrefix): \(error)")
+        switch error {
+        case URLError.notConnectedToInternet:
+            Logger.warn("\(logPrefix): notConnectedToInternet")
+        default:
+            Logger.warn("\(logPrefix): \(error)")
+        }
 
         self.currentWebSocket = nil
 

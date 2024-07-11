@@ -395,7 +395,6 @@ public class SSKWebSocketNative: SSKWebSocket {
         shouldReportError = false
 
         callbackScheduler.async {
-            Logger.warn("[\(self.id), context: \(context)] Socket error: \(error)")
             self.delegate?.websocketDidDisconnectOrFail(socket: self, error: error)
         }
     }
