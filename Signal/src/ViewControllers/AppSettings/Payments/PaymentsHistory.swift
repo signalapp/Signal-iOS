@@ -4,10 +4,16 @@
 //
 
 import SignalServiceKit
+import SignalUI
 
 public struct PaymentsHistoryItem {
-    let paymentModel: TSPaymentModel
+    private let paymentModel: TSPaymentModel
     let displayName: String
+
+    init(paymentModel: TSPaymentModel, displayName: String) {
+        self.paymentModel = paymentModel
+        self.displayName = displayName
+    }
 
     var address: SignalServiceAddress? {
         paymentModel.senderOrRecipientAci.map { SignalServiceAddress($0.wrappedAciValue) }
@@ -45,6 +51,10 @@ public struct PaymentsHistoryItem {
         paymentModel.paymentAmount
     }
 
+    var feeAmount: TSPaymentAmount? {
+        paymentModel.mobileCoin?.feeAmount
+    }
+
     var paymentType: TSPaymentType {
         paymentModel.paymentType
     }
@@ -55,6 +65,65 @@ public struct PaymentsHistoryItem {
 
     var sortDate: Date {
         paymentModel.sortDate
+    }
+
+    var createdDate: Date {
+        paymentModel.createdDate
+    }
+
+    var ledgerBlockDate: Date? {
+        paymentModel.mcLedgerBlockDate
+    }
+
+    var ledgerBlockIndex: UInt64 {
+        paymentModel.mcLedgerBlockIndex
+    }
+
+    var isUnread: Bool {
+        paymentModel.isUnread
+    }
+
+    var memoMessage: String? {
+        paymentModel.memoMessage
+    }
+
+    var formattedPaymentAmount: String {
+        guard let paymentAmount = paymentModel.paymentAmount else { return "" }
+        var totalAmount = paymentAmount
+        if let feeAmount = paymentModel.mobileCoin?.feeAmount {
+            totalAmount = totalAmount.plus(feeAmount)
+        }
+        return PaymentsFormat.format(
+            paymentAmount: totalAmount,
+            isShortForm: true,
+            withCurrencyCode: true,
+            withSpace: false,
+            withPaymentType: paymentModel.paymentType
+        )
+    }
+
+    func statusDescription(isLongForm: Bool) -> String {
+        paymentModel.statusDescription(isLongForm: isLongForm)
+    }
+
+    func markAsRead(tx: SDSAnyWriteTransaction) {
+        PaymentsViewUtils.markPaymentAsRead(paymentModel, transaction: tx)
+    }
+
+    func reload(tx: SDSAnyReadTransaction) -> Self? {
+        guard let newPaymentModel = TSPaymentModel.anyFetch(
+            uniqueId: paymentModel.uniqueId,
+            transaction: tx
+        ) else { return nil }
+
+        return PaymentsHistoryItem(paymentModel: newPaymentModel, displayName: displayName)
+    }
+
+    func replaceAsUnidentified(tx: SDSAnyWriteTransaction) {
+        NSObject.payments.replaceAsUnidentified(
+            paymentModel: paymentModel,
+            transaction: tx
+        )
     }
 }
 

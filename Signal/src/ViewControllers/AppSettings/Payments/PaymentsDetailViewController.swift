@@ -54,8 +54,10 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 
         paymentsCurrencies.updateConversationRatesIfStale()
 
-        if paymentItem.paymentModel.isUnread {
-            PaymentsViewUtils.markPaymentAsReadWithSneakyTransaction(paymentItem.paymentModel)
+        if paymentItem.isUnread {
+            databaseStorage.asyncWrite { [weak self] tx in
+                self?.paymentItem.markAsRead(tx: tx)
+            }
         }
     }
 
@@ -82,18 +84,13 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 
         contents.add(buildStatusSection())
 
-        if DebugFlags.internalSettings {
-            contents.add(buildInternalSection())
-        }
-
         self.contents = contents
     }
 
+    /*
     private func buildInternalSection() -> OWSTableSection {
         let section = OWSTableSection()
         section.headerTitle = "Internal"
-
-        let paymentModel = paymentItem.paymentModel
 
         section.add(OWSTableItem.item(name: "paymentType",
                                       accessoryText: paymentModel.paymentType.formatted,
@@ -108,7 +105,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
                                       accessibilityIdentifier: "paymentFailure",
                                       actionBlock: nil))
 
-        if let paymentAmount = paymentModel.paymentAmount {
+        if let paymentAmount = paymentItem.paymentAmount {
             section.add(OWSTableItem.item(name: "paymentAmount",
                                           accessoryText: paymentAmount.formatted,
                                           accessibilityIdentifier: "paymentAmount",
@@ -120,7 +117,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         dateFormatter.timeStyle = .medium
 
         section.add(OWSTableItem.item(name: "createdDate",
-                                      accessoryText: dateFormatter.string(from: paymentModel.createdDate),
+                                      accessoryText: dateFormatter.string(from: paymentItem.createdDate),
                                       accessibilityIdentifier: "createdDate",
                                       actionBlock: nil))
 
@@ -191,20 +188,20 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 
         return section
     }
+     */
 
     private func buildStatusSection() -> OWSTableSection {
         let section = OWSTableSection()
         section.customHeaderHeight = 16
 
         let paymentItem = self.paymentItem
-        let paymentModel = paymentItem.paymentModel
 
         // Block
-        if paymentModel.isUnidentified,
-           paymentModel.mcLedgerBlockIndex > 0 {
+        if paymentItem.isUnidentified,
+           paymentItem.ledgerBlockIndex > 0 {
             section.add(buildStatusItem(topText: OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX",
                                                                    comment: "Label for the 'MobileCoin block index' in the payment details view in the app settings."),
-                                        bottomText: OWSFormat.formatUInt64(paymentModel.mcLedgerBlockIndex)))
+                                        bottomText: OWSFormat.formatUInt64(paymentItem.ledgerBlockIndex)))
         }
 
         // Type/Amount
@@ -212,9 +209,9 @@ class PaymentsDetailViewController: OWSTableViewController2 {
            !paymentAmount.isZero,
            !paymentItem.isFailed {
             let title: String
-            if let senderOrRecipientAci = paymentModel.senderOrRecipientAci?.wrappedAciValue {
+            if let senderOrRecipientAddress = paymentItem.address {
                 let username = databaseStorage.read { tx in
-                    return contactsManager.displayName(for: SignalServiceAddress(senderOrRecipientAci), tx: tx).resolvedValue()
+                    return contactsManager.displayName(for: senderOrRecipientAddress, tx: tx).resolvedValue()
                 }
                 let titleFormat: String = {
                     switch paymentItem {
@@ -256,8 +253,8 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         }
 
         // Fee
-        if paymentModel.isOutgoing,
-           let feeAmount = paymentItem.paymentModel.mobileCoin?.feeAmount, !paymentItem.isFailed {
+        if paymentItem.isOutgoing,
+           let feeAmount = paymentItem.feeAmount, !paymentItem.isFailed {
             let value = PaymentsFormat.format(paymentAmount: feeAmount,
                                                    isShortForm: false,
                                                    withCurrencyCode: true,
@@ -275,7 +272,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
                 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS",
                 comment: "Label for the transaction status in the payment details view in the app settings."
             ),
-            bottomText: paymentModel.statusDescription(isLongForm: true),
+            bottomText: paymentItem.statusDescription(isLongForm: true),
             useFailedColor: paymentItem.isFailed
         ))
 
@@ -286,9 +283,9 @@ class PaymentsDetailViewController: OWSTableViewController2 {
                     return CommonStrings.you
                 }
                 let displayName: DisplayName
-                if let senderAci = paymentModel.senderOrRecipientAci?.wrappedAciValue {
+                if let senderAci = paymentItem.address {
                     displayName = databaseStorage.read { tx in
-                        return contactsManager.displayName(for: SignalServiceAddress(senderAci), tx: tx)
+                        return contactsManager.displayName(for: senderAci, tx: tx)
                     }
                 } else {
                     displayName = .unknown
@@ -296,7 +293,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
                 return displayName.resolvedValue()
             }()
             let value: String
-            if let mcLedgerBlockDate = paymentItem.paymentModel.mcLedgerBlockDate {
+            if let mcLedgerBlockDate = paymentItem.ledgerBlockDate {
                 let senderFormat = OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT",
                                                      comment: "Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}.")
                 value = String(format: senderFormat,
@@ -327,7 +324,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
             )
         }
 
-        let footerText = (paymentModel.isDefragmentation
+        let footerText = (paymentItem.isDefragmentation
                             ? OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION",
                                                 comment: "Footer string for the status section of the payment details view in the app settings for defragmentation transactions.")
                             : OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER",
@@ -379,8 +376,8 @@ class PaymentsDetailViewController: OWSTableViewController2 {
     }
 
     private func configureHeader(cell: UITableViewCell) {
-        if let senderOrRecipientAci = paymentItem.paymentModel.senderOrRecipientAci?.wrappedAciValue {
-            configureHeaderContact(cell: cell, address: SignalServiceAddress(senderOrRecipientAci))
+        if let senderOrRecipientAddress = paymentItem.address {
+            configureHeaderContact(cell: cell, address: senderOrRecipientAddress)
         } else {
             configureHeaderUnidentified(cell: cell)
         }
@@ -406,7 +403,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 
         stackViews.append(buildAmountView())
 
-        if let memoLabel = PaymentsViewUtils.buildMemoLabel(memoMessage: paymentItem.paymentModel.memoMessage) {
+        if let memoLabel = PaymentsViewUtils.buildMemoLabel(memoMessage: paymentItem.memoMessage) {
             stackViews.append(UIView.spacer(withHeight: 12))
             stackViews.append(memoLabel)
         }
@@ -523,18 +520,12 @@ class PaymentsDetailViewController: OWSTableViewController2 {
     // MARK: -
 
     private func updateItem() {
-        func reloadPaymentModel() -> TSPaymentModel? {
-            Self.databaseStorage.read { transaction in
-                TSPaymentModel.anyFetch(uniqueId: self.paymentItem.paymentModel.uniqueId, transaction: transaction)
-            }
-        }
-        guard let paymentModel = reloadPaymentModel() else {
+        guard let _ = databaseStorage.read(block: { [weak self] tx in
+            self?.paymentItem.reload(tx: tx)
+        }) else {
             navigationController?.popViewController(animated: true)
             return
         }
-
-        self.paymentItem = PaymentsHistoryItem(paymentModel: paymentModel,
-                                               displayName: paymentItem.displayName)
 
         updateTableContents()
     }
@@ -543,9 +534,8 @@ class PaymentsDetailViewController: OWSTableViewController2 {
 
     @objc
     private func didTapRemove() {
-        databaseStorage.write { transaction in
-            self.payments.replaceAsUnidentified(paymentModel: self.paymentItem.paymentModel,
-                                                transaction: transaction)
+        databaseStorage.write { tx in
+            self.paymentItem.replaceAsUnidentified(tx: tx)
         }
         navigationController?.popViewController(animated: true)
     }
