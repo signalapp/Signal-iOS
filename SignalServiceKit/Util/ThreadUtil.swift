@@ -270,7 +270,7 @@ extension ThreadUtil {
         setDefaultTimerIfNecessary: Bool,
         tx: SDSAnyWriteTransaction
     ) -> Bool {
-        if shouldSetUniversalTimer(for: thread, tx: tx) {
+        if setDefaultTimerIfNecessary, shouldSetUniversalTimer(for: thread, tx: tx) {
             setUniversalTimer(for: thread, tx: tx)
         }
         let shouldAddToProfileWhitelist = shouldAddThreadToProfileWhitelist(thread, tx: tx)

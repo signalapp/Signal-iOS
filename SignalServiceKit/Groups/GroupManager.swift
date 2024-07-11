@@ -392,37 +392,44 @@ public class GroupManager: NSObject {
 
     #endif
 
-    // MARK: - Disappearing Messages
+    // MARK: - Disappearing Messages for group threads
 
-    @objc
+    private static func updateDisappearingMessageConfiguration(
+        newToken: DisappearingMessageToken,
+        groupThread: TSGroupThread,
+        tx: SDSAnyWriteTransaction
+    ) -> DisappearingMessagesConfigurationStore.SetTokenResult {
+        let setTokenResult = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+            .set(token: newToken, for: .thread(groupThread), tx: tx.asV2Write)
+
+        if setTokenResult.newConfiguration != setTokenResult.oldConfiguration {
+            databaseStorage.touch(thread: groupThread, shouldReindex: false, transaction: tx)
+        }
+
+        return setTokenResult
+    }
+
+    // MARK: - Disappearing Messages for contact threads (for whatever reason, historically part of GroupManager)
+
     public static func remoteUpdateDisappearingMessages(
-        withContactThread thread: TSContactThread,
+        contactThread: TSContactThread,
         disappearingMessageToken: DisappearingMessageToken,
-        changeAuthor: AciObjC?,
-        localIdentifiers: LocalIdentifiersObjC,
+        changeAuthor: Aci?,
+        localIdentifiers: LocalIdentifiers,
         transaction: SDSAnyWriteTransaction
     ) {
-        let changeAuthor: GroupUpdateSource = {
-            if let changeAuthor, changeAuthor.wrappedAciValue == localIdentifiers.aci.wrappedAciValue {
-                return .localUser(originalSource: .aci(changeAuthor.wrappedAciValue))
-            } else if let changeAuthor {
-                return .aci(changeAuthor.wrappedAciValue)
-            } else {
-                return .unknown
-            }
-        }()
         _ = self.updateDisappearingMessagesInDatabaseAndCreateMessages(
-            token: disappearingMessageToken,
-            thread: thread,
-            shouldInsertInfoMessage: true,
+            newToken: disappearingMessageToken,
+            contactThread: contactThread,
             changeAuthor: changeAuthor,
+            localIdentifiers: localIdentifiers,
             transaction: transaction
         )
     }
 
-    private static func localUpdateDisappearingMessageToken(
+    public static func localUpdateDisappearingMessageToken(
         _ disappearingMessageToken: DisappearingMessageToken,
-        inContactOrGroupV1Thread thread: TSThread,
+        inContactThread contactThread: TSContactThread,
         tx: SDSAnyWriteTransaction
     ) {
         guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx.asV2Read) else {
@@ -430,117 +437,76 @@ public class GroupManager: NSObject {
             return
         }
         let updateResult = self.updateDisappearingMessagesInDatabaseAndCreateMessages(
-            token: disappearingMessageToken,
-            thread: thread,
-            shouldInsertInfoMessage: true,
-            changeAuthor: .localUser(originalSource: .aci(localIdentifiers.aci)),
+            newToken: disappearingMessageToken,
+            contactThread: contactThread,
+            changeAuthor: localIdentifiers.aci,
+            localIdentifiers: localIdentifiers,
             transaction: tx
         )
         self.sendDisappearingMessagesConfigurationMessage(
             updateResult: updateResult,
-            thread: thread,
+            contactThread: contactThread,
             transaction: tx
         )
     }
 
-    public static func localUpdateDisappearingMessageToken(
-        _ disappearingMessageToken: DisappearingMessageToken,
-        inContactThread thread: TSContactThread,
-        tx: SDSAnyWriteTransaction
-    ) {
-        localUpdateDisappearingMessageToken(disappearingMessageToken, inContactOrGroupV1Thread: thread, tx: tx)
-    }
-
-    public static func localUpdateDisappearingMessages(
-        thread: TSThread,
-        disappearingMessageToken: DisappearingMessageToken
-    ) -> Promise<Void> {
-        if let groupV2Model = (thread as? TSGroupThread)?.groupModel as? TSGroupModelV2 {
-            return updateGroupV2(groupModel: groupV2Model, description: "Update disappearing messages") { changeSet in
-                changeSet.setNewDisappearingMessageToken(disappearingMessageToken)
-            }.asVoid()
-        } else {
-            return databaseStorage.write(.promise) { tx in
-                localUpdateDisappearingMessageToken(disappearingMessageToken, inContactOrGroupV1Thread: thread, tx: tx)
-            }
-        }
-    }
-
-    private struct UpdateDMConfigurationResult {
-        let oldConfiguration: OWSDisappearingMessagesConfiguration
-        let newConfiguration: OWSDisappearingMessagesConfiguration
-    }
-
     private static func updateDisappearingMessagesInDatabaseAndCreateMessages(
-        token newToken: DisappearingMessageToken,
-        thread: TSThread,
-        shouldInsertInfoMessage: Bool,
-        changeAuthor: GroupUpdateSource,
+        newToken: DisappearingMessageToken,
+        contactThread: TSThread,
+        changeAuthor: Aci?,
+        localIdentifiers: LocalIdentifiers,
         transaction: SDSAnyWriteTransaction
-    ) -> UpdateDMConfigurationResult {
-        let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-        let result = dmConfigurationStore.set(token: newToken, for: .thread(thread), tx: transaction.asV2Write)
+    ) -> DisappearingMessagesConfigurationStore.SetTokenResult {
+        let result = DependenciesBridge.shared.disappearingMessagesConfigurationStore
+            .set(
+                token: newToken,
+                for: .thread(contactThread),
+                tx: transaction.asV2Write
+            )
 
         // Skip redundant updates.
         if result.newConfiguration != result.oldConfiguration {
-            if shouldInsertInfoMessage {
-
-                let remoteContactName: String?
-                switch changeAuthor {
-                case .unknown, .localUser:
-                    remoteContactName = nil
-                case .legacyE164(let e164):
-                    remoteContactName = contactsManager.displayName(
-                        for: .legacyAddress(serviceId: nil, phoneNumber: e164.stringValue),
-                        tx: transaction
-                    ).resolvedValue()
-                case .aci(let aci):
-                    remoteContactName = contactsManager.displayName(
-                        for: .init(aci),
-                        tx: transaction
-                    ).resolvedValue()
-                case .rejectedInviteToPni(let pni):
-                    remoteContactName = contactsManager.displayName(
-                        for: .init(pni),
+            let remoteContactName: String? = {
+                if
+                    let changeAuthor,
+                    changeAuthor != localIdentifiers.aci
+                {
+                    return contactsManager.displayName(
+                        for: SignalServiceAddress(changeAuthor),
                         tx: transaction
                     ).resolvedValue()
                 }
 
-                let infoMessage = OWSDisappearingConfigurationUpdateInfoMessage(
-                    thread: thread,
-                    configuration: result.newConfiguration,
-                    createdByRemoteName: remoteContactName,
-                    createdInExistingGroup: false
-                )
-                infoMessage.anyInsert(transaction: transaction)
-            }
+                return nil
+            }()
 
-            databaseStorage.touch(thread: thread, shouldReindex: false, transaction: transaction)
+            let infoMessage = OWSDisappearingConfigurationUpdateInfoMessage(
+                thread: contactThread,
+                configuration: result.newConfiguration,
+                createdByRemoteName: remoteContactName,
+                createdInExistingGroup: false
+            )
+            infoMessage.anyInsert(transaction: transaction)
+
+            databaseStorage.touch(thread: contactThread, shouldReindex: false, transaction: transaction)
         }
 
-        return UpdateDMConfigurationResult(
-            oldConfiguration: result.oldConfiguration,
-            newConfiguration: result.newConfiguration
-        )
+        return result
     }
 
     private static func sendDisappearingMessagesConfigurationMessage(
-        updateResult: UpdateDMConfigurationResult,
-        thread: TSThread,
+        updateResult: DisappearingMessagesConfigurationStore.SetTokenResult,
+        contactThread: TSContactThread,
         transaction: SDSAnyWriteTransaction
     ) {
         guard updateResult.newConfiguration != updateResult.oldConfiguration else {
             // The update was redundant, don't send an update message.
             return
         }
-        guard !thread.isGroupV2Thread else {
-            // Don't send DM configuration messages for v2 groups.
-            return
-        }
         let newConfiguration = updateResult.newConfiguration
         let message = OWSDisappearingMessagesConfigurationMessage(
             configuration: newConfiguration,
-            thread: thread,
+            thread: contactThread,
             transaction: transaction
         )
         let preparedMessage = PreparedOutgoingMessage.preprepared(
@@ -975,12 +941,10 @@ public class GroupManager: NSObject {
         )
 
         let newDisappearingMessageToken = disappearingMessageToken ?? DisappearingMessageToken.disabledToken
-        _ = updateDisappearingMessagesInDatabaseAndCreateMessages(
-            token: newDisappearingMessageToken,
-            thread: groupThread,
-            shouldInsertInfoMessage: false,
-            changeAuthor: groupUpdateSource,
-            transaction: transaction
+        _ = updateDisappearingMessageConfiguration(
+            newToken: newDisappearingMessageToken,
+            groupThread: groupThread,
+            tx: transaction
         )
 
         autoWhitelistGroupIfNecessary(
@@ -1107,21 +1071,23 @@ public class GroupManager: NSObject {
         }
 
         // Step 2: Update DM configuration in database, if necessary.
-        let updateDMResult: UpdateDMConfigurationResult
+        let updateDMResult: DisappearingMessagesConfigurationStore.SetTokenResult
         if let newDisappearingMessageToken = newDisappearingMessageToken {
             // shouldInsertInfoMessage is false because we only want to insert a
             // single info message if we update both DM config and thread model.
-            updateDMResult = updateDisappearingMessagesInDatabaseAndCreateMessages(
-                token: newDisappearingMessageToken,
-                thread: groupThread,
-                shouldInsertInfoMessage: false,
-                changeAuthor: groupUpdateSource,
-                transaction: transaction
+            updateDMResult = updateDisappearingMessageConfiguration(
+                newToken: newDisappearingMessageToken,
+                groupThread: groupThread,
+                tx: transaction
             )
         } else {
             let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
             let dmConfiguration = dmConfigurationStore.fetchOrBuildDefault(for: .thread(groupThread), tx: transaction.asV2Read)
-            updateDMResult = UpdateDMConfigurationResult(oldConfiguration: dmConfiguration, newConfiguration: dmConfiguration)
+
+            updateDMResult = (
+                oldConfiguration: dmConfiguration,
+                newConfiguration: dmConfiguration
+            )
         }
 
         // Step 3: If any member was removed, make sure we rotate our sender key

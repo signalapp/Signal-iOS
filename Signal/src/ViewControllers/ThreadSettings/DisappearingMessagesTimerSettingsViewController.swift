@@ -198,14 +198,44 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
                 // We're sending a message, so we're accepting any pending message request.
                 ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
 
-                return GroupManager.localUpdateDisappearingMessages(thread: thread,
-                                                                    disappearingMessageToken: configuration.asToken)
+                return self.localUpdateDisappearingMessagesConfiguration(
+                    thread: thread,
+                    newToken: configuration.asToken
+                )
             },
             completion: { [weak self] _ in
                 self?.completion(configuration)
                 self?.dismiss(animated: true)
             }
         )
+    }
+
+    private func localUpdateDisappearingMessagesConfiguration(
+        thread: TSThread,
+        newToken: DisappearingMessageToken
+    ) -> Promise<Void> {
+        if let contactThread = thread as? TSContactThread {
+            return databaseStorage.write(.promise) { tx in
+                GroupManager.localUpdateDisappearingMessageToken(
+                    newToken,
+                    inContactThread: contactThread,
+                    tx: tx
+                )
+            }
+        } else if let groupThread = thread as? TSGroupThread {
+            if let groupV2Model = groupThread.groupModel as? TSGroupModelV2 {
+                return GroupManager.updateGroupV2(
+                    groupModel: groupV2Model,
+                    description: "Update disappearing messages"
+                ) { changeSet in
+                    changeSet.setNewDisappearingMessageToken(newToken)
+                }.asVoid()
+            } else {
+                return Promise(error: OWSAssertionError("Cannot update disappearing message config for V1 groups!"))
+            }
+        } else {
+            return Promise(error: OWSAssertionError("Unexpected thread type in disappearing message update! \(type(of: thread))"))
+        }
     }
 }
 

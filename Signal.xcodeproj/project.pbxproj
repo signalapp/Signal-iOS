@@ -10238,6 +10238,14 @@
 			path = Mocks;
 			sourceTree = "<group>";
 		};
+		D9E5203E2C3F321C004D3D45 /* DisappearingMessagesConfiguration */ = {
+			isa = PBXGroup;
+			children = (
+				502D45452A09C2EE00B8BCE0 /* DisappearingMessagesConfigurationStore.swift */,
+			);
+			path = DisappearingMessagesConfiguration;
+			sourceTree = "<group>";
+		};
 		D9E8EDEF2C0FCB0600923E3C /* DeleteForMe */ = {
 			isa = PBXGroup;
 			children = (
@@ -10727,6 +10735,7 @@
 				7255A4CE2B98E23800E95368 /* DebugLogs */,
 				666BAB0E2980B76B00867196 /* Dependencies */,
 				F9C5CA09289453B100548EEE /* Devices */,
+				D9E5203E2C3F321C004D3D45 /* DisappearingMessagesConfiguration */,
 				72C905882B9A275C00E586B8 /* Environment */,
 				506695ED29C5337700B6D8D0 /* GroupMembers */,
 				F9C5CBA3289453B200548EEE /* Groups */,
@@ -11228,7 +11237,6 @@
 				5096BE642AF3514800668F9F /* ContactSyncAttachmentBuilder.swift */,
 				5077B5B72BBC7FE600EF399E /* ContactTest.swift */,
 				F9C5C9FB289453B100548EEE /* ContactThreadFinder.swift */,
-				502D45452A09C2EE00B8BCE0 /* DisappearingMessagesConfigurationStore.swift */,
 				50A40ED22B88005A0060C5A5 /* DisplayName.swift */,
 				5003BB42299F034D0037159B /* E164.swift */,
 				342FFE822721D4B6000AC89F /* FetchedSystemContacts.swift */,

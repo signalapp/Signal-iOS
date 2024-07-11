@@ -6,6 +6,11 @@
 import Foundation
 
 public protocol DisappearingMessagesConfigurationStore {
+    typealias SetTokenResult = (
+        oldConfiguration: OWSDisappearingMessagesConfiguration,
+        newConfiguration: OWSDisappearingMessagesConfiguration
+    )
+
     func fetch(for scope: DisappearingMessagesConfigurationScope, tx: DBReadTransaction) -> OWSDisappearingMessagesConfiguration?
 
     func remove(for thread: TSThread, tx: DBWriteTransaction)
@@ -15,7 +20,7 @@ public protocol DisappearingMessagesConfigurationStore {
         token: DisappearingMessageToken,
         for scope: DisappearingMessagesConfigurationScope,
         tx: DBWriteTransaction
-    ) -> (oldConfiguration: OWSDisappearingMessagesConfiguration, newConfiguration: OWSDisappearingMessagesConfiguration)
+    ) -> SetTokenResult
 }
 
 public enum DisappearingMessagesConfigurationScope {
@@ -64,7 +69,7 @@ class DisappearingMessagesConfigurationStoreImpl: DisappearingMessagesConfigurat
         token: DisappearingMessageToken,
         for scope: DisappearingMessagesConfigurationScope,
         tx: DBWriteTransaction
-    ) -> (oldConfiguration: OWSDisappearingMessagesConfiguration, newConfiguration: OWSDisappearingMessagesConfiguration) {
+    ) -> SetTokenResult {
         let oldConfiguration = fetchOrBuildDefault(for: scope, tx: tx)
         let newConfiguration = (
             token.isEnabled
@@ -96,7 +101,7 @@ class MockDisappearingMessagesConfigurationStore: DisappearingMessagesConfigurat
         token: DisappearingMessageToken,
         for scope: DisappearingMessagesConfigurationScope,
         tx: DBWriteTransaction
-    ) -> (oldConfiguration: OWSDisappearingMessagesConfiguration, newConfiguration: OWSDisappearingMessagesConfiguration) {
+    ) -> SetTokenResult {
         let oldConfiguration = fetchOrBuildDefault(for: scope, tx: tx)
         let newConfiguration = OWSDisappearingMessagesConfiguration(
             threadId: scope.persistenceKey,

@@ -1186,10 +1186,10 @@ public final class MessageReceiver: Dependencies {
             return
         }
         GroupManager.remoteUpdateDisappearingMessages(
-            withContactThread: contactThread,
+            contactThread: contactThread,
             disappearingMessageToken: .token(forProtoExpireTimerSeconds: dataMessage.expireTimer),
-            changeAuthor: envelope.sourceAciObjC,
-            localIdentifiers: LocalIdentifiersObjC(localIdentifiers),
+            changeAuthor: envelope.sourceAci,
+            localIdentifiers: localIdentifiers,
             transaction: tx
         )
     }

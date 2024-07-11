@@ -92,7 +92,7 @@ extension GroupManager {
         }
     }
 
-    static func updateGroupV2(
+    public static func updateGroupV2(
         groupModel: TSGroupModelV2,
         description: String,
         changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void

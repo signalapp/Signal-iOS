@@ -96,10 +96,10 @@ public class _SentMessageTranscriptReceiver_GroupManagerWrapper: _SentMessageTra
         tx: DBWriteTransaction
     ) {
         GroupManager.remoteUpdateDisappearingMessages(
-            withContactThread: thread,
+            contactThread: thread,
             disappearingMessageToken: disappearingMessageToken,
-            changeAuthor: .init(changeAuthor),
-            localIdentifiers: .init(localIdentifiers),
+            changeAuthor: changeAuthor,
+            localIdentifiers: localIdentifiers,
             transaction: SDSDB.shimOnlyBridge(tx)
         )
     }

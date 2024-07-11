@@ -254,10 +254,10 @@ private class IncomingContactSyncJobRunner: JobRunner, Dependencies {
 
         let disappearingMessageToken = DisappearingMessageToken.token(forProtoExpireTimerSeconds: contactDetails.expireTimer)
         GroupManager.remoteUpdateDisappearingMessages(
-            withContactThread: contactThread,
+            contactThread: contactThread,
             disappearingMessageToken: disappearingMessageToken,
             changeAuthor: nil,
-            localIdentifiers: LocalIdentifiersObjC(localIdentifiers),
+            localIdentifiers: localIdentifiers,
             transaction: tx
         )
 
