@@ -121,6 +121,7 @@ CREATE
             ,"storyReactionEmoji" TEXT
             ,"giftBadge" BLOB
             ,"editState" INTEGER DEFAULT 0
+            ,"archivedPaymentInfo" BLOB
         )
 ;
 

@@ -38,6 +38,7 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
 #import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
+#import <SignalServiceKit/OWSArchivedPaymentMessage.h>
 #import <SignalServiceKit/OWSAsserts.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSBlockedPhoneNumbersMessage.h>
@@ -55,6 +56,7 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSGroupCallMessage.h>
 #import <SignalServiceKit/OWSHTTPSecurityPolicy.h>
 #import <SignalServiceKit/OWSIdentity.h>
+#import <SignalServiceKit/OWSIncomingArchivedPaymentMessage.h>
 #import <SignalServiceKit/OWSIncomingPaymentMessage.h>
 #import <SignalServiceKit/OWSLinkedDeviceReadReceipt.h>
 #import <SignalServiceKit/OWSLogs.h>
@@ -62,6 +64,7 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSMessageHandler.h>
 #import <SignalServiceKit/OWSMultipart.h>
 #import <SignalServiceKit/OWSOperation.h>
+#import <SignalServiceKit/OWSOutgoingArchivedPaymentMessage.h>
 #import <SignalServiceKit/OWSOutgoingCallMessage.h>
 #import <SignalServiceKit/OWSOutgoingNullMessage.h>
 #import <SignalServiceKit/OWSOutgoingPaymentMessage.h>

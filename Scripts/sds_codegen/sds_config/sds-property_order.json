@@ -41,6 +41,7 @@
     "InstalledStickerRecord.contentType": 3,
     "InstalledStickerRecord.emojiString": 1,
     "InstalledStickerRecord.info": 2,
+    "InteractionRecord.archivedPaymentInfo": 71,
     "InteractionRecord.attachmentIds": 4,
     "InteractionRecord.authorId": 5,
     "InteractionRecord.authorPhoneNumber": 6,

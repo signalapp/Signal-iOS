@@ -124,4 +124,16 @@ NSString *NSStringFromTSPaymentFailure(TSPaymentFailure value);
 
 @end
 
+#pragma mark -
+
+@interface TSArchivedPaymentInfo : MTLModel
+
+@property (nonatomic, readonly, nullable) NSString *amount;
+@property (nonatomic, readonly, nullable) NSString *fee;
+@property (nonatomic, readonly, nullable) NSString *note;
+
+- (instancetype)initWithAmount:(nullable NSString *)amount fee:(nullable NSString *)fee note:(nullable NSString *)note;
+
+@end
+
 NS_ASSUME_NONNULL_END

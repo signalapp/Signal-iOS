@@ -269,6 +269,7 @@ public class GRDBSchemaMigrator: NSObject {
         case recreateMessageAttachmentReferenceMediaGalleryIndexes
         case addAttachmentDownloadQueue
         case attachmentAddCdnUnencryptedByteCounts
+        case addArchivedPaymentInfoColumn
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -3063,7 +3064,13 @@ public class GRDBSchemaMigrator: NSObject {
                 table.add(column: "transitUnencryptedByteCount", .integer)
                 table.add(column: "mediaTierUnencryptedByteCount", .integer)
             }
+            return .success(())
+        }
 
+        migrator.registerMigration(.addArchivedPaymentInfoColumn) { tx in
+            try tx.database.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
+                table.add(column: "archivedPaymentInfo", .blob)
+            }
             return .success(())
         }
 

@@ -324,6 +324,16 @@ extension TSPaymentNotification: DeepCopyable {
 // MARK: -
 
 @objc
+extension TSArchivedPaymentInfo: DeepCopyable {
+    public func deepCopy() throws -> AnyObject {
+        // This class can use shallow copies.
+        return try DeepCopies.shallowCopy(self)
+    }
+}
+
+// MARK: -
+
+@objc
 extension MobileCoinPayment: DeepCopyable {
     public func deepCopy() throws -> AnyObject {
         // This class can use shallow copies.

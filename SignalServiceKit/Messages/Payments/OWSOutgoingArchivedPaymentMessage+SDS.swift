@@ -12,19 +12,19 @@ import GRDB
 // MARK: - Typed Convenience Methods
 
 @objc
-public extension OWSUnknownContactBlockOfferMessage {
+public extension OWSOutgoingArchivedPaymentMessage {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchUnknownContactBlockOfferMessage(
+    class func anyFetchOutgoingArchivedPaymentMessage(
         uniqueId: String,
         transaction: SDSAnyReadTransaction
-    ) -> OWSUnknownContactBlockOfferMessage? {
+    ) -> OWSOutgoingArchivedPaymentMessage? {
         assert(!uniqueId.isEmpty)
 
         guard let object = anyFetch(uniqueId: uniqueId,
                                     transaction: transaction) else {
                                         return nil
         }
-        guard let instance = object as? OWSUnknownContactBlockOfferMessage else {
+        guard let instance = object as? OWSOutgoingArchivedPaymentMessage else {
             owsFailDebug("Object has unexpected type: \(type(of: object))")
             return nil
         }
@@ -32,9 +32,9 @@ public extension OWSUnknownContactBlockOfferMessage {
     }
 
     // NOTE: This method will fail if the object has unexpected type.
-    func anyUpdateUnknownContactBlockOfferMessage(transaction: SDSAnyWriteTransaction, block: (OWSUnknownContactBlockOfferMessage) -> Void) {
+    func anyUpdateOutgoingArchivedPaymentMessage(transaction: SDSAnyWriteTransaction, block: (OWSOutgoingArchivedPaymentMessage) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
-            guard let instance = object as? OWSUnknownContactBlockOfferMessage else {
+            guard let instance = object as? OWSOutgoingArchivedPaymentMessage else {
                 owsFailDebug("Object has unexpected type: \(type(of: object))")
                 return
             }
@@ -47,10 +47,10 @@ public extension OWSUnknownContactBlockOfferMessage {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class OWSUnknownContactBlockOfferMessageSerializer: SDSSerializer {
+class OWSOutgoingArchivedPaymentMessageSerializer: SDSSerializer {
 
-    private let model: OWSUnknownContactBlockOfferMessage
-    public init(model: OWSUnknownContactBlockOfferMessage) {
+    private let model: OWSOutgoingArchivedPaymentMessage
+    public init(model: OWSOutgoingArchivedPaymentMessage) {
         self.model = model
     }
 
@@ -59,7 +59,7 @@ class OWSUnknownContactBlockOfferMessageSerializer: SDSSerializer {
     func asRecord() throws -> SDSRecord {
         let id: Int64? = model.sortId > 0 ? Int64(model.sortId) : model.grdbId?.int64Value
 
-        let recordType: SDSRecordType = .unknownContactBlockOfferMessage
+        let recordType: SDSRecordType = .outgoingArchivedPaymentMessage
         let uniqueId: String = model.uniqueId
 
         // Properties
@@ -77,37 +77,37 @@ class OWSUnknownContactBlockOfferMessageSerializer: SDSSerializer {
         let contactShare: Data? = optionalArchive(model.contactShare)
         let createdByRemoteName: String? = nil
         let createdInExistingGroup: Bool? = nil
-        let customMessage: String? = nil
+        let customMessage: String? = model.customMessage
         let envelopeData: Data? = nil
-        let errorType: TSErrorMessageType? = model.errorType
+        let errorType: TSErrorMessageType? = nil
         let expireStartedAt: UInt64? = model.expireStartedAt
         let expiresAt: UInt64? = model.expiresAt
         let expiresInSeconds: UInt32? = model.expiresInSeconds
-        let groupMetaMessage: TSGroupMetaMessage? = nil
-        let hasLegacyMessageState: Bool? = nil
-        let hasSyncedTranscript: Bool? = nil
-        let wasNotCreatedLocally: Bool? = nil
+        let groupMetaMessage: TSGroupMetaMessage? = model.groupMetaMessage
+        let hasLegacyMessageState: Bool? = model.hasLegacyMessageState
+        let hasSyncedTranscript: Bool? = model.hasSyncedTranscript
+        let wasNotCreatedLocally: Bool? = model.wasNotCreatedLocally
         let isLocalChange: Bool? = nil
         let isViewOnceComplete: Bool? = model.isViewOnceComplete
         let isViewOnceMessage: Bool? = model.isViewOnceMessage
-        let isVoiceMessage: Bool? = nil
-        let legacyMessageState: TSOutgoingMessageState? = nil
-        let legacyWasDelivered: Bool? = nil
+        let isVoiceMessage: Bool? = model.isVoiceMessage
+        let legacyMessageState: TSOutgoingMessageState? = model.legacyMessageState
+        let legacyWasDelivered: Bool? = model.legacyWasDelivered
         let linkPreview: Data? = optionalArchive(model.linkPreview)
         let messageId: String? = nil
         let messageSticker: Data? = optionalArchive(model.messageSticker)
         let messageType: TSInfoMessageType? = nil
-        let mostRecentFailureText: String? = nil
+        let mostRecentFailureText: String? = model.mostRecentFailureText
         let preKeyBundle: Data? = nil
         let protocolVersion: UInt? = nil
         let quotedMessage: Data? = optionalArchive(model.quotedMessage)
-        let read: Bool? = model.wasRead
-        let recipientAddress: Data? = optionalArchive(model.recipientAddress)
-        let recipientAddressStates: Data? = nil
-        let sender: Data? = optionalArchive(model.sender)
+        let read: Bool? = nil
+        let recipientAddress: Data? = nil
+        let recipientAddressStates: Data? = optionalArchive(model.recipientAddressStates)
+        let sender: Data? = nil
         let serverTimestamp: UInt64? = nil
         let deprecated_sourceDeviceId: UInt32? = nil
-        let storedMessageState: TSOutgoingMessageState? = nil
+        let storedMessageState: TSOutgoingMessageState? = model.storedMessageState
         let storedShouldStartExpireTimer: Bool? = model.storedShouldStartExpireTimer
         let unregisteredAddress: Data? = nil
         let verificationState: OWSVerificationState? = nil
@@ -121,7 +121,7 @@ class OWSUnknownContactBlockOfferMessageSerializer: SDSSerializer {
         let hasEnded: Bool? = nil
         let creatorUuid: String? = nil
         let joinedMemberUuids: Data? = nil
-        let wasIdentityVerified: Bool? = model.wasIdentityVerified
+        let wasIdentityVerified: Bool? = nil
         let paymentCancellation: Data? = nil
         let paymentNotification: Data? = nil
         let paymentRequest: Data? = nil
@@ -133,7 +133,7 @@ class OWSUnknownContactBlockOfferMessageSerializer: SDSSerializer {
         let storyReactionEmoji: String? = model.storyReactionEmoji
         let giftBadge: Data? = optionalArchive(model.giftBadge)
         let editState: TSEditState? = model.editState
-        let archivedPaymentInfo: Data? = nil
+        let archivedPaymentInfo: Data? = optionalArchive(model.archivedPaymentInfo)
 
         return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, wasNotCreatedLocally: wasNotCreatedLocally, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, deprecated_sourceDeviceId: deprecated_sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted, bodyRanges: bodyRanges, offerType: offerType, serverDeliveryTimestamp: serverDeliveryTimestamp, eraId: eraId, hasEnded: hasEnded, creatorUuid: creatorUuid, joinedMemberUuids: joinedMemberUuids, wasIdentityVerified: wasIdentityVerified, paymentCancellation: paymentCancellation, paymentNotification: paymentNotification, paymentRequest: paymentRequest, viewed: viewed, serverGuid: serverGuid, storyAuthorUuidString: storyAuthorUuidString, storyTimestamp: storyTimestamp, isGroupStoryReply: isGroupStoryReply, storyReactionEmoji: storyReactionEmoji, giftBadge: giftBadge, editState: editState, archivedPaymentInfo: archivedPaymentInfo)
     }

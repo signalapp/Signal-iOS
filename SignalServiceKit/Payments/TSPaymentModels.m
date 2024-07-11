@@ -166,4 +166,25 @@ NSString *NSStringFromTSPaymentFailure(TSPaymentFailure value)
 
 @end
 
+#pragma mark -
+
+@implementation TSArchivedPaymentInfo
+
+- (instancetype)initWithAmount:(nullable NSString *)amount fee:(nullable NSString *)fee note:(nullable NSString *)note
+{
+    self = [super init];
+
+    if (!self) {
+        return self;
+    }
+
+    _amount = amount;
+    _fee = fee;
+    _note = note;
+
+    return self;
+}
+
+@end
+
 NS_ASSUME_NONNULL_END
