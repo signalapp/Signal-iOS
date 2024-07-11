@@ -190,7 +190,7 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
         dataMessage: SSKProtoDataMessage
     ) -> Bool {
         switch type {
-        case .message, .expirationTimerUpdate, .paymentNotification:
+        case .message, .expirationTimerUpdate, .paymentNotification, .archivedPayment:
             // We only validate these types
             break
         case .recipientUpdate, .endSessionUpdate:

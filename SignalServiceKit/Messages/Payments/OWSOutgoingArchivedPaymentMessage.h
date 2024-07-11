@@ -10,6 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSOutgoingArchivedPaymentMessageBuilder;
 @class TSPaymentReference;
 
 @interface OWSOutgoingArchivedPaymentMessage : TSOutgoingMessage <OWSArchivedPaymentMessage>
@@ -65,6 +66,12 @@ NS_ASSUME_NONNULL_BEGIN
                            fee:(nullable NSString *)fee
                           note:(nullable NSString *)note
                    transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initOutgoingArchivedPaymentMessageWithBuilder:
+                    (OWSOutgoingArchivedPaymentMessageBuilder *)outgoingArchivedPaymentMessageBuilder
+
+                                                  transaction:(SDSAnyReadTransaction *)transaction
+    NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 

@@ -246,6 +246,7 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
 
         let downstreamObjectsResult = contentsArchiver.restoreDownstreamObjects(
             message: message,
+            thread: chatThread,
             chatItemId: chatItem.id,
             restoredContents: contents,
             context: context,

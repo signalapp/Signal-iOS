@@ -389,6 +389,11 @@ extension MessageBackup {
                 /// An "unsupported protocol version" simple chat update was
                 /// associated with a recipient with no ACI.
                 case unsupportedProtocolVersionNotFromAci
+
+                /// An ArchivedPayment was unable to be crated from the
+                /// restored payment information.
+                case unrecognizedPaymentTransaction
+
             }
 
             /// The proto contained invalid or self-contradictory data, e.g an invalid ACI.
@@ -500,6 +505,7 @@ extension MessageBackup {
                         .decryptionErrorNotFromContact,
                         .paymentsActivationRequestNotFromAci,
                         .paymentsActivatedNotFromAci,
+                        .unrecognizedPaymentTransaction,
                         .unsupportedProtocolVersionNotFromAci:
                     // Collapse all others by the id of the containing frame.
                     return idLogString

@@ -99,6 +99,11 @@ public protocol InteractionStore {
         tx: DBReadTransaction
     ) -> TSOutgoingMessage
 
+    func buildOutgoingArchivedPaymentMessage(
+        builder: OWSOutgoingArchivedPaymentMessageBuilder,
+        tx: DBReadTransaction
+    ) -> OWSOutgoingArchivedPaymentMessage
+
     func insertOrReplacePlaceholder(
         for interaction: TSInteraction,
         from sender: SignalServiceAddress,
@@ -255,6 +260,16 @@ public class InteractionStoreImpl: InteractionStore {
     ) -> TSOutgoingMessage {
         return TSOutgoingMessage(
             outgoingMessageWithBuilder: builder,
+            transaction: SDSDB.shimOnlyBridge(tx)
+        )
+    }
+
+    public func buildOutgoingArchivedPaymentMessage(
+        builder: OWSOutgoingArchivedPaymentMessageBuilder,
+        tx: DBReadTransaction
+    ) -> OWSOutgoingArchivedPaymentMessage {
+        return OWSOutgoingArchivedPaymentMessage(
+            outgoingArchivedPaymentMessageWith: builder,
             transaction: SDSDB.shimOnlyBridge(tx)
         )
     }
@@ -421,6 +436,13 @@ open class MockInteractionStore: InteractionStore {
             in: builder.thread,
             messageBody: builder.messageBody
         )
+    }
+
+    public func buildOutgoingArchivedPaymentMessage(
+        builder: OWSOutgoingArchivedPaymentMessageBuilder,
+        tx: DBReadTransaction
+    ) -> OWSOutgoingArchivedPaymentMessage {
+        return OWSOutgoingArchivedPaymentMessage(in: builder.thread, messageBody: nil)
     }
 
     open func insertOrReplacePlaceholder(

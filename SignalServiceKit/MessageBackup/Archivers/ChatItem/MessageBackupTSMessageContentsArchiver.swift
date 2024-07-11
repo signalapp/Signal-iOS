@@ -34,7 +34,23 @@ extension MessageBackup {
             fileprivate let reactions: [BackupProto.Reaction]
         }
 
+        struct Payment {
+            enum Status {
+                case success(BackupProto.PaymentNotification.TransactionDetails.Transaction.Status)
+                case failure(BackupProto.PaymentNotification.TransactionDetails.FailedTransaction.FailureReason)
+            }
+
+            internal let amount: String?
+            internal let fee: String?
+            internal let note: String?
+
+            fileprivate let status: Status
+
+            fileprivate let payment: BackupProto.PaymentNotification.TransactionDetails.Transaction?
+        }
+
         case text(Text)
+        case archivedPayment(Payment)
     }
 }
 
@@ -44,6 +60,8 @@ extension MessageBackup.RestoredMessageContents {
         switch self {
         case .text(let text):
             return text.body
+        case .archivedPayment:
+            return nil
         }
     }
 
@@ -51,6 +69,8 @@ extension MessageBackup.RestoredMessageContents {
         switch self {
         case .text(let text):
             return text.quotedMessage
+        case .archivedPayment:
+            return nil
         }
     }
 }
@@ -339,7 +359,15 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
                 .developerError(OWSAssertionError("Chat update has no contents to restore!")),
                 chatItemId
             )])
-        case .contactMessage, .stickerMessage, .remoteDeletedMessage, .paymentNotification, .giftBadge:
+        case .paymentNotification(let paymentNotification):
+            return restorePaymentNotification(
+                paymentNotification,
+                chatItemId: chatItemId,
+                thread: chatThread,
+                context: context,
+                tx: tx
+            )
+        case .contactMessage, .stickerMessage, .remoteDeletedMessage, .giftBadge:
             // Other types not supported yet.
             return .messageFailure([.restoreFrameError(.unimplemented, chatItemId)])
         }
@@ -351,27 +379,113 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
     /// This method will create and insert all necessary objects (e.g. reactions).
     func restoreDownstreamObjects(
         message: TSMessage,
+        thread: MessageBackup.ChatThread,
         chatItemId: MessageBackup.ChatItemId,
         restoredContents: MessageBackup.RestoredMessageContents,
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> RestoreInteractionResult<Void> {
-        let restoreReactionsResult: RestoreInteractionResult<Void>
+        let restoreInteractionResult: RestoreInteractionResult<Void>
         switch restoredContents {
         case .text(let text):
-            restoreReactionsResult = reactionArchiver.restoreReactions(
+            restoreInteractionResult = reactionArchiver.restoreReactions(
                 text.reactions,
                 chatItemId: chatItemId,
                 message: message,
                 context: context.recipientContext,
                 tx: tx
             )
+        case .archivedPayment(let archivedPayment):
+            restoreInteractionResult = restoreArchivedPaymentContents(
+                archivedPayment,
+                chatItemId: chatItemId,
+                thread: thread,
+                message: message,
+                tx: tx
+            )
         }
 
-        return restoreReactionsResult
+        return restoreInteractionResult
     }
 
     // MARK: Helpers
+
+    private func restoreArchivedPaymentContents(
+        _ transaction: MessageBackup.RestoredMessageContents.Payment,
+        chatItemId: MessageBackup.ChatItemId,
+        thread: MessageBackup.ChatThread,
+        message: TSMessage,
+        tx: DBWriteTransaction
+    ) -> MessageBackup.RestoreInteractionResult<Void> {
+        let senderOrRecipientAci: Aci? = {
+            switch thread {
+            case .contact(let thread):
+                // Payments only supported for 1:1 chats
+                return thread.contactAddress.aci
+            case .groupV2:
+                return nil
+            }
+        }()
+
+        let direction: ArchivedPayment.Direction
+        switch message {
+        case message as TSIncomingMessage:
+            direction = .incoming
+        case message as TSOutgoingMessage:
+            direction = .outgoing
+        default:
+            return .messageFailure([.restoreFrameError(
+                .developerError(OWSAssertionError("Invalid message type passed in for paymentRestore")),
+                chatItemId
+            )])
+        }
+        guard
+            let senderOrRecipientAci,
+            let archivedPayment = ArchivedPayment.fromBackup(
+                transaction,
+                senderOrRecipientAci: senderOrRecipientAci,
+                direction: direction,
+                interactionUniqueId: message.uniqueId
+        ) else {
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.unrecognizedPaymentTransaction),
+                chatItemId
+            )])
+        }
+        archivedPaymentStore.insert(archivedPayment, tx: tx)
+        return .success(())
+    }
+
+    private func restorePaymentNotification(
+        _ paymentNotification: BackupProto.PaymentNotification,
+        chatItemId: MessageBackup.ChatItemId,
+        thread: MessageBackup.ChatThread,
+        context: MessageBackup.ChatRestoringContext,
+        tx: DBReadTransaction
+    ) -> RestoreInteractionResult<MessageBackup.RestoredMessageContents> {
+        let status: MessageBackup.RestoredMessageContents.Payment.Status
+        let paymentTransaction: BackupProto.PaymentNotification.TransactionDetails.Transaction?
+        switch paymentNotification.transactionDetails?.payment {
+        case .failedTransaction(let failedTransaction):
+            status = .failure(failedTransaction.reason)
+            paymentTransaction = nil
+        case .transaction(let payment):
+            status = .success(payment.status)
+            paymentTransaction = payment
+        case .none:
+            // Default to 'success' if there is no included information
+            status = .success(.SUCCESSFUL)
+            paymentTransaction = nil
+        }
+
+        return .success(.archivedPayment(.init(
+            amount: paymentNotification.amountMob,
+            fee: paymentNotification.feeMob,
+            note: paymentNotification.note,
+            status: status,
+            payment: paymentTransaction
+        )))
+    }
 
     private func restoreStandardMessage(
         _ standardMessage: BackupProto.StandardMessage,
@@ -639,5 +753,84 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
         } else {
             return filteredMessages.first
         }
+    }
+}
+
+fileprivate extension ArchivedPayment {
+    static func fromBackup(
+        _ backup: MessageBackup.RestoredMessageContents.Payment,
+        senderOrRecipientAci: Aci,
+        direction: Direction,
+        interactionUniqueId: String?
+    ) -> ArchivedPayment? {
+        var archivedPayment: ArchivedPayment?
+        switch backup.status {
+        case .failure(let reason):
+            archivedPayment = ArchivedPayment(
+                amount: nil,
+                fee: nil,
+                note: nil,
+                mobileCoinIdentification: nil,
+                status: .error,
+                failureReason: reason.asFailureType(),
+                direction: direction,
+                timestamp: nil,
+                blockIndex: nil,
+                blockTimestamp: nil,
+                transaction: nil,
+                receipt: nil,
+                senderOrRecipientAci: senderOrRecipientAci,
+                interactionUniqueId: interactionUniqueId
+            )
+        case .success(let status):
+            let payment = backup.payment
+            let transactionIdentifier = payment?.mobileCoinIdentification?.nilIfEmpty.map {
+                TransactionIdentifier(publicKey: $0.publicKey, keyImages: $0.keyImages)
+            }
+
+            archivedPayment = ArchivedPayment(
+                amount: backup.amount,
+                fee: backup.fee,
+                note: backup.note,
+                mobileCoinIdentification: transactionIdentifier,
+                status: status.asStatusType(),
+                failureReason: .none,
+                direction: direction,
+                timestamp: payment?.timestamp,
+                blockIndex: payment?.blockIndex,
+                blockTimestamp: payment?.blockTimestamp,
+                transaction: payment?.transaction,
+                receipt: payment?.receipt,
+                senderOrRecipientAci: senderOrRecipientAci,
+                interactionUniqueId: interactionUniqueId
+            )
+        }
+        return archivedPayment
+    }
+}
+
+extension BackupProto.PaymentNotification.TransactionDetails.FailedTransaction.FailureReason {
+    func asFailureType() -> ArchivedPayment.FailureReason {
+        switch self {
+        case .GENERIC: return .genericFailure
+        case .NETWORK: return .networkFailure
+        case .INSUFFICIENT_FUNDS: return .insufficientFundsFailure
+        }
+    }
+}
+
+extension BackupProto.PaymentNotification.TransactionDetails.Transaction.Status {
+    func asStatusType() -> ArchivedPayment.Status {
+        switch self {
+        case .INITIAL: return .initial
+        case .SUBMITTED: return .submitted
+        case .SUCCESSFUL: return .successful
+        }
+    }
+}
+
+extension BackupProto.PaymentNotification.TransactionDetails.MobileCoinTxoIdentification {
+    var nilIfEmpty: Self? {
+        (publicKey.isEmpty || keyImages.isEmpty) ? nil : self
     }
 }

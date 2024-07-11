@@ -113,6 +113,32 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             )
             return .success(nil)
 
+        case .archivedPayment(let archivedPayment):
+
+            guard validateProtocolVersion(for: transcript, thread: archivedPayment.target.thread, tx: tx) else {
+                return .failure(OWSAssertionError("Protocol version validation failed"))
+            }
+
+            let builder = OWSOutgoingArchivedPaymentMessageBuilder(
+                thread: archivedPayment.target.thread,
+                timestamp: transcript.timestamp,
+                amount: archivedPayment.amount,
+                fee: archivedPayment.fee,
+                note: archivedPayment.note,
+                expirationStartedAt: archivedPayment.expirationStartedAt,
+                expirationDurationSeconds: archivedPayment.expirationDurationSeconds
+            )
+
+            let message = interactionStore.buildOutgoingArchivedPaymentMessage(builder: builder, tx: tx)
+            interactionStore.insertInteraction(message, tx: tx)
+            interactionStore.updateRecipientsFromNonLocalDevice(
+                message,
+                recipientStates: transcript.recipientStates,
+                isSentUpdate: false,
+                tx: tx
+            )
+
+            return .success(message)
         case .expirationTimerUpdate(let target):
             Logger.info("Recording expiration timer update transcript in thread: \(target.threadUniqueId) timestamp: \(transcript.timestamp)")
             guard validateTimestampValue() else {

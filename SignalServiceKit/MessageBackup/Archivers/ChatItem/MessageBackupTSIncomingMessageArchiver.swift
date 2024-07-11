@@ -165,37 +165,73 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
             return .messageFailure(partialErrors)
         }
 
-        let messageBody = contents.body
+        let message: TSIncomingMessage = {
+            switch contents {
+            case .archivedPayment(let archivedPayment):
+                let messageBuilder = TSIncomingMessageBuilder(
+                    thread: chatThread.tsThread,
+                    timestamp: incomingDetails.dateReceived,
+                    authorAci: authorAci,
+                    authorE164: authorE164,
+                    messageBody: nil,
+                    bodyRanges: nil,
+                    editState: .none,
+                    expiresInSeconds: UInt32(chatItem.expiresInMs / 1000),
+                    expireStartedAt: chatItem.expireStartDate,
+                    read: incomingDetails.read,
+                    serverTimestamp: nil,
+                    serverDeliveryTimestamp: chatItem.dateSent,
+                    serverGuid: nil,
+                    wasReceivedByUD: incomingDetails.sealedSender,
+                    isViewOnceMessage: false,
+                    storyAuthorAci: nil,
+                    storyTimestamp: nil,
+                    storyReactionEmoji: nil,
+                    giftBadge: nil,
+                    paymentNotification: nil
+                )
+                return OWSIncomingArchivedPaymentMessage(
+                    incomingMessageWith: messageBuilder,
+                    amount: archivedPayment.amount,
+                    fee: archivedPayment.fee,
+                    note: archivedPayment.note
+                )
+            case .text(let text):
+                let messageBody = text.body
+                let messageBuilder = TSIncomingMessageBuilder(
+                    thread: chatThread.tsThread,
+                    timestamp: incomingDetails.dateReceived,
+                    authorAci: authorAci,
+                    authorE164: authorE164,
+                    messageBody: messageBody.text,
+                    bodyRanges: messageBody.ranges,
+                    // TODO: [Backups] handle edit states
+                    editState: .none,
+                    expiresInSeconds: UInt32(chatItem.expiresInMs / 1000),
+                    expireStartedAt: chatItem.expireStartDate,
+                    read: incomingDetails.read,
+                    serverTimestamp: nil,
+                    serverDeliveryTimestamp: chatItem.dateSent,
+                    serverGuid: nil,
+                    wasReceivedByUD: incomingDetails.sealedSender,
+                    isViewOnceMessage: false,
+                    storyAuthorAci: nil,
+                    storyTimestamp: nil,
+                    storyReactionEmoji: nil,
+                    giftBadge: nil,
+                    paymentNotification: nil
+                )
+                let message = messageBuilder.build()
+                contents.quotedMessage.map { interactionStore.update(message, with: $0, tx: tx) }
+                return message
+            }
+        }()
 
-        let messageBuilder = TSIncomingMessageBuilder(
-            thread: chatThread.tsThread,
-            timestamp: incomingDetails.dateReceived,
-            authorAci: authorAci,
-            authorE164: authorE164,
-            messageBody: messageBody?.text,
-            bodyRanges: messageBody?.ranges,
-            // TODO: [Backups] handle edit states
-            editState: .none,
-            expiresInSeconds: UInt32(chatItem.expiresInMs / 1000),
-            expireStartedAt: chatItem.expireStartDate,
-            read: incomingDetails.read,
-            serverTimestamp: nil,
-            serverDeliveryTimestamp: chatItem.dateSent,
-            serverGuid: nil,
-            wasReceivedByUD: incomingDetails.sealedSender,
-            isViewOnceMessage: false,
-            storyAuthorAci: nil,
-            storyTimestamp: nil,
-            storyReactionEmoji: nil,
-            giftBadge: nil,
-            paymentNotification: nil
-        )
-        let message = messageBuilder.build()
-        contents.quotedMessage.map { interactionStore.update(message, with: $0, tx: tx) }
         interactionStore.insertInteraction(message, tx: tx)
 
         let downstreamObjectsResult = contentsArchiver.restoreDownstreamObjects(
             message: message,
+            thread: chatThread,
             chatItemId: chatItem.id,
             restoredContents: contents,
             context: context,

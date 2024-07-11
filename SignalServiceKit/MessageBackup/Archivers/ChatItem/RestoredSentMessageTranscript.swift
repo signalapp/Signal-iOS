@@ -13,11 +13,7 @@ import LibSignalClient
 /// transcript processing pipes as synced message transcripts.
 internal class RestoredSentMessageTranscript: SentMessageTranscript {
 
-    private let messageParams: SentMessageTranscriptType.Message
-
-    var type: SentMessageTranscriptType {
-        return .message(messageParams)
-    }
+    let type: SentMessageTranscriptType
 
     let timestamp: UInt64
 
@@ -44,36 +40,23 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
             target = .group(groupThread)
         }
 
-        // TODO: handle attachments in quotes
-        let quotedMessageBuilder = { [contents] (_: DBWriteTransaction) in
-            contents.quotedMessage.map {
-                return OwnedAttachmentBuilder<TSQuotedMessage>.withoutFinalizer($0)
-            }
+        let messageType: SentMessageTranscriptType
+        switch contents {
+        case .text(let text):
+            messageType = restoreMessageTranscript(
+                contents: text,
+                target: target,
+                chatItem: chatItem,
+                expirationToken: expirationToken
+            )
+        case .archivedPayment(let archivedPayment):
+            messageType = restorePaymentTranscript(
+                payment: archivedPayment,
+                target: target,
+                chatItem: chatItem,
+                expirationToken: expirationToken
+            )
         }
-
-        let messageParams = SentMessageTranscriptType.Message(
-            target: target,
-            body: contents.body?.text,
-            bodyRanges: contents.body?.ranges,
-            // TODO: attachments
-            attachmentPointerProtos: [],
-            makeQuotedMessageBuilder: quotedMessageBuilder,
-            // TODO: contact message
-            makeContactBuilder: { _ in nil },
-            // TODO: linkPreview message
-            makeLinkPreviewBuilder: { _ in nil },
-            // TODO: gift badge message
-            giftBadge: nil,
-            // TODO: sticker message
-            makeMessageStickerBuilder: { _ in nil },
-            // TODO: isViewOnceMessage
-            isViewOnceMessage: false,
-            expirationStartedAt: chatItem.expireStartDate,
-            expirationDurationSeconds: expirationToken.durationSeconds,
-            // We never restore stories.
-            storyTimestamp: nil,
-            storyAuthorAci: nil
-        )
 
         var partialErrors = [MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>]()
 
@@ -120,7 +103,7 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
         }
 
         let transcript = RestoredSentMessageTranscript(
-            messageParams: messageParams,
+            type: messageType,
             timestamp: chatItem.dateSent,
             recipientStates: recipientStates
         )
@@ -129,6 +112,64 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
         } else {
             return .partialRestore(transcript, partialErrors)
         }
+    }
+
+    private static func restoreMessageTranscript(
+        contents: MessageBackup.RestoredMessageContents.Text,
+        target: SentMessageTranscriptTarget,
+        chatItem: BackupProto.ChatItem,
+        expirationToken: DisappearingMessageToken
+    ) -> SentMessageTranscriptType {
+        // TODO: handle attachments in quotes
+        let quotedMessageBuilder = { [contents] (_: DBWriteTransaction) in
+            contents.quotedMessage.map {
+                return OwnedAttachmentBuilder<TSQuotedMessage>.withoutFinalizer($0)
+            }
+        }
+
+        let messageParams = SentMessageTranscriptType.Message(
+            target: target,
+            body: contents.body.text,
+            bodyRanges: contents.body.ranges,
+            // TODO: attachments
+            attachmentPointerProtos: [],
+            makeQuotedMessageBuilder: quotedMessageBuilder,
+            // TODO: contact message
+            makeContactBuilder: { _ in nil },
+            // TODO: linkPreview message
+            makeLinkPreviewBuilder: { _ in nil },
+            // TODO: gift badge message
+            giftBadge: nil,
+            // TODO: sticker message
+            makeMessageStickerBuilder: { _ in nil },
+            // TODO: isViewOnceMessage
+            isViewOnceMessage: false,
+            expirationStartedAt: chatItem.expireStartDate,
+            expirationDurationSeconds: expirationToken.durationSeconds,
+            // We never restore stories.
+            storyTimestamp: nil,
+            storyAuthorAci: nil
+        )
+
+        return .message(messageParams)
+    }
+
+    private static func restorePaymentTranscript(
+        payment: MessageBackup.RestoredMessageContents.Payment,
+        target: SentMessageTranscriptTarget,
+        chatItem: BackupProto.ChatItem,
+        expirationToken: DisappearingMessageToken
+    ) -> SentMessageTranscriptType {
+        return .archivedPayment(
+            .init(
+                target: target,
+                amount: payment.amount,
+                fee: payment.fee,
+                note: payment.note,
+                expirationStartedAt: chatItem.expireStartDate,
+                expirationDurationSeconds: expirationToken.durationSeconds
+            )
+        )
     }
 
     private static func recipientState(
@@ -191,11 +232,11 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
     }
 
     private init(
-        messageParams: SentMessageTranscriptType.Message,
+        type: SentMessageTranscriptType,
         timestamp: UInt64,
         recipientStates: [MessageBackup.InteropAddress: TSOutgoingMessageRecipientState]
     ) {
-        self.messageParams = messageParams
+        self.type = type
         self.timestamp = timestamp
         self.recipientStates = recipientStates
     }
