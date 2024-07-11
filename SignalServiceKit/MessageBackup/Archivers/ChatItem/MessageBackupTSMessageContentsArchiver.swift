@@ -66,19 +66,46 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
     private typealias RestoreFrameError = MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>
 
     private let interactionStore: InteractionStore
+    private let archivedPaymentStore: ArchivedPaymentStore
     private let reactionArchiver: MessageBackupReactionArchiver
 
     init(
         interactionStore: InteractionStore,
+        archivedPaymentStore: ArchivedPaymentStore,
         reactionArchiver: MessageBackupReactionArchiver
     ) {
         self.interactionStore = interactionStore
+        self.archivedPaymentStore = archivedPaymentStore
         self.reactionArchiver = reactionArchiver
     }
 
     // MARK: - Archiving
 
     func archiveMessageContents(
+        _ message: TSMessage,
+        context: MessageBackup.RecipientArchivingContext,
+        tx: DBReadTransaction
+    ) -> ArchiveInteractionResult<ChatItemType> {
+        if let paymentMessage = message as? OWSPaymentMessage {
+            return archivePaymentMessageContents(
+                paymentMessage,
+                uniqueInteractionId: message.uniqueInteractionId,
+                context: context,
+                tx: tx
+            )
+        } else if let archivedPayment = message as? OWSArchivedPaymentMessage {
+            return archivePaymentArchiveContents(
+                archivedPayment,
+                uniqueInteractionId: message.uniqueInteractionId,
+                context: context,
+                tx: tx
+            )
+        } else {
+            return archiveStandardMessageContents(message, context: context, tx: tx)
+        }
+    }
+
+    private func archiveStandardMessageContents(
         _ message: TSMessage,
         context: MessageBackup.RecipientArchivingContext,
         tx: DBReadTransaction
@@ -141,6 +168,61 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
         } else {
             return .partialFailure(.standardMessage(standardMessage), partialErrors)
         }
+    }
+
+    private func archivePaymentArchiveContents(
+        _ archivedPaymentMessage: OWSArchivedPaymentMessage,
+        uniqueInteractionId: MessageBackup.InteractionUniqueId,
+        context: MessageBackup.RecipientArchivingContext,
+        tx: DBReadTransaction
+    ) -> MessageBackup.ArchiveInteractionResult<ChatItemType> {
+        guard let historyItem = archivedPaymentStore.fetch(for: archivedPaymentMessage, tx: tx) else {
+            return .messageFailure([.archiveFrameError(.missingPaymentInformation, uniqueInteractionId)])
+        }
+
+        var paymentNotificationProto = BackupProto.PaymentNotification()
+        paymentNotificationProto.amountMob = archivedPaymentMessage.archivedPaymentInfo.amount
+        paymentNotificationProto.feeMob = archivedPaymentMessage.archivedPaymentInfo.fee
+        paymentNotificationProto.note = archivedPaymentMessage.archivedPaymentInfo.note
+        paymentNotificationProto.transactionDetails = historyItem.toTransactionDetailsProto()
+
+        return .success(.paymentNotification(paymentNotificationProto))
+    }
+
+    private func archivePaymentMessageContents(
+        _ message: OWSPaymentMessage,
+        uniqueInteractionId: MessageBackup.InteractionUniqueId,
+        context: MessageBackup.RecipientArchivingContext,
+        tx: DBReadTransaction
+    ) -> MessageBackup.ArchiveInteractionResult<ChatItemType> {
+        guard
+            let paymentNotification = message.paymentNotification,
+            let model = PaymentFinder.paymentModels(
+                forMcReceiptData: paymentNotification.mcReceiptData,
+                transaction: SDSDB.shimOnlyBridge(tx)
+            ).first
+        else {
+            return .messageFailure([.archiveFrameError(.missingPaymentInformation, uniqueInteractionId)])
+        }
+
+        var paymentNotificationProto = BackupProto.PaymentNotification()
+
+        if let amount = model.paymentAmount {
+            paymentNotificationProto.amountMob = PaymentsFormat.format(
+                picoMob: amount.picoMob,
+                isShortForm: true
+            )
+        }
+        if let fee = model.mobileCoin?.feeAmount {
+            paymentNotificationProto.feeMob = PaymentsFormat.format(
+                picoMob: fee.picoMob,
+                isShortForm: true
+            )
+        }
+        paymentNotificationProto.note = paymentNotification.memoMessage
+        paymentNotificationProto.transactionDetails = model.asArchivedPayment().toTransactionDetailsProto()
+
+        return .success(.paymentNotification(paymentNotificationProto))
     }
 
     private func archiveText(

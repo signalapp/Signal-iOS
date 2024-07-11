@@ -903,6 +903,7 @@ public class AppSetup {
                 groupUpdateItemBuilder: groupUpdateItemBuilder,
                 individualCallRecordManager: individualCallRecordManager,
                 interactionStore: interactionStore,
+                archivedPaymentStore: archivedPaymentStore,
                 reactionStore: ReactionStoreImpl(),
                 sentMessageTranscriptReceiver: sentMessageTranscriptReceiver,
                 threadStore: threadStore

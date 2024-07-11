@@ -16,6 +16,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
     private let groupUpdateItemBuilder: GroupUpdateItemBuilder
     private let individualCallRecordManager: IndividualCallRecordManager
     private let interactionStore: InteractionStore
+    private let archivedPaymentStore: ArchivedPaymentStore
     private let reactionStore: ReactionStore
     private let sentMessageTranscriptReceiver: SentMessageTranscriptReceiver
     private let threadStore: ThreadStore
@@ -28,6 +29,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         groupUpdateItemBuilder: GroupUpdateItemBuilder,
         individualCallRecordManager: IndividualCallRecordManager,
         interactionStore: InteractionStore,
+        archivedPaymentStore: ArchivedPaymentStore,
         reactionStore: ReactionStore,
         sentMessageTranscriptReceiver: SentMessageTranscriptReceiver,
         threadStore: ThreadStore
@@ -39,6 +41,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         self.groupUpdateItemBuilder = groupUpdateItemBuilder
         self.individualCallRecordManager = individualCallRecordManager
         self.interactionStore = interactionStore
+        self.archivedPaymentStore = archivedPaymentStore
         self.reactionStore = reactionStore
         self.sentMessageTranscriptReceiver = sentMessageTranscriptReceiver
         self.threadStore = threadStore
@@ -49,6 +52,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
     )
     private lazy var contentsArchiver = MessageBackupTSMessageContentsArchiver(
         interactionStore: interactionStore,
+        archivedPaymentStore: archivedPaymentStore,
         reactionArchiver: reactionArchiver
     )
     private lazy var incomingMessageArchiver =

@@ -112,6 +112,9 @@ extension MessageBackup {
             /// A simple chat update message that was expected to be in a 1:1
             /// thread was not, in fact, in a 1:1 thread.
             case simpleChatUpdateMessageNotInContactThread
+
+            /// The payment message was missing required additional payment information.
+            case missingPaymentInformation
         }
 
         private let type: ErrorType
@@ -173,6 +176,7 @@ extension MessageBackup {
                     .emptyGroupUpdate,
                     .missingLocalProfile,
                     .missingLocalProfileKey,
+                    .missingPaymentInformation,
                     .missingRequiredGroupMemberParams,
                     .groupCallRecordHadIndividualCallStatus,
                     .verificationStateUpdateInteractionMissingAuthor,
