@@ -102,6 +102,19 @@ class GroupCallViewController: UIViewController {
 
     private let scrollView = UIScrollView()
 
+    private enum Page {
+        case grid, speaker
+    }
+
+    private var page: Page = .grid {
+        didSet {
+            guard page != oldValue else { return }
+            videoOverflow.reloadData()
+            updateCallUI(shouldAnimateViewFrames: true)
+            ImpactHapticFeedback.impactOccurred(style: .light)
+        }
+    }
+
     private let incomingReactionsView = IncomingReactionsView()
 
     private var isCallMinimized = false {
@@ -444,7 +457,7 @@ class GroupCallViewController: UIViewController {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
-        let wasOnSpeakerPage = scrollView.contentOffset.y >= view.height
+        let wasOnSpeakerPage = self.page == .speaker
 
         coordinator.animate(alongsideTransition: { _ in
             self.updateCallUI(size: size)
@@ -604,10 +617,9 @@ class GroupCallViewController: UIViewController {
             moveToTopIfNotAlready(self.videoOverflowContainer)
         }
 
-        let isOnGridView = scrollView.contentOffset.y == 0
         if
             hasOverflowMembers,
-            isOnGridView
+            self.page == .grid
         {
             self.bottomVStack.spacing = 24
         } else {
@@ -1614,10 +1626,11 @@ extension GroupCallViewController: RaisedHandsToastDelegate {
 
 extension GroupCallViewController: GroupCallVideoOverflowDelegate {
     var firstOverflowMemberIndex: Int {
-        if scrollView.contentOffset.y >= view.height {
-            return 1
-        } else {
+        switch self.page {
+        case .grid:
             return videoGrid.maxItems
+        case .speaker:
+            return 1
         }
     }
 }
@@ -1626,11 +1639,8 @@ extension GroupCallViewController: GroupCallVideoOverflowDelegate {
 
 extension GroupCallViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        // If we changed pages, update the overflow view.
-        if scrollView.contentOffset.y == 0 || scrollView.contentOffset.y == view.height {
-            videoOverflow.reloadData()
-            updateCallUI(shouldAnimateViewFrames: true)
-        }
+        let isScrolledPastHalfway = scrollView.contentOffset.y > view.height / 2
+        self.page = isScrolledPastHalfway ? .speaker : .grid
 
         if isAutoScrollingToScreenShare {
             isAutoScrollingToScreenShare = scrollView.contentOffset.y != speakerView.frame.origin.y
