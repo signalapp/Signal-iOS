@@ -18,16 +18,18 @@ class GroupCallSheet: InteractiveSheetViewController {
 
     override var interactiveScrollViews: [UIScrollView] { [tableView] }
     override var canBeDismissed: Bool {
-        return !FeatureFlags.callDrawerSupport
+        return false
     }
     override var canInteractWithParent: Bool {
-        return FeatureFlags.callDrawerSupport
+        return true
     }
 
     private let tableView = UITableView(frame: .zero, style: .insetGrouped)
     private let call: SignalCall
     private let ringRtcCall: SignalRingRTC.GroupCall
     private let groupThreadCall: GroupThreadCall
+
+    private var tableViewTopConstraint: NSLayoutConstraint?
 
     override var sheetBackgroundColor: UIColor {
         self.tableView.backgroundColor ?? .systemGroupedBackground
@@ -54,11 +56,26 @@ class GroupCallSheet: InteractiveSheetViewController {
 
         self.overrideUserInterfaceStyle = .dark
         groupThreadCall.addObserver(self, syncStateImmediately: true)
-        if FeatureFlags.callDrawerSupport {
-            callControls.addHeightObserver(self)
-            self.tableView.isHidden = true
-            // Don't add a dim visual effect to the call when the sheet is open.
-            self.backdropColor = .clear
+
+        callControls.addHeightObserver(self)
+        self.tableView.alpha = 0
+        // Don't add a dim visual effect to the call when the sheet is open.
+        self.backdropColor = .clear
+    }
+
+    override func maximumAllowedHeight() -> CGFloat {
+        guard let windowHeight = view.window?.frame.height else {
+            return super.maximumAllowedHeight()
+        }
+        let halfHeight = windowHeight / 2
+        let twoThirdsHeight = 2 * windowHeight / 3
+        let tableHeight = tableView.contentSize.height
+        if tableHeight >= twoThirdsHeight {
+            return twoThirdsHeight
+        } else if tableHeight > halfHeight {
+            return tableHeight
+        } else {
+            return halfHeight
         }
     }
 
@@ -161,20 +178,21 @@ class GroupCallSheet: InteractiveSheetViewController {
         tableView.delegate = self
         tableView.tableHeaderView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 0, height: CGFloat.leastNormalMagnitude)))
         contentView.addSubview(tableView)
-        tableView.autoPinEdgesToSuperviewEdges()
+        tableViewTopConstraint = tableView.autoPinEdge(toSuperviewEdge: .top, withInset: HeightConstants.initialTableInset)
+        tableView.autoPinEdge(toSuperviewEdge: .bottom)
+        tableView.autoPinEdge(toSuperviewEdge: .leading)
+        tableView.autoPinEdge(toSuperviewEdge: .trailing)
 
         tableView.register(GroupCallMemberCell.self, forCellReuseIdentifier: GroupCallMemberCell.reuseIdentifier)
 
         tableView.dataSource = self.dataSource
 
-        if FeatureFlags.callDrawerSupport {
-            callControls.translatesAutoresizingMaskIntoConstraints = false
-            contentView.addSubview(callControls)
-            NSLayoutConstraint.activate([
-                callControls.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-                callControls.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10)
-            ])
-        }
+        callControls.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(callControls)
+        NSLayoutConstraint.activate([
+            callControls.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            callControls.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10)
+        ])
 
         updateMembers()
     }
@@ -338,9 +356,79 @@ class GroupCallSheet: InteractiveSheetViewController {
 
         inCallHeader.memberCount = sortedMembers.count
 
-        dataSource.apply(snapshot, animatingDifferences: true)
+        dataSource.apply(snapshot, animatingDifferences: true) { [weak self] in
+            self?.refreshMaxHeight()
+        }
     }
 
+    private func changesForSnapToMax() {
+        self.tableView.alpha = 1
+        self.callControls.alpha = 0
+        self.tableViewTopConstraint?.constant = 0
+        self.view.layoutIfNeeded()
+    }
+
+    private func changesForSnapToMin() {
+        self.tableView.alpha = 0
+        self.callControls.alpha = 1
+        self.tableViewTopConstraint?.constant = HeightConstants.initialTableInset
+        self.view.layoutIfNeeded()
+    }
+
+    override func heightDidChange(to height: InteractiveSheetViewController.SheetHeight) {
+        switch height {
+        case .min:
+            changesForSnapToMin()
+        case .height(let height):
+            let distance = self.maxHeight - self.minimizedHeight
+
+            // The "pivot point" is the sheet height where call controls have totally
+            // faded out and the call info table begins to fade in.
+            let pivotPoint = minimizedHeight + 0.1*distance
+
+            if height <= self.minimizedHeight {
+                changesForSnapToMin()
+            } else if height > self.minimizedHeight && height < pivotPoint {
+                tableView.alpha = 0
+                let denominator = pivotPoint - self.minimizedHeight
+                if denominator <= 0 {
+                    owsFailBeta("You've changed the conditions of this if-branch such that the denominator could be zero!")
+                    callControls.alpha = 1
+                } else {
+                    callControls.alpha = 1 - ((height - self.minimizedHeight) / denominator)
+                }
+            } else if height >= pivotPoint && height < maxHeight {
+                callControls.alpha = 0
+
+                // Table view fades in as sheet opens and fades out as sheet closes.
+                let denominator = maxHeight - pivotPoint
+                if denominator <= 0 {
+                    owsFailBeta("You've changed the conditions of this if-branch such that the denominator could be zero!")
+                    tableView.alpha = 0
+                } else {
+                    tableView.alpha = (height - pivotPoint) / denominator
+                }
+
+                // Table view slides up via a y-shift to its final position as the sheet opens.
+
+                // The distance across which the y-shift will be completed.
+                let totalTravelableDistanceForSheet = maxHeight - pivotPoint
+                // The distance traveled in the y-shift range.
+                let distanceTraveledBySheetSoFar = height - pivotPoint
+                // Table travel distance per unit sheet travel distance.
+                let stepSize = HeightConstants.initialTableInset / totalTravelableDistanceForSheet
+                // How far the table should have traveled.
+                let tableTravelDistance = stepSize * distanceTraveledBySheetSoFar
+                self.tableViewTopConstraint?.constant = HeightConstants.initialTableInset - tableTravelDistance
+            } else if height == maxHeight {
+                changesForSnapToMax()
+            } else {
+                owsFailDebug("GroupCallSheet is somehow taller than its maxHeight!")
+            }
+        case .max:
+            changesForSnapToMax()
+        }
+    }
 }
 
 // MARK: UITableViewDelegate
@@ -401,6 +489,14 @@ extension GroupCallSheet: EmojiPickerSheetPresenter {
 extension GroupCallSheet {
     func isPresentingCallControls() -> Bool {
         return self.presentingViewController != nil && callControls.alpha == 1
+    }
+
+    func isPresentingCallInfo() -> Bool {
+        return self.presentingViewController != nil && tableView.alpha == 1
+    }
+
+    func isCrossFading() -> Bool {
+        return self.presentingViewController != nil && callControls.alpha < 1 && tableView.alpha < 1
     }
 }
 
@@ -551,11 +647,11 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
 
 extension GroupCallSheet: CallControlsHeightObserver {
     func callControlsHeightDidChange(newHeight: CGFloat) {
-        guard FeatureFlags.callDrawerSupport else { return }
         self.setBottomSheetMinimizedHeight()
     }
 
     private enum HeightConstants {
         static let bottomPadding: CGFloat = 48
+        static let initialTableInset: CGFloat = 25
     }
 }

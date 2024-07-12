@@ -560,7 +560,7 @@ class GroupCallViewController: UIViewController {
             videoGrid.isHidden = false
             let height: CGFloat
             if FeatureFlags.callDrawerSupport {
-                let controlsHeight = controlsAreHidden ? 16 : bottomSheet.sheetHeight
+                let controlsHeight = controlsAreHidden || bottomSheet.isPresentingCallInfo() || bottomSheet.isCrossFading() ? 16 : bottomSheet.sheetHeight
                 height = size.height - view.safeAreaInsets.top - controlsHeight - overflowGridHeight
             } else {
                 let controlsHeight = controlsAreHidden ? 16 : callControls.height
@@ -645,7 +645,7 @@ class GroupCallViewController: UIViewController {
 
         let yMax: CGFloat
         if FeatureFlags.callDrawerSupport {
-            yMax = (controlsAreHidden ? size.height - 16 : size.height - bottomSheet.sheetHeight) - 16
+            yMax = (controlsAreHidden || bottomSheet.isPresentingCallInfo() || bottomSheet.isCrossFading() ? size.height - 16 : size.height - bottomSheet.sheetHeight) - 16
         } else {
             yMax = (controlsAreHidden ? size.height - 16 : callControls.frame.minY) - 16
         }

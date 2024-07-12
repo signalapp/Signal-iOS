@@ -334,7 +334,7 @@ open class InteractiveSheetViewController: OWSViewController {
         interactiveScrollViews.forEach { $0.panGestureRecognizer.addTarget(self, action: #selector(handlePan)) }
     }
 
-    private func maximumAllowedHeight() -> CGFloat {
+    open func maximumAllowedHeight() -> CGFloat {
         return CurrentAppContext().frame.height - (view.safeAreaInsets.top + Constants.extraTopPadding)
     }
 
@@ -393,11 +393,16 @@ open class InteractiveSheetViewController: OWSViewController {
             let translation = sender.translation(in: view).y - startingTranslation
 
             var newHeight = startingHeight - translation
+            self.maxHeight = maximumAllowedHeight()
             if newHeight > maxHeight {
                 newHeight = maxHeight
             }
 
-            // If the height is decreasing, adjust the relevant view's proporitionally
+            if newHeight != startingHeight {
+                heightDidChange(to: .height(newHeight))
+            }
+
+            // If the height is decreasing, adjust the relevant view's proportionally
             if newHeight < startingHeight {
                 backdropView?.alpha = 1 - (startingHeight - newHeight) / startingHeight
             }
@@ -443,6 +448,7 @@ open class InteractiveSheetViewController: OWSViewController {
                 }
             }
 
+            maxHeight = maximumAllowedHeight()
             let finalHeight: CGFloat
             switch completionState {
             case .dismissing:
@@ -469,10 +475,19 @@ open class InteractiveSheetViewController: OWSViewController {
                     self.view.layoutIfNeeded()
                 }
 
+                switch completionState {
+                case .growing:
+                    self.heightDidChange(to: .max)
+                case .shrinking, .dismissing:
+                    self.heightDidChange(to: .min)
+                }
+
                 self.backdropView?.alpha = completionState == .dismissing ? 0 : 1
             }) { _ in
                 self.sheetCurrentHeightConstraint.constant = finalHeight
                 self.view.layoutIfNeeded()
+
+                self.heightDidChange(to: .height(finalHeight))
 
                 if completionState == .dismissing && self.canBeDismissed {
                     self.willDismissInteractively()
@@ -490,8 +505,30 @@ open class InteractiveSheetViewController: OWSViewController {
 
             guard let startingHeight = startingHeight else { break }
             sheetCurrentHeightConstraint.constant = startingHeight
+            heightDidChange(to: .height(startingHeight))
         }
     }
+
+    public final func refreshMaxHeight() {
+        let oldMaxHeight = self.maxHeight
+        self.maxHeight = maximumAllowedHeight()
+        self.sheetHeightMaxConstraint.constant = self.maxHeight
+        if self.sheetCurrentHeightConstraint.constant == oldMaxHeight {
+            self.sheetCurrentHeightConstraint.constant = self.maxHeight
+            UIView.animate(withDuration: 0.4) {
+                self.view.setNeedsLayout()
+                self.view.layoutIfNeeded()
+            }
+        }
+    }
+
+    public enum SheetHeight {
+        case min
+        case height(CGFloat)
+        case max
+    }
+
+    open func heightDidChange(to height: SheetHeight) {}
 
     private func beginInteractiveTransitionIfNecessary(_ sender: UIPanGestureRecognizer) -> Bool {
         let panningScrollView = interactiveScrollViews.first { $0.panGestureRecognizer == sender }
