@@ -561,9 +561,7 @@ private class CallControlsViewModel {
         switch call.mode {
         case .individual:
             if FeatureFlags.callDrawerSupport {
-                // TODO: Put call controls in drawer in individual calls,
-                // at which point the gradient view will no longer be needed.
-                return false
+                return true
             } else {
                 return call.joinState != .joined
             }

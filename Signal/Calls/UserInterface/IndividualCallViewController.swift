@@ -37,12 +37,32 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         presentingContainerView: callControlsConfirmationToastContainerView
     )
     private lazy var callControlsConfirmationToastContainerView = UIView()
-    private lazy var callControls = CallControls(
-        call: call,
-        callService: callService,
-        confirmationToastManager: callControlsConfirmationToastManager,
-        delegate: self
-    )
+    private lazy var callControls: CallControls? = {
+        guard !FeatureFlags.callDrawerSupport else { return nil }
+        return CallControls(
+            call: call,
+            callService: callService,
+            confirmationToastManager: callControlsConfirmationToastManager,
+            delegate: self
+        )
+    }()
+
+    // TODO: Make non-optional when the FeatureFlag is removed
+    private lazy var bottomSheet: CallDrawerSheet? = {
+        guard FeatureFlags.callDrawerSupport else { return nil }
+        return CallDrawerSheet(
+            call: call,
+            callSheetDataSource: IndividualCallSheetDataSource(
+                thread: thread,
+                call: call,
+                individualCall: individualCall
+            ),
+            callService: callService,
+            confirmationToastManager: callControlsConfirmationToastManager,
+            callControlsDelegate: self
+        )
+    }()
+
     private var callService: CallService { AppEnvironment.shared.callService }
 
     /// When the local member view (which is displayed picture-in-picture) is
@@ -201,6 +221,11 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
+        if FeatureFlags.callDrawerSupport {
+            self.dismissBottomSheet(animated)
+            callService.audioService.delegate = nil
+        }
+
         callDurationTimer?.invalidate()
         callDurationTimer = nil
     }
@@ -295,20 +320,33 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         bottomGradientView.autoPinWidthToSuperview()
         bottomGradientView.autoPinEdge(toSuperviewEdge: .bottom)
 
-        bottomContainerView.addSubview(callControls)
-        callControls.autoPinEdge(toSuperviewEdge: .bottom)
-        callControls.autoPinEdge(toSuperviewEdge: .leading)
-        callControls.autoPinEdge(toSuperviewEdge: .trailing)
+        if let callControls {
+            bottomContainerView.addSubview(callControls)
+            callControls.autoPinEdge(toSuperviewEdge: .bottom)
+            callControls.autoPinEdge(toSuperviewEdge: .leading)
+            callControls.autoPinEdge(toSuperviewEdge: .trailing)
 
-        // Confirmation toasts should sit on top of the `localVideoView`
-        // and most other UI elements, so this `addSubview` should remain towards
-        // the end of the setup.
-        view.addSubview(callControlsConfirmationToastContainerView)
-        callControlsConfirmationToastContainerView.autoPinEdge(.bottom, to: .top, of: callControls, withOffset: -30)
-        callControlsConfirmationToastContainerView.autoHCenterInSuperview()
+            // Confirmation toasts should sit on top of the `localVideoView`
+            // and most other UI elements, so this `addSubview` should remain towards
+            // the end of the setup.
+            view.addSubview(callControlsConfirmationToastContainerView)
+            callControlsConfirmationToastContainerView.autoPinEdge(.bottom, to: .top, of: callControls, withOffset: -30)
+            callControlsConfirmationToastContainerView.autoHCenterInSuperview()
+        }
 
         createContactViews()
         createIncomingCallControls()
+    }
+
+    private func presentBottomSheet(_ animated: Bool) {
+        guard let bottomSheet, bottomSheet.presentingViewController == nil else { return }
+        bottomSheet.setBottomSheetMinimizedHeight()
+        present(bottomSheet, animated: animated)
+    }
+
+    private func dismissBottomSheet(_ animated: Bool = true) {
+        guard let bottomSheet, bottomSheet.presentingViewController != nil else { return }
+        bottomSheet.dismiss(animated: animated)
     }
 
     @objc
@@ -746,11 +784,17 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
             let isVideoOffer = individualCall.offerMediaType == .video
             incomingVideoCallControls.isHidden = !isVideoOffer
             incomingAudioCallControls.isHidden = isVideoOffer
-            callControls.isHidden = true
+            callControls?.isHidden = true
+            if FeatureFlags.callDrawerSupport {
+                dismissBottomSheet(true)
+            }
         } else {
             incomingVideoCallControls.isHidden = true
             incomingAudioCallControls.isHidden = true
-            callControls.isHidden = false
+            callControls?.isHidden = false
+            if FeatureFlags.callDrawerSupport {
+                presentBottomSheet(true)
+            }
         }
 
         // Rework control state if remote video is available.
@@ -759,13 +803,21 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
 
         // Layout controls immediately to avoid spurious animation.
         for controls in [incomingVideoCallControls, incomingAudioCallControls, callControls] {
-            controls.layoutIfNeeded()
+            controls?.layoutIfNeeded()
         }
 
         // Also hide other controls if user has tapped to hide them.
         let hideRemoteControls = shouldRemoteVideoControlsBeHidden && self.individualCall.isRemoteVideoEnabled
         let remoteControlsAreHidden = bottomContainerView.isHidden && topGradientView.isHidden
         if hideRemoteControls != remoteControlsAreHidden {
+            if FeatureFlags.callDrawerSupport {
+                if hideRemoteControls {
+                    dismissBottomSheet(true)
+                } else {
+                    presentBottomSheet(true)
+                }
+            }
+
             self.bottomContainerView.isHidden = false
             self.topGradientView.isHidden = false
 
@@ -829,13 +881,15 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
 
         hasDismissed = true
 
-        callService.audioService.delegate = nil
+        if !FeatureFlags.callDrawerSupport {
+            callService.audioService.delegate = nil
+        }
 
         contactNameLabel.removeFromSuperview()
         callStatusLabel.removeFromSuperview()
         incomingAudioCallControls.removeFromSuperview()
         incomingVideoCallControls.removeFromSuperview()
-        callControls.removeFromSuperview()
+        callControls?.removeFromSuperview()
         backButton.removeFromSuperview()
         remoteMemberView.applyChangesToCallMemberViewAndVideoView { view in
             view.removeFromSuperview()
@@ -1004,7 +1058,9 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
     // MARK: - Dismiss
 
     private func dismissIfPossible(shouldDelay: Bool, completion: (() -> Void)? = nil) {
-        callService.audioService.delegate = nil
+        if !FeatureFlags.callDrawerSupport {
+            callService.audioService.delegate = nil
+        }
 
         if hasDismissed {
             // Don't dismiss twice.

@@ -29,12 +29,12 @@ class GroupCallViewController: UIViewController {
         confirmationToastManager: callControlsConfirmationToastManager,
         delegate: self
     )
-    private lazy var bottomSheet: GroupCallSheet = {
+    private lazy var bottomSheet: CallDrawerSheet = {
         switch groupCall.concreteType {
         case .groupThread(let groupThreadCall):
-            return GroupCallSheet(
+            return CallDrawerSheet(
                 call: call,
-                groupThreadCall: groupThreadCall,
+                callSheetDataSource: GroupCallSheetDataSource(groupThreadCall: groupThreadCall),
                 callService: callService,
                 confirmationToastManager: callControlsConfirmationToastManager,
                 callControlsDelegate: self

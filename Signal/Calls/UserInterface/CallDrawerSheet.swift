@@ -11,7 +11,7 @@ import Combine
 
 // MARK: - GroupCallSheet
 
-class GroupCallSheet: InteractiveSheetViewController {
+class CallDrawerSheet: InteractiveSheetViewController {
     private let callControls: CallControls
 
     // MARK: Properties
@@ -26,8 +26,7 @@ class GroupCallSheet: InteractiveSheetViewController {
 
     private let tableView = UITableView(frame: .zero, style: .insetGrouped)
     private let call: SignalCall
-    private let ringRtcCall: SignalRingRTC.GroupCall
-    private let groupThreadCall: GroupThreadCall
+    private let callSheetDataSource: CallDrawerSheetDataSource
 
     private var tableViewTopConstraint: NSLayoutConstraint?
 
@@ -37,14 +36,13 @@ class GroupCallSheet: InteractiveSheetViewController {
 
     init(
         call: SignalCall,
-        groupThreadCall: GroupThreadCall,
+        callSheetDataSource: CallDrawerSheetDataSource,
         callService: CallService,
         confirmationToastManager: CallControlsConfirmationToastManager,
         callControlsDelegate: CallControlsDelegate
     ) {
         self.call = call
-        self.ringRtcCall = groupThreadCall.ringRtcCall
-        self.groupThreadCall = groupThreadCall
+        self.callSheetDataSource = callSheetDataSource
         self.callControls = CallControls(
             call: call,
             callService: callService,
@@ -55,8 +53,7 @@ class GroupCallSheet: InteractiveSheetViewController {
         super.init(blurEffect: nil)
 
         self.overrideUserInterfaceStyle = .dark
-        groupThreadCall.addObserver(self, syncStateImmediately: true)
-
+        callSheetDataSource.addObserver(self, syncStateImmediately: true)
         callControls.addHeightObserver(self)
         self.tableView.alpha = 0
         // Don't add a dim visual effect to the call when the sheet is open.
@@ -99,7 +96,7 @@ class GroupCallSheet: InteractiveSheetViewController {
     ) { [weak self] tableView, indexPath, id -> UITableViewCell? in
         guard let cell = tableView.dequeueReusableCell(GroupCallMemberCell.self, for: indexPath) else { return nil }
 
-        cell.ringRtcCall = self?.ringRtcCall
+        cell.delegate = self?.callSheetDataSource
 
         guard let viewModel = self?.viewModelsByID[id.memberID] else {
             owsFailDebug("missing view model")
@@ -199,7 +196,7 @@ class GroupCallSheet: InteractiveSheetViewController {
 
     // MARK: - Table contents
 
-    fileprivate struct JoinedMember {
+    struct JoinedMember {
         enum ID: Hashable {
             case aci(Aci)
             case demuxID(DemuxId)
@@ -236,87 +233,8 @@ class GroupCallSheet: InteractiveSheetViewController {
     }
 
     private func updateMembers() {
-        let unsortedMembers: [JoinedMember] = databaseStorage.read { transaction -> [JoinedMember] in
-            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
-                return []
-            }
-
-            var members = [JoinedMember]()
-            let config: DisplayName.ComparableValue.Config = .current()
-            if self.ringRtcCall.localDeviceState.joinState == .joined {
-                members += self.ringRtcCall.remoteDeviceStates.values.map { member in
-                    let resolvedName: String
-                    let comparableName: DisplayName.ComparableValue
-                    if member.aci == localIdentifiers.aci {
-                        resolvedName = OWSLocalizedString(
-                            "GROUP_CALL_YOU_ON_ANOTHER_DEVICE",
-                            comment: "Text describing the local user in the group call members sheet when connected from another device."
-                        )
-                        comparableName = .nameValue(resolvedName)
-                    } else {
-                        let displayName = self.contactsManager.displayName(for: member.address, tx: transaction)
-                        resolvedName = displayName.resolvedValue(config: config.displayNameConfig)
-                        comparableName = displayName.comparableValue(config: config)
-                    }
-
-                    return JoinedMember(
-                        id: .demuxID(member.demuxId),
-                        aci: member.aci,
-                        displayName: resolvedName,
-                        comparableName: comparableName,
-                        demuxID: member.demuxId,
-                        isLocalUser: false,
-                        isAudioMuted: member.audioMuted,
-                        isVideoMuted: member.videoMuted,
-                        isPresenting: member.presenting
-                    )
-                }
-
-                let displayName = CommonStrings.you
-                let comparableName: DisplayName.ComparableValue = .nameValue(displayName)
-                let id: JoinedMember.ID
-                let demuxId: UInt32?
-                if let localDemuxId = groupThreadCall.ringRtcCall.localDeviceState.demuxId {
-                    id = .demuxID(localDemuxId)
-                    demuxId = localDemuxId
-                } else {
-                    id = .aci(localIdentifiers.aci)
-                    demuxId = nil
-                }
-                members.append(JoinedMember(
-                    id: id,
-                    aci: localIdentifiers.aci,
-                    displayName: displayName,
-                    comparableName: comparableName,
-                    demuxID: demuxId,
-                    isLocalUser: true,
-                    isAudioMuted: self.ringRtcCall.isOutgoingAudioMuted,
-                    isVideoMuted: self.ringRtcCall.isOutgoingVideoMuted,
-                    isPresenting: false
-                ))
-            } else {
-                // If we're not yet in the call, `remoteDeviceStates` will not exist.
-                // We can get the list of joined members still, provided we are connected.
-                members += self.ringRtcCall.peekInfo?.joinedMembers.map { aciUuid in
-                    let aci = Aci(fromUUID: aciUuid)
-                    let address = SignalServiceAddress(aci)
-                    let displayName = self.contactsManager.displayName(for: address, tx: transaction)
-                    return JoinedMember(
-                        id: .aci(aci),
-                        aci: aci,
-                        displayName: displayName.resolvedValue(config: config.displayNameConfig),
-                        comparableName: displayName.comparableValue(config: config),
-                        demuxID: nil,
-                        isLocalUser: false,
-                        isAudioMuted: nil,
-                        isVideoMuted: nil,
-                        isPresenting: nil
-                    )
-                } ?? []
-            }
-
-            return members
+        let unsortedMembers: [JoinedMember] = databaseStorage.read {
+            callSheetDataSource.unsortedMembers(tx: $0.asV2Read)
         }
 
         sortedMembers = unsortedMembers.sorted {
@@ -336,16 +254,17 @@ class GroupCallSheet: InteractiveSheetViewController {
     private func updateSnapshotAndHeaders() {
         var snapshot = Snapshot()
 
-        if !groupThreadCall.raisedHands.isEmpty {
+        let raiseHandMemberIds = callSheetDataSource.raisedHandMemberIds()
+        if !raiseHandMemberIds.isEmpty {
             snapshot.appendSections([.raisedHands])
             snapshot.appendItems(
-                groupThreadCall.raisedHands.map {
-                    RowID(section: .raisedHands, memberID: .demuxID($0))
+                raiseHandMemberIds.map {
+                    RowID(section: .raisedHands, memberID: $0)
                 },
                 toSection: .raisedHands
             )
 
-            raisedHandsHeader.memberCount = groupThreadCall.raisedHands.count
+            raisedHandsHeader.memberCount = raiseHandMemberIds.count
         }
 
         snapshot.appendSections([.inCall])
@@ -433,9 +352,9 @@ class GroupCallSheet: InteractiveSheetViewController {
 
 // MARK: UITableViewDelegate
 
-extension GroupCallSheet: UITableViewDelegate {
+extension CallDrawerSheet: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        if section == 0, !groupThreadCall.raisedHands.isEmpty {
+        if section == 0, !callSheetDataSource.raisedHandMemberIds().isEmpty {
             return raisedHandsHeader
         } else {
             return inCallHeader
@@ -453,40 +372,25 @@ extension GroupCallSheet: UITableViewDelegate {
 
 // MARK: CallObserver
 
-extension GroupCallSheet: GroupCallObserver {
-    func groupCallLocalDeviceStateChanged(_ call: GroupCall) {
+extension CallDrawerSheet: CallDrawerSheetDataSourceObserver {
+    func callSheetMembershipDidChange(_ dataSource: CallDrawerSheetDataSource) {
         AssertIsOnMainThread()
         updateMembers()
     }
 
-    func groupCallRemoteDeviceStatesChanged(_ call: GroupCall) {
-        AssertIsOnMainThread()
-        updateMembers()
-    }
-
-    func groupCallPeekChanged(_ call: GroupCall) {
-        AssertIsOnMainThread()
-        updateMembers()
-    }
-
-    func groupCallEnded(_ call: GroupCall, reason: GroupCallEndReason) {
-        AssertIsOnMainThread()
-        updateMembers()
-    }
-
-    func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [DemuxId]) {
+    func callSheetRaisedHandsDidChange(_ dataSource: CallDrawerSheetDataSource) {
         AssertIsOnMainThread()
         updateSnapshotAndHeaders()
     }
 }
 
-extension GroupCallSheet: EmojiPickerSheetPresenter {
+extension CallDrawerSheet: EmojiPickerSheetPresenter {
     func present(sheet: EmojiPickerSheet, animated: Bool) {
         self.present(sheet, animated: animated)
     }
 }
 
-extension GroupCallSheet {
+extension CallDrawerSheet {
     func isPresentingCallControls() -> Bool {
         return self.presentingViewController != nil && callControls.alpha == 1
     }
@@ -502,12 +406,16 @@ extension GroupCallSheet {
 
 // MARK: - GroupCallMemberCell
 
+protocol GroupCallMemberCellDelegate: AnyObject {
+    func raiseHand(raise: Bool)
+}
+
 private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
 
     // MARK: ViewModel
 
     class ViewModel {
-        typealias Member = GroupCallSheet.JoinedMember
+        typealias Member = CallDrawerSheet.JoinedMember
 
         let aci: Aci
         let name: String
@@ -536,7 +444,7 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
 
     static let reuseIdentifier = "GroupCallMemberCell"
 
-    var ringRtcCall: SignalRingRTC.GroupCall?
+    weak var delegate: GroupCallMemberCellDelegate?
 
     private let avatarView = ConversationAvatarView(
         sizeClass: .thirtySix,
@@ -551,7 +459,7 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
         tintColor: .ows_white,
         dimsWhenHighlighted: true
     ) { [weak self] in
-        self?.ringRtcCall?.raiseHand(raise: false)
+        self?.delegate?.raiseHand(raise: false)
     }
 
     private let leadingWrapper = UIView()
@@ -645,7 +553,7 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
 
 }
 
-extension GroupCallSheet: CallControlsHeightObserver {
+extension CallDrawerSheet: CallControlsHeightObserver {
     func callControlsHeightDidChange(newHeight: CGFloat) {
         self.setBottomSheetMinimizedHeight()
     }
