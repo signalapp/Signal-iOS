@@ -27,6 +27,8 @@ typedef NS_ENUM(NSUInteger, TSPaymentType) {
     TSPaymentTypeOutgoingTransfer,
     TSPaymentTypeOutgoingDefragmentation,
     TSPaymentTypeOutgoingDefragmentationNotFromLocalDevice,
+    TSPaymentTypeOutgoingRestored,
+    TSPaymentTypeIncomingRestored,
 };
 
 NSString *NSStringFromTSPaymentType(TSPaymentType value);

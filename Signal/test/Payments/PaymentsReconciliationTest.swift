@@ -28,21 +28,51 @@ private struct MockTransactionHistory: MCTransactionHistory {
 
 private extension PaymentsDatabaseState {
     var incomingIdentifiedUnverifiedCount: Int {
-        allPaymentModels.filter { paymentModel in
-            paymentModel.isIncoming && paymentModel.isIdentifiedPayment && !paymentModel.isVerified && !paymentModel.isFailed
-        }.count
+        allPaymentState
+            .compactMap { paymentState -> TSPaymentModel? in
+                switch paymentState {
+                case .archivedPayment:
+                    return nil
+                case .model(let paymentModel):
+                    return paymentModel
+                }
+            }
+            .filter { paymentModel in
+                paymentModel.isIncoming && paymentModel.isIdentifiedPayment && !paymentModel.isVerified && !paymentModel.isFailed
+            }
+            .count
     }
 
     var incomingIdentifiedVerifiedCount: Int {
-        allPaymentModels.filter { paymentModel in
-            paymentModel.isIncoming && paymentModel.isIdentifiedPayment && paymentModel.isVerified && !paymentModel.isFailed
-        }.count
+        allPaymentState
+            .compactMap { paymentState -> TSPaymentModel? in
+                switch paymentState {
+                case .archivedPayment:
+                    return nil
+                case .model(let paymentModel):
+                    return paymentModel
+                }
+            }
+            .filter { paymentModel in
+                paymentModel.isIncoming && paymentModel.isIdentifiedPayment && paymentModel.isVerified && !paymentModel.isFailed
+            }
+            .count
     }
 
     var incomingUnidentifiedCount: Int {
-        allPaymentModels.filter { paymentModel in
-            paymentModel.isIncoming && paymentModel.isUnidentified
-        }.count
+        allPaymentState
+            .compactMap { paymentState -> TSPaymentModel? in
+                switch paymentState {
+                case .archivedPayment:
+                    return nil
+                case .model(let paymentModel):
+                    return paymentModel
+                }
+            }
+            .filter { paymentModel in
+                paymentModel.isIncoming && paymentModel.isUnidentified
+            }
+            .count
     }
 }
 
@@ -124,7 +154,7 @@ class PaymentsReconciliationTest: SignalBaseTest {
                 do {
                     var databaseState = PaymentsReconciliation.buildPaymentsDatabaseState(transaction: transaction)
 
-                    XCTAssertEqual(databaseState.allPaymentModels.count, 0)
+                    XCTAssertEqual(databaseState.allPaymentState.count, 0)
                     XCTAssertEqual(databaseState.incomingAnyMap.count, 0)
                     XCTAssertEqual(databaseState.incomingIdentifiedUnverifiedCount, 0)
                     XCTAssertEqual(databaseState.incomingIdentifiedVerifiedCount, 0)
@@ -138,7 +168,7 @@ class PaymentsReconciliationTest: SignalBaseTest {
                                                          transaction: transaction)
                     databaseState = PaymentsReconciliation.buildPaymentsDatabaseState(transaction: transaction)
 
-                    XCTAssertEqual(databaseState.allPaymentModels.count, 1)
+                    XCTAssertEqual(databaseState.allPaymentState.count, 1)
                     XCTAssertEqual(databaseState.incomingAnyMap.count, 1)
                     XCTAssertEqual(databaseState.incomingIdentifiedUnverifiedCount, 0)
                     XCTAssertEqual(databaseState.incomingIdentifiedVerifiedCount, 0)
@@ -147,8 +177,10 @@ class PaymentsReconciliationTest: SignalBaseTest {
                     XCTAssertEqual(databaseState.outputPublicKeyMap.count, 0)
 
                     let paymentModels = databaseState.incomingAnyMap[buildItem2a_incomingUnspent.txoPublicKey]
-                    guard paymentModels.count == 1,
-                          let paymentModel = paymentModels.first else {
+                    guard
+                        paymentModels.count == 1,
+                        case .model(let paymentModel) = paymentModels.first
+                    else {
                         XCTFail("Unexpected paymentModel count: \(paymentModels.count)")
                         return
                     }
@@ -183,7 +215,7 @@ class PaymentsReconciliationTest: SignalBaseTest {
                                                          transaction: transaction)
                     databaseState = PaymentsReconciliation.buildPaymentsDatabaseState(transaction: transaction)
 
-                    XCTAssertEqual(databaseState.allPaymentModels.count, 1)
+                    XCTAssertEqual(databaseState.allPaymentState.count, 1)
                     XCTAssertEqual(databaseState.incomingAnyMap.count, 1)
                     XCTAssertEqual(databaseState.incomingIdentifiedUnverifiedCount, 0)
                     XCTAssertEqual(databaseState.incomingIdentifiedVerifiedCount, 0)
@@ -213,7 +245,7 @@ class PaymentsReconciliationTest: SignalBaseTest {
 
                     var databaseState = PaymentsReconciliation.buildPaymentsDatabaseState(transaction: transaction)
 
-                    XCTAssertEqual(databaseState.allPaymentModels.count, 0)
+                    XCTAssertEqual(databaseState.allPaymentState.count, 0)
                     XCTAssertEqual(databaseState.incomingAnyMap.count, 0)
                     XCTAssertEqual(databaseState.incomingIdentifiedUnverifiedCount, 0)
                     XCTAssertEqual(databaseState.incomingIdentifiedVerifiedCount, 0)
@@ -227,7 +259,7 @@ class PaymentsReconciliationTest: SignalBaseTest {
                                                          transaction: transaction)
                     databaseState = PaymentsReconciliation.buildPaymentsDatabaseState(transaction: transaction)
 
-                    XCTAssertEqual(databaseState.allPaymentModels.count, 1)
+                    XCTAssertEqual(databaseState.allPaymentState.count, 1)
                     XCTAssertEqual(databaseState.incomingAnyMap.count, 1)
                     XCTAssertEqual(databaseState.incomingIdentifiedUnverifiedCount, 0)
                     XCTAssertEqual(databaseState.incomingIdentifiedVerifiedCount, 0)
@@ -236,8 +268,10 @@ class PaymentsReconciliationTest: SignalBaseTest {
                     XCTAssertEqual(databaseState.outputPublicKeyMap.count, 0)
 
                     let paymentModels = databaseState.incomingAnyMap[buildItem2a_incomingUnspent.txoPublicKey]
-                    guard paymentModels.count == 1,
-                          let paymentModel = paymentModels.first else {
+                    guard
+                        paymentModels.count == 1,
+                        case .model(let paymentModel) = paymentModels.first
+                    else {
                         XCTFail("Unexpected paymentModel count: \(paymentModels.count)")
                         return
                     }
@@ -278,7 +312,7 @@ class PaymentsReconciliationTest: SignalBaseTest {
                                                          transaction: transaction)
                     databaseState = PaymentsReconciliation.buildPaymentsDatabaseState(transaction: transaction)
 
-                    XCTAssertEqual(databaseState.allPaymentModels.count, 2)
+                    XCTAssertEqual(databaseState.allPaymentState.count, 2)
                     XCTAssertEqual(databaseState.incomingAnyMap.count, 1)
                     XCTAssertEqual(databaseState.incomingIdentifiedUnverifiedCount, 0)
                     XCTAssertEqual(databaseState.incomingIdentifiedVerifiedCount, 0)
@@ -286,7 +320,7 @@ class PaymentsReconciliationTest: SignalBaseTest {
                     XCTAssertEqual(databaseState.spentImageKeyMap.count, 1)
                     XCTAssertEqual(databaseState.outputPublicKeyMap.count, 0)
 
-                    if let paymentModel = databaseState.spentImageKeyMap[buildItem2a_incomingSpentIn4.keyImage] {
+                    if case .model(let paymentModel) = databaseState.spentImageKeyMap[buildItem2a_incomingSpentIn4.keyImage] {
                         let item = buildItem2a_incomingSpentIn4
                         XCTAssertEqual(TSPaymentType.outgoingUnidentified, paymentModel.paymentType)
                         XCTAssertEqual(TSPaymentState.outgoingComplete, paymentModel.paymentState)
@@ -326,7 +360,7 @@ class PaymentsReconciliationTest: SignalBaseTest {
                                                          transaction: transaction)
                     databaseState = PaymentsReconciliation.buildPaymentsDatabaseState(transaction: transaction)
 
-                    XCTAssertEqual(databaseState.allPaymentModels.count, 2)
+                    XCTAssertEqual(databaseState.allPaymentState.count, 2)
                     XCTAssertEqual(databaseState.incomingAnyMap.count, 1)
                     XCTAssertEqual(databaseState.incomingIdentifiedUnverifiedCount, 0)
                     XCTAssertEqual(databaseState.incomingIdentifiedVerifiedCount, 0)

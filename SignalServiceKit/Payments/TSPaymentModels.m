@@ -38,6 +38,10 @@ NSString *NSStringFromTSPaymentType(TSPaymentType value)
             return @"OutgoingDefragmentation";
         case TSPaymentTypeOutgoingDefragmentationNotFromLocalDevice:
             return @"OutgoingDefragmentationNotFromLocalDevice";
+        case TSPaymentTypeIncomingRestored:
+            return @"IncomingRestoredPayment";
+        case TSPaymentTypeOutgoingRestored:
+            return @"OutgoingRestoredPayment";
         default:
             OWSCFailDebug(@"Unknown value: %d", (int)value);
             return @"Unknown";

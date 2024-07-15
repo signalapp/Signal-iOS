@@ -346,85 +346,100 @@ public class PaymentsReconciliation: Dependencies {
             // * A spent TXO is unaccounted for if you don't yet have an
             //   outgoing TSPaymentModel without that TXO's keyImage in its
             //   mcSpentKeyImages.
+            // * If there is an archived payment present for the TXO, record this
+            //   and attempt to rebuild a TSPaymentModel based on this information later.
+            var restoredPayments = Set<ArchivedPayment>()
             var unaccountedForSpentItems = [MCTransactionHistoryItem]()
+            let restoredSpentPayments = MultiMap<ArchivedPayment, MCTransactionHistoryItem>()
             for spentItem in blockActivity.spentItems {
-                let isAccountedFor = databaseState.spentImageKeyMap[spentItem.keyImage] != nil
-                if !isAccountedFor {
+                switch databaseState.spentImageKeyMap[spentItem.keyImage] {
+                case .none:
                     unaccountedForSpentItems.append(spentItem)
+                case .model:
+                    break
+                case .archivedPayment(let history):
+                    // An archived outgoing payment was found. Record it and attempt
+                    // to restore the TSPaymentModel later.
+                    restoredPayments.insert(history)
+                    restoredSpentPayments.add(key: history, value: spentItem)
                 }
             }
 
             var unaccountedForReceivedItems = [MCTransactionHistoryItem]()
+            let restoredReceivedPayments = MultiMap<ArchivedPayment, MCTransactionHistoryItem>()
             for receivedItem in blockActivity.receivedItems {
                 let existingReceivingPaymentModels = databaseState.incomingAnyMap.values(forKey: receivedItem.txoPublicKey)
-                owsAssertDebug(existingReceivingPaymentModels.filter { $0.isFailed }.isEmpty)
-                let isAccountedFor = !existingReceivingPaymentModels.isEmpty
-                let isPossibleChange = databaseState.outputPublicKeyMap[receivedItem.txoPublicKey] != nil
-                if !isAccountedFor, !isPossibleChange {
-                    unaccountedForReceivedItems.append(receivedItem)
+                let knownTransaction = databaseState.outputPublicKeyMap[receivedItem.txoPublicKey]
+                let isPossibleChange = knownTransaction != nil
+
+                switch existingReceivingPaymentModels.first {
+                case .none:
+                    if !isPossibleChange {
+                        unaccountedForReceivedItems.append(receivedItem)
+                    } else if case let .archivedPayment(history) = knownTransaction {
+                        // This isn't the leftovers (change) from an outgoing transaciton,
+                        // and matches a received transaction. Record this item and attempt
+                        // to rebuild an incoming payment from it. This isn't the full list
+                        // of public keys associated with this transaction, so later on during
+                        // restore, the list of public keys will be restored from the archived payment
+                        restoredPayments.insert(history)
+                        restoredReceivedPayments.add(key: history, value: receivedItem)
+                    }
+                case .model:
+                    break
+                case .archivedPayment(let history):
+                    // Found an archived incoming payment that can be reattached.
+                    restoredPayments.insert(history)
+                    restoredReceivedPayments.add(key: history, value: receivedItem)
                 }
             }
 
-            guard !unaccountedForSpentItems.isEmpty || !unaccountedForReceivedItems.isEmpty else {
-                continue
+            let createdTimestamp: UInt64 = Self.guesstimateBlockTimestamp(
+                forBlockActivity: blockActivity,
+                allBlockActivities: blockActivities
+            )
+
+            func insert(model: TSPaymentModel) throws {
+                if let transaction = transaction as? SDSAnyWriteTransaction {
+                    try Self.paymentsHelper.tryToInsertPaymentModel(model, transaction: transaction)
+                } else {
+                    throw ReconciliationError.unsavedChanges
+                }
             }
 
-            let spentPicoMob = unaccountedForSpentItems.map { $0.amountPicoMob }.reduce(0, +)
-            let receivedPicoMob = unaccountedForReceivedItems.map { $0.amountPicoMob }.reduce(0, +)
-
-            // If the net MOB received > spent, the "omnibus" payment is an
-            // "unidentified incoming" payment; otherwise it is "unidentified
-            // outgoing."
-            //
-            let isOutgoing = spentPicoMob > receivedPicoMob
-
-            let netPicoMob: UInt64
-            if isOutgoing {
-                netPicoMob = spentPicoMob - receivedPicoMob
-            } else {
-                netPicoMob = receivedPicoMob - spentPicoMob
-            }
-            let paymentAmount = TSPaymentAmount(currency: .mobileCoin,
-                                                picoMob: netPicoMob)
-            let paymentType: TSPaymentType = (isOutgoing ? .outgoingUnidentified : .incomingUnidentified)
-            let paymentState: TSPaymentState = (isOutgoing ? .outgoingComplete : .incomingComplete)
-
-            let ledgerBlockIndex: UInt64 = blockActivity.blockIndex
-            let ledgerBlockTimestamp: UInt64 = blockActivity.blockTimestamp ?? 0
-            let createdTimestamp: UInt64 = Self.guesstimateBlockTimestamp(forBlockActivity: blockActivity,
-                                                                          allBlockActivities: blockActivities)
-            let createdDate = NSDate.ows_date(withMillisecondsSince1970: createdTimestamp)
-
-            let unaccountedForSpentKeyImages: [Data] = unaccountedForSpentItems.map { $0.keyImage }
-            let spentKeyImages: [Data]? = Array(Set(unaccountedForSpentKeyImages)).nilIfEmpty
-            let incomingTransactionPublicKeys: [Data]? = unaccountedForReceivedItems.map { $0.txoPublicKey }.nilIfEmpty
-
-            let mobileCoin = MobileCoinPayment(recipientPublicAddressData: nil,
-                                               transactionData: nil,
-                                               receiptData: nil,
-                                               incomingTransactionPublicKeys: incomingTransactionPublicKeys,
-                                               spentKeyImages: spentKeyImages,
-                                               outputPublicKeys: nil,
-                                               ledgerBlockTimestamp: ledgerBlockTimestamp,
-                                               ledgerBlockIndex: ledgerBlockIndex,
-                                               feeAmount: nil)
-            let paymentModel = TSPaymentModel(paymentType: paymentType,
-                                              paymentState: paymentState,
-                                              paymentAmount: paymentAmount,
-                                              createdDate: createdDate,
-                                              senderOrRecipientAci: nil,
-                                              memoMessage: nil,
-                                              isUnread: true,
-                                              interactionUniqueId: nil,
-                                              mobileCoin: mobileCoin)
-
-            if let transaction = transaction as? SDSAnyWriteTransaction {
-                try Self.paymentsHelper.tryToInsertPaymentModel(paymentModel, transaction: transaction)
-            } else {
-                throw ReconciliationError.unsavedChanges
+            if restoredPayments.isEmpty.negated {
+                // An archived payment at this point means there is something from a backup that is now
+                // being populated from the ledger. For each ArchivedPayment matched above, attempt
+                // to rebuild a TSPaymentModel from the matched public keys and spent key image information.
+                for restoredPayment in restoredPayments {
+                    let restoredSpentPayments = restoredSpentPayments[restoredPayment]
+                    let restoredReceivedPayments = restoredReceivedPayments[restoredPayment]
+                    if let paymentModel = buildArchivedPaymentModel(
+                        timestamp: createdTimestamp,
+                        blockActivity: blockActivity,
+                        restoredSpentItems: restoredSpentPayments,
+                        restoredReceivedItems: restoredReceivedPayments,
+                        archivedPayment: restoredPayment
+                    ) {
+                        try insert(model: paymentModel)
+                        databaseState.add(paymentModel: paymentModel)
+                    } else {
+                        unaccountedForSpentItems.append(contentsOf: restoredSpentPayments)
+                        unaccountedForReceivedItems.append(contentsOf: restoredReceivedPayments)
+                    }
+                }
             }
 
-            databaseState.add(paymentModel: paymentModel)
+            if !unaccountedForSpentItems.isEmpty || !unaccountedForReceivedItems.isEmpty {
+                let paymentModel = buildPaymentModel(
+                    timestamp: createdTimestamp,
+                    blockActivity: blockActivity,
+                    unaccountedForSpentItems: unaccountedForSpentItems,
+                    unaccountedForReceivedItems: unaccountedForReceivedItems
+                )
+                try insert(model: paymentModel)
+                databaseState.add(paymentModel: paymentModel)
+            }
         }
 
         // 3. Fill in missing ledger timestamps.
@@ -437,8 +452,9 @@ public class PaymentsReconciliation: Dependencies {
 
             // Review all existing payment models in the block and fill in
             // any missing ledger block timestamps.
-            let paymentModels = databaseState.ledgerBlockIndexMap[ledgerBlockIndex]
-            for paymentModel in paymentModels {
+            let paymentStates = databaseState.ledgerBlockIndexMap[ledgerBlockIndex]
+            for paymentState in paymentStates {
+                guard case .model(let paymentModel) = paymentState else { continue }
                 let hasLedgerBlockIndex = (paymentModel.mobileCoin?.ledgerBlockIndex ?? 0) > 0
                 if !hasLedgerBlockIndex {
                     if let transaction = transaction as? SDSAnyWriteTransaction {
@@ -450,6 +466,136 @@ public class PaymentsReconciliation: Dependencies {
                 }
             }
         }
+    }
+
+    private static func buildPaymentModel(
+        timestamp: UInt64,
+        blockActivity: BlockActivity,
+        unaccountedForSpentItems: [MCTransactionHistoryItem],
+        unaccountedForReceivedItems: [MCTransactionHistoryItem]
+    ) -> TSPaymentModel {
+        let spentPicoMob = unaccountedForSpentItems.map { $0.amountPicoMob }.reduce(0, +)
+        let receivedPicoMob = unaccountedForReceivedItems.map { $0.amountPicoMob }.reduce(0, +)
+
+        // If the net MOB received > spent, the "omnibus" payment is an
+        // "unidentified incoming" payment; otherwise it is "unidentified
+        // outgoing."
+        //
+        let isOutgoing = spentPicoMob > receivedPicoMob
+
+        let netPicoMob: UInt64
+        if isOutgoing {
+            netPicoMob = spentPicoMob - receivedPicoMob
+        } else {
+            netPicoMob = receivedPicoMob - spentPicoMob
+        }
+        let paymentAmount = TSPaymentAmount(currency: .mobileCoin,
+                                            picoMob: netPicoMob)
+        let paymentType: TSPaymentType = (isOutgoing ? .outgoingUnidentified : .incomingUnidentified)
+        let paymentState: TSPaymentState = (isOutgoing ? .outgoingComplete : .incomingComplete)
+
+        let ledgerBlockIndex: UInt64 = blockActivity.blockIndex
+        let ledgerBlockTimestamp: UInt64 = blockActivity.blockTimestamp ?? 0
+        let createdTimestamp: UInt64 = timestamp
+        let createdDate = NSDate.ows_date(withMillisecondsSince1970: createdTimestamp)
+
+        let unaccountedForSpentKeyImages: [Data] = unaccountedForSpentItems.map { $0.keyImage }
+        let spentKeyImages: [Data]? = Array(Set(unaccountedForSpentKeyImages)).nilIfEmpty
+        let incomingTransactionPublicKeys: [Data]? = unaccountedForReceivedItems.map { $0.txoPublicKey }.nilIfEmpty
+
+        let mobileCoin = MobileCoinPayment(recipientPublicAddressData: nil,
+                                           transactionData: nil,
+                                           receiptData: nil,
+                                           incomingTransactionPublicKeys: incomingTransactionPublicKeys,
+                                           spentKeyImages: spentKeyImages,
+                                           outputPublicKeys: nil,
+                                           ledgerBlockTimestamp: ledgerBlockTimestamp,
+                                           ledgerBlockIndex: ledgerBlockIndex,
+                                           feeAmount: nil)
+        return TSPaymentModel(paymentType: paymentType,
+                              paymentState: paymentState,
+                              paymentAmount: paymentAmount,
+                              createdDate: createdDate,
+                              senderOrRecipientAci: nil,
+                              memoMessage: nil,
+                              isUnread: true,
+                              interactionUniqueId: nil,
+                              mobileCoin: mobileCoin)
+    }
+
+    /// Take an ArchivedPayment and any matched spent keys and public keys and rebuild a payment model
+    ///
+    /// The bulk of this is an intentional duplication of `buildPaymentModel`, so as to leave the restore of
+    /// non-archived payments untouched and avoid any sublte bugs in extending the existing reconciliation logic.
+    ///
+    /// One note is that, even though most of the mobileCoin information can be sourced from the backup,
+    /// the data from the ledger is preferred and helps protect against pieces of information being missing from backups.
+    private static func buildArchivedPaymentModel(
+        timestamp: UInt64,
+        blockActivity: BlockActivity,
+        restoredSpentItems: [MCTransactionHistoryItem],
+        restoredReceivedItems: [MCTransactionHistoryItem],
+        archivedPayment: ArchivedPayment
+    ) -> TSPaymentModel? {
+        let isOutgoing = archivedPayment.direction == .outgoing
+
+        guard let receipt = archivedPayment.receipt else {
+            return nil
+        }
+
+        // Can't restore if the public key is missing. However, due to how ledger payments
+        // are matched to archived payments, this shouldn't get this far without a public key
+        guard let publicKey = archivedPayment.mobileCoinIdentification?.publicKey else {
+            return nil
+        }
+
+        // spentKeyImages and transaction data can be nil for incoming payments, so only validate for outgoing
+        let spentKeyImages = archivedPayment.mobileCoinIdentification?.keyImages?.nilIfEmpty
+        if isOutgoing {
+            if  archivedPayment.transaction == nil || spentKeyImages == nil {
+                return nil
+            }
+        }
+
+        let spentPicoMob = restoredSpentItems.map { $0.amountPicoMob }.reduce(0, +)
+        let receivedPicoMob = restoredReceivedItems.map { $0.amountPicoMob }.reduce(0, +)
+        let netPicoMob: UInt64
+        if isOutgoing {
+            netPicoMob = spentPicoMob - receivedPicoMob
+        } else {
+            netPicoMob = receivedPicoMob - spentPicoMob
+        }
+
+        let paymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: netPicoMob)
+        let paymentType: TSPaymentType = isOutgoing ? .outgoingRestored : .incomingRestored
+        let paymentState: TSPaymentState = (isOutgoing ? .outgoingComplete : .incomingComplete)
+
+        let ledgerBlockIndex: UInt64 = blockActivity.blockIndex
+        let ledgerBlockTimestamp: UInt64 = blockActivity.blockTimestamp ?? 0
+        let createdDate = NSDate.ows_date(withMillisecondsSince1970: timestamp)
+
+        let mobileCoin = MobileCoinPayment(
+            recipientPublicAddressData: nil,
+            transactionData: archivedPayment.transaction,
+            receiptData: receipt,
+            incomingTransactionPublicKeys: isOutgoing ? nil : publicKey,
+            spentKeyImages: spentKeyImages,
+            outputPublicKeys: isOutgoing ? publicKey : nil,
+            ledgerBlockTimestamp: ledgerBlockTimestamp,
+            ledgerBlockIndex: ledgerBlockIndex,
+            feeAmount: nil
+        )
+        return TSPaymentModel(
+            paymentType: paymentType,
+            paymentState: paymentState,
+            paymentAmount: paymentAmount,
+            createdDate: createdDate,
+            senderOrRecipientAci: archivedPayment.senderOrRecipientAci.map { AciObjC($0) },
+            memoMessage: archivedPayment.note,
+            isUnread: false,
+            interactionUniqueId: archivedPayment.interactionUniqueId,
+            mobileCoin: mobileCoin
+        )
     }
 
     // When creating "unidentified" payments, the ledger block timestamp
@@ -607,10 +753,12 @@ public class PaymentsReconciliation: Dependencies {
              .incomingUnidentified:
             owsFailDebug("Unexpected payment: \(oldPaymentModel.descriptionForLogs)")
             return
-        case .incomingPayment:
+        case .incomingPayment,
+             .incomingRestored:
             paymentType = .incomingUnidentified
             paymentState = .incomingComplete
         case .outgoingPayment,
+             .outgoingRestored,
              .outgoingPaymentNotFromLocalDevice,
              .outgoingTransfer,
              .outgoingDefragmentation,
@@ -664,6 +812,9 @@ public class PaymentsReconciliation: Dependencies {
             databaseState.add(paymentModel: paymentModel)
         }
 
+        DependenciesBridge.shared.archivedPaymentStore.enumerateAll(tx: transaction.asV2Read) { (archivedPayment, _) in
+            databaseState.add(archivedPayment: archivedPayment)
+        }
         return databaseState
     }
 
@@ -803,26 +954,30 @@ extension Array where Element == BlockActivity {
 // MARK: -
 
 internal class PaymentsDatabaseState {
+    enum PaymentState {
+        case model(TSPaymentModel)
+        case archivedPayment(ArchivedPayment)
+    }
 
-    var allPaymentModels = [TSPaymentModel]()
+    var allPaymentState = [PaymentState]()
 
-    // A map of "received TXO public key" to TSPaymentModel for
-    // (incoming) transactions.
-    var incomingAnyMap = MultiMap<Data, TSPaymentModel>()
+    // A map of "received TXO public key" to TSPaymentModel or ArchivedPayment
+    // representing an (incoming) transactions.
+    var incomingAnyMap = MultiMap<Data, PaymentState>()
 
-    // A map of "spent TXO image key" to TSPaymentModel for
-    // (known, outgoing) transactions.
-    var spentImageKeyMap = [Data: TSPaymentModel]()
+    // A map of "spent TXO image key" to TSPaymentModel or ArchivedPayment
+    // representing a (known, outgoing) transactions.
+    var spentImageKeyMap = [Data: PaymentState]()
 
-    // A map of "output TXO public key" to TSPaymentModel for
-    // (known, outgoing) transactions.
-    var outputPublicKeyMap = [Data: TSPaymentModel]()
+    // A map of "output TXO public key" to TSPaymentModel or ArchivedPayment
+    // representing a (known, outgoing) transactions.
+    var outputPublicKeyMap = [Data: PaymentState]()
 
-    // A map of "ledger block index" to TSPaymentModel for
+    // A map of "ledger block index" to TSPaymentModel or ArchivedPayment for
     // all payment models.
     //
     // TODO: Extend unit test to verify this state.
-    var ledgerBlockIndexMap = MultiMap<UInt64, TSPaymentModel>()
+    var ledgerBlockIndexMap = MultiMap<UInt64, PaymentState>()
 
     // MARK: -
 
@@ -830,7 +985,7 @@ internal class PaymentsDatabaseState {
 
         owsAssertDebug(paymentModel.isValid)
 
-        allPaymentModels.append(paymentModel)
+        allPaymentState.append(.model(paymentModel))
 
         let formattedState = paymentModel.descriptionForLogs
 
@@ -842,7 +997,7 @@ internal class PaymentsDatabaseState {
         if let incomingTransactionPublicKeys = paymentModel.mobileCoin?.incomingTransactionPublicKeys {
             owsAssertDebug(paymentModel.canHaveMCIncomingTransaction)
             for key in incomingTransactionPublicKeys {
-                incomingAnyMap.add(key: key, value: paymentModel)
+                incomingAnyMap.add(key: key, value: .model(paymentModel))
             }
         } else if paymentModel.shouldHaveMCIncomingTransaction {
             owsFailDebug("Empty or missing mcIncomingTransaction: \(formattedState).")
@@ -851,7 +1006,7 @@ internal class PaymentsDatabaseState {
         if let mcSpentKeyImages = paymentModel.mcSpentKeyImages {
             owsAssertDebug(paymentModel.canHaveMCSpentKeyImages)
             for spentImageKey in mcSpentKeyImages {
-                spentImageKeyMap[spentImageKey] = paymentModel
+                spentImageKeyMap[spentImageKey] = .model(paymentModel)
             }
         } else if paymentModel.shouldHaveMCSpentKeyImages {
             owsFailDebug("Empty or missing mcSpentKeyImages: \(formattedState).")
@@ -860,7 +1015,7 @@ internal class PaymentsDatabaseState {
         if let mcOutputPublicKeys = paymentModel.mcOutputPublicKeys {
             owsAssertDebug(paymentModel.canHaveMCOutputPublicKeys)
             for outputPublicKeys in mcOutputPublicKeys {
-                outputPublicKeyMap[outputPublicKeys] = paymentModel
+                outputPublicKeyMap[outputPublicKeys] = .model(paymentModel)
             }
         } else if paymentModel.shouldHaveMCOutputPublicKeys {
             owsFailDebug("Empty or missing mcOutputPublicKeys: \(formattedState).")
@@ -868,7 +1023,59 @@ internal class PaymentsDatabaseState {
 
         let ledgerBlockIndex = paymentModel.mobileCoin?.ledgerBlockIndex ?? 0
         if ledgerBlockIndex > 0 {
-            ledgerBlockIndexMap.add(key: ledgerBlockIndex, value: paymentModel)
+            ledgerBlockIndexMap.add(key: ledgerBlockIndex, value: .model(paymentModel))
+        }
+    }
+
+    func add(archivedPayment: ArchivedPayment) {
+
+        guard !archivedPayment.status.isFailure else { return }
+
+        var wasPaymentAdded = false
+        switch archivedPayment.direction {
+        case .unknown:
+            return
+        case .incoming:
+            archivedPayment.mobileCoinIdentification?.publicKey?
+                 .filter { item in
+                    incomingAnyMap[item].isEmpty
+                 }
+                 .forEach {
+                     incomingAnyMap.add(key: $0, value: .archivedPayment(archivedPayment))
+                     wasPaymentAdded = true
+                 }
+        case .outgoing:
+            if archivedPayment.mobileCoinIdentification?.keyImages == nil || archivedPayment.mobileCoinIdentification?.publicKey == nil {
+                owsFailDebug("missing data ")
+            }
+
+            archivedPayment.mobileCoinIdentification?.keyImages?
+                .filter { item in
+                    spentImageKeyMap[item] == nil
+                }
+                .forEach {
+                    spentImageKeyMap[$0] = .archivedPayment(archivedPayment)
+                    wasPaymentAdded = true
+                }
+            archivedPayment.mobileCoinIdentification?.publicKey?
+                .filter { item in
+                    outputPublicKeyMap[item] == nil
+                }
+                .forEach {
+                    outputPublicKeyMap[$0] = .archivedPayment(archivedPayment)
+                    wasPaymentAdded = true
+                }
+        }
+
+        if wasPaymentAdded {
+            allPaymentState.append(.archivedPayment(archivedPayment))
+        }
+
+        if
+            let ledgerBlockIndex = archivedPayment.blockIndex,
+            ledgerBlockIndexMap[ledgerBlockIndex].isEmpty
+        {
+            ledgerBlockIndexMap.add(key: ledgerBlockIndex, value: .archivedPayment(archivedPayment))
         }
     }
 }

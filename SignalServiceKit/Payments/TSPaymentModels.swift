@@ -329,7 +329,7 @@ extension TSPaymentModel: TSPaymentBaseModel {
                 isValid = false
             }
         } else {
-            let shouldHaveFeeAmount = !isUnidentified && isOutgoing && !isFailed
+            let shouldHaveFeeAmount = !isUnidentified && isOutgoing && !isRestored && !isFailed
             if shouldHaveFeeAmount {
                 owsFailDebug("Missing feeAmount: \(formattedState).")
                 isValid = false
@@ -342,7 +342,7 @@ extension TSPaymentModel: TSPaymentBaseModel {
             isValid = false
         }
 
-        let shouldHaveMCRecipientPublicAddressData = isOutgoing && (isIdentifiedPayment || isOutgoingTransfer) && !isFailed
+        let shouldHaveMCRecipientPublicAddressData = !isRestored && isOutgoing && (isIdentifiedPayment || isOutgoingTransfer) && !isFailed
         if shouldHaveMCRecipientPublicAddressData, mcRecipientPublicAddressData == nil {
             owsFailDebug("Missing mcRecipientPublicAddressData: \(formattedState).")
         }
@@ -485,6 +485,10 @@ extension TSPaymentModel: TSPaymentBaseModel {
         paymentType.isUnidentified
     }
 
+    public var isRestored: Bool {
+        paymentType.isRestored
+    }
+
     public var isDefragmentation: Bool {
         paymentType.isDefragmentation
     }
@@ -624,6 +628,7 @@ extension TSPaymentType {
     public var isIncoming: Bool {
         switch self {
         case .incomingPayment,
+             .incomingRestored,
              .incomingUnidentified:
             return true
         case .outgoingPayment,
@@ -631,7 +636,8 @@ extension TSPaymentType {
              .outgoingUnidentified,
              .outgoingTransfer,
              .outgoingDefragmentation,
-             .outgoingDefragmentationNotFromLocalDevice:
+             .outgoingDefragmentationNotFromLocalDevice,
+             .outgoingRestored:
             return false
         @unknown default:
             owsFailDebug("Invalid value: \(rawValue)")
@@ -642,7 +648,9 @@ extension TSPaymentType {
     public var isIdentifiedPayment: Bool {
         switch self {
         case .incomingPayment,
+             .incomingRestored,
              .outgoingPayment,
+             .outgoingRestored,
              .outgoingPaymentNotFromLocalDevice:
             return true
         case .incomingUnidentified,
@@ -667,7 +675,29 @@ extension TSPaymentType {
              .outgoingPaymentNotFromLocalDevice,
              .outgoingTransfer,
              .outgoingDefragmentation,
-             .outgoingDefragmentationNotFromLocalDevice:
+             .outgoingDefragmentationNotFromLocalDevice,
+             .incomingRestored,
+             .outgoingRestored:
+            return false
+        @unknown default:
+            owsFailDebug("Invalid value: \(rawValue)")
+            return false
+        }
+    }
+
+    public var isRestored: Bool {
+        switch self {
+        case .incomingRestored,
+             .outgoingRestored:
+            return true
+        case .incomingPayment,
+             .outgoingPayment,
+             .outgoingPaymentNotFromLocalDevice,
+             .outgoingTransfer,
+             .outgoingDefragmentation,
+             .outgoingDefragmentationNotFromLocalDevice,
+             .incomingUnidentified,
+             .outgoingUnidentified:
             return false
         @unknown default:
             owsFailDebug("Invalid value: \(rawValue)")
@@ -685,7 +715,9 @@ extension TSPaymentType {
              .outgoingPaymentNotFromLocalDevice,
              .outgoingTransfer,
              .incomingUnidentified,
-             .outgoingUnidentified:
+             .outgoingUnidentified,
+             .incomingRestored,
+             .outgoingRestored:
             return false
         @unknown default:
             owsFailDebug("Invalid value: \(rawValue)")
@@ -703,7 +735,9 @@ extension TSPaymentType {
              .outgoingTransfer,
              .incomingUnidentified,
              .outgoingUnidentified,
-             .outgoingDefragmentation:
+             .outgoingDefragmentation,
+             .incomingRestored,
+             .outgoingRestored:
             return false
         @unknown default:
             owsFailDebug("Invalid value: \(rawValue)")
