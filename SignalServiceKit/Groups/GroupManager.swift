@@ -452,7 +452,7 @@ public class GroupManager: NSObject {
 
     private static func updateDisappearingMessagesInDatabaseAndCreateMessages(
         newToken: DisappearingMessageToken,
-        contactThread: TSThread,
+        contactThread: TSContactThread,
         changeAuthor: Aci?,
         localIdentifiers: LocalIdentifiers,
         transaction: SDSAnyWriteTransaction
@@ -481,7 +481,7 @@ public class GroupManager: NSObject {
             }()
 
             let infoMessage = OWSDisappearingConfigurationUpdateInfoMessage(
-                thread: contactThread,
+                contactThread: contactThread,
                 configuration: result.newConfiguration,
                 createdByRemoteName: remoteContactName,
                 createdInExistingGroup: false

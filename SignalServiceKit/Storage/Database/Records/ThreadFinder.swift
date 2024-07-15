@@ -312,14 +312,15 @@ public class ThreadFinder: Dependencies {
         return true
     }
 
+    /// Whether we should set the default timer for the given contact thread.
+    ///
+    /// - Note
+    /// We never set the default timer for group threads, which are instead set
+    /// during group creation.
     public func shouldSetDefaultDisappearingMessageTimer(
-        thread: TSThread,
+        contactThread: TSContactThread,
         transaction tx: SDSAnyReadTransaction
     ) -> Bool {
-        // We never set the default timer for group threads. Group thread timers
-        // are set during group creation.
-        guard !thread.isGroupThread else { return false }
-
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
 
         // Make sure the universal timer is enabled.
@@ -332,14 +333,14 @@ public class ThreadFinder: Dependencies {
 
         // Make sure there the current timer is disabled.
         guard !dmConfigurationStore.fetchOrBuildDefault(
-            for: .thread(thread),
+            for: .thread(contactThread),
             tx: tx.asV2Read
         ).isEnabled else {
             return false
         }
 
         // Make sure there has been no user initiated interactions.
-        return !InteractionFinder(threadUniqueId: thread.uniqueId)
+        return !InteractionFinder(threadUniqueId: contactThread.uniqueId)
             .hasUserInitiatedInteraction(transaction: tx)
     }
 

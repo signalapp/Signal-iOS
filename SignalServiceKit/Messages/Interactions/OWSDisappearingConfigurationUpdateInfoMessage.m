@@ -27,12 +27,12 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (instancetype)initWithThread:(TSThread *)thread
-                 configuration:(OWSDisappearingMessagesConfiguration *)configuration
-           createdByRemoteName:(nullable NSString *)remoteName
-        createdInExistingGroup:(BOOL)createdInExistingGroup
+- (instancetype)initWithContactThread:(TSContactThread *)contactThread
+                        configuration:(OWSDisappearingMessagesConfiguration *)configuration
+                  createdByRemoteName:(nullable NSString *)remoteName
+               createdInExistingGroup:(BOOL)createdInExistingGroup
 {
-    self = [super initWithThread:thread
+    self = [super initWithThread:contactThread
                        timestamp:0
                       serverGuid:nil
                      messageType:TSInfoMessageTypeDisappearingMessagesUpdate

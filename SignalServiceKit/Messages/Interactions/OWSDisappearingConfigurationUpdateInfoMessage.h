@@ -8,7 +8,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSDisappearingMessagesConfiguration;
-@class TSThread;
+@class TSContactThread;
 
 @interface OWSDisappearingConfigurationUpdateInfoMessage : TSInfoMessage
 
@@ -61,13 +61,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-/**
- * @param remoteName is nil when created by the local user
- */
-- (instancetype)initWithThread:(TSThread *)thread
-                 configuration:(OWSDisappearingMessagesConfiguration *)configuration
-           createdByRemoteName:(nullable NSString *)remoteName
-        createdInExistingGroup:(BOOL)createdInExistingGroup NS_DESIGNATED_INITIALIZER;
+/// Create a new disappearing-timer-update info message.
+///
+/// - Important
+/// This info message today is only inserted for contact threads, and was
+/// historically persisted for GV1 groups. It's unclear, however, if these were
+/// ever persisted in GV2 threads, which today represent these updates using
+/// "group update items".
+///
+/// - SeeAlso ``GroupUpdateItemBuilder``
+/// - SeeAlso ``GroupUpdateInfoMessageInserter``
+- (instancetype)initWithContactThread:(TSContactThread *)contactThread
+                        configuration:(OWSDisappearingMessagesConfiguration *)configuration
+                  createdByRemoteName:(nullable NSString *)remoteName
+               createdInExistingGroup:(BOOL)createdInExistingGroup NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 

@@ -224,16 +224,23 @@ public extension ThreadUtil {
 // MARK: - Profile Whitelist
 
 extension ThreadUtil {
-    private static func shouldSetUniversalTimer(for thread: TSThread, tx: SDSAnyReadTransaction) -> Bool {
-        ThreadFinder().shouldSetDefaultDisappearingMessageTimer(thread: thread, transaction: tx)
+    /// Should we set the universal timer for this contact thread?
+    /// - Note
+    /// Group threads never go through this method, and instead have their
+    /// disappearing-message timer set during group creation.
+    private static func shouldSetUniversalTimer(contactThread: TSContactThread, tx: SDSAnyReadTransaction) -> Bool {
+        ThreadFinder().shouldSetDefaultDisappearingMessageTimer(
+            contactThread: contactThread,
+            transaction: tx
+        )
     }
 
-    private static func setUniversalTimer(for thread: TSThread, tx: SDSAnyWriteTransaction) {
+    private static func setUniversalTimer(contactThread: TSContactThread, tx: SDSAnyWriteTransaction) {
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
         let dmUniversalToken = dmConfigurationStore.fetchOrBuildDefault(for: .universal, tx: tx.asV2Read).asToken
-        let dmResult = dmConfigurationStore.set(token: dmUniversalToken, for: .thread(thread), tx: tx.asV2Write)
+        let dmResult = dmConfigurationStore.set(token: dmUniversalToken, for: .thread(contactThread), tx: tx.asV2Write)
         OWSDisappearingConfigurationUpdateInfoMessage(
-            thread: thread,
+            contactThread: contactThread,
             configuration: dmResult.newConfiguration,
             createdByRemoteName: nil,
             createdInExistingGroup: false
@@ -252,11 +259,19 @@ extension ThreadUtil {
     public class func addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(
         _ thread: TSThread
     ) -> Bool {
-        let (shouldSetUniversalTimer, shouldAddToProfileWhitelist) = databaseStorage.read { tx in
-            (Self.shouldSetUniversalTimer(for: thread, tx: tx), shouldAddThreadToProfileWhitelist(thread, tx: tx))
+        let threadAsContactThread = thread as? TSContactThread
+
+        let (shouldSetUniversalTimer, shouldAddToProfileWhitelist) = databaseStorage.read { tx -> (Bool, Bool) in
+            let universalTimer: Bool = {
+                guard let threadAsContactThread else { return false }
+                return Self.shouldSetUniversalTimer(contactThread: threadAsContactThread, tx: tx)
+            }()
+            let profileWhitelist = shouldAddThreadToProfileWhitelist(thread, tx: tx)
+
+            return (universalTimer, profileWhitelist)
         }
-        if shouldSetUniversalTimer {
-            databaseStorage.write { tx in setUniversalTimer(for: thread, tx: tx) }
+        if shouldSetUniversalTimer, let threadAsContactThread {
+            databaseStorage.write { tx in setUniversalTimer(contactThread: threadAsContactThread, tx: tx) }
         }
         if shouldAddToProfileWhitelist {
             databaseStorage.write { tx in profileManager.addThread(toProfileWhitelist: thread, transaction: tx) }
@@ -270,8 +285,12 @@ extension ThreadUtil {
         setDefaultTimerIfNecessary: Bool,
         tx: SDSAnyWriteTransaction
     ) -> Bool {
-        if setDefaultTimerIfNecessary, shouldSetUniversalTimer(for: thread, tx: tx) {
-            setUniversalTimer(for: thread, tx: tx)
+        if
+            setDefaultTimerIfNecessary,
+            let contactThread = thread as? TSContactThread,
+            shouldSetUniversalTimer(contactThread: contactThread, tx: tx)
+        {
+            setUniversalTimer(contactThread: contactThread, tx: tx)
         }
         let shouldAddToProfileWhitelist = shouldAddThreadToProfileWhitelist(thread, tx: tx)
         if shouldAddToProfileWhitelist {

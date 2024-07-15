@@ -713,7 +713,16 @@ private extension MessageLoader {
     }
 
     func shouldShowDefaultDisappearingMessageTimer(thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
-        ThreadFinder().shouldSetDefaultDisappearingMessageTimer(thread: thread, transaction: transaction)
+        guard let contactThread = thread as? TSContactThread else {
+            // Group threads get their initial disappearing message timer during
+            // group creation.
+            return false
+        }
+
+        return ThreadFinder().shouldSetDefaultDisappearingMessageTimer(
+            contactThread: contactThread,
+            transaction: transaction
+        )
     }
 }
 

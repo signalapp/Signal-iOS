@@ -1149,51 +1149,6 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             ]
         }
 
-        // Disappearing Messages
-
-        if let durationSeconds = OWSDisappearingMessagesConfiguration.presetDurationsSeconds().first?.uint32Value {
-            let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-            let disappearingMessagesConfiguration = dmConfigurationStore
-                .fetchOrBuildDefault(for: .thread(thread), tx: transaction.asV2Read)
-                .copyAsEnabled(withDurationSeconds: durationSeconds)
-            results.append(OWSDisappearingConfigurationUpdateInfoMessage(
-                thread: thread,
-                configuration: disappearingMessagesConfiguration,
-                createdByRemoteName: "Alice",
-                createdInExistingGroup: false
-            ))
-            results.append(OWSDisappearingConfigurationUpdateInfoMessage(
-                thread: thread,
-                configuration: disappearingMessagesConfiguration,
-                createdByRemoteName: nil,
-                createdInExistingGroup: true
-            ))
-        }
-
-        if let durationSeconds = OWSDisappearingMessagesConfiguration.presetDurationsSeconds().last?.uint32Value {
-            let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-            let disappearingMessagesConfiguration = dmConfigurationStore
-                .fetchOrBuildDefault(for: .thread(thread), tx: transaction.asV2Read)
-                .copyAsEnabled(withDurationSeconds: durationSeconds)
-            results.append(OWSDisappearingConfigurationUpdateInfoMessage(
-                thread: thread,
-                configuration: disappearingMessagesConfiguration,
-                createdByRemoteName: "Alice",
-                createdInExistingGroup: false
-            ))
-        }
-
-        let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-        let disappearingMessagesConfiguration = dmConfigurationStore
-            .fetchOrBuildDefault(for: .thread(thread), tx: transaction.asV2Read)
-            .copy(withIsEnabled: false)
-        results.append(OWSDisappearingConfigurationUpdateInfoMessage(
-            thread: thread,
-            configuration: disappearingMessagesConfiguration,
-            createdByRemoteName: "Alice",
-            createdInExistingGroup: false
-        ))
-
         results += [
             TSInfoMessage(thread: thread, messageType: .typeSessionDidEnd),
             // TODO: customMessage?
