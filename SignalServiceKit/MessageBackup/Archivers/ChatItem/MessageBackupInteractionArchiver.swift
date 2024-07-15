@@ -46,6 +46,11 @@ extension MessageBackup {
             /// into the `createdByLocalUser`; the former is just omitted from
             /// backups.
             case inviteFriendsToNewlyCreatedGroup
+
+            /// This is supposedly a group update, but we don't have any
+            /// metadata on what the update actually was, so we're dropping this
+            /// update message.
+            case missingUpdateMetadata
         }
 
         /// Represents types of ``TSErrorMessage``s (as described by

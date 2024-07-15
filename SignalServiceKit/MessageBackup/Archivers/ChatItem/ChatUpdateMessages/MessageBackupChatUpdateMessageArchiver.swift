@@ -81,6 +81,8 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
             }
 
             switch infoMessage.messageType {
+            case .typeGroupUpdate:
+                return .skippableChatUpdate(.skippableGroupUpdate(.missingUpdateMetadata))
             case .userNotRegistered:
                 return .skippableChatUpdate(.legacyInfoMessage(.userNotRegistered))
             case .typeUnsupportedMessage:
@@ -114,7 +116,6 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
                     tx: tx
                 )
             case
-                    .typeGroupUpdate,
                     .typeDisappearingMessagesUpdate,
                     .profileUpdate,
                     .threadMerge,
