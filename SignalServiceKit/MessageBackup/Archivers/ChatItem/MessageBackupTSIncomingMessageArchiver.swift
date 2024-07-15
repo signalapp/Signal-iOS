@@ -26,6 +26,7 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
 
     func archiveInteraction(
         _ interaction: TSInteraction,
+        thread _: TSThread,
         context: MessageBackup.ChatArchivingContext,
         tx: DBReadTransaction
     ) -> MessageBackup.ArchiveInteractionResult<Details> {

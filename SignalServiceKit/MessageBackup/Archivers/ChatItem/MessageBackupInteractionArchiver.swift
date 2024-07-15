@@ -156,6 +156,7 @@ internal protocol MessageBackupInteractionArchiver: MessageBackupProtoArchiver {
 
     func archiveInteraction(
         _ interaction: TSInteraction,
+        thread: TSThread,
         context: MessageBackup.ChatArchivingContext,
         tx: DBReadTransaction
     ) -> MessageBackup.ArchiveInteractionResult<Details>

@@ -73,8 +73,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
             groupUpdateHelper: groupUpdateHelper,
             groupUpdateItemBuilder: groupUpdateItemBuilder,
             individualCallRecordManager: individualCallRecordManager,
-            interactionStore: interactionStore,
-            threadStore: threadStore
+            interactionStore: interactionStore
         )
     // TODO: need for info messages. not story messages, those are skipped.
     // are there other message types? what about e.g. payment messages?
@@ -159,12 +158,24 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
     ) -> ArchiveMultiFrameResult {
         var partialErrors = [ArchiveFrameError]()
 
-        guard let chatId = context[interaction.uniqueThreadIdentifier] else {
+        guard
+            let chatId = context[interaction.uniqueThreadIdentifier],
+            let thread = threadStore.fetchThreadForInteraction(interaction, tx: tx)
+        else {
             partialErrors.append(.archiveFrameError(
                 .referencedThreadIdMissing(interaction.uniqueThreadIdentifier),
                 interaction.uniqueInteractionId
             ))
             return .partialSuccess(partialErrors)
+        }
+
+        if
+            let groupThread = thread as? TSGroupThread,
+            groupThread.isGroupV1Thread
+        {
+            /// We are knowingly dropping GV1 data from backups, so we'll skip
+            /// archiving any interactions for GV1 threads without errors.
+            return .success
         }
 
         guard let archiver = self.archiver(for: interaction.archiverType()) else {
@@ -176,6 +187,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
 
         let result = archiver.archiveInteraction(
             interaction,
+            thread: thread,
             context: context,
             tx: tx
         )

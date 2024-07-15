@@ -16,20 +16,16 @@ final class MessageBackupSimpleChatUpdateArchiver {
     private let logger: MessageBackupLogger = .shared
 
     private let interactionStore: any InteractionStore
-    private let threadStore: any ThreadStore
 
-    init(
-        interactionStore: any InteractionStore,
-        threadStore: any ThreadStore
-    ) {
+    init(interactionStore: any InteractionStore) {
         self.interactionStore = interactionStore
-        self.threadStore = threadStore
     }
 
     // MARK: -
 
     func archiveSimpleChatUpdate(
         infoMessage: TSInfoMessage,
+        thread: TSThread,
         context: MessageBackup.ChatArchivingContext,
         tx: any DBReadTransaction
     ) -> ArchiveChatUpdateMessageResult {
@@ -193,7 +189,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
             updateAuthorRecipientId = recipientId
         case .containingContactThread:
             guard
-                let contactThread = threadStore.fetchThreadForInteraction(infoMessage, tx: tx) as? TSContactThread,
+                let contactThread = thread as? TSContactThread,
                 let authorAddress = contactThread.contactAddress.asSingleServiceIdBackupAddress()
             else {
                 return messageFailure(.simpleChatUpdateMessageNotInContactThread)
@@ -224,6 +220,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
 
     func archiveSimpleChatUpdate(
         errorMessage: TSErrorMessage,
+        thread: TSThread,
         context: MessageBackup.ChatArchivingContext,
         tx: any DBReadTransaction
     ) -> ArchiveChatUpdateMessageResult {
@@ -274,7 +271,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
             /// They also historically did not persist the recipient on the
             /// message, so we'll pull it off the thread.
             guard
-                let contactThread = threadStore.fetchThreadForInteraction(errorMessage, tx: tx) as? TSContactThread,
+                let contactThread = thread as? TSContactThread,
                 let recipientAddress = contactThread.contactAddress.asSingleServiceIdBackupAddress()
             else {
                 return messageFailure(.sessionRefreshInteractionMissingAuthor)

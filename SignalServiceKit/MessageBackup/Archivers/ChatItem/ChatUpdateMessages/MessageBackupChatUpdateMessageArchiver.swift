@@ -20,8 +20,7 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
         groupUpdateHelper: any GroupUpdateInfoMessageInserterBackupHelper,
         groupUpdateItemBuilder: any GroupUpdateItemBuilder,
         individualCallRecordManager: any IndividualCallRecordManager,
-        interactionStore: any InteractionStore,
-        threadStore: any ThreadStore
+        interactionStore: any InteractionStore
     ) {
         groupCallArchiver = MessageBackupGroupCallArchiver(
             callRecordStore: callRecordStore,
@@ -39,8 +38,7 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
             interactionStore: interactionStore
         )
         simpleChatUpdateArchiver = MessageBackupSimpleChatUpdateArchiver(
-            interactionStore: interactionStore,
-            threadStore: threadStore
+            interactionStore: interactionStore
         )
     }
 
@@ -48,6 +46,7 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
 
     func archiveInteraction(
         _ interaction: TSInteraction,
+        thread: TSThread,
         context: MessageBackup.ChatArchivingContext,
         tx: any DBReadTransaction
     ) -> ArchiveChatUpdateMessageResult {
@@ -112,6 +111,7 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
                 /// These info message types map to simple chat updates.
                 return simpleChatUpdateArchiver.archiveSimpleChatUpdate(
                     infoMessage: infoMessage,
+                    thread: thread,
                     context: context,
                     tx: tx
                 )
@@ -127,6 +127,7 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
             /// All `TSErrorMessage`s map to simple chat updates.
             return simpleChatUpdateArchiver.archiveSimpleChatUpdate(
                 errorMessage: errorMessage,
+                thread: thread,
                 context: context,
                 tx: tx
             )
