@@ -2471,7 +2471,7 @@ private extension LocalIdentifiers {
 
 // MARK: - Dependencies
 
-internal typealias Shims = GroupUpdateItemBuilderImpl.Shims
+private typealias Shims = GroupUpdateItemBuilderImpl.Shims
 private typealias IsLocalUserBlock = (SignalServiceAddress) -> Bool
 
 extension GroupUpdateItemBuilderImpl {
