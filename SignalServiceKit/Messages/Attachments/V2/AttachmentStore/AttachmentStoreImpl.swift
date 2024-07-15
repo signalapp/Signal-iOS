@@ -231,17 +231,24 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
         let sql = "SELECT * FROM \(recordType.databaseTableName) WHERE \(filterClauses.joined(separator: " OR "));"
         do {
-            return try RecordType
+            var results = try RecordType
                 .fetchAll(db, sql: sql, arguments: arguments)
-                .compactMap {
-                    do {
-                        return try $0.asReference()
-                    } catch {
-                        // Fail the individual row, not all of them.
-                        owsFailDebug("Failed to parse attachment reference: \(error)")
-                        return nil
-                    }
+
+            // If we have one owner and are capable of sorting, sort in ascending order.
+            if owners.count == 1, let orderInOwnerKey = RecordType.orderInOwnerKey {
+                results = results.sorted(by: { lhs, rhs in
+                    return lhs[keyPath: orderInOwnerKey] ?? 0 <= rhs[keyPath: orderInOwnerKey] ?? 0
+                })
+            }
+            return results.compactMap {
+                do {
+                    return try $0.asReference()
+                } catch {
+                    // Fail the individual row, not all of them.
+                    owsFailDebug("Failed to parse attachment reference: \(error)")
+                    return nil
                 }
+            }
         } catch {
             owsFailDebug("Failed to fetch attachment references \(error)")
             return []

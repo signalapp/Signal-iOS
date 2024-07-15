@@ -26,11 +26,17 @@ internal protocol FetchableAttachmentReferenceRecord: Codable, PersistableRecord
 
     static var attachmentRowIdColumn: Column { get }
 
+    static var orderInOwnerKey: KeyPath<Self, UInt32?>? { get }
+
     /// Filters to apply when querying the table for rows matching the provided row id.
     /// If returns `nonMatchingOwnerType`, the record's table should not be queried at all.
     static func columnFilters(for ownerId: AttachmentReference.OwnerId) -> AttachmentReference.FetchableRecordColumnFilter
 
     func asReference() throws -> AttachmentReference
+}
+
+extension FetchableAttachmentReferenceRecord {
+    static var orderInOwnerKey: KeyPath<Self, UInt32?>? { nil }
 }
 
 extension AttachmentReference {
@@ -98,6 +104,8 @@ extension AttachmentReference {
         static var ownerRowIdColumn: Column { Column(CodingKeys.ownerRowId) }
 
         static var attachmentRowIdColumn: Column { Column(CodingKeys.attachmentRowId) }
+
+        static var orderInOwnerKey: KeyPath<Self, UInt32?>? { \.orderInMessage }
 
         static func columnFilters(for ownerId: AttachmentReference.OwnerId) -> FetchableRecordColumnFilter {
             func ownerTypeAndRowId(_ messageRowId: Int64, _ ownerType: MessageOwnerTypeRaw) -> FetchableRecordColumnFilter {
