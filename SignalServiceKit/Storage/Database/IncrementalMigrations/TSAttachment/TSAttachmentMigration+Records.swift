@@ -207,6 +207,96 @@ extension TSAttachmentMigration {
         var videoStillFrameRelativeFilePath: String?
         var originalAttachmentIdForQuotedReply: Int64?
 
+        init(
+            id: Int64?,
+            blurHash: String?,
+            sha256ContentHash: Data?,
+            encryptedByteCount: UInt32?,
+            unencryptedByteCount: UInt32?,
+            mimeType: String,
+            encryptionKey: Data,
+            digestSHA256Ciphertext: Data?,
+            contentType: UInt32?,
+            transitCdnNumber: UInt32?,
+            transitCdnKey: String?,
+            transitUploadTimestamp: UInt64?,
+            transitEncryptionKey: Data?,
+            transitUnencryptedByteCount: UInt32?,
+            transitDigestSHA256Ciphertext: Data?,
+            lastTransitDownloadAttemptTimestamp: UInt64?,
+            mediaName: String?,
+            mediaTierCdnNumber: UInt32?,
+            mediaTierUnencryptedByteCount: UInt32?,
+            mediaTierUploadEra: String?,
+            lastMediaTierDownloadAttemptTimestamp: UInt64?,
+            thumbnailCdnNumber: UInt32?,
+            thumbnailUploadEra: String?,
+            lastThumbnailDownloadAttemptTimestamp: UInt64?,
+            localRelativeFilePath: String?,
+            localRelativeFilePathThumbnail: String?,
+            cachedAudioDurationSeconds: Double?,
+            cachedMediaHeightPixels: UInt32?,
+            cachedMediaWidthPixels: UInt32?,
+            cachedVideoDurationSeconds: Double?,
+            audioWaveformRelativeFilePath: String?,
+            videoStillFrameRelativeFilePath: String?,
+            originalAttachmentIdForQuotedReply: Int64?
+        ) {
+            self.id = id
+            self.blurHash = blurHash
+            self.sha256ContentHash = sha256ContentHash
+            self.encryptedByteCount = encryptedByteCount
+            self.unencryptedByteCount = unencryptedByteCount
+            self.mimeType = mimeType
+            self.encryptionKey = encryptionKey
+            self.digestSHA256Ciphertext = digestSHA256Ciphertext
+            self.contentType = contentType
+
+            // We only set transit tier fields if they are all set.
+            if
+                let transitCdnNumber,
+                transitCdnNumber != 0,
+                let transitCdnKey = transitCdnKey?.nilIfEmpty,
+                let transitEncryptionKey,
+                !transitEncryptionKey.isEmpty,
+                let transitUnencryptedByteCount,
+                let transitDigestSHA256Ciphertext,
+                !transitDigestSHA256Ciphertext.isEmpty
+            {
+                self.transitCdnNumber = transitCdnNumber
+                self.transitCdnKey = transitCdnKey
+                self.transitUploadTimestamp = transitUploadTimestamp ?? Date().ows_millisecondsSince1970
+                self.transitEncryptionKey = transitEncryptionKey
+                self.transitUnencryptedByteCount = transitUnencryptedByteCount
+                self.transitDigestSHA256Ciphertext = transitDigestSHA256Ciphertext
+            } else {
+                self.transitCdnNumber = nil
+                self.transitCdnKey = nil
+                self.transitUploadTimestamp = nil
+                self.transitEncryptionKey = nil
+                self.transitUnencryptedByteCount = nil
+                self.transitDigestSHA256Ciphertext = nil
+            }
+            self.lastTransitDownloadAttemptTimestamp = lastTransitDownloadAttemptTimestamp
+            self.mediaName = mediaName
+            self.mediaTierCdnNumber = mediaTierCdnNumber
+            self.mediaTierUnencryptedByteCount = mediaTierUnencryptedByteCount
+            self.mediaTierUploadEra = mediaTierUploadEra
+            self.lastMediaTierDownloadAttemptTimestamp = lastMediaTierDownloadAttemptTimestamp
+            self.thumbnailCdnNumber = thumbnailCdnNumber
+            self.thumbnailUploadEra = thumbnailUploadEra
+            self.lastThumbnailDownloadAttemptTimestamp = lastThumbnailDownloadAttemptTimestamp
+            self.localRelativeFilePath = localRelativeFilePath
+            self.localRelativeFilePathThumbnail = localRelativeFilePathThumbnail
+            self.cachedAudioDurationSeconds = cachedAudioDurationSeconds
+            self.cachedMediaHeightPixels = cachedMediaHeightPixels
+            self.cachedMediaWidthPixels = cachedMediaWidthPixels
+            self.cachedVideoDurationSeconds = cachedVideoDurationSeconds
+            self.audioWaveformRelativeFilePath = audioWaveformRelativeFilePath
+            self.videoStillFrameRelativeFilePath = videoStillFrameRelativeFilePath
+            self.originalAttachmentIdForQuotedReply = originalAttachmentIdForQuotedReply
+        }
+
         mutating func didInsert(with rowID: Int64, for column: String?) {
             self.id = rowID
         }
