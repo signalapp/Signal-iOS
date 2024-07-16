@@ -196,11 +196,9 @@ class ChatsSettingsViewController: OWSTableViewController2 {
             presentationDelay: 0.5,
             backgroundBlockQueueQos: .userInitiated,
             backgroundBlock: { modal in
-                self.databaseStorage.write { tx in
-                    self.clearHistoryWithSneakyTransaction(
-                        threadSoftDeleteManager: threadSoftDeleteManager
-                    )
-                }
+                self.clearHistoryWithSneakyTransaction(
+                    threadSoftDeleteManager: threadSoftDeleteManager
+                )
 
                 DispatchQueue.main.async {
                     modal.dismiss()
