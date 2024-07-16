@@ -168,7 +168,6 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         let vc = databaseStorage.read { tx in
             ConversationViewController.load(
                 threadViewModel: ThreadViewModel(thread: thread, forChatList: false, transaction: tx),
-                isSelectedDelegate: self,
                 action: action,
                 focusMessageId: focusMessageId,
                 tx: tx

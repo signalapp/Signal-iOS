@@ -340,8 +340,6 @@ extension ConversationViewController {
     public func startReadTimer(caller: String = #function) {
         AssertIsOnMainThread()
 
-        markAsReadLogger.info("Starting read timer for \(caller).")
-
         readTimer?.invalidate()
         let readTimer = Timer(timeInterval: 0.1, repeats: true) { [weak self] timer in
             guard let self else {
@@ -370,8 +368,6 @@ extension ConversationViewController {
 
     public func cancelReadTimer(caller: String = #function) {
         AssertIsOnMainThread()
-
-        markAsReadLogger.info("Canceling read timer for \(caller).")
 
         readTimer?.invalidate()
         self.readTimer = nil
@@ -445,22 +441,6 @@ extension ConversationViewController {
         AssertIsOnMainThread()
 
         guard
-            let isSelectedDelegate,
-            isSelectedDelegate.isConversationViewSelected(self)
-        else {
-            /// We've seen reports of conversation views marking messages as
-            /// read while users are on the chat list, which is to say even when
-            /// the given conversation isn't "selected". (We're not sure why,
-            /// although we suspect that something is holding onto a reference
-            /// to a CVC it shouldn't.)
-            ///
-            /// This workaround confirms that we are, in fact, selected before
-            /// trying to mark messages as read.
-            markAsReadLogger.warn("Trying to mark visible messages as read, but conversation view is not selected! \(caller)")
-            return
-        }
-
-        guard
             let navigationController,
             navigationController.topViewController === self
         else {
@@ -483,8 +463,6 @@ extension ConversationViewController {
         let lastVisibleSortId = self.lastVisibleSortId
         let isShowingUnreadMessage = lastVisibleSortId > self.lastSortIdMarkedRead
         if !self.isMarkingAsRead && isShowingUnreadMessage {
-            markAsReadLogger.info("Marking as read for \(caller).")
-
             self.isMarkingAsRead = true
 
             Self.receiptManager.markAsReadLocally(

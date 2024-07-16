@@ -171,7 +171,6 @@ extension ChatListViewController {
         let vc = databaseStorage.read { tx in
             ConversationViewController.load(
                 threadViewModel: threadViewModel,
-                isSelectedDelegate: nil,
                 action: .none,
                 focusMessageId: nil,
                 tx: tx

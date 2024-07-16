@@ -1885,7 +1885,6 @@
 		D994C7C92C45D0B9009ECEDA /* MessageBackupContactTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D994C7C52C45D07F009ECEDA /* MessageBackupContactTest.swift */; };
 		D994C7CA2C45D0BF009ECEDA /* MessageBackupDistributionListTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D994C7C72C45D0B4009ECEDA /* MessageBackupDistributionListTest.swift */; };
 		D994C7CE2C45D100009ECEDA /* MessageBackupExpirationTimerChatUpdateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D994C7CD2C45D100009ECEDA /* MessageBackupExpirationTimerChatUpdateTest.swift */; };
-		D994C7CF2C45D152009ECEDA /* MessageBackupSimpleChatUpdateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D994C7CB2C45D0D9009ECEDA /* MessageBackupSimpleChatUpdateTest.swift */; };
 		D994C7D12C45D24F009ECEDA /* MessageBackupProfileChangeChatUpdateArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D994C7D02C45D24F009ECEDA /* MessageBackupProfileChangeChatUpdateArchiver.swift */; };
 		D994C7D42C45E765009ECEDA /* profile-change-chat-update-message.jsonproto in Resources */ = {isa = PBXBuildFile; fileRef = D994C7D22C45E764009ECEDA /* profile-change-chat-update-message.jsonproto */; };
 		D994C7D52C45E765009ECEDA /* profile-change-chat-update-message.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D994C7D32C45E764009ECEDA /* profile-change-chat-update-message.binproto */; };
@@ -1904,7 +1903,6 @@
 		D99ABC742A3D0BE10034CD3B /* BitmapsImageParsingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99ABC722A3D0BBB0034CD3B /* BitmapsImageParsingTest.swift */; };
 		D99ABC782A3D132D0034CD3B /* blue-rectangle.png in Resources */ = {isa = PBXBuildFile; fileRef = D99ABC762A3D132D0034CD3B /* blue-rectangle.png */; };
 		D99ABC7A2A3D1D710034CD3B /* semitransparent.png in Resources */ = {isa = PBXBuildFile; fileRef = D99ABC792A3D1D710034CD3B /* semitransparent.png */; };
-		D99C25A22C2A18C1001B2012 /* ConversationViewIsSelectedDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99C25A12C2A18C1001B2012 /* ConversationViewIsSelectedDelegate.swift */; };
 		D99D960F292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */; };
 		D9A3E22B2A0D633500E2A8B5 /* UsernameLookupRecordTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F56F298DF41B00158EE4 /* UsernameLookupRecordTest.swift */; };
 		D9A3E2302A0DABDF00E2A8B5 /* UsernameQuerier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9A3E22F2A0DABDF00E2A8B5 /* UsernameQuerier.swift */; };
@@ -4959,7 +4957,6 @@
 		D99ABC722A3D0BBB0034CD3B /* BitmapsImageParsingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BitmapsImageParsingTest.swift; sourceTree = "<group>"; };
 		D99ABC762A3D132D0034CD3B /* blue-rectangle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "blue-rectangle.png"; sourceTree = "<group>"; };
 		D99ABC792A3D1D710034CD3B /* semitransparent.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = semitransparent.png; sourceTree = "<group>"; };
-		D99C25A12C2A18C1001B2012 /* ConversationViewIsSelectedDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewIsSelectedDelegate.swift; sourceTree = "<group>"; };
 		D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonateViewController+OneTimePaypalDonation.swift"; sourceTree = "<group>"; };
 		D9A3E22F2A0DABDF00E2A8B5 /* UsernameQuerier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameQuerier.swift; sourceTree = "<group>"; };
 		D9A81C6A2BAA54FC00C07D2B /* CallRecordSyncMessageConversationIdAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordSyncMessageConversationIdAdapter.swift; sourceTree = "<group>"; };
@@ -6290,7 +6287,6 @@
 				88928A70264099EC009C9B30 /* ConversationViewController+VoiceMessage.swift */,
 				888B6D4C25B2523700E2A662 /* ConversationViewController+Wallpaper.swift */,
 				34A4D88C267A363A00A794E7 /* ConversationViewController.swift */,
-				D99C25A12C2A18C1001B2012 /* ConversationViewIsSelectedDelegate.swift */,
 				3498AC9E25190E8B00B1F315 /* ConversationViewLayout.swift */,
 				50EF8DCB2A189B3000A00935 /* ConversationViewModel.swift */,
 				348815CF25545C0A00D4F4C4 /* CVAttachments.swift */,
@@ -13417,7 +13413,6 @@
 				88928A71264099EC009C9B30 /* ConversationViewController+VoiceMessage.swift in Sources */,
 				888B6D4D25B2523800E2A662 /* ConversationViewController+Wallpaper.swift in Sources */,
 				34A4D88D267A363A00A794E7 /* ConversationViewController.swift in Sources */,
-				D99C25A22C2A18C1001B2012 /* ConversationViewIsSelectedDelegate.swift in Sources */,
 				3498AC9F25190E8C00B1F315 /* ConversationViewLayout.swift in Sources */,
 				50EF8DCC2A189B3000A00935 /* ConversationViewModel.swift in Sources */,
 				50733B202BAD03E400CEEC1F /* CreateCallLinkViewController.swift in Sources */,

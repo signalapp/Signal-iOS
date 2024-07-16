@@ -44,22 +44,9 @@ public final class ConversationViewController: OWSViewController {
     public let collectionView: ConversationCollectionView
     public let searchController: ConversationSearchController
 
-    /// A delegate we can ask about our visibility to the user. If the delegate
-    /// is `nil`, we should assume we are not visible.
-    public weak var isSelectedDelegate: ConversationViewIsSelectedDelegate?
-
     var selectionToolbar: MessageActionsToolbar?
 
     var otherUsersProfileDidChangeEvent: DebouncedEvent?
-
-    class MarkAsReadLogger: PrefixedLogger {
-        init(thread: TSThread) {
-            super.init(prefix: "[MarkAsRead]", suffix: thread.uniqueId)
-        }
-    }
-
-    // [MarkAsRead] TODO: using this logger to track down the phantom "mark as read" bug. Remove once addressed.
-    let markAsReadLogger: MarkAsReadLogger
 
     /// See `ConversationViewController+OWS.updateContentInsetsDebounced`
     lazy var updateContentInsetsEvent = DebouncedEvents.build(
@@ -76,7 +63,6 @@ public final class ConversationViewController: OWSViewController {
 
     public static func load(
         threadViewModel: ThreadViewModel,
-        isSelectedDelegate: (any ConversationViewIsSelectedDelegate)?,
         action: ConversationViewAction,
         focusMessageId: String?,
         tx: SDSAnyReadTransaction
@@ -127,7 +113,6 @@ public final class ConversationViewController: OWSViewController {
             chatColor: chatColor,
             wallpaperViewBuilder: wallpaperViewBuilder
         )
-        cvc.isSelectedDelegate = isSelectedDelegate
 
         return cvc
     }
@@ -172,8 +157,6 @@ public final class ConversationViewController: OWSViewController {
         self.layout = ConversationViewLayout(conversationStyle: conversationStyle)
         self.collectionView = ConversationCollectionView(frame: .zero, collectionViewLayout: self.layout)
         self.searchController = ConversationSearchController(thread: threadViewModel.threadRecord)
-
-        self.markAsReadLogger = MarkAsReadLogger(thread: threadViewModel.threadRecord)
 
         super.init()
 
