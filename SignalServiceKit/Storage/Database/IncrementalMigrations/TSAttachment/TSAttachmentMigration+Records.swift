@@ -65,6 +65,57 @@ extension TSAttachmentMigration {
             let attachmentsFolder = rootPath.appendingPathComponent("Attachments")
             return attachmentsFolder.appendingPathComponent(localRelativeFilePath)
         }
+
+        var thumbnailsDirPath: String {
+            let dirName = "\(uniqueId)-thumbnails"
+            return OWSFileSystem.cachesDirectoryPath().appendingPathComponent(dirName)
+        }
+
+        var legacyThumbnailPath: String? {
+            guard let localRelativeFilePath else {
+                return nil
+            }
+            let filename = ((localRelativeFilePath as NSString).lastPathComponent as NSString).deletingPathExtension
+            let containingDir = (localRelativeFilePath as NSString).deletingLastPathComponent
+            let newFilename = filename.appending("-signal-ios-thumbnail")
+            return containingDir.appendingPathComponent(newFilename).appendingFileExtension("jpg")
+        }
+
+        var uniqueIdAttachmentFolder: String {
+            let rootPath = FileManager.default.containerURL(
+                forSecurityApplicationGroupIdentifier: TSConstants.applicationGroup
+            )!.path
+            let attachmentsFolder = rootPath.appendingPathComponent("Attachments")
+            return attachmentsFolder.appendingPathComponent(self.uniqueId)
+        }
+
+        func deleteFiles() throws {
+            // Ignore failure cuz its a cache directory anyway.
+            _ = OWSFileSystem.deleteFileIfExists(thumbnailsDirPath)
+
+            if let legacyThumbnailPath {
+                guard OWSFileSystem.deleteFileIfExists(legacyThumbnailPath) else {
+                    throw OWSAssertionError("Failed to delete file")
+                }
+            }
+
+            if let localFilePath {
+                guard OWSFileSystem.deleteFileIfExists(localFilePath) else {
+                    throw OWSAssertionError("Failed to delete file")
+                }
+            }
+
+            guard OWSFileSystem.deleteFileIfExists(uniqueIdAttachmentFolder) else {
+                throw OWSAssertionError("Failed to delete folder")
+            }
+        }
+
+        func deleteMediaGalleryRecord(tx: GRDBWriteTransaction) throws {
+            try tx.database.execute(
+                sql: "DELETE FROM media_gallery_items WHERE attachmentId = ?",
+                arguments: [self.id]
+            )
+        }
     }
 
     struct V1AttachmentReservedFileIds: Codable, MutablePersistableRecord, FetchableRecord {
