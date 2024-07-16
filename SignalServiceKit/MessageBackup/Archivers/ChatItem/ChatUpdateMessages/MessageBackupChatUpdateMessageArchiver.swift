@@ -9,6 +9,7 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
 
     static var archiverType: MessageBackup.ChatItemArchiverType { .chatUpdateMessage }
 
+    private let expirationTimerChatUpdateArchiver: MessageBackupExpirationTimerChatUpdateArchiver
     private let groupCallArchiver: MessageBackupGroupCallArchiver
     private let groupUpdateMessageArchiver: MessageBackupGroupUpdateMessageArchiver
     private let individualCallArchiver: MessageBackupIndividualCallArchiver
@@ -16,12 +17,17 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
 
     init(
         callRecordStore: any CallRecordStore,
+        contactManager: any MessageBackup.Shims.ContactManager,
         groupCallRecordManager: any GroupCallRecordManager,
         groupUpdateHelper: any GroupUpdateInfoMessageInserterBackupHelper,
         groupUpdateItemBuilder: any GroupUpdateItemBuilder,
         individualCallRecordManager: any IndividualCallRecordManager,
         interactionStore: any InteractionStore
     ) {
+        expirationTimerChatUpdateArchiver = MessageBackupExpirationTimerChatUpdateArchiver(
+            contactManager: contactManager,
+            interactionStore: interactionStore
+        )
         groupCallArchiver = MessageBackupGroupCallArchiver(
             callRecordStore: callRecordStore,
             groupCallRecordManager: groupCallRecordManager,
@@ -115,8 +121,14 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
                     context: context,
                     tx: tx
                 )
+            case .typeDisappearingMessagesUpdate:
+                return expirationTimerChatUpdateArchiver.archiveExpirationTimerChatUpdate(
+                    infoMessage: infoMessage,
+                    thread: thread,
+                    context: context,
+                    tx: tx
+                )
             case
-                    .typeDisappearingMessagesUpdate,
                     .profileUpdate,
                     .threadMerge,
                     .sessionSwitchover:
@@ -198,7 +210,13 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
                 tx: tx
             )
         case .expirationTimerChange(let expirationTimerUpdateProto):
-            return .messageFailure([.restoreFrameError(.unimplemented, chatItem.id)])
+            return expirationTimerChatUpdateArchiver.restoreExpirationTimerChatUpdate(
+                expirationTimerUpdateProto,
+                chatItem: chatItem,
+                chatThread: chatThread,
+                context: context,
+                tx: tx
+            )
         case .profileChange(let profileChangeUpdateProto):
             return .messageFailure([.restoreFrameError(.unimplemented, chatItem.id)])
         case .threadMerge(let threadMergeUpdateProto):

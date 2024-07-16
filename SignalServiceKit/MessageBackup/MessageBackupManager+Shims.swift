@@ -12,11 +12,13 @@ public enum MessageBackup {}
 extension MessageBackup {
     public enum Shims {
         public typealias BlockingManager = _MessageBackup_BlockingManagerShim
+        public typealias ContactManager = _MessageBackup_ContactManagerShim
         public typealias ProfileManager = _MessageBackup_ProfileManagerShim
     }
 
     public enum Wrappers {
         public typealias BlockingManager = _MessageBackup_BlockingManagerWrapper
+        public typealias ContactManager = _MessageBackup_ContactManagerWrapper
         public typealias ProfileManager = _MessageBackup_ProfileManagerWrapper
     }
 }
@@ -44,6 +46,24 @@ public class _MessageBackup_BlockingManagerWrapper: _MessageBackup_BlockingManag
 
     public func addBlockedAddress(_ address: SignalServiceAddress, tx: DBWriteTransaction) {
         blockingManager.addBlockedAddress(address, blockMode: .restoreFromBackup, transaction: SDSDB.shimOnlyBridge(tx))
+    }
+}
+
+// MARK: - ContactManager
+
+public protocol _MessageBackup_ContactManagerShim {
+    func displayName(_ address: SignalServiceAddress, tx: DBWriteTransaction) -> String
+}
+
+public class _MessageBackup_ContactManagerWrapper: _MessageBackup_ContactManagerShim {
+    private let contactManager: any ContactManager
+
+    init(_ contactManager: any ContactManager) {
+        self.contactManager = contactManager
+    }
+
+    public func displayName(_ address: SignalServiceAddress, tx: any DBWriteTransaction) -> String {
+        return contactManager.displayName(for: address, tx: SDSDB.shimOnlyBridge(tx)).resolvedValue()
     }
 }
 

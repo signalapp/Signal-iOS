@@ -897,6 +897,7 @@ public class AppSetup {
             ),
             chatItemArchiver: MessageBackupChatItemArchiverImpl(
                 callRecordStore: callRecordStore,
+                contactManager: MessageBackup.Wrappers.ContactManager(contactManager),
                 dateProvider: dateProvider,
                 groupCallRecordManager: groupCallRecordManager,
                 groupUpdateHelper: GroupUpdateInfoMessageInserterBackupHelperImpl(),

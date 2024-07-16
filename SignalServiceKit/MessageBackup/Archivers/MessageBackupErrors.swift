@@ -115,6 +115,19 @@ extension MessageBackup {
 
             /// The payment message was missing required additional payment information.
             case missingPaymentInformation
+
+            /// A "disappearing message config update" info message was not of
+            /// the expected SDS record type, ``OWSDisappearingConfigurationUpdateInfoMessage``.
+            case disappearingMessageConfigUpdateNotExpectedSDSRecordType
+            /// An ``OWSDisappearingConfigurationUpdateInfoMessage`` info
+            /// message was unexpectedly found in a non-contact thread.
+            /// - Note
+            /// Disappearing message timer updates for groups are handled by
+            /// "group update metadata" on ``TSInfoMessage``s.
+            case disappearingMessageConfigUpdateNotInContactThread
+            /// An ``OWSDisappearingConfigurationUpdateInfoMessage`` info
+            /// message was unexpectedly missing author info.
+            case disappearingMessageConfigUpdateMissingAuthor
         }
 
         private let type: ErrorType
@@ -176,7 +189,6 @@ extension MessageBackup {
                     .emptyGroupUpdate,
                     .missingLocalProfile,
                     .missingLocalProfileKey,
-                    .missingPaymentInformation,
                     .missingRequiredGroupMemberParams,
                     .groupCallRecordHadIndividualCallStatus,
                     .verificationStateUpdateInteractionMissingAuthor,
@@ -189,7 +201,11 @@ extension MessageBackup {
                     .foundComplexChatUpdateTypeWhenExpectingSimple,
                     .verificationStateChangeNotExpectedSDSRecordType,
                     .unknownProtocolVersionNotExpectedSDSRecordType,
-                    .simpleChatUpdateMessageNotInContactThread:
+                    .simpleChatUpdateMessageNotInContactThread,
+                    .missingPaymentInformation,
+                    .disappearingMessageConfigUpdateNotExpectedSDSRecordType,
+                    .disappearingMessageConfigUpdateNotInContactThread,
+                    .disappearingMessageConfigUpdateMissingAuthor:
                 // Log any others as we see them.
                 return nil
             }
@@ -394,6 +410,14 @@ extension MessageBackup {
                 /// restored payment information.
                 case unrecognizedPaymentTransaction
 
+                /// An "expiration timer update" was in a non-contact thread.
+                /// - Note
+                /// Expiration timer updates for group threads are handled via
+                /// a separate "group expiration timer update" proto.
+                case expirationTimerUpdateNotInContactThread
+                /// An "expiration timer update" contained an expiration timer
+                /// that overflowed the local type for timer updates.
+                case expirationTimerUpdateOverflowedLocalType
             }
 
             /// The proto contained invalid or self-contradictory data, e.g an invalid ACI.
@@ -506,7 +530,9 @@ extension MessageBackup {
                         .paymentsActivationRequestNotFromAci,
                         .paymentsActivatedNotFromAci,
                         .unrecognizedPaymentTransaction,
-                        .unsupportedProtocolVersionNotFromAci:
+                        .unsupportedProtocolVersionNotFromAci,
+                        .expirationTimerUpdateNotInContactThread,
+                        .expirationTimerUpdateOverflowedLocalType:
                     // Collapse all others by the id of the containing frame.
                     return idLogString
                 }

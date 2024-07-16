@@ -10,6 +10,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
     private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>
 
     private let callRecordStore: CallRecordStore
+    private let contactManager: MessageBackup.Shims.ContactManager
     private let dateProvider: DateProvider
     private let groupCallRecordManager: GroupCallRecordManager
     private let groupUpdateHelper: GroupUpdateInfoMessageInserterBackupHelper
@@ -23,6 +24,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
 
     public init(
         callRecordStore: CallRecordStore,
+        contactManager: MessageBackup.Shims.ContactManager,
         dateProvider: @escaping DateProvider,
         groupCallRecordManager: GroupCallRecordManager,
         groupUpdateHelper: GroupUpdateInfoMessageInserterBackupHelper,
@@ -35,6 +37,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         threadStore: ThreadStore
     ) {
         self.callRecordStore = callRecordStore
+        self.contactManager = contactManager
         self.dateProvider = dateProvider
         self.groupCallRecordManager = groupCallRecordManager
         self.groupUpdateHelper = groupUpdateHelper
@@ -69,6 +72,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
     private lazy var chatUpdateMessageArchiver =
         MessageBackupChatUpdateMessageArchiver(
             callRecordStore: callRecordStore,
+            contactManager: contactManager,
             groupCallRecordManager: groupCallRecordManager,
             groupUpdateHelper: groupUpdateHelper,
             groupUpdateItemBuilder: groupUpdateItemBuilder,

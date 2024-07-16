@@ -865,10 +865,10 @@ extension BackupProto {
         /**
          * 0 means the expiration timer was disabled
          */
-        public var expiresInMs: UInt32
+        public var expiresInMs: UInt64
         public var unknownFields: UnknownFields = .init()
 
-        public init(expiresInMs: UInt32) {
+        public init(expiresInMs: UInt64) {
             self.expiresInMs = expiresInMs
         }
 
@@ -9217,12 +9217,12 @@ extension BackupProto.ExpirationTimerChatUpdate : ProtoMessage {
 extension BackupProto.ExpirationTimerChatUpdate : Proto3Codable {
 
     public init(from protoReader: ProtoReader) throws {
-        var expiresInMs: UInt32 = 0
+        var expiresInMs: UInt64 = 0
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: expiresInMs = try protoReader.decode(UInt32.self)
+            case 1: expiresInMs = try protoReader.decode(UInt64.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
         }
@@ -9243,7 +9243,7 @@ extension BackupProto.ExpirationTimerChatUpdate : Codable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.expiresInMs = try container.decode(UInt32.self, forKey: "expiresInMs")
+        self.expiresInMs = try container.decode(stringEncoded: UInt64.self, forKey: "expiresInMs")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -9251,7 +9251,7 @@ extension BackupProto.ExpirationTimerChatUpdate : Codable {
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         if includeDefaults || self.expiresInMs != 0 {
-            try container.encode(self.expiresInMs, forKey: "expiresInMs")
+            try container.encode(stringEncoded: self.expiresInMs, forKey: "expiresInMs")
         }
     }
 
