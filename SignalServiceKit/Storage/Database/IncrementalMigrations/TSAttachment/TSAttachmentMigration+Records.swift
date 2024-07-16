@@ -326,6 +326,15 @@ extension TSAttachmentMigration {
         case shouldLoop = 3
     }
 
+    enum V2MessageAttachmentOwnerType: Int {
+        case bodyAttachment = 0
+        case oversizeText = 1
+        case linkPreview = 2
+        case quotedReplyAttachment = 3
+        case sticker = 4
+        case contactAvatar = 5
+    }
+
     struct MessageAttachmentReference: Codable, PersistableRecord, FetchableRecord {
         static let databaseTableName: String = "MessageAttachmentReference"
 
