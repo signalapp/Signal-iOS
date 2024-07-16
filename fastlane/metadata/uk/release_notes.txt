@@ -1,1 +1,1 @@
-• We fixed a bug that made it impossible to dismiss the menu to raise your hand or react to a group call if you tapped on those icons while you were waiting for other people to join the call or if you were the last person to hang up. The next time you're alone in a group call, make Madonna proud and express yourself. 
+• Ми усунули помилку, через яку під час групових викликів за відсутності інших учасників не закривалося меню підняття руки чи панель реакцій. Тож сміливо виражайте свої емоції — а надто якщо ніхто не бачить. 

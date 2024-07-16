@@ -376,9 +376,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Je kunt niet deelnemen omdat deze oproep het maximale aantal van %1$d deelnemer heeft bereikt. Probeer het later opnieuw.</string>
+			<string>Je kunt niet deelnemen omdat deze groepsoproep het maximale aantal van %1$d deelnemer heeft bereikt. Probeer het later opnieuw.</string>
 			<key>other</key>
-			<string>Je kunt niet deelnemen omdat deze oproep het maximale aantal van %1$d deelnemers heeft bereikt. Probeer het later opnieuw.</string>
+			<string>Je kunt niet deelnemen omdat deze groepsoproep het maximale aantal van %1$d deelnemers heeft bereikt. Probeer het later opnieuw.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d</key>

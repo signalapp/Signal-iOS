@@ -1,1 +1,1 @@
-• We fixed a bug that made it impossible to dismiss the menu to raise your hand or react to a group call if you tapped on those icons while you were waiting for other people to join the call or if you were the last person to hang up. The next time you're alone in a group call, make Madonna proud and express yourself. 
+• 我們修復了一個錯誤，這錯誤是如果你在等待其他人加入通話或最後一個掛斷電話時，點按舉手或心情回應等圖示，則會無法關閉選單。所以下次就算只有你一個人在群組通話中，也可以隨意舉手作回應。 

@@ -1000,9 +1000,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Todas las conexiones de Signal · %1$d persona</string>
+			<string>Todos los contactos de Signal · %1$d persona</string>
 			<key>other</key>
-			<string>Todas las conexiones de Signal · %1$d personas</string>
+			<string>Todos los contactos de Signal · %1$d personas</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -1016,9 +1016,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Todas las conexiones de Signal · %1$d persona excluida</string>
+			<string>Todos los contactos de Signal · %1$d persona excluida</string>
 			<key>other</key>
-			<string>Todas las conexiones de Signal · %1$d personas excluidas</string>
+			<string>Todos los contactos de Signal · %1$d personas excluidas</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
@@ -1320,9 +1320,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Los alias deben empezar con al menos %1$d carácter</string>
+			<string>Los alias deben contener al menos %1$d carácter</string>
 			<key>other</key>
-			<string>Los alias deben empezar con al menos %1$d caracteres</string>
+			<string>Los alias deben contener al menos %1$d caracteres</string>
 		</dict>
 	</dict>
 </dict>

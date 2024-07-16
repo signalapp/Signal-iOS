@@ -1,1 +1,1 @@
-• We fixed a bug that made it impossible to dismiss the menu to raise your hand or react to a group call if you tapped on those icons while you were waiting for other people to join the call or if you were the last person to hang up. The next time you're alone in a group call, make Madonna proud and express yourself. 
+• We hebben een bug opgelost waardoor je de opties om je hand op te steken of te reageren op een groepsoproep niet kon sluiten als je er op tikte tijdens het wachten op anderen of als je als enige overbleef in een oproep. 

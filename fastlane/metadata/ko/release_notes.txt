@@ -1,1 +1,1 @@
-• We fixed a bug that made it impossible to dismiss the menu to raise your hand or react to a group call if you tapped on those icons while you were waiting for other people to join the call or if you were the last person to hang up. The next time you're alone in a group call, make Madonna proud and express yourself. 
+• 그룹 통화에서 때때로 손 들기 및 반응 메뉴를 닫을 수 없는 버그를 수정했습니다. 

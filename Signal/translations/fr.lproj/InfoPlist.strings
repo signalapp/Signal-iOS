@@ -1,4 +1,4 @@
-NSAppleMusicUsageDescription = "Signal doit utiliser Apple Music pour lire les fichiers multimédias joints.";
+NSAppleMusicUsageDescription = "Pour lire les médias en pièce jointe, Signal doit utiliser Apple Music.";
 NSCameraUsageDescription = "Signal utilise votre appareil photo pour prendre des photos et pour les appels vidéo.";
 NSContactsUsageDescription = "Signal utilise vos contacts pour trouver des utilisateurs que vous connaissez. Nous n’enregistrons pas vos contacts sur le serveur.";
 NSFaceIDUsageDescription = "Le verrouillage d’écran de Signal utilise Face ID.";
