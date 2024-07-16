@@ -504,10 +504,6 @@ class GroupCallViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        if FeatureFlags.callDrawerSupport {
-            self.presentBottomSheet()
-        }
-
         if hasUnresolvedSafetyNumberMismatch && CurrentAppContext().isAppForegroundAndActive() {
             // If we're not active yet, this will be handled by the `didBecomeActive` callback.
             resolveSafetyNumberMismatch()
@@ -515,13 +511,23 @@ class GroupCallViewController: UIViewController {
     }
 
     private func presentBottomSheet() {
-        guard FeatureFlags.callDrawerSupport else { return }
+        guard
+            FeatureFlags.callDrawerSupport,
+            bottomSheet.presentingViewController == nil
+        else {
+            return
+        }
         bottomSheet.setBottomSheetMinimizedHeight()
         present(self.bottomSheet, animated: true)
     }
 
     private func dismissBottomSheet(animated: Bool = true) {
-        guard FeatureFlags.callDrawerSupport else { return }
+        guard
+            FeatureFlags.callDrawerSupport,
+            bottomSheet.presentingViewController != nil
+        else {
+            return
+        }
         bottomSheet.dismiss(animated: animated)
     }
 
@@ -811,6 +817,10 @@ class GroupCallViewController: UIViewController {
             updateMemberViewFrames(size: size, controlsAreHidden: true)
             updateScrollViewFrames(size: size, controlsAreHidden: true)
             return
+        } else {
+            if FeatureFlags.callDrawerSupport {
+                presentBottomSheet()
+            }
         }
 
         if let incomingCallControls, !incomingCallControls.isHidden {
