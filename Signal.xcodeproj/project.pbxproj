@@ -1879,6 +1879,8 @@
 		D990CAC92B4CCB97000A99A2 /* MockLocalUsernameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D990CABF2B4CC930000A99A2 /* MockLocalUsernameManager.swift */; };
 		D990CACA2B4CCB9D000A99A2 /* MockUsernameLinkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D990CAC12B4CC9CE000A99A2 /* MockUsernameLinkManager.swift */; };
 		D990CACD2B4DCD83000A99A2 /* ConsumableMockPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830772A70399C006CDCDE /* ConsumableMockPromise.swift */; };
+		D994C7C12C45C836009ECEDA /* expiration-timer-chat-update-message.jsonproto in Resources */ = {isa = PBXBuildFile; fileRef = D994C7BF2C45C836009ECEDA /* expiration-timer-chat-update-message.jsonproto */; };
+		D994C7C22C45C836009ECEDA /* expiration-timer-chat-update-message.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D994C7C02C45C836009ECEDA /* expiration-timer-chat-update-message.binproto */; };
 		D995546E2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = D995546D2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift */; };
 		D995546F2AF5668E0001E15C /* ProfileBadgesSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99554692AF4873E0001E15C /* ProfileBadgesSnapshot.swift */; };
 		D99554752AF5AFE90001E15C /* BadgeThanksSheetPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99554742AF5AFE80001E15C /* BadgeThanksSheetPresenter.swift */; };
@@ -4921,6 +4923,8 @@
 		D990CABD2B4CC8FD000A99A2 /* MockUsernameApiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockUsernameApiClient.swift; sourceTree = "<group>"; };
 		D990CABF2B4CC930000A99A2 /* MockLocalUsernameManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockLocalUsernameManager.swift; sourceTree = "<group>"; };
 		D990CAC12B4CC9CE000A99A2 /* MockUsernameLinkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockUsernameLinkManager.swift; sourceTree = "<group>"; };
+		D994C7BF2C45C836009ECEDA /* expiration-timer-chat-update-message.jsonproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "expiration-timer-chat-update-message.jsonproto"; path = "Signal-Message-Backup-Tests/test-cases/expiration-timer-chat-update-message.jsonproto"; sourceTree = "<group>"; };
+		D994C7C02C45C836009ECEDA /* expiration-timer-chat-update-message.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = "expiration-timer-chat-update-message.binproto"; path = "Signal-Message-Backup-Tests/test-cases/expiration-timer-chat-update-message.binproto"; sourceTree = "<group>"; };
 		D99554692AF4873E0001E15C /* ProfileBadgesSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileBadgesSnapshot.swift; sourceTree = "<group>"; };
 		D995546D2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReceiptCredentialRedemptionSuccess.swift; sourceTree = "<group>"; };
 		D99554702AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProfileBadgesSnapshot+Constructors.swift"; sourceTree = "<group>"; };
@@ -9844,6 +9848,8 @@
 			children = (
 				D9247E9B2BFBED2A00DFEF6F /* account-data.binproto */,
 				D9247E9A2BFBED2A00DFEF6F /* account-data.jsonproto */,
+				D994C7C02C45C836009ECEDA /* expiration-timer-chat-update-message.binproto */,
+				D994C7BF2C45C836009ECEDA /* expiration-timer-chat-update-message.jsonproto */,
 				D9247E9D2BFBED2A00DFEF6F /* registered-blocked-contact.binproto */,
 				D9247E982BFBED2A00DFEF6F /* registered-blocked-contact.jsonproto */,
 				D968F7192C3355AA00AB318B /* simple-chat-update-message.binproto */,
@@ -12600,6 +12606,8 @@
 			files = (
 				D9247EA12BFBED2A00DFEF6F /* account-data.binproto in Resources */,
 				D9247EA02BFBED2A00DFEF6F /* account-data.jsonproto in Resources */,
+				D994C7C22C45C836009ECEDA /* expiration-timer-chat-update-message.binproto in Resources */,
+				D994C7C12C45C836009ECEDA /* expiration-timer-chat-update-message.jsonproto in Resources */,
 				D9247EA32BFBED2A00DFEF6F /* registered-blocked-contact.binproto in Resources */,
 				D9247E9E2BFBED2A00DFEF6F /* registered-blocked-contact.jsonproto in Resources */,
 				F942628B289B1B5600460798 /* sample-sticker.encrypted in Resources */,

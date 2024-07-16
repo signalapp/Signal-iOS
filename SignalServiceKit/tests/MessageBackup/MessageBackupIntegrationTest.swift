@@ -23,7 +23,7 @@ final class MessageBackupAccountDataTest: MessageBackupIntegrationTestCase {
             switch deps.localUsernameManager.usernameState(tx: tx) {
             case .available(let username, let usernameLink):
                 XCTAssertEqual(username, "boba_fett.66")
-                XCTAssertEqual(usernameLink.handle, UUID("61C101A2-00D5-4217-89C2-0518D8497AF0"))
+                XCTAssertEqual(usernameLink.handle, UUID(uuidString: "61C101A2-00D5-4217-89C2-0518D8497AF0")!)
                 XCTAssertEqual(deps.localUsernameManager.usernameLinkQRCodeColor(tx: tx), .olive)
             case .unset, .linkCorrupted, .usernameAndLinkCorrupted:
                 XCTFail("Unexpected username state!")
@@ -63,10 +63,11 @@ final class MessageBackupAccountDataTest: MessageBackupIntegrationTestCase {
 // MARK: -
 
 final class MessageBackupContactTest: MessageBackupIntegrationTestCase {
+    private let aciFixture = Aci.constantForTesting("4076995E-0531-4042-A9E4-1E67A77DF358")
+    private let pniFixture = Pni.constantForTesting("PNI:26FC02A2-BA58-4A7D-B081-9DA23971570A")
+
     private func assert(
         recipient: SignalRecipient,
-        aci: Aci = .fixture,
-        pni: Pni = .fixture,
         username: String = "han_solo.44",
         phoneNumber: String = "+17735550199",
         isBlocked: Bool,
@@ -80,8 +81,8 @@ final class MessageBackupContactTest: MessageBackupIntegrationTestCase {
         sdsTx: SDSAnyReadTransaction,
         tx: DBReadTransaction
     ) {
-        XCTAssertEqual(recipient.aci, aci)
-        XCTAssertEqual(recipient.pni, pni)
+        XCTAssertEqual(recipient.aci, aciFixture)
+        XCTAssertEqual(recipient.pni, pniFixture)
         XCTAssertEqual(deps.usernameLookupManager.fetchUsername(forAci: recipient.aci!, transaction: tx), username)
         XCTAssertEqual(recipient.phoneNumber?.stringValue, phoneNumber)
         XCTAssertEqual(blockingManager.isAddressBlocked(recipient.address, transaction: sdsTx), isBlocked)
@@ -96,9 +97,15 @@ final class MessageBackupContactTest: MessageBackupIntegrationTestCase {
         XCTAssertEqual(StoryStoreImpl().getOrCreateStoryContextAssociatedData(for: recipient.aci!, tx: tx).isHidden, isStoryHidden)
     }
 
+    private func allRecipients(tx: any DBReadTransaction) -> [SignalRecipient] {
+        var result = [SignalRecipient]()
+        deps.recipientDatabaseTable.enumerateAll(tx: tx) { result.append($0) }
+        return result
+    }
+
     func testRegisteredBlockedContact() async throws {
         try await runTest(backupName: "registered-blocked-contact") { sdsTx, tx in
-            let allRecipients = deps.recipientDatabaseTable.allRecipients(tx: tx)
+            let allRecipients = allRecipients(tx: tx)
             XCTAssertEqual(allRecipients.count, 1)
 
             assert(
@@ -116,7 +123,7 @@ final class MessageBackupContactTest: MessageBackupIntegrationTestCase {
 
     func testUnregisteredContact() async throws {
         try await runTest(backupName: "unregistered-contact") { sdsTx, tx in
-            let allRecipients = deps.recipientDatabaseTable.allRecipients(tx: tx)
+            let allRecipients = allRecipients(tx: tx)
             XCTAssertEqual(allRecipients.count, 1)
 
             assert(
@@ -157,7 +164,7 @@ final class MessageBackupDistributionListTest: MessageBackupIntegrationTestCase 
             XCTAssertEqual(deletedStories.count, 2)
 
             let validationBlocks: [UUID: ListValidationBlock] = [
-                UUID(TSPrivateStoryThread.myStoryUniqueId): { thread in
+                UUID(uuidString: TSPrivateStoryThread.myStoryUniqueId)!: { thread in
                     XCTAssertTrue(thread.allowsReplies)
                 },
                 UUID(data: Data(base64Encoded: "me/ptJ9tRnyCWu/eg9uP7Q==")!)!: { thread in
@@ -177,7 +184,7 @@ final class MessageBackupDistributionListTest: MessageBackupIntegrationTestCase 
 
             try threadStore.enumerateStoryThreads(tx: tx) { thread in
                 do {
-                    let validationBlock = try XCTUnwrap(validationBlocks[UUID(thread.uniqueId)])
+                    let validationBlock = try XCTUnwrap(validationBlocks[UUID(uuidString: thread.uniqueId)!])
                     validationBlock(thread)
                 } catch {
                     XCTFail("Missing validation block")
@@ -210,7 +217,7 @@ final class MessageBackupSimpleChatUpdateTest: MessageBackupIntegrationTestCase 
     }
 
     func testSimpleChatUpdates() async throws {
-        let expectedAci = Aci.parseFrom(aciString: "5F8C568D-0119-47BD-81AA-BB87C9B71995")!
+        let expectedAci = Aci.constantForTesting("5F8C568D-0119-47BD-81AA-BB87C9B71995")
 
         try await runTest(backupName: "simple-chat-update-message") { sdsTx, tx in
             var seenVerificationStates = Set<OWSVerificationState>()
@@ -383,36 +390,49 @@ final class MessageBackupSimpleChatUpdateTest: MessageBackupIntegrationTestCase 
 
 // MARK: -
 
-private extension RecipientDatabaseTable {
-    func allRecipients(tx: any DBReadTransaction) -> [SignalRecipient] {
-        var result = [SignalRecipient]()
-        enumerateAll(tx: tx) { result.append($0) }
-        return result
-    }
-}
+final class MessageBackupExpirationTimerChatUpdateTest: MessageBackupIntegrationTestCase {
+    func testExpirationTimerChatUpdates() async throws {
+        let contactAci = Aci.constantForTesting("5F8C568D-0119-47BD-81AA-BB87C9B71995")
 
-// MARK: _
+        try await runTest(backupName: "expiration-timer-chat-update-message") { sdsTx, tx in
+            let fetchedContactThreads = deps.threadStore.fetchContactThreads(serviceId: contactAci, tx: tx)
+            XCTAssertEqual(fetchedContactThreads.count, 1)
+            let expectedContactThread = fetchedContactThreads.first!
 
-private extension UUID {
-    init(_ string: String) {
-        self.init(uuidString: string)!
-    }
-}
+            struct ExpectedExpirationTimerUpdate {
+                let authorIsLocalUser: Bool
+                let expiresInSeconds: UInt32
+                var isEnabled: Bool { expiresInSeconds > 0 }
+            }
 
-private extension Aci {
-    /// Corresponds to base64 data `QHaZXgUxQEKp5B5np33zWA==`.
-    static let fixture: Aci = Aci("4076995E-0531-4042-A9E4-1E67A77DF358")
+            var expectedUpdates: [ExpectedExpirationTimerUpdate] = [
+                .init(authorIsLocalUser: false, expiresInSeconds: 0),
+                .init(authorIsLocalUser: true, expiresInSeconds: 9001),
+            ]
 
-    convenience init(_ string: String) {
-        self.init(fromUUID: UUID(string))
-    }
-}
+            try deps.interactionStore.enumerateAllInteractions(tx: tx) { interaction -> Bool in
+                XCTAssertEqual(interaction.uniqueThreadId, expectedContactThread.uniqueId)
 
-private extension Pni {
-    /// Corresponds to base64 data `JvwCorpYSn2wgZ2iOXFXCg==`.
-    static let fixture: Pni = Pni("26FC02A2-BA58-4A7D-B081-9DA23971570A")
+                guard let dmUpdateInfoMessage = interaction as? OWSDisappearingConfigurationUpdateInfoMessage else {
+                    XCTFail("Unexpected interaction type: \(type(of: interaction))")
+                    return false
+                }
 
-    convenience init(_ string: String) {
-        self.init(fromUUID: UUID(string))
+                guard let expectedUpdate = expectedUpdates.popFirst() else {
+                    XCTFail("Unexpectedly missing expected timer change!")
+                    return false
+                }
+
+                XCTAssertEqual(dmUpdateInfoMessage.configurationDurationSeconds, expectedUpdate.expiresInSeconds)
+                XCTAssertEqual(dmUpdateInfoMessage.configurationIsEnabled, expectedUpdate.isEnabled)
+                if expectedUpdate.authorIsLocalUser {
+                    XCTAssertNil(dmUpdateInfoMessage.createdByRemoteName)
+                } else {
+                    XCTAssertNotNil(dmUpdateInfoMessage.createdByRemoteName)
+                }
+
+                return true
+            }
+        }
     }
 }
