@@ -344,8 +344,19 @@ public extension TSInfoMessage {
         profileChanges?.newFullName
     }
 
-    var profileChangeNewNameComponents: PersonNameComponents? {
-        return profileChanges?.newNameComponents
+    var profileChangesNewNameComponents: PersonNameComponents? {
+        if let newNameComponents = profileChanges?.newNameComponents {
+            return newNameComponents
+        } else if let newNameLiteral = profileChanges?.newNameLiteral {
+            /// If we only have the literal new name, we can use it to seed a
+            /// `PersonNameComponents`. This isn't ideal, but better than `nil`.
+            ///
+            /// (At the time of writing, this would only happen for a profile
+            /// change update that was restored from a Backup.)
+            return PersonNameComponents(givenName: newNameLiteral)
+        }
+
+        return nil
     }
 
     @objc

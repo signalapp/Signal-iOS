@@ -1886,6 +1886,7 @@
 		D994C7CA2C45D0BF009ECEDA /* MessageBackupDistributionListTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D994C7C72C45D0B4009ECEDA /* MessageBackupDistributionListTest.swift */; };
 		D994C7CE2C45D100009ECEDA /* MessageBackupExpirationTimerChatUpdateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D994C7CD2C45D100009ECEDA /* MessageBackupExpirationTimerChatUpdateTest.swift */; };
 		D994C7CF2C45D152009ECEDA /* MessageBackupSimpleChatUpdateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D994C7CB2C45D0D9009ECEDA /* MessageBackupSimpleChatUpdateTest.swift */; };
+		D994C7D12C45D24F009ECEDA /* MessageBackupProfileChangeChatUpdateArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D994C7D02C45D24F009ECEDA /* MessageBackupProfileChangeChatUpdateArchiver.swift */; };
 		D995546E2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = D995546D2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift */; };
 		D995546F2AF5668E0001E15C /* ProfileBadgesSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99554692AF4873E0001E15C /* ProfileBadgesSnapshot.swift */; };
 		D99554752AF5AFE90001E15C /* BadgeThanksSheetPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99554742AF5AFE80001E15C /* BadgeThanksSheetPresenter.swift */; };
@@ -4934,6 +4935,7 @@
 		D994C7C72C45D0B4009ECEDA /* MessageBackupDistributionListTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupDistributionListTest.swift; sourceTree = "<group>"; };
 		D994C7CB2C45D0D9009ECEDA /* MessageBackupSimpleChatUpdateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupSimpleChatUpdateTest.swift; sourceTree = "<group>"; };
 		D994C7CD2C45D100009ECEDA /* MessageBackupExpirationTimerChatUpdateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupExpirationTimerChatUpdateTest.swift; sourceTree = "<group>"; };
+		D994C7D02C45D24F009ECEDA /* MessageBackupProfileChangeChatUpdateArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupProfileChangeChatUpdateArchiver.swift; sourceTree = "<group>"; };
 		D99554692AF4873E0001E15C /* ProfileBadgesSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileBadgesSnapshot.swift; sourceTree = "<group>"; };
 		D995546D2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReceiptCredentialRedemptionSuccess.swift; sourceTree = "<group>"; };
 		D99554702AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProfileBadgesSnapshot+Constructors.swift"; sourceTree = "<group>"; };
@@ -7626,6 +7628,7 @@
 				662590C92B599474001FDCDD /* GroupUpdates */,
 				D9EA2A862C2B609800B367DF /* MessageBackupChatUpdateMessageArchiver.swift */,
 				D91D9C8B2C3F06400009E4F7 /* MessageBackupExpirationTimerChatUpdateArchiver.swift */,
+				D994C7D02C45D24F009ECEDA /* MessageBackupProfileChangeChatUpdateArchiver.swift */,
 				D9EA2A882C2B929400B367DF /* MessageBackupSimpleChatUpdateArchiver.swift */,
 			);
 			path = ChatUpdateMessages;
@@ -14432,6 +14435,7 @@
 				665C0D5C2ADF538100539A37 /* MessageBackupManager.swift in Sources */,
 				665C0D5E2ADF53E200539A37 /* MessageBackupManagerImpl.swift in Sources */,
 				C10E9FAF2BB778E100A609B9 /* MessageBackupManagerMock.swift in Sources */,
+				D994C7D12C45D24F009ECEDA /* MessageBackupProfileChangeChatUpdateArchiver.swift in Sources */,
 				66CD25592B0685E000139E17 /* MessageBackupProtoArchiver.swift in Sources */,
 				66CD25752B0807BC00139E17 /* MessageBackupProtoInputStream.swift in Sources */,
 				66CD25772B0807C700139E17 /* MessageBackupProtoOutputStream.swift in Sources */,

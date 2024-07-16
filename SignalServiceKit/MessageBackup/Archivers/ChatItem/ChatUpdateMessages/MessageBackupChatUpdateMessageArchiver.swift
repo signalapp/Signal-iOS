@@ -13,6 +13,7 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
     private let groupCallArchiver: MessageBackupGroupCallArchiver
     private let groupUpdateMessageArchiver: MessageBackupGroupUpdateMessageArchiver
     private let individualCallArchiver: MessageBackupIndividualCallArchiver
+    private let profileChangeChatUpdateArchiver: MessageBackupProfileChangeChatUpdateArchiver
     private let simpleChatUpdateArchiver: MessageBackupSimpleChatUpdateArchiver
 
     init(
@@ -41,6 +42,9 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
         individualCallArchiver = MessageBackupIndividualCallArchiver(
             callRecordStore: callRecordStore,
             individualCallRecordManager: individualCallRecordManager,
+            interactionStore: interactionStore
+        )
+        profileChangeChatUpdateArchiver = MessageBackupProfileChangeChatUpdateArchiver(
             interactionStore: interactionStore
         )
         simpleChatUpdateArchiver = MessageBackupSimpleChatUpdateArchiver(
@@ -121,6 +125,13 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
                     context: context,
                     tx: tx
                 )
+            case .profileUpdate:
+                return profileChangeChatUpdateArchiver.archive(
+                    infoMessage: infoMessage,
+                    thread: thread,
+                    context: context,
+                    tx: tx
+                )
             case .typeDisappearingMessagesUpdate:
                 return expirationTimerChatUpdateArchiver.archiveExpirationTimerChatUpdate(
                     infoMessage: infoMessage,
@@ -129,7 +140,6 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
                     tx: tx
                 )
             case
-                    .profileUpdate,
                     .threadMerge,
                     .sessionSwitchover:
                 // TODO: [Backups] Add support for "non-simple" chat updates.
@@ -218,7 +228,13 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
                 tx: tx
             )
         case .profileChange(let profileChangeUpdateProto):
-            return .messageFailure([.restoreFrameError(.unimplemented, chatItem.id)])
+            return profileChangeChatUpdateArchiver.restoreProfileChangeChatUpdate(
+                profileChangeUpdateProto,
+                chatItem: chatItem,
+                chatThread: chatThread,
+                context: context,
+                tx: tx
+            )
         case .threadMerge(let threadMergeUpdateProto):
             return .messageFailure([.restoreFrameError(.unimplemented, chatItem.id)])
         case .sessionSwitchover(let sessionSwitchoverUpdateProto):

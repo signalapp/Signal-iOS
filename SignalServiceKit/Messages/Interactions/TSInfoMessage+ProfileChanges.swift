@@ -51,36 +51,82 @@ public extension TSInfoMessage {
             saveProfileUpdateMessage(thread: groupThread)
         }
     }
+
+    static func makeForProfileChange(
+        profileAddress: SignalServiceAddress,
+        oldName: String,
+        newName: String,
+        thread: TSThread
+    ) -> TSInfoMessage {
+        let infoMessage = TSInfoMessage(
+            thread: thread,
+            messageType: .profileUpdate,
+            infoMessageUserInfo: [.profileChanges: ProfileChanges(
+                address: profileAddress,
+                oldNameLiteral: oldName,
+                newNameLiteral: newName
+            )]
+        )
+        infoMessage.wasRead = true
+
+        return infoMessage
+    }
 }
 
+/// Represents a profile change for in-chat messages.
+/// - Note
+/// All members must be exposed to ObjC, nullable, and mutable, such that Mantle
+/// can populate them using reflection from its `init(coder:)` implementation.
 @objcMembers
 public class ProfileChanges: MTLModel {
     var address: SignalServiceAddress?
 
+    /// If this is populated, `oldNameComponents` will be nil.
+    var oldNameLiteral: String?
+    /// If this is populated, `oldNameLiteral` will be nil.
     var oldNameComponents: PersonNameComponents?
+
+    /// If this is populated, `newNameComponents` will be nil.
+    var newNameLiteral: String?
+    /// If this is populated, `newNameLiteral` will be nil.
     var newNameComponents: PersonNameComponents?
 
     var oldFullName: String? {
-        guard let oldNameComponents = oldNameComponents else { return nil }
-        return OWSFormat.formatNameComponents(oldNameComponents).filterStringForDisplay()
+        if let oldNameLiteral {
+            return oldNameLiteral
+        } else if let oldNameComponents {
+            return OWSFormat.formatNameComponents(oldNameComponents).filterStringForDisplay()
+        }
+
+        return nil
     }
 
     var newFullName: String? {
-        guard let newNameComponents = newNameComponents else { return nil }
-        return OWSFormat.formatNameComponents(newNameComponents).filterStringForDisplay()
+        if let newNameLiteral {
+            return newNameLiteral
+        } else if let newNameComponents {
+            return OWSFormat.formatNameComponents(newNameComponents).filterStringForDisplay()
+        }
+
+        return nil
     }
 
     var hasRenderableChanges: Bool {
         return oldFullName != nil && newFullName != nil && oldFullName != newFullName
     }
 
+    init(address: SignalServiceAddress, oldNameLiteral: String, newNameLiteral: String) {
+        self.address = address
+        self.oldNameLiteral = oldNameLiteral
+        self.newNameLiteral = newNameLiteral
+
+        super.init()
+    }
+
     init(address: SignalServiceAddress, oldProfile: OWSUserProfile, newProfile: OWSUserProfile) {
         self.address = address
         self.oldNameComponents = oldProfile.filteredNameComponents
         self.newNameComponents = newProfile.filteredNameComponents
-
-        // TODO: Eventually, we'll want to track profile
-        // photo and username changes here too.
 
         super.init()
     }

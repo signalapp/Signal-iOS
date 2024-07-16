@@ -128,6 +128,12 @@ extension MessageBackup {
             /// An ``OWSDisappearingConfigurationUpdateInfoMessage`` info
             /// message was unexpectedly missing author info.
             case disappearingMessageConfigUpdateMissingAuthor
+
+            /// A "profile change update" info message was missing author info.
+            case profileChangeUpdateMissingAuthor
+            /// A "profile change update" info message was missing the before or
+            /// after profile name.
+            case profileChangeUpdateMissingNames
         }
 
         private let type: ErrorType
@@ -205,7 +211,9 @@ extension MessageBackup {
                     .missingPaymentInformation,
                     .disappearingMessageConfigUpdateNotExpectedSDSRecordType,
                     .disappearingMessageConfigUpdateNotInContactThread,
-                    .disappearingMessageConfigUpdateMissingAuthor:
+                    .disappearingMessageConfigUpdateMissingAuthor,
+                    .profileChangeUpdateMissingAuthor,
+                    .profileChangeUpdateMissingNames:
                 // Log any others as we see them.
                 return nil
             }
@@ -418,6 +426,12 @@ extension MessageBackup {
                 /// An "expiration timer update" contained an expiration timer
                 /// that overflowed the local type for timer updates.
                 case expirationTimerUpdateOverflowedLocalType
+
+                /// A "profile change update" contained invalid before/after
+                /// profile names.
+                case profileChangeUpdateInvalidNames
+                /// A "profile change update" was not authored by a contact.
+                case profileChangeUpdateNotFromContact
             }
 
             /// The proto contained invalid or self-contradictory data, e.g an invalid ACI.
@@ -532,7 +546,9 @@ extension MessageBackup {
                         .unrecognizedPaymentTransaction,
                         .unsupportedProtocolVersionNotFromAci,
                         .expirationTimerUpdateNotInContactThread,
-                        .expirationTimerUpdateOverflowedLocalType:
+                        .expirationTimerUpdateOverflowedLocalType,
+                        .profileChangeUpdateInvalidNames,
+                        .profileChangeUpdateNotFromContact:
                     // Collapse all others by the id of the containing frame.
                     return idLogString
                 }

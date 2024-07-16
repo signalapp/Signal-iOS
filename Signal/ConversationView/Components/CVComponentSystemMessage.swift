@@ -1169,7 +1169,7 @@ extension CVComponentSystemMessage {
             guard contactsManagerImpl.isEditingAllowed else {
                 return nil
             }
-            guard let profileChangeNewNameComponents = infoMessage.profileChangeNewNameComponents else {
+            guard let profileChangesNewNameComponents = infoMessage.profileChangesNewNameComponents else {
                 return nil
             }
             guard let profileChangePhoneNumber = profileChangeAddress.phoneNumber else {
@@ -1179,7 +1179,7 @@ extension CVComponentSystemMessage {
             guard let systemContactName else {
                 return nil
             }
-            let newProfileName = OWSFormat.formatNameComponents(profileChangeNewNameComponents)
+            let newProfileName = OWSFormat.formatNameComponents(profileChangesNewNameComponents)
             let currentProfileName = profileManager.fullName(for: profileChangeAddress, transaction: transaction)
 
             // Only show the button if the address book contact's name is different
@@ -1197,7 +1197,7 @@ extension CVComponentSystemMessage {
             return Action(
                 title: OWSLocalizedString("UPDATE_CONTACT_ACTION", comment: "Action sheet item"),
                 accessibilityIdentifier: "update_contact",
-                action: .didTapUpdateSystemContact(address: profileChangeAddress, newNameComponents: profileChangeNewNameComponents)
+                action: .didTapUpdateSystemContact(address: profileChangeAddress, newNameComponents: profileChangesNewNameComponents)
             )
 
         case .phoneNumberChange:
