@@ -1967,3 +1967,33 @@ CREATE
         ON "ArchivedPayment"("interactionUniqueId"
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "TSAttachmentMigration" (
+            "tsAttachmentUniqueId" TEXT NOT NULL
+            ,"interactionRowId" INTEGER
+            ,"storyMessageRowId" INTEGER
+            ,"reservedV2AttachmentPrimaryFileId" BLOB NOT NULL
+            ,"reservedV2AttachmentAudioWaveformFileId" BLOB NOT NULL
+            ,"reservedV2AttachmentVideoStillFrameFileId" BLOB NOT NULL
+        )
+;
+
+CREATE
+    INDEX "index_TSAttachmentMigration_on_interactionRowId"
+        ON "TSAttachmentMigration" (
+        "interactionRowId"
+    )
+WHERE
+    "interactionRowId" IS NOT NULL
+;
+
+CREATE
+    INDEX "index_TSAttachmentMigration_on_storyMessageRowId"
+        ON "TSAttachmentMigration" (
+        "storyMessageRowId"
+    )
+WHERE
+    "storyMessageRowId" IS NOT NULL
+;

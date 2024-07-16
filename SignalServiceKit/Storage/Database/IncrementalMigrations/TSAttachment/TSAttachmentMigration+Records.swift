@@ -67,6 +67,49 @@ extension TSAttachmentMigration {
         }
     }
 
+    struct V1AttachmentReservedFileIds: Codable, MutablePersistableRecord, FetchableRecord {
+        static let databaseTableName: String = "TSAttachmentMigration"
+
+        var tsAttachmentUniqueId: String
+        var interactionRowId: Int64?
+        var storyMessageRowId: Int64?
+        var reservedV2AttachmentPrimaryFileId: UUID
+        var reservedV2AttachmentAudioWaveformFileId: UUID
+        var reservedV2AttachmentVideoStillFrameFileId: UUID
+
+        static var databaseUUIDEncodingStrategy: DatabaseUUIDEncodingStrategy = .deferredToUUID
+
+        init(
+            tsAttachmentUniqueId: String,
+            interactionRowId: Int64?,
+            storyMessageRowId: Int64?,
+            reservedV2AttachmentPrimaryFileId: UUID,
+            reservedV2AttachmentAudioWaveformFileId: UUID,
+            reservedV2AttachmentVideoStillFrameFileId: UUID
+        ) {
+            self.tsAttachmentUniqueId = tsAttachmentUniqueId
+            self.interactionRowId = interactionRowId
+            self.storyMessageRowId = storyMessageRowId
+            self.reservedV2AttachmentPrimaryFileId = reservedV2AttachmentPrimaryFileId
+            self.reservedV2AttachmentAudioWaveformFileId = reservedV2AttachmentAudioWaveformFileId
+            self.reservedV2AttachmentVideoStillFrameFileId = reservedV2AttachmentVideoStillFrameFileId
+        }
+
+        func cleanUpFiles() throws {
+            for uuid in [
+                self.reservedV2AttachmentPrimaryFileId,
+                self.reservedV2AttachmentAudioWaveformFileId,
+                self.reservedV2AttachmentVideoStillFrameFileId
+            ] {
+                let relPath = TSAttachmentMigration.V2Attachment.relativeFilePath(reservedUUID: uuid)
+                let fileUrl = TSAttachmentMigration.V2Attachment.absoluteAttachmentFileURL(
+                    relativeFilePath: relPath
+                )
+                try OWSFileSystem.deleteFileIfExists(url: fileUrl)
+            }
+        }
+    }
+
     struct V2Attachment: Codable, MutablePersistableRecord, FetchableRecord {
         static let databaseTableName: String = "Attachment"
 

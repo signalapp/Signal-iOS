@@ -278,7 +278,10 @@ public extension DatabaseRecovery {
             AttachmentReference.ThreadAttachmentReferenceRecord.databaseTableName,
             OrphanedAttachmentRecord.databaseTableName,
             QueuedAttachmentDownloadRecord.databaseTableName,
-            ArchivedPayment.databaseTableName
+            ArchivedPayment.databaseTableName,
+            // TODO: remove this once the attachment migration is blocking; by the time
+            // this runs migrations are done and the migration table will be deleted.
+            TSAttachmentMigration.V1AttachmentReservedFileIds.databaseTableName,
         ]
 
         private static func prepareToCopyTablesWithBestEffort(

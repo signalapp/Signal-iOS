@@ -272,6 +272,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addArchivedPaymentInfoColumn
         case createArchivedPaymentTable
         case removeDeadEndGroupThreadIdMappings
+        case addTSAttachmentMigrationTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -333,7 +334,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 77
+    public static let grdbSchemaVersionLatest: UInt = 78
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3192,6 +3193,34 @@ public class GRDBSchemaMigrator: NSObject {
 
                 Logger.warn("Deleting dead-end group ID mapping: \(deadEndGroupId)")
             }
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.addTSAttachmentMigrationTable) { tx in
+            try tx.database.create(table: "TSAttachmentMigration") { table in
+                table.column("tsAttachmentUniqueId", .text).notNull()
+                // No benefit from making these foreign keys; we don't want cascade
+                // delete behavior and don't need existence guarantees.
+                table.column("interactionRowId", .integer)
+                table.column("storyMessageRowId", .integer)
+                table.column("reservedV2AttachmentPrimaryFileId", .blob).notNull()
+                table.column("reservedV2AttachmentAudioWaveformFileId", .blob).notNull()
+                table.column("reservedV2AttachmentVideoStillFrameFileId", .blob).notNull()
+            }
+
+            try tx.database.execute(sql: """
+                CREATE INDEX "index_TSAttachmentMigration_on_interactionRowId"
+                ON "TSAttachmentMigration"
+                ("interactionRowId")
+                WHERE "interactionRowId" IS NOT NULL;
+                """)
+            try tx.database.execute(sql: """
+                CREATE INDEX "index_TSAttachmentMigration_on_storyMessageRowId"
+                ON "TSAttachmentMigration"
+                ("storyMessageRowId")
+                WHERE "storyMessageRowId" IS NOT NULL;
+                """)
 
             return .success(())
         }
