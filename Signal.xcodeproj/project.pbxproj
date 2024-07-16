@@ -1881,6 +1881,11 @@
 		D990CACD2B4DCD83000A99A2 /* ConsumableMockPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93830772A70399C006CDCDE /* ConsumableMockPromise.swift */; };
 		D994C7C12C45C836009ECEDA /* expiration-timer-chat-update-message.jsonproto in Resources */ = {isa = PBXBuildFile; fileRef = D994C7BF2C45C836009ECEDA /* expiration-timer-chat-update-message.jsonproto */; };
 		D994C7C22C45C836009ECEDA /* expiration-timer-chat-update-message.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D994C7C02C45C836009ECEDA /* expiration-timer-chat-update-message.binproto */; };
+		D994C7C42C45D023009ECEDA /* MessageBackupAccountDataTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D994C7C32C45D023009ECEDA /* MessageBackupAccountDataTest.swift */; };
+		D994C7C92C45D0B9009ECEDA /* MessageBackupContactTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D994C7C52C45D07F009ECEDA /* MessageBackupContactTest.swift */; };
+		D994C7CA2C45D0BF009ECEDA /* MessageBackupDistributionListTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D994C7C72C45D0B4009ECEDA /* MessageBackupDistributionListTest.swift */; };
+		D994C7CE2C45D100009ECEDA /* MessageBackupExpirationTimerChatUpdateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D994C7CD2C45D100009ECEDA /* MessageBackupExpirationTimerChatUpdateTest.swift */; };
+		D994C7CF2C45D152009ECEDA /* MessageBackupSimpleChatUpdateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D994C7CB2C45D0D9009ECEDA /* MessageBackupSimpleChatUpdateTest.swift */; };
 		D995546E2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = D995546D2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift */; };
 		D995546F2AF5668E0001E15C /* ProfileBadgesSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99554692AF4873E0001E15C /* ProfileBadgesSnapshot.swift */; };
 		D99554752AF5AFE90001E15C /* BadgeThanksSheetPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99554742AF5AFE80001E15C /* BadgeThanksSheetPresenter.swift */; };
@@ -1947,7 +1952,6 @@
 		D9C964102BE451CE0058F143 /* TSMessageStorageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C9640F2BE451CE0058F143 /* TSMessageStorageTest.swift */; };
 		D9C964142BE45A030058F143 /* SignedPreKeyDeletionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C964132BE45A030058F143 /* SignedPreKeyDeletionTests.swift */; };
 		D9C964172BE56DFB0058F143 /* MessageBackupIntegrationTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C964162BE56DFB0058F143 /* MessageBackupIntegrationTestCase.swift */; };
-		D9C964192BE59E270058F143 /* MessageBackupIntegrationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C964182BE59E270058F143 /* MessageBackupIntegrationTest.swift */; };
 		D9CA5BF729B3F61E00D9AAD1 /* LegacyChangePhoneNumber+ChangeTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CA5BF629B3F61E00D9AAD1 /* LegacyChangePhoneNumber+ChangeTokens.swift */; };
 		D9CA61482C2E2D0000F99EA3 /* MessageBackupAdHocCallArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CA61472C2E2D0000F99EA3 /* MessageBackupAdHocCallArchiver.swift */; };
 		D9CA614B2C2F675E00F99EA3 /* PrivateStoryThreadDeletionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CA614A2C2F675E00F99EA3 /* PrivateStoryThreadDeletionManager.swift */; };
@@ -4925,6 +4929,11 @@
 		D990CAC12B4CC9CE000A99A2 /* MockUsernameLinkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockUsernameLinkManager.swift; sourceTree = "<group>"; };
 		D994C7BF2C45C836009ECEDA /* expiration-timer-chat-update-message.jsonproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "expiration-timer-chat-update-message.jsonproto"; path = "Signal-Message-Backup-Tests/test-cases/expiration-timer-chat-update-message.jsonproto"; sourceTree = "<group>"; };
 		D994C7C02C45C836009ECEDA /* expiration-timer-chat-update-message.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = "expiration-timer-chat-update-message.binproto"; path = "Signal-Message-Backup-Tests/test-cases/expiration-timer-chat-update-message.binproto"; sourceTree = "<group>"; };
+		D994C7C32C45D023009ECEDA /* MessageBackupAccountDataTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupAccountDataTest.swift; sourceTree = "<group>"; };
+		D994C7C52C45D07F009ECEDA /* MessageBackupContactTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupContactTest.swift; sourceTree = "<group>"; };
+		D994C7C72C45D0B4009ECEDA /* MessageBackupDistributionListTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupDistributionListTest.swift; sourceTree = "<group>"; };
+		D994C7CB2C45D0D9009ECEDA /* MessageBackupSimpleChatUpdateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupSimpleChatUpdateTest.swift; sourceTree = "<group>"; };
+		D994C7CD2C45D100009ECEDA /* MessageBackupExpirationTimerChatUpdateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupExpirationTimerChatUpdateTest.swift; sourceTree = "<group>"; };
 		D99554692AF4873E0001E15C /* ProfileBadgesSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileBadgesSnapshot.swift; sourceTree = "<group>"; };
 		D995546D2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReceiptCredentialRedemptionSuccess.swift; sourceTree = "<group>"; };
 		D99554702AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProfileBadgesSnapshot+Constructors.swift"; sourceTree = "<group>"; };
@@ -4994,7 +5003,6 @@
 		D9C9640F2BE451CE0058F143 /* TSMessageStorageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSMessageStorageTest.swift; sourceTree = "<group>"; };
 		D9C964132BE45A030058F143 /* SignedPreKeyDeletionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignedPreKeyDeletionTests.swift; sourceTree = "<group>"; };
 		D9C964162BE56DFB0058F143 /* MessageBackupIntegrationTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupIntegrationTestCase.swift; sourceTree = "<group>"; };
-		D9C964182BE59E270058F143 /* MessageBackupIntegrationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupIntegrationTest.swift; sourceTree = "<group>"; };
 		D9CA5BF629B3F61E00D9AAD1 /* LegacyChangePhoneNumber+ChangeTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LegacyChangePhoneNumber+ChangeTokens.swift"; sourceTree = "<group>"; };
 		D9CA61472C2E2D0000F99EA3 /* MessageBackupAdHocCallArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupAdHocCallArchiver.swift; sourceTree = "<group>"; };
 		D9CA614A2C2F675E00F99EA3 /* PrivateStoryThreadDeletionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivateStoryThreadDeletionManager.swift; sourceTree = "<group>"; };
@@ -9843,7 +9851,7 @@
 			path = Megaphones;
 			sourceTree = "<group>";
 		};
-		D9247E4F2BFBE9B400DFEF6F /* TestCases */ = {
+		D9247E4F2BFBE9B400DFEF6F /* SharedTestCases */ = {
 			isa = PBXGroup;
 			children = (
 				D9247E9B2BFBED2A00DFEF6F /* account-data.binproto */,
@@ -9859,7 +9867,7 @@
 				D9247E9C2BFBED2A00DFEF6F /* unregistered-contact.binproto */,
 				D9247E992BFBED2A00DFEF6F /* unregistered-contact.jsonproto */,
 			);
-			name = TestCases;
+			name = SharedTestCases;
 			sourceTree = "<group>";
 		};
 		D9247EA52BFBFFCA00DFEF6F /* DeleteForMe */ = {
@@ -10169,9 +10177,13 @@
 		D9C964152BE56DE20058F143 /* MessageBackup */ = {
 			isa = PBXGroup;
 			children = (
-				D9247E4F2BFBE9B400DFEF6F /* TestCases */,
-				D9C964182BE59E270058F143 /* MessageBackupIntegrationTest.swift */,
+				D9247E4F2BFBE9B400DFEF6F /* SharedTestCases */,
+				D994C7C32C45D023009ECEDA /* MessageBackupAccountDataTest.swift */,
+				D994C7C52C45D07F009ECEDA /* MessageBackupContactTest.swift */,
+				D994C7C72C45D0B4009ECEDA /* MessageBackupDistributionListTest.swift */,
+				D994C7CD2C45D100009ECEDA /* MessageBackupExpirationTimerChatUpdateTest.swift */,
 				D9C964162BE56DFB0058F143 /* MessageBackupIntegrationTestCase.swift */,
+				D994C7CB2C45D0D9009ECEDA /* MessageBackupSimpleChatUpdateTest.swift */,
 			);
 			path = MessageBackup;
 			sourceTree = "<group>";
@@ -15271,8 +15283,12 @@
 				F942625F289B1B5500460798 /* LRUCacheTest.swift in Sources */,
 				F9426269289B1B5500460798 /* MathOWSTests.swift in Sources */,
 				66AE8A872C169A900044D388 /* MediaGalleryAttachmentFinderTest.swift in Sources */,
-				D9C964192BE59E270058F143 /* MessageBackupIntegrationTest.swift in Sources */,
+				D994C7C42C45D023009ECEDA /* MessageBackupAccountDataTest.swift in Sources */,
+				D994C7C92C45D0B9009ECEDA /* MessageBackupContactTest.swift in Sources */,
+				D994C7CA2C45D0BF009ECEDA /* MessageBackupDistributionListTest.swift in Sources */,
+				D994C7CE2C45D100009ECEDA /* MessageBackupExpirationTimerChatUpdateTest.swift in Sources */,
 				D9C964172BE56DFB0058F143 /* MessageBackupIntegrationTestCase.swift in Sources */,
+				D994C7CF2C45D152009ECEDA /* MessageBackupSimpleChatUpdateTest.swift in Sources */,
 				66FC637229DF7A1500F00DAC /* MessageBodyRangesTests.swift in Sources */,
 				668444822A3292AB00DBED7C /* MessageBodyStyleTests.swift in Sources */,
 				66883A3A29D7630A00E898CF /* MessageBodyTests.swift in Sources */,

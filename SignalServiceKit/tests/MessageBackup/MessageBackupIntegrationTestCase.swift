@@ -13,10 +13,12 @@ class MessageBackupIntegrationTestCase: XCTestCase {
         DDLog.add(DDTTYLogger.sharedInstance!)
     }
 
+    var deps: DependenciesBridge { .shared }
+
     // MARK: -
 
     private var messageBackupManager: MessageBackupManager {
-        DependenciesBridge.shared.messageBackupManager
+        deps.messageBackupManager
     }
 
     var localIdentifiers: LocalIdentifiers {
