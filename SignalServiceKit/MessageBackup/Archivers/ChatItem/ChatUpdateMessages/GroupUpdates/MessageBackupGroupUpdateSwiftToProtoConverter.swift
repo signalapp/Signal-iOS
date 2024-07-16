@@ -1004,10 +1004,9 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                 asUpdate: { .groupJoinRequestApprovalUpdate($0) }
             )
         case .disappearingMessagesEnabledByLocalUser(let durationMs):
-            let expiresInMs = UInt32(clamping: durationMs)
             setUpdate(
                 BackupProto.GroupExpirationTimerUpdate(
-                    expiresInMs: expiresInMs
+                    expiresInMs: durationMs
                 ),
                 setOptionalFields: {
                     $0.updaterAci = localAciData
@@ -1015,10 +1014,9 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                 asUpdate: { .groupExpirationTimerUpdate($0) }
             )
         case .disappearingMessagesEnabledByOtherUser(let updaterAci, let durationMs):
-            let expiresInMs = UInt32(clamping: durationMs)
             setUpdate(
                 BackupProto.GroupExpirationTimerUpdate(
-                    expiresInMs: expiresInMs
+                    expiresInMs: durationMs
                 ),
                 setOptionalFields: {
                     $0.updaterAci = aciData(updaterAci)
@@ -1026,10 +1024,9 @@ internal final class MessageBackupGroupUpdateSwiftToProtoConverter {
                 asUpdate: { .groupExpirationTimerUpdate($0) }
             )
         case .disappearingMessagesEnabledByUnknownUser(let durationMs):
-            let expiresInMs = UInt32(clamping: durationMs)
             setUpdate(
                 BackupProto.GroupExpirationTimerUpdate(
-                    expiresInMs: expiresInMs
+                    expiresInMs: durationMs
                 ),
                 asUpdate: { .groupExpirationTimerUpdate($0) }
             )

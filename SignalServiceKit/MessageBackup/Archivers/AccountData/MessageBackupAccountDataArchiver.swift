@@ -162,7 +162,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
             }
         }()
         let preferContactAvatars = sskPreferences.preferContactAvatars(tx: tx)
-        let universalExpireTimer = disappearingMessageConfigurationStore.fetchOrBuildDefault(for: .universal, tx: tx).durationSeconds
+        let universalExpireTimerSeconds = disappearingMessageConfigurationStore.fetchOrBuildDefault(for: .universal, tx: tx).durationSeconds
         let displayBadgesOnProfile = subscriptionManager.displayBadgesOnProfile(tx: tx)
         let keepMutedChatsArchived = sskPreferences.shouldKeepMutedChatsArchived(tx: tx)
         let hasSetMyStoriesPrivacy = storyManager.hasSetMyStoriesPrivacy(tx: tx)
@@ -193,7 +193,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
             linkPreviews: linkPreviews,
             notDiscoverableByPhoneNumber: notDiscoverableByPhoneNumber,
             preferContactAvatars: preferContactAvatars,
-            universalExpireTimer: universalExpireTimer,
+            universalExpireTimerSeconds: universalExpireTimerSeconds,
             displayBadgesOnProfile: displayBadgesOnProfile,
             keepMutedChatsArchived: keepMutedChatsArchived,
             hasSetMyStoriesPrivacy: hasSetMyStoriesPrivacy,
@@ -255,8 +255,8 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
             sskPreferences.setPreferContactAvatars(value: settings.preferContactAvatars, tx: tx)
 
             let token = DisappearingMessageToken(
-                isEnabled: settings.universalExpireTimer > 0,
-                durationSeconds: settings.universalExpireTimer
+                isEnabled: settings.universalExpireTimerSeconds > 0,
+                durationSeconds: settings.universalExpireTimerSeconds
             )
             disappearingMessageConfigurationStore.set(token: token, for: .universal, tx: tx)
 

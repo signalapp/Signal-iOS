@@ -1462,12 +1462,12 @@ extension BackupProto {
         /**
          * 0 means the expiration timer was disabled
          */
-        public var expiresInMs: UInt32
+        public var expiresInMs: UInt64
         @ProtoDefaulted
         public var updaterAci: Foundation.Data?
         public var unknownFields: UnknownFields = .init()
 
-        public init(expiresInMs: UInt32, configure: (inout Self) -> Swift.Void = { _ in }) {
+        public init(expiresInMs: UInt64, configure: (inout Self) -> Swift.Void = { _ in }) {
             self.expiresInMs = expiresInMs
             configure(&self)
         }
@@ -1949,12 +1949,12 @@ extension BackupProto.AccountData {
         /**
          * 0 means no universal expire timer.
          */
-        public var universalExpireTimer: UInt32 {
+        public var universalExpireTimerSeconds: UInt32 {
             get {
-                storage.universalExpireTimer
+                storage.universalExpireTimerSeconds
             }
             set {
-                storage.universalExpireTimer = newValue
+                storage.universalExpireTimerSeconds = newValue
             }
         }
         public var preferredReactionEmoji: [String] {
@@ -2061,7 +2061,7 @@ extension BackupProto.AccountData {
             linkPreviews: Bool,
             notDiscoverableByPhoneNumber: Bool,
             preferContactAvatars: Bool,
-            universalExpireTimer: UInt32,
+            universalExpireTimerSeconds: UInt32,
             displayBadgesOnProfile: Bool,
             keepMutedChatsArchived: Bool,
             hasSetMyStoriesPrivacy: Bool,
@@ -2079,7 +2079,7 @@ extension BackupProto.AccountData {
                     linkPreviews: linkPreviews,
                     notDiscoverableByPhoneNumber: notDiscoverableByPhoneNumber,
                     preferContactAvatars: preferContactAvatars,
-                    universalExpireTimer: universalExpireTimer,
+                    universalExpireTimerSeconds: universalExpireTimerSeconds,
                     displayBadgesOnProfile: displayBadgesOnProfile,
                     keepMutedChatsArchived: keepMutedChatsArchived,
                     hasSetMyStoriesPrivacy: hasSetMyStoriesPrivacy,
@@ -2294,7 +2294,7 @@ extension BackupProto.AccountData.AccountSettings {
         public var linkPreviews: Bool
         public var notDiscoverableByPhoneNumber: Bool
         public var preferContactAvatars: Bool
-        public var universalExpireTimer: UInt32
+        public var universalExpireTimerSeconds: UInt32
         public var preferredReactionEmoji: [String] = []
         public var displayBadgesOnProfile: Bool
         public var keepMutedChatsArchived: Bool
@@ -2316,7 +2316,7 @@ extension BackupProto.AccountData.AccountSettings {
             linkPreviews: Bool,
             notDiscoverableByPhoneNumber: Bool,
             preferContactAvatars: Bool,
-            universalExpireTimer: UInt32,
+            universalExpireTimerSeconds: UInt32,
             displayBadgesOnProfile: Bool,
             keepMutedChatsArchived: Bool,
             hasSetMyStoriesPrivacy: Bool,
@@ -2333,7 +2333,7 @@ extension BackupProto.AccountData.AccountSettings {
             self.linkPreviews = linkPreviews
             self.notDiscoverableByPhoneNumber = notDiscoverableByPhoneNumber
             self.preferContactAvatars = preferContactAvatars
-            self.universalExpireTimer = universalExpireTimer
+            self.universalExpireTimerSeconds = universalExpireTimerSeconds
             self.displayBadgesOnProfile = displayBadgesOnProfile
             self.keepMutedChatsArchived = keepMutedChatsArchived
             self.hasSetMyStoriesPrivacy = hasSetMyStoriesPrivacy
@@ -2379,7 +2379,7 @@ extension BackupProto.AccountData.AccountSettings.Storage : Proto3Codable {
         var linkPreviews: Bool = false
         var notDiscoverableByPhoneNumber: Bool = false
         var preferContactAvatars: Bool = false
-        var universalExpireTimer: UInt32 = 0
+        var universalExpireTimerSeconds: UInt32 = 0
         var preferredReactionEmoji: [String] = []
         var displayBadgesOnProfile: Bool = false
         var keepMutedChatsArchived: Bool = false
@@ -2401,7 +2401,7 @@ extension BackupProto.AccountData.AccountSettings.Storage : Proto3Codable {
             case 4: linkPreviews = try protoReader.decode(Bool.self)
             case 5: notDiscoverableByPhoneNumber = try protoReader.decode(Bool.self)
             case 6: preferContactAvatars = try protoReader.decode(Bool.self)
-            case 7: universalExpireTimer = try protoReader.decode(UInt32.self)
+            case 7: universalExpireTimerSeconds = try protoReader.decode(UInt32.self)
             case 8: try protoReader.decode(into: &preferredReactionEmoji)
             case 9: displayBadgesOnProfile = try protoReader.decode(Bool.self)
             case 10: keepMutedChatsArchived = try protoReader.decode(Bool.self)
@@ -2424,7 +2424,7 @@ extension BackupProto.AccountData.AccountSettings.Storage : Proto3Codable {
         self.linkPreviews = linkPreviews
         self.notDiscoverableByPhoneNumber = notDiscoverableByPhoneNumber
         self.preferContactAvatars = preferContactAvatars
-        self.universalExpireTimer = universalExpireTimer
+        self.universalExpireTimerSeconds = universalExpireTimerSeconds
         self.preferredReactionEmoji = preferredReactionEmoji
         self.displayBadgesOnProfile = displayBadgesOnProfile
         self.keepMutedChatsArchived = keepMutedChatsArchived
@@ -2445,7 +2445,7 @@ extension BackupProto.AccountData.AccountSettings.Storage : Proto3Codable {
         try protoWriter.encode(tag: 4, value: self.linkPreviews)
         try protoWriter.encode(tag: 5, value: self.notDiscoverableByPhoneNumber)
         try protoWriter.encode(tag: 6, value: self.preferContactAvatars)
-        try protoWriter.encode(tag: 7, value: self.universalExpireTimer)
+        try protoWriter.encode(tag: 7, value: self.universalExpireTimerSeconds)
         try protoWriter.encode(tag: 8, value: self.preferredReactionEmoji)
         try protoWriter.encode(tag: 9, value: self.displayBadgesOnProfile)
         try protoWriter.encode(tag: 10, value: self.keepMutedChatsArchived)
@@ -2473,7 +2473,7 @@ extension BackupProto.AccountData.AccountSettings.Storage : Codable {
         self.linkPreviews = try container.decode(Bool.self, forKey: "linkPreviews")
         self.notDiscoverableByPhoneNumber = try container.decode(Bool.self, forKey: "notDiscoverableByPhoneNumber")
         self.preferContactAvatars = try container.decode(Bool.self, forKey: "preferContactAvatars")
-        self.universalExpireTimer = try container.decode(UInt32.self, forKey: "universalExpireTimer")
+        self.universalExpireTimerSeconds = try container.decode(UInt32.self, forKey: "universalExpireTimerSeconds")
         self.preferredReactionEmoji = try container.decodeProtoArray(String.self, forKey: "preferredReactionEmoji")
         self.displayBadgesOnProfile = try container.decode(Bool.self, forKey: "displayBadgesOnProfile")
         self.keepMutedChatsArchived = try container.decode(Bool.self, forKey: "keepMutedChatsArchived")
@@ -2509,8 +2509,8 @@ extension BackupProto.AccountData.AccountSettings.Storage : Codable {
         if includeDefaults || self.preferContactAvatars != false {
             try container.encode(self.preferContactAvatars, forKey: "preferContactAvatars")
         }
-        if includeDefaults || self.universalExpireTimer != 0 {
-            try container.encode(self.universalExpireTimer, forKey: "universalExpireTimer")
+        if includeDefaults || self.universalExpireTimerSeconds != 0 {
+            try container.encode(self.universalExpireTimerSeconds, forKey: "universalExpireTimerSeconds")
         }
         if includeDefaults || !self.preferredReactionEmoji.isEmpty {
             try container.encodeProtoArray(self.preferredReactionEmoji, forKey: "preferredReactionEmoji")
@@ -12417,13 +12417,13 @@ extension BackupProto.GroupExpirationTimerUpdate : ProtoMessage {
 extension BackupProto.GroupExpirationTimerUpdate : Proto3Codable {
 
     public init(from protoReader: ProtoReader) throws {
-        var expiresInMs: UInt32 = 0
+        var expiresInMs: UInt64 = 0
         var updaterAci: Foundation.Data? = nil
 
         let token = try protoReader.beginMessage()
         while let tag = try protoReader.nextTag(token: token) {
             switch tag {
-            case 1: expiresInMs = try protoReader.decode(UInt32.self)
+            case 1: expiresInMs = try protoReader.decode(UInt64.self)
             case 2: updaterAci = try protoReader.decode(Foundation.Data.self)
             default: try protoReader.readUnknownField(tag: tag)
             }
@@ -12447,7 +12447,7 @@ extension BackupProto.GroupExpirationTimerUpdate : Codable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: StringLiteralCodingKeys.self)
-        self.expiresInMs = try container.decode(UInt32.self, forKey: "expiresInMs")
+        self.expiresInMs = try container.decode(stringEncoded: UInt64.self, forKey: "expiresInMs")
         self._updaterAci.wrappedValue = try container.decodeIfPresent(stringEncoded: Foundation.Data.self, forKey: "updaterAci")
     }
 
@@ -12456,7 +12456,7 @@ extension BackupProto.GroupExpirationTimerUpdate : Codable {
         let includeDefaults = encoder.protoDefaultValuesEncodingStrategy == .include
 
         if includeDefaults || self.expiresInMs != 0 {
-            try container.encode(self.expiresInMs, forKey: "expiresInMs")
+            try container.encode(stringEncoded: self.expiresInMs, forKey: "expiresInMs")
         }
         try container.encodeIfPresent(stringEncoded: self.updaterAci, forKey: "updaterAci")
     }

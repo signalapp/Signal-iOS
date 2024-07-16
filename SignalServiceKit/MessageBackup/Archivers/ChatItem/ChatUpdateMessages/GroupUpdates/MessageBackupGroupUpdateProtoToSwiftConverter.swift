@@ -608,7 +608,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                 return .messageFailure([error])
             }
         case .groupExpirationTimerUpdate(let proto):
-            let durationMs = UInt64(clamping: proto.expiresInMs)
+            let durationMs = proto.expiresInMs
             if durationMs > 0 {
                 switch unwrapAci(proto, \.updaterAci) {
                 case .unknown:
