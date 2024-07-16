@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-// MARK: - Namespace
+import LibSignalClient
 
 extension Usernames {
     fileprivate enum ValidationError: Error {
@@ -30,6 +30,8 @@ public protocol UsernameValidationManager {
     func validateUsernameIfNecessary(_ transaction: DBReadTransaction)
 }
 
+// MARK: -
+
 public class UsernameValidationManagerImpl: UsernameValidationManager {
 
     private enum Constants {
@@ -53,6 +55,8 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
     private let keyValueStore: KeyValueStore
     private let context: Context
 
+    private var logger: UsernameLogger { .shared }
+
     init(context: Context) {
         self.context = context
         keyValueStore = context.keyValueStoreFactory.keyValueStore(collection: Constants.collectionName)
@@ -65,7 +69,7 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
             return
         }
 
-        UsernameLogger.shared.info("Validating username.")
+        logger.info("Validating username.")
 
         firstly(on: context.schedulers.sync) { () -> Promise<Void> in
             return self.ensureUsernameStateUpToDate()
@@ -118,7 +122,7 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
             }
         }
         .catch(on: context.schedulers.global()) { error in
-            UsernameLogger.shared.error("Error validating username: \(error)")
+            self.logger.error("Error validating username and/or link: \(error)")
         }
     }
 
@@ -172,7 +176,7 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
         }
         .done(on: context.schedulers.global()) { whoamiResponse throws in
             let validationSucceeded: Bool = {
-                UsernameLogger.shared.info("Comparing usernames: \(localUsername == nil), \(whoamiResponse.usernameHash == nil)")
+                self.logger.info("Comparing usernames: \(localUsername == nil), \(whoamiResponse.usernameHash == nil)")
 
                 switch (localUsername, whoamiResponse.usernameHash) {
                 case (nil, nil):
@@ -195,8 +199,10 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
             }()
 
             if validationSucceeded {
-                UsernameLogger.shared.info("Username validated successfully.")
+                self.logger.info("Username validated successfully.")
             } else {
+                self.logger.warn("Username validation failed: marking local username as corrupted!")
+
                 self.context.database.write { tx in
                     self.context.localUsernameManager.setLocalUsernameCorrupted(
                         tx: tx
@@ -216,16 +222,36 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
             self.context.usernameLinkManager.decryptEncryptedLink(
                 link: localUsernameLink
             )
+        }.recover(on: context.schedulers.global()) { error throws -> Promise<String?> in
+            switch error {
+            case LibSignalClient.SignalError.usernameLinkInvalidEntropyDataLength:
+                fallthrough
+            case LibSignalClient.SignalError.usernameLinkInvalid:
+                self.logger.warn("Local username link invalid: marking local username link corrupted!")
+
+                self.context.database.write { tx in
+                    self.context.localUsernameManager.setLocalUsernameWithCorruptedLink(
+                        username: localUsername,
+                        tx: tx
+                    )
+                }
+            default:
+                break
+            }
+
+            throw error
         }.map(on: context.schedulers.global()) { usernameForLocalLink throws in
             if
                 let usernameForLocalLink,
                 usernameForLocalLink == localUsername
             {
-                UsernameLogger.shared.info("Username link validated successfully.")
+                self.logger.info("Username link validated successfully.")
             } else {
                 if usernameForLocalLink == nil {
-                    UsernameLogger.shared.warn("Username missing for local link!")
+                    self.logger.warn("Username missing for local link!")
                 }
+
+                self.logger.warn("Username link validation failed: marking local username link corrupted!")
 
                 self.context.database.write { tx in
                     self.context.localUsernameManager.setLocalUsernameWithCorruptedLink(
