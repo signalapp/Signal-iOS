@@ -72,9 +72,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// - SeeAlso ``GroupUpdateItemBuilder``
 /// - SeeAlso ``GroupUpdateInfoMessageInserter``
 - (instancetype)initWithContactThread:(TSContactThread *)contactThread
-                        configuration:(OWSDisappearingMessagesConfiguration *)configuration
-                  createdByRemoteName:(nullable NSString *)remoteName
-               createdInExistingGroup:(BOOL)createdInExistingGroup NS_DESIGNATED_INITIALIZER;
+               isConfigurationEnabled:(BOOL)isConfigurationEnabled
+         configurationDurationSeconds:(uint32_t)configurationDurationSeconds
+                  createdByRemoteName:(nullable NSString *)remoteName NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 

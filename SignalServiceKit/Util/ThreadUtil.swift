@@ -241,9 +241,9 @@ extension ThreadUtil {
         let dmResult = dmConfigurationStore.set(token: dmUniversalToken, for: .thread(contactThread), tx: tx.asV2Write)
         OWSDisappearingConfigurationUpdateInfoMessage(
             contactThread: contactThread,
-            configuration: dmResult.newConfiguration,
-            createdByRemoteName: nil,
-            createdInExistingGroup: false
+            isConfigurationEnabled: dmResult.newConfiguration.isEnabled,
+            configurationDurationSeconds: dmResult.newConfiguration.durationSeconds,
+            createdByRemoteName: nil
         ).anyInsert(transaction: tx)
     }
 

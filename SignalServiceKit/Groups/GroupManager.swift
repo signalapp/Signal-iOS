@@ -482,9 +482,9 @@ public class GroupManager: NSObject {
 
             let infoMessage = OWSDisappearingConfigurationUpdateInfoMessage(
                 contactThread: contactThread,
-                configuration: result.newConfiguration,
-                createdByRemoteName: remoteContactName,
-                createdInExistingGroup: false
+                isConfigurationEnabled: result.newConfiguration.isEnabled,
+                configurationDurationSeconds: result.newConfiguration.durationSeconds,
+                createdByRemoteName: remoteContactName
             )
             infoMessage.anyInsert(transaction: transaction)
 

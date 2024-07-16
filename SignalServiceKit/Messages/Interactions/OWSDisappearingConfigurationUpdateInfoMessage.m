@@ -13,8 +13,11 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSDisappearingConfigurationUpdateInfoMessage ()
 
 @property (nonatomic, readonly, nullable) NSString *createdByRemoteName;
-@property (nonatomic, readonly) BOOL createdInExistingGroup;
 @property (nonatomic, readonly) uint32_t configurationDurationSeconds;
+
+/// This property is set for legacy messages, but always set to `false` for new
+/// messages.
+@property (nonatomic, readonly) BOOL createdInExistingGroup;
 
 @end
 
@@ -28,9 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithContactThread:(TSContactThread *)contactThread
-                        configuration:(OWSDisappearingMessagesConfiguration *)configuration
+               isConfigurationEnabled:(BOOL)isConfigurationEnabled
+         configurationDurationSeconds:(uint32_t)configurationDurationSeconds
                   createdByRemoteName:(nullable NSString *)remoteName
-               createdInExistingGroup:(BOOL)createdInExistingGroup
 {
     self = [super initWithThread:contactThread
                        timestamp:0
@@ -41,14 +44,11 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _configurationIsEnabled = configuration.isEnabled;
-    _configurationDurationSeconds = configuration.durationSeconds;
-
-    // At most one should be set
-    OWSAssertDebug(!remoteName || !createdInExistingGroup);
-
+    _configurationIsEnabled = isConfigurationEnabled;
+    _configurationDurationSeconds = configurationDurationSeconds;
     _createdByRemoteName = remoteName;
-    _createdInExistingGroup = createdInExistingGroup;
+
+    _createdInExistingGroup = false;
 
     return self;
 }
