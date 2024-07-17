@@ -390,6 +390,82 @@ extension AttachmentReference.Owner {
             return .thread(.globalThreadWallpaperImage(creationTimestamp: record.creationTimestamp))
         }
     }
+
+    /// When we go from a pointer to a stream (e.g. by downloading) and find another attachment with the same plaintext hash,
+    /// we instead reassign the pointer's references to that existing attachment. When we do so, we need to update their contentType
+    /// to match the new/old attachment (theyre the same plaintext hash so same content type).
+    public func forReassignmentWithContentType(_ contentType: AttachmentReference.ContentType) -> Self {
+        switch self {
+        case .message(let messageSource):
+            return .message({
+                switch messageSource {
+                case .bodyAttachment(let metadata):
+                    return .bodyAttachment(.init(
+                        messageRowId: metadata.messageRowId,
+                        receivedAtTimestamp: metadata.receivedAtTimestamp,
+                        threadRowId: metadata.threadRowId,
+                        contentType: contentType,
+                        caption: metadata.caption,
+                        renderingFlag: metadata.renderingFlag,
+                        orderInOwner: metadata.orderInOwner,
+                        idInOwner: metadata.idInOwner
+                    ))
+                case .oversizeText(let metadata):
+                    return .oversizeText(.init(
+                        messageRowId: metadata.messageRowId,
+                        receivedAtTimestamp: metadata.receivedAtTimestamp,
+                        threadRowId: metadata.threadRowId,
+                        contentType: contentType
+                    ))
+                case .linkPreview(let metadata):
+                    return .linkPreview(.init(
+                        messageRowId: metadata.messageRowId,
+                        receivedAtTimestamp: metadata.receivedAtTimestamp,
+                        threadRowId: metadata.threadRowId,
+                        contentType: contentType
+                    ))
+                case .quotedReply(let metadata):
+                    return .quotedReply(.init(
+                        messageRowId: metadata.messageRowId,
+                        receivedAtTimestamp: metadata.receivedAtTimestamp,
+                        threadRowId: metadata.threadRowId,
+                        contentType: contentType,
+                        renderingFlag: metadata.renderingFlag
+                    ))
+                case .sticker(let metadata):
+                    return .sticker(.init(
+                        messageRowId: metadata.messageRowId,
+                        receivedAtTimestamp: metadata.receivedAtTimestamp,
+                        threadRowId: metadata.threadRowId,
+                        contentType: contentType,
+                        stickerPackId: metadata.stickerPackId,
+                        stickerId: metadata.stickerId
+                    ))
+                case .contactAvatar(let metadata):
+                    return .contactAvatar(.init(
+                        messageRowId: metadata.messageRowId,
+                        receivedAtTimestamp: metadata.receivedAtTimestamp,
+                        threadRowId: metadata.threadRowId,
+                        contentType: contentType
+                    ))
+                }
+            }())
+        case .storyMessage(let storyMessageSource):
+            switch storyMessageSource {
+            case .media(let metadata):
+                return .storyMessage(.media(metadata))
+            case .textStoryLinkPreview(let metadata):
+                return .storyMessage(.textStoryLinkPreview(metadata))
+            }
+        case .thread(let threadSource):
+            switch threadSource {
+            case .threadWallpaperImage(let metadata):
+                return .thread(.threadWallpaperImage(metadata))
+            case .globalThreadWallpaperImage(let creationTimestamp):
+                return .thread(.globalThreadWallpaperImage(creationTimestamp: creationTimestamp))
+            }
+        }
+    }
 }
 
 // MARK: - Converters
