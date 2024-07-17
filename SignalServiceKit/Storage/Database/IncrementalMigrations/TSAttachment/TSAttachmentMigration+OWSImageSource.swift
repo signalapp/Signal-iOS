@@ -466,7 +466,7 @@ extension TSAttachmentMigration {
             if isAnimated, byteLength > TSAttachmentMigration.kMaxFileSizeAnimatedImage {
                 Logger.warn("Oversize image.")
                 return nil
-            } else if byteLength > TSAttachmentMigration.kMaxFileSizeImage {
+            } else if !isAnimated, byteLength > TSAttachmentMigration.kMaxFileSizeImage {
                 Logger.warn("Oversize image.")
                 return nil
             }

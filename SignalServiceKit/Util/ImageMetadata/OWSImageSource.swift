@@ -374,7 +374,7 @@ extension OWSImageSource {
             if isAnimated, byteLength > OWSMediaUtils.kMaxFileSizeAnimatedImage {
                 Logger.warn("Oversize image.")
                 return .imageTypeSizeLimitExceeded
-            } else if byteLength > OWSMediaUtils.kMaxFileSizeImage {
+            } else if !isAnimated, byteLength > OWSMediaUtils.kMaxFileSizeImage {
                 Logger.warn("Oversize image.")
                 return .imageTypeSizeLimitExceeded
             }
