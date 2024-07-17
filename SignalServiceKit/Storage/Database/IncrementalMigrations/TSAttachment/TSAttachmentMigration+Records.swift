@@ -8,6 +8,21 @@ import GRDB
 
 extension TSAttachmentMigration {
 
+    /// These are the "live" models this migration depends on.
+    /// We point to the same Swift class/struct model as the live app on the
+    /// assumption that they will need to always be backwards compatible regardless,
+    /// so using them here (which requires backwards compatibility) adds no new burden.
+    ///
+    /// If you are writing a migration to remove these models or update them in a
+    /// non-backwards compatible way, that migration likely needs to make copies of
+    /// the pre-migration models so that it knows how to read them before migrating them.
+    /// This migration should be updated to point at those new copies.
+    enum LiveModels {
+        typealias MessageBodyRanges = SignalServiceKit.MessageBodyRanges
+        typealias SignalServiceAddress = SignalServiceKit.SignalServiceAddress
+        typealias StyleOnlyMessageBody = SignalServiceKit.StyleOnlyMessageBody
+    }
+
     struct V1Attachment: Codable, MutablePersistableRecord, FetchableRecord {
         static let databaseTableName: String = "model_TSAttachment"
 
@@ -378,4 +393,481 @@ extension TSAttachmentMigration {
         var attachmentRowId: Int64
         var creationTimestamp: UInt64
     }
+
+    // MARK: - MTLModels
+
+    private static let nsCodingMappings: [String: AnyClass] = [
+        "SignalServiceKit.OWSLinkPreview": TSAttachmentMigration.OWSLinkPreview.self,
+        "StickerInfo": TSAttachmentMigration.StickerInfo.self,
+        "SignalServiceKit.MessageSticker": TSAttachmentMigration.MessageSticker.self,
+        "OWSContact": TSAttachmentMigration.OWSContact.self,
+        "OWSContactAddress": TSAttachmentMigration.OWSContactAddress.self,
+        "OWSContactEmail": TSAttachmentMigration.OWSContactEmail.self,
+        "OWSContactName": TSAttachmentMigration.OWSContactName.self,
+        "OWSContactPhoneNumber": TSAttachmentMigration.OWSContactPhoneNumber.self,
+        "OWSAttachmentInfo": TSAttachmentMigration.OWSAttachmentInfo.self,
+        "TSQuotedMessage": TSAttachmentMigration.TSQuotedMessage.self,
+        "SignalServiceKit.MessageBodyRanges": LiveModels.MessageBodyRanges.self,
+        "SignalServiceKit.SignalServiceAddress": LiveModels.SignalServiceAddress.self,
+    ]
+
+    static func prepareNSCodingMappings(archiver: NSKeyedArchiver) {
+        Self.nsCodingMappings.forEach { originalClassName, migrationClass in
+            archiver.setClassName(originalClassName, for: migrationClass)
+        }
+    }
+
+    static func prepareNSCodingMappings(unarchiver: NSKeyedUnarchiver) {
+        Self.nsCodingMappings.forEach { originalClassName, migrationClass in
+            unarchiver.setClass(migrationClass, forClassName: originalClassName)
+        }
+    }
+
+    static func cleanUpNSCodingMappings(archiver: NSKeyedArchiver) {
+        Self.nsCodingMappings.forEach { originalClassName, migrationClass in
+            archiver.setClassName(nil, for: migrationClass)
+        }
+    }
+
+    static func cleanUpNSCodingMappings(unarchiver: NSKeyedUnarchiver) {
+        Self.nsCodingMappings.forEach { originalClassName, migrationClass in
+            unarchiver.setClass(nil, forClassName: originalClassName)
+        }
+    }
+
+    @objcMembers
+    class OWSLinkPreview: MTLModel, Codable {
+        var urlString: String?
+        var title: String?
+        var imageAttachmentId: String?
+        var usesV2AttachmentReferenceValue: NSNumber?
+        var previewDescription: String?
+        var date: Date?
+
+        override init() { super.init() }
+
+        required init!(coder: NSCoder) { super.init(coder: coder) }
+
+        required init(dictionary dictionaryValue: [String: Any]!) throws {
+            try super.init(dictionary: dictionaryValue)
+        }
+
+        enum CodingKeys: String, CodingKey {
+            case urlString
+            case title
+            case usesV2AttachmentReferenceValue
+            case imageAttachmentId
+            case previewDescription
+            case date
+        }
+
+        required init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            urlString = try container.decodeIfPresent(String.self, forKey: .urlString)
+            title = try container.decodeIfPresent(String.self, forKey: .title)
+            let usesV2AttachmentReferenceValue = try container.decodeIfPresent(Int.self, forKey: .usesV2AttachmentReferenceValue)
+            self.usesV2AttachmentReferenceValue = usesV2AttachmentReferenceValue.map(NSNumber.init(integerLiteral:))
+            imageAttachmentId = try container.decodeIfPresent(String.self, forKey: .imageAttachmentId)
+            previewDescription = try container.decodeIfPresent(String.self, forKey: .previewDescription)
+            date = try container.decodeIfPresent(Date.self, forKey: .date)
+            super.init()
+        }
+
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encodeIfPresent(urlString, forKey: .urlString)
+            try container.encodeIfPresent(title, forKey: .title)
+            try container.encodeIfPresent(usesV2AttachmentReferenceValue?.intValue, forKey: .usesV2AttachmentReferenceValue)
+            try container.encodeIfPresent(imageAttachmentId, forKey: .imageAttachmentId)
+            try container.encodeIfPresent(previewDescription, forKey: .previewDescription)
+            try container.encodeIfPresent(date, forKey: .date)
+        }
+    }
+
+    @objcMembers
+    class StickerInfo: MTLModel {
+        var packId: Data = Randomness.generateRandomBytes(16)
+        var packKey: Data = Randomness.generateRandomBytes(32)
+        var stickerId: UInt32 = 0
+
+        override init() { super.init() }
+
+        required init!(coder: NSCoder!) { super.init(coder: coder) }
+
+        required init(dictionary: [String: Any]!) throws {
+            try super.init(dictionary: dictionary)
+        }
+    }
+
+    @objcMembers
+    class MessageSticker: MTLModel {
+        var info = TSAttachmentMigration.StickerInfo()
+        var attachmentId: String?
+        var emoji: String?
+
+        override init() { super.init() }
+
+        required init!(coder: NSCoder) { super.init(coder: coder) }
+
+        required init(dictionary dictionaryValue: [String: Any]!) throws {
+            try super.init(dictionary: dictionaryValue)
+        }
+    }
+
+    @objcMembers
+    public class OWSContactName: MTLModel {
+        var givenName: String?
+        var familyName: String?
+        var namePrefix: String?
+        var nameSuffix: String?
+        var middleName: String?
+        var nickname: String?
+        var organizationName: String?
+
+        override init() { super.init() }
+
+        required init!(coder: NSCoder!) { super.init(coder: coder) }
+
+        required init(dictionary dictionaryValue: [String: Any]!) throws {
+            try super.init(dictionary: dictionaryValue)
+        }
+    }
+
+    @objcMembers
+    class OWSContactPhoneNumber: MTLModel {
+        @objc
+        enum `Type`: Int {
+            case home = 1
+            case mobile
+            case work
+            case custom
+        }
+
+        var phoneType: `Type` = .home
+        var label: String?
+        var phoneNumber: String = ""
+
+        override init() { super.init() }
+
+        required init!(coder: NSCoder!) { super.init(coder: coder) }
+
+        required init(dictionary dictionaryValue: [String: Any]!) throws {
+            try super.init(dictionary: dictionaryValue)
+        }
+    }
+
+    @objcMembers
+    class OWSContactEmail: MTLModel {
+        @objc
+        enum `Type`: Int {
+            case home = 1
+            case mobile
+            case work
+            case custom
+        }
+
+        var emailType: `Type` = .home
+        var label: String?
+        var email: String = ""
+
+        override init() { super.init() }
+
+        required init!(coder: NSCoder!) { super.init(coder: coder) }
+
+        required init(dictionary dictionaryValue: [String: Any]!) throws {
+            try super.init(dictionary: dictionaryValue)
+        }
+    }
+
+    @objcMembers
+    class OWSContactAddress: MTLModel {
+        @objc
+        enum `Type`: Int {
+            case home = 1
+            case work
+            case custom
+        }
+
+        var addressType: `Type` = .home
+        var label: String?
+        var street: String?
+        var pobox: String?
+        var neighborhood: String?
+        var city: String?
+        var region: String?
+        var postcode: String?
+        var country: String?
+
+        override init() { super.init() }
+
+        required init!(coder: NSCoder!) { super.init(coder: coder) }
+
+        required init(dictionary dictionaryValue: [String: Any]!) throws {
+            try super.init(dictionary: dictionaryValue)
+        }
+    }
+
+    @objcMembers
+    class OWSContact: MTLModel {
+        var name: TSAttachmentMigration.OWSContactName
+        var phoneNumbers: [TSAttachmentMigration.OWSContactPhoneNumber] = []
+        var emails: [TSAttachmentMigration.OWSContactEmail] = []
+        var addresses: [TSAttachmentMigration.OWSContactAddress] = []
+        var avatarAttachmentId: String?
+
+        override init() {
+            self.name = TSAttachmentMigration.OWSContactName()
+            super.init()
+        }
+
+        required init!(coder: NSCoder!) {
+            self.name = TSAttachmentMigration.OWSContactName()
+            super.init(coder: coder)
+        }
+
+        required init(dictionary dictionaryValue: [String: Any]!) throws {
+            self.name = TSAttachmentMigration.OWSContactName()
+            try super.init(dictionary: dictionaryValue)
+        }
+    }
+
+    @objc
+    enum OWSAttachmentInfoReference: Int, Codable {
+        case unset = 0
+        case originalForSend = 1
+        case original = 2
+        case thumbnail = 3
+        case untrustedPointer = 4
+        case v2 = 5
+    }
+
+    @objcMembers
+    class OWSAttachmentInfo: MTLModel, NSSecureCoding {
+        var schemaVersion: UInt = 1
+        var attachmentType: TSAttachmentMigration.OWSAttachmentInfoReference = .unset
+        var rawAttachmentId: String = ""
+        var contentType: String?
+        var sourceFilename: String?
+
+        static var supportsSecureCoding: Bool = false
+
+        init(
+            schemaVersion: UInt = 1,
+            attachmentType: TSAttachmentMigration.OWSAttachmentInfoReference,
+            rawAttachmentId: String,
+            contentType: String?,
+            sourceFilename: String?
+        ) {
+            self.schemaVersion = schemaVersion
+            self.attachmentType = attachmentType
+            self.rawAttachmentId = rawAttachmentId
+            self.contentType = contentType
+            self.sourceFilename = sourceFilename
+            super.init()
+        }
+
+        override init() { super.init() }
+
+        required init!(coder: NSCoder!) {
+            super.init(coder: coder)
+
+            if schemaVersion == 0 {
+                let oldStreamId = coder.decodeObject(of: NSString.self, forKey: "thumbnailAttachmentStreamId")
+                let oldPointerId = coder.decodeObject(of: NSString.self, forKey: "thumbnailAttachmentPointerId")
+                let oldSourceAttachmentId = coder.decodeObject(of: NSString.self, forKey: "attachmentId")
+
+                // Before, we maintained each of these IDs in parallel, though in practice only one in use at a time.
+                // Migration codifies this behavior.
+                if let oldStreamId, oldPointerId == oldStreamId {
+                    attachmentType = .thumbnail
+                    rawAttachmentId = oldStreamId as String
+                } else if let oldPointerId {
+                    attachmentType = .untrustedPointer
+                    rawAttachmentId = oldPointerId as String
+                } else if let oldStreamId {
+                    attachmentType = .thumbnail
+                    rawAttachmentId = oldStreamId as String
+                } else if let oldSourceAttachmentId {
+                    attachmentType = .originalForSend
+                    rawAttachmentId = oldSourceAttachmentId as String
+                } else {
+                    attachmentType = .unset
+                    rawAttachmentId = ""
+                }
+            }
+            self.schemaVersion = 1
+        }
+
+        required init(dictionary dictionaryValue: [String: Any]!) throws {
+            try super.init(dictionary: dictionaryValue)
+        }
+    }
+
+    @objc
+    enum TSQuotedMessageContentSource: Int, Codable {
+        case unknown = 0
+        case local = 1
+        case remote = 2
+        case story = 3
+    }
+
+    @objcMembers
+    class TSQuotedMessage: MTLModel {
+        var timestamp: UInt64 = 0
+        var authorAddress: LiveModels.SignalServiceAddress?
+        var bodySource: TSAttachmentMigration.TSQuotedMessageContentSource = .unknown
+        var body: String?
+        var bodyRanges: LiveModels.MessageBodyRanges?
+        var quotedAttachment: TSAttachmentMigration.OWSAttachmentInfo?
+        var isGiftBadge: Bool = false
+
+        override init() { super.init() }
+
+        required init!(coder: NSCoder!) {
+            super.init(coder: coder)
+
+            if authorAddress == nil, let phoneNumber = coder.decodeObject(of: NSString.self, forKey: "authorId") {
+                authorAddress = LiveModels.SignalServiceAddress.legacyAddress(aciString: nil, phoneNumber: phoneNumber as String)
+            }
+
+            if
+                quotedAttachment == nil,
+                let array = coder.decodeArrayOfObjects(ofClass: TSAttachmentMigration.OWSAttachmentInfo.self, forKey: "quotedAttachments"),
+                let first = array.first
+            {
+                quotedAttachment = first
+            }
+        }
+
+        required init(dictionary dictionaryValue: [String: Any]!) throws {
+            try super.init(dictionary: dictionaryValue)
+        }
+    }
+
+    // MARK: - Styles
+
+    struct NSRangedValue<T> {
+        let range: NSRange
+        let value: T
+    }
+
+    struct Style: OptionSet, Codable {
+        let rawValue: Int
+
+        init(rawValue: Int) {
+            self.rawValue = rawValue
+        }
+    }
+
+    enum SingleStyle: Int, Codable {
+        case bold = 1
+        case italic = 2
+        case spoiler = 4
+        case strikethrough = 8
+        case monospace = 16
+    }
+
+    struct MergedSingleStyle: Equatable, Codable {
+        let style: TSAttachmentMigration.SingleStyle
+        let mergedRange: NSRange
+        let id: Int
+    }
+
+    struct CollapsedStyle: Equatable, Codable {
+        let style: TSAttachmentMigration.Style
+        let originals: [TSAttachmentMigration.SingleStyle: TSAttachmentMigration.MergedSingleStyle]
+    }
+
+    // MARK: - Stories
+
+    enum SerializedStoryMessageAttachment: Codable {
+        case file(attachmentId: String)
+        case text(attachment: TSAttachmentMigration.TextAttachment)
+        case fileV2(TSAttachmentMigration.StoryMessageFileAttachment)
+        case foreignReferenceAttachment
+    }
+
+    struct StoryMessageFileAttachment: Codable {
+        let attachmentId: String
+        let captionStyles: [TSAttachmentMigration.NSRangedValue<TSAttachmentMigration.CollapsedStyle>]
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+
+            self.attachmentId = try container.decode(String.self, forKey: .attachmentId)
+
+            do {
+                // A year prior to this migration being written, captionStyles contained raw Styles
+                // instead of collapsed styles. Stories expire in 24 hours. Byt the time of this
+                // migration any story with the non-collapsed style is expired; technically though
+                // this migration runs before StoryManager deletes expired stories. So we need to not
+                // fail, but its ok to drop the caption styles since its about to be deleted anyway.
+                self.captionStyles = try container.decode([TSAttachmentMigration.NSRangedValue<TSAttachmentMigration.CollapsedStyle>].self, forKey: .captionStyles)
+            } catch {
+                self.captionStyles = []
+            }
+        }
+    }
+
+    struct TextAttachment: Codable, Equatable {
+
+        enum TextStyle: Int, Codable, Equatable {
+            case regular = 0
+            case bold = 1
+            case serif = 2
+            case script = 3
+            case condensed = 4
+        }
+
+        enum RawBackground: Codable, Equatable {
+            case color(hex: UInt32)
+            case gradient(raw: Self.RawGradient)
+
+            struct RawGradient: Codable, Equatable {
+                let colors: [UInt32]
+                let positions: [Float]
+                let angle: UInt32
+            }
+        }
+
+        let body: LiveModels.StyleOnlyMessageBody?
+        let textStyle: Self.TextStyle
+        var preview: TSAttachmentMigration.OWSLinkPreview?
+        let textForegroundColorHex: UInt32?
+        let textBackgroundColorHex: UInt32?
+        let rawBackground: Self.RawBackground
+
+        enum CodingKeys: String, CodingKey {
+            case body = "text"
+            case textStyle
+            case textForegroundColorHex
+            case textBackgroundColorHex
+            case rawBackground
+            case preview
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+
+            do {
+                // Backwards compability; this used to contain just a raw string,
+                // which we now interpret as a style-less string.
+                if let rawText = try container.decodeIfPresent(String.self, forKey: .body) {
+                    self.body = LiveModels.StyleOnlyMessageBody(plaintext: rawText)
+                } else {
+                    self.body = nil
+                }
+            } catch {
+                self.body = try container.decodeIfPresent(LiveModels.StyleOnlyMessageBody.self, forKey: .body)
+            }
+
+            self.textStyle = try container.decode(Self.TextStyle.self, forKey: .textStyle)
+            self.textForegroundColorHex = try container.decodeIfPresent(UInt32.self, forKey: .textForegroundColorHex)
+            self.textBackgroundColorHex = try container.decodeIfPresent(UInt32.self, forKey: .textBackgroundColorHex)
+            self.rawBackground = try container.decode(Self.RawBackground.self, forKey: .rawBackground)
+            self.preview = try container.decodeIfPresent(TSAttachmentMigration.OWSLinkPreview.self, forKey: .preview)
+        }
+    }
 }
+
+extension TSAttachmentMigration.NSRangedValue: Codable where T: Codable {}
