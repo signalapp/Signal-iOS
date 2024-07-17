@@ -31,6 +31,19 @@ extension TSAttachmentMigration {
             case voiceMessage = 1
             case borderless = 2
             case gif = 3
+
+            var asRenderingFlag: TSAttachmentMigration.V2RenderingFlag {
+                switch self {
+                case .default:
+                    return .default
+                case .voiceMessage:
+                    return .voiceMessage
+                case .borderless:
+                    return .borderless
+                case .gif:
+                    return .shouldLoop
+                }
+            }
         }
 
         static let attachmentPointerSDSRecordType: UInt32 = 3
@@ -69,6 +82,25 @@ extension TSAttachmentMigration {
         var attachmentSchemaVersion: UInt
         var videoDuration: Double?
         var clientUuid: String?
+
+        func sourceMediaSizePixels() throws -> (height: UInt32, width: UInt32)? {
+            guard let encoded = mediaSize else {
+                return nil
+            }
+            guard
+                let decoded = try NSKeyedUnarchiver
+                    .unarchiveTopLevelObjectWithData(encoded) as? CGSize
+            else {
+                throw OWSAssertionError("Invalid media size")
+            }
+            guard
+                let height = UInt32(exactly: decoded.height),
+                let width = UInt32(exactly: decoded.width)
+            else {
+                return nil
+            }
+            return (height, width)
+        }
 
         var localFilePath: String? {
             guard let localRelativeFilePath else {
@@ -223,7 +255,7 @@ extension TSAttachmentMigration {
         var originalAttachmentIdForQuotedReply: Int64?
 
         init(
-            id: Int64?,
+            id: Int64? = nil,
             blurHash: String?,
             sha256ContentHash: Data?,
             encryptedByteCount: UInt32?,
@@ -239,23 +271,13 @@ extension TSAttachmentMigration {
             transitUnencryptedByteCount: UInt32?,
             transitDigestSHA256Ciphertext: Data?,
             lastTransitDownloadAttemptTimestamp: UInt64?,
-            mediaName: String?,
-            mediaTierCdnNumber: UInt32?,
-            mediaTierUnencryptedByteCount: UInt32?,
-            mediaTierUploadEra: String?,
-            lastMediaTierDownloadAttemptTimestamp: UInt64?,
-            thumbnailCdnNumber: UInt32?,
-            thumbnailUploadEra: String?,
-            lastThumbnailDownloadAttemptTimestamp: UInt64?,
             localRelativeFilePath: String?,
-            localRelativeFilePathThumbnail: String?,
             cachedAudioDurationSeconds: Double?,
             cachedMediaHeightPixels: UInt32?,
             cachedMediaWidthPixels: UInt32?,
             cachedVideoDurationSeconds: Double?,
             audioWaveformRelativeFilePath: String?,
-            videoStillFrameRelativeFilePath: String?,
-            originalAttachmentIdForQuotedReply: Int64?
+            videoStillFrameRelativeFilePath: String?
         ) {
             self.id = id
             self.blurHash = blurHash
@@ -293,23 +315,31 @@ extension TSAttachmentMigration {
                 self.transitDigestSHA256Ciphertext = nil
             }
             self.lastTransitDownloadAttemptTimestamp = lastTransitDownloadAttemptTimestamp
-            self.mediaName = mediaName
-            self.mediaTierCdnNumber = mediaTierCdnNumber
-            self.mediaTierUnencryptedByteCount = mediaTierUnencryptedByteCount
-            self.mediaTierUploadEra = mediaTierUploadEra
-            self.lastMediaTierDownloadAttemptTimestamp = lastMediaTierDownloadAttemptTimestamp
-            self.thumbnailCdnNumber = thumbnailCdnNumber
-            self.thumbnailUploadEra = thumbnailUploadEra
-            self.lastThumbnailDownloadAttemptTimestamp = lastThumbnailDownloadAttemptTimestamp
+            self.mediaName = digestSHA256Ciphertext.map {
+                TSAttachmentMigration.V2Attachment.mediaName(
+                    digestSHA256Ciphertext: $0
+                )
+            }
+            // Media tier and thumbnail upload info was unsupported in TSAttachment
+            // and therefore will always be nil in this migration.
+            self.mediaTierCdnNumber = nil
+            self.mediaTierUnencryptedByteCount = nil
+            self.mediaTierUploadEra = nil
+            self.lastMediaTierDownloadAttemptTimestamp = nil
+            self.thumbnailCdnNumber = nil
+            self.thumbnailUploadEra = nil
+            self.lastThumbnailDownloadAttemptTimestamp = nil
             self.localRelativeFilePath = localRelativeFilePath
-            self.localRelativeFilePathThumbnail = localRelativeFilePathThumbnail
+            self.localRelativeFilePathThumbnail = nil
             self.cachedAudioDurationSeconds = cachedAudioDurationSeconds
             self.cachedMediaHeightPixels = cachedMediaHeightPixels
             self.cachedMediaWidthPixels = cachedMediaWidthPixels
             self.cachedVideoDurationSeconds = cachedVideoDurationSeconds
             self.audioWaveformRelativeFilePath = audioWaveformRelativeFilePath
             self.videoStillFrameRelativeFilePath = videoStillFrameRelativeFilePath
-            self.originalAttachmentIdForQuotedReply = originalAttachmentIdForQuotedReply
+            // In the migration we never reference a quote original since the original
+            // is likely unmigrated when we migrate the quoted reply.
+            self.originalAttachmentIdForQuotedReply = nil
         }
 
         mutating func didInsert(with rowID: Int64, for column: String?) {

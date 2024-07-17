@@ -1013,6 +1013,7 @@
 		669379F32C3C7C3B00EED7A0 /* TSAttachmentMigration+OWSImageSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669379F22C3C7C3B00EED7A0 /* TSAttachmentMigration+OWSImageSource.swift */; };
 		669379F52C3C7EA800EED7A0 /* TSAttachmentMigration+ImageMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669379F42C3C7EA800EED7A0 /* TSAttachmentMigration+ImageMetadata.swift */; };
 		669379F72C3C847000EED7A0 /* TSAttachmentMigration+AttachmentValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669379F62C3C847000EED7A0 /* TSAttachmentMigration+AttachmentValidator.swift */; };
+		66937A032C3F4EFC00EED7A0 /* TSAttachmentMigration+StoryMessageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66937A022C3F4EFC00EED7A0 /* TSAttachmentMigration+StoryMessageAttachment.swift */; };
 		6694BF682B36484900B18764 /* PinnedThreadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6694BF672B36484800B18764 /* PinnedThreadManager.swift */; };
 		6694BF6A2B3650E400B18764 /* PinnedThreadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6694BF692B3650E400B18764 /* PinnedThreadStore.swift */; };
 		6694BF6C2B3656D500B18764 /* MockPinnedThreadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6694BF6B2B3656D500B18764 /* MockPinnedThreadManager.swift */; };
@@ -4055,6 +4056,7 @@
 		669379F22C3C7C3B00EED7A0 /* TSAttachmentMigration+OWSImageSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentMigration+OWSImageSource.swift"; sourceTree = "<group>"; };
 		669379F42C3C7EA800EED7A0 /* TSAttachmentMigration+ImageMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentMigration+ImageMetadata.swift"; sourceTree = "<group>"; };
 		669379F62C3C847000EED7A0 /* TSAttachmentMigration+AttachmentValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentMigration+AttachmentValidator.swift"; sourceTree = "<group>"; };
+		66937A022C3F4EFC00EED7A0 /* TSAttachmentMigration+StoryMessageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentMigration+StoryMessageAttachment.swift"; sourceTree = "<group>"; };
 		6694BF672B36484800B18764 /* PinnedThreadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedThreadManager.swift; sourceTree = "<group>"; };
 		6694BF692B3650E400B18764 /* PinnedThreadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnedThreadStore.swift; sourceTree = "<group>"; };
 		6694BF6B2B3656D500B18764 /* MockPinnedThreadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPinnedThreadManager.swift; sourceTree = "<group>"; };
@@ -8243,6 +8245,7 @@
 				669379F22C3C7C3B00EED7A0 /* TSAttachmentMigration+OWSImageSource.swift */,
 				669379F02C3C79E800EED7A0 /* TSAttachmentMigration+OWSMediaUtils.swift */,
 				669379EC2C3C5B2C00EED7A0 /* TSAttachmentMigration+Records.swift */,
+				66937A022C3F4EFC00EED7A0 /* TSAttachmentMigration+StoryMessageAttachment.swift */,
 				665C758B2C35A55300D2E4BA /* TSAttachmentMigration+ThreadWallpaper.swift */,
 				66A1ABE12C3311B40033C5EB /* TSAttachmentMigration.swift */,
 			);
@@ -15041,6 +15044,7 @@
 				669379F32C3C7C3B00EED7A0 /* TSAttachmentMigration+OWSImageSource.swift in Sources */,
 				669379F12C3C79E800EED7A0 /* TSAttachmentMigration+OWSMediaUtils.swift in Sources */,
 				669379ED2C3C5B2C00EED7A0 /* TSAttachmentMigration+Records.swift in Sources */,
+				66937A032C3F4EFC00EED7A0 /* TSAttachmentMigration+StoryMessageAttachment.swift in Sources */,
 				665C758C2C35A55300D2E4BA /* TSAttachmentMigration+ThreadWallpaper.swift in Sources */,
 				66A1ABE22C3311B40033C5EB /* TSAttachmentMigration.swift in Sources */,
 				725464EC2B9F6EB900EABFD2 /* TSAttachmentMultisendJob.swift in Sources */,

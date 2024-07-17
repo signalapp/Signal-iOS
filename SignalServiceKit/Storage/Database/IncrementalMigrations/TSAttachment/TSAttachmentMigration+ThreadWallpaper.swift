@@ -180,7 +180,6 @@ extension TSAttachmentMigration {
         }
 
         var attachment = TSAttachmentMigration.V2Attachment(
-            id: nil,
             blurHash: pendingAttachment.blurHash,
             sha256ContentHash: pendingAttachment.sha256ContentHash,
             encryptedByteCount: pendingAttachment.encryptedByteCount,
@@ -196,25 +195,13 @@ extension TSAttachmentMigration {
             transitUnencryptedByteCount: nil,
             transitDigestSHA256Ciphertext: nil,
             lastTransitDownloadAttemptTimestamp: nil,
-            mediaName: TSAttachmentMigration.V2Attachment.mediaName(
-                digestSHA256Ciphertext: pendingAttachment.digestSHA256Ciphertext
-            ),
-            mediaTierCdnNumber: nil,
-            mediaTierUnencryptedByteCount: nil,
-            mediaTierUploadEra: nil,
-            lastMediaTierDownloadAttemptTimestamp: nil,
-            thumbnailCdnNumber: nil,
-            thumbnailUploadEra: nil,
-            lastThumbnailDownloadAttemptTimestamp: nil,
             localRelativeFilePath: pendingAttachment.localRelativeFilePath,
-            localRelativeFilePathThumbnail: nil,
             cachedAudioDurationSeconds: pendingAttachment.audioDurationSeconds,
             cachedMediaHeightPixels: pendingAttachment.mediaSizePixels.map { UInt32($0.height) },
             cachedMediaWidthPixels: pendingAttachment.mediaSizePixels.map { UInt32($0.width) },
             cachedVideoDurationSeconds: pendingAttachment.videoDurationSeconds,
             audioWaveformRelativeFilePath: pendingAttachment.audioWaveformRelativeFilePath,
-            videoStillFrameRelativeFilePath: pendingAttachment.videoStillFrameRelativeFilePath,
-            originalAttachmentIdForQuotedReply: nil
+            videoStillFrameRelativeFilePath: pendingAttachment.videoStillFrameRelativeFilePath
         )
 
         try attachment.insert(tx.database)
