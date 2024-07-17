@@ -90,10 +90,10 @@ extension TSAttachmentMigration {
 
         private static let thumbnailDimensionPointsForQuotedReply: CGFloat = 200
 
-        private static func prepareQuotedReplyThumbnail(
+        static func prepareQuotedReplyThumbnail(
             fromOriginalAttachmentStream stream: TSAttachmentMigration.V1Attachment,
             reservedFileIds: ReservedRelativeFileIds,
-            renderingFlag: AttachmentReference.RenderingFlag,
+            renderingFlag: TSAttachmentMigration.V2RenderingFlag,
             sourceFilename: String?
         ) throws -> TSAttachmentMigration.PendingV2AttachmentFile {
             guard let localFilePath = stream.localFilePath else {
