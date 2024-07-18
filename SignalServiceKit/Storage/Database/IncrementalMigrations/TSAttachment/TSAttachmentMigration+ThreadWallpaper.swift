@@ -118,7 +118,10 @@ extension TSAttachmentMigration {
             sql: "DELETE FROM keyvalue where collection = ?",
             arguments: ["WallpaperMigration"]
         )
-        // Delete the old wallpaper directory.
+    }
+
+    // Delete the old wallpaper directory.
+    static func cleanUpLegacyThreadWallpaperDirectory() throws {
         for filePath in try OWSFileSystem.recursiveFilesInDirectory(legacyWallpaperDirectory.path) {
             if !OWSFileSystem.deleteFile(filePath, ignoreIfMissing: true) {
                 throw OWSAssertionError("Failed to delete!")
