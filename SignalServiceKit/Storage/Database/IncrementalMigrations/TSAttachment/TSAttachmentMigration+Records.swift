@@ -762,10 +762,15 @@ extension TSAttachmentMigration {
 
             if
                 quotedAttachment == nil,
-                let array = coder.decodeArrayOfObjects(ofClass: TSAttachmentMigration.OWSAttachmentInfo.self, forKey: "quotedAttachments"),
-                let first = array.first
+                let array = coder.decodeObject(of: NSArray.self, forKey: "quotedAttachments"),
+                let first = array.firstObject as? TSAttachmentMigration.OWSAttachmentInfo
             {
                 quotedAttachment = first
+            } else if
+                quotedAttachment == nil,
+                let quotedAttachment = coder.decodeObject(of: TSAttachmentMigration.OWSAttachmentInfo.self, forKey: "quotedAttachments")
+            {
+                self.quotedAttachment = quotedAttachment
             }
         }
 
