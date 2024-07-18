@@ -295,6 +295,305 @@ extension TSAttachmentMigration {
             fatalError("TODO")
         }
 
+        // MARK: - Migrating a single TSAttachment
+
+        // Returns the deleted TSAttachment.
+        private static func migrateSingleMessageAttachment(
+            tsAttachmentUniqueId: String,
+            reservedFileIds: TSAttachmentMigration.V1AttachmentReservedFileIds,
+            messageRowId: Int64,
+            threadRowId: Int64,
+            messageOwnerType: TSAttachmentMigration.V2MessageAttachmentOwnerType,
+            messageReceivedAtTimestamp: UInt64,
+            isEditedMessage: Bool,
+            orderInMessage: UInt32?,
+            stickerPackId: Data?,
+            stickerId: UInt32?,
+            tx: GRDBWriteTransaction
+        ) throws -> TSAttachmentMigration.V1Attachment? {
+            let oldAttachment = try TSAttachmentMigration.V1Attachment
+                .filter(Column("uniqueId") == tsAttachmentUniqueId)
+                .fetchOne(tx.database)
+            guard let oldAttachment else {
+                try reservedFileIds.cleanUpFiles()
+                return nil
+            }
+
+            let pendingAttachment: TSAttachmentMigration.PendingV2AttachmentFile?
+            if let oldFilePath = oldAttachment.localFilePath, OWSFileSystem.fileOrFolderExists(atPath: oldFilePath) {
+                pendingAttachment = try TSAttachmentMigration.V2AttachmentContentValidator.validateContents(
+                    unencryptedFileUrl: URL(fileURLWithPath: oldFilePath),
+                    reservedFileIds: .init(
+                        primaryFile: reservedFileIds.reservedV2AttachmentPrimaryFileId,
+                        audioWaveform: reservedFileIds.reservedV2AttachmentAudioWaveformFileId,
+                        videoStillFrame: reservedFileIds.reservedV2AttachmentVideoStillFrameFileId
+                    ),
+                    encryptionKey: oldAttachment.encryptionKey,
+                    mimeType: oldAttachment.contentType,
+                    renderingFlag: oldAttachment.attachmentType.asRenderingFlag,
+                    sourceFilename: oldAttachment.sourceFilename
+                )
+            } else {
+                // A pointer; no validation needed.
+                pendingAttachment = nil
+                // Clean up files just in case.
+                try reservedFileIds.cleanUpFiles()
+            }
+
+            let v2AttachmentId: Int64
+            if
+                let pendingAttachment,
+                let existingV2Attachment = try TSAttachmentMigration.V2Attachment
+                    .filter(Column("sha256ContentHash") == pendingAttachment.sha256ContentHash)
+                    .fetchOne(tx.database)
+            {
+                // If we already have a v2 attachment with the same plaintext hash,
+                // create new references to it and drop the pending attachment.
+                v2AttachmentId = existingV2Attachment.id!
+                // Delete the reserved files being used by the pending attachment.
+                try reservedFileIds.cleanUpFiles()
+            } else {
+                var v2Attachment: TSAttachmentMigration.V2Attachment
+                if let pendingAttachment {
+                    v2Attachment = TSAttachmentMigration.V2Attachment(
+                        blurHash: pendingAttachment.blurHash,
+                        sha256ContentHash: pendingAttachment.sha256ContentHash,
+                        encryptedByteCount: pendingAttachment.encryptedByteCount,
+                        unencryptedByteCount: pendingAttachment.unencryptedByteCount,
+                        mimeType: pendingAttachment.mimeType,
+                        encryptionKey: pendingAttachment.encryptionKey,
+                        digestSHA256Ciphertext: pendingAttachment.digestSHA256Ciphertext,
+                        contentType: UInt32(pendingAttachment.validatedContentType.rawValue),
+                        transitCdnNumber: oldAttachment.cdnNumber,
+                        transitCdnKey: oldAttachment.cdnKey,
+                        transitUploadTimestamp: oldAttachment.uploadTimestamp,
+                        transitEncryptionKey: oldAttachment.encryptionKey,
+                        transitUnencryptedByteCount: pendingAttachment.unencryptedByteCount,
+                        transitDigestSHA256Ciphertext: oldAttachment.digest,
+                        lastTransitDownloadAttemptTimestamp: nil,
+                        localRelativeFilePath: pendingAttachment.localRelativeFilePath,
+                        cachedAudioDurationSeconds: pendingAttachment.audioDurationSeconds,
+                        cachedMediaHeightPixels: pendingAttachment.mediaSizePixels.map { UInt32($0.height) },
+                        cachedMediaWidthPixels: pendingAttachment.mediaSizePixels.map { UInt32($0.width) },
+                        cachedVideoDurationSeconds: pendingAttachment.videoDurationSeconds,
+                        audioWaveformRelativeFilePath: pendingAttachment.audioWaveformRelativeFilePath,
+                        videoStillFrameRelativeFilePath: pendingAttachment.videoStillFrameRelativeFilePath
+                    )
+                } else {
+                    v2Attachment = TSAttachmentMigration.V2Attachment(
+                        blurHash: oldAttachment.blurHash,
+                        sha256ContentHash: nil,
+                        encryptedByteCount: nil,
+                        unencryptedByteCount: nil,
+                        mimeType: oldAttachment.contentType,
+                        encryptionKey: oldAttachment.encryptionKey ?? Cryptography.randomAttachmentEncryptionKey(),
+                        digestSHA256Ciphertext: nil,
+                        contentType: nil,
+                        transitCdnNumber: oldAttachment.cdnNumber,
+                        transitCdnKey: oldAttachment.cdnKey,
+                        transitUploadTimestamp: oldAttachment.uploadTimestamp,
+                        transitEncryptionKey: oldAttachment.encryptionKey,
+                        transitUnencryptedByteCount: oldAttachment.byteCount,
+                        transitDigestSHA256Ciphertext: oldAttachment.digest,
+                        lastTransitDownloadAttemptTimestamp: nil,
+                        localRelativeFilePath: pendingAttachment?.localRelativeFilePath,
+                        cachedAudioDurationSeconds: nil,
+                        cachedMediaHeightPixels: nil,
+                        cachedMediaWidthPixels: nil,
+                        cachedVideoDurationSeconds: nil,
+                        audioWaveformRelativeFilePath: nil,
+                        videoStillFrameRelativeFilePath: nil
+                    )
+                }
+
+                try v2Attachment.insert(tx.database)
+                v2AttachmentId = v2Attachment.id!
+            }
+
+            let ownerTypeRaw: UInt32
+            switch messageOwnerType {
+            case .bodyAttachment:
+                // Oversize text is a "body attachment" in v1, but a separate type
+                // in v2. If this is the first attachment and it matches the oversize
+                // text MIME type, re-map it to oversize text.
+                if orderInMessage == 0, pendingAttachment?.mimeType == "text/x-signal-plain" {
+                    ownerTypeRaw = UInt32(TSAttachmentMigration.V2MessageAttachmentOwnerType.oversizeText.rawValue)
+                } else {
+                    // Uniquely, non-oversize-text body attachments are present in the
+                    // media gallery table and need to be deleted from there.
+                    try oldAttachment.deleteMediaGalleryRecord(tx: tx)
+                    fallthrough
+                }
+            default:
+                ownerTypeRaw = UInt32(messageOwnerType.rawValue)
+            }
+
+            let (sourceMediaHeightPixels, sourceMediaWidthPixels) = try oldAttachment.sourceMediaSizePixels() ?? (nil, nil)
+
+            let reference = TSAttachmentMigration.MessageAttachmentReference(
+                ownerType: ownerTypeRaw,
+                ownerRowId: messageRowId,
+                attachmentRowId: v2AttachmentId,
+                receivedAtTimestamp: messageReceivedAtTimestamp,
+                contentType: pendingAttachment.map { UInt32($0.validatedContentType.rawValue) },
+                renderingFlag: UInt32(oldAttachment.attachmentType.asRenderingFlag.rawValue),
+                idInMessage: oldAttachment.clientUuid,
+                orderInMessage: orderInMessage,
+                threadRowId: threadRowId,
+                caption: oldAttachment.caption,
+                sourceFilename: oldAttachment.sourceFilename,
+                sourceUnencryptedByteCount: oldAttachment.byteCount,
+                sourceMediaHeightPixels: sourceMediaHeightPixels,
+                sourceMediaWidthPixels: sourceMediaWidthPixels,
+                stickerPackId: stickerPackId,
+                stickerId: stickerId
+            )
+            try reference.insert(tx.database)
+
+            // Edits might be reusing the original's TSAttachment.
+            // DON'T delete the TSAttachment so its still available for the original.
+            // Also don't return it (so we don't delete its files either).
+            // If it turns out the original doesn't reuse (e.g. we edited oversize text),
+            // this attachment will stick around until the migration is done, but
+            // will get deleted when we bulk delete the table and folder at the end.
+            if isEditedMessage {
+                return nil
+            }
+
+            try oldAttachment.delete(tx.database)
+
+            return oldAttachment
+        }
+
+        /// Given the unique id of the _original_ message's attachment and a reply message's row id,
+        /// thumbnails the attachment if possible and assigns the thumbnail to the provided message row id.
+        ///
+        /// Returns the new TSQuotedMessage to use on the reply TSMessage.
+        /// DOES NOT delete the original attachment.
+        private static func migrateQuotedMessageAttachment(
+            quotedMessage: TSQuotedMessage,
+            originalTSAttachmentUniqueId: String,
+            reservedFileIds: TSAttachmentMigration.V1AttachmentReservedFileIds,
+            messageRowId: Int64,
+            threadRowId: Int64,
+            messageReceivedAtTimestamp: UInt64,
+            tx: GRDBWriteTransaction
+        ) throws -> TSAttachmentMigration.TSQuotedMessage? {
+            let oldAttachment = try TSAttachmentMigration.V1Attachment
+                .filter(Column("uniqueId") == originalTSAttachmentUniqueId)
+                .fetchOne(tx.database)
+            guard let oldAttachment else {
+                try reservedFileIds.cleanUpFiles()
+                return nil
+            }
+
+            let rawContentType = TSAttachmentMigration.V2AttachmentContentValidator.rawContentType(
+                mimeType: oldAttachment.contentType
+            )
+
+            guard
+                let oldFilePath = oldAttachment.localFilePath,
+                OWSFileSystem.fileOrFolderExists(atPath: oldFilePath),
+                rawContentType == .image || rawContentType == .video || rawContentType == .animatedImage
+            else {
+                // We've got no original media stream, just a pointer or non-visual media.
+                // We can't easily handle this, so instead just fall back to a stub.
+                var newQuotedMessage = quotedMessage
+                var newQuotedAttachment = newQuotedMessage.quotedAttachment
+                newQuotedAttachment?.attachmentType = .unset
+                newQuotedAttachment?.rawAttachmentId = ""
+                newQuotedAttachment?.contentType = oldAttachment.contentType
+                newQuotedAttachment?.sourceFilename = oldAttachment.sourceFilename
+                newQuotedMessage.quotedAttachment = newQuotedAttachment
+
+                try reservedFileIds.cleanUpFiles()
+                return newQuotedMessage
+            }
+
+            let pendingAttachment = try TSAttachmentMigration.V2AttachmentContentValidator.prepareQuotedReplyThumbnail(
+                fromOriginalAttachmentStream: oldAttachment,
+                reservedFileIds: .init(
+                    primaryFile: reservedFileIds.reservedV2AttachmentPrimaryFileId,
+                    audioWaveform: reservedFileIds.reservedV2AttachmentAudioWaveformFileId,
+                    videoStillFrame: reservedFileIds.reservedV2AttachmentVideoStillFrameFileId
+                ),
+                renderingFlag: oldAttachment.attachmentType.asRenderingFlag,
+                sourceFilename: oldAttachment.sourceFilename
+            )
+
+            let v2AttachmentId: Int64
+
+            let existingV2Attachment = try TSAttachmentMigration.V2Attachment
+                .filter(Column("sha256ContentHash") == pendingAttachment.sha256ContentHash)
+                .fetchOne(tx.database)
+            if let existingV2Attachment {
+                // If we already have a v2 attachment with the same plaintext hash,
+                // create new references to it and drop the pending attachment.
+                v2AttachmentId = existingV2Attachment.id!
+                // Delete the reserved files being used by the pending attachment.
+                try reservedFileIds.cleanUpFiles()
+            } else {
+                var v2Attachment = TSAttachmentMigration.V2Attachment(
+                    blurHash: pendingAttachment.blurHash,
+                    sha256ContentHash: pendingAttachment.sha256ContentHash,
+                    encryptedByteCount: pendingAttachment.encryptedByteCount,
+                    unencryptedByteCount: pendingAttachment.unencryptedByteCount,
+                    mimeType: pendingAttachment.mimeType,
+                    encryptionKey: pendingAttachment.encryptionKey,
+                    digestSHA256Ciphertext: pendingAttachment.digestSHA256Ciphertext,
+                    contentType: UInt32(pendingAttachment.validatedContentType.rawValue),
+                    transitCdnNumber: nil,
+                    transitCdnKey: nil,
+                    transitUploadTimestamp: nil,
+                    transitEncryptionKey: nil,
+                    transitUnencryptedByteCount: nil,
+                    transitDigestSHA256Ciphertext: nil,
+                    lastTransitDownloadAttemptTimestamp: nil,
+                    localRelativeFilePath: pendingAttachment.localRelativeFilePath,
+                    cachedAudioDurationSeconds: pendingAttachment.audioDurationSeconds,
+                    cachedMediaHeightPixels: pendingAttachment.mediaSizePixels.map { UInt32($0.height) },
+                    cachedMediaWidthPixels: pendingAttachment.mediaSizePixels.map { UInt32($0.width) },
+                    cachedVideoDurationSeconds: pendingAttachment.videoDurationSeconds,
+                    audioWaveformRelativeFilePath: pendingAttachment.audioWaveformRelativeFilePath,
+                    videoStillFrameRelativeFilePath: pendingAttachment.videoStillFrameRelativeFilePath
+                )
+
+                try v2Attachment.insert(tx.database)
+                v2AttachmentId = v2Attachment.id!
+            }
+
+            let reference = TSAttachmentMigration.MessageAttachmentReference(
+                ownerType: UInt32(TSAttachmentMigration.V2MessageAttachmentOwnerType.quotedReplyAttachment.rawValue),
+                ownerRowId: messageRowId,
+                attachmentRowId: v2AttachmentId,
+                receivedAtTimestamp: messageReceivedAtTimestamp,
+                contentType: UInt32(pendingAttachment.validatedContentType.rawValue),
+                renderingFlag: UInt32(pendingAttachment.renderingFlag.rawValue),
+                idInMessage: nil,
+                orderInMessage: nil,
+                threadRowId: threadRowId,
+                caption: nil,
+                sourceFilename: pendingAttachment.sourceFilename,
+                sourceUnencryptedByteCount: nil,
+                sourceMediaHeightPixels: nil,
+                sourceMediaWidthPixels: nil,
+                stickerPackId: nil,
+                stickerId: nil
+            )
+            try reference.insert(tx.database)
+
+            // NOTE: we DO NOT delete the old attachment. It belongs to the original message.
+
+            var newQuotedMessage = quotedMessage
+            var newQuotedAttachment = newQuotedMessage.quotedAttachment
+            newQuotedAttachment?.attachmentType = .v2
+            newQuotedAttachment?.rawAttachmentId = ""
+            newQuotedAttachment?.contentType = nil
+            newQuotedAttachment?.sourceFilename = nil
+            newQuotedMessage.quotedAttachment = newQuotedAttachment
+            return newQuotedMessage
+        }
+
         // MARK: - NSKeyedArchiver/Unarchiver
 
         private static func unarchive<T: NSCoding>(_ data: Data) throws -> T {

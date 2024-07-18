@@ -210,7 +210,7 @@ extension TSAttachmentMigration {
             "image/png",
         ]).union(supportedDefinitelyAnimatedMimeTypes)
 
-        private static func rawContentType(mimeType: String) -> TSAttachmentMigration.V2Attachment.ContentType {
+        static func rawContentType(mimeType: String) -> TSAttachmentMigration.V2Attachment.ContentType {
             if Self.supportedVideoMimeTypes.contains(mimeType) {
                 return .video
             } else if Self.supportedAudioMimeTypes.contains(mimeType) {
