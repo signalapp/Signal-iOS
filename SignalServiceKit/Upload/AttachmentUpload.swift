@@ -50,14 +50,6 @@ public struct AttachmentUpload<Metadata: UploadMetadata> {
 
         progress?(buildProgress(done: 0, total: localMetadata.encryptedDataLength))
 
-        defer {
-            do {
-                try fileSystem.deleteFile(url: localMetadata.fileUrl)
-            } catch {
-                owsFailDebug("Error: \(error)")
-            }
-        }
-
         return try await attemptUpload(localMetadata: localMetadata, formSource: formSource, progress: progress)
     }
 
