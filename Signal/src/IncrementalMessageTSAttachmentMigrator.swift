@@ -12,12 +12,12 @@ import SignalServiceKit
 /// doing so while the main app is running.
 public class IncrementalMessageTSAttachmentMigrator {
 
+    private typealias Store = IncrementalTSAttachmentMigrationStore
+
     private let databaseStorage: SDSDatabaseStorage
-    private let kvStore: SDSKeyValueStore
 
     public init(databaseStorage: SDSDatabaseStorage) {
         self.databaseStorage = databaseStorage
-        self.kvStore = SDSKeyValueStore(collection: "IncrementalMessageTSAttachmentMigrator")
     }
 
     // Must be kept in sync with the value in info.plist.
@@ -73,7 +73,7 @@ public class IncrementalMessageTSAttachmentMigrator {
 
     private func shouldLaunchBGProcessingTask() -> Bool {
         guard FeatureFlags.v2AttachmentIncrementalMigration else { return false }
-        let state = databaseStorage.read(block: self.getState(tx:))
+        let state = databaseStorage.read(block: Store.getState(tx:))
         return state != .finished
     }
 
@@ -125,7 +125,7 @@ public class IncrementalMessageTSAttachmentMigrator {
 
     public func runInMainAppBackgroundIfNeeded() {
         guard FeatureFlags.v2AttachmentIncrementalMigration else { return }
-        let state = databaseStorage.read(block: self.getState(tx:))
+        let state = databaseStorage.read(block: Store.getState(tx:))
         switch state {
         case .finished, .unstarted:
             return
@@ -174,30 +174,14 @@ public class IncrementalMessageTSAttachmentMigrator {
                 tx: tx.unwrapGrdbWrite
             )
             if didPrepareBatch {
-                try self.setState(.started, tx: tx)
+                try Store.setState(.started, tx: tx)
                 return false
             }
 
             // If there was nothing to migrate and nothing to prepare, wipe the files and finish.
             try Migrator.cleanUpTSAttachmentFiles()
-            try self.setState(.finished, tx: tx)
+            try Store.setState(.finished, tx: tx)
             return true
         }
-    }
-
-    private enum State: Int, Codable {
-        case unstarted
-        case started
-        case finished
-
-        static let key = "state"
-    }
-
-    private func getState(tx: SDSAnyReadTransaction) -> State {
-        return (try? kvStore.getCodableValue(forKey: State.key, transaction: tx)) ?? .unstarted
-    }
-
-    private func setState(_ state: State, tx: SDSAnyWriteTransaction) throws {
-        try kvStore.setCodable(state, key: State.key, transaction: tx)
     }
 }

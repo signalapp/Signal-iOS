@@ -29,8 +29,16 @@ public class TSResourceManagerImpl: TSResourceManager {
     // MARK: - Migration
 
     public func didFinishTSAttachmentToAttachmentMigration(tx: DBReadTransaction) -> Bool {
-        // TODO: put this in a key value store once the migration is written.
-        return false
+        guard
+            FeatureFlags.readV2Attachments,
+            FeatureFlags.newAttachmentsUseV2,
+            FeatureFlags.v2ThreadAttachments,
+            FeatureFlags.v2AttachmentIncrementalMigration
+        else {
+            return false
+        }
+        let tx = SDSDB.shimOnlyBridge(tx)
+        return IncrementalTSAttachmentMigrationStore.getState(tx: tx) == .finished
     }
 
     // MARK: - Creating Attachments from source

@@ -902,6 +902,7 @@
 		666072622BAB58A20084B3D2 /* OWSContactSerializationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666072602BAB58850084B3D2 /* OWSContactSerializationTest.swift */; };
 		6660C7972C45C34A00D9C30A /* TSAttachmentMigration+TSMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6660C7962C45C34A00D9C30A /* TSAttachmentMigration+TSMessage.swift */; };
 		6660C7992C48277300D9C30A /* IncrementalMessageTSAttachmentMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6660C7982C48277300D9C30A /* IncrementalMessageTSAttachmentMigrator.swift */; };
+		6660C79B2C4874AB00D9C30A /* IncrementalTSAttachmentMigrationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6660C79A2C4874AB00D9C30A /* IncrementalTSAttachmentMigrationStore.swift */; };
 		6664B9AB2A314EBD008EF74B /* SpoilerRevealStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6664B9AA2A314EBD008EF74B /* SpoilerRevealStateTests.swift */; };
 		666654212AD0B03F00B23B32 /* MasterKeySyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666654202AD0B03F00B23B32 /* MasterKeySyncManager.swift */; };
 		666B0A8E2C0CD37100737CA0 /* TSResourceContentValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666B0A8D2C0CD37100737CA0 /* TSResourceContentValidator.swift */; };
@@ -3945,6 +3946,7 @@
 		666072602BAB58850084B3D2 /* OWSContactSerializationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSContactSerializationTest.swift; sourceTree = "<group>"; };
 		6660C7962C45C34A00D9C30A /* TSAttachmentMigration+TSMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSAttachmentMigration+TSMessage.swift"; sourceTree = "<group>"; };
 		6660C7982C48277300D9C30A /* IncrementalMessageTSAttachmentMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementalMessageTSAttachmentMigrator.swift; sourceTree = "<group>"; };
+		6660C79A2C4874AB00D9C30A /* IncrementalTSAttachmentMigrationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementalTSAttachmentMigrationStore.swift; sourceTree = "<group>"; };
 		6664B9AA2A314EBD008EF74B /* SpoilerRevealStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRevealStateTests.swift; sourceTree = "<group>"; };
 		666654202AD0B03F00B23B32 /* MasterKeySyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterKeySyncManager.swift; sourceTree = "<group>"; };
 		666B0A8D2C0CD37100737CA0 /* TSResourceContentValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSResourceContentValidator.swift; sourceTree = "<group>"; };
@@ -8697,6 +8699,7 @@
 		66E1AD902B9133A000C56B7B /* TSResource */ = {
 			isa = PBXGroup;
 			children = (
+				6660C79A2C4874AB00D9C30A /* IncrementalTSAttachmentMigrationStore.swift */,
 				66E1AD952B91437B00C56B7B /* TSAttachmentManager.swift */,
 				66CA4CE82B9FDBF8009A5ED8 /* TSResourceManager.swift */,
 				66CA4CE72B9FDBF8009A5ED8 /* TSResourceManagerImpl.swift */,
@@ -14346,6 +14349,7 @@
 				D9AE0AD1291870220063488B /* IncomingGroupSyncJobRecord.swift in Sources */,
 				6640DD602ACDBEC500CE9A8C /* IncomingPniChangeNumberProcessor.swift in Sources */,
 				F9C5CC69289453B300548EEE /* IncompleteCallsJob.swift in Sources */,
+				6660C79B2C4874AB00D9C30A /* IncrementalTSAttachmentMigrationStore.swift in Sources */,
 				D979CC262AD3933B006AAC49 /* IndividualCallRecordManager.swift in Sources */,
 				D9B95A9B29E8923B00D7CB95 /* InMemoryDB.swift in Sources */,
 				6612780C2996BC2900A1D5A1 /* InMemoryKeyValueStore.swift in Sources */,
