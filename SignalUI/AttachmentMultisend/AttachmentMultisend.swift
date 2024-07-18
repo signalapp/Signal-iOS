@@ -35,7 +35,7 @@ public class AttachmentMultisend {
             let preparedMessages: [PreparedOutgoingMessage]
             let sendPromises: [Promise<Void>]
             do {
-                let destinations = try Self.prepareForSending(
+                let destinations = try await Self.prepareForSending(
                     approvedMessageBody,
                     to: conversations,
                     db: deps.databaseStorage,

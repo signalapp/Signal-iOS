@@ -21,7 +21,7 @@ extension AttachmentMultisend {
         to conversations: [ConversationItem],
         db: SDSDatabaseStorage,
         attachmentValidator: TSResourceContentValidator
-    ) throws -> [Destination] {
+    ) async throws -> [Destination] {
 
         // If the message body has no mentions, we can "hydrate" once across all threads
         // and share it. We only need to re-generate per-thread if there are mentions.
@@ -33,7 +33,7 @@ extension AttachmentMultisend {
             let messageBody: HydratedMessageBody?
         }
 
-        let preDestinations: [PreDestination] = try db.write { tx in
+        let preDestinations: [PreDestination] = try await db.awaitableWrite { tx in
             return try conversations.map { conversation in
                 guard let thread = conversation.getOrCreateThread(transaction: tx) else {
                     throw OWSAssertionError("Missing thread for conversation")

@@ -370,7 +370,7 @@ extension SharingThreadPickerViewController {
         let nonStorySendPromises: [Promise<Void>]
 
         do {
-            let destinations = try AttachmentMultisend.prepareForSending(
+            let destinations = try await AttachmentMultisend.prepareForSending(
                 messageBody,
                 to: conversations,
                 db: self.databaseStorage,
