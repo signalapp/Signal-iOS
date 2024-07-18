@@ -75,6 +75,7 @@ public class FeatureFlags: NSObject {
 
     public static let readV2Attachments = false
     public static let newAttachmentsUseV2 = false
+    public static let v2AttachmentIncrementalMigration = false
 
     public static let v2ThreadAttachments = true
 

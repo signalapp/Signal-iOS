@@ -202,6 +202,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             OrphanedAttachmentRecord.self,
             QueuedAttachmentDownloadRecord.self,
             ArchivedPayment.self,
+            TSAttachmentMigration.V1AttachmentReservedFileIds.self,
         ]
     }
 

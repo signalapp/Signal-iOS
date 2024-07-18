@@ -7,4 +7,4 @@ import Foundation
 import GRDB
 
 /// Just a namespace for TSAttachment migration related types.
-internal enum TSAttachmentMigration {}
+public enum TSAttachmentMigration {}

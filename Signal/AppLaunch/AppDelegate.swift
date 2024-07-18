@@ -141,6 +141,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // MARK: - App Launch
 
+    // We have to hold a reference to this object so it isn't deallocated.
+    // TODO: remove this (and the incremental migrator itself) once we make this
+    // migration a launch-blocking GRDB migration.
+    private var incrementalMessageTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator?
+
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
@@ -273,6 +278,20 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let userDefaults = mainAppContext.appUserDefaults()
         let appLaunchesAttempted = userDefaults.integer(forKey: Constants.appLaunchesAttemptedKey)
         userDefaults.set(appLaunchesAttempted + 1, forKey: Constants.appLaunchesAttemptedKey)
+
+        // Set up and register incremental migration for TSAttachment -> v2 Attachment.
+        // TODO: remove this (and the incremental migrator itself) once we make this
+        // migration a launch-blocking GRDB migration.
+        let incrementalMessageTSAttachmentMigrator = IncrementalMessageTSAttachmentMigrator(databaseStorage: databaseStorage)
+
+        // We _must_ register BGProcessingTask handlers synchronously in didFinishLaunching.
+        // https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler/register(fortaskwithidentifier:using:launchhandler:)
+        incrementalMessageTSAttachmentMigrator.registerBGProcessingTask()
+        self.incrementalMessageTSAttachmentMigrator = incrementalMessageTSAttachmentMigrator
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            incrementalMessageTSAttachmentMigrator.scheduleBGProcessingTaskIfNeeded()
+            incrementalMessageTSAttachmentMigrator.runInMainAppBackgroundIfNeeded()
+        }
 
         // Show LoadingViewController until the database migrations are complete.
         let window = initializeWindow(mainAppContext: mainAppContext, rootViewController: LoadingViewController())

@@ -4,6 +4,7 @@
 <dict>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
+		<string>MessageAttachmentMigrationTask</string>
 		<string>MessageFetchBGRefreshTask</string>
 	</array>
 	<key>BuildDetails</key>
@@ -130,6 +131,7 @@
 	<array>
 		<string>audio</string>
 		<string>fetch</string>
+		<string>processing</string>
 		<string>remote-notification</string>
 		<string>voip</string>
 	</array>

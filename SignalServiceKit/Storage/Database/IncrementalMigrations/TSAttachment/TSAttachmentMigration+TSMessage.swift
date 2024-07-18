@@ -43,7 +43,7 @@ extension TSAttachmentMigration {
     /// We prepare batches of messages newest first (phase 1) and migrate them (phase 3) until we reach
     /// the oldest TSMessage. Then we prepare batches oldest first starting at the cutoff (phase 2) and migrate
     /// them (phase 3) until we reach the newest TSMessage. At that point we are done and run phase 4.
-    enum TSMessageMigration {
+    public enum TSMessageMigration {
 
         // MARK: - Phase 1/2
 
@@ -88,7 +88,7 @@ extension TSAttachmentMigration {
         /// Phases 1 and 2 when running as an iterative migration.
         /// - Returns
         /// True if any rows were migrated; callers should keep calling until it returns false.
-        static func prepareNextIterativeTSMessageMigrationBatch(tx: GRDBWriteTransaction) throws -> Bool {
+        public static func prepareNextIterativeTSMessageMigrationBatch(tx: GRDBWriteTransaction) throws -> Bool {
             // If we finished phase 2, we are done.
             let finished: Bool? = try Self.read(key: finishedGoingForwardsKey, tx: tx)
             if finished == true {
@@ -245,7 +245,7 @@ extension TSAttachmentMigration {
         /// Phase 3 when running as an iterative migration.
         /// - Returns
         /// True if any rows were migrated; callers should keep calling until it returns false.
-        static func completeNextIterativeTSMessageMigrationBatch(tx: GRDBWriteTransaction) throws -> Bool {
+        public static func completeNextIterativeTSMessageMigrationBatch(tx: GRDBWriteTransaction) throws -> Bool {
             let batchSize = 5
             let count = try Self.completeTSMessageMigrationBatch(batchSize: batchSize, tx: tx)
             return count > 0
@@ -255,7 +255,7 @@ extension TSAttachmentMigration {
 
         /// Phase 4.
         /// Works the same whether its run "iteratively" or as a blocking GRDB migration.
-        static func cleanUpTSAttachmentFiles() throws {
+        public static func cleanUpTSAttachmentFiles() throws {
             // Just try and delete the folder, don't bother checking if we've tried before.
             // If the folder is already deleted, this is super cheap.
             let rootPath = FileManager.default.containerURL(
