@@ -15,7 +15,7 @@ public class TSResourceMultisend {
         approvalMessageBody: MessageBody?,
         approvedAttachments: [SignalAttachment]
     ) -> AttachmentMultisend.Result {
-        if FeatureFlags.newAttachmentsUseV2 {
+        if FeatureFlags.v2Attachments {
             return AttachmentMultisend.sendApprovedMedia(
                 conversations: conversations,
                 approvedMessageBody: approvalMessageBody,
@@ -34,7 +34,7 @@ public class TSResourceMultisend {
         _ textAttachment: UnsentTextAttachment,
         to conversations: [ConversationItem]
     ) -> AttachmentMultisend.Result {
-        if FeatureFlags.newAttachmentsUseV2 {
+        if FeatureFlags.v2Attachments {
             return AttachmentMultisend.sendTextAttachment(textAttachment, to: conversations)
         } else {
             return TSAttachmentMultisend.sendTextAttachment(textAttachment, to: conversations)

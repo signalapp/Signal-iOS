@@ -73,9 +73,7 @@ public class FeatureFlags: NSObject {
     public static let messageBackupFileAlpha = build.includes(.internal)
     public static let messageBackupFileAlphaRegistrationFlow = build.includes(.dev)
 
-    public static let readV2Attachments = false
-    public static let newAttachmentsUseV2 = false
-    public static let v2AttachmentIncrementalMigration = false
+    public static let v2Attachments = false
 
     public static let v2ThreadAttachments = true
 

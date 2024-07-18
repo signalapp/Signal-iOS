@@ -10,7 +10,7 @@ public struct OversizeTextDataSource {
     public let legacyDataSource: TSAttachmentDataSource
 
     public var dataSource: TSResourceDataSource {
-        if FeatureFlags.newAttachmentsUseV2, let v2DataSource {
+        if FeatureFlags.v2Attachments, let v2DataSource {
             return v2DataSource.tsDataSource
         } else {
             return legacyDataSource.tsDataSource
@@ -88,7 +88,7 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
         caption: MessageBody?,
         renderingFlag: AttachmentReference.RenderingFlag
     ) throws -> TSResourceDataSource {
-        if FeatureFlags.newAttachmentsUseV2 {
+        if FeatureFlags.v2Attachments {
             let attachmentDataSource: AttachmentDataSource =
                 try attachmentValidator.validateContents(
                     dataSource: dataSource,
@@ -117,7 +117,7 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
         caption: MessageBody?,
         renderingFlag: AttachmentReference.RenderingFlag
     ) throws -> TSResourceDataSource {
-        if FeatureFlags.newAttachmentsUseV2 {
+        if FeatureFlags.v2Attachments {
             let attachmentDataSource: AttachmentDataSource =
                 try attachmentValidator.validateContents(
                     data: data,
@@ -156,7 +156,7 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
         }
 
         let v2DataSource: AttachmentDataSource?
-        if FeatureFlags.newAttachmentsUseV2 {
+        if FeatureFlags.v2Attachments {
             let result = try attachmentValidator.prepareOversizeTextIfNeeded(
                 from: messageBody
             )
@@ -225,7 +225,7 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
             throw OWSAssertionError("Invalid attachment + reference combination")
 
         case (.v2(let attachment), .v2(let attachmentReference)):
-            guard FeatureFlags.newAttachmentsUseV2 else {
+            guard FeatureFlags.v2Attachments else {
                 throw OWSAssertionError("How did we get a v2 attachment if we aren't creating them yet")
             }
             return try attachmentValidator.prepareQuotedReplyThumbnail(
@@ -233,7 +233,7 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
                 originalReference: attachmentReference
             ).tsDataSource
         case (.legacy(let tsAttachment), .legacy):
-            guard FeatureFlags.newAttachmentsUseV2 else {
+            guard FeatureFlags.v2Attachments else {
                 // legacy to legacy is easy; we just refer to the original.
                 return .fromLegacyOriginalAttachment(tsAttachment, originalMessageRowId: originalMessageRowId)
             }

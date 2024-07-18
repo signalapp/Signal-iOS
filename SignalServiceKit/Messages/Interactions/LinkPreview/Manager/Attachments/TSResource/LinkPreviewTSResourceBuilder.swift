@@ -11,7 +11,7 @@ public struct LinkPreviewTSResourceDataSource {
     public let imageLegacyDataSource: TSAttachmentDataSource?
 
     public var imageDataSource: TSResourceDataSource? {
-        if FeatureFlags.newAttachmentsUseV2, let imageV2DataSource {
+        if FeatureFlags.v2Attachments, let imageV2DataSource {
             return imageV2DataSource.tsDataSource
         } else {
             return imageLegacyDataSource?.tsDataSource
@@ -59,7 +59,7 @@ public class LinkPreviewTSResourceBuilder: LinkPreviewBuilder {
         // it we want the link preview to be legacy too, even if we have
         // since started using v2 for new attachments.
         let v2DataSource: AttachmentDataSource?
-        if FeatureFlags.newAttachmentsUseV2 {
+        if FeatureFlags.v2Attachments {
             v2DataSource = try attachmentValidator.validateContents(
                 data: imageData,
                 mimeType: imageMimeType,

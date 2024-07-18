@@ -274,7 +274,7 @@ private class _OrphanedAttachmentCleanerImpl_FeatureFlagsMock: _OrphanedAttachme
 
     init() {}
 
-    var readV2Attachments: Bool { true }
+    var v2Attachments: Bool { true }
     var v2ThreadAttachments: Bool { true }
 }
 
