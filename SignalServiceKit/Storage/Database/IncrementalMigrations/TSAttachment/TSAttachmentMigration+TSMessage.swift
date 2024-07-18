@@ -363,6 +363,220 @@ extension TSAttachmentMigration {
             fatalError("TODO")
         }
 
+        // MARK: - Migrating a single TSMessage
+
+        /// Returns the deleted TSAttachments.
+        /// Empty array means nothing was migrated but the migration "succeeded" (nothing _needed_ migrating).
+        /// Nil return value means new attachments were added so we need to re-reserve and migrate again
+        /// later; reserved Ids should NOT be deleted.
+        private static func migrateMessageAttachments(
+            reservedFileIds reservedFileIdsArray: [TSAttachmentMigration.V1AttachmentReservedFileIds],
+            messageRow: Row,
+            messageRowId: Int64,
+            isRunningIteratively: Bool,
+            tx: GRDBWriteTransaction
+        ) throws -> [TSAttachmentMigration.V1Attachment]? {
+            // From attachment unique id to the reserved file ids.
+            var reservedFileIdsDict = [String: TSAttachmentMigration.V1AttachmentReservedFileIds]()
+            for reservedFileIds in reservedFileIdsArray {
+                reservedFileIdsDict[reservedFileIds.tsAttachmentUniqueId] = reservedFileIds
+            }
+
+            let bodyTSAttachmentIds = try Self.bodyAttachmentIds(messageRow: messageRow)
+            let messageSticker = try Self.messageSticker(messageRow: messageRow)
+            let stickerTSAttachmentId = messageSticker?.attachmentId
+            let linkPreview = try Self.linkPreview(messageRow: messageRow)
+            let linkPreviewTSAttachmentId = linkPreview?.imageAttachmentId
+            let contactShare = try Self.contactShare(messageRow: messageRow)
+            let contactTSAttachmentId = contactShare?.avatarAttachmentId
+            let quotedMessage = try Self.quotedMessage(messageRow: messageRow)
+            let quotedMessageTSAttachmentId = quotedMessage?.quotedAttachment?.rawAttachmentId.nilIfEmpty
+
+            // Check if the message has any attachments.
+            let allAttachmentIds: [String] = (
+                bodyTSAttachmentIds
+                + [
+                    stickerTSAttachmentId,
+                    linkPreviewTSAttachmentId,
+                    contactTSAttachmentId,
+                    quotedMessageTSAttachmentId
+                ]
+            ).compacted()
+
+            if allAttachmentIds.isEmpty {
+                // Nothing to migrate! This can happen if an edit removed attachments.
+                try reservedFileIdsArray.forEach { try $0.cleanUpFiles() }
+                return []
+            }
+
+            // Ensure every attachment is represented in the reserved ids.
+            let hasUnreservedAttachment = allAttachmentIds.contains(where: {
+                reservedFileIdsDict[$0] == nil
+            })
+            if hasUnreservedAttachment {
+                guard isRunningIteratively else {
+                    // If we are running as a blocking GRDB migration this should be impossible.
+                    throw OWSAssertionError("Message attachment changed between blocking migrations")
+                }
+                try reservedFileIdsArray.forEach { try $0.cleanUpFiles() }
+                // Return nil to mark this message and needing another pass.
+                return nil
+            }
+
+            guard let threadUniqueId = messageRow["uniqueThreadId"] as? String else {
+                throw OWSAssertionError("Missing thread for message")
+            }
+
+            let threadRowId = try Int64.fetchOne(
+                tx.database,
+                sql: "SELECT id FROM model_TSThread WHERE uniqueId = ?;",
+                arguments: [threadUniqueId]
+            )
+            guard let threadRowId else {
+                throw OWSAssertionError("Thread doesn't exist for message")
+            }
+
+            guard
+                // Row only gives Int64, never UInt64
+                let messageReceivedAtTimestampRaw = messageRow["receivedAtTimestamp"] as? Int64
+            else {
+                throw OWSAssertionError("Missing timestamp for message")
+            }
+            let messageReceivedAtTimestamp = UInt64(bitPattern: messageReceivedAtTimestampRaw)
+
+            // Edited messages can share attachments with the original.
+            // Don't delete attachments if this is an edit, just migrate and leave alone.
+            // We will delete when we get to the original.
+            let isEditedMessage = messageRow["editState"] as? Int64 == 2
+
+            var migratedAttachments = [TSAttachmentMigration.V1Attachment]()
+            func migrateSingleMessageAttachment(
+                tsAttachmentUniqueId: String,
+                messageOwnerType: TSAttachmentMigration.V2MessageAttachmentOwnerType,
+                orderInMessage: Int? = nil,
+                stickerPackId: Data? = nil,
+                stickerId: UInt32? = nil
+            ) throws {
+                guard let reservedFileIds = reservedFileIdsDict.removeValue(forKey: tsAttachmentUniqueId) else {
+                    throw OWSAssertionError("Missing reservation for attachment")
+                }
+                let migratedAttachment = try Self.migrateSingleMessageAttachment(
+                    tsAttachmentUniqueId: tsAttachmentUniqueId,
+                    reservedFileIds: reservedFileIds,
+                    messageRowId: messageRowId,
+                    threadRowId: threadRowId,
+                    messageOwnerType: messageOwnerType,
+                    messageReceivedAtTimestamp: messageReceivedAtTimestamp,
+                    isEditedMessage: isEditedMessage,
+                    orderInMessage: orderInMessage.map(UInt32.init(_:)),
+                    stickerPackId: stickerPackId,
+                    stickerId: stickerId,
+                    tx: tx
+                )
+                if let migratedAttachment {
+                    migratedAttachments.append(migratedAttachment)
+                }
+            }
+
+            var newBodyAttachmentIds: [String]?
+            var newContact: TSAttachmentMigration.OWSContact?
+            var newMessageSticker: TSAttachmentMigration.MessageSticker?
+            var newLinkPreview: TSAttachmentMigration.OWSLinkPreview?
+            var newQuotedMessage: TSAttachmentMigration.TSQuotedMessage?
+
+            for (index, bodyTSAttachmentId) in bodyTSAttachmentIds.enumerated() {
+                try migrateSingleMessageAttachment(
+                    tsAttachmentUniqueId: bodyTSAttachmentId,
+                    messageOwnerType: .bodyAttachment,
+                    orderInMessage: index
+                )
+                newBodyAttachmentIds = []
+            }
+
+            if let messageSticker, let stickerTSAttachmentId {
+                try migrateSingleMessageAttachment(
+                    tsAttachmentUniqueId: stickerTSAttachmentId,
+                    messageOwnerType: .sticker,
+                    stickerPackId: messageSticker.info.packId,
+                    stickerId: messageSticker.info.stickerId
+                )
+                newMessageSticker = messageSticker
+                newMessageSticker?.attachmentId = nil
+            }
+
+            if let linkPreviewTSAttachmentId {
+                try migrateSingleMessageAttachment(
+                    tsAttachmentUniqueId: linkPreviewTSAttachmentId,
+                    messageOwnerType: .linkPreview
+                )
+                newLinkPreview = linkPreview
+                newLinkPreview?.imageAttachmentId = nil
+                newLinkPreview?.usesV2AttachmentReferenceValue = NSNumber(value: true)
+            }
+
+            if let contactTSAttachmentId {
+                try migrateSingleMessageAttachment(
+                    tsAttachmentUniqueId: contactTSAttachmentId,
+                    messageOwnerType: .contactAvatar
+                )
+                newContact = contactShare
+                newContact?.avatarAttachmentId = nil
+            }
+
+            if
+                let quotedMessage,
+                let quotedMessageAttachment = quotedMessage.quotedAttachment,
+                let quotedMessageTSAttachmentId
+            {
+                switch quotedMessageAttachment.attachmentType {
+                case .thumbnail, .untrustedPointer:
+                    // Standard case; attachment is wholly owned by this quoted reply
+                    // and no thumbnail-ing is necessary.
+                    try migrateSingleMessageAttachment(
+                        tsAttachmentUniqueId: quotedMessageTSAttachmentId,
+                        messageOwnerType: .quotedReplyAttachment
+                    )
+                    newQuotedMessage = quotedMessage
+                    var newQuotedAttachment = newQuotedMessage?.quotedAttachment
+                    newQuotedAttachment?.rawAttachmentId = ""
+                    newQuotedAttachment?.attachmentType = .v2
+                    newQuotedAttachment?.contentType = nil
+                    newQuotedAttachment?.sourceFilename = nil
+                    newQuotedMessage?.quotedAttachment = newQuotedAttachment
+                case .originalForSend, .original:
+                    guard let reservedFileIds = reservedFileIdsDict.removeValue(forKey: quotedMessageTSAttachmentId) else {
+                        throw OWSAssertionError("Missing reservation for attachment")
+                    }
+                    // These point at the attachment of the message being quoted.
+                    // We need to thumbnail the message.
+                    newQuotedMessage = try Self.migrateQuotedMessageAttachment(
+                        quotedMessage: quotedMessage,
+                        originalTSAttachmentUniqueId: quotedMessageTSAttachmentId,
+                        reservedFileIds: reservedFileIds,
+                        messageRowId: messageRowId,
+                        threadRowId: threadRowId,
+                        messageReceivedAtTimestamp: messageReceivedAtTimestamp,
+                        tx: tx
+                    )
+                case .unset, .v2:
+                    // Nothing to migrate
+                    break
+                }
+            }
+
+            try Self.updateMessageRow(
+                rowId: messageRowId,
+                bodyAttachmentIds: newBodyAttachmentIds,
+                contact: newContact,
+                messageSticker: newMessageSticker,
+                linkPreview: newLinkPreview,
+                quotedMessage: newQuotedMessage,
+                tx: tx
+            )
+
+            return migratedAttachments
+        }
+
         // MARK: - Migrating a single TSAttachment
 
         // Returns the deleted TSAttachment.
