@@ -282,7 +282,75 @@ extension TSAttachmentMigration {
             minRowId: Int64?,
             tx: GRDBWriteTransaction
         ) throws -> Int64? {
-            fatalError("TODO")
+            var sql = "SELECT * FROM model_TSInteraction"
+            var arguments = StatementArguments()
+            if let maxRowId {
+                sql += " WHERE id < ? ORDER BY id DESC;"
+                _ = arguments.append(contentsOf: [maxRowId])
+            } else if let minRowId {
+                sql += " WHERE id > ? ORDER BY id ASC;"
+                _ = arguments.append(contentsOf: [minRowId])
+            } else {
+                sql += " ORDER BY id DESC"
+            }
+            let cursor = try Row.fetchCursor(
+                tx.database,
+                sql: sql,
+                arguments: arguments
+            )
+            var batchCount = 0
+            var lastMessageRowId: Int64?
+            while batchCount < batchSize ?? Int.max, let messageRow = try cursor.next() {
+                guard let messageRowId = messageRow["id"] as? Int64 else {
+                    throw OWSAssertionError("TSInteraction row without id")
+                }
+
+                guard try prepareTSMessageForMigration(
+                    messageRow: messageRow,
+                    messageRowId: messageRowId,
+                    tx: tx
+                ) else {
+                    continue
+                }
+                batchCount += 1
+                lastMessageRowId = messageRowId
+            }
+            return lastMessageRowId
+        }
+
+        /// Returns true if there was anything to migrate.
+        fileprivate static func prepareTSMessageForMigration(
+            messageRow: Row,
+            messageRowId: Int64,
+            tx: GRDBWriteTransaction
+        ) throws -> Bool {
+            // Check if the message has any attachments.
+            let attachmentIds: [String] = (
+                try bodyAttachmentIds(messageRow: messageRow)
+                + [
+                    try contactAttachmentId(messageRow: messageRow),
+                    try stickerAttachmentId(messageRow: messageRow),
+                    try linkPreviewAttachmentId(messageRow: messageRow),
+                    try quoteAttachmentId(messageRow: messageRow)
+                ]
+            ).compacted()
+
+            guard !attachmentIds.isEmpty else {
+                return false
+            }
+
+            for attachmentId in attachmentIds {
+                var reservedFileIds = TSAttachmentMigration.V1AttachmentReservedFileIds(
+                    tsAttachmentUniqueId: attachmentId,
+                    interactionRowId: messageRowId,
+                    storyMessageRowId: nil,
+                    reservedV2AttachmentPrimaryFileId: UUID(),
+                    reservedV2AttachmentAudioWaveformFileId: UUID(),
+                    reservedV2AttachmentVideoStillFrameFileId: UUID()
+                )
+                try reservedFileIds.insert(tx.database)
+            }
+            return true
         }
 
         /// Completes another prepared batch, returns count of touched message rows.
