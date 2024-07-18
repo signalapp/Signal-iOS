@@ -273,6 +273,9 @@ public class GRDBSchemaMigrator: NSObject {
         case createArchivedPaymentTable
         case removeDeadEndGroupThreadIdMappings
         case addTSAttachmentMigrationTable
+        case threadWallpaperTSAttachmentMigration1
+        case threadWallpaperTSAttachmentMigration2
+        case threadWallpaperTSAttachmentMigration3
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -334,7 +337,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 78
+    public static let grdbSchemaVersionLatest: UInt = 79
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3222,6 +3225,21 @@ public class GRDBSchemaMigrator: NSObject {
                 WHERE "storyMessageRowId" IS NOT NULL;
                 """)
 
+            return .success(())
+        }
+
+        migrator.registerMigration(.threadWallpaperTSAttachmentMigration1) { tx in
+            try TSAttachmentMigration.prepareThreadWallpaperMigration(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.threadWallpaperTSAttachmentMigration2) { tx in
+            try TSAttachmentMigration.completeThreadWallpaperMigration(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.threadWallpaperTSAttachmentMigration3) { tx in
+            try TSAttachmentMigration.cleanUpLegacyThreadWallpaperDirectory()
             return .success(())
         }
 

@@ -100,7 +100,7 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
     }
 
     public func beginObserving() {
-        guard featureFlags.readV2Attachments else {
+        guard featureFlags.readV2Attachments || featureFlags.v2ThreadAttachments else {
             return
         }
 
@@ -347,6 +347,7 @@ extension OrphanedAttachmentCleanerImpl {
 public protocol _OrphanedAttachmentCleanerImpl_FeatureFlagsShim {
 
     var readV2Attachments: Bool { get }
+    var v2ThreadAttachments: Bool { get }
 }
 
 public class _OrphanedAttachmentCleanerImpl_FeatureFlagsWrapper: _OrphanedAttachmentCleanerImpl_FeatureFlagsShim {
@@ -354,6 +355,7 @@ public class _OrphanedAttachmentCleanerImpl_FeatureFlagsWrapper: _OrphanedAttach
     public init() {}
 
     public var readV2Attachments: Bool { FeatureFlags.readV2Attachments }
+    public var v2ThreadAttachments: Bool { FeatureFlags.v2ThreadAttachments }
 }
 
 public protocol _OrphanedAttachmentCleanerImpl_OWSFileSystemShim {
