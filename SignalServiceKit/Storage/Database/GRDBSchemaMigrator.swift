@@ -276,6 +276,7 @@ public class GRDBSchemaMigrator: NSObject {
         case threadWallpaperTSAttachmentMigration1
         case threadWallpaperTSAttachmentMigration2
         case threadWallpaperTSAttachmentMigration3
+        case indexMessageAttachmentReferenceByReceivedAtTimestamp
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -3240,6 +3241,15 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(.threadWallpaperTSAttachmentMigration3) { tx in
             try TSAttachmentMigration.cleanUpLegacyThreadWallpaperDirectory()
+            return .success(())
+        }
+
+        migrator.registerMigration(.indexMessageAttachmentReferenceByReceivedAtTimestamp) { tx in
+            try tx.database.create(
+                index: "index_message_attachment_reference_on_receivedAtTimestamp",
+                on: "MessageAttachmentReference",
+                columns: ["receivedAtTimestamp"]
+            )
             return .success(())
         }
 

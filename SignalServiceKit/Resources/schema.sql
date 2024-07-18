@@ -1997,3 +1997,9 @@ CREATE
 WHERE
     "storyMessageRowId" IS NOT NULL
 ;
+
+CREATE
+    INDEX "index_message_attachment_reference_on_receivedAtTimestamp"
+        ON "MessageAttachmentReference"("receivedAtTimestamp"
+)
+;
