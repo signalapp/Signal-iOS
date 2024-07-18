@@ -3668,7 +3668,7 @@
 "INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "स्पॅम कळवा";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad. For your security, chat history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "आपण आपल्या फोन किंवा iPad वरून संकलित संदेश पाठवू आणि प्राप्त करू शकता. ↵आपल्या सुरक्षेसाठी, नवीन लिंक केलेल्या डिव्हाईस मध्ये चॅट इतिहास स्थानांतरित केला जात नाही.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ यांनी त्यांचा फोन क्रमांक बदलला";
@@ -5621,13 +5621,16 @@
 "RAISED_HANDS_LOWER_HAND_BUTTON" = "खाली घ्या";
 
 /* A message appearing on the call view's raised hands toast indicating that multiple members have raised their hands. Embeds {{name}}, {{number of other users}} */
-"RAISED_HANDS_TOAST_MULTIPLE_HANDS_MESSAGE" = "%1$@ +%2$d raised a hand";
+"RAISED_HANDS_TOAST_MULTIPLE_HANDS_MESSAGE" = "%1$@ +%2$d नी हात वर केला";
 
 /* A message appearing on the call view's raised hands toast indicating that another named member has raised their hand. */
-"RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@ raised a hand";
+"RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@ ने हात वर केला";
+
+/* A compact member count on the call view's raised hands toast indicating that you and a number of other users raised a hand. Embeds {{number of other users}} */
+"RAISED_HANDS_TOAST_YOU_PLUS_OTHERS_COUNT" = "You +%1$d";
 
 /* A message appearing on the call view's raised hands toast indicating that you raised your own hand. */
-"RAISED_HANDS_TOAST_YOUR_HAND_MESSAGE" = "You raised a hand";
+"RAISED_HANDS_TOAST_YOUR_HAND_MESSAGE" = "आपण हात वर केला आहे";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
 "REACTION_DETAIL_ALL_FORMAT" = "सर्व · %1$@";
@@ -6798,9 +6801,6 @@
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "उर्वरित बॅलंस";
-
-/* Label for the 'remove payments details' button in the app settings. */
-"SETTINGS_PAYMENTS_REMOVE_BUTTON" = "काढून टाका";
 
 /* Label for 'restore payments' button in the payments settings. */
 "SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "पेमेंट खाते पुनर्स्थापित करा";

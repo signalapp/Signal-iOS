@@ -2060,7 +2060,7 @@
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "銀行轉賬通常需要 1 個工作天先完成處理。請你等呢次捐款完成咗，先至開始另一次捐款。";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "銀行轉賬通常需要 1 個工作天先完成處理。請你等呢次捐款完成咗，先至更新你嘅定期贊助。";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "銀行轉賬通常需要 1 個工作天先完成處理。請你等呢次捐款完成咗，先至更新你嘅課金計劃。";
 
 /* Message for an alert shown when the user tries to donate via bank transfer, but the amount they want to donate is too large. Embeds {{ the maximum allowed donation amount }}. */
 "DONATE_SCREEN_ERROR_MESSAGE_FORMAT_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "你可以透過銀行轉賬發送最多 %1$@。試吓其他金額或者其他付款方式。";
@@ -2069,7 +2069,7 @@
 "DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "仲處理緊你嘅捐款。視乎你嘅上網速度，過程可能需時幾分鐘。請你等呢次捐款完成咗，先至開始另一次捐款。";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via non-bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "仲處理緊你嘅捐款。視乎你嘅上網速度，過程可能需時幾分鐘。請你等呢次捐款完成咗，先至更新你嘅定期贊助。";
+"DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "仲處理緊你嘅捐款。視乎你嘅上網速度，過程可能需時幾分鐘。請你等呢次捐款完成咗，先至更新你嘅課金計劃。";
 
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
 "DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "請揀選捐款金額。";
@@ -3668,7 +3668,7 @@
 "INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "已舉報垃圾訊息";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad. For your security, chat history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "你可以喺手機或者 iPad 度收發同步訊息。為咗保障你嘅安全，系統冇將聊天紀錄轉移到新連結嘅裝置。";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ 已轉咗新電話冧把。";
@@ -5621,13 +5621,16 @@
 "RAISED_HANDS_LOWER_HAND_BUTTON" = "放低";
 
 /* A message appearing on the call view's raised hands toast indicating that multiple members have raised their hands. Embeds {{name}}, {{number of other users}} */
-"RAISED_HANDS_TOAST_MULTIPLE_HANDS_MESSAGE" = "%1$@ +%2$d raised a hand";
+"RAISED_HANDS_TOAST_MULTIPLE_HANDS_MESSAGE" = "%1$@ + 另外 %2$d 個人舉咗手";
 
 /* A message appearing on the call view's raised hands toast indicating that another named member has raised their hand. */
-"RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@ raised a hand";
+"RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@ 舉咗手";
+
+/* A compact member count on the call view's raised hands toast indicating that you and a number of other users raised a hand. Embeds {{number of other users}} */
+"RAISED_HANDS_TOAST_YOU_PLUS_OTHERS_COUNT" = "You +%1$d";
 
 /* A message appearing on the call view's raised hands toast indicating that you raised your own hand. */
-"RAISED_HANDS_TOAST_YOUR_HAND_MESSAGE" = "You raised a hand";
+"RAISED_HANDS_TOAST_YOUR_HAND_MESSAGE" = "你舉咗手";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
 "REACTION_DETAIL_ALL_FORMAT" = "全部 · %1$@";
@@ -6798,9 +6801,6 @@
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "餘額";
-
-/* Label for the 'remove payments details' button in the app settings. */
-"SETTINGS_PAYMENTS_REMOVE_BUTTON" = "移除";
 
 /* Label for 'restore payments' button in the payments settings. */
 "SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "恢復付款帳戶";

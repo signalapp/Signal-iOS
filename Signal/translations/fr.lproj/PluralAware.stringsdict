@@ -173,9 +173,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Signal supprimera cette conversation de tous vos appareils.</string>
+			<string>Cette conversation sera supprimée de tous vos appareils.</string>
 			<key>other</key>
-			<string>Signal supprimera ces conversations de tous vos appareils.</string>
+			<string>Ces conversations seront supprimées de tous vos appareils.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>

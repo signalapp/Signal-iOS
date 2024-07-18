@@ -368,7 +368,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "Le fichier joint est vide.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choisissez un fichier multimédia à envoyer";
+"ATTACHMENT_HINT" = "Choisissez le média à envoyer";
 
 /* Button in chat attachment panel that allows to select photos/videos Signal has access to. */
 "ATTACHMENT_KEYBOARD_BUTTON_MANAGE" = "Gérer";
@@ -821,7 +821,7 @@
 "CALLS_TAB_DELETE_ALL_CALLS_BUTTON_TITLE" = "Supprimer";
 
 /* Message for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
-"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "Cette action supprimera définitivement tout l’historique des appels.";
+"CALLS_TAB_DELETE_ALL_CALLS_PROMPT_MESSAGE" = "Cela supprimera définitivement tout l’historique des appels.";
 
 /* Title for a prompt confirming that the user wants to delete all the calls from the Calls Tab. */
 "CALLS_TAB_DELETE_ALL_CALLS_PROMPT_TITLE" = "Supprimer l’historique des appels ?";
@@ -1133,7 +1133,7 @@
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Numéro non inscrit";
 
 /* Label for a contact's email address. */
-"CONTACT_EMAIL" = "Adresse courriel";
+"CONTACT_EMAIL" = "E-mail";
 
 /* Label for the 'family name' field of a contact. */
 "CONTACT_FIELD_FAMILY_NAME" = "Nom de famille";
@@ -1184,7 +1184,7 @@
 "CONTACT_PHONE" = "Téléphone";
 
 /* table cell subtitle when contact card has no email */
-"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Aucune adresse courriel n’est indiquée.";
+"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Adresse e-mail indisponible.";
 
 /* table cell subtitle when contact card has no known phone number */
 "CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Aucun numéro de téléphone indiqué.";
@@ -1280,7 +1280,7 @@
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Ouvrir dans Maps";
 
 /* Label for 'open email in email app' button in contact view. */
-"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Envoyer un courriel";
+"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Envoyer un e-mail";
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "Contact sans nom";
@@ -1319,7 +1319,7 @@
 "CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "Stop";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Signal supprimera cette conversation de tous vos appareils.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Cette conversation sera supprimée de tous vos appareils.";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Supprimer la conversation ?";
@@ -1721,7 +1721,7 @@
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Copier le lien";
 
 /* Label for the 'email debug log' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Envoyer un courriel à l’assistance";
+"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Envoyer un e-mail à l’assistance";
 
 /* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
 "DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Exporter les journaux";
@@ -2444,10 +2444,10 @@
 "EMAIL_INVITE_SUBJECT" = "Passons à Signal";
 
 /* Description for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_MESSAGE" = "Votre appareil n’est pas configuré pour envoyer des courriels. Pour envoyer une demande d’assistance, configurez les courriels sur votre appareil ou envoyez un courriel à support@signal.org";
+"EMAIL_SIGNAL_MESSAGE" = "Votre appareil n’est pas configuré pour envoyer des e-mails. Pour envoyer une demande d’assistance, configurez les e-mails sur votre appareil ou envoyez un e-mail à support@signal.org via un autre appareil.";
 
 /* Title for the fallback support sheet if user cannot send email */
-"EMAIL_SIGNAL_TITLE" = "Le courriel n’est pas configuré";
+"EMAIL_SIGNAL_TITLE" = "Impossible d’envoyer des e-mails";
 
 /* The name for the emoji category 'Activities' */
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "Activités";
@@ -2510,7 +2510,7 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Échec d’envoi du message.";
 
 /* Error indicating that openURL for a mailto: URL failed. */
-"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Échec d’ouverture de l’appli de courriel";
+"ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL" = "Impossible d’ouvrir l’appli de messagerie électronique";
 
 /* Error indicating that a support mailto link could not be created. */
 "ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL" = "Impossible de créer la demande d’assistance";
@@ -3668,7 +3668,7 @@
 "INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Signalé comme spam";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad. For your security, chat history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "Les messages que vous envoyez et recevez depuis votre téléphone ou votre iPad sont synchronisés.\nPour votre sécurité, nous ne transférons pas l’historique des conversations vers les appareils nouvellement associés.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ a changé de numéro de téléphone";
@@ -3974,10 +3974,10 @@
 "MESSAGE_ACTION_EDIT_MESSAGE" = "Modifier le message";
 
 /* Label for button to compose a new email. */
-"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "Nouveau courriel";
+"MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE" = "Nouvel e-mail";
 
 /* Error show when user tries to send email without email being configured. */
-"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "Le courriel n’est pas configuré.";
+"MESSAGE_ACTION_ERROR_EMAIL_NOT_CONFIGURED" = "E-mail non configuré.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Transférer ce message";
@@ -5621,13 +5621,16 @@
 "RAISED_HANDS_LOWER_HAND_BUTTON" = "Baisser la main";
 
 /* A message appearing on the call view's raised hands toast indicating that multiple members have raised their hands. Embeds {{name}}, {{number of other users}} */
-"RAISED_HANDS_TOAST_MULTIPLE_HANDS_MESSAGE" = "%1$@ +%2$d raised a hand";
+"RAISED_HANDS_TOAST_MULTIPLE_HANDS_MESSAGE" = "%1$@ + %2$d ont levé la main";
 
 /* A message appearing on the call view's raised hands toast indicating that another named member has raised their hand. */
-"RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@ raised a hand";
+"RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@ a levé la main";
+
+/* A compact member count on the call view's raised hands toast indicating that you and a number of other users raised a hand. Embeds {{number of other users}} */
+"RAISED_HANDS_TOAST_YOU_PLUS_OTHERS_COUNT" = "You +%1$d";
 
 /* A message appearing on the call view's raised hands toast indicating that you raised your own hand. */
-"RAISED_HANDS_TOAST_YOUR_HAND_MESSAGE" = "You raised a hand";
+"RAISED_HANDS_TOAST_YOUR_HAND_MESSAGE" = "Vous avez levé la main.";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
 "REACTION_DETAIL_ALL_FORMAT" = "Toutes · %1$@";
@@ -6798,9 +6801,6 @@
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "Solde restant";
-
-/* Label for the 'remove payments details' button in the app settings. */
-"SETTINGS_PAYMENTS_REMOVE_BUTTON" = "Supprimer";
 
 /* Label for 'restore payments' button in the payments settings. */
 "SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Récupérer un compte de paiement";
@@ -8096,7 +8096,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Touchez ici pour faire disparaître ce message après consultation.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Les fichiers multimédias éphémères sortants sont effacés automatiquement après l’envoi.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Les médias à vue unique sortants sont automatiquement supprimés après envoi.";
 
 /* View the photo of a group or user */
 "VIEW_PHOTO" = "Visualiser la photo";

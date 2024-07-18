@@ -1571,7 +1571,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Більше";
 
 /* Indicator that a value has been copied to the clipboard. */
-"COPIED_TO_CLIPBOARD" = "Скопійовано до буфера обміну";
+"COPIED_TO_CLIPBOARD" = "Скопійовано в буфер обміну";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Скидання сеансу дасть вам змогу отримувати повідомлення від %1$@, але не відновить жодних раніше пошкоджених повідомлень.";
@@ -3578,7 +3578,7 @@
 "IMAGE_EDITOR_BLUR_SETTING" = "Розмити обличчя";
 
 /* A toast indicating that you can blur more faces after detection */
-"IMAGE_EDITOR_BLUR_TOAST" = "Малюй, щоб розмити обличчя або області";
+"IMAGE_EDITOR_BLUR_TOAST" = "Замалюйте інші обличчя або зони, щоб їх розмити";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Ви можете надіслати максимум %1$@ зображення";
@@ -3668,7 +3668,7 @@
 "INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Про спам повідомлено";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad. For your security, chat history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "Ви можете надсилати та отримувати повідомлення, використовуючи телефон чи iPad. Такі повідомлення буде синхронізовано.\n З міркувань безпеки історія чатів не переноситься на нові зв'язані пристрої.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ змінює номер телефону.";
@@ -4064,7 +4064,7 @@
 "MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "Зникне через";
 
 /* Status label for messages which are delivered. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Доставлено";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Кому доставлено:";
 
 /* Status label for messages which are failed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Не вдалося";
@@ -4073,7 +4073,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED" = "Відправлення призупинене";
 
 /* Status label for messages which are read. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Прочитано";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Хто прочитав:";
 
 /* Status label for messages which are sending. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Надсилається до";
@@ -4082,7 +4082,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Кому надіслано:";
 
 /* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Пропущено";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Кому не доставлено:";
 
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Завантаження";
@@ -4115,7 +4115,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Заблокувати і видалити";
 
 /* Action sheet action to confirm blocking and reporting spam for a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Повідомити про спам і заблокувати";
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Повідомити й заблокувати";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Заблоковані користувачі не зможуть вам дзвонити й надсилати повідомлення.";
@@ -4256,7 +4256,7 @@
 "MESSAGE_STATUS_READ" = "Прочитано";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
-"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Пропущено";
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Кому не доставлено:";
 
 /* Label indicating that a message failed to send. */
 "MESSAGE_STATUS_SEND_FAILED" = "Не вдалося надіслати";
@@ -4316,7 +4316,7 @@
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "Ви можете надати доступ у налаштуваннях iOS.";
 
 /* Alert title indicating the user has denied location permissions */
-"MISSING_LOCATION_PERMISSION_TITLE" = "Для використання цієї функції Signal потребує доступу до розташування.";
+"MISSING_LOCATION_PERMISSION_TITLE" = "Для використання цієї функції Signal потребує доступу до геопозиції.";
 
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Ви можете надати доступ у налаштуваннях iOS.";
@@ -5540,7 +5540,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Профіль може бути оновлено лише за наявності підключення до інтернету.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Ваш профіль і зміни в ньому бачитимуть ваші співрозмовники, контакти та групи.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Ваш профіль і зміни в ньому бачать ваші співрозмовники, контакти й групи.";
 
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Профіль";
@@ -5621,13 +5621,16 @@
 "RAISED_HANDS_LOWER_HAND_BUTTON" = "Опустити";
 
 /* A message appearing on the call view's raised hands toast indicating that multiple members have raised their hands. Embeds {{name}}, {{number of other users}} */
-"RAISED_HANDS_TOAST_MULTIPLE_HANDS_MESSAGE" = "%1$@ +%2$d raised a hand";
+"RAISED_HANDS_TOAST_MULTIPLE_HANDS_MESSAGE" = "%1$@ +%2$d підняли руки";
 
 /* A message appearing on the call view's raised hands toast indicating that another named member has raised their hand. */
-"RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@ raised a hand";
+"RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "Користувач %1$@ підняв руку";
+
+/* A compact member count on the call view's raised hands toast indicating that you and a number of other users raised a hand. Embeds {{number of other users}} */
+"RAISED_HANDS_TOAST_YOU_PLUS_OTHERS_COUNT" = "You +%1$d";
 
 /* A message appearing on the call view's raised hands toast indicating that you raised your own hand. */
-"RAISED_HANDS_TOAST_YOUR_HAND_MESSAGE" = "You raised a hand";
+"RAISED_HANDS_TOAST_YOUR_HAND_MESSAGE" = "Ви підняли руку";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
 "REACTION_DETAIL_ALL_FORMAT" = "Всі · %1$@";
@@ -6221,10 +6224,10 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Обхід цензури";
 
 /* Label for the 'manual censorship circumvention' country. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY" = "Розташування";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY" = "Країна";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Якщо увімкнено, Signal намагатиметься обійти цензуру. Не вмикайте цю функцію, якщо ви не в місці, де Signal заблоковано.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Якщо ввімкнути, то Signal намагатиметься обійти цензуру. Вмикайте цю функцію, тільки якщо ви в місці, де Signal заблоковано.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Обхід цензури активовано на підставі номера телефону, на який зареєстровано цей акаунт.";
@@ -6350,7 +6353,7 @@
 "SETTINGS_CHATS" = "Чати";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Очистити історію чату";
+"SETTINGS_CLEAR_HISTORY" = "Очистити історію чатів";
 
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "Авторські права належать Signal Messenger\nЛіцензія: AGPLv3";
@@ -6506,7 +6509,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "Активувати";
 
 /* Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "Переглянути Умови користування MobileCoin";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "Умови користування MobileCoin";
 
 /* Label for 'add money' view in the payment settings. */
 "SETTINGS_PAYMENTS_ADD_MONEY" = "Додати кошти";
@@ -6798,9 +6801,6 @@
 
 /* Label for the current balance in the 'deactivate payments' settings. */
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "Баланс на рахунку";
-
-/* Label for the 'remove payments details' button in the app settings. */
-"SETTINGS_PAYMENTS_REMOVE_BUTTON" = "Вилучити";
 
 /* Label for 'restore payments' button in the payments settings. */
 "SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "Відновити профіль";
