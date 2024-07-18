@@ -179,36 +179,56 @@ extension TSAttachmentMigration {
             )
         }
 
-        var attachment = TSAttachmentMigration.V2Attachment(
-            blurHash: pendingAttachment.blurHash,
-            sha256ContentHash: pendingAttachment.sha256ContentHash,
-            encryptedByteCount: pendingAttachment.encryptedByteCount,
-            unencryptedByteCount: pendingAttachment.unencryptedByteCount,
-            mimeType: pendingAttachment.mimeType,
-            encryptionKey: pendingAttachment.encryptionKey,
-            digestSHA256Ciphertext: pendingAttachment.digestSHA256Ciphertext,
-            contentType: UInt32(pendingAttachment.validatedContentType.rawValue),
-            transitCdnNumber: nil,
-            transitCdnKey: nil,
-            transitUploadTimestamp: nil,
-            transitEncryptionKey: nil,
-            transitUnencryptedByteCount: nil,
-            transitDigestSHA256Ciphertext: nil,
-            lastTransitDownloadAttemptTimestamp: nil,
-            localRelativeFilePath: pendingAttachment.localRelativeFilePath,
-            cachedAudioDurationSeconds: pendingAttachment.audioDurationSeconds,
-            cachedMediaHeightPixels: pendingAttachment.mediaSizePixels.map { UInt32($0.height) },
-            cachedMediaWidthPixels: pendingAttachment.mediaSizePixels.map { UInt32($0.width) },
-            cachedVideoDurationSeconds: pendingAttachment.videoDurationSeconds,
-            audioWaveformRelativeFilePath: pendingAttachment.audioWaveformRelativeFilePath,
-            videoStillFrameRelativeFilePath: pendingAttachment.videoStillFrameRelativeFilePath
-        )
+        let v2AttachmentId: Int64
+        if
+            let existingV2Attachment = try TSAttachmentMigration.V2Attachment
+                .filter(Column("sha256ContentHash") == pendingAttachment.sha256ContentHash)
+                .fetchOne(tx.database)
+        {
+            // If we already have a v2 attachment with the same plaintext hash,
+            // create new references to it and drop the pending attachment.
+            v2AttachmentId = existingV2Attachment.id!
+            // Delete the reserved files being used by the pending attachment.
+            try OWSFileSystem.deleteFileIfExists(
+                url: TSAttachmentMigration.V2Attachment.absoluteAttachmentFileURL(
+                    relativeFilePath: TSAttachmentMigration.V2Attachment.relativeFilePath(
+                        reservedUUID: reservedFileUUID
+                    )
+                )
+            )
+        } else {
+            var v2Attachment = TSAttachmentMigration.V2Attachment(
+                blurHash: pendingAttachment.blurHash,
+                sha256ContentHash: pendingAttachment.sha256ContentHash,
+                encryptedByteCount: pendingAttachment.encryptedByteCount,
+                unencryptedByteCount: pendingAttachment.unencryptedByteCount,
+                mimeType: pendingAttachment.mimeType,
+                encryptionKey: pendingAttachment.encryptionKey,
+                digestSHA256Ciphertext: pendingAttachment.digestSHA256Ciphertext,
+                contentType: UInt32(pendingAttachment.validatedContentType.rawValue),
+                transitCdnNumber: nil,
+                transitCdnKey: nil,
+                transitUploadTimestamp: nil,
+                transitEncryptionKey: nil,
+                transitUnencryptedByteCount: nil,
+                transitDigestSHA256Ciphertext: nil,
+                lastTransitDownloadAttemptTimestamp: nil,
+                localRelativeFilePath: pendingAttachment.localRelativeFilePath,
+                cachedAudioDurationSeconds: pendingAttachment.audioDurationSeconds,
+                cachedMediaHeightPixels: pendingAttachment.mediaSizePixels.map { UInt32($0.height) },
+                cachedMediaWidthPixels: pendingAttachment.mediaSizePixels.map { UInt32($0.width) },
+                cachedVideoDurationSeconds: pendingAttachment.videoDurationSeconds,
+                audioWaveformRelativeFilePath: pendingAttachment.audioWaveformRelativeFilePath,
+                videoStillFrameRelativeFilePath: pendingAttachment.videoStillFrameRelativeFilePath
+            )
 
-        try attachment.insert(tx.database)
+            try v2Attachment.insert(tx.database)
+            v2AttachmentId = v2Attachment.id!
+        }
 
         let reference = TSAttachmentMigration.ThreadAttachmentReference(
             ownerRowId: threadRowId,
-            attachmentRowId: attachment.id!,
+            attachmentRowId: v2AttachmentId,
             creationTimestamp: Date().ows_millisecondsSince1970
         )
         try reference.insert(tx.database)
