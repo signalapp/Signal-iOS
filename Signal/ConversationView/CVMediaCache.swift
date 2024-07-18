@@ -44,7 +44,12 @@ public class CVMediaCache: NSObject {
 
     public func getMediaView(_ key: CacheKey, isAnimated: Bool) -> ReusableMediaView? {
         let cache = isAnimated ? animatedMediaViewCache : stillMediaViewCache
-        return cache.get(key: key)?.value
+        let view = cache.get(key: key)?.value
+        if view?.owner != nil {
+            // If the owner isn't nil its not eligible for reuse.
+            return nil
+        }
+        return view
     }
 
     public func setMediaView(_ value: ReusableMediaView, forKey key: CacheKey, isAnimated: Bool) {

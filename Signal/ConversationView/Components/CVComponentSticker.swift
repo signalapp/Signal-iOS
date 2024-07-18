@@ -211,7 +211,6 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             if let reusableMediaView = reusableMediaView,
                reusableMediaView.owner == self {
                 reusableMediaView.unload()
-                reusableMediaView.owner = nil
             }
         }
 
