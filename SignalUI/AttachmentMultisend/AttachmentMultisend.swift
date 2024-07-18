@@ -367,6 +367,8 @@ public class AttachmentMultisend {
         let storyMessageBuilders = try storyMessageBuilders(
             segmentedAttachments: segmentedAttachments,
             approvedMessageBody: messageBodyForStories,
+            groupStoryThreads: groupStoryThreads,
+            privateStoryThreads: privateStoryThreads,
             tx: tx
         )
 
@@ -545,6 +547,9 @@ public class AttachmentMultisend {
         builders: [StoryMessageBuilder],
         tx: SDSAnyWriteTransaction
     ) throws -> [PreparedOutgoingMessage] {
+        if privateStoryThreads.isEmpty {
+            return []
+        }
         return try builders
             .flatMap { builder in
                 let storyMessage = try createAndInsertStoryMessage(
@@ -629,8 +634,15 @@ public class AttachmentMultisend {
     private class func storyMessageBuilders(
         segmentedAttachments: [(AttachmentDataSource, isLoopingVideo: Bool)],
         approvedMessageBody: MessageBody?,
+        groupStoryThreads: [TSGroupThread],
+        privateStoryThreads: [TSPrivateStoryThread],
         tx: SDSAnyReadTransaction
     ) throws -> [StoryMessageBuilder] {
+        if groupStoryThreads.isEmpty && privateStoryThreads.isEmpty {
+            // No story destinations, no need to build story messages.
+            return []
+        }
+
         guard let localAci = deps.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci else {
             throw OWSAssertionError("Sending without a local aci!")
         }
