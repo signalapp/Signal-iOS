@@ -209,7 +209,10 @@ extension ConversationSettingsViewController {
         guard !recentMedia.isEmpty else { return }
 
         let section = OWSTableSection()
-        section.headerTitle = MediaStrings.allMedia
+        section.headerTitle = OWSLocalizedString(
+            "CONVERSATION_SETTINGS_ALL_MEDIA_HEADER",
+            comment: "Header title for the section showing all media in conversation settings"
+        )
 
         section.add(.init(
             customCellBlock: { [weak self] in
