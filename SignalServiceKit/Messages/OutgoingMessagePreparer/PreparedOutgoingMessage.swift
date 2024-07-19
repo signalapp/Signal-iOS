@@ -91,6 +91,9 @@ public class PreparedOutgoingMessage {
                 messageForSending: messageForSending
             )))
         case .transient(let message):
+            if let storyMessage = message as? OutgoingStoryMessage {
+                return .init(messageType: .story(.init(message: storyMessage)))
+            }
             return .init(messageType: .transient(message))
         case .none:
             return nil
