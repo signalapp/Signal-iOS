@@ -63,7 +63,7 @@ public final class OwnedAttachmentBuilder<InfoType> {
     // MARK: - Private
 
     fileprivate let finalizeFn: FinalizeFn
-    private var hasBeenFinalized: Bool = false
+    fileprivate var hasBeenFinalized: Bool = false
 
     deinit {
         if !hasBeenFinalized {
@@ -81,5 +81,29 @@ extension OwnedAttachmentBuilder {
                 try self.finalize(owner: owner, tx: tx)
             }
         )
+    }
+
+    /// Normally, OwnedAttachmentBuilders must be finalized exactly once.
+    /// However, in multisend we want to send to multiple destinations which are all identical
+    /// in their InfoType, use the same source Attachment, and only differ in the owner passed to the finalize method.
+    /// In those cases they are allowed to "finalize" the same object multiple times, but we enforce that
+    /// it must be finalized exactly once per destination, no more no less.
+    public func forMultisendReuse(numDestinations: Int) -> [OwnedAttachmentBuilder<InfoType>] {
+        var finalizedCount = 0
+        var duplicates = [OwnedAttachmentBuilder<InfoType>]()
+        for _ in 0..<numDestinations {
+            duplicates.append(OwnedAttachmentBuilder<InfoType>(
+                info: self.info,
+                finalize: { [self] owner, tx in
+                    try self.finalize(owner: owner, tx: tx)
+                    finalizedCount += 1
+                    if finalizedCount < numDestinations {
+                        // Reset the "finalized" state until we hit all destinations.
+                        self.hasBeenFinalized = false
+                    }
+                }
+            ))
+        }
+        return duplicates
     }
 }

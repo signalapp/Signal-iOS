@@ -354,7 +354,22 @@ public class AttachmentManagerImpl: AttachmentManager {
             )
 
             do {
-                guard orphanedAttachmentStore.orphanAttachmentExists(with: pendingAttachment.orphanRecordId, tx: tx) else {
+                let hasExistingAttachmentWithSameFile = attachmentStore.fetchAttachment(
+                    sha256ContentHash: pendingAttachment.sha256ContentHash,
+                    tx: tx
+                )?.streamInfo?.localRelativeFilePath == pendingAttachment.localRelativeFilePath
+                let hasOrphanRecord = orphanedAttachmentStore.orphanAttachmentExists(
+                    with: pendingAttachment.orphanRecordId,
+                    tx: tx
+                )
+
+                // Typically, we'd expect an orphan record to exist (which ensures that
+                // if this creation transaction fails, the file on disk gets cleaned up).
+                // However, in AttachmentMultisend we send the same pending attachment file multiple
+                // times; the first instance creates an attachment and deletes the orphan record.
+                // We can detect this (and know its ok) if the existing attachment uses the same file
+                // as our pending attachment; that only happens if it shared the pending attachment.
+                guard hasExistingAttachmentWithSameFile || hasOrphanRecord else {
                     throw OWSAssertionError("Attachment file deleted before creation")
                 }
 
@@ -364,8 +379,10 @@ public class AttachmentManagerImpl: AttachmentManager {
                     reference: referenceParams,
                     tx: tx
                 )
-                // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
-                try orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
+                if hasOrphanRecord {
+                    // Make sure to clear out the pending attachment from the orphan table so it isn't deleted!
+                    try orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
+                }
             } catch let AttachmentInsertError.duplicatePlaintextHash(existingAttachmentId) {
                 // Already have an attachment with the same plaintext hash! Create a new reference to it instead.
                 // DO NOT remove the pending attachment's orphan table row, so the pending copy gets cleaned up.

@@ -392,8 +392,6 @@ public class AttachmentMultisend {
         _ textAttachment: UnsentTextAttachment.ForSending,
         tx: SDSAnyWriteTransaction
     ) throws -> ([TSThread], [PreparedOutgoingMessage]) {
-        let storyMessageBuilder = try storyMessageBuilder(textAttachment: textAttachment, tx: tx)
-
         var allStoryThreads = [TSThread]()
         var privateStoryThreads = [TSPrivateStoryThread]()
         var groupStoryThreads = [TSGroupThread]()
@@ -413,6 +411,13 @@ public class AttachmentMultisend {
             }
             allStoryThreads.append(thread)
         }
+
+        let storyMessageBuilder = try storyMessageBuilder(
+            textAttachment: textAttachment,
+            groupStoryThreads: groupStoryThreads,
+            privateStoryThreads: privateStoryThreads,
+            tx: tx
+        )
 
         let groupStoryMessages = try prepareGroupStoryMessages(
             groupStoryThreads: groupStoryThreads,
@@ -606,7 +611,10 @@ public class AttachmentMultisend {
     // MARK: Generic story construction
 
     private struct StoryMessageBuilder {
-        let attachmentBuilder: OwnedAttachmentBuilder<StoryMessageAttachment>
+        /// Group id to builder; each group thread gets its own builder.
+        let groupThreadAttachmentBuilders: [Data: OwnedAttachmentBuilder<StoryMessageAttachment>]
+        /// All private story threads share a single builder (because they share a single StoryMessage).
+        let privateStoryThreadAttachmentBuilder: OwnedAttachmentBuilder<StoryMessageAttachment>?
         let localAci: Aci
         let mediaCaption: StyleOnlyMessageBody?
         let shouldLoop: Bool
@@ -616,13 +624,23 @@ public class AttachmentMultisend {
             manifest: StoryManifest,
             tx: SDSAnyWriteTransaction
         ) throws -> StoryMessage {
+            let attachmentBuilder: OwnedAttachmentBuilder<StoryMessageAttachment>?
+            if let groupId {
+                attachmentBuilder = groupThreadAttachmentBuilders[groupId]
+            } else {
+                attachmentBuilder = privateStoryThreadAttachmentBuilder
+            }
+            guard let attachmentBuilder else {
+                throw OWSAssertionError("Building for an unprepared thread")
+            }
+
             let storyMessage = try StoryMessage.createAndInsert(
                 timestamp: Date.ows_millisecondTimestamp(),
                 authorAci: self.localAci,
                 groupId: groupId,
                 manifest: manifest,
                 replyCount: 0,
-                attachmentBuilder: self.attachmentBuilder,
+                attachmentBuilder: attachmentBuilder,
                 mediaCaption: self.mediaCaption,
                 shouldLoop: self.shouldLoop,
                 transaction: tx
@@ -662,8 +680,10 @@ public class AttachmentMultisend {
                     )
                 }
             )
-            return .init(
+            return storyMessageBuilder(
                 attachmentBuilder: attachmentBuilder,
+                groupStoryThreads: groupStoryThreads,
+                privateStoryThreads: privateStoryThreads,
                 localAci: localAci,
                 mediaCaption: storyCaption,
                 shouldLoop: isLoopingVideo
@@ -673,6 +693,8 @@ public class AttachmentMultisend {
 
     private class func storyMessageBuilder(
         textAttachment: UnsentTextAttachment.ForSending,
+        groupStoryThreads: [TSGroupThread],
+        privateStoryThreads: [TSPrivateStoryThread],
         tx: SDSAnyWriteTransaction
     ) throws -> StoryMessageBuilder {
         guard let localAci = deps.tsAccountManager.localIdentifiers(tx: tx.asV2Read)?.aci else {
@@ -685,11 +707,43 @@ public class AttachmentMultisend {
         else {
             throw OWSAssertionError("Invalid text attachment")
         }
-        return .init(
+        return storyMessageBuilder(
             attachmentBuilder: textAttachmentBuilder,
+            groupStoryThreads: groupStoryThreads,
+            privateStoryThreads: privateStoryThreads,
             localAci: localAci,
             mediaCaption: nil,
             shouldLoop: false
+        )
+    }
+
+    private class func storyMessageBuilder(
+        attachmentBuilder: OwnedAttachmentBuilder<StoryMessageAttachment>,
+        groupStoryThreads: [TSGroupThread],
+        privateStoryThreads: [TSPrivateStoryThread],
+        localAci: Aci,
+        mediaCaption: StyleOnlyMessageBody?,
+        shouldLoop: Bool
+    ) -> StoryMessageBuilder {
+        var numDestinations = groupStoryThreads.count
+        if !privateStoryThreads.isEmpty {
+            numDestinations += 1
+        }
+        let duplicatedAttachmentBuilders = attachmentBuilder.forMultisendReuse(
+            numDestinations: numDestinations
+        )
+        var groupThreadAttachmentBuilders = [Data: OwnedAttachmentBuilder<StoryMessageAttachment>]()
+        for (index, groupStoryThread) in groupStoryThreads.enumerated() {
+            groupThreadAttachmentBuilders[groupStoryThread.groupId] = duplicatedAttachmentBuilders[index]
+        }
+        return .init(
+            groupThreadAttachmentBuilders: groupThreadAttachmentBuilders,
+            privateStoryThreadAttachmentBuilder: privateStoryThreads.isEmpty
+                ? nil
+                : duplicatedAttachmentBuilders.last,
+            localAci: localAci,
+            mediaCaption: mediaCaption,
+            shouldLoop: shouldLoop
         )
     }
 }
