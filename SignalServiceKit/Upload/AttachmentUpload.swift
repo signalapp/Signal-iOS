@@ -83,7 +83,12 @@ public struct AttachmentUpload<Metadata: UploadMetadata> {
             case .local(let localForm):
                 form = localForm
             case .remote:
-                form = try await fetchUploadForm()
+                let formRequest = Upload.FormRequest(
+                    signalService: signalService,
+                    networkManager: networkManager,
+                    chatConnectionManager: chatConnectionManager
+                )
+                form = try await formRequest.start()
             }
             let attempt = try await buildAttempt(for: localMetadata, form: form, logger: logger)
             try await performResumableUpload(attempt: attempt, progress: progress)
@@ -232,11 +237,6 @@ public struct AttachmentUpload<Metadata: UploadMetadata> {
 
     // MARK: - Helper Methods
 
-    private func fetchUploadForm() async throws -> Upload.Form {
-        let request = OWSRequestFactory.allocAttachmentRequestV4()
-        return try await fetchUploadForm(request: request)
-    }
-
     private func buildAttempt(
         for localMetadata: UploadMetadata,
         form: Upload.Form,
@@ -274,13 +274,6 @@ public struct AttachmentUpload<Metadata: UploadMetadata> {
         )
     }
 
-    private func fetchUploadForm<T: Decodable>(request: TSRequest ) async throws -> T {
-        guard let data = try await performRequest(request).responseBodyData else {
-            throw OWSAssertionError("Invalid JSON")
-        }
-        return try JSONDecoder().decode(T.self, from: data)
-    }
-
     private func performRequest(_ request: TSRequest) async throws -> HTTPResponse {
         try await networkManager.makePromise(
             request: request,
@@ -298,5 +291,42 @@ public struct AttachmentUpload<Metadata: UploadMetadata> {
         progress.totalUnitCount = Int64(total)
         progress.completedUnitCount = Int64(done)
         return progress
+    }
+}
+
+extension Upload {
+    struct FormRequest {
+        private let signalService: OWSSignalServiceProtocol
+        private let networkManager: NetworkManager
+        private let chatConnectionManager: ChatConnectionManager
+
+        public init(
+            signalService: OWSSignalServiceProtocol,
+            networkManager: NetworkManager,
+            chatConnectionManager: ChatConnectionManager
+        ) {
+            self.signalService = signalService
+            self.networkManager = networkManager
+            self.chatConnectionManager = chatConnectionManager
+        }
+
+        public func start() async throws -> Upload.Form {
+            let request = OWSRequestFactory.allocAttachmentRequestV4()
+            return try await fetchUploadForm(request: request)
+        }
+
+        private func fetchUploadForm<T: Decodable>(request: TSRequest ) async throws -> T {
+            guard let data = try await performRequest(request).responseBodyData else {
+                throw OWSAssertionError("Invalid JSON")
+            }
+            return try JSONDecoder().decode(T.self, from: data)
+        }
+
+        private func performRequest(_ request: TSRequest) async throws -> HTTPResponse {
+            try await networkManager.makePromise(
+                request: request,
+                canUseWebSocket: chatConnectionManager.canMakeRequests(connectionType: .identified)
+            ).awaitable()
+        }
     }
 }
