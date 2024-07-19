@@ -28,6 +28,9 @@ public class ViewOnceContent {
     fileprivate let plaintextLength: UInt32
     fileprivate let mimeType: String
 
+    // TODO: can remove this once TSViewOnceContent is removed.
+    fileprivate var isExclusiveFileOwner = true
+
     init(
         messageId: String,
         type: ContentType,
@@ -45,6 +48,9 @@ public class ViewOnceContent {
     }
 
     deinit {
+        guard isExclusiveFileOwner else {
+            return
+        }
         let fileUrl = self.fileUrl
         DispatchQueue.global().async {
             try? OWSFileSystem.deleteFile(url: fileUrl)
@@ -87,6 +93,7 @@ public class ViewOnceContent {
 extension ViewOnceContent {
 
     var asTSContent: TSViewOnceContent {
+        self.isExclusiveFileOwner = false
         return .init(
             messageId: messageId,
             type: type,
