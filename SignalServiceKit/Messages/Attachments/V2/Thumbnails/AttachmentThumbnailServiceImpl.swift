@@ -58,7 +58,7 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
                         relativeFilePath: attachmentStream.localRelativeFilePath
                     ),
                     encryptionKey: attachmentStream.attachment.encryptionKey,
-                    plaintextLength: attachmentStream.encryptedByteCount,
+                    plaintextLength: attachmentStream.unencryptedByteCount,
                     mimeType: attachmentStream.mimeType
                 )
                 .resized(maxDimensionPoints: quality.thumbnailDimensionPoints())
