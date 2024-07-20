@@ -47,6 +47,8 @@ extension AVAsset {
         return try createAsset(mimeTypeOverride: mimeTypeOverride)
     }
 
+    private static let videoDecryptionQueue = DispatchQueue(label: "Decrypt AVAsset")
+
     private static func _fromEncryptedFile(
         at fileURL: URL,
         encryptionKey: Data,
@@ -72,7 +74,8 @@ extension AVAsset {
             throw OWSAssertionError("Failed to prefix URL!")
         }
         let asset = AVURLAsset(url: redirectURL)
-        asset.resourceLoader.setDelegate(resourceLoader, queue: .global())
+        asset.resourceLoader.preloadsEligibleContentKeys = true
+        asset.resourceLoader.setDelegate(resourceLoader, queue: Self.videoDecryptionQueue)
 
         // The resource loader delegate is held via weak reference, but:
         // 1. it doesn't hold a reference to the AVAsset
@@ -123,10 +126,15 @@ extension AVAsset {
 
             infoRequest.contentType = utiType
             infoRequest.contentLength = Int64(exactly: fileHandle.plaintextLength) ?? 0
+            if #available(iOSApplicationExtension 16.0, *) {
+                infoRequest.isEntireLengthAvailableOnDemand = true
+            }
             infoRequest.isByteRangeAccessSupported = true
             loadingRequest.finishLoading()
             return true
         }
+
+        private static let chunkSize: UInt32 = 4096
 
         private func handleDataRequest(for loadingRequest: AVAssetResourceLoadingRequest) -> Bool {
             guard
@@ -141,18 +149,28 @@ extension AVAsset {
                 requestedLength = fileHandle.plaintextLength - requestedOffset
             }
 
-            let data: Data
             do {
                 if requestedOffset != fileHandle.offset() {
                     try fileHandle.seek(toOffset: requestedOffset)
                 }
-                data = try fileHandle.read(upToCount: requestedLength)
             } catch let error {
                 loadingRequest.finishLoading(with: error)
                 return true
             }
 
-            dataRequest.respond(with: data)
+            var bytesReadSoFar: UInt32 = 0
+            do {
+                while bytesReadSoFar < requestedLength {
+                    let lengthToRead = min(Self.chunkSize, requestedLength - bytesReadSoFar)
+                    let data = try fileHandle.read(upToCount: lengthToRead)
+                    bytesReadSoFar += UInt32(data.byteLength)
+                    dataRequest.respond(with: data)
+                }
+            } catch let error {
+                loadingRequest.finishLoading(with: error)
+                return true
+            }
+
             loadingRequest.finishLoading()
 
             return true
