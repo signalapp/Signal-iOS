@@ -237,6 +237,7 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
                 return try DependenciesBridge.shared.linkPreviewManager.validateAndBuildLinkPreview(
                     from: linkPreview,
                     dataMessage: dataMessage,
+                    ownerType: .message,
                     tx: tx
                 )
             }

@@ -121,6 +121,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             do {
                 let thumbnailAttachmentBuilder = try attachmentManager.createAttachmentPointerBuilder(
                     from: thumbnailProto,
+                    ownerType: .message,
                     tx: tx
                 )
                 attachmentBuilder = thumbnailAttachmentBuilder.wrap { attachmentInfo in

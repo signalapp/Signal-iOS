@@ -98,6 +98,7 @@ public class ContactShareManagerImpl: ContactShareManager {
         {
             let avatarAttachmentBuilder = try attachmentManager.createAttachmentPointerBuilder(
                 from: avatarAttachmentProto,
+                ownerType: .message,
                 tx: tx
             )
 
@@ -138,7 +139,8 @@ public class ContactShareManagerImpl: ContactShareManager {
                     mimeType: mimeType,
                     sourceFilename: nil,
                     caption: nil,
-                    renderingFlag: .default
+                    renderingFlag: .default,
+                    ownerType: .message
                 )
             } else {
                 return nil

@@ -246,6 +246,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         if let fileAttachment = storyMessage.fileAttachment {
             let attachmentBuilder = try DependenciesBridge.shared.tsResourceManager.createAttachmentPointerBuilder(
                 from: fileAttachment,
+                ownerType: .story,
                 tx: transaction.asV2Write
             )
             switch attachmentBuilder.info {
@@ -369,6 +370,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         if let fileAttachment = storyMessage.fileAttachment {
             let attachmentBuilder = try DependenciesBridge.shared.tsResourceManager.createAttachmentPointerBuilder(
                 from: fileAttachment,
+                ownerType: .story,
                 tx: transaction.asV2Write
             )
             switch attachmentBuilder.info {

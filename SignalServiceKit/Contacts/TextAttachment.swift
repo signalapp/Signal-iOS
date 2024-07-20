@@ -39,7 +39,8 @@ public struct UnsentTextAttachment {
         if let linkPreview = linkPreviewDraft {
             do {
                 validatedLinkPreview = try DependenciesBridge.shared.linkPreviewManager.buildDataSource(
-                    from: linkPreview
+                    from: linkPreview,
+                    ownerType: .story
                 )
             } catch LinkPreviewError.featureDisabled {
                 validatedLinkPreview = .init(
@@ -95,10 +96,11 @@ public struct UnsentTextAttachment {
                 do {
                     linkPreviewBuilder = try DependenciesBridge.shared.linkPreviewManager.buildLinkPreview(
                         from: linkPreview,
+                        ownerType: .story,
                         tx: transaction.asV2Write
                     )
                 } catch LinkPreviewError.featureDisabled {
-                    linkPreviewBuilder = .withoutFinalizer(.withoutImage(urlString: linkPreview.metadata.urlString))
+                    linkPreviewBuilder = .withoutFinalizer(.withoutImage(urlString: linkPreview.metadata.urlString, ownerType: .story))
                 } catch {
                     Logger.error("Failed to generate link preview.")
                 }

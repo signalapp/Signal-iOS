@@ -1394,7 +1394,8 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                     mimeType: "image/jpg",
                     sourceFilename: "test.jpg",
                     caption: nil,
-                    renderingFlag: .default
+                    renderingFlag: .default,
+                    ownerType: .message
                 )
                 contents.append(.incomingAttachments([attachmentDataSource]))
             case 3:
@@ -1410,7 +1411,8 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                         mimeType: "image/png",
                         sourceFilename: "test.png",
                         caption: nil,
-                        renderingFlag: .default
+                        renderingFlag: .default,
+                        ownerType: .message
                     )
                     attachmentDataSources.append(dataSource)
                 }

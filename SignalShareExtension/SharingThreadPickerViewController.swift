@@ -233,7 +233,8 @@ extension SharingThreadPickerViewController {
             let linkPreviewDataSource: LinkPreviewTSResourceDataSource?
             if let linkPreviewDraft {
                 linkPreviewDataSource = try? DependenciesBridge.shared.linkPreviewManager.buildDataSource(
-                    from: linkPreviewDraft
+                    from: linkPreviewDraft,
+                    ownerType: .message
                 )
             } else {
                 linkPreviewDataSource = nil

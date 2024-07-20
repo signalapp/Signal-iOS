@@ -36,7 +36,7 @@ public class EditManagerTSResourcesImpl: EditManagerTSResources {
         tx: DBWriteTransaction
     ) throws {
         let canUseExclusiveV2: Bool = {
-            guard FeatureFlags.v2Attachments else {
+            guard FeatureFlags.writeMessageV2Attachments else {
                 return false
             }
             // Only use v2 if the edit target has no v1 body attachments
@@ -155,6 +155,7 @@ public class EditManagerTSResourcesImpl: EditManagerTSResources {
             let builder = try linkPreviewManager.buildLinkPreview(
                 from: draft.legacyDataSource,
                 builder: builder,
+                ownerType: .message,
                 tx: tx
             )
             tsMessageStore.update(latestRevision, with: builder.info, tx: tx)
@@ -171,6 +172,7 @@ public class EditManagerTSResourcesImpl: EditManagerTSResources {
                 from: preview,
                 dataMessage: dataMessage,
                 builder: builder,
+                ownerType: .message,
                 tx: tx
             )
             tsMessageStore.update(latestRevision, with: linkPreviewBuilder.info, tx: tx)

@@ -266,10 +266,11 @@ public class TSAttachmentMultisend: Dependencies {
             do {
                 (validatedLinkPreview, imageAttachmentUniqueId) = try Self.buildValidatedUnownedLinkPreview(
                     fromInfo: linkPreview,
+                    ownerType: .story,
                     transaction: transaction
                 )
             } catch LinkPreviewError.featureDisabled {
-                validatedLinkPreview = .withoutImage(urlString: linkPreview.metadata.urlString)
+                validatedLinkPreview = .withoutImage(urlString: linkPreview.metadata.urlString, ownerType: .story)
             } catch {
                 Logger.error("Failed to generate link preview.")
             }
@@ -291,6 +292,7 @@ public class TSAttachmentMultisend: Dependencies {
 
     private class func buildValidatedUnownedLinkPreview(
         fromInfo info: LinkPreviewTSResourceDataSource,
+        ownerType: TSResourceOwnerType,
         transaction: SDSAnyWriteTransaction
     ) throws -> (OWSLinkPreview, attachmentUniqueId: String?) {
         guard SSKPreferences.areLinkPreviewsEnabled(transaction: transaction) else {
@@ -318,7 +320,11 @@ public class TSAttachmentMultisend: Dependencies {
                 title: info.metadata.title,
                 attachmentId: $0
             )
-        } ?? OWSLinkPreview.withoutImage(urlString: info.metadata.urlString, title: info.metadata.title)
+        } ?? OWSLinkPreview.withoutImage(
+            urlString: info.metadata.urlString,
+            title: info.metadata.title,
+            ownerType: ownerType
+        )
         linkPreview.previewDescription = info.metadata.previewDescription
         linkPreview.date = info.metadata.date
         return (linkPreview, attachmentUniqueId: attachmentUniqueId)

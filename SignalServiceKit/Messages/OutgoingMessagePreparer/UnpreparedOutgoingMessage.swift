@@ -209,6 +209,7 @@ public class UnpreparedOutgoingMessage {
         let linkPreviewBuilder = try message.linkPreviewDraft.map {
             try DependenciesBridge.shared.linkPreviewManager.buildLinkPreview(
                 from: $0,
+                ownerType: .message,
                 tx: tx.asV2Write
             )
         }.map {

@@ -956,6 +956,7 @@ public final class MessageReceiver: Dependencies {
                 linkPreviewBuilder = try DependenciesBridge.shared.linkPreviewManager.validateAndBuildLinkPreview(
                     from: linkPreview,
                     dataMessage: dataMessage,
+                    ownerType: .message,
                     tx: tx.asV2Write
                 )
             } catch {

@@ -49,6 +49,7 @@ public class TSResourceManagerMock: TSResourceManager {
 
     public func createAttachmentPointerBuilder(
         from proto: SSKProtoAttachmentPointer,
+        ownerType: TSResourceOwnerType,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo> {
         return .withoutFinalizer(.legacy(uniqueId: ""))

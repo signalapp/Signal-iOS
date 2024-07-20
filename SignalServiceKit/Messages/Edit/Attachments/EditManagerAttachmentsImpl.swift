@@ -222,6 +222,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             let builder = try linkPreviewManager.buildLinkPreview(
                 from: draft.v2DataSource,
                 builder: builder,
+                ownerType: .message,
                 tx: tx
             )
             tsMessageStore.update(latestRevision, with: builder.info, tx: tx)
@@ -238,6 +239,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
                 from: preview,
                 dataMessage: dataMessage,
                 builder: builder,
+                ownerType: .message,
                 tx: tx
             )
             tsMessageStore.update(latestRevision, with: builder.info, tx: tx)

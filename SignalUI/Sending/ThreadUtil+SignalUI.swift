@@ -30,10 +30,10 @@ extension ThreadUtil {
                         .prepareOversizeTextIfNeeded(from: $0)
                 } ?? nil
                 let linkPreviewDataSource = try linkPreviewDraft.map {
-                    try DependenciesBridge.shared.linkPreviewManager.buildDataSource(from: $0)
+                    try DependenciesBridge.shared.linkPreviewManager.buildDataSource(from: $0, ownerType: .message)
                 }
                 let mediaAttachments = try mediaAttachments.map {
-                    try $0.forSending()
+                    try $0.forSending(ownerType: .message)
                 }
                 let quotedReplyDraft = try quotedReplyDraft.map {
                     try DependenciesBridge.shared.quotedReplyManager.prepareDraftForSending($0)
@@ -85,7 +85,7 @@ extension ThreadUtil {
                         .prepareOversizeTextIfNeeded(from: $0)
                 } ?? nil
                 let linkPreviewDataSource = try linkPreviewDraft.map {
-                    try DependenciesBridge.shared.linkPreviewManager.buildDataSource(from: $0)
+                    try DependenciesBridge.shared.linkPreviewManager.buildDataSource(from: $0, ownerType: .message)
                 }
 
                 unpreparedMessage = UnpreparedOutgoingMessage.buildForEdit(

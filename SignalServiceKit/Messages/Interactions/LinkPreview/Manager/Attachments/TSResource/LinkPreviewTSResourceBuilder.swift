@@ -10,8 +10,8 @@ public struct LinkPreviewTSResourceDataSource {
     public let imageV2DataSource: AttachmentDataSource?
     public let imageLegacyDataSource: TSAttachmentDataSource?
 
-    public var imageDataSource: TSResourceDataSource? {
-        if FeatureFlags.v2Attachments, let imageV2DataSource {
+    public func imageDataSource(ownerType: TSResourceOwnerType) -> TSResourceDataSource? {
+        if ownerType.writeV2FeatureFlag, let imageV2DataSource {
             return imageV2DataSource.tsDataSource
         } else {
             return imageLegacyDataSource?.tsDataSource
@@ -35,7 +35,8 @@ public class LinkPreviewTSResourceBuilder: LinkPreviewBuilder {
     }
 
     public func buildDataSource(
-        _ draft: OWSLinkPreviewDraft
+        _ draft: OWSLinkPreviewDraft,
+        ownerType: TSResourceOwnerType
     ) throws -> LinkPreviewTSResourceDataSource {
         let metadata = OWSLinkPreview.Metadata(
             urlString: draft.urlString,
@@ -59,7 +60,7 @@ public class LinkPreviewTSResourceBuilder: LinkPreviewBuilder {
         // it we want the link preview to be legacy too, even if we have
         // since started using v2 for new attachments.
         let v2DataSource: AttachmentDataSource?
-        if FeatureFlags.v2Attachments {
+        if ownerType.writeV2FeatureFlag {
             v2DataSource = try attachmentValidator.validateContents(
                 data: imageData,
                 mimeType: imageMimeType,
@@ -87,10 +88,11 @@ public class LinkPreviewTSResourceBuilder: LinkPreviewBuilder {
 
     public func createLinkPreview(
         from dataSource: LinkPreviewTSResourceDataSource,
+        ownerType: TSResourceOwnerType,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
-        guard let imageDataSource = dataSource.imageDataSource else {
-            return .withoutFinalizer(.withoutImage(metadata: dataSource.metadata))
+        guard let imageDataSource = dataSource.imageDataSource(ownerType: ownerType) else {
+            return .withoutFinalizer(.withoutImage(metadata: dataSource.metadata, ownerType: ownerType))
         }
         return try tsResourceManager.createAttachmentStreamBuilder(
             from: imageDataSource,
@@ -100,7 +102,7 @@ public class LinkPreviewTSResourceBuilder: LinkPreviewBuilder {
             case .legacy(let attachmentId):
                 return .withLegacyImageAttachment(metadata: dataSource.metadata, attachmentId: attachmentId)
             case .v2:
-                return .withForeignReferenceImageAttachment(metadata: dataSource.metadata)
+                return .withForeignReferenceImageAttachment(metadata: dataSource.metadata, ownerType: ownerType)
             }
         }
     }
@@ -108,17 +110,19 @@ public class LinkPreviewTSResourceBuilder: LinkPreviewBuilder {
     public func createLinkPreview(
         from proto: SSKProtoAttachmentPointer,
         metadata: OWSLinkPreview.Metadata,
+        ownerType: TSResourceOwnerType,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
         return try tsResourceManager.createAttachmentPointerBuilder(
             from: proto,
+            ownerType: ownerType,
             tx: tx
         ).wrap {
             switch $0 {
             case .legacy(let attachmentId):
                 return .withLegacyImageAttachment(metadata: metadata, attachmentId: attachmentId)
             case .v2:
-                return .withForeignReferenceImageAttachment(metadata: metadata)
+                return .withForeignReferenceImageAttachment(metadata: metadata, ownerType: ownerType)
             }
         }
     }

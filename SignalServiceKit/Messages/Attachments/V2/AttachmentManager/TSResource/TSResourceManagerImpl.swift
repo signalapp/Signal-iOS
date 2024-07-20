@@ -29,7 +29,11 @@ public class TSResourceManagerImpl: TSResourceManager {
     // MARK: - Migration
 
     public func didFinishTSAttachmentToAttachmentMigration(tx: DBReadTransaction) -> Bool {
-        guard FeatureFlags.v2Attachments else {
+        guard
+            FeatureFlags.readMessageV2Attachments,
+            FeatureFlags.writeMessageV2Attachments,
+            FeatureFlags.v2AttachmentIncrementalMigration
+        else {
             return false
         }
         let tx = SDSDB.shimOnlyBridge(tx)
@@ -45,7 +49,7 @@ public class TSResourceManagerImpl: TSResourceManager {
         message: TSMessage,
         tx: DBWriteTransaction
     ) throws {
-        if FeatureFlags.v2Attachments {
+        if FeatureFlags.writeMessageV2Attachments {
             guard let messageRowId = message.sqliteRowId else {
                 owsFailDebug("Adding attachments to an uninserted message!")
                 return
@@ -79,7 +83,7 @@ public class TSResourceManagerImpl: TSResourceManager {
         message: TSMessage,
         tx: DBWriteTransaction
     ) throws {
-        if FeatureFlags.v2Attachments {
+        if FeatureFlags.writeMessageV2Attachments {
             guard let messageRowId = message.sqliteRowId else {
                 owsFailDebug("Adding attachments to an uninserted message!")
                 return
@@ -115,7 +119,7 @@ public class TSResourceManagerImpl: TSResourceManager {
         message: TSMessage,
         tx: DBWriteTransaction
     ) throws {
-        if FeatureFlags.v2Attachments, let attachmentDataSource = dataSource.v2DataSource {
+        if FeatureFlags.writeMessageV2Attachments, let attachmentDataSource = dataSource.v2DataSource {
             guard let messageRowId = message.sqliteRowId else {
                 owsFailDebug("Adding attachments to an uninserted message!")
                 return
@@ -195,9 +199,10 @@ public class TSResourceManagerImpl: TSResourceManager {
 
     public func createAttachmentPointerBuilder(
         from proto: SSKProtoAttachmentPointer,
+        ownerType: TSResourceOwnerType,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo> {
-        if FeatureFlags.v2Attachments {
+        if ownerType.writeV2FeatureFlag {
             return OwnedAttachmentBuilder<TSResourceRetrievalInfo>(
                 info: .v2,
                 finalize: { [attachmentManager] owner, innerTx in
@@ -364,7 +369,7 @@ public class TSResourceManagerImpl: TSResourceManager {
             }
         }
 
-        if FeatureFlags.v2Attachments {
+        if FeatureFlags.readMessageV2Attachments {
             guard let messageRowId = message.sqliteRowId else {
                 owsFailDebug("Removing attachments from un-inserted message.")
                 return
@@ -393,7 +398,7 @@ public class TSResourceManagerImpl: TSResourceManager {
         case .foreignReferenceAttachment:
             break
         }
-        if FeatureFlags.v2Attachments {
+        if FeatureFlags.readStoryV2Attachments {
             guard let storyMessageRowId = storyMessage.id else {
                 owsFailDebug("Removing attachments from an un-inserted message")
                 return
@@ -445,7 +450,7 @@ public class TSResourceManagerImpl: TSResourceManager {
             else {
                 return nil
             }
-            if FeatureFlags.v2Attachments {
+            if FeatureFlags.writeMessageV2Attachments {
                 // We are in a conundrum. New messages should be using v2 attachments, but
                 // we are quoting a legacy message attachment.
                 // The process of cloning a legacy attachment as a v2 attachment is asynchronous
@@ -498,7 +503,7 @@ public class TSResourceManagerImpl: TSResourceManager {
         originalMessageRowId: Int64?,
         tx: DBWriteTransaction
     ) -> OwnedAttachmentBuilder<QuotedAttachmentInfo>? {
-        guard FeatureFlags.v2Attachments else {
+        guard FeatureFlags.writeMessageV2Attachments else {
             owsFailDebug("Should not have a v2 data source if we aren't using v2 attachments!")
             return nil
         }

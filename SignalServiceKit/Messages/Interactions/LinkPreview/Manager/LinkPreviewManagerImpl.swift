@@ -71,12 +71,14 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
     public func validateAndBuildLinkPreview(
         from proto: SSKProtoPreview,
         dataMessage: SSKProtoDataMessage,
+        ownerType: TSResourceOwnerType,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
         return try validateAndBuildLinkPreview(
             from: proto,
             dataMessage: dataMessage,
             builder: defaultBuilder,
+            ownerType: ownerType,
             tx: tx
         )
     }
@@ -85,6 +87,7 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
         from proto: SSKProtoPreview,
         dataMessage: SSKProtoDataMessage,
         builder: Builder,
+        ownerType: TSResourceOwnerType,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
         if dataMessage.attachments.count == 1, dataMessage.attachments[0].contentType != MimeType.textXSignalPlain.rawValue {
@@ -107,7 +110,7 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
             throw LinkPreviewError.invalidPreview
         }
 
-        return try buildValidatedLinkPreview(proto: proto, builder: defaultBuilder, tx: tx)
+        return try buildValidatedLinkPreview(proto: proto, builder: defaultBuilder, ownerType: ownerType, tx: tx)
     }
 
     public func validateAndBuildStoryLinkPreview(
@@ -118,42 +121,46 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
             Logger.error("Discarding link preview; can't parse URLs in story message.")
             throw LinkPreviewError.invalidPreview
         }
-        return try buildValidatedLinkPreview(proto: proto, builder: defaultBuilder, tx: tx)
+        return try buildValidatedLinkPreview(proto: proto, builder: defaultBuilder, ownerType: .story, tx: tx)
     }
 
     public func buildDataSource(
-        from draft: OWSLinkPreviewDraft
+        from draft: OWSLinkPreviewDraft,
+        ownerType: TSResourceOwnerType
     ) throws -> LinkPreviewTSResourceDataSource {
-        return try buildDataSource(from: draft, builder: defaultBuilder)
+        return try buildDataSource(from: draft, builder: defaultBuilder, ownerType: ownerType)
     }
 
     public func buildDataSource<Builder: LinkPreviewBuilder>(
         from draft: OWSLinkPreviewDraft,
-        builder: Builder
+        builder: Builder,
+        ownerType: TSResourceOwnerType
     ) throws -> Builder.DataSource {
         let areLinkPreviewsEnabled = db.read { sskPreferences.areLinkPreviewsEnabled(tx: $0) }
         guard areLinkPreviewsEnabled else {
             throw LinkPreviewError.featureDisabled
         }
-        return try builder.buildDataSource(draft)
+        return try builder.buildDataSource(draft, ownerType: ownerType)
     }
 
     public func buildLinkPreview(
         from dataSource: LinkPreviewTSResourceDataSource,
+        ownerType: TSResourceOwnerType,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
-        return try buildLinkPreview(from: dataSource, builder: defaultBuilder, tx: tx)
+        return try buildLinkPreview(from: dataSource, builder: defaultBuilder, ownerType: ownerType, tx: tx)
     }
 
     public func buildLinkPreview<Builder: LinkPreviewBuilder>(
         from dataSource: Builder.DataSource,
         builder: Builder,
+        ownerType: TSResourceOwnerType,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
         guard sskPreferences.areLinkPreviewsEnabled(tx: tx) else {
             throw LinkPreviewError.featureDisabled
         }
-        return try builder.createLinkPreview(from: dataSource, tx: tx)
+        return try builder.createLinkPreview(from: dataSource, ownerType: ownerType, tx: tx)
     }
 
     public func buildProtoForSending(
@@ -302,6 +309,7 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
     private func buildValidatedLinkPreview<Builder: LinkPreviewBuilder>(
         proto: SSKProtoPreview,
         builder: Builder,
+        ownerType: TSResourceOwnerType,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
         let urlString = proto.url
@@ -342,11 +350,12 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
         )
 
         guard let protoImage = proto.image else {
-            return .withoutFinalizer(.withoutImage(metadata: metadata))
+            return .withoutFinalizer(.withoutImage(metadata: metadata, ownerType: ownerType))
         }
         return try builder.createLinkPreview(
             from: protoImage,
             metadata: metadata,
+            ownerType: ownerType,
             tx: tx
         )
     }

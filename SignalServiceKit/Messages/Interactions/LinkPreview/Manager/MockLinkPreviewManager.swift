@@ -29,6 +29,7 @@ public class MockLinkPreviewManager: LinkPreviewManager {
     public func validateAndBuildLinkPreview(
         from proto: SSKProtoPreview,
         dataMessage: SSKProtoDataMessage,
+        ownerType: TSResourceOwnerType,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
         return .withoutFinalizer(.init())
@@ -38,6 +39,7 @@ public class MockLinkPreviewManager: LinkPreviewManager {
         from proto: SSKProtoPreview,
         dataMessage: SSKProtoDataMessage,
         builder: Builder,
+        ownerType: TSResourceOwnerType,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
         return .withoutFinalizer(.init())
@@ -51,7 +53,8 @@ public class MockLinkPreviewManager: LinkPreviewManager {
     }
 
     public func buildDataSource(
-        from draft: OWSLinkPreviewDraft
+        from draft: OWSLinkPreviewDraft,
+        ownerType: TSResourceOwnerType
     ) throws -> LinkPreviewTSResourceDataSource {
         return .init(
             metadata: .init(
@@ -67,13 +70,15 @@ public class MockLinkPreviewManager: LinkPreviewManager {
 
     public func buildDataSource<Builder: LinkPreviewBuilder>(
         from draft: OWSLinkPreviewDraft,
-        builder: Builder
+        builder: Builder,
+        ownerType: TSResourceOwnerType
     ) throws -> Builder.DataSource {
-        return try builder.buildDataSource(draft)
+        return try builder.buildDataSource(draft, ownerType: ownerType)
     }
 
     public func buildLinkPreview(
         from dataSource: LinkPreviewTSResourceDataSource,
+        ownerType: TSResourceOwnerType,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
         return .withoutFinalizer(.init())
@@ -82,6 +87,7 @@ public class MockLinkPreviewManager: LinkPreviewManager {
     public func buildLinkPreview<Builder: LinkPreviewBuilder>(
         from dataSource: Builder.DataSource,
         builder: Builder,
+        ownerType: TSResourceOwnerType,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
         return .withoutFinalizer(.init())

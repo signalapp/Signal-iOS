@@ -60,6 +60,7 @@ class OWSLinkPreviewTest: SSKBaseTest {
             let linkPreviewBuilder = try! linkPreviewManager.validateAndBuildLinkPreview(
                 from: dataMessage.preview.first!,
                 dataMessage: dataMessage,
+                ownerType: .message,
                 tx: tx
             )
             XCTAssertNotNil(linkPreviewBuilder)
@@ -88,6 +89,7 @@ class OWSLinkPreviewTest: SSKBaseTest {
             let linkPreviewBuilder = try! linkPreviewManager.validateAndBuildLinkPreview(
                 from: dataMessage.preview.first!,
                 dataMessage: dataMessage,
+                ownerType: .message,
                 tx: tx
             )
             XCTAssertNotNil(linkPreviewBuilder)
@@ -120,6 +122,7 @@ class OWSLinkPreviewTest: SSKBaseTest {
             let linkPreviewBuilder = try! linkPreviewManager.validateAndBuildLinkPreview(
                 from: dataMessage.preview.first!,
                 dataMessage: dataMessage,
+                ownerType: .message,
                 tx: tx
             )
             XCTAssertNotNil(linkPreviewBuilder)

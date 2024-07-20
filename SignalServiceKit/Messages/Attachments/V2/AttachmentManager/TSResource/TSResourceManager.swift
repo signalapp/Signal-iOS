@@ -29,6 +29,20 @@ public struct TSMessageAttachmentReferenceType: OptionSet {
     ]
 }
 
+public enum TSResourceOwnerType {
+    case message
+    case story
+    case thread
+
+    var writeV2FeatureFlag: Bool {
+        switch self {
+        case .message: FeatureFlags.writeMessageV2Attachments
+        case .story: FeatureFlags.writeStoryV2Attachments
+        case .thread: FeatureFlags.writeThreadWallpaperV2Attachments
+        }
+    }
+}
+
 public protocol TSResourceManager {
 
     // MARK: - Migration
@@ -89,6 +103,7 @@ public protocol TSResourceManager {
     /// Throws an error if the provided proto is invalid.
     func createAttachmentPointerBuilder(
         from proto: SSKProtoAttachmentPointer,
+        ownerType: TSResourceOwnerType,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<TSResourceRetrievalInfo>
 

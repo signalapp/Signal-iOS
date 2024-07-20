@@ -128,9 +128,14 @@ public class OWSLinkPreview: MTLModel, Codable {
     }
 
     public static func withForeignReferenceImageAttachment(
-        metadata: Metadata
+        metadata: Metadata,
+        ownerType: TSResourceOwnerType
     ) -> OWSLinkPreview {
-        let linkPreview = OWSLinkPreview.withoutImage(urlString: metadata.urlString, title: metadata.title)
+        let linkPreview = OWSLinkPreview.withoutImage(
+            urlString: metadata.urlString,
+            title: metadata.title,
+            ownerType: ownerType
+        )
         linkPreview.previewDescription = metadata.previewDescription
         linkPreview.date = metadata.date
         return linkPreview
@@ -138,12 +143,13 @@ public class OWSLinkPreview: MTLModel, Codable {
 
     public static func withoutImage(
         urlString: String,
-        title: String? = nil
+        title: String? = nil,
+        ownerType: TSResourceOwnerType
     ) -> OWSLinkPreview {
         /// In legacy-world, we put nil on the attachment id to mark this as not having an attachment
         /// In v2-world, the existence of an AttachmentReference is what determines if a link preview has an image or not.
         /// In either case, the legacy attachment id is nil, but fetching ends up different, so mark it down at write time.
-        let usesV2AttachmentReference = FeatureFlags.v2Attachments
+        let usesV2AttachmentReference = ownerType.writeV2FeatureFlag
         return .init(
             urlString: urlString,
             title: title,
@@ -153,9 +159,14 @@ public class OWSLinkPreview: MTLModel, Codable {
     }
 
     public static func withoutImage(
-        metadata: Metadata
+        metadata: Metadata,
+        ownerType: TSResourceOwnerType
     ) -> OWSLinkPreview {
-        let linkPreview = OWSLinkPreview.withoutImage(urlString: metadata.urlString, title: metadata.title)
+        let linkPreview = OWSLinkPreview.withoutImage(
+            urlString: metadata.urlString,
+            title: metadata.title,
+            ownerType: ownerType
+        )
         linkPreview.previewDescription = metadata.previewDescription
         linkPreview.date = metadata.date
         return linkPreview

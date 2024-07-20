@@ -274,8 +274,7 @@ private class _OrphanedAttachmentCleanerImpl_FeatureFlagsMock: _OrphanedAttachme
 
     init() {}
 
-    var v2Attachments: Bool { true }
-    var v2ThreadAttachments: Bool { true }
+    var readV2Attachments: Bool { true }
 }
 
 private class _OrphanedAttachmentCleanerImpl_OWSFileSystemMock: _OrphanedAttachmentCleanerImpl_OWSFileSystemShim {

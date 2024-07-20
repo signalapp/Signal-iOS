@@ -92,7 +92,7 @@ public class MessageStickerManagerImpl: MessageStickerManager {
         // try to derive an TSAttachmentStream (only legacy) using that.
         // V2 attachments use the local sticker pack at "download" time.
         if
-            !FeatureFlags.v2Attachments,
+            !FeatureFlags.writeMessageV2Attachments,
             let attachment = tsAttachmentForInstalledSticker(
                 dataProto: dataProto,
                 stickerInfo: stickerInfo,
@@ -113,6 +113,7 @@ public class MessageStickerManagerImpl: MessageStickerManager {
             }
             return try attachmentManager.createAttachmentPointerBuilder(
                 from: proto,
+                ownerType: .message,
                 tx: tx
             )
         } catch {
@@ -180,7 +181,8 @@ public class MessageStickerManagerImpl: MessageStickerManager {
             mimeType: draft.stickerType.mimeType,
             sourceFilename: nil,
             caption: nil,
-            renderingFlag: .default
+            renderingFlag: .default,
+            ownerType: .message
         )
         return .init(
             info: draft.info,

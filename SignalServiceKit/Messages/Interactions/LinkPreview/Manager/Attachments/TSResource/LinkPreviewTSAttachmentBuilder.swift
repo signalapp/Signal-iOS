@@ -23,7 +23,8 @@ public class LinkPreviewTSAttachmentBuilder: LinkPreviewBuilder {
     }
 
     public func buildDataSource(
-        _ draft: OWSLinkPreviewDraft
+        _ draft: OWSLinkPreviewDraft,
+        ownerType: TSResourceOwnerType
     ) throws -> LinkPreviewTSAttachmentDataSource {
         let metadata = OWSLinkPreview.Metadata(
             urlString: draft.urlString,
@@ -45,10 +46,11 @@ public class LinkPreviewTSAttachmentBuilder: LinkPreviewBuilder {
 
     public func createLinkPreview(
         from dataSource: LinkPreviewTSAttachmentDataSource,
+        ownerType: TSResourceOwnerType,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
         guard let imageDataSource = dataSource.imageDataSource else {
-            return .withoutFinalizer(.withoutImage(metadata: dataSource.metadata))
+            return .withoutFinalizer(.withoutImage(metadata: dataSource.metadata, ownerType: ownerType))
         }
         let attachmentId = try tsAttachmentManager.createAttachmentStream(
             from: imageDataSource,
@@ -60,6 +62,7 @@ public class LinkPreviewTSAttachmentBuilder: LinkPreviewBuilder {
     public func createLinkPreview(
         from proto: SSKProtoAttachmentPointer,
         metadata: OWSLinkPreview.Metadata,
+        ownerType: TSResourceOwnerType,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
         let attachmentId = try tsAttachmentManager.createAttachmentPointer(

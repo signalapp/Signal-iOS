@@ -78,7 +78,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         )
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
-            guard FeatureFlags.v2Attachments else {
+            guard FeatureFlags.writeStoryV2Attachments || FeatureFlags.writeMessageV2Attachments else {
                 return
             }
             self?.beginDownloadingIfNecessary()

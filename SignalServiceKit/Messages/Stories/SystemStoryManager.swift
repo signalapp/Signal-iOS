@@ -58,7 +58,8 @@ public class OnboardingStoryManagerStoryMessageFactory: NSObject {
             mimeType: mimeType,
             sourceFilename: nil,
             caption: nil,
-            renderingFlag: .default
+            renderingFlag: .default,
+            ownerType: .story
         )
     }
 }

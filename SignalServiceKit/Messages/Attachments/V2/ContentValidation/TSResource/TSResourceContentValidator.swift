@@ -10,7 +10,7 @@ public struct OversizeTextDataSource {
     public let legacyDataSource: TSAttachmentDataSource
 
     public var dataSource: TSResourceDataSource {
-        if FeatureFlags.v2Attachments, let v2DataSource {
+        if FeatureFlags.writeMessageV2Attachments, let v2DataSource {
             return v2DataSource.tsDataSource
         } else {
             return legacyDataSource.tsDataSource
@@ -39,7 +39,8 @@ public protocol TSResourceContentValidator {
         mimeType: String,
         sourceFilename: String?,
         caption: MessageBody?,
-        renderingFlag: AttachmentReference.RenderingFlag
+        renderingFlag: AttachmentReference.RenderingFlag,
+        ownerType: TSResourceOwnerType
     ) throws -> TSResourceDataSource
 
     /// Prepare and possibly validate Data's contents, based on the provided mimetype.
@@ -53,7 +54,8 @@ public protocol TSResourceContentValidator {
         mimeType: String,
         sourceFilename: String?,
         caption: MessageBody?,
-        renderingFlag: AttachmentReference.RenderingFlag
+        renderingFlag: AttachmentReference.RenderingFlag,
+        ownerType: TSResourceOwnerType
     ) throws -> TSResourceDataSource
 
     /// If the provided message body is large enough to require an oversize text
@@ -86,9 +88,10 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
         mimeType: String,
         sourceFilename: String?,
         caption: MessageBody?,
-        renderingFlag: AttachmentReference.RenderingFlag
+        renderingFlag: AttachmentReference.RenderingFlag,
+        ownerType: TSResourceOwnerType
     ) throws -> TSResourceDataSource {
-        if FeatureFlags.v2Attachments {
+        if ownerType.writeV2FeatureFlag {
             let attachmentDataSource: AttachmentDataSource =
                 try attachmentValidator.validateContents(
                     dataSource: dataSource,
@@ -115,9 +118,10 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
         mimeType: String,
         sourceFilename: String?,
         caption: MessageBody?,
-        renderingFlag: AttachmentReference.RenderingFlag
+        renderingFlag: AttachmentReference.RenderingFlag,
+        ownerType: TSResourceOwnerType
     ) throws -> TSResourceDataSource {
-        if FeatureFlags.v2Attachments {
+        if ownerType.writeV2FeatureFlag {
             let attachmentDataSource: AttachmentDataSource =
                 try attachmentValidator.validateContents(
                     data: data,
@@ -156,7 +160,7 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
         }
 
         let v2DataSource: AttachmentDataSource?
-        if FeatureFlags.v2Attachments {
+        if FeatureFlags.writeMessageV2Attachments {
             let result = try attachmentValidator.prepareOversizeTextIfNeeded(
                 from: messageBody
             )
@@ -225,7 +229,7 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
             throw OWSAssertionError("Invalid attachment + reference combination")
 
         case (.v2(let attachment), .v2(let attachmentReference)):
-            guard FeatureFlags.v2Attachments else {
+            guard FeatureFlags.writeMessageV2Attachments else {
                 throw OWSAssertionError("How did we get a v2 attachment if we aren't creating them yet")
             }
             return try attachmentValidator.prepareQuotedReplyThumbnail(
@@ -233,7 +237,7 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
                 originalReference: attachmentReference
             ).tsDataSource
         case (.legacy(let tsAttachment), .legacy):
-            guard FeatureFlags.v2Attachments else {
+            guard FeatureFlags.writeMessageV2Attachments else {
                 // legacy to legacy is easy; we just refer to the original.
                 return .fromLegacyOriginalAttachment(tsAttachment, originalMessageRowId: originalMessageRowId)
             }
@@ -318,7 +322,8 @@ open class TSResourceContentValidatorMock: TSResourceContentValidator {
         mimeType: String,
         sourceFilename: String?,
         caption: MessageBody?,
-        renderingFlag: AttachmentReference.RenderingFlag
+        renderingFlag: AttachmentReference.RenderingFlag,
+        ownerType: TSResourceOwnerType
     ) throws -> TSResourceDataSource {
         return TSAttachmentDataSource(
             mimeType: mimeType,
@@ -334,7 +339,8 @@ open class TSResourceContentValidatorMock: TSResourceContentValidator {
         mimeType: String,
         sourceFilename: String?,
         caption: MessageBody?,
-        renderingFlag: AttachmentReference.RenderingFlag
+        renderingFlag: AttachmentReference.RenderingFlag,
+        ownerType: TSResourceOwnerType
     ) throws -> TSResourceDataSource {
         return TSAttachmentDataSource(
             mimeType: mimeType,
