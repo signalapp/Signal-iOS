@@ -383,6 +383,9 @@ class StoryManagerTest: SSKBaseTest {
     static func makeImageAttachment() -> SSKProtoAttachmentPointer {
         let builder = SSKProtoAttachmentPointer.builder()
         builder.setCdnID(1)
+        builder.setCdnNumber(3)
+        builder.setCdnKey("someCdnKey")
+        builder.setDigest(Randomness.generateRandomBytes(32))
         builder.setKey(Randomness.generateRandomBytes(32))
         builder.setContentType(MimeType.imageJpeg.rawValue)
         return builder.buildInfallibly()
@@ -443,5 +446,17 @@ class StoryManagerTest: SSKBaseTest {
             groupSecretParamsData: Data(),
             groupId: Data(bytes)
         )
+    }
+
+    // MARK: - Overrides
+
+    class StoryManager: SignalServiceKit.StoryManager {
+
+        override static func enqueueDownloadOfAttachmentsForStoryMessage(
+            _ message: StoryMessage,
+            tx: any DBWriteTransaction
+        ) {
+            // Do nothing
+        }
     }
 }

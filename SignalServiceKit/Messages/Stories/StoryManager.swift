@@ -317,7 +317,7 @@ public class StoryManager: NSObject {
         if autoDownloadContexts.contains(message.context) || autoDownloadContexts.contains(.authorAci(message.authorAci)) {
             Logger.info("Automatically downloading attachments for story with timestamp \(message.timestamp) and context \(message.context)")
 
-            DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(message, tx: transaction.asV2Write)
+            Self.enqueueDownloadOfAttachmentsForStoryMessage(message, tx: transaction.asV2Write)
         } else {
             Logger.info("Skipping automatic download of attachments for story with timestamp \(message.timestamp), context \(message.context) not recently active")
             DependenciesBridge.shared.tsResourceManager.markPointerAsPendingManualDownload(
@@ -325,6 +325,17 @@ public class StoryManager: NSObject {
                 tx: transaction.asV2Write
             )
         }
+    }
+
+    // Exposed for testing
+    internal class func enqueueDownloadOfAttachmentsForStoryMessage(
+        _ message: StoryMessage,
+        tx: DBWriteTransaction
+    ) {
+        DependenciesBridge.shared.tsResourceDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(
+            message,
+            tx: tx
+        )
     }
 }
 
