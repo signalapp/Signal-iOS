@@ -91,7 +91,7 @@ extension StickerMetadata {
     }
 
     public var firstEmoji: String? {
-        StickerManager.firstEmoji(inEmojiString: emojiString)
+        StickerManager.firstEmoji(in: emojiString ?? "")
     }
 
     public var mimeType: String {

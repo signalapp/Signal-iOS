@@ -1266,6 +1266,8 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     private let suggestedStickerViewCache = StickerViewCache(maxSize: 12)
 
+    private var suggestedStickerEmoji: Character?
+
     private var suggestedStickerInfos: [StickerInfo] = []
 
     private var suggestedStickersViewConstraint: NSLayoutConstraint?
@@ -1301,10 +1303,25 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     private var isSuggestedStickersViewHidden = true
 
     private func updateSuggestedStickers(animated: Bool) {
-        let suggestedStickerInfos = StickerManager.shared.suggestedStickers(forTextInput: inputTextView.trimmedText).map { $0.info }
+        let suggestedStickerEmoji = StickerManager.suggestedStickerEmoji(chatBoxText: inputTextView.trimmedText)
 
-        guard suggestedStickerInfos != self.suggestedStickerInfos else { return }
+        if self.suggestedStickerEmoji == suggestedStickerEmoji {
+            return
+        }
+        self.suggestedStickerEmoji = suggestedStickerEmoji
 
+        let suggestedStickerInfos: [StickerInfo]
+        if let suggestedStickerEmoji {
+            suggestedStickerInfos = databaseStorage.read { tx in
+                return StickerManager.suggestedStickers(for: suggestedStickerEmoji, tx: tx).map { $0.info }
+            }
+        } else {
+            suggestedStickerInfos = []
+        }
+
+        if self.suggestedStickerInfos == suggestedStickerInfos {
+            return
+        }
         self.suggestedStickerInfos = suggestedStickerInfos
 
         guard !suggestedStickerInfos.isEmpty else {

@@ -758,6 +758,18 @@ extension UnicodeScalar {
     }
 }
 
+extension String.UnicodeScalarView {
+    public func containsOnlyEmoji() -> Bool {
+        if self.isEmpty {
+            return false
+        }
+        if self.contains(where: { !$0.isEmoji && !$0.isZeroWidthJoiner }) {
+            return false
+        }
+        return true
+    }
+}
+
 public extension String {
     var glyphCount: Int {
         // String.count reflects the number of user-visible characters
@@ -774,11 +786,7 @@ public extension String {
     }
 
     var containsOnlyEmoji: Bool {
-        !isEmpty
-            && !unicodeScalars.contains(where: {
-                !$0.isEmoji
-                    && !$0.isZeroWidthJoiner
-            })
+        return self.unicodeScalars.containsOnlyEmoji()
     }
 
     func trimmedIfNeeded(maxGlyphCount: Int) -> String? {

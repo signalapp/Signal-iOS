@@ -612,7 +612,7 @@ public extension TSMessage {
                 "STICKER_MESSAGE_PREVIEW",
                 comment: "Preview text shown in notifications and conversation list for sticker messages."
             )
-            if let stickerEmoji = StickerManager.firstEmoji(inEmojiString: messageSticker.emoji)?.nilIfEmpty {
+            if let stickerEmoji = StickerManager.firstEmoji(in: messageSticker.emoji ?? "")?.nilIfEmpty {
                 return .stickerDescription(stickerEmoji.appending(" ").appending(stickerDescription))
             } else {
                 return .stickerDescription(stickerDescription)

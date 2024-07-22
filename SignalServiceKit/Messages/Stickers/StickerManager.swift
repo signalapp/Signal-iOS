@@ -790,18 +790,12 @@ public class StickerManager: NSObject {
 
     // MARK: - Emoji
 
-    public class func allEmoji(inEmojiString emojiString: String?) -> [String] {
-        guard let emojiString = emojiString else {
-            return []
-        }
-
-        return emojiString.map(String.init).filter {
-            $0.containsOnlyEmoji
-        }
+    static func allEmoji(in emojiString: String) -> LazyFilterSequence<LazySequence<String>.Elements> {
+        return emojiString.lazy.filter { $0.unicodeScalars.containsOnlyEmoji() }
     }
 
-    public class func firstEmoji(inEmojiString emojiString: String?) -> String? {
-        return allEmoji(inEmojiString: emojiString).first
+    static func firstEmoji(in emojiString: String) -> String? {
+        return allEmoji(in: emojiString).first.map(String.init)
     }
 
     private class func addStickerToEmojiMap(_ installedSticker: InstalledSticker, tx: SDSAnyWriteTransaction) {
@@ -809,10 +803,9 @@ public class StickerManager: NSObject {
             return
         }
         let stickerId = installedSticker.uniqueId
-        for emoji in allEmoji(inEmojiString: emojiString) {
-            emojiMapStore.prependToOrderedUniqueArray(key: emoji, value: stickerId, tx: tx)
+        for emoji in allEmoji(in: emojiString) {
+            emojiMapStore.prependToOrderedUniqueArray(key: String(emoji), value: stickerId, tx: tx)
         }
-        shared.clearSuggestedStickersCache()
     }
 
     private class func removeStickerFromEmojiMap(_ installedSticker: InstalledSticker, tx: SDSAnyWriteTransaction) {
@@ -820,55 +813,28 @@ public class StickerManager: NSObject {
             return
         }
         let stickerId = installedSticker.uniqueId
-        for emoji in allEmoji(inEmojiString: emojiString) {
-            emojiMapStore.removeFromOrderedUniqueArray(key: emoji, value: stickerId, tx: tx)
-        }
-        shared.clearSuggestedStickersCache()
-    }
-
-    private static let cacheQueue = DispatchQueue(label: "org.signal.sticker-manager.cache")
-    // This cache should only be accessed on cacheQueue.
-    private var suggestedStickersCache = LRUCache<String, [InstalledSticker]>(maxSize: 5)
-
-    // We clear the cache every time we install or uninstall a sticker.
-    private func clearSuggestedStickersCache() {
-        StickerManager.cacheQueue.sync {
-            self.suggestedStickersCache.removeAllObjects()
+        for emoji in allEmoji(in: emojiString) {
+            emojiMapStore.removeFromOrderedUniqueArray(key: String(emoji), value: stickerId, tx: tx)
         }
     }
 
-    public func suggestedStickers(forTextInput textInput: String) -> [InstalledSticker] {
-        return StickerManager.cacheQueue.sync {
-            if let suggestions = suggestedStickersCache.object(forKey: textInput) {
-                return suggestions
-            }
-
-            let suggestions = StickerManager.suggestedStickers(forTextInput: textInput)
-            suggestedStickersCache.setObject(suggestions, forKey: textInput)
-            return suggestions
+    public static func suggestedStickerEmoji(chatBoxText: String) -> Character? {
+        // We must have a Character, we must have no other Characters, and it must
+        // contain only emoji.
+        guard
+            let firstCharacter = chatBoxText.first,
+            chatBoxText.dropFirst().isEmpty,
+            firstCharacter.unicodeScalars.containsOnlyEmoji()
+        else {
+            return nil
         }
+        return firstCharacter
     }
 
-    internal class func suggestedStickers(forTextInput textInput: String) -> [InstalledSticker] {
-        var result = [InstalledSticker]()
-        databaseStorage.read { (transaction) in
-            result = self.suggestedStickers(forTextInput: textInput, transaction: transaction)
-        }
-        return result
-    }
-
-    internal class func suggestedStickers(forTextInput textInput: String, transaction: SDSAnyReadTransaction) -> [InstalledSticker] {
-        guard let emoji = firstEmoji(inEmojiString: textInput) else {
-            // Text input contains no emoji.
-            return []
-        }
-        guard emoji == textInput else {
-            // Text input contains more than just a single emoji.
-            return []
-        }
-        let stickerIds = emojiMapStore.orderedUniqueArray(forKey: emoji, tx: transaction)
+    public class func suggestedStickers(for emoji: Character, tx: SDSAnyReadTransaction) -> [InstalledSticker] {
+        let stickerIds = emojiMapStore.orderedUniqueArray(forKey: String(emoji), tx: tx)
         return stickerIds.compactMap { (stickerId) in
-            guard let installedSticker = InstalledSticker.anyFetch(uniqueId: stickerId, transaction: transaction) else {
+            guard let installedSticker = InstalledSticker.anyFetch(uniqueId: stickerId, transaction: tx) else {
                 owsFailDebug("Missing installed sticker.")
                 return nil
             }

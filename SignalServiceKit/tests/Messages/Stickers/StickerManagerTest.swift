@@ -10,29 +10,47 @@ import Foundation
 class StickerManagerTest: XCTestCase {
 
     func testFirstEmoji() {
-        XCTAssertNil(StickerManager.firstEmoji(inEmojiString: nil))
-        XCTAssertEqual("🇨🇦", StickerManager.firstEmoji(inEmojiString: "🇨🇦"))
-        XCTAssertEqual("🇨🇦", StickerManager.firstEmoji(inEmojiString: "🇨🇦🇨🇦"))
-        XCTAssertEqual("🇹🇹", StickerManager.firstEmoji(inEmojiString: "🇹🇹🌼🇹🇹🌼🇹🇹"))
-        XCTAssertEqual("🌼", StickerManager.firstEmoji(inEmojiString: "🌼🇹🇹🌼🇹🇹"))
-        XCTAssertEqual("👌🏽", StickerManager.firstEmoji(inEmojiString: "👌🏽👌🏾"))
-        XCTAssertEqual("👌🏾", StickerManager.firstEmoji(inEmojiString: "👌🏾👌🏽"))
-        XCTAssertEqual("👾", StickerManager.firstEmoji(inEmojiString: "👾🙇💁🙅🙆🙋🙎🙍"))
-        XCTAssertEqual("👾", StickerManager.firstEmoji(inEmojiString: "👾🙇💁🙅🙆🙋🙎🙍"))
+        XCTAssertEqual(nil, StickerManager.firstEmoji(in: ""))
+        XCTAssertEqual(nil, StickerManager.firstEmoji(in: "ABC"))
+        XCTAssertEqual("🇨🇦", StickerManager.firstEmoji(in: "🇨🇦"))
+        XCTAssertEqual("🇨🇦", StickerManager.firstEmoji(in: "🇨🇦🇨🇦"))
+        XCTAssertEqual("🇹🇹", StickerManager.firstEmoji(in: "🇹🇹🌼🇹🇹🌼🇹🇹"))
+        XCTAssertEqual("🌼", StickerManager.firstEmoji(in: "🌼🇹🇹🌼🇹🇹"))
+        XCTAssertEqual("👌🏽", StickerManager.firstEmoji(in: "👌🏽👌🏾"))
+        XCTAssertEqual("👌🏾", StickerManager.firstEmoji(in: "👌🏾👌🏽"))
+        XCTAssertEqual("👾", StickerManager.firstEmoji(in: "👾🙇💁🙅🙆🙋🙎🙍"))
+        XCTAssertEqual("👾", StickerManager.firstEmoji(in: "👾🙇💁🙅🙆🙋🙎🙍"))
     }
 
     func testAllEmoji() {
-        XCTAssertEqual([], StickerManager.allEmoji(inEmojiString: nil))
-        XCTAssertEqual(["🇨🇦"], StickerManager.allEmoji(inEmojiString: "🇨🇦"))
-        XCTAssertEqual(["🇨🇦", "🇨🇦"], StickerManager.allEmoji(inEmojiString: "🇨🇦🇨🇦"))
-        XCTAssertEqual(["🇹🇹", "🌼", "🇹🇹", "🌼", "🇹🇹"], StickerManager.allEmoji(inEmojiString: "🇹🇹🌼🇹🇹🌼🇹🇹"))
-        XCTAssertEqual(["🌼", "🇹🇹", "🌼", "🇹🇹"], StickerManager.allEmoji(inEmojiString: "🌼🇹🇹🌼🇹🇹"))
-        XCTAssertEqual(["👌🏽", "👌🏾"], StickerManager.allEmoji(inEmojiString: "👌🏽👌🏾"))
-        XCTAssertEqual(["👌🏾", "👌🏽"], StickerManager.allEmoji(inEmojiString: "👌🏾👌🏽"))
-        XCTAssertEqual(["👾", "🙇", "💁", "🙅", "🙆", "🙋", "🙎", "🙍"], StickerManager.allEmoji(inEmojiString: "👾🙇💁🙅🙆🙋🙎🙍"))
+        XCTAssertEqual(["🇨🇦"], Array(StickerManager.allEmoji(in: "🇨🇦")))
+        XCTAssertEqual(["🇨🇦", "🇨🇦"], Array(StickerManager.allEmoji(in: "🇨🇦🇨🇦")))
+        XCTAssertEqual(["🇹🇹", "🌼", "🇹🇹", "🌼", "🇹🇹"], Array(StickerManager.allEmoji(in: "🇹🇹🌼🇹🇹🌼🇹🇹")))
+        XCTAssertEqual(["🌼", "🇹🇹", "🌼", "🇹🇹"], Array(StickerManager.allEmoji(in: "🌼🇹🇹🌼🇹🇹")))
+        XCTAssertEqual(["👌🏽", "👌🏾"], Array(StickerManager.allEmoji(in: "👌🏽👌🏾")))
+        XCTAssertEqual(["👌🏾", "👌🏽"], Array(StickerManager.allEmoji(in: "👌🏾👌🏽")))
+        XCTAssertEqual(["👾", "🙇", "💁", "🙅", "🙆", "🙋", "🙎", "🙍"], Array(StickerManager.allEmoji(in: "👾🙇💁🙅🙆🙋🙎🙍")))
 
-        XCTAssertEqual(["🇨🇦"], StickerManager.allEmoji(inEmojiString: "a🇨🇦a"))
-        XCTAssertEqual(["🇨🇦", "🇹🇹"], StickerManager.allEmoji(inEmojiString: "a🇨🇦b🇹🇹c"))
+        XCTAssertEqual(["🇨🇦"], Array(StickerManager.allEmoji(in: "a🇨🇦a")))
+        XCTAssertEqual(["🇨🇦", "🇹🇹"], Array(StickerManager.allEmoji(in: "a🇨🇦b🇹🇹c")))
+    }
+
+    func testSuggestedStickerEmoji() {
+        let testCases: [(String, Character?)] = [
+            ("", nil),
+            ("Hey Bob, what's up?", nil),
+            ("a🇨🇦", nil),
+            ("🇨🇦a", nil),
+            ("🇨🇦🇹🇹", nil),
+            ("🌼🇨🇦", nil),
+            ("This is a flag: 🇨🇦", nil),
+            ("🇨🇦", "🇨🇦"),
+            ("🌼", "🌼"),
+            ("🇹🇹", "🇹🇹"),
+        ]
+        for (inputValue, suggestedEmoji) in testCases {
+            XCTAssertEqual(StickerManager.suggestedStickerEmoji(chatBoxText: inputValue), suggestedEmoji, "\(inputValue)")
+        }
     }
 
     func testInfos() {
@@ -70,15 +88,13 @@ class StickerManagerTest: XCTestCase {
 
 class StickerManagerTest2: SSKBaseTest {
 
-    func testSuggestedStickers_uncached() {
+    func testSuggestedStickers() {
         // The "StickerManager.suggestedStickers" instance method does caching;
         // the class method does not.
 
-        XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "").count)
-        XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "Hey Bob, what's up?").count)
-        XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "🇨🇦").count)
-        XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "🇨🇦🇹🇹").count)
-        XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "This is a flag: 🇨🇦").count)
+        databaseStorage.read { tx in
+            XCTAssertEqual(0, StickerManager.suggestedStickers(for: "🇨🇦", tx: tx).count)
+        }
 
         let stickerInfo = StickerInfo.defaultValue
         let stickerData = Randomness.generateRandomBytes(1)
@@ -93,77 +109,21 @@ class StickerManagerTest2: SSKBaseTest {
         )
         XCTAssertTrue(success)
 
-        XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "").count)
-        XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "Hey Bob, what's up?").count)
         // The sticker should only be suggested if user enters a single emoji
         // (and nothing else) that is associated with the sticker.
-        XCTAssertEqual(1, StickerManager.suggestedStickers(forTextInput: "🇨🇦").count)
-        XCTAssertEqual(1, StickerManager.suggestedStickers(forTextInput: "🌼").count)
-        XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "🇹🇹").count)
-        XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "a🇨🇦").count)
-        XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "🇨🇦a").count)
-        XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "🇨🇦🇹🇹").count)
-        XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "🌼🇨🇦").count)
-        XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "This is a flag: 🇨🇦").count)
+        databaseStorage.read { tx in
+            XCTAssertEqual(1, StickerManager.suggestedStickers(for: "🇨🇦", tx: tx).count)
+            XCTAssertEqual(1, StickerManager.suggestedStickers(for: "🌼", tx: tx).count)
+            XCTAssertEqual(0, StickerManager.suggestedStickers(for: "🇹🇹", tx: tx).count)
+        }
 
         databaseStorage.write { (transaction) in
             // Don't bother calling completion.
             StickerManager.uninstallSticker(stickerInfo: stickerInfo, transaction: transaction)
         }
 
-        XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "").count)
-        XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "Hey Bob, what's up?").count)
-        XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "🇨🇦").count)
-        XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "🇨🇦🇹🇹").count)
-        XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "This is a flag: 🇨🇦").count)
-    }
-
-    func testSuggestedStickers_cached() {
-        // The "StickerManager.suggestedStickers" instance method does caching;
-        // the class method does not.
-        let stickerManager = StickerManager.shared
-
-        XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "").count)
-        XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "Hey Bob, what's up?").count)
-        XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "🇨🇦").count)
-        XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "🇨🇦🇹🇹").count)
-        XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "This is a flag: 🇨🇦").count)
-
-        let stickerInfo = StickerInfo.defaultValue
-        let stickerData = Randomness.generateRandomBytes(1)
-        let temporaryFile = OWSFileSystem.temporaryFileUrl()
-        try! stickerData.write(to: temporaryFile)
-
-        let success = StickerManager.installSticker(
-            stickerInfo: stickerInfo,
-            stickerUrl: temporaryFile,
-            contentType: MimeType.imageWebp.rawValue,
-            emojiString: "🌼🇨🇦"
-        )
-        XCTAssertTrue(success)
-
-        XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "").count)
-        XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "Hey Bob, what's up?").count)
-        // The sticker should only be suggested if user enters a single emoji
-        // (and nothing else) that is associated with the sticker.
-        XCTAssertEqual(1, stickerManager.suggestedStickers(forTextInput: "🇨🇦").count)
-        XCTAssertEqual(1, stickerManager.suggestedStickers(forTextInput: "🌼").count)
-        XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "🇹🇹").count)
-        XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "a🇨🇦").count)
-        XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "🇨🇦a").count)
-        XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "🇨🇦🇹🇹").count)
-        XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "🌼🇨🇦").count)
-        XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "This is a flag: 🇨🇦").count)
-
-        databaseStorage.write { (transaction) in
-            // Don't bother calling completion.
-            StickerManager.uninstallSticker(stickerInfo: stickerInfo, transaction: transaction)
+        databaseStorage.read { tx in
+            XCTAssertEqual(0, StickerManager.suggestedStickers(for: "🇨🇦", tx: tx).count)
         }
-
-        XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "").count)
-        XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "Hey Bob, what's up?").count)
-        XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "🇨🇦").count)
-        XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "🇨🇦🇹🇹").count)
-        XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "This is a flag: 🇨🇦").count)
     }
 }
