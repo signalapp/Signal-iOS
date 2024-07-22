@@ -77,17 +77,21 @@ class CallHeader: UIView {
         // Group members button
 
         let topRightButton: UIButton
-        switch groupCall.concreteType {
-        case .groupThread:
+        if FeatureFlags.callDrawerSupport {
+            topRightButton = OWSButton(
+                imageName: "info",
+                tintColor: .ows_white,
+                dimsWhenHighlighted: true
+            ) { [weak delegate] in
+                delegate?.didTapMembersButton()
+            }
+        } else {
             groupMembersButton.addTarget(
                 delegate,
                 action: #selector(CallHeaderDelegate.didTapMembersButton),
                 for: .touchUpInside
             )
             topRightButton = groupMembersButton
-        case .callLink:
-            // [CallLink] TODO: Add support for the Info button.
-            topRightButton = UIButton(type: .infoLight)
         }
 
         addShadow(to: topRightButton)
@@ -281,7 +285,12 @@ class CallHeader: UIView {
             switch groupCall.concreteType {
             case .groupThread(let groupThreadCall):
                 if !ringRtcCall.remoteDeviceStates.isEmpty {
-                    return callDurationText()
+                    // TODO: Remove callDurationText and callDurationTimer when this feature flag is removed.
+                    if FeatureFlags.callDrawerSupport {
+                        fallthrough
+                    } else {
+                        return callDurationText()
+                    }
                 }
                 if case .ringing = groupThreadCall.groupCallRingState {
                     return ringingOthersText(groupThreadCall: groupThreadCall)

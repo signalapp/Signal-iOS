@@ -273,39 +273,49 @@ open class InteractiveSheetViewController: OWSViewController {
         sheetCurrentHeightConstraint.constant = minHeight
         guard animated else {
             view.layoutIfNeeded()
+            self.heightDidChange(to: .min)
             return
         }
 
         view.setNeedsUpdateConstraints()
-        UIView.animate(
-            withDuration: Constants.maxAnimationDuration,
-            delay: 0,
-            options: .curveEaseOut,
-            animations: {
-                self.view.layoutIfNeeded()
-            }
-        )
+        Self.springAnimation {
+            self.view.layoutIfNeeded()
+            self.heightDidChange(to: .min)
+        }
     }
 
     public func maximizeHeight(animated: Bool = true, completion: (() -> Void)? = nil) {
         sheetCurrentHeightConstraint.constant = maxHeight
         guard animated else {
             view.layoutIfNeeded()
+            self.heightDidChange(to: .max)
             completion?()
             return
         }
 
         view.setNeedsUpdateConstraints()
-        UIView.animate(
-            withDuration: Constants.maxAnimationDuration,
-            delay: 0,
-            options: .curveEaseOut,
+        Self.springAnimation(
             animations: {
                 self.view.layoutIfNeeded()
+                self.heightDidChange(to: .max)
             },
-            completion: { _ in
-                completion?()
-            }
+            completion: completion
+        )
+    }
+
+    private static func springAnimation(
+        duration: CGFloat = Constants.maxAnimationDuration,
+        response: CGFloat = 0.3,
+        animations: @escaping () -> Void,
+        completion: (() -> Void)? = nil
+    ) {
+        UIView.animate(
+            withDuration: duration,
+            delay: 0,
+            usingSpringWithDamping: 4 * .pi / response,
+            initialSpringVelocity: 0,
+            animations: animations,
+            completion: completion.map { closure in { _ in closure() } }
         )
     }
 

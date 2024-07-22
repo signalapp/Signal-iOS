@@ -56,8 +56,10 @@ open class OWSButton: UIButton {
     public init(
         imageName: String,
         tintColor: UIColor?,
+        dimsWhenHighlighted: Bool = false,
         block: @escaping () -> Void = {}
     ) {
+        self.dimsWhenHighlighted = dimsWhenHighlighted
         super.init(frame: .zero)
 
         self.block = block

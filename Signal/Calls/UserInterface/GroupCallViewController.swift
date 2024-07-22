@@ -774,6 +774,8 @@ class GroupCallViewController: UIViewController {
 
     private var flipCameraTooltipManager = FlipCameraTooltipManager(db: DependenciesBridge.shared.db)
 
+    private var hasShownCallControls = false
+
     private func updateCallUI(
         size: CGSize? = nil,
         shouldAnimateViewFrames: Bool = false
@@ -817,10 +819,9 @@ class GroupCallViewController: UIViewController {
             updateMemberViewFrames(size: size, controlsAreHidden: true)
             updateScrollViewFrames(size: size, controlsAreHidden: true)
             return
-        } else {
-            if FeatureFlags.callDrawerSupport {
-                presentBottomSheet()
-            }
+        } else if !self.hasShownCallControls, FeatureFlags.callDrawerSupport {
+            self.presentBottomSheet()
+            self.hasShownCallControls = true
         }
 
         if let incomingCallControls, !incomingCallControls.isHidden {
@@ -1604,7 +1605,11 @@ extension GroupCallViewController: CallHeaderDelegate {
         switch groupCall.concreteType {
         case .groupThread(let groupThreadCall):
             if FeatureFlags.callDrawerSupport {
-                present(bottomSheet, animated: true)
+                let callControlsArePresented = self.bottomSheet.isPresentingCallControls()
+                if !callControlsArePresented {
+                    callControlsDisplayState = .callControlsOnly
+                }
+                self.bottomSheet.maximizeHeight(animated: callControlsArePresented)
             } else {
                 present(
                     GroupCallMemberSheet(
