@@ -73,6 +73,56 @@ public extension TSInfoMessage {
     }
 }
 
+// MARK: -
+
+public extension TSInfoMessage {
+    @objc
+    func profileChangeDescription(transaction tx: SDSAnyReadTransaction) -> String {
+        guard
+            let profileChanges = profileChanges,
+            let updateDescription = profileChanges.descriptionForUpdate(tx: tx)
+        else {
+            owsFailDebug("Unexpectedly missing update description for profile change")
+            return ""
+        }
+
+        return updateDescription
+    }
+
+    var profileChangeAddress: SignalServiceAddress? {
+        return profileChanges?.address
+    }
+
+    var profileChangesOldFullName: String? {
+        profileChanges?.oldFullName
+    }
+
+    var profileChangesNewFullName: String? {
+        profileChanges?.newFullName
+    }
+
+    var profileChangesNewNameComponents: PersonNameComponents? {
+        if let newNameComponents = profileChanges?.newNameComponents {
+            return newNameComponents
+        } else if let newNameLiteral = profileChanges?.newNameLiteral {
+            /// If we only have the literal new name, we can use it to seed a
+            /// `PersonNameComponents`. This isn't ideal, but better than `nil`.
+            ///
+            /// (At the time of writing, this would only happen for a profile
+            /// change update that was restored from a Backup.)
+            return PersonNameComponents(givenName: newNameLiteral)
+        }
+
+        return nil
+    }
+
+    private var profileChanges: ProfileChanges? {
+        return infoMessageUserInfo?[.profileChanges] as? ProfileChanges
+    }
+}
+
+// MARK: -
+
 /// Represents a profile change for in-chat messages.
 /// - Note
 /// All members must be exposed to ObjC, nullable, and mutable, such that Mantle
@@ -143,7 +193,7 @@ public class ProfileChanges: MTLModel {
         try super.init(dictionary: dictionaryValue)
     }
 
-    func descriptionForUpdate(transaction: SDSAnyReadTransaction) -> String? {
+    func descriptionForUpdate(tx: SDSAnyReadTransaction) -> String? {
         guard let address = address else {
             owsFailDebug("Unexpectedly missing address for profile change")
             return nil
@@ -154,7 +204,7 @@ public class ProfileChanges: MTLModel {
             return nil
         }
 
-        if let phoneNumber = address.phoneNumber, let systemContactName = contactsManager.systemContactName(for: phoneNumber, tx: transaction) {
+        if let phoneNumber = address.phoneNumber, let systemContactName = contactsManager.systemContactName(for: phoneNumber, tx: tx) {
             let formatString = OWSLocalizedString(
                 "PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT",
                 comment: "The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name}"

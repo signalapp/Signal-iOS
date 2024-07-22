@@ -277,17 +277,6 @@ public extension TSInfoMessage {
 
 public extension TSInfoMessage {
     @objc
-    func profileChangeDescription(transaction: SDSAnyReadTransaction) -> String {
-        guard let profileChanges = profileChanges,
-            let updateDescription = profileChanges.descriptionForUpdate(transaction: transaction) else {
-                owsFailDebug("Unexpectedly missing update description for profile change")
-            return ""
-        }
-
-        return updateDescription
-    }
-
-    @objc
     func threadMergeDescription(tx: SDSAnyReadTransaction) -> String {
         let displayName = contactThreadDisplayName(tx: tx)
         if let phoneNumber = infoMessageUserInfo?[.threadMergePhoneNumber] as? String {
@@ -330,33 +319,6 @@ public extension TSInfoMessage {
             return contactsManager.displayName(for: address, tx: tx).resolvedValue()
         }()
         return result ?? CommonStrings.unknownUser
-    }
-
-    var profileChangeAddress: SignalServiceAddress? {
-        return profileChanges?.address
-    }
-
-    var profileChangesOldFullName: String? {
-        profileChanges?.oldFullName
-    }
-
-    var profileChangesNewFullName: String? {
-        profileChanges?.newFullName
-    }
-
-    var profileChangesNewNameComponents: PersonNameComponents? {
-        if let newNameComponents = profileChanges?.newNameComponents {
-            return newNameComponents
-        } else if let newNameLiteral = profileChanges?.newNameLiteral {
-            /// If we only have the literal new name, we can use it to seed a
-            /// `PersonNameComponents`. This isn't ideal, but better than `nil`.
-            ///
-            /// (At the time of writing, this would only happen for a profile
-            /// change update that was restored from a Backup.)
-            return PersonNameComponents(givenName: newNameLiteral)
-        }
-
-        return nil
     }
 
     @objc
@@ -436,15 +398,25 @@ extension TSInfoMessage {
     }
 
     public func paymentsActivationRequestAuthor(localIdentifiers: LocalIdentifiers) -> PaymentsInfoMessageAuthor? {
+        guard
+            let requestSenderAciString: String = infoMessageValue(forKey: .paymentActivationRequestSenderAci),
+            let requestSenderAci = Aci.parseFrom(aciString: requestSenderAciString)
+        else { return nil }
+
         return paymentsInfoMessageAuthor(
-            identifyingAci: paymentActivationRequestSenderAci,
+            identifyingAci: requestSenderAci,
             localIdentifiers: localIdentifiers
         )
     }
 
     public func paymentsActivatedAuthor(localIdentifiers: LocalIdentifiers) -> PaymentsInfoMessageAuthor? {
+        guard
+            let authorAciString: String = infoMessageValue(forKey: .paymentActivatedAci),
+            let authorAci = Aci.parseFrom(aciString: authorAciString)
+        else { return nil }
+
         return paymentsInfoMessageAuthor(
-            identifyingAci: paymentActivatedAci,
+            identifyingAci: authorAci,
             localIdentifiers: localIdentifiers
         )
     }
@@ -571,23 +543,9 @@ extension TSInfoMessage {
     }
 }
 
-// MARK: - InfoMessageUserInfo
+// MARK: - Group Updates
 
 extension TSInfoMessage {
-
-    private func infoMessageValue<T>(forKey key: InfoMessageUserInfoKey) -> T? {
-        guard let infoMessageUserInfo = self.infoMessageUserInfo else {
-            return nil
-        }
-
-        guard let groupModel = infoMessageUserInfo[key] as? T else {
-            assert(infoMessageUserInfo[key] == nil)
-            return nil
-        }
-
-        return groupModel
-    }
-
     public enum GroupUpdateMetadata {
         public struct UpdateMetadata {
             public let source: GroupUpdateSource
@@ -680,6 +638,10 @@ extension TSInfoMessage {
         }
     }
 
+    public func setGroupUpdateItemsWrapper(_ updateItemsWrapper: PersistableGroupUpdateItemsWrapper) {
+        setInfoMessageValue(updateItemsWrapper, forKey: .groupUpdateItems)
+    }
+
     /// We only stored this legacy data before we persisted the new ``TSInfoMessage.PersistableGroupUpdateItem``,
     /// so it lives either alongside a model diff or alongside ``TSInfoMessage.LegacyPersistableGroupUpdateItem``.
     private var persistedLegacyUpdateMetadata: GroupUpdateMetadata.UpdateMetadata {
@@ -694,36 +656,24 @@ extension TSInfoMessage {
             updaterWasLocalUser: updaterWasLocalUser
         )
     }
-
-    fileprivate var profileChanges: ProfileChanges? {
-        return infoMessageValue(forKey: .profileChanges)
-    }
-
-    fileprivate var paymentActivationRequestSenderAci: Aci? {
-        guard let raw: String = infoMessageValue(forKey: .paymentActivationRequestSenderAci) else {
-            return nil
-        }
-        return try? Aci.parseFrom(serviceIdString: raw)
-    }
-
-    fileprivate var paymentActivatedAci: Aci? {
-        guard let raw: String = infoMessageValue(forKey: .paymentActivatedAci) else {
-            return nil
-        }
-        return try? Aci.parseFrom(serviceIdString: raw)
-    }
 }
 
+// MARK: - InfoMessageUserInfo
+
 extension TSInfoMessage {
+    private func infoMessageValue<T>(forKey key: InfoMessageUserInfoKey) -> T? {
+        guard let value = infoMessageUserInfo?[key] as? T else {
+            return nil
+        }
+
+        return value
+    }
+
     private func setInfoMessageValue(_ value: Any, forKey key: InfoMessageUserInfoKey) {
         if self.infoMessageUserInfo != nil {
             self.infoMessageUserInfo![key] = value
         } else {
             self.infoMessageUserInfo = [key: value]
         }
-    }
-
-    public func setGroupUpdateItemsWrapper(_ updateItemsWrapper: PersistableGroupUpdateItemsWrapper) {
-        setInfoMessageValue(updateItemsWrapper, forKey: .groupUpdateItems)
     }
 }
