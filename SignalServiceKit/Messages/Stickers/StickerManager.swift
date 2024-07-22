@@ -658,11 +658,6 @@ public class StickerManager: NSObject {
             return false
         }
 
-        guard OWSFileSystem.fileOrFolderExists(url: stickerTemporaryUrl) else {
-            owsFailDebug("Missing sticker file.")
-            return false
-        }
-
         let installedSticker = InstalledSticker(
             info: stickerInfo,
             contentType: contentType,
@@ -680,14 +675,12 @@ public class StickerManager: NSObject {
             // generally very small so this shouldn't be a big perf hit.
             try OWSFileSystem.deleteFileIfExists(url: stickerDataUrl)
             try FileManager.default.copyItem(at: stickerTemporaryUrl, to: stickerDataUrl)
-        } catch let error as NSError {
-            if OWSFileSystem.fileOrFolderExists(url: stickerDataUrl) {
-                // Races can occur; ignore and proceed.
-                Logger.warn("File already exists: \(error)")
-            } else {
-                owsFailDebug("File write failed: \(error)")
-                return false
-            }
+        } catch CocoaError.fileWriteFileExists {
+            // We hit a race condition and somebody else put the file here after we
+            // deleted it. It's fine to continue...
+        } catch let error {
+            owsFailDebug("File write failed: \(error)")
+            return false
         }
 
         return databaseStorage.write { (transaction) -> Bool in

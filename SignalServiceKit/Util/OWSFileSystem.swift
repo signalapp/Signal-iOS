@@ -30,10 +30,11 @@ public extension OWSFileSystem {
     }
 
     class func deleteFileIfExists(url: URL) throws {
-        guard FileManager.default.fileExists(atPath: url.path) else {
-            return
+        do {
+            try deleteFile(url: url)
+        } catch POSIXError.ENOENT, CocoaError.fileNoSuchFile {
+            // this is fine
         }
-        try deleteFile(url: url)
     }
 
     class func moveFile(from fromUrl: URL, to toUrl: URL) throws {
