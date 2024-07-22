@@ -64,6 +64,7 @@ public final class OwnedAttachmentBuilder<InfoType> {
 
     fileprivate let finalizeFn: FinalizeFn
     fileprivate var hasBeenFinalized: Bool = false
+    fileprivate weak var wrappee: AnyOwnedAttachmentBuilder?
 
     deinit {
         if !hasBeenFinalized {
@@ -75,12 +76,14 @@ public final class OwnedAttachmentBuilder<InfoType> {
 extension OwnedAttachmentBuilder {
 
     public func wrap<T>(_ mapFn: (InfoType) -> T) -> OwnedAttachmentBuilder<T> {
-        return OwnedAttachmentBuilder<T>(
+        let wrapped = OwnedAttachmentBuilder<T>(
             info: mapFn(self.info),
             finalize: { [self] owner, tx in
                 try self.finalize(owner: owner, tx: tx)
             }
         )
+        wrapped.wrappee = self
+        return wrapped
     }
 
     /// Normally, OwnedAttachmentBuilders must be finalized exactly once.
@@ -99,6 +102,11 @@ extension OwnedAttachmentBuilder {
                     finalizedCount += 1
                     if finalizedCount < numDestinations {
                         // Reset the "finalized" state until we hit all destinations.
+                        var builder: AnyOwnedAttachmentBuilder? = self
+                        while builder != nil {
+                            builder?.hasBeenFinalized = false
+                            builder = builder?.wrappee
+                        }
                         self.hasBeenFinalized = false
                     }
                 }
@@ -107,3 +115,9 @@ extension OwnedAttachmentBuilder {
         return duplicates
     }
 }
+
+private protocol AnyOwnedAttachmentBuilder: AnyObject {
+    var hasBeenFinalized: Bool { get set }
+    var wrappee: AnyOwnedAttachmentBuilder? { get }
+}
+extension OwnedAttachmentBuilder: AnyOwnedAttachmentBuilder {}
