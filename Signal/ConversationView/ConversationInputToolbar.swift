@@ -1890,20 +1890,18 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         set { setDesiredKeyboardType(newValue, animated: false) }
     }
 
-    private var _stickerKeyboard: StickerKeyboard?
+    private var stickerKeyboard: StickerKeyboard?
 
-    private var stickerKeyboard: StickerKeyboard {
-        if let stickerKeyboard = _stickerKeyboard {
+    private func getOrCreateStickerKeyboard() -> StickerKeyboard {
+        if let stickerKeyboard {
             return stickerKeyboard
         }
-        let keyboard = StickerKeyboard()
-        keyboard.delegate = self
-        keyboard.registerWithView(self)
-        _stickerKeyboard = keyboard
-        return keyboard
+        let stickerKeyboard = StickerKeyboard()
+        stickerKeyboard.delegate = self
+        stickerKeyboard.registerWithView(self)
+        self.stickerKeyboard = stickerKeyboard
+        return stickerKeyboard
     }
-
-    private var stickerKeyboardIfLoaded: StickerKeyboard? { _stickerKeyboard }
 
     func showStickerKeyboard() {
         AssertIsOnMainThread()
@@ -2019,7 +2017,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     var isInputViewFirstResponder: Bool {
         return inputTextView.isFirstResponder
-        || stickerKeyboardIfLoaded?.isFirstResponder ?? false
+        || stickerKeyboard?.isFirstResponder ?? false
         || attachmentKeyboardIfLoaded?.isFirstResponder ?? false
     }
 
@@ -2030,7 +2028,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     private var desiredFirstResponder: UIResponder {
         switch desiredKeyboardType {
         case .system: return inputTextView
-        case .sticker: return stickerKeyboard
+        case .sticker: return getOrCreateStickerKeyboard()
         case .attachment: return attachmentKeyboard
         }
     }
@@ -2042,7 +2040,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     func endEditingMessage() {
         _ = inputTextView.resignFirstResponder()
-        _ = stickerKeyboardIfLoaded?.resignFirstResponder()
+        _ = stickerKeyboard?.resignFirstResponder()
         _ = attachmentKeyboardIfLoaded?.resignFirstResponder()
     }
 
@@ -2067,7 +2065,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         guard inputTextView.isFirstResponder || isMeasuringKeyboardHeight else { return }
         let newHeight = keyboardEndFrame.size.height - frame.size.height
         guard newHeight > 0 else { return }
-        stickerKeyboard.updateSystemKeyboardHeight(newHeight)
+        stickerKeyboard?.updateSystemKeyboardHeight(newHeight)
         attachmentKeyboard.updateSystemKeyboardHeight(newHeight)
         if isMeasuringKeyboardHeight {
             isMeasuringKeyboardHeight = false
