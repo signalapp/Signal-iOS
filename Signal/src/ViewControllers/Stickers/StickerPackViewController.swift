@@ -20,8 +20,10 @@ public class StickerPackViewController: OWSViewController {
 
     public init(stickerPackInfo: StickerPackInfo) {
         self.stickerPackInfo = stickerPackInfo
-        self.dataSource = TransientStickerPackDataSource(stickerPackInfo: stickerPackInfo,
-                                                         shouldDownloadAllStickers: true)
+        self.dataSource = TransientStickerPackDataSource(
+            stickerPackInfo: stickerPackInfo,
+            shouldDownloadAllStickers: true
+        )
 
         super.init()
 
@@ -29,10 +31,12 @@ public class StickerPackViewController: OWSViewController {
         stickerCollectionView.show(dataSource: dataSource)
         dataSource.add(delegate: self)
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(stickersOrPacksDidChange),
-                                               name: StickerManager.stickersOrPacksDidChange,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(stickersOrPacksDidChange),
+            name: StickerManager.stickersOrPacksDidChange,
+            object: nil
+        )
     }
 
     // MARK: - View Lifecycle
@@ -74,7 +78,6 @@ public class StickerPackViewController: OWSViewController {
         dismissButton.setTemplateImage(Theme.iconImage(.buttonX), tintColor: Theme.darkThemePrimaryColor)
         dismissButton.addTarget(self, action: #selector(dismissButtonPressed(sender:)), for: .touchUpInside)
         dismissButton.ows_contentEdgeInsets = UIEdgeInsets(top: 20, leading: hMargin, bottom: 20, trailing: hMargin)
-        dismissButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "dismissButton")
 
         coverView.autoSetDimensions(to: CGSize(square: 64))
         coverView.setCompressionResistanceHigh()
@@ -92,7 +95,6 @@ public class StickerPackViewController: OWSViewController {
 
         shareButton.setTemplateImageName("forward-fill", tintColor: Theme.darkThemePrimaryColor)
         shareButton.addTarget(self, action: #selector(shareButtonPressed(sender:)), for: .touchUpInside)
-        shareButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "shareButton")
 
         view.addSubview(dismissButton)
         dismissButton.autoPinEdge(toSuperviewEdge: .leading)
@@ -127,22 +129,24 @@ public class StickerPackViewController: OWSViewController {
         stickerCollectionView.autoPinWidthToSuperview()
         stickerCollectionView.autoPinEdge(.top, to: .bottom, of: headerStack)
 
-        let installButton = OWSFlatButton.button(title: OWSLocalizedString("STICKERS_INSTALL_BUTTON", comment: "Label for the 'install sticker pack' button."),
-                                             font: UIFont.dynamicTypeBody.semibold(),
-                                             titleColor: Theme.accentBlueColor,
-                                             backgroundColor: UIColor.white,
-                                             target: self,
-                                             selector: #selector(didTapInstall))
+        let installButton = OWSFlatButton.button(
+            title: OWSLocalizedString("STICKERS_INSTALL_BUTTON", comment: "Label for the 'install sticker pack' button."),
+            font: UIFont.dynamicTypeBody.semibold(),
+            titleColor: Theme.accentBlueColor,
+            backgroundColor: UIColor.white,
+            target: self,
+            selector: #selector(didTapInstall)
+        )
         self.installButton = installButton
-        installButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "installButton")
-        let uninstallButton = OWSFlatButton.button(title: OWSLocalizedString("STICKERS_UNINSTALL_BUTTON", comment: "Label for the 'uninstall sticker pack' button."),
-                                             font: UIFont.dynamicTypeBody.semibold(),
-                                             titleColor: Theme.accentBlueColor,
-                                             backgroundColor: UIColor.white,
-                                             target: self,
-                                             selector: #selector(didTapUninstall))
+        let uninstallButton = OWSFlatButton.button(
+            title: OWSLocalizedString("STICKERS_UNINSTALL_BUTTON", comment: "Label for the 'uninstall sticker pack' button."),
+            font: UIFont.dynamicTypeBody.semibold(),
+            titleColor: Theme.accentBlueColor,
+            backgroundColor: UIColor.white,
+            target: self,
+            selector: #selector(didTapUninstall)
+        )
         self.uninstallButton = uninstallButton
-        uninstallButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "uninstallButton")
         for button in [installButton, uninstallButton] {
             view.addSubview(button)
             button.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 10)
@@ -154,8 +158,10 @@ public class StickerPackViewController: OWSViewController {
         view.addSubview(loadingIndicator)
         loadingIndicator.autoCenterInSuperview()
 
-        loadFailedLabel.text = OWSLocalizedString("STICKERS_PACK_VIEW_FAILED_TO_LOAD",
-                                                 comment: "Label indicating that the sticker pack failed to load.")
+        loadFailedLabel.text = OWSLocalizedString(
+            "STICKERS_PACK_VIEW_FAILED_TO_LOAD",
+            comment: "Label indicating that the sticker pack failed to load."
+        )
         loadFailedLabel.font = UIFont.dynamicTypeBody
         loadFailedLabel.textColor = Theme.darkThemePrimaryColor
         loadFailedLabel.textAlignment = .center
@@ -303,21 +309,25 @@ public class StickerPackViewController: OWSViewController {
             return
         }
 
-        ModalActivityIndicatorViewController.present(fromViewController: self,
-                                                     canCancel: false,
-                                                     presentationDelay: 0) { modal in
-
-                                                        self.databaseStorage.write { (transaction) in
-                                                            StickerManager.installStickerPack(stickerPack: stickerPack,
-                                                                                              wasLocallyInitiated: true,
-                                                                                              transaction: transaction)
-                                                            transaction.addAsyncCompletionOnMain {
-                                                                modal.dismiss {
-                                                                    self.dismiss(animated: true)
-                                                                }
-                                                            }
-                                                        }
-        }
+        ModalActivityIndicatorViewController.present(
+            fromViewController: self,
+            canCancel: false,
+            presentationDelay: 0,
+            backgroundBlock: { modal in
+                self.databaseStorage.write { (transaction) in
+                    StickerManager.installStickerPack(
+                        stickerPack: stickerPack,
+                        wasLocallyInitiated: true,
+                        transaction: transaction
+                    )
+                }
+                DispatchQueue.main.async {
+                    modal.dismiss {
+                        self.dismiss(animated: true)
+                    }
+                }
+            }
+        )
     }
 
     @objc
@@ -327,21 +337,25 @@ public class StickerPackViewController: OWSViewController {
         isDismissing = true
 
         let stickerPackInfo = self.stickerPackInfo
-        ModalActivityIndicatorViewController.present(fromViewController: self,
-                                                     canCancel: false,
-                                                     presentationDelay: 0) { modal in
-
-                                                        self.databaseStorage.write { (transaction) in
-                                                            StickerManager.uninstallStickerPack(stickerPackInfo: stickerPackInfo,
-                                                                                                wasLocallyInitiated: true,
-                                                                                                transaction: transaction)
-                                                            transaction.addAsyncCompletionOnMain {
-                                                                modal.dismiss {
-                                                                    self.dismiss(animated: true)
-                                                                }
-                                                            }
-                                                        }
-        }
+        ModalActivityIndicatorViewController.present(
+            fromViewController: self,
+            canCancel: false,
+            presentationDelay: 0,
+            backgroundBlock: { modal in
+                self.databaseStorage.write { (transaction) in
+                    StickerManager.uninstallStickerPack(
+                        stickerPackInfo: stickerPackInfo,
+                        wasLocallyInitiated: true,
+                        transaction: transaction
+                    )
+                }
+                DispatchQueue.main.async {
+                    modal.dismiss {
+                        self.dismiss(animated: true)
+                    }
+                }
+            }
+        )
     }
 
     @objc
@@ -369,11 +383,13 @@ public class StickerPackViewController: OWSViewController {
         let navigationController = OWSNavigationController()
         let messageBody = MessageBody(text: packUrl, ranges: .empty)
         let unapprovedContent = SendMessageUnapprovedContent.text(messageBody: messageBody)
-        let sendMessageFlow = SendMessageFlow(flowType: .`default`,
-                                              unapprovedContent: unapprovedContent,
-                                              useConversationComposeForSingleRecipient: true,
-                                              navigationController: navigationController,
-                                              delegate: self)
+        let sendMessageFlow = SendMessageFlow(
+            flowType: .`default`,
+            unapprovedContent: unapprovedContent,
+            useConversationComposeForSingleRecipient: true,
+            navigationController: navigationController,
+            delegate: self
+        )
         // Retain the flow until it is complete.
         self.sendMessageFlow = sendMessageFlow
 
