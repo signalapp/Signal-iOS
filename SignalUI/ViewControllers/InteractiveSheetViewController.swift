@@ -477,7 +477,7 @@ open class InteractiveSheetViewController: OWSViewController {
             // very slowly) we'll default to `maxAnimationDuration`
             let remainingTime = TimeInterval(abs(remainingDistance / currentVelocity))
 
-            UIView.animate(withDuration: min(remainingTime, Constants.maxAnimationDuration), delay: 0, options: .curveEaseOut, animations: {
+            Self.springAnimation(duration: max(min(remainingTime, Constants.maxAnimationDuration), Constants.maxAnimationDuration / 2)) {
                 if remainingDistance < 0 {
                     self.sheetContainerView.frame.origin.y -= remainingDistance
                 } else {
@@ -493,7 +493,7 @@ open class InteractiveSheetViewController: OWSViewController {
                 }
 
                 self.backdropView?.alpha = completionState == .dismissing ? 0 : 1
-            }) { _ in
+            } completion: {
                 self.sheetCurrentHeightConstraint.constant = finalHeight
                 self.view.layoutIfNeeded()
 

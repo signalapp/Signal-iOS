@@ -294,16 +294,50 @@ class CallDrawerSheet: InteractiveSheetViewController {
         self.view.layoutIfNeeded()
     }
 
+    /// The portion of the height of the sheet to pivot the fade transition over
+    private let pivot: CGFloat = 0.2
+    private var lastKnownHeight: SheetHeight = .min
+
     override func heightDidChange(to height: InteractiveSheetViewController.SheetHeight) {
         switch height {
         case .min:
-            changesForSnapToMin()
+            let currentHeight = switch lastKnownHeight {
+            case .min:
+                self.minimizedHeight
+            case .max:
+                self.maxHeight
+            case .height(let height):
+                height
+            }
+
+            let currentHeightProportional = (currentHeight - self.minimizedHeight) / (self.maxHeight - self.minimizedHeight)
+
+            let tableFadePortion = max((currentHeightProportional - self.pivot) / currentHeightProportional, 0)
+            let controlsFadePortion = 1 - tableFadePortion
+
+            // The deceleration at the end of the animation is most
+            // of the duration, so it looks a lot smoother playing
+            // these animations over half the total duration.
+            let tableFadeAnimationPortion = tableFadePortion / 2
+            let controlsFadeAnimationPortion = controlsFadePortion / 2
+
+            // Inherit the animation
+            UIView.animateKeyframes(withDuration: 0, delay: 0) {
+                UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: tableFadeAnimationPortion) {
+                    self.tableView.alpha = 0
+                    self.tableViewTopConstraint?.constant = HeightConstants.initialTableInset
+                    self.view.layoutIfNeeded()
+                }
+                UIView.addKeyframe(withRelativeStartTime: tableFadeAnimationPortion, relativeDuration: controlsFadeAnimationPortion) {
+                    self.callControls.alpha = 1
+                }
+            }
         case .height(let height):
             let distance = self.maxHeight - self.minimizedHeight
 
             // The "pivot point" is the sheet height where call controls have totally
             // faded out and the call info table begins to fade in.
-            let pivotPoint = minimizedHeight + 0.1*distance
+            let pivotPoint = minimizedHeight + self.pivot * distance
 
             if height <= self.minimizedHeight {
                 changesForSnapToMin()
@@ -345,8 +379,39 @@ class CallDrawerSheet: InteractiveSheetViewController {
                 owsFailDebug("GroupCallSheet is somehow taller than its maxHeight!")
             }
         case .max:
-            changesForSnapToMax()
+            let currentHeight = switch lastKnownHeight {
+            case .min:
+                self.minimizedHeight
+            case .max:
+                self.maxHeight
+            case .height(let height):
+                height
+            }
+
+            // Basically the same as the .min case, but flipped upside-down
+            //  - Height of 1 = bottom
+            //  - Treat pivot as 1 - its value
+            let currentHeightProportional = 1 - ((currentHeight - self.minimizedHeight) / (self.maxHeight - self.minimizedHeight))
+
+            let controlsFadePortion = max((currentHeightProportional - (1 - self.pivot)) / currentHeightProportional, 0)
+            let tableFadePortion = 1 - controlsFadePortion
+
+            let tableFadeAnimationPortion = tableFadePortion / 2
+            let controlsFadeAnimationPortion = controlsFadePortion / 2
+
+            UIView.animateKeyframes(withDuration: 0, delay: 0) {
+                UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: controlsFadeAnimationPortion) {
+                    self.callControls.alpha = 0
+                }
+                UIView.addKeyframe(withRelativeStartTime: controlsFadeAnimationPortion, relativeDuration: tableFadeAnimationPortion) {
+                    self.tableView.alpha = 1
+                    self.tableViewTopConstraint?.constant = 0
+                    self.view.layoutIfNeeded()
+                }
+            }
         }
+
+        self.lastKnownHeight = height
     }
 }
 
