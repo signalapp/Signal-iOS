@@ -1265,10 +1265,7 @@ extension CVComponentSystemMessage {
                 return nil
             }
         case .threadMerge:
-            guard
-                let userInfo = infoMessage.infoMessageUserInfo,
-                let phoneNumber = userInfo[.threadMergePhoneNumber] as? String
-            else {
+            guard let phoneNumber = infoMessage.threadMergePhoneNumber else {
                 return nil
             }
             return CVMessageAction(

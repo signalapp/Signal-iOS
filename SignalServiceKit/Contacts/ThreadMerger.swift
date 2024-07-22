@@ -241,11 +241,10 @@ final class ThreadMerger {
             }
             return phoneNumber
         }()
-        var userInfo = [InfoMessageUserInfoKey: Any]()
-        if let mergedPhoneNumber {
-            userInfo[.threadMergePhoneNumber] = mergedPhoneNumber
-        }
-        let message = TSInfoMessage(thread: threadPair.intoValue, messageType: .threadMerge, infoMessageUserInfo: userInfo)
+        let message: TSInfoMessage = .makeForThreadMerge(
+            mergedThread: threadPair.intoValue,
+            previousE164: mergedPhoneNumber
+        )
         interactionStore.insertInteraction(message, tx: tx)
     }
 

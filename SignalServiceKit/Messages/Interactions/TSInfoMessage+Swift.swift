@@ -275,11 +275,36 @@ public extension TSInfoMessage {
 
 // MARK: -
 
+extension TSInfoMessage {
+    static func makeForThreadMerge(
+        mergedThread: TSContactThread,
+        previousE164: String?
+    ) -> TSInfoMessage {
+        let infoMessageUserInfo: [InfoMessageUserInfoKey: Any] = if let previousE164 {
+            [.threadMergePhoneNumber: previousE164]
+        } else {
+            [:]
+        }
+
+        return TSInfoMessage(
+            thread: mergedThread,
+            messageType: .threadMerge,
+            infoMessageUserInfo: infoMessageUserInfo
+        )
+    }
+}
+
 public extension TSInfoMessage {
+    /// If this info message represents an E164/PNI -> ACI thread merge event,
+    /// returns the "before" thread's E164.
+    var threadMergePhoneNumber: String? {
+        return infoMessageValue(forKey: .threadMergePhoneNumber)
+    }
+
     @objc
     func threadMergeDescription(tx: SDSAnyReadTransaction) -> String {
         let displayName = contactThreadDisplayName(tx: tx)
-        if let phoneNumber = infoMessageUserInfo?[.threadMergePhoneNumber] as? String {
+        if let phoneNumber = threadMergePhoneNumber {
             let formatString = OWSLocalizedString(
                 "THREAD_MERGE_PHONE_NUMBER",
                 comment: "A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameters are replaced with the contact's name (eg John Doe) and their phone number (eg +1 650 555 0100)."
@@ -294,7 +319,11 @@ public extension TSInfoMessage {
             return String(format: formatString, displayName)
         }
     }
+}
 
+// MARK: -
+
+public extension TSInfoMessage {
     @objc
     func sessionSwitchoverDescription(tx: SDSAnyReadTransaction) -> String {
         if let phoneNumber = infoMessageUserInfo?[.sessionSwitchoverPhoneNumber] as? String {
@@ -583,13 +612,9 @@ extension TSInfoMessage {
     }
 
     public func groupUpdateMetadata(localIdentifiers: LocalIdentifiers) -> GroupUpdateMetadata {
-        if let precomputed: PersistableGroupUpdateItemsWrapper =
-            infoMessageValue(forKey: .groupUpdateItems)
-        {
+        if let precomputed = infoMessageUserInfo?[.groupUpdateItems] as? PersistableGroupUpdateItemsWrapper {
             return .precomputed(precomputed)
-        } else if let legacyPrecomputed: LegacyPersistableGroupUpdateItemsWrapper =
-            infoMessageValue(forKey: .legacyGroupUpdateItems)
-        {
+        } else if let legacyPrecomputed = infoMessageUserInfo?[.legacyGroupUpdateItems] as? LegacyPersistableGroupUpdateItemsWrapper {
             let updateMetadata = self.persistedLegacyUpdateMetadata
             // Convert the legacy items into new items.
             let mappedItems: [PersistableGroupUpdateItem] = legacyPrecomputed
@@ -597,7 +622,7 @@ extension TSInfoMessage {
                 .compactMap { legacyItem in
                     return legacyItem.toNewItem(
                         updater: updateMetadata.source,
-                        oldGroupModel: infoMessageValue(forKey: .oldGroupModel),
+                        oldGroupModel: infoMessageUserInfo?[.oldGroupModel] as? TSGroupModel,
                         localIdentifiers: localIdentifiers
                     )
                 }

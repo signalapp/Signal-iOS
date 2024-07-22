@@ -15,6 +15,7 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
     private let individualCallArchiver: MessageBackupIndividualCallArchiver
     private let profileChangeChatUpdateArchiver: MessageBackupProfileChangeChatUpdateArchiver
     private let simpleChatUpdateArchiver: MessageBackupSimpleChatUpdateArchiver
+    private let threadMergeChatUpdateArchiver: MessageBackupThreadMergeChatUpdateArchiver
 
     init(
         callRecordStore: any CallRecordStore,
@@ -48,6 +49,9 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
             interactionStore: interactionStore
         )
         simpleChatUpdateArchiver = MessageBackupSimpleChatUpdateArchiver(
+            interactionStore: interactionStore
+        )
+        threadMergeChatUpdateArchiver = MessageBackupThreadMergeChatUpdateArchiver(
             interactionStore: interactionStore
         )
     }
@@ -139,8 +143,14 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
                     context: context,
                     tx: tx
                 )
+            case .threadMerge:
+                return threadMergeChatUpdateArchiver.archive(
+                    infoMessage: infoMessage,
+                    thread: thread,
+                    context: context,
+                    tx: tx
+                )
             case
-                    .threadMerge,
                     .sessionSwitchover:
                 // TODO: [Backups] Add support for "non-simple" chat updates.
                 return .notYetImplemented
@@ -236,7 +246,13 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
                 tx: tx
             )
         case .threadMerge(let threadMergeUpdateProto):
-            return .messageFailure([.restoreFrameError(.unimplemented, chatItem.id)])
+            return threadMergeChatUpdateArchiver.restoreThreadMergeChatUpdate(
+                threadMergeUpdateProto,
+                chatItem: chatItem,
+                chatThread: chatThread,
+                context: context,
+                tx: tx
+            )
         case .sessionSwitchover(let sessionSwitchoverUpdateProto):
             return .messageFailure([.restoreFrameError(.unimplemented, chatItem.id)])
         case .learnedProfileChange(let learnedProfileChangeProto):

@@ -134,6 +134,10 @@ extension MessageBackup {
             /// A "profile change update" info message was missing the before or
             /// after profile name.
             case profileChangeUpdateMissingNames
+
+            /// A "thread merge update" info message was missing info as to the
+            /// contact whose threads were merged.
+            case threadMergeUpdateMissingAuthor
         }
 
         private let type: ErrorType
@@ -213,7 +217,8 @@ extension MessageBackup {
                     .disappearingMessageConfigUpdateNotInContactThread,
                     .disappearingMessageConfigUpdateMissingAuthor,
                     .profileChangeUpdateMissingAuthor,
-                    .profileChangeUpdateMissingNames:
+                    .profileChangeUpdateMissingNames,
+                    .threadMergeUpdateMissingAuthor:
                 // Log any others as we see them.
                 return nil
             }
@@ -432,6 +437,9 @@ extension MessageBackup {
                 case profileChangeUpdateInvalidNames
                 /// A "profile change update" was not authored by a contact.
                 case profileChangeUpdateNotFromContact
+
+                /// A "thread merge update" was not authored by a contact.
+                case threadMergeUpdateNotFromContact
             }
 
             /// The proto contained invalid or self-contradictory data, e.g an invalid ACI.
@@ -548,7 +556,8 @@ extension MessageBackup {
                         .expirationTimerUpdateNotInContactThread,
                         .expirationTimerUpdateOverflowedLocalType,
                         .profileChangeUpdateInvalidNames,
-                        .profileChangeUpdateNotFromContact:
+                        .profileChangeUpdateNotFromContact,
+                        .threadMergeUpdateNotFromContact:
                     // Collapse all others by the id of the containing frame.
                     return idLogString
                 }

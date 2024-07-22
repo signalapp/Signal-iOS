@@ -281,7 +281,7 @@ final class ThreadMergerTest: XCTestCase {
         let threadMergeEvent = try XCTUnwrap(interactionStore.insertedInteractions.first as? TSInfoMessage)
         XCTAssertEqual(interactionStore.insertedInteractions.count, 1)
         XCTAssertEqual(threadMergeEvent.messageType, .threadMerge)
-        XCTAssertEqual(threadMergeEvent.infoMessageUserInfo?[.threadMergePhoneNumber] as? String, phoneNumber.stringValue)
+        XCTAssertEqual(threadMergeEvent.threadMergePhoneNumber, phoneNumber.stringValue)
     }
 
     func testThreadMergeEventInvisibleThread() {
@@ -302,7 +302,7 @@ final class ThreadMergerTest: XCTestCase {
         let threadMergeEvent = try XCTUnwrap(interactionStore.insertedInteractions.first as? TSInfoMessage)
         XCTAssertEqual(interactionStore.insertedInteractions.count, 1)
         XCTAssertEqual(threadMergeEvent.messageType, .threadMerge)
-        XCTAssertNil(threadMergeEvent.infoMessageUserInfo?[.threadMergePhoneNumber])
+        XCTAssertNil(threadMergeEvent.threadMergePhoneNumber)
     }
 
     // MARK: - Raw SDS Migrations

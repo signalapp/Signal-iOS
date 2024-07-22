@@ -26,6 +26,7 @@ final class MessageBackupProfileChangeChatUpdateTest: MessageBackupIntegrationTe
                 return
             }
 
+            XCTAssertEqual(profileChangeInfoMessage.messageType, .profileUpdate)
             XCTAssertEqual(profileChangeAddress.aci, expectedAci)
             XCTAssertEqual(oldName, "Snoop Dogg")
             XCTAssertEqual(newName, "Snoop Lion")

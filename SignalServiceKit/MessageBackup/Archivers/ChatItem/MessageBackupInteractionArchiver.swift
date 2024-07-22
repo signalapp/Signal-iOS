@@ -91,6 +91,9 @@ extension MessageBackup {
             case addGroupToProfileWhitelistOffer
             /// See: `TSInfoMessageType/syncedThread`
             case syncedThread
+            /// This is a "thread merge" event for which we don't know the
+            /// "before" thread's phone number.
+            case threadMergeWithoutPhoneNumber
         }
 
         /// Some group updates are deliberately skipped.
