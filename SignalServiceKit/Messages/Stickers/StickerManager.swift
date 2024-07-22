@@ -41,28 +41,24 @@ public class StickerManager: NSObject {
     public static let stickersOrPacksDidChange = Notification.Name("stickersOrPacksDidChange")
     public static let recentStickersDidChange = Notification.Name("recentStickersDidChange")
 
-    private static var packsDidChangeEvent: DebouncedEvent {
-        DebouncedEvents.build(
-            mode: .firstLast,
-            maxFrequencySeconds: 0.5,
-            onQueue: .asyncOnQueue(queue: .global()),
-            notifyBlock: {
-                NotificationCenter.default.postNotificationNameAsync(packsDidChange, object: nil)
-                NotificationCenter.default.postNotificationNameAsync(stickersOrPacksDidChange, object: nil)
-            }
-        )
-    }
+    private static let packsDidChangeEvent: DebouncedEvent = DebouncedEvents.build(
+        mode: .firstLast,
+        maxFrequencySeconds: 0.5,
+        onQueue: .asyncOnQueue(queue: .global()),
+        notifyBlock: {
+            NotificationCenter.default.postNotificationNameAsync(packsDidChange, object: nil)
+            NotificationCenter.default.postNotificationNameAsync(stickersOrPacksDidChange, object: nil)
+        }
+    )
 
-    private static var stickersDidChangeEvent: DebouncedEvent {
-        DebouncedEvents.build(
-            mode: .firstLast,
-            maxFrequencySeconds: 0.5,
-            onQueue: .asyncOnQueue(queue: .global()),
-            notifyBlock: {
-                NotificationCenter.default.postNotificationNameAsync(stickersOrPacksDidChange, object: nil)
-            }
-        )
-    }
+    private static let stickersDidChangeEvent: DebouncedEvent = DebouncedEvents.build(
+        mode: .firstLast,
+        maxFrequencySeconds: 0.5,
+        onQueue: .asyncOnQueue(queue: .global()),
+        notifyBlock: {
+            NotificationCenter.default.postNotificationNameAsync(stickersOrPacksDidChange, object: nil)
+        }
+    )
 
     // MARK: - Properties
 
