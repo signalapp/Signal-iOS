@@ -138,6 +138,10 @@ extension MessageBackup {
             /// A "thread merge update" info message was missing info as to the
             /// contact whose threads were merged.
             case threadMergeUpdateMissingAuthor
+
+            /// A "session switchover update" info message was missing info as
+            /// to the switched-over-from session.
+            case sessionSwitchoverUpdateMissingAuthor
         }
 
         private let type: ErrorType
@@ -218,7 +222,8 @@ extension MessageBackup {
                     .disappearingMessageConfigUpdateMissingAuthor,
                     .profileChangeUpdateMissingAuthor,
                     .profileChangeUpdateMissingNames,
-                    .threadMergeUpdateMissingAuthor:
+                    .threadMergeUpdateMissingAuthor,
+                    .sessionSwitchoverUpdateMissingAuthor:
                 // Log any others as we see them.
                 return nil
             }
@@ -440,6 +445,9 @@ extension MessageBackup {
 
                 /// A "thread merge update" was not authored by a contact.
                 case threadMergeUpdateNotFromContact
+
+                /// A "session switchover update" was not authored by a contact.
+                case sessionSwitchoverUpdateNotFromContact
             }
 
             /// The proto contained invalid or self-contradictory data, e.g an invalid ACI.
@@ -557,7 +565,8 @@ extension MessageBackup {
                         .expirationTimerUpdateOverflowedLocalType,
                         .profileChangeUpdateInvalidNames,
                         .profileChangeUpdateNotFromContact,
-                        .threadMergeUpdateNotFromContact:
+                        .threadMergeUpdateNotFromContact,
+                        .sessionSwitchoverUpdateNotFromContact:
                     // Collapse all others by the id of the containing frame.
                     return idLogString
                 }

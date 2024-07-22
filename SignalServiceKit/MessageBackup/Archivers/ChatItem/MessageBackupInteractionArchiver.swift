@@ -94,6 +94,9 @@ extension MessageBackup {
             /// This is a "thread merge" event for which we don't know the
             /// "before" thread's phone number.
             case threadMergeWithoutPhoneNumber
+            /// This is a "session switchover" event for which we don't know the
+            /// old session's phone number.
+            case sessionSwitchoverWithoutPhoneNumber
         }
 
         /// Some group updates are deliberately skipped.

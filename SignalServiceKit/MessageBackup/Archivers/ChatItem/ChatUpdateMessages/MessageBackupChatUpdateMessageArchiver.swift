@@ -14,6 +14,7 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
     private let groupUpdateMessageArchiver: MessageBackupGroupUpdateMessageArchiver
     private let individualCallArchiver: MessageBackupIndividualCallArchiver
     private let profileChangeChatUpdateArchiver: MessageBackupProfileChangeChatUpdateArchiver
+    private let sessionSwitchoverChatUpdateArchiver: MessageBackupSessionSwitchoverChatUpdateArchiver
     private let simpleChatUpdateArchiver: MessageBackupSimpleChatUpdateArchiver
     private let threadMergeChatUpdateArchiver: MessageBackupThreadMergeChatUpdateArchiver
 
@@ -46,6 +47,9 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
             interactionStore: interactionStore
         )
         profileChangeChatUpdateArchiver = MessageBackupProfileChangeChatUpdateArchiver(
+            interactionStore: interactionStore
+        )
+        sessionSwitchoverChatUpdateArchiver = MessageBackupSessionSwitchoverChatUpdateArchiver(
             interactionStore: interactionStore
         )
         simpleChatUpdateArchiver = MessageBackupSimpleChatUpdateArchiver(
@@ -150,10 +154,13 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
                     context: context,
                     tx: tx
                 )
-            case
-                    .sessionSwitchover:
-                // TODO: [Backups] Add support for "non-simple" chat updates.
-                return .notYetImplemented
+            case .sessionSwitchover:
+                return sessionSwitchoverChatUpdateArchiver.archive(
+                    infoMessage: infoMessage,
+                    thread: thread,
+                    context: context,
+                    tx: tx
+                )
             }
         } else if let errorMessage = interaction as? TSErrorMessage {
             /// All `TSErrorMessage`s map to simple chat updates.
@@ -254,7 +261,13 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
                 tx: tx
             )
         case .sessionSwitchover(let sessionSwitchoverUpdateProto):
-            return .messageFailure([.restoreFrameError(.unimplemented, chatItem.id)])
+            return sessionSwitchoverChatUpdateArchiver.restoreSessionSwitchoverChatUpdate(
+                sessionSwitchoverUpdateProto,
+                chatItem: chatItem,
+                chatThread: chatThread,
+                context: context,
+                tx: tx
+            )
         case .learnedProfileChange(let learnedProfileChangeProto):
             return .messageFailure([.restoreFrameError(.unimplemented, chatItem.id)])
         }

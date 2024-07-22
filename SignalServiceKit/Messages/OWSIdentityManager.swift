@@ -424,14 +424,9 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         guard let contactThread = TSContactThread.getWithContactAddress(recipient.address, transaction: tx) else {
             return
         }
-        var userInfo = [InfoMessageUserInfoKey: Any]()
-        if let phoneNumber {
-            userInfo[.sessionSwitchoverPhoneNumber] = phoneNumber
-        }
-        let sessionSwitchoverEvent = TSInfoMessage(
-            thread: contactThread,
-            messageType: .sessionSwitchover,
-            infoMessageUserInfo: userInfo
+        let sessionSwitchoverEvent: TSInfoMessage = .makeForSessionSwitchover(
+            contactThread: contactThread,
+            phoneNumber: phoneNumber
         )
         sessionSwitchoverEvent.anyInsert(transaction: tx)
     }

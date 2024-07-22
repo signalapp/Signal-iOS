@@ -323,10 +323,33 @@ public extension TSInfoMessage {
 
 // MARK: -
 
+extension TSInfoMessage {
+    static func makeForSessionSwitchover(
+        contactThread: TSContactThread,
+        phoneNumber: String?
+    ) -> TSInfoMessage {
+        let infoMessageUserInfo: [InfoMessageUserInfoKey: Any] = if let phoneNumber {
+            [.sessionSwitchoverPhoneNumber: phoneNumber]
+        } else {
+            [:]
+        }
+
+        return TSInfoMessage(
+            thread: contactThread,
+            messageType: .sessionSwitchover,
+            infoMessageUserInfo: infoMessageUserInfo
+        )
+    }
+}
+
 public extension TSInfoMessage {
+    var sessionSwitchoverPhoneNumber: String? {
+        return infoMessageValue(forKey: .sessionSwitchoverPhoneNumber)
+    }
+
     @objc
     func sessionSwitchoverDescription(tx: SDSAnyReadTransaction) -> String {
-        if let phoneNumber = infoMessageUserInfo?[.sessionSwitchoverPhoneNumber] as? String {
+        if let phoneNumber = sessionSwitchoverPhoneNumber {
             let displayName = contactThreadDisplayName(tx: tx)
             let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber)
             let formatString = OWSLocalizedString(
@@ -339,17 +362,11 @@ public extension TSInfoMessage {
             return TSErrorMessage.safetyNumberChangeDescription(for: address, tx: tx)
         }
     }
+}
 
-    private func contactThreadDisplayName(tx: SDSAnyReadTransaction) -> String {
-        let result: String? = {
-            guard let address = TSContactThread.contactAddress(fromThreadId: uniqueThreadId, transaction: tx) else {
-                return nil
-            }
-            return contactsManager.displayName(for: address, tx: tx).resolvedValue()
-        }()
-        return result ?? CommonStrings.unknownUser
-    }
+// MARK: -
 
+public extension TSInfoMessage {
     @objc
     static func legacyDisappearingMessageUpdateDescription(
         token newToken: DisappearingMessageToken,
@@ -680,6 +697,20 @@ extension TSInfoMessage {
             source: source,
             updaterWasLocalUser: updaterWasLocalUser
         )
+    }
+}
+
+// MARK: -
+
+private extension TSInfoMessage {
+    func contactThreadDisplayName(tx: SDSAnyReadTransaction) -> String {
+        let result: String? = {
+            guard let address = TSContactThread.contactAddress(fromThreadId: uniqueThreadId, transaction: tx) else {
+                return nil
+            }
+            return contactsManager.displayName(for: address, tx: tx).resolvedValue()
+        }()
+        return result ?? CommonStrings.unknownUser
     }
 }
 
