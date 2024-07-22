@@ -219,7 +219,31 @@ extension MyStoriesViewController: UITableViewDataSource {
         }
 
         let cell = tableView.dequeueReusableCell(withIdentifier: SentStoryCell.reuseIdentifier, for: indexPath) as! SentStoryCell
-        cell.configure(with: item, spoilerState: spoilerState, contextMenuButtonDelegate: self, indexPath: indexPath)
+
+        let contextMenuActions: [UIAction] = {
+            guard let item = self.item(for: indexPath) else { return [] }
+
+            return databaseStorage.read { tx -> [UIAction] in
+                contextMenuGenerator.nativeContextMenuActions(
+                    for: item.message,
+                    in: item.thread,
+                    attachment: item.attachment,
+                    spoilerState: spoilerState,
+                    sourceView: { [weak self] in
+                        // refetch the cell in case it changes out from underneath us.
+                        return self?.tableView.dequeueReusableCell(withIdentifier: SentStoryCell.reuseIdentifier, for: indexPath)
+                    },
+                    transaction: tx
+                )
+            }
+        }()
+
+        cell.configure(
+            with: item,
+            spoilerState: spoilerState,
+            contextMenuActions: contextMenuActions,
+            indexPath: indexPath
+        )
         return cell
     }
 
@@ -261,36 +285,6 @@ extension MyStoriesViewController: DatabaseChangeDelegate {
 
     func databaseChangesDidReset() {
         reloadStories()
-    }
-}
-
-extension MyStoriesViewController: ContextMenuButtonDelegate {
-
-    func contextMenuConfiguration(for contextMenuButton: DelegatingContextMenuButton) -> ContextMenuConfiguration? {
-        guard
-            let indexPath = (contextMenuButton as? IndexPathContextMenuButton)?.indexPath,
-            let item = self.item(for: indexPath)
-        else {
-            return nil
-        }
-        let actions = Self.databaseStorage.read { transaction in
-            return self.contextMenuGenerator.contextMenuActions(
-                for: item.message,
-                in: item.thread,
-                attachment: item.attachment,
-                spoilerState: spoilerState,
-                sourceView: { [weak self] in
-                    // refetch the cell in case it changes out from underneath us.
-                    return self?.tableView.dequeueReusableCell(withIdentifier: SentStoryCell.reuseIdentifier, for: indexPath)
-                },
-                hideSaveAction: true,
-                onlyRenderMyStories: true,
-                transaction: transaction
-            )
-        }
-        return .init(identifier: nil, actionProvider: { _ in
-            return .init(actions)
-        })
     }
 }
 
@@ -338,6 +332,17 @@ private struct OutgoingStoryItem {
 class SentStoryCell: UITableViewCell {
     static let reuseIdentifier = "SentStoryCell"
 
+    private class ContextButtonContainer: UIView {
+        func setContextButton(_ contextButton: ContextMenuButton) {
+            removeAllSubviews()
+
+            addSubview(contextButton)
+            contextButton.autoPinEdgesToSuperviewEdges()
+            contextButton.layer.cornerRadius = 16
+            contextButton.clipsToBounds = true
+        }
+    }
+
     let attachmentThumbnail = UIView()
 
     fileprivate let contentHStackView = UIStackView()
@@ -345,7 +350,7 @@ class SentStoryCell: UITableViewCell {
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
     private let saveButton = OWSButton()
-    private let contextButton = IndexPathContextMenuButton()
+    private let contextButtonContainer = ContextButtonContainer()
 
     private let failedIconContainer = UIView()
     private let failedIconView = UIImageView()
@@ -395,16 +400,8 @@ class SentStoryCell: UITableViewCell {
 
         contentHStackView.addArrangedSubview(.spacer(withWidth: 20))
 
-        let contextButtonContainer = UIView()
         contextButtonContainer.autoSetDimensions(to: CGSize(square: 32))
         contentHStackView.addArrangedSubview(contextButtonContainer)
-
-        contextButtonContainer.addSubview(contextButton)
-        contextButton.autoPinEdgesToSuperviewEdges()
-
-        contextButton.layer.cornerRadius = 16
-        contextButton.clipsToBounds = true
-        contextButton.showsContextMenuAsPrimaryAction = true
     }
 
     required init?(coder: NSCoder) {
@@ -416,7 +413,7 @@ class SentStoryCell: UITableViewCell {
     fileprivate func configure(
         with item: OutgoingStoryItem,
         spoilerState: SpoilerRenderState,
-        contextMenuButtonDelegate: ContextMenuButtonDelegate,
+        contextMenuActions: [UIAction],
         indexPath: IndexPath
     ) {
         if self.attachment != item.attachment {
@@ -480,19 +477,14 @@ class SentStoryCell: UITableViewCell {
             saveButton.block = {}
         }
 
+        let contextButton = ContextMenuButton(actions: contextMenuActions)
         contextButton.tintColor = Theme.primaryIconColor
         contextButton.setImage(UIImage(imageLiteralResourceName: "more-compact"), for: .normal)
         contextButton.setBackgroundImage(UIImage.image(color: Theme.secondaryBackgroundColor), for: .normal)
-        contextButton.delegate = contextMenuButtonDelegate
-        contextButton.indexPath = indexPath
+        contextButtonContainer.setContextButton(contextButton)
 
         let selectedBackgroundView = UIView()
         selectedBackgroundView.backgroundColor = Theme.tableCell2SelectedBackgroundColor2
         self.selectedBackgroundView = selectedBackgroundView
     }
-}
-
-private class IndexPathContextMenuButton: DelegatingContextMenuButton {
-
-    var indexPath: IndexPath?
 }

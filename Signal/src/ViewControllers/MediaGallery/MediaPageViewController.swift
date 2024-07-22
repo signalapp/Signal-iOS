@@ -309,9 +309,8 @@ class MediaPageViewController: UIPageViewController {
     // MARK: Context Menu
 
     private lazy var contextMenuBarButton: UIBarButtonItem = {
-        let contextButton = ContextMenuButton()
-        contextButton.showsContextMenuAsPrimaryAction = true
-        contextButton.forceDarkTheme = true
+        let contextButton = ContextMenuButton(empty: ())
+        contextButton.overrideUserInterfaceStyle = .dark
         return UIBarButtonItem(customView: contextButton)
     }()
 
@@ -331,10 +330,10 @@ class MediaPageViewController: UIPageViewController {
             return
         }
 
-        var contextMenuActions: [ContextMenuAction] = []
+        var contextMenuActions = [UIAction]()
         // TODO: Video Playback Speed
         // TODO: Edit
-        contextMenuActions.append(ContextMenuAction(
+        contextMenuActions.append(UIAction(
             title: OWSLocalizedString(
                 "MEDIA_VIEWER_DELETE_MEDIA_ACTION",
                 comment: "Context menu item in media viewer. Refers to deleting currently displayed photo/video."
@@ -345,7 +344,7 @@ class MediaPageViewController: UIPageViewController {
                 self?.deleteCurrentMedia()
             }
         ))
-        contextMenuButton.contextMenu = ContextMenu(contextMenuActions)
+        contextMenuButton.setActions(actions: contextMenuActions)
     }
 
     // MARK: Bar Buttons

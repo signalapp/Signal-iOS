@@ -30,10 +30,12 @@ class StoryItemMediaView: UIView {
     private lazy var gradientProtectionView = GradientView(colors: [])
     private var gradientProtectionViewHeightConstraint: NSLayoutConstraint?
 
+    private var contextButton: ContextMenuButton!
     private let bottomContentVStack = UIStackView()
 
     init(
         item: StoryItem,
+        contextButton: ContextMenuButton,
         spoilerState: SpoilerRenderState,
         delegate: StoryItemMediaViewDelegate
     ) {
@@ -77,7 +79,7 @@ class StoryItemMediaView: UIView {
         bottomContentVStack.addArrangedSubview(authorRow)
 
         updateCaption()
-        updateAuthorRow()
+        updateAuthorRow(newContextButton: contextButton)
     }
 
     required init?(coder: NSCoder) {
@@ -95,12 +97,12 @@ class StoryItemMediaView: UIView {
         lastTruncationWidth = nil
     }
 
-    func updateItem(_ newItem: StoryItem) {
+    func updateItem(_ newItem: StoryItem, newContextButton: ContextMenuButton) {
         let oldItem = self.item
         self.item = newItem
 
         updateTimestampText()
-        updateAuthorRow()
+        updateAuthorRow(newContextButton: newContextButton)
 
         // Only recreate the media view if the actual attachment changes.
         if item.attachment != oldItem.attachment {
@@ -137,7 +139,10 @@ class StoryItemMediaView: UIView {
             return didHandle
         }
 
-        if contextButton.bounds.contains(gesture.location(in: contextButton)) {
+        if
+            let contextButton,
+            contextButton.bounds.contains(gesture.location(in: contextButton))
+        {
             return true
         }
 
@@ -145,7 +150,10 @@ class StoryItemMediaView: UIView {
     }
 
     func willHandlePanGesture(_ gesture: UIPanGestureRecognizer) -> Bool {
-        if contextButton.bounds.contains(gesture.location(in: contextButton)) {
+        if
+            let contextButton,
+            contextButton.bounds.contains(gesture.location(in: contextButton))
+        {
             return true
         }
 
@@ -284,7 +292,7 @@ class StoryItemMediaView: UIView {
 
     private lazy var timestampLabel = UILabel()
     private lazy var authorRow = UIStackView()
-    private func updateAuthorRow() {
+    private func updateAuthorRow(newContextButton contextButton: ContextMenuButton) {
         let (avatarView, nameLabel) = databaseStorage.read { (
             buildAvatarView(transaction: $0),
             buildNameLabel(transaction: $0)
@@ -346,18 +354,26 @@ class StoryItemMediaView: UIView {
             metadataStackView = nameHStack
         }
 
+        let contextButtonSize: CGFloat = 42
+
         authorRow.removeAllSubviews()
         authorRow.addArrangedSubviews([
             avatarView,
             .spacer(withWidth: 12),
             metadataStackView,
             .hStretchingSpacer(),
-            .spacer(withWidth: Self.contextButtonSize)
+            .spacer(withWidth: contextButtonSize)
         ])
         authorRow.axis = .horizontal
         authorRow.alignment = .center
 
+        self.contextButton = contextButton
+        contextButton.tintColor = Theme.darkThemePrimaryColor
+        contextButton.setImage(Theme.iconImage(.buttonMore), for: .normal)
+        contextButton.contentMode = .center
+
         authorRow.addSubview(contextButton)
+        contextButton.autoSetDimensions(to: .square(contextButtonSize))
         contextButton.autoPinEdge(toSuperviewEdge: .trailing)
         NSLayoutConstraint.activate([
             contextButton.centerYAnchor.constraint(equalTo: authorRow.centerYAnchor)
@@ -439,20 +455,6 @@ class StoryItemMediaView: UIView {
         )
         return label
     }
-
-    static let contextButtonSize: CGFloat = 42
-
-    private lazy var contextButton: DelegatingContextMenuButton = {
-        let contextButton = DelegatingContextMenuButton(delegate: delegate)
-        contextButton.showsContextMenuAsPrimaryAction = true
-        contextButton.tintColor = Theme.darkThemePrimaryColor
-        contextButton.setImage(Theme.iconImage(.buttonMore), for: .normal)
-        contextButton.contentMode = .center
-
-        contextButton.autoSetDimensions(to: .square(Self.contextButtonSize))
-
-        return contextButton
-    }()
 
     // MARK: - Caption
 

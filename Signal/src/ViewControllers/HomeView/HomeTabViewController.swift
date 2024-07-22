@@ -16,21 +16,17 @@ extension HomeTabViewController {
     func createSettingsBarButtonItem(
         databaseStorage: SDSDatabaseStorage,
         shouldShowUnreadPaymentBadge: Bool = false,
-        actions: (_ settingsAction: ContextMenuAction) -> [ContextMenuAction],
+        buildActions: (_ settingsAction: UIAction) -> [UIAction],
         showAppSettings: @escaping () -> Void
     ) -> UIBarButtonItem {
-        let contextButton = ContextMenuButton()
-        contextButton.showsContextMenuAsPrimaryAction = true
-        contextButton.accessibilityLabel = CommonStrings.openSettingsButton
-
-        let settingsAction = ContextMenuAction(
+        let settingsAction = UIAction(
             title: CommonStrings.openSettingsButton,
             image: Theme.iconImage(.contextMenuSettings),
-            handler: { _ in
-                showAppSettings()
-            }
+            handler: { _ in showAppSettings() }
         )
-        contextButton.contextMenu = .init(actions(settingsAction))
+
+        let contextButton = ContextMenuButton(actions: buildActions(settingsAction))
+        contextButton.accessibilityLabel = CommonStrings.openSettingsButton
 
         let avatarView = ConversationAvatarView(
             sizeClass: .twentyEight,

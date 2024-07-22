@@ -1069,7 +1069,6 @@
 		66B78E112BE5AB360022580E /* AttachmentViewOnceManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B78E102BE5AB360022580E /* AttachmentViewOnceManagerMock.swift */; };
 		66B78E132BE5AB7E0022580E /* ViewOnceContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B78E122BE5AB7E0022580E /* ViewOnceContent.swift */; };
 		66B78E152BE5ABA60022580E /* TSViewOnceContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B78E142BE5ABA60022580E /* TSViewOnceContent.swift */; };
-		66B8B28028C94C0F005EAFE0 /* DelegatingContextMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B8B27F28C94C0F005EAFE0 /* DelegatingContextMenuButton.swift */; };
 		66B9437E2A6EFCD900DCF2FF /* SpoilerParticleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B9437D2A6EFCD900DCF2FF /* SpoilerParticleView.swift */; };
 		66B943812A6F217600DCF2FF /* SpoilerParticleShader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 66B9437F2A6F216D00DCF2FF /* SpoilerParticleShader.metal */; };
 		66BB4D592AD8BF6200A84219 /* MergingDict.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BB4D582AD8BF6200A84219 /* MergingDict.swift */; };
@@ -1475,7 +1474,6 @@
 		88588D1D252D5D3D00405414 /* CallMemberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88588D1C252D5D3D00405414 /* CallMemberView.swift */; };
 		88588D26252E59CE00405414 /* CallService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88588D25252E59CE00405414 /* CallService.swift */; };
 		88594E5A2335B08000390B19 /* AudioMessagePresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88594E592335B08000390B19 /* AudioMessagePresenter.swift */; };
-		885F3D3128AC33E700FE8AFE /* ContextMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885F3D3028AC33E700FE8AFE /* ContextMenuButton.swift */; };
 		8862921028355B8000AA0C3B /* MyStoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8862920F28355B8000AA0C3B /* MyStoryViewModel.swift */; };
 		886292122835606D00AA0C3B /* MyStoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886292112835606D00AA0C3B /* MyStoryCell.swift */; };
 		8862A55925F090C5005D65DB /* InternalSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8862A55825F090C5005D65DB /* InternalSettingsViewController.swift */; };
@@ -1893,6 +1891,7 @@
 		D994C7D42C45E765009ECEDA /* profile-change-chat-update-message.jsonproto in Resources */ = {isa = PBXBuildFile; fileRef = D994C7D22C45E764009ECEDA /* profile-change-chat-update-message.jsonproto */; };
 		D994C7D52C45E765009ECEDA /* profile-change-chat-update-message.binproto in Resources */ = {isa = PBXBuildFile; fileRef = D994C7D32C45E764009ECEDA /* profile-change-chat-update-message.binproto */; };
 		D994C7D72C45E7A0009ECEDA /* MessageBackupProfileChangeChatUpdateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D994C7D62C45E7A0009ECEDA /* MessageBackupProfileChangeChatUpdateTest.swift */; };
+		D994C7D92C486E54009ECEDA /* ContextMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D994C7D82C486E54009ECEDA /* ContextMenuButton.swift */; };
 		D995546E2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = D995546D2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift */; };
 		D995546F2AF5668E0001E15C /* ProfileBadgesSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99554692AF4873E0001E15C /* ProfileBadgesSnapshot.swift */; };
 		D99554752AF5AFE90001E15C /* BadgeThanksSheetPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99554742AF5AFE80001E15C /* BadgeThanksSheetPresenter.swift */; };
@@ -1978,7 +1977,6 @@
 		D9DB37F92B72A770007B16C8 /* CallRecordDeleteAllJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DB37F82B72A770007B16C8 /* CallRecordDeleteAllJobQueue.swift */; };
 		D9DB37FB2B72A85C007B16C8 /* CallRecordDeleteAllJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DB37FA2B72A85C007B16C8 /* CallRecordDeleteAllJobRecord.swift */; };
 		D9DCFDA52A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDA42A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift */; };
-		D9DCFDA92A39321100C73C0B /* ContextMenuPresentingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDA82A39321100C73C0B /* ContextMenuPresentingTableViewCell.swift */; };
 		D9DCFDAB2A39402F00C73C0B /* SettingsHeaderButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAA2A39402F00C73C0B /* SettingsHeaderButton.swift */; };
 		D9DCFDAE2A3BB25200C73C0B /* QRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAD2A3BB25200C73C0B /* QRCodeGenerator.swift */; };
 		D9DCFDB02A3BC4A400C73C0B /* UsernameLinkQRCodeGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9DCFDAF2A3BC4A400C73C0B /* UsernameLinkQRCodeGenerator.swift */; };
@@ -4117,7 +4115,6 @@
 		66B78E102BE5AB360022580E /* AttachmentViewOnceManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentViewOnceManagerMock.swift; sourceTree = "<group>"; };
 		66B78E122BE5AB7E0022580E /* ViewOnceContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewOnceContent.swift; sourceTree = "<group>"; };
 		66B78E142BE5ABA60022580E /* TSViewOnceContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSViewOnceContent.swift; sourceTree = "<group>"; };
-		66B8B27F28C94C0F005EAFE0 /* DelegatingContextMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatingContextMenuButton.swift; sourceTree = "<group>"; };
 		66B9437D2A6EFCD900DCF2FF /* SpoilerParticleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerParticleView.swift; sourceTree = "<group>"; };
 		66B9437F2A6F216D00DCF2FF /* SpoilerParticleShader.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = SpoilerParticleShader.metal; sourceTree = "<group>"; };
 		66BB4D582AD8BF6200A84219 /* MergingDict.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MergingDict.swift; sourceTree = "<group>"; };
@@ -4448,7 +4445,6 @@
 		88588D25252E59CE00405414 /* CallService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallService.swift; sourceTree = "<group>"; };
 		88594E592335B08000390B19 /* AudioMessagePresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMessagePresenter.swift; sourceTree = "<group>"; };
 		885C354F2370DFD50004BA35 /* OWSSyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSSyncManager.swift; sourceTree = "<group>"; };
-		885F3D3028AC33E700FE8AFE /* ContextMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuButton.swift; sourceTree = "<group>"; };
 		8862920F28355B8000AA0C3B /* MyStoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyStoryViewModel.swift; sourceTree = "<group>"; };
 		886292112835606D00AA0C3B /* MyStoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyStoryCell.swift; sourceTree = "<group>"; };
 		8862A55825F090C5005D65DB /* InternalSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InternalSettingsViewController.swift; sourceTree = "<group>"; };
@@ -4948,6 +4944,7 @@
 		D994C7D22C45E764009ECEDA /* profile-change-chat-update-message.jsonproto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "profile-change-chat-update-message.jsonproto"; path = "Signal-Message-Backup-Tests/test-cases/profile-change-chat-update-message.jsonproto"; sourceTree = "<group>"; };
 		D994C7D32C45E764009ECEDA /* profile-change-chat-update-message.binproto */ = {isa = PBXFileReference; lastKnownFileType = file; name = "profile-change-chat-update-message.binproto"; path = "Signal-Message-Backup-Tests/test-cases/profile-change-chat-update-message.binproto"; sourceTree = "<group>"; };
 		D994C7D62C45E7A0009ECEDA /* MessageBackupProfileChangeChatUpdateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBackupProfileChangeChatUpdateTest.swift; sourceTree = "<group>"; };
+		D994C7D82C486E54009ECEDA /* ContextMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuButton.swift; sourceTree = "<group>"; };
 		D99554692AF4873E0001E15C /* ProfileBadgesSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileBadgesSnapshot.swift; sourceTree = "<group>"; };
 		D995546D2AF563150001E15C /* ReceiptCredentialRedemptionSuccess.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReceiptCredentialRedemptionSuccess.swift; sourceTree = "<group>"; };
 		D99554702AF566C30001E15C /* ProfileBadgesSnapshot+Constructors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProfileBadgesSnapshot+Constructors.swift"; sourceTree = "<group>"; };
@@ -5048,7 +5045,6 @@
 		D9DB37F82B72A770007B16C8 /* CallRecordDeleteAllJobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordDeleteAllJobQueue.swift; sourceTree = "<group>"; };
 		D9DB37FA2B72A85C007B16C8 /* CallRecordDeleteAllJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordDeleteAllJobRecord.swift; sourceTree = "<group>"; };
 		D9DCFDA42A37D12100C73C0B /* UsernameLinkPresentQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkPresentQRCodeViewController.swift; sourceTree = "<group>"; };
-		D9DCFDA82A39321100C73C0B /* ContextMenuPresentingTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuPresentingTableViewCell.swift; sourceTree = "<group>"; };
 		D9DCFDAA2A39402F00C73C0B /* SettingsHeaderButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsHeaderButton.swift; sourceTree = "<group>"; };
 		D9DCFDAD2A3BB25200C73C0B /* QRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeGenerator.swift; sourceTree = "<group>"; };
 		D9DCFDAF2A3BC4A400C73C0B /* UsernameLinkQRCodeGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkQRCodeGenerator.swift; sourceTree = "<group>"; };
@@ -6779,7 +6775,7 @@
 				340FC87A204DAC8C007AEB0F /* AppSettings */,
 				8809CE8822F93C0D00D38867 /* Attachment Keyboard */,
 				883A7FC1269F4BE700841DF9 /* Avatars */,
-				F0B872B4269CF01E00D26481 /* Context Menus */,
+				F0B872B4269CF01E00D26481 /* ContextMenus */,
 				34D8C0221ED3673300188D7C /* DebugUI */,
 				F924A68028F8703400E368C8 /* Donations */,
 				34BECE2C1F7ABCE000D7438D /* GifPicker */,
@@ -10096,6 +10092,18 @@
 			path = Util;
 			sourceTree = "<group>";
 		};
+		D994C7DC2C49A0CB009ECEDA /* CustomContextMenus */ = {
+			isa = PBXGroup;
+			children = (
+				F05F51C826A90D6B00861034 /* ContextMenuActionsAccessory.swift */,
+				F0B872B7269D079B00D26481 /* ContextMenuConfiguration.swift */,
+				F0FB6B1F269E625A00AC2A41 /* ContextMenuController.swift */,
+				F0B872B5269CF6D900D26481 /* ContextMenuInteraction.swift */,
+				F0EE4DB526A7AC18001DE4ED /* ContextMenuReactionBarAccessory.swift */,
+			);
+			path = CustomContextMenus;
+			sourceTree = "<group>";
+		};
 		D99840BB297A04A300F7ED6D /* Usernames */ = {
 			isa = PBXGroup;
 			children = (
@@ -10354,19 +10362,13 @@
 			path = subscriptions;
 			sourceTree = "<group>";
 		};
-		F0B872B4269CF01E00D26481 /* Context Menus */ = {
+		F0B872B4269CF01E00D26481 /* ContextMenus */ = {
 			isa = PBXGroup;
 			children = (
-				F05F51C826A90D6B00861034 /* ContextMenuActionsAccessory.swift */,
-				885F3D3028AC33E700FE8AFE /* ContextMenuButton.swift */,
-				F0B872B7269D079B00D26481 /* ContextMenuConfiguration.swift */,
-				F0FB6B1F269E625A00AC2A41 /* ContextMenuController.swift */,
-				F0B872B5269CF6D900D26481 /* ContextMenuInteraction.swift */,
-				D9DCFDA82A39321100C73C0B /* ContextMenuPresentingTableViewCell.swift */,
-				F0EE4DB526A7AC18001DE4ED /* ContextMenuReactionBarAccessory.swift */,
-				66B8B27F28C94C0F005EAFE0 /* DelegatingContextMenuButton.swift */,
+				D994C7DC2C49A0CB009ECEDA /* CustomContextMenus */,
+				D994C7D82C486E54009ECEDA /* ContextMenuButton.swift */,
 			);
-			path = "Context Menus";
+			path = ContextMenus;
 			sourceTree = "<group>";
 		};
 		F908AA7B28CE628700472E68 /* Fixtures */ = {
@@ -13379,11 +13381,10 @@
 				32ECD08A24BFBF9500EDDED0 /* ContactSupportViewController.swift in Sources */,
 				34E88D262098C5AE00A608F4 /* ContactViewController.swift in Sources */,
 				F05F51C926A90D6B00861034 /* ContextMenuActionsAccessory.swift in Sources */,
-				885F3D3128AC33E700FE8AFE /* ContextMenuButton.swift in Sources */,
+				D994C7D92C486E54009ECEDA /* ContextMenuButton.swift in Sources */,
 				F0B872B8269D079B00D26481 /* ContextMenuConfiguration.swift in Sources */,
 				F0FB6B20269E625A00AC2A41 /* ContextMenuController.swift in Sources */,
 				F0B872B6269CF6D900D26481 /* ContextMenuInteraction.swift in Sources */,
-				D9DCFDA92A39321100C73C0B /* ContextMenuPresentingTableViewCell.swift in Sources */,
 				F0EE4DB626A7AC18001DE4ED /* ContextMenuReactionBarAccessory.swift in Sources */,
 				3457794326828A9A00732869 /* ConversationCollectionView.swift in Sources */,
 				34E20D4C24256563002C011E /* ConversationHeaderBuilder.swift in Sources */,
@@ -13513,7 +13514,6 @@
 				76F958652A09A65B00B43E63 /* DebugUISyncMessages.swift in Sources */,
 				76E7A2112A01B6A500A8F538 /* DebugUITableViewController.swift in Sources */,
 				88DBDFB9263731C800C2101C /* DefaultDisappearingMessageTimerInteraction.swift in Sources */,
-				66B8B28028C94C0F005EAFE0 /* DelegatingContextMenuButton.swift in Sources */,
 				887B6DC925F6C3E900E677D4 /* DeleteAccountConfirmationViewController.swift in Sources */,
 				D9E8EDF32C0FD8C800923E3C /* DeleteForMeInfoSheetCoordinator.swift in Sources */,
 				D9E8EDF12C0FCB3000923E3C /* DeleteForMeSyncMessageInfoSheet.swift in Sources */,

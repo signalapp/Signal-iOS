@@ -143,8 +143,7 @@ class RegistrationPinViewController: OWSViewController {
     // MARK: Rendering
 
     private lazy var moreButton: ContextMenuButton = {
-        let result = ContextMenuButton()
-        result.showsContextMenuAsPrimaryAction = true
+        let result = ContextMenuButton(empty: ())
         result.autoSetDimensions(to: .square(40))
         return result
     }()
@@ -301,7 +300,7 @@ class RegistrationPinViewController: OWSViewController {
         return result
     }
 
-    private func exitAction() -> ContextMenuAction? {
+    private func exitAction() -> UIAction? {
         let exitTitle: String
         switch state.exitConfiguration {
         case .noExitAllowed:
@@ -317,7 +316,7 @@ class RegistrationPinViewController: OWSViewController {
                 comment: "Button to exit change number, shown in context menu."
             )
         }
-        return .init(
+        return UIAction(
             title: exitTitle,
             handler: { [weak self] _ in
                 self?.presenter?.exitRegistration()
@@ -348,10 +347,6 @@ class RegistrationPinViewController: OWSViewController {
 
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-
-        if moreButton.isShowingContextMenu {
-            moreButton.dismissContextMenu(animated: animated)
-        }
 
         isViewAppeared = false
     }
@@ -426,8 +421,8 @@ class RegistrationPinViewController: OWSViewController {
 
     private func renderForCreatingNewPin() {
         navigationItem.leftBarButtonItem = moreBarButton
-        moreButton.contextMenu = ContextMenu([
-            .init(
+        moreButton.setActions(actions: [
+            UIAction(
                 title: OWSLocalizedString(
                     "PIN_CREATION_LEARN_MORE",
                     comment: "Learn more action on the pin creation view"
@@ -436,7 +431,7 @@ class RegistrationPinViewController: OWSViewController {
                     self?.showCreatingNewPinLearnMoreUi()
                 }
             ),
-            .init(
+            UIAction(
                 title: OWSLocalizedString(
                     "PIN_CREATION_SKIP",
                     comment: "Skip action on the pin creation view"
@@ -489,8 +484,8 @@ class RegistrationPinViewController: OWSViewController {
     ) {
         if skippability.canSkip {
             navigationItem.leftBarButtonItem = moreBarButton
-            moreButton.contextMenu = ContextMenu([
-                .init(
+            moreButton.setActions(actions: [
+                UIAction(
                     title: OWSLocalizedString(
                         "PIN_ENTER_EXISTING_SKIP",
                         comment: "If the user is re-registering, they need to enter their PIN to restore all their data. In some cases, they can skip this entry and lose some data. This text is shown on a button that lets them begin to do this."

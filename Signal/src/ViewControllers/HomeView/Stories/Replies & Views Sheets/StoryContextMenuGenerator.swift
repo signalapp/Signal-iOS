@@ -52,50 +52,6 @@ class StoryContextMenuGenerator: Dependencies {
         self.delegate = delegate
     }
 
-    public func contextMenuActions(
-        for model: StoryViewModel,
-        spoilerState: SpoilerRenderState,
-        sourceView: @escaping () -> UIView?
-    ) -> [ContextMenuAction] {
-        return Self.databaseStorage.read {
-            let thread = model.context.thread(transaction: $0)
-            return self.contextMenuActions(
-                for: model.latestMessage,
-                in: thread,
-                attachment: model.latestMessageAttachment,
-                spoilerState: spoilerState,
-                sourceView: sourceView,
-                transaction: $0
-            )
-        }
-    }
-
-    public func contextMenuActions(
-        for message: StoryMessage,
-        in thread: TSThread?,
-        attachment: StoryThumbnailView.Attachment,
-        spoilerState: SpoilerRenderState,
-        sourceView: @escaping () -> UIView?,
-        hideSaveAction: Bool = false,
-        onlyRenderMyStories: Bool = false,
-        transaction: SDSAnyReadTransaction
-    ) -> [ContextMenuAction] {
-        return [
-            deleteAction(for: message, in: thread),
-            hideAction(for: message, transaction: transaction),
-            infoAction(
-                for: message,
-                in: thread,
-                onlyRenderMyStories: onlyRenderMyStories,
-                spoilerState: spoilerState
-            ),
-            hideSaveAction ? nil : saveAction(message: message, attachment: attachment, spoilerState: spoilerState),
-            forwardAction(message: message),
-            shareAction(message: message, attachment: attachment, sourceView: sourceView),
-            goToChatAction(thread: thread)
-        ].compactMap({ $0?.asSignalContextMenuAction() })
-    }
-
     public func nativeContextMenuActions(
         for model: StoryViewModel,
         spoilerState: SpoilerRenderState,

@@ -383,13 +383,49 @@ class StoryContextViewController: OWSViewController {
 
     private func currentItemWasUpdated(messageDidChange: Bool) {
         if let currentItem = currentItem {
+            let newContextButton: ContextMenuButton = {
+                let attachment: StoryThumbnailView.Attachment
+                switch currentItem.attachment {
+                case .pointer(let pointer):
+                    attachment = .file(.init(reference: pointer.reference, attachment: pointer.attachment.resource))
+                case .stream(let stream):
+                    attachment = .file(stream.attachment)
+                case .text(let textAttachment):
+                    attachment = .text(textAttachment)
+                }
+
+                let contextButton = ContextMenuButton(empty: ())
+                let actions = self.databaseStorage.read { tx -> [UIAction] in
+                    self.contextMenuGenerator.nativeContextMenuActions(
+                        for: currentItem.message,
+                        in: self.context.thread(transaction: tx),
+                        attachment: attachment,
+                        spoilerState: self.spoilerState,
+                        sourceView: { [weak contextButton] in return contextButton },
+                        transaction: tx
+                    )
+                }
+                contextButton.setActions(actions: actions)
+                contextButton.delegate = self
+                return contextButton
+            }()
+
             if currentItemMediaView == nil {
-                let itemView = StoryItemMediaView(item: currentItem, spoilerState: spoilerState, delegate: self)
+                let itemView = StoryItemMediaView(
+                    item: currentItem,
+                    contextButton: newContextButton,
+                    spoilerState: spoilerState,
+                    delegate: self
+                )
                 self.currentItemMediaView = itemView
                 mediaViewContainer.addSubview(itemView)
                 itemView.autoPinEdgesToSuperviewEdges()
             }
-            currentItemMediaView?.updateItem(currentItem)
+
+            currentItemMediaView!.updateItem(
+                currentItem,
+                newContextButton: newContextButton
+            )
 
             if currentItem.message.sendingState != .sent {
                 updateSendingIndicator(currentItem)
@@ -1050,43 +1086,6 @@ extension StoryContextViewController: DatabaseChangeDelegate {
 }
 
 extension StoryContextViewController: StoryItemMediaViewDelegate {
-
-    func contextMenuConfiguration(for contextMenuButton: DelegatingContextMenuButton) -> ContextMenuConfiguration? {
-        guard let item = currentItem else {
-            return nil
-        }
-        let attachment: StoryThumbnailView.Attachment
-        switch item.attachment {
-        case .pointer(let pointer):
-            attachment = .file(.init(reference: pointer.reference, attachment: pointer.attachment.resource))
-        case .stream(let stream):
-            attachment = .file(stream.attachment)
-        case .text(let textAttachment):
-            attachment = .text(textAttachment)
-        }
-        return .init(
-            identifier: nil,
-            actionProvider: { [weak self, weak contextMenuButton] _ in
-                guard
-                    let self  = self,
-                    let contextMenuButton = contextMenuButton
-                else {
-                    return .init([])
-                }
-                return Self.databaseStorage.read {
-                    return ContextMenu(self.contextMenuGenerator.contextMenuActions(
-                        for: item.message,
-                        in: self.context.thread(transaction: $0),
-                        attachment: attachment,
-                        spoilerState: self.spoilerState,
-                        sourceView: { return contextMenuButton },
-                        transaction: $0
-                    ))
-                }
-            }
-        )
-    }
-
     func storyItemMediaViewWantsToPlay(_ storyItemMediaView: StoryItemMediaView) {
         play()
     }
@@ -1099,11 +1098,11 @@ extension StoryContextViewController: StoryItemMediaViewDelegate {
         return delegate?.storyContextViewControllerShouldBeMuted(self) ?? false
     }
 
-    func contextMenuWillDisplay(from contextMenuButton: DelegatingContextMenuButton) {
+    func contextMenuWillDisplay(from _: ContextMenuButton) {
         pause()
     }
 
-    func contextMenuDidDismiss(from contextMenuButton: ContextMenuButton) {
+    func contextMenuDidDismiss(from _: ContextMenuButton) {
         guard !contextMenuGenerator.isDisplayingFollowup else {
             return
         }

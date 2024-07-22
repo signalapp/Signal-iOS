@@ -196,9 +196,9 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
     private func updateNavigationBar() {
         navigationItem.leftBarButtonItem = createSettingsBarButtonItem(
             databaseStorage: databaseStorage,
-            actions: { settingsAction in
-                [
-                    .init(
+            buildActions: { settingsAction -> [UIAction] in
+                return [
+                    UIAction(
                         title: OWSLocalizedString(
                             "STORY_PRIVACY_TITLE",
                             comment: "Title for the story privacy settings view"

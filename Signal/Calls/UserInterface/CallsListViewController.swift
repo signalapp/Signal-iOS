@@ -152,15 +152,15 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private func profileBarButtonItem() -> UIBarButtonItem {
         createSettingsBarButtonItem(
             databaseStorage: databaseStorage,
-            actions: { settingsAction in
-                [
-                    .init(
+            buildActions: { settingsAction -> [UIAction] in
+                return [
+                    UIAction(
                         title: Strings.selectCallsButtonTitle,
                         image: Theme.iconImage(.contextMenuSelect),
-                        attributes: []
-                    ) { [weak self] _ in
-                        self?.startMultiselect()
-                    },
+                        handler: { [weak self] _ in
+                            self?.startMultiselect()
+                        }
+                    ),
                     settingsAction,
                 ]
             },

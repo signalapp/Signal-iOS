@@ -120,8 +120,7 @@ class RegistrationPhoneNumberViewController: OWSViewController {
     // MARK: Rendering
 
     private lazy var contextButton: ContextMenuButton = {
-        let result = ContextMenuButton()
-        result.showsContextMenuAsPrimaryAction = true
+        let result = ContextMenuButton(empty: ())
         result.autoSetDimensions(to: .square(40))
         return result
     }()
@@ -209,14 +208,6 @@ class RegistrationPhoneNumberViewController: OWSViewController {
         }
     }
 
-    public override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        if contextButton.isShowingContextMenu {
-            contextButton.dismissContextMenu(animated: animated)
-        }
-    }
-
     public override func themeDidChange() {
         super.themeDidChange()
         render()
@@ -246,8 +237,8 @@ class RegistrationPhoneNumberViewController: OWSViewController {
     }
 
     private func render() {
-        var actions: [ContextMenuAction] = [
-            .init(
+        var actions: [UIAction] = [
+            UIAction(
                 title: OWSLocalizedString(
                     "USE_PROXY_BUTTON",
                     comment: "Button to activate the signal proxy"
@@ -267,7 +258,7 @@ class RegistrationPhoneNumberViewController: OWSViewController {
             canExitRegistration = subState.canExitRegistration
         }
         if canExitRegistration {
-            actions.append(.init(
+            actions.append(UIAction(
                 title: OWSLocalizedString(
                     "EXIT_REREGISTRATION",
                     comment: "Button to exit re-registration, shown in context menu."
@@ -277,7 +268,7 @@ class RegistrationPhoneNumberViewController: OWSViewController {
                 }
             ))
         }
-        contextButton.contextMenu = ContextMenu(actions)
+        contextButton.setActions(actions: actions)
         navigationItem.leftBarButtonItem = contextBarButton
 
         contextButton.setImage(Theme.iconImage(.buttonMore), for: .normal)

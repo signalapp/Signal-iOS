@@ -432,8 +432,6 @@ public extension OWSTableItem {
     }
 
     static func buildCell(
-        baseCell: UITableViewCell? = nil,
-        contentWrapperView: UIView? = nil,
         icon: ThemeIcon? = nil,
         tintColor: UIColor? = nil,
         itemName: String,
@@ -455,8 +453,6 @@ public extension OWSTableItem {
         }
 
         return buildImageViewCell(
-            baseCell: baseCell,
-            contentWrapperView: contentWrapperView,
             imageView: imageView,
             itemName: itemName,
             subtitle: subtitle,
@@ -503,8 +499,6 @@ public extension OWSTableItem {
     }
 
     private static func buildImageViewCell(
-        baseCell: UITableViewCell? = nil,
-        contentWrapperView: UIView? = nil,
         imageView: UIImageView? = nil,
         tintColor: UIColor? = nil,
         itemName: String,
@@ -518,15 +512,7 @@ public extension OWSTableItem {
         customColor: UIColor? = nil,
         accessibilityIdentifier: String? = nil
     ) -> UITableViewCell {
-        let cell: UITableViewCell = {
-            guard let baseCell else {
-                return OWSTableItem.newCell()
-            }
-
-            configureCell(baseCell)
-            return baseCell
-        }()
-
+        let cell = OWSTableItem.newCell()
         cell.preservesSuperviewLayoutMargins = true
         cell.contentView.preservesSuperviewLayoutMargins = true
 
@@ -622,17 +608,8 @@ public extension OWSTableItem {
         contentRow.setContentHuggingHigh()
         contentRow.autoSetDimension(.height, toSize: iconSize, relation: .greaterThanOrEqual)
 
-        if let contentWrapperView {
-            cell.contentView.addSubview(contentWrapperView)
-            contentWrapperView.addSubview(contentRow)
-
-            contentWrapperView.autoPinEdgesToSuperviewMargins()
-            contentRow.autoPinEdgesToSuperviewEdges()
-        } else {
-            cell.contentView.addSubview(contentRow)
-
-            contentRow.autoPinEdgesToSuperviewMargins()
-        }
+        cell.contentView.addSubview(contentRow)
+        contentRow.autoPinEdgesToSuperviewMargins()
 
         cell.accessibilityIdentifier = accessibilityIdentifier
         cell.accessoryType = accessoryType

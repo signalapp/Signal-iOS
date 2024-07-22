@@ -8,7 +8,7 @@ import SignalUI
 
 class GroupStorySettingsViewController: OWSTableViewController2 {
     let thread: TSGroupThread
-    let contextButton = ContextMenuButton()
+    let contextButton = ContextMenuButton(empty: ())
 
     init(thread: TSGroupThread) {
         self.thread = thread
@@ -31,9 +31,8 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
         title = thread.groupNameOrDefault
 
         contextButton.setImage(Theme.iconImage(.buttonMore), for: .normal)
-        contextButton.showsContextMenuAsPrimaryAction = true
-        contextButton.contextMenu = .init([
-            .init(
+        contextButton.setActions(actions: [
+            UIAction(
                 title: OWSLocalizedString(
                     "STORIES_GO_TO_CHAT_ACTION",
                     comment: "Context menu action to open the chat associated with the selected story"

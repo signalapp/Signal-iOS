@@ -318,61 +318,51 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
     /// A table item for an available username.
     private func usernameAvailableTableItem(username: String) -> OWSTableItem {
-        // No action block required, as the cell will handle taps itself
-        // by presenting a context menu.
+        let editUsernameAction = UIAction(
+            title: OWSLocalizedString(
+                "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION",
+                comment: "Title for a menu action allowing users to edit their existing username."
+            ),
+            image: Theme.iconImage(.contextMenuEdit),
+            handler: { [weak self] _ in
+                self?.presentUsernameSelection(
+                    currentUsername: username,
+                    isAttemptingRecovery: false
+                )
+            }
+        )
+
+        let deleteUsernameAction = UIAction(
+            title: CommonStrings.deleteButton,
+            image: Theme.iconImage(.contextMenuDelete),
+            attributes: .destructive,
+            handler: { [weak self] _ in
+                self?.offerToDeleteUsername(currentUsername: username)
+            }
+        )
+
         return OWSTableItem(
-            customCellBlock: { [weak self] in
-                let editUsernameAction = ContextMenuAction(
-                    title: OWSLocalizedString(
-                        "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION",
-                        comment: "Title for a menu action allowing users to edit their existing username."
-                    ),
-                    image: Theme.iconImage(.contextMenuEdit),
-                    handler: { [weak self] _ in
-                        self?.presentUsernameSelection(
-                            currentUsername: username,
-                            isAttemptingRecovery: false
-                        )
-                    }
-                )
-
-                let deleteUsernameAction = ContextMenuAction(
-                    title: CommonStrings.deleteButton,
-                    image: Theme.iconImage(.contextMenuDelete),
-                    attributes: .destructive,
-                    handler: { [weak self] _ in
-                        self?.offerToDeleteUsername(currentUsername: username)
-                    }
-                )
-
-                let contextMenuButton = ContextMenuButton(
-                    contextMenu: ContextMenu([
-                        editUsernameAction,
-                        deleteUsernameAction
-                    ]),
-                    preferredContextMenuPosition: ContextMenuButton.ContextMenuPosition(
-                        verticalPinnedEdge: .bottom,
-                        horizontalPinnedEdge: CurrentAppContext().isRTL ? .right : .left,
-                        alignmentOffset: CGPoint(
-                            x: Self.cellHInnerMargin,
-                            y: Self.cellVInnerMargin
-                        )
-                    )
-                )
-
-                contextMenuButton.showsContextMenuAsPrimaryAction = true
-
-                let contextMenuPresentingCell = ContextMenuPresentingTableViewCell(
-                    contextMenuButton: contextMenuButton
-                )
-
-                return OWSTableItem.buildCell(
-                    baseCell: contextMenuPresentingCell,
-                    contentWrapperView: contextMenuButton,
+            customCellBlock: {
+                let cell = OWSTableItem.buildCell(
                     icon: .profileUsername,
                     itemName: username,
                     accessoryType: .disclosureIndicator
                 )
+
+                /// We want a context menu to present when the user taps this
+                /// cell. To that end, we'll lay a context menu button over the
+                /// entire cell, which will intercept taps.
+                let contextMenuButton = ContextMenuButton(actions: [
+                    editUsernameAction,
+                    deleteUsernameAction
+                ])
+
+                /// We're intentionally not using `cell.contentView` here,
+                /// because we don't want the button inset.
+                cell.addSubview(contextMenuButton)
+                contextMenuButton.autoPinEdgesToSuperviewEdges()
+
+                return cell
             }
         )
     }

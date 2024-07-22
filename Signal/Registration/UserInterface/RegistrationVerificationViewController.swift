@@ -204,8 +204,7 @@ class RegistrationVerificationViewController: OWSViewController {
     )
 
     private lazy var contextButton: ContextMenuButton = {
-        let result = ContextMenuButton()
-        result.showsContextMenuAsPrimaryAction = true
+        let result = ContextMenuButton(empty: ())
         result.autoSetDimensions(to: .square(40))
         return result
     }()
@@ -243,10 +242,6 @@ class RegistrationVerificationViewController: OWSViewController {
 
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-
-        if contextButton.isShowingContextMenu {
-            contextButton.dismissContextMenu(animated: animated)
-        }
 
         isViewAppeared = false
     }
@@ -312,8 +307,8 @@ class RegistrationVerificationViewController: OWSViewController {
             navigationItem.leftBarButtonItem = nil
         case .exitReRegistration:
             navigationItem.leftBarButtonItem = contextBarButton
-            contextButton.contextMenu = ContextMenu([
-                .init(
+            contextButton.setActions(actions: [
+                UIAction(
                     title: OWSLocalizedString(
                         "EXIT_REREGISTRATION",
                         comment: "Button to exit re-registration, shown in context menu."
@@ -325,8 +320,8 @@ class RegistrationVerificationViewController: OWSViewController {
             ])
         case .exitChangeNumber:
             navigationItem.leftBarButtonItem = contextBarButton
-            contextButton.contextMenu = ContextMenu([
-                .init(
+            contextButton.setActions(actions: [
+                UIAction(
                     title: OWSLocalizedString(
                         "EXIT_CHANGE_NUMBER",
                         comment: "Button to exit change number, shown in context menu."

@@ -340,17 +340,16 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         let barButtonItem = createSettingsBarButtonItem(
             databaseStorage: databaseStorage,
             shouldShowUnreadPaymentBadge: viewState.settingsButtonCreator.hasUnreadPaymentNotification,
-            actions: { settingsAction in
-                var contextMenuActions: [ContextMenuAction] = []
+            buildActions: { settingsAction -> [UIAction] in
+                var contextMenuActions: [UIAction] = []
 
                 if FeatureFlags.chatListFilter {
                     switch viewState.inboxFilter {
                     case .unread:
                         contextMenuActions.append(
-                            ContextMenuAction(
+                            UIAction(
                                 title: OWSLocalizedString("CHAT_LIST_CLEAR_FILTER_MENU_ACTION", comment: "Title for context menu action to disable chat list filter (e.g., Filter by Unread)"),
                                 image: Theme.iconImage(.chatListClearFilter),
-                                attributes: [],
                                 handler: { [weak self] _ in
                                     self?.disableChatListFilter()
                                 }
@@ -358,10 +357,9 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                         )
                     case nil:
                         contextMenuActions.append(
-                            ContextMenuAction(
+                            UIAction(
                                 title: OWSLocalizedString("CHAT_LIST_UNREAD_FILTER_MENU_ACTION", comment: "Title for context menu action to enable Filter by Unread"),
                                 image: Theme.iconImage(.chatListFilterByUnread),
-                                attributes: [],
                                 handler: { [weak self] _ in
                                     self?.enableChatListFilter()
                                 }
@@ -372,14 +370,13 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
                 if viewState.settingsButtonCreator.hasInboxChats {
                     contextMenuActions.append(
-                        ContextMenuAction(
+                        UIAction(
                             title: OWSLocalizedString(
                                 "HOME_VIEW_TITLE_SELECT_CHATS",
                                 comment: "Title for the 'Select Chats' option in the ChatList."
                             ),
                             image: Theme.iconImage(.contextMenuSelect),
-                            attributes: [],
-                            handler: { [weak self] (_) in
+                            handler: { [weak self] _ in
                                 self?.willEnterMultiselectMode()
                             }
                         )
@@ -390,14 +387,13 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
                 if viewState.settingsButtonCreator.hasArchivedChats {
                     contextMenuActions.append(
-                        ContextMenuAction(
+                        UIAction(
                             title: OWSLocalizedString(
                                 "HOME_VIEW_TITLE_ARCHIVE",
                                 comment: "Title for the conversation list's 'archive' mode."
                             ),
                             image: Theme.iconImage(.contextMenuArchive),
-                            attributes: [],
-                            handler: { [weak self] (_) in
+                            handler: { [weak self] _ in
                                 self?.showArchivedConversations(offerMultiSelectMode: true)
                             }
                         )
