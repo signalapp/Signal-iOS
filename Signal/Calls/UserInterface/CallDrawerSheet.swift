@@ -620,7 +620,10 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
 
 extension CallDrawerSheet: CallControlsHeightObserver {
     func callControlsHeightDidChange(newHeight: CGFloat) {
-        self.setBottomSheetMinimizedHeight()
+        Self.springAnimation {
+            self.setBottomSheetMinimizedHeight()
+            self.view.layoutIfNeeded()
+        }
     }
 
     private enum HeightConstants {

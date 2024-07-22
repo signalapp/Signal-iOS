@@ -16,7 +16,7 @@ open class InteractiveSheetViewController: OWSViewController {
 
         public static let defaultMinHeight: CGFloat = 346
 
-        fileprivate static let maxAnimationDuration: TimeInterval = 0.3
+        public static let maxAnimationDuration: TimeInterval = 0.3
 
         /// Any absolute velocity below this amount counts as zero velocity, e.g. just releasing.
         fileprivate static let baseVelocityThreshhold: CGFloat = 200
@@ -303,7 +303,7 @@ open class InteractiveSheetViewController: OWSViewController {
         )
     }
 
-    private static func springAnimation(
+    public static func springAnimation(
         duration: CGFloat = Constants.maxAnimationDuration,
         response: CGFloat = 0.3,
         animations: @escaping () -> Void,
