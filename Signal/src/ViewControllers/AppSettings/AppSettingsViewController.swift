@@ -134,8 +134,7 @@ class AppSettingsViewController: OWSTableViewController2 {
         let section1 = OWSTableSection()
         section1.add(.disclosureItem(
             icon: .settingsAccount,
-            name: OWSLocalizedString("SETTINGS_ACCOUNT", comment: "Title for the 'account' link in settings."),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "account"),
+            withText: OWSLocalizedString("SETTINGS_ACCOUNT", comment: "Title for the 'account' link in settings."),
             actionBlock: { [weak self] in
                 let vc = AccountSettingsViewController()
                 self?.navigationController?.pushViewController(vc, animated: true)
@@ -144,8 +143,7 @@ class AppSettingsViewController: OWSTableViewController2 {
         if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == true {
             section1.add(.disclosureItem(
                 icon: .settingsLinkedDevices,
-                name: OWSLocalizedString("LINKED_DEVICES_TITLE", comment: "Menu item and navbar title for the device manager"),
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "linked-devices"),
+                withText: OWSLocalizedString("LINKED_DEVICES_TITLE", comment: "Menu item and navbar title for the device manager"),
                 actionBlock: { [weak self] in
                     let vc = LinkedDevicesTableViewController()
                     self?.navigationController?.pushViewController(vc, animated: true)
@@ -178,8 +176,7 @@ class AppSettingsViewController: OWSTableViewController2 {
         let section2 = OWSTableSection()
         section2.add(.disclosureItem(
             icon: .settingsAppearance,
-            name: OWSLocalizedString("SETTINGS_APPEARANCE_TITLE", comment: "The title for the appearance settings."),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "appearance"),
+            withText: OWSLocalizedString("SETTINGS_APPEARANCE_TITLE", comment: "The title for the appearance settings."),
             actionBlock: { [weak self] in
                 let vc = AppearanceSettingsTableViewController()
                 self?.navigationController?.pushViewController(vc, animated: true)
@@ -187,8 +184,7 @@ class AppSettingsViewController: OWSTableViewController2 {
         ))
         section2.add(.disclosureItem(
             icon: .settingsChats,
-            name: OWSLocalizedString("SETTINGS_CHATS", comment: "Title for the 'chats' link in settings."),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "chats"),
+            withText: OWSLocalizedString("SETTINGS_CHATS", comment: "Title for the 'chats' link in settings."),
             actionBlock: { [weak self] in
                 let vc = ChatsSettingsViewController()
                 self?.navigationController?.pushViewController(vc, animated: true)
@@ -196,11 +192,10 @@ class AppSettingsViewController: OWSTableViewController2 {
         ))
         section2.add(.disclosureItem(
             icon: .settingsStories,
-            name: OWSLocalizedString(
+            withText: OWSLocalizedString(
                 "STORY_SETTINGS_TITLE",
                 comment: "Label for the stories section of the settings view"
             ),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "stories"),
             actionBlock: { [weak self] in
                 let vc = StoryPrivacySettingsViewController()
                 self?.navigationController?.pushViewController(vc, animated: true)
@@ -208,8 +203,7 @@ class AppSettingsViewController: OWSTableViewController2 {
         ))
         section2.add(.disclosureItem(
             icon: .settingsNotifications,
-            name: OWSLocalizedString("SETTINGS_NOTIFICATIONS", comment: "The title for the notification settings."),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "notifications"),
+            withText: OWSLocalizedString("SETTINGS_NOTIFICATIONS", comment: "The title for the notification settings."),
             actionBlock: { [weak self] in
                 let vc = NotificationSettingsViewController()
                 self?.navigationController?.pushViewController(vc, animated: true)
@@ -217,8 +211,7 @@ class AppSettingsViewController: OWSTableViewController2 {
         ))
         section2.add(.disclosureItem(
             icon: .settingsPrivacy,
-            name: OWSLocalizedString("SETTINGS_PRIVACY_TITLE", comment: "The title for the privacy settings."),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "privacy"),
+            withText: OWSLocalizedString("SETTINGS_PRIVACY_TITLE", comment: "The title for the privacy settings."),
             actionBlock: { [weak self] in
                 let vc = PrivacySettingsViewController()
                 self?.navigationController?.pushViewController(vc, animated: true)
@@ -226,8 +219,7 @@ class AppSettingsViewController: OWSTableViewController2 {
         ))
         section2.add(.disclosureItem(
             icon: .settingsDataUsage,
-            name: OWSLocalizedString("SETTINGS_DATA", comment: "Label for the 'data' section of the app settings."),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "data-usage"),
+            withText: OWSLocalizedString("SETTINGS_DATA", comment: "Label for the 'data' section of the app settings."),
             actionBlock: { [weak self] in
                 let vc = DataSettingsTableViewController()
                 self?.navigationController?.pushViewController(vc, animated: true)
@@ -311,8 +303,7 @@ class AppSettingsViewController: OWSTableViewController2 {
         let section3 = OWSTableSection()
         section3.add(.disclosureItem(
             icon: .settingsHelp,
-            name: CommonStrings.help,
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "help"),
+            withText: CommonStrings.help,
             actionBlock: { [weak self] in
                 let vc = HelpViewController()
                 self?.navigationController?.pushViewController(vc, animated: true)
@@ -321,7 +312,6 @@ class AppSettingsViewController: OWSTableViewController2 {
         section3.add(.item(
             icon: .settingsInvite,
             name: OWSLocalizedString("SETTINGS_INVITE_TITLE", comment: "Settings table view cell label"),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "invite"),
             actionBlock: { [weak self] in
                 self?.showInviteFlow()
             }
@@ -332,8 +322,7 @@ class AppSettingsViewController: OWSTableViewController2 {
             let internalSection = OWSTableSection()
             internalSection.add(.disclosureItem(
                 icon: .settingsAdvanced,
-                name: "Internal",
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "internal"),
+                withText: "Internal",
                 actionBlock: { [weak self] in
                     let vc = InternalSettingsViewController()
                     self?.navigationController?.pushViewController(vc, animated: true)

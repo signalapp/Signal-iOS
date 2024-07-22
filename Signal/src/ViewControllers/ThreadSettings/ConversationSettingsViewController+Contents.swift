@@ -323,20 +323,18 @@ extension ConversationSettingsViewController {
     private func addSafetyNumberItemIfNecessary(to section: OWSTableSection) {
         guard !thread.isNoteToSelf, !isGroupThread, thread.hasSafetyNumbers() else { return }
 
-        section.add(OWSTableItem(customCellBlock: { [weak self] in
-            guard let self = self else {
-                owsFailDebug("Missing self")
-                return OWSTableItem.newCell()
-            }
-
-            return OWSTableItem.buildDisclosureCell(name: OWSLocalizedString("VERIFY_PRIVACY",
-                                                                            comment: "Label for button or row which allows users to verify the safety number of another user."),
-                                                    icon: .contactInfoSafetyNumber,
-                                                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "safety_numbers"))
-        },
-        actionBlock: { [weak self] in
-            self?.showVerificationView()
-        }))
+        section.add(
+            OWSTableItem.disclosureItem(
+                icon: .contactInfoSafetyNumber,
+                withText: OWSLocalizedString(
+                    "VERIFY_PRIVACY",
+                    comment: "Label for button or row which allows users to verify the safety number of another user."
+                ),
+                actionBlock: { [weak self] in
+                    self?.showVerificationView()
+                }
+            )
+        )
     }
 
     private func addSystemContactSectionIfNecessary(to contents: OWSTableContents) {
@@ -345,46 +343,34 @@ extension ConversationSettingsViewController {
         let section = OWSTableSection()
 
         if isSystemContact {
-            section.add(OWSTableItem(customCellBlock: { [weak self] in
-                guard let self = self else {
-                    owsFailDebug("Missing self")
-                    return OWSTableItem.newCell()
-                }
-
-                return OWSTableItem.buildDisclosureCell(
-                    name: OWSLocalizedString(
+            section.add(
+                OWSTableItem.disclosureItem(
+                    icon: .contactInfoUserInContacts,
+                    withText: OWSLocalizedString(
                         "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT",
                         comment: "Indicates that user is in the system contacts list."
                     ),
-                    icon: .contactInfoUserInContacts,
-                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "is_in_contacts")
+                    actionBlock: { [weak self] in
+                        self?.presentCreateOrEditContactViewController(
+                            address: contactThread.contactAddress,
+                            editImmediately: false
+                        )
+                    }
                 )
-            },
-            actionBlock: { [weak self] in
-                guard let self = self else {
-                    owsFailDebug("Missing self")
-                    return
-                }
-                self.presentCreateOrEditContactViewController(address: contactThread.contactAddress, editImmediately: false)
-            }))
+            )
         } else if contactThread.contactAddress.phoneNumber != nil {
-            section.add(OWSTableItem(customCellBlock: { [weak self] in
-                guard let self = self else {
-                    owsFailDebug("Missing self")
-                    return OWSTableItem.newCell()
-                }
-                return OWSTableItem.buildDisclosureCell(
-                    name: OWSLocalizedString(
+            section.add(
+                OWSTableItem.disclosureItem(
+                    icon: .contactInfoAddToContacts,
+                    withText: OWSLocalizedString(
                         "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS",
                         comment: "button in conversation settings view."
                     ),
-                    icon: .contactInfoAddToContacts,
-                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "add_to_system_contacts")
+                    actionBlock: { [weak self] in
+                        self?.showAddToSystemContactsActionSheet(contactThread: contactThread)
+                    }
                 )
-            },
-            actionBlock: { [weak self] in
-                self?.showAddToSystemContactsActionSheet(contactThread: contactThread)
-            }))
+            )
         }
 
         contents.add(section)
@@ -807,12 +793,11 @@ extension ConversationSettingsViewController {
                                : CommonStrings.switchOff)
         section.add(OWSTableItem.disclosureItem(
             icon: .groupInfoGroupLink,
-            name: OWSLocalizedString(
+            withText: OWSLocalizedString(
                 "CONVERSATION_SETTINGS_GROUP_LINK",
                 comment: "Label for 'group link' action in conversation settings view."
             ),
             accessoryText: groupLinkStatus,
-            accessibilityIdentifier: "conversation_settings_group_link",
             actionBlock: { [weak self] in
                 self?.showGroupLinkView()
             })
@@ -822,9 +807,8 @@ extension ConversationSettingsViewController {
                                           comment: "Label for 'member requests & invites' action in conversation settings view.")
         section.add(OWSTableItem.disclosureItem(
             icon: .groupInfoRequestAndInvites,
-            name: itemTitle,
+            withText: itemTitle,
             accessoryText: OWSFormat.formatInt(groupModelV2.groupMembership.invitedOrRequestMembers.count),
-            accessibilityIdentifier: "conversation_settings_requests_and_invites",
             actionBlock: { [weak self] in
                 self?.showMemberRequestsAndInvitesView()
             })
@@ -837,8 +821,7 @@ extension ConversationSettingsViewController {
             )
             section.add(OWSTableItem.disclosureItem(
                 icon: .groupInfoPermissions,
-                name: itemTitle,
-                accessibilityIdentifier: "conversation_settings_permissions",
+                withText: itemTitle,
                 actionBlock: { [weak self] in
                     self?.showPermissionsSettingsView()
                 }

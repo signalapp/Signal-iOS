@@ -134,9 +134,10 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
         wallpaperSection.customHeaderHeight = 14
 
         wallpaperSection.add(OWSTableItem.disclosureItem(
-            withText: OWSLocalizedString("WALLPAPER_SETTINGS_SET_WALLPAPER",
-                                        comment: "Set wallpaper action in wallpaper settings view."),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "set_wallpaper")
+            withText: OWSLocalizedString(
+                "WALLPAPER_SETTINGS_SET_WALLPAPER",
+                comment: "Set wallpaper action in wallpaper settings view."
+            )
         ) { [weak self] in
             guard let self = self else { return }
             let viewController = self.databaseStorage.read { tx in

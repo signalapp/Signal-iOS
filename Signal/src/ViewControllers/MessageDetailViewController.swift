@@ -373,11 +373,10 @@ class MessageDetailViewController: OWSTableViewController2 {
         let section = OWSTableSection()
         section.add(.disclosureItem(
             icon: .buttonEdit,
-            name: OWSLocalizedString(
+            withText: OWSLocalizedString(
                 "MESSAGE_DETAILS_EDIT_HISTORY_TITLE",
                 comment: "Title for the 'edit history' section on the 'message details' view."
             ),
-            accessibilityIdentifier: "view_edit_history",
             actionBlock: { [weak self] in
                 guard let self else { return }
                 let sheet = EditHistoryTableSheetViewController(

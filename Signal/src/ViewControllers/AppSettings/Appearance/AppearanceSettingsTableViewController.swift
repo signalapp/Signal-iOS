@@ -28,17 +28,17 @@ class AppearanceSettingsTableViewController: OWSTableViewController2 {
         firstSection.add(OWSTableItem.disclosureItem(
             withText: OWSLocalizedString("SETTINGS_APPEARANCE_THEME_TITLE",
                                         comment: "The title for the theme section in the appearance settings."),
-            detailText: ThemeSettingsTableViewController.currentThemeName,
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "theme")
+            accessoryText: ThemeSettingsTableViewController.currentThemeName
         ) { [weak self] in
             guard let self = self else { return }
             let vc = ThemeSettingsTableViewController()
             self.navigationController?.pushViewController(vc, animated: true)
         })
         firstSection.add(OWSTableItem.disclosureItem(
-            withText: OWSLocalizedString("SETTINGS_ITEM_COLOR_AND_WALLPAPER",
-                                        comment: "Label for settings view that allows user to change the chat color and wallpaper."),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "color_and_wallpaper")
+            withText: OWSLocalizedString(
+                "SETTINGS_ITEM_COLOR_AND_WALLPAPER",
+                comment: "Label for settings view that allows user to change the chat color and wallpaper."
+            )
         ) { [weak self] in
             guard let self = self else { return }
             let vc = ColorAndWallpaperSettingsViewController()

@@ -75,7 +75,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
                 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE",
                 comment: "Title for the 'country code' row of the 'delete account confirmation' view controller."
             ),
-            detailText: "\(callingCode) (\(countryCode))",
+            accessoryText: "\(callingCode) (\(countryCode))",
             actionBlock: { [weak self] in
                 guard let self = self else { return }
                 let countryCodeController = CountryCodeViewController()

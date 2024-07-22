@@ -38,7 +38,6 @@ class BlockListViewController: OWSTableViewController2 {
                     "SETTINGS_BLOCK_LIST_ADD_BUTTON",
                     comment: "A label for the 'add phone number' button in the block list table."
                 ),
-                accessibilityIdentifier: "BlockListViewController.add",
                 actionBlock: { [weak self] in
                     let viewController = AddToBlockListViewController()
                     viewController.delegate = self

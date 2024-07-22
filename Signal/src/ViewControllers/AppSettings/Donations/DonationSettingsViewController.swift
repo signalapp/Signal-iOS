@@ -382,13 +382,9 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
         section.add(.disclosureItem(
             icon: .donateGift,
-            name: OWSLocalizedString(
+            withText: OWSLocalizedString(
                 "DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND",
                 comment: "Title for the \"donate for a friend\" button on the donation view."
-            ),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(
-                in: self,
-                name: "donationOnBehalfOfAFriend"
             ),
             actionBlock: { [weak self] in
                 guard let self = self else { return }
@@ -437,11 +433,10 @@ class DonationSettingsViewController: OWSTableViewController2 {
         if shouldShowSubscriptionFaqLink {
             section.add(.disclosureItem(
                 icon: .settingsHelp,
-                name: OWSLocalizedString(
+                withText: OWSLocalizedString(
                     "DONATION_VIEW_DONOR_FAQ",
                     comment: "Title for the 'Donor FAQ' button on the donation screen"
                 ),
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "donorFAQ"),
                 actionBlock: { [weak self] in
                     let vc = SFSafariViewController(url: SupportConstants.donorFAQURL)
                     self?.present(vc, animated: true, completion: nil)
@@ -459,8 +454,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
     private func donationReceiptsItem(profileBadgeLookup: ProfileBadgeLookup) -> OWSTableItem {
         .disclosureItem(
             icon: .donateReceipts,
-            name: OWSLocalizedString("DONATION_RECEIPTS", comment: "Title of view where you can see all of your donation receipts, or button to take you there"),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "subscriptionReceipts"),
+            withText: OWSLocalizedString("DONATION_RECEIPTS", comment: "Title of view where you can see all of your donation receipts, or button to take you there"),
             actionBlock: { [weak self] in
                 let vc = DonationReceiptsViewController(profileBadgeLookup: profileBadgeLookup)
                 self?.navigationController?.pushViewController(vc, animated: true)

@@ -63,7 +63,6 @@ class AccountSettingsViewController: OWSTableViewController2 {
                         "SETTINGS_PINS_ITEM_CREATE",
                         comment: "Label for the 'pins' item of the privacy settings when the user doesn't have a pin."
                     ),
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "pin"),
                 actionBlock: { [weak self] in
                     self?.showCreateOrChangePin()
                 }
@@ -108,7 +107,6 @@ class AccountSettingsViewController: OWSTableViewController2 {
                     "SETTINGS_ADVANCED_PIN_SETTINGS",
                     comment: "Label for the 'advanced pin settings' button."
                 ),
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "advanced-pins"),
                 actionBlock: { [weak self] in
                     let vc = AdvancedPinSettingsTableViewController()
                     self?.navigationController?.pushViewController(vc, animated: true)

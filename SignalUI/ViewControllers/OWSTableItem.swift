@@ -99,20 +99,18 @@ public class OWSTableItem {
     }
 
     public static func disclosureItem(
-        withText text: String,
-        detailText: String? = nil,
-        accessibilityIdentifier: String? = nil,
+        icon: ThemeIcon? = nil,
+        withText: String,
+        maxNameLines: Int? = nil,
+        accessoryText: String? = nil,
         actionBlock: (() -> Void)? = nil
     ) -> OWSTableItem {
-        return OWSTableItem(
-            customCellBlock: {
-                return OWSTableItem.buildCell(
-                    itemName: text,
-                    accessoryText: detailText,
-                    accessoryType: .disclosureIndicator,
-                    accessibilityIdentifier: accessibilityIdentifier
-                )
-            },
+        return item(
+            icon: icon,
+            name: withText,
+            maxNameLines: maxNameLines,
+            accessoryText: accessoryText,
+            accessoryType: .disclosureIndicator,
             actionBlock: actionBlock
         )
     }
@@ -345,58 +343,6 @@ public extension OWSTableItem {
         result.layer.magnificationFilter = .trilinear
         result.autoSetDimensions(to: CGSize(square: iconSize))
         return result
-    }
-
-    static func buildCell(
-        name: String,
-        icon: ThemeIcon,
-        accessibilityIdentifier: String? = nil
-    ) -> UITableViewCell {
-        let iconView = imageView(forIcon: icon)
-        let cell = buildCell(name: name, iconView: iconView)
-        cell.accessibilityIdentifier = accessibilityIdentifier
-        return cell
-    }
-
-    static func buildDisclosureCell(
-        name: String,
-        icon: ThemeIcon,
-        accessibilityIdentifier: String
-    ) -> UITableViewCell {
-        let cell = buildCell(name: name, icon: icon)
-        cell.accessoryType = .disclosureIndicator
-        cell.accessibilityIdentifier = accessibilityIdentifier
-        return cell
-    }
-
-    static func buildLabelCell(
-        name: String,
-        icon: ThemeIcon,
-        accessibilityIdentifier: String
-    ) -> UITableViewCell {
-        let cell = buildCell(name: name, icon: icon)
-        cell.accessoryType = .none
-        cell.accessibilityIdentifier = accessibilityIdentifier
-        return cell
-    }
-
-    static func disclosureItem(
-        icon: ThemeIcon,
-        name: String,
-        maxNameLines: Int? = nil,
-        accessoryText: String? = nil,
-        accessibilityIdentifier: String,
-        actionBlock: (() -> Void)?
-    ) -> OWSTableItem {
-        return item(
-            icon: icon,
-            name: name,
-            maxNameLines: maxNameLines,
-            accessoryText: accessoryText,
-            accessoryType: .disclosureIndicator,
-            accessibilityIdentifier: accessibilityIdentifier,
-            actionBlock: actionBlock
-        )
     }
 
     static func item(

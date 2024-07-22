@@ -34,7 +34,6 @@ class InternalSettingsViewController: OWSTableViewController2 {
         if DebugFlags.audibleErrorLogging {
             debugSection.add(.disclosureItem(
                 withText: OWSLocalizedString("SETTINGS_ADVANCED_VIEW_ERROR_LOG", comment: ""),
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "error_logs"),
                 actionBlock: { [weak self] in
                     Logger.flush()
                     let vc = LogPickerViewController(logDirUrl: DebugLogger.errorLogsDir)

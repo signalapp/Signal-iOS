@@ -77,9 +77,10 @@ class SetWallpaperViewController: OWSTableViewController2 {
 
         let choosePhotoItem = OWSTableItem.disclosureItem(
             icon: .buttonPhotoLibrary,
-            name: OWSLocalizedString("SET_WALLPAPER_CHOOSE_PHOTO",
-                                    comment: "Title for the wallpaper choose from photos option"),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "choose_photo")
+            withText: OWSLocalizedString(
+                "SET_WALLPAPER_CHOOSE_PHOTO",
+                comment: "Title for the wallpaper choose from photos option"
+            )
         ) { [weak self] in
             guard let self = self else { return }
             let vc = UIImagePickerController()

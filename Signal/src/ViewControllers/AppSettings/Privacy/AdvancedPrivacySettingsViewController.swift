@@ -109,7 +109,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
                     "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY",
                     comment: "Label for the 'manual censorship circumvention' country."
                 ),
-                detailText: ensureManualCensorshipCircumventionCountry().localizedCountryName,
+                accessoryText: ensureManualCensorshipCircumventionCountry().localizedCountryName,
                 actionBlock: { [weak self] in
                     let vc = DomainFrontingCountryViewController()
                     self?.navigationController?.pushViewController(vc, animated: true)
@@ -133,7 +133,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
                 "PROXY_SETTINGS_TITLE",
                 comment: "Title for the signal proxy settings"
             ),
-            detailText: SignalProxy.isEnabled ? CommonStrings.switchOn : CommonStrings.switchOff,
+            accessoryText: SignalProxy.isEnabled ? CommonStrings.switchOn : CommonStrings.switchOff,
             actionBlock: { [weak self] in
                 let vc = ProxySettingsViewController()
                 self?.navigationController?.pushViewController(vc, animated: true)

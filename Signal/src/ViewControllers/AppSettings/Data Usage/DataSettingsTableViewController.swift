@@ -62,8 +62,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
 
             autoDownloadSection.add(OWSTableItem.disclosureItem(
                 withText: name,
-                detailText: preferenceName,
-                accessibilityIdentifier: mediaDownloadType.rawValue
+                accessoryText: preferenceName
             ) { [weak self] in
                 self?.showMediaDownloadView(forMediaDownloadType: mediaDownloadType)
             })
@@ -107,7 +106,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
                 "SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE",
                 comment: "Item title for the sent media quality setting"
             ),
-            detailText: databaseStorage.read(block: ImageQualityLevel.resolvedQuality(tx:)).localizedString,
+            accessoryText: databaseStorage.read(block: ImageQualityLevel.resolvedQuality(tx:)).localizedString,
             actionBlock: { [weak self] in
                 self?.showSentMediaQualityPreferences()
             }
@@ -135,7 +134,7 @@ class DataSettingsTableViewController: OWSTableViewController2 {
             withText: OWSLocalizedString(
                 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE",
                 comment: "Item title for the low bandwidth call setting"),
-            detailText: currentCallDataPreferenceString ?? "",
+            accessoryText: currentCallDataPreferenceString ?? "",
             actionBlock: { [weak self] in
                 self?.showCallDataPreferences()
             }

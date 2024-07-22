@@ -151,12 +151,11 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
 
         section.add(.disclosureItem(
             icon: isCustomTime ? .checkmark : .empty,
-            name: OWSLocalizedString(
+            withText: OWSLocalizedString(
                 "DISAPPEARING_MESSAGES_CUSTOM_TIME",
                 comment: "Disappearing message option to define a custom time"
             ),
             accessoryText: isCustomTime ? DateUtil.formatDuration(seconds: configuration.durationSeconds, useShortFormat: false) : nil,
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "timer_custom"),
             actionBlock: { [weak self] in
                 guard let self = self else { return }
                 let vc = DisappearingMessagesTimerSettingsViewController(

@@ -178,11 +178,10 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         )
         mainSection.add(.disclosureItem(
             icon: .profileName,
-            name: fullName ?? OWSLocalizedString(
+            withText: fullName ?? OWSLocalizedString(
                 "PROFILE_SETTINGS_NAME_PLACEHOLDER",
                 comment: "Placeholder when the user doesn't have a 'name' defined for profile settings screen."
             ),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "name"),
             actionBlock: { [weak self] in
                 guard let self = self else { return }
                 let vc = ProfileNameViewController(
@@ -196,14 +195,13 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
         mainSection.add(.disclosureItem(
             icon: .profileAbout,
-            name: OWSUserProfile.bioForDisplay(
+            withText: OWSUserProfile.bioForDisplay(
                 bio: profileValues.bio.currentValue,
                 bioEmoji: profileValues.bioEmoji.currentValue
             ) ?? OWSLocalizedString(
                 "PROFILE_SETTINGS_BIO_PLACEHOLDER",
                 comment: "Placeholder when the user doesn't have an 'about' for profile settings screen."
             ),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "about"),
             actionBlock: { [weak self] in
                 guard let self = self else { return }
                 let vc = ProfileBioViewController(
@@ -217,11 +215,10 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         if !allBadges.isEmpty {
             mainSection.add(.disclosureItem(
                 icon: .profileBadges,
-                name: OWSLocalizedString(
+                withText: OWSLocalizedString(
                     "BADGE_CONFIGURATION_TITLE",
                     comment: "The title for the badge configuration page"
                 ),
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "badges"),
                 actionBlock: { [weak self] in
                     guard let self = self else { return }
 

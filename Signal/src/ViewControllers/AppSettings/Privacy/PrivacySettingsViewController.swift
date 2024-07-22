@@ -162,7 +162,7 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                     "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT",
                     comment: "Label for the 'screen lock activity timeout' setting of the privacy settings."
                 ),
-                detailText: formatScreenLockTimeout(ScreenLock.shared.screenLockTimeout()),
+                accessoryText: formatScreenLockTimeout(ScreenLock.shared.screenLockTimeout()),
                 actionBlock: { [weak self] in
                     self?.showScreenLockTimeoutPicker()
                 }

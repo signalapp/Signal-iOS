@@ -209,7 +209,6 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
                 "LINK_NEW_DEVICE_TITLE",
                 comment: "Navigation title when scanning QR code to add new device."
             ),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "add_new_linked_device"),
             actionBlock: { [weak self] in
                 self?.getCameraPermissionsThenShowLinkNewDeviceView()
             }

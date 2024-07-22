@@ -120,8 +120,7 @@ extension DonationSettingsViewController {
         if hasAnyBadges {
             section.add(.disclosureItem(
                 icon: .donateBadges,
-                name: OWSLocalizedString("DONATION_VIEW_MANAGE_BADGES", comment: "Title for the 'Badges' button on the donation screen"),
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "badges"),
+                withText: OWSLocalizedString("DONATION_VIEW_MANAGE_BADGES", comment: "Title for the 'Badges' button on the donation screen"),
                 actionBlock: { [weak self] in
                     guard let self = self else { return }
                     let vc = BadgeConfigurationViewController(fetchingDataFromLocalProfileWithDelegate: self)

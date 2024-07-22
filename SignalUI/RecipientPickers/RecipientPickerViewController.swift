@@ -336,11 +336,10 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
         if shouldShowNewGroup && !isSearching {
             staticSection.add(OWSTableItem.disclosureItem(
                 icon: .genericGroup,
-                name: OWSLocalizedString(
+                withText: OWSLocalizedString(
                     "NEW_GROUP_BUTTON",
                     comment: "Label for the 'create new group' button."
                 ),
-                accessibilityIdentifier: "RecipientPickerViewController.new_group",
                 actionBlock: { [weak self] in
                     self?.newGroupButtonPressed()
                 }
@@ -351,11 +350,10 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
             // Find by username
             staticSection.add(OWSTableItem.disclosureItem(
                 icon: .profileUsername,
-                name: OWSLocalizedString(
+                withText: OWSLocalizedString(
                     "NEW_CONVERSATION_FIND_BY_USERNAME",
                     comment: "A label for the cell that lets you add a new member by their username"
                 ),
-                accessibilityIdentifier: "RecipientPickerViewController.find_by_username",
                 actionBlock: { [weak self] in
                     guard let self else { return }
                     let viewController = FindByUsernameViewController()
@@ -367,11 +365,10 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
             // Find by phone number
             staticSection.add(OWSTableItem.disclosureItem(
                 icon: .phoneNumber,
-                name: OWSLocalizedString(
+                withText: OWSLocalizedString(
                     "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER",
                     comment: "A label the cell that lets you add a new member to a group."
                 ),
-                accessibilityIdentifier: "RecipientPickerViewController.find_by_phone",
                 actionBlock: { [weak self] in
                     guard let self else { return }
                     let viewController = FindByPhoneNumberViewController(
@@ -451,11 +448,10 @@ public class RecipientPickerViewController: OWSViewController, OWSNavigationChil
             ))
             bottomSection.add(OWSTableItem.disclosureItem(
                 icon: .settingsInvite,
-                name: OWSLocalizedString(
+                withText: OWSLocalizedString(
                     "INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
                     comment: "Label for the cell that presents the 'invite contacts' workflow."
                 ),
-                accessibilityIdentifier: "RecipientPickerViewController.invite_contacts",
                 actionBlock: { [weak self] in
                     self?.presentInviteFlow()
                 }

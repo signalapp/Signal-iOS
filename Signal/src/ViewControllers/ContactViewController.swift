@@ -178,8 +178,7 @@ class ContactViewController: OWSTableViewController2 {
         if showInviteToSignal() {
             actionsSection.add(.disclosureItem(
                 icon: .settingsInvite,
-                name: OWSLocalizedString("ACTION_INVITE", comment: ""),
-                accessibilityIdentifier: "invite_contact_share",
+                withText: OWSLocalizedString("ACTION_INVITE", comment: ""),
                 actionBlock: { [weak self] in
                     self?.didPressInvite()
                 }
@@ -189,11 +188,10 @@ class ContactViewController: OWSTableViewController2 {
         if showAddToContacts() {
             actionsSection.add(.disclosureItem(
                 icon: .contactInfoAddToContacts,
-                name: OWSLocalizedString(
+                withText: OWSLocalizedString(
                     "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER",
                     comment: "")
                 ,
-                accessibilityIdentifier: "add_to_contacts",
                 actionBlock: { [weak self] in
                     self?.didPressAddToContacts()
                 }
