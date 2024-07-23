@@ -61,6 +61,7 @@ class TSMessageTest: SSKBaseTest {
             builder.timestamp = now - kMinuteInMs
             let message = builder.buildWithSneakyTransaction()
             self.databaseStorage.write { transaction in
+                message.anyInsert(transaction: transaction)
                 message.updateWithRemotelyDeletedAndRemoveRenderableContent(with: transaction)
             }
 

@@ -92,6 +92,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
             messageBuilder.timestamp = 100
             let message = messageBuilder.build(transaction: transaction)
+            message.anyInsert(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
             let content = try! SSKProtoContent(serializedData: messageData)
             XCTAssertNil(content.pniSignatureMessage)
@@ -108,6 +109,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
             messageBuilder.timestamp = 100
             let message = messageBuilder.build(transaction: transaction)
+            message.anyInsert(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
             let content = try! SSKProtoContent(serializedData: messageData)
 
@@ -132,6 +134,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
             messageBuilder.timestamp = Date.ows_millisecondTimestamp()
             let message = messageBuilder.build(transaction: transaction)
+            message.anyInsert(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
 
             message.update(withSentRecipient: ServiceIdObjC.wrapValue(otherAci), wasSentByUD: true, transaction: transaction)
@@ -171,6 +174,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
             messageBuilder.timestamp = Date.ows_millisecondTimestamp()
             let message = messageBuilder.build(transaction: transaction)
+            message.anyInsert(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
 
             message.update(withSentRecipient: ServiceIdObjC.wrapValue(otherAci), wasSentByUD: true, transaction: transaction)
@@ -229,6 +233,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
             messageBuilder.timestamp = Date.ows_millisecondTimestamp()
             let message = messageBuilder.build(transaction: transaction)
+            message.anyInsert(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
 
             message.update(withSentRecipient: ServiceIdObjC.wrapValue(otherAci), wasSentByUD: false, transaction: transaction)
@@ -268,6 +273,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
             messageBuilder.timestamp = Date.ows_millisecondTimestamp()
             let message = messageBuilder.build(transaction: transaction)
+            message.anyInsert(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
 
             message.update(withSentRecipient: ServiceIdObjC.wrapValue(otherAci), wasSentByUD: true, transaction: transaction)
@@ -311,6 +317,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
             messageBuilder.timestamp = Date.ows_millisecondTimestamp()
             message = messageBuilder.build(transaction: transaction)
+            message.anyInsert(transaction: transaction)
             let messageData = message.buildPlainTextData(thread, transaction: transaction)!
 
             message.update(withSentRecipient: ServiceIdObjC.wrapValue(otherAci), wasSentByUD: true, transaction: transaction)
