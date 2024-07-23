@@ -5627,7 +5627,7 @@
 "RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@ قول كۆتۈردى";
 
 /* A compact member count on the call view's raised hands toast indicating that you and a number of other users raised a hand. Embeds {{number of other users}} */
-"RAISED_HANDS_TOAST_YOU_PLUS_OTHERS_COUNT" = "You +%1$d";
+"RAISED_HANDS_TOAST_YOU_PLUS_OTHERS_COUNT" = "سىز ۋە +%1$d";
 
 /* A message appearing on the call view's raised hands toast indicating that you raised your own hand. */
 "RAISED_HANDS_TOAST_YOUR_HAND_MESSAGE" = "قول كۆتۈردىڭىز";

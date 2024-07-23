@@ -1,1 +1,1 @@
-• We added haptic feedback and a subtle vibration when you change between different views during a group call, but it’s still up to you whether or not you shake it up and switch from the grid view back to the slideshow that your coworker is presenting.
+• We hebben haptische feedback en subtiele trilling toegevoegd wanneer je tijdens een groepsoproep tussen weergaven wisselt.

@@ -45,9 +45,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>¿Añadir participante a &quot;%2$@&quot;?</string>
+			<string>¿Añadir participante a «%2$@»?</string>
 			<key>other</key>
-			<string>¿Añadir %1$d participantes a &quot;%2$@&quot;?</string>
+			<string>¿Añadir %1$d participantes a «%2$@»?</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -584,9 +584,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Se encontró %1$d conflicto de nombre en este grupo. Revisa la lista de participantes debajo y selecciona la opción adecuada.</string>
+			<string>Se encontró %1$d conflicto de nombre en este grupo. Revisa la lista de participantes debajo y selecciona la opción que desees.</string>
 			<key>other</key>
-			<string>Se encontraron %1$d conflictos de nombre en este grupo. Revisa la lista de participantes debajo y selecciona la opción adecuada.</string>
+			<string>Se encontraron %1$d conflictos de nombre en este grupo. Revisa la lista de participantes debajo y selecciona la opción que desees.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -600,9 +600,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d participante del grupo tiene el mismo nombre. Revisa la lista de participantes debajo y selecciona la opción adecuada.</string>
+			<string>%1$d participante del grupo tiene el mismo nombre. Revisa la lista de participantes debajo y selecciona la opción que desees.</string>
 			<key>other</key>
-			<string>%1$d participantes del grupo tienen el mismo nombre. Revisa la lista de participantes debajo y selecciona la opción adecuada.</string>
+			<string>%1$d participantes del grupo tienen el mismo nombre. Revisa la lista de participantes debajo y selecciona la opción que desees.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -1160,9 +1160,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>¿Retirar la invitación de grupo enviada por &quot;%2$@&quot;?</string>
+			<string>¿Retirar la invitación de grupo enviada por «%2$@»?</string>
 			<key>other</key>
-			<string>¿Retirar %1$d invitaciones de grupo enviadas por &quot;%2$@&quot;?</string>
+			<string>¿Retirar %1$d invitaciones de grupo enviadas por «%2$@»?</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>

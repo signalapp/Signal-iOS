@@ -236,13 +236,13 @@
 "APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Plus tard";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "La version %1$@ est maintenant proposée dans la logithèque App Store.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "La version %1$@ est maintenant disponible dans l’App Store.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "Une nouvelle version de Signal est proposée";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Une nouvelle version de Signal est disponible";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Mise à jour";
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Mettre à jour";
 
 /* Name indicating that the dark theme is enabled. */
 "APPEARANCE_SETTINGS_DARK_THEME_NAME" = "Sombre";
@@ -1226,7 +1226,7 @@
 "CONTACT_SUPPORT_FILTER_FEEDBACK" = "J’ai des commentaires sur l’appli";
 
 /* A brief localized representation of the 'feedback' support filter. */
-"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "Rétroaction sur l’appli";
+"CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT" = "Commentaires sur l’appli";
 
 /* The localized representation of the 'other' support filter. */
 "CONTACT_SUPPORT_FILTER_OTHER" = "Autre chose";
@@ -1838,7 +1838,7 @@
 "DEVICE_LINKED_AT_LABEL" = "Associé le %1$@";
 
 /* Alert title that can occur when viewing device manager. */
-"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Échec de mise à jour de la liste des appareils";
+"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Impossible de mettre à jour la liste des appareils";
 
 /* A label for this device in the device list. */
 "DEVICE_NAME_THIS_DEVICE" = "Cet appareil";
@@ -2837,7 +2837,7 @@
 "GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Sonnerie %1$@ et %2$@…";
 
 /* Button to join an ongoing group call */
-"GROUP_CALL_JOIN_BUTTON" = "Me joindre à l’appel";
+"GROUP_CALL_JOIN_BUTTON" = "Rejoindre l’appel";
 
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "Quitter l’appel";
@@ -5627,7 +5627,7 @@
 "RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@ a levé la main";
 
 /* A compact member count on the call view's raised hands toast indicating that you and a number of other users raised a hand. Embeds {{number of other users}} */
-"RAISED_HANDS_TOAST_YOU_PLUS_OTHERS_COUNT" = "You +%1$d";
+"RAISED_HANDS_TOAST_YOU_PLUS_OTHERS_COUNT" = "Vous + %1$d";
 
 /* A message appearing on the call view's raised hands toast indicating that you raised your own hand. */
 "RAISED_HANDS_TOAST_YOUR_HAND_MESSAGE" = "Vous avez levé la main.";
@@ -6770,7 +6770,7 @@
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Installer la dernière version de Signal";
 
 /* Message for payments outdated sheet. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "Une mise à jour est nécessaire pour continuer à envoyer et à recevoir des paiements, et pour actualiser le solde de vos paiements.";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "Une mise à jour est nécessaire pour afficher votre solde actualisé et continuer d’envoyer et de recevoir des paiements.";
 
 /* Title for payments outdated sheet saying cant send. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "Impossible d’envoyer le paiement";
@@ -7433,7 +7433,7 @@
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Visitez le lien";
 
 /* Text indicating a story that was replied to is no longer available. */
-"STORY_NO_LONGER_AVAILABLE" = "N’est plus proposée";
+"STORY_NO_LONGER_AVAILABLE" = "Cette story n’est plus disponible";
 
 /* Button to access the story privacy settings menu */
 "STORY_PRIVACY_SETTINGS" = "Confidentialité";
@@ -7826,10 +7826,10 @@
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "Vous avez reçu un message qui ne peut être ni traité ni affiché, car il utilise une nouvelle fonction de Signal.";
 
 /* Label for button that lets users upgrade the app. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Installer la mise à jour de Signal";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Mettre à jour Signal";
 
 /* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "La mise à jour vers la version la plus récente de Signal a été effectuée. Vous pouvez désormais recevoir ce type de message sur votre appareil.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "La dernière version de Signal a bien été installée. Vous pouvez maintenant recevoir ce type de messages sur votre appareil.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Vous pouvez demander à %1$@ de renvoyer ce message, maintenant que vous utilisez une version à jour de Signal.";

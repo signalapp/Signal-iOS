@@ -3668,7 +3668,7 @@
 "INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Rapporteret spam";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "Du kan sende eller modtage synkroniserede beskeder fra din telefon eller iPad. \nAf hensyn til din sikkerhed overføres samtalehistorik ikke til nye forbundne enheder";
+"INFO_MESSAGE_SYNCED_THREAD" = "Du kan sende eller modtage synkroniserede beskeder fra din telefon eller iPad.\nAf hensyn til din sikkerhed overføres samtalehistorik ikke til nye forbundne enheder.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ ændrede sit telefonnummer.";
@@ -5627,7 +5627,7 @@
 "RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@ har rakt hånden op";
 
 /* A compact member count on the call view's raised hands toast indicating that you and a number of other users raised a hand. Embeds {{number of other users}} */
-"RAISED_HANDS_TOAST_YOU_PLUS_OTHERS_COUNT" = "You +%1$d";
+"RAISED_HANDS_TOAST_YOU_PLUS_OTHERS_COUNT" = "Dig +%1$d";
 
 /* A message appearing on the call view's raised hands toast indicating that you raised your own hand. */
 "RAISED_HANDS_TOAST_YOUR_HAND_MESSAGE" = "Du har rakt hånden op";

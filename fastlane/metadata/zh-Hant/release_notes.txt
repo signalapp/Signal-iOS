@@ -1,1 +1,1 @@
-• We added haptic feedback and a subtle vibration when you change between different views during a group call, but it’s still up to you whether or not you shake it up and switch from the grid view back to the slideshow that your coworker is presenting.
+• 當你在群組通話期間切換不同瀏覽方式時，我們新增了觸覺回饋和輕微的震動，但是否改動並從網格瀏覽切換回同事正在展示的幻燈片，仍由你決定。

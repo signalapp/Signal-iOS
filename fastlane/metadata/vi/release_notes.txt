@@ -1,1 +1,1 @@
-• We added haptic feedback and a subtle vibration when you change between different views during a group call, but it’s still up to you whether or not you shake it up and switch from the grid view back to the slideshow that your coworker is presenting.
+• Chúng tôi đã bổ sung hỗ trợ phản hồi xúc giác và thông báo rung khi bạn chuyển đổi giữa các chế độ hiển thị khác nhau trong một cuộc gọi nhóm.

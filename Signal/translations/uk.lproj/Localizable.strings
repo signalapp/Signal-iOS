@@ -1103,7 +1103,7 @@
 "CONTACT_ABOUT_SHEET_BLOCKED_USER_FORMAT" = "Користувача %1$@ заблоковано";
 
 /* Indicates that another account is in the user's system contacts. Embeds {{name}} */
-"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ є в контактах вашого телефона";
+"CONTACT_ABOUT_SHEET_CONNECTION_IN_SYSTEM_CONTACTS" = "%1$@ є в контактах телефона";
 
 /* Indicates that the user has no messages with the other account. Embeds {{name}} */
 "CONTACT_ABOUT_SHEET_NO_DIRECT_MESSAGES" = "Особистого чату з %1$@ немає";
@@ -1940,7 +1940,7 @@
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Отримання даних";
 
 /* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Підключення…";
+"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Триває з'єднання…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Помістіть цей QR-код всередині кола";
@@ -2060,7 +2060,7 @@
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Зазвичай обробка банківських переказів займає 1 робочий день. Будь ласка, зачекайте на проведення платежу, перш ніж робити новий донат.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Зазвичай обробка банківських переказів займає 1 робочий день. Будь ласка, зачекайте на проведення платежу, перш ніж оновлювати передплату.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Зазвичай опрацювання банківських переказів триває 1 робочий день. Просимо вас дочекатися списання донату, перш ніж оновлювати підписку.";
 
 /* Message for an alert shown when the user tries to donate via bank transfer, but the amount they want to donate is too large. Embeds {{ the maximum allowed donation amount }}. */
 "DONATE_SCREEN_ERROR_MESSAGE_FORMAT_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "За допомогою банківського переказу можна надіслати до %1$@. Спробуйте іншу суму або інший спосіб оплати.";
@@ -2069,7 +2069,7 @@
 "DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "Ваш донат все ще обробляється. Обробка може зайняти кілька хвилин в залежності від вашого з'єднання. Будь ласка, зачекайте на проведення платежу, перш ніж робити новий донат.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via non-bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Ваш донат все ще обробляється. Обробка може зайняти кілька хвилин в залежності від вашого з'єднання. Будь ласка, зачекайте на проведення платежу, перш ніж оновлювати передплату.";
+"DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "Опрацювання вашого донату ще триває. Воно може зайняти кілька хвилин — швидкість залежить від вашого з'єднання. Просимо вас дочекатися списання донату, перш ніж оновлювати підписку.";
 
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
 "DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Оберіть суму донату.";
@@ -2105,10 +2105,10 @@
 "DONATE_SCREEN_MONTHLY_SUBSCRIPTION_TITLE" = "%1$@/місяць";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
-"DONATE_SCREEN_ONE_TIME_CHOICE" = "Одноразово";
+"DONATE_SCREEN_ONE_TIME_CHOICE" = "Разово";
 
 /* On the donation screen, if you already have a subscription, you'll see a button to update your subscription. This is the text on that button. */
-"DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "Оновити передплату";
+"DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "Змінити підписку";
 
 /* Message for a sheet explaining that a donation via bank payment has failed. Embeds {{ a specific, already-localized string describing the payment failure }}. */
 "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_FAILED_MESSAGE" = "З обробкою банківського переказу виникла проблема. %1$@";
@@ -2126,7 +2126,7 @@
 "DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Ваш щомісячний донат очікує на розгляд. Ви зможете відобразити значок «%1$@» у профілі, коли донат буде отримано.\n\nЗазвичай обробка банківських переказів займає 1 робочий день.";
 
 /* Title for a button asking the user to renew their subscription, because it has expired. */
-"DONATION_BADGE_ISSUE_SHEET_RENEW_SUBSCRIPTION_BUTTON_TITLE" = "Поновити передплату";
+"DONATION_BADGE_ISSUE_SHEET_RENEW_SUBSCRIPTION_BUTTON_TITLE" = "Поновити підписку";
 
 /* Title for a button asking the user to try their donation again, because something went wrong. */
 "DONATION_BADGE_ISSUE_SHEET_TRY_AGAIN_BUTTON_TITLE" = "Спробувати знову";
@@ -2258,10 +2258,10 @@
 "DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Донат за друга";
 
 /* Title for one-time donation receipts */
-"DONATION_RECEIPT_ONE_TIME" = "Одноразово";
+"DONATION_RECEIPT_ONE_TIME" = "Разово";
 
 /* Title for recurring donation receipts */
-"DONATION_RECEIPT_RECURRING" = "Поточні";
+"DONATION_RECEIPT_RECURRING" = "Щомісяця";
 
 /* Title on donation receipts */
 "DONATION_RECEIPT_TITLE" = "Підтвердження донату";
@@ -2303,7 +2303,7 @@
 "DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "Якщо продовжити, ваш недавній донат буде скасовано. Кошти не стягнуться, але ви зможете бачити запит на платіж у банківському застосунку, поки не вживете заходів. Ви дійсно хочете задонатити знову?";
 
 /* Title for an action in an action sheet asking the user to renew a subscription that has failed to renew. */
-"DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION" = "Поновити передплату";
+"DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION" = "Поновити підписку";
 
 /* Title for an action in an action sheet asking the user to try again, in reference to a donation that failed. */
 "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN" = "Спробувати знову";
@@ -2360,7 +2360,7 @@
 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_WAITING_FOR_AUTHORIZATION" = "Очікування авторизації";
 
 /* A string describing the amount and currency of a one-time payment. Embeds {{ the amount, formatted as a currency }}. */
-"DONATION_SETTINGS_ONE_TIME_AMOUNT_FORMAT" = "%1$@ одноразово";
+"DONATION_SETTINGS_ONE_TIME_AMOUNT_FORMAT" = "%1$@ один раз";
 
 /* Title for the \"donate for a friend\" button on the donation view. */
 "DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND" = "Зробити донат за друга";
@@ -2426,7 +2426,7 @@
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Незбережені зміни";
 
 /* Label for Edit History modal */
-"EDIT_HISTORY_LABEL" = "Правки";
+"EDIT_HISTORY_LABEL" = "Попередній текст";
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "Копіювати";
@@ -2825,16 +2825,16 @@
 "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Для цього виклику досягнуто максимальної кількості учасників. Спробуйте пізніше.";
 
 /* Text explaining that someone has sent a ring to the group. Embeds {ring sender name} */
-"GROUP_CALL_INCOMING_RING_FORMAT" = "%1$@ дзвонить групі";
+"GROUP_CALL_INCOMING_RING_FORMAT" = "Користувач %1$@ дзвонить групі";
 
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "Немає місць";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Виклик: %1$@…";
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "У користувача %1$@ лунає дзвінок…";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Виклик: %1$@ і %2$@…";
+"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "У користувачів %1$@ і %2$@ лунає дзвінок…";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "Приєднатись";
@@ -2882,7 +2882,7 @@
 "GROUP_CALL_PRESENTING_FORMAT" = "%1$@ демонструє свій екран";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
-"GROUP_CALL_RECONNECTING" = "Перепідключення";
+"GROUP_CALL_RECONNECTING" = "Триває відновлення з'єднання";
 
 /* notification body when you join a group call and an already-joined participant has an untrusted safety number */
 "GROUP_CALL_SAFETY_NUMBER_CHANGE_AT_JOIN_BODY" = "Змінився код безпеки одного з учасників виклику. Торкніться, щоб переглянути.";
@@ -3599,10 +3599,10 @@
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Відхилено на іншому пристрої";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "відновлюємо з'єднання…";
+"IN_CALL_RECONNECTING" = "триває відновлення з'єднання…";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "дзвонимо…";
+"IN_CALL_RINGING" = "лунає дзвінок…";
 
 /* Call setup status label */
 "IN_CALL_RINGING_AUDIO" = "Аудіовиклик…";
@@ -4346,7 +4346,7 @@
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Усі контакти Signal";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Ділитися тільки з…";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Обрані глядачі";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Мої історії";
@@ -5627,7 +5627,7 @@
 "RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "Користувач %1$@ підняв руку";
 
 /* A compact member count on the call view's raised hands toast indicating that you and a number of other users raised a hand. Embeds {{number of other users}} */
-"RAISED_HANDS_TOAST_YOU_PLUS_OTHERS_COUNT" = "You +%1$d";
+"RAISED_HANDS_TOAST_YOU_PLUS_OTHERS_COUNT" = "Ви + %1$d";
 
 /* A message appearing on the call view's raised hands toast indicating that you raised your own hand. */
 "RAISED_HANDS_TOAST_YOUR_HAND_MESSAGE" = "Ви підняли руку";
@@ -6920,7 +6920,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "Встановлення кодової фрази завершено.";
 
 /* Label for 'confirm' button in the 'view payments passphrase' view of the app settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM" = "Підтвердження";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM" = "Підтвердити";
 
 /* Format for the explanation of the 'confirm payments passphrase word' step in the 'view payments passphrase' settings, indicating that the user needs to enter two words from their payments passphrase. Embeds: {{ %1$@ the index of the first word, %2$@ the index of the second word }}. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_EXPLANATION_FORMAT" = "Введіть слова %1$@ та %2$@ з вашої кодової фрази.";
@@ -7481,7 +7481,7 @@
 "STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "Не вдалося надіслати історію деяким користувачам. Перевірте з'єднання з мережею і спробуйте знову";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Ділитися тільки з…";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Обрані глядачі";
 
 /* The title for the 'select excluded connections for story' view. */
 "STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Усі, крім…";
@@ -7616,13 +7616,13 @@
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Ще обробляється";
 
 /* Sustainer view Cancel Subscription button title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Скасувати передплату";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Скасувати підписку";
 
 /* Confirm Cancellation? Action sheet confirm button */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Підтвердити";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Плата більше не стягуватиметься. Ваш значок буде вилучено з профілю після закінчення періоду передплати.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Оплата більше не стягуватиметься. Значок буде вилучено з профілю, коли спливе період підписки.";
 
 /* Confirm Cancellation? Action sheet title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Підтвердити скасування?";
@@ -7652,16 +7652,16 @@
 "SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Ваш донат все ще обробляється. Обробка може зайняти кілька хвилин в залежності від вашого з'єднання.";
 
 /* Toast indicating that the subscription has been cancelled */
-"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Вашу передплату скасовано";
+"SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Вашу підписку скасовано";
 
 /* Sustainer view Not Now Action sheet button */
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Не зараз";
 
 /* Update Subscription? Action sheet message, embeds {{Price}} */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Сьогодні з вас буде стягнуто повну суму (%1$@) передплати. Ваша нова передплата поновлюватиметься щомісяця.";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Сьогодні з вас буде стягнуто повну суму (%1$@) нової підписки. Ми стягуватимемо таку суму щомісяця.";
 
 /* Update Subscription? Action sheet title */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Оновити передплату?";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Змінити підписку?";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Вимк.";
@@ -7673,7 +7673,7 @@
 "SYSTEM_ADDRESS_NAME" = "Signal";
 
 /* Label for button to verify a user's safety number. */
-"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Підтвердження";
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Перевірити";
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
 "SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Коли ви відправите це тимчасове повідомлення, буде встановлено відповідний таймер: %1$@.";
@@ -7889,7 +7889,7 @@
 "UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Ваш код безпеки з %1$@, ймовірно, змінився тому що цей користувач перевстановив Signal або змінив пристрій. Торкніться «Підтвердити» щоб підтвердити новий код безпеки. Це необов'язково.";
 
 /* Action to verify a safety number after it has changed */
-"UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "Підтвердження";
+"UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "Перевірити";
 
 /* Action sheet item */
 "UPDATE_CONTACT_ACTION" = "Оновити контакт";

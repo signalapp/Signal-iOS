@@ -488,13 +488,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Виклик: %2$@, %3$@ і ще %1$d користувач…</string>
+			<string>У користувачів %2$@, %3$@ і ще %1$d лунає дзвінок…</string>
 			<key>few</key>
-			<string>Виклик: %2$@, %3$@ і %1$d інших…</string>
+			<string>У користувачів %2$@, %3$@ і ще %1$d лунає дзвінок…</string>
 			<key>many</key>
-			<string>Виклик: %2$@, %3$@ і %1$d інших…</string>
+			<string>У користувачів %2$@, %3$@ і ще %1$d лунає дзвінок…</string>
 			<key>other</key>
-			<string>Виклик: %2$@, %3$@ і %1$d інших…</string>
+			<string>У користувачів %2$@, %3$@ і ще %1$d лунає дзвінок…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_OTHERS_HERE</key>
@@ -1288,13 +1288,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ділитися тільки з · %1$d глядач</string>
+			<string>Обрані глядачі · %1$d глядач</string>
 			<key>few</key>
-			<string>Ділитися тільки з · %1$d глядачі</string>
+			<string>Обрані глядачі · %1$d глядачі</string>
 			<key>many</key>
-			<string>Ділитися тільки з · %1$d глядачів</string>
+			<string>Обрані глядачі · %1$d глядачів</string>
 			<key>other</key>
-			<string>Ділитися тільки з · %1$d глядача</string>
+			<string>Обрані глядачі · %1$d глядача</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
