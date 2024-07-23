@@ -100,8 +100,11 @@ public class AttachmentStream {
     // MARK: - Accessing file data
 
     public func decryptedRawData() throws -> Data {
-        return try Cryptography.decryptFile(
-            at: fileURL,
+        // If we are about to read the whole thing into memory anyway,
+        // its much more efficient to do decryption in memory.
+        let encryptedData = try Data(contentsOf: fileURL, options: .mappedIfSafe)
+        return try Cryptography.decryptWithoutValidating(
+            encryptedData,
             metadata: .init(
                 key: attachment.encryptionKey,
                 length: Int(info.encryptedByteCount),
@@ -122,8 +125,22 @@ public class AttachmentStream {
         switch contentType {
         case .file, .invalid, .audio:
             throw OWSAssertionError("Requesting image from non-visual attachment")
-        case .image, .animatedImage:
+        case .image:
             return try UIImage.from(self)
+        case .animatedImage:
+            let data = try self.decryptedRawData()
+            let image: UIImage?
+            if mimeType.caseInsensitiveCompare(MimeType.imageWebp.rawValue) == .orderedSame {
+                /// Use YYImage for webp.
+                image = YYImage(data: data)
+            } else {
+                image = UIImage(data: data)
+            }
+
+            guard let image else {
+                throw OWSAssertionError("Failed to load image")
+            }
+            return image
         case .video(_, _, let stillImageRelativeFilePath):
             guard let stillImageRelativeFilePath else {
                 throw OWSAssertionError("Still image unavailable for video")

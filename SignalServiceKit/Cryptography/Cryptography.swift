@@ -524,6 +524,45 @@ public extension Cryptography {
         }
     }
 
+    /// Decrypt in memory data in a single pass without validating hmac or digest.
+    static func decryptWithoutValidating(
+        _ data: Data,
+        metadata: EncryptionMetadata
+    ) throws -> Data {
+        // The metadata "key" is actually a concatentation of the
+        // encryption key and the hmac key.
+        let encryptionKey = metadata.key.prefix(aesKeySize)
+
+        let ivLength = Int(aescbcIVLength)
+        let iv = data.prefix(ivLength)
+
+        var cipherContext = try CipherContext(
+            operation: .decrypt,
+            algorithm: .aes,
+            options: .pkcs7Padding,
+            key: encryptionKey,
+            iv: iv
+        )
+
+        let ciphertextLength =
+            data.byteLength
+            - ivLength
+            - hmac256OutputLength
+
+        let ciphertextStart = data.startIndex.advanced(by: ivLength)
+        let ciphertextEnd = ciphertextStart.advanced(by: ciphertextLength)
+        let encryptedData = data.subdata(in: ciphertextStart..<ciphertextEnd)
+
+        var output = try cipherContext.update(encryptedData)
+        output.append(try cipherContext.finalize())
+
+        if let plaintextLength = metadata.plaintextLength {
+            return output.prefix(plaintextLength)
+        } else {
+            return output
+        }
+    }
+
     static func decryptFile(
         at encryptedUrl: URL,
         metadata: EncryptionMetadata,
