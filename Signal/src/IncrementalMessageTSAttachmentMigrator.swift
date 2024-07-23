@@ -18,6 +18,23 @@ public class IncrementalMessageTSAttachmentMigrator {
 
     public init(databaseStorage: SDSDatabaseStorage) {
         self.databaseStorage = databaseStorage
+
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync { [weak self] in
+            guard FeatureFlags.v2AttachmentIncrementalMigration else {
+                return
+            }
+
+            self?.databaseStorage.read { tx in
+                switch Store.getState(tx: tx) {
+                case .unstarted:
+                    Logger.info("Has not started message attachment migration")
+                case .started:
+                    Logger.info("Partial progress on message attachment migration")
+                case .finished:
+                    Logger.info("Finished message attachment migration")
+                }
+            }
+        }
     }
 
     // Must be kept in sync with the value in info.plist.
