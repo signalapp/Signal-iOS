@@ -176,16 +176,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         sourceOrder: UInt32?,
         tx: DBWriteTransaction
     ) throws {
-        let cdnNumber = proto.cdnNumber
-        guard let cdnKey = proto.cdnKey?.nilIfEmpty, cdnNumber > 0 else {
-            throw OWSAssertionError("Invalid cdn info")
-        }
-        guard let encryptionKey = proto.key?.nilIfEmpty else {
-            throw OWSAssertionError("Invalid encryption key")
-        }
-        guard let digestSHA256Ciphertext = proto.digest?.nilIfEmpty else {
-            throw OWSAssertionError("Missing digest")
-        }
+        let transitTierInfo = try self.transitTierInfo(from: proto)
 
         let knownIdFromProto: OwnerBuilder.KnownIdInOwner = {
             if
@@ -221,16 +212,8 @@ public class AttachmentManagerImpl: AttachmentManager {
         let attachmentParams = Attachment.ConstructionParams.fromPointer(
             blurHash: proto.blurHash,
             mimeType: mimeType,
-            encryptionKey: encryptionKey,
-            transitTierInfo: .init(
-                cdnNumber: cdnNumber,
-                cdnKey: cdnKey,
-                uploadTimestamp: proto.uploadTimestamp,
-                encryptionKey: encryptionKey,
-                unencryptedByteCount: proto.size,
-                digestSHA256Ciphertext: digestSHA256Ciphertext,
-                lastDownloadAttemptTimestamp: nil
-            )
+            encryptionKey: transitTierInfo.encryptionKey,
+            transitTierInfo: transitTierInfo
         )
         let sourceMediaSizePixels: CGSize?
         if
@@ -289,6 +272,31 @@ public class AttachmentManagerImpl: AttachmentManager {
         default:
             break
         }
+    }
+
+    private func transitTierInfo(
+        from proto: SSKProtoAttachmentPointer
+    ) throws -> Attachment.TransitTierInfo {
+        let cdnNumber = proto.cdnNumber
+        guard let cdnKey = proto.cdnKey?.nilIfEmpty, cdnNumber > 0 else {
+            throw OWSAssertionError("Invalid cdn info")
+        }
+        guard let encryptionKey = proto.key?.nilIfEmpty else {
+            throw OWSAssertionError("Invalid encryption key")
+        }
+        guard let digestSHA256Ciphertext = proto.digest?.nilIfEmpty else {
+            throw OWSAssertionError("Missing digest")
+        }
+
+        return .init(
+            cdnNumber: cdnNumber,
+            cdnKey: cdnKey,
+            uploadTimestamp: proto.uploadTimestamp,
+            encryptionKey: encryptionKey,
+            unencryptedByteCount: proto.size,
+            digestSHA256Ciphertext: digestSHA256Ciphertext,
+            lastDownloadAttemptTimestamp: nil
+        )
     }
 
     private func _createAttachmentStream(
