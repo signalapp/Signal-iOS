@@ -92,7 +92,7 @@ public class MessageStickerManagerImpl: MessageStickerManager {
         // try to derive an TSAttachmentStream (only legacy) using that.
         // V2 attachments use the local sticker pack at "download" time.
         if
-            !FeatureFlags.writeMessageV2Attachments,
+            !AttachmentFeatureFlags.writeMessages,
             let attachment = tsAttachmentForInstalledSticker(
                 dataProto: dataProto,
                 stickerInfo: stickerInfo,

@@ -231,9 +231,9 @@ class ChatsSettingsViewController: OWSTableViewController2 {
 
         TSAttachmentStream.deleteAttachmentsFromDisk()
         if
-            FeatureFlags.readStoryV2Attachments
-            || FeatureFlags.readMessageV2Attachments
-            || FeatureFlags.readThreadWallpaperV2Attachments
+            AttachmentFeatureFlags.readStories
+            || AttachmentFeatureFlags.readMessages
+            || AttachmentFeatureFlags.readThreadWallpapers
         {
             AttachmentStream.deleteAllAttachmentFiles()
         }

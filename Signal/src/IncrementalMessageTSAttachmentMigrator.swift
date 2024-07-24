@@ -20,7 +20,7 @@ public class IncrementalMessageTSAttachmentMigrator {
         self.databaseStorage = databaseStorage
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync { [weak self] in
-            guard FeatureFlags.v2AttachmentIncrementalMigration else {
+            guard AttachmentFeatureFlags.incrementalMigration else {
                 return
             }
 
@@ -89,7 +89,7 @@ public class IncrementalMessageTSAttachmentMigrator {
     }
 
     private func shouldLaunchBGProcessingTask() -> Bool {
-        guard FeatureFlags.v2AttachmentIncrementalMigration else { return false }
+        guard AttachmentFeatureFlags.incrementalMigration else { return false }
         let state = databaseStorage.read(block: Store.getState(tx:))
         return state != .finished
     }
@@ -141,7 +141,7 @@ public class IncrementalMessageTSAttachmentMigrator {
     }
 
     public func runInMainAppBackgroundIfNeeded() {
-        guard FeatureFlags.v2AttachmentIncrementalMigration else { return }
+        guard AttachmentFeatureFlags.incrementalMigration else { return }
         let state = databaseStorage.read(block: Store.getState(tx:))
         switch state {
         case .finished, .unstarted:

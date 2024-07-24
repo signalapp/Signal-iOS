@@ -940,6 +940,7 @@
 		6681AB652B7AE53B0099D187 /* PreloadedTextAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6681AB642B7AE53B0099D187 /* PreloadedTextAttachment.swift */; };
 		668444802A3289C700DBED7C /* MessageBodyStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6684447F2A3289C700DBED7C /* MessageBodyStyle.swift */; };
 		668444822A3292AB00DBED7C /* MessageBodyStyleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668444812A3292AB00DBED7C /* MessageBodyStyleTests.swift */; };
+		668787D52C4F199500D13822 /* AttachmentFeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668787D42C4F199500D13822 /* AttachmentFeatureFlags.swift */; };
 		66883A3A29D7630A00E898CF /* MessageBodyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66883A3829D7630300E898CF /* MessageBodyTests.swift */; };
 		6688E602298232A4004467C8 /* PaymentActionSheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6688E601298232A4004467C8 /* PaymentActionSheets.swift */; };
 		6689B23A2C055F7C003D5B2F /* OrphanedAttachmentRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6689B2392C055F7C003D5B2F /* OrphanedAttachmentRecord.swift */; };
@@ -3991,6 +3992,7 @@
 		6681AB642B7AE53B0099D187 /* PreloadedTextAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreloadedTextAttachment.swift; sourceTree = "<group>"; };
 		6684447F2A3289C700DBED7C /* MessageBodyStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBodyStyle.swift; sourceTree = "<group>"; };
 		668444812A3292AB00DBED7C /* MessageBodyStyleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBodyStyleTests.swift; sourceTree = "<group>"; };
+		668787D42C4F199500D13822 /* AttachmentFeatureFlags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentFeatureFlags.swift; sourceTree = "<group>"; };
 		66883A3829D7630300E898CF /* MessageBodyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBodyTests.swift; sourceTree = "<group>"; };
 		6688E601298232A4004467C8 /* PaymentActionSheets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentActionSheets.swift; sourceTree = "<group>"; };
 		6689B2392C055F7C003D5B2F /* OrphanedAttachmentRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrphanedAttachmentRecord.swift; sourceTree = "<group>"; };
@@ -8713,6 +8715,7 @@
 		66E1AD902B9133A000C56B7B /* TSResource */ = {
 			isa = PBXGroup;
 			children = (
+				668787D42C4F199500D13822 /* AttachmentFeatureFlags.swift */,
 				6660C79A2C4874AB00D9C30A /* IncrementalTSAttachmentMigrationStore.swift */,
 				66E1AD952B91437B00C56B7B /* TSAttachmentManager.swift */,
 				66CA4CE82B9FDBF8009A5ED8 /* TSResourceManager.swift */,
@@ -14082,6 +14085,7 @@
 				66278A4A2C1CB821006123E9 /* AttachmentDownloadStore.swift in Sources */,
 				66278A4C2C1CDDD9006123E9 /* AttachmentDownloadStoreImpl.swift in Sources */,
 				66278A4E2C1CDE8F006123E9 /* AttachmentDownloadStoreMock.swift in Sources */,
+				668787D52C4F199500D13822 /* AttachmentFeatureFlags.swift in Sources */,
 				66D7B92D2B98DAAD0005C98B /* AttachmentManager+Proto.swift in Sources */,
 				66D7B8FF2B9287F00005C98B /* AttachmentManager.swift in Sources */,
 				66D7B9012B92889E0005C98B /* AttachmentManagerImpl.swift in Sources */,

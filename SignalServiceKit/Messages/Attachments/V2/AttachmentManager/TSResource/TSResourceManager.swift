@@ -36,9 +36,9 @@ public enum TSResourceOwnerType {
 
     var writeV2FeatureFlag: Bool {
         switch self {
-        case .message: FeatureFlags.writeMessageV2Attachments
-        case .story: FeatureFlags.writeStoryV2Attachments
-        case .thread: FeatureFlags.writeThreadWallpaperV2Attachments
+        case .message: AttachmentFeatureFlags.writeMessages
+        case .story: AttachmentFeatureFlags.writeStories
+        case .thread: AttachmentFeatureFlags.writeThreadWallpapers
         }
     }
 }

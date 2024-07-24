@@ -34,7 +34,7 @@ public class AttachmentDownloadRetryRunner {
     )
 
     public func beginObserving() {
-        guard FeatureFlags.writeStoryV2Attachments || FeatureFlags.writeMessageV2Attachments else {
+        guard AttachmentFeatureFlags.writeStories || AttachmentFeatureFlags.writeMessages else {
             return
         }
         db.grdbStorage.pool.add(transactionObserver: dbObserver)
@@ -76,7 +76,7 @@ public class AttachmentDownloadRetryRunner {
         private var isRunning = false
 
         fileprivate func runIfNotRunning() async {
-            guard FeatureFlags.writeStoryV2Attachments || FeatureFlags.writeMessageV2Attachments else {
+            guard AttachmentFeatureFlags.writeStories || AttachmentFeatureFlags.writeMessages else {
                 return
             }
             if self.isRunning { return }

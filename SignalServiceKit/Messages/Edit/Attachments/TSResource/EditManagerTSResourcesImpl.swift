@@ -36,7 +36,7 @@ public class EditManagerTSResourcesImpl: EditManagerTSResources {
         tx: DBWriteTransaction
     ) throws {
         let canUseExclusiveV2: Bool = {
-            guard FeatureFlags.writeMessageV2Attachments else {
+            guard AttachmentFeatureFlags.writeMessages else {
                 return false
             }
             // Only use v2 if the edit target has no v1 body attachments

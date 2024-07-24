@@ -355,9 +355,9 @@ public class _OrphanedAttachmentCleanerImpl_FeatureFlagsWrapper: _OrphanedAttach
 
     public var readV2Attachments: Bool {
         return
-            FeatureFlags.readThreadWallpaperV2Attachments
-            || FeatureFlags.readStoryV2Attachments
-            || FeatureFlags.readMessageV2Attachments
+            AttachmentFeatureFlags.readThreadWallpapers
+            || AttachmentFeatureFlags.readStories
+            || AttachmentFeatureFlags.readMessages
     }
 }
 

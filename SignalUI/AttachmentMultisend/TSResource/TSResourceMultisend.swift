@@ -15,13 +15,13 @@ public class TSResourceMultisend {
         approvalMessageBody: MessageBody?,
         approvedAttachments: [SignalAttachment]
     ) -> AttachmentMultisend.Result {
-        if FeatureFlags.writeStoryV2Attachments && FeatureFlags.writeMessageV2Attachments {
+        if AttachmentFeatureFlags.writeStories && AttachmentFeatureFlags.writeMessages {
             return AttachmentMultisend.sendApprovedMedia(
                 conversations: conversations,
                 approvedMessageBody: approvalMessageBody,
                 approvedAttachments: approvedAttachments
             )
-        } else if !FeatureFlags.writeStoryV2Attachments && !FeatureFlags.writeMessageV2Attachments {
+        } else if !AttachmentFeatureFlags.writeStories && !AttachmentFeatureFlags.writeMessages {
             return TSAttachmentMultisend.sendApprovedMedia(
                 conversations: conversations,
                 approvalMessageBody: approvalMessageBody,
@@ -33,7 +33,7 @@ public class TSResourceMultisend {
             let messageConversations = conversations.filter(\.isStory.negated)
 
             func sendToStoryConversations(approvedAttachments: [SignalAttachment]) -> AttachmentMultisend.Result {
-                if FeatureFlags.writeStoryV2Attachments {
+                if AttachmentFeatureFlags.writeStories {
                     return AttachmentMultisend.sendApprovedMedia(
                         conversations: storyConversations,
                         approvedMessageBody: approvalMessageBody,
@@ -49,7 +49,7 @@ public class TSResourceMultisend {
             }
 
             func sendToMessageConversations(approvedAttachments: [SignalAttachment]) -> AttachmentMultisend.Result {
-                if FeatureFlags.writeMessageV2Attachments {
+                if AttachmentFeatureFlags.writeMessages {
                     return AttachmentMultisend.sendApprovedMedia(
                         conversations: messageConversations,
                         approvedMessageBody: approvalMessageBody,
@@ -100,7 +100,7 @@ public class TSResourceMultisend {
         _ textAttachment: UnsentTextAttachment,
         to conversations: [ConversationItem]
     ) -> AttachmentMultisend.Result {
-        if FeatureFlags.writeStoryV2Attachments {
+        if AttachmentFeatureFlags.writeStories {
             return AttachmentMultisend.sendTextAttachment(textAttachment, to: conversations)
         } else {
             return TSAttachmentMultisend.sendTextAttachment(textAttachment, to: conversations)

@@ -30,9 +30,9 @@ public class TSResourceManagerImpl: TSResourceManager {
 
     public func didFinishTSAttachmentToAttachmentMigration(tx: DBReadTransaction) -> Bool {
         guard
-            FeatureFlags.readMessageV2Attachments,
-            FeatureFlags.writeMessageV2Attachments,
-            FeatureFlags.v2AttachmentIncrementalMigration
+            AttachmentFeatureFlags.readMessages,
+            AttachmentFeatureFlags.writeMessages,
+            AttachmentFeatureFlags.incrementalMigration
         else {
             return false
         }
@@ -49,7 +49,7 @@ public class TSResourceManagerImpl: TSResourceManager {
         message: TSMessage,
         tx: DBWriteTransaction
     ) throws {
-        if FeatureFlags.writeMessageV2Attachments {
+        if AttachmentFeatureFlags.writeMessages {
             guard let messageRowId = message.sqliteRowId else {
                 owsFailDebug("Adding attachments to an uninserted message!")
                 return
@@ -83,7 +83,7 @@ public class TSResourceManagerImpl: TSResourceManager {
         message: TSMessage,
         tx: DBWriteTransaction
     ) throws {
-        if FeatureFlags.writeMessageV2Attachments {
+        if AttachmentFeatureFlags.writeMessages {
             guard let messageRowId = message.sqliteRowId else {
                 owsFailDebug("Adding attachments to an uninserted message!")
                 return
@@ -119,7 +119,7 @@ public class TSResourceManagerImpl: TSResourceManager {
         message: TSMessage,
         tx: DBWriteTransaction
     ) throws {
-        if FeatureFlags.writeMessageV2Attachments, let attachmentDataSource = dataSource.v2DataSource {
+        if AttachmentFeatureFlags.writeMessages, let attachmentDataSource = dataSource.v2DataSource {
             guard let messageRowId = message.sqliteRowId else {
                 owsFailDebug("Adding attachments to an uninserted message!")
                 return
@@ -369,7 +369,7 @@ public class TSResourceManagerImpl: TSResourceManager {
             }
         }
 
-        if FeatureFlags.readMessageV2Attachments {
+        if AttachmentFeatureFlags.readMessages {
             guard let messageRowId = message.sqliteRowId else {
                 owsFailDebug("Removing attachments from un-inserted message.")
                 return
@@ -398,7 +398,7 @@ public class TSResourceManagerImpl: TSResourceManager {
         case .foreignReferenceAttachment:
             break
         }
-        if FeatureFlags.readStoryV2Attachments {
+        if AttachmentFeatureFlags.readStories {
             guard let storyMessageRowId = storyMessage.id else {
                 owsFailDebug("Removing attachments from an un-inserted message")
                 return
@@ -450,7 +450,7 @@ public class TSResourceManagerImpl: TSResourceManager {
             else {
                 return nil
             }
-            if FeatureFlags.writeMessageV2Attachments {
+            if AttachmentFeatureFlags.writeMessages {
                 // We are in a conundrum. New messages should be using v2 attachments, but
                 // we are quoting a legacy message attachment.
                 // The process of cloning a legacy attachment as a v2 attachment is asynchronous
@@ -503,7 +503,7 @@ public class TSResourceManagerImpl: TSResourceManager {
         originalMessageRowId: Int64?,
         tx: DBWriteTransaction
     ) -> OwnedAttachmentBuilder<QuotedAttachmentInfo>? {
-        guard FeatureFlags.writeMessageV2Attachments else {
+        guard AttachmentFeatureFlags.writeMessages else {
             owsFailDebug("Should not have a v2 data source if we aren't using v2 attachments!")
             return nil
         }

@@ -10,7 +10,7 @@ public struct OversizeTextDataSource {
     public let legacyDataSource: TSAttachmentDataSource
 
     public var dataSource: TSResourceDataSource {
-        if FeatureFlags.writeMessageV2Attachments, let v2DataSource {
+        if AttachmentFeatureFlags.writeMessages, let v2DataSource {
             return v2DataSource.tsDataSource
         } else {
             return legacyDataSource.tsDataSource
@@ -160,7 +160,7 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
         }
 
         let v2DataSource: AttachmentDataSource?
-        if FeatureFlags.writeMessageV2Attachments {
+        if AttachmentFeatureFlags.writeMessages {
             let result = try attachmentValidator.prepareOversizeTextIfNeeded(
                 from: messageBody
             )
@@ -229,7 +229,7 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
             throw OWSAssertionError("Invalid attachment + reference combination")
 
         case (.v2(let attachment), .v2(let attachmentReference)):
-            guard FeatureFlags.writeMessageV2Attachments else {
+            guard AttachmentFeatureFlags.writeMessages else {
                 throw OWSAssertionError("How did we get a v2 attachment if we aren't creating them yet")
             }
             return try attachmentValidator.prepareQuotedReplyThumbnail(
@@ -237,7 +237,7 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
                 originalReference: attachmentReference
             ).tsDataSource
         case (.legacy(let tsAttachment), .legacy):
-            guard FeatureFlags.writeMessageV2Attachments else {
+            guard AttachmentFeatureFlags.writeMessages else {
                 // legacy to legacy is easy; we just refer to the original.
                 return .fromLegacyOriginalAttachment(tsAttachment, originalMessageRowId: originalMessageRowId)
             }

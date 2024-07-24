@@ -531,7 +531,7 @@ public struct MediaGalleryResourceFinder {
     }
 
     private func mode(tx: DBReadTransaction) -> Mode {
-        guard FeatureFlags.readMessageV2Attachments else {
+        guard AttachmentFeatureFlags.readMessages else {
             return .justLegacy
         }
         if
