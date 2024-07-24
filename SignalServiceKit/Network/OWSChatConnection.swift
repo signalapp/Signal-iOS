@@ -537,7 +537,7 @@ public class OWSChatConnection: NSObject {
     }
 
     @objc
-    private func storiesEnabledStateDidChange(_ notification: NSNotification) {
+    fileprivate func storiesEnabledStateDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
         cycleSocket()
@@ -1405,7 +1405,7 @@ private class WebSocketConnection {
 
 internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSSKWebSocket {
     private var libsignalNet: Net
-    @Atomic private var chatService: ChatService
+    @Atomic private var chatService: UnauthenticatedChatService
 
     private var _shadowingFrequency: Double
     private var shadowingFrequency: Double {
@@ -1450,8 +1450,8 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
         }
     }
 
-    private static func makeChatService(libsignalNet: Net) -> ChatService {
-        return libsignalNet.createChatService(username: "", password: "")
+    private static func makeChatService(libsignalNet: Net) -> UnauthenticatedChatService {
+        return libsignalNet.createUnauthenticatedChatService()
     }
 
     internal init(libsignalNet: Net, type: OWSChatConnectionType, appExpiry: AppExpiry, db: DB, shadowingFrequency: Double) {
@@ -1505,7 +1505,7 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
         Task {
             do {
                 owsAssertDebug(type == .unidentified)
-                let debugInfo = try await chatService.connectUnauthenticated()
+                let debugInfo = try await chatService.connect()
                 Logger.verbose("\(logPrefix): libsignal shadowing socket connected: \(debugInfo.connectionInfo)")
             } catch {
                 Logger.error("\(logPrefix): failed to connect libsignal: \(error)")
@@ -1576,7 +1576,7 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
         }
 
         do {
-            let (healthCheckResult, debugInfo) = try await chatService.unauthenticatedSendAndDebug(.init(method: "GET", pathAndQuery: "/v1/keepalive", timeout: 3))
+            let (healthCheckResult, debugInfo) = try await chatService.sendAndDebug(.init(method: "GET", pathAndQuery: "/v1/keepalive", timeout: 3))
             let succeeded = (200...299).contains(healthCheckResult.status)
             if !succeeded {
                 Logger.warn("\(logPrefix): [\(originalRequestId)] keepalive via libsignal responded with status [\(healthCheckResult.status)] (\(debugInfo.connectionInfo))")
@@ -1616,10 +1616,10 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
     }
 }
 
-internal class OWSChatConnectionUsingLibSignal: OWSChatConnection {
+internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatConnection {
     fileprivate let libsignalNet: Net
-    private var _chatService: ChatService
-    fileprivate var chatService: ChatService {
+    private var _chatService: Service
+    fileprivate var chatService: Service {
         get {
             assertOnQueue(serialQueue)
             return _chatService
@@ -1652,14 +1652,14 @@ internal class OWSChatConnectionUsingLibSignal: OWSChatConnection {
         }
     }
 
-    internal init(libsignalNet: Net, type: OWSChatConnectionType, appExpiry: AppExpiry, db: DB) {
+    internal init(libsignalNet: Net, chatService: Service, type: OWSChatConnectionType, appExpiry: AppExpiry, db: DB) {
         self.libsignalNet = libsignalNet
-        self._chatService = libsignalNet.createChatService(username: "", password: "")
+        self._chatService = chatService
         super.init(type: type, appExpiry: appExpiry, db: db)
     }
 
-    fileprivate func makeChatService() -> ChatService {
-        return libsignalNet.createChatService(username: "", password: "")
+    fileprivate func makeChatService() -> Service {
+        fatalError("must be overridden by subclass")
     }
 
     fileprivate func resetChatService() {
@@ -1716,12 +1716,9 @@ internal class OWSChatConnectionUsingLibSignal: OWSChatConnection {
             }
 
             do {
-                switch type {
-                case .identified:
-                    try await chatService.connectAuthenticated()
+                try await chatService.connect()
+                if type == .identified {
                     self.didConnectIdentified()
-                case .unidentified:
-                    try await chatService.connectUnauthenticated()
                 }
                 connectionAttemptCompleted(.open)
                 outageDetection.reportConnectionSuccess()
@@ -1848,12 +1845,7 @@ internal class OWSChatConnectionUsingLibSignal: OWSChatConnection {
             defer {
                 removeUnsubmittedRequestToken(unsubmittedRequestToken)
             }
-            switch type {
-            case .identified:
-                return try await chatService.authenticatedSendAndDebug(libsignalRequest)
-            case .unidentified:
-                return try await chatService.unauthenticatedSendAndDebug(libsignalRequest)
-            }
+            return try await chatService.sendAndDebug(libsignalRequest)
         }.done(on: self.serialQueue) { (response: ChatService.Response, debugInfo: ChatService.DebugInfo) in
             if DebugFlags.internalLogging {
                 Logger.info("\(label) received response, status: \(response.status), message: \(response.message), route: \(debugInfo.connectionInfo)")
@@ -1886,7 +1878,18 @@ internal class OWSChatConnectionUsingLibSignal: OWSChatConnection {
     }
 }
 
-internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal, ChatListener {
+internal class OWSUnauthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<UnauthenticatedChatService> {
+    init(libsignalNet: Net, appExpiry: AppExpiry, db: DB) {
+        let chatService = libsignalNet.createUnauthenticatedChatService()
+        super.init(libsignalNet: libsignalNet, chatService: chatService, type: .unidentified, appExpiry: appExpiry, db: db)
+    }
+
+    override func makeChatService() -> UnauthenticatedChatService {
+        return libsignalNet.createUnauthenticatedChatService()
+    }
+}
+
+internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<AuthenticatedChatService>, ChatListener {
     private let accountManager: TSAccountManager
 
     private let _hasEmptiedInitialQueue = AtomicBool(false, lock: .sharedGlobal)
@@ -1894,11 +1897,10 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal,
         _hasEmptiedInitialQueue.get()
     }
 
-    init(libsignalNet: Net, type: OWSChatConnectionType, accountManager: TSAccountManager, appExpiry: AppExpiry, db: DB) {
-        owsAssertDebug(type == .identified)
-
+    init(libsignalNet: Net, accountManager: TSAccountManager, appExpiry: AppExpiry, db: DB) {
         self.accountManager = accountManager
-        super.init(libsignalNet: libsignalNet, type: type, appExpiry: appExpiry, db: db)
+        let dummyChatService = libsignalNet.createAuthenticatedChatService(username: "", password: "", receiveStories: false)
+        super.init(libsignalNet: libsignalNet, chatService: dummyChatService, type: .identified, appExpiry: appExpiry, db: db)
     }
 
     fileprivate override func appDidBecomeReady() {
@@ -1909,12 +1911,12 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal,
         super.appDidBecomeReady()
     }
 
-    fileprivate override func makeChatService() -> ChatService {
+    fileprivate override func makeChatService() -> AuthenticatedChatService {
         let (username, password) = db.read { tx in
             (accountManager.storedServerUsername(tx: tx), accountManager.storedServerAuthToken(tx: tx))
         }
         // Note that we still create a service for an unregistered user. Connections will fail, however.
-        return libsignalNet.createChatService(username: username ?? "", password: password ?? "")
+        return libsignalNet.createAuthenticatedChatService(username: username ?? "", password: password ?? "", receiveStories: StoryManager.areStoriesEnabled)
     }
 
     fileprivate override func resetChatService() {
@@ -1941,7 +1943,16 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal,
         applyDesiredSocketState()
     }
 
-    func chatService(_ chat: ChatService, didReceiveIncomingMessage envelope: Data, serverDeliveryTimestamp: UInt64, sendAck: @escaping () async throws -> Void) {
+    fileprivate override func storiesEnabledStateDidChange(_ notification: NSNotification) {
+        // We have to reset fully because the story state is set on creation.
+        self.serialQueue.async {
+            self.resetChatService()
+        }
+        // Note that this includes its own serialQueue.async, so we might as well do it here.
+        applyDesiredSocketState()
+    }
+
+    func chatService(_ chat: AuthenticatedChatService, didReceiveIncomingMessage envelope: Data, serverDeliveryTimestamp: UInt64, sendAck: @escaping () async throws -> Void) {
         ensureBackgroundKeepAlive(.receiveMessage)
         let backgroundTask = OWSBackgroundTask(label: "handleIncomingMessage")
 
@@ -1970,7 +1981,7 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal,
         }
     }
 
-    func chatServiceDidReceiveQueueEmpty(_ chat: LibSignalClient.ChatService) {
+    func chatServiceDidReceiveQueueEmpty(_ chat: AuthenticatedChatService) {
         self.serialQueue.async { [self] in
             guard self.chatService === chat else {
                 // We have since disconnected from the chat service instance that reported the empty queue.
@@ -1996,7 +2007,7 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal,
         }
     }
 
-    func chatServiceConnectionWasInterrupted(_ chat: ChatService) {
+    func chatServiceConnectionWasInterrupted(_ chat: AuthenticatedChatService) {
         self.serialQueue.async { [self] in
             guard self.chatService === chat else {
                 // We have since disconnected from the chat service instance that got interrupted.

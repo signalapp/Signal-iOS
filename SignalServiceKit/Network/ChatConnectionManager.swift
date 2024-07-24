@@ -25,7 +25,7 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
     public init(accountManager: TSAccountManager, appExpiry: AppExpiry, db: DB, libsignalNet: Net, userDefaults: UserDefaults) {
         AssertIsOnMainThread()
         if userDefaults.bool(forKey: Self.shouldUseLibsignalForIdentifiedDefaultsKey) {
-            connectionIdentified = OWSAuthConnectionUsingLibSignal(libsignalNet: libsignalNet, type: .identified, accountManager: accountManager, appExpiry: appExpiry, db: db)
+            connectionIdentified = OWSAuthConnectionUsingLibSignal(libsignalNet: libsignalNet, accountManager: accountManager, appExpiry: appExpiry, db: db)
         } else {
             connectionIdentified = OWSChatConnectionUsingSSKWebSocket(
                 type: .identified,
@@ -35,7 +35,7 @@ public class ChatConnectionManagerImpl: ChatConnectionManager {
         }
 
         if userDefaults.bool(forKey: Self.shouldUseLibsignalForUnidentifiedDefaultsKey) {
-            connectionUnidentified = OWSChatConnectionUsingLibSignal(libsignalNet: libsignalNet, type: .unidentified, appExpiry: appExpiry, db: db)
+            connectionUnidentified = OWSUnauthConnectionUsingLibSignal(libsignalNet: libsignalNet, appExpiry: appExpiry, db: db)
         } else if userDefaults.bool(forKey: Self.enableShadowingDefaultsKey) {
             let shadowingConnection = OWSChatConnectionWithLibSignalShadowing(
                 libsignalNet: libsignalNet,
