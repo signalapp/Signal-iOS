@@ -83,7 +83,7 @@ public protocol AttachmentContentValidator {
     /// Build a `QuotedReplyAttachmentDataSource` for a reply to a message with the provided attachment.
     /// Throws an error if the provided attachment is non-visual, or if data reading/writing fails.
     func prepareQuotedReplyThumbnail(
-        fromOriginalAttachment: Attachment,
+        fromOriginalAttachment: AttachmentStream,
         originalReference: AttachmentReference
     ) throws -> QuotedReplyAttachmentDataSource
 

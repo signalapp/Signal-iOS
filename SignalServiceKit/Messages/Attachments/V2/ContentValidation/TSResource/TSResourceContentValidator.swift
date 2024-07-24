@@ -68,7 +68,7 @@ public protocol TSResourceContentValidator {
     /// Build a `QuotedReplyTSResourceDataSource` for a reply to a message with the provided attachment.
     /// Throws an error if the provided attachment is non-visual, or if data reading/writing fails.
     func prepareQuotedReplyThumbnail(
-        fromOriginalAttachment: TSResource,
+        fromOriginalAttachment: TSResourceStream,
         originalReference: TSResourceReference,
         originalMessageRowId: Int64
     ) throws -> QuotedReplyTSResourceDataSource
@@ -220,11 +220,11 @@ public class TSResourceContentValidatorImpl: TSResourceContentValidator {
     }
 
     public func prepareQuotedReplyThumbnail(
-        fromOriginalAttachment originalAttachment: TSResource,
+        fromOriginalAttachment originalAttachment: TSResourceStream,
         originalReference: TSResourceReference,
         originalMessageRowId: Int64
     ) throws -> QuotedReplyTSResourceDataSource {
-        switch (originalAttachment.concreteType, originalReference.concreteType) {
+        switch (originalAttachment.concreteStreamType, originalReference.concreteType) {
         case (.v2, .legacy), (.legacy, .v2):
             throw OWSAssertionError("Invalid attachment + reference combination")
 
@@ -358,7 +358,7 @@ open class TSResourceContentValidatorMock: TSResourceContentValidator {
     }
 
     open func prepareQuotedReplyThumbnail(
-        fromOriginalAttachment originalAttachment: TSResource,
+        fromOriginalAttachment originalAttachment: TSResourceStream,
         originalReference: TSResourceReference,
         originalMessageRowId: Int64
     ) throws -> QuotedReplyTSResourceDataSource {
@@ -367,7 +367,7 @@ open class TSResourceContentValidatorMock: TSResourceContentValidator {
             return .fromLegacyOriginalAttachment(tsAttachment, originalMessageRowId: originalMessageRowId)
         case .v2(let attachment):
             switch originalReference.concreteType {
-            case .legacy(let tSAttachmentReference):
+            case .legacy(_):
                 fatalError("Invalid combination")
             case .v2(let attachmentReference):
                 return QuotedReplyAttachmentDataSource.fromOriginalAttachment(

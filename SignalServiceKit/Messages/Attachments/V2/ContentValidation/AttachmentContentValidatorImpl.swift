@@ -140,20 +140,11 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
     }
 
     public func prepareQuotedReplyThumbnail(
-        fromOriginalAttachment originalAttachment: Attachment,
+        fromOriginalAttachment originalAttachment: AttachmentStream,
         originalReference: AttachmentReference
     ) throws -> QuotedReplyAttachmentDataSource {
-        guard let stream = originalAttachment.asStream() else {
-            // If we don't have a stream, the best we can do is create a reference
-            // to the original.
-            return .fromOriginalAttachment(
-                originalAttachment,
-                originalReference: originalReference
-            )
-        }
-
         let pendingAttachment = try prepareQuotedReplyThumbnail(
-            fromOriginalAttachmentStream: stream,
+            fromOriginalAttachmentStream: originalAttachment,
             renderingFlag: originalReference.renderingFlag,
             sourceFilename: originalReference.sourceFilename
         )

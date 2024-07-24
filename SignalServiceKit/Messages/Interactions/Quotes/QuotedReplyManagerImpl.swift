@@ -685,13 +685,13 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                     return MimeTypeUtil.isSupportedVisualMediaMimeType(originalAttachment.mimeType)
                 }
             }()
-            guard isVisualMedia else {
-                // Just return a stub for non-visual media.
+            guard isVisualMedia, let originalAttachmentStream = originalAttachment.asResourceStream() else {
+                // Just return a stub for non-visual or undownloaded media.
                 return .stub(.init(mimeType: originalAttachment.mimeType, sourceFilename: originalAttachmentReference.sourceFilename))
             }
             do {
                 let dataSource = try attachmentValidator.prepareQuotedReplyThumbnail(
-                    fromOriginalAttachment: originalAttachment,
+                    fromOriginalAttachment: originalAttachmentStream,
                     originalReference: originalAttachmentReference,
                     originalMessageRowId: originalMessageRowId
                 )
