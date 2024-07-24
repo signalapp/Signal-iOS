@@ -157,7 +157,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
                 text = textComponents.joined(separator: " • ")
             }
         } else if let attachmentStream = attachmentStream {
-            if let fileSize = attachmentStream.encryptedResourceByteCount {
+            if let fileSize = attachmentStream.unencryptedResourceByteCount {
                 text = OWSFormat.localizedFileSizeString(from: Int64(fileSize))
             }
         } else {

@@ -482,7 +482,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(!self.isConsumed);
     NSString *_Nullable fileExtension = self.fileUrl.pathExtension;
-    return (fileExtension ? [MimeTypeUtil mimeTypeForFileExtension:fileExtension] : nil);
+    if (fileExtension.length == 0) {
+        return nil;
+    }
+    return [MimeTypeUtil mimeTypeForFileExtension:fileExtension];
 }
 
 @end
