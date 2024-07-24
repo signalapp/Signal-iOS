@@ -77,7 +77,7 @@ class CallHeader: UIView {
         // Group members button
 
         let topRightButton: UIButton
-        if FeatureFlags.callDrawerSupport {
+        if FeatureFlags.groupCallDrawerSupport {
             topRightButton = OWSButton(
                 imageName: "info",
                 tintColor: .ows_white,
@@ -286,7 +286,7 @@ class CallHeader: UIView {
             case .groupThread(let groupThreadCall):
                 if !ringRtcCall.remoteDeviceStates.isEmpty {
                     // TODO: Remove callDurationText and callDurationTimer when this feature flag is removed.
-                    if FeatureFlags.callDrawerSupport {
+                    if FeatureFlags.groupCallDrawerSupport {
                         fallthrough
                     } else {
                         return callDurationText()

@@ -31,7 +31,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
     private var tableViewTopConstraint: NSLayoutConstraint?
 
     override var sheetBackgroundColor: UIColor {
-        if FeatureFlags.callDrawerSupport {
+        if self.useCallDrawerStyling {
             return UIColor(rgbHex: 0x1C1C1E)
         } else {
             return self.tableView.backgroundColor ?? .systemGroupedBackground
@@ -39,18 +39,21 @@ class CallDrawerSheet: InteractiveSheetViewController {
     }
 
     override var handleBackgroundColor: UIColor {
-        if FeatureFlags.callDrawerSupport {
+        if self.useCallDrawerStyling {
             return UIColor(rgbHex: 0x787880).withAlphaComponent(0.36)
         } else {
             return super.handleBackgroundColor
         }
     }
 
+    private let useCallDrawerStyling: Bool
+
     init(
         call: SignalCall,
         callSheetDataSource: CallDrawerSheetDataSource,
         callService: CallService,
         confirmationToastManager: CallControlsConfirmationToastManager,
+        useCallDrawerStyling: Bool,
         callControlsDelegate: CallControlsDelegate,
         sheetPanDelegate: (any SheetPanDelegate)?
     ) {
@@ -60,8 +63,10 @@ class CallDrawerSheet: InteractiveSheetViewController {
             call: call,
             callService: callService,
             confirmationToastManager: confirmationToastManager,
+            useCallDrawerStyling: useCallDrawerStyling,
             delegate: callControlsDelegate
         )
+        self.useCallDrawerStyling = useCallDrawerStyling
 
         super.init(blurEffect: nil)
 

@@ -38,18 +38,20 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
     )
     private lazy var callControlsConfirmationToastContainerView = UIView()
     private lazy var callControls: CallControls? = {
-        guard !FeatureFlags.callDrawerSupport else { return nil }
+        guard !FeatureFlags.individualCallDrawerSupport else { return nil }
         return CallControls(
             call: call,
             callService: callService,
             confirmationToastManager: callControlsConfirmationToastManager,
+            // In practice, always false because `callControls` is only created when the flag is false.
+            useCallDrawerStyling: FeatureFlags.individualCallDrawerSupport,
             delegate: self
         )
     }()
 
     // TODO: Make non-optional when the FeatureFlag is removed
     private lazy var bottomSheet: CallDrawerSheet? = {
-        guard FeatureFlags.callDrawerSupport else { return nil }
+        guard FeatureFlags.individualCallDrawerSupport else { return nil }
         return CallDrawerSheet(
             call: call,
             callSheetDataSource: IndividualCallSheetDataSource(
@@ -59,6 +61,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
             ),
             callService: callService,
             confirmationToastManager: callControlsConfirmationToastManager,
+            useCallDrawerStyling: FeatureFlags.individualCallDrawerSupport,
             callControlsDelegate: self,
             sheetPanDelegate: nil
         )
@@ -222,7 +225,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        if FeatureFlags.callDrawerSupport {
+        if FeatureFlags.individualCallDrawerSupport {
             self.dismissBottomSheet(animated)
             callService.audioService.delegate = nil
         }
@@ -786,14 +789,14 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
             incomingVideoCallControls.isHidden = !isVideoOffer
             incomingAudioCallControls.isHidden = isVideoOffer
             callControls?.isHidden = true
-            if FeatureFlags.callDrawerSupport {
+            if FeatureFlags.individualCallDrawerSupport {
                 dismissBottomSheet(true)
             }
         } else {
             incomingVideoCallControls.isHidden = true
             incomingAudioCallControls.isHidden = true
             callControls?.isHidden = false
-            if FeatureFlags.callDrawerSupport {
+            if FeatureFlags.individualCallDrawerSupport {
                 presentBottomSheet(true)
             }
         }
@@ -811,7 +814,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         let hideRemoteControls = shouldRemoteVideoControlsBeHidden && self.individualCall.isRemoteVideoEnabled
         let remoteControlsAreHidden = bottomContainerView.isHidden && topGradientView.isHidden
         if hideRemoteControls != remoteControlsAreHidden {
-            if FeatureFlags.callDrawerSupport {
+            if FeatureFlags.individualCallDrawerSupport {
                 if hideRemoteControls {
                     dismissBottomSheet(true)
                 } else {
@@ -882,7 +885,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
 
         hasDismissed = true
 
-        if !FeatureFlags.callDrawerSupport {
+        if !FeatureFlags.individualCallDrawerSupport {
             callService.audioService.delegate = nil
         }
 
@@ -1059,7 +1062,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
     // MARK: - Dismiss
 
     private func dismissIfPossible(shouldDelay: Bool, completion: (() -> Void)? = nil) {
-        if !FeatureFlags.callDrawerSupport {
+        if !FeatureFlags.individualCallDrawerSupport {
             callService.audioService.delegate = nil
         }
 

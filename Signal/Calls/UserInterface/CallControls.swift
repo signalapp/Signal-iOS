@@ -23,7 +23,7 @@ class CallControls: UIView {
             accessibilityLabel: viewModel.hangUpButtonAccessibilityLabel,
             action: #selector(CallControlsViewModel.didPressHangup)
         )
-        button.unselectedBackgroundColor = FeatureFlags.callDrawerSupport ? UIColor(rgbHex: 0xEB5545) : .ows_accentRed
+        button.unselectedBackgroundColor = useCallDrawerStyling ? UIColor(rgbHex: 0xEB5545) : .ows_accentRed
         return button
     }()
     private(set) lazy var audioSourceButton = createButton(
@@ -109,19 +109,24 @@ class CallControls: UIView {
     private weak var delegate: CallControlsDelegate!
     private let viewModel: CallControlsViewModel
 
+    private let useCallDrawerStyling: Bool
+
     init(
         call: SignalCall,
         callService: CallService,
         confirmationToastManager: CallControlsConfirmationToastManager,
+        useCallDrawerStyling: Bool,
         delegate: CallControlsDelegate
     ) {
         let viewModel = CallControlsViewModel(
             call: call,
             callService: callService,
             confirmationToastManager: confirmationToastManager,
+            useCallDrawerStyling: useCallDrawerStyling,
             delegate: delegate
         )
         self.viewModel = viewModel
+        self.useCallDrawerStyling = useCallDrawerStyling
         self.delegate = delegate
         super.init(frame: .zero)
 
@@ -153,8 +158,8 @@ class CallControls: UIView {
             withInset: HeightConstants.bottomPadding,
             relation: .lessThanOrEqual
         )
-        let insetFromBottom: CGFloat = FeatureFlags.callDrawerSupport ? 56 : 32
-        let insetFromTop: CGFloat = FeatureFlags.callDrawerSupport ? 0 : 16
+        let insetFromBottom: CGFloat = useCallDrawerStyling ? 56 : 32
+        let insetFromTop: CGFloat = useCallDrawerStyling ? 0 : 16
         NSLayoutConstraint.autoSetPriority(.defaultHigh - 1) {
             controlsStack.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: insetFromBottom)
         }
@@ -274,7 +279,7 @@ class CallControls: UIView {
         button.addTarget(viewModel, action: action, for: .touchUpInside)
         button.setContentHuggingHorizontalHigh()
         button.setCompressionResistanceHorizontalLow()
-        if FeatureFlags.callDrawerSupport {
+        if useCallDrawerStyling {
             // TODO: When feature flag is removed, set these colors in `CallButton`.
             let unselectedBackgroundColor = UIColor(rgbHex: 0x4A4A4A).withAlphaComponent(0.63)
             button.unselectedBackgroundColor = unselectedBackgroundColor
@@ -322,6 +327,7 @@ protocol CallControlsHeightObserver {
 private class CallControlsViewModel {
     private let call: SignalCall
     private let callService: CallService
+    private let useCallDrawerStyling: Bool
     private weak var delegate: CallControlsDelegate?
     private let confirmationToastManager: CallControlsConfirmationToastManager
     fileprivate var refreshView: (() -> Void)?
@@ -329,11 +335,13 @@ private class CallControlsViewModel {
         call: SignalCall,
         callService: CallService,
         confirmationToastManager: CallControlsConfirmationToastManager,
+        useCallDrawerStyling: Bool,
         delegate: CallControlsDelegate
     ) {
         self.call = call
         self.callService = callService
         self.confirmationToastManager = confirmationToastManager
+        self.useCallDrawerStyling = useCallDrawerStyling
         self.delegate = delegate
         switch call.mode {
         case .individual(let call):
@@ -573,13 +581,13 @@ private class CallControlsViewModel {
     var gradientViewIsHidden: Bool {
         switch call.mode {
         case .individual:
-            if FeatureFlags.callDrawerSupport {
+            if useCallDrawerStyling {
                 return true
             } else {
                 return call.joinState != .joined
             }
         case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
-            if FeatureFlags.callDrawerSupport {
+            if useCallDrawerStyling {
                 return true
             } else {
                 return !call.hasJoinedOrIsWaitingForAdminApproval
