@@ -507,6 +507,19 @@ public class TSResourceManagerImpl: TSResourceManager {
             owsFailDebug("Should not have a v2 data source if we aren't using v2 attachments!")
             return nil
         }
+        guard MimeTypeUtil.isSupportedVisualMediaMimeType(dataSource.mimeType) else {
+            // Can't make a thumbnail, just return a stub.
+            return .withoutFinalizer(
+                .init(
+                    info: OWSAttachmentInfo(
+                        stubWithMimeType: dataSource.mimeType,
+                        sourceFilename: dataSource.sourceFilename
+                    ),
+                    renderingFlag: dataSource.renderingFlag
+                )
+            )
+        }
+
         return OwnedAttachmentBuilder<QuotedAttachmentInfo>(
             info: .init(info: .init(forV2ThumbnailReference: ()), renderingFlag: dataSource.renderingFlag),
             finalize: { [attachmentManager, dataSource] ownerId, tx in

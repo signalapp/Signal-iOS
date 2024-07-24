@@ -113,6 +113,29 @@ extension QuotedReplyAttachmentDataSource.Source {
             return .fromProto(proto)
         }
     }
+
+    var mimeType: String {
+        switch self {
+        case .pendingAttachment(let pendingAttachment):
+            return pendingAttachment.mimeType
+        case .originalAttachment(let originalAttachmentSource):
+            return originalAttachmentSource.mimeType
+        case .pointer(let proto):
+            return proto.contentType ?? MimeType.applicationOctetStream.rawValue
+        }
+    }
+
+    var sourceFilename: String? {
+        switch self {
+        case .pendingAttachment(let pendingAttachment):
+            return pendingAttachment.sourceFilename
+        case .originalAttachment(let originalAttachmentSource):
+            return originalAttachmentSource.sourceFilename
+        case .pointer(let proto):
+            return proto.fileName?.nilIfEmpty
+        }
+    }
+
 }
 
 public struct OwnedQuotedReplyAttachmentDataSource {
