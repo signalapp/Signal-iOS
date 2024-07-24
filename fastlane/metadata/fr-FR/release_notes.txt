@@ -1,1 +1,1 @@
-• We added haptic feedback and a subtle vibration when you change between different views during a group call, but it’s still up to you whether or not you shake it up and switch from the grid view back to the slideshow that your coworker is presenting.
+• Le retour haptique vous fait vibrer ? Votre appareil émet désormais une petite vibration quand vous passez d’une vue à l’autre pendant un appel de groupe. Mais vous pouvez toujours décider que rien ne bouge quand vous passez de l’affichage Grille au diaporama présenté par votre collègue.

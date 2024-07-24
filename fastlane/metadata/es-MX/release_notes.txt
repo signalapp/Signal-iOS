@@ -1,1 +1,1 @@
-• We added haptic feedback and a subtle vibration when you change between different views during a group call, but it’s still up to you whether or not you shake it up and switch from the grid view back to the slideshow that your coworker is presenting.
+• Hemos añadido respuestas táctiles y una vibración suave cuando cambias entre vistas diferentes durante una llamada grupal, pero sigue siendo tu elección si te mantienes en la vista de cuadrícula o regresas a la presentación de tu colega.

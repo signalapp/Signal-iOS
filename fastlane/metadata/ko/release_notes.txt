@@ -1,1 +1,1 @@
-• We added haptic feedback and a subtle vibration when you change between different views during a group call, but it’s still up to you whether or not you shake it up and switch from the grid view back to the slideshow that your coworker is presenting.
+• 그룹 통화 중 여러 보기 간에 전환하는 경우 햅틱 피드백과 진동 표시기를 추가했습니다.
