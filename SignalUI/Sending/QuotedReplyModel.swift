@@ -368,7 +368,34 @@ public class QuotedReplyModel {
                     return nil
                 }
             }()
-            if let thumbnailAttachment {
+
+            if
+                let originalMessageTimestamp = quotedMessage.timestampValue?.uint64Value,
+                let originalMessage = InteractionFinder.findMessage(
+                    withTimestamp: originalMessageTimestamp,
+                    threadId: message.uniqueThreadId,
+                    author: quotedMessage.authorAddress,
+                    transaction: transaction
+                ),
+                let originalAttachmentReference = DependenciesBridge.shared.tsResourceStore
+                    .attachmentToUseInQuote(
+                        originalMessage: originalMessage,
+                        tx: transaction.asV2Read
+                    ),
+                let originalAttachment = DependenciesBridge.shared.tsResourceStore.fetch(
+                    originalAttachmentReference.resourceId,
+                    tx: transaction.asV2Read
+                )
+            {
+                return buildQuotedReplyModel(originalContent: .attachment(
+                    originalMessageBody,
+                    attachment: .init(
+                        reference: originalAttachmentReference,
+                        attachment: originalAttachment
+                    ),
+                    thumbnailImage: image
+                ))
+            } else if let thumbnailAttachment {
                 return buildQuotedReplyModel(originalContent: .attachment(
                     originalMessageBody,
                     attachment: .init(reference: attachmentRef, attachment: thumbnailAttachment),
