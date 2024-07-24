@@ -887,8 +887,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     }
 
     private class ProgressStates {
-        var states = [Attachment.IDType: Double]()
-        var cancelledAttachmentIds = Set<Attachment.IDType>()
+        private let lock = UnfairLock()
+        private(set) lazy var states = AtomicDictionary<Attachment.IDType, Double>(lock: lock)
+        private(set) lazy var cancelledAttachmentIds = AtomicSet<Attachment.IDType>(lock: lock)
 
         init() {}
     }
