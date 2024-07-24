@@ -91,6 +91,10 @@ class CLVTableDataSource: NSObject {
         renderState.thread(forIndexPath: indexPath)
     }
 
+    func selectedThreads(in tableView: UITableView) -> [TSThread]? {
+        tableView.indexPathsForSelectedRows?.compactMap(thread(forIndexPath:))
+    }
+
     private func preloadCellsIfNecessary() {
         AssertIsOnMainThread()
 

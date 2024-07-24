@@ -425,14 +425,14 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         reloadTableData()
     }
 
-    func reloadTableData() {
+    func reloadTableData(withSelection previousSelection: [TSThread]? = nil) {
         AssertIsOnMainThread()
 
-        var selectedThreadIds: Set<String> = []
-        for indexPath in tableView.indexPathsForSelectedRows ?? [] {
-            if let key = tableDataSource.thread(forIndexPath: indexPath)?.uniqueId {
-                selectedThreadIds.insert(key)
-            }
+        let selectedThreadIds: Set<String>
+        if let previousSelection {
+            selectedThreadIds = Set(previousSelection.lazy.map(\.uniqueId))
+        } else {
+            selectedThreadIds = []
         }
 
         tableView.reloadData()
