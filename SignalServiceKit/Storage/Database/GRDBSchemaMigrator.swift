@@ -277,6 +277,8 @@ public class GRDBSchemaMigrator: NSObject {
         case threadWallpaperTSAttachmentMigration2
         case threadWallpaperTSAttachmentMigration3
         case indexMessageAttachmentReferenceByReceivedAtTimestamp
+        case migrateStoryMessageTSAttachments1
+        case migrateStoryMessageTSAttachments2
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -338,7 +340,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 79
+    public static let grdbSchemaVersionLatest: UInt = 80
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3250,6 +3252,16 @@ public class GRDBSchemaMigrator: NSObject {
                 on: "MessageAttachmentReference",
                 columns: ["receivedAtTimestamp"]
             )
+            return .success(())
+        }
+
+        migrator.registerMigration(.migrateStoryMessageTSAttachments1) { tx in
+            try TSAttachmentMigration.StoryMessageMigration.prepareStoryMessageMigration(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.migrateStoryMessageTSAttachments2) { tx in
+            try TSAttachmentMigration.StoryMessageMigration.completeStoryMessageMigration(tx: tx)
             return .success(())
         }
 

@@ -76,8 +76,8 @@ public class FeatureFlags: NSObject {
     public static let readThreadWallpaperV2Attachments = true
     public static let writeThreadWallpaperV2Attachments = true
 
-    public static let readStoryV2Attachments = false
-    public static let writeStoryV2Attachments = false
+    public static let readStoryV2Attachments = true
+    public static let writeStoryV2Attachments = true
 
     public static let readMessageV2Attachments = false
     public static let writeMessageV2Attachments = false
