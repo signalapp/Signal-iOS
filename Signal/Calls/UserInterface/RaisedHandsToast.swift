@@ -276,13 +276,12 @@ class RaisedHandsToast: UIView {
 
             if raisedHands.count > 1 {
                 let otherMembersCount = raisedHands.count - 1
-                return String(
-                    format: OWSLocalizedString(
-                        "RAISED_HANDS_TOAST_MULTIPLE_HANDS_MESSAGE",
-                        comment: "A message appearing on the call view's raised hands toast indicating that multiple members have raised their hands. Embeds {{name}}, {{number of other users}}"
-                    ),
-                    firstRaisedHandMemberName, otherMembersCount
+                let format = OWSLocalizedString(
+                    "RAISED_HANDS_TOAST_MULTIPLE_HANDS_MESSAGE",
+                    tableName: "PluralAware",
+                    comment: "A message appearing on the call view's raised hands toast indicating that multiple members have raised their hands. Example: 'Alice +4 raised a hand'. Embeds {{number of other users}}, {{name}}"
                 )
+                return String.localizedStringWithFormat(format, otherMembersCount, firstRaisedHandMemberName)
             }
 
             return String(
