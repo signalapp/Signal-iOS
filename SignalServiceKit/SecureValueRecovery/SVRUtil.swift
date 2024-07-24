@@ -48,19 +48,4 @@ public final class SVRUtil: NSObject {
             return false
         }
     }
-
-    internal static func deriveSVR1EncryptionKeyAndAccessKey(
-        pin: String,
-        backupId: Data
-    ) throws -> (encryptionKey: Data, accessKey: Data) {
-        guard let pinData = normalizePin(pin).data(using: .utf8) else { throw SVR.SVRError.assertion }
-        guard backupId.count == 32 else { throw SVR.SVRError.assertion }
-
-        // From method documentation:
-        // Note: This should be used with SVR1 only. For SVR1, the salt should be the backup id.
-        // For SVR2 clients, use ``PinHash/init(pin:username:mrenclave:)`` which handles salt construction.
-        let pinHash = try LibSignalClient.PinHash(normalizedPin: pinData, salt: backupId)
-
-        return (encryptionKey: Data(pinHash.encryptionKey), accessKey: Data(pinHash.accessKey))
-    }
 }
