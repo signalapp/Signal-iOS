@@ -37,7 +37,8 @@ public class AttachmentManagerImpl: AttachmentManager {
             protos,
             mimeType: \.proto.contentType,
             owner: \.owner,
-            createFn: self._createAttachmentPointer(from:sourceOrder:tx:),
+            output: \.proto,
+            createFn: self._createAttachmentPointer(from:owner:sourceOrder:tx:),
             tx: tx
         )
     }
@@ -50,7 +51,8 @@ public class AttachmentManagerImpl: AttachmentManager {
             dataSources,
             mimeType: { $0.mimeType },
             owner: \.owner,
-            createFn: self._createAttachmentStream(consuming:sourceOrder:tx:),
+            output: \.source,
+            createFn: self._createAttachmentStream(consuming:owner:sourceOrder:tx:),
             tx: tx
         )
     }
@@ -129,11 +131,12 @@ public class AttachmentManagerImpl: AttachmentManager {
 
     // MARK: Creating Attachments from source
 
-    private func createAttachments<T>(
-        _ inputArray: [T],
-        mimeType: (T) -> String?,
-        owner: (T) -> OwnerBuilder,
-        createFn: (T, UInt32?, DBWriteTransaction) throws -> Void,
+    private func createAttachments<Input, Output>(
+        _ inputArray: [Input],
+        mimeType: (Input) -> String?,
+        owner: (Input) -> OwnerBuilder,
+        output: (Input) -> Output,
+        createFn: (Output, OwnerBuilder, UInt32?, DBWriteTransaction) throws -> Void,
         tx: DBWriteTransaction
     ) throws {
         guard inputArray.count < UInt32.max else {
@@ -162,18 +165,17 @@ public class AttachmentManagerImpl: AttachmentManager {
                 }
             }
 
-            try createFn(input, sourceOrder, tx)
+            try createFn(output(input), ownerForInput, sourceOrder, tx)
         }
     }
 
     private func _createAttachmentPointer(
-        from protoAndOwner: OwnedAttachmentPointerProto,
+        from proto: SSKProtoAttachmentPointer,
+        owner: OwnerBuilder,
         // Nil if no order is to be applied.
         sourceOrder: UInt32?,
         tx: DBWriteTransaction
     ) throws {
-        let proto = protoAndOwner.proto
-        let owner = protoAndOwner.owner
         let cdnNumber = proto.cdnNumber
         guard let cdnKey = proto.cdnKey?.nilIfEmpty, cdnNumber > 0 else {
             throw OWSAssertionError("Invalid cdn info")
@@ -290,18 +292,19 @@ public class AttachmentManagerImpl: AttachmentManager {
     }
 
     private func _createAttachmentStream(
-        consuming dataSource: OwnedAttachmentDataSource,
+        consuming dataSource: AttachmentDataSource,
+        owner: OwnerBuilder,
         // Nil if no order is to be applied.
         sourceOrder: UInt32?,
         tx: DBWriteTransaction
     ) throws {
-        switch dataSource.source {
+        switch dataSource {
         case .existingAttachment(let existingAttachmentMetadata):
             guard let existingAttachment = attachmentStore.fetch(id: existingAttachmentMetadata.id, tx: tx) else {
                 throw OWSAssertionError("Missing existing attachment!")
             }
 
-            let owner: AttachmentReference.Owner = try dataSource.owner.build(
+            let owner: AttachmentReference.Owner = try owner.build(
                 orderInOwner: sourceOrder,
                 knownIdInOwner: .none,
                 renderingFlag: existingAttachmentMetadata.renderingFlag,
@@ -319,7 +322,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 tx: tx
             )
         case .pendingAttachment(let pendingAttachment):
-            let owner: AttachmentReference.Owner = try dataSource.owner.build(
+            let owner: AttachmentReference.Owner = try owner.build(
                 orderInOwner: sourceOrder,
                 knownIdInOwner: .none,
                 renderingFlag: pendingAttachment.renderingFlag,
@@ -450,19 +453,15 @@ public class AttachmentManagerImpl: AttachmentManager {
         switch dataSource.source.source {
         case .pointer(let proto):
             try self._createAttachmentPointer(
-                from: .init(
-                    proto: proto,
-                    owner: referenceOwner
-                ),
+                from: proto,
+                owner: referenceOwner,
                 sourceOrder: nil,
                 tx: tx
             )
         case .pendingAttachment(let pendingAttachment):
             try self._createAttachmentStream(
-                consuming: .init(
-                    dataSource: .pendingAttachment(pendingAttachment),
-                    owner: referenceOwner
-                ),
+                consuming: .pendingAttachment(pendingAttachment),
+                owner: referenceOwner,
                 sourceOrder: nil,
                 tx: tx
             )
