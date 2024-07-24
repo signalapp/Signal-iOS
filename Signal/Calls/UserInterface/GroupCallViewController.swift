@@ -902,7 +902,11 @@ class GroupCallViewController: UIViewController {
     }
 
     private var callControlsConfirmationToastContainerViewBottomConstraintConstant: CGFloat {
-        -self.bottomSheet.sheetHeight - 30
+        if FeatureFlags.callDrawerSupport {
+            return  -self.bottomSheet.sheetHeight - 16
+        } else {
+            return -self.bottomSheet.sheetHeight - 30
+        }
     }
 
     // Theoretically, we should never show the call controls overflow _only_, without call controls
