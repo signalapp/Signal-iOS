@@ -1375,6 +1375,9 @@
 /* button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "휴대폰 연락처에 추가";
 
+/* Header title for the section showing all media in conversation settings */
+"CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "All Media";
+
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "그룹 이름, 사진, 설명 및 사라지는 메시지 타이머를 편집할 수 있는 사용자를 선택하세요.";
 
@@ -5620,14 +5623,11 @@
 /* Label for a button to lower your raised hand in a call. */
 "RAISED_HANDS_LOWER_HAND_BUTTON" = "손 내리기";
 
-/* A message appearing on the call view's raised hands toast indicating that multiple members have raised their hands. Embeds {{name}}, {{number of other users}} */
-"RAISED_HANDS_TOAST_MULTIPLE_HANDS_MESSAGE" = "%1$@ 님 외 %2$d명이 손을 들었습니다.";
-
 /* A message appearing on the call view's raised hands toast indicating that another named member has raised their hand. */
 "RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE" = "%1$@님이 손을 들었습니다.";
 
 /* A compact member count on the call view's raised hands toast indicating that you and a number of other users raised a hand. Embeds {{number of other users}} */
-"RAISED_HANDS_TOAST_YOU_PLUS_OTHERS_COUNT" = "You +%1$d";
+"RAISED_HANDS_TOAST_YOU_PLUS_OTHERS_COUNT" = "나 외 %1$d명";
 
 /* A message appearing on the call view's raised hands toast indicating that you raised your own hand. */
 "RAISED_HANDS_TOAST_YOUR_HAND_MESSAGE" = "손을 들었습니다.";

@@ -1181,6 +1181,22 @@
 			<string>Egendefinert story · Sett av %1$d</string>
 		</dict>
 	</dict>
+	<key>RAISED_HANDS_TOAST_MULTIPLE_HANDS_MESSAGE</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>ld</string>
+			<key>one</key>
+			<string>%2$@ +%1$ld raised a hand</string>
+			<key>other</key>
+			<string>%2$@ +%1$ld raised a hand</string>
+		</dict>
+	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
