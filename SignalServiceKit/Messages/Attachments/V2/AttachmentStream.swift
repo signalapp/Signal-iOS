@@ -81,9 +81,16 @@ public class AttachmentStream {
     }
 
     public func makeDecryptedCopy() throws -> URL {
-        guard let pathExtension = MimeTypeUtil.fileExtensionForMimeType(mimeType) else {
+        guard var pathExtension = MimeTypeUtil.fileExtensionForMimeType(mimeType) else {
             throw OWSAssertionError("Invalid mime type!")
         }
+        // Special-case the "aac" filetype we use for voice messages (for legacy reasons)
+        // to use a .m4a file extension, not .aac, since AVAudioPlayer can't handle .aac
+        // properly. Doesn't affect file contents.
+        if pathExtension == "aac" {
+            pathExtension = "m4a"
+        }
+
         let tmpURL = OWSFileSystem.temporaryFileUrl(fileExtension: pathExtension)
         try Cryptography.decryptAttachment(
             at: fileURL,
