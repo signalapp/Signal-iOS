@@ -46,7 +46,7 @@ public final class OutgoingAttachmentInfo {
             dataSource: dataSource,
             shouldConsume: true,
             mimeType: contentType,
-            sourceFilename: nil,
+            sourceFilename: sourceFilename,
             caption: caption.map { MessageBody(text: $0, ranges: .empty) },
             renderingFlag: renderingFlag,
             ownerType: ownerType
