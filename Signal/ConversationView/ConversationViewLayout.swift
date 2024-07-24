@@ -733,9 +733,6 @@ public class ConversationViewLayout: UICollectionViewLayout {
     private enum DelegateScrollContinuityMode: Equatable {
         case disabled
         case enabled(lastKnownDistanceFromBottom: CGFloat?)
-        case enabledIOS12(token: CVScrollContinuityToken,
-                          isRelativeToTop: Bool,
-                          lastKnownDistanceFromBottom: CGFloat?)
     }
     private var delegateScrollContinuityMode: DelegateScrollContinuityMode = .disabled
 
@@ -991,71 +988,9 @@ public class ConversationViewLayout: UICollectionViewLayout {
                                                                                          lastKnownDistanceFromBottom: lastKnownDistanceFromBottom)
                 return targetContentOffset
             }
-        case .enabledIOS12(let token,
-                           let isRelativeToTop,
-                           let lastKnownDistanceFromBottom):
-
-            if let lastKnownDistanceFromBottom = lastKnownDistanceFromBottom,
-               abs(lastKnownDistanceFromBottom) < 5 {
-                // If the user was scrolled to the bottom, use the "delegate"
-                // scroll continuity mechanism.
-            } else {
-                let layoutInfoCurrent = ensureCurrentLayoutInfo()
-                if let targetContentOffset = Self.targetContentOffsetForUpdate(delegate: delegate,
-                                                                               token: token,
-                                                                               isRelativeToTop: isRelativeToTop,
-                                                                               layoutInfoAfterUpdate: layoutInfoCurrent) {
-                    return targetContentOffset
-                }
-            }
-            if let conversationViewController = delegate.conversationViewController {
-                let targetContentOffset = conversationViewController.targetContentOffset(forProposedContentOffset: proposedContentOffset,
-                                                                                         lastKnownDistanceFromBottom: lastKnownDistanceFromBottom)
-                return targetContentOffset
-            }
         }
 
         return proposedContentOffset
-    }
-
-    private static func targetContentOffsetForUpdate(delegate: ConversationViewLayoutDelegate,
-                                                     token: CVScrollContinuityToken,
-                                                     isRelativeToTop: Bool,
-                                                     layoutInfoAfterUpdate: LayoutInfo) -> CGPoint? {
-        let layoutInfoBeforeUpdate = token.layoutInfo
-        let contentOffsetBeforeUpdate = token.contentOffset
-
-        var beforeItemLayoutMap = [String: ItemLayout]()
-        for beforeItemLayout in layoutInfoBeforeUpdate.itemLayouts {
-            guard beforeItemLayout.canBeUsedForContinuity else {
-                continue
-            }
-            beforeItemLayoutMap[beforeItemLayout.interactionUniqueId] = beforeItemLayout
-        }
-
-        // Honor the scroll continuity bias.
-        //
-        // If we prefer continuity with regard to the bottom
-        // of the conversation, start with the last items.
-        let afterItemLayouts = (
-            isRelativeToTop
-            ? layoutInfoAfterUpdate.itemLayouts
-            : layoutInfoAfterUpdate.itemLayouts.reversed()
-        )
-
-        for afterItemLayout in afterItemLayouts {
-            guard afterItemLayout.canBeUsedForContinuity,
-                  let beforeItemLayout = beforeItemLayoutMap[afterItemLayout.interactionUniqueId] else {
-                continue
-            }
-            let frameBeforeUpdate = beforeItemLayout.frame
-            let frameAfterUpdate = afterItemLayout.frame
-            let offset = frameAfterUpdate.origin - frameBeforeUpdate.origin
-            let updatedContentOffset = CGPoint(x: 0, y: (contentOffsetBeforeUpdate + offset).y)
-            return updatedContentOffset
-        }
-
-        return nil
     }
 
     public override var debugDescription: String {
