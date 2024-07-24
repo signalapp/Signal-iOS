@@ -280,12 +280,14 @@ public extension Cryptography {
     /// - parameter input: The data to encrypt.
     /// - parameter encryptionKey: The key to encrypt with; the AES key and the hmac key concatenated together.
     ///     (The same format as ``EncryptionMetadata/key``). A random key will be generated if none is provided.
+    /// - parameter applyExtraPadding: If true, extra zero padding will be applied to ensure bucketing of file sizes,
+    ///     in addition to standard PKCS7 padding. If false, only standard PKCS7 padding is applied.
     ///
-    /// - returns: The encrypted data prefixed with the random iv and postfixed with the hmac. The ciphertext
-    /// is padded using standard pkcs7 padding but NOT with any custom padding applied to the plaintext prior to encryption.
+    /// - returns: The encrypted padded data prefixed with the random iv and postfixed with the hmac.
     static func encrypt(
         _ input: Data,
-        encryptionKey inputKey: Data? = nil
+        encryptionKey inputKey: Data? = nil,
+        applyExtraPadding: Bool = false
     ) throws -> (Data, EncryptionMetadata) {
         if let inputKey, inputKey.count != concatenatedEncryptionKeyLength {
             throw OWSAssertionError("Invalid encryption key length")
@@ -307,7 +309,7 @@ public extension Cryptography {
             },
             encryptionKey: encryptionKey,
             hmacKey: hmacKey,
-            applyExtraPadding: false
+            applyExtraPadding: applyExtraPadding
         )
         return (outputData, encryptionMetadata)
     }

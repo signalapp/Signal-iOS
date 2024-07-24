@@ -763,7 +763,8 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         case .inMemory(let data):
             let (encryptedData, encryptionMetadata) = try Cryptography.encrypt(
                 data,
-                encryptionKey: encryptionKey
+                encryptionKey: encryptionKey,
+                applyExtraPadding: true
             )
             // We'll unwrap the digest again later, but unwrap and fail
             // early so we don't waste time writing bytes to disk.
