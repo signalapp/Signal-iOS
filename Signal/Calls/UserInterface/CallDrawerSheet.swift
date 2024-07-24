@@ -31,7 +31,19 @@ class CallDrawerSheet: InteractiveSheetViewController {
     private var tableViewTopConstraint: NSLayoutConstraint?
 
     override var sheetBackgroundColor: UIColor {
-        self.tableView.backgroundColor ?? .systemGroupedBackground
+        if FeatureFlags.callDrawerSupport {
+            return UIColor(rgbHex: 0x1C1C1E)
+        } else {
+            return self.tableView.backgroundColor ?? .systemGroupedBackground
+        }
+    }
+
+    override var handleBackgroundColor: UIColor {
+        if FeatureFlags.callDrawerSupport {
+            return UIColor(rgbHex: 0x787880).withAlphaComponent(0.36)
+        } else {
+            return super.handleBackgroundColor
+        }
     }
 
     init(
@@ -415,6 +427,11 @@ class CallDrawerSheet: InteractiveSheetViewController {
         }
 
         self.lastKnownHeight = height
+    }
+
+    override func themeDidChange() {
+        // The call drawer always uses dark styling regardless of the
+        // system setting, so ignore.
     }
 }
 

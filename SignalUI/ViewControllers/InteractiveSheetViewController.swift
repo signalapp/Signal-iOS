@@ -68,6 +68,7 @@ open class InteractiveSheetViewController: OWSViewController {
     open var canInteractWithParent: Bool { false }
 
     open var sheetBackgroundColor: UIColor { Theme.actionSheetBackgroundColor }
+    open var handleBackgroundColor: UIColor { Theme.tableView2PresentedSeparatorColor }
 
     public weak var externalBackdropView: UIView?
     private lazy var _internalBackdropView = UIView()
@@ -172,7 +173,7 @@ open class InteractiveSheetViewController: OWSViewController {
         sheetStackView.insertArrangedSubview(handleContainer, at: 0)
         handleContainer.autoPinWidthToSuperview()
         handleContainer.addSubview(handle)
-        handle.backgroundColor = Theme.tableView2PresentedSeparatorColor
+        handle.backgroundColor = handleBackgroundColor
         handle.autoPinHeightToSuperview(withMargin: Constants.handleInsideMargin)
         handle.autoHCenterInSuperview()
 
@@ -188,7 +189,7 @@ open class InteractiveSheetViewController: OWSViewController {
     open override func themeDidChange() {
         super.themeDidChange()
 
-        handle.backgroundColor = Theme.tableView2PresentedSeparatorColor
+        handle.backgroundColor = handleBackgroundColor
         sheetContainerView.backgroundColor = sheetBackgroundColor
     }
 

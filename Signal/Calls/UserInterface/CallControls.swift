@@ -23,7 +23,7 @@ class CallControls: UIView {
             accessibilityLabel: viewModel.hangUpButtonAccessibilityLabel,
             action: #selector(CallControlsViewModel.didPressHangup)
         )
-        button.unselectedBackgroundColor = .ows_accentRed
+        button.unselectedBackgroundColor = FeatureFlags.callDrawerSupport ? UIColor(rgbHex: 0xEB5545) : .ows_accentRed
         return button
     }()
     private(set) lazy var audioSourceButton = createButton(
@@ -274,7 +274,14 @@ class CallControls: UIView {
         button.addTarget(viewModel, action: action, for: .touchUpInside)
         button.setContentHuggingHorizontalHigh()
         button.setCompressionResistanceHorizontalLow()
-        button.alpha = 0.9
+        if FeatureFlags.callDrawerSupport {
+            // TODO: When feature flag is removed, set these colors in `CallButton`.
+            let unselectedBackgroundColor = UIColor(rgbHex: 0x4A4A4A).withAlphaComponent(0.63)
+            button.unselectedBackgroundColor = unselectedBackgroundColor
+            button.selectedIconColor = .ows_black
+        } else {
+            button.alpha = 0.9
+        }
         return button
     }
 
