@@ -179,8 +179,9 @@ class CallControls: UIView {
         return stackView
     }
 
+    private var heightAfterLastUpdate: CGFloat = 0
+
     private func updateControls() {
-        let oldHeight = self.currentHeight
         // Top row
         audioSourceButton.isHidden = viewModel.audioSourceButtonIsHidden
         hangUpButton.isHidden = viewModel.hangUpButtonIsHidden
@@ -248,11 +249,13 @@ class CallControls: UIView {
         flipCameraButton.accessibilityLabel = viewModel.flipCameraButtonAccessibilityLabel
         moreButton.accessibilityLabel = viewModel.moreButtonAccessibilityLabel
 
-        if oldHeight != self.currentHeight {
+        if self.heightAfterLastUpdate != self.currentHeight {
             callControlsHeightObservers.elements.forEach {
                 $0.callControlsHeightDidChange(newHeight: currentHeight)
             }
         }
+
+        self.heightAfterLastUpdate = self.currentHeight
     }
 
     required init(coder: NSCoder) {

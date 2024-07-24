@@ -59,7 +59,8 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
             ),
             callService: callService,
             confirmationToastManager: callControlsConfirmationToastManager,
-            callControlsDelegate: self
+            callControlsDelegate: self,
+            sheetPanDelegate: nil
         )
     }()
 

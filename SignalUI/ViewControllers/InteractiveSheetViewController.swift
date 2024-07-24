@@ -81,6 +81,8 @@ open class InteractiveSheetViewController: OWSViewController {
 
     private let blurEffect: UIBlurEffect?
 
+    public weak var sheetPanDelegate: SheetPanDelegate?
+
     public init(blurEffect: UIBlurEffect? = nil) {
         self.blurEffect = blurEffect
         super.init()
@@ -383,7 +385,10 @@ open class InteractiveSheetViewController: OWSViewController {
         let panningScrollView = interactiveScrollViews.first { $0.panGestureRecognizer == sender }
 
         switch sender.state {
-        case .began, .changed:
+        case .began:
+            sheetPanDelegate?.sheetPanDidBegin()
+            fallthrough
+        case .changed:
             guard beginInteractiveTransitionIfNecessary(sender),
                 let startingHeight = startingHeight,
                 let startingTranslation = startingTranslation else {
@@ -421,6 +426,7 @@ open class InteractiveSheetViewController: OWSViewController {
             sheetCurrentHeightConstraint.constant = newHeight
             view.layoutIfNeeded()
         case .ended, .cancelled, .failed:
+            sheetPanDelegate?.sheetPanDidEnd()
             let currentHeight = sheetContainerView.height
             let currentVelocity = sender.velocity(in: view).y
 
@@ -477,6 +483,7 @@ open class InteractiveSheetViewController: OWSViewController {
             // very slowly) we'll default to `maxAnimationDuration`
             let remainingTime = TimeInterval(abs(remainingDistance / currentVelocity))
 
+            sheetPanDelegate?.sheetPanDecelerationDidBegin()
             Self.springAnimation(duration: max(min(remainingTime, Constants.maxAnimationDuration), Constants.maxAnimationDuration / 2)) {
                 if remainingDistance < 0 {
                     self.sheetContainerView.frame.origin.y -= remainingDistance
@@ -494,6 +501,7 @@ open class InteractiveSheetViewController: OWSViewController {
 
                 self.backdropView?.alpha = completionState == .dismissing ? 0 : 1
             } completion: {
+                self.sheetPanDelegate?.sheetPanDecelerationDidEnd()
                 self.sheetCurrentHeightConstraint.constant = finalHeight
                 self.view.layoutIfNeeded()
 
@@ -651,4 +659,11 @@ extension InteractiveSheetViewController: UIViewControllerTransitioningDelegate 
         let controller = InteractiveSheetAnimationController(presentedViewController: presented, presenting: presenting, backdropColor: self.backdropColor)
         return controller
     }
+}
+
+public protocol SheetPanDelegate: AnyObject {
+    func sheetPanDidBegin()
+    func sheetPanDidEnd()
+    func sheetPanDecelerationDidBegin()
+    func sheetPanDecelerationDidEnd()
 }

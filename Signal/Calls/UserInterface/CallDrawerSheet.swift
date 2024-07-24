@@ -39,7 +39,8 @@ class CallDrawerSheet: InteractiveSheetViewController {
         callSheetDataSource: CallDrawerSheetDataSource,
         callService: CallService,
         confirmationToastManager: CallControlsConfirmationToastManager,
-        callControlsDelegate: CallControlsDelegate
+        callControlsDelegate: CallControlsDelegate,
+        sheetPanDelegate: (any SheetPanDelegate)?
     ) {
         self.call = call
         self.callSheetDataSource = callSheetDataSource
@@ -51,6 +52,8 @@ class CallDrawerSheet: InteractiveSheetViewController {
         )
 
         super.init(blurEffect: nil)
+
+        self.sheetPanDelegate = sheetPanDelegate
 
         self.overrideUserInterfaceStyle = .dark
         callSheetDataSource.addObserver(self, syncStateImmediately: true)

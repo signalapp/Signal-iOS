@@ -180,19 +180,30 @@ class CallControlsConfirmationToastManager {
             toast.transform = .identity
         }
         appearAnimator.addCompletion { _ in
-            let disappearAnimator = UIViewPropertyAnimator(
-                duration: 0.2,
-                springDamping: 0.8,
-                springResponse: 0.2
-            )
-            disappearAnimator.addAnimations {
-                toast.alpha = 0
-            }
-            disappearAnimator.addCompletion { _ in
-                toast.removeFromSuperview()
-            }
+            let disappearAnimator = self.disappearAnimator(toast: toast)
             disappearAnimator.startAnimation(afterDelay: 2)
         }
         appearAnimator.startAnimation()
+    }
+
+    private func disappearAnimator(toast: UIView) -> UIViewPropertyAnimator {
+        let disappearAnimator = UIViewPropertyAnimator(
+            duration: 0.2,
+            springDamping: 0.8,
+            springResponse: 0.2
+        )
+        disappearAnimator.addAnimations {
+            toast.alpha = 0
+        }
+        disappearAnimator.addCompletion { _ in
+            toast.removeFromSuperview()
+        }
+        return disappearAnimator
+    }
+
+    public func forceDismissToast() {
+        if let toast {
+            self.disappearAnimator(toast: toast).startAnimation()
+        }
     }
 }
