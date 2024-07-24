@@ -479,14 +479,40 @@ public class AttachmentManagerImpl: AttachmentManager {
                 throw OWSAssertionError("Original attachment not found")
             }
 
+            let thumbnailMimeType: String
+            let thumbnailBlurHash: String?
+            let thumbnailTransitTierInfo: Attachment.TransitTierInfo?
+            let thumbnailEncryptionKey: Data
+            if
+                originalAttachment.asStream() == nil,
+                let thumbnailProtoFromSender = originalAttachmentSource.thumbnailPointerFromSender,
+                let mimeType = thumbnailProtoFromSender.contentType,
+                let transitTierInfo = try? self.transitTierInfo(from: thumbnailProtoFromSender)
+            {
+                // If the original is undownloaded, prefer to use the thumbnail
+                // pointer from the sender.
+                thumbnailMimeType = mimeType
+                thumbnailBlurHash = thumbnailProtoFromSender.blurHash
+                thumbnailTransitTierInfo = transitTierInfo
+                thumbnailEncryptionKey = transitTierInfo.encryptionKey
+            } else {
+                // Otherwise fall back to the original's info, leaving transit tier
+                // info blank (thumbnail cannot itself be downloaded) in the hopes
+                // that we will download the original later and fill the thumbnail in.
+                thumbnailMimeType = MimeTypeUtil.thumbnailMimetype(fullsizeMimeType: originalAttachment.mimeType)
+                thumbnailBlurHash = originalAttachment.blurHash
+                thumbnailTransitTierInfo = nil
+                thumbnailEncryptionKey = originalAttachment.encryptionKey
+            }
+
             // Create a new attachment, but add foreign key reference to the original
             // so that when/if we download the original we can update this thumbnail'ed copy.
             let attachmentParams = Attachment.ConstructionParams.forQuotedReplyThumbnailPointer(
                 originalAttachment: originalAttachment,
-                thumbnailBlurHash: originalAttachment.blurHash,
-                thumbnailMimeType: MimeTypeUtil.thumbnailMimetype(fullsizeMimeType: originalAttachment.mimeType),
-                thumbnailEncryptionKey: originalAttachment.encryptionKey,
-                thumbnailTransitTierInfo: originalAttachment.transitTierInfo
+                thumbnailBlurHash: thumbnailBlurHash,
+                thumbnailMimeType: thumbnailMimeType,
+                thumbnailEncryptionKey: thumbnailEncryptionKey,
+                thumbnailTransitTierInfo: thumbnailTransitTierInfo
             )
             let referenceParams = AttachmentReference.ConstructionParams(
                 owner: try referenceOwner.build(

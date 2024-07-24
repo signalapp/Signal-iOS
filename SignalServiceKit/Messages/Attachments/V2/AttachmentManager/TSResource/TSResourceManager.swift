@@ -206,7 +206,7 @@ extension TSResourceManager {
     public func newQuotedReplyMessageThumbnailBuilder(
         originalAttachment: TSResource,
         originalReference: TSResourceReference,
-        fallbackQuoteProto: SSKProtoDataMessageQuote?,
+        fallbackQuoteProto: SSKProtoDataMessageQuote,
         originalMessageRowId: Int64,
         tx: DBWriteTransaction
     ) -> OwnedAttachmentBuilder<QuotedAttachmentInfo>? {
@@ -222,7 +222,8 @@ extension TSResourceManager {
             return self.newQuotedReplyMessageThumbnailBuilder(
                 from: QuotedReplyAttachmentDataSource.fromOriginalAttachment(
                     attachment,
-                    originalReference: attachmentReference
+                    originalReference: attachmentReference,
+                    thumbnailPointerFromSender: fallbackQuoteProto.attachments.first?.thumbnail
                 ).tsDataSource,
                 fallbackQuoteProto: fallbackQuoteProto,
                 tx: tx

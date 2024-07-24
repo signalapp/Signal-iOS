@@ -44,6 +44,9 @@ public struct QuotedReplyAttachmentDataSource {
         public let sourceFilename: String?
         public let sourceUnencryptedByteCount: UInt32?
         public let sourceMediaSizePixels: CGSize?
+
+        /// Pointer proto from the sender of the quoted reply.
+        public let thumbnailPointerFromSender: SSKProtoAttachmentPointer?
     }
 
     internal init(originalMessageRowId: Int64?, source: Source) {
@@ -60,7 +63,8 @@ public struct QuotedReplyAttachmentDataSource {
 
     public static func fromOriginalAttachment(
         _ originalAttachment: Attachment,
-        originalReference: AttachmentReference
+        originalReference: AttachmentReference,
+        thumbnailPointerFromSender: SSKProtoAttachmentPointer?
     ) -> Self {
         let originalMessageRowId: Int64?
         switch originalReference.owner.id {
@@ -89,7 +93,8 @@ public struct QuotedReplyAttachmentDataSource {
                 renderingFlag: originalReference.renderingFlag,
                 sourceFilename: originalReference.sourceFilename,
                 sourceUnencryptedByteCount: originalReference.sourceUnencryptedByteCount,
-                sourceMediaSizePixels: originalReference.sourceMediaSizePixels
+                sourceMediaSizePixels: originalReference.sourceMediaSizePixels,
+                thumbnailPointerFromSender: thumbnailPointerFromSender
             ))
         )
     }

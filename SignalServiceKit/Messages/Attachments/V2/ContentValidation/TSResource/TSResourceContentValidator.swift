@@ -370,10 +370,7 @@ open class TSResourceContentValidatorMock: TSResourceContentValidator {
             case .legacy(_):
                 fatalError("Invalid combination")
             case .v2(let attachmentReference):
-                return QuotedReplyAttachmentDataSource.fromOriginalAttachment(
-                    attachment,
-                    originalReference: attachmentReference
-                ).tsDataSource
+                throw OWSAssertionError("Unimplemented")
             }
         }
     }
