@@ -664,17 +664,14 @@ extension ConversationViewController: CVComponentDelegate {
             owsFailDebug("Invalid thread.")
             return
         }
-        firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
-            GroupManager.sendGroupUpdateMessage(thread: groupThread)
-        }.done(on: DispatchQueue.global()) {
+        Task {
+            await GroupManager.sendGroupUpdateMessage(thread: groupThread)
             Logger.info("Group updated, removing group creation error.")
 
-            Self.databaseStorage.write { tx in
+            await Self.databaseStorage.awaitableWrite { tx in
                 DependenciesBridge.shared.interactionDeleteManager
                     .delete(message, sideEffects: .default(), tx: tx.asV2Write)
             }
-        }.catch(on: DispatchQueue.global()) { error in
-            owsFailDebug("Error: \(error)")
         }
     }
 

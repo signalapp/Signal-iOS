@@ -378,7 +378,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
             break
         }
 
-        _ = GroupManager.sendGroupUpdateMessage(
+        await GroupManager.sendGroupUpdateMessage(
             thread: updatedV2Group.groupThread,
             changeActionsProtoData: updatedV2Group.changeActionsProtoData
         )
@@ -1628,7 +1628,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
                 throw OWSAssertionError("Missing group thread.")
             }
 
-            _ = GroupManager.sendGroupUpdateMessage(
+            await GroupManager.sendGroupUpdateMessage(
                 thread: groupThread,
                 changeActionsProtoData: changeActionsProtoData
             )
@@ -1672,7 +1672,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
                 return groupThread
             }
 
-            _ = GroupManager.sendGroupUpdateMessage(thread: groupThread, changeActionsProtoData: nil)
+            await GroupManager.sendGroupUpdateMessage(thread: groupThread, changeActionsProtoData: nil)
             return groupThread
         }
     }

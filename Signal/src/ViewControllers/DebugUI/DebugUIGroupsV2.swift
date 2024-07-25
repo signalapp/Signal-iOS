@@ -412,12 +412,9 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
     }
 
     private func sendGroupUpdate(groupThread: TSGroupThread) {
-        firstly {
-            GroupManager.sendGroupUpdateMessage(thread: groupThread)
-        }.done { _ in
+        Task {
+            await GroupManager.sendGroupUpdateMessage(thread: groupThread)
             Logger.info("Success.")
-        }.catch { error in
-            owsFailDebug("Error: \(error)")
         }
     }
 

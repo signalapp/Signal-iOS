@@ -260,7 +260,7 @@ public class GroupManager: NSObject {
         }
 
         if shouldSendMessage {
-            try await sendDurableNewGroupMessage(forThread: thread).awaitable()
+            await sendDurableNewGroupMessage(forThread: thread)
         }
         return thread
     }
@@ -810,13 +810,12 @@ public class GroupManager: NSObject {
 
     // MARK: - Messages
 
-    public static func sendGroupUpdateMessage(thread: TSGroupThread,
-                                              changeActionsProtoData: Data? = nil) -> Promise<Void> {
+    public static func sendGroupUpdateMessage(thread: TSGroupThread, changeActionsProtoData: Data? = nil) async {
         guard thread.isGroupV2Thread else {
             owsFail("[GV1] Should be impossible to send V1 group messages!")
         }
 
-        return databaseStorage.write(.promise) { transaction in
+        await databaseStorage.awaitableWrite { transaction in
             let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
 
             let message = OutgoingGroupUpdateMessage(
@@ -837,12 +836,12 @@ public class GroupManager: NSObject {
         }
     }
 
-    private static func sendDurableNewGroupMessage(forThread thread: TSGroupThread) -> Promise<Void> {
+    private static func sendDurableNewGroupMessage(forThread thread: TSGroupThread) async {
         guard thread.isGroupV2Thread else {
             owsFail("[GV1] Should be impossible to send V1 group messages!")
         }
 
-        return databaseStorage.write(.promise) { tx in
+        await databaseStorage.awaitableWrite { tx in
             let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
             let message = OutgoingGroupUpdateMessage(
                 in: thread,
