@@ -115,19 +115,12 @@ public class UserProfileFinder: NSObject {
         return userProfiles
     }
 
-    func fetchAcisWithSharedPhoneNumbers(tx: SDSAnyReadTransaction) throws -> [Aci] {
-        let sql: String
-        if OWSUserProfile.isPhoneNumberSharedByDefault {
-            sql = """
-                SELECT \(userProfileColumn: .serviceIdString) FROM \(OWSUserProfile.databaseTableName)
-                WHERE \(userProfileColumn: .isPhoneNumberShared) IS NOT FALSE
-            """
-        } else {
-            sql = """
-                SELECT \(userProfileColumn: .serviceIdString) FROM \(OWSUserProfile.databaseTableName)
-                WHERE \(userProfileColumn: .isPhoneNumberShared) IS TRUE
-            """
-        }
+    func fetchAcisWithHiddenPhoneNumbers(tx: SDSAnyReadTransaction) throws -> [Aci] {
+        let sql = """
+        SELECT \(userProfileColumn: .serviceIdString) FROM \(OWSUserProfile.databaseTableName)
+        WHERE \(userProfileColumn: .isPhoneNumberShared) IS FALSE
+        OR (\(userProfileColumn: .isPhoneNumberShared) IS NULL AND \(userProfileColumn: .givenName) IS NOT NULL)
+        """
         do {
             let serviceIdStrings = try String?.fetchAll(tx.unwrapGrdbRead.database, sql: sql)
             return serviceIdStrings.compactMap(Aci.parseFrom(aciString:))

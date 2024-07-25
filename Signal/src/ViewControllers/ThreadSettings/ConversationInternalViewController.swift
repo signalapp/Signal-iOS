@@ -74,7 +74,16 @@ public class ConversationInternalViewController: OWSTableViewController2 {
 
                 section.add(.copyableItem(
                     label: "Sharing Phone Number?",
-                    value: userProfile.isPhoneNumberSharedOrDefault ? "Yes" : "No"
+                    value: {
+                        switch userProfile?.isPhoneNumberShared {
+                        case .some(true):
+                            return "Yes"
+                        case .some(false):
+                            return "No"
+                        case .none:
+                            return "!isProfileNameKnown"
+                        }
+                    }()
                 ))
 
                 section.add(.copyableItem(

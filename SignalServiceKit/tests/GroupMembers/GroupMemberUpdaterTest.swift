@@ -105,8 +105,8 @@ class GroupMemberUpdaterTest: XCTestCase {
         // create a group member for the ACI one.
         signalRecipients.append(("00000000-0000-4000-8000-000000000009", "PNI:00000000-0000-4000-8000-00000000000A", "+16505550105"))
         groupThreadMembers.append(("00000000-0000-4000-8000-000000000009", "+16505550105"))
-        mockPhoneNumberVisibilityFetcher.acisWithSharedPhoneNumbers.insert(
-            Aci.constantForTesting("00000000-0000-4000-8000-000000000009")
+        mockPhoneNumberVisibilityFetcher.acisWithHiddenPhoneNumbers.insert(
+            Aci.constantForTesting("00000000-0000-4000-8000-00000000000A")
         )
         groupThreadMembers.append(("PNI:00000000-0000-4000-8000-00000000000A", "+16505550105"))
         fetchableInteractionTimestamps.append(("00000000-0000-4000-8000-000000000009", 10))

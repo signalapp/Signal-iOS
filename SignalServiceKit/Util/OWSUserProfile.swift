@@ -255,14 +255,6 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     /// never had a profile key for this user, or the value can't be decrypted.
     private(set) public var isPhoneNumberShared: Bool?
 
-    public var isPhoneNumberSharedOrDefault: Bool {
-        return isPhoneNumberShared ?? Self.isPhoneNumberSharedByDefault
-    }
-
-    public static var isPhoneNumberSharedByDefault: Bool {
-        return PhoneNumberSharingMode.defaultValue == .everybody
-    }
-
     public convenience init(
         address: Address,
         givenName: String? = nil,
@@ -919,12 +911,6 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     }
 }
 
-extension Optional where Wrapped == OWSUserProfile {
-    public var isPhoneNumberSharedOrDefault: Bool {
-        return self?.isPhoneNumberSharedOrDefault ?? OWSUserProfile.isPhoneNumberSharedByDefault
-    }
-}
-
 // MARK: -
 
 extension OWSUserProfile {
@@ -1273,8 +1259,17 @@ extension OWSUserProfile {
         newUserProfile: OWSUserProfile,
         tx: DBWriteTransaction
     ) {
+        let shouldUpdateVisibility: Bool = {
+            if (oldUserProfile?.givenName == nil) && (newUserProfile.givenName != nil) {
+                return true
+            }
+            if newUserProfile.isPhoneNumberShared != oldUserProfile?.isPhoneNumberShared {
+                return true
+            }
+            return false
+        }()
         // Don't do anything unless the sharing setting was changed.
-        if newUserProfile.isPhoneNumberSharedOrDefault == oldUserProfile.isPhoneNumberSharedOrDefault {
+        guard shouldUpdateVisibility else {
             return
         }
         guard case .otherUser(let address) = internalAddress, let aci = address.aci else {

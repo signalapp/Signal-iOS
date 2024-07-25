@@ -562,8 +562,7 @@ public class SignalServiceAddressCache: NSObject {
                 updateRecipient(
                     recipient,
                     isPhoneNumberVisible: (
-                        bulkFetcher?.isPhoneNumberVisible(for: recipient)
-                        ?? OWSUserProfile.isPhoneNumberSharedByDefault
+                        bulkFetcher?.isPhoneNumberVisible(for: recipient) ?? false
                     )
                 )
             }
