@@ -1031,7 +1031,6 @@
 		6698FC0F297F03FE004EFC30 /* KeyValueStoreFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC0E297F03FE004EFC30 /* KeyValueStoreFactory.swift */; };
 		6698FC11297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC10297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStore.swift */; };
 		6698FC1A2980AB45004EFC30 /* DependenciesBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC192980AB45004EFC30 /* DependenciesBridge.swift */; };
-		6698FC1C2980AE00004EFC30 /* SecureValueRecoveryObjcBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC1B2980AE00004EFC30 /* SecureValueRecoveryObjcBridge.swift */; };
 		669947BA2A20129000E4DC0C /* SVR2Shims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669947B92A20129000E4DC0C /* SVR2Shims.swift */; };
 		669A2FCC2BD9D32400166DB6 /* AudioWaveformManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669A2FCB2BD9D32400166DB6 /* AudioWaveformManager.swift */; };
 		669A2FCE2BD9D48800166DB6 /* AudioWaveform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669A2FCD2BD9D48800166DB6 /* AudioWaveform.swift */; };
@@ -4085,7 +4084,6 @@
 		6698FC10297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SDSKeyValueStore+KeyValueStore.swift"; sourceTree = "<group>"; };
 		6698FC13297F38BB004EFC30 /* ViewControllerContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerContext.swift; sourceTree = "<group>"; };
 		6698FC192980AB45004EFC30 /* DependenciesBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependenciesBridge.swift; sourceTree = "<group>"; };
-		6698FC1B2980AE00004EFC30 /* SecureValueRecoveryObjcBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureValueRecoveryObjcBridge.swift; sourceTree = "<group>"; };
 		669947B92A20129000E4DC0C /* SVR2Shims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVR2Shims.swift; sourceTree = "<group>"; };
 		669A2FCB2BD9D32400166DB6 /* AudioWaveformManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformManager.swift; sourceTree = "<group>"; };
 		669A2FCD2BD9D48800166DB6 /* AudioWaveform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveform.swift; sourceTree = "<group>"; };
@@ -7946,7 +7944,6 @@
 				66C2B13B2A0E9108008DDE72 /* SVR2 */,
 				666654202AD0B03F00B23B32 /* MasterKeySyncManager.swift */,
 				66138FB5298326C7002E0CFE /* SecureValueRecovery.swift */,
-				6698FC1B2980AE00004EFC30 /* SecureValueRecoveryObjcBridge.swift */,
 				66C2B1372A0DB6A9008DDE72 /* SVRAuthCredential.swift */,
 				6673FF6F2978C40300F96CFD /* SVRAuthCredentialStorage.swift */,
 				6673FF712979B33800F96CFD /* SVRAuthCredentialStorageImpl.swift */,
@@ -14910,7 +14907,6 @@
 				66138FB6298326C7002E0CFE /* SecureValueRecovery.swift in Sources */,
 				662C440B2A156DF7001F83E2 /* SecureValueRecovery2Impl.swift in Sources */,
 				6691E7F72996EAD70032A68A /* SecureValueRecoveryMock.swift in Sources */,
-				6698FC1C2980AE00004EFC30 /* SecureValueRecoveryObjcBridge.swift in Sources */,
 				F9C5CD37289453B300548EEE /* SenderKeyStore.swift in Sources */,
 				725465392BA01FAA00EABFD2 /* SendGiftBadgeJobQueue.swift in Sources */,
 				D9AE0AD5291877600063488B /* SendGiftBadgeJobRecord.swift in Sources */,
