@@ -238,7 +238,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
                 _ = try await groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
                     groupId: groupId,
                     groupSecretParams: groupV2Params.groupSecretParams
-                ).awaitable()
+                )
 
                 (builtGroupChange, httpResponse) = try await buildGroupChangeProtoAndTryToUpdateGroupOnService(
                     groupId: groupId,
@@ -1231,18 +1231,21 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
             return
         }
         let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionAfterMessageProcessWithThrottling
-        firstly {
-            self.groupV2Updates.tryToRefreshV2GroupThread(
-                groupId: groupId,
-                spamReportingMetadata: .learnedByLocallyInitatedRefresh,
-                groupSecretParams: try groupModelV2.secretParams(),
-                groupUpdateMode: groupUpdateMode
-            )
-        }.catch { error in
-            if case GroupsV2Error.localUserNotInGroup = error {
-                Logger.warn("Error: \(error)")
-            } else {
-                owsFailDebugUnlessNetworkFailure(error)
+        let groupSecretParamsData = groupModelV2.secretParamsData
+        Task {
+            do {
+                _ = try await self.groupV2Updates.tryToRefreshV2GroupThread(
+                    groupId: groupId,
+                    spamReportingMetadata: .learnedByLocallyInitatedRefresh,
+                    groupSecretParams: try GroupSecretParams(contents: [UInt8](groupSecretParamsData)),
+                    groupUpdateMode: groupUpdateMode
+                )
+            } catch {
+                if case GroupsV2Error.localUserNotInGroup = error {
+                    Logger.warn("Error: \(error)")
+                } else {
+                    owsFailDebugUnlessNetworkFailure(error)
+                }
             }
         }
     }
@@ -1552,7 +1555,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
         let groupThread = try await groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
             groupId: groupId,
             groupSecretParams: groupV2Params.groupSecretParams
-        ).awaitable()
+        )
 
         guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
             throw OWSAssertionError("Missing localAci.")
@@ -1630,7 +1633,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
                     groupId: groupId,
                     groupSecretParams: groupV2Params.groupSecretParams,
                     groupModelOptions: .didJustAddSelfViaGroupLink
-                ).awaitable()
+                )
             } catch {
                 throw GroupsV2Error.requestingMemberCantLoadGroupState
             }

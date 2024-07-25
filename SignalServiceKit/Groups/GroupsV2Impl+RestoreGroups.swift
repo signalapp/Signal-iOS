@@ -240,8 +240,8 @@ public extension GroupsV2Impl {
                 // This will try to update the group using incremental "changes" but
                 // failover to using a "snapshot".
                 let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionAfterMessageProcessWithThrottling
-                firstly {
-                    self.groupV2Updates.tryToRefreshV2GroupThread(
+                Promise.wrapAsync {
+                    try await self.groupV2Updates.tryToRefreshV2GroupThread(
                         groupId: groupContextInfo.groupId,
                         spamReportingMetadata: .learnedByLocallyInitatedRefresh,
                         groupSecretParams: groupContextInfo.groupSecretParams,

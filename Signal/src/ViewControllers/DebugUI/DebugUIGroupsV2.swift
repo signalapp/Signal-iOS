@@ -424,15 +424,18 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
             owsFailDebug("Invalid groupModel.")
             return
         }
-        firstly {
-            self.groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
-                groupId: groupModelV2.groupId,
-                groupSecretParams: try groupModelV2.secretParams()
-            )
-        }.done { _ in
-            Logger.info("Success.")
-        }.catch { error in
-            owsFailDebug("Error: \(error)")
+        let groupId = groupModelV2.groupId
+        let groupSecretParamsData = groupModelV2.secretParamsData
+        Task {
+            do {
+                _ = try await self.groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
+                    groupId: groupId,
+                    groupSecretParams: try GroupSecretParams(contents: [UInt8](groupSecretParamsData))
+                )
+                Logger.info("Success.")
+            } catch {
+                owsFailDebug("Error: \(error)")
+            }
         }
     }
 }

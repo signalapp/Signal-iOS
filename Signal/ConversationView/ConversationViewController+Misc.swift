@@ -12,8 +12,7 @@ public extension ConversationViewController {
     func updateV2GroupIfNecessary() {
         AssertIsOnMainThread()
 
-        guard let groupThread = thread as? TSGroupThread,
-              thread.isGroupV2Thread else {
+        guard let groupThread = thread as? TSGroupThread, thread.isGroupV2Thread else {
             return
         }
         // Try to update the v2 group to latest from the service.

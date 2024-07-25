@@ -277,10 +277,12 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                 // waitForFetchingAndProcessing above.
                 let groupId = groupModel.groupId
                 let groupSecretParams = try groupModel.secretParams()
-                return Self.groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
-                    groupId: groupId,
-                    groupSecretParams: groupSecretParams
-                ).asVoid()
+                return Promise.wrapAsync {
+                    _ = try await Self.groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
+                        groupId: groupId,
+                        groupSecretParams: groupSecretParams
+                    )
+                }
             }.then(on: DispatchQueue.global()) { () throws -> Promise<TSGroupThread> in
                 return GroupManager.updateLocalProfileKey(
                     groupModel: groupModel

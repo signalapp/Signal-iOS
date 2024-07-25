@@ -819,7 +819,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
                 spamReportingMetadata: spamReportingMetadata,
                 groupSecretParams: groupContextInfo.groupSecretParams,
                 groupUpdateMode: groupUpdateMode
-            ).awaitable()
+            )
             return .successShouldProcess
         } catch {
             if self.isRetryableError(error) {

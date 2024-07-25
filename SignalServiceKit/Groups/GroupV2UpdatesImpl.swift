@@ -33,49 +33,49 @@ public class GroupV2UpdatesImpl: Dependencies {
         SwiftSingletons.register(self)
 
         AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
-            self.autoRefreshGroupOnLaunch()
+            Task { await self.autoRefreshGroupOnLaunch() }
         }
     }
 
     // MARK: -
 
     // On launch, we refresh a few randomly-selected groups.
-    private func autoRefreshGroupOnLaunch() {
+    private func autoRefreshGroupOnLaunch() async {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             return
         }
 
-        firstly(on: DispatchQueue.global()) { () -> Guarantee<Void> in
-            self.messageProcessor.waitForFetchingAndProcessing()
-        }.then(on: DispatchQueue.global()) { _ -> Promise<Void> in
-            guard let groupInfoToRefresh = Self.findGroupToAutoRefresh() else {
-                // We didn't find a group to refresh; abort.
-                return Promise.value(())
-            }
-            let groupId = groupInfoToRefresh.groupId
-            let groupSecretParams = groupInfoToRefresh.groupSecretParams
-            if let lastRefreshDate = groupInfoToRefresh.lastRefreshDate {
-                Logger.info("Auto-refreshing group: \(groupId.hexadecimalString) which hasn't been refreshed in \(-lastRefreshDate.timeIntervalSinceNow/kDayInterval) days.")
-            } else {
-                Logger.info("Auto-refreshing group: \(groupId.hexadecimalString) which has never been refreshed.")
-            }
-            return self.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
+        await self.messageProcessor.waitForFetchingAndProcessing().awaitable()
+
+        guard let groupInfoToRefresh = Self.findGroupToAutoRefresh() else {
+            // We didn't find a group to refresh; abort.
+            return
+        }
+
+        let groupId = groupInfoToRefresh.groupId
+        let groupSecretParams = groupInfoToRefresh.groupSecretParams
+        if let lastRefreshDate = groupInfoToRefresh.lastRefreshDate {
+            Logger.info("Auto-refreshing group: \(groupId.hexadecimalString) which hasn't been refreshed in \(-lastRefreshDate.timeIntervalSinceNow/kDayInterval) days.")
+        } else {
+            Logger.info("Auto-refreshing group: \(groupId.hexadecimalString) which has never been refreshed.")
+        }
+
+        do {
+            _ = try await self.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
                 groupId: groupId,
                 groupSecretParams: groupSecretParams
-            ).asVoid()
-        }.catch(on: DispatchQueue.global()) { error in
-            if case GroupsV2Error.localUserNotInGroup = error {
-                Logger.warn("Error: \(error)")
-            } else {
-                owsFailDebugUnlessNetworkFailure(error)
-            }
+            )
+        } catch GroupsV2Error.localUserNotInGroup {
+            Logger.warn("Can't auto-refresh group unless we're a member")
+        } catch {
+            owsFailDebugUnlessNetworkFailure(error)
         }
     }
 
-    private func didUpdateGroupToCurrentRevision(groupId: Data) {
+    private func didUpdateGroupToCurrentRevision(groupId: Data) async {
         let storeKey = groupId.hexadecimalString
-        Self.databaseStorage.write { transaction in
+        return await databaseStorage.awaitableWrite { transaction in
             Self.groupRefreshStore.setDate(Date(), key: storeKey, transaction: transaction)
         }
     }
@@ -216,9 +216,9 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
     public func tryToRefreshV2GroupUpToCurrentRevisionImmediately(
         groupId: Data,
         groupSecretParams: GroupSecretParams
-    ) -> Promise<TSGroupThread> {
+    ) async throws -> TSGroupThread {
         let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionImmediately
-        return tryToRefreshV2GroupThread(
+        return try await tryToRefreshV2GroupThread(
             groupId: groupId,
             spamReportingMetadata: .learnedByLocallyInitatedRefresh,
             groupSecretParams: groupSecretParams,
@@ -230,9 +230,9 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         groupId: Data,
         groupSecretParams: GroupSecretParams,
         groupModelOptions: TSGroupModelOptions
-    ) -> Promise<TSGroupThread> {
+    ) async throws -> TSGroupThread {
         let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionImmediately
-        return tryToRefreshV2GroupThread(
+        return try await tryToRefreshV2GroupThread(
             groupId: groupId,
             spamReportingMetadata: .learnedByLocallyInitatedRefresh,
             groupSecretParams: groupSecretParams,
@@ -246,8 +246,8 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         groupSecretParams: GroupSecretParams,
         groupUpdateMode: GroupUpdateMode
-    ) -> Promise<TSGroupThread> {
-        tryToRefreshV2GroupThread(
+    ) async throws -> TSGroupThread {
+        return try await tryToRefreshV2GroupThread(
             groupId: groupId,
             spamReportingMetadata: spamReportingMetadata,
             groupSecretParams: groupSecretParams,
@@ -270,21 +270,22 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         _ groupThread: TSGroupThread,
         groupUpdateMode: GroupUpdateMode
     ) {
-
-        firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
-            guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
-                return Promise.value(())
+        guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+            return
+        }
+        let groupId = groupModel.groupId
+        let groupSecretParamsData = groupModel.secretParamsData
+        Task {
+            do {
+                _ = try await self.tryToRefreshV2GroupThread(
+                    groupId: groupId,
+                    spamReportingMetadata: .learnedByLocallyInitatedRefresh,
+                    groupSecretParams: try GroupSecretParams(contents: [UInt8](groupSecretParamsData)),
+                    groupUpdateMode: groupUpdateMode
+                )
+            } catch {
+                Logger.warn("Group refresh failed: \(error).")
             }
-            let groupId = groupModel.groupId
-            let groupSecretParams = try groupModel.secretParams()
-            return self.tryToRefreshV2GroupThread(
-                groupId: groupId,
-                spamReportingMetadata: .learnedByLocallyInitatedRefresh,
-                groupSecretParams: groupSecretParams,
-                groupUpdateMode: groupUpdateMode
-            ).asVoid()
-        }.catch(on: DispatchQueue.global()) { error in
-            Logger.warn("Group refresh failed: \(error).")
         }
     }
 
@@ -294,7 +295,7 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         groupSecretParams: GroupSecretParams,
         groupUpdateMode: GroupUpdateMode,
         groupModelOptions: TSGroupModelOptions
-    ) -> Promise<TSGroupThread> {
+    ) async throws -> TSGroupThread {
 
         let isThrottled = { () -> Bool in
             guard groupUpdateMode.shouldThrottle else {
@@ -308,36 +309,35 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
             return abs(lastSuccessfulRefreshDate.timeIntervalSinceNow) < refreshFrequency
         }()
 
-        let earlyPromise: Promise<TSGroupThread>? = databaseStorage.read {
+        let earlyResult = try databaseStorage.read { tx -> TSGroupThread? in
             // - If we're blocked, it's an immediate error
-            // - If we're throttled, return the current thread state if we have it
-            // - Otherwise, we want to proceed with group update
-            if blockingManager.isGroupIdBlocked(groupId, transaction: $0) {
-                return Promise(error: GroupsV2Error.groupBlocked)
-            } else if isThrottled, let thread = TSGroupThread.fetch(groupId: groupId, transaction: $0) {
-                return Promise.value(thread)
-            } else {
-                return nil
+            if blockingManager.isGroupIdBlocked(groupId, transaction: tx) {
+                throw GroupsV2Error.groupBlocked
             }
+            // - If we're throttled, return the current thread state if we have it
+            if isThrottled, let thread = TSGroupThread.fetch(groupId: groupId, transaction: tx) {
+                return thread
+            }
+            // - Otherwise, we want to proceed with group update
+            return nil
         }
 
-        if let earlyPromise = earlyPromise {
-            return earlyPromise
+        if let earlyResult {
+            return earlyResult
         }
 
-        let operation = GroupV2UpdateOperation(
-            groupId: groupId,
-            spamReportingMetadata: spamReportingMetadata,
-            groupSecretParams: groupSecretParams,
-            groupUpdateMode: groupUpdateMode,
-            groupModelOptions: groupModelOptions
-        )
-        operation.promise.done(on: DispatchQueue.global()) { _ in
-            self.groupRefreshDidSucceed(forGroupId: groupId, groupUpdateMode: groupUpdateMode)
-        }.cauterize()
-        let operationQueue = self.operationQueue(forGroupUpdateMode: groupUpdateMode)
-        operationQueue.addOperation(operation)
-        return operation.promise
+        let result = try await withCheckedThrowingContinuation { continuation in
+            self.operationQueue(forGroupUpdateMode: groupUpdateMode).addOperation(GroupV2UpdateOperation(
+                groupId: groupId,
+                spamReportingMetadata: spamReportingMetadata,
+                groupSecretParams: groupSecretParams,
+                groupUpdateMode: groupUpdateMode,
+                groupModelOptions: groupModelOptions,
+                continuation: continuation
+            ))
+        }
+        await self.groupRefreshDidSucceed(forGroupId: groupId, groupUpdateMode: groupUpdateMode)
+        return result
     }
 
     private func lastSuccessfulRefreshDate(forGroupId groupId: Data) -> Date? {
@@ -347,11 +347,11 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
     private func groupRefreshDidSucceed(
         forGroupId groupId: Data,
         groupUpdateMode: GroupUpdateMode
-    ) {
+    ) async {
         lastSuccessfulRefreshMap[groupId] = Date()
 
         if groupUpdateMode.shouldUpdateToCurrentRevision {
-            didUpdateGroupToCurrentRevision(groupId: groupId)
+            await didUpdateGroupToCurrentRevision(groupId: groupId)
         }
     }
 
@@ -371,25 +371,22 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         let groupModelOptions: TSGroupModelOptions
         let spamReportingMetadata: GroupUpdateSpamReportingMetadata
 
-        let promise: Promise<TSGroupThread>
-        let future: Future<TSGroupThread>
+        private let continuation: CheckedContinuation<TSGroupThread, any Error>
 
         init(
             groupId: Data,
             spamReportingMetadata: GroupUpdateSpamReportingMetadata,
             groupSecretParams: GroupSecretParams,
             groupUpdateMode: GroupUpdateMode,
-            groupModelOptions: TSGroupModelOptions
+            groupModelOptions: TSGroupModelOptions,
+            continuation: CheckedContinuation<TSGroupThread, any Error>
         ) {
             self.groupId = groupId
             self.spamReportingMetadata = spamReportingMetadata
             self.groupSecretParams = groupSecretParams
             self.groupUpdateMode = groupUpdateMode
             self.groupModelOptions = groupModelOptions
-
-            let (promise, future) = Promise<TSGroupThread>.pending()
-            self.promise = promise
-            self.future = future
+            self.continuation = continuation
 
             super.init()
 
@@ -399,37 +396,43 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         // MARK: Run
 
         public override func run() {
-            firstly { () -> Guarantee<Void> in
-                if groupUpdateMode.shouldBlockOnMessageProcessing {
-                    return self.messageProcessor.waitForFetchingAndProcessing()
-                } else {
-                    return Guarantee.value(())
+            Task {
+                do {
+                    let result = try await self._run()
+                    self.reportSuccess()
+                    self.continuation.resume(returning: result)
+                } catch {
+                    self.reportError(error)
                 }
-            }.then(on: DispatchQueue.global()) { () in
-                self.groupV2UpdatesImpl.refreshGroupFromService(
+            }
+        }
+
+        private func _run() async throws -> TSGroupThread {
+            if groupUpdateMode.shouldBlockOnMessageProcessing {
+                await self.messageProcessor.waitForFetchingAndProcessing().awaitable()
+            }
+
+            do {
+                return try await self.groupV2UpdatesImpl.refreshGroupFromService(
                     groupSecretParams: self.groupSecretParams,
                     groupUpdateMode: self.groupUpdateMode,
                     groupModelOptions: self.groupModelOptions,
                     spamReportingMetadata: self.spamReportingMetadata
                 )
-            }.done(on: DispatchQueue.global()) { (groupThread: TSGroupThread) in
-                self.reportSuccess()
-                self.future.resolve(groupThread)
-            }.catch(on: DispatchQueue.global()) { (error) in
+            } catch {
                 if error.isNetworkFailureOrTimeout {
                     Logger.warn("Group update failed: \(error)")
                 } else {
                     switch error {
                     case GroupsV2Error.localUserNotInGroup,
-                         GroupsV2Error.timeout,
-                         GroupsV2Error.missingGroupChangeProtos:
-                    Logger.warn("Group update failed: \(error)")
+                        GroupsV2Error.timeout,
+                        GroupsV2Error.missingGroupChangeProtos:
+                        Logger.warn("Group update failed: \(error)")
                     default:
                         owsFailDebug("Group update failed: \(error)")
                     }
                 }
-
-                self.reportError(error)
+                throw error
             }
         }
 
@@ -458,7 +461,7 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         public override func didFail(error: Error) {
             Logger.error("failed with error: \(error)")
 
-            future.reject(error)
+            self.continuation.resume(throwing: error)
         }
     }
 }
@@ -483,67 +486,68 @@ private extension GroupV2UpdatesImpl {
         groupUpdateMode: GroupUpdateMode,
         groupModelOptions: TSGroupModelOptions,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata
-    ) -> Promise<TSGroupThread> {
+    ) async throws -> TSGroupThread {
+        try await GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
 
-        return firstly {
-            Promise.wrapAsync {
-                try await GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
-            }
-        }.then(on: DispatchQueue.global()) { () throws -> Promise<TSGroupThread> in
+        do {
             // Try to use individual changes.
-            return firstly(on: DispatchQueue.global()) {
-                self.fetchAndApplyChangeActionsFromService(
-                    groupSecretParams: groupSecretParams,
-                    groupUpdateMode: groupUpdateMode,
-                    groupModelOptions: groupModelOptions,
-                    spamReportingMetadata: spamReportingMetadata
-                ).timeout(seconds: GroupManager.groupUpdateTimeoutDuration, description: "Update via changes") {
-                    GroupsV2Error.timeout
-                }
-            }.recover { (error) throws -> Promise<TSGroupThread> in
-                let shouldTrySnapshot = { () -> Bool in
-                    // This should not fail over in the case of networking problems.
-                    if error.isNetworkFailureOrTimeout {
-                        Logger.warn("Error: \(error)")
-                        return false
-                    }
-
-                    switch error {
-                    case GroupsV2Error.localUserNotInGroup:
-                        // We can recover from some auth edge cases using a
-                        // snapshot. For example, if we are joining via an
-                        // invite link we will be unable to fetch change
-                        // actions.
-                        return true
-                    case GroupsV2Error.cantApplyChangesToPlaceholder:
-                        // We can only update placeholder groups using a snapshot.
-                        return true
-                    case GroupsV2Error.missingGroupChangeProtos:
-                        // If the service returns a group state without change protos,
-                        // fail over to the snapshot.
-                        return true
-                    case GroupsV2Error.groupChangeProtoForIncompatibleRevision:
-                        // If we got change protos for an incompatible revision,
-                        // try and recover using a snapshot.
-                        return true
-                    default:
-                        owsFailDebugUnlessNetworkFailure(error)
-                        return false
-                    }
-                }()
-
-                guard shouldTrySnapshot else {
-                    throw error
-                }
-
-                // Failover to applying latest snapshot.
-                return self.fetchAndApplyCurrentGroupV2SnapshotFromService(
+            return try await Promise.wrapAsync {
+                return try await self.fetchAndApplyChangeActionsFromService(
                     groupSecretParams: groupSecretParams,
                     groupUpdateMode: groupUpdateMode,
                     groupModelOptions: groupModelOptions,
                     spamReportingMetadata: spamReportingMetadata
                 )
+            }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration, description: "Update via changes") {
+                return GroupsV2Error.timeout
+            }.awaitable()
+        } catch {
+            let shouldTrySnapshot = { () -> Bool in
+                // This should not fail over in the case of networking problems.
+                if error.isNetworkFailureOrTimeout {
+                    Logger.warn("Error: \(error)")
+                    return false
+                }
+
+                switch error {
+                case GroupsV2Error.localUserNotInGroup:
+                    // We can recover from some auth edge cases using a
+                    // snapshot. For example, if we are joining via an
+                    // invite link we will be unable to fetch change
+                    // actions.
+                    return true
+                case GroupsV2Error.cantApplyChangesToPlaceholder:
+                    // We can only update placeholder groups using a snapshot.
+                    return true
+                case GroupsV2Error.missingGroupChangeProtos:
+                    // If the service returns a group state without change protos,
+                    // fail over to the snapshot.
+                    return true
+                case GroupsV2Error.groupChangeProtoForIncompatibleRevision:
+                    // If we got change protos for an incompatible revision,
+                    // try and recover using a snapshot.
+                    return true
+                default:
+                    owsFailDebugUnlessNetworkFailure(error)
+                    return false
+                }
+            }()
+
+            guard shouldTrySnapshot else {
+                throw error
             }
+
+            // Failover to applying latest snapshot.
+            return try await Promise.wrapAsync {
+                return try await self.fetchAndApplyCurrentGroupV2SnapshotFromService(
+                    groupSecretParams: groupSecretParams,
+                    groupUpdateMode: groupUpdateMode,
+                    groupModelOptions: groupModelOptions,
+                    spamReportingMetadata: spamReportingMetadata
+                )
+            }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration, description: "Update via snapshot") {
+                return GroupsV2Error.timeout
+            }.awaitable()
         }
     }
 
@@ -552,50 +556,47 @@ private extension GroupV2UpdatesImpl {
         groupUpdateMode: GroupUpdateMode,
         groupModelOptions: TSGroupModelOptions,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata
-    ) -> Promise<TSGroupThread> {
+    ) async throws -> TSGroupThread {
 
-        return firstly { () -> Promise<GroupsV2Impl.GroupChangePage> in
-            self.fetchChangeActionsFromService(
-                groupSecretParams: groupSecretParams,
-                groupUpdateMode: groupUpdateMode
-            )
-        }.then(on: DispatchQueue.global()) { (groupChanges: GroupsV2Impl.GroupChangePage) throws -> Promise<TSGroupThread> in
-            let groupId = try groupSecretParams.getPublicParams().getGroupIdentifier().serialize().asData
-            let applyPromise = self.tryToApplyGroupChangesFromService(
-                groupId: groupId,
-                spamReportingMetadata: spamReportingMetadata,
-                groupSecretParams: groupSecretParams,
-                groupChanges: groupChanges.changes,
-                groupUpdateMode: groupUpdateMode,
-                groupModelOptions: groupModelOptions
-            )
-            guard let earlyEnd = groupChanges.earlyEnd else {
-                // We fetched all possible updates (or got a cached set of updates).
-                return applyPromise
-            }
-            if case .upToSpecificRevisionImmediately(upToRevision: let upToRevision) = groupUpdateMode {
-                if upToRevision <= earlyEnd {
-                    // We didn't fetch everything but we did fetch enough.
-                    return applyPromise
-                }
-            }
+        let groupChanges = try await self.fetchChangeActionsFromService(
+            groupSecretParams: groupSecretParams,
+            groupUpdateMode: groupUpdateMode
+        )
 
-            // Recurse to process more updates.
-            return applyPromise.then { _ in
-                return self.fetchAndApplyChangeActionsFromService(
-                    groupSecretParams: groupSecretParams,
-                    groupUpdateMode: groupUpdateMode,
-                    groupModelOptions: groupModelOptions,
-                    spamReportingMetadata: spamReportingMetadata
-                )
+        let groupId = try groupSecretParams.getPublicParams().getGroupIdentifier().serialize().asData
+        let groupThread = try await self.tryToApplyGroupChangesFromService(
+            groupId: groupId,
+            spamReportingMetadata: spamReportingMetadata,
+            groupSecretParams: groupSecretParams,
+            groupChanges: groupChanges.changes,
+            groupUpdateMode: groupUpdateMode,
+            groupModelOptions: groupModelOptions
+        )
+
+        guard let earlyEnd = groupChanges.earlyEnd else {
+            // We fetched all possible updates (or got a cached set of updates).
+            return groupThread
+        }
+        if case .upToSpecificRevisionImmediately(upToRevision: let upToRevision) = groupUpdateMode {
+            if upToRevision <= earlyEnd {
+                // We didn't fetch everything but we did fetch enough.
+                return groupThread
             }
         }
+
+        // Recurse to process more updates.
+        return try await self.fetchAndApplyChangeActionsFromService(
+            groupSecretParams: groupSecretParams,
+            groupUpdateMode: groupUpdateMode,
+            groupModelOptions: groupModelOptions,
+            spamReportingMetadata: spamReportingMetadata
+        )
     }
 
     private func fetchChangeActionsFromService(
         groupSecretParams: GroupSecretParams,
         groupUpdateMode: GroupUpdateMode
-    ) -> Promise<GroupsV2Impl.GroupChangePage> {
+    ) async throws -> GroupsV2Impl.GroupChangePage {
 
         let upToRevision: UInt32? = {
             switch groupUpdateMode {
@@ -616,32 +617,21 @@ private extension GroupV2UpdatesImpl {
             }
         }()
 
-        return firstly(on: DispatchQueue.global()) { () -> [GroupV2Change]? in
-            // Try to use group changes from the cache.
-            return self.cachedGroupChanges(
-                groupSecretParams: groupSecretParams,
-                upToRevision: upToRevision
-            )
-        }.then(on: DispatchQueue.global()) { (groupChanges: [GroupV2Change]?) -> Promise<GroupsV2Impl.GroupChangePage> in
-            if let groupChanges = groupChanges {
-                return Promise.value(GroupsV2Impl.GroupChangePage(changes: groupChanges, earlyEnd: nil))
-            }
-            return firstly {
-                return Promise.wrapAsync {
-                    try await self.groupsV2Impl.fetchGroupChangeActions(
-                        groupSecretParams: groupSecretParams,
-                        includeCurrentRevision: includeCurrentRevision
-                    )
-                }
-            }.map(on: DispatchQueue.global()) { (groupChanges: GroupsV2Impl.GroupChangePage) -> GroupsV2Impl.GroupChangePage in
-                self.addGroupChangesToCache(
-                    groupChanges: groupChanges.changes,
-                    groupSecretParams: groupSecretParams
-                )
-
-                return groupChanges
-            }
+        // Try to use group changes from the cache.
+        let cachedChanges = self.cachedGroupChanges(
+            groupSecretParams: groupSecretParams,
+            upToRevision: upToRevision
+        )
+        if let cachedChanges {
+            return .init(changes: cachedChanges, earlyEnd: nil)
         }
+
+        let fetchedPage = try await self.groupsV2Impl.fetchGroupChangeActions(
+            groupSecretParams: groupSecretParams,
+            includeCurrentRevision: includeCurrentRevision
+        )
+        self.addGroupChangesToCache(groupChanges: fetchedPage.changes, groupSecretParams: groupSecretParams)
+        return fetchedPage
     }
 
     private func tryToApplyGroupChangesFromService(
@@ -651,23 +641,18 @@ private extension GroupV2UpdatesImpl {
         groupChanges: [GroupV2Change],
         groupUpdateMode: GroupUpdateMode,
         groupModelOptions: TSGroupModelOptions
-    ) -> Promise<TSGroupThread> {
-        return firstly { () -> Guarantee<Void> in
-            if groupUpdateMode.shouldBlockOnMessageProcessing {
-                return self.messageProcessor.waitForFetchingAndProcessing()
-            } else {
-                return Guarantee.value(())
-            }
-        }.then(on: DispatchQueue.global()) {
-            return self.tryToApplyGroupChangesFromServiceNow(
-                groupId: groupId,
-                spamReportingMetadata: spamReportingMetadata,
-                groupSecretParams: groupSecretParams,
-                groupChanges: groupChanges,
-                upToRevision: groupUpdateMode.upToRevision,
-                groupModelOptions: groupModelOptions
-            )
+    ) async throws -> TSGroupThread {
+        if groupUpdateMode.shouldBlockOnMessageProcessing {
+            await self.messageProcessor.waitForFetchingAndProcessing().awaitable()
         }
+        return try await self.tryToApplyGroupChangesFromServiceNow(
+            groupId: groupId,
+            spamReportingMetadata: spamReportingMetadata,
+            groupSecretParams: groupSecretParams,
+            groupChanges: groupChanges,
+            upToRevision: groupUpdateMode.upToRevision,
+            groupModelOptions: groupModelOptions
+        )
     }
 
     private func tryToApplyGroupChangesFromServiceNow(
@@ -677,8 +662,8 @@ private extension GroupV2UpdatesImpl {
         groupChanges: [GroupV2Change],
         upToRevision: UInt32?,
         groupModelOptions: TSGroupModelOptions
-    ) -> Promise<TSGroupThread> {
-        return databaseStorage.write(.promise) { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
+    ) async throws -> TSGroupThread {
+        return try await databaseStorage.awaitableWrite { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
             guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
                 throw OWSAssertionError("Missing localIdentifiers.")
             }
@@ -1024,23 +1009,14 @@ private extension GroupV2UpdatesImpl {
         groupUpdateMode: GroupUpdateMode,
         groupModelOptions: TSGroupModelOptions,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata
-    ) -> Promise<TSGroupThread> {
-
-        return firstly {
-            Promise.wrapAsync {
-                try await self.groupsV2Impl.fetchCurrentGroupV2Snapshot(groupSecretParams: groupSecretParams)
-            }
-        }.then(on: DispatchQueue.global()) { groupV2Snapshot in
-            return self.tryToApplyCurrentGroupV2SnapshotFromService(
-                groupV2Snapshot: groupV2Snapshot,
-                groupUpdateMode: groupUpdateMode,
-                groupModelOptions: groupModelOptions,
-                spamReportingMetadata: spamReportingMetadata
-            )
-        }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
-                  description: "Update via snapshot") {
-            GroupsV2Error.timeout
-        }
+    ) async throws -> TSGroupThread {
+        let groupV2Snapshot = try await self.groupsV2Impl.fetchCurrentGroupV2Snapshot(groupSecretParams: groupSecretParams)
+        return try await self.tryToApplyCurrentGroupV2SnapshotFromService(
+            groupV2Snapshot: groupV2Snapshot,
+            groupUpdateMode: groupUpdateMode,
+            groupModelOptions: groupModelOptions,
+            spamReportingMetadata: spamReportingMetadata
+        )
     }
 
     private func tryToApplyCurrentGroupV2SnapshotFromService(
@@ -1048,32 +1024,26 @@ private extension GroupV2UpdatesImpl {
         groupUpdateMode: GroupUpdateMode,
         groupModelOptions: TSGroupModelOptions,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata
-    ) -> Promise<TSGroupThread> {
-
-        return firstly { () -> Guarantee<Void> in
-            if groupUpdateMode.shouldBlockOnMessageProcessing {
-                return self.messageProcessor.waitForFetchingAndProcessing()
-            } else {
-                return Guarantee.value(())
-            }
-        }.then(on: DispatchQueue.global()) { () in
-            self.tryToApplyCurrentGroupV2SnapshotFromServiceNow(
-                groupV2Snapshot: groupV2Snapshot,
-                groupModelOptions: groupModelOptions,
-                spamReportingMetadata: spamReportingMetadata
-            )
+    ) async throws -> TSGroupThread {
+        if groupUpdateMode.shouldBlockOnMessageProcessing {
+            await self.messageProcessor.waitForFetchingAndProcessing().awaitable()
         }
+        return try await self.tryToApplyCurrentGroupV2SnapshotFromServiceNow(
+            groupV2Snapshot: groupV2Snapshot,
+            groupModelOptions: groupModelOptions,
+            spamReportingMetadata: spamReportingMetadata
+        )
     }
 
     private func tryToApplyCurrentGroupV2SnapshotFromServiceNow(
         groupV2Snapshot: GroupV2Snapshot,
         groupModelOptions: TSGroupModelOptions,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata
-    ) -> Promise<TSGroupThread> {
+    ) async throws -> TSGroupThread {
 
         let localProfileKey = profileManager.localProfileKey()
 
-        return databaseStorage.write(.promise) { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
+        return try await databaseStorage.awaitableWrite { (transaction: SDSAnyWriteTransaction) throws -> TSGroupThread in
             guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
                 throw OWSAssertionError("Missing localIdentifiers.")
             }
