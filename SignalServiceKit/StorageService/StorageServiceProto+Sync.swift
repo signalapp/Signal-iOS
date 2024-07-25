@@ -909,14 +909,9 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
         unknownFields: UnknownStorage?,
         transaction: SDSAnyReadTransaction
     ) -> StorageServiceProtoGroupV2Record? {
-        guard groupsV2.isValidGroupV2MasterKey(masterKeyData) else {
-            owsFailDebug("Invalid master key.")
-            return nil
-        }
-
         let groupContextInfo: GroupV2ContextInfo
         do {
-            groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: masterKeyData)
+            groupContextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: masterKeyData)
         } catch {
             owsFailDebug("Invalid master key \(error).")
             return nil
@@ -977,14 +972,9 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
     ) -> StorageServiceMergeResult<Data> {
         let masterKey = record.masterKey
 
-        guard groupsV2.isValidGroupV2MasterKey(masterKey) else {
-            owsFailDebug("Invalid master key.")
-            return .invalid
-        }
-
         let groupContextInfo: GroupV2ContextInfo
         do {
-            groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
+            groupContextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: masterKey)
         } catch {
             owsFailDebug("Invalid master key.")
             return .invalid
@@ -1641,7 +1631,7 @@ extension StorageServiceAccountRecordUpdater {
                 let thread = TSContactThread.getOrCreateThread(withContactAddress: address, transaction: transaction)
                 pinnedThreadIds.append(thread.uniqueId)
             case .groupMasterKey(let masterKey)?:
-                let contextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
+                let contextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: masterKey)
                 let threadUniqueId = TSGroupThread.threadId(forGroupId: contextInfo.groupId,
                                                             transaction: transaction)
                 pinnedThreadIds.append(threadUniqueId)
@@ -1668,19 +1658,14 @@ extension StorageServiceAccountRecordUpdater {
 
             if let groupThread = pinnedThread as? TSGroupThread {
                 if let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 {
-                    let masterKeyData: Data
+                    let masterKey: GroupMasterKey
                     do {
-                        masterKeyData = try groupsV2.masterKeyData(forGroupModel: groupModelV2)
+                        masterKey = try groupModelV2.masterKey()
                     } catch {
                         owsFailDebug("Missing master key: \(error)")
                         continue
                     }
-                    guard groupsV2.isValidGroupV2MasterKey(masterKeyData) else {
-                        owsFailDebug("Invalid master key.")
-                        continue
-                    }
-
-                    pinnedConversationBuilder.setIdentifier(.groupMasterKey(masterKeyData))
+                    pinnedConversationBuilder.setIdentifier(.groupMasterKey(masterKey.serialize().asData))
                 } else {
                     pinnedConversationBuilder.setIdentifier(.legacyGroupID(groupThread.groupModel.groupId))
                 }

@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
+
 @objc
 public extension TSGroupThread {
 
@@ -101,12 +103,33 @@ public extension TSGroupThread {
     ) {
         setGroupIdMapping(threadUniqueId: threadUniqueId, groupId: groupId, tx: tx)
 
-        if
-            GroupManager.isV1GroupId(groupId),
-            let v2GroupId = groupsV2.v2GroupId(forV1GroupId: groupId)
-        {
-            setGroupIdMapping(threadUniqueId: threadUniqueId, groupId: v2GroupId, tx: tx)
+        if GroupManager.isV1GroupId(groupId) {
+            do {
+                let v2GroupId = try self.v2GroupId(forV1GroupId: groupId)
+                setGroupIdMapping(threadUniqueId: threadUniqueId, groupId: v2GroupId, tx: tx)
+            } catch {
+                Logger.warn("Couldn't set GV2 mapping for legacy thread")
+            }
         }
+    }
+
+    private static func v2GroupId(forV1GroupId v1GroupId: Data) throws -> Data {
+        owsPrecondition(GroupManager.isV1GroupId(v1GroupId))
+
+        let infoString = "GV2 Migration"
+        guard let keyBytes = try infoString.utf8.withContiguousStorageIfAvailable({ ptr in
+            try hkdf(
+                outputLength: GroupMasterKey.SIZE,
+                inputKeyMaterial: v1GroupId,
+                salt: [],
+                info: ptr
+            )
+        }) else {
+            owsFail("Failed to compute key bytes!")
+        }
+
+        let contextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: Data(keyBytes))
+        return contextInfo.groupId
     }
 
     private static func setGroupIdMapping(

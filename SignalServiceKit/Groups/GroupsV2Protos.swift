@@ -216,20 +216,11 @@ public class GroupsV2Protos {
         return builder.buildInfallibly()
     }
 
-    public class func masterKeyData(forGroupModel groupModel: TSGroupModelV2) throws -> Data {
-        return try masterKeyData(forGroupSecretParamsData: groupModel.secretParamsData)
-    }
-
-    public class func masterKeyData(forGroupSecretParamsData groupSecretParamsData: Data) throws -> Data {
-        let groupSecretParams = try GroupSecretParams(contents: [UInt8](groupSecretParamsData))
-        return try groupSecretParams.getMasterKey().serialize().asData
-    }
-
     public class func buildGroupContextV2Proto(groupModel: TSGroupModelV2,
                                                changeActionsProtoData: Data?) throws -> SSKProtoGroupContextV2 {
 
         let builder = SSKProtoGroupContextV2.builder()
-        builder.setMasterKey(try masterKeyData(forGroupModel: groupModel))
+        builder.setMasterKey(try groupModel.masterKey().serialize().asData)
         builder.setRevision(groupModel.revision)
 
         if let changeActionsProtoData = changeActionsProtoData {

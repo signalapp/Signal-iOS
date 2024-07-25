@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 public struct TSGroupModelBuilder: Dependencies {
 
@@ -32,7 +33,7 @@ public struct TSGroupModelBuilder: Dependencies {
     // Convert a group state proto received from the service
     // into a group model.
     private init(groupV2Snapshot: GroupV2Snapshot) throws {
-        self.groupId = try groupsV2.groupId(forGroupSecretParamsData: groupV2Snapshot.groupSecretParamsData)
+        self.groupId = try GroupSecretParams(contents: [UInt8](groupV2Snapshot.groupSecretParamsData)).getPublicParams().getGroupIdentifier().serialize().asData
         self.name = groupV2Snapshot.title
         self.descriptionText = groupV2Snapshot.descriptionText
         self.avatarData = groupV2Snapshot.avatarData
@@ -215,10 +216,7 @@ public struct TSGroupModelBuilder: Dependencies {
         case .V1:
             return newGroupSeed.groupIdV1
         case .V2:
-            guard let groupIdV2 = newGroupSeed.groupIdV2 else {
-                throw OWSAssertionError("Missing groupIdV2.")
-            }
-            return groupIdV2
+            return newGroupSeed.groupIdV2
         }
     }
 
@@ -227,10 +225,7 @@ public struct TSGroupModelBuilder: Dependencies {
             return value
         }
 
-        guard let value = newGroupSeed.groupSecretParamsData else {
-            throw OWSAssertionError("Missing groupSecretParamsData.")
-        }
-        return value
+        return newGroupSeed.groupSecretParamsData
     }
 
     private func buildGroupAccess(groupsVersion: GroupsVersion) -> GroupAccess {

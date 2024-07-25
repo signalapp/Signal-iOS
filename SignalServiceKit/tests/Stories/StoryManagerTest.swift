@@ -132,7 +132,7 @@ class StoryManagerTest: SSKBaseTest {
         let author = Aci.randomForTesting()
         let storyMessage = try Self.makeGroupStory()
 
-        let groupId = try groupsV2.groupV2ContextInfo(forMasterKeyData: storyMessage.group!.masterKey!).groupId
+        let groupId = try GroupV2ContextInfo.deriveFrom(masterKeyData: storyMessage.group!.masterKey!).groupId
 
         try write {
             profileManager.addUser(
@@ -171,7 +171,7 @@ class StoryManagerTest: SSKBaseTest {
         let author = Aci.randomForTesting()
         let storyMessage = try Self.makeGroupStory()
 
-        let groupId = try groupsV2.groupV2ContextInfo(forMasterKeyData: storyMessage.group!.masterKey!).groupId
+        let groupId = try GroupV2ContextInfo.deriveFrom(masterKeyData: storyMessage.group!.masterKey!).groupId
 
         try write {
             profileManager.addUser(
@@ -206,7 +206,7 @@ class StoryManagerTest: SSKBaseTest {
         let author = Aci.randomForTesting()
         let storyMessage = try Self.makeGroupStory()
 
-        let groupId = try groupsV2.groupV2ContextInfo(forMasterKeyData: storyMessage.group!.masterKey!).groupId
+        let groupId = try GroupV2ContextInfo.deriveFrom(masterKeyData: storyMessage.group!.masterKey!).groupId
 
         try write {
             profileManager.addUser(
@@ -241,7 +241,7 @@ class StoryManagerTest: SSKBaseTest {
         let author = Aci.randomForTesting()
         let storyMessage = try Self.makeGroupStory()
 
-        let groupId = try groupsV2.groupV2ContextInfo(forMasterKeyData: storyMessage.group!.masterKey!).groupId
+        let groupId = try GroupV2ContextInfo.deriveFrom(masterKeyData: storyMessage.group!.masterKey!).groupId
 
         try write {
             profileManager.addUser(
@@ -276,7 +276,7 @@ class StoryManagerTest: SSKBaseTest {
         let author = Aci.randomForTesting()
         let storyMessage = try Self.makeGroupStory()
 
-        let groupId = try groupsV2.groupV2ContextInfo(forMasterKeyData: storyMessage.group!.masterKey!).groupId
+        let groupId = try GroupV2ContextInfo.deriveFrom(masterKeyData: storyMessage.group!.masterKey!).groupId
 
         try write {
             profileManager.addUser(
@@ -397,8 +397,6 @@ class StoryManagerTest: SSKBaseTest {
         storyMessageBuilder.setProfileKey(Randomness.generateRandomBytes(32))
 
         let groupContext = makeGroupContext()
-        let groupInfo = try makeGroupContextInfo(for: groupContext)
-        (groupsV2 as! MockGroupsV2).groupV2ContextInfos[groupContext.masterKey!] = groupInfo
 
         storyMessageBuilder.setGroup(groupContext)
 
@@ -434,18 +432,13 @@ class StoryManagerTest: SSKBaseTest {
 
     static func makeGroupContext() -> SSKProtoGroupContextV2 {
         let builder = SSKProtoGroupContextV2.builder()
-        builder.setMasterKey(Data())
+        builder.setMasterKey(Data(repeating: 0, count: 32))
         builder.setRevision(1)
         return builder.buildInfallibly()
     }
 
     static func makeGroupContextInfo(for context: SSKProtoGroupContextV2) throws -> GroupV2ContextInfo {
-        let bytes: [UInt8] = .init(repeating: 1, count: Int(kGroupIdLengthV2))
-        return GroupV2ContextInfo(
-            masterKeyData: context.masterKey!,
-            groupSecretParamsData: Data(),
-            groupId: Data(bytes)
-        )
+        return try GroupV2ContextInfo.deriveFrom(masterKeyData: context.masterKey!)
     }
 
     // MARK: - Overrides

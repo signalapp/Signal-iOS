@@ -347,7 +347,7 @@ public final class MessageReceiver: Dependencies {
             return nil
         }
         do {
-            return try groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey).groupId
+            return try GroupV2ContextInfo.deriveFrom(masterKeyData: masterKey).groupId
         } catch {
             owsFailDebug("Invalid group context.")
             return nil
@@ -790,7 +790,7 @@ public final class MessageReceiver: Dependencies {
         }
         let groupContextInfo: GroupV2ContextInfo
         do {
-            groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
+            groupContextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: masterKey)
         } catch {
             owsFailDebug("Invalid group context.")
             return nil

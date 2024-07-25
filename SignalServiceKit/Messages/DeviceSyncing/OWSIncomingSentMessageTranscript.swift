@@ -35,26 +35,18 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
         let recipientAddress: SignalServiceAddress?
         let groupId: Data?
         if let groupContextV2 = dataMessage.groupV2 {
-            guard let masterKey = groupContextV2.masterKey, masterKey.count >= 1 else {
+            guard let masterKey = groupContextV2.masterKey else {
                 owsFailDebug("Missing masterKey.")
                 return nil
             }
 
-            guard let contextInfo = try? Self.groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey) else {
+            guard let contextInfo = try? GroupV2ContextInfo.deriveFrom(masterKeyData: masterKey) else {
                 owsFailDebug("Couldn't parse contextInfo.")
                 return nil
             }
 
             groupId = contextInfo.groupId
             recipientAddress = nil
-            guard
-                let groupId,
-                groupId.count >= 1,
-                GroupManager.isValidGroupId(groupId, groupsVersion: .V2)
-            else {
-                owsFailDebug("Invalid groupId.")
-                return nil
-            }
         } else if
             sentProto.destinationServiceID != nil
             || sentProto.destinationE164 != nil

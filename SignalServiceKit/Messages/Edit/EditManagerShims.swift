@@ -9,13 +9,11 @@ import LibSignalClient
 extension EditManagerImpl {
     public enum Shims {
         public typealias DataStore = _EditManagerImpl_DataStore
-        public typealias Groups = _EditManagerImpl_GroupsShim
         public typealias ReceiptManager = _EditManagerImpl_ReceiptManagerShim
     }
 
     public enum Wrappers {
         public typealias DataStore = _EditManagerImpl_DataStoreWrapper
-        public typealias Groups = _EditManagerImpl_GroupsWrapper
         public typealias ReceiptManager = _EditManagerImpl_ReceiptManagerWrapper
     }
 }
@@ -105,23 +103,6 @@ public class _EditManagerImpl_DataStoreWrapper: EditManagerImpl.Shims.DataStore 
         tx: DBWriteTransaction
     ) {
         message.anyOverwritingUpdate(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-}
-
-// MARK: - EditManager.Groups
-
-public protocol _EditManagerImpl_GroupsShim {
-    func groupId(for message: SSKProtoDataMessage) -> GroupV2ContextInfo?
-}
-
-public class _EditManagerImpl_GroupsWrapper: EditManagerImpl.Shims.Groups {
-
-    private let groupsV2: GroupsV2
-    public init(groupsV2: GroupsV2) { self.groupsV2 = groupsV2 }
-
-    public func groupId(for message: SSKProtoDataMessage) -> GroupV2ContextInfo? {
-        guard let masterKey = message.groupV2?.masterKey else { return nil }
-        return try? groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
     }
 }
 

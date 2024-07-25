@@ -33,7 +33,6 @@ public class EditManagerImpl: EditManager {
         let dataStore: EditManagerImpl.Shims.DataStore
         let editManagerAttachments: EditManagerTSResources
         let editMessageStore: EditMessageStore
-        let groupsShim: EditManagerImpl.Shims.Groups
         let receiptManagerShim: EditManagerImpl.Shims.ReceiptManager
         let tsResourceStore: TSResourceStore
 
@@ -41,14 +40,12 @@ public class EditManagerImpl: EditManager {
             dataStore: EditManagerImpl.Shims.DataStore,
             editManagerAttachments: EditManagerTSResources,
             editMessageStore: EditMessageStore,
-            groupsShim: EditManagerImpl.Shims.Groups,
             receiptManagerShim: EditManagerImpl.Shims.ReceiptManager,
             tsResourceStore: TSResourceStore
         ) {
             self.dataStore = dataStore
             self.editManagerAttachments = editManagerAttachments
             self.editMessageStore = editMessageStore
-            self.groupsShim = groupsShim
             self.receiptManagerShim = receiptManagerShim
             self.tsResourceStore = tsResourceStore
         }
@@ -406,8 +403,9 @@ public class EditManagerImpl: EditManager {
         // If this is a group message, validate edit groupID matches the target
         if let groupThread = thread as? TSGroupThread {
             guard
-                let data = context.groupsShim.groupId(for: editMessage),
-                data.groupId == groupThread.groupModel.groupId
+                let masterKey = editMessage.groupV2?.masterKey,
+                let contextInfo = try? GroupV2ContextInfo.deriveFrom(masterKeyData: masterKey),
+                contextInfo.groupId == groupThread.groupModel.groupId
             else {
                 throw OWSAssertionError("Edit message group does not match target message")
             }

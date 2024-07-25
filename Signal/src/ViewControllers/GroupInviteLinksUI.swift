@@ -24,7 +24,7 @@ public class GroupInviteLinksUI: UIView {
                                                                       comment: "Message for the 'invalid group invite link' alert."))
         }
 
-        guard let groupInviteLinkInfo = GroupManager.parseGroupInviteLink(url) else {
+        guard let groupInviteLinkInfo = GroupInviteLinkInfo.parseFrom(url) else {
             owsFailDebug("Invalid group invite link.")
             showInvalidInviteLinkAlert()
             return
@@ -32,7 +32,7 @@ public class GroupInviteLinksUI: UIView {
 
         let groupV2ContextInfo: GroupV2ContextInfo
         do {
-            groupV2ContextInfo = try self.groupsV2.groupV2ContextInfo(forMasterKeyData: groupInviteLinkInfo.masterKey)
+            groupV2ContextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: groupInviteLinkInfo.masterKey)
         } catch {
             owsFailDebug("Error: \(error)")
             showInvalidInviteLinkAlert()

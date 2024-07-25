@@ -54,7 +54,6 @@ class EditManagerTests: SSKBaseTest {
                 dataStore: dataStoreMock,
                 editManagerAttachments: MockEditManagerTSResources(),
                 editMessageStore: editMessageStoreMock,
-                groupsShim: GroupsMock(),
                 receiptManagerShim: ReceiptManagerMock(),
                 tsResourceStore: TSResourceStoreMock()
             )
@@ -100,7 +99,6 @@ class EditManagerTests: SSKBaseTest {
                 dataStore: dataStoreMock,
                 editManagerAttachments: MockEditManagerTSResources(),
                 editMessageStore: editMessageStoreMock,
-                groupsShim: GroupsMock(),
                 receiptManagerShim: ReceiptManagerMock(),
                 tsResourceStore: TSResourceStoreMock()
             )
@@ -143,7 +141,6 @@ class EditManagerTests: SSKBaseTest {
                 dataStore: dataStoreMock,
                 editManagerAttachments: MockEditManagerTSResources(),
                 editMessageStore: editMessageStoreMock,
-                groupsShim: GroupsMock(),
                 receiptManagerShim: ReceiptManagerMock(),
                 tsResourceStore: TSResourceStoreMock()
             )
@@ -188,7 +185,6 @@ class EditManagerTests: SSKBaseTest {
                 dataStore: dataStoreMock,
                 editManagerAttachments: MockEditManagerTSResources(),
                 editMessageStore: editMessageStoreMock,
-                groupsShim: GroupsMock(),
                 receiptManagerShim: ReceiptManagerMock(),
                 tsResourceStore: TSResourceStoreMock()
             )
@@ -235,7 +231,6 @@ class EditManagerTests: SSKBaseTest {
                 dataStore: dataStoreMock,
                 editManagerAttachments: MockEditManagerTSResources(),
                 editMessageStore: editMessageStoreMock,
-                groupsShim: GroupsMock(),
                 receiptManagerShim: ReceiptManagerMock(),
                 tsResourceStore: TSResourceStoreMock()
             )
@@ -450,12 +445,6 @@ class EditManagerTests: SSKBaseTest {
 
         func update(_ editRecord: EditRecord, tx: DBWriteTransaction) throws {}
 
-    }
-
-    private class GroupsMock: EditManagerImpl.Shims.Groups {
-        func groupId(for message: SSKProtoDataMessage) -> GroupV2ContextInfo? {
-            return nil
-        }
     }
 
     private class ReceiptManagerMock: EditManagerImpl.Shims.ReceiptManager {

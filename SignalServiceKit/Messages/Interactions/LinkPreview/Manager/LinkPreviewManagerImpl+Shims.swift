@@ -20,8 +20,6 @@ extension LinkPreviewManagerImpl {
 
 public protocol _LinkPreviewManagerImpl_GroupsV2Shim {
 
-    func groupV2ContextInfo(forMasterKeyData masterKeyData: Data?) throws -> GroupV2ContextInfo
-
     func fetchGroupInviteLinkPreview(
         inviteLinkPassword: Data?,
         groupSecretParamsData: Data,
@@ -40,10 +38,6 @@ public class _LinkPreviewManagerImpl_GroupsV2Wrapper: _LinkPreviewManagerImpl_Gr
 
     public init(_ groupsV2: GroupsV2) {
         self.groupsV2 = groupsV2
-    }
-
-    public func groupV2ContextInfo(forMasterKeyData masterKeyData: Data?) throws -> GroupV2ContextInfo {
-        return try groupsV2.groupV2ContextInfo(forMasterKeyData: masterKeyData)
     }
 
     public func fetchGroupInviteLinkPreview(

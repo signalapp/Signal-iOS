@@ -426,7 +426,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
         }
         jobInfo.groupContext = groupContext
         do {
-            jobInfo.groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: groupContext.masterKey)
+            jobInfo.groupContextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: groupContext.masterKey ?? Data())
         } catch {
             owsFailDebug("Invalid group context: \(error).")
             return jobInfo
@@ -447,7 +447,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
 
         let groupContextInfo: GroupV2ContextInfo
         do {
-            groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: groupContext.masterKey)
+            groupContextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: groupContext.masterKey ?? Data())
         } catch {
             owsFailDebug("Invalid group context: \(error).")
             return .discard
@@ -920,7 +920,7 @@ public class GroupsV2MessageProcessor: NSObject {
             return nil
         }
         do {
-            let groupContextInfo = try NSObject.groupsV2.groupV2ContextInfo(forMasterKeyData: groupContext.masterKey)
+            let groupContextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: groupContext.masterKey ?? Data())
             return groupContextInfo.groupId
         } catch {
             owsFailDebug("Invalid group context: \(error).")
@@ -938,7 +938,7 @@ public class GroupsV2MessageProcessor: NSObject {
     ) -> Bool {
         let groupContextInfo: GroupV2ContextInfo
         do {
-            groupContextInfo = try NSObject.groupsV2.groupV2ContextInfo(forMasterKeyData: groupContext.masterKey)
+            groupContextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: groupContext.masterKey ?? Data())
         } catch {
             owsFailDebug("Invalid group context: \(error).")
             return false

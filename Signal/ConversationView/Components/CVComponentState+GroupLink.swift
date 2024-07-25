@@ -53,11 +53,11 @@ fileprivate extension CVComponentState {
         }
 
         return firstly(on: DispatchQueue.global()) { () -> Promise<Data> in
-            let groupV2ContextInfo = try Self.groupsV2.groupV2ContextInfo(forMasterKeyData: groupInviteLinkInfo.masterKey)
+            let contextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: groupInviteLinkInfo.masterKey)
             return Promise.wrapAsync {
                 try await self.groupsV2Impl.fetchGroupInviteLinkAvatar(
                     avatarUrlPath: avatarUrlPath,
-                    groupSecretParamsData: groupV2ContextInfo.groupSecretParamsData
+                    groupSecretParamsData: contextInfo.groupSecretParamsData
                 )
             }
         }.map(on: DispatchQueue.global()) { (avatarData: Data) -> Void in
@@ -112,7 +112,7 @@ extension CVComponentState {
             // try to do load it now. On success, touch the interaction
             // in order to trigger reload of the view.
             firstly(on: DispatchQueue.global()) { () -> Promise<GroupInviteLinkPreview> in
-                let groupContextInfo = try Self.groupsV2.groupV2ContextInfo(forMasterKeyData: groupInviteLinkInfo.masterKey)
+                let groupContextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: groupInviteLinkInfo.masterKey)
                 return Promise.wrapAsync {
                     try await Self.groupsV2Impl.fetchGroupInviteLinkPreview(
                         inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,

@@ -237,12 +237,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupRecipientDestinat
         let groupContextInfo: GroupV2ContextInfo
         do {
             let masterKey = groupProto.masterKey
-
-            guard groupsV2.isValidGroupV2MasterKey(masterKey) else {
-                return .failure([.restoreFrameError(.invalidProtoData(.invalidGV2MasterKey), recipient.recipientId)])
-            }
-
-            groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
+            groupContextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: masterKey)
         } catch {
             return .failure([.restoreFrameError(.invalidProtoData(.invalidGV2MasterKey), recipient.recipientId)])
         }

@@ -542,10 +542,12 @@ private extension GroupV2UpdatesImpl {
     ) -> Promise<TSGroupThread> {
 
         return firstly { () -> Promise<GroupsV2Impl.GroupChangePage> in
-            self.fetchChangeActionsFromService(groupSecretParamsData: groupSecretParamsData,
-                                               groupUpdateMode: groupUpdateMode)
+            self.fetchChangeActionsFromService(
+                groupSecretParamsData: groupSecretParamsData,
+                groupUpdateMode: groupUpdateMode
+            )
         }.then(on: DispatchQueue.global()) { (groupChanges: GroupsV2Impl.GroupChangePage) throws -> Promise<TSGroupThread> in
-            let groupId = try self.groupsV2.groupId(forGroupSecretParamsData: groupSecretParamsData)
+            let groupId = try GroupSecretParams(contents: [UInt8](groupSecretParamsData)).getPublicParams().getGroupIdentifier().serialize().asData
             let applyPromise = self.tryToApplyGroupChangesFromService(
                 groupId: groupId,
                 spamReportingMetadata: spamReportingMetadata,
@@ -1223,7 +1225,7 @@ private extension GroupV2UpdatesImpl {
         }
         let groupId: Data
         do {
-            groupId = try groupsV2.groupId(forGroupSecretParamsData: groupSecretParamsData)
+            groupId = try GroupSecretParams(contents: [UInt8](groupSecretParamsData)).getPublicParams().getGroupIdentifier().serialize().asData
         } catch {
             owsFailDebug("Error: \(error)")
             return nil

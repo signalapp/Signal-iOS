@@ -70,25 +70,15 @@ public enum GroupsV2LinkMode: UInt, CustomStringConvertible {
 
 public protocol GroupsV2 {
 
-    func generateGroupSecretParamsData() throws -> Data
-
-    func groupId(forGroupSecretParamsData groupSecretParamsData: Data) throws -> Data
-
-    func v2GroupId(forV1GroupId v1GroupId: Data) -> Data?
-
     func hasProfileKeyCredential(
         for address: SignalServiceAddress,
         transaction: SDSAnyReadTransaction
     ) -> Bool
 
-    func masterKeyData(forGroupModel groupModel: TSGroupModelV2) throws -> Data
-
     func buildGroupContextV2Proto(
         groupModel: TSGroupModelV2,
         changeActionsProtoData: Data?
     ) throws -> SSKProtoGroupContextV2
-
-    func groupV2ContextInfo(forMasterKeyData masterKeyData: Data?) throws -> GroupV2ContextInfo
 
     func scheduleAllGroupsV2ForProfileKeyUpdate(transaction: SDSAnyWriteTransaction)
 
@@ -100,8 +90,6 @@ public protocol GroupsV2 {
         groupModel: TSGroupModelV2,
         transaction: SDSAnyReadTransaction
     ) -> Bool
-
-    func isValidGroupV2MasterKey(_ masterKeyData: Data) -> Bool
 
     typealias ProfileKeyCredentialMap = [Aci: ExpiringProfileKeyCredential]
 
@@ -145,10 +133,6 @@ public protocol GroupsV2 {
     ) async throws -> TSGroupThread
 
     func uploadGroupAvatar(avatarData: Data, groupSecretParamsData: Data) async throws -> String
-
-    func groupInviteLink(forGroupModelV2 groupModelV2: TSGroupModelV2) throws -> URL
-
-    func parseGroupInviteLink(_ url: URL) -> GroupInviteLinkInfo?
 
     func cachedGroupInviteLinkPreview(groupSecretParamsData: Data) -> GroupInviteLinkPreview?
 
@@ -405,16 +389,35 @@ public struct GroupV2Change {
 
 // MARK: -
 
-@objc
-public class GroupV2ContextInfo: NSObject {
-    @objc
+extension GroupMasterKey {
+    static func isValid(_ masterKeyData: Data) -> Bool {
+        return (try? GroupMasterKey(contents: [UInt8](masterKeyData))) != nil
+    }
+}
+
+// MARK: -
+
+public struct GroupV2ContextInfo {
     public let masterKeyData: Data
-    @objc
     public let groupSecretParamsData: Data
-    @objc
     public let groupId: Data
 
-    public init(masterKeyData: Data, groupSecretParamsData: Data, groupId: Data) {
+    public static func deriveFrom(masterKeyData: Data) throws -> GroupV2ContextInfo {
+        let groupSecretParams = try self.groupSecretParams(for: masterKeyData)
+        let groupIdentifier = try groupSecretParams.getPublicParams().getGroupIdentifier()
+        return GroupV2ContextInfo(
+            masterKeyData: masterKeyData,
+            groupSecretParamsData: groupSecretParams.serialize().asData,
+            groupId: groupIdentifier.serialize().asData
+        )
+    }
+
+    private static func groupSecretParams(for masterKeyData: Data) throws -> GroupSecretParams {
+        let groupMasterKey = try GroupMasterKey(contents: [UInt8](masterKeyData))
+        return try GroupSecretParams.deriveFromMasterKey(groupMasterKey: groupMasterKey)
+    }
+
+    private init(masterKeyData: Data, groupSecretParamsData: Data, groupId: Data) {
         self.masterKeyData = masterKeyData
         self.groupSecretParamsData = groupSecretParamsData
         self.groupId = groupId
@@ -423,16 +426,46 @@ public class GroupV2ContextInfo: NSObject {
 
 // MARK: -
 
-@objc
-public class GroupInviteLinkInfo: NSObject {
-    @objc
+public struct GroupInviteLinkInfo {
     public let masterKey: Data
-    @objc
     public let inviteLinkPassword: Data
 
     public init(masterKey: Data, inviteLinkPassword: Data) {
         self.masterKey = masterKey
         self.inviteLinkPassword = inviteLinkPassword
+    }
+
+    public static func parseFrom(_ url: URL) -> GroupInviteLinkInfo? {
+        guard GroupManager.isPossibleGroupInviteLink(url) else {
+            return nil
+        }
+        guard let protoBase64Url = url.fragment, !protoBase64Url.isEmpty else {
+            owsFailDebug("Missing encoded data.")
+            return nil
+        }
+        do {
+            let protoData = try Data.data(fromBase64Url: protoBase64Url)
+            let proto = try GroupsProtoGroupInviteLink(serializedData: protoData)
+            guard let protoContents = proto.contents else {
+                owsFailDebug("Missing proto contents.")
+                return nil
+            }
+            switch protoContents {
+            case .contentsV1(let contentsV1):
+                guard let masterKey = contentsV1.groupMasterKey, !masterKey.isEmpty else {
+                    owsFailDebug("Invalid masterKey.")
+                    return nil
+                }
+                guard let inviteLinkPassword = contentsV1.inviteLinkPassword, !inviteLinkPassword.isEmpty else {
+                    owsFailDebug("Invalid inviteLinkPassword.")
+                    return nil
+                }
+                return GroupInviteLinkInfo(masterKey: masterKey, inviteLinkPassword: inviteLinkPassword)
+            }
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return nil
+        }
     }
 }
 
@@ -569,28 +602,6 @@ public class MockGroupsV2: GroupsV2 {
         owsFail("Not implemented.")
     }
 
-    public func generateGroupSecretParamsData() throws -> Data {
-        if CurrentAppContext().isRunningTests {
-            return Randomness.generateRandomBytes(289)
-        }
-        owsFail("Not implemented.")
-    }
-
-    public func groupId(forGroupSecretParamsData groupSecretParamsData: Data) throws -> Data {
-        if CurrentAppContext().isRunningTests {
-            owsPrecondition(groupSecretParamsData.count >= 32)
-            return groupSecretParamsData.subdata(in: Int(0)..<Int(32))
-        }
-        owsFail("Not implemented.")
-    }
-
-    public func v2GroupId(forV1GroupId v1GroupId: Data) -> Data? {
-        let v2GroupId = v1GroupId + v1GroupId
-        owsPrecondition(GroupManager.isV1GroupId(v1GroupId))
-        owsPrecondition(GroupManager.isV2GroupId(v2GroupId))
-        return v2GroupId
-    }
-
     public func hasProfileKeyCredential(for address: SignalServiceAddress,
                                         transaction: SDSAnyReadTransaction) -> Bool {
         owsFail("Not implemented.")
@@ -617,10 +628,6 @@ public class MockGroupsV2: GroupsV2 {
         owsFail("Not implemented.")
     }
 
-    public func masterKeyData(forGroupModel groupModel: TSGroupModelV2) throws -> Data {
-        owsFail("Not implemented.")
-    }
-
     public func buildGroupContextV2Proto(groupModel: TSGroupModelV2,
                                          changeActionsProtoData: Data?) throws -> SSKProtoGroupContextV2 {
         owsFail("Not implemented.")
@@ -632,15 +639,6 @@ public class MockGroupsV2: GroupsV2 {
         changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
     ) async throws -> TSGroupThread {
         owsFail("Not implemented.")
-    }
-
-    public var groupV2ContextInfos = [Data: GroupV2ContextInfo]()
-
-    public func groupV2ContextInfo(forMasterKeyData masterKeyData: Data?) throws -> GroupV2ContextInfo {
-        guard let masterKeyData = masterKeyData, let info = groupV2ContextInfos[masterKeyData] else {
-            owsFail("No registered GroupV2ContextInfo on mock")
-        }
-        return info
     }
 
     public func parseAndVerifyChangeActionsProto(
@@ -696,23 +694,6 @@ public class MockGroupsV2: GroupsV2 {
         transaction: SDSAnyWriteTransaction
     ) {
         owsFail("Not implemented.")
-    }
-
-    public func isValidGroupV2MasterKey(_ masterKeyData: Data) -> Bool {
-        owsFail("Not implemented.")
-    }
-
-    public func groupInviteLink(forGroupModelV2 groupModelV2: TSGroupModelV2) throws -> URL {
-        owsFail("Not implemented.")
-    }
-
-    public func parseGroupInviteLink(_ url: URL) -> GroupInviteLinkInfo? {
-        if CurrentAppContext().isRunningTests {
-            Logger.warn("Not implemented.")
-        } else {
-            owsFail("Not implemented.")
-        }
-        return nil
     }
 
     public func cachedGroupInviteLinkPreview(groupSecretParamsData: Data) -> GroupInviteLinkPreview? {

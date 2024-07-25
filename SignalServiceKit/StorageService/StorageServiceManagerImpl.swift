@@ -301,19 +301,14 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
     @objc
     public func recordPendingUpdates(groupModel: TSGroupModel) {
         if let groupModelV2 = groupModel as? TSGroupModelV2 {
-            let masterKeyData: Data
+            let masterKey: GroupMasterKey
             do {
-                masterKeyData = try groupsV2.masterKeyData(forGroupModel: groupModelV2)
+                masterKey = try groupModelV2.masterKey()
             } catch {
                 owsFailDebug("Missing master key: \(error)")
                 return
             }
-            guard groupsV2.isValidGroupV2MasterKey(masterKeyData) else {
-                owsFailDebug("Invalid master key.")
-                return
-            }
-
-            recordPendingUpdates(updatedGroupV2MasterKeys: [ masterKeyData ])
+            recordPendingUpdates(updatedGroupV2MasterKeys: [ masterKey.serialize().asData ])
         } else {
             owsFailDebug("How did we end up with pending updates to a V1 group?")
         }
@@ -901,14 +896,14 @@ class StorageServiceOperation: OWSOperation {
                     let groupThread = thread as? TSGroupThread,
                     let groupModel = groupThread.groupModel as? TSGroupModelV2
                 {
-                    let groupMasterKey: Data
+                    let masterKey: GroupMasterKey
                     do {
-                        groupMasterKey = try GroupsV2Protos.masterKeyData(forGroupModel: groupModel)
+                        masterKey = try groupModel.masterKey()
                     } catch {
                         owsFailDebug("Invalid group model \(error).")
                         return
                     }
-                    createRecord(localId: groupMasterKey, stateUpdater: groupV2Updater)
+                    createRecord(localId: masterKey.serialize().asData, stateUpdater: groupV2Updater)
                 } else if let storyThread = thread as? TSPrivateStoryThread {
                     guard let distributionListId = storyThread.distributionListIdentifier else {
                         owsFailDebug("Missing distribution list id for story thread \(thread.uniqueId)")

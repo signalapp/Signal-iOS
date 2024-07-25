@@ -149,8 +149,8 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
         var messages = [OWSDynamicOutgoingMessage]()
 
         let groupContextInfoForGroupModel = { (groupModelV2: TSGroupModelV2) -> GroupV2ContextInfo in
-            let masterKey = try! GroupsV2Protos.masterKeyData(forGroupModel: groupModelV2)
-            return try! self.groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
+            let masterKey = try! groupModelV2.masterKey().serialize().asData
+            return try! GroupV2ContextInfo.deriveFrom(masterKeyData: masterKey)
         }
 
         let validGroupContextInfo = groupContextInfoForGroupModel(validGroupModelV2)
@@ -158,10 +158,7 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
         let missingLocalUserGroupContextInfo = groupContextInfoForGroupModel(missingLocalUserGroupModelV2)
 
         let buildValidGroupContextInfo = { () -> GroupV2ContextInfo in
-            let groupsV2 = self.groupsV2
-            let groupSecretParamsData = try! groupsV2.generateGroupSecretParamsData()
-            let masterKeyData = try! GroupsV2Protos.masterKeyData(forGroupSecretParamsData: groupSecretParamsData)
-            return try! groupsV2.groupV2ContextInfo(forMasterKeyData: masterKeyData)
+            return try! GroupV2ContextInfo.deriveFrom(masterKeyData: Cryptography.generateRandomBytes(32))
         }
 
         databaseStorage.read { transaction in
@@ -355,8 +352,8 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
 
         var messages = [OWSDynamicOutgoingMessage]()
 
-        let masterKey = try! GroupsV2Protos.masterKeyData(forGroupModel: groupModelV2)
-        let groupContextInfo = try! self.groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
+        let masterKey = try! groupModelV2.masterKey().serialize().asData
+        let groupContextInfo = try! GroupV2ContextInfo.deriveFrom(masterKeyData: masterKey)
 
         databaseStorage.read { transaction in
             messages.append(OWSDynamicOutgoingMessage(thread: groupThread, transaction: transaction) {

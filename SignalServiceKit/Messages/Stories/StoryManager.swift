@@ -55,7 +55,7 @@ public class StoryManager: NSObject {
         }
 
         if let masterKey = storyMessage.group?.masterKey {
-            let contextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
+            let contextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: masterKey)
 
             guard !blockingManager.isGroupIdBlocked(contextInfo.groupId, transaction: transaction) else {
                 Logger.warn("Dropping story message with timestamp \(timestamp) in blocked group")

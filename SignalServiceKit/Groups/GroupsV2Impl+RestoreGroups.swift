@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 public extension GroupsV2Impl {
 
@@ -34,7 +35,7 @@ public extension GroupsV2Impl {
 
     static func isGroupKnownToStorageService(groupModel: TSGroupModelV2, transaction: SDSAnyReadTransaction) -> Bool {
         do {
-            let masterKeyData = try groupsV2.masterKeyData(forGroupModel: groupModel)
+            let masterKeyData = try groupModel.masterKey().serialize().asData
             let key = restoreGroupKey(forMasterKeyData: masterKeyData)
             return allStorageServiceGroupIds.hasValue(forKey: key, transaction: transaction)
         } catch {
@@ -60,7 +61,7 @@ public extension GroupsV2Impl {
         transaction: SDSAnyWriteTransaction
     ) {
 
-        guard groupsV2.isValidGroupV2MasterKey(groupRecord.masterKey) else {
+        guard GroupMasterKey.isValid(groupRecord.masterKey) else {
             owsFailDebug("Invalid master key.")
             return
         }
@@ -220,7 +221,7 @@ public extension GroupsV2Impl {
 
                 let groupContextInfo: GroupV2ContextInfo
                 do {
-                    groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: masterKeyData)
+                    groupContextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: masterKeyData)
                 } catch {
                     owsFailDebug("Error: \(error)")
                     markAsFailed()

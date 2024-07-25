@@ -1508,7 +1508,7 @@ fileprivate extension CVComponentState.Builder {
             owsFailDebug("Invalid urlString.")
             return
         }
-        if let groupInviteLinkInfo = GroupManager.parseGroupInviteLink(url) {
+        if let groupInviteLinkInfo = GroupInviteLinkInfo.parseFrom(url) {
             let groupInviteLinkViewModel = CVComponentState.configureGroupInviteLink(url, message: message,
                                                                                      groupInviteLinkInfo: groupInviteLinkInfo)
             if !groupInviteLinkViewModel.isExpired {

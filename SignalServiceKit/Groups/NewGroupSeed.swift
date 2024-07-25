@@ -4,50 +4,27 @@
 //
 
 import Foundation
+import LibSignalClient
 
 // This seed can be used to pre-generate the key group
 // state before the group is created.  This allows us
 // to preview the correct conversation color, etc. in
 // the "new group" view.
-@objc
-public class NewGroupSeed: NSObject {
+public struct NewGroupSeed {
 
-    @objc
     public let groupIdV1: Data
+    public let groupIdV2: Data
+    public let groupSecretParamsData: Data
 
-    @objc
-    public let groupIdV2: Data?
-    @objc
-    public let groupSecretParamsData: Data?
-
-    @objc
-    public override convenience init() {
-        self.init(groupIdV1: nil)
+    public init() {
+        self.init(groupIdV1: TSGroupModel.generateRandomV1GroupId())
     }
 
-    private init(groupIdV1: Data? = nil) {
-        if let groupIdV1 = groupIdV1 {
-            self.groupIdV1 = groupIdV1
-        } else {
-            self.groupIdV1 = TSGroupModel.generateRandomV1GroupId()
-        }
-
-        let groupsV2 = Self.groupsV2
-        let groupSecretParamsData = try! groupsV2.generateGroupSecretParamsData()
-        self.groupSecretParamsData = groupSecretParamsData
-        groupIdV2 = try! groupsV2.groupId(forGroupSecretParamsData: groupSecretParamsData)
-    }
-
-    // During the v1->v2 transition period, we don't know whether
-    // a new group will be v1 or v2 until we make it.  So we guess.
-    // This is only used for color previews so it's okay to be
-    // inaccurate.
-    @objc
-    public var possibleGroupId: Data {
-        if let groupIdV2 = groupIdV2 {
-            return groupIdV2
-        }
-        return groupIdV1
+    private init(groupIdV1: Data) {
+        self.groupIdV1 = groupIdV1
+        let groupSecretParams = try! GroupSecretParams.generate()
+        self.groupSecretParamsData = groupSecretParams.serialize().asData
+        self.groupIdV2 = try! groupSecretParams.getPublicParams().getGroupIdentifier().serialize().asData
     }
 
     public var deriveNewGroupSeedForRetry: NewGroupSeed {

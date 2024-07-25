@@ -570,7 +570,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
             )
         }
 
-        let groupId = try groupId(forGroupSecretParamsData: groupV2Params.groupSecretParamsData)
+        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier().serialize().asData
         let response = try await performServiceRequest(
             requestBuilder: requestBuilder,
             groupId: groupId,
@@ -627,7 +627,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
             )
         }
 
-        let groupId = try groupId(forGroupSecretParamsData: groupV2Params.groupSecretParamsData)
+        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier().serialize().asData
         let response = try await performServiceRequest(
             requestBuilder: requestBuilder,
             groupId: groupId,
@@ -659,8 +659,8 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
         groupSecretParamsData: Data,
         includeCurrentRevision: Bool
     ) async throws -> GroupChangePage {
-        let groupId = try self.groupId(forGroupSecretParamsData: groupSecretParamsData)
         let groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
+        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier().serialize().asData
         return try await fetchGroupChangeActions(
             groupId: groupId,
             groupV2Params: groupV2Params,
@@ -847,7 +847,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
             downloadedAvatars.merge(justUploadedAvatars)
         }
 
-        let groupId = try groupId(forGroupSecretParamsData: groupV2Params.groupSecretParamsData)
+        let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier().serialize().asData
 
         // First step - try to skip downloading the current group avatar.
         if
@@ -1349,10 +1349,6 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
 
     // MARK: - Protos
 
-    public func masterKeyData(forGroupModel groupModel: TSGroupModelV2) throws -> Data {
-        return try GroupsV2Protos.masterKeyData(forGroupModel: groupModel)
-    }
-
     public func buildGroupContextV2Proto(groupModel: TSGroupModelV2,
                                          changeActionsProtoData: Data?) throws -> SSKProtoGroupContextV2 {
         return try GroupsV2Protos.buildGroupContextV2Proto(groupModel: groupModel, changeActionsProtoData: changeActionsProtoData)
@@ -1388,135 +1384,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
         GroupsV2Impl.enqueueGroupRestore(groupRecord: groupRecord, account: account, transaction: transaction)
     }
 
-    // MARK: - Groups Secrets
-
-    public func generateGroupSecretParamsData() throws -> Data {
-        let groupSecretParams = try GroupSecretParams.generate()
-        let bytes = groupSecretParams.serialize()
-        return bytes.asData
-    }
-
-    public func groupSecretParamsData(forMasterKeyData masterKeyData: Data) throws -> Data {
-        let groupMasterKey = try GroupMasterKey(contents: [UInt8](masterKeyData))
-        let groupSecretParams = try GroupSecretParams.deriveFromMasterKey(groupMasterKey: groupMasterKey)
-        return groupSecretParams.serialize().asData
-    }
-
-    public func groupId(forGroupSecretParamsData groupSecretParamsData: Data) throws -> Data {
-        let groupSecretParams = try GroupSecretParams(contents: [UInt8](groupSecretParamsData))
-        return try groupSecretParams.getPublicParams().getGroupIdentifier().serialize().asData
-    }
-
-    public func v2GroupId(forV1GroupId v1GroupId: Data) -> Data? {
-        guard GroupManager.isValidGroupId(v1GroupId, groupsVersion: .V1) else {
-            owsFailDebug("Invalid V2 group ID!")
-            return nil
-        }
-
-        do {
-            let masterKey: Data = try { () throws -> Data in
-                let infoString = "GV2 Migration"
-                guard let keyBytes = try infoString.utf8.withContiguousStorageIfAvailable({ ptr in
-                    try hkdf(
-                        outputLength: GroupMasterKey.SIZE,
-                        inputKeyMaterial: v1GroupId,
-                        salt: [],
-                        info: ptr
-                    )
-                }) else {
-                    owsFail("Failed to compute key bytes!")
-                }
-
-                return Data(keyBytes)
-            }()
-
-            let v2GroupSecretParams = try groupSecretParamsData(forMasterKeyData: masterKey)
-            return try groupId(forGroupSecretParamsData: v2GroupSecretParams)
-        } catch let error {
-            owsFailDebug("Error computing V2 group ID: \(error)")
-            return nil
-        }
-    }
-
-    public func groupV2ContextInfo(forMasterKeyData masterKeyData: Data?) throws -> GroupV2ContextInfo {
-        guard let masterKeyData = masterKeyData else {
-            throw OWSAssertionError("Missing masterKeyData.")
-        }
-        let groupSecretParamsData = try self.groupSecretParamsData(forMasterKeyData: masterKeyData)
-        let groupId = try self.groupId(forGroupSecretParamsData: groupSecretParamsData)
-        guard GroupManager.isValidGroupId(groupId, groupsVersion: .V2) else {
-            throw OWSAssertionError("Invalid groupId.")
-        }
-        return GroupV2ContextInfo(masterKeyData: masterKeyData,
-                                  groupSecretParamsData: groupSecretParamsData,
-                                  groupId: groupId)
-    }
-
-    public func isValidGroupV2MasterKey(_ masterKeyData: Data) -> Bool {
-        return masterKeyData.count == GroupMasterKey.SIZE
-    }
-
     // MARK: - Group Links
-
-    public func groupInviteLink(forGroupModelV2 groupModelV2: TSGroupModelV2) throws -> URL {
-        guard let inviteLinkPassword = groupModelV2.inviteLinkPassword,
-              !inviteLinkPassword.isEmpty else {
-            throw OWSAssertionError("Missing password.")
-        }
-        let masterKey = try GroupsV2Protos.masterKeyData(forGroupModel: groupModelV2)
-
-        var contentsV1Builder = GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1.builder()
-        contentsV1Builder.setGroupMasterKey(masterKey)
-        contentsV1Builder.setInviteLinkPassword(inviteLinkPassword)
-
-        var builder = GroupsProtoGroupInviteLink.builder()
-        builder.setContents(GroupsProtoGroupInviteLinkOneOfContents.contentsV1(contentsV1Builder.buildInfallibly()))
-        let protoData = try builder.buildSerializedData()
-
-        let protoBase64Url = protoData.asBase64Url
-
-        let urlString = "https://signal.group/#\(protoBase64Url)"
-        guard let url = URL(string: urlString) else {
-            throw OWSAssertionError("Could not construct url.")
-        }
-        return url
-    }
-
-    public func parseGroupInviteLink(_ url: URL) -> GroupInviteLinkInfo? {
-        guard GroupManager.isPossibleGroupInviteLink(url) else {
-            return nil
-        }
-        guard let protoBase64Url = url.fragment,
-              !protoBase64Url.isEmpty else {
-            owsFailDebug("Missing encoded data.")
-            return nil
-        }
-        do {
-            let protoData = try Data.data(fromBase64Url: protoBase64Url)
-            let proto = try GroupsProtoGroupInviteLink(serializedData: protoData)
-            guard let protoContents = proto.contents else {
-                owsFailDebug("Missing proto contents.")
-                return nil
-            }
-            switch protoContents {
-            case .contentsV1(let contentsV1):
-                guard let masterKey = contentsV1.groupMasterKey,
-                      !masterKey.isEmpty else {
-                    owsFailDebug("Invalid masterKey.")
-                    return nil
-                }
-                guard let inviteLinkPassword = contentsV1.inviteLinkPassword,
-                      !inviteLinkPassword.isEmpty else {
-                    owsFailDebug("Invalid inviteLinkPassword.")
-                    return nil
-                }
-                return GroupInviteLinkInfo(masterKey: masterKey, inviteLinkPassword: inviteLinkPassword)
-            }
-        } catch {
-            owsFailDebug("Error: \(error)")
-            return nil
-        }
-    }
 
     private let groupInviteLinkPreviewCache = LRUCache<Data, GroupInviteLinkPreview>(maxSize: 5,
                                                                                      shouldEvacuateInBackground: true)
@@ -2184,7 +2052,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
         isLocalUserRequestingMember: Bool
     ) async {
         do {
-            let groupId = try self.groupId(forGroupSecretParamsData: groupSecretParamsData)
+            let groupId = try GroupSecretParams(contents: [UInt8](groupSecretParamsData)).getPublicParams().getGroupIdentifier().serialize().asData
             try await NSObject.databaseStorage.awaitableWrite { transaction in
                 guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
                     throw OWSAssertionError("Missing localIdentifiers.")

@@ -209,7 +209,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
         let groupId: Data?
         if let masterKey = storyMessage.group?.masterKey {
-            let groupContext = try Self.groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
+            let groupContext = try GroupV2ContextInfo.deriveFrom(masterKeyData: masterKey)
             groupId = groupContext.groupId
         } else {
             groupId = nil
@@ -335,7 +335,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
         let groupId: Data?
         if let masterKey = storyMessage.group?.masterKey {
-            let groupContext = try Self.groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
+            let groupContext = try GroupV2ContextInfo.deriveFrom(masterKeyData: masterKey)
             groupId = groupContext.groupId
         } else {
             groupId = nil

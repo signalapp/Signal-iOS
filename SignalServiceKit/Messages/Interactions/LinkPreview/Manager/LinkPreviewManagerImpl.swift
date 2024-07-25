@@ -532,13 +532,13 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
 
     private func linkPreviewDraft(forGroupInviteLink url: URL) -> Promise<OWSLinkPreviewDraft> {
         return firstly(on: Self.workQueue) { () -> GroupInviteLinkInfo in
-            guard let groupInviteLinkInfo = GroupManager.parseGroupInviteLink(url) else {
+            guard let groupInviteLinkInfo = GroupInviteLinkInfo.parseFrom(url) else {
                 Logger.error("Could not parse URL.")
                 throw LinkPreviewError.invalidPreview
             }
             return groupInviteLinkInfo
         }.then(on: Self.workQueue) { (groupInviteLinkInfo: GroupInviteLinkInfo) -> Promise<OWSLinkPreviewDraft> in
-            let groupV2ContextInfo = try self.groupsV2.groupV2ContextInfo(forMasterKeyData: groupInviteLinkInfo.masterKey)
+            let groupV2ContextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: groupInviteLinkInfo.masterKey)
             return firstly {
                 self.groupsV2.fetchGroupInviteLinkPreview(
                     inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,

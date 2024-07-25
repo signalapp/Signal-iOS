@@ -662,11 +662,6 @@ public class GroupManager: NSObject {
         Cryptography.generateRandomBytes(inviteLinkPasswordLengthV2)
     }
 
-    public static func groupInviteLink(forGroupModelV2 groupModelV2: TSGroupModelV2) throws -> URL {
-        try groupsV2.groupInviteLink(forGroupModelV2: groupModelV2)
-    }
-
-    @objc
     public static func isPossibleGroupInviteLink(_ url: URL) -> Bool {
         let possibleHosts: [String]
         if url.scheme == "https" {
@@ -680,11 +675,6 @@ public class GroupManager: NSObject {
             return false
         }
         return possibleHosts.contains(host)
-    }
-
-    @objc
-    public static func parseGroupInviteLink(_ url: URL) -> GroupInviteLinkInfo? {
-        groupsV2.parseGroupInviteLink(url)
     }
 
     public static func joinGroupViaInviteLink(
@@ -742,10 +732,9 @@ public class GroupManager: NSObject {
         }
     }
 
-    @objc
     public static func cachedGroupInviteLinkPreview(groupInviteLinkInfo: GroupInviteLinkInfo) -> GroupInviteLinkPreview? {
         do {
-            let groupContextInfo = try self.groupsV2.groupV2ContextInfo(forMasterKeyData: groupInviteLinkInfo.masterKey)
+            let groupContextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: groupInviteLinkInfo.masterKey)
             return groupsV2.cachedGroupInviteLinkPreview(groupSecretParamsData: groupContextInfo.groupSecretParamsData)
         } catch {
             owsFailDebug("Error: \(error)")

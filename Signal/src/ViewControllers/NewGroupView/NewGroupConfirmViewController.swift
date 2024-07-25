@@ -33,7 +33,7 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
     init(newGroupState: NewGroupState) {
         self.newGroupState = newGroupState
 
-        let groupId = newGroupState.groupSeed.possibleGroupId
+        let groupId = newGroupState.groupSeed.groupIdV2
         self.helper = GroupAttributesEditorHelper(
             groupId: groupId,
             groupNameOriginal: newGroupState.groupName,

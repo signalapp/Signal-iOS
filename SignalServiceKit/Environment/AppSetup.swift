@@ -394,7 +394,6 @@ public class AppSetup {
                     tsMessageStore: EditManagerAttachmentsImpl.Wrappers.TSMessageStore()
                 ),
                 editMessageStore: editMessageStore,
-                groupsShim: EditManagerImpl.Wrappers.Groups(groupsV2: groupsV2),
                 receiptManagerShim: EditManagerImpl.Wrappers.ReceiptManager(receiptManager: receiptManager),
                 tsResourceStore: tsResourceStore
             )
