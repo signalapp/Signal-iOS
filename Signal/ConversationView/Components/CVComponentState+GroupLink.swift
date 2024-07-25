@@ -125,9 +125,8 @@ extension CVComponentState {
                     )
                 }
             }.done(on: DispatchQueue.global()) { (_: GroupInviteLinkPreview) in
-                if Self.updateExpirationList(url: url, isExpired: false) {
-                    touchMessage()
-                }
+                _ = Self.updateExpirationList(url: url, isExpired: false)
+                touchMessage()
             }.catch(on: DispatchQueue.global()) { (error: Error) in
                 switch error {
                 case GroupsV2Error.expiredGroupInviteLink, GroupsV2Error.localUserBlockedFromJoining:
