@@ -276,9 +276,11 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                 // finished message processing, but we've already blocked on
                 // waitForFetchingAndProcessing above.
                 let groupId = groupModel.groupId
-                let groupSecretParamsData = groupModel.secretParamsData
-                return Self.groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: groupId,
-                                                                                             groupSecretParamsData: groupSecretParamsData).asVoid()
+                let groupSecretParams = try groupModel.secretParams()
+                return Self.groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
+                    groupId: groupId,
+                    groupSecretParams: groupSecretParams
+                ).asVoid()
             }.then(on: DispatchQueue.global()) { () throws -> Promise<TSGroupThread> in
                 return GroupManager.updateLocalProfileKey(
                     groupModel: groupModel

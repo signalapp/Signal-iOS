@@ -218,8 +218,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
     private func updateExistingGroupOnService(changes: GroupsV2OutgoingChanges) async throws -> TSGroupThread {
 
         let groupId = changes.groupId
-        let groupSecretParamsData = changes.groupSecretParamsData
-        let groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
+        let groupV2Params = try GroupV2Params(groupSecretParams: changes.groupSecretParams)
 
         var builtGroupChange: GroupsV2BuiltGroupChange
         let httpResponse: HTTPResponse
@@ -238,7 +237,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
 
                 _ = try await groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
                     groupId: groupId,
-                    groupSecretParamsData: groupSecretParamsData
+                    groupSecretParams: groupV2Params.groupSecretParams
                 ).awaitable()
 
                 (builtGroupChange, httpResponse) = try await buildGroupChangeProtoAndTryToUpdateGroupOnService(
@@ -492,9 +491,9 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
         ignoreSignature: Bool,
-        groupSecretParamsData: Data
+        groupSecretParams: GroupSecretParams
     ) async throws -> TSGroupThread {
-        let groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
+        let groupV2Params = try GroupV2Params(groupSecretParams: groupSecretParams)
         return try await _updateGroupWithChangeActions(
             groupId: groupId,
             spamReportingMetadata: spamReportingMetadata,
@@ -552,9 +551,9 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
 
     public func uploadGroupAvatar(
         avatarData: Data,
-        groupSecretParamsData: Data
+        groupSecretParams: GroupSecretParams
     ) async throws -> String {
-        let groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
+        let groupV2Params = try GroupV2Params(groupSecretParams: groupSecretParams)
         return try await uploadGroupAvatar(avatarData: avatarData, groupV2Params: groupV2Params)
     }
 
@@ -596,23 +595,23 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
         // into the database.
         let justUploadedAvatars = GroupV2DownloadedAvatars.from(groupModel: groupModel)
         return try await fetchCurrentGroupV2Snapshot(
-            groupSecretParamsData: groupModel.secretParamsData,
+            groupSecretParams: try groupModel.secretParams(),
             justUploadedAvatars: justUploadedAvatars
         )
     }
 
-    public func fetchCurrentGroupV2Snapshot(groupSecretParamsData: Data) async throws -> GroupV2Snapshot {
+    public func fetchCurrentGroupV2Snapshot(groupSecretParams: GroupSecretParams) async throws -> GroupV2Snapshot {
         return try await fetchCurrentGroupV2Snapshot(
-            groupSecretParamsData: groupSecretParamsData,
+            groupSecretParams: groupSecretParams,
             justUploadedAvatars: nil
         )
     }
 
     private func fetchCurrentGroupV2Snapshot(
-        groupSecretParamsData: Data,
+        groupSecretParams: GroupSecretParams,
         justUploadedAvatars: GroupV2DownloadedAvatars?
     ) async throws -> GroupV2Snapshot {
-        let groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
+        let groupV2Params = try GroupV2Params(groupSecretParams: groupSecretParams)
         return try await fetchCurrentGroupV2Snapshot(groupV2Params: groupV2Params, justUploadedAvatars: justUploadedAvatars)
     }
 
@@ -656,10 +655,10 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
     // MARK: - Fetch Group Change Actions
 
     func fetchGroupChangeActions(
-        groupSecretParamsData: Data,
+        groupSecretParams: GroupSecretParams,
         includeCurrentRevision: Bool
     ) async throws -> GroupChangePage {
-        let groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
+        let groupV2Params = try GroupV2Params(groupSecretParams: groupSecretParams)
         let groupId = try groupV2Params.groupPublicParams.getGroupIdentifier().serialize().asData
         return try await fetchGroupChangeActions(
             groupId: groupId,
@@ -964,12 +963,12 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
 
     public func updateGroupV2(
         groupId: Data,
-        groupSecretParamsData: Data,
+        groupSecretParams: GroupSecretParams,
         changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
     ) async throws -> TSGroupThread {
         let changes = GroupsV2OutgoingChangesImpl(
             groupId: groupId,
-            groupSecretParamsData: groupSecretParamsData
+            groupSecretParams: groupSecretParams
         )
         changesBlock(changes)
         return try await updateExistingGroupOnService(changes: changes)
@@ -1233,10 +1232,12 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
         }
         let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionAfterMessageProcessWithThrottling
         firstly {
-            self.groupV2Updates.tryToRefreshV2GroupThread(groupId: groupId,
-                                                          spamReportingMetadata: .learnedByLocallyInitatedRefresh,
-                                                          groupSecretParamsData: groupModelV2.secretParamsData,
-                                                          groupUpdateMode: groupUpdateMode)
+            self.groupV2Updates.tryToRefreshV2GroupThread(
+                groupId: groupId,
+                spamReportingMetadata: .learnedByLocallyInitatedRefresh,
+                groupSecretParams: try groupModelV2.secretParams(),
+                groupUpdateMode: groupUpdateMode
+            )
         }.catch { error in
             if case GroupsV2Error.localUserNotInGroup = error {
                 Logger.warn("Error: \(error)")
@@ -1389,22 +1390,22 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
     private let groupInviteLinkPreviewCache = LRUCache<Data, GroupInviteLinkPreview>(maxSize: 5,
                                                                                      shouldEvacuateInBackground: true)
 
-    private func groupInviteLinkPreviewCacheKey(groupSecretParamsData: Data) -> Data {
-        groupSecretParamsData
+    private func groupInviteLinkPreviewCacheKey(groupSecretParams: GroupSecretParams) -> Data {
+        return groupSecretParams.serialize().asData
     }
 
-    public func cachedGroupInviteLinkPreview(groupSecretParamsData: Data) -> GroupInviteLinkPreview? {
-        let cacheKey = groupInviteLinkPreviewCacheKey(groupSecretParamsData: groupSecretParamsData)
+    public func cachedGroupInviteLinkPreview(groupSecretParams: GroupSecretParams) -> GroupInviteLinkPreview? {
+        let cacheKey = groupInviteLinkPreviewCacheKey(groupSecretParams: groupSecretParams)
         return groupInviteLinkPreviewCache.object(forKey: cacheKey)
     }
 
     // inviteLinkPassword is not necessary if we're already a member or have a pending request.
     public func fetchGroupInviteLinkPreview(
         inviteLinkPassword: Data?,
-        groupSecretParamsData: Data,
+        groupSecretParams: GroupSecretParams,
         allowCached: Bool
     ) async throws -> GroupInviteLinkPreview {
-        let cacheKey = groupInviteLinkPreviewCacheKey(groupSecretParamsData: groupSecretParamsData)
+        let cacheKey = groupInviteLinkPreviewCacheKey(groupSecretParams: groupSecretParams)
 
         if
             allowCached,
@@ -1413,7 +1414,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
             return groupInviteLinkPreview
         }
 
-        let groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
+        let groupV2Params = try GroupV2Params(groupSecretParams: groupSecretParams)
 
         let requestBuilder: RequestBuilder = { (authCredential) in
             try StorageService.buildFetchGroupInviteLinkPreviewRequest(
@@ -1444,7 +1445,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
             groupInviteLinkPreviewCache.setObject(groupInviteLinkPreview, forKey: cacheKey)
 
             await updatePlaceholderGroupModelUsingInviteLinkPreview(
-                groupSecretParamsData: groupSecretParamsData,
+                groupSecretParams: groupSecretParams,
                 isLocalUserRequestingMember: groupInviteLinkPreview.isLocalUserRequestingMember
             )
 
@@ -1452,7 +1453,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
         } catch {
             if case GroupsV2Error.localUserIsNotARequestingMember = error {
                 await self.updatePlaceholderGroupModelUsingInviteLinkPreview(
-                    groupSecretParamsData: groupSecretParamsData,
+                    groupSecretParams: groupSecretParams,
                     isLocalUserRequestingMember: false
                 )
             }
@@ -1462,9 +1463,9 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
 
     public func fetchGroupInviteLinkAvatar(
         avatarUrlPath: String,
-        groupSecretParamsData: Data
+        groupSecretParams: GroupSecretParams
     ) async throws -> Data {
-        let groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
+        let groupV2Params = try GroupV2Params(groupSecretParams: groupSecretParams)
         let downloadedAvatars = try await fetchAvatarData(
             avatarUrlPaths: [avatarUrlPath],
             downloadedAvatars: GroupV2DownloadedAvatars(),
@@ -1475,12 +1476,12 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
 
     public func joinGroupViaInviteLink(
         groupId: Data,
-        groupSecretParamsData: Data,
+        groupSecretParams: GroupSecretParams,
         inviteLinkPassword: Data,
         groupInviteLinkPreview: GroupInviteLinkPreview,
         avatarData: Data?
     ) async throws -> TSGroupThread {
-        let groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
+        let groupV2Params = try GroupV2Params(groupSecretParams: groupSecretParams)
         return try await Promises.performWithImmediateRetry {
             Promise.wrapAsync {
                 try await self.joinGroupViaInviteLinkAttempt(
@@ -1550,7 +1551,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
         // who are not yet in the group.
         let groupThread = try await groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
             groupId: groupId,
-            groupSecretParamsData: groupV2Params.groupSecretParamsData
+            groupSecretParams: groupV2Params.groupSecretParams
         ).awaitable()
 
         guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction else {
@@ -1627,7 +1628,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
             do {
                 _ = try await groupV2UpdatesImpl.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
                     groupId: groupId,
-                    groupSecretParamsData: groupV2Params.groupSecretParamsData,
+                    groupSecretParams: groupV2Params.groupSecretParams,
                     groupModelOptions: .didJustAddSelfViaGroupLink
                 ).awaitable()
             } catch {
@@ -1813,7 +1814,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
         // * local user's request status.
         let groupInviteLinkPreview = try await fetchGroupInviteLinkPreview(
             inviteLinkPassword: inviteLinkPassword,
-            groupSecretParamsData: groupV2Params.groupSecretParamsData,
+            groupSecretParams: groupV2Params.groupSecretParams,
             allowCached: false
         )
 
@@ -1961,7 +1962,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
         // * local user's request status.
         let groupInviteLinkPreview = try await fetchGroupInviteLinkPreview(
             inviteLinkPassword: inviteLinkPassword,
-            groupSecretParamsData: groupV2Params.groupSecretParamsData,
+            groupSecretParams: groupV2Params.groupSecretParams,
             allowCached: false
         )
 
@@ -2029,7 +2030,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
             let groupV2Params = try groupModel.groupV2Params()
             _ = try await fetchGroupInviteLinkPreview(
                 inviteLinkPassword: groupModel.inviteLinkPassword,
-                groupSecretParamsData: groupV2Params.groupSecretParamsData,
+                groupSecretParams: groupV2Params.groupSecretParams,
                 allowCached: false
             )
         } catch {
@@ -2048,11 +2049,11 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
     }
 
     private func updatePlaceholderGroupModelUsingInviteLinkPreview(
-        groupSecretParamsData: Data,
+        groupSecretParams: GroupSecretParams,
         isLocalUserRequestingMember: Bool
     ) async {
         do {
-            let groupId = try GroupSecretParams(contents: [UInt8](groupSecretParamsData)).getPublicParams().getGroupIdentifier().serialize().asData
+            let groupId = try groupSecretParams.getPublicParams().getGroupIdentifier().serialize().asData
             try await NSObject.databaseStorage.awaitableWrite { transaction in
                 guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read) else {
                     throw OWSAssertionError("Missing localIdentifiers.")

@@ -111,11 +111,11 @@ public protocol GroupsV2 {
 
     func fetchCurrentGroupV2Snapshot(groupModel: TSGroupModelV2) async throws -> GroupV2Snapshot
 
-    func fetchCurrentGroupV2Snapshot(groupSecretParamsData: Data) async throws -> GroupV2Snapshot
+    func fetchCurrentGroupV2Snapshot(groupSecretParams: GroupSecretParams) async throws -> GroupV2Snapshot
 
     func updateGroupV2(
         groupId: Data,
-        groupSecretParamsData: Data,
+        groupSecretParams: GroupSecretParams,
         changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
     ) async throws -> TSGroupThread
 
@@ -129,28 +129,28 @@ public protocol GroupsV2 {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
         ignoreSignature: Bool,
-        groupSecretParamsData: Data
+        groupSecretParams: GroupSecretParams
     ) async throws -> TSGroupThread
 
-    func uploadGroupAvatar(avatarData: Data, groupSecretParamsData: Data) async throws -> String
+    func uploadGroupAvatar(avatarData: Data, groupSecretParams: GroupSecretParams) async throws -> String
 
-    func cachedGroupInviteLinkPreview(groupSecretParamsData: Data) -> GroupInviteLinkPreview?
+    func cachedGroupInviteLinkPreview(groupSecretParams: GroupSecretParams) -> GroupInviteLinkPreview?
 
     // inviteLinkPassword is not necessary if we're already a member or have a pending request.
     func fetchGroupInviteLinkPreview(
         inviteLinkPassword: Data?,
-        groupSecretParamsData: Data,
+        groupSecretParams: GroupSecretParams,
         allowCached: Bool
     ) async throws -> GroupInviteLinkPreview
 
     func fetchGroupInviteLinkAvatar(
         avatarUrlPath: String,
-        groupSecretParamsData: Data
+        groupSecretParams: GroupSecretParams
     ) async throws -> Data
 
     func joinGroupViaInviteLink(
         groupId: Data,
-        groupSecretParamsData: Data,
+        groupSecretParams: GroupSecretParams,
         inviteLinkPassword: Data,
         groupInviteLinkPreview: GroupInviteLinkPreview,
         avatarData: Data?
@@ -205,7 +205,7 @@ public struct GroupsV2BuiltGroupChange {
 
 public protocol GroupsV2OutgoingChanges: AnyObject {
     var groupId: Data { get }
-    var groupSecretParamsData: Data { get }
+    var groupSecretParams: GroupSecretParams { get }
 
     var newAvatarData: Data? { get }
     var newAvatarUrlPath: String? { get }
@@ -323,25 +323,31 @@ public protocol GroupV2Updates {
 
     func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithoutThrottling(_ groupThread: TSGroupThread)
 
-    func tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: Data,
-                                                           groupSecretParamsData: Data) -> Promise<TSGroupThread>
+    func tryToRefreshV2GroupUpToCurrentRevisionImmediately(
+        groupId: Data,
+        groupSecretParams: GroupSecretParams
+    ) -> Promise<TSGroupThread>
 
-    func tryToRefreshV2GroupThread(groupId: Data,
-                                   spamReportingMetadata: GroupUpdateSpamReportingMetadata,
-                                   groupSecretParamsData: Data,
-                                   groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread>
+    func tryToRefreshV2GroupThread(
+        groupId: Data,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata,
+        groupSecretParams: GroupSecretParams,
+        groupUpdateMode: GroupUpdateMode
+    ) -> Promise<TSGroupThread>
 
-    func updateGroupWithChangeActions(groupId: Data,
-                                      spamReportingMetadata: GroupUpdateSpamReportingMetadata,
-                                      changeActionsProto: GroupsProtoGroupChangeActions,
-                                      downloadedAvatars: GroupV2DownloadedAvatars,
-                                      transaction: SDSAnyWriteTransaction) throws -> TSGroupThread
+    func updateGroupWithChangeActions(
+        groupId: Data,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata,
+        changeActionsProto: GroupsProtoGroupChangeActions,
+        downloadedAvatars: GroupV2DownloadedAvatars,
+        transaction: SDSAnyWriteTransaction
+    ) throws -> TSGroupThread
 }
 
 // MARK: -
 
 public protocol GroupV2Snapshot {
-    var groupSecretParamsData: Data { get }
+    var groupSecretParams: GroupSecretParams { get }
 
     var debugDescription: String { get }
 
@@ -399,6 +405,7 @@ extension GroupMasterKey {
 
 public struct GroupV2ContextInfo {
     public let masterKeyData: Data
+    public let groupSecretParams: GroupSecretParams
     public let groupSecretParamsData: Data
     public let groupId: Data
 
@@ -407,7 +414,7 @@ public struct GroupV2ContextInfo {
         let groupIdentifier = try groupSecretParams.getPublicParams().getGroupIdentifier()
         return GroupV2ContextInfo(
             masterKeyData: masterKeyData,
-            groupSecretParamsData: groupSecretParams.serialize().asData,
+            groupSecretParams: groupSecretParams,
             groupId: groupIdentifier.serialize().asData
         )
     }
@@ -417,9 +424,10 @@ public struct GroupV2ContextInfo {
         return try GroupSecretParams.deriveFromMasterKey(groupMasterKey: groupMasterKey)
     }
 
-    private init(masterKeyData: Data, groupSecretParamsData: Data, groupId: Data) {
+    private init(masterKeyData: Data, groupSecretParams: GroupSecretParams, groupId: Data) {
         self.masterKeyData = masterKeyData
-        self.groupSecretParamsData = groupSecretParamsData
+        self.groupSecretParams = groupSecretParams
+        self.groupSecretParamsData = groupSecretParams.serialize().asData
         self.groupId = groupId
     }
 }
@@ -624,7 +632,7 @@ public class MockGroupsV2: GroupsV2 {
         owsFail("Not implemented.")
     }
 
-    public func fetchCurrentGroupV2Snapshot(groupSecretParamsData: Data) async throws -> GroupV2Snapshot {
+    public func fetchCurrentGroupV2Snapshot(groupSecretParams: GroupSecretParams) async throws -> GroupV2Snapshot {
         owsFail("Not implemented.")
     }
 
@@ -635,7 +643,7 @@ public class MockGroupsV2: GroupsV2 {
 
     public func updateGroupV2(
         groupId: Data,
-        groupSecretParamsData: Data,
+        groupSecretParams: GroupSecretParams,
         changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
     ) async throws -> TSGroupThread {
         owsFail("Not implemented.")
@@ -665,14 +673,14 @@ public class MockGroupsV2: GroupsV2 {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         changeActionsProto: GroupsProtoGroupChangeActions,
         ignoreSignature: Bool,
-        groupSecretParamsData: Data
+        groupSecretParams: GroupSecretParams
     ) async throws -> TSGroupThread {
         owsFail("Not implemented.")
     }
 
     public func uploadGroupAvatar(
         avatarData: Data,
-        groupSecretParamsData: Data
+        groupSecretParams: GroupSecretParams
     ) async throws -> String {
         owsFail("Not implemented.")
     }
@@ -696,13 +704,13 @@ public class MockGroupsV2: GroupsV2 {
         owsFail("Not implemented.")
     }
 
-    public func cachedGroupInviteLinkPreview(groupSecretParamsData: Data) -> GroupInviteLinkPreview? {
+    public func cachedGroupInviteLinkPreview(groupSecretParams: GroupSecretParams) -> GroupInviteLinkPreview? {
         owsFail("Not implemented.")
     }
 
     public func fetchGroupInviteLinkPreview(
         inviteLinkPassword: Data?,
-        groupSecretParamsData: Data,
+        groupSecretParams: GroupSecretParams,
         allowCached: Bool
     ) async throws -> GroupInviteLinkPreview {
         owsFail("Not implemented.")
@@ -710,14 +718,14 @@ public class MockGroupsV2: GroupsV2 {
 
     public func fetchGroupInviteLinkAvatar(
         avatarUrlPath: String,
-        groupSecretParamsData: Data
+        groupSecretParams: GroupSecretParams
     ) async throws -> Data {
         owsFail("Not implemented.")
     }
 
     public func joinGroupViaInviteLink(
         groupId: Data,
-        groupSecretParamsData: Data,
+        groupSecretParams: GroupSecretParams,
         inviteLinkPassword: Data,
         groupInviteLinkPreview: GroupInviteLinkPreview,
         avatarData: Data?
@@ -752,23 +760,29 @@ public class MockGroupV2Updates: GroupV2Updates {
         owsFail("Not implemented.")
     }
 
-    public func tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: Data,
-                                                                  groupSecretParamsData: Data) -> Promise<TSGroupThread> {
+    public func tryToRefreshV2GroupUpToCurrentRevisionImmediately(
+        groupId: Data,
+        groupSecretParams: GroupSecretParams
+    ) -> Promise<TSGroupThread> {
         owsFail("Not implemented.")
     }
 
-    public func tryToRefreshV2GroupThread(groupId: Data,
-                                          spamReportingMetadata: GroupUpdateSpamReportingMetadata,
-                                          groupSecretParamsData: Data,
-                                          groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
+    public func tryToRefreshV2GroupThread(
+        groupId: Data,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata,
+        groupSecretParams: GroupSecretParams,
+        groupUpdateMode: GroupUpdateMode
+    ) -> Promise<TSGroupThread> {
         owsFail("Not implemented.")
     }
 
-    public func updateGroupWithChangeActions(groupId: Data,
-                                             spamReportingMetadata: GroupUpdateSpamReportingMetadata,
-                                             changeActionsProto: GroupsProtoGroupChangeActions,
-                                             downloadedAvatars: GroupV2DownloadedAvatars,
-                                             transaction: SDSAnyWriteTransaction) throws -> TSGroupThread {
+    public func updateGroupWithChangeActions(
+        groupId: Data,
+        spamReportingMetadata: GroupUpdateSpamReportingMetadata,
+        changeActionsProto: GroupsProtoGroupChangeActions,
+        downloadedAvatars: GroupV2DownloadedAvatars,
+        transaction: SDSAnyWriteTransaction
+    ) throws -> TSGroupThread {
         owsFail("Not implemented.")
     }
 }

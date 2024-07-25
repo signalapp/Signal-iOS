@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 extension GroupManager {
     // Serialize group updates by group ID
@@ -62,7 +63,7 @@ extension GroupManager {
                 Promise.wrapAsync {
                     try await self.groupsV2.updateGroupV2(
                         groupId: self.groupId,
-                        groupSecretParamsData: self.groupSecretParamsData,
+                        groupSecretParams: try GroupSecretParams(contents: [UInt8](self.groupSecretParamsData)),
                         changesBlock: self.changesBlock
                     )
                 }

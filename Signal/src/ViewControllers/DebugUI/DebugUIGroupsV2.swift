@@ -425,8 +425,10 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
             return
         }
         firstly {
-            self.groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: groupModelV2.groupId,
-                                                                                  groupSecretParamsData: groupModelV2.secretParamsData)
+            self.groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
+                groupId: groupModelV2.groupId,
+                groupSecretParams: try groupModelV2.secretParams()
+            )
         }.done { _ in
             Logger.info("Success.")
         }.catch { error in

@@ -244,7 +244,7 @@ public extension GroupsV2Impl {
                     self.groupV2Updates.tryToRefreshV2GroupThread(
                         groupId: groupContextInfo.groupId,
                         spamReportingMetadata: .learnedByLocallyInitatedRefresh,
-                        groupSecretParamsData: groupContextInfo.groupSecretParamsData,
+                        groupSecretParams: groupContextInfo.groupSecretParams,
                         groupUpdateMode: groupUpdateMode
                     )
                 }.done { _ in

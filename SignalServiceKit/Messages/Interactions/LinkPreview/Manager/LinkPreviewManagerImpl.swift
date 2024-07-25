@@ -542,7 +542,7 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
             return firstly {
                 self.groupsV2.fetchGroupInviteLinkPreview(
                     inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
-                    groupSecretParamsData: groupV2ContextInfo.groupSecretParamsData,
+                    groupSecretParams: groupV2ContextInfo.groupSecretParams,
                     allowCached: false
                 )
             }.then(on: Self.workQueue) { (groupInviteLinkPreview: GroupInviteLinkPreview) in
@@ -553,7 +553,7 @@ public class LinkPreviewManagerImpl: LinkPreviewManager {
                     return firstly { () -> Promise<Data> in
                         self.groupsV2.fetchGroupInviteLinkAvatar(
                             avatarUrlPath: avatarUrlPath,
-                            groupSecretParamsData: groupV2ContextInfo.groupSecretParamsData
+                            groupSecretParams: groupV2ContextInfo.groupSecretParams
                         )
                     }.map { (avatarData: Data) -> Data? in
                         return avatarData

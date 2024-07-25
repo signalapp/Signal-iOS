@@ -57,7 +57,7 @@ fileprivate extension CVComponentState {
             return Promise.wrapAsync {
                 try await self.groupsV2Impl.fetchGroupInviteLinkAvatar(
                     avatarUrlPath: avatarUrlPath,
-                    groupSecretParamsData: contextInfo.groupSecretParamsData
+                    groupSecretParams: contextInfo.groupSecretParams
                 )
             }
         }.map(on: DispatchQueue.global()) { (avatarData: Data) -> Void in
@@ -116,7 +116,7 @@ extension CVComponentState {
                 return Promise.wrapAsync {
                     try await Self.groupsV2Impl.fetchGroupInviteLinkPreview(
                         inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
-                        groupSecretParamsData: groupContextInfo.groupSecretParamsData,
+                        groupSecretParams: groupContextInfo.groupSecretParams,
                         allowCached: false
                     )
                 }

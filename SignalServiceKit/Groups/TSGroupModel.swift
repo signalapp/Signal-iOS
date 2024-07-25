@@ -85,8 +85,12 @@ public class TSGroupModelV2: TSGroupModel {
                    addedBy: addedByAddress)
     }
 
+    public func secretParams() throws -> GroupSecretParams {
+        return try GroupSecretParams(contents: [UInt8](self.secretParamsData))
+    }
+
     public func masterKey() throws -> GroupMasterKey {
-        return try GroupSecretParams(contents: [UInt8](self.secretParamsData)).getMasterKey()
+        return try secretParams().getMasterKey()
     }
 
     public func groupInviteLinkUrl() throws -> URL {

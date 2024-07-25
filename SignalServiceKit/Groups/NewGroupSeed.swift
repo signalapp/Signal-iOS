@@ -14,7 +14,7 @@ public struct NewGroupSeed {
 
     public let groupIdV1: Data
     public let groupIdV2: Data
-    public let groupSecretParamsData: Data
+    public let groupSecretParams: GroupSecretParams
 
     public init() {
         self.init(groupIdV1: TSGroupModel.generateRandomV1GroupId())
@@ -23,7 +23,7 @@ public struct NewGroupSeed {
     private init(groupIdV1: Data) {
         self.groupIdV1 = groupIdV1
         let groupSecretParams = try! GroupSecretParams.generate()
-        self.groupSecretParamsData = groupSecretParams.serialize().asData
+        self.groupSecretParams = groupSecretParams
         self.groupIdV2 = try! groupSecretParams.getPublicParams().getGroupIdentifier().serialize().asData
     }
 

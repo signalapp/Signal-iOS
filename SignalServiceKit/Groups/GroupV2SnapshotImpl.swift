@@ -8,7 +8,7 @@ import LibSignalClient
 
 public struct GroupV2SnapshotImpl: GroupV2Snapshot {
 
-    public let groupSecretParamsData: Data
+    public let groupSecretParams: GroupSecretParams
 
     public let groupProto: GroupsProtoGroup
 
@@ -36,21 +36,22 @@ public struct GroupV2SnapshotImpl: GroupV2Snapshot {
         return groupProto.debugDescription
     }
 
-    public init(groupSecretParamsData: Data,
-                groupProto: GroupsProtoGroup,
-                revision: UInt32,
-                title: String,
-                descriptionText: String?,
-                avatarUrlPath: String?,
-                avatarData: Data?,
-                groupMembership: GroupMembership,
-                groupAccess: GroupAccess,
-                inviteLinkPassword: Data?,
-                disappearingMessageToken: DisappearingMessageToken,
-                isAnnouncementsOnly: Bool,
-                profileKeys: [Aci: Data]) {
-
-        self.groupSecretParamsData = groupSecretParamsData
+    public init(
+        groupSecretParams: GroupSecretParams,
+        groupProto: GroupsProtoGroup,
+        revision: UInt32,
+        title: String,
+        descriptionText: String?,
+        avatarUrlPath: String?,
+        avatarData: Data?,
+        groupMembership: GroupMembership,
+        groupAccess: GroupAccess,
+        inviteLinkPassword: Data?,
+        disappearingMessageToken: DisappearingMessageToken,
+        isAnnouncementsOnly: Bool,
+        profileKeys: [Aci: Data]
+    ) {
+        self.groupSecretParams = groupSecretParams
         self.groupProto = groupProto
         self.revision = revision
         self.title = title

@@ -7,15 +7,14 @@ import Foundation
 import LibSignalClient
 
 public struct GroupV2Params {
-    public let groupSecretParamsData: Data
     public let groupSecretParams: GroupSecretParams
+    public let groupSecretParamsData: Data
     public let groupPublicParams: GroupPublicParams
     public let groupPublicParamsData: Data
 
-    public init(groupSecretParamsData: Data) throws {
-        self.groupSecretParamsData = groupSecretParamsData
-        let groupSecretParams = try GroupSecretParams(contents: [UInt8](groupSecretParamsData))
+    public init(groupSecretParams: GroupSecretParams) throws {
         self.groupSecretParams = groupSecretParams
+        self.groupSecretParamsData = groupSecretParams.serialize().asData
         let groupPublicParams = try groupSecretParams.getPublicParams()
         self.groupPublicParams = groupPublicParams
         self.groupPublicParamsData = groupPublicParams.serialize().asData
@@ -26,7 +25,7 @@ public struct GroupV2Params {
 
 public extension TSGroupModelV2 {
     func groupV2Params() throws -> GroupV2Params {
-        return try GroupV2Params(groupSecretParamsData: secretParamsData)
+        return try GroupV2Params(groupSecretParams: try GroupSecretParams(contents: [UInt8](secretParamsData)))
     }
 }
 

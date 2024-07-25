@@ -38,7 +38,7 @@ import LibSignalClient
 public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges {
 
     public let groupId: Data
-    public let groupSecretParamsData: Data
+    public let groupSecretParams: GroupSecretParams
 
     // MARK: -
 
@@ -101,14 +101,14 @@ public class GroupsV2OutgoingChangesImpl: Dependencies, GroupsV2OutgoingChanges 
     // Non-nil if dm state changed.
     private var newDisappearingMessageToken: DisappearingMessageToken?
 
-    public init(groupId: Data, groupSecretParamsData: Data) {
+    public init(groupId: Data, groupSecretParams: GroupSecretParams) {
         self.groupId = groupId
-        self.groupSecretParamsData = groupSecretParamsData
+        self.groupSecretParams = groupSecretParams
     }
 
-    public init(for groupModel: TSGroupModelV2) {
+    public init(for groupModel: TSGroupModelV2) throws {
         self.groupId = groupModel.groupId
-        self.groupSecretParamsData = groupModel.secretParamsData
+        self.groupSecretParams = try groupModel.secretParams()
     }
 
     public func setTitle(_ value: String) {

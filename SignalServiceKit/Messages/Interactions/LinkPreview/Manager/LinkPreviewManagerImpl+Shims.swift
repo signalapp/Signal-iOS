@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 extension LinkPreviewManagerImpl {
     public enum Shims {
@@ -22,13 +23,13 @@ public protocol _LinkPreviewManagerImpl_GroupsV2Shim {
 
     func fetchGroupInviteLinkPreview(
         inviteLinkPassword: Data?,
-        groupSecretParamsData: Data,
+        groupSecretParams: GroupSecretParams,
         allowCached: Bool
     ) -> Promise<GroupInviteLinkPreview>
 
     func fetchGroupInviteLinkAvatar(
         avatarUrlPath: String,
-        groupSecretParamsData: Data
+        groupSecretParams: GroupSecretParams
     ) -> Promise<Data>
 }
 
@@ -42,13 +43,13 @@ public class _LinkPreviewManagerImpl_GroupsV2Wrapper: _LinkPreviewManagerImpl_Gr
 
     public func fetchGroupInviteLinkPreview(
         inviteLinkPassword: Data?,
-        groupSecretParamsData: Data,
+        groupSecretParams: GroupSecretParams,
         allowCached: Bool
     ) -> Promise<GroupInviteLinkPreview> {
         Promise.wrapAsync {
             return try await self.groupsV2.fetchGroupInviteLinkPreview(
                 inviteLinkPassword: inviteLinkPassword,
-                groupSecretParamsData: groupSecretParamsData,
+                groupSecretParams: groupSecretParams,
                 allowCached: allowCached
             )
         }
@@ -56,12 +57,12 @@ public class _LinkPreviewManagerImpl_GroupsV2Wrapper: _LinkPreviewManagerImpl_Gr
 
     public func fetchGroupInviteLinkAvatar(
         avatarUrlPath: String,
-        groupSecretParamsData: Data
+        groupSecretParams: GroupSecretParams
     ) -> Promise<Data> {
         Promise.wrapAsync {
             return try await self.groupsV2.fetchGroupInviteLinkAvatar(
                 avatarUrlPath: avatarUrlPath,
-                groupSecretParamsData: groupSecretParamsData
+                groupSecretParams: groupSecretParams
             )
         }
     }

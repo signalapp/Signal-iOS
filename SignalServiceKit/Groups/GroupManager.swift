@@ -222,7 +222,7 @@ public class GroupManager: NSObject {
             // Upload avatar.
             let avatarUrlPath = try await groupsV2.uploadGroupAvatar(
                 avatarData: avatarData,
-                groupSecretParamsData: proposedGroupModel.secretParamsData
+                groupSecretParams: try proposedGroupModel.secretParams()
             )
 
             // Fill in the avatarUrl on the group model.
@@ -679,7 +679,7 @@ public class GroupManager: NSObject {
 
     public static func joinGroupViaInviteLink(
         groupId: Data,
-        groupSecretParamsData: Data,
+        groupSecretParams: GroupSecretParams,
         inviteLinkPassword: Data,
         groupInviteLinkPreview: GroupInviteLinkPreview,
         avatarData: Data?
@@ -687,7 +687,7 @@ public class GroupManager: NSObject {
         try await ensureLocalProfileHasCommitmentIfNecessary()
         let groupThread = try await NSObject.groupsV2.joinGroupViaInviteLink(
             groupId: groupId,
-            groupSecretParamsData: groupSecretParamsData,
+            groupSecretParams: groupSecretParams,
             inviteLinkPassword: inviteLinkPassword,
             groupInviteLinkPreview: groupInviteLinkPreview,
             avatarData: avatarData
@@ -735,7 +735,7 @@ public class GroupManager: NSObject {
     public static func cachedGroupInviteLinkPreview(groupInviteLinkInfo: GroupInviteLinkInfo) -> GroupInviteLinkPreview? {
         do {
             let groupContextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: groupInviteLinkInfo.masterKey)
-            return groupsV2.cachedGroupInviteLinkPreview(groupSecretParamsData: groupContextInfo.groupSecretParamsData)
+            return groupsV2.cachedGroupInviteLinkPreview(groupSecretParams: groupContextInfo.groupSecretParams)
         } catch {
             owsFailDebug("Error: \(error)")
             return nil
@@ -1525,7 +1525,7 @@ extension GroupManager {
             return Promise.wrapAsync {
                 try await self.groupsV2.uploadGroupAvatar(
                     avatarData: avatarData,
-                    groupSecretParamsData: existingGroupModel.secretParamsData
+                    groupSecretParams: try existingGroupModel.secretParams()
                 )
             }.map { Optional.some($0) }
         }.then(on: DispatchQueue.global()) { (avatarUrlPath: String?) -> Promise<TSGroupThread> in

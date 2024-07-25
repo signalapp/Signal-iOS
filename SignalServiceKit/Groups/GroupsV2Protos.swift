@@ -438,20 +438,22 @@ public class GroupsV2Protos {
         validateInviteLinkState(inviteLinkPassword: inviteLinkPassword, groupAccess: groupAccess)
 
         let revision = groupProto.revision
-        let groupSecretParamsData = groupV2Params.groupSecretParamsData
-        return GroupV2SnapshotImpl(groupSecretParamsData: groupSecretParamsData,
-                                   groupProto: groupProto,
-                                   revision: revision,
-                                   title: title,
-                                   descriptionText: descriptionText,
-                                   avatarUrlPath: avatarUrlPath,
-                                   avatarData: avatarData,
-                                   groupMembership: groupMembership,
-                                   groupAccess: groupAccess,
-                                   inviteLinkPassword: inviteLinkPassword,
-                                   disappearingMessageToken: disappearingMessageToken,
-                                   isAnnouncementsOnly: isAnnouncementsOnly,
-                                   profileKeys: profileKeys)
+        let groupSecretParams = groupV2Params.groupSecretParams
+        return GroupV2SnapshotImpl(
+            groupSecretParams: groupSecretParams,
+            groupProto: groupProto,
+            revision: revision,
+            title: title,
+            descriptionText: descriptionText,
+            avatarUrlPath: avatarUrlPath,
+            avatarData: avatarData,
+            groupMembership: groupMembership,
+            groupAccess: groupAccess,
+            inviteLinkPassword: inviteLinkPassword,
+            disappearingMessageToken: disappearingMessageToken,
+            isAnnouncementsOnly: isAnnouncementsOnly,
+            profileKeys: profileKeys
+        )
     }
 
     // MARK: -

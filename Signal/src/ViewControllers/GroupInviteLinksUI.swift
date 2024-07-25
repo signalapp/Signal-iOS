@@ -210,7 +210,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
             Promise.wrapAsync {
                 try await self.groupsV2Impl.fetchGroupInviteLinkPreview(
                     inviteLinkPassword: self.groupInviteLinkInfo.inviteLinkPassword,
-                    groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData,
+                    groupSecretParams: self.groupV2ContextInfo.groupSecretParams,
                     allowCached: false
                 )
             }
@@ -248,7 +248,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
             Promise.wrapAsync {
                 try await self.groupsV2Impl.fetchGroupInviteLinkAvatar(
                     avatarUrlPath: avatarUrlPath,
-                    groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData
+                    groupSecretParams: self.groupV2ContextInfo.groupSecretParams
                 )
             }
         }.done { [weak self] (groupAvatar: Data) in
@@ -357,7 +357,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
                 return Promise.wrapAsync {
                     try await self.groupsV2Impl.fetchGroupInviteLinkPreview(
                         inviteLinkPassword: self.groupInviteLinkInfo.inviteLinkPassword,
-                        groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData,
+                        groupSecretParams: self.groupV2ContextInfo.groupSecretParams,
                         allowCached: false
                     )
                 }
@@ -374,7 +374,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
                     Promise.wrapAsync {
                         try await self.groupsV2Impl.fetchGroupInviteLinkAvatar(
                             avatarUrlPath: avatarUrlPath,
-                            groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData
+                            groupSecretParams: self.groupV2ContextInfo.groupSecretParams
                         )
                     }
                 }.map(on: DispatchQueue.global()) { (groupAvatar: Data) in
@@ -391,7 +391,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController, Dependencies {
                 Promise.wrapAsync {
                     try await GroupManager.joinGroupViaInviteLink(
                         groupId: self.groupV2ContextInfo.groupId,
-                        groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData,
+                        groupSecretParams: self.groupV2ContextInfo.groupSecretParams,
                         inviteLinkPassword: self.groupInviteLinkInfo.inviteLinkPassword,
                         groupInviteLinkPreview: groupInviteLinkPreview,
                         avatarData: avatarData

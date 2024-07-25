@@ -761,7 +761,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
                 spamReportingMetadata: spamReportingMetadata,
                 changeActionsProto: changeActionsProto,
                 ignoreSignature: false,
-                groupSecretParamsData: oldGroupModel.secretParamsData
+                groupSecretParams: try oldGroupModel.secretParams()
             )
 
             guard let updatedGroupModel = updatedGroupThread.groupModel as? TSGroupModelV2 else {
@@ -817,7 +817,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
             _ = try await groupV2Updates.tryToRefreshV2GroupThread(
                 groupId: groupContextInfo.groupId,
                 spamReportingMetadata: spamReportingMetadata,
-                groupSecretParamsData: groupContextInfo.groupSecretParamsData,
+                groupSecretParams: groupContextInfo.groupSecretParams,
                 groupUpdateMode: groupUpdateMode
             ).awaitable()
             return .successShouldProcess

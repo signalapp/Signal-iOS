@@ -54,7 +54,7 @@ public class GroupV2UpdatesImpl: Dependencies {
                 return Promise.value(())
             }
             let groupId = groupInfoToRefresh.groupId
-            let groupSecretParamsData = groupInfoToRefresh.groupSecretParamsData
+            let groupSecretParams = groupInfoToRefresh.groupSecretParams
             if let lastRefreshDate = groupInfoToRefresh.lastRefreshDate {
                 Logger.info("Auto-refreshing group: \(groupId.hexadecimalString) which hasn't been refreshed in \(-lastRefreshDate.timeIntervalSinceNow/kDayInterval) days.")
             } else {
@@ -62,7 +62,7 @@ public class GroupV2UpdatesImpl: Dependencies {
             }
             return self.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
                 groupId: groupId,
-                groupSecretParamsData: groupSecretParamsData
+                groupSecretParams: groupSecretParams
             ).asVoid()
         }.catch(on: DispatchQueue.global()) { error in
             if case GroupsV2Error.localUserNotInGroup = error {
@@ -82,7 +82,7 @@ public class GroupV2UpdatesImpl: Dependencies {
 
     private struct GroupInfo {
         let groupId: Data
-        let groupSecretParamsData: Data
+        let groupSecretParams: GroupSecretParams
         let lastRefreshDate: Date?
     }
 
@@ -99,7 +99,8 @@ public class GroupV2UpdatesImpl: Dependencies {
                 guard
                     let groupThread = thread as? TSGroupThread,
                     let groupModel = groupThread.groupModel as? TSGroupModelV2,
-                    groupModel.groupMembership.isLocalUserFullOrInvitedMember
+                    groupModel.groupMembership.isLocalUserFullOrInvitedMember,
+                    let groupSecretParams = try? groupModel.secretParams()
                 else {
                     // Refreshing a group we're not a member of will throw errors
                     return
@@ -114,7 +115,7 @@ public class GroupV2UpdatesImpl: Dependencies {
                     // pick that one immediately.
                     groupInfoToRefresh = GroupInfo(
                         groupId: groupThread.groupId,
-                        groupSecretParamsData: groupModel.secretParamsData,
+                        groupSecretParams: groupSecretParams,
                         lastRefreshDate: nil
                     )
                     stop.pointee = true
@@ -139,7 +140,7 @@ public class GroupV2UpdatesImpl: Dependencies {
 
                 groupInfoToRefresh = GroupInfo(
                     groupId: groupThread.groupId,
-                    groupSecretParamsData: groupModel.secretParamsData,
+                    groupSecretParams: groupSecretParams,
                     lastRefreshDate: lastRefreshDate
                 )
             }
@@ -214,39 +215,45 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
 
     public func tryToRefreshV2GroupUpToCurrentRevisionImmediately(
         groupId: Data,
-        groupSecretParamsData: Data
+        groupSecretParams: GroupSecretParams
     ) -> Promise<TSGroupThread> {
         let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionImmediately
-        return tryToRefreshV2GroupThread(groupId: groupId,
-                                         spamReportingMetadata: .learnedByLocallyInitatedRefresh,
-                                         groupSecretParamsData: groupSecretParamsData,
-                                         groupUpdateMode: groupUpdateMode)
+        return tryToRefreshV2GroupThread(
+            groupId: groupId,
+            spamReportingMetadata: .learnedByLocallyInitatedRefresh,
+            groupSecretParams: groupSecretParams,
+            groupUpdateMode: groupUpdateMode
+        )
     }
 
     public func tryToRefreshV2GroupUpToCurrentRevisionImmediately(
         groupId: Data,
-        groupSecretParamsData: Data,
+        groupSecretParams: GroupSecretParams,
         groupModelOptions: TSGroupModelOptions
     ) -> Promise<TSGroupThread> {
         let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionImmediately
-        return tryToRefreshV2GroupThread(groupId: groupId,
-                                         spamReportingMetadata: .learnedByLocallyInitatedRefresh,
-                                         groupSecretParamsData: groupSecretParamsData,
-                                         groupUpdateMode: groupUpdateMode,
-                                         groupModelOptions: groupModelOptions)
+        return tryToRefreshV2GroupThread(
+            groupId: groupId,
+            spamReportingMetadata: .learnedByLocallyInitatedRefresh,
+            groupSecretParams: groupSecretParams,
+            groupUpdateMode: groupUpdateMode,
+            groupModelOptions: groupModelOptions
+        )
     }
 
     public func tryToRefreshV2GroupThread(
         groupId: Data,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
-        groupSecretParamsData: Data,
+        groupSecretParams: GroupSecretParams,
         groupUpdateMode: GroupUpdateMode
     ) -> Promise<TSGroupThread> {
-        tryToRefreshV2GroupThread(groupId: groupId,
-                                  spamReportingMetadata: spamReportingMetadata,
-                                  groupSecretParamsData: groupSecretParamsData,
-                                  groupUpdateMode: groupUpdateMode,
-                                  groupModelOptions: [])
+        tryToRefreshV2GroupThread(
+            groupId: groupId,
+            spamReportingMetadata: spamReportingMetadata,
+            groupSecretParams: groupSecretParams,
+            groupUpdateMode: groupUpdateMode,
+            groupModelOptions: []
+        )
     }
 
     public func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(_ groupThread: TSGroupThread) {
@@ -269,11 +276,11 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
                 return Promise.value(())
             }
             let groupId = groupModel.groupId
-            let groupSecretParamsData = groupModel.secretParamsData
+            let groupSecretParams = try groupModel.secretParams()
             return self.tryToRefreshV2GroupThread(
                 groupId: groupId,
                 spamReportingMetadata: .learnedByLocallyInitatedRefresh,
-                groupSecretParamsData: groupSecretParamsData,
+                groupSecretParams: groupSecretParams,
                 groupUpdateMode: groupUpdateMode
             ).asVoid()
         }.catch(on: DispatchQueue.global()) { error in
@@ -284,7 +291,7 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
     private func tryToRefreshV2GroupThread(
         groupId: Data,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
-        groupSecretParamsData: Data,
+        groupSecretParams: GroupSecretParams,
         groupUpdateMode: GroupUpdateMode,
         groupModelOptions: TSGroupModelOptions
     ) -> Promise<TSGroupThread> {
@@ -318,11 +325,13 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
             return earlyPromise
         }
 
-        let operation = GroupV2UpdateOperation(groupId: groupId,
-                                               spamReportingMetadata: spamReportingMetadata,
-                                               groupSecretParamsData: groupSecretParamsData,
-                                               groupUpdateMode: groupUpdateMode,
-                                               groupModelOptions: groupModelOptions)
+        let operation = GroupV2UpdateOperation(
+            groupId: groupId,
+            spamReportingMetadata: spamReportingMetadata,
+            groupSecretParams: groupSecretParams,
+            groupUpdateMode: groupUpdateMode,
+            groupModelOptions: groupModelOptions
+        )
         operation.promise.done(on: DispatchQueue.global()) { _ in
             self.groupRefreshDidSucceed(forGroupId: groupId, groupUpdateMode: groupUpdateMode)
         }.cauterize()
@@ -357,7 +366,7 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
     private class GroupV2UpdateOperation: OWSOperation, Dependencies {
 
         let groupId: Data
-        let groupSecretParamsData: Data
+        let groupSecretParams: GroupSecretParams
         let groupUpdateMode: GroupUpdateMode
         let groupModelOptions: TSGroupModelOptions
         let spamReportingMetadata: GroupUpdateSpamReportingMetadata
@@ -365,14 +374,16 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
         let promise: Promise<TSGroupThread>
         let future: Future<TSGroupThread>
 
-        init(groupId: Data,
-             spamReportingMetadata: GroupUpdateSpamReportingMetadata,
-             groupSecretParamsData: Data,
-             groupUpdateMode: GroupUpdateMode,
-             groupModelOptions: TSGroupModelOptions) {
+        init(
+            groupId: Data,
+            spamReportingMetadata: GroupUpdateSpamReportingMetadata,
+            groupSecretParams: GroupSecretParams,
+            groupUpdateMode: GroupUpdateMode,
+            groupModelOptions: TSGroupModelOptions
+        ) {
             self.groupId = groupId
             self.spamReportingMetadata = spamReportingMetadata
-            self.groupSecretParamsData = groupSecretParamsData
+            self.groupSecretParams = groupSecretParams
             self.groupUpdateMode = groupUpdateMode
             self.groupModelOptions = groupModelOptions
 
@@ -395,10 +406,12 @@ extension GroupV2UpdatesImpl: GroupV2Updates {
                     return Guarantee.value(())
                 }
             }.then(on: DispatchQueue.global()) { () in
-                self.groupV2UpdatesImpl.refreshGroupFromService(groupSecretParamsData: self.groupSecretParamsData,
-                                                                groupUpdateMode: self.groupUpdateMode,
-                                                                groupModelOptions: self.groupModelOptions,
-                                                                spamReportingMetadata: self.spamReportingMetadata)
+                self.groupV2UpdatesImpl.refreshGroupFromService(
+                    groupSecretParams: self.groupSecretParams,
+                    groupUpdateMode: self.groupUpdateMode,
+                    groupModelOptions: self.groupModelOptions,
+                    spamReportingMetadata: self.spamReportingMetadata
+                )
             }.done(on: DispatchQueue.global()) { (groupThread: TSGroupThread) in
                 self.reportSuccess()
                 self.future.resolve(groupThread)
@@ -466,7 +479,7 @@ private extension GroupV2UpdatesImpl {
     // * If reachability changes, we should retry network errors
     //   immediately.
     func refreshGroupFromService(
-        groupSecretParamsData: Data,
+        groupSecretParams: GroupSecretParams,
         groupUpdateMode: GroupUpdateMode,
         groupModelOptions: TSGroupModelOptions,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata
@@ -479,14 +492,14 @@ private extension GroupV2UpdatesImpl {
         }.then(on: DispatchQueue.global()) { () throws -> Promise<TSGroupThread> in
             // Try to use individual changes.
             return firstly(on: DispatchQueue.global()) {
-                self.fetchAndApplyChangeActionsFromService(groupSecretParamsData: groupSecretParamsData,
-                                                           groupUpdateMode: groupUpdateMode,
-                                                           groupModelOptions: groupModelOptions,
-                                                           spamReportingMetadata: spamReportingMetadata)
-                    .timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
-                             description: "Update via changes") {
-                        GroupsV2Error.timeout
-                    }
+                self.fetchAndApplyChangeActionsFromService(
+                    groupSecretParams: groupSecretParams,
+                    groupUpdateMode: groupUpdateMode,
+                    groupModelOptions: groupModelOptions,
+                    spamReportingMetadata: spamReportingMetadata
+                ).timeout(seconds: GroupManager.groupUpdateTimeoutDuration, description: "Update via changes") {
+                    GroupsV2Error.timeout
+                }
             }.recover { (error) throws -> Promise<TSGroupThread> in
                 let shouldTrySnapshot = { () -> Bool in
                     // This should not fail over in the case of networking problems.
@@ -525,7 +538,7 @@ private extension GroupV2UpdatesImpl {
 
                 // Failover to applying latest snapshot.
                 return self.fetchAndApplyCurrentGroupV2SnapshotFromService(
-                    groupSecretParamsData: groupSecretParamsData,
+                    groupSecretParams: groupSecretParams,
                     groupUpdateMode: groupUpdateMode,
                     groupModelOptions: groupModelOptions,
                     spamReportingMetadata: spamReportingMetadata
@@ -535,7 +548,7 @@ private extension GroupV2UpdatesImpl {
     }
 
     private func fetchAndApplyChangeActionsFromService(
-        groupSecretParamsData: Data,
+        groupSecretParams: GroupSecretParams,
         groupUpdateMode: GroupUpdateMode,
         groupModelOptions: TSGroupModelOptions,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata
@@ -543,15 +556,15 @@ private extension GroupV2UpdatesImpl {
 
         return firstly { () -> Promise<GroupsV2Impl.GroupChangePage> in
             self.fetchChangeActionsFromService(
-                groupSecretParamsData: groupSecretParamsData,
+                groupSecretParams: groupSecretParams,
                 groupUpdateMode: groupUpdateMode
             )
         }.then(on: DispatchQueue.global()) { (groupChanges: GroupsV2Impl.GroupChangePage) throws -> Promise<TSGroupThread> in
-            let groupId = try GroupSecretParams(contents: [UInt8](groupSecretParamsData)).getPublicParams().getGroupIdentifier().serialize().asData
+            let groupId = try groupSecretParams.getPublicParams().getGroupIdentifier().serialize().asData
             let applyPromise = self.tryToApplyGroupChangesFromService(
                 groupId: groupId,
                 spamReportingMetadata: spamReportingMetadata,
-                groupSecretParamsData: groupSecretParamsData,
+                groupSecretParams: groupSecretParams,
                 groupChanges: groupChanges.changes,
                 groupUpdateMode: groupUpdateMode,
                 groupModelOptions: groupModelOptions
@@ -570,7 +583,7 @@ private extension GroupV2UpdatesImpl {
             // Recurse to process more updates.
             return applyPromise.then { _ in
                 return self.fetchAndApplyChangeActionsFromService(
-                    groupSecretParamsData: groupSecretParamsData,
+                    groupSecretParams: groupSecretParams,
                     groupUpdateMode: groupUpdateMode,
                     groupModelOptions: groupModelOptions,
                     spamReportingMetadata: spamReportingMetadata
@@ -580,7 +593,7 @@ private extension GroupV2UpdatesImpl {
     }
 
     private func fetchChangeActionsFromService(
-        groupSecretParamsData: Data,
+        groupSecretParams: GroupSecretParams,
         groupUpdateMode: GroupUpdateMode
     ) -> Promise<GroupsV2Impl.GroupChangePage> {
 
@@ -605,8 +618,10 @@ private extension GroupV2UpdatesImpl {
 
         return firstly(on: DispatchQueue.global()) { () -> [GroupV2Change]? in
             // Try to use group changes from the cache.
-            return self.cachedGroupChanges(groupSecretParamsData: groupSecretParamsData,
-                                           upToRevision: upToRevision)
+            return self.cachedGroupChanges(
+                groupSecretParams: groupSecretParams,
+                upToRevision: upToRevision
+            )
         }.then(on: DispatchQueue.global()) { (groupChanges: [GroupV2Change]?) -> Promise<GroupsV2Impl.GroupChangePage> in
             if let groupChanges = groupChanges {
                 return Promise.value(GroupsV2Impl.GroupChangePage(changes: groupChanges, earlyEnd: nil))
@@ -614,13 +629,15 @@ private extension GroupV2UpdatesImpl {
             return firstly {
                 return Promise.wrapAsync {
                     try await self.groupsV2Impl.fetchGroupChangeActions(
-                        groupSecretParamsData: groupSecretParamsData,
+                        groupSecretParams: groupSecretParams,
                         includeCurrentRevision: includeCurrentRevision
                     )
                 }
             }.map(on: DispatchQueue.global()) { (groupChanges: GroupsV2Impl.GroupChangePage) -> GroupsV2Impl.GroupChangePage in
-                self.addGroupChangesToCache(groupChanges: groupChanges.changes,
-                                            groupSecretParamsData: groupSecretParamsData)
+                self.addGroupChangesToCache(
+                    groupChanges: groupChanges.changes,
+                    groupSecretParams: groupSecretParams
+                )
 
                 return groupChanges
             }
@@ -630,7 +647,7 @@ private extension GroupV2UpdatesImpl {
     private func tryToApplyGroupChangesFromService(
         groupId: Data,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
-        groupSecretParamsData: Data,
+        groupSecretParams: GroupSecretParams,
         groupChanges: [GroupV2Change],
         groupUpdateMode: GroupUpdateMode,
         groupModelOptions: TSGroupModelOptions
@@ -645,7 +662,7 @@ private extension GroupV2UpdatesImpl {
             return self.tryToApplyGroupChangesFromServiceNow(
                 groupId: groupId,
                 spamReportingMetadata: spamReportingMetadata,
-                groupSecretParamsData: groupSecretParamsData,
+                groupSecretParams: groupSecretParams,
                 groupChanges: groupChanges,
                 upToRevision: groupUpdateMode.upToRevision,
                 groupModelOptions: groupModelOptions
@@ -656,7 +673,7 @@ private extension GroupV2UpdatesImpl {
     private func tryToApplyGroupChangesFromServiceNow(
         groupId: Data,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
-        groupSecretParamsData: Data,
+        groupSecretParams: GroupSecretParams,
         groupChanges: [GroupV2Change],
         upToRevision: UInt32?,
         groupModelOptions: TSGroupModelOptions
@@ -666,7 +683,7 @@ private extension GroupV2UpdatesImpl {
                 throw OWSAssertionError("Missing localIdentifiers.")
             }
 
-            let groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
+            let groupV2Params = try GroupV2Params(groupSecretParams: groupSecretParams)
 
             // See comment on getOrCreateThreadForGroupChanges(...).
             guard var (groupThread, localUserWasAddedBy) = self.getOrCreateThreadForGroupChanges(
@@ -1003,7 +1020,7 @@ private extension GroupV2UpdatesImpl {
 private extension GroupV2UpdatesImpl {
 
     func fetchAndApplyCurrentGroupV2SnapshotFromService(
-        groupSecretParamsData: Data,
+        groupSecretParams: GroupSecretParams,
         groupUpdateMode: GroupUpdateMode,
         groupModelOptions: TSGroupModelOptions,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata
@@ -1011,7 +1028,7 @@ private extension GroupV2UpdatesImpl {
 
         return firstly {
             Promise.wrapAsync {
-                try await self.groupsV2Impl.fetchCurrentGroupV2Snapshot(groupSecretParamsData: groupSecretParamsData)
+                try await self.groupsV2Impl.fetchCurrentGroupV2Snapshot(groupSecretParams: groupSecretParams)
             }
         }.then(on: DispatchQueue.global()) { groupV2Snapshot in
             return self.tryToApplyCurrentGroupV2SnapshotFromService(
@@ -1207,17 +1224,17 @@ private extension GroupV2UpdatesImpl {
         }
     }
 
-    private func addGroupChangesToCache(groupChanges: [GroupV2Change], groupSecretParamsData: Data) {
+    private func addGroupChangesToCache(groupChanges: [GroupV2Change], groupSecretParams: GroupSecretParams) {
         guard !groupChanges.isEmpty else {
-            changeCache.removeObject(forKey: groupSecretParamsData)
+            changeCache.removeObject(forKey: groupSecretParams.serialize().asData)
             return
         }
 
-        changeCache.setObject(ChangeCacheItem(groupChanges: groupChanges), forKey: groupSecretParamsData)
+        changeCache.setObject(ChangeCacheItem(groupChanges: groupChanges), forKey: groupSecretParams.serialize().asData)
     }
 
     private func cachedGroupChanges(
-        groupSecretParamsData: Data,
+        groupSecretParams: GroupSecretParams,
         upToRevision: UInt32?
     ) -> [GroupV2Change]? {
         guard let upToRevision = upToRevision else {
@@ -1225,7 +1242,7 @@ private extension GroupV2UpdatesImpl {
         }
         let groupId: Data
         do {
-            groupId = try GroupSecretParams(contents: [UInt8](groupSecretParamsData)).getPublicParams().getGroupIdentifier().serialize().asData
+            groupId = try groupSecretParams.getPublicParams().getGroupIdentifier().serialize().asData
         } catch {
             owsFailDebug("Error: \(error)")
             return nil
@@ -1242,10 +1259,10 @@ private extension GroupV2UpdatesImpl {
             return nil
         }
         guard dbRevision < upToRevision else {
-            changeCache.removeObject(forKey: groupSecretParamsData)
+            changeCache.removeObject(forKey: groupSecretParams.serialize().asData)
             return nil
         }
-        guard let cacheItem = changeCache.object(forKey: groupSecretParamsData) else {
+        guard let cacheItem = changeCache.object(forKey: groupSecretParams.serialize().asData) else {
             return nil
         }
         let cachedChanges = cacheItem.groupChanges.filter { groupChange in
@@ -1257,7 +1274,7 @@ private extension GroupV2UpdatesImpl {
         }
         let revisions = cachedChanges.map { $0.revision }
         guard Set(revisions).contains(upToRevision) else {
-            changeCache.removeObject(forKey: groupSecretParamsData)
+            changeCache.removeObject(forKey: groupSecretParams.serialize().asData)
             return nil
         }
         return cachedChanges
