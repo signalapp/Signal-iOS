@@ -3671,7 +3671,7 @@
 "INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Reported Spam";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.\U2028For your security, chat history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "For your security, chat history isn't transferred to new linked devices.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ changed their phone number.";
