@@ -240,7 +240,7 @@ public class IndividualCall: CustomDebugStringConvertible {
             offerMediaType: offerMediaType,
             state: .dialing,
             thread: thread,
-            sentAtTimestamp: Date.ows_millisecondTimestamp()
+            sentAtTimestamp: MessageTimestampGenerator.sharedInstance.generateTimestamp()
         )
     }
 

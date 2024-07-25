@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
             plainTextDataBlock:(DynamicOutgoingMessageBlock)block
 {
     return [self initWithThread:thread
-                      timestamp:[NSDate ows_millisecondTimeStamp]
+                      timestamp:[MessageTimestampGenerator.sharedInstance generateTimestamp]
                     transaction:transaction
              plainTextDataBlock:block];
 }

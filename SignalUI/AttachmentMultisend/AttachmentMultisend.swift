@@ -635,7 +635,7 @@ public class AttachmentMultisend {
             }
 
             let storyMessage = try StoryMessage.createAndInsert(
-                timestamp: Date.ows_millisecondTimestamp(),
+                timestamp: MessageTimestampGenerator.sharedInstance.generateTimestamp(),
                 authorAci: self.localAci,
                 groupId: groupId,
                 manifest: manifest,

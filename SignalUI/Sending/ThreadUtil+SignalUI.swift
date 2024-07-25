@@ -19,7 +19,7 @@ extension ThreadUtil {
     ) {
         AssertIsOnMainThread()
 
-        let messageTimestamp = Date.ows_millisecondTimestamp()
+        let messageTimestamp = MessageTimestampGenerator.sharedInstance.generateTimestamp()
 
         let benchEventId = sendMessageBenchEventStart(messageTimestamp: messageTimestamp)
         self.enqueueSendQueue.async {
@@ -74,7 +74,7 @@ extension ThreadUtil {
     ) {
         AssertIsOnMainThread()
 
-        let messageTimestamp = Date.ows_millisecondTimestamp()
+        let messageTimestamp = MessageTimestampGenerator.sharedInstance.generateTimestamp()
 
         let benchEventId = sendMessageBenchEventStart(messageTimestamp: messageTimestamp)
         self.enqueueSendQueue.async {

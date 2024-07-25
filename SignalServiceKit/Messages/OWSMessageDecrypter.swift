@@ -756,7 +756,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                     let errorMessage = TSErrorMessage.failedDecryption(
                         forSender: placeholder.sender,
                         thread: thread,
-                        timestamp: NSDate.ows_millisecondTimeStamp()
+                        timestamp: MessageTimestampGenerator.sharedInstance.generateTimestamp()
                     )
                     errorMessage.anyInsert(transaction: tx)
                     self.notificationPresenter.notifyUser(forErrorMessage: errorMessage, thread: thread, transaction: tx)

@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
                    transaction:(SDSAnyReadTransaction *)transaction
 {
     return [self initWithThread:thread
-                      timestamp:[NSDate ows_millisecondTimeStamp]
+                      timestamp:[MessageTimestampGenerator.sharedInstance generateTimestamp]
                   plaintextData:plaintextData
                     transaction:transaction];
 }

@@ -130,7 +130,7 @@ extension OutgoingStoryMessage {
         )
 
         let storyMessage = try StoryMessage.createAndInsert(
-            timestamp: Date.ows_millisecondTimestamp(),
+            timestamp: MessageTimestampGenerator.sharedInstance.generateTimestamp(),
             authorAci: DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)!.aci,
             groupId: (thread as? TSGroupThread)?.groupId,
             manifest: storyManifest,

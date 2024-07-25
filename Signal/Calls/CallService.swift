@@ -928,7 +928,7 @@ extension CallService: GroupCallObserver {
                 self.groupCallManager.updateGroupCallModelsForPeek(
                     peekInfo: peekInfo,
                     groupThread: groupThread,
-                    triggerEventTimestamp: Date.ows_millisecondTimestamp(),
+                    triggerEventTimestamp: MessageTimestampGenerator.sharedInstance.generateTimestamp(),
                     tx: tx
                 )
             }
