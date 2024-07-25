@@ -26,48 +26,57 @@ extension UIImage {
         plaintextLength: UInt32?,
         mimeType: String
     ) throws -> UIImage {
-        if mimeType.caseInsensitiveCompare(MimeType.imageJpeg.rawValue) == .orderedSame {
+        if
+            mimeType.caseInsensitiveCompare(MimeType.imageJpeg.rawValue) == .orderedSame,
             /// We can use a CGDataProvider. UIImage tends to load the whole thing into memory _anyway_,
             /// but this at least makes it possible for it to choose not to.
-            return try CGDataProvider.loadFromEncryptedFile(
+            let jpegImage = try? CGDataProvider.loadFromEncryptedFile(
                 at: fileURL,
                 encryptionKey: encryptionKey,
-                plaintextLength: plaintextLength
-            ) { dataProvider in
-                return UIImage(cgImage: try dataProvider.toJpegCGImage())
-            }
-        } else if mimeType.caseInsensitiveCompare(MimeType.imagePng.rawValue) == .orderedSame {
-            /// We can use a CGDataProvider. UIImage tends to load the whole thing into memory _anyway_,
-            /// but this at least makes it possible for it to choose not to.
-            return try CGDataProvider.loadFromEncryptedFile(
-                at: fileURL,
-                encryptionKey: encryptionKey,
-                plaintextLength: plaintextLength
-            ) { dataProvider in
-                return UIImage(cgImage: try dataProvider.toPngCGImage())
-            }
-        } else {
-            Logger.warn("Loading non-jpeg, non-png image into memory")
-            let data = try Cryptography.decryptFile(
-                at: fileURL,
-                metadata: .init(
-                    key: encryptionKey,
-                    plaintextLength: plaintextLength.map(Int.init(_:))
-                )
+                plaintextLength: plaintextLength,
+                block: { dataProvider in
+                    return UIImage(cgImage: try dataProvider.toJpegCGImage())
+                }
             )
-            let image: UIImage?
-            if mimeType.caseInsensitiveCompare(MimeType.imageWebp.rawValue) == .orderedSame {
-                /// Use YYImage for webp.
-                image = YYImage(data: data)
-            } else {
-                image = UIImage(data: data)
-            }
-
-            guard let image else {
-                throw OWSAssertionError("Failed to load image")
-            }
-            return image
+        {
+            return jpegImage
         }
+        if
+            mimeType.caseInsensitiveCompare(MimeType.imagePng.rawValue) == .orderedSame,
+            /// We can use a CGDataProvider. UIImage tends to load the whole thing into memory _anyway_,
+            /// but this at least makes it possible for it to choose not to.
+            let pngImage = try? CGDataProvider.loadFromEncryptedFile(
+                at: fileURL,
+                encryptionKey: encryptionKey,
+                plaintextLength: plaintextLength,
+                block: { dataProvider in
+                    return UIImage(cgImage: try dataProvider.toPngCGImage())
+                }
+            )
+        {
+            return pngImage
+        }
+
+        Logger.warn("Loading non-jpeg, non-png image into memory")
+        let data = try Cryptography.decryptFile(
+            at: fileURL,
+            metadata: .init(
+                key: encryptionKey,
+                plaintextLength: plaintextLength.map(Int.init(_:))
+            )
+        )
+        let image: UIImage?
+        if mimeType.caseInsensitiveCompare(MimeType.imageWebp.rawValue) == .orderedSame {
+            /// Use YYImage for webp.
+            image = YYImage(data: data)
+        } else {
+            image = UIImage(data: data)
+        }
+
+        guard let image else {
+            throw OWSAssertionError("Failed to load image")
+        }
+        return image
     }
 }
 
@@ -156,6 +165,11 @@ extension CGDataProvider {
 
 extension CGDataProvider {
 
+    enum ParsingError: Error {
+        case failedToParsePng
+        case failedToParseJpg
+    }
+
     fileprivate func toPngCGImage() throws -> CGImage {
         guard let cgImage = CGImage(
             pngDataProviderSource: self,
@@ -163,7 +177,7 @@ extension CGDataProvider {
             shouldInterpolate: true,
             intent: .defaultIntent
         ) else {
-            throw OWSAssertionError("Failed to create CGImage")
+            throw ParsingError.failedToParsePng
         }
         return cgImage
     }
@@ -175,7 +189,7 @@ extension CGDataProvider {
             shouldInterpolate: true,
             intent: .defaultIntent
         ) else {
-            throw OWSAssertionError("Failed to create CGImage")
+            throw ParsingError.failedToParseJpg
         }
         return cgImage
     }
