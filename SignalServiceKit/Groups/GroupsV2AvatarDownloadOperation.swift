@@ -8,12 +8,11 @@ import Foundation
 public class GroupsV2AvatarDownloadOperation: CDNDownloadOperation {
 
     private let urlPath: String
-    private let maxDownloadSize: UInt?
+    private let maxDownloadSize: UInt
     public let promise: Promise<Data>
     private let future: Future<Data>
 
-    public init(urlPath: String,
-                maxDownloadSize: UInt? = nil) {
+    public init(urlPath: String, maxDownloadSize: UInt) {
         self.urlPath = urlPath
         self.maxDownloadSize = maxDownloadSize
 

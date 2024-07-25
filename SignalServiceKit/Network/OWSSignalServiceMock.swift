@@ -38,12 +38,13 @@ public class OWSSignalServiceMock: OWSSignalServiceProtocol, Dependencies {
     public func buildUrlSession(
         for signalServiceInfo: SignalServiceInfo,
         endpoint: OWSURLSessionEndpoint,
-        configuration: URLSessionConfiguration?
+        configuration: URLSessionConfiguration?,
+        maxResponseSize: Int?
     ) -> OWSURLSessionProtocol {
         return mockUrlSessionBuilder?(signalServiceInfo, endpoint, configuration) ?? BaseOWSURLSessionMock(
             endpoint: endpoint,
             configuration: .default,
-            maxResponseSize: nil
+            maxResponseSize: maxResponseSize
         )
     }
 }

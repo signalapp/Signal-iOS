@@ -5,6 +5,16 @@
 
 import Foundation
 
+public enum OWSURLSessionError: Error, IsRetryableProvider {
+    case responseTooLarge
+
+    public var isRetryableProvider: Bool {
+        switch self {
+        case .responseTooLarge: return false
+        }
+    }
+}
+
 public class OWSURLSession: NSObject, OWSURLSessionProtocol {
 
     // MARK: - OWSURLSessionProtocol conformance
@@ -184,31 +194,13 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         }
 
         let request = prepareRequest(request: request)
-        let taskState = UploadOrDataTaskState(progressBlock: nil)
-        var requestConfig: RequestConfig?
-        let task = session.dataTask(with: request) { [weak self] (responseData: Data?, urlResponse: URLResponse?, _: Error?) in
-            guard let self = self else {
-                owsFailDebug("Missing session.")
-                return
-            }
-            guard let requestConfig = requestConfig else {
-                owsFailDebug("Missing requestConfig.")
-                return
-            }
-            if let responseData = responseData,
-               let maxResponseSize = self.maxResponseSize {
-                guard responseData.count <= maxResponseSize else {
-                    self.taskDidFail(requestConfig.task, error: OWSGenericError("Oversize download."))
-                    return
-                }
-            }
-            self.uploadOrDataTaskDidSucceed(requestConfig.task, httpUrlResponse: urlResponse as? HTTPURLResponse, responseData: responseData)
-        }
+        let taskState = DataTaskState(progressBlock: nil)
+        let task = session.dataTask(with: request)
         addTask(task, taskState: taskState)
         guard let requestUrl = request.url else {
             owsFail("Request missing url.")
         }
-        requestConfig = self.requestConfig(forTask: task, requestUrl: requestUrl)
+        let requestConfig = self.requestConfig(forTask: task, requestUrl: requestUrl)
         task.resume()
 
         return firstly { () -> Promise<(URLSessionTask, Data?)> in
@@ -217,9 +209,6 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
             Logger.warn("\(error)")
             throw error
         }.then(on: DispatchQueue.global()) { (_, responseData: Data?) -> Promise<HTTPResponse> in
-            guard let requestConfig = requestConfig else {
-                throw OWSAssertionError("Missing requestConfig.")
-            }
             return Self.uploadOrDataTaskCompletionPromise(requestConfig: requestConfig, responseData: responseData)
         }
     }
@@ -263,6 +252,15 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
             // Don't use a completion block or the delegate will be ignored for download tasks.
             session.downloadTask(withResumeData: resumeData)
         }
+    }
+
+    public func webSocketTask(requestUrl: URL, didOpenBlock: @escaping (String?) -> Void, didCloseBlock: @escaping (Error) -> Void) -> URLSessionWebSocketTask {
+        // We can't pass a URLRequest here since it prevents the proxy from
+        // operating correctly. See `SSKWebSocketNative.init(...)` for more details
+        // and an example of passing URLRequest options via this web socket.
+        let task = session.webSocketTask(with: requestUrl)
+        addTask(task, taskState: WebSocketTaskState(openBlock: didOpenBlock, closeBlock: didCloseBlock))
+        return task
     }
 
     // MARK: - Internal Implementation
@@ -328,11 +326,9 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
                       shouldHandleRemoteDeprecation: shouldHandleRemoteDeprecation)
     }
 
-    private class func uploadOrDataTaskCompletionPromise(requestConfig: RequestConfig,
-                                                         responseData: Data?,
-                                                         monitorId: UInt64? = nil) -> Promise<HTTPResponse> {
+    private class func uploadOrDataTaskCompletionPromise(requestConfig: RequestConfig, responseData: Data?) -> Promise<HTTPResponse> {
         firstly {
-            baseCompletionPromise(requestConfig: requestConfig, responseData: responseData, monitorId: monitorId)
+            baseCompletionPromise(requestConfig: requestConfig, responseData: responseData)
         }.map(on: DispatchQueue.global()) { (httpUrlResponse: HTTPURLResponse) -> HTTPResponse in
             HTTPResponseImpl.build(requestUrl: requestConfig.requestUrl,
                                    httpUrlResponse: httpUrlResponse,
@@ -340,11 +336,9 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         }
     }
 
-    private class func downloadTaskCompletionPromise(requestConfig: RequestConfig,
-                                                     downloadUrl: URL,
-                                                     monitorId: UInt64? = nil) -> Promise<OWSUrlDownloadResponse> {
+    private class func downloadTaskCompletionPromise(requestConfig: RequestConfig, downloadUrl: URL) -> Promise<OWSUrlDownloadResponse> {
         firstly {
-            baseCompletionPromise(requestConfig: requestConfig, responseData: nil, monitorId: monitorId)
+            baseCompletionPromise(requestConfig: requestConfig, responseData: nil)
         }.map(on: DispatchQueue.global()) { (httpUrlResponse: HTTPURLResponse) -> OWSUrlDownloadResponse in
             return OWSUrlDownloadResponse(task: requestConfig.task,
                                           httpUrlResponse: httpUrlResponse,
@@ -352,9 +346,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         }
     }
 
-    private class func baseCompletionPromise(requestConfig: RequestConfig,
-                                             responseData: Data?,
-                                             monitorId: UInt64? = nil) -> Promise<HTTPURLResponse> {
+    private class func baseCompletionPromise(requestConfig: RequestConfig, responseData: Data?) -> Promise<HTTPURLResponse> {
         firstly(on: DispatchQueue.global()) { () -> HTTPURLResponse in
             let task = requestConfig.task
 
@@ -451,6 +443,18 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         let appExpiry = DependenciesBridge.shared.appExpiry
         let db = DependenciesBridge.shared.db
         appExpiry.setHasAppExpiredAtCurrentVersion(db: db)
+    }
+
+    private func isResponseTooLarge(bytesReceived: Int64, bytesExpected: Int64) -> Bool {
+        if let maxResponseSize {
+            if bytesReceived > maxResponseSize {
+                return true
+            }
+            if bytesExpected != NSURLSessionTransferSizeUnknown, bytesExpected > maxResponseSize {
+                return true
+            }
+        }
+        return false
     }
 
     // MARK: Request building
@@ -581,14 +585,14 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         }
 
         let request = prepareRequest(request: request)
-        let taskState = UploadOrDataTaskState(progressBlock: progressBlock)
+        let taskState = UploadTaskState(progressBlock: progressBlock)
         var requestConfig: RequestConfig?
         let task = uploadTaskBuilder.build(session: session, request: request) { [weak self] (responseData: Data?, urlResponse: URLResponse?, _: Error?) in
             guard let requestConfig = requestConfig else {
                 owsFailDebug("Missing requestConfig.")
                 return
             }
-            self?.uploadOrDataTaskDidSucceed(requestConfig.task, httpUrlResponse: urlResponse as? HTTPURLResponse, responseData: responseData)
+            self?.uploadTaskDidSucceed(requestConfig.task, httpUrlResponse: urlResponse as? HTTPURLResponse, responseData: responseData)
         }
 
         addTask(task, taskState: taskState)
@@ -668,6 +672,12 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         }
     }
 
+    private func dataTaskState(forTask task: URLSessionTask) -> DataTaskState? {
+        return lock.withLock {
+            return self.taskStateMap[task.taskIdentifier] as? DataTaskState
+        }
+    }
+
     private func webSocketState(forTask task: URLSessionTask) -> WebSocketTaskState? {
         lock.withLock {
             self.taskStateMap[task.taskIdentifier] as? WebSocketTaskState
@@ -696,11 +706,20 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         taskState.future.resolve((task, downloadUrl))
     }
 
-    private func uploadOrDataTaskDidSucceed(_ task: URLSessionTask, httpUrlResponse: HTTPURLResponse?, responseData: Data?, monitorId: UInt64? = nil) {
-        guard let taskState = removeCompletedTaskState(task) as? UploadOrDataTaskState else {
+    private func uploadTaskDidSucceed(_ task: URLSessionTask, httpUrlResponse: HTTPURLResponse?, responseData: Data?) {
+        guard let taskState = removeCompletedTaskState(task) as? UploadTaskState else {
             owsFailDebug("Missing TaskState.")
             return
         }
+        taskState.future.resolve((task, responseData))
+    }
+
+    private func dataTaskDidSucceed(_ task: URLSessionTask, httpUrlResponse: HTTPURLResponse?) {
+        guard let taskState = removeCompletedTaskState(task) as? DataTaskState else {
+            owsFailDebug("Missing TaskState.")
+            return
+        }
+        let responseData = taskState.pendingData.get()
         taskState.future.resolve((task, responseData))
     }
 
@@ -717,9 +736,10 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
 
     public typealias URLAuthenticationChallengeCompletion = (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
 
-    fileprivate func urlSession(didReceive challenge: URLAuthenticationChallenge,
-                                completionHandler: @escaping URLAuthenticationChallengeCompletion) {
-
+    fileprivate func urlSession(
+        didReceive challenge: URLAuthenticationChallenge,
+        completionHandler: @escaping URLAuthenticationChallengeCompletion
+    ) {
         var disposition: URLSession.AuthChallengeDisposition = .performDefaultHandling
         var credential: URLCredential?
 
@@ -739,27 +759,33 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
     }
 }
 
-// MARK: - URLSessionDelegate
+// MARK: - Forwarded Delegate Methods
 
-extension OWSURLSession: URLSessionDelegate {
+extension OWSURLSession {
 
-    public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         if let error {
             taskDidFail(task, error: error)
+        } else if let dataTask = task as? URLSessionDataTask {
+            dataTaskDidSucceed(dataTask, httpUrlResponse: dataTask.response as? HTTPURLResponse)
         }
     }
 
-    public func urlSession(_ session: URLSession,
-                           didReceive challenge: URLAuthenticationChallenge,
-                           completionHandler: @escaping URLAuthenticationChallengeCompletion) {
+    func urlSession(
+        _ session: URLSession,
+        didReceive challenge: URLAuthenticationChallenge,
+        completionHandler: @escaping URLAuthenticationChallengeCompletion
+    ) {
         urlSession(didReceive: challenge, completionHandler: completionHandler)
     }
 
-    public func urlSession(_ session: URLSession,
-                           task: URLSessionTask,
-                           willPerformHTTPRedirection response: HTTPURLResponse,
-                           newRequest: URLRequest,
-                           completionHandler: @escaping (URLRequest?) -> Void) {
+    func urlSession(
+        _ session: URLSession,
+        task: URLSessionTask,
+        willPerformHTTPRedirection response: HTTPURLResponse,
+        newRequest: URLRequest,
+        completionHandler: @escaping (URLRequest?) -> Void
+    ) {
         guard allowRedirects else { return completionHandler(nil) }
 
         if let customRedirectHandler = customRedirectHandler {
@@ -768,21 +794,17 @@ extension OWSURLSession: URLSessionDelegate {
             completionHandler(newRequest)
         }
     }
-}
 
-// MARK: - URLSessionTaskDelegate
-
-extension OWSURLSession: URLSessionTaskDelegate {
-
-    public func urlSession(_ session: URLSession,
-                           task: URLSessionTask,
-                           didReceive challenge: URLAuthenticationChallenge,
-                           completionHandler: @escaping URLAuthenticationChallengeCompletion) {
-
+    func urlSession(
+        _ session: URLSession,
+        task: URLSessionTask,
+        didReceive challenge: URLAuthenticationChallenge,
+        completionHandler: @escaping URLAuthenticationChallengeCompletion
+    ) {
         urlSession(didReceive: challenge, completionHandler: completionHandler)
     }
 
-    public func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
+    func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
         guard let progressBlock = self.progressBlock(forTask: task) else {
             return
         }
@@ -792,28 +814,22 @@ extension OWSURLSession: URLSessionTaskDelegate {
         progress.completedUnitCount = totalBytesSent
         progressBlock(task, progress)
     }
-}
 
-// MARK: - URLSessionDownloadDelegate
-
-extension OWSURLSession: URLSessionDownloadDelegate {
-
-    public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        if let maxResponseSize = maxResponseSize {
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        if let maxResponseSize {
             guard let fileSize = OWSFileSystem.fileSize(of: location) else {
                 taskDidFail(downloadTask, error: OWSAssertionError("Unknown download size."))
                 return
             }
             guard fileSize.intValue <= maxResponseSize else {
-                taskDidFail(downloadTask, error: OWSAssertionError("Oversize download."))
+                taskDidFail(downloadTask, error: OWSURLSessionError.responseTooLarge)
                 return
             }
         }
         do {
             // Download locations are cleaned up quickly, so we
             // need to move the file synchronously.
-            let temporaryUrl = OWSFileSystem.temporaryFileUrl(fileExtension: nil,
-                                                              isAvailableWhileDeviceLocked: true)
+            let temporaryUrl = OWSFileSystem.temporaryFileUrl(fileExtension: nil, isAvailableWhileDeviceLocked: true)
             try OWSFileSystem.moveFile(from: location, to: temporaryUrl)
             downloadTaskDidSucceed(downloadTask, downloadUrl: temporaryUrl)
         } catch {
@@ -823,17 +839,16 @@ extension OWSURLSession: URLSessionDownloadDelegate {
         }
     }
 
-    public func urlSession(_ session: URLSession,
-                           downloadTask: URLSessionDownloadTask,
-                           didWriteData bytesWritten: Int64,
-                           totalBytesWritten: Int64,
-                           totalBytesExpectedToWrite: Int64) {
-        if let maxResponseSize = maxResponseSize {
-            guard totalBytesWritten <= maxResponseSize,
-                  totalBytesExpectedToWrite <= maxResponseSize else {
-                      downloadTask.cancel()
-                      return
-                  }
+    func urlSession(
+        _ session: URLSession,
+        downloadTask: URLSessionDownloadTask,
+        didWriteData bytesWritten: Int64,
+        totalBytesWritten: Int64,
+        totalBytesExpectedToWrite: Int64
+    ) {
+        if isResponseTooLarge(bytesReceived: totalBytesWritten, bytesExpected: totalBytesExpectedToWrite) {
+            taskDidFail(downloadTask, error: OWSURLSessionError.responseTooLarge)
+            return
         }
         guard let progressBlock = self.progressBlock(forTask: downloadTask) else {
             return
@@ -844,16 +859,15 @@ extension OWSURLSession: URLSessionDownloadDelegate {
         progressBlock(downloadTask, progress)
     }
 
-    public func urlSession(_ session: URLSession,
-                           downloadTask: URLSessionDownloadTask,
-                           didResumeAtOffset fileOffset: Int64,
-                           expectedTotalBytes: Int64) {
-        if let maxResponseSize = maxResponseSize {
-            guard fileOffset <= maxResponseSize,
-                  expectedTotalBytes <= maxResponseSize else {
-                      downloadTask.cancel()
-                      return
-                  }
+    func urlSession(
+        _ session: URLSession,
+        downloadTask: URLSessionDownloadTask,
+        didResumeAtOffset fileOffset: Int64,
+        expectedTotalBytes: Int64
+    ) {
+        if isResponseTooLarge(bytesReceived: fileOffset, bytesExpected: expectedTotalBytes) {
+            taskDidFail(downloadTask, error: OWSURLSessionError.responseTooLarge)
+            return
         }
         guard let progressBlock = self.progressBlock(forTask: downloadTask) else {
             return
@@ -864,61 +878,33 @@ extension OWSURLSession: URLSessionDownloadDelegate {
         progressBlock(downloadTask, progress)
     }
 
-    public func urlSession(_ session: URLSession,
-                           dataTask: URLSessionDataTask,
-                           didReceive response: URLResponse,
-                           completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
-        guard let maxResponseSize = maxResponseSize else {
-            completionHandler(.allow)
-            return
-        }
-        if response.expectedContentLength == NSURLSessionTransferSizeUnknown {
-            completionHandler(.allow)
-            return
-        }
-        guard response.expectedContentLength <= maxResponseSize else {
-            owsFailDebug("Oversize response: \(response.expectedContentLength) > \(maxResponseSize)")
+    func urlSession(
+        _ session: URLSession,
+        dataTask: URLSessionDataTask,
+        didReceive response: URLResponse,
+        completionHandler: @escaping (URLSession.ResponseDisposition) -> Void
+    ) {
+        if isResponseTooLarge(bytesReceived: 0, bytesExpected: response.expectedContentLength) {
+            taskDidFail(dataTask, error: OWSURLSessionError.responseTooLarge)
             completionHandler(.cancel)
             return
-        }
-        if response.expectedContentLength > 800_000 {
-            let formattedContentLength = OWSFormat.formatFileSize(UInt(response.expectedContentLength))
-            let urlString = response.url.map { String(describing: $0) } ?? "<unknown URL>"
-            Logger.warn("Large response (\(formattedContentLength)) for \(urlString)")
         }
         completionHandler(.allow)
     }
 
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-        guard let maxResponseSize = maxResponseSize else {
+        if isResponseTooLarge(bytesReceived: dataTask.countOfBytesReceived, bytesExpected: dataTask.countOfBytesExpectedToReceive) {
+            taskDidFail(dataTask, error: OWSURLSessionError.responseTooLarge)
             return
         }
-        guard dataTask.countOfBytesReceived <= maxResponseSize else {
-            owsFailDebug("Oversize response: \(dataTask.countOfBytesReceived) > \(maxResponseSize)")
-            dataTask.cancel()
-            return
-        }
-    }
-}
-
-// MARK: - WebSocket
-
-extension OWSURLSession: URLSessionWebSocketDelegate {
-
-    public func webSocketTask(requestUrl: URL, didOpenBlock: @escaping (String?) -> Void, didCloseBlock: @escaping (Error) -> Void) -> URLSessionWebSocketTask {
-        // We can't pass a URLRequest here since it prevents the proxy from
-        // operating correctly. See `SSKWebSocketNative.init(...)` for more details
-        // and an example of passing URLRequest options via this web socket.
-        let task = session.webSocketTask(with: requestUrl)
-        addTask(task, taskState: WebSocketTaskState(openBlock: didOpenBlock, closeBlock: didCloseBlock))
-        return task
+        dataTaskState(forTask: dataTask)?.pendingData.update { $0 += data }
     }
 
-    public func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol: String?) {
+    func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol: String?) {
         webSocketState(forTask: webSocketTask)?.openBlock(didOpenWithProtocol)
     }
 
-    public func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
+    func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
         guard let webSocketState = removeCompletedTaskState(webSocketTask) as? WebSocketTaskState else { return }
         webSocketState.closeBlock(WebSocketError.closeError(statusCode: closeCode.rawValue, closeReason: reason))
     }
@@ -953,9 +939,30 @@ private class DownloadTaskState: TaskState {
     }
 }
 
-// MARK: - UploadOrDataTaskState
+// MARK: - UploadTaskState
 
-private class UploadOrDataTaskState: TaskState {
+private class UploadTaskState: TaskState {
+    let progressBlock: ProgressBlock?
+    let promise: Promise<(URLSessionTask, Data?)>
+    let future: Future<(URLSessionTask, Data?)>
+
+    init(progressBlock: ProgressBlock?) {
+        self.progressBlock = progressBlock
+
+        let (promise, future) = Promise<(URLSessionTask, Data?)>.pending()
+        self.promise = promise
+        self.future = future
+    }
+
+    func reject(error: Error, task: URLSessionTask) {
+        future.reject(error)
+    }
+}
+
+// MARK: - DataTaskState
+
+private class DataTaskState: TaskState {
+    let pendingData = AtomicValue<Data>(Data(), lock: .init())
     let progressBlock: ProgressBlock?
     let promise: Promise<(URLSessionTask, Data?)>
     let future: Future<(URLSessionTask, Data?)>
@@ -1040,7 +1047,7 @@ private class URLSessionDelegateBox: NSObject {
 
 // MARK: -
 
-extension URLSessionDelegateBox: URLSessionDelegate, URLSessionTaskDelegate, URLSessionDownloadDelegate {
+extension URLSessionDelegateBox: URLSessionDelegate, URLSessionTaskDelegate, URLSessionDownloadDelegate, URLSessionDataDelegate {
 
     // Any of the optional methods will be forwarded using objc selector forwarding
     // If all goes according to plan, weakDelegate will only go nil once everything is being dealloced
@@ -1049,96 +1056,124 @@ extension URLSessionDelegateBox: URLSessionDelegate, URLSessionTaskDelegate, URL
         weakDelegate?.urlSession(session, downloadTask: downloadTask, didFinishDownloadingTo: location)
     }
 
-    func urlSession(_ session: URLSession,
-                    downloadTask: URLSessionDownloadTask,
-                    didWriteData bytesWritten: Int64,
-                    totalBytesWritten: Int64,
-                    totalBytesExpectedToWrite: Int64) {
-        weakDelegate?.urlSession(session,
-                                 downloadTask: downloadTask,
-                                 didWriteData: bytesWritten,
-                                 totalBytesWritten: totalBytesWritten,
-                                 totalBytesExpectedToWrite: totalBytesExpectedToWrite)
+    func urlSession(
+        _ session: URLSession,
+        downloadTask: URLSessionDownloadTask,
+        didWriteData bytesWritten: Int64,
+        totalBytesWritten: Int64,
+        totalBytesExpectedToWrite: Int64
+    ) {
+        weakDelegate?.urlSession(
+            session,
+            downloadTask: downloadTask,
+            didWriteData: bytesWritten,
+            totalBytesWritten: totalBytesWritten,
+            totalBytesExpectedToWrite: totalBytesExpectedToWrite
+        )
     }
 
-    func urlSession(_ session: URLSession,
-                    downloadTask: URLSessionDownloadTask,
-                    didResumeAtOffset fileOffset: Int64,
-                    expectedTotalBytes: Int64) {
-        weakDelegate?.urlSession(session,
-                                 downloadTask: downloadTask,
-                                 didResumeAtOffset: fileOffset,
-                                 expectedTotalBytes: expectedTotalBytes)
+    func urlSession(
+        _ session: URLSession,
+        downloadTask: URLSessionDownloadTask,
+        didResumeAtOffset fileOffset: Int64,
+        expectedTotalBytes: Int64
+    ) {
+        weakDelegate?.urlSession(
+            session,
+            downloadTask: downloadTask,
+            didResumeAtOffset: fileOffset,
+            expectedTotalBytes: expectedTotalBytes
+        )
     }
 
     public typealias URLAuthenticationChallengeCompletion = OWSURLSession.URLAuthenticationChallengeCompletion
 
-    func urlSession(_ session: URLSession,
-                    task: URLSessionTask,
-                    didReceive challenge: URLAuthenticationChallenge,
-                    completionHandler: @escaping URLAuthenticationChallengeCompletion) {
-        weakDelegate?.urlSession(session,
-                                 task: task,
-                                 didReceive: challenge,
-                                 completionHandler: completionHandler)
+    func urlSession(
+        _ session: URLSession,
+        task: URLSessionTask,
+        didReceive challenge: URLAuthenticationChallenge,
+        completionHandler: @escaping URLAuthenticationChallengeCompletion
+    ) {
+        weakDelegate?.urlSession(
+            session,
+            task: task,
+            didReceive: challenge,
+            completionHandler: completionHandler
+        )
     }
 
-    func urlSession(_ session: URLSession,
-                    task: URLSessionTask,
-                    didSendBodyData bytesSent: Int64,
-                    totalBytesSent: Int64,
-                    totalBytesExpectedToSend: Int64) {
-        weakDelegate?.urlSession(session,
-                                 task: task,
-                                 didSendBodyData: bytesSent,
-                                 totalBytesSent: totalBytesSent,
-                                 totalBytesExpectedToSend: totalBytesExpectedToSend)
+    func urlSession(
+        _ session: URLSession,
+        task: URLSessionTask,
+        didSendBodyData bytesSent: Int64,
+        totalBytesSent: Int64,
+        totalBytesExpectedToSend: Int64
+    ) {
+        weakDelegate?.urlSession(
+            session,
+            task: task,
+            didSendBodyData: bytesSent,
+            totalBytesSent: totalBytesSent,
+            totalBytesExpectedToSend: totalBytesExpectedToSend
+        )
     }
 
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        weakDelegate?.urlSession(session,
-                                 task: task,
-                                 didCompleteWithError: error)
+        weakDelegate?.urlSession(
+            session,
+            task: task,
+            didCompleteWithError: error
+        )
     }
 
-    func urlSession(_ session: URLSession,
-                    didReceive challenge: URLAuthenticationChallenge,
-                    completionHandler: @escaping URLAuthenticationChallengeCompletion) {
-        weakDelegate?.urlSession(session,
-                                 didReceive: challenge,
-                                 completionHandler: completionHandler)
+    func urlSession(
+        _ session: URLSession,
+        didReceive challenge: URLAuthenticationChallenge,
+        completionHandler: @escaping URLAuthenticationChallengeCompletion
+    ) {
+        weakDelegate?.urlSession(
+            session,
+            didReceive: challenge,
+            completionHandler: completionHandler
+        )
     }
 
-    func urlSession(_ session: URLSession,
-                    task: URLSessionTask,
-                    willPerformHTTPRedirection response: HTTPURLResponse,
-                    newRequest: URLRequest,
-                    completionHandler: @escaping (URLRequest?) -> Void) {
-        weakDelegate?.urlSession(session,
-                                 task: task,
-                                 willPerformHTTPRedirection: response,
-                                 newRequest: newRequest,
-                                 completionHandler: completionHandler)
+    func urlSession(
+        _ session: URLSession,
+        task: URLSessionTask,
+        willPerformHTTPRedirection response: HTTPURLResponse,
+        newRequest: URLRequest,
+        completionHandler: @escaping (URLRequest?) -> Void
+    ) {
+        weakDelegate?.urlSession(
+            session,
+            task: task,
+            willPerformHTTPRedirection: response,
+            newRequest: newRequest,
+            completionHandler: completionHandler
+        )
     }
 
-    func urlSession(_ session: URLSession,
-                    dataTask: URLSessionDataTask,
-                    didReceive response: URLResponse,
-                    completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
+    func urlSession(
+        _ session: URLSession,
+        dataTask: URLSessionDataTask,
+        didReceive response: URLResponse,
+        completionHandler: @escaping (URLSession.ResponseDisposition) -> Void
+    ) {
         guard let delegate = weakDelegate else {
             completionHandler(.cancel)
             return
         }
-        delegate.urlSession(session,
-                            dataTask: dataTask,
-                            didReceive: response,
-                            completionHandler: completionHandler)
+        delegate.urlSession(
+            session,
+            dataTask: dataTask,
+            didReceive: response,
+            completionHandler: completionHandler
+        )
     }
 
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-        weakDelegate?.urlSession(session,
-                                 dataTask: dataTask,
-                                 didReceive: data)
+        weakDelegate?.urlSession(session, dataTask: dataTask, didReceive: data)
     }
 }
 

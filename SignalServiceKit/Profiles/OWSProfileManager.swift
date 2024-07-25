@@ -732,7 +732,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
     // MARK: -
 
     private class var avatarUrlSession: OWSURLSessionProtocol {
-        return self.signalService.urlSessionForCdn(cdnNumber: 0)
+        return self.signalService.urlSessionForCdn(cdnNumber: 0, maxResponseSize: nil)
     }
 
     // MARK: -

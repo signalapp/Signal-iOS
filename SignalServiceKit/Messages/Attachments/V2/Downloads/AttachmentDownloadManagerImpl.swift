@@ -949,7 +949,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             resumeData: Data?,
             attemptCount: UInt
         ) async throws -> URL {
-            let urlSession = self.signalService.urlSessionForCdn(cdnNumber: downloadState.cdnNumber())
+            let urlSession = self.signalService.urlSessionForCdn(
+                cdnNumber: downloadState.cdnNumber(),
+                maxResponseSize: maxDownloadSizeBytes
+            )
             let urlPath = try downloadState.urlPath()
             var headers = downloadState.additionalHeaders()
             headers["Content-Type"] = MimeType.applicationOctetStream.rawValue
@@ -965,7 +968,6 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             let progress = { (task: URLSessionTask, progress: Progress) in
                 self.handleDownloadProgress(
                     downloadState: downloadState,
-                    maxDownloadSizeBytes: maxDownloadSizeBytes,
                     task: task,
                     progress: progress,
                     attachmentId: attachmentId
@@ -1032,7 +1034,6 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
         private nonisolated func handleDownloadProgress(
             downloadState: DownloadState,
-            maxDownloadSizeBytes: UInt,
             task: URLSessionTask,
             progress: Progress,
             attachmentId: Attachment.IDType?
@@ -1046,18 +1047,6 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
             // Don't do anything until we've received at least one byte of data.
             guard progress.completedUnitCount > 0 else {
-                return
-            }
-
-            guard progress.totalUnitCount <= maxDownloadSizeBytes,
-                  progress.completedUnitCount <= maxDownloadSizeBytes else {
-                // A malicious service might send a misleading content length header,
-                // so....
-                //
-                // If the current downloaded bytes or the expected total byes
-                // exceed the max download size, abort the download.
-                owsFailDebug("Attachment download exceed expected content length: \(progress.totalUnitCount), \(progress.completedUnitCount).")
-                task.cancel()
                 return
             }
 

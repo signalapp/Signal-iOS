@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern const NSUInteger kGroupIdLengthV1;
 extern const NSUInteger kGroupIdLengthV2;
+extern const NSUInteger kMaxAvatarSize;
 
 typedef NS_CLOSED_ENUM(uint32_t, GroupsVersion) {
     GroupsVersionV1 = 0,

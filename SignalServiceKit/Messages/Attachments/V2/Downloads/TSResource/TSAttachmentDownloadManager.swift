@@ -1094,7 +1094,10 @@ public extension TSAttachmentDownloadManager {
 
         firstly(on: schedulers.global()) { () -> Promise<OWSUrlDownloadResponse> in
             let attachmentPointer = downloadState.attachmentPointer
-            let urlSession = Self.signalService.urlSessionForCdn(cdnNumber: attachmentPointer.cdnNumber)
+            let urlSession = Self.signalService.urlSessionForCdn(
+                cdnNumber: attachmentPointer.cdnNumber,
+                maxResponseSize: maxDownloadSizeBytes
+            )
             let urlPath = try Self.urlPath(for: downloadState)
             let headers: [String: String] = [
                 "Content-Type": MimeType.applicationOctetStream.rawValue
@@ -1103,7 +1106,6 @@ public extension TSAttachmentDownloadManager {
             let progress = { (task: URLSessionTask, progress: Progress) in
                 self.handleDownloadProgress(
                     downloadState: downloadState,
-                    maxDownloadSizeBytes: maxDownloadSizeBytes,
                     task: task,
                     progress: progress,
                     future: future
@@ -1189,14 +1191,14 @@ public extension TSAttachmentDownloadManager {
 
     private enum AttachmentDownloadError: Error {
         case cancelled
-        case oversize
     }
 
-    private func handleDownloadProgress(downloadState: DownloadState,
-                                        maxDownloadSizeBytes: UInt,
-                                        task: URLSessionTask,
-                                        progress: Progress,
-                                        future: Future<URL>) {
+    private func handleDownloadProgress(
+        downloadState: DownloadState,
+        task: URLSessionTask,
+        progress: Progress,
+        future: Future<URL>
+    ) {
 
         guard !self.shouldCancelJob(downloadState: downloadState) else {
             Logger.info("Cancelling job.")
@@ -1207,19 +1209,6 @@ public extension TSAttachmentDownloadManager {
 
         // Don't do anything until we've received at least one byte of data.
         guard progress.completedUnitCount > 0 else {
-            return
-        }
-
-        guard progress.totalUnitCount <= maxDownloadSizeBytes,
-              progress.completedUnitCount <= maxDownloadSizeBytes else {
-            // A malicious service might send a misleading content length header,
-            // so....
-            //
-            // If the current downloaded bytes or the expected total byes
-            // exceed the max download size, abort the download.
-            owsFailDebug("Attachment download exceed expected content length: \(progress.totalUnitCount), \(progress.completedUnitCount).")
-            task.cancel()
-            future.reject(AttachmentDownloadError.oversize)
             return
         }
 

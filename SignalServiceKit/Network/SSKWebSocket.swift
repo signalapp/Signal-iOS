@@ -182,7 +182,8 @@ public class SSKWebSocketNative: SSKWebSocket {
         self.urlSession = signalService.buildUrlSession(
             for: signalServiceInfo,
             endpoint: endpoint,
-            configuration: configuration
+            configuration: configuration,
+            maxResponseSize: nil
         )
         self.requestUrl = urlRequest.url!
         self.callbackScheduler = callbackScheduler

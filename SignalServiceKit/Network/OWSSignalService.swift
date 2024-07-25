@@ -159,12 +159,13 @@ public class OWSSignalService: OWSSignalServiceProtocol, Dependencies {
     public func buildUrlSession(
         for signalServiceInfo: SignalServiceInfo,
         endpoint: OWSURLSessionEndpoint,
-        configuration: URLSessionConfiguration?
+        configuration: URLSessionConfiguration?,
+        maxResponseSize: Int?
     ) -> OWSURLSessionProtocol {
         let urlSession = OWSURLSession(
             endpoint: endpoint,
             configuration: configuration ?? OWSURLSession.defaultConfigurationWithoutCaching,
-            maxResponseSize: nil,
+            maxResponseSize: maxResponseSize,
             canUseSignalProxy: endpoint.frontingInfo == nil
         )
         urlSession.shouldHandleRemoteDeprecation = signalServiceInfo.shouldHandleRemoteDeprecation

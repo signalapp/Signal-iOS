@@ -9,7 +9,6 @@ import Foundation
 public enum StickerError: Int, Error, IsRetryableProvider {
     case invalidInput
     case noSticker
-    case assertionFailure
     case corruptData
 
     // MARK: - IsRetryableProvider

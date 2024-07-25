@@ -139,13 +139,9 @@ public enum SSKUnretryableError: Error, IsRetryableProvider {
     case paymentsProcessingFailure
     case partialLocalProfileFetch
     case stickerDecryptionFailure
-    case stickerMissingFile
-    case stickerOversizeFile
     case downloadCouldNotMoveFile
     case downloadCouldNotDeleteFile
-    case invalidThread
     case messageProcessingFailed
-    case couldNotLoadFileData
     case restoreGroupFailed
 
     // MARK: - IsRetryableProvider
