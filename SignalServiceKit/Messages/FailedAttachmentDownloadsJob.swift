@@ -8,15 +8,15 @@ import Foundation
 public class FailedAttachmentDownloadsJob {
     public init() {}
 
-    public func runSync(databaseStorage: SDSDatabaseStorage) {
-        databaseStorage.write { tx in
+    public func run(databaseStorage: SDSDatabaseStorage) async {
+        await databaseStorage.awaitableWrite { tx in
             let attachmentIds = TSAttachmentStore().attachmentPointerIdsToMarkAsFailed(tx: tx)
             attachmentIds.forEach { attachmentId in
                 // Since we can't directly mutate the enumerated attachments, we store only
                 // their ids in hopes of saving a little memory and then enumerate the
                 // (larger) TSAttachment objects one at a time.
                 autoreleasepool {
-                    updateAttachmentPointerIfNecessary(attachmentId, tx: tx)
+                    self.updateAttachmentPointerIfNecessary(attachmentId, tx: tx)
                 }
             }
             Logger.info("Finished job. Marked \(attachmentIds.count) in-progress attachments as failed.")

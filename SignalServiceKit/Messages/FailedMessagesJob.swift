@@ -8,15 +8,15 @@ import Foundation
 public class FailedMessagesJob {
     public init() {}
 
-    public func runSync(databaseStorage: SDSDatabaseStorage) {
+    public func run(databaseStorage: SDSDatabaseStorage) async {
         var count = 0
-        databaseStorage.write { writeTx in
+        await databaseStorage.awaitableWrite { writeTx in
             InteractionFinder.attemptingOutInteractionIds(transaction: writeTx).forEach { failedInteractionId in
                 // Since we can't directly mutate the enumerated "attempting out" expired messages, we store
                 // only their ids in hopes of saving a little memory and then enumerate the (larger)
                 // TSMessage objects one at a time.
                 autoreleasepool {
-                    updateFailedMessageIfNecessary(failedInteractionId, count: &count, transaction: writeTx)
+                    self.updateFailedMessageIfNecessary(failedInteractionId, count: &count, transaction: writeTx)
                 }
             }
 

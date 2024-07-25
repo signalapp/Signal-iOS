@@ -14,14 +14,14 @@ public class IncompleteCallsJob {
         self.cutoffTimestamp = cutoffDate.ows_millisecondsSince1970
     }
 
-    public func runSync(databaseStorage: SDSDatabaseStorage) {
+    public func run(databaseStorage: SDSDatabaseStorage) async {
         var count = 0
-        databaseStorage.write { writeTx in
+        await databaseStorage.awaitableWrite { writeTx in
             InteractionFinder.incompleteCallIds(transaction: writeTx).forEach { incompleteCallId in
                 // Since we can't directly mutate the enumerated "incomplete" calls, we store only their ids in hopes
                 // of saving a little memory and then enumerate the (larger) TSCall objects one at a time.
                 autoreleasepool {
-                    updateIncompleteCallIfNecessary(incompleteCallId, count: &count, transaction: writeTx)
+                    self.updateIncompleteCallIfNecessary(incompleteCallId, count: &count, transaction: writeTx)
                 }
             }
         }

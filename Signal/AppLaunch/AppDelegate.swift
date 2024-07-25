@@ -461,17 +461,19 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 actions: [.submitDebugLogsAndCrash]
             )
         case nil:
-            firstly {
-                LaunchJobs.run(
-                    tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-                    databaseStorage: databaseStorage
-                )
-            }.done(on: DispatchQueue.main) {
-                self.setAppIsReady(
-                    launchInterface: launchInterface,
-                    launchContext: launchContext
-                )
-                DeviceSleepManager.shared.removeBlock(blockObject: sleepBlockObject)
+            let backgroundTask = OWSBackgroundTask(label: #function)
+            Task { @MainActor in
+                defer { backgroundTask.end() }
+                if !hasInProgressRegistration {
+                    await LaunchJobs.run(databaseStorage: databaseStorage)
+                }
+                DispatchQueue.main.async {
+                    self.setAppIsReady(
+                        launchInterface: launchInterface,
+                        launchContext: launchContext
+                    )
+                    DeviceSleepManager.shared.removeBlock(blockObject: sleepBlockObject)
+                }
             }
         }
     }
