@@ -80,7 +80,9 @@ public class AttachmentStream {
         return Self.absoluteAttachmentFileURL(relativeFilePath: self.localRelativeFilePath)
     }
 
-    public func makeDecryptedCopy() throws -> URL {
+    /// - parameter filename: if provided, the output file url will use this name, minus any file extension (which
+    /// will instead be inferred from the file contents) and made url-safe AND user-friendly. If nil, a random file name is used.
+    public func makeDecryptedCopy(filename: String? = nil) throws -> URL {
         guard var pathExtension = MimeTypeUtil.fileExtensionForMimeType(mimeType) else {
             throw OWSAssertionError("Invalid mime type!")
         }
@@ -91,7 +93,25 @@ public class AttachmentStream {
             pathExtension = "m4a"
         }
 
-        let tmpURL = OWSFileSystem.temporaryFileUrl(fileExtension: pathExtension)
+        let tmpURL: URL
+        if let filename {
+            tmpURL = OWSFileSystem.temporaryFileUrl(
+                fileName: (filename as NSString)
+                    .deletingPathExtension
+                    // We don't want percent-encoding, as these are user visible when sharing.
+                    // But we do need a url-safe name, so just use a custom replacement.
+                    // Replace : as well, even though its url-safe, because UIActivityViewController
+                    // doesn't like colons for some reason.
+                    .replaceCharacters(
+                        characterSet: .urlHostAllowed.inverted.union(.init(charactersIn: ":")),
+                        replacement: "_"
+                    ),
+                fileExtension: pathExtension
+            )
+            try OWSFileSystem.deleteFileIfExists(url: tmpURL)
+        } else {
+            tmpURL = OWSFileSystem.temporaryFileUrl(fileExtension: pathExtension)
+        }
         try Cryptography.decryptAttachment(
             at: fileURL,
             metadata: EncryptionMetadata(

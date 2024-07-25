@@ -23,7 +23,8 @@ public class SignalAttachmentClonerImpl: SignalAttachmentCloner {
             throw OWSAssertionError("Missing dataUTI.")
         }
 
-        let decryptedCopyUrl = try attachment.attachmentStream.makeDecryptedCopy()
+        // Just use a random file name on the decrypted copy; its internal use only.
+        let decryptedCopyUrl = try attachment.attachmentStream.makeDecryptedCopy(filename: nil)
 
         let decryptedDataSource = try DataSourcePath.dataSource(
             with: decryptedCopyUrl,

@@ -334,7 +334,8 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
                 return nil
             }
         case .v2(let attachmentStream):
-            guard let url = try? attachmentStream.makeDecryptedCopy() else {
+            let sourceFilename = genericAttachment.attachment.attachment.reference.sourceFilename
+            guard let url = try? attachmentStream.makeDecryptedCopy(filename: sourceFilename) else {
                 return nil
             }
             guard QLPreviewController.canPreview(url as NSURL) else {
@@ -361,7 +362,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
     }
 
     public func showShareUI(from view: UIView) {
-        guard let attachmentStream = try? attachmentStream?.asShareableResource() else {
+        guard let attachmentStream = try? genericAttachment.attachment.attachment.asReferencedStream?.asShareableResource() else {
             owsFailDebug("should not show the share UI unless there's a downloaded attachment")
             return
         }

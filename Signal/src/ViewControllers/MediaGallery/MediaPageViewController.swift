@@ -485,8 +485,7 @@ class MediaPageViewController: UIPageViewController {
     private func shareCurrentMedia(fromNavigationBar: Bool) {
         guard let currentViewController else { return }
         guard
-            let attachmentStream = try? currentViewController.galleryItem.attachmentStream
-                .attachmentStream.asShareableResource()
+            let attachmentStream = try? currentViewController.galleryItem.attachmentStream.asShareableResource()
         else {
             return
         }

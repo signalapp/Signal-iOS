@@ -65,14 +65,21 @@ extension AttachmentSharing {
     }
 }
 
-extension TSResourceStream {
+extension ReferencedTSResourceStream {
 
     public func asShareableResource() throws -> ShareableTSResource? {
+        return try self.attachmentStream.asShareableResource(sourceFilename: reference.sourceFilename)
+    }
+}
+
+extension TSResourceStream {
+
+    public func asShareableResource(sourceFilename: String?) throws -> ShareableTSResource? {
         switch concreteStreamType {
         case .legacy(let tsAttachment):
             return ShareableTSAttachment(tsAttachment).map { .legacy($0) }
         case .v2(let attachment):
-            return try attachment.asShareableAttachment().map { .v2($0) }
+            return try attachment.asShareableAttachment(sourceFilename: sourceFilename).map { .v2($0) }
         }
     }
 }

@@ -136,8 +136,8 @@ public class AttachmentSharing {
 
 extension AttachmentStream {
 
-    public func asShareableAttachment() throws -> ShareableAttachment? {
-        return try ShareableAttachment(self)
+    public func asShareableAttachment(sourceFilename: String?) throws -> ShareableAttachment? {
+        return try ShareableAttachment(self, sourceFilename: sourceFilename)
     }
 }
 
@@ -145,7 +145,7 @@ public class ShareableAttachment: NSObject, UIActivityItemSource {
 
     /// Throws an error if decryption fails.
     /// Returns nil if the attachment cannot be shared with the system sharesheet.
-    public init?(_ attachmentStream: AttachmentStream) throws {
+    public init?(_ attachmentStream: AttachmentStream, sourceFilename: String?) throws {
         self.attachmentStream = attachmentStream
         if attachmentStream.mimeType == MimeType.imageWebp.rawValue {
             self.shareType = .image
@@ -164,9 +164,9 @@ public class ShareableAttachment: NSObject, UIActivityItemSource {
             self.shareType = .decryptedFileURL(try attachmentStream.makeDecryptedCopy())
             return
         case .image, .animatedImage:
-            shareType = .decryptedFileURL(try attachmentStream.makeDecryptedCopy())
+            shareType = .decryptedFileURL(try attachmentStream.makeDecryptedCopy(filename: sourceFilename))
         case .video:
-            let decryptedFileUrl = try attachmentStream.makeDecryptedCopy()
+            let decryptedFileUrl = try attachmentStream.makeDecryptedCopy(filename: sourceFilename)
             // Some videos don't support sharing.
             guard UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(decryptedFileUrl.path) else {
                 return nil
@@ -177,7 +177,7 @@ public class ShareableAttachment: NSObject, UIActivityItemSource {
             guard MimeTypeUtil.isSupportedVisualMediaMimeType(attachmentStream.mimeType) else {
                 return nil
             }
-            shareType = .decryptedFileURL(try attachmentStream.makeDecryptedCopy())
+            shareType = .decryptedFileURL(try attachmentStream.makeDecryptedCopy(filename: sourceFilename))
         }
     }
 

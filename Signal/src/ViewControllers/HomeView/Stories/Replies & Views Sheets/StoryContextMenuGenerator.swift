@@ -559,9 +559,9 @@ extension StoryThumbnailView.Attachment {
         }
 
         switch self {
-        case .file(let attachment):
+        case .file(let fileAttachment):
             guard
-                let attachment = attachment.attachment.asResourceStream(),
+                let attachment = fileAttachment.attachment.asResourceStream(),
                 MimeTypeUtil.isSupportedVisualMediaMimeType(attachment.mimeType)
             else { break }
 
@@ -573,7 +573,7 @@ extension StoryThumbnailView.Attachment {
                 shouldDeleteFileAfterComplete = false
             case .v2(let attachmentStream):
                 // Make a copy since we are about to send this off to the system anyway.
-                mediaURL = try? attachmentStream.makeDecryptedCopy()
+                mediaURL = try? attachmentStream.makeDecryptedCopy(filename: fileAttachment.reference.sourceFilename)
                 shouldDeleteFileAfterComplete = true
             }
             guard let mediaURL else {
@@ -745,7 +745,7 @@ extension StoryContextMenuGenerator {
                 }
                 switch attachment {
                 case .file(let attachment):
-                    guard let attachment = try? attachment.attachment.asResourceStream()?.asShareableResource() else {
+                    guard let attachment = try? attachment.asReferencedStream?.asShareableResource() else {
                         completion(false)
                         return owsFailDebug("Unexpectedly tried to share undownloaded attachment")
                     }

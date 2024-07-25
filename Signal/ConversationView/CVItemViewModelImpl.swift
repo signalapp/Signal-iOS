@@ -213,12 +213,12 @@ extension CVItemViewModelImpl {
             return []
         }
 
-        if let attachment = self.audioAttachmentStream {
+        if let attachment = self.componentState.audioAttachmentStream {
             return [try? attachment.asShareableResource()].compacted()
-        } else if let attachment = self.genericAttachmentStream {
+        } else if let attachment = self.componentState.genericAttachmentStream {
             return [try? attachment.asShareableResource()].compacted()
         } else {
-            return self.bodyMediaAttachmentStreams.compactMap { attachment in
+            return self.componentState.bodyMediaAttachmentStreams.compactMap { attachment in
                 return try? attachment.asShareableResource()
             }
         }
