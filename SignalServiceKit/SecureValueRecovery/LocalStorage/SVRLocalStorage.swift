@@ -23,8 +23,6 @@ public protocol SVRLocalStorageInternal: SVRLocalStorage {
 
     func getSVR2MrEnclaveStringValue(_ transaction: DBReadTransaction) -> String?
 
-    func hadSVR1Enclave(_ transaction: DBReadTransaction) -> Bool
-
     // MARK: - Setters
 
     func setIsMasterKeyBackedUp(_ value: Bool, _ transaction: DBWriteTransaction)
@@ -47,6 +45,9 @@ public protocol SVRLocalStorageInternal: SVRLocalStorage {
 
     func clearKeys(_ transaction: DBWriteTransaction)
 
+    // MARK: - Cleanup
+
+    func cleanupDeadKeys(_ transaction: DBWriteTransaction)
 }
 
 /// Stores state related to SVR independent of enclave; e.g. do we have backups at all,
@@ -94,10 +95,6 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
 
     public func getSVR2MrEnclaveStringValue(_ transaction: DBReadTransaction) -> String? {
         return keyValueStore.getString(Keys.svr2MrEnclaveStringValue, transaction: transaction)
-    }
-
-    public func hadSVR1Enclave(_ transaction: DBReadTransaction) -> Bool {
-        return keyValueStore.hasValue(Keys.legacy_svr1EnclaveName, transaction: transaction)
     }
 
     // MARK: - Setters
@@ -149,6 +146,17 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
         )
     }
 
+    // MARK: - Cleanup
+
+    func cleanupDeadKeys(_ transaction: any DBWriteTransaction) {
+        keyValueStore.removeValues(
+            forKeys: [
+                Keys.legacy_svr1EnclaveName,
+            ],
+            transaction: transaction
+        )
+    }
+
     // MARK: - Identifiers
 
     private enum Keys {
@@ -160,6 +168,7 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
         static let syncedStorageServiceKey = "Storage Service Encryption"
         static let syncedBackupKey = "Backup Key"
         // Kept around because its existence indicates we had an svr1 backup.
+        // TODO: Remove after Nov 1, 2024
         static let legacy_svr1EnclaveName = "enclaveName"
         static let svr2MrEnclaveStringValue = "svr2_mrenclaveStringValue"
     }

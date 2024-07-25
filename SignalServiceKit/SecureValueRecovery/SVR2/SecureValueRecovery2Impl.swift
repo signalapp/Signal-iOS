@@ -1257,8 +1257,8 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         guard self.appReadiness.isMainApp else {
             return nil
         }
-        return firstly(on: scheduler) { [weak self] () -> (String?, String, Data)? in
-            return self?.db.read { tx -> (String?, String, Data)? in
+        return firstly(on: scheduler) { [weak self] () -> (String, String, Data)? in
+            return self?.db.read { tx -> (String, String, Data)? in
                 guard
                     let self,
                     self.tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
@@ -1272,41 +1272,24 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 let currentEnclaveString = self.tsConstants.svr2Enclave.stringValue
                 let oldSVR2EnclaveString = self.localStorage.getSVR2MrEnclaveStringValue(tx)
 
-                let isBackedUpToOlderEnclaveNeedingMigration: Bool = {
-                    guard self.localStorage.getIsMasterKeyBackedUp(tx) else {
-                        // "isMasterKeyBackedUp" is shared between svr2 and kbs; if its
-                        // false that means we had no backups to begin with and therefore
-                        // should not back up to any new enclave.
-                        Logger.info("Not migrating; no previous backups.")
-                        return false
-                    }
-
-                    if
-                        let oldSVR2EnclaveString,
-                        oldSVR2EnclaveString != currentEnclaveString
-                    {
-                        // We are backed up to an svr2 enclave that isn't the current one.
-                        Logger.info("Migrating from old svr2 enclave")
-                        return true
-                    }
-                    if
-                        oldSVR2EnclaveString == nil,
-                        self.localStorage.hadSVR1Enclave(tx)
-                    {
-                        // We have not ever backed up to svr2, but we had backed up
-                        // to svr1 (kbs), so we should migrate immediately.
-                        Logger.info("Migrating from kbs")
-                        return true
-                    }
-                    return false
-                }()
-
-                guard isBackedUpToOlderEnclaveNeedingMigration else {
-                    // We only migrate if we actually have a backup on some enclave that isn't
-                    // the current one.
+                guard self.localStorage.getIsMasterKeyBackedUp(tx) else {
+                    // "isMasterKeyBackedUp" is shared between svr2 and kbs; if its
+                    // false that means we had no backups to begin with and therefore
+                    // should not back up to any new enclave.
+                    Logger.info("Not migrating; no previous backups.")
                     return nil
                 }
-                return (oldSVR2EnclaveString, pin, masterKey)
+
+                if
+                    let oldSVR2EnclaveString,
+                    oldSVR2EnclaveString != currentEnclaveString
+                {
+                    // We are backed up to an svr2 enclave that isn't the current one.
+                    Logger.info("Migrating from old svr2 enclave")
+                    return (oldSVR2EnclaveString, pin, masterKey)
+                }
+
+                return nil
             }
         }.then(on: scheduler) { [weak self] values -> Promise<Void> in
             guard let self, let (oldSVR2EnclaveString, pin, masterKey) = values else {
@@ -1322,11 +1305,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                     guard let self else {
                         return
                     }
-                    // The oldSVR2EnclaveString might be nil if we are migrating from KBS.
-                    // In these cases we shouldn't wipe anything from kbs; we will mirror
-                    // to kbs for a while and eventually kbs will be torn down for us.
                     if
-                        let oldSVR2EnclaveString,
                         let backedUpEnclave = self.tsConstants.svr2PreviousEnclaves.first(where: {
                             $0.stringValue == oldSVR2EnclaveString
                         }) {
@@ -1637,6 +1616,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         mode: LocalDataUpdateMode,
         transaction: DBWriteTransaction
     ) {
+        localStorage.cleanupDeadKeys(transaction)
         let masterKeyChanged = masterKey != localStorage.getMasterKey(transaction)
         if masterKeyChanged {
             localStorage.setMasterKey(masterKey, transaction)
