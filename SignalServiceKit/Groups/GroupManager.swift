@@ -520,26 +520,22 @@ public class GroupManager: NSObject {
     public static func localAcceptInviteToGroupV2(
         groupModel: TSGroupModelV2,
         waitForMessageProcessing: Bool = false
-    ) -> Promise<TSGroupThread> {
-        firstly { () -> Promise<Void> in
-            if waitForMessageProcessing {
-                return GroupManager.messageProcessingPromise(for: groupModel, description: "Accept invite")
-            }
-
-            return Promise.value(())
-        }.then { () -> Promise<Void> in
-            self.databaseStorage.write(.promise) { transaction in
-                self.profileManager.addGroupId(toProfileWhitelist: groupModel.groupId,
-                                               userProfileWriter: .localUser,
-                                               transaction: transaction)
-            }
-        }.then(on: DispatchQueue.global()) { _ -> Promise<TSGroupThread> in
-            return updateGroupV2(
-                groupModel: groupModel,
-                description: "Accept invite"
-            ) { groupChangeSet in
-                groupChangeSet.setLocalShouldAcceptInvite()
-            }
+    ) async throws -> TSGroupThread {
+        if waitForMessageProcessing {
+            try await GroupManager.waitForMessageFetchingAndProcessingWithTimeout(description: "Accept invite")
+        }
+        await self.databaseStorage.awaitableWrite { transaction in
+            self.profileManager.addGroupId(
+                toProfileWhitelist: groupModel.groupId,
+                userProfileWriter: .localUser,
+                transaction: transaction
+            )
+        }
+        return try await updateGroupV2(
+            groupModel: groupModel,
+            description: "Accept invite"
+        ) { groupChangeSet in
+            groupChangeSet.setLocalShouldAcceptInvite()
         }
     }
 
@@ -587,8 +583,8 @@ public class GroupManager: NSObject {
     public static func removeFromGroupOrRevokeInviteV2(
         groupModel: TSGroupModelV2,
         serviceIds: [ServiceId]
-    ) -> Promise<TSGroupThread> {
-        updateGroupV2(groupModel: groupModel, description: "Remove from group or revoke invite") { groupChangeSet in
+    ) async throws -> TSGroupThread {
+        return try await updateGroupV2(groupModel: groupModel, description: "Remove from group or revoke invite") { groupChangeSet in
             for serviceId in serviceIds {
                 owsAssertDebug(!groupModel.groupMembership.isRequestingMember(serviceId))
 
@@ -602,9 +598,8 @@ public class GroupManager: NSObject {
         }
     }
 
-    public static func revokeInvalidInvites(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
-        updateGroupV2(groupModel: groupModel,
-                      description: "Revoke invalid invites") { groupChangeSet in
+    public static func revokeInvalidInvites(groupModel: TSGroupModelV2) async throws -> TSGroupThread {
+        return try await updateGroupV2(groupModel: groupModel, description: "Revoke invalid invites") { groupChangeSet in
             groupChangeSet.revokeInvalidInvites()
         }
     }
@@ -615,43 +610,36 @@ public class GroupManager: NSObject {
         groupModel: TSGroupModelV2,
         aci: Aci,
         role: TSGroupMemberRole
-    ) -> Promise<TSGroupThread> {
-        updateGroupV2(groupModel: groupModel, description: "Change member role") { groupChangeSet in
+    ) async throws -> TSGroupThread {
+        return try await updateGroupV2(groupModel: groupModel, description: "Change member role") { groupChangeSet in
             groupChangeSet.changeRoleForMember(aci, role: role)
         }
     }
 
     // MARK: - Change Group Access
 
-    public static func changeGroupAttributesAccessV2(groupModel: TSGroupModelV2,
-                                                     access: GroupV2Access) -> Promise<TSGroupThread> {
-        updateGroupV2(groupModel: groupModel,
-                      description: "Change group attributes access") { groupChangeSet in
+    public static func changeGroupAttributesAccessV2(groupModel: TSGroupModelV2, access: GroupV2Access) async throws {
+        _ = try await updateGroupV2(groupModel: groupModel, description: "Change group attributes access") { groupChangeSet in
             groupChangeSet.setAccessForAttributes(access)
         }
     }
 
-    public static func changeGroupMembershipAccessV2(groupModel: TSGroupModelV2,
-                                                     access: GroupV2Access) -> Promise<TSGroupThread> {
-        updateGroupV2(groupModel: groupModel,
-                      description: "Change group membership access") { groupChangeSet in
+    public static func changeGroupMembershipAccessV2(groupModel: TSGroupModelV2, access: GroupV2Access) async throws {
+        _ = try await updateGroupV2(groupModel: groupModel, description: "Change group membership access") { groupChangeSet in
             groupChangeSet.setAccessForMembers(access)
         }
     }
 
     // MARK: - Group Links
 
-    public static func updateLinkModeV2(groupModel: TSGroupModelV2,
-                                        linkMode: GroupsV2LinkMode) -> Promise<TSGroupThread> {
-        updateGroupV2(groupModel: groupModel,
-                      description: "Change group link mode") { groupChangeSet in
+    public static func updateLinkModeV2(groupModel: TSGroupModelV2, linkMode: GroupsV2LinkMode) async throws -> TSGroupThread {
+        return try await updateGroupV2(groupModel: groupModel, description: "Change group link mode") { groupChangeSet in
             groupChangeSet.setLinkMode(linkMode)
         }
     }
 
-    public static func resetLinkV2(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
-        updateGroupV2(groupModel: groupModel,
-                      description: "Rotate invite link password") { groupChangeSet in
+    public static func resetLinkV2(groupModel: TSGroupModelV2) async throws -> TSGroupThread {
+        return try await updateGroupV2(groupModel: groupModel, description: "Rotate invite link password") { groupChangeSet in
             groupChangeSet.rotateInviteLinkPassword()
         }
     }
@@ -707,9 +695,9 @@ public class GroupManager: NSObject {
         groupModel: TSGroupModelV2,
         aci: Aci,
         shouldAccept: Bool
-    ) -> Promise<TSGroupThread> {
+    ) async throws -> TSGroupThread {
         let description = (shouldAccept ? "Accept group member request" : "Deny group member request")
-        return updateGroupV2(groupModel: groupModel, description: description) { groupChangeSet in
+        return try await updateGroupV2(groupModel: groupModel, description: description) { groupChangeSet in
             if shouldAccept {
                 groupChangeSet.addMember(aci, role: .`normal`)
             } else {
@@ -719,17 +707,13 @@ public class GroupManager: NSObject {
         }
     }
 
-    public static func cancelMemberRequestsV2(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
-
+    public static func cancelMemberRequestsV2(groupModel: TSGroupModelV2) async throws -> TSGroupThread {
         let description = "Cancel Member Request"
-
-        return firstly(on: DispatchQueue.global()) {
-            Promise.wrapAsync {
-                try await self.groupsV2.cancelMemberRequests(groupModel: groupModel)
-            }
+        return try await Promise.wrapAsync {
+            try await self.groupsV2.cancelMemberRequests(groupModel: groupModel)
         }.timeout(seconds: Self.groupUpdateTimeoutDuration, description: description) {
-            GroupsV2Error.timeout
-        }
+            return GroupsV2Error.timeout
+        }.awaitable()
     }
 
     public static func cachedGroupInviteLinkPreview(groupInviteLinkInfo: GroupInviteLinkInfo) -> GroupInviteLinkPreview? {
@@ -744,18 +728,16 @@ public class GroupManager: NSObject {
 
     // MARK: - Announcements
 
-    public static func setIsAnnouncementsOnly(groupModel: TSGroupModelV2,
-                                              isAnnouncementsOnly: Bool) -> Promise<TSGroupThread> {
-        updateGroupV2(groupModel: groupModel,
-                      description: "Update isAnnouncementsOnly") { groupChangeSet in
+    public static func setIsAnnouncementsOnly(groupModel: TSGroupModelV2, isAnnouncementsOnly: Bool) async throws {
+        _ = try await updateGroupV2(groupModel: groupModel, description: "Update isAnnouncementsOnly") { groupChangeSet in
             groupChangeSet.setIsAnnouncementsOnly(isAnnouncementsOnly)
         }
     }
 
     // MARK: - Local profile key
 
-    public static func updateLocalProfileKey(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
-        updateGroupV2(groupModel: groupModel, description: "Update local profile key") { changes in
+    public static func updateLocalProfileKey(groupModel: TSGroupModelV2) async throws -> TSGroupThread {
+        return try await updateGroupV2(groupModel: groupModel, description: "Update local profile key") { changes in
             changes.setShouldUpdateLocalProfileKey()
         }
     }
@@ -1413,31 +1395,12 @@ public class GroupManager: NSObject {
 // MARK: -
 
 public extension GroupManager {
-    class func messageProcessingPromise(for thread: TSThread,
-                                        description: String) -> Promise<Void> {
-        guard thread.isGroupV2Thread else {
-            return Promise.value(())
-        }
-
-        return messageProcessingPromise(description: description)
-    }
-
-    class func messageProcessingPromise(for groupModel: TSGroupModel,
-                                        description: String) -> Promise<Void> {
-        guard groupModel.groupsVersion == .V2 else {
-            return Promise.value(())
-        }
-
-        return messageProcessingPromise(description: description)
-    }
-
-    private class func messageProcessingPromise(description: String) -> Promise<Void> {
-        return firstly {
-            self.messageProcessor.waitForFetchingAndProcessing()
-        }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
-                  description: description) {
-            GroupsV2Error.timeout
-        }
+    class func waitForMessageFetchingAndProcessingWithTimeout(description: String) async throws {
+        return try await Promise.wrapAsync {
+            await self.messageProcessor.waitForFetchingAndProcessing().awaitable()
+        }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration, description: description) {
+            return GroupsV2Error.timeout
+        }.awaitable()
     }
 }
 
@@ -1447,48 +1410,43 @@ extension GroupManager {
     public static func addOrInvite(
         serviceIds: [ServiceId],
         toExistingGroup existingGroupModel: TSGroupModel
-    ) -> Promise<TSGroupThread> {
+    ) async throws -> TSGroupThread {
         guard let existingGroupModel = existingGroupModel as? TSGroupModelV2 else {
             owsFail("[GV1] Mutations on V1 groups should be impossible!")
         }
 
-        return firstly { () -> Promise<Void> in
-            // Ensure we have fetched profile key credentials before performing
-            // the add below, since we depend on credential state to decide
-            // whether to add or invite a user.
+        // Ensure we have fetched profile key credentials before performing
+        // the add below, since we depend on credential state to decide
+        // whether to add or invite a user.
+        try await self.groupsV2.tryToFetchProfileKeyCredentials(
+            for: serviceIds.compactMap { $0 as? Aci },
+            ignoreMissingProfiles: false,
+            forceRefresh: false
+        )
 
-            Promise.wrapAsync {
-                try await self.groupsV2.tryToFetchProfileKeyCredentials(
-                    for: serviceIds.compactMap { $0 as? Aci },
-                    ignoreMissingProfiles: false,
-                    forceRefresh: false
-                )
-            }
-        }.then(on: DispatchQueue.global()) { () -> Promise<TSGroupThread> in
-            updateGroupV2(
-                groupModel: existingGroupModel,
-                description: "Add/Invite new non-admin members"
-            ) { groupChangeSet in
-                self.databaseStorage.read { transaction in
-                    for serviceId in serviceIds {
-                        owsAssertDebug(!existingGroupModel.groupMembership.isMemberOfAnyKind(serviceId))
+        return try await updateGroupV2(
+            groupModel: existingGroupModel,
+            description: "Add/Invite new non-admin members"
+        ) { groupChangeSet in
+            self.databaseStorage.read { transaction in
+                for serviceId in serviceIds {
+                    owsAssertDebug(!existingGroupModel.groupMembership.isMemberOfAnyKind(serviceId))
 
-                        // Important that at this point we already have the
-                        // profile keys for these users
-                        let hasCredential = self.groupsV2.hasProfileKeyCredential(
-                            for: SignalServiceAddress(serviceId),
-                            transaction: transaction
-                        )
+                    // Important that at this point we already have the
+                    // profile keys for these users
+                    let hasCredential = self.groupsV2.hasProfileKeyCredential(
+                        for: SignalServiceAddress(serviceId),
+                        transaction: transaction
+                    )
 
-                        if let aci = serviceId as? Aci, hasCredential {
-                            groupChangeSet.addMember(aci, role: .normal)
-                        } else {
-                            groupChangeSet.addInvitedMember(serviceId, role: .normal)
-                        }
+                    if let aci = serviceId as? Aci, hasCredential {
+                        groupChangeSet.addMember(aci, role: .normal)
+                    } else {
+                        groupChangeSet.addInvitedMember(serviceId, role: .normal)
+                    }
 
-                        if let aci = serviceId as? Aci, existingGroupModel.groupMembership.isBannedMember(aci) {
-                            groupChangeSet.removeBannedMember(aci)
-                        }
+                    if let aci = serviceId as? Aci, existingGroupModel.groupMembership.isBannedMember(aci) {
+                        groupChangeSet.removeBannedMember(aci)
                     }
                 }
             }
@@ -1504,14 +1462,14 @@ extension GroupManager {
         description: String?,
         avatarData: Data?,
         inExistingGroup existingGroupModel: TSGroupModel
-    ) -> Promise<TSGroupThread> {
+    ) async throws {
         guard let existingGroupModel = existingGroupModel as? TSGroupModelV2 else {
             owsFail("[GV1] Mutations on V1 groups should be impossible!")
         }
 
-        return firstly(on: DispatchQueue.global()) { () -> Promise<String?> in
-            guard let avatarData = avatarData else {
-                return .value(nil)
+        let avatarUrlPath = try await { () -> String? in
+            guard let avatarData else {
+                return nil
             }
 
             // Skip upload if the new avatar data is the same as the existing
@@ -1519,57 +1477,55 @@ extension GroupManager {
                 let existingAvatarHash = existingGroupModel.avatarHash,
                 try existingAvatarHash == TSGroupModel.hash(forAvatarData: avatarData)
             {
-                return .value(nil)
+                return nil
             }
 
-            return Promise.wrapAsync {
-                try await self.groupsV2.uploadGroupAvatar(
-                    avatarData: avatarData,
-                    groupSecretParams: try existingGroupModel.secretParams()
-                )
-            }.map { Optional.some($0) }
-        }.then(on: DispatchQueue.global()) { (avatarUrlPath: String?) -> Promise<TSGroupThread> in
-            var message = "Update attributes:"
-            message += title != nil ? " title" : ""
-            message += description != nil ? " description" : ""
-            message += avatarData != nil ? " settingAvatarData" : " clearingAvatarData"
+            return try await self.groupsV2.uploadGroupAvatar(
+                avatarData: avatarData,
+                groupSecretParams: try existingGroupModel.secretParams()
+            )
+        }()
 
-            return self.updateGroupV2(
-                groupModel: existingGroupModel,
-                description: message
-            ) { groupChangeSet in
-                if
-                    let title = title?.ows_stripped(),
-                    title != existingGroupModel.groupName
-                {
-                    groupChangeSet.setTitle(title)
-                }
+        var message = "Update attributes:"
+        message += title != nil ? " title" : ""
+        message += description != nil ? " description" : ""
+        message += avatarData != nil ? " settingAvatarData" : " clearingAvatarData"
 
-                if
-                    let description = description?.ows_stripped(),
-                    description != existingGroupModel.descriptionText
-                {
-                    groupChangeSet.setDescriptionText(description)
-                } else if
-                    description == nil,
-                    existingGroupModel.descriptionText != nil
-                {
-                    groupChangeSet.setDescriptionText(nil)
-                }
+        _ = try await self.updateGroupV2(
+            groupModel: existingGroupModel,
+            description: message
+        ) { groupChangeSet in
+            if
+                let title = title?.ows_stripped(),
+                title != existingGroupModel.groupName
+            {
+                groupChangeSet.setTitle(title)
+            }
 
-                // Having a URL from the previous step means this data
-                // represents a new avatar, which we have already uploaded.
-                if
-                    let avatarData = avatarData,
-                    let avatarUrlPath = avatarUrlPath
-                {
-                    groupChangeSet.setAvatar((data: avatarData, urlPath: avatarUrlPath))
-                } else if
-                    avatarData == nil,
-                    existingGroupModel.avatarData != nil
-                {
-                    groupChangeSet.setAvatar(nil)
-                }
+            if
+                let description = description?.ows_stripped(),
+                description != existingGroupModel.descriptionText
+            {
+                groupChangeSet.setDescriptionText(description)
+            } else if
+                description == nil,
+                existingGroupModel.descriptionText != nil
+            {
+                groupChangeSet.setDescriptionText(nil)
+            }
+
+            // Having a URL from the previous step means this data
+            // represents a new avatar, which we have already uploaded.
+            if
+                let avatarData = avatarData,
+                let avatarUrlPath = avatarUrlPath
+            {
+                groupChangeSet.setAvatar((data: avatarData, urlPath: avatarUrlPath))
+            } else if
+                avatarData == nil,
+                existingGroupModel.avatarData != nil
+            {
+                groupChangeSet.setAvatar(nil)
             }
         }
     }

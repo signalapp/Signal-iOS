@@ -30,24 +30,20 @@ extension GroupManager {
         private let groupSecretParamsData: Data
         private let updateDescription: String
         private let changesBlock: (GroupsV2OutgoingChanges) -> Void
-
-        let promise: Promise<TSGroupThread>
-        private let future: Future<TSGroupThread>
+        private let continuation: CheckedContinuation<TSGroupThread, any Error>
 
         init(
             groupId: Data,
             groupSecretParamsData: Data,
             updateDescription: String,
-            changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
+            changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void,
+            continuation: CheckedContinuation<TSGroupThread, any Error>
         ) {
             self.groupId = groupId
             self.groupSecretParamsData = groupSecretParamsData
             self.updateDescription = updateDescription
             self.changesBlock = changesBlock
-
-            let (promise, future) = Promise<TSGroupThread>.pending()
-            self.promise = promise
-            self.future = future
+            self.continuation = continuation
 
             super.init()
 
@@ -55,41 +51,42 @@ extension GroupManager {
         }
 
         public override func run() {
-            firstly {
-                Promise.wrapAsync {
-                    try await GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
-                }
-            }.then(on: DispatchQueue.global()) { () throws -> Promise<TSGroupThread> in
-                Promise.wrapAsync {
-                    try await self.groupsV2.updateGroupV2(
-                        groupId: self.groupId,
-                        groupSecretParams: try GroupSecretParams(contents: [UInt8](self.groupSecretParamsData)),
-                        changesBlock: self.changesBlock
-                    )
-                }
-            }.done(on: DispatchQueue.global()) { groupThread in
-                self.reportSuccess()
-                self.future.resolve(groupThread)
-            }.timeout(
-                seconds: GroupManager.groupUpdateTimeoutDuration,
-                description: description
-            ) {
-                GroupsV2Error.timeout
-            }.catch(on: DispatchQueue.global()) { error in
-                switch error {
-                case GroupsV2Error.redundantChange:
-                    // From an operation perspective, this is a success!
+            Task {
+                do {
+                    let groupThread = try await Promise.wrapAsync {
+                        try await self._run()
+                    }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration, description: description) {
+                        return GroupsV2Error.timeout
+                    }.awaitable()
+
                     self.reportSuccess()
-                    self.future.reject(error)
-                default:
-                    owsFailDebug("Group update failed: \(error)")
-                    self.reportError(error)
+                    self.continuation.resume(returning: groupThread)
+                } catch {
+                    switch error {
+                    case GroupsV2Error.redundantChange:
+                        // From an operation perspective, this is a success!
+                        self.reportSuccess()
+                        self.continuation.resume(throwing: error)
+                    default:
+                        owsFailDebug("Group update failed: \(error)")
+                        self.reportError(error)
+                    }
                 }
             }
         }
 
+        private func _run() async throws -> TSGroupThread {
+            try await GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
+
+            return try await self.groupsV2.updateGroupV2(
+                groupId: self.groupId,
+                groupSecretParams: try GroupSecretParams(contents: [UInt8](self.groupSecretParamsData)),
+                changesBlock: self.changesBlock
+            )
+        }
+
         public override func didFail(error: Error) {
-            future.reject(error)
+            self.continuation.resume(throwing: error)
         }
     }
 
@@ -97,16 +94,16 @@ extension GroupManager {
         groupModel: TSGroupModelV2,
         description: String,
         changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
-    ) -> Promise<TSGroupThread> {
-        let operation = GenericGroupUpdateOperation(
-            groupId: groupModel.groupId,
-            groupSecretParamsData: groupModel.secretParamsData,
-            updateDescription: description,
-            changesBlock: changesBlock
-        )
-
-        operationQueue(forUpdatingGroup: groupModel).addOperation(operation)
-
-        return operation.promise
+    ) async throws -> TSGroupThread {
+        return try await withCheckedThrowingContinuation { continuation in
+            let operation = GenericGroupUpdateOperation(
+                groupId: groupModel.groupId,
+                groupSecretParamsData: groupModel.secretParamsData,
+                updateDescription: description,
+                changesBlock: changesBlock,
+                continuation: continuation
+            )
+            operationQueue(forUpdatingGroup: groupModel).addOperation(operation)
+        }
     }
 }

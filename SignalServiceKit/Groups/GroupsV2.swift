@@ -116,7 +116,7 @@ public protocol GroupsV2 {
     func updateGroupV2(
         groupId: Data,
         groupSecretParams: GroupSecretParams,
-        changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
+        changesBlock: (GroupsV2OutgoingChanges) -> Void
     ) async throws -> TSGroupThread
 
     func parseAndVerifyChangeActionsProto(
@@ -644,7 +644,7 @@ public class MockGroupsV2: GroupsV2 {
     public func updateGroupV2(
         groupId: Data,
         groupSecretParams: GroupSecretParams,
-        changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
+        changesBlock: (GroupsV2OutgoingChanges) -> Void
     ) async throws -> TSGroupThread {
         owsFail("Not implemented.")
     }

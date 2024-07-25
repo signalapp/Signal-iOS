@@ -289,10 +289,9 @@ class GroupAttributesEditorHelper: NSObject {
 
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: fromViewController,
-            withGroupModel: oldGroupModel,
             updateDescription: self.logTag,
             updateBlock: {
-                GroupManager.updateGroupAttributes(
+                _ = try await GroupManager.updateGroupAttributes(
                     title: currentTitle,
                     description: currentDescription,
                     avatarData: currentAvatarData,

@@ -58,12 +58,14 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
         let serviceIdsToKick = groupModel.groupMembership.allMembersOfAnyKind
             .compactMap({ $0.serviceId }).filter({ $0 != localAci })
 
-        GroupManager.removeFromGroupOrRevokeInviteV2(groupModel: groupModel, serviceIds: serviceIdsToKick)
-            .done { _ in
+        Task {
+            do {
+                _ = try await GroupManager.removeFromGroupOrRevokeInviteV2(groupModel: groupModel, serviceIds: serviceIdsToKick)
                 Logger.info("Success.")
-            }.catch { error in
+            } catch {
                 owsFailDebug("Error: \(error)")
             }
+        }
     }
 
     private func sendInvalidGroupMessages(contactThread: TSContactThread) {
@@ -121,7 +123,7 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
                     groupModel: groupModel,
                     aci: otherUserAci,
                     role: .administrator
-                ).awaitable()
+                )
                 self.databaseStorage.write { transaction in
                     GroupManager.localLeaveGroupOrDeclineInvite(groupThread: changeMemberThread, tx: transaction)
                 }

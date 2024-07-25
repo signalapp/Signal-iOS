@@ -245,10 +245,9 @@ public class GroupLinkViewUtils {
                                completion: @escaping (TSGroupThread) -> Void) {
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: fromViewController,
-            withGroupModel: groupModelV2,
             updateDescription: description,
-            updateBlock: { () -> Promise<TSGroupThread> in
-                GroupManager.updateLinkModeV2(groupModel: groupModelV2, linkMode: linkMode)
+            updateBlock: {
+                return try await GroupManager.updateLinkModeV2(groupModel: groupModelV2, linkMode: linkMode)
             },
             completion: { (groupThread: TSGroupThread?) in
                 guard let groupThread = groupThread else {
@@ -375,10 +374,9 @@ private extension GroupLinkViewController {
     func resetLink() {
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: self,
-            withGroupModel: self.groupModelV2,
             updateDescription: self.logTag,
-            updateBlock: { () -> Promise<TSGroupThread> in
-                GroupManager.resetLinkV2(groupModel: self.groupModelV2)
+            updateBlock: {
+                return try await GroupManager.resetLinkV2(groupModel: self.groupModelV2)
             },
             completion: { [weak self] (groupThread: TSGroupThread?) in
                 guard let groupThread = groupThread else {

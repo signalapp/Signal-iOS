@@ -241,17 +241,17 @@ class DebugUIStress: DebugUIPage, Dependencies {
         for serviceId in serviceIdsToAdd {
             Logger.verbose("Adding: \(serviceId)")
         }
-        firstly {
-            GroupManager.addOrInvite(
-                serviceIds: serviceIdsToAdd,
-                toExistingGroup: dstGroupThread.groupModel
-            )
-        }.done { (groupThread) in
-            Logger.info("Complete.")
-
-            SignalApp.shared.presentConversationForThread(groupThread, animated: true)
-        }.catch(on: DispatchQueue.global()) { error in
-            owsFailDebug("Error: \(error)")
+        Task { @MainActor in
+            do {
+                let groupThread = try await GroupManager.addOrInvite(
+                    serviceIds: serviceIdsToAdd,
+                    toExistingGroup: dstGroupThread.groupModel
+                )
+                Logger.info("Complete.")
+                SignalApp.shared.presentConversationForThread(groupThread, animated: true)
+            } catch {
+                owsFailDebug("Error: \(error)")
+            }
         }
     }
 

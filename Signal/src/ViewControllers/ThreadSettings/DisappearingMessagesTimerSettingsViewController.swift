@@ -191,13 +191,17 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
 
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: self,
-            withThread: thread,
             updateDescription: "Update disappearing messages configuration",
-            updateBlock: { () -> Promise<Void> in
-                // We're sending a message, so we're accepting any pending message request.
-                ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
+            updateBlock: {
+                await withCheckedContinuation { continuation in
+                    DispatchQueue.global().async {
+                        // We're sending a message, so we're accepting any pending message request.
+                        ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
+                        continuation.resume()
+                    }
+                }
 
-                return self.localUpdateDisappearingMessagesConfiguration(
+                _ = try await self.localUpdateDisappearingMessagesConfiguration(
                     thread: thread,
                     newToken: configuration.asToken
                 )
@@ -212,9 +216,9 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
     private func localUpdateDisappearingMessagesConfiguration(
         thread: TSThread,
         newToken: DisappearingMessageToken
-    ) -> Promise<Void> {
+    ) async throws {
         if let contactThread = thread as? TSContactThread {
-            return databaseStorage.write(.promise) { tx in
+            await databaseStorage.awaitableWrite { tx in
                 GroupManager.localUpdateDisappearingMessageToken(
                     newToken,
                     inContactThread: contactThread,
@@ -223,17 +227,17 @@ class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
             }
         } else if let groupThread = thread as? TSGroupThread {
             if let groupV2Model = groupThread.groupModel as? TSGroupModelV2 {
-                return GroupManager.updateGroupV2(
+                _ = try await GroupManager.updateGroupV2(
                     groupModel: groupV2Model,
                     description: "Update disappearing messages"
                 ) { changeSet in
                     changeSet.setNewDisappearingMessageToken(newToken)
-                }.asVoid()
+                }
             } else {
-                return Promise(error: OWSAssertionError("Cannot update disappearing message config for V1 groups!"))
+                throw OWSAssertionError("Cannot update disappearing message config for V1 groups!")
             }
         } else {
-            return Promise(error: OWSAssertionError("Unexpected thread type in disappearing message update! \(type(of: thread))"))
+            throw OWSAssertionError("Unexpected thread type in disappearing message update! \(type(of: thread))")
         }
     }
 }

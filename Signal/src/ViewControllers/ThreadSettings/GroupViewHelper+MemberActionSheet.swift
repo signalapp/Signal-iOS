@@ -20,7 +20,7 @@ extension GroupViewHelper {
         titleFormat: String,
         actionTitle: String,
         updateDescription: String,
-        updateBlock: @escaping (TSGroupModelV2, T) -> Promise<Void>
+        updateBlock: @escaping (TSGroupModelV2, T) async throws -> Void
     ) {
         guard
             let fromViewController = fromViewController,
@@ -35,9 +35,8 @@ extension GroupViewHelper {
         let actionBlock = {
             GroupViewUtils.updateGroupWithActivityIndicator(
                 fromViewController: fromViewController,
-                withGroupModel: oldGroupModel,
                 updateDescription: updateDescription,
-                updateBlock: { updateBlock(oldGroupModel, serviceId) },
+                updateBlock: { try await updateBlock(oldGroupModel, serviceId) },
                 completion: { [weak self] _ in
                     self?.delegate?.groupViewHelperDidUpdateGroup()
                 }
@@ -81,7 +80,7 @@ extension GroupViewHelper {
             actionTitle: actionTitle,
             updateDescription: "Make group admin",
             updateBlock: { (oldGroupModel, aci: Aci) in
-                GroupManager.changeMemberRoleV2(groupModel: oldGroupModel, aci: aci, role: .administrator).asVoid()
+                _ = try await GroupManager.changeMemberRoleV2(groupModel: oldGroupModel, aci: aci, role: .administrator)
             }
         )
     }
@@ -114,7 +113,7 @@ extension GroupViewHelper {
             actionTitle: actionTitle,
             updateDescription: "Revoke group admin",
             updateBlock: { (oldGroupModel, aci: Aci) in
-                GroupManager.changeMemberRoleV2(groupModel: oldGroupModel, aci: aci, role: .normal).asVoid()
+                _ = try await GroupManager.changeMemberRoleV2(groupModel: oldGroupModel, aci: aci, role: .normal)
             }
         )
     }
@@ -140,17 +139,21 @@ extension GroupViewHelper {
     }
 
     func presentRemoveFromGroupActionSheet(address: SignalServiceAddress) {
-        let titleFormat = OWSLocalizedString("CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT",
-                                            comment: "Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}.")
-        let actionTitle =  OWSLocalizedString("CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON",
-                                             comment: "Label for 'remove from group' button in conversation settings view.")
+        let titleFormat = OWSLocalizedString(
+            "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT",
+            comment: "Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}."
+        )
+        let actionTitle =  OWSLocalizedString(
+            "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON",
+            comment: "Label for 'remove from group' button in conversation settings view."
+        )
         showMemberActionConfirmationActionSheet(
             address: address,
             titleFormat: titleFormat,
             actionTitle: actionTitle,
             updateDescription: "Remove user from group",
             updateBlock: { (oldGroupModel, serviceId: ServiceId) in
-                GroupManager.removeFromGroupOrRevokeInviteV2(groupModel: oldGroupModel, serviceIds: [serviceId]).asVoid()
+                _ = try await GroupManager.removeFromGroupOrRevokeInviteV2(groupModel: oldGroupModel, serviceIds: [serviceId])
             }
         )
     }

@@ -469,10 +469,9 @@ private extension GroupMemberRequestsAndInvitesViewController {
 
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: self,
-            withGroupModel: groupModelV2,
             updateDescription: self.logTag,
             updateBlock: {
-                GroupManager.removeFromGroupOrRevokeInviteV2(groupModel: groupModelV2, serviceIds: serviceIds)
+                return try await GroupManager.removeFromGroupOrRevokeInviteV2(groupModel: groupModelV2, serviceIds: serviceIds)
             },
             completion: { [weak self] groupThread in
                 self?.reloadContent(groupThread: groupThread)
@@ -488,10 +487,9 @@ private extension GroupMemberRequestsAndInvitesViewController {
 
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: self,
-            withGroupModel: groupModelV2,
             updateDescription: self.logTag,
             updateBlock: {
-                GroupManager.revokeInvalidInvites(groupModel: groupModelV2)
+                return try await GroupManager.revokeInvalidInvites(groupModel: groupModelV2)
             },
             completion: { [weak self] groupThread in
                 self?.reloadContent(groupThread: groupThread)
@@ -548,10 +546,9 @@ fileprivate extension GroupMemberRequestsAndInvitesViewController {
 
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: self,
-            withGroupModel: groupModelV2,
             updateDescription: self.logTag,
-            updateBlock: { () -> Promise<TSGroupThread> in
-                GroupManager.acceptOrDenyMemberRequestsV2(groupModel: groupModelV2, aci: aci, shouldAccept: shouldAccept)
+            updateBlock: {
+                return try await GroupManager.acceptOrDenyMemberRequestsV2(groupModel: groupModelV2, aci: aci, shouldAccept: shouldAccept)
             },
             completion: { [weak self] groupThread in
                 guard let self = self else { return }

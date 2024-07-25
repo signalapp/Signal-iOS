@@ -113,10 +113,9 @@ class MemberRequestView: UIStackView {
 
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: fromViewController,
-            withGroupModel: groupModelV2,
             updateDescription: self.logTag,
             updateBlock: {
-                GroupManager.cancelMemberRequestsV2(groupModel: groupModelV2)
+                return try await GroupManager.cancelMemberRequestsV2(groupModel: groupModelV2)
             },
             completion: nil
         )

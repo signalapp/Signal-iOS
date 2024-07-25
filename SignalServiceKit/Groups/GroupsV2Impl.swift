@@ -944,7 +944,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
     public func updateGroupV2(
         groupId: Data,
         groupSecretParams: GroupSecretParams,
-        changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
+        changesBlock: (GroupsV2OutgoingChanges) -> Void
     ) async throws -> TSGroupThread {
         let changes = GroupsV2OutgoingChangesImpl(
             groupId: groupId,
@@ -1556,7 +1556,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
             // We're already invited by ACI; try to join by accepting the invite.
             // That will make us a full member; requesting to join via
             // the invite link might make us a requesting member.
-            return try await GroupManager.localAcceptInviteToGroupV2(groupModel: groupModelV2).awaitable()
+            return try await GroupManager.localAcceptInviteToGroupV2(groupModel: groupModelV2)
         } else if
             let pni = localIdentifiers.pni,
             groupMembership.isInvitedMember(pni)
@@ -1564,7 +1564,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
             // We're already invited by PNI; try to join by accepting the invite.
             // That will make us a full member; requesting to join via
             // the invite link might make us a requesting member.
-            return try await GroupManager.localAcceptInviteToGroupV2(groupModel: groupModelV2).awaitable()
+            return try await GroupManager.localAcceptInviteToGroupV2(groupModel: groupModelV2)
         } else {
             throw GroupsV2Error.localUserNotInGroup
         }

@@ -266,39 +266,33 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
         // into a single change.
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: self,
-            withThread: thread,
             updateDescription: "Update group permissions",
-            updateBlock: { () -> Promise<Void> in
-                // We're sending a message, so we're accepting any pending message request.
-                ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(self.thread)
+            updateBlock: { @MainActor [thread] in
+                await withCheckedContinuation { continuation in
+                    DispatchQueue.global().async {
+                        // We're sending a message, so we're accepting any pending message request.
+                        ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
+                        continuation.resume()
+                    }
+                }
 
-                return firstly { () -> Promise<Void> in
-                    if self.newAccessMembers != self.oldAccessMembers {
-                        return GroupManager.changeGroupMembershipAccessV2(
-                            groupModel: self.groupModelV2,
-                            access: self.newAccessMembers
-                        ).asVoid()
-                    } else {
-                        return Promise.value(())
-                    }
-                }.then { () -> Promise<Void> in
-                    if self.newAccessAttributes != self.oldAccessAttributes {
-                        return GroupManager.changeGroupAttributesAccessV2(
-                            groupModel: self.groupModelV2,
-                            access: self.newAccessAttributes
-                        ).asVoid()
-                    } else {
-                        return Promise.value(())
-                    }
-                }.then { () -> Promise<Void> in
-                    if self.newIsAnnouncementsOnly != self.oldIsAnnouncementsOnly {
-                        return GroupManager.setIsAnnouncementsOnly(
-                            groupModel: self.groupModelV2,
-                            isAnnouncementsOnly: self.newIsAnnouncementsOnly
-                        ).asVoid()
-                    } else {
-                        return Promise.value(())
-                    }
+                if self.newAccessMembers != self.oldAccessMembers {
+                    try await GroupManager.changeGroupMembershipAccessV2(
+                        groupModel: self.groupModelV2,
+                        access: self.newAccessMembers
+                    )
+                }
+                if self.newAccessAttributes != self.oldAccessAttributes {
+                    try await GroupManager.changeGroupAttributesAccessV2(
+                        groupModel: self.groupModelV2,
+                        access: self.newAccessAttributes
+                    )
+                }
+                if self.newIsAnnouncementsOnly != self.oldIsAnnouncementsOnly {
+                    try await GroupManager.setIsAnnouncementsOnly(
+                        groupModel: self.groupModelV2,
+                        isAnnouncementsOnly: self.newIsAnnouncementsOnly
+                    )
                 }
             },
             completion: { [weak self] _ in

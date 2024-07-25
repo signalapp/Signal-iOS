@@ -48,14 +48,9 @@ private class LocalUserLeaveGroupJobRunner: JobRunner, Dependencies {
 
     private func _runJobAttempt(_ jobRecord: LocalUserLeaveGroupJobRecord) async throws -> TSGroupThread {
         if jobRecord.waitForMessageProcessing {
-            let groupModel = try databaseStorage.read { tx in
-                try fetchGroupModel(threadUniqueId: jobRecord.threadId, tx: tx)
-            }
-            try await GroupManager.messageProcessingPromise(for: groupModel, description: #fileID).awaitable()
+            try await GroupManager.waitForMessageFetchingAndProcessingWithTimeout(description: #fileID)
         }
 
-        // Read the group model again from the DB to ensure we have the
-        // latest before we try and update the group
         let groupModel = try databaseStorage.read { tx in
             try fetchGroupModel(threadUniqueId: jobRecord.threadId, tx: tx)
         }
@@ -77,7 +72,7 @@ private class LocalUserLeaveGroupJobRunner: JobRunner, Dependencies {
             if let replacementAdminAci {
                 groupChangeSet.changeRoleForMember(replacementAdminAci, role: .administrator)
             }
-        }.awaitable()
+        }
 
         await databaseStorage.awaitableWrite { tx in
             jobRecord.anyRemove(transaction: tx)

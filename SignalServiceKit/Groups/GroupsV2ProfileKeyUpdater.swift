@@ -284,9 +284,9 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                     )
                 }
             }.then(on: DispatchQueue.global()) { () throws -> Promise<TSGroupThread> in
-                return GroupManager.updateLocalProfileKey(
-                    groupModel: groupModel
-                )
+                return Promise.wrapAsync {
+                    return try await GroupManager.updateLocalProfileKey(groupModel: groupModel)
+                }
             }.then(on: DispatchQueue.global()) { (groupThread: TSGroupThread) -> Promise<TSGroupThread> in
                 // Confirm that the updated snapshot has the new profile key.
                 return firstly(on: DispatchQueue.global()) { () -> Promise<GroupV2Snapshot> in

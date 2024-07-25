@@ -18,63 +18,27 @@ public class GroupViewUtils {
 
     public static func updateGroupWithActivityIndicator<T>(
         fromViewController: UIViewController,
-        withThread thread: TSThread,
         updateDescription: String,
-        updateBlock: @escaping () -> Promise<T>,
-        completion: ((T?) -> Void)?
-    ) {
-        updateGroupWithActivityIndicator(
-            fromViewController: fromViewController,
-            withMessageProcessingPromise: GroupManager.messageProcessingPromise(
-                for: thread,
-                description: updateDescription
-            ),
-            updateBlock: updateBlock,
-            completion: completion
-        )
-    }
-
-    public static func updateGroupWithActivityIndicator<T>(
-        fromViewController: UIViewController,
-        withGroupModel groupModel: TSGroupModel,
-        updateDescription: String,
-        updateBlock: @escaping () -> Promise<T>,
-        completion: ((T?) -> Void)?
-    ) {
-        updateGroupWithActivityIndicator(
-            fromViewController: fromViewController,
-            withMessageProcessingPromise: GroupManager.messageProcessingPromise(
-                for: groupModel,
-                description: updateDescription
-            ),
-            updateBlock: updateBlock,
-            completion: completion
-        )
-    }
-
-    private static func updateGroupWithActivityIndicator<T>(
-        fromViewController: UIViewController,
-        withMessageProcessingPromise messageProcessingPromise: Promise<Void>,
-        updateBlock: @escaping () -> Promise<T>,
+        updateBlock: @escaping () async throws -> T,
         completion: ((T?) -> Void)?
     ) {
         // GroupsV2 TODO: Should we allow cancel here?
-        ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
-                                                     canCancel: false) { modalActivityIndicator in
-            messageProcessingPromise.then(on: DispatchQueue.global()) {
-                updateBlock()
-            }.done(on: DispatchQueue.main) { (value: T) in
-                modalActivityIndicator.dismiss {
-                    completion?(value)
-                }
-            }.catch { error in
-                switch error {
-                case GroupsV2Error.redundantChange:
+        ModalActivityIndicatorViewController.present(
+            fromViewController: fromViewController,
+            canCancel: false,
+            asyncBlock: { modalActivityIndicator in
+                do {
+                    try await GroupManager.waitForMessageFetchingAndProcessingWithTimeout(description: updateDescription)
+                    let value = try await updateBlock()
+                    modalActivityIndicator.dismiss {
+                        completion?(value)
+                    }
+                } catch GroupsV2Error.redundantChange {
                     // Treat GroupsV2Error.redundantChange as a success.
                     modalActivityIndicator.dismiss {
                         completion?(nil)
                     }
-                default:
+                } catch {
                     owsFailDebugUnlessNetworkFailure(error)
 
                     modalActivityIndicator.dismiss {
@@ -82,7 +46,7 @@ public class GroupViewUtils {
                     }
                 }
             }
-        }
+        )
     }
 
     public class func showUpdateErrorUI(error: Error) {
