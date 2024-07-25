@@ -876,69 +876,49 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
 
     private func fetchAvatarData(
         avatarUrlPaths: [String],
-        downloadedAvatars downloadedAvatarsParam: GroupV2DownloadedAvatars,
+        downloadedAvatars: GroupV2DownloadedAvatars,
         groupV2Params: GroupV2Params
     ) async throws -> GroupV2DownloadedAvatars {
-        var downloadedAvatars = downloadedAvatarsParam
+        var downloadedAvatars = downloadedAvatars
 
-        let avatars = try await firstly(on: DispatchQueue.global()) { () -> Promise<[(String, Data)]> in
-            let undownloadedAvatarUrlPaths = Set(avatarUrlPaths).subtracting(downloadedAvatars.avatarUrlPaths)
-            guard !undownloadedAvatarUrlPaths.isEmpty else {
-                return Promise.value([])
-            }
+        let undownloadedAvatarUrlPaths = Set(avatarUrlPaths).subtracting(downloadedAvatars.avatarUrlPaths)
 
+        try await withThrowingTaskGroup(of: (String, Data).self) { taskGroup in
             // We need to "populate" any group changes that have a
             // avatar with the avatar data.
-            var promises = [Promise<(String, Data)>]()
             for avatarUrlPath in undownloadedAvatarUrlPaths {
-                let promise = firstly { () -> Promise<Data> in
-                    Promise.wrapAsync {
-                        try await self.fetchAvatarData(
+                taskGroup.addTask {
+                    var avatarData: Data
+                    do {
+                        avatarData = try await self.fetchAvatarData(
                             avatarUrlPath: avatarUrlPath,
                             groupV2Params: groupV2Params
                         )
-                    }
-                }.recover(on: DispatchQueue.global()) { error -> Promise<Data> in
-                    if let statusCode = error.httpStatusCode,
-                       statusCode == 404 {
+                    } catch where error.httpStatusCode == 404 {
                         // Fulfill with empty data if service returns 404 status code.
                         // We don't want the group to be left in an unrecoverable state
                         // if the avatar is missing from the CDN.
-                        return .value(Data())
+                        avatarData = Data()
                     }
-
-                    throw error
-                }.map(on: DispatchQueue.global()) { (avatarData: Data) -> Data in
-                    guard avatarData.count > 0 else {
-                        owsFailDebug("Empty avatarData.")
-                        return avatarData
+                    if !avatarData.isEmpty {
+                        avatarData = (try? groupV2Params.decryptGroupAvatar(avatarData)) ?? Data()
                     }
-                    do {
-                        return try groupV2Params.decryptGroupAvatar(avatarData) ?? Data()
-                    } catch {
-                        owsFailDebug("Invalid avatar data: \(error)")
-                        // Empty avatar data will be discarded below.
-                        return Data()
-                    }
-                }.map(on: DispatchQueue.global()) { (avatarData: Data) -> (String, Data) in
                     return (avatarUrlPath, avatarData)
                 }
-                promises.append(promise)
             }
-            return Promise.when(fulfilled: promises)
-        }.awaitable()
-
-        for (avatarUrlPath, avatarData) in avatars {
-            guard avatarData.count > 0 else {
-                owsFailDebug("Empty avatarData.")
-                continue
+            while let (avatarUrlPath, avatarData) = try await taskGroup.next() {
+                guard avatarData.count > 0 else {
+                    owsFailDebug("Empty avatarData.")
+                    continue
+                }
+                guard TSGroupModel.isValidGroupAvatarData(avatarData) else {
+                    owsFailDebug("Invalid group avatar")
+                    continue
+                }
+                downloadedAvatars.set(avatarData: avatarData, avatarUrlPath: avatarUrlPath)
             }
-            guard TSGroupModel.isValidGroupAvatarData(avatarData) else {
-                owsFailDebug("Invalid group avatar")
-                continue
-            }
-            downloadedAvatars.set(avatarData: avatarData, avatarUrlPath: avatarUrlPath)
         }
+
         return downloadedAvatars
     }
 
@@ -1485,17 +1465,21 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
         avatarData: Data?
     ) async throws -> TSGroupThread {
         let groupV2Params = try GroupV2Params(groupSecretParams: groupSecretParams)
-        return try await Promises.performWithImmediateRetry {
-            Promise.wrapAsync {
-                try await self.joinGroupViaInviteLinkAttempt(
+        var remainingRetries = 3
+        while true {
+            do {
+                return try await self.joinGroupViaInviteLinkAttempt(
                     groupId: groupId,
                     inviteLinkPassword: inviteLinkPassword,
                     groupV2Params: groupV2Params,
                     groupInviteLinkPreview: groupInviteLinkPreview,
                     avatarData: avatarData
                 )
+            } catch where remainingRetries > 0 && error.isNetworkFailureOrTimeout {
+                Logger.warn("Retryable after error: \(error)")
+                remainingRetries -= 1
             }
-        }.awaitable()
+        }
     }
 
     private func joinGroupViaInviteLinkAttempt(

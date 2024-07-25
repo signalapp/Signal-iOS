@@ -2712,7 +2712,6 @@
 		F9C5CE19289453B400548EEE /* SSKPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB47289453B200548EEE /* SSKPreferences.swift */; };
 		F9C5CE1A289453B400548EEE /* OWSFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB48289453B200548EEE /* OWSFormat.swift */; };
 		F9C5CE1B289453B400548EEE /* OWSFileSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB49289453B200548EEE /* OWSFileSystem.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CE1D289453B400548EEE /* Promise+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB4B289453B200548EEE /* Promise+OWS.swift */; };
 		F9C5CE1E289453B400548EEE /* OrderedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB4C289453B200548EEE /* OrderedSet.swift */; };
 		F9C5CE1F289453B400548EEE /* UIImage+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB4D289453B200548EEE /* UIImage+OWS.swift */; };
 		F9C5CE20289453B400548EEE /* PendingTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB4E289453B200548EEE /* PendingTasks.swift */; };
@@ -5803,7 +5802,6 @@
 		F9C5CB47289453B200548EEE /* SSKPreferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKPreferences.swift; sourceTree = "<group>"; };
 		F9C5CB48289453B200548EEE /* OWSFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSFormat.swift; sourceTree = "<group>"; };
 		F9C5CB49289453B200548EEE /* OWSFileSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSFileSystem.h; sourceTree = "<group>"; };
-		F9C5CB4B289453B200548EEE /* Promise+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Promise+OWS.swift"; sourceTree = "<group>"; };
 		F9C5CB4C289453B200548EEE /* OrderedSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderedSet.swift; sourceTree = "<group>"; };
 		F9C5CB4D289453B200548EEE /* UIImage+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+OWS.swift"; sourceTree = "<group>"; };
 		F9C5CB4E289453B200548EEE /* PendingTasks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PendingTasks.swift; sourceTree = "<group>"; };
@@ -11862,7 +11860,6 @@
 				F9C5CB58289453B200548EEE /* Platform.swift */,
 				768F720C2A22CEAC002C4E7D /* Preferences.swift */,
 				D95C39EB296E1BC600A9DA23 /* PrefixedLogger.swift */,
-				F9C5CB4B289453B200548EEE /* Promise+OWS.swift */,
 				4CB93DC12180FF07004B9764 /* ProximityMonitoringManager.swift */,
 				F9C5CB42289453B200548EEE /* ReadyFlag.swift */,
 				F9C5CB46289453B200548EEE /* Refinery.swift */,
@@ -14818,7 +14815,6 @@
 				503BD2892B44D666009624FC /* ProfileManager.swift in Sources */,
 				B93296692BBB3FF200B8BD39 /* ProfileName.swift in Sources */,
 				50F77AA02AAA7B8A00FB70C5 /* ProfileWhitelistMerger.swift in Sources */,
-				F9C5CE1D289453B400548EEE /* Promise+OWS.swift in Sources */,
 				668A01322C2B6088007B8808 /* Promise.swift in Sources */,
 				F9C5CCE6289453B300548EEE /* ProtoUtils.m in Sources */,
 				F9C5CC9D289453B300548EEE /* Provisioning.pb.swift in Sources */,
