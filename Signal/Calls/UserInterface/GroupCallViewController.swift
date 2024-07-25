@@ -369,7 +369,11 @@ class GroupCallViewController: UIViewController {
 
         raisedHandsToastInnerContainer.autoPinVerticalEdges(toEdgesOf: raisedHandsToastContainer)
         raisedHandsToastInnerContainer.autoHCenterInSuperview()
-        raisedHandsToastInnerContainer.widthAnchor.constraint(lessThanOrEqualToConstant: 540).isActive = true
+        if UIDevice.current.isIPad {
+            raisedHandsToastInnerContainer.widthAnchor.constraint(lessThanOrEqualToConstant: bottomSheet.maxWidth).isActive = true
+        } else {
+            raisedHandsToastInnerContainer.widthAnchor.constraint(lessThanOrEqualToConstant: 540).isActive = true
+        }
         raisedHandsToastInnerContainer.autoPinHorizontalEdges(toEdgesOf: raisedHandsToastContainer)
             // Prioritize the 540px limit
             .forEach { $0.priority = .defaultHigh }
