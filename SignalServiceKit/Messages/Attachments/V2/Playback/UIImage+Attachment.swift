@@ -35,7 +35,8 @@ extension UIImage {
                 encryptionKey: encryptionKey,
                 plaintextLength: plaintextLength,
                 block: { dataProvider in
-                    return UIImage(cgImage: try dataProvider.toJpegCGImage())
+                    let (cgImage, orientation) = try dataProvider.toJpegCGImage()
+                    return UIImage(cgImage: cgImage, scale: 1, orientation: orientation)
                 }
             )
         {
@@ -182,7 +183,29 @@ extension CGDataProvider {
         return cgImage
     }
 
-    fileprivate func toJpegCGImage() throws -> CGImage {
+    fileprivate func toJpegCGImage() throws -> (CGImage, UIImage.Orientation) {
+        let orientation: UIImage.Orientation = {
+            guard let imageSource = CGImageSourceCreateWithDataProvider(self, nil) else {
+                return nil
+            }
+            // Get image orientation
+            let options: [CFString: Any] = [
+                kCGImageSourceShouldAllowFloat: true
+            ]
+            let properties = CGImageSourceCopyPropertiesAtIndex(
+                imageSource,
+                0,
+                options as CFDictionary
+            ) as? [CFString: Any]
+            guard
+                let raw = properties?[kCGImagePropertyOrientation] as? Int,
+                let raw = UInt32(exactly: raw)
+            else {
+                return nil
+            }
+            return CGImagePropertyOrientation(rawValue: raw)?.uiImageOrientation
+        }() ?? .up
+
         guard let cgImage = CGImage(
             jpegDataProviderSource: self,
             decode: nil,
@@ -191,6 +214,30 @@ extension CGDataProvider {
         ) else {
             throw ParsingError.failedToParseJpg
         }
-        return cgImage
+        return (cgImage, orientation)
+    }
+}
+
+extension CGImagePropertyOrientation {
+
+    var uiImageOrientation: UIImage.Orientation {
+        switch self {
+        case .up:
+            return .up
+        case .down:
+            return .down
+        case .left:
+            return .left
+        case .right:
+            return .right
+        case .upMirrored:
+            return .upMirrored
+        case .downMirrored:
+            return .downMirrored
+        case .leftMirrored:
+            return .leftMirrored
+        case .rightMirrored:
+            return .rightMirrored
+        }
     }
 }
