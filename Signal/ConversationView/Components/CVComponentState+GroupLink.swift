@@ -43,8 +43,7 @@ fileprivate extension CVComponentState {
         }
     }
 
-    private static func loadGroupInviteLinkAvatar(avatarUrlPath: String,
-                                                  groupInviteLinkInfo: GroupInviteLinkInfo) -> Promise<Void> {
+    private static func loadGroupInviteLinkAvatar(avatarUrlPath: String, groupInviteLinkInfo: GroupInviteLinkInfo) -> Promise<Void> {
         Self.unfairLock.withLock {
             guard !groupInviteLinkAvatarsInFlight.contains(avatarUrlPath) else {
                 return
@@ -62,12 +61,13 @@ fileprivate extension CVComponentState {
             }
         }.map(on: DispatchQueue.global()) { (avatarData: Data) -> Void in
             let imageMetadata = avatarData.imageMetadata(withPath: nil, mimeType: nil)
-            let cacheFileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: imageMetadata.fileExtension,
-                                                              isAvailableWhileDeviceLocked: true)
+            let cacheFileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: imageMetadata.fileExtension, isAvailableWhileDeviceLocked: true)
             guard imageMetadata.isValid else {
-                let cachedAvatar = GroupInviteLinkCachedAvatar(cacheFileUrl: cacheFileUrl,
-                                                               imageSizePixels: imageMetadata.pixelSize,
-                                                               isValid: false)
+                let cachedAvatar = GroupInviteLinkCachedAvatar(
+                    cacheFileUrl: cacheFileUrl,
+                    imageSizePixels: imageMetadata.pixelSize,
+                    isValid: false
+                )
                 Self.unfairLock.withLock {
                     Self.groupInviteLinkAvatarCache[avatarUrlPath] = cachedAvatar
                     Self.groupInviteLinkAvatarsInFlight.remove(avatarUrlPath)
@@ -75,9 +75,11 @@ fileprivate extension CVComponentState {
                 throw OWSAssertionError("Invalid group avatar.")
             }
             try avatarData.write(to: cacheFileUrl)
-            let cachedAvatar = GroupInviteLinkCachedAvatar(cacheFileUrl: cacheFileUrl,
-                                                           imageSizePixels: imageMetadata.pixelSize,
-                                                           isValid: true)
+            let cachedAvatar = GroupInviteLinkCachedAvatar(
+                cacheFileUrl: cacheFileUrl,
+                imageSizePixels: imageMetadata.pixelSize,
+                isValid: true
+            )
             Self.unfairLock.withLock {
                 Self.groupInviteLinkAvatarCache[avatarUrlPath] = cachedAvatar
                 Self.groupInviteLinkAvatarsInFlight.remove(avatarUrlPath)
@@ -97,9 +99,11 @@ extension CVComponentState {
 
     // MARK: - Notifications
 
-    static func configureGroupInviteLink(_ url: URL,
-                                         message: TSMessage,
-                                         groupInviteLinkInfo: GroupInviteLinkInfo) -> GroupInviteLinkViewModel {
+    static func configureGroupInviteLink(
+        _ url: URL,
+        message: TSMessage,
+        groupInviteLinkInfo: GroupInviteLinkInfo
+    ) -> GroupInviteLinkViewModel {
 
         let touchMessage = {
             Self.databaseStorage.write { transaction in
@@ -136,18 +140,22 @@ extension CVComponentState {
                     owsFailDebugUnlessNetworkFailure(error)
                 }
             }
-            return GroupInviteLinkViewModel(url: url,
-                                            groupInviteLinkPreview: nil,
-                                            avatar: nil,
-                                            isExpired: Self.isGroupInviteLinkExpired(url))
+            return GroupInviteLinkViewModel(
+                url: url,
+                groupInviteLinkPreview: nil,
+                avatar: nil,
+                isExpired: Self.isGroupInviteLinkExpired(url)
+            )
         }
 
         guard let avatarUrlPath = groupInviteLinkPreview.avatarUrlPath else {
             // If this group link has no avatar, there's nothing left to load.
-            return GroupInviteLinkViewModel(url: url,
-                                            groupInviteLinkPreview: groupInviteLinkPreview,
-                                            avatar: nil,
-                                            isExpired: false)
+            return GroupInviteLinkViewModel(
+                url: url,
+                groupInviteLinkPreview: groupInviteLinkPreview,
+                avatar: nil,
+                isExpired: false
+            )
         }
 
         guard let avatar = Self.cachedGroupInviteLinkAvatar(avatarUrlPath: avatarUrlPath) else {
@@ -155,8 +163,7 @@ extension CVComponentState {
             // try to do load it now. On success, touch the interaction
             // in order to trigger reload of the view.
             firstly(on: DispatchQueue.global()) {
-                Self.loadGroupInviteLinkAvatar(avatarUrlPath: avatarUrlPath,
-                                               groupInviteLinkInfo: groupInviteLinkInfo)
+                Self.loadGroupInviteLinkAvatar(avatarUrlPath: avatarUrlPath, groupInviteLinkInfo: groupInviteLinkInfo)
             }.done(on: DispatchQueue.global()) { () in
                 touchMessage()
             }.catch { error in
@@ -164,15 +171,19 @@ extension CVComponentState {
                 owsFailDebugUnlessNetworkFailure(error)
             }
 
-            return GroupInviteLinkViewModel(url: url,
-                                            groupInviteLinkPreview: groupInviteLinkPreview,
-                                            avatar: nil,
-                                            isExpired: false)
+            return GroupInviteLinkViewModel(
+                url: url,
+                groupInviteLinkPreview: groupInviteLinkPreview,
+                avatar: nil,
+                isExpired: false
+            )
         }
 
-        return GroupInviteLinkViewModel(url: url,
-                                        groupInviteLinkPreview: groupInviteLinkPreview,
-                                        avatar: avatar,
-                                        isExpired: false)
+        return GroupInviteLinkViewModel(
+            url: url,
+            groupInviteLinkPreview: groupInviteLinkPreview,
+            avatar: avatar,
+            isExpired: false
+        )
     }
 }

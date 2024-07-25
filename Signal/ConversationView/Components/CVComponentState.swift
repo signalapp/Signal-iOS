@@ -1495,7 +1495,7 @@ fileprivate extension CVComponentState.Builder {
         return build()
     }
 
-    mutating func buildLinkPreview(message: TSMessage, linkPreview: OWSLinkPreview) throws {
+    private mutating func buildLinkPreview(message: TSMessage, linkPreview: OWSLinkPreview) throws {
         guard bodyText != nil else {
             owsFailDebug("Missing body text.")
             return
@@ -1509,19 +1509,23 @@ fileprivate extension CVComponentState.Builder {
             return
         }
         if let groupInviteLinkInfo = GroupInviteLinkInfo.parseFrom(url) {
-            let groupInviteLinkViewModel = CVComponentState.configureGroupInviteLink(url, message: message,
-                                                                                     groupInviteLinkInfo: groupInviteLinkInfo)
+            let groupInviteLinkViewModel = CVComponentState.configureGroupInviteLink(
+                url,
+                message: message,
+                groupInviteLinkInfo: groupInviteLinkInfo
+            )
             if !groupInviteLinkViewModel.isExpired {
-                let linkType: LinkPreviewLinkType = (isIncoming
-                                                        ? .incomingMessageGroupInviteLink
-                                                        : .outgoingMessageGroupInviteLink)
-                let state = LinkPreviewGroupLink(linkType: linkType,
-                                                 linkPreview: linkPreview,
-                                                 groupInviteLinkViewModel: groupInviteLinkViewModel,
-                                                 conversationStyle: conversationStyle)
-                self.linkPreview = LinkPreview(linkPreview: linkPreview,
-                                               linkPreviewAttachment: nil,
-                                               state: state)
+                let state = LinkPreviewGroupLink(
+                    linkType: isIncoming ? .incomingMessageGroupInviteLink : .outgoingMessageGroupInviteLink,
+                    linkPreview: linkPreview,
+                    groupInviteLinkViewModel: groupInviteLinkViewModel,
+                    conversationStyle: conversationStyle
+                )
+                self.linkPreview = LinkPreview(
+                    linkPreview: linkPreview,
+                    linkPreviewAttachment: nil,
+                    state: state
+                )
             }
         } else {
             let linkPreviewAttachment = { () -> TSResource? in
@@ -1552,12 +1556,16 @@ fileprivate extension CVComponentState.Builder {
                 return attachmentStream
             }()
 
-            let state = LinkPreviewSent(linkPreview: linkPreview,
-                                        imageAttachment: linkPreviewAttachment,
-                                        conversationStyle: conversationStyle)
-            self.linkPreview = LinkPreview(linkPreview: linkPreview,
-                                           linkPreviewAttachment: linkPreviewAttachment,
-                                           state: state)
+            let state = LinkPreviewSent(
+                linkPreview: linkPreview,
+                imageAttachment: linkPreviewAttachment,
+                conversationStyle: conversationStyle
+            )
+            self.linkPreview = LinkPreview(
+                linkPreview: linkPreview,
+                linkPreviewAttachment: linkPreviewAttachment,
+                state: state
+            )
         }
     }
 
