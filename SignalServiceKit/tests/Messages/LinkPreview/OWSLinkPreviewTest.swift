@@ -142,273 +142,148 @@ class OWSLinkPreviewTest: SSKBaseTest {
 
 extension OWSLinkPreviewTest {
 
-    func testLinkDownloadAndParsing() {
-        guard shouldRunNetworkTests else { return }
+    func testLinkDownloadAndParsing() async throws {
+        try XCTSkipUnless(shouldRunNetworkTests)
 
-        let expectation = self.expectation(description: "link download and parsing")
-
-        linkPreviewManager.fetchLinkPreview(for: URL(string: "https://www.youtube.com/watch?v=tP-Ipsat90c")!)
-            .done { (draft: OWSLinkPreviewDraft) in
-                XCTAssertNotNil(draft)
-
-                XCTAssertEqual(draft.title, "Randomness is Random - Numberphile")
-                XCTAssertNotNil(draft.imageData)
-
-                expectation.fulfill()
-            }.catch { (error) in
-                Logger.error("error: \(error)")
-                XCTFail("Unexpected error: \(error)")
-                expectation.fulfill()
-            }
-
-        self.waitForExpectations(timeout: 15.0, handler: nil)
+        let draft = try await linkPreviewManager.fetchLinkPreview(for: URL(string: "https://www.youtube.com/watch?v=tP-Ipsat90c")!)
+        XCTAssertEqual(draft.title, "Randomness is Random - Numberphile")
+        XCTAssertNotNil(draft.imageData)
     }
 
-    func testLinkParsingWithRealData1() {
-        guard shouldRunNetworkTests else { return }
+    func testLinkParsingWithRealData1() async throws {
+        try XCTSkipUnless(shouldRunNetworkTests)
 
-        let expectation = self.expectation(description: "link download and parsing")
+        let (_, linkText) = try await linkPreviewManager.fetchStringResource(from: URL(string: "https://www.youtube.com/watch?v=tP-Ipsat90c")!)
 
-        linkPreviewManager.fetchStringResource(from: URL(string: "https://www.youtube.com/watch?v=tP-Ipsat90c")!)
-            .done { _, linkText in
-                let content = HTMLMetadata.construct(parsing: linkText)
-                XCTAssertNotNil(content)
+        let content = HTMLMetadata.construct(parsing: linkText)
+        XCTAssertNotNil(content)
 
-                XCTAssertEqual(content.ogTitle, "Randomness is Random - Numberphile")
-                XCTAssertEqual(content.ogImageUrlString, "https://i.ytimg.com/vi/tP-Ipsat90c/maxresdefault.jpg")
-
-                expectation.fulfill()
-        }.catch { (error) in
-            Logger.error("error: \(error)")
-            XCTFail("Unexpected error: \(error)")
-            expectation.fulfill()
-        }
-
-        self.waitForExpectations(timeout: 15.0, handler: nil)
+        XCTAssertEqual(content.ogTitle, "Randomness is Random - Numberphile")
+        XCTAssertEqual(content.ogImageUrlString, "https://i.ytimg.com/vi/tP-Ipsat90c/maxresdefault.jpg")
     }
 
-    func testLinkParsingWithRealData2() {
-        guard shouldRunNetworkTests else { return }
+    func testLinkParsingWithRealData2() async throws {
+        try XCTSkipUnless(shouldRunNetworkTests)
 
-        let expectation = self.expectation(description: "link download and parsing")
+        let (_, linkText) = try await linkPreviewManager.fetchStringResource(from: URL(string: "https://youtu.be/tP-Ipsat90c")!)
 
-        linkPreviewManager.fetchStringResource(from: URL(string: "https://youtu.be/tP-Ipsat90c")!)
-            .done { _, linkText in
-                let content = HTMLMetadata.construct(parsing: linkText)
-                XCTAssertNotNil(content)
+        let content = HTMLMetadata.construct(parsing: linkText)
+        XCTAssertNotNil(content)
 
-                XCTAssertEqual(content.ogTitle, "Randomness is Random - Numberphile")
-                XCTAssertEqual(content.ogImageUrlString, "https://i.ytimg.com/vi/tP-Ipsat90c/maxresdefault.jpg")
-
-                expectation.fulfill()
-        }.catch { (error) in
-            Logger.error("error: \(error)")
-            XCTFail("Unexpected error: \(error)")
-            expectation.fulfill()
-        }
-
-        self.waitForExpectations(timeout: 15.0, handler: nil)
+        XCTAssertEqual(content.ogTitle, "Randomness is Random - Numberphile")
+        XCTAssertEqual(content.ogImageUrlString, "https://i.ytimg.com/vi/tP-Ipsat90c/maxresdefault.jpg")
     }
 
-    func testLinkParsingWithRealData3() {
-        guard shouldRunNetworkTests else { return }
+    func testLinkParsingWithRealData3() async throws {
+        try XCTSkipUnless(shouldRunNetworkTests)
 
-        let expectation = self.expectation(description: "link download and parsing")
+        let (_, linkText) = try await linkPreviewManager.fetchStringResource(from: URL(string: "https://www.reddit.com/r/memes/comments/c3p3dy/i_drew_all_the_boys_together_and_i_did_it_for_the/")!)
 
-        linkPreviewManager.fetchStringResource(from: URL(string:
-            "https://www.reddit.com/r/memes/comments/c3p3dy/i_drew_all_the_boys_together_and_i_did_it_for_the/")!)
-            .done { _, linkText in
-                let content = HTMLMetadata.construct(parsing: linkText)
-                XCTAssertNotNil(content)
+        let content = HTMLMetadata.construct(parsing: linkText)
+        XCTAssertNotNil(content)
 
-                XCTAssertEqual(content.ogTitle, "r/memes - I drew all the boys together and i did it for the internet")
-                XCTAssertEqual(content.ogImageUrlString, "https://preview.redd.it/yb3996njhw531.jpg?auto=webp&s=f8977087ab74e57063fff19c5df9534f22c0f521")
-
-                expectation.fulfill()
-        }.catch { (error) in
-            Logger.error("error: \(error)")
-            XCTFail("Unexpected error: \(error)")
-            expectation.fulfill()
-        }
-
-        self.waitForExpectations(timeout: 15.0, handler: nil)
+        XCTAssertEqual(content.ogTitle, "From the memes community on Reddit: I drew all the boys together and i did it for the internet")
+        XCTAssertEqual(content.ogImageUrlString, "https://preview.redd.it/yb3996njhw531.jpg?width=1080&crop=smart&auto=webp&s=0f0c60355dcb7d051fdb2cf068aca3b669d7dbda")
     }
 
-    func testLinkParsingWithRealData4() {
-        guard shouldRunNetworkTests else { return }
+    func testLinkParsingWithRealData4() async throws {
+        try XCTSkipUnless(shouldRunNetworkTests)
 
-        let expectation = self.expectation(description: "link download and parsing")
+        let (_, linkText) = try await linkPreviewManager.fetchStringResource(from: URL(string: "https://www.reddit.com/r/WhitePeopleTwitter/comments/a7j3mm/why/")!)
 
-        linkPreviewManager.fetchStringResource(from: URL(string: "https://www.reddit.com/r/WhitePeopleTwitter/comments/a7j3mm/why/")!)
-            .done { _, linkText in
-                let content = HTMLMetadata.construct(parsing: linkText)
-                XCTAssertNotNil(content)
+        let content = HTMLMetadata.construct(parsing: linkText)
+        XCTAssertNotNil(content)
 
-                XCTAssertEqual(content.ogTitle, "r/WhitePeopleTwitter - Why")
-                XCTAssertEqual(content.ogImageUrlString, "https://preview.redd.it/ehakvm9vx5521.jpg?auto=webp&s=925fb2d8776ca7102b944ab00e0615ae20c1bd5a")
-
-                expectation.fulfill()
-        }.catch { (error) in
-            Logger.error("error: \(error)")
-            XCTFail("Unexpected error: \(error)")
-            expectation.fulfill()
-        }
-
-        self.waitForExpectations(timeout: 15.0, handler: nil)
+        XCTAssertEqual(content.ogTitle, "From the WhitePeopleTwitter community on Reddit: Why")
+        XCTAssertEqual(content.ogImageUrlString, "https://share.redd.it/preview/post/a7j3mm")
     }
 
-    func testLinkParsingWithRealData5() {
-        guard shouldRunNetworkTests else { return }
+    func testLinkParsingWithRealData5() async throws {
+        try XCTSkipUnless(shouldRunNetworkTests)
 
-        let expectation = self.expectation(description: "link download and parsing")
+        let (_, linkText) = try await linkPreviewManager.fetchStringResource(from: URL(string: "https://imgur.com/gallery/KFCL8fm")!)
 
-        linkPreviewManager.fetchStringResource(from: URL(string: "https://imgur.com/gallery/KFCL8fm")!)
-            .done { _, linkText in
-                let content = HTMLMetadata.construct(parsing: linkText)
-                XCTAssertNotNil(content)
+        let content = HTMLMetadata.construct(parsing: linkText)
+        XCTAssertNotNil(content)
 
-                XCTAssertEqual(content.ogTitle, "imgur.com")
+        XCTAssertEqual(content.ogTitle, "imgur.com")
 
-                // Actual URL can change based on network response
-                //
-                // It seems like some parts of the URL are stable, but if this continues to be brittle we may choose
-                // to remove it or stub the network response
-                XCTAssertTrue(content.ogImageUrlString!.hasPrefix("https://i.imgur.com/Y3wjlwY."))
-
-                expectation.fulfill()
-        }.catch { (error) in
-            Logger.error("error: \(error)")
-            XCTFail("Unexpected error: \(error)")
-            expectation.fulfill()
-        }
-
-        self.waitForExpectations(timeout: 15.0, handler: nil)
+        // Actual URL can change based on network response
+        //
+        // It seems like some parts of the URL are stable, but if this continues to be brittle we may choose
+        // to remove it or stub the network response
+        XCTAssertTrue(content.ogImageUrlString!.hasPrefix("https://i.imgur.com/Y3wjlwY."))
     }
 
-    func testLinkParsingWithRealData6() {
-        guard shouldRunNetworkTests else { return }
+    func testLinkParsingWithRealData6() async throws {
+        try XCTSkipUnless(shouldRunNetworkTests)
 
-        let expectation = self.expectation(description: "link download and parsing")
+        let (_, linkText) = try await linkPreviewManager.fetchStringResource(from: URL(string: "https://imgur.com/gallery/FMdwTiV")!)
 
-        linkPreviewManager.fetchStringResource(from: URL(string: "https://imgur.com/gallery/FMdwTiV")!)
-            .done { _, linkText in
-                let content = HTMLMetadata.construct(parsing: linkText)
-                XCTAssertNotNil(content)
+        let content = HTMLMetadata.construct(parsing: linkText)
+        XCTAssertNotNil(content)
 
-                XCTAssertEqual(content.ogTitle, "Freddy would be proud!")
-                XCTAssertEqual(content.ogImageUrlString, "https://i.imgur.com/Vot3iHh.jpg?fbplay")
-
-                expectation.fulfill()
-        }.catch { (error) in
-            Logger.error("error: \(error)")
-            XCTFail("Unexpected error: \(error)")
-            expectation.fulfill()
-        }
-
-        self.waitForExpectations(timeout: 15.0, handler: nil)
+        XCTAssertEqual(content.ogTitle, "Freddy would be proud!")
+        XCTAssertEqual(content.ogImageUrlString, "https://i.imgur.com/Vot3iHh.jpg?fbplay")
     }
 
-    func testLinkParsingWithRealData_instagram_web_link() {
-        guard shouldRunNetworkTests else { return }
+    func testLinkParsingWithRealData_instagram_web_link() async throws {
+        try XCTSkipUnless(shouldRunNetworkTests)
 
-        let expectation = self.expectation(description: "link download and parsing")
+        let (_, linkText) = try await linkPreviewManager.fetchStringResource(from: URL(string: "https://www.instagram.com/p/BtjTTyHnDKJ/?utm_source=ig_web_button_share_sheet")!)
 
-        linkPreviewManager.fetchStringResource(from: URL(string: "https://www.instagram.com/p/BtjTTyHnDKJ/?utm_source=ig_web_button_share_sheet")!)
-            .done { _, linkText in
-                let content = HTMLMetadata.construct(parsing: linkText)
-                XCTAssertNotNil(content)
+        let content = HTMLMetadata.construct(parsing: linkText)
+        XCTAssertNotNil(content)
 
-                XCTAssertEqual(content.ogTitle, "Signal on Instagram: “I link therefore I am: https://signal.org/blog/i-link-therefore-i-am/”")
-                // Actual URL can change based on network response
-                //
-                // It seems like some parts of the URL are stable, so we can pattern match, but if this continues to be brittle we may choose
-                // to remove it or stub the network response
-                XCTAssertMatch(expectedPattern: "^https://.*.cdninstagram.com/.*/50654775_634096837020403_4737154112061769375_n.jpg\\?.*$",
-                               actualText: content.ogImageUrlString!)
-                //                XCTAssertEqual(content.imageUrl, "https://scontent-iad3-1.cdninstagram.com/vp/88656d9c10074b97b503d3b7b86eba84/5D774562/t51.2885-15/e35/50654775_634096837020403_4737154112061769375_n.jpg?_nc_ht=scontent-iad3-1.cdninstagram.com")
-
-                expectation.fulfill()
-        }.catch { (error) in
-            Logger.error("error: \(error)")
-            XCTFail("Unexpected error: \(error)")
-            expectation.fulfill()
-        }
-
-        self.waitForExpectations(timeout: 15.0, handler: nil)
+        XCTAssertEqual(content.ogTitle, "Signal Messenger on Instagram: \"I link therefore I am: https://signal.org/blog/i-link-therefore-i-am/\"")
+        // Actual URL can change based on network response
+        //
+        // It seems like some parts of the URL are stable, so we can pattern match, but if this continues to be brittle we may choose
+        // to remove it or stub the network response
+        XCTAssertMatch(expectedPattern: "^https://.*.cdninstagram.com/.*/50654775_634096837020403_4737154112061769375_n.jpg\\?.*$",
+                       actualText: content.ogImageUrlString!)
+        //                XCTAssertEqual(content.imageUrl, "https://scontent-iad3-1.cdninstagram.com/vp/88656d9c10074b97b503d3b7b86eba84/5D774562/t51.2885-15/e35/50654775_634096837020403_4737154112061769375_n.jpg?_nc_ht=scontent-iad3-1.cdninstagram.com")
     }
 
-    func testLinkParsingWithRealData_instagram_app_sharesheet() {
-        guard shouldRunNetworkTests else { return }
+    func testLinkParsingWithRealData_instagram_app_sharesheet() async throws {
+        try XCTSkipUnless(shouldRunNetworkTests)
 
-        let expectation = self.expectation(description: "link download and parsing")
+        let (_, linkText) = try await linkPreviewManager.fetchStringResource(from: URL(string: "https://www.instagram.com/p/BtjTTyHnDKJ/?utm_source=ig_share_sheet&igshid=1bgo1ur9m9hi5")!)
 
-        linkPreviewManager.fetchStringResource(from: URL(string: "https://www.instagram.com/p/BtjTTyHnDKJ/?utm_source=ig_share_sheet&igshid=1bgo1ur9m9hi5")!)
-            .done { _, linkText in
-                let content = HTMLMetadata.construct(parsing: linkText)
-                XCTAssertNotNil(content)
+        let content = HTMLMetadata.construct(parsing: linkText)
+        XCTAssertNotNil(content)
 
-                XCTAssertEqual(content.ogTitle, "Signal on Instagram: “I link therefore I am: https://signal.org/blog/i-link-therefore-i-am/”")
-                // Actual URL can change based on network response
-                //
-                // It seems like some parts of the URL are stable, so we can pattern match, but if this continues to be brittle we may choose
-                // to remove it or stub the network response
-                XCTAssertMatch(expectedPattern: "^https://.*.cdninstagram.com/.*/50654775_634096837020403_4737154112061769375_n.jpg\\?.*$",
-                               actualText: content.ogImageUrlString!)
-                //                XCTAssertEqual(content.imageUrl, "https://scontent-iad3-1.cdninstagram.com/vp/88656d9c10074b97b503d3b7b86eba84/5D774562/t51.2885-15/e35/50654775_634096837020403_4737154112061769375_n.jpg?_nc_ht=scontent-iad3-1.cdninstagram.com")
-
-                expectation.fulfill()
-        }.catch { (error) in
-            Logger.error("error: \(error)")
-            XCTFail("Unexpected error: \(error)")
-            expectation.fulfill()
-        }
-
-        self.waitForExpectations(timeout: 15.0, handler: nil)
+        XCTAssertEqual(content.ogTitle, "Signal Messenger on Instagram: \"I link therefore I am: https://signal.org/blog/i-link-therefore-i-am/\"")
+        // Actual URL can change based on network response
+        //
+        // It seems like some parts of the URL are stable, so we can pattern match, but if this continues to be brittle we may choose
+        // to remove it or stub the network response
+        XCTAssertMatch(expectedPattern: "^https://.*.cdninstagram.com/.*/50654775_634096837020403_4737154112061769375_n.jpg\\?.*$",
+                       actualText: content.ogImageUrlString!)
+        //                XCTAssertEqual(content.imageUrl, "https://scontent-iad3-1.cdninstagram.com/vp/88656d9c10074b97b503d3b7b86eba84/5D774562/t51.2885-15/e35/50654775_634096837020403_4737154112061769375_n.jpg?_nc_ht=scontent-iad3-1.cdninstagram.com")
     }
 
-    func testLinkParsingWithRealData9() {
-        guard shouldRunNetworkTests else { return }
+    func testLinkParsingWithRealData9() async throws {
+        try XCTSkipUnless(shouldRunNetworkTests)
 
-        let expectation = self.expectation(description: "link download and parsing")
+        let (_, linkText) = try await linkPreviewManager.fetchStringResource(from: URL(string: "https://imgur.com/gallery/igHOwDM")!)
 
-        linkPreviewManager.fetchStringResource(from: URL(string: "https://imgur.com/gallery/igHOwDM")!)
-            .done { _, linkText in
-                let content = HTMLMetadata.construct(parsing: linkText)
-                XCTAssertNotNil(content)
+        let content = HTMLMetadata.construct(parsing: linkText)
+        XCTAssertNotNil(content)
 
-                XCTAssertEqual(content.ogTitle, "Sheet dance")
-                XCTAssertEqual(content.ogImageUrlString, "https://i.imgur.com/PYiyLv1.jpg?fbplay")
-
-                expectation.fulfill()
-        }.catch { (error) in
-            Logger.error("error: \(error)")
-            XCTFail("Unexpected error: \(error)")
-            expectation.fulfill()
-        }
-
-        self.waitForExpectations(timeout: 15.0, handler: nil)
+        XCTAssertEqual(content.ogTitle, "Sheet dance")
+        XCTAssertEqual(content.ogImageUrlString, "https://i.imgur.com/PYiyLv1.jpg?fbplay")
     }
 
-    func testLinkParsingWithRealData10() {
-        guard shouldRunNetworkTests else { return }
+    func testLinkParsingWithRealData10() async throws {
+        try XCTSkipUnless(shouldRunNetworkTests)
 
-        let expectation = self.expectation(description: "link download and parsing")
+        let (_, linkText) = try await linkPreviewManager.fetchStringResource(from: URL(string: "https://www.pinterest.com/norat0464/test-board/")!)
 
-        linkPreviewManager.fetchStringResource(from: URL(string: "https://www.pinterest.com/norat0464/test-board/")!)
-            .done { _, linkText in
-                let content = HTMLMetadata.construct(parsing: linkText)
-                XCTAssertNotNil(content)
+        let content = HTMLMetadata.construct(parsing: linkText)
+        XCTAssertNotNil(content)
 
-                XCTAssertEqual(content.ogTitle, "Test board")
-                XCTAssertEqual(content.ogImageUrlString, "https://i.pinimg.com/200x150/3e/85/f8/3e85f88e7be0dd1418a5b430d2ee8a55.jpg")
-
-                expectation.fulfill()
-        }.catch { (error) in
-            Logger.error("error: \(error)")
-            XCTFail("Unexpected error: \(error)")
-            expectation.fulfill()
-        }
-
-        self.waitForExpectations(timeout: 15.0, handler: nil)
+        XCTAssertEqual(content.ogTitle, "Test board")
+        XCTAssertEqual(content.ogImageUrlString, "https://i.pinimg.com/200x150/3e/85/f8/3e85f88e7be0dd1418a5b430d2ee8a55.jpg")
     }
 }

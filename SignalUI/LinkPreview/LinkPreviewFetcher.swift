@@ -11,19 +11,16 @@ public class LinkPreviewFetcher {
 
     private let db: DB
     private let linkPreviewManager: LinkPreviewManager
-    private let schedulers: Schedulers
     private let onlyParseIfEnabled: Bool
 
     public init(
         db: DB,
         linkPreviewManager: LinkPreviewManager,
-        schedulers: Schedulers,
         onlyParseIfEnabled: Bool = true,
         linkPreviewDraft: OWSLinkPreviewDraft? = nil
     ) {
         self.db = db
         self.linkPreviewManager = linkPreviewManager
-        self.schedulers = schedulers
         self.onlyParseIfEnabled = onlyParseIfEnabled
         if let linkPreviewDraft {
             self._currentState = (.loaded(linkPreviewDraft), linkPreviewDraft.url)
@@ -54,6 +51,8 @@ public class LinkPreviewFetcher {
             onStateChange?()
         }
     }
+
+    private var fetchTask: Task<Void, Never>?
 
     /// Invoked when `currentState` is updated.
     public var onStateChange: (() -> Void)?
@@ -97,11 +96,12 @@ public class LinkPreviewFetcher {
     /// - Parameter prependSchemeIfNeeded: If true, an "https://" scheme will be
     /// prepended to `rawText` if it doesn't have another scheme. This is useful
     /// for text fields dedicated to URL entry.
+    @discardableResult
     public func update(
         _ body: MessageBody,
         enableIfEmpty: Bool = false,
         prependSchemeIfNeeded: Bool = false
-    ) {
+    ) -> Task<Void, Never>? {
         if enableIfEmpty, body.text.isEmpty {
             isEnabled = true
         }
@@ -109,31 +109,36 @@ public class LinkPreviewFetcher {
         let proposedUrl = validUrl(in: body, prependSchemeIfNeeded: prependSchemeIfNeeded)
 
         if currentUrl == proposedUrl {
-            return
+            return self.fetchTask
         }
+
+        self.fetchTask?.cancel()
+        self.fetchTask = nil
 
         guard let proposedUrl else {
             _currentState = (.none, nil)
-            return
+            return nil
         }
 
         _currentState = (.loading, proposedUrl)
 
-        linkPreviewManager.fetchLinkPreview(for: proposedUrl)
-            .done(on: schedulers.main) { [weak self] linkPreviewDraft in
+        self.fetchTask = Task { @MainActor [weak self, linkPreviewManager] in
+            do {
+                let linkPreviewDraft = try await linkPreviewManager.fetchLinkPreview(for: proposedUrl)
                 guard let self = self else { return }
                 // Obsolete callback.
                 guard self.currentUrl == proposedUrl else { return }
 
                 self._currentState = (.loaded(linkPreviewDraft), proposedUrl)
-            }
-            .catch(on: schedulers.main) { [weak self] error in
+            } catch {
                 guard let self = self else { return }
                 // Obsolete callback.
                 guard self.currentUrl == proposedUrl else { return }
 
                 self._currentState = (.failed(error), proposedUrl)
             }
+        }
+        return self.fetchTask
     }
 
     private func validUrl(

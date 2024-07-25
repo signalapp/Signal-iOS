@@ -83,8 +83,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         self.inputToolbarDelegate = inputToolbarDelegate
         self.linkPreviewFetcher = LinkPreviewFetcher(
             db: DependenciesBridge.shared.db,
-            linkPreviewManager: DependenciesBridge.shared.linkPreviewManager,
-            schedulers: DependenciesBridge.shared.schedulers
+            linkPreviewManager: DependenciesBridge.shared.linkPreviewManager
         )
 
         super.init(frame: .zero)

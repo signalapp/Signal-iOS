@@ -37,7 +37,6 @@ private extension LinkPreviewFetcher.State {
 class LinkPreviewFetcherTest: XCTestCase {
 
     private var mockLinkPreviewManager: MockLinkPreviewManager!
-    private var testScheduler: TestScheduler!
     private var mockDB: MockDB!
 
     override func setUp() {
@@ -45,20 +44,17 @@ class LinkPreviewFetcherTest: XCTestCase {
 
         mockDB = MockDB()
         mockLinkPreviewManager = MockLinkPreviewManager()
-        testScheduler = TestScheduler()
-        testScheduler.start()
     }
 
-    func testUpdateLoaded() throws {
+    func testUpdateLoaded() async throws {
         let linkPreviewFetcher = LinkPreviewFetcher(
             db: mockDB,
-            linkPreviewManager: mockLinkPreviewManager,
-            schedulers: TestSchedulers(scheduler: testScheduler)
+            linkPreviewManager: mockLinkPreviewManager
         )
 
         // Non-URL text shouldn't issue any fetches.
         for textValue in ["a", "ab", "abc"] {
-            linkPreviewFetcher.update(.init(text: textValue, ranges: .empty))
+            await linkPreviewFetcher.update(.init(text: textValue, ranges: .empty))?.value
             XCTAssert(linkPreviewFetcher.currentState.isNone)
             XCTAssertNil(linkPreviewFetcher.linkPreviewDraftIfLoaded)
             XCTAssertNil(linkPreviewFetcher.currentUrl)
@@ -69,10 +65,10 @@ class LinkPreviewFetcherTest: XCTestCase {
         let validURL = try XCTUnwrap(URL(string: "https://signal.org"))
         mockLinkPreviewManager.fetchLinkPreviewBlock = { fetchedURL in
             XCTAssertEqual(fetchedURL, validURL)
-            return .value(OWSLinkPreviewDraft(url: fetchedURL, title: "Website Title"))
+            return OWSLinkPreviewDraft(url: fetchedURL, title: "Website Title")
         }
         for textValue in ["Check ou https://signal.org", "Check out https://signal.org"] {
-            linkPreviewFetcher.update(.init(text: textValue, ranges: .empty))
+            await linkPreviewFetcher.update(.init(text: textValue, ranges: .empty))?.value
             XCTAssert(linkPreviewFetcher.currentState.isLoaded)
             XCTAssertEqual(linkPreviewFetcher.linkPreviewDraftIfLoaded?.url, validURL)
             XCTAssertEqual(linkPreviewFetcher.currentUrl, validURL)
@@ -83,10 +79,10 @@ class LinkPreviewFetcherTest: XCTestCase {
         let invalidURL = try XCTUnwrap(URL(string: "https://signal.org/not_found"))
         mockLinkPreviewManager.fetchLinkPreviewBlock = { fetchedURL in
             XCTAssertEqual(fetchedURL, invalidURL)
-            return Promise(error: OWSGenericError("Not found."))
+            throw OWSGenericError("Not found.")
         }
         for textValue in ["Check ou https://signal.org/not_found", "Check out https://signal.org/not_found"] {
-            linkPreviewFetcher.update(.init(text: textValue, ranges: .empty))
+            await linkPreviewFetcher.update(.init(text: textValue, ranges: .empty))?.value
             XCTAssert(linkPreviewFetcher.currentState.isFailed)
             XCTAssertNil(linkPreviewFetcher.linkPreviewDraftIfLoaded)
             XCTAssertEqual(linkPreviewFetcher.currentUrl, invalidURL)
@@ -95,7 +91,7 @@ class LinkPreviewFetcherTest: XCTestCase {
 
         // Removing the URL should clear the link preview.
         for textValue in ["Check out", "Check ou"] {
-            linkPreviewFetcher.update(.init(text: textValue, ranges: .empty))
+            await linkPreviewFetcher.update(.init(text: textValue, ranges: .empty))?.value
             XCTAssert(linkPreviewFetcher.currentState.isNone)
             XCTAssertNil(linkPreviewFetcher.linkPreviewDraftIfLoaded)
             XCTAssertNil(linkPreviewFetcher.currentUrl)
@@ -103,60 +99,92 @@ class LinkPreviewFetcherTest: XCTestCase {
         }
     }
 
-    func testUpdateLoading() throws {
+    private struct PendingFetchState {
+        var isReady = false
+        var deferredBlocks = [() -> Void]()
+        var expectedCount: Int
+
+        mutating func resolveIfReady() {
+            guard self.isReady, self.deferredBlocks.count == self.expectedCount else {
+                return
+            }
+            self.deferredBlocks.forEach { $0() }
+            self.deferredBlocks.removeAll()
+        }
+    }
+
+    func testUpdateLoading() async throws {
         let linkPreviewFetcher = LinkPreviewFetcher(
             db: mockDB,
-            linkPreviewManager: mockLinkPreviewManager,
-            schedulers: TestSchedulers(scheduler: testScheduler)
+            linkPreviewManager: mockLinkPreviewManager
         )
 
         let validURL = try XCTUnwrap(URL(string: "https://signal.org"))
+        let pendingFetchState = AtomicValue(PendingFetchState(expectedCount: 1), lock: .init())
         mockLinkPreviewManager.fetchLinkPreviewBlock = { fetchedURL in
-            return .value(OWSLinkPreviewDraft(url: fetchedURL, title: "Website Title"))
+            return try await withCheckedThrowingContinuation { continuation in
+                pendingFetchState.update {
+                    $0.deferredBlocks.append {
+                        continuation.resume(returning: OWSLinkPreviewDraft(url: fetchedURL, title: "Website Title"))
+                    }
+                    $0.resolveIfReady()
+                }
+            }
         }
 
-        testScheduler.stop()
-
-        linkPreviewFetcher.update(.init(text: "https://signal.org is a grea", ranges: .empty))
+        let task1 = linkPreviewFetcher.update(.init(text: "https://signal.org is a grea", ranges: .empty))
         XCTAssert(linkPreviewFetcher.currentState.isLoading)
-        XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [validURL])
 
         // If there's a request in flight, we shouldn't send a new request.
-        linkPreviewFetcher.update(.init(text: "https://signal.org is a great", ranges: .empty))
+        let task2 = linkPreviewFetcher.update(.init(text: "https://signal.org is a great", ranges: .empty))
         XCTAssert(linkPreviewFetcher.currentState.isLoading)
-        XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [validURL])
 
-        testScheduler.start()
+        pendingFetchState.update {
+            $0.isReady = true
+            $0.resolveIfReady()
+        }
+
+        await task1?.value
+        await task2?.value
 
         XCTAssert(linkPreviewFetcher.currentState.isLoaded)
         XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [validURL])
     }
 
-    func testUpdateObsolete() throws {
+    func testUpdateObsolete() async throws {
         let linkPreviewFetcher = LinkPreviewFetcher(
             db: mockDB,
-            linkPreviewManager: mockLinkPreviewManager,
-            schedulers: TestSchedulers(scheduler: testScheduler)
+            linkPreviewManager: mockLinkPreviewManager
         )
 
+        let pendingFetchState = AtomicValue(PendingFetchState(expectedCount: 2), lock: .init())
         mockLinkPreviewManager.fetchLinkPreviewBlock = { fetchedURL in
-            return .value(OWSLinkPreviewDraft(url: fetchedURL, title: "Website Title"))
+            return try await withCheckedThrowingContinuation { continuation in
+                pendingFetchState.update {
+                    $0.deferredBlocks.append {
+                        continuation.resume(returning: OWSLinkPreviewDraft(url: fetchedURL, title: "Website Title"))
+                    }
+                    $0.resolveIfReady()
+                }
+            }
         }
 
-        testScheduler.stop()
-
         let url1 = try XCTUnwrap(URL(string: "https://signal.org/one"))
-        linkPreviewFetcher.update(.init(text: "https://signal.org/one", ranges: .empty))
+        let task1 = linkPreviewFetcher.update(.init(text: "https://signal.org/one", ranges: .empty))
         XCTAssert(linkPreviewFetcher.currentState.isLoading)
-        XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [url1])
 
         // If there's a request in flight & we change the URL, drop the original request.
         let url2 = try XCTUnwrap(URL(string: "https://signal.org/two"))
-        linkPreviewFetcher.update(.init(text: "https://signal.org/two", ranges: .empty))
+        let task2 = linkPreviewFetcher.update(.init(text: "https://signal.org/two", ranges: .empty))
         XCTAssert(linkPreviewFetcher.currentState.isLoading)
-        XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [url1, url2])
 
-        testScheduler.start()
+        pendingFetchState.update {
+            $0.isReady = true
+            $0.resolveIfReady()
+        }
+
+        await task1?.value
+        await task2?.value
 
         XCTAssert(linkPreviewFetcher.currentState.isLoaded)
         XCTAssertEqual(linkPreviewFetcher.linkPreviewDraftIfLoaded?.url, url2)
@@ -164,67 +192,65 @@ class LinkPreviewFetcherTest: XCTestCase {
         XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [url1, url2])
     }
 
-    func testUpdatePrependScheme() {
+    func testUpdatePrependScheme() async throws {
         let linkPreviewFetcher = LinkPreviewFetcher(
             db: mockDB,
-            linkPreviewManager: mockLinkPreviewManager,
-            schedulers: TestSchedulers(scheduler: testScheduler)
+            linkPreviewManager: mockLinkPreviewManager
         )
 
         mockLinkPreviewManager.fetchLinkPreviewBlock = { fetchedURL in
-            return .value(OWSLinkPreviewDraft(url: fetchedURL, title: "Signal"))
+            return OWSLinkPreviewDraft(url: fetchedURL, title: "Signal")
         }
-        linkPreviewFetcher.update(.init(text: "signal.org", ranges: .empty), prependSchemeIfNeeded: false)
+        await linkPreviewFetcher.update(.init(text: "signal.org", ranges: .empty), prependSchemeIfNeeded: false)?.value
         XCTAssert(linkPreviewFetcher.currentState.isNone)
         XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [])
 
         // If we should prepend a scheme, prepend "https://".
-        linkPreviewFetcher.update(.init(text: "signal.org", ranges: .empty), prependSchemeIfNeeded: true)
+        await linkPreviewFetcher.update(.init(text: "signal.org", ranges: .empty), prependSchemeIfNeeded: true)?.value
         XCTAssert(linkPreviewFetcher.currentState.isLoaded)
         XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [URL(string: "https://signal.org")!])
         mockLinkPreviewManager.fetchedURLs.removeAll()
 
         // If there's already a scheme, we don't add "https://". (We require
         // "https://", so specify anything other scheme disables link previews.
-        linkPreviewFetcher.update(.init(text: "http://signal.org", ranges: .empty), prependSchemeIfNeeded: true)
+        await linkPreviewFetcher.update(.init(text: "http://signal.org", ranges: .empty), prependSchemeIfNeeded: true)?.value
         XCTAssert(linkPreviewFetcher.currentState.isNone)
         XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [])
     }
 
-    func testOnStateChange() throws {
+    func testOnStateChange() async throws {
         let linkPreviewFetcher = LinkPreviewFetcher(
             db: mockDB,
-            linkPreviewManager: mockLinkPreviewManager,
-            schedulers: TestSchedulers(scheduler: testScheduler)
+            linkPreviewManager: mockLinkPreviewManager
         )
 
         mockLinkPreviewManager.fetchLinkPreviewBlock = { fetchedURL in
-            return .value(OWSLinkPreviewDraft(url: fetchedURL, title: "Signal"))
+            return OWSLinkPreviewDraft(url: fetchedURL, title: "Signal")
         }
 
         var onStateChangeCount = 0
         linkPreviewFetcher.onStateChange = { onStateChangeCount += 1 }
 
-        linkPreviewFetcher.update(.init(text: "", ranges: .empty))
+        await linkPreviewFetcher.update(.init(text: "", ranges: .empty))?.value
         XCTAssertEqual(onStateChangeCount, 0)
 
         // Redundant updates generally don't result in state updates.
-        linkPreviewFetcher.update(.init(text: "a", ranges: .empty))
+        await linkPreviewFetcher.update(.init(text: "a", ranges: .empty))?.value
         XCTAssertEqual(onStateChangeCount, 0)
 
         // Fetching a URL should update the state twice: to loading & to loaded.
-        linkPreviewFetcher.update(.init(text: "https://signal.org", ranges: .empty))
+        await linkPreviewFetcher.update(.init(text: "https://signal.org", ranges: .empty))?.value
         XCTAssertEqual(onStateChangeCount, 2)
 
-        linkPreviewFetcher.update(.init(text: "https://signal.org", ranges: .empty))
+        await linkPreviewFetcher.update(.init(text: "https://signal.org", ranges: .empty))?.value
         XCTAssertEqual(onStateChangeCount, 2)
 
         // Clearing the text should update the link preview.
-        linkPreviewFetcher.update(.init(text: "", ranges: .empty))
+        await linkPreviewFetcher.update(.init(text: "", ranges: .empty))?.value
         XCTAssertEqual(onStateChangeCount, 3)
 
         // Assigning the URL again should fetch it again.
-        linkPreviewFetcher.update(.init(text: "https://signal.org", ranges: .empty))
+        await linkPreviewFetcher.update(.init(text: "https://signal.org", ranges: .empty))?.value
         XCTAssertEqual(onStateChangeCount, 5)
 
         // Disabling the link preview should trigger an update.
@@ -232,20 +258,19 @@ class LinkPreviewFetcherTest: XCTestCase {
         XCTAssertEqual(onStateChangeCount, 6)
     }
 
-    func testDisable() throws {
+    func testDisable() async throws {
         let linkPreviewFetcher = LinkPreviewFetcher(
             db: mockDB,
-            linkPreviewManager: mockLinkPreviewManager,
-            schedulers: TestSchedulers(scheduler: testScheduler)
+            linkPreviewManager: mockLinkPreviewManager
         )
 
         mockLinkPreviewManager.fetchLinkPreviewBlock = { fetchedURL in
-            return .value(OWSLinkPreviewDraft(url: fetchedURL, title: "Signal"))
+            return OWSLinkPreviewDraft(url: fetchedURL, title: "Signal")
         }
 
         // Fetch the original preview.
         let url = try XCTUnwrap(URL(string: "https://signal.org"))
-        linkPreviewFetcher.update(.init(text: "https://signal.org", ranges: .empty))
+        await linkPreviewFetcher.update(.init(text: "https://signal.org", ranges: .empty))?.value
         XCTAssertEqual(linkPreviewFetcher.linkPreviewDraftIfLoaded?.url, url)
         XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [url])
         mockLinkPreviewManager.fetchedURLs.removeAll()
@@ -256,119 +281,116 @@ class LinkPreviewFetcherTest: XCTestCase {
         XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [])
 
         // Assign the same URL again; make sure it doesn't come back.
-        linkPreviewFetcher.update(.init(text: "https://signal.org", ranges: .empty))
+        await linkPreviewFetcher.update(.init(text: "https://signal.org", ranges: .empty))?.value
         XCTAssertNil(linkPreviewFetcher.linkPreviewDraftIfLoaded)
         XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [])
 
         // Clear the URL; make sure it stays away.
-        linkPreviewFetcher.update(.init(text: "", ranges: .empty))
+        await linkPreviewFetcher.update(.init(text: "", ranges: .empty))?.value
         XCTAssertNil(linkPreviewFetcher.linkPreviewDraftIfLoaded)
         XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [])
 
         // Enter a different URL; make sure we don't fetch it.
-        linkPreviewFetcher.update(.init(text: "https://signal.org/one", ranges: .empty))
+        await linkPreviewFetcher.update(.init(text: "https://signal.org/one", ranges: .empty))?.value
         XCTAssertNil(linkPreviewFetcher.linkPreviewDraftIfLoaded)
         XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [])
 
         // Ensure "enableIfEmpty" doesn't enable when the text isn't empty.
-        linkPreviewFetcher.update(.init(text: "https://signal.org/one", ranges: .empty), enableIfEmpty: true)
+        await linkPreviewFetcher.update(.init(text: "https://signal.org/one", ranges: .empty), enableIfEmpty: true)?.value
         XCTAssertNil(linkPreviewFetcher.linkPreviewDraftIfLoaded)
         XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [])
 
         // Clear the text with "enableIfEmpty" to re-enable link previews.
-        linkPreviewFetcher.update(.init(text: "", ranges: .empty), enableIfEmpty: true)
+        await linkPreviewFetcher.update(.init(text: "", ranges: .empty), enableIfEmpty: true)?.value
         XCTAssertNil(linkPreviewFetcher.linkPreviewDraftIfLoaded)
         XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [])
 
         // Set a URL and make sure we fetch it.
         let url2 = try XCTUnwrap(URL(string: "https://signal.org/two"))
-        linkPreviewFetcher.update(.init(text: "https://signal.org/two", ranges: .empty), enableIfEmpty: true)
+        await linkPreviewFetcher.update(.init(text: "https://signal.org/two", ranges: .empty), enableIfEmpty: true)?.value
         XCTAssertEqual(linkPreviewFetcher.linkPreviewDraftIfLoaded?.url, url2)
         XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [url2])
     }
 
-    func testOnlyParseIfEnabled() throws {
+    func testOnlyParseIfEnabled() async throws {
         mockLinkPreviewManager.areLinkPreviewsEnabledMock = false
 
         do {
             let linkPreviewFetcher = LinkPreviewFetcher(
                 db: mockDB,
                 linkPreviewManager: mockLinkPreviewManager,
-                schedulers: TestSchedulers(scheduler: testScheduler),
                 onlyParseIfEnabled: true
             )
 
-            linkPreviewFetcher.update(.init(text: "https://signal.org", ranges: .empty))
+            await linkPreviewFetcher.update(.init(text: "https://signal.org", ranges: .empty))?.value
             XCTAssertNil(linkPreviewFetcher.currentUrl)
         }
         do {
             let linkPreviewFetcher = LinkPreviewFetcher(
                 db: mockDB,
                 linkPreviewManager: mockLinkPreviewManager,
-                schedulers: TestSchedulers(scheduler: testScheduler),
                 onlyParseIfEnabled: false
             )
 
             // If link previews are disabled, we may still want to parse URLs in the
             // text so that they can be attached (without a preview) to text stories.
             mockLinkPreviewManager.fetchLinkPreviewBlock = { fetchedURL in
-                return Promise(error: OWSGenericError("Not found."))
+                throw OWSGenericError("Not found.")
             }
-            linkPreviewFetcher.update(.init(text: "https://signal.org", ranges: .empty))
+            await linkPreviewFetcher.update(.init(text: "https://signal.org", ranges: .empty))?.value
             XCTAssertEqual(linkPreviewFetcher.currentUrl, try XCTUnwrap(URL(string: "https://signal.org")))
         }
     }
 
-    func testDontParseInSpoilers() throws {
+    func testDontParseInSpoilers() async throws {
         mockLinkPreviewManager.fetchLinkPreviewBlock = { fetchedURL in
-            return .value(OWSLinkPreviewDraft(url: fetchedURL, title: "Signal"))
+            return OWSLinkPreviewDraft(url: fetchedURL, title: "Signal")
         }
 
         let linkPreviewFetcher = LinkPreviewFetcher(
             db: mockDB,
             linkPreviewManager: mockLinkPreviewManager,
-            schedulers: TestSchedulers(scheduler: testScheduler),
             onlyParseIfEnabled: true
         )
 
         // Bold should have no effect
-        linkPreviewFetcher.update(.init(
+        await linkPreviewFetcher.update(.init(
             text: "https://signal.org",
             ranges: .init(
                 mentions: [:],
                 styles: [.init(.bold, range: NSRange(location: 0, length: 18))]
             )
-        ))
+        ))?.value
         XCTAssertNotNil(linkPreviewFetcher.currentUrl)
 
         // Spoiler should mean we don't match.
-        linkPreviewFetcher.update(.init(
+        await linkPreviewFetcher.update(.init(
             text: "https://signal.org",
             ranges: .init(
                 mentions: [:],
                 styles: [.init(.spoiler, range: NSRange(location: 0, length: 18))]
             )
-        ))
+        ))?.value
         XCTAssertNil(linkPreviewFetcher.currentUrl)
 
         // Even if only partially covering.
-        linkPreviewFetcher.update(.init(
+        await linkPreviewFetcher.update(.init(
             text: "https://signal.org",
             ranges: .init(
                 mentions: [:],
                 styles: [.init(.spoiler, range: NSRange(location: 3, length: 5))]
             )
-        ))
+        ))?.value
         XCTAssertNil(linkPreviewFetcher.currentUrl)
 
         // Including if we prepend a prefix.
-        linkPreviewFetcher.update(.init(
+        await linkPreviewFetcher.update(.init(
             text: "signal.org",
             ranges: .init(
                 mentions: [:],
                 styles: [.init(.spoiler, range: NSRange(location: 5, length: 5))]
             )
-        ))
+        ))?.value
         XCTAssertNil(linkPreviewFetcher.currentUrl)
     }
 }
