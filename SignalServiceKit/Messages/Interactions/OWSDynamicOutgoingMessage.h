@@ -7,6 +7,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#ifdef TESTABLE_BUILD
+
 typedef NSData *_Nonnull (^DynamicOutgoingMessageBlock)(void);
 
 /// This class is only used in debug tools
@@ -18,11 +20,9 @@ typedef NSData *_Nonnull (^DynamicOutgoingMessageBlock)(void);
 - (instancetype)initWithThread:(TSThread *)thread
                    transaction:(SDSAnyReadTransaction *)transaction
             plainTextDataBlock:(DynamicOutgoingMessageBlock)block;
-- (instancetype)initWithThread:(TSThread *)thread
-                     timestamp:(uint64_t)timestamp
-                   transaction:(SDSAnyReadTransaction *)transaction
-            plainTextDataBlock:(DynamicOutgoingMessageBlock)block;
 
 @end
+
+#endif
 
 NS_ASSUME_NONNULL_END

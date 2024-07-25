@@ -178,13 +178,11 @@ class DebugUIStress: DebugUIPage, Dependencies {
 
     private static func sendStressMessage(
         toThread thread: TSThread,
-        timestamp: UInt64 = Date.ows_millisecondTimestamp(),
         block: @escaping DynamicOutgoingMessageBlock
     ) {
         let message = databaseStorage.read { transaction in
             OWSDynamicOutgoingMessage(
                 thread: thread,
-                timestamp: timestamp,
                 transaction: transaction,
                 plainTextDataBlock: block
             )

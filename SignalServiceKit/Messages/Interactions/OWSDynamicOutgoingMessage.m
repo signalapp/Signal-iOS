@@ -9,6 +9,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#ifdef TESTABLE_BUILD
+
 @interface OWSDynamicOutgoingMessage ()
 
 @property (nonatomic, readonly) DynamicOutgoingMessageBlock block;
@@ -23,20 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
                    transaction:(SDSAnyReadTransaction *)transaction
             plainTextDataBlock:(DynamicOutgoingMessageBlock)block
 {
-    return [self initWithThread:thread
-                      timestamp:[MessageTimestampGenerator.sharedInstance generateTimestamp]
-                    transaction:transaction
-             plainTextDataBlock:block];
-}
-
-// MJK TODO can we remove sender timestamp?
-- (instancetype)initWithThread:(TSThread *)thread
-                     timestamp:(uint64_t)timestamp
-                   transaction:(SDSAnyReadTransaction *)transaction
-            plainTextDataBlock:(DynamicOutgoingMessageBlock)block
-{
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
-    messageBuilder.timestamp = timestamp;
     self = [super initOutgoingMessageWithBuilder:messageBuilder transaction:transaction];
 
     if (self) {
@@ -59,5 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 @end
+
+#endif
 
 NS_ASSUME_NONNULL_END
