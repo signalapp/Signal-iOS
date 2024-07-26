@@ -1235,7 +1235,11 @@ public class SignalAttachment: NSObject {
                                                            shouldDeleteOnDeallocation: true)
             dataSource.sourceFilename = mp4Filename
 
-            return SignalAttachment(dataSource: dataSource, dataUTI: UTType.mpeg4Movie.identifier)
+            let attachment = SignalAttachment(dataSource: dataSource, dataUTI: UTType.mpeg4Movie.identifier)
+            if dataSource.dataLength > SignalAttachment.kMaxFileSizeVideo {
+                attachment.error = .fileSizeTooLarge
+            }
+            return attachment
         } catch {
             owsFailDebug("Failed to build data source for exported video URL")
             let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
