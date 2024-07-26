@@ -59,7 +59,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         do {
             let upload = AttachmentUpload(
                 localMetadata: localUploadMetadata,
-                formSource: .local(form),
+                uploadForm: form,
                 signalService: signalService,
                 networkManager: networkManager,
                 chatConnectionManager: chatConnectionManager,
@@ -92,11 +92,16 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         }
         let metadata = try attachmentEncrypter.encryptAttachment(at: sourceURL, output: temporaryFile)
         let localMetadata = try Upload.LocalUploadMetadata.validateAndBuild(fileUrl: temporaryFile, metadata: metadata)
+        let form = try await Upload.FormRequest(
+            signalService: signalService,
+            networkManager: networkManager,
+            chatConnectionManager: chatConnectionManager
+        ).start()
 
         do {
             let upload = AttachmentUpload(
                 localMetadata: localMetadata,
-                formSource: .remote,
+                uploadForm: form,
                 signalService: signalService,
                 networkManager: networkManager,
                 chatConnectionManager: chatConnectionManager,
@@ -123,11 +128,15 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     }
 
     /// Entry point for uploading an `AttachmentStream`
-    /// Fetches the `AttachmentStream`, builds the AttachmentUpload, begins the
+    /// Fetches the `AttachmentStream`, fetches an upload form, builds the AttachmentUpload, begins the
     /// upload, and updates the `AttachmentStream` upon success.
     ///
     /// It is assumed any errors that could be retried or otherwise handled will have happend at a lower level,
     /// so any error encountered here is considered unrecoverable and thrown to the caller.
+    ///
+    /// Resumption of an active upload can be handled at a lower level, but if the endpoint returns an
+    /// error that requires a full restart, this is the method that will be called to fetch a new upload form and
+    /// rebuild the endpoint and upload state before trying again.
     public func uploadAttachment(attachmentId: Attachment.IDType) async throws {
         let logger = PrefixedLogger(prefix: "[Upload]", suffix: "[\(attachmentId)]")
 
@@ -150,9 +159,15 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         }
 
         do {
+            let form = try await Upload.FormRequest(
+                signalService: signalService,
+                networkManager: networkManager,
+                chatConnectionManager: chatConnectionManager
+            ).start()
+
             let upload = AttachmentUpload(
                 localMetadata: localMetadata,
-                formSource: .remote,
+                uploadForm: form,
                 signalService: signalService,
                 networkManager: networkManager,
                 chatConnectionManager: chatConnectionManager,
@@ -172,7 +187,21 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             )
 
         } catch {
-            if error.isNetworkFailureOrTimeout {
+            // Anything besides 'restart' should be handled below this method,
+            // or is an unhandled error that should be thrown to the caller
+            if
+                case Upload.Error.uploadFailure(let recoveryMode) = error,
+                case .restart(let backOff) = recoveryMode
+            {
+                switch backOff {
+                case .immediately:
+                    break
+                case .afterDelay(let delay):
+                    try await Upload.sleep(for: delay)
+                }
+
+                return try await uploadAttachment(attachmentId: attachmentId)
+            } else if error.isNetworkFailureOrTimeout {
                 logger.warn("Upload failed due to network error")
             } else if error is CancellationError {
                 logger.warn("Upload cancelled")

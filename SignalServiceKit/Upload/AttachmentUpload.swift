@@ -20,11 +20,11 @@ public struct AttachmentUpload<Metadata: UploadMetadata> {
     private let logger: PrefixedLogger
 
     private let localMetadata: Metadata
-    private let formSource: Upload.FormSource
+    private let uploadForm: Upload.Form
 
     public init(
         localMetadata: Metadata,
-        formSource: Upload.FormSource,
+        uploadForm: Upload.Form,
         signalService: OWSSignalServiceProtocol,
         networkManager: NetworkManager,
         chatConnectionManager: ChatConnectionManager,
@@ -32,7 +32,7 @@ public struct AttachmentUpload<Metadata: UploadMetadata> {
         logger: PrefixedLogger
     ) {
         self.localMetadata = localMetadata
-        self.formSource = formSource
+        self.uploadForm = uploadForm
         self.signalService = signalService
         self.networkManager = networkManager
         self.chatConnectionManager = chatConnectionManager
@@ -50,74 +50,35 @@ public struct AttachmentUpload<Metadata: UploadMetadata> {
 
         progress?(buildProgress(done: 0, total: localMetadata.encryptedDataLength))
 
-        return try await attemptUpload(localMetadata: localMetadata, formSource: formSource, progress: progress)
+        return try await attemptUpload(localMetadata: localMetadata, uploadForm: uploadForm, progress: progress)
     }
 
     /// The retriable parts of the upload.
-    /// 1. Fetch upload form
-    /// 2. Create upload endpoint
-    /// 3. Get the target URL from the endpoint
-    /// 4. Initate the upload via the endpoint
+    /// 1. Create upload endpoint
+    /// 2. Get the target URL from the endpoint
+    /// 3. Initate the upload via the endpoint
     ///
     /// - Parameters:
     ///   - localMetadata: The metadata and URL path for the local upload data
     ///   will create a new request and fetch a new form.
-    ///   - count: For certain failure types, the attempt will be retried.  This keeps track and will error
-    ///   out after a certain number of retries.
     ///   - progressBlock: Callback notified up upload progress.
     /// - returns: `Upload.Result` reflecting the metadata of the final upload result.
     ///
-    /// Resumption of an active upload can be handled at a lower level, but if the endpoint returns an
-    /// error that requires a full restart, this is the method that will be called to fetch a new upload form and
-    /// rebuild the endpoint and upload state before trying again
     private func attemptUpload(
         localMetadata: Metadata,
-        formSource: Upload.FormSource,
-        count: UInt = 0,
+        uploadForm: Upload.Form,
         progress: Upload.ProgressBlock?
     ) async throws -> Upload.Result<Metadata> {
         logger.info("Begin upload.")
-        do {
-            let form: Upload.Form
-            switch formSource {
-            case .local(let localForm):
-                form = localForm
-            case .remote:
-                let formRequest = Upload.FormRequest(
-                    signalService: signalService,
-                    networkManager: networkManager,
-                    chatConnectionManager: chatConnectionManager
-                )
-                form = try await formRequest.start()
-            }
-            let attempt = try await buildAttempt(for: localMetadata, form: form, logger: logger)
-            try await performResumableUpload(attempt: attempt, progress: progress)
-            return Upload.Result(
-                cdnKey: attempt.cdnKey,
-                cdnNumber: attempt.cdnNumber,
-                localUploadMetadata: localMetadata,
-                beginTimestamp: attempt.beginTimestamp,
-                finishTimestamp: Date().ows_millisecondsSince1970
-            )
-        } catch {
-            // Anything besides 'restart' should be handled below this method,
-            // or is an unhandled error that should be thrown to the caller
-            if
-                case Upload.Error.uploadFailure(let recoveryMode) = error,
-                case .restart(let backOff) = recoveryMode
-            {
-                switch backOff {
-                case .immediately:
-                    break
-                case .afterDelay(let delay):
-                    try await sleep(for: delay)
-                }
-
-                return try await attemptUpload(localMetadata: localMetadata, formSource: formSource, count: count + 1, progress: progress)
-            } else {
-                throw error
-            }
-        }
+        let attempt = try await buildAttempt(for: localMetadata, form: uploadForm, logger: logger)
+        try await performResumableUpload(attempt: attempt, progress: progress)
+        return Upload.Result(
+            cdnKey: attempt.cdnKey,
+            cdnNumber: attempt.cdnNumber,
+            localUploadMetadata: localMetadata,
+            beginTimestamp: attempt.beginTimestamp,
+            finishTimestamp: Date().ows_millisecondsSince1970
+        )
     }
 
     /// Consult the UploadEndpoint to determine how much has already been uploaded.
@@ -222,7 +183,7 @@ public struct AttachmentUpload<Metadata: UploadMetadata> {
                     attempt.logger.warn("Retry upload immediately.")
                 case .afterDelay(let delay):
                     attempt.logger.warn("Retry upload after \(delay) seconds.")
-                    try await sleep(for: delay)
+                    try await Upload.sleep(for: delay)
                 }
             case .restart:
                 // Restart is handled at a higher level since the whole
@@ -281,16 +242,18 @@ public struct AttachmentUpload<Metadata: UploadMetadata> {
         ).awaitable()
     }
 
-    private func sleep(for delay: TimeInterval) async throws {
-        let delayInNs = UInt64(delay * Double(NSEC_PER_SEC))
-        try await Task.sleep(nanoseconds: delayInNs)
-    }
-
     private func buildProgress(done: Int, total: UInt32) -> Progress {
         let progress = Progress(parent: nil, userInfo: nil)
         progress.totalUnitCount = Int64(total)
         progress.completedUnitCount = Int64(done)
         return progress
+    }
+}
+
+extension Upload {
+    static func sleep(for delay: TimeInterval) async throws {
+        let delayInNs = UInt64(delay * Double(NSEC_PER_SEC))
+        try await Task.sleep(nanoseconds: delayInNs)
     }
 }
 
