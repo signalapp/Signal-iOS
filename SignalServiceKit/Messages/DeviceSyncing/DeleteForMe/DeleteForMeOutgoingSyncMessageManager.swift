@@ -526,7 +526,7 @@ open class MockDeleteForMeOutgoingSyncMessageManager: DeleteForMeOutgoingSyncMes
 
         return Outgoing.ThreadDeletionContext(
             conversationIdentifier: conversationIdentifier,
-            isFullDelete: true,
+            isFullDelete: isFullDelete,
             threadUniqueId: thread.uniqueId,
             localIdentifiers: localIdentifiers
         )
