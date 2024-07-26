@@ -68,6 +68,7 @@ class CLVTableDataSource: NSObject {
         tableView.separatorColor = Theme.cellSeparatorColor
         tableView.register(ChatListCell.self)
         tableView.register(ArchivedConversationsCell.self)
+        tableView.register(ChatListButtonCell.self)
         tableView.tableFooterView = UIView()
     }
 
@@ -127,12 +128,10 @@ class CLVTableDataSource: NSObject {
         }
         let conversationIndexPaths = visibleIndexPaths.compactMap { indexPath -> IndexPath? in
             switch renderState.sections[indexPath.section].type {
-            case .reminders:
+            case .reminders, .archiveButton, .inboxFilterFooter:
                 return nil
             case .pinned, .unpinned:
                 return indexPath
-            case .archiveButton:
-                return nil
             }
         }
         guard !conversationIndexPaths.isEmpty else {
@@ -141,7 +140,7 @@ class CLVTableDataSource: NSObject {
         let sortedIndexPaths = conversationIndexPaths.sorted()
         var indexPathsToPreload = [IndexPath]()
         func tryToEnqueue(_ indexPath: IndexPath) {
-            let rowCount = numberOfRows(inSection: indexPath.section)
+            let rowCount = renderState.numberOfRows(in: renderState.sections[indexPath.section])
             guard indexPath.row >= 0,
                   indexPath.row < rowCount else {
                 return
@@ -209,11 +208,12 @@ public enum ChatListMode: Int, CaseIterable {
 
 // MARK: -
 
-public enum ChatListSectionType: CaseIterable {
+public enum ChatListSectionType: String, CaseIterable {
     case reminders
     case pinned
     case unpinned
     case archiveButton
+    case inboxFilterFooter
 }
 
 // MARK: -
@@ -311,7 +311,7 @@ extension CLVTableDataSource: UITableViewDelegate {
 
     public func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         switch renderState.sections[indexPath.section].type {
-        case .reminders:
+        case .reminders, .inboxFilterFooter:
             return nil
 
         case .archiveButton:
@@ -352,9 +352,12 @@ extension CLVTableDataSource: UITableViewDelegate {
             viewController.cancelSearch()
         }
 
-        switch renderState.sections[indexPath.section].type {
-        case .reminders:
-            owsFailDebug("Can't select reminders")
+        let sectionType = renderState.sections[indexPath.section].type
+
+        switch sectionType {
+        case .reminders, .inboxFilterFooter:
+            owsFailDebug("Unexpected selection in section \(sectionType)")
+            tableView.deselectRow(at: indexPath, animated: false)
 
         case .pinned, .unpinned:
             guard let thread = renderState.thread(forIndexPath: indexPath) else {
@@ -514,32 +517,15 @@ extension CLVTableDataSource: UITableViewDataSource {
     }
 
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        numberOfRows(inSection: section)
-    }
-
-    fileprivate func numberOfRows(inSection section: Int) -> Int {
-        AssertIsOnMainThread()
-
-        switch renderState.sections[section].type {
-        case .reminders:
-            return renderState.hasVisibleReminders ? 1 : 0
-        case .pinned:
-            return renderState.pinnedThreads.count
-        case .unpinned:
-            return renderState.unpinnedThreads.count
-        case .archiveButton:
-            return renderState.hasArchivedThreadsRow ? 1 : 0
-        }
+        renderState.numberOfRows(in: renderState.sections[section])
     }
 
     public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch renderState.sections[indexPath.section].type {
-        case .reminders:
+        case .reminders, .archiveButton, .inboxFilterFooter:
             return UITableView.automaticDimension
         case .pinned, .unpinned:
             return measureConversationCell(tableView: tableView, indexPath: indexPath)
-        case .archiveButton:
-            return UITableView.automaticDimension
         }
     }
 
@@ -559,6 +545,10 @@ extension CLVTableDataSource: UITableViewDataSource {
             cell = buildConversationCell(tableView: tableView, indexPath: indexPath)
         case .archiveButton:
             cell = buildArchivedConversationsButtonCell(tableView: tableView, indexPath: indexPath)
+        case .inboxFilterFooter:
+            let chatListButtonCell = tableView.dequeueReusableCell(ChatListButtonCell.self, for: indexPath)
+            chatListButtonCell.primaryAction = .disableChatListFilter
+            cell = chatListButtonCell
         }
 
         cell.tintColor = .ows_accentBlue
@@ -631,7 +621,7 @@ extension CLVTableDataSource: UITableViewDataSource {
 
     public func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         switch renderState.sections[indexPath.section].type {
-        case .reminders, .archiveButton:
+        case .reminders, .archiveButton, .inboxFilterFooter:
             return nil
 
         case .pinned, .unpinned:
@@ -656,21 +646,16 @@ extension CLVTableDataSource: UITableViewDataSource {
 
     public func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         switch renderState.sections[indexPath.section].type {
-        case .reminders:
+        case .reminders, .archiveButton, .inboxFilterFooter:
             return false
         case .pinned, .unpinned:
             return true
-        case .archiveButton:
-            return false
         }
     }
 
     public func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         switch renderState.sections[indexPath.section].type {
-        case .reminders:
-            return nil
-
-        case .archiveButton:
+        case .reminders, .archiveButton, .inboxFilterFooter:
             return nil
 
         case .pinned, .unpinned:

@@ -87,6 +87,25 @@ public extension UIButton {
     }
 }
 
+// MARK: - UIButton.Configuration
+
+extension UIConfigurationTextAttributesTransformer {
+    /// Assign to a text attributes transformer (e.g., `UIButton.Configuration.titleTextAttributesTransformer`)
+    /// to configure a default font for that configuration.
+    ///
+    /// This differs from setting the `AttributedText` directly in that a
+    /// `.font` attribute set directly on the attributed text will take
+    /// precedence over the default font.
+    public static func defaultFont(_ defaultFont: UIFont) -> UIConfigurationTextAttributesTransformer {
+        UIConfigurationTextAttributesTransformer { attributes in
+            guard attributes.font == nil else { return attributes }
+            var attributes = attributes
+            attributes.font = defaultFont
+            return attributes
+        }
+    }
+}
+
 // MARK: - UIBarButtonItem
 
 public extension UIBarButtonItem {

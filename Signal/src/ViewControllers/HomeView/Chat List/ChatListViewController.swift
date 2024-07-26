@@ -21,6 +21,10 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         viewState.configure()
     }
 
+    public override var canBecomeFirstResponder: Bool {
+        true
+    }
+
     // MARK: View Lifecycle
 
     public override func viewDidLoad() {
@@ -346,25 +350,9 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                 if FeatureFlags.chatListFilter {
                     switch viewState.inboxFilter {
                     case .unread:
-                        contextMenuActions.append(
-                            UIAction(
-                                title: OWSLocalizedString("CHAT_LIST_CLEAR_FILTER_MENU_ACTION", comment: "Title for context menu action to disable chat list filter (e.g., Filter by Unread)"),
-                                image: Theme.iconImage(.chatListClearFilter),
-                                handler: { [weak self] _ in
-                                    self?.disableChatListFilter()
-                                }
-                            )
-                        )
+                        contextMenuActions.append(.disableChatListFilter)
                     case nil:
-                        contextMenuActions.append(
-                            UIAction(
-                                title: OWSLocalizedString("CHAT_LIST_UNREAD_FILTER_MENU_ACTION", comment: "Title for context menu action to enable Filter by Unread"),
-                                image: Theme.iconImage(.chatListFilterByUnread),
-                                handler: { [weak self] _ in
-                                    self?.enableChatListFilter()
-                                }
-                            )
-                        )
+                        contextMenuActions.append(.enableChatListFilter)
                     }
                 }
 
@@ -1017,20 +1005,6 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         return true
     }
 
-    // MARK: - Chat List Filter
-
-    func enableChatListFilter() {
-        viewState.inboxFilter = .unread
-        updateBarButtonItems()
-        loadCoordinator.loadIfNecessary()
-    }
-
-    func disableChatListFilter() {
-        viewState.inboxFilter = nil
-        updateBarButtonItems()
-        loadCoordinator.loadIfNecessary()
-    }
-
     // MARK: - Payments
 
     func configureUnreadPaymentsBannerSingle(_ paymentsReminderView: UIView,
@@ -1334,7 +1308,24 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     }
 }
 
-// MARK: Settings Button
+// MARK: - ChatListFilterActions
+
+extension ChatListViewController {
+    func enableChatListFilter(_ sender: Any?) {
+        viewState.inboxFilter = .unread
+        updateBarButtonItems()
+        loadCoordinator.loadIfNecessary()
+    }
+
+    func disableChatListFilter(_ sender: Any?) {
+        guard viewState.inboxFilter != nil else { return }
+        viewState.inboxFilter = nil
+        updateBarButtonItems()
+        loadCoordinator.loadIfNecessary()
+    }
+}
+
+// MARK: - Settings Button
 
 extension ChatListViewController: ChatListSettingsButtonDelegate {
     func didUpdateButton(_ settingsButtonCreator: ChatListSettingsButtonState) {

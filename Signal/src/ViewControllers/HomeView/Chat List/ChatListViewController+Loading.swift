@@ -376,8 +376,7 @@ public class CLVLoadCoordinator: Dependencies {
         }
 
         // Apply the load to the view.
-        let wasViewEmpty = viewController.tableDataSource.renderState.visibleThreadCount == 0
-        let shouldAnimate = !suppressAnimations && !wasViewEmpty && viewController.hasEverAppeared
+        let shouldAnimate = !suppressAnimations && viewController.hasEverAppeared
         if shouldAnimate {
             viewController.applyLoadResult(loadResult, animated: shouldAnimate)
         } else {

@@ -25,22 +25,21 @@ struct CLVRenderState {
         self.viewInfo = viewInfo
         self.pinnedThreads = pinnedThreads
         self.unpinnedThreads = unpinnedThreads
+        self.sections = ChatListSectionType.allCases.compactMap(makeSection(for:))
+    }
 
-        for sectionType in ChatListSectionType.allCases {
-            switch sectionType {
-            case .reminders:
-                if hasVisibleReminders {
-                    sections.append(Section(type: sectionType))
-                }
-            case .archiveButton:
-                if hasArchivedThreadsRow {
-                    sections.append(Section(type: sectionType))
-                }
-            case .pinned:
-                sections.append(Section(type: sectionType, threads: \.pinnedThreads))
-            case .unpinned:
-                sections.append(Section(type: sectionType, threads: \.unpinnedThreads))
-            }
+    private func makeSection(for sectionType: ChatListSectionType) -> Section? {
+        switch sectionType {
+        case .pinned:
+            return Section(type: sectionType, threads: \.pinnedThreads)
+        case .unpinned:
+            return Section(type: sectionType, threads: \.unpinnedThreads)
+        case .reminders where hasVisibleReminders,
+             .archiveButton where hasArchivedThreadsRow,
+             .inboxFilterFooter where viewInfo.inboxFilter != nil:
+            return Section(type: sectionType)
+        case .reminders, .archiveButton, .inboxFilterFooter:
+            return nil
         }
     }
 
@@ -69,6 +68,17 @@ struct CLVRenderState {
     }
 
     // MARK: UITableViewDataSource
+
+    func numberOfRows(in section: Section) -> Int {
+        switch section.type {
+        case .reminders, .archiveButton, .inboxFilterFooter:
+            return 1
+        case .pinned:
+            return pinnedThreads.count
+        case .unpinned:
+            return unpinnedThreads.count
+        }
+    }
 
     func sectionIndex(for sectionType: ChatListSectionType) -> Int? {
         sections.firstIndex(where: { $0.type == sectionType })
