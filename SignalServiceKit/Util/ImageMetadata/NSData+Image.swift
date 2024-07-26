@@ -59,6 +59,12 @@ extension NSData {
 
     @objc
     @available(swift, obsoleted: 1)
+    public static func ows_hasStickerLikeProperties(metadata: ImageMetadata) -> Bool {
+        Data.ows_hasStickerLikeProperties(withImageMetadata: metadata)
+    }
+
+    @objc
+    @available(swift, obsoleted: 1)
     public static func ows_hasStickerLikeProperties(withPath filePath: String) -> Bool {
         Data.ows_hasStickerLikeProperties(withPath: filePath)
     }

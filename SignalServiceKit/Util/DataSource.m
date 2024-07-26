@@ -222,7 +222,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)hasStickerLikeProperties
 {
     OWSAssertDebug(!self.isConsumed);
-    return [self.data ows_hasStickerLikeProperties];
+    ImageMetadata *metadata = [self imageMetadata];
+    return [NSData ows_hasStickerLikePropertiesWithMetadata:metadata];
 }
 
 - (ImageMetadata *)imageMetadata
@@ -411,7 +412,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)hasStickerLikeProperties
 {
     OWSAssertDebug(!self.isConsumed);
-    return [NSData ows_hasStickerLikePropertiesWithPath:self.dataUrl.path];
+    ImageMetadata *metadata = [self imageMetadata];
+    return [NSData ows_hasStickerLikePropertiesWithMetadata:metadata];
 }
 
 - (ImageMetadata *)imageMetadata

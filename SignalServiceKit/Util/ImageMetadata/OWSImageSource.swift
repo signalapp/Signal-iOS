@@ -253,7 +253,7 @@ extension OWSImageSource {
         return Data.ows_hasStickerLikeProperties(withImageMetadata: imageMetadata)
     }
 
-    fileprivate static func ows_hasStickerLikeProperties(withImageMetadata imageMetadata: ImageMetadata) -> Bool {
+    public static func ows_hasStickerLikeProperties(withImageMetadata imageMetadata: ImageMetadata) -> Bool {
         let maxStickerHeight = CGFloat(512)
         return (imageMetadata.isValid
                 && imageMetadata.pixelSize.width <= maxStickerHeight
