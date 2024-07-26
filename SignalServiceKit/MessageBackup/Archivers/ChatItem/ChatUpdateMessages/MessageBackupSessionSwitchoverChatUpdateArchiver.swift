@@ -92,7 +92,7 @@ final class MessageBackupSessionSwitchoverChatUpdateArchiver {
             return invalidProtoData(.invalidE164(protoClass: BackupProto.SessionSwitchoverChatUpdate.self))
         }
 
-        guard case .contact(let switchedOverContactThread) = chatThread else {
+        guard case .contact(let switchedOverContactThread) = chatThread.threadType else {
             return invalidProtoData(.sessionSwitchoverUpdateNotFromContact)
         }
 

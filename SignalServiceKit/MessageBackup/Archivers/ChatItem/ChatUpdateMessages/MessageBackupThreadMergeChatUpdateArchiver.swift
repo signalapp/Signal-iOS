@@ -92,7 +92,7 @@ final class MessageBackupThreadMergeChatUpdateArchiver {
             return invalidProtoData(.invalidE164(protoClass: BackupProto.ThreadMergeChatUpdate.self))
         }
 
-        guard case .contact(let mergedThread) = chatThread else {
+        guard case .contact(let mergedThread) = chatThread.threadType else {
             return invalidProtoData(.threadMergeUpdateNotFromContact)
         }
 

@@ -164,7 +164,7 @@ final class MessageBackupGroupUpdateMessageArchiver {
         tx: DBWriteTransaction
     ) -> RestoreChatUpdateMessageResult {
         let groupThread: TSGroupThread
-        switch chatThread {
+        switch chatThread.threadType {
         case .contact:
             return .messageFailure([.restoreFrameError(
                 .invalidProtoData(.groupUpdateMessageInNonGroupChat),

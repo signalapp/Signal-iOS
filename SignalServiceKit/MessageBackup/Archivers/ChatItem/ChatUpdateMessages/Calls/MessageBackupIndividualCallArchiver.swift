@@ -110,7 +110,7 @@ final class MessageBackupIndividualCallArchiver {
         tx: DBWriteTransaction
     ) -> RestoreChatUpdateMessageResult {
         let contactThread: TSContactThread
-        switch chatThread {
+        switch chatThread.threadType {
         case .contact(let _contactThread):
             contactThread = _contactThread
         case .groupV2:
@@ -184,7 +184,7 @@ final class MessageBackupIndividualCallArchiver {
                 individualCallInteraction: individualCallInteraction,
                 individualCallInteractionRowId: individualCallInteraction.sqliteRowId!,
                 contactThread: contactThread,
-                contactThreadRowId: contactThread.sqliteRowId!,
+                contactThreadRowId: chatThread.threadRowId,
                 callId: callId,
                 callType: callRecordType,
                 callDirection: callRecordDirection,

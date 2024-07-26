@@ -468,6 +468,8 @@ extension MessageBackup {
             /// The overlap with referencedChatThreadNotFound is confusing, but this is for restoring group-specific metadata.
             case referencedGroupThreadNotFound(GroupId)
 
+            case databaseModelMissingRowId(modelClass: AnyClass)
+
             case databaseInsertionFailed(RawError)
 
             /// These should never happen; it means some invariant we could not
@@ -584,6 +586,9 @@ extension MessageBackup {
             case .referencedChatThreadNotFound, .referencedGroupThreadNotFound:
                 // Collapse these by the id they refer to, which is in the "type".
                 return typeLogString
+            case .databaseModelMissingRowId(let modelClass):
+                // Collapse these by the relevant class.
+                return "\(modelClass)"
             case .databaseInsertionFailed(let rawError):
                 // We don't want to re-log every instance of this we see if they repeat.
                 // Collapse them by the raw error itself.

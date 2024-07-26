@@ -115,7 +115,7 @@ final class MessageBackupExpirationTimerChatUpdateArchiver {
         }
 
         let contactThread: TSContactThread
-        switch chatThread {
+        switch chatThread.threadType {
         case .contact(let _contactThread):
             contactThread = _contactThread
         case .groupV2:

@@ -115,7 +115,7 @@ final class MessageBackupGroupCallArchiver {
         tx: DBWriteTransaction
     ) -> RestoreChatUpdateMessageResult {
         let groupThread: TSGroupThread
-        switch chatThread {
+        switch chatThread.threadType {
         case .groupV2(let _groupThread):
             groupThread = _groupThread
         case .contact:
@@ -193,7 +193,7 @@ final class MessageBackupGroupCallArchiver {
                 groupCallInteraction: groupCallInteraction,
                 groupCallInteractionRowId: groupCallInteraction.sqliteRowId!,
                 groupThread: groupThread,
-                groupThreadRowId: groupThread.sqliteRowId!,
+                groupThreadRowId: chatThread.threadRowId,
                 callDirection: callDirection,
                 groupCallStatus: callStatus,
                 groupCallRingerAci: groupCallRingerAci,

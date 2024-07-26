@@ -131,7 +131,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         context: MessageBackup.ChatArchivingContext,
         tx: DBReadTransaction
     ) -> ArchiveMultiFrameResult {
-        let chatId = context.assignChatId(to: MessageBackup.ChatThread.contact(thread).uniqueId)
+        let chatId = context.assignChatId(to: MessageBackup.ThreadUniqueId(thread: thread))
 
         return archiveThread(
             thread,
@@ -149,7 +149,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         context: MessageBackup.ChatArchivingContext,
         tx: DBReadTransaction
     ) -> ArchiveMultiFrameResult {
-        let chatId = context.assignChatId(to: MessageBackup.ChatThread.contact(thread).uniqueId)
+        let chatId = context.assignChatId(to: MessageBackup.ThreadUniqueId(thread: thread))
 
         let contactServiceId: ServiceId? = thread.contactUUID.flatMap { try? ServiceId.parseFrom(serviceIdString: $0) }
         guard
@@ -187,7 +187,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
         context: MessageBackup.ChatArchivingContext,
         tx: DBReadTransaction
     ) -> ArchiveMultiFrameResult {
-        let chatId = context.assignChatId(to: MessageBackup.ChatThread.groupV2(thread).uniqueId)
+        let chatId = context.assignChatId(to: MessageBackup.ThreadUniqueId(thread: thread))
 
         let recipientAddress = MessageBackup.RecipientArchivingContext.Address.group(thread.groupId)
         guard let recipientId = context.recipientContext[recipientAddress] else {
@@ -282,7 +282,16 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
                 with: context.recipientContext.localIdentifiers.aciAddress,
                 tx: tx
             )
-            chatThread = .contact(noteToSelfThread)
+            guard let noteToSelfRowId = noteToSelfThread.sqliteRowId else {
+                return .failure([.restoreFrameError(
+                    .databaseModelMissingRowId(modelClass: TSContactThread.self),
+                    chat.chatId
+                )])
+            }
+            chatThread = MessageBackup.ChatThread(
+                threadType: .contact(noteToSelfThread),
+                threadRowId: noteToSelfRowId
+            )
         case .releaseNotesChannel:
             // TODO: [Backups] Implement restoring the Release Notes channel chat.
             return .success
@@ -298,10 +307,28 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
                     chat.chatId
                 )])
             }
-            chatThread = .groupV2(groupThread)
+            guard let groupThreadRowId = groupThread.sqliteRowId else {
+                return .failure([.restoreFrameError(
+                    .databaseModelMissingRowId(modelClass: TSGroupThread.self),
+                    chat.chatId
+                )])
+            }
+            chatThread = MessageBackup.ChatThread(
+                threadType: .groupV2(groupThread),
+                threadRowId: groupThreadRowId
+            )
         case .contact(let address):
             let contactThread = threadStore.getOrCreateContactThread(with: address.asInteropAddress(), tx: tx)
-            chatThread = .contact(contactThread)
+            guard let contactThreadRowId = contactThread.sqliteRowId else {
+                return .failure([.restoreFrameError(
+                    .databaseModelMissingRowId(modelClass: TSContactThread.self),
+                    chat.chatId
+                )])
+            }
+            chatThread = MessageBackup.ChatThread(
+                threadType: .contact(contactThread),
+                threadRowId: contactThreadRowId
+            )
         case .distributionList:
             return .failure([
                 .restoreFrameError(
@@ -344,7 +371,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
 
         if chat.pinnedOrder != 0 {
             let newPinnedThreadIds = context.pinnedThreadOrder(
-                newPinnedThreadId: chatThread.uniqueId,
+                newPinnedThreadId: MessageBackup.ThreadUniqueId(chatThread: chatThread),
                 newPinnedThreadIndex: chat.pinnedOrder
             )
             pinnedThreadManager.updatePinnedThreadIds(newPinnedThreadIds.map(\.value), updateStorageService: false, tx: tx)

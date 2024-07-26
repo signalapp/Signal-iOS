@@ -418,7 +418,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
         tx: DBWriteTransaction
     ) -> MessageBackup.RestoreInteractionResult<Void> {
         let senderOrRecipientAci: Aci? = {
-            switch thread {
+            switch thread.threadType {
             case .contact(let thread):
                 // Payments only supported for 1:1 chats
                 return thread.contactAddress.aci
@@ -744,7 +744,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
         let filteredMessages = messageCandidates
             .lazy
             .compactMap { $0 as? TSMessage }
-            .filter { $0.uniqueThreadId == thread.uniqueId.value }
+            .filter { $0.uniqueThreadId == thread.tsThread.uniqueId }
 
         if filteredMessages.count > 1 {
             // We found more than one matching message. We don't know which

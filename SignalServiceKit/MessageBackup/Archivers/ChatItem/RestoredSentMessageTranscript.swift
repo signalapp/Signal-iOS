@@ -33,7 +33,7 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
         let expirationToken: DisappearingMessageToken = .token(forProtoExpireTimerMillis: chatItem.expiresInMs)
 
         let target: SentMessageTranscriptTarget
-        switch chatThread {
+        switch chatThread.threadType {
         case .contact(let contactThread):
             target = .contact(contactThread, expirationToken)
         case .groupV2(let groupThread):

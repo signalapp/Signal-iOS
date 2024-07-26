@@ -30,23 +30,24 @@ extension MessageBackup {
     }
 
     /// Chats only exist for group (v2) and contact threads, not story threads.
-    public enum ChatThread {
-        /// Note: covers note to self as well.
-        case contact(TSContactThread)
-        /// Instantiators are expected to validate the group is gv2.
-        case groupV2(TSGroupThread)
+    public struct ChatThread {
+        public enum ThreadType {
+            /// Also covers Note to Self.
+            case contact(TSContactThread)
+            /// Instantiators are expected to validate the group is GV2.
+            case groupV2(TSGroupThread)
+        }
+
+        public let threadType: ThreadType
+        public let threadRowId: Int64
 
         public var tsThread: TSThread {
-            switch self {
+            switch threadType {
             case .contact(let thread):
                 return thread
             case .groupV2(let thread):
                 return thread
             }
-        }
-
-        public var uniqueId: MessageBackup.ThreadUniqueId {
-            return .init(chatThread: self)
         }
     }
 
@@ -57,16 +58,16 @@ extension MessageBackup {
             self.value = value
         }
 
-        fileprivate init(thread: TSThread) {
+        public init(thread: TSThread) {
             self.init(value: thread.uniqueId)
+        }
+
+        public init(chatThread: ChatThread) {
+            self.init(thread: chatThread.tsThread)
         }
 
         fileprivate init(interaction: TSInteraction) {
             self.init(value: interaction.uniqueThreadId)
-        }
-
-        fileprivate init(chatThread: ChatThread) {
-            self.init(thread: chatThread.tsThread)
         }
 
         // MARK: MessageBackupLoggableId
@@ -128,7 +129,7 @@ extension MessageBackup {
             _ chatId: ChatId,
             to thread: ChatThread
         ) {
-            map[chatId] = thread.uniqueId
+            map[chatId] = ThreadUniqueId(chatThread: thread)
         }
 
         /// Given a newly encountered pinned thread, return all pinned thread ids encountered so far, in order.
