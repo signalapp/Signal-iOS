@@ -413,7 +413,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             owsFail("Can't answer Call Link calls.")
         case .groupThread(let groupThreadCall):
             // Explicitly unmute to request permissions, if needed.
-            callService.updateIsLocalAudioMuted(isLocalAudioMuted: call.isOutgoingAudioMuted)
+            callService.updateIsLocalAudioMuted(isLocalAudioMuted: call.isOutgoingAudioMuted || groupThreadCall.shouldMuteAutomatically())
             // Explicitly start video to request permissions, if needed.
             // This has the added effect of putting the video mute button in the correct state
             // if the user has disabled camera permissions for the app.

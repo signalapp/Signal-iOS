@@ -357,6 +357,8 @@ private class CallControlsViewModel {
         callService.audioService.delegate = nil
     }
 
+    private var didOverrideDefaultMuteState = false
+
     private var hasExternalAudioInputsAndAudioSource: Bool {
         let audioService = callService.audioService
         return audioService.hasExternalInputs && audioService.currentAudioSource != nil
@@ -639,6 +641,10 @@ extension CallControlsViewModel: GroupCallObserver {
     }
 
     func groupCallPeekChanged(_ call: GroupCall) {
+        // Mute if there's more than 8 people in the call.
+        if call.shouldMuteAutomatically(), !didOverrideDefaultMuteState, !muteButtonIsSelected {
+            callService.updateIsLocalAudioMuted(isLocalAudioMuted: true)
+        }
         refreshView?()
     }
 
@@ -711,6 +717,7 @@ extension CallControlsViewModel {
         let shouldMute = !muteButtonIsSelected
         callService.updateIsLocalAudioMuted(isLocalAudioMuted: shouldMute)
         confirmationToastManager.toastInducingCallControlChangeDidOccur(state: .mute(isOn: shouldMute))
+        didOverrideDefaultMuteState = true
         refreshView?()
     }
 

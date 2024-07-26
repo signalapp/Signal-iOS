@@ -32,6 +32,11 @@ extension GroupCallObserver {
 }
 
 class GroupCall: SignalRingRTC.GroupCallDelegate {
+    enum Constants {
+        /// Automatically mute on join when seeing this many members in a call before we join.
+        static let autoMuteThreshold = 8
+    }
+
     let commonState: CommonCallState
     let ringRtcCall: SignalRingRTC.GroupCall
     private(set) var raisedHands: [DemuxId] = []
@@ -69,6 +74,13 @@ class GroupCall: SignalRingRTC.GroupCallDelegate {
         case .joined, .pending:
             return true
         }
+    }
+
+    func shouldMuteAutomatically() -> Bool {
+        return (
+            ringRtcCall.localDeviceState.joinState == .notJoined
+            && (ringRtcCall.peekInfo?.deviceCountExcludingPendingDevices ?? 0) >= Constants.autoMuteThreshold
+        )
     }
 
     // MARK: - Concrete Type
