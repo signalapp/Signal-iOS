@@ -8,9 +8,6 @@ import LibSignalClient
 
 extension MessageBackup {
 
-    // TODO: Flesh this out. Not sure how exactly we will map
-    // from the "types" in the proto to the "types" in our database.
-
     /// Represents message content "types" as they are represented in iOS code, after
     /// being mapped from their representation in the backup proto. For example, normal
     /// text messages and quoted replies are a single "type" in the proto, but have separate
@@ -19,13 +16,13 @@ extension MessageBackup {
     /// after the TSMessage has been created, so that downstream objects that require the TSMessage exist
     /// can be created afterwards. So anything needed for that (but not needed to create the TSMessage)
     /// can be made a fileprivate variable in these structs.
-    internal enum RestoredMessageContents {
+    enum RestoredMessageContents {
         struct Text {
 
             // Internal - these fields are exposed for TSMessage construction.
 
-            internal let body: MessageBody
-            internal let quotedMessage: TSQuotedMessage?
+            let body: MessageBody
+            let quotedMessage: TSQuotedMessage?
 
             // Private - these fields are used by ``restoreDownstreamObjects`` to
             //     construct objects that are parsed from the backup proto but require
@@ -40,12 +37,11 @@ extension MessageBackup {
                 case failure(BackupProto.PaymentNotification.TransactionDetails.FailedTransaction.FailureReason)
             }
 
-            internal let amount: String?
-            internal let fee: String?
-            internal let note: String?
+            let amount: String?
+            let fee: String?
+            let note: String?
 
             fileprivate let status: Status
-
             fileprivate let payment: BackupProto.PaymentNotification.TransactionDetails.Transaction?
         }
 
@@ -120,27 +116,31 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
                 context: context,
                 tx: tx
             )
+        } else if let messageBody = message.body {
+            return archiveStandardMessageContents(
+                message,
+                messageBody: messageBody,
+                context: context,
+                tx: tx
+            )
         } else {
-            return archiveStandardMessageContents(message, context: context, tx: tx)
+            // TODO: [Backups] Handle non-standard messages.
+            return .notYetImplemented
         }
     }
 
     private func archiveStandardMessageContents(
         _ message: TSMessage,
+        messageBody: String,
         context: MessageBackup.RecipientArchivingContext,
         tx: DBReadTransaction
     ) -> ArchiveInteractionResult<ChatItemType> {
-        guard let body = message.body else {
-            // TODO: handle non simple text messages.
-            return .notYetImplemented
-        }
-
         var standardMessage = BackupProto.StandardMessage()
         var partialErrors = [ArchiveFrameError]()
 
         let text: BackupProto.Text
         let textResult = archiveText(
-            .init(text: body, ranges: message.bodyRanges ?? .empty),
+            .init(text: messageBody, ranges: message.bodyRanges ?? .empty),
             interactionUniqueId: message.uniqueInteractionId
         )
         switch textResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
@@ -322,7 +322,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
             quote.bodyRanges = text.bodyRanges
         }
 
-        // TODO: set attachments on the quote
+        // TODO: [Backups] Set attachments on the quote
 
         return .success(quote)
     }
@@ -515,7 +515,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
         }
 
         guard let text = standardMessage.text else {
-            // Non-text not supported yet.
+            // TODO: [Backups] Support messages with no text
             return .messageFailure([.restoreFrameError(.unimplemented, chatItemId)])
         }
 
@@ -617,7 +617,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
         }
     }
 
-    func restoreQuote(
+    private func restoreQuote(
         _ quote: BackupProto.Quote,
         chatItemId: MessageBackup.ChatItemId,
         thread: MessageBackup.ChatThread,
@@ -708,7 +708,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
             return .messageFailure([.restoreFrameError(.unimplemented, chatItemId)])
         }
 
-        // TODO: support attachments
+        // TODO: [Backups] Support attachments
 
         let quotedMessage = TSQuotedMessage(
             targetMessageTimestamp: targetMessageTimestamp,

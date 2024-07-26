@@ -9,8 +9,6 @@ import LibSignalClient
 internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionArchiver {
     private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>
 
-    static let archiverType: MessageBackup.ChatItemArchiverType = .outgoingMessage
-
     private let contentsArchiver: MessageBackupTSMessageContentsArchiver
     private let interactionStore: InteractionStore
     private let sentMessageTranscriptReceiver: SentMessageTranscriptReceiver
@@ -132,7 +130,7 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
                     statusTimestamp = message.timestamp
                 }
             case OWSOutgoingMessageRecipientState.failed:
-                // TODO: identify specific errors. for now call everything network.
+                // TODO: [Backups] Identify specific errors (see recipientState.errorCode). For now, call everything network.
                 isNetworkFailure = true
                 isIdentityKeyMismatchFailure = false
                 protoDeliveryStatus = .FAILED
@@ -145,7 +143,7 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
                 statusTimestamp = message.timestamp
             }
 
-            var sendStatus = BackupProto.SendStatus(
+            let sendStatus = BackupProto.SendStatus(
                 recipientId: recipientId.value,
                 deliveryStatus: protoDeliveryStatus,
                 networkFailure: isNetworkFailure,
@@ -199,7 +197,7 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupInteractionA
 
         guard let chatItemType = chatItem.item else {
             // Unrecognized item type!
-            return .messageFailure([.restoreFrameError(.invalidProtoData(.unrecognizedChatItemType), chatItem.id)])
+            return .messageFailure([.restoreFrameError(.invalidProtoData(.chatItemMissingItem), chatItem.id)])
         }
 
         var partialErrors = [MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>]()

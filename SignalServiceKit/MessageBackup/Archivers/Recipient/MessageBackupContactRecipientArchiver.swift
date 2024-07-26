@@ -6,13 +6,16 @@
 import Foundation
 import LibSignalClient
 
-/**
- * Archives a contact (``SignalRecipient``) as a ``BackupProto.Contact``, which is a type of
- * ``BackupProto.Recipient``.
- */
-public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestinationArchiver {
-    private typealias ArchivingAddress = MessageBackup.RecipientArchivingContext.Address
+/// Archives ``SignalRecipient``s as ``BackupProto.Contact`` recipients.
+public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
+    typealias RecipientId = MessageBackup.RecipientId
+    typealias RecipientAppId = MessageBackup.RecipientArchivingContext.Address
+
+    typealias ArchiveMultiFrameResult = MessageBackup.ArchiveMultiFrameResult<RecipientAppId>
     private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<RecipientAppId>
+
+    typealias RestoreFrameResult = MessageBackup.RestoreFrameResult<RecipientId>
+    private typealias RestoreFrameError = MessageBackup.RestoreFrameError<RecipientId>
 
     private let blockingManager: MessageBackup.Shims.BlockingManager
     private let profileManager: MessageBackup.Shims.ProfileManager
@@ -49,7 +52,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         self.usernameLookupManager = usernameLookupManager
     }
 
-    public func archiveRecipients(
+    func archiveAllContactRecipients(
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.RecipientArchivingContext,
         tx: DBReadTransaction
@@ -135,7 +138,6 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
             contact.profileKey = userProfile?.profileKey.map(\.keyData)
             contact.profileGivenName = userProfile?.givenName
             contact.profileFamilyName = userProfile?.familyName
-            // TODO: joined name?
 
             Self.writeFrameToStream(
                 stream,
@@ -158,29 +160,17 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         }
     }
 
-    static func canRestore(_ recipient: BackupProto.Recipient) -> Bool {
-        switch recipient.destination {
-        case .contact:
-            return true
-        case nil, .group, .distributionList, .selfRecipient, .releaseNotes, .callLink:
-            return false
-        }
-    }
-
-    public func restore(
-        _ recipientProto: BackupProto.Recipient,
+    func restoreContactRecipientProto(
+        _ contactProto: BackupProto.Contact,
+        recipient: BackupProto.Recipient,
         context: MessageBackup.RecipientRestoringContext,
         tx: DBWriteTransaction
     ) -> RestoreFrameResult {
-        let contactProto: BackupProto.Contact
-        switch recipientProto.destination {
-        case .contact(let backupProtoContact):
-            contactProto = backupProtoContact
-        case nil, .group, .distributionList, .selfRecipient, .releaseNotes, .callLink:
-            return .failure([.restoreFrameError(
-                .developerError(OWSAssertionError("Invalid proto for class")),
-                recipientProto.recipientId
-            )])
+        func restoreFrameError(
+            _ error: RestoreFrameError.ErrorType,
+            line: UInt = #line
+        ) -> RestoreFrameResult {
+            return .failure([.restoreFrameError(error, recipient.recipientId, line: line)])
         }
 
         let isRegistered: Bool
@@ -189,7 +179,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         case nil:
             return .failure([.restoreFrameError(
                 .invalidProtoData(.contactWithoutRegistrationInfo),
-                recipientProto.recipientId
+                recipient.recipientId
             )])
         case .notRegistered(let notRegisteredProto):
             isRegistered = false
@@ -205,7 +195,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         let profileKey: OWSAES256Key?
         if let aciRaw = contactProto.aci {
             guard let aciUuid = UUID(data: aciRaw) else {
-                return .failure([.restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto.Contact.self)), recipientProto.recipientId)])
+                return restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto.Contact.self)))
             }
             aci = Aci.init(fromUUID: aciUuid)
         } else {
@@ -213,7 +203,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         }
         if let pniRaw = contactProto.pni {
             guard let pniUuid = UUID(data: pniRaw) else {
-                return .failure([.restoreFrameError(.invalidProtoData(.invalidPni(protoClass: BackupProto.Contact.self)), recipientProto.recipientId)])
+                return restoreFrameError(.invalidProtoData(.invalidPni(protoClass: BackupProto.Contact.self)))
             }
             pni = Pni.init(fromUUID: pniUuid)
         } else {
@@ -221,7 +211,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         }
         if let contactProtoE164 = contactProto.e164 {
             guard let protoE164 = E164(contactProtoE164) else {
-                return .failure([.restoreFrameError(.invalidProtoData(.invalidE164(protoClass: BackupProto.Contact.self)), recipientProto.recipientId)])
+                return restoreFrameError(.invalidProtoData(.invalidE164(protoClass: BackupProto.Contact.self)))
             }
             e164 = protoE164
         } else {
@@ -229,7 +219,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
         }
         if let contactProtoProfileKeyData = contactProto.profileKey {
             guard let protoProfileKey = OWSAES256Key(data: contactProtoProfileKeyData) else {
-                return .failure([.restoreFrameError(.invalidProtoData(.invalidProfileKey(protoClass: BackupProto.Contact.self)), recipientProto.recipientId)])
+                return restoreFrameError(.invalidProtoData(.invalidProfileKey(protoClass: BackupProto.Contact.self)))
             }
             profileKey = protoProfileKey
         } else {
@@ -242,9 +232,9 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
             pni: pni,
             e164: e164
         ) else {
-            return .failure([.restoreFrameError(.invalidProtoData(.contactWithoutIdentifiers), recipientProto.recipientId)])
+            return restoreFrameError(.invalidProtoData(.contactWithoutIdentifiers))
         }
-        context[recipientProto.recipientId] = .contact(backupContactAddress)
+        context[recipient.recipientId] = .contact(backupContactAddress)
 
         let recipient = SignalRecipient.fromBackup(
             backupContactAddress,
@@ -265,14 +255,11 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
                 localIdentifiers: context.localIdentifiers
             )
         } else {
-            return .failure([.restoreFrameError(
-                .developerError(OWSAssertionError("How did we have no identifiers after constructing a backup contact address?")),
-                recipientProto.recipientId
-            )])
+            return restoreFrameError(.developerError(OWSAssertionError("How did we have no identifiers after constructing a backup contact address?")))
         }
         switch profileInsertableAddress {
         case .localUser:
-            return .failure([.restoreFrameError(.invalidProtoData(.otherContactWithLocalIdentifiers), recipientProto.recipientId)])
+            return restoreFrameError(.invalidProtoData(.otherContactWithLocalIdentifiers))
         case .otherUser, .legacyUserPhoneNumberFromBackupRestore:
             break
         }
@@ -308,7 +295,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
             do {
                 try recipientHidingManager.addHiddenRecipient(recipient, wasLocallyInitiated: false, tx: tx)
             } catch let error {
-                return .failure([.restoreFrameError(.databaseInsertionFailed(error), recipientProto.recipientId)])
+                return restoreFrameError(.databaseInsertionFailed(error))
             }
         case .VISIBLE:
             break
@@ -328,8 +315,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupRecipientDestin
             tx: tx
         )
 
-        // TODO: Refetch every profile (including our own) after registration.
-        // Certain fields (eg badges & Sealed Sender state) can be fetched without the profile key.
+        // TODO: [Backups] Enqueue a fetch of this contact's profile and download of their avatar (even if we have no profile key).
 
         return .success
     }

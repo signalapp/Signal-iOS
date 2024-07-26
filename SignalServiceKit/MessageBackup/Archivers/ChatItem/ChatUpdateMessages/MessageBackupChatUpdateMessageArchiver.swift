@@ -7,8 +7,6 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
     typealias ArchiveChatUpdateMessageResult = MessageBackup.ArchiveInteractionResult<Details>
     typealias RestoreChatUpdateMessageResult = MessageBackup.RestoreInteractionResult<Void>
 
-    static var archiverType: MessageBackup.ChatItemArchiverType { .chatUpdateMessage }
-
     private let expirationTimerChatUpdateArchiver: MessageBackupExpirationTimerChatUpdateArchiver
     private let groupCallArchiver: MessageBackupGroupCallArchiver
     private let groupUpdateMessageArchiver: MessageBackupGroupUpdateMessageArchiver

@@ -79,9 +79,6 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
             individualCallRecordManager: individualCallRecordManager,
             interactionStore: interactionStore
         )
-    // TODO: need for info messages. not story messages, those are skipped.
-    // are there other message types? what about e.g. payment messages?
-    // anything that isnt a TSOutgoingMessage or TSIncomingMessage.
 
     public func archiveInteractions(
         stream: MessageBackupProtoOutputStream,
@@ -133,27 +130,6 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         }
     }
 
-    // TODO: once we have a complete set of archivers, this
-    // should return a non-optional value.
-    private func archiver(
-        for archiverType: MessageBackup.ChatItemArchiverType
-    ) -> MessageBackupInteractionArchiver? {
-        let archiver: MessageBackupInteractionArchiver
-        switch archiverType {
-        case .incomingMessage:
-            archiver = incomingMessageArchiver
-        case .outgoingMessage:
-            archiver = outgoingMessageArchiver
-        case .chatUpdateMessage:
-            archiver = chatUpdateMessageArchiver
-        case .unimplemented:
-            return nil
-        }
-
-        owsAssertDebug(archiverType == type(of: archiver).archiverType)
-        return archiver
-    }
-
     private func archiveInteraction(
         _ interaction: TSInteraction,
         stream: MessageBackupProtoOutputStream,
@@ -182,10 +158,19 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
             return .success
         }
 
-        guard let archiver = self.archiver(for: interaction.archiverType()) else {
-            // TODO: when we have a complete set of archivers, this should
-            // maybe be considered a catastrophic failure?
-            // For now there's interactions we don't handle; just ignore it.
+        let archiver: MessageBackupInteractionArchiver
+        switch interaction {
+        case is TSIncomingMessage:
+            archiver = incomingMessageArchiver
+        case is TSOutgoingMessage:
+            archiver = outgoingMessageArchiver
+        case is TSInfoMessage: fallthrough
+        case is TSErrorMessage: fallthrough
+        case is TSCall: fallthrough
+        case is OWSGroupCallMessage:
+            archiver = chatUpdateMessageArchiver
+        default:
+            // TODO: [Backups] When we have a complete set of archivers, this should be a hard failure. For now, there's interactions we don't handle, so we'll ignore it.
             return .success
         }
 
@@ -266,11 +251,11 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> RestoreFrameResult {
-        guard let archiver = self.archiver(for: chatItem.archiverType) else {
-            // TODO: when we have a complete set of archivers, this should
-            // maybe be considered a catastrophic failure?
-            // For now there's interactions we don't handle; just ignore it.
-            return .success
+        func restoreFrameError(
+            _ error: MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>.ErrorType,
+            line: UInt = #line
+        ) -> RestoreFrameResult {
+            return .failure([.restoreFrameError(error, chatItem.id, line: line)])
         }
 
         switch context.recipientContext[chatItem.authorRecipientId] {
@@ -285,19 +270,13 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         }
 
         guard let threadUniqueId = context[chatItem.typedChatId] else {
-            return .failure([.restoreFrameError(
-                .invalidProtoData(.chatIdNotFound(chatItem.typedChatId)),
-                chatItem.id
-            )])
+            return restoreFrameError(.invalidProtoData(.chatIdNotFound(chatItem.typedChatId)))
         }
 
         guard
             let threadRaw = threadStore.fetchThread(uniqueId: threadUniqueId.value, tx: tx)
         else {
-            return .failure([.restoreFrameError(
-                .referencedChatThreadNotFound(threadUniqueId),
-                chatItem.id
-            )])
+            return restoreFrameError(.referencedChatThreadNotFound(threadUniqueId))
         }
 
         let thread: MessageBackup.ChatThread
@@ -312,6 +291,25 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
                 .developerError(OWSAssertionError("Invalid TSThread type for chatId")),
                 chatItem.id
             )])
+        }
+
+        let archiver: MessageBackupInteractionArchiver
+        switch chatItem.directionalDetails {
+        case nil:
+            return restoreFrameError(.invalidProtoData(.chatItemMissingDirectionalDetails))
+        case .incoming:
+            archiver = incomingMessageArchiver
+        case .outgoing:
+            archiver = outgoingMessageArchiver
+        case .directionless:
+            switch chatItem.item {
+            case nil:
+                return restoreFrameError(.invalidProtoData(.chatItemMissingItem))
+            case .standardMessage, .contactMessage, .giftBadge, .paymentNotification, .remoteDeletedMessage, .stickerMessage:
+                return restoreFrameError(.invalidProtoData(.directionlessChatItemNotUpdateMessage))
+            case .updateMessage:
+                archiver = chatUpdateMessageArchiver
+            }
         }
 
         let result = archiver.restoreChatItem(

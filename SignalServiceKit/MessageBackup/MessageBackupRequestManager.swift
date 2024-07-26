@@ -24,11 +24,11 @@ public protocol MessageBackupRequestManager {
 
     func fetchCDNReadCredentials(cdn: Int32, auth: MessageBackupServiceAuth) async throws -> CDNReadCredential
 
-    // TODO: Batched backup media
-    // TODO: Backup media
-    // TODO: List media objects
-    // TODO: Delete media objects
-    // TODO: Redeem receipt
+    // TODO: [Backups] Batched backup media
+    // TODO: [Backups] Backup media
+    // TODO: [Backups] List media objects
+    // TODO: [Backups] Delete media objects
+    // TODO: [Backups] Redeem receipt
 }
 
 public struct MessageBackupRequestManagerImpl: MessageBackupRequestManager {

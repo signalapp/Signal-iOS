@@ -30,12 +30,15 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let backupRequestManager: MessageBackupRequestManager
     private let chatArchiver: MessageBackupChatArchiver
     private let chatItemArchiver: MessageBackupChatItemArchiver
+    private let contactRecipientArchiver: MessageBackupContactRecipientArchiver
     private let dateProvider: DateProvider
     private let db: DB
+    private let distributionListRecipientArchiver: MessageBackupDistributionListRecipientArchiver
+    private let groupRecipientArchiver: MessageBackupGroupRecipientArchiver
     private let kvStore: KeyValueStore
     private let localRecipientArchiver: MessageBackupLocalRecipientArchiver
     private let messageBackupKeyMaterial: MessageBackupKeyMaterial
-    private let recipientArchiver: MessageBackupRecipientArchiver
+    private let releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver
     private let streamProvider: MessageBackupProtoStreamProvider
 
     public init(
@@ -45,12 +48,15 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         backupRequestManager: MessageBackupRequestManager,
         chatArchiver: MessageBackupChatArchiver,
         chatItemArchiver: MessageBackupChatItemArchiver,
+        contactRecipientArchiver: MessageBackupContactRecipientArchiver,
         dateProvider: @escaping DateProvider,
         db: DB,
+        distributionListRecipientArchiver: MessageBackupDistributionListRecipientArchiver,
+        groupRecipientArchiver: MessageBackupGroupRecipientArchiver,
         kvStoreFactory: KeyValueStoreFactory,
         localRecipientArchiver: MessageBackupLocalRecipientArchiver,
         messageBackupKeyMaterial: MessageBackupKeyMaterial,
-        recipientArchiver: MessageBackupRecipientArchiver,
+        releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver,
         streamProvider: MessageBackupProtoStreamProvider
     ) {
         self.accountDataArchiver = accountDataArchiver
@@ -59,12 +65,15 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.backupRequestManager = backupRequestManager
         self.chatArchiver = chatArchiver
         self.chatItemArchiver = chatItemArchiver
+        self.contactRecipientArchiver = contactRecipientArchiver
         self.dateProvider = dateProvider
         self.db = db
+        self.distributionListRecipientArchiver = distributionListRecipientArchiver
+        self.groupRecipientArchiver = groupRecipientArchiver
         self.kvStore = kvStoreFactory.keyValueStore(collection: Constants.keyValueStoreCollectionName)
         self.localRecipientArchiver = localRecipientArchiver
         self.messageBackupKeyMaterial = messageBackupKeyMaterial
-        self.recipientArchiver = recipientArchiver
+        self.releaseNotesRecipientArchiver = releaseNotesRecipientArchiver
         self.streamProvider = streamProvider
     }
 
@@ -218,12 +227,11 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             localRecipientId: localRecipientId
         )
 
-        let recipientArchiveResult = recipientArchiver.archiveRecipients(
+        switch contactRecipientArchiver.archiveAllContactRecipients(
             stream: stream,
             context: recipientArchivingContext,
             tx: tx
-        )
-        switch recipientArchiveResult {
+        ) {
         case .success:
             break
         case .partialSuccess(let partialFailures):
@@ -231,6 +239,47 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         case .completeFailure(let error):
             try processFatalArchivingError(error: error)
         }
+
+        switch groupRecipientArchiver.archiveAllGroupRecipients(
+            stream: stream,
+            context: recipientArchivingContext,
+            tx: tx
+        ) {
+        case .success:
+            break
+        case .partialSuccess(let partialFailures):
+            try processArchiveFrameErrors(errors: partialFailures)
+        case .completeFailure(let error):
+            try processFatalArchivingError(error: error)
+        }
+
+        switch distributionListRecipientArchiver.archiveAllDistributionListRecipients(
+            stream: stream,
+            context: recipientArchivingContext,
+            tx: tx
+        ) {
+        case .success:
+            break
+        case .partialSuccess(let partialFailures):
+            try processArchiveFrameErrors(errors: partialFailures)
+        case .completeFailure(let error):
+            try processFatalArchivingError(error: error)
+        }
+
+        switch releaseNotesRecipientArchiver.archiveReleaseNotesRecipient(
+            stream: stream,
+            context: recipientArchivingContext,
+            tx: tx
+        ) {
+        case .success:
+            break
+        case .partialSuccess(let partialFailures):
+            try processArchiveFrameErrors(errors: partialFailures)
+        case .completeFailure(let error):
+            try processFatalArchivingError(error: error)
+        }
+
+        // TODO: [Backups] Archive call link recipients.
 
         let chatArchivingContext = MessageBackup.ChatArchivingContext(
             recipientContext: recipientArchivingContext
@@ -408,19 +457,52 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             switch frame.item {
             case .recipient(let recipient):
                 let recipientResult: MessageBackup.RestoreFrameResult<MessageBackup.RecipientId>
-                if type(of: localRecipientArchiver).canRestore(recipient) {
-                    recipientResult = localRecipientArchiver.restore(
-                        recipient,
+                switch recipient.destination {
+                case nil:
+                    recipientResult = .failure([.restoreFrameError(
+                        .invalidProtoData(.recipientMissingDestination),
+                        recipient.recipientId
+                    )])
+                case .selfRecipient(let selfRecipientProto):
+                    recipientResult = localRecipientArchiver.restoreSelfRecipient(
+                        selfRecipientProto,
+                        recipient: recipient,
                         context: recipientContext,
                         tx: tx
                     )
-                } else {
-                    recipientResult = recipientArchiver.restore(
-                        recipient,
+                case .contact(let contactRecipientProto):
+                    recipientResult = contactRecipientArchiver.restoreContactRecipientProto(
+                        contactRecipientProto,
+                        recipient: recipient,
                         context: recipientContext,
                         tx: tx
                     )
+                case .group(let groupRecipientProto):
+                    recipientResult = groupRecipientArchiver.restoreGroupRecipientProto(
+                        groupRecipientProto,
+                        recipient: recipient,
+                        context: recipientContext,
+                        tx: tx
+                    )
+                case .distributionList(let distributionListRecipientProto):
+                    recipientResult = distributionListRecipientArchiver.restoreDistributionListRecipientProto(
+                        distributionListRecipientProto,
+                        recipient: recipient,
+                        context: recipientContext,
+                        tx: tx
+                    )
+                case .releaseNotes(let releaseNotesRecipientProto):
+                    recipientResult = releaseNotesRecipientArchiver.restoreReleaseNotesRecipientProto(
+                        releaseNotesRecipientProto,
+                        recipient: recipient,
+                        context: recipientContext,
+                        tx: tx
+                    )
+                case .callLink(let callLinkRecipientProto):
+                    // TODO: [Backups] Restore call link recipients.
+                    recipientResult = .failure([.restoreFrameError(.unimplemented, recipient.recipientId)])
                 }
+
                 switch recipientResult {
                 case .success:
                     continue
@@ -468,12 +550,13 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                     try processRestoreFrameErrors(errors: errors)
                 }
             case .stickerPack(let backupProtoStickerPack):
-                // TODO: Not yet implemented.
+                // TODO: [Backups] Restore sticker packs.
                 try processRestoreFrameErrors(errors: [.restoreFrameError(
                     .unimplemented,
                     MessageBackup.StickerPackId(backupProtoStickerPack.packId)
                 )])
             case .adHocCall(let backupProtoAdHocCall):
+                // TODO: [Backups] Restore ad-hoc calls.
                 try processRestoreFrameErrors(errors: [.restoreFrameError(
                     .unimplemented,
                     MessageBackup.AdHocCallId(

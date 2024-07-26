@@ -501,7 +501,7 @@ public class _MessageBackup_AccountData_ReactionManagerWrapper: _MessageBackup_A
 
 public protocol _MessageBackup_AccountData_UDManagerShim {
     func phoneNumberSharingMode(tx: DBReadTransaction) -> PhoneNumberSharingMode?
-    func setPhoneNumberSharingMode(_ mode: PhoneNumberSharingMode, tx: DBWriteTransaction)
+    func setPhoneNumberSharingMode(mode: PhoneNumberSharingMode, tx: DBWriteTransaction)
 }
 
 public class _MessageBackup_AccountData_UDManagerWrapper: _MessageBackup_AccountData_UDManagerShim {
@@ -512,7 +512,7 @@ public class _MessageBackup_AccountData_UDManagerWrapper: _MessageBackup_Account
     public func phoneNumberSharingMode(tx: DBReadTransaction) -> PhoneNumberSharingMode? {
         udManager.phoneNumberSharingMode(tx: tx)
     }
-    public func setPhoneNumberSharingMode(_ mode: PhoneNumberSharingMode, tx: DBWriteTransaction) {
+    public func setPhoneNumberSharingMode(mode: PhoneNumberSharingMode, tx: DBWriteTransaction) {
         udManager.setPhoneNumberSharingMode(mode, updateStorageServiceAndProfile: false, tx: SDSDB.shimOnlyBridge(tx))
     }
 }

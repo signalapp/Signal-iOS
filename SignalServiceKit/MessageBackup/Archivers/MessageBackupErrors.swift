@@ -311,15 +311,23 @@ extension MessageBackup {
                 /// An invalid member (group, distribution list, etc) was specified as a distribution list member.  Includes the offending proto
                 case invalidDistributionListMember(protoClass: Any.Type)
 
+                /// A ``BackupProto/Recipient`` with a missing destination.
+                case recipientMissingDestination
+
                 /// A ``BackupProto/Contact`` with no aci, pni, or e164.
                 case contactWithoutIdentifiers
-                /// A ``BackupProto/Recipient`` with an unrecognized sub-type.
-                case unrecognizedRecipientType
                 /// A ``BackupProto/Contact`` for the local user. This shouldn't exist.
                 case otherContactWithLocalIdentifiers
                 /// A ``BackupProto/Contact`` missing info as to whether or not
                 /// it is registered.
                 case contactWithoutRegistrationInfo
+
+                /// A ``BackupProto/ChatItem`` was missing directional details.
+                case chatItemMissingDirectionalDetails
+                /// A ``BackupProto/ChatItem`` was missing its actual item.
+                case chatItemMissingItem
+                /// A directionless chat item was not an update message.
+                case directionlessChatItemNotUpdateMessage
 
                 /// A message must come from either an Aci or an E164.
                 /// One in the backup did not.
@@ -329,8 +337,6 @@ extension MessageBackup {
                 case outgoingNonContactMessageRecipient
                 /// A BackupProto.SendStatus had an unregonized BackupProto.SendStatusStatus.
                 case unrecognizedMessageSendStatus
-                /// A BackupProto.ChatItem with an unregonized item type.
-                case unrecognizedChatItemType
 
                 /// BackupProto.Reaction must come from either an Aci or an E164.
                 /// One in the backup did not.
@@ -389,6 +395,8 @@ extension MessageBackup {
                 /// a contact or otherwise did not contain an ACI.
                 case groupCallRecipientIdNotAnAci(RecipientId)
 
+                /// BackupProto.DistributionListItem was missing its item
+                case distributionListItemMissingItem
                 /// BackupProto.DistributionList.distributionId was not a valid UUID
                 case invalidDistributionListId
                 /// BackupProto.DistributionList.privacyMode was missing, or contained an unknown privacy mode
@@ -518,14 +526,16 @@ extension MessageBackup {
                         .invalidE164,
                         .invalidProfileKey,
                         .invalidDistributionListMember,
+                        .recipientMissingDestination,
                         .contactWithoutIdentifiers,
-                        .unrecognizedRecipientType,
                         .otherContactWithLocalIdentifiers,
                         .contactWithoutRegistrationInfo,
+                        .chatItemMissingDirectionalDetails,
+                        .chatItemMissingItem,
+                        .directionlessChatItemNotUpdateMessage,
                         .incomingMessageNotFromAciOrE164,
                         .outgoingNonContactMessageRecipient,
                         .unrecognizedMessageSendStatus,
-                        .unrecognizedChatItemType,
                         .reactionNotFromAciOrE164,
                         .unrecognizedBodyRangeStyle,
                         .invalidGV2MasterKey,
@@ -547,10 +557,11 @@ extension MessageBackup {
                         .groupCallNotInGroupThread,
                         .groupCallUnrecognizedState,
                         .groupCallRecipientIdNotAnAci,
-                        .invalidDistributionListDeletionTimestamp,
+                        .distributionListItemMissingItem,
                         .invalidDistributionListId,
                         .invalidDistributionListPrivacyMode,
                         .invalidDistributionListPrivacyModeMissingRequiredMembers,
+                        .invalidDistributionListDeletionTimestamp,
                         .emptyChatUpdateMessage,
                         .unrecognizedSimpleChatUpdate,
                         .verificationStateChangeNotFromContact,

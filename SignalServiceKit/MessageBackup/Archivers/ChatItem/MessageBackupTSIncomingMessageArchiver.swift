@@ -9,8 +9,6 @@ import LibSignalClient
 internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionArchiver {
     private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>
 
-    static let archiverType: MessageBackup.ChatItemArchiverType = .incomingMessage
-
     private let contentsArchiver: MessageBackupTSMessageContentsArchiver
     private let interactionStore: InteractionStore
 
@@ -147,7 +145,7 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
         guard let messageType = chatItem.item else {
             // Unrecognized item type!
             return .messageFailure([.restoreFrameError(
-                .invalidProtoData(.unrecognizedChatItemType),
+                .invalidProtoData(.chatItemMissingItem),
                 chatItem.id
             )])
         }

@@ -153,14 +153,10 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         let sealedSenderIndicators = preferences.shouldShowUnidentifiedDeliveryIndicators(tx: tx)
         let typingIndicatorsEnabled = typingIndicators.areTypingIndicatorsEnabled()
         let linkPreviews = sskPreferences.areLinkPreviewsEnabled(tx: tx)
-        let notDiscoverableByPhoneNumber = {
-            switch phoneNumberDiscoverabilityManager.phoneNumberDiscoverability(tx: tx) {
-            case .everybody:
-                return false
-            case .nobody, .none:
-                return true
-            }
-        }()
+        let notDiscoverableByPhoneNumber = switch phoneNumberDiscoverabilityManager.phoneNumberDiscoverability(tx: tx) {
+        case .everybody: false
+        case .nobody, .none: true
+        }
         let preferContactAvatars = sskPreferences.preferContactAvatars(tx: tx)
         let universalExpireTimerSeconds = disappearingMessageConfigurationStore.fetchOrBuildDefault(for: .universal, tx: tx).durationSeconds
         let displayBadgesOnProfile = subscriptionManager.displayBadgesOnProfile(tx: tx)
@@ -170,20 +166,11 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         let storiesDisabled = storyManager.areStoriesEnabled(tx: tx).negated
         let hasSeenGroupStoryEducationSheet = systemStoryManager.hasSeenGroupStoryEducationSheet(tx: tx)
         let hasCompletedUsernameOnboarding = usernameEducationManager.shouldShowUsernameEducation(tx: tx).negated
-
-        // Optional settings
-        let preferredReactionEmoji = reactionManager.customEmojiSet(tx: tx)
-        let storyViewReceiptsEnabled = storyManager.areViewReceiptsEnabled(tx: tx)
-        let phoneNumberSharingMode: BackupProto.AccountData.PhoneNumberSharingMode = {
-            switch udManager.phoneNumberSharingMode(tx: tx) {
-            case .everybody:
-                return .EVERYBODY
-            case .nobody:
-                return .NOBODY
-            case .none:
-                return .UNKNOWN
-            }
-        }()
+        let phoneNumberSharingMode: BackupProto.AccountData.PhoneNumberSharingMode = switch udManager.phoneNumberSharingMode(tx: tx) {
+        case .everybody: .EVERYBODY
+        case .nobody: .NOBODY
+        case .none: .UNKNOWN
+        }
 
         // Populate the proto with the settings
         var accountSettings = BackupProto.AccountData.AccountSettings(
@@ -203,10 +190,10 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
             hasCompletedUsernameOnboarding: hasCompletedUsernameOnboarding,
             phoneNumberSharingMode: phoneNumberSharingMode
         )
-        if let preferredReactionEmoji {
-            accountSettings.preferredReactionEmoji = preferredReactionEmoji
-        }
-        accountSettings.storyViewReceiptsEnabled = storyViewReceiptsEnabled
+        accountSettings.preferredReactionEmoji = reactionManager.customEmojiSet(tx: tx) ?? []
+        accountSettings.storyViewReceiptsEnabled = storyManager.areViewReceiptsEnabled(tx: tx)
+        // TODO: [Backups] Archive default chat style
+        // TODO: [Backups] Archive custom chat colors
 
         return accountSettings
     }
@@ -253,39 +240,42 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
                 tx: tx
             )
             sskPreferences.setPreferContactAvatars(value: settings.preferContactAvatars, tx: tx)
-
-            let token = DisappearingMessageToken(
-                isEnabled: settings.universalExpireTimerSeconds > 0,
-                durationSeconds: settings.universalExpireTimerSeconds
+            disappearingMessageConfigurationStore.set(
+                token: DisappearingMessageToken(
+                    isEnabled: settings.universalExpireTimerSeconds > 0,
+                    durationSeconds: settings.universalExpireTimerSeconds
+                ),
+                for: .universal,
+                tx: tx
             )
-            disappearingMessageConfigurationStore.set(token: token, for: .universal, tx: tx)
-
+            if settings.preferredReactionEmoji.count > 0 {
+                reactionManager.setCustomEmojiSet(emojis: settings.preferredReactionEmoji, tx: tx)
+            }
             subscriptionManager.setDisplayBadgesOnProfile(value: settings.displayBadgesOnProfile, tx: tx)
             sskPreferences.setShouldKeepMutedChatsArchived(value: settings.keepMutedChatsArchived, tx: tx)
             storyManager.setHasSetMyStoriesPrivacy(value: settings.hasSetMyStoriesPrivacy, tx: tx)
             systemStoryManager.setHasViewedOnboardingStory(value: settings.hasViewedOnboardingStory, tx: tx)
             storyManager.setAreStoriesEnabled(value: settings.storiesDisabled.negated, tx: tx)
-            systemStoryManager.setHasSeenGroupStoryEducationSheet(value: settings.hasSeenGroupStoryEducationSheet, tx: tx)
-            usernameEducationManager.setShouldShowUsernameEducation(settings.hasCompletedUsernameOnboarding.negated, tx: tx)
-
-            if settings.preferredReactionEmoji.count > 0 {
-                reactionManager.setCustomEmojiSet(emojis: settings.preferredReactionEmoji, tx: tx)
-            }
             if let storyViewReceiptsEnabled = settings.storyViewReceiptsEnabled {
                 storyManager.setAreViewReceiptsEnabled(value: storyViewReceiptsEnabled, tx: tx)
             }
-
-            let phoneNumberSharingMode: PhoneNumberSharingMode = {
-                switch settings.phoneNumberSharingMode {
-                case .UNKNOWN:
-                    return .defaultValue
-                case .EVERYBODY:
-                    return .everybody
-                case .NOBODY:
-                    return .nobody
-                }
-            }()
-            udManager.setPhoneNumberSharingMode(phoneNumberSharingMode, tx: tx)
+            systemStoryManager.setHasSeenGroupStoryEducationSheet(value: settings.hasSeenGroupStoryEducationSheet, tx: tx)
+            usernameEducationManager.setShouldShowUsernameEducation(settings.hasCompletedUsernameOnboarding.negated, tx: tx)
+            udManager.setPhoneNumberSharingMode(
+                mode: { () -> PhoneNumberSharingMode in
+                    switch settings.phoneNumberSharingMode {
+                    case .UNKNOWN:
+                        return .defaultValue
+                    case .EVERYBODY:
+                        return .everybody
+                    case .NOBODY:
+                        return .nobody
+                    }
+                }(),
+                tx: tx
+            )
+            // TODO: [Backups] Restore default chat style
+            // TODO: [Backups] Restore custom chat colors
         }
 
         // Restore username details (username, link, QR color)

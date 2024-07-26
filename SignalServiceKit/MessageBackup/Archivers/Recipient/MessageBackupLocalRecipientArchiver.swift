@@ -4,7 +4,6 @@
 //
 
 extension MessageBackup {
-
     public struct LocalRecipientId: MessageBackupLoggableId {
         public var typeLogString: String { "Local Recipient" }
         public var idLogString: String { "" }
@@ -14,39 +13,15 @@ extension MessageBackup {
     public typealias RestoreLocalRecipientResult = RestoreFrameResult<RecipientId>
 }
 
-/**
- * Archiver for the ``BackupProto.SelfRecipient`` recipient, a.k.a. the local user author/recipient.
- * Used as the recipient for the Note To Self chat.
- */
-public protocol MessageBackupLocalRecipientArchiver: MessageBackupProtoArchiver {
-
-    typealias RecipientId = MessageBackup.RecipientId
+/// Archiver for the ``BackupProto.SelfRecipient`` recipient, a.k.a. the local
+/// user author/recipient.  Used as the recipient for the Note To Self chat.
+public class MessageBackupLocalRecipientArchiver: MessageBackupProtoArchiver {
+    private static let localRecipientId = MessageBackup.RecipientId(value: 1)
 
     /// Archive the local recipient.
-    func archiveLocalRecipient(
+    public func archiveLocalRecipient(
         stream: MessageBackupProtoOutputStream
-    ) -> MessageBackup.ArchiveLocalRecipientResult
-
-    /// Restore a single ``BackupProto.Recipient`` frame for the local recipient.
-    ///
-    /// - Returns: ``RestoreFrameResult.success`` if the frame was read without error.
-    /// How to handle ``RestoreFrameResult.failure`` is up to the caller,
-    /// but typically an error will be shown to the user, but the restore will be allowed to proceed.
-    func restore(
-        _ recipient: BackupProto.Recipient,
-        context: MessageBackup.RecipientRestoringContext,
-        tx: DBWriteTransaction
-    ) -> MessageBackup.RestoreLocalRecipientResult
-
-    /// Determines whether the given recipient is the local recipient.
-    static func canRestore(_ recipient: BackupProto.Recipient) -> Bool
-}
-
-public class MessageBackupLocalRecipientArchiverImpl: MessageBackupLocalRecipientArchiver {
-
-    private static let localRecipientId = RecipientId(value: 1)
-
-    public func archiveLocalRecipient(stream: MessageBackupProtoOutputStream) -> MessageBackup.ArchiveLocalRecipientResult {
+    ) -> MessageBackup.ArchiveLocalRecipientResult {
         let error = Self.writeFrameToStream(
             stream,
             objectId: MessageBackup.LocalRecipientId()
@@ -68,31 +43,14 @@ public class MessageBackupLocalRecipientArchiverImpl: MessageBackupLocalRecipien
         }
     }
 
-    public func restore(
-        _ recipient: BackupProto.Recipient,
+    /// Restore a single ``BackupProto/Recipient`` frame for the local recipient.
+    public func restoreSelfRecipient(
+        _ selfRecipientProto: BackupProto.SelfRecipient,
+        recipient: BackupProto.Recipient,
         context: MessageBackup.RecipientRestoringContext,
         tx: DBWriteTransaction
     ) -> MessageBackup.RestoreLocalRecipientResult {
-        switch recipient.destination {
-        case .selfRecipient:
-            break
-        case nil, .contact, .group, .distributionList, .releaseNotes, .callLink:
-            return .failure([.restoreFrameError(
-                .developerError(OWSAssertionError("Non self recipient sent to local recipient archiver")),
-                recipient.recipientId
-            )])
-        }
-
         context[recipient.recipientId] = .localAddress
         return .success
-    }
-
-    public static func canRestore(_ recipient: BackupProto.Recipient) -> Bool {
-        switch recipient.destination {
-        case .selfRecipient:
-            return true
-        case nil, .contact, .group, .distributionList, .releaseNotes, .callLink:
-            return false
-        }
     }
 }

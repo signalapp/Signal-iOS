@@ -19,7 +19,7 @@ extension MessageBackup {
         public var idLogString: String { value }
     }
 
-    internal struct InteractionArchiveDetails {
+    struct InteractionArchiveDetails {
         typealias DirectionalDetails = BackupProto.ChatItem.DirectionalDetails
         typealias ChatItemType = BackupProto.ChatItem.Item
 
@@ -27,9 +27,9 @@ extension MessageBackup {
         let directionalDetails: DirectionalDetails
         let expireStartDate: UInt64?
         let expiresInMs: UInt64?
-        // TODO: edit revisions
+        // TODO: [Backups] Include edit revisions.
         let revisions: [BackupProto.ChatItem] = []
-        // TODO: sms
+        // TODO: [Backups] Properly set isSms. This will only be relevant for messages we previously restored from an Android.
         let isSms: Bool = false
         let isSealedSender: Bool
         let chatItemType: ChatItemType
@@ -128,7 +128,7 @@ extension MessageBackup {
         /// We intentionally skip archiving some chat-update interactions.
         case skippableChatUpdate(SkippableChatUpdate)
 
-        // TODO: remove this once we flesh out implementation for all interactions.
+        // TODO: [Backups] Remove this once we flesh out implementation for all interactions.
         case notYetImplemented
 
         // MARK: Errors
@@ -157,8 +157,6 @@ extension MessageBackup {
 internal protocol MessageBackupInteractionArchiver: MessageBackupProtoArchiver {
 
     typealias Details = MessageBackup.InteractionArchiveDetails
-
-    static var archiverType: MessageBackup.ChatItemArchiverType { get }
 
     func archiveInteraction(
         _ interaction: TSInteraction,

@@ -120,29 +120,27 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
         chatItem: BackupProto.ChatItem,
         expirationToken: DisappearingMessageToken
     ) -> SentMessageTranscriptType {
-        // TODO: handle attachments in quotes
-        let quotedMessageBuilder = { [contents] (_: DBWriteTransaction) in
-            contents.quotedMessage.map {
-                return OwnedAttachmentBuilder<TSQuotedMessage>.withoutFinalizer($0)
-            }
-        }
-
         let messageParams = SentMessageTranscriptType.Message(
             target: target,
             body: contents.body.text,
             bodyRanges: contents.body.ranges,
-            // TODO: attachments
+            // TODO: [Backups] Attachments
             attachmentPointerProtos: [],
-            makeQuotedMessageBuilder: quotedMessageBuilder,
-            // TODO: contact message
+            // TODO: [Backups] Handle attachments in quotes
+            makeQuotedMessageBuilder: { [contents] _ in
+                contents.quotedMessage.map {
+                    return OwnedAttachmentBuilder<TSQuotedMessage>.withoutFinalizer($0)
+                }
+            },
+            // TODO: [Backups] Contact message
             makeContactBuilder: { _ in nil },
-            // TODO: linkPreview message
+            // TODO: [Backups] linkPreview message
             makeLinkPreviewBuilder: { _ in nil },
-            // TODO: gift badge message
+            // TODO: [Backups] Gift badge message
             giftBadge: nil,
-            // TODO: sticker message
+            // TODO: [Backups] Sticker message
             makeMessageStickerBuilder: { _ in nil },
-            // TODO: isViewOnceMessage
+            // TODO: [Backups] isViewOnceMessage
             isViewOnceMessage: false,
             expirationStartedAt: chatItem.expireStartDate,
             expirationDurationSeconds: expirationToken.durationSeconds,
@@ -161,7 +159,7 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
         expirationToken: DisappearingMessageToken
     ) -> SentMessageTranscriptType {
         return .archivedPayment(
-            .init(
+            SentMessageTranscriptType.ArchivedPayment(
                 target: target,
                 amount: payment.amount,
                 fee: payment.fee,
@@ -188,7 +186,7 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
         recipientState.wasSentByUD = sendStatus.sealedSender.negated
 
         switch sendStatus.deliveryStatus {
-        case nil, .UNKNOWN:
+        case .UNKNOWN:
             partialErrors.append(.restoreFrameError(.invalidProtoData(.unrecognizedMessageSendStatus), chatItemId))
             return nil
         case .PENDING:

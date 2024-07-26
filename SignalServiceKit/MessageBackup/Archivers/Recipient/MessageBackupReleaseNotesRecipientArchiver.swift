@@ -8,23 +8,20 @@
 /// - Important
 /// The Release Notes Channel has yet to be built on iOS, and consequently this
 /// class is implemented with stubs.
-public class MessageBackupReleaseNotesRecipientArchiver: MessageBackupRecipientDestinationArchiver {
-    static func canRestore(_ recipient: BackupProto.Recipient) -> Bool {
-        switch recipient.destination {
-        case .releaseNotes:
-            return true
-        case nil, .contact, .group, .distributionList, .selfRecipient, .callLink:
-            return false
-        }
-    }
+public class MessageBackupReleaseNotesRecipientArchiver: MessageBackupProtoArchiver {
+    typealias RecipientId = MessageBackup.RecipientId
+    typealias RecipientAppId = MessageBackup.RecipientArchivingContext.Address
+
+    typealias ArchiveMultiFrameResult = MessageBackup.ArchiveMultiFrameResult<RecipientAppId>
+    typealias RestoreFrameResult = MessageBackup.RestoreFrameResult<RecipientId>
 
     private let logger: MessageBackupLogger = .shared
 
-    init() {}
+    public init() {}
 
     // MARK: -
 
-    public func archiveRecipients(
+    func archiveReleaseNotesRecipient(
         stream: any MessageBackupProtoOutputStream,
         context: MessageBackup.RecipientArchivingContext,
         tx: any DBReadTransaction
@@ -36,8 +33,9 @@ public class MessageBackupReleaseNotesRecipientArchiver: MessageBackupRecipientD
 
     // MARK: -
 
-    public func restore(
-        _ recipient: BackupProto.Recipient,
+    func restoreReleaseNotesRecipientProto(
+        _ releaseNotesRecipientProto: BackupProto.ReleaseNotes,
+        recipient: BackupProto.Recipient,
         context: MessageBackup.RecipientRestoringContext,
         tx: any DBWriteTransaction
     ) -> RestoreFrameResult {

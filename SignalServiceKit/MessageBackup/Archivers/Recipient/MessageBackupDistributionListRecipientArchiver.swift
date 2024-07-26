@@ -3,10 +3,15 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoArchiver {
+    typealias RecipientId = MessageBackup.RecipientId
+    typealias RecipientAppId = MessageBackup.RecipientArchivingContext.Address
 
-class MessageBackupDistributionListRecipientArchiver: MessageBackupRecipientDestinationArchiver {
+    typealias ArchiveMultiFrameResult = MessageBackup.ArchiveMultiFrameResult<RecipientAppId>
     private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<RecipientAppId>
+
+    typealias RestoreFrameResult = MessageBackup.RestoreFrameResult<RecipientId>
+    private typealias RestoreFrameError = MessageBackup.RestoreFrameError<RecipientId>
 
     private let privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager
     private let storyStore: any StoryStore
@@ -22,7 +27,7 @@ class MessageBackupDistributionListRecipientArchiver: MessageBackupRecipientDest
         self.threadStore = threadStore
     }
 
-    func archiveRecipients(
+    func archiveAllDistributionListRecipients(
         stream: MessageBackupProtoOutputStream,
         context: MessageBackup.RecipientArchivingContext,
         tx: DBReadTransaction
@@ -180,33 +185,26 @@ class MessageBackupDistributionListRecipientArchiver: MessageBackupRecipientDest
         }.map { errors.append($0) }
     }
 
-    func restore(
-        _ recipient: BackupProto.Recipient,
+    func restoreDistributionListRecipientProto(
+        _ distributionListItemProto: BackupProto.DistributionListItem,
+        recipient: BackupProto.Recipient,
         context: MessageBackup.RecipientRestoringContext,
         tx: any DBWriteTransaction
     ) -> RestoreFrameResult {
-
-        let distributionListItemProto: BackupProto.DistributionListItem
-        switch recipient.destination {
-        case .distributionList(let backupProtoDistributionListItem):
-            distributionListItemProto = backupProtoDistributionListItem
-        case nil, .contact, .group, .releaseNotes, .selfRecipient, .callLink:
-            return .failure([.restoreFrameError(
-                .developerError(OWSAssertionError("Invalid proto for class")),
-                recipient.recipientId
-            )])
+        func restoreFrameError(
+            _ error: RestoreFrameError.ErrorType,
+            line: UInt = #line
+        ) -> RestoreFrameResult {
+            return .failure([.restoreFrameError(error, recipient.recipientId, line: line)])
         }
 
         guard let distributionId = UUID(data: distributionListItemProto.distributionId) else {
-            return .failure([.restoreFrameError(
-                .invalidProtoData(.invalidDistributionListId),
-                recipient.recipientId
-            )])
+            return restoreFrameError(.invalidProtoData(.invalidDistributionListId))
         }
 
         let result: RestoreFrameResult
         switch distributionListItemProto.item {
-        case .some(.deletionTimestamp(let deletionTimestamp)):
+        case .deletionTimestamp(let deletionTimestamp):
             // Restore deleted distribution lists identifiers. These are needed
             // to preserve the deleted distribution list entry in storage service
             // during a sync.  If these weren't backed up, there's a chance the deleted
@@ -222,12 +220,9 @@ class MessageBackupDistributionListRecipientArchiver: MessageBackupRecipientDest
                 )
                 result = .success
             } else {
-                result = .failure([.restoreFrameError(
-                    .invalidProtoData(.invalidDistributionListDeletionTimestamp),
-                    recipient.recipientId
-                )])
+                result = restoreFrameError(.invalidProtoData(.invalidDistributionListDeletionTimestamp))
             }
-        case .some(.distributionList(let distributionListItemProto)):
+        case .distributionList(let distributionListItemProto):
             result = buildDistributionList(
                 from: distributionListItemProto,
                 distributionId: distributionId,
@@ -235,11 +230,8 @@ class MessageBackupDistributionListRecipientArchiver: MessageBackupRecipientDest
                 context: context,
                 tx: tx
             )
-        case .none:
-            result = .failure([.restoreFrameError(
-                .developerError(OWSAssertionError("Invalid proto for class")),
-                recipient.recipientId
-            )])
+        case nil:
+            result = restoreFrameError(.invalidProtoData(.distributionListItemMissingItem))
         }
 
         context[recipient.recipientId] = .distributionList(distributionListItemProto.distributionId)
@@ -331,14 +323,5 @@ class MessageBackupDistributionListRecipientArchiver: MessageBackupRecipientDest
         }
 
         return .success
-    }
-
-    static func canRestore(_ recipient: BackupProto.Recipient) -> Bool {
-        switch recipient.destination {
-        case .distributionList:
-            return true
-        case nil, .contact, .group, .selfRecipient, .releaseNotes, .callLink:
-            return false
-        }
     }
 }

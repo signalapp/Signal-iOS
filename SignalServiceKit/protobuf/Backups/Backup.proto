@@ -5,7 +5,9 @@
 
 syntax = "proto3";
 
-package BackupProto;
+package signal.backup;
+
+option java_package = "org.thoughtcrime.securesms.backup.v2.proto";
 
 message BackupProto {
   message BackupInfo {
@@ -42,7 +44,6 @@ message BackupProto {
       EVERYBODY = 1;
       NOBODY = 2;
     }
-
     message UsernameLink {
       enum Color {
         UNKNOWN = 0;
@@ -80,6 +81,7 @@ message BackupProto {
       bool hasCompletedUsernameOnboarding = 16;
       PhoneNumberSharingMode phoneNumberSharingMode = 17;
       ChatStyle defaultChatStyle = 18;
+      repeated ChatStyle.CustomChatColor customChatColors = 19;
     }
 
     message SubscriberData {
@@ -569,7 +571,7 @@ message BackupProto {
       optional uint32 cdnNumber = 2;
       bytes key = 3;
       bytes digest = 4;
-      uint32 size = 5;
+      uint64 size = 5;
       // Fallback in case backup tier upload failed.
       optional string transitCdnKey = 6;
       optional uint32 transitCdnNumber = 7;
@@ -1039,8 +1041,17 @@ message BackupProto {
   message ChatStyle {
     message Gradient {
       uint32 angle = 1; // degrees
-      repeated uint32 colors = 2;
+      repeated fixed32 colors = 2;
       repeated float positions = 3; // percent from 0 to 1
+    }
+
+    message CustomChatColor {
+      uint32 id = 1;
+
+      oneof color {
+        fixed32 solid = 2;
+        Gradient gradient = 3;
+      }
     }
 
     message AutomaticBubbleColor {
@@ -1103,11 +1114,15 @@ message BackupProto {
     }
 
     oneof bubbleColor {
-      BubbleColorPreset bubbleColorPreset = 3;
-      Gradient bubbleGradient = 4;
-      uint32 bubbleSolidColor = 5;
-      // Bubble setting is automatically determined based on the wallpaper setting.
-      AutomaticBubbleColor autoBubbleColor = 6;
+      // Bubble setting is automatically determined based on the wallpaper setting,
+      // or `SOLID_ULTRAMARINE` for `noWallpaper`
+      AutomaticBubbleColor autoBubbleColor = 3;
+      BubbleColorPreset bubbleColorPreset = 4;
+
+      // See AccountSettings.customChatColors
+      uint32 customColorId = 5;
     }
+
+    bool dimWallpaperInDarkMode = 7;
   }
 }

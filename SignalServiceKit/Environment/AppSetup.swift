@@ -908,26 +908,36 @@ public class AppSetup {
                 sentMessageTranscriptReceiver: sentMessageTranscriptReceiver,
                 threadStore: threadStore
             ),
-            dateProvider: dateProvider,
-            db: db,
-            kvStoreFactory: keyValueStoreFactory,
-            localRecipientArchiver: MessageBackupLocalRecipientArchiverImpl(),
-            messageBackupKeyMaterial: messageBackupKeyMaterial,
-            recipientArchiver: MessageBackupRecipientArchiverImpl(
+            contactRecipientArchiver: MessageBackupContactRecipientArchiver(
                 blockingManager: MessageBackup.Wrappers.BlockingManager(blockingManager),
-                disappearingMessageConfigStore: disappearingMessagesConfigurationStore,
-                groupsV2: groupsV2,
                 profileManager: MessageBackup.Wrappers.ProfileManager(profileManager),
                 recipientDatabaseTable: recipientDatabaseTable,
                 recipientHidingManager: recipientHidingManager,
                 recipientManager: recipientManager,
-                privateStoryThreadDeletionManager: privateStoryThreadDeletionManager,
                 signalServiceAddressCache: signalServiceAddressCache,
                 storyStore: storyStore,
                 threadStore: threadStore,
                 tsAccountManager: tsAccountManager,
                 usernameLookupManager: usernameLookupManager
             ),
+            dateProvider: dateProvider,
+            db: db,
+            distributionListRecipientArchiver: MessageBackupDistributionListRecipientArchiver(
+                privateStoryThreadDeletionManager: privateStoryThreadDeletionManager,
+                storyStore: storyStore,
+                threadStore: threadStore
+            ),
+            groupRecipientArchiver: MessageBackupGroupRecipientArchiver(
+                disappearingMessageConfigStore: disappearingMessagesConfigurationStore,
+                groupsV2: groupsV2,
+                profileManager: MessageBackup.Wrappers.ProfileManager(profileManager),
+                storyStore: storyStore,
+                threadStore: threadStore
+            ),
+            kvStoreFactory: keyValueStoreFactory,
+            localRecipientArchiver: MessageBackupLocalRecipientArchiver(),
+            messageBackupKeyMaterial: messageBackupKeyMaterial,
+            releaseNotesRecipientArchiver: MessageBackupReleaseNotesRecipientArchiver(),
             streamProvider: MessageBackupProtoStreamProviderImpl(
                 backupKeyMaterial: messageBackupKeyMaterial
             )
