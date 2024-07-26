@@ -86,7 +86,7 @@ final class ThreadSoftDeleteManagerImpl: ThreadSoftDeleteManager {
             {
                 syncMessageContext = deleteForMeOutgoingSyncMessageManager.makeThreadDeletionContext(
                     thread: thread,
-                    isFullDelete: false,
+                    isFullDelete: true,
                     localIdentifiers: localIdentifiers,
                     tx: tx
                 )
