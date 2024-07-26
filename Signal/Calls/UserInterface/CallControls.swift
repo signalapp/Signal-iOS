@@ -148,7 +148,7 @@ class CallControls: UIView {
             joinButtonContainer
         ])
         controlsStack.axis = .vertical
-        controlsStack.spacing = HeightConstants.stackSpacing
+        controlsStack.spacing = useCallDrawerStyling ? HeightConstants.stackSpacingInDrawer : HeightConstants.stackSpacingWithoutDrawer
         controlsStack.alignment = .center
 
         addSubview(controlsStack)
@@ -302,7 +302,7 @@ class CallControls: UIView {
         var height = self.buttonRowHeight + HeightConstants.bottomPadding
         if !viewModel.joinButtonIsHidden {
             height += HeightConstants.joinButtonHeight
-            height += HeightConstants.stackSpacing
+            height += (self.useCallDrawerStyling ? HeightConstants.stackSpacingInDrawer : HeightConstants.stackSpacingWithoutDrawer)
         }
         return height
     }
@@ -313,7 +313,8 @@ class CallControls: UIView {
 
     private enum HeightConstants {
         static let joinButtonHeight: CGFloat = 56
-        static let stackSpacing: CGFloat = 40
+        static let stackSpacingInDrawer: CGFloat = 30
+        static let stackSpacingWithoutDrawer: CGFloat = 40
         static let bottomPadding: CGFloat = 40
     }
 }
