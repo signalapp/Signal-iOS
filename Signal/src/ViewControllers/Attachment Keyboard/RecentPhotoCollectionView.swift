@@ -308,6 +308,21 @@ extension RecentPhotosCollectionView: UICollectionViewDelegate, UICollectionView
         collectionContents.outgoingAttachment(
             for: asset
         ).done { [weak self] attachment in
+            switch attachment.error {
+            case nil:
+                break
+            case .fileSizeTooLarge:
+                OWSActionSheets.showActionSheet(
+                    title: OWSLocalizedString(
+                        "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE",
+                        comment: "Attachment error message for attachments whose data exceed file size limits"
+                    )
+                )
+                return
+            default:
+                OWSActionSheets.showActionSheet(title: OWSLocalizedString("IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS", comment: "alert title"))
+                return
+            }
             self?.recentPhotosDelegate?.didSelectRecentPhoto(asset: asset, attachment: attachment)
         }.ensure { [weak self] in
             self?.fetchingAttachmentIndex = nil
