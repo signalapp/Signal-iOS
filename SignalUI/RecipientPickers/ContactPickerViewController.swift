@@ -76,7 +76,7 @@ open class ContactPickerViewController: OWSViewController, OWSNavigationChildCon
         viewController.selectionBehavior = .toggleSelectionWithAction
         viewController.defaultSeparatorInsetLeading = OWSTableViewController2.cellHInnerMargin
         + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing
-        viewController.tableView.register(ContactCell.self, forCellReuseIdentifier: ContactCell.reuseIdentifier)
+        viewController.tableView.register(ContactCell.self)
         viewController.tableView.allowsMultipleSelection = allowsMultipleSelection
         viewController.tableView.tableHeaderView = searchBar
         viewController.view.setCompressionResistanceVerticalHigh()

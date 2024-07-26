@@ -6,8 +6,7 @@
 import SignalServiceKit
 import SignalUI
 
-class ChatListCell: UITableViewCell {
-
+class ChatListCell: UITableViewCell, ReusableTableViewCell {
     static let reuseIdentifier = "ChatListCell"
 
     private var avatarView: ConversationAvatarView?

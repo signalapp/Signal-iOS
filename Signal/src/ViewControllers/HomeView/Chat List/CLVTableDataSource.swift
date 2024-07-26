@@ -66,8 +66,8 @@ class CLVTableDataSource: NSObject {
         tableView.dataSource = self
         tableView.separatorStyle = .none
         tableView.separatorColor = Theme.cellSeparatorColor
-        tableView.register(ChatListCell.self, forCellReuseIdentifier: ChatListCell.reuseIdentifier)
-        tableView.register(ArchivedConversationsCell.self, forCellReuseIdentifier: ArchivedConversationsCell.reuseIdentifier)
+        tableView.register(ChatListCell.self)
+        tableView.register(ArchivedConversationsCell.self)
         tableView.tableFooterView = UIView()
     }
 
@@ -549,18 +549,17 @@ extension CLVTableDataSource: UITableViewDataSource {
             return UITableViewCell()
         }
 
+        let cell: UITableViewCell
         let section = renderState.sections[indexPath.section]
 
-        let cell: UITableViewCell = {
-            switch section.type {
-            case .reminders:
-                return viewController.reminderViewCell
-            case .pinned, .unpinned:
-                return buildConversationCell(tableView: tableView, indexPath: indexPath)
-            case .archiveButton:
-                return buildArchivedConversationsButtonCell(tableView: tableView, indexPath: indexPath)
-            }
-        }()
+        switch section.type {
+        case .reminders:
+            cell = viewController.reminderViewCell
+        case .pinned, .unpinned:
+            cell = buildConversationCell(tableView: tableView, indexPath: indexPath)
+        case .archiveButton:
+            cell = buildArchivedConversationsButtonCell(tableView: tableView, indexPath: indexPath)
+        }
 
         cell.tintColor = .ows_accentBlue
         return cell
@@ -588,10 +587,8 @@ extension CLVTableDataSource: UITableViewDataSource {
     private func buildConversationCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
         AssertIsOnMainThread()
 
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: ChatListCell.reuseIdentifier) as? ChatListCell else {
-            owsFailDebug("Invalid cell.")
-            return UITableViewCell()
-        }
+        let cell = tableView.dequeueReusableCell(ChatListCell.self, for: indexPath)
+
         guard let contentToken = buildCellContentToken(for: indexPath) else {
             owsFailDebug("Missing cellConfigurationAndContentToken.")
             return UITableViewCell()
@@ -621,14 +618,8 @@ extension CLVTableDataSource: UITableViewDataSource {
 
     private func buildArchivedConversationsButtonCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell {
         AssertIsOnMainThread()
-
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: ArchivedConversationsCell.reuseIdentifier) else {
-            owsFailDebug("Invalid cell.")
-            return UITableViewCell()
-        }
-        if let cell = cell as? ArchivedConversationsCell {
-            cell.configure(enabled: !viewState.multiSelectState.isActive)
-        }
+        let cell = tableView.dequeueReusableCell(ArchivedConversationsCell.self, for: indexPath)
+        cell.configure(enabled: !viewState.multiSelectState.isActive)
         return cell
     }
 
@@ -700,7 +691,6 @@ extension CLVTableDataSource: UITableViewDataSource {
 // MARK: -
 
 extension CLVTableDataSource {
-
     func updateAndSetRefreshTimer(for cell: ChatListCell?) {
         if let cell = cell, let timestamp = cell.nextUpdateTimestamp {
             if nextUpdateAt == nil || timestamp.isBefore(nextUpdateAt!) {

@@ -6,9 +6,8 @@
 import SignalServiceKit
 import SignalUI
 
-public class ArchivedConversationsCell: UITableViewCell {
-
-    public static let reuseIdentifier = "ArchivedConversationsCell"
+class ArchivedConversationsCell: UITableViewCell, ReusableTableViewCell {
+    static let reuseIdentifier = "ArchivedConversationsCell"
 
     private let label = UILabel()
     private let disclosureImageView = UIImageView(image: UIImage(imageLiteralResourceName: "chevron-right-20"))
@@ -78,7 +77,7 @@ public class ArchivedConversationsCell: UITableViewCell {
                                                object: nil)
     }
 
-    public override func prepareForReuse() {
+    override func prepareForReuse() {
         NotificationCenter.default.removeObserver(self)
         super.prepareForReuse()
     }

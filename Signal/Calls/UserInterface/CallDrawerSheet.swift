@@ -114,7 +114,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
     private lazy var dataSource = DiffableDataSource(
         tableView: tableView
     ) { [weak self] tableView, indexPath, id -> UITableViewCell? in
-        guard let cell = tableView.dequeueReusableCell(GroupCallMemberCell.self, for: indexPath) else { return nil }
+        let cell = tableView.dequeueReusableCell(GroupCallMemberCell.self, for: indexPath)
 
         cell.delegate = self?.callSheetDataSource
 
@@ -200,7 +200,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
         tableView.autoPinEdge(toSuperviewEdge: .leading)
         tableView.autoPinEdge(toSuperviewEdge: .trailing)
 
-        tableView.register(GroupCallMemberCell.self, forCellReuseIdentifier: GroupCallMemberCell.reuseIdentifier)
+        tableView.register(GroupCallMemberCell.self)
 
         tableView.dataSource = self.dataSource
 
