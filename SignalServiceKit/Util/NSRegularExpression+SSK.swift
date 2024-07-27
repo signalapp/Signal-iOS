@@ -66,10 +66,10 @@ public extension NSRegularExpression {
 }
 
 public struct MatchSet {
-    let fullString: Substring
-    let matchedGroups: [Substring?]
+    public let fullString: Substring
+    public let matchedGroups: [Substring?]
 
-    func group(idx: Int) -> Substring? {
+    public func group(idx: Int) -> Substring? {
         guard idx < matchedGroups.count else { return nil }
         return matchedGroups[idx]
     }

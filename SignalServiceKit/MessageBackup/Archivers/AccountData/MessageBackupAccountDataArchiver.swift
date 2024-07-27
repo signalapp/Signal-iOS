@@ -41,6 +41,7 @@ public protocol MessageBackupAccountDataArchiver: MessageBackupProtoArchiver {
 public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchiver {
 
     private let disappearingMessageConfigurationStore: DisappearingMessagesConfigurationStore
+    private let linkPreviewSettingStore: LinkPreviewSettingStore
     private let localUsernameManager: LocalUsernameManager
     private let phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager
     private let preferences: MessageBackup.AccountData.Shims.Preferences
@@ -57,6 +58,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
 
     public init(
         disappearingMessageConfigurationStore: DisappearingMessagesConfigurationStore,
+        linkPreviewSettingStore: LinkPreviewSettingStore,
         localUsernameManager: LocalUsernameManager,
         phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager,
         preferences: MessageBackup.AccountData.Shims.Preferences,
@@ -72,6 +74,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         usernameEducationManager: UsernameEducationManager
     ) {
         self.disappearingMessageConfigurationStore = disappearingMessageConfigurationStore
+        self.linkPreviewSettingStore = linkPreviewSettingStore
         self.localUsernameManager = localUsernameManager
         self.phoneNumberDiscoverabilityManager = phoneNumberDiscoverabilityManager
         self.preferences = preferences
@@ -152,7 +155,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         let readReceipts = receiptManager.areReadReceiptsEnabled(tx: tx)
         let sealedSenderIndicators = preferences.shouldShowUnidentifiedDeliveryIndicators(tx: tx)
         let typingIndicatorsEnabled = typingIndicators.areTypingIndicatorsEnabled()
-        let linkPreviews = sskPreferences.areLinkPreviewsEnabled(tx: tx)
+        let linkPreviews = linkPreviewSettingStore.areLinkPreviewsEnabled(tx: tx)
         let notDiscoverableByPhoneNumber = switch phoneNumberDiscoverabilityManager.phoneNumberDiscoverability(tx: tx) {
         case .everybody: false
         case .nobody, .none: true
@@ -231,7 +234,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
             receiptManager.setAreReadReceiptsEnabled(value: settings.readReceipts, tx: tx)
             preferences.setShouldShowUnidentifiedDeliveryIndicators(value: settings.sealedSenderIndicators, tx: tx)
             typingIndicators.setTypingIndicatorsEnabled(value: settings.typingIndicators, tx: tx)
-            sskPreferences.setAreLinkPreviewsEnabled(value: settings.linkPreviews, tx: tx)
+            linkPreviewSettingStore.setAreLinkPreviewsEnabled(settings.linkPreviews, tx: tx)
             phoneNumberDiscoverabilityManager.setPhoneNumberDiscoverability(
                 settings.notDiscoverableByPhoneNumber ? .nobody : .everybody,
                 updateAccountAttributes: false, // This should be updated later, similar to storage service

@@ -6,11 +6,6 @@
 import Foundation
 
 public protocol LinkPreviewManager {
-
-    func areLinkPreviewsEnabled(tx: DBReadTransaction) -> Bool
-
-    func fetchLinkPreview(for url: URL) async throws -> OWSLinkPreviewDraft
-
     /// Uses the default builder.
     func validateAndBuildLinkPreview(
         from proto: SSKProtoPreview,

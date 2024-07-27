@@ -295,7 +295,7 @@ public class TSAttachmentMultisend: Dependencies {
         ownerType: TSResourceOwnerType,
         transaction: SDSAnyWriteTransaction
     ) throws -> (OWSLinkPreview, attachmentUniqueId: String?) {
-        guard SSKPreferences.areLinkPreviewsEnabled(transaction: transaction) else {
+        guard DependenciesBridge.shared.linkPreviewSettingStore.areLinkPreviewsEnabled(tx: transaction.asV2Read) else {
             throw LinkPreviewError.featureDisabled
         }
         let attachmentUniqueId: String?

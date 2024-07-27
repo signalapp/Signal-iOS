@@ -334,9 +334,6 @@ public class _MessageBackup_AccountData_PreferencesWrapper: _MessageBackup_Accou
 // MARK: SSKPreferences
 
 public protocol _MessageBackup_AccountData_SSKPreferencesShim {
-    func areLinkPreviewsEnabled(tx: DBReadTransaction) -> Bool
-    func setAreLinkPreviewsEnabled(value: Bool, tx: DBWriteTransaction)
-
     func preferContactAvatars(tx: DBReadTransaction) -> Bool
     func setPreferContactAvatars(value: Bool, tx: DBWriteTransaction)
 
@@ -345,13 +342,6 @@ public protocol _MessageBackup_AccountData_SSKPreferencesShim {
 }
 
 public class _MessageBackup_AccountData_SSKPreferencesWrapper: _MessageBackup_AccountData_SSKPreferencesShim {
-    public func areLinkPreviewsEnabled(tx: DBReadTransaction) -> Bool {
-        SSKPreferences.areLinkPreviewsEnabled(transaction: SDSDB.shimOnlyBridge(tx))
-    }
-    public func setAreLinkPreviewsEnabled(value: Bool, tx: DBWriteTransaction) {
-        SSKPreferences.setAreLinkPreviewsEnabled(value, sendSyncMessage: false, transaction: SDSDB.shimOnlyBridge(tx))
-    }
-
     public func preferContactAvatars(tx: DBReadTransaction) -> Bool {
         SSKPreferences.preferContactAvatars(transaction: SDSDB.shimOnlyBridge(tx))
     }

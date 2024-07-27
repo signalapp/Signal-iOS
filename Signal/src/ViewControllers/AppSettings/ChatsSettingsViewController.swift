@@ -39,7 +39,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
                 comment: "Setting for enabling & disabling link previews."
             ),
             isOn: {
-                Self.databaseStorage.read { SSKPreferences.areLinkPreviewsEnabled(transaction: $0) }
+                Self.databaseStorage.read { DependenciesBridge.shared.linkPreviewSettingStore.areLinkPreviewsEnabled(tx: $0.asV2Read) }
             },
             target: self,
             selector: #selector(didToggleLinkPreviewsEnabled)
@@ -113,8 +113,10 @@ class ChatsSettingsViewController: OWSTableViewController2 {
     @objc
     private func didToggleLinkPreviewsEnabled(_ sender: UISwitch) {
         Logger.info("toggled to: \(sender.isOn)")
-        databaseStorage.write { transaction in
-            SSKPreferences.setAreLinkPreviewsEnabled(sender.isOn, sendSyncMessage: true, transaction: transaction)
+        let db = DependenciesBridge.shared.db
+        db.write { tx in
+            let linkPreviewSettingManager = DependenciesBridge.shared.linkPreviewSettingManager
+            linkPreviewSettingManager.setAreLinkPreviewsEnabled(sender.isOn, shouldSendSyncMessage: true, tx: tx)
         }
     }
 

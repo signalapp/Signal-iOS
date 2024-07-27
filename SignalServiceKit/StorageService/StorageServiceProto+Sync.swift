@@ -1077,6 +1077,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     private let dmConfigurationStore: DisappearingMessagesConfigurationStore
     private let groupsV2: GroupsV2
     private let legacyChangePhoneNumber: LegacyChangePhoneNumber
+    private let linkPreviewSettingStore: LinkPreviewSettingStore
     private let localUsernameManager: LocalUsernameManager
     private let paymentsHelper: PaymentsHelperSwift
     private let phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager
@@ -1100,6 +1101,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
         groupsV2: GroupsV2,
         legacyChangePhoneNumber: LegacyChangePhoneNumber,
+        linkPreviewSettingStore: LinkPreviewSettingStore,
         localUsernameManager: LocalUsernameManager,
         paymentsHelper: PaymentsHelperSwift,
         phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager,
@@ -1122,6 +1124,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         self.dmConfigurationStore = dmConfigurationStore
         self.groupsV2 = groupsV2
         self.legacyChangePhoneNumber = legacyChangePhoneNumber
+        self.linkPreviewSettingStore = linkPreviewSettingStore
         self.localUsernameManager = localUsernameManager
         self.paymentsHelper = paymentsHelper
         self.phoneNumberDiscoverabilityManager = phoneNumberDiscoverabilityManager
@@ -1216,7 +1219,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         let proxiedLinkPreviewsEnabled = SSKPreferences.areLegacyLinkPreviewsEnabled(transaction: transaction)
         builder.setProxiedLinkPreviews(proxiedLinkPreviewsEnabled)
 
-        let linkPreviewsEnabled = SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
+        let linkPreviewsEnabled = linkPreviewSettingStore.areLinkPreviewsEnabled(tx: transaction.asV2Read)
         builder.setLinkPreviews(linkPreviewsEnabled)
 
         let phoneNumberSharingMode = udManager.phoneNumberSharingMode(tx: transaction.asV2Read)
@@ -1439,9 +1442,9 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             typingIndicators.setTypingIndicatorsEnabled(value: record.typingIndicators, transaction: transaction)
         }
 
-        let linkPreviewsEnabled = SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
+        let linkPreviewsEnabled = linkPreviewSettingStore.areLinkPreviewsEnabled(tx: transaction.asV2Read)
         if record.linkPreviews != linkPreviewsEnabled {
-            SSKPreferences.setAreLinkPreviewsEnabled(record.linkPreviews, transaction: transaction)
+            linkPreviewSettingStore.setAreLinkPreviewsEnabled(record.linkPreviews, tx: transaction.asV2Write)
         }
 
         let proxiedLinkPreviewsEnabled = SSKPreferences.areLegacyLinkPreviewsEnabled(transaction: transaction)

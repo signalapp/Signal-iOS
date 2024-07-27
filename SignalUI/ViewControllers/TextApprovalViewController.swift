@@ -27,7 +27,7 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
     // MARK: - Properties
 
     private let initialMessageBody: MessageBody
-    private let linkPreviewFetcher: LinkPreviewFetcher
+    private let linkPreviewFetchState: LinkPreviewFetchState
 
     private let textView = BodyRangesTextView()
     private let footerView = ApprovalFooterView()
@@ -51,14 +51,19 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
 
     public init(messageBody: MessageBody) {
         self.initialMessageBody = messageBody
-        self.linkPreviewFetcher = LinkPreviewFetcher(
+        self.linkPreviewFetchState = LinkPreviewFetchState(
             db: DependenciesBridge.shared.db,
-            linkPreviewManager: DependenciesBridge.shared.linkPreviewManager
+            linkPreviewFetcher: LinkPreviewFetcherImpl(
+                db: DependenciesBridge.shared.db,
+                groupsV2: NSObject.groupsV2,
+                linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore
+            ),
+            linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore
         )
 
         super.init()
 
-        self.linkPreviewFetcher.onStateChange = { [weak self] in self?.updateLinkPreviewView() }
+        self.linkPreviewFetchState.onStateChange = { [weak self] in self?.updateLinkPreviewView() }
     }
 
     // MARK: - UIViewController
@@ -126,11 +131,11 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
     }()
 
     private func updateLinkPreviewText() {
-        linkPreviewFetcher.update(textView.messageBodyForSending)
+        linkPreviewFetchState.update(textView.messageBodyForSending)
     }
 
     private func updateLinkPreviewView() {
-        switch linkPreviewFetcher.currentState {
+        switch linkPreviewFetchState.currentState {
         case .none, .failed:
             linkPreviewView.isHidden = true
         case .loading:
@@ -210,7 +215,7 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
 
 extension TextApprovalViewController: ApprovalFooterDelegate {
     public func approvalFooterDelegateDidRequestProceed(_ approvalFooterView: ApprovalFooterView) {
-        let linkPreviewDraft = linkPreviewFetcher.linkPreviewDraftIfLoaded
+        let linkPreviewDraft = linkPreviewFetchState.linkPreviewDraftIfLoaded
         delegate?.textApproval(self, didApproveMessage: self.textView.messageBodyForSending, linkPreviewDraft: linkPreviewDraft)
     }
 
@@ -270,6 +275,6 @@ extension TextApprovalViewController: InputAccessoryViewPlaceholderDelegate {
 
 extension TextApprovalViewController: LinkPreviewViewDraftDelegate {
     public func linkPreviewDidCancel() {
-        linkPreviewFetcher.disable()
+        linkPreviewFetchState.disable()
     }
 }

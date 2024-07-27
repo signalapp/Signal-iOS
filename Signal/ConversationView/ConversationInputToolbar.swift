@@ -81,14 +81,19 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         self.mediaCache = mediaCache
         self.editTarget = editTarget
         self.inputToolbarDelegate = inputToolbarDelegate
-        self.linkPreviewFetcher = LinkPreviewFetcher(
+        self.linkPreviewFetchState = LinkPreviewFetchState(
             db: DependenciesBridge.shared.db,
-            linkPreviewManager: DependenciesBridge.shared.linkPreviewManager
+            linkPreviewFetcher: LinkPreviewFetcherImpl(
+                db: DependenciesBridge.shared.db,
+                groupsV2: NSObject.groupsV2,
+                linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore
+            ),
+            linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore
         )
 
         super.init(frame: .zero)
 
-        self.linkPreviewFetcher.onStateChange = { [weak self] in self?.updateLinkPreviewView() }
+        self.linkPreviewFetchState.onStateChange = { [weak self] in self?.updateLinkPreviewView() }
 
         createContentsWithMessageDraft(
             messageDraft,
@@ -1113,7 +1118,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     // MARK: Link Preview
 
-    private let linkPreviewFetcher: LinkPreviewFetcher
+    private let linkPreviewFetchState: LinkPreviewFetchState
 
     private var linkPreviewView: LinkPreviewView?
 
@@ -1146,7 +1151,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     var linkPreviewDraft: OWSLinkPreviewDraft? {
         AssertIsOnMainThread()
 
-        return linkPreviewFetcher.linkPreviewDraftIfLoaded
+        return linkPreviewFetchState.linkPreviewDraftIfLoaded
     }
 
     private func updateInputLinkPreview() {
@@ -1154,13 +1159,13 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
         let messageBody = messageBodyForSending
             ?? .init(text: "", ranges: .empty)
-        linkPreviewFetcher.update(messageBody, enableIfEmpty: true)
+        linkPreviewFetchState.update(messageBody, enableIfEmpty: true)
     }
 
     private func updateLinkPreviewView() {
         let animateChanges = window != nil
 
-        switch linkPreviewFetcher.currentState {
+        switch linkPreviewFetchState.currentState {
         case .none, .failed:
             hideLinkPreviewView(animated: animateChanges)
         case .loading:
@@ -1258,7 +1263,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     public func linkPreviewDidCancel() {
         AssertIsOnMainThread()
 
-        linkPreviewFetcher.disable()
+        linkPreviewFetchState.disable()
     }
 
     // MARK: Stickers

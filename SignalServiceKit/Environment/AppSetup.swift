@@ -367,13 +367,19 @@ public class AppSetup {
             tsAccountManager: tsAccountManager
         )
 
+        let linkPreviewSettingStore = LinkPreviewSettingStore(keyValueStore: SSKPreferences.store)
+        let linkPreviewSettingManager = LinkPreviewSettingManagerImpl(
+            linkPreviewSettingStore: linkPreviewSettingStore,
+            storageServiceManager: storageServiceManager,
+            syncManager: syncManager
+        )
+
         let linkPreviewManager = LinkPreviewManagerImpl(
             attachmentManager: tsResourceManager,
             attachmentStore: tsResourceStore,
             attachmentValidator: attachmentContentValidator,
             db: db,
-            groupsV2: LinkPreviewManagerImpl.Wrappers.GroupsV2(groupsV2),
-            sskPreferences: LinkPreviewManagerImpl.Wrappers.SSKPreferences()
+            linkPreviewSettingStore: linkPreviewSettingStore
         )
 
         let editMessageStore = EditMessageStoreImpl()
@@ -860,6 +866,7 @@ public class AppSetup {
         let messageBackupManager = MessageBackupManagerImpl(
             accountDataArchiver: MessageBackupAccountDataArchiverImpl(
                 disappearingMessageConfigurationStore: disappearingMessagesConfigurationStore,
+                linkPreviewSettingStore: linkPreviewSettingStore,
                 localUsernameManager: localUsernameManager,
                 phoneNumberDiscoverabilityManager: phoneNumberDiscoverabilityManager,
                 preferences: MessageBackup.AccountData.Wrappers.Preferences(preferences: preferences),
@@ -1054,6 +1061,8 @@ public class AppSetup {
             learnMyOwnPniManager: learnMyOwnPniManager,
             linkedDevicePniKeyManager: linkedDevicePniKeyManager,
             linkPreviewManager: linkPreviewManager,
+            linkPreviewSettingStore: linkPreviewSettingStore,
+            linkPreviewSettingManager: linkPreviewSettingManager,
             localProfileChecker: localProfileChecker,
             localUsernameManager: localUsernameManager,
             masterKeySyncManager: masterKeySyncManager,

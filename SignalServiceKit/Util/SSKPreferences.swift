@@ -17,25 +17,7 @@ public class SSKPreferences: NSObject {
 
     // MARK: -
 
-    private static var areLinkPreviewsEnabledKey: String { "areLinkPreviewsEnabled" }
     private static var areLegacyLinkPreviewsEnabledKey: String { "areLegacyLinkPreviewsEnabled" }
-
-    @objc
-    public static func areLinkPreviewsEnabled(transaction: SDSAnyReadTransaction) -> Bool {
-        return store.getBool(areLinkPreviewsEnabledKey, defaultValue: true, transaction: transaction)
-    }
-
-    @objc
-    public static func setAreLinkPreviewsEnabled(_ newValue: Bool,
-                                                 sendSyncMessage shouldSync: Bool = false,
-                                                 transaction: SDSAnyWriteTransaction) {
-        store.setBool(newValue, key: areLinkPreviewsEnabledKey, transaction: transaction)
-
-        if shouldSync {
-            Self.syncManager.sendConfigurationSyncMessage()
-            Self.storageServiceManager.recordPendingLocalAccountUpdates()
-        }
-    }
 
     // The following two methods are just to make sure we can store and forward in storage service updates
     public static func areLegacyLinkPreviewsEnabled(transaction: SDSAnyReadTransaction) -> Bool {

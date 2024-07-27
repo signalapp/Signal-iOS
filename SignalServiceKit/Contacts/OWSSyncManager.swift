@@ -86,7 +86,8 @@ public class OWSSyncManager: NSObject, SyncManagerProtocolObjc {
             self.typingIndicatorsImpl.setTypingIndicatorsEnabled(value: syncMessage.typingIndicators, transaction: transaction)
         }
         if syncMessage.hasLinkPreviews {
-            SSKPreferences.setAreLinkPreviewsEnabled(syncMessage.linkPreviews, transaction: transaction)
+            let linkPreviewSettingStore = DependenciesBridge.shared.linkPreviewSettingStore
+            linkPreviewSettingStore.setAreLinkPreviewsEnabled(syncMessage.linkPreviews, tx: transaction.asV2Write)
         }
         transaction.addAsyncCompletionOffMain {
             NotificationCenter.default.postNotificationNameAsync(.syncManagerConfigurationSyncDidComplete, object: nil)
@@ -379,7 +380,7 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             return
         }
 
-        let linkPreviews = SSKPreferences.areLinkPreviewsEnabled(transaction: tx)
+        let linkPreviews = DependenciesBridge.shared.linkPreviewSettingStore.areLinkPreviewsEnabled(tx: tx.asV2Read)
         let readReceipts = receiptManager.areReadReceiptsEnabled(transaction: tx)
         let sealedSenderIndicators = preferences.shouldShowUnidentifiedDeliveryIndicators(transaction: tx)
         let typingIndicators = typingIndicatorsImpl.areTypingIndicatorsEnabled()

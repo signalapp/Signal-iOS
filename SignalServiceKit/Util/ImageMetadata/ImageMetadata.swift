@@ -5,7 +5,7 @@
 
 import Foundation
 
-enum ImageFormat: CustomStringConvertible {
+public enum ImageFormat: CustomStringConvertible {
     case unknown
     case png
     case gif
@@ -16,7 +16,7 @@ enum ImageFormat: CustomStringConvertible {
     case heic
     case heif
 
-    var description: String {
+    public var description: String {
         switch self {
         case .unknown:
             "ImageFormat_Unknown"
@@ -116,10 +116,10 @@ enum ImageFormat: CustomStringConvertible {
 public class ImageMetadata: NSObject {
     @objc
     public let isValid: Bool
-    let imageFormat: ImageFormat
+    public let imageFormat: ImageFormat
     @objc
     public let pixelSize: CGSize
-    let hasAlpha: Bool
+    public let hasAlpha: Bool
     let isAnimated: Bool
 
     internal init(isValid: Bool, imageFormat: ImageFormat, pixelSize: CGSize, hasAlpha: Bool, isAnimated: Bool) {

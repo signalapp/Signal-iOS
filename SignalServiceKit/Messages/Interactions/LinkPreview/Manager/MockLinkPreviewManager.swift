@@ -11,21 +11,6 @@ public class MockLinkPreviewManager: LinkPreviewManager {
 
     public init() {}
 
-    public var areLinkPreviewsEnabledMock = true
-
-    public func areLinkPreviewsEnabled(tx: DBReadTransaction) -> Bool {
-        return areLinkPreviewsEnabledMock
-    }
-
-    public var fetchedURLs = [URL]()
-
-    public var fetchLinkPreviewBlock: ((URL) async throws -> OWSLinkPreviewDraft)?
-
-    public func fetchLinkPreview(for url: URL) async throws -> OWSLinkPreviewDraft {
-        fetchedURLs.append(url)
-        return try await fetchLinkPreviewBlock!(url)
-    }
-
     public func validateAndBuildLinkPreview(
         from proto: SSKProtoPreview,
         dataMessage: SSKProtoDataMessage,

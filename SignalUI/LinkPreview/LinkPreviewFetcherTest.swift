@@ -1,396 +1,175 @@
 //
-// Copyright 2023 Signal Messenger, LLC
+// Copyright 2024 Signal Messenger, LLC
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import Foundation
+@testable import SignalServiceKit
+@testable import SignalUI
 import XCTest
-import SignalServiceKit
-import SignalUI
 
-private extension LinkPreviewFetcher.State {
-    var isNone: Bool {
-        if case .none = self {
-            return true
-        }
-        return false
-    }
-    var isLoaded: Bool {
-        if case .loaded = self {
-            return true
-        }
-        return false
-    }
-    var isFailed: Bool {
-        if case .failed = self {
-            return true
-        }
-        return false
-    }
-    var isLoading: Bool {
-        if case .loading = self {
-            return true
-        }
-        return false
-    }
+func XCTAssertMatch(expectedPattern: String, actualText: String, file: StaticString = #file, line: UInt = #line) {
+    let regex = try! NSRegularExpression(pattern: expectedPattern, options: [])
+    XCTAssert(regex.hasMatch(input: actualText), "\(actualText) did not match pattern \(expectedPattern)", file: file, line: line)
 }
 
 class LinkPreviewFetcherTest: XCTestCase {
+    let shouldRunNetworkTests = false
 
-    private var mockLinkPreviewManager: MockLinkPreviewManager!
-    private var mockDB: MockDB!
+    private var linkPreviewFetcher: LinkPreviewFetcherImpl!
 
     override func setUp() {
         super.setUp()
 
-        mockDB = MockDB()
-        mockLinkPreviewManager = MockLinkPreviewManager()
-    }
-
-    func testUpdateLoaded() async throws {
-        let linkPreviewFetcher = LinkPreviewFetcher(
-            db: mockDB,
-            linkPreviewManager: mockLinkPreviewManager
+        self.linkPreviewFetcher = LinkPreviewFetcherImpl(
+            db: MockDB(),
+            groupsV2: MockGroupsV2(),
+            linkPreviewSettingStore: LinkPreviewSettingStore.mock()
         )
-
-        // Non-URL text shouldn't issue any fetches.
-        for textValue in ["a", "ab", "abc"] {
-            await linkPreviewFetcher.update(.init(text: textValue, ranges: .empty))?.value
-            XCTAssert(linkPreviewFetcher.currentState.isNone)
-            XCTAssertNil(linkPreviewFetcher.linkPreviewDraftIfLoaded)
-            XCTAssertNil(linkPreviewFetcher.currentUrl)
-            XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [])
-        }
-
-        // A valid URL should fetch only once, even if the text is modified.
-        let validURL = try XCTUnwrap(URL(string: "https://signal.org"))
-        mockLinkPreviewManager.fetchLinkPreviewBlock = { fetchedURL in
-            XCTAssertEqual(fetchedURL, validURL)
-            return OWSLinkPreviewDraft(url: fetchedURL, title: "Website Title")
-        }
-        for textValue in ["Check ou https://signal.org", "Check out https://signal.org"] {
-            await linkPreviewFetcher.update(.init(text: textValue, ranges: .empty))?.value
-            XCTAssert(linkPreviewFetcher.currentState.isLoaded)
-            XCTAssertEqual(linkPreviewFetcher.linkPreviewDraftIfLoaded?.url, validURL)
-            XCTAssertEqual(linkPreviewFetcher.currentUrl, validURL)
-            XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [validURL])
-        }
-
-        // An invalid URL should fetch only once, even if the text is modified.
-        let invalidURL = try XCTUnwrap(URL(string: "https://signal.org/not_found"))
-        mockLinkPreviewManager.fetchLinkPreviewBlock = { fetchedURL in
-            XCTAssertEqual(fetchedURL, invalidURL)
-            throw OWSGenericError("Not found.")
-        }
-        for textValue in ["Check ou https://signal.org/not_found", "Check out https://signal.org/not_found"] {
-            await linkPreviewFetcher.update(.init(text: textValue, ranges: .empty))?.value
-            XCTAssert(linkPreviewFetcher.currentState.isFailed)
-            XCTAssertNil(linkPreviewFetcher.linkPreviewDraftIfLoaded)
-            XCTAssertEqual(linkPreviewFetcher.currentUrl, invalidURL)
-            XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [validURL, invalidURL])
-        }
-
-        // Removing the URL should clear the link preview.
-        for textValue in ["Check out", "Check ou"] {
-            await linkPreviewFetcher.update(.init(text: textValue, ranges: .empty))?.value
-            XCTAssert(linkPreviewFetcher.currentState.isNone)
-            XCTAssertNil(linkPreviewFetcher.linkPreviewDraftIfLoaded)
-            XCTAssertNil(linkPreviewFetcher.currentUrl)
-            XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [validURL, invalidURL])
-        }
     }
 
-    private struct PendingFetchState {
-        var isReady = false
-        var deferredBlocks = [() -> Void]()
-        var expectedCount: Int
+    func testLinkDownloadAndParsing() async throws {
+        try XCTSkipUnless(shouldRunNetworkTests)
 
-        mutating func resolveIfReady() {
-            guard self.isReady, self.deferredBlocks.count == self.expectedCount else {
-                return
-            }
-            self.deferredBlocks.forEach { $0() }
-            self.deferredBlocks.removeAll()
-        }
+        let draft = try await linkPreviewFetcher.fetchLinkPreview(for: URL(string: "https://www.youtube.com/watch?v=tP-Ipsat90c")!)
+        XCTAssertEqual(draft.title, "Randomness is Random - Numberphile")
+        XCTAssertNotNil(draft.imageData)
     }
 
-    func testUpdateLoading() async throws {
-        let linkPreviewFetcher = LinkPreviewFetcher(
-            db: mockDB,
-            linkPreviewManager: mockLinkPreviewManager
-        )
+    func testLinkParsingWithRealData1() async throws {
+        try XCTSkipUnless(shouldRunNetworkTests)
 
-        let validURL = try XCTUnwrap(URL(string: "https://signal.org"))
-        let pendingFetchState = AtomicValue(PendingFetchState(expectedCount: 1), lock: .init())
-        mockLinkPreviewManager.fetchLinkPreviewBlock = { fetchedURL in
-            return try await withCheckedThrowingContinuation { continuation in
-                pendingFetchState.update {
-                    $0.deferredBlocks.append {
-                        continuation.resume(returning: OWSLinkPreviewDraft(url: fetchedURL, title: "Website Title"))
-                    }
-                    $0.resolveIfReady()
-                }
-            }
-        }
+        let (_, linkText) = try await linkPreviewFetcher.fetchStringResource(from: URL(string: "https://www.youtube.com/watch?v=tP-Ipsat90c")!)
 
-        let task1 = linkPreviewFetcher.update(.init(text: "https://signal.org is a grea", ranges: .empty))
-        XCTAssert(linkPreviewFetcher.currentState.isLoading)
+        let content = HTMLMetadata.construct(parsing: linkText)
+        XCTAssertNotNil(content)
 
-        // If there's a request in flight, we shouldn't send a new request.
-        let task2 = linkPreviewFetcher.update(.init(text: "https://signal.org is a great", ranges: .empty))
-        XCTAssert(linkPreviewFetcher.currentState.isLoading)
-
-        pendingFetchState.update {
-            $0.isReady = true
-            $0.resolveIfReady()
-        }
-
-        await task1?.value
-        await task2?.value
-
-        XCTAssert(linkPreviewFetcher.currentState.isLoaded)
-        XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [validURL])
+        XCTAssertEqual(content.ogTitle, "Randomness is Random - Numberphile")
+        XCTAssertEqual(content.ogImageUrlString, "https://i.ytimg.com/vi/tP-Ipsat90c/maxresdefault.jpg")
     }
 
-    func testUpdateObsolete() async throws {
-        let linkPreviewFetcher = LinkPreviewFetcher(
-            db: mockDB,
-            linkPreviewManager: mockLinkPreviewManager
-        )
+    func testLinkParsingWithRealData2() async throws {
+        try XCTSkipUnless(shouldRunNetworkTests)
 
-        let pendingFetchState = AtomicValue(PendingFetchState(expectedCount: 2), lock: .init())
-        mockLinkPreviewManager.fetchLinkPreviewBlock = { fetchedURL in
-            return try await withCheckedThrowingContinuation { continuation in
-                pendingFetchState.update {
-                    $0.deferredBlocks.append {
-                        continuation.resume(returning: OWSLinkPreviewDraft(url: fetchedURL, title: "Website Title"))
-                    }
-                    $0.resolveIfReady()
-                }
-            }
-        }
+        let (_, linkText) = try await linkPreviewFetcher.fetchStringResource(from: URL(string: "https://youtu.be/tP-Ipsat90c")!)
 
-        let url1 = try XCTUnwrap(URL(string: "https://signal.org/one"))
-        let task1 = linkPreviewFetcher.update(.init(text: "https://signal.org/one", ranges: .empty))
-        XCTAssert(linkPreviewFetcher.currentState.isLoading)
+        let content = HTMLMetadata.construct(parsing: linkText)
+        XCTAssertNotNil(content)
 
-        // If there's a request in flight & we change the URL, drop the original request.
-        let url2 = try XCTUnwrap(URL(string: "https://signal.org/two"))
-        let task2 = linkPreviewFetcher.update(.init(text: "https://signal.org/two", ranges: .empty))
-        XCTAssert(linkPreviewFetcher.currentState.isLoading)
-
-        pendingFetchState.update {
-            $0.isReady = true
-            $0.resolveIfReady()
-        }
-
-        await task1?.value
-        await task2?.value
-
-        XCTAssert(linkPreviewFetcher.currentState.isLoaded)
-        XCTAssertEqual(linkPreviewFetcher.linkPreviewDraftIfLoaded?.url, url2)
-        XCTAssertEqual(linkPreviewFetcher.currentUrl, url2)
-        XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [url1, url2])
+        XCTAssertEqual(content.ogTitle, "Randomness is Random - Numberphile")
+        XCTAssertEqual(content.ogImageUrlString, "https://i.ytimg.com/vi/tP-Ipsat90c/maxresdefault.jpg")
     }
 
-    func testUpdatePrependScheme() async throws {
-        let linkPreviewFetcher = LinkPreviewFetcher(
-            db: mockDB,
-            linkPreviewManager: mockLinkPreviewManager
-        )
+    func testLinkParsingWithRealData3() async throws {
+        try XCTSkipUnless(shouldRunNetworkTests)
 
-        mockLinkPreviewManager.fetchLinkPreviewBlock = { fetchedURL in
-            return OWSLinkPreviewDraft(url: fetchedURL, title: "Signal")
-        }
-        await linkPreviewFetcher.update(.init(text: "signal.org", ranges: .empty), prependSchemeIfNeeded: false)?.value
-        XCTAssert(linkPreviewFetcher.currentState.isNone)
-        XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [])
+        let (_, linkText) = try await linkPreviewFetcher.fetchStringResource(from: URL(string: "https://www.reddit.com/r/memes/comments/c3p3dy/i_drew_all_the_boys_together_and_i_did_it_for_the/")!)
 
-        // If we should prepend a scheme, prepend "https://".
-        await linkPreviewFetcher.update(.init(text: "signal.org", ranges: .empty), prependSchemeIfNeeded: true)?.value
-        XCTAssert(linkPreviewFetcher.currentState.isLoaded)
-        XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [URL(string: "https://signal.org")!])
-        mockLinkPreviewManager.fetchedURLs.removeAll()
+        let content = HTMLMetadata.construct(parsing: linkText)
+        XCTAssertNotNil(content)
 
-        // If there's already a scheme, we don't add "https://". (We require
-        // "https://", so specify anything other scheme disables link previews.
-        await linkPreviewFetcher.update(.init(text: "http://signal.org", ranges: .empty), prependSchemeIfNeeded: true)?.value
-        XCTAssert(linkPreviewFetcher.currentState.isNone)
-        XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [])
+        XCTAssertEqual(content.ogTitle, "From the memes community on Reddit: I drew all the boys together and i did it for the internet")
+        XCTAssertEqual(content.ogImageUrlString, "https://preview.redd.it/yb3996njhw531.jpg?width=1080&crop=smart&auto=webp&s=0f0c60355dcb7d051fdb2cf068aca3b669d7dbda")
     }
 
-    func testOnStateChange() async throws {
-        let linkPreviewFetcher = LinkPreviewFetcher(
-            db: mockDB,
-            linkPreviewManager: mockLinkPreviewManager
-        )
+    func testLinkParsingWithRealData4() async throws {
+        try XCTSkipUnless(shouldRunNetworkTests)
 
-        mockLinkPreviewManager.fetchLinkPreviewBlock = { fetchedURL in
-            return OWSLinkPreviewDraft(url: fetchedURL, title: "Signal")
-        }
+        let (_, linkText) = try await linkPreviewFetcher.fetchStringResource(from: URL(string: "https://www.reddit.com/r/WhitePeopleTwitter/comments/a7j3mm/why/")!)
 
-        var onStateChangeCount = 0
-        linkPreviewFetcher.onStateChange = { onStateChangeCount += 1 }
+        let content = HTMLMetadata.construct(parsing: linkText)
+        XCTAssertNotNil(content)
 
-        await linkPreviewFetcher.update(.init(text: "", ranges: .empty))?.value
-        XCTAssertEqual(onStateChangeCount, 0)
-
-        // Redundant updates generally don't result in state updates.
-        await linkPreviewFetcher.update(.init(text: "a", ranges: .empty))?.value
-        XCTAssertEqual(onStateChangeCount, 0)
-
-        // Fetching a URL should update the state twice: to loading & to loaded.
-        await linkPreviewFetcher.update(.init(text: "https://signal.org", ranges: .empty))?.value
-        XCTAssertEqual(onStateChangeCount, 2)
-
-        await linkPreviewFetcher.update(.init(text: "https://signal.org", ranges: .empty))?.value
-        XCTAssertEqual(onStateChangeCount, 2)
-
-        // Clearing the text should update the link preview.
-        await linkPreviewFetcher.update(.init(text: "", ranges: .empty))?.value
-        XCTAssertEqual(onStateChangeCount, 3)
-
-        // Assigning the URL again should fetch it again.
-        await linkPreviewFetcher.update(.init(text: "https://signal.org", ranges: .empty))?.value
-        XCTAssertEqual(onStateChangeCount, 5)
-
-        // Disabling the link preview should trigger an update.
-        linkPreviewFetcher.disable()
-        XCTAssertEqual(onStateChangeCount, 6)
+        XCTAssertEqual(content.ogTitle, "From the WhitePeopleTwitter community on Reddit: Why")
+        XCTAssertEqual(content.ogImageUrlString, "https://share.redd.it/preview/post/a7j3mm")
     }
 
-    func testDisable() async throws {
-        let linkPreviewFetcher = LinkPreviewFetcher(
-            db: mockDB,
-            linkPreviewManager: mockLinkPreviewManager
-        )
+    func testLinkParsingWithRealData5() async throws {
+        try XCTSkipUnless(shouldRunNetworkTests)
 
-        mockLinkPreviewManager.fetchLinkPreviewBlock = { fetchedURL in
-            return OWSLinkPreviewDraft(url: fetchedURL, title: "Signal")
-        }
+        let (_, linkText) = try await linkPreviewFetcher.fetchStringResource(from: URL(string: "https://imgur.com/gallery/KFCL8fm")!)
 
-        // Fetch the original preview.
-        let url = try XCTUnwrap(URL(string: "https://signal.org"))
-        await linkPreviewFetcher.update(.init(text: "https://signal.org", ranges: .empty))?.value
-        XCTAssertEqual(linkPreviewFetcher.linkPreviewDraftIfLoaded?.url, url)
-        XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [url])
-        mockLinkPreviewManager.fetchedURLs.removeAll()
+        let content = HTMLMetadata.construct(parsing: linkText)
+        XCTAssertNotNil(content)
 
-        // Dismiss the preview; make sure it goes away.
-        linkPreviewFetcher.disable()
-        XCTAssertNil(linkPreviewFetcher.linkPreviewDraftIfLoaded)
-        XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [])
+        XCTAssertEqual(content.ogTitle, "imgur.com")
 
-        // Assign the same URL again; make sure it doesn't come back.
-        await linkPreviewFetcher.update(.init(text: "https://signal.org", ranges: .empty))?.value
-        XCTAssertNil(linkPreviewFetcher.linkPreviewDraftIfLoaded)
-        XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [])
-
-        // Clear the URL; make sure it stays away.
-        await linkPreviewFetcher.update(.init(text: "", ranges: .empty))?.value
-        XCTAssertNil(linkPreviewFetcher.linkPreviewDraftIfLoaded)
-        XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [])
-
-        // Enter a different URL; make sure we don't fetch it.
-        await linkPreviewFetcher.update(.init(text: "https://signal.org/one", ranges: .empty))?.value
-        XCTAssertNil(linkPreviewFetcher.linkPreviewDraftIfLoaded)
-        XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [])
-
-        // Ensure "enableIfEmpty" doesn't enable when the text isn't empty.
-        await linkPreviewFetcher.update(.init(text: "https://signal.org/one", ranges: .empty), enableIfEmpty: true)?.value
-        XCTAssertNil(linkPreviewFetcher.linkPreviewDraftIfLoaded)
-        XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [])
-
-        // Clear the text with "enableIfEmpty" to re-enable link previews.
-        await linkPreviewFetcher.update(.init(text: "", ranges: .empty), enableIfEmpty: true)?.value
-        XCTAssertNil(linkPreviewFetcher.linkPreviewDraftIfLoaded)
-        XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [])
-
-        // Set a URL and make sure we fetch it.
-        let url2 = try XCTUnwrap(URL(string: "https://signal.org/two"))
-        await linkPreviewFetcher.update(.init(text: "https://signal.org/two", ranges: .empty), enableIfEmpty: true)?.value
-        XCTAssertEqual(linkPreviewFetcher.linkPreviewDraftIfLoaded?.url, url2)
-        XCTAssertEqual(mockLinkPreviewManager.fetchedURLs, [url2])
+        // Actual URL can change based on network response
+        //
+        // It seems like some parts of the URL are stable, but if this continues to be brittle we may choose
+        // to remove it or stub the network response
+        XCTAssertTrue(content.ogImageUrlString!.hasPrefix("https://i.imgur.com/Y3wjlwY."))
     }
 
-    func testOnlyParseIfEnabled() async throws {
-        mockLinkPreviewManager.areLinkPreviewsEnabledMock = false
+    func testLinkParsingWithRealData6() async throws {
+        try XCTSkipUnless(shouldRunNetworkTests)
 
-        do {
-            let linkPreviewFetcher = LinkPreviewFetcher(
-                db: mockDB,
-                linkPreviewManager: mockLinkPreviewManager,
-                onlyParseIfEnabled: true
-            )
+        let (_, linkText) = try await linkPreviewFetcher.fetchStringResource(from: URL(string: "https://imgur.com/gallery/FMdwTiV")!)
 
-            await linkPreviewFetcher.update(.init(text: "https://signal.org", ranges: .empty))?.value
-            XCTAssertNil(linkPreviewFetcher.currentUrl)
-        }
-        do {
-            let linkPreviewFetcher = LinkPreviewFetcher(
-                db: mockDB,
-                linkPreviewManager: mockLinkPreviewManager,
-                onlyParseIfEnabled: false
-            )
+        let content = HTMLMetadata.construct(parsing: linkText)
+        XCTAssertNotNil(content)
 
-            // If link previews are disabled, we may still want to parse URLs in the
-            // text so that they can be attached (without a preview) to text stories.
-            mockLinkPreviewManager.fetchLinkPreviewBlock = { fetchedURL in
-                throw OWSGenericError("Not found.")
-            }
-            await linkPreviewFetcher.update(.init(text: "https://signal.org", ranges: .empty))?.value
-            XCTAssertEqual(linkPreviewFetcher.currentUrl, try XCTUnwrap(URL(string: "https://signal.org")))
-        }
+        XCTAssertEqual(content.ogTitle, "Freddy would be proud!")
+        XCTAssertEqual(content.ogImageUrlString, "https://i.imgur.com/Vot3iHh.jpg?fbplay")
     }
 
-    func testDontParseInSpoilers() async throws {
-        mockLinkPreviewManager.fetchLinkPreviewBlock = { fetchedURL in
-            return OWSLinkPreviewDraft(url: fetchedURL, title: "Signal")
-        }
+    func testLinkParsingWithRealData_instagram_web_link() async throws {
+        try XCTSkipUnless(shouldRunNetworkTests)
 
-        let linkPreviewFetcher = LinkPreviewFetcher(
-            db: mockDB,
-            linkPreviewManager: mockLinkPreviewManager,
-            onlyParseIfEnabled: true
-        )
+        let (_, linkText) = try await linkPreviewFetcher.fetchStringResource(from: URL(string: "https://www.instagram.com/p/BtjTTyHnDKJ/?utm_source=ig_web_button_share_sheet")!)
 
-        // Bold should have no effect
-        await linkPreviewFetcher.update(.init(
-            text: "https://signal.org",
-            ranges: .init(
-                mentions: [:],
-                styles: [.init(.bold, range: NSRange(location: 0, length: 18))]
-            )
-        ))?.value
-        XCTAssertNotNil(linkPreviewFetcher.currentUrl)
+        let content = HTMLMetadata.construct(parsing: linkText)
+        XCTAssertNotNil(content)
 
-        // Spoiler should mean we don't match.
-        await linkPreviewFetcher.update(.init(
-            text: "https://signal.org",
-            ranges: .init(
-                mentions: [:],
-                styles: [.init(.spoiler, range: NSRange(location: 0, length: 18))]
-            )
-        ))?.value
-        XCTAssertNil(linkPreviewFetcher.currentUrl)
+        XCTAssertEqual(content.ogTitle, "Signal Messenger on Instagram: \"I link therefore I am: https://signal.org/blog/i-link-therefore-i-am/\"")
+        // Actual URL can change based on network response
+        //
+        // It seems like some parts of the URL are stable, so we can pattern match, but if this continues to be brittle we may choose
+        // to remove it or stub the network response
+        XCTAssertMatch(expectedPattern: "^https://.*.cdninstagram.com/.*/50654775_634096837020403_4737154112061769375_n.jpg\\?.*$",
+                       actualText: content.ogImageUrlString!)
+        //                XCTAssertEqual(content.imageUrl, "https://scontent-iad3-1.cdninstagram.com/vp/88656d9c10074b97b503d3b7b86eba84/5D774562/t51.2885-15/e35/50654775_634096837020403_4737154112061769375_n.jpg?_nc_ht=scontent-iad3-1.cdninstagram.com")
+    }
 
-        // Even if only partially covering.
-        await linkPreviewFetcher.update(.init(
-            text: "https://signal.org",
-            ranges: .init(
-                mentions: [:],
-                styles: [.init(.spoiler, range: NSRange(location: 3, length: 5))]
-            )
-        ))?.value
-        XCTAssertNil(linkPreviewFetcher.currentUrl)
+    func testLinkParsingWithRealData_instagram_app_sharesheet() async throws {
+        try XCTSkipUnless(shouldRunNetworkTests)
 
-        // Including if we prepend a prefix.
-        await linkPreviewFetcher.update(.init(
-            text: "signal.org",
-            ranges: .init(
-                mentions: [:],
-                styles: [.init(.spoiler, range: NSRange(location: 5, length: 5))]
-            )
-        ))?.value
-        XCTAssertNil(linkPreviewFetcher.currentUrl)
+        let (_, linkText) = try await linkPreviewFetcher.fetchStringResource(from: URL(string: "https://www.instagram.com/p/BtjTTyHnDKJ/?utm_source=ig_share_sheet&igshid=1bgo1ur9m9hi5")!)
+
+        let content = HTMLMetadata.construct(parsing: linkText)
+        XCTAssertNotNil(content)
+
+        XCTAssertEqual(content.ogTitle, "Signal Messenger on Instagram: \"I link therefore I am: https://signal.org/blog/i-link-therefore-i-am/\"")
+        // Actual URL can change based on network response
+        //
+        // It seems like some parts of the URL are stable, so we can pattern match, but if this continues to be brittle we may choose
+        // to remove it or stub the network response
+        XCTAssertMatch(expectedPattern: "^https://.*.cdninstagram.com/.*/50654775_634096837020403_4737154112061769375_n.jpg\\?.*$",
+                       actualText: content.ogImageUrlString!)
+        //                XCTAssertEqual(content.imageUrl, "https://scontent-iad3-1.cdninstagram.com/vp/88656d9c10074b97b503d3b7b86eba84/5D774562/t51.2885-15/e35/50654775_634096837020403_4737154112061769375_n.jpg?_nc_ht=scontent-iad3-1.cdninstagram.com")
+    }
+
+    func testLinkParsingWithRealData9() async throws {
+        try XCTSkipUnless(shouldRunNetworkTests)
+
+        let (_, linkText) = try await linkPreviewFetcher.fetchStringResource(from: URL(string: "https://imgur.com/gallery/igHOwDM")!)
+
+        let content = HTMLMetadata.construct(parsing: linkText)
+        XCTAssertNotNil(content)
+
+        XCTAssertEqual(content.ogTitle, "Sheet dance")
+        XCTAssertEqual(content.ogImageUrlString, "https://i.imgur.com/PYiyLv1.jpg?fbplay")
+    }
+
+    func testLinkParsingWithRealData10() async throws {
+        try XCTSkipUnless(shouldRunNetworkTests)
+
+        let (_, linkText) = try await linkPreviewFetcher.fetchStringResource(from: URL(string: "https://www.pinterest.com/norat0464/test-board/")!)
+
+        let content = HTMLMetadata.construct(parsing: linkText)
+        XCTAssertNotNil(content)
+
+        XCTAssertEqual(content.ogTitle, "Test board")
+        XCTAssertEqual(content.ogImageUrlString, "https://i.pinimg.com/200x150/3e/85/f8/3e85f88e7be0dd1418a5b430d2ee8a55.jpg")
     }
 }

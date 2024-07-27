@@ -15,17 +15,22 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
 
     weak var delegate: LinkPreviewAttachmentViewControllerDelegate?
 
-    private let linkPreviewFetcher: LinkPreviewFetcher
+    private let linkPreviewFetchState: LinkPreviewFetchState
 
     init(_ linkPreview: OWSLinkPreviewDraft? = nil) {
-        self.linkPreviewFetcher = LinkPreviewFetcher(
+        self.linkPreviewFetchState = LinkPreviewFetchState(
             db: DependenciesBridge.shared.db,
-            linkPreviewManager: DependenciesBridge.shared.linkPreviewManager,
+            linkPreviewFetcher: LinkPreviewFetcherImpl(
+                db: DependenciesBridge.shared.db,
+                groupsV2: NSObject.groupsV2,
+                linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore
+            ),
+            linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore,
             onlyParseIfEnabled: false,
             linkPreviewDraft: linkPreview
         )
         super.init()
-        self.linkPreviewFetcher.onStateChange = { [weak self] in self?.updateLinkPreview(animated: true) }
+        self.linkPreviewFetchState.onStateChange = { [weak self] in self?.updateLinkPreview(animated: true) }
     }
 
     private let linkPreviewPanel = LinkPreviewPanel()
@@ -93,7 +98,7 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
         textField.addTarget(self, action: #selector(textDidChange), for: .editingChanged)
         doneButton.addTarget(self, action: #selector(doneButtonPressed), for: .touchUpInside)
 
-        if let initialLinkPreview = linkPreviewFetcher.linkPreviewDraftIfLoaded {
+        if let initialLinkPreview = linkPreviewFetchState.linkPreviewDraftIfLoaded {
             textField.text = initialLinkPreview.urlString
         }
 
@@ -140,7 +145,7 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
     @objc
     private func textDidChange() {
         let text = textField.text ?? ""
-        linkPreviewFetcher.update(
+        linkPreviewFetchState.update(
             MessageBody(text: text, ranges: .empty),
             prependSchemeIfNeeded: true
         )
@@ -203,7 +208,7 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
 
     private func updateLinkPreview(animated: Bool) {
         let newState: LinkPreviewPanel.State
-        switch (linkPreviewFetcher.currentState, linkPreviewFetcher.currentUrl) {
+        switch (linkPreviewFetchState.currentState, linkPreviewFetchState.currentUrl) {
         case (.none, _):
             newState = .placeholder
         case (.loading, _):

@@ -33,7 +33,7 @@ final class MessageBackupAccountDataTest: MessageBackupIntegrationTestCase {
             XCTAssertTrue(receiptManager.areReadReceiptsEnabled(transaction: sdsTx))
             XCTAssertTrue(preferences.shouldShowUnidentifiedDeliveryIndicators(transaction: sdsTx))
             XCTAssertTrue(typingIndicatorsImpl.areTypingIndicatorsEnabled())
-            XCTAssertFalse(SSKPreferences.areLinkPreviewsEnabled(transaction: sdsTx))
+            XCTAssertFalse(deps.linkPreviewSettingStore.areLinkPreviewsEnabled(tx: tx))
             XCTAssertEqual(deps.phoneNumberDiscoverabilityManager.phoneNumberDiscoverability(tx: tx), .nobody)
             XCTAssertTrue(SSKPreferences.preferContactAvatars(transaction: sdsTx))
             let universalExpireConfig = deps.disappearingMessagesConfigurationStore.fetch(for: .universal, tx: tx)

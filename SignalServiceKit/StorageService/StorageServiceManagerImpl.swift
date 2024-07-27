@@ -1564,6 +1564,7 @@ class StorageServiceOperation: OWSOperation {
                 dmConfigurationStore: DependenciesBridge.shared.disappearingMessagesConfigurationStore,
                 groupsV2: groupsV2,
                 legacyChangePhoneNumber: legacyChangePhoneNumber,
+                linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore,
                 localUsernameManager: DependenciesBridge.shared.localUsernameManager,
                 paymentsHelper: paymentsHelperSwift,
                 phoneNumberDiscoverabilityManager: DependenciesBridge.shared.phoneNumberDiscoverabilityManager,
