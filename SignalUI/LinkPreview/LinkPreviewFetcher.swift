@@ -26,18 +26,24 @@ class MockLinkPreviewFetcher: LinkPreviewFetcher {
 #endif
 
 public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
+    private let authCredentialManager: any AuthCredentialManager
     private let db: any DB
     private let groupsV2: any GroupsV2
     private let linkPreviewSettingStore: LinkPreviewSettingStore
+    private let tsAccountManager: any TSAccountManager
 
     public init(
+        authCredentialManager: any AuthCredentialManager,
         db: any DB,
         groupsV2: any GroupsV2,
-        linkPreviewSettingStore: LinkPreviewSettingStore
+        linkPreviewSettingStore: LinkPreviewSettingStore,
+        tsAccountManager: any TSAccountManager
     ) {
+        self.authCredentialManager = authCredentialManager
         self.db = db
         self.groupsV2 = groupsV2
         self.linkPreviewSettingStore = linkPreviewSettingStore
+        self.tsAccountManager = tsAccountManager
     }
 
     public func fetchLinkPreview(for url: URL) async throws -> OWSLinkPreviewDraft {
@@ -51,6 +57,10 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
             linkPreviewDraft = try await self.linkPreviewDraft(forStickerShare: url)
         } else if GroupManager.isPossibleGroupInviteLink(url) {
             linkPreviewDraft = try await self.linkPreviewDraft(forGroupInviteLink: url)
+        } else if let callLink = CallLink(url: url) {
+            let (linkName, linkDescription) = try await self.linkNameAndDescription(forCallLink: callLink)
+            linkPreviewDraft = OWSLinkPreviewDraft(url: url, title: linkName)
+            linkPreviewDraft.previewDescription = linkDescription
         } else {
             linkPreviewDraft = try await self.fetchLinkPreview(forGenericUrl: url)
         }
@@ -289,6 +299,21 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
             title: groupInviteLinkPreview.title,
             imageData: previewThumbnail?.imageData,
             imageMimeType: previewThumbnail?.mimetype
+        )
+    }
+
+    // MARK: - Call Links
+
+    private func linkNameAndDescription(forCallLink callLink: CallLink) async throws -> (String, String) {
+        let localIdentifiers = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!
+        let authCredential = try await authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: localIdentifiers)
+        let callLinkState = try await CallLinkFetcherImpl().readCallLink(callLink.rootKey, authCredential: authCredential)
+        return (
+            callLinkState.localizedName,
+            OWSLocalizedString(
+                "CALL_LINK_LINK_PREVIEW_DESCRIPTION",
+                comment: "Shown in a message bubble when you send a call link in a Signal chat"
+            )
         )
     }
 }

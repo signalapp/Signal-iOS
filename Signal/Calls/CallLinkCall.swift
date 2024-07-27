@@ -6,16 +6,17 @@
 import Foundation
 import SignalRingRTC
 import SignalServiceKit
+import SignalUI
 
 final class CallLinkCall: Signal.GroupCall {
     let callLink: CallLink
     let adminPasskey: Data?
-    let callLinkState: CallLinkState
+    let callLinkState: SignalUI.CallLinkState
 
     init(
         callLink: CallLink,
         adminPasskey: Data?,
-        callLinkState: CallLinkState,
+        callLinkState: SignalUI.CallLinkState,
         ringRtcCall: SignalRingRTC.GroupCall,
         videoCaptureController: VideoCaptureController
     ) {
@@ -31,16 +32,5 @@ final class CallLinkCall: Signal.GroupCall {
 
     var mayNeedToAskToJoin: Bool {
         return callLinkState.requiresAdminApproval && adminPasskey == nil
-    }
-
-    var localizedName: String {
-        return self.callLinkState.name ?? Self.defaultLocalizedName
-    }
-
-    static var defaultLocalizedName: String {
-        return OWSLocalizedString(
-            "SIGNAL_CALL",
-            comment: "Shown in the header when the user hasn't provided a custom name for a call."
-        )
     }
 }

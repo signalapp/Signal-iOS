@@ -35,6 +35,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     let individualCallService: IndividualCallService
     let groupCallRemoteVideoManager: GroupCallRemoteVideoManager
     let callLinkManager: CallLinkManagerImpl
+    let callLinkFetcher: CallLinkFetcherImpl
 
     /// Needs to be lazily initialized, because it uses singletons that are not
     /// available when this class is initialized.
@@ -92,6 +93,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
         self.groupCallRemoteVideoManager = GroupCallRemoteVideoManager(
             callServiceState: self.callServiceState
         )
+        self.callLinkFetcher = CallLinkFetcherImpl()
         self.callLinkManager = CallLinkManagerImpl(
             networkManager: networkManager,
             serverParams: callLinkPublicParams,
@@ -534,7 +536,7 @@ final class CallService: CallServiceStateObserver, CallServiceStateDelegate {
     func buildAndConnectCallLinkCall(callLink: CallLink) async throws -> (SignalCall, CallLinkCall)? {
         let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!
         let authCredential = try await authCredentialManager.fetchCallLinkAuthCredential(localIdentifiers: localIdentifiers)
-        let callLinkState = try await callLinkManager.readCallLink(callLink.rootKey, authCredential: authCredential)
+        let callLinkState = try await callLinkFetcher.readCallLink(callLink.rootKey, authCredential: authCredential)
         return _buildAndConnectGroupCall(isOutgoingVideoMuted: false) { () -> (SignalCall, CallLinkCall)? in
             // [CallLink] TODO: Provide adminPasskey.
             let videoCaptureController = VideoCaptureController()

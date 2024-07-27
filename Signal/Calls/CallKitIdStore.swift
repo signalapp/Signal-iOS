@@ -6,6 +6,7 @@
 import Foundation
 import SignalRingRTC
 import SignalServiceKit
+import SignalUI
 
 class CallKitIdStore {
     private static let phoneNumberStore = SDSKeyValueStore(collection: "TSStorageManagerCallKitIdToPhoneNumberCollection")

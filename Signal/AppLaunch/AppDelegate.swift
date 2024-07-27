@@ -361,15 +361,17 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             notificationPresenter: NotificationPresenterImpl()
         )
         setupNSEInteroperation()
-        SUIEnvironment.shared.setup()
-        AppEnvironment.shared.setUp(callService: CallService(
-            appContext: launchContext.appContext,
-            authCredentialManager: databaseContinuation.authCredentialManager,
-            callLinkPublicParams: databaseContinuation.callLinkPublicParams,
-            mutableCurrentCall: _currentCall,
-            networkManager: NSObject.networkManager,
-            tsAccountManager: DependenciesBridge.shared.tsAccountManager
-        ))
+        SUIEnvironment.shared.setUp(authCredentialManager: databaseContinuation.authCredentialManager)
+        AppEnvironment.shared.setUp(
+            callService: CallService(
+                appContext: launchContext.appContext,
+                authCredentialManager: databaseContinuation.authCredentialManager,
+                callLinkPublicParams: databaseContinuation.callLinkPublicParams,
+                mutableCurrentCall: _currentCall,
+                networkManager: NSObject.networkManager,
+                tsAccountManager: DependenciesBridge.shared.tsAccountManager
+            )
+        )
         let result = databaseContinuation.prepareDatabase()
         return result.map(on: SyncScheduler()) { ($0, sleepBlockObject) }
     }

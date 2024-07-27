@@ -5,7 +5,7 @@
 
 import XCTest
 
-@testable import Signal
+@testable import SignalUI
 
 final class CallLinkTest: XCTestCase {
     private func parse(_ urlString: String) -> CallLink? {

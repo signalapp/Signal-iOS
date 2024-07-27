@@ -53,11 +53,7 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
         self.initialMessageBody = messageBody
         self.linkPreviewFetchState = LinkPreviewFetchState(
             db: DependenciesBridge.shared.db,
-            linkPreviewFetcher: LinkPreviewFetcherImpl(
-                db: DependenciesBridge.shared.db,
-                groupsV2: NSObject.groupsV2,
-                linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore
-            ),
+            linkPreviewFetcher: SUIEnvironment.shared.linkPreviewFetcher,
             linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore
         )
 

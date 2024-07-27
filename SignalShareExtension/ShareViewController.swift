@@ -95,7 +95,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         )
 
         // Configure the rest of the globals before preparing the database.
-        SUIEnvironment.shared.setup()
+        SUIEnvironment.shared.setUp(authCredentialManager: databaseContinuation.authCredentialManager)
 
         databaseContinuation.prepareDatabase().done(on: DispatchQueue.main) { finalContinuation in
             switch finalContinuation.finish(willResumeInProgressRegistration: false) {

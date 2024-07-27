@@ -7,7 +7,7 @@ import Foundation
 import SignalRingRTC
 import SignalServiceKit
 
-struct CallLink {
+public struct CallLink {
     // MARK: -
 
     private enum Constants {
@@ -20,17 +20,17 @@ struct CallLink {
 
     // MARK: -
 
-    let rootKey: CallLinkRootKey
+    public let rootKey: CallLinkRootKey
 
-    init(rootKey: CallLinkRootKey) {
+    public init(rootKey: CallLinkRootKey) {
         self.rootKey = rootKey
     }
 
     /// Parses a URL of the form: https://signal.link/call/#key=value
-    init?(url: URL) {
+    public init?(url: URL) {
         guard
             var components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-            components.scheme == Constants.scheme || components.scheme == UrlOpener.Constants.sgnlPrefix,
+            components.scheme == Constants.scheme || components.scheme == "sgnl",
             components.user == nil,
             components.password == nil,
             components.host == Constants.host,
@@ -53,12 +53,12 @@ struct CallLink {
         self.init(rootKey: rootKey)
     }
 
-    static func generate() -> CallLink {
+    public static func generate() -> CallLink {
         let rootKey = CallLinkRootKey.generate()
         return CallLink(rootKey: rootKey)
     }
 
-    func url() -> URL {
+    public func url() -> URL {
         var components = URLComponents()
         components.scheme = Constants.scheme
         components.host = Constants.host

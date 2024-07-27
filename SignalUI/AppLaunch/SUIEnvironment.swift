@@ -31,14 +31,26 @@ public class SUIEnvironment: NSObject {
 
     public var paymentsRef: Payments = PaymentsImpl()
 
+    private(set) public var linkPreviewFetcher: (any LinkPreviewFetcher)!
+
     private override init() {
         super.init()
 
         SwiftSingletons.register(self)
     }
 
-    public func setup() {
+    public func setUp(
+        authCredentialManager: any AuthCredentialManager
+    ) {
         registerCustomFonts()
+
+        self.linkPreviewFetcher = LinkPreviewFetcherImpl(
+            authCredentialManager: authCredentialManager,
+            db: DependenciesBridge.shared.db,
+            groupsV2: NSObject.groupsV2,
+            linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore,
+            tsAccountManager: DependenciesBridge.shared.tsAccountManager
+        )
     }
 
     private func registerCustomFonts() {

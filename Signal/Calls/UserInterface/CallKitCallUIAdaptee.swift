@@ -122,9 +122,9 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             )
         case .callLink(let call):
             if showNamesOnCallScreen {
-                return call.localizedName
+                return call.callLinkState.localizedName
             }
-            return CallLinkCall.defaultLocalizedName
+            return CallLinkState.defaultLocalizedName
         }
     }
 

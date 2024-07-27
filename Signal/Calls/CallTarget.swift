@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalServiceKit
+import SignalUI
 
 enum CallTarget {
     case individual(TSContactThread)

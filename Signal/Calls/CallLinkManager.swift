@@ -7,9 +7,10 @@ import Foundation
 import LibSignalClient
 import SignalRingRTC
 import SignalServiceKit
+import SignalUI
 
 protocol CallLinkManager {
-    func createCallLink(rootKey: CallLinkRootKey) async throws -> CallLinkState
+    func createCallLink(rootKey: CallLinkRootKey) async throws -> SignalUI.CallLinkState
 }
 
 class CallLinkManagerImpl: CallLinkManager {
@@ -58,7 +59,7 @@ class CallLinkManagerImpl: CallLinkManager {
         return try credentialRequestContext.receive(credentialResponse, userId: localAci, params: self.serverParams)
     }
 
-    func createCallLink(rootKey: CallLinkRootKey) async throws -> CallLinkState {
+    func createCallLink(rootKey: CallLinkRootKey) async throws -> SignalUI.CallLinkState {
         let roomId = rootKey.deriveRoomId()
         let localIdentifiers = self.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!
         let sfuUrl = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
@@ -74,34 +75,5 @@ class CallLinkManagerImpl: CallLinkManager {
             adminPasskey: adminPasskey,
             callLinkPublicParams: publicParams.serialize()
         ).unwrap())
-    }
-
-    func readCallLink(
-        _ rootKey: CallLinkRootKey,
-        authCredential: SignalServiceKit.CallLinkAuthCredential
-    ) async throws -> CallLinkState {
-        let sfuUrl = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
-        let secretParams = CallLinkSecretParams.deriveFromRootKey(rootKey.bytes)
-        let authCredentialPresentation = authCredential.present(callLinkParams: secretParams)
-        return CallLinkState(try await self.sfuClient.readCallLink(
-            sfuUrl: sfuUrl,
-            authCredentialPresentation: authCredentialPresentation.serialize(),
-            linkRootKey: rootKey
-        ).unwrap())
-    }
-}
-
-private struct SFUError: Error {
-    let rawValue: UInt16
-}
-
-private extension SFUResult {
-    func unwrap() throws -> Value {
-        switch self {
-        case .success(let value):
-            return value
-        case .failure(let errorCode):
-            throw SFUError(rawValue: errorCode)
-        }
     }
 }

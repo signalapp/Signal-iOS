@@ -20,11 +20,7 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
     init(_ linkPreview: OWSLinkPreviewDraft? = nil) {
         self.linkPreviewFetchState = LinkPreviewFetchState(
             db: DependenciesBridge.shared.db,
-            linkPreviewFetcher: LinkPreviewFetcherImpl(
-                db: DependenciesBridge.shared.db,
-                groupsV2: NSObject.groupsV2,
-                linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore
-            ),
+            linkPreviewFetcher: SUIEnvironment.shared.linkPreviewFetcher,
             linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore,
             onlyParseIfEnabled: false,
             linkPreviewDraft: linkPreview

@@ -512,7 +512,7 @@ class CallHeader: UIView {
                 contactsManager.displayName(for: groupThreadCall.groupThread, transaction: transaction)
             }
         case .callLink(let call):
-            return call.localizedName
+            return call.callLinkState.localizedName
         }
     }
 

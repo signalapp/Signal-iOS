@@ -11,6 +11,19 @@ public protocol AuthCredentialManager {
     func fetchCallLinkAuthCredential(localIdentifiers: LocalIdentifiers) async throws -> CallLinkAuthCredential
 }
 
+#if TESTABLE_BUILD
+
+class MockAuthCrededentialManager: AuthCredentialManager {
+    func fetchGroupAuthCredential(localIdentifiers: LocalIdentifiers) async throws -> AuthCredentialWithPni {
+        throw OWSGenericError("Not implemented.")
+    }
+    func fetchCallLinkAuthCredential(localIdentifiers: LocalIdentifiers) async throws -> CallLinkAuthCredential {
+        throw OWSGenericError("Not implemented.")
+    }
+}
+
+#endif
+
 class AuthCredentialManagerImpl: AuthCredentialManager {
     private let authCredentialStore: AuthCredentialStore
     private let callLinkPublicParams: GenericServerPublicParams
