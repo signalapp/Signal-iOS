@@ -13,8 +13,24 @@ public enum AttachmentFeatureFlags {
     public static let readStories = true
     public static let writeStories = true
 
-    public static let readMessages = false
-    public static let writeMessages = false
+    public static var readMessages: Bool {
+        FeatureFlags.v2MessageAttachmentsForceEnable
+            || UserDefaults.standard.bool(forKey: enableForMessagesKey)
+    }
+    public static var writeMessages: Bool {
+        FeatureFlags.v2MessageAttachmentsForceEnable
+            || UserDefaults.standard.bool(forKey: enableForMessagesKey)
+    }
 
-    public static let incrementalMigration = false
+    public static var incrementalMigration: Bool {
+        FeatureFlags.v2MessageAttachmentsForceEnable
+            || UserDefaults.standard.bool(forKey: enableForMessagesKey)
+    }
+
+    private static let enableForMessagesKey = "AttachmentFeatureFlags_enableForMessages"
+
+    public static func enableV2ForMessages() {
+        guard FeatureFlags.v2MessageAttachmentsToggle else { return }
+        UserDefaults.standard.set(true, forKey: enableForMessagesKey)
+    }
 }
