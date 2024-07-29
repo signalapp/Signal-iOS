@@ -34,6 +34,10 @@ const InfoMessageUserInfoKey InfoMessageUserInfoKeyThreadMergePhoneNumber
     = @"InfoMessageUserInfoKeyThreadMergePhoneNumber";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeySessionSwitchoverPhoneNumber
     = @"InfoMessageUserInfoKeySessionSwitchoverPhoneNumber";
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyPhoneNumberDisplayNameBeforeLearningProfileName
+    = @"InfoMessageUserInfoKeyPhoneNumberDisplayNameBeforeLearningProfileName";
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyUsernameDisplayNameBeforeLearningProfileName
+    = @"InfoMessageUserInfoKeyUsernameDisplayNameBeforeLearningProfileName";
 
 NSUInteger TSInfoMessageSchemaVersion = 2;
 
@@ -324,6 +328,8 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         case TSInfoMessageReportedSpam:
             return OWSLocalizedString(
                 @"INFO_MESSAGE_REPORTED_SPAM", @"Shown when a user reports a conversation as spam.");
+        case TSInfoMessageLearnedProfileName:
+            return [self learnedProfileNameDescriptionWithTx:transaction];
     }
 
     OWSFailDebug(@"Unknown info message type");

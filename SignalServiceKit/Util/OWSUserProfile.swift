@@ -1120,6 +1120,8 @@ extension OWSUserProfile {
         tx: SDSAnyWriteTransaction,
         completion: (() -> Void)?
     ) {
+        let displayNameBeforeLearningProfileName = displayNameBeforeLearningProfileNameIfNecessary(tx: tx.asV2Read)
+
         let internalAddress = self.internalAddress
 
         if case .otherUser(let address) = internalAddress {
@@ -1193,6 +1195,20 @@ extension OWSUserProfile {
             )
         }
 
+        if
+            let displayNameBeforeLearningProfileName,
+            displayNameBeforeLearningProfileNameIfNecessary(tx: tx.asV2Read) == nil
+        {
+            /// We didn't have a pre-profile-key display name for this profile
+            /// before applying changes, but we do know. Insert an info message
+            /// to that effect.
+            TSInfoMessage.insertLearnedProfileNameMessage(
+                serviceId: displayNameBeforeLearningProfileName.serviceId,
+                displayNameBefore: displayNameBeforeLearningProfileName.displayName,
+                tx: tx.asV2Write
+            )
+        }
+
         updatePhoneNumberVisibilityIfNeeded(
             oldUserProfile: oldInstance,
             newUserProfile: newInstance,
@@ -1252,6 +1268,65 @@ extension OWSUserProfile {
                 )
             }
         }
+    }
+
+    private struct DisplayNameBeforeLearningProfileName {
+        let serviceId: ServiceId
+        let displayName: TSInfoMessage.DisplayNameBeforeLearningProfileName
+    }
+
+    /// Returns the display name for this profile if we have not yet learned the
+    /// profile key.
+    ///
+    /// - Note
+    /// This implementation deliberately avoids the typical `DisplayName`
+    /// calculation in `ContactManager`. See comments inline.
+    private func displayNameBeforeLearningProfileNameIfNecessary(
+        tx: any DBReadTransaction
+    ) -> DisplayNameBeforeLearningProfileName? {
+        guard givenName == nil else {
+            return nil
+        }
+
+        let signalServiceAddress: SignalServiceAddress
+        switch internalAddress {
+        case .localUser:
+            return nil
+        case .otherUser(let _address):
+            signalServiceAddress = _address
+        }
+
+        let usernameLookupManager = DependenciesBridge.shared.usernameLookupManager
+        let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
+
+        if
+            let aci = signalServiceAddress.serviceId as? Aci,
+            let username = usernameLookupManager.fetchUsername(forAci: aci, transaction: tx)
+        {
+            /// If we have their ACI and a username for that ACI, we'll prefer
+            /// it by the same "prefer ACI identifiers" rule we use elsewhere,
+            /// such as in thread merging.
+            return DisplayNameBeforeLearningProfileName(
+                serviceId: aci,
+                displayName: .username(username)
+            )
+        } else if
+            let serviceId = signalServiceAddress.serviceId,
+            let recipient = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx),
+            let phoneNumber = recipient.phoneNumber
+        {
+            /// We'll get here if this profile maps to one of your system
+            /// contacts, and we'll ignore the system contact name here. That's
+            /// also intentional, since we're interested in the display name
+            /// exclusively in the Signal ecosystem (i.e., not including names
+            /// the user brought with them, and that might change).
+            return DisplayNameBeforeLearningProfileName(
+                serviceId: serviceId,
+                displayName: .phoneNumber(phoneNumber.stringValue)
+            )
+        }
+
+        return nil
     }
 
     private func updatePhoneNumberVisibilityIfNeeded(

@@ -80,6 +80,7 @@ public enum ThemeIcon: UInt {
     case official
     case qrCode
     case qrCodeLight
+    case threadCompact
 
     case buttonCamera
     case buttonMicrophone
@@ -346,6 +347,8 @@ public extension Theme {
             return "qr_code"
         case .qrCodeLight:
             return "qr_code-light"
+        case .threadCompact:
+            return isDarkThemeEnabled ? "thread-compact-fill" : "thread-compact"
 
             // Buttons (24 dp)
         case .buttonCamera:

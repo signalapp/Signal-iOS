@@ -159,6 +159,8 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
                     context: context,
                     tx: tx
                 )
+            case .learnedProfileName:
+                return .notYetImplemented
             }
         } else if let errorMessage = interaction as? TSErrorMessage {
             /// All `TSErrorMessage`s map to simple chat updates.

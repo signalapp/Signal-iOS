@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "thread-fill-20.pdf",
+      "filename" : "thread-fill.pdf",
       "idiom" : "universal"
     }
   ],
@@ -10,6 +10,7 @@
     "version" : 1
   },
   "properties" : {
+    "preserves-vector-representation" : true,
     "template-rendering-intent" : "template"
   }
 }
