@@ -59,7 +59,8 @@ extension UIImage {
         }
 
         Logger.warn("Loading non-jpeg, non-png image into memory")
-        let data = try Cryptography.decryptFile(
+        // hmac and digest are validated at download time; no need to revalidate every read.
+        let data = try Cryptography.decryptFileWithoutValidating(
             at: fileURL,
             metadata: .init(
                 key: encryptionKey,

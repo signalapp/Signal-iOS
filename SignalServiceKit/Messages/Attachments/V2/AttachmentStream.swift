@@ -112,7 +112,8 @@ public class AttachmentStream {
         } else {
             tmpURL = OWSFileSystem.temporaryFileUrl(fileExtension: pathExtension)
         }
-        try Cryptography.decryptAttachment(
+        // hmac and digest are validated at download time; no need to revalidate every read.
+        try Cryptography.decryptFileWithoutValidating(
             at: fileURL,
             metadata: EncryptionMetadata(
                 key: attachment.encryptionKey,
@@ -127,11 +128,9 @@ public class AttachmentStream {
     // MARK: - Accessing file data
 
     public func decryptedRawData() throws -> Data {
-        // If we are about to read the whole thing into memory anyway,
-        // its much more efficient to do decryption in memory.
-        let encryptedData = try Data(contentsOf: fileURL, options: .mappedIfSafe)
-        return try Cryptography.decryptWithoutValidating(
-            encryptedData,
+        // hmac and digest are validated at download time; no need to revalidate every read.
+        return try Cryptography.decryptFileWithoutValidating(
+            at: fileURL,
             metadata: .init(
                 key: attachment.encryptionKey,
                 length: Int(info.encryptedByteCount),

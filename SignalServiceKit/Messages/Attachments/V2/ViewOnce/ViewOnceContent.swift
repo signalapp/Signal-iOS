@@ -67,7 +67,8 @@ public class ViewOnceContent {
     }
 
     public func loadYYImage() throws -> YYImage {
-        let data = try Cryptography.decryptFile(
+        // hmac and digest are validated at download time; no need to revalidate every read.
+        let data = try Cryptography.decryptFileWithoutValidating(
             at: fileUrl,
             metadata: .init(
                 key: encryptionKey,

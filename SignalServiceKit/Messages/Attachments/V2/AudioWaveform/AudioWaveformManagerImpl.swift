@@ -44,7 +44,8 @@ public class AudioWaveformManagerImpl: AudioWaveformManager {
                     let fileURL = AttachmentStream.absoluteAttachmentFileURL(
                         relativeFilePath: relativeWaveformFilePath
                     )
-                    let data = try Cryptography.decryptFile(
+                    // waveform is validated at creation time; no need to revalidate every read.
+                    let data = try Cryptography.decryptFileWithoutValidating(
                         at: fileURL,
                         metadata: .init(
                             key: encryptionKey
