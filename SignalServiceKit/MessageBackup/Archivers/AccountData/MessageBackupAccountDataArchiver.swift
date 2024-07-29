@@ -4,7 +4,7 @@
 //
 
 extension MessageBackup {
-    /// An identifier for the ``BackupProto.AccountData`` backup frame.
+    /// An identifier for the ``BackupProto_AccountData`` backup frame.
     ///
     /// Uses a singleton pattern, as there is only ever one account data frame
     /// in a backup.
@@ -15,7 +15,7 @@ extension MessageBackup {
 
         // MARK: MessageBackupLoggableId
 
-        public var typeLogString: String { "BackupProto.AccountData" }
+        public var typeLogString: String { "BackupProto_AccountData" }
         public var idLogString: String { "localUser" }
     }
 
@@ -24,7 +24,7 @@ extension MessageBackup {
 }
 
 /**
- * Archives the ``BackupProto.AccountData`` frame
+ * Archives the ``BackupProto_AccountData`` frame
  */
 public protocol MessageBackupAccountDataArchiver: MessageBackupProtoArchiver {
     func archiveAccountData(
@@ -33,7 +33,7 @@ public protocol MessageBackupAccountDataArchiver: MessageBackupProtoArchiver {
     ) -> MessageBackup.ArchiveAccountDataResult
 
     func restore(
-        _ accountData: BackupProto.AccountData,
+        _ accountData: BackupProto_AccountData,
         tx: DBWriteTransaction
     ) -> MessageBackup.RestoreAccountDataResult
 }
@@ -102,18 +102,19 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
             return .failure(.archiveFrameError(.missingLocalProfileKey, .localUser))
         }
 
-        var accountData = BackupProto.AccountData(
-            profileKey: profileKeyData,
-            givenName: localProfile.givenName ?? "",
-            familyName: localProfile.familyName ?? "",
-            avatarUrlPath: localProfile.avatarUrlPath ?? ""
-        )
+        var accountData = BackupProto_AccountData()
+        accountData.profileKey = profileKeyData
+        accountData.givenName = localProfile.givenName ?? ""
+        accountData.familyName = localProfile.familyName ?? ""
+        accountData.avatarURLPath = localProfile.avatarUrlPath ?? ""
+
         if let donationSubscriberId = subscriptionManager.getSubscriberID(tx: tx) {
-            accountData.donationSubscriberData = BackupProto.AccountData.SubscriberData(
-                subscriberId: donationSubscriberId,
-                currencyCode: subscriptionManager.getSubscriberCurrencyCode(tx: tx) ?? "",
-                manuallyCancelled: subscriptionManager.userManuallyCancelledSubscription(tx: tx)
-            )
+            var donationSubscriberData = BackupProto_AccountData.SubscriberData()
+            donationSubscriberData.subscriberID = donationSubscriberId
+            donationSubscriberData.currencyCode = subscriptionManager.getSubscriberCurrencyCode(tx: tx) ?? ""
+            donationSubscriberData.manuallyCancelled = subscriptionManager.userManuallyCancelledSubscription(tx: tx)
+
+            accountData.donationSubscriberData = donationSubscriberData
         }
 
         if let result = buildUsernameLinkProto(tx: tx) {
@@ -124,7 +125,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         accountData.accountSettings = buildAccountSettingsProto(tx: tx)
 
         let error = Self.writeFrameToStream(stream, objectId: MessageBackup.AccountDataId.localUser) {
-            var frame = BackupProto.Frame()
+            var frame = BackupProto_Frame()
             frame.item = .account(accountData)
             return frame
         }
@@ -136,20 +137,21 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         }
     }
 
-    private func buildUsernameLinkProto(tx: DBReadTransaction) -> (username: String, usernameLink: BackupProto.AccountData.UsernameLink)? {
+    private func buildUsernameLinkProto(tx: DBReadTransaction) -> (username: String, usernameLink: BackupProto_AccountData.UsernameLink)? {
         switch self.localUsernameManager.usernameState(tx: tx) {
         case .unset, .linkCorrupted, .usernameAndLinkCorrupted:
             return nil
         case .available(let username, let usernameLink):
-            return (username, BackupProto.AccountData.UsernameLink(
-                entropy: usernameLink.entropy,
-                serverId: usernameLink.handle.data,
-                color: localUsernameManager.usernameLinkQRCodeColor(tx: tx).backupProtoColor
-            ))
+            var usernameLinkProto = BackupProto_AccountData.UsernameLink()
+            usernameLinkProto.entropy = usernameLink.entropy
+            usernameLinkProto.serverID = usernameLink.handle.data
+            usernameLinkProto.color = localUsernameManager.usernameLinkQRCodeColor(tx: tx).backupProtoColor
+
+            return (username, usernameLinkProto)
         }
     }
 
-    private func buildAccountSettingsProto(tx: DBReadTransaction) -> BackupProto.AccountData.AccountSettings {
+    private func buildAccountSettingsProto(tx: DBReadTransaction) -> BackupProto_AccountData.AccountSettings {
 
         // Fetch all the account settings
         let readReceipts = receiptManager.areReadReceiptsEnabled(tx: tx)
@@ -169,30 +171,29 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         let storiesDisabled = storyManager.areStoriesEnabled(tx: tx).negated
         let hasSeenGroupStoryEducationSheet = systemStoryManager.hasSeenGroupStoryEducationSheet(tx: tx)
         let hasCompletedUsernameOnboarding = usernameEducationManager.shouldShowUsernameEducation(tx: tx).negated
-        let phoneNumberSharingMode: BackupProto.AccountData.PhoneNumberSharingMode = switch udManager.phoneNumberSharingMode(tx: tx) {
-        case .everybody: .EVERYBODY
-        case .nobody: .NOBODY
-        case .none: .UNKNOWN
+        let phoneNumberSharingMode: BackupProto_AccountData.PhoneNumberSharingMode = switch udManager.phoneNumberSharingMode(tx: tx) {
+        case .everybody: .everybody
+        case .nobody: .nobody
+        case .none: .unknown
         }
 
         // Populate the proto with the settings
-        var accountSettings = BackupProto.AccountData.AccountSettings(
-            readReceipts: readReceipts,
-            sealedSenderIndicators: sealedSenderIndicators,
-            typingIndicators: typingIndicatorsEnabled,
-            linkPreviews: linkPreviews,
-            notDiscoverableByPhoneNumber: notDiscoverableByPhoneNumber,
-            preferContactAvatars: preferContactAvatars,
-            universalExpireTimerSeconds: universalExpireTimerSeconds,
-            displayBadgesOnProfile: displayBadgesOnProfile,
-            keepMutedChatsArchived: keepMutedChatsArchived,
-            hasSetMyStoriesPrivacy: hasSetMyStoriesPrivacy,
-            hasViewedOnboardingStory: hasViewedOnboardingStory,
-            storiesDisabled: storiesDisabled,
-            hasSeenGroupStoryEducationSheet: hasSeenGroupStoryEducationSheet,
-            hasCompletedUsernameOnboarding: hasCompletedUsernameOnboarding,
-            phoneNumberSharingMode: phoneNumberSharingMode
-        )
+        var accountSettings = BackupProto_AccountData.AccountSettings()
+        accountSettings.readReceipts = readReceipts
+        accountSettings.sealedSenderIndicators = sealedSenderIndicators
+        accountSettings.typingIndicators = typingIndicatorsEnabled
+        accountSettings.linkPreviews = linkPreviews
+        accountSettings.notDiscoverableByPhoneNumber = notDiscoverableByPhoneNumber
+        accountSettings.preferContactAvatars = preferContactAvatars
+        accountSettings.universalExpireTimerSeconds = universalExpireTimerSeconds
+        accountSettings.displayBadgesOnProfile = displayBadgesOnProfile
+        accountSettings.keepMutedChatsArchived = keepMutedChatsArchived
+        accountSettings.hasSetMyStoriesPrivacy_p = hasSetMyStoriesPrivacy
+        accountSettings.hasViewedOnboardingStory_p = hasViewedOnboardingStory
+        accountSettings.storiesDisabled = storiesDisabled
+        accountSettings.hasSeenGroupStoryEducationSheet_p = hasSeenGroupStoryEducationSheet
+        accountSettings.hasCompletedUsernameOnboarding_p = hasCompletedUsernameOnboarding
+        accountSettings.phoneNumberSharingMode = phoneNumberSharingMode
         accountSettings.preferredReactionEmoji = reactionManager.customEmojiSet(tx: tx) ?? []
         accountSettings.storyViewReceiptsEnabled = storyManager.areViewReceiptsEnabled(tx: tx)
         // TODO: [Backups] Archive default chat style
@@ -202,7 +203,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
     }
 
     public func restore(
-        _ accountData: BackupProto.AccountData,
+        _ accountData: BackupProto_AccountData,
         tx: DBWriteTransaction
     ) -> MessageBackup.RestoreAccountDataResult {
         guard let profileKey = OWSAES256Key(data: accountData.profileKey) else {
@@ -217,20 +218,22 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         profileManager.insertLocalUserProfile(
             givenName: accountData.givenName,
             familyName: accountData.familyName.nilIfEmpty,
-            avatarUrlPath: accountData.avatarUrlPath.nilIfEmpty,
+            avatarUrlPath: accountData.avatarURLPath.nilIfEmpty,
             profileKey: profileKey,
             tx: tx
         )
 
         // Restore donation subscription data, if present.
-        if let donationSubscriberData = accountData.donationSubscriberData {
-            subscriptionManager.setSubscriberID(subscriberID: donationSubscriberData.subscriberId, tx: tx)
+        if accountData.hasDonationSubscriberData {
+            let donationSubscriberData = accountData.donationSubscriberData
+            subscriptionManager.setSubscriberID(subscriberID: donationSubscriberData.subscriberID, tx: tx)
             subscriptionManager.setSubscriberCurrencyCode(currencyCode: donationSubscriberData.currencyCode, tx: tx)
             subscriptionManager.setUserManuallyCancelledSubscription(value: donationSubscriberData.manuallyCancelled, tx: tx)
         }
 
         // Restore local settings
-        if let settings = accountData.accountSettings {
+        if accountData.hasAccountSettings {
+            let settings = accountData.accountSettings
             receiptManager.setAreReadReceiptsEnabled(value: settings.readReceipts, tx: tx)
             preferences.setShouldShowUnidentifiedDeliveryIndicators(value: settings.sealedSenderIndicators, tx: tx)
             typingIndicators.setTypingIndicatorsEnabled(value: settings.typingIndicators, tx: tx)
@@ -256,22 +259,22 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
             }
             subscriptionManager.setDisplayBadgesOnProfile(value: settings.displayBadgesOnProfile, tx: tx)
             sskPreferences.setShouldKeepMutedChatsArchived(value: settings.keepMutedChatsArchived, tx: tx)
-            storyManager.setHasSetMyStoriesPrivacy(value: settings.hasSetMyStoriesPrivacy, tx: tx)
-            systemStoryManager.setHasViewedOnboardingStory(value: settings.hasViewedOnboardingStory, tx: tx)
+            storyManager.setHasSetMyStoriesPrivacy(value: settings.hasSetMyStoriesPrivacy_p, tx: tx)
+            systemStoryManager.setHasViewedOnboardingStory(value: settings.hasViewedOnboardingStory_p, tx: tx)
             storyManager.setAreStoriesEnabled(value: settings.storiesDisabled.negated, tx: tx)
-            if let storyViewReceiptsEnabled = settings.storyViewReceiptsEnabled {
-                storyManager.setAreViewReceiptsEnabled(value: storyViewReceiptsEnabled, tx: tx)
+            if settings.hasStoryViewReceiptsEnabled {
+                storyManager.setAreViewReceiptsEnabled(value: settings.storyViewReceiptsEnabled, tx: tx)
             }
-            systemStoryManager.setHasSeenGroupStoryEducationSheet(value: settings.hasSeenGroupStoryEducationSheet, tx: tx)
-            usernameEducationManager.setShouldShowUsernameEducation(settings.hasCompletedUsernameOnboarding.negated, tx: tx)
+            systemStoryManager.setHasSeenGroupStoryEducationSheet(value: settings.hasSeenGroupStoryEducationSheet_p, tx: tx)
+            usernameEducationManager.setShouldShowUsernameEducation(settings.hasCompletedUsernameOnboarding_p.negated, tx: tx)
             udManager.setPhoneNumberSharingMode(
                 mode: { () -> PhoneNumberSharingMode in
                     switch settings.phoneNumberSharingMode {
-                    case .UNKNOWN:
+                    case .unknown, .UNRECOGNIZED:
                         return .defaultValue
-                    case .EVERYBODY:
+                    case .everybody:
                         return .everybody
-                    case .NOBODY:
+                    case .nobody:
                         return .nobody
                     }
                 }(),
@@ -282,19 +285,20 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         }
 
         // Restore username details (username, link, QR color)
-        if let username = accountData.username, let usernameLink = accountData.usernameLink {
+        if accountData.hasUsername, accountData.hasUsernameLink {
+            let username = accountData.username
+            let usernameLink = accountData.usernameLink
+
             if
-                let handle = UUID(data: usernameLink.serverId),
+                let handle = UUID(data: usernameLink.serverID),
                 let linkData = Usernames.UsernameLink(handle: handle, entropy: usernameLink.entropy)
             {
                 localUsernameManager.setLocalUsername(username: username, usernameLink: linkData, tx: tx)
             } else {
                 return .failure([.restoreFrameError(.invalidProtoData(.invalidLocalUsernameLink), .localUser)])
             }
-        }
 
-        if let color = accountData.usernameLink?.color {
-            localUsernameManager.setUsernameLinkQRCodeColor(color: color.qrCodeColor, tx: tx)
+            localUsernameManager.setUsernameLinkQRCodeColor(color: usernameLink.color.qrCodeColor, tx: tx)
         }
 
         return .success
@@ -302,32 +306,32 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
 }
 
 private extension Usernames.QRCodeColor {
-    var backupProtoColor: BackupProto.AccountData.UsernameLink.Color {
+    var backupProtoColor: BackupProto_AccountData.UsernameLink.Color {
         switch self {
-        case .blue: return .BLUE
-        case .white: return .WHITE
-        case .grey: return .GREY
-        case .olive: return .OLIVE
-        case .green: return .GREEN
-        case .orange: return .ORANGE
-        case .pink: return .PINK
-        case .purple: return .PURPLE
+        case .blue: return .blue
+        case .white: return .white
+        case .grey: return .grey
+        case .olive: return .olive
+        case .green: return .green
+        case .orange: return .orange
+        case .pink: return .pink
+        case .purple: return .purple
         }
     }
 }
 
-private extension BackupProto.AccountData.UsernameLink.Color {
+private extension BackupProto_AccountData.UsernameLink.Color {
     var qrCodeColor: Usernames.QRCodeColor {
         switch self {
-        case .BLUE: return .blue
-        case .WHITE: return .white
-        case .GREY: return .grey
-        case .OLIVE: return .olive
-        case .GREEN: return .green
-        case .ORANGE: return .orange
-        case .PINK: return .pink
-        case .PURPLE: return .purple
-        case .UNKNOWN: return .unknown
+        case .blue: return .blue
+        case .white: return .white
+        case .grey: return .grey
+        case .olive: return .olive
+        case .green: return .green
+        case .orange: return .orange
+        case .pink: return .pink
+        case .purple: return .purple
+        case .unknown, .UNRECOGNIZED: return .unknown
         }
     }
 }

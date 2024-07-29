@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Wire
-
 extension MessageBackup {
     public enum ProtoOutputStreamWriteResult {
         case success
@@ -29,10 +27,10 @@ public protocol MessageBackupProtoOutputStream {
     /// Write a header (BakckupInfo) to the backup file.
     /// It is the caller's responsibility to ensure this is always written, and is the first thing written,
     /// in order to produce a valid backup file.
-    func writeHeader(_ header: BackupProto.BackupInfo) -> MessageBackup.ProtoOutputStreamWriteResult
+    func writeHeader(_ header: BackupProto_BackupInfo) -> MessageBackup.ProtoOutputStreamWriteResult
 
     /// Write a frame to the backup file.
-    func writeFrame(_ frame: BackupProto.Frame) -> MessageBackup.ProtoOutputStreamWriteResult
+    func writeFrame(_ frame: BackupProto_Frame) -> MessageBackup.ProtoOutputStreamWriteResult
 
     /// Closes the output stream.
     func closeFileStream() throws
@@ -46,10 +44,10 @@ internal class MessageBackupProtoOutputStreamImpl: MessageBackupProtoOutputStrea
         self.outputStream = outputStream
     }
 
-    internal func writeHeader(_ header: BackupProto.BackupInfo) -> MessageBackup.ProtoOutputStreamWriteResult {
+    internal func writeHeader(_ header: BackupProto_BackupInfo) -> MessageBackup.ProtoOutputStreamWriteResult {
         let bytes: Data
         do {
-            bytes = try ProtoEncoder().encode(header)
+            bytes = try header.serializedData()
         } catch {
             return .protoSerializationError(error)
         }
@@ -61,10 +59,10 @@ internal class MessageBackupProtoOutputStreamImpl: MessageBackupProtoOutputStrea
         return .success
     }
 
-    internal func writeFrame(_ frame: BackupProto.Frame) -> MessageBackup.ProtoOutputStreamWriteResult {
+    internal func writeFrame(_ frame: BackupProto_Frame) -> MessageBackup.ProtoOutputStreamWriteResult {
         let bytes: Data
         do {
-            bytes = try ProtoEncoder().encode(frame)
+            bytes = try frame.serializedData()
         } catch {
             return .protoSerializationError(error)
         }

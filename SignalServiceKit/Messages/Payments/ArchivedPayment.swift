@@ -115,37 +115,41 @@ public struct ArchivedPayment: Codable, Hashable, FetchableRecord, PersistableRe
 }
 
 extension ArchivedPayment {
-    func toTransactionDetailsProto() -> BackupProto.PaymentNotification.TransactionDetails {
-        var transactionDetails = BackupProto.PaymentNotification.TransactionDetails()
+    func toTransactionDetailsProto() -> BackupProto_PaymentNotification.TransactionDetails {
+        var transactionDetails = BackupProto_PaymentNotification.TransactionDetails()
 
         if status.isFailure {
-            let reason: BackupProto.PaymentNotification.TransactionDetails.FailedTransaction.FailureReason = {
+            let reason: BackupProto_PaymentNotification.TransactionDetails.FailedTransaction.FailureReason = {
                 switch failureReason {
-                case .genericFailure: return .GENERIC
-                case .networkFailure: return .NETWORK
-                case .insufficientFundsFailure: return .INSUFFICIENT_FUNDS
+                case .genericFailure: return .generic
+                case .networkFailure: return .network
+                case .insufficientFundsFailure: return .insufficientFunds
                 case .none:
                     owsFailDebug("Invalid status for failure type")
-                    return .GENERIC
+                    return .generic
                 }
             }()
 
-            transactionDetails.payment = .failedTransaction(.init(reason: reason))
+            var failedTransaction = BackupProto_PaymentNotification.TransactionDetails.FailedTransaction()
+            failedTransaction.reason = reason
+
+            transactionDetails.payment = .failedTransaction(failedTransaction)
         } else {
-            let success: BackupProto.PaymentNotification.TransactionDetails.Transaction.Status = {
+            let success: BackupProto_PaymentNotification.TransactionDetails.Transaction.Status = {
                 switch status {
-                case .initial: return .INITIAL
-                case .submitted: return .SUBMITTED
-                case .successful: return .SUCCESSFUL
+                case .initial: return .initial
+                case .submitted: return .submitted
+                case .successful: return .successful
                 case .error:
                     owsFailDebug("Invalid status for success type")
-                    return .SUCCESSFUL
+                    return .successful
                 }
             }()
 
-            var transaction = BackupProto.PaymentNotification.TransactionDetails.Transaction(status: success)
+            var transaction = BackupProto_PaymentNotification.TransactionDetails.Transaction()
+            transaction.status = success
 
-            var identification = BackupProto.PaymentNotification.TransactionDetails.MobileCoinTxoIdentification()
+            var identification = BackupProto_PaymentNotification.TransactionDetails.MobileCoinTxoIdentification()
             if let keyImages = mobileCoinIdentification?.keyImages {
                 identification.keyImages = keyImages
             }
@@ -154,11 +158,11 @@ extension ArchivedPayment {
             }
             transaction.mobileCoinIdentification = identification
 
-            transaction.timestamp = timestamp
-            transaction.blockIndex = blockIndex
-            transaction.blockTimestamp = blockTimestamp
-            transaction.transaction = self.transaction
-            transaction.receipt = receipt
+            if let timestamp { transaction.timestamp = timestamp }
+            if let blockIndex { transaction.blockIndex = blockIndex }
+            if let blockTimestamp { transaction.blockIndex = blockTimestamp }
+            if let _transaction = self.transaction { transaction.transaction = _transaction }
+            if let receipt { transaction.receipt = receipt }
 
             transactionDetails.payment = .transaction(transaction)
         }

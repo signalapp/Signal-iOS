@@ -53,7 +53,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
         }
 
         let updateAuthor: UpdateAuthor
-        let updateType: BackupProto.SimpleChatUpdate.Type_
+        let updateType: BackupProto_SimpleChatUpdate.TypeEnum
 
         switch infoMessage.messageType {
         case
@@ -99,9 +99,9 @@ final class MessageBackupSimpleChatUpdateArchiver {
 
             switch verificationStateChangeMessage.verificationState {
             case .default, .defaultAcknowledged, .noLongerVerified:
-                updateType = .IDENTITY_DEFAULT
+                updateType = .identityDefault
             case .verified:
-                updateType = .IDENTITY_VERIFIED
+                updateType = .identityVerified
             }
         case .phoneNumberChange:
             guard let changedNumberUserAci = infoMessage.phoneNumberChangeInfo()?.aci else {
@@ -114,7 +114,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
             }
 
             updateAuthor = .precomputedRecipientId(recipientId)
-            updateType = .CHANGE_NUMBER
+            updateType = .changeNumber
         case .paymentsActivationRequest:
             switch infoMessage.paymentsActivationRequestAuthor(localIdentifiers: context.recipientContext.localIdentifiers) {
             case nil:
@@ -130,7 +130,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
                 updateAuthor = .precomputedRecipientId(authorRecipientId)
             }
 
-            updateType = .PAYMENT_ACTIVATION_REQUEST
+            updateType = .paymentActivationRequest
         case .paymentsActivated:
             switch infoMessage.paymentsActivatedAuthor(localIdentifiers: context.recipientContext.localIdentifiers) {
             case nil:
@@ -146,7 +146,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
                 updateAuthor = .precomputedRecipientId(authorRecipientId)
             }
 
-            updateType = .PAYMENTS_ACTIVATED
+            updateType = .paymentsActivated
         case .unknownProtocolVersion:
             guard let unknownProtocolVersionMessage = infoMessage as? OWSUnknownProtocolVersionMessage else {
                 return messageFailure(.unknownProtocolVersionNotExpectedSDSRecordType)
@@ -167,21 +167,21 @@ final class MessageBackupSimpleChatUpdateArchiver {
                 updateAuthor = .localUser
             }
 
-            updateType = .UNSUPPORTED_PROTOCOL_MESSAGE
+            updateType = .unsupportedProtocolMessage
         case .typeSessionDidEnd:
             // Only inserted for 1:1 threads.
             updateAuthor = .containingContactThread
-            updateType = .END_SESSION
+            updateType = .endSession
         case .userJoinedSignal:
             // Only inserted for 1:1 threads.
             updateAuthor = .containingContactThread
-            updateType = .JOINED_SIGNAL
+            updateType = .joinedSignal
         case .reportedSpam:
             // The reported-spam info message doesn't contain any info as to
             // what message we reported spam. Regardless, we were the one to
             // take this action, so we're the author.
             updateAuthor = .localUser
-            updateType = .REPORTED_SPAM
+            updateType = .reportedSpam
         }
 
         let updateAuthorRecipientId: MessageBackup.RecipientId
@@ -204,12 +204,15 @@ final class MessageBackupSimpleChatUpdateArchiver {
             updateAuthorRecipientId = context.recipientContext.localRecipientId
         }
 
-        var chatUpdateMessage = BackupProto.ChatUpdateMessage()
-        chatUpdateMessage.update = .simpleUpdate(BackupProto.SimpleChatUpdate(type: updateType))
+        var simpleChatUpdate = BackupProto_SimpleChatUpdate()
+        simpleChatUpdate.type = updateType
+
+        var chatUpdateMessage = BackupProto_ChatUpdateMessage()
+        chatUpdateMessage.update = .simpleUpdate(simpleChatUpdate)
 
         let interactionArchiveDetails = Details(
             author: updateAuthorRecipientId,
-            directionalDetails: .directionless(BackupProto.ChatItem.DirectionlessMessageDetails()),
+            directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,
@@ -237,7 +240,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
         }
 
         let updateAuthor: MessageBackup.ContactAddress
-        let updateType: BackupProto.SimpleChatUpdate.Type_
+        let updateType: BackupProto_SimpleChatUpdate.TypeEnum
 
         switch errorMessage.errorType {
         case .noSession:
@@ -265,7 +268,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
                 return messageFailure(.identityKeyChangeInteractionMissingAuthor)
             }
 
-            updateType = .IDENTITY_UPDATE
+            updateType = .identityUpdate
             updateAuthor = recipientAddress
         case .sessionRefresh:
             /// These can only happen in contact threads, not group threads.
@@ -278,7 +281,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
                 return messageFailure(.sessionRefreshInteractionMissingAuthor)
             }
 
-            updateType = .CHAT_SESSION_REFRESH
+            updateType = .chatSessionRefresh
             updateAuthor = recipientAddress
         case .decryptionFailure:
             /// This type of error message historically put the person who sent
@@ -287,7 +290,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
                 return messageFailure(.decryptionErrorInteractionMissingAuthor)
             }
 
-            updateType = .BAD_DECRYPT
+            updateType = .badDecrypt
             updateAuthor = recipientAddress
         }
 
@@ -295,12 +298,15 @@ final class MessageBackupSimpleChatUpdateArchiver {
             return messageFailure(.referencedRecipientIdMissing(.contact(updateAuthor)))
         }
 
-        var chatUpdateMessage = BackupProto.ChatUpdateMessage()
-        chatUpdateMessage.update = .simpleUpdate(BackupProto.SimpleChatUpdate(type: updateType))
+        var simpleChatUpdate = BackupProto_SimpleChatUpdate()
+        simpleChatUpdate.type = updateType
+
+        var chatUpdateMessage = BackupProto_ChatUpdateMessage()
+        chatUpdateMessage.update = .simpleUpdate(simpleChatUpdate)
 
         let interactionArchiveDetails = Details(
             author: updateAuthorRecipientId,
-            directionalDetails: .directionless(BackupProto.ChatItem.DirectionlessMessageDetails()),
+            directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,
@@ -313,8 +319,8 @@ final class MessageBackupSimpleChatUpdateArchiver {
     // MARK: -
 
     func restoreSimpleChatUpdate(
-        _ simpleChatUpdate: BackupProto.SimpleChatUpdate,
-        chatItem: BackupProto.ChatItem,
+        _ simpleChatUpdate: BackupProto_SimpleChatUpdate,
+        chatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: any DBWriteTransaction
@@ -340,11 +346,11 @@ final class MessageBackupSimpleChatUpdateArchiver {
         let simpleChatUpdateInteraction: SimpleChatUpdateInteraction
 
         switch simpleChatUpdate.type {
-        case .UNKNOWN:
+        case .unknown, .UNRECOGNIZED:
             return invalidProtoData(.unrecognizedSimpleChatUpdate)
-        case .JOINED_SIGNAL:
+        case .joinedSignal:
             simpleChatUpdateInteraction = .simpleInfoMessage(.userJoinedSignal)
-        case .IDENTITY_UPDATE:
+        case .identityUpdate:
             guard let verificationRecipient = context.recipientContext[chatItem.authorRecipientId] else {
                 return invalidProtoData(.recipientIdNotFound(chatItem.authorRecipientId))
             }
@@ -362,7 +368,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
                 // backup and it only affects the action shown for the message.
                 wasIdentityVerified: false
             ))
-        case .IDENTITY_VERIFIED, .IDENTITY_DEFAULT:
+        case .identityVerified, .identityDefault:
             guard let verificationRecipient = context.recipientContext[chatItem.authorRecipientId] else {
                 return invalidProtoData(.recipientIdNotFound(chatItem.authorRecipientId))
             }
@@ -371,8 +377,8 @@ final class MessageBackupSimpleChatUpdateArchiver {
             }
 
             let verificationState: OWSVerificationState = switch simpleChatUpdate.type {
-            case .IDENTITY_VERIFIED: .verified
-            case .IDENTITY_DEFAULT: .default
+            case .identityVerified: .verified
+            case .identityDefault: .default
             default: owsFail("Impossible: checked above.")
             }
 
@@ -387,7 +393,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
                 // message is displayed.
                 isLocalChange: true
             ))
-        case .CHANGE_NUMBER:
+        case .changeNumber:
             guard let verificationRecipient = context.recipientContext[chatItem.authorRecipientId] else {
                 return invalidProtoData(.recipientIdNotFound(chatItem.authorRecipientId))
             }
@@ -402,17 +408,17 @@ final class MessageBackupSimpleChatUpdateArchiver {
             changeNumberInfoMessage.setPhoneNumberChangeInfo(aci: aci, oldNumber: nil, newNumber: nil)
 
             simpleChatUpdateInteraction = .prebuiltInfoMessage(changeNumberInfoMessage)
-        case .RELEASE_CHANNEL_DONATION_REQUEST:
+        case .releaseChannelDonationRequest:
             // TODO: [Backups] Add support (and a test case!) for this once we've implemented the Release Notes channel.
             logger.warn("Encountered not-yet-supported release-channel-donation-request update")
             return .success(())
-        case .END_SESSION:
+        case .endSession:
             simpleChatUpdateInteraction = .simpleInfoMessage(.typeSessionDidEnd)
-        case .CHAT_SESSION_REFRESH:
+        case .chatSessionRefresh:
             simpleChatUpdateInteraction = .errorMessage(TSErrorMessage.sessionRefresh(
                 in: thread
             ))
-        case .BAD_DECRYPT:
+        case .badDecrypt:
             guard let senderRecipient = context.recipientContext[chatItem.authorRecipientId] else {
                 return invalidProtoData(.recipientIdNotFound(chatItem.authorRecipientId))
             }
@@ -425,7 +431,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
                 thread: thread,
                 timestamp: chatItem.dateSent
             ))
-        case .PAYMENTS_ACTIVATED:
+        case .paymentsActivated:
             let senderAci: Aci
             switch context.recipientContext[chatItem.authorRecipientId] {
             case nil:
@@ -443,7 +449,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
                 thread: thread,
                 senderAci: senderAci
             ))
-        case .PAYMENT_ACTIVATION_REQUEST:
+        case .paymentActivationRequest:
             let senderAci: Aci
             switch context.recipientContext[chatItem.authorRecipientId] {
             case nil:
@@ -461,7 +467,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
                 thread: thread,
                 senderAci: senderAci
             ))
-        case .UNSUPPORTED_PROTOCOL_MESSAGE:
+        case .unsupportedProtocolMessage:
             let senderAddress: SignalServiceAddress?
             switch context.recipientContext[chatItem.authorRecipientId] {
             case nil:
@@ -483,7 +489,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
                 // will always show "unknown protocol version", but that's fine.
                 protocolVersion: UInt(Int64.max)
             ))
-        case .REPORTED_SPAM:
+        case .reportedSpam:
             simpleChatUpdateInteraction = .simpleInfoMessage(.reportedSpam)
         }
 

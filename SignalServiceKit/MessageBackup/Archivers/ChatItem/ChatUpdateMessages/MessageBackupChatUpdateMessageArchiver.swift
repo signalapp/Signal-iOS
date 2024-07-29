@@ -180,12 +180,12 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
     // MARK: -
 
     func restoreChatItem(
-        _ chatItem: BackupProto.ChatItem,
+        _ chatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: any DBWriteTransaction
     ) -> RestoreChatUpdateMessageResult {
-        let chatUpdateMessage: BackupProto.ChatUpdateMessage
+        let chatUpdateMessage: BackupProto_ChatUpdateMessage
         do {
             switch chatItem.item {
             case .updateMessage(let updateMessage):

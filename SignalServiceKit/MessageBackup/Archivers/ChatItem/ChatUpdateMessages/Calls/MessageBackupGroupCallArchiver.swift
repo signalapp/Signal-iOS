@@ -34,19 +34,19 @@ final class MessageBackupGroupCallArchiver {
             tx: tx
         )
 
-        let groupCallState: BackupProto.GroupCall.State
+        let groupCallState: BackupProto_GroupCall.State
         if let associatedCallRecord {
             switch associatedCallRecord.callStatus {
-            case .group(.generic): groupCallState = .GENERIC
-            case .group(.joined): groupCallState = .JOINED
-            case .group(.ringing): groupCallState = .RINGING
+            case .group(.generic): groupCallState = .generic
+            case .group(.joined): groupCallState = .joined
+            case .group(.ringing): groupCallState = .ringing
             case .group(.ringingAccepted):
                 switch associatedCallRecord.callDirection {
-                case .incoming: groupCallState = .ACCEPTED
-                case .outgoing: groupCallState = .OUTGOING_RING
+                case .incoming: groupCallState = .accepted
+                case .outgoing: groupCallState = .outgoingRing
                 }
-            case .group(.ringingDeclined): groupCallState = .DECLINED
-            case .group(.ringingMissed): groupCallState = .MISSED
+            case .group(.ringingDeclined): groupCallState = .declined
+            case .group(.ringingMissed): groupCallState = .missed
             case .individual:
                 return .messageFailure([.archiveFrameError(
                     .groupCallRecordHadIndividualCallStatus,
@@ -55,7 +55,7 @@ final class MessageBackupGroupCallArchiver {
             }
         } else {
             // This call predates the introduction of call records.
-            groupCallState = .GENERIC
+            groupCallState = .generic
         }
 
         /// The call record will store the best record of when the call began,
@@ -67,17 +67,18 @@ final class MessageBackupGroupCallArchiver {
         /// iOS doesn't currently track this, so we'll default-populate it.
         let endedCallTimestamp: UInt64 = 0
 
-        var groupCallUpdate = BackupProto.GroupCall(
-            state: groupCallState,
-            startedCallTimestamp: startedCallTimestamp,
-            endedCallTimestamp: endedCallTimestamp
-        )
-        groupCallUpdate.callId = associatedCallRecord?.callId
+        var groupCallUpdate = BackupProto_GroupCall()
+        groupCallUpdate.state = groupCallState
+        groupCallUpdate.startedCallTimestamp = startedCallTimestamp
+        groupCallUpdate.endedCallTimestamp = endedCallTimestamp
+        if let associatedCallRecord {
+            groupCallUpdate.callID = associatedCallRecord.callId
+        }
 
         if let ringerAci = associatedCallRecord?.groupCallRingerAci {
             switch context.recipientContext.getRecipientId(aci: ringerAci, forInteraction: groupCallInteraction) {
             case .found(let recipientId):
-                groupCallUpdate.ringerRecipientId = recipientId.value
+                groupCallUpdate.ringerRecipientID = recipientId.value
             case .missing(let archiveFrameError):
                 return .messageFailure([archiveFrameError])
             }
@@ -86,18 +87,18 @@ final class MessageBackupGroupCallArchiver {
         if let creatorAci = groupCallInteraction.creatorUuid.flatMap({ Aci.parseFrom(aciString: $0) }) {
             switch context.recipientContext.getRecipientId(aci: creatorAci, forInteraction: groupCallInteraction) {
             case .found(let recipientId):
-                groupCallUpdate.startedCallRecipientId = recipientId.value
+                groupCallUpdate.startedCallRecipientID = recipientId.value
             case .missing(let archiveFrameError):
                 return .messageFailure([archiveFrameError])
             }
         }
 
-        var chatUpdateMessage = BackupProto.ChatUpdateMessage()
+        var chatUpdateMessage = BackupProto_ChatUpdateMessage()
         chatUpdateMessage.update = .groupCall(groupCallUpdate)
 
         let interactionArchiveDetails = Details(
             author: context.recipientContext.localRecipientId,
-            directionalDetails: .directionless(BackupProto.ChatItem.DirectionlessMessageDetails()),
+            directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,
@@ -108,8 +109,8 @@ final class MessageBackupGroupCallArchiver {
     }
 
     func restoreGroupCall(
-        _ groupCall: BackupProto.GroupCall,
-        chatItem: BackupProto.ChatItem,
+        _ groupCall: BackupProto_GroupCall,
+        chatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
@@ -126,9 +127,9 @@ final class MessageBackupGroupCallArchiver {
         }
 
         let startedCallAci: Aci?
-        if let startedCallRecipientId = groupCall.startedCallRecipientId {
+        if groupCall.hasStartedCallRecipientID {
             switch context.recipientContext.getAci(
-                recipientId: MessageBackup.RecipientId(value: startedCallRecipientId),
+                recipientId: MessageBackup.RecipientId(value: groupCall.startedCallRecipientID),
                 forChatItemId: chatItem.id
             ) {
             case .found(let aci): startedCallAci = aci
@@ -146,39 +147,39 @@ final class MessageBackupGroupCallArchiver {
         )
         interactionStore.insertInteraction(groupCallInteraction, tx: tx)
 
-        if let callId = groupCall.callId {
+        if groupCall.hasCallID {
             let callDirection: CallRecord.CallDirection
             let callStatus: CallRecord.CallStatus.GroupCallStatus
             switch groupCall.state {
-            case .UNKNOWN_STATE:
+            case .unknownState, .UNRECOGNIZED:
                 return .messageFailure([.restoreFrameError(.invalidProtoData(.groupCallUnrecognizedState), chatItem.id)])
-            case .GENERIC:
+            case .generic:
                 callDirection = .incoming
                 callStatus = .generic
-            case .JOINED:
+            case .joined:
                 callDirection = .incoming
                 callStatus = .joined
-            case .RINGING:
+            case .ringing:
                 callDirection = .incoming
                 callStatus = .ringing
-            case .ACCEPTED:
+            case .accepted:
                 callDirection = .incoming
                 callStatus = .ringingAccepted
-            case .DECLINED:
+            case .declined:
                 callDirection = .incoming
                 callStatus = .ringingDeclined
-            case .MISSED, .MISSED_NOTIFICATION_PROFILE:
+            case .missed, .missedNotificationProfile:
                 callDirection = .incoming
                 callStatus = .ringingMissed
-            case .OUTGOING_RING:
+            case .outgoingRing:
                 callDirection = .outgoing
                 callStatus = .ringingAccepted
             }
 
             let groupCallRingerAci: Aci?
-            if let ringerRecipientId = groupCall.ringerRecipientId {
+            if groupCall.hasRingerRecipientID {
                 switch context.recipientContext.getAci(
-                    recipientId: MessageBackup.RecipientId(value: ringerRecipientId),
+                    recipientId: MessageBackup.RecipientId(value: groupCall.ringerRecipientID),
                     forChatItemId: chatItem.id
                 ) {
                 case .found(let aci): groupCallRingerAci = aci
@@ -189,7 +190,7 @@ final class MessageBackupGroupCallArchiver {
             }
 
             _ = groupCallRecordManager.createGroupCallRecord(
-                callId: callId,
+                callId: groupCall.callID,
                 groupCallInteraction: groupCallInteraction,
                 groupCallInteractionRowId: groupCallInteraction.sqliteRowId!,
                 groupThread: groupThread,

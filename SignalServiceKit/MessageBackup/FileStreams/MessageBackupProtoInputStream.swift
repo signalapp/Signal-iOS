@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Wire
-
 extension MessageBackup {
     public enum ProtoInputStreamReadResult<T> {
         case success(T, moreBytesAvailable: Bool)
@@ -25,10 +23,10 @@ public protocol MessageBackupProtoInputStream {
 
     /// Read the single header object at the start of every backup file.
     /// If this header is missing or invalid, the backup should be discarded.
-    func readHeader() -> MessageBackup.ProtoInputStreamReadResult<BackupProto.BackupInfo>
+    func readHeader() -> MessageBackup.ProtoInputStreamReadResult<BackupProto_BackupInfo>
 
     /// Read a the next frame from the backup file.
-    func readFrame() -> MessageBackup.ProtoInputStreamReadResult<BackupProto.Frame>
+    func readFrame() -> MessageBackup.ProtoInputStreamReadResult<BackupProto_Frame>
 
     /// Close the stream. Attempting to read after closing will result in failures.
     func closeFileStream()
@@ -47,17 +45,15 @@ internal class MessageBackupProtoInputStreamImpl: MessageBackupProtoInputStream 
         self.inputStreamDelegate = inputStreamDelegate
     }
 
-    internal func readHeader() -> MessageBackup.ProtoInputStreamReadResult<BackupProto.BackupInfo> {
+    internal func readHeader() -> MessageBackup.ProtoInputStreamReadResult<BackupProto_BackupInfo> {
         return readProto { protoData in
-            return try ProtoDecoder(enumDecodingStrategy: .returnNil)
-                .decode(BackupProto.BackupInfo.self, from: protoData)
+            return try BackupProto_BackupInfo(contiguousBytes: protoData)
         }
     }
 
-    internal func readFrame() -> MessageBackup.ProtoInputStreamReadResult<BackupProto.Frame> {
+    internal func readFrame() -> MessageBackup.ProtoInputStreamReadResult<BackupProto_Frame> {
         return readProto { protoData in
-            return try ProtoDecoder(enumDecodingStrategy: .returnNil)
-                .decode(BackupProto.Frame.self, from: protoData)
+            return try BackupProto_Frame(contiguousBytes: protoData)
         }
     }
 

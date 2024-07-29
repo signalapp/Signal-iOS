@@ -20,15 +20,15 @@ extension MessageBackup {
     }
 
     struct InteractionArchiveDetails {
-        typealias DirectionalDetails = BackupProto.ChatItem.DirectionalDetails
-        typealias ChatItemType = BackupProto.ChatItem.Item
+        typealias DirectionalDetails = BackupProto_ChatItem.OneOf_DirectionalDetails
+        typealias ChatItemType = BackupProto_ChatItem.OneOf_Item
 
         let author: RecipientId
         let directionalDetails: DirectionalDetails
         let expireStartDate: UInt64?
         let expiresInMs: UInt64?
         // TODO: [Backups] Include edit revisions.
-        let revisions: [BackupProto.ChatItem] = []
+        let revisions: [BackupProto_ChatItem] = []
         // TODO: [Backups] Properly set isSms. This will only be relevant for messages we previously restored from an Android.
         let isSms: Bool = false
         let isSealedSender: Bool
@@ -166,7 +166,7 @@ internal protocol MessageBackupInteractionArchiver: MessageBackupProtoArchiver {
     ) -> MessageBackup.ArchiveInteractionResult<Details>
 
     func restoreChatItem(
-        _ chatItem: BackupProto.ChatItem,
+        _ chatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
@@ -301,7 +301,7 @@ extension MessageBackup.RestoreInteractionResult where Component == Void {
     }
 }
 
-extension BackupProto.ChatItem {
+extension BackupProto_ChatItem {
 
     var id: MessageBackup.ChatItemId {
         return .init(backupProtoChatItem: self)

@@ -77,14 +77,15 @@ final class MessageBackupExpirationTimerChatUpdateArchiver {
             chatUpdateAuthorRecipientId = recipientId
         }
 
-        var chatUpdateMessage = BackupProto.ChatUpdateMessage()
-        chatUpdateMessage.update = .expirationTimerChange(BackupProto.ExpirationTimerChatUpdate(
-            expiresInMs: chatUpdateExpiresInMs
-        ))
+        var expirationTimerChatUpdate = BackupProto_ExpirationTimerChatUpdate()
+        expirationTimerChatUpdate.expiresInMs = chatUpdateExpiresInMs
+
+        var chatUpdateMessage = BackupProto_ChatUpdateMessage()
+        chatUpdateMessage.update = .expirationTimerChange(expirationTimerChatUpdate)
 
         let interactionArchiveDetails = Details(
             author: chatUpdateAuthorRecipientId,
-            directionalDetails: .directionless(BackupProto.ChatItem.DirectionlessMessageDetails()),
+            directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,
@@ -97,8 +98,8 @@ final class MessageBackupExpirationTimerChatUpdateArchiver {
     // MARK: -
 
     func restoreExpirationTimerChatUpdate(
-        _ expirationTimerChatUpdate: BackupProto.ExpirationTimerChatUpdate,
-        chatItem: BackupProto.ChatItem,
+        _ expirationTimerChatUpdate: BackupProto_ExpirationTimerChatUpdate,
+        chatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: any DBWriteTransaction

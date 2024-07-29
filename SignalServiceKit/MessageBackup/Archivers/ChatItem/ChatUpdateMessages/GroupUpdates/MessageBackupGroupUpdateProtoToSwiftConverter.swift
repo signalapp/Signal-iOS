@@ -6,14 +6,14 @@
 import Foundation
 import LibSignalClient
 
-internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
+final class MessageBackupGroupUpdateProtoToSwiftConverter {
 
     private init() {}
 
     typealias PersistableGroupUpdateItem = TSInfoMessage.PersistableGroupUpdateItem
 
-    internal static func restoreGroupUpdates(
-        groupUpdates: [BackupProto.GroupChangeChatUpdate.Update],
+    static func restoreGroupUpdates(
+        groupUpdates: [BackupProto_GroupChangeChatUpdate.Update],
         // We should never be comparing our pni as it can change,
         // we only ever want to compare our unchanging aci.
         localUserAci: Aci,
@@ -37,54 +37,58 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
     }
 
     private static func restoreGroupUpdate(
-        groupUpdate: BackupProto.GroupChangeChatUpdate.Update,
+        groupUpdate: BackupProto_GroupChangeChatUpdate.Update,
         localUserAci: Aci,
         chatItemId: MessageBackup.ChatItemId
     ) -> MessageBackup.RestoreInteractionResult<[PersistableGroupUpdateItem]> {
-        enum UnwrappedAci {
+        enum UnwrappedRequiredAci {
             case localUser
             case otherUser(AciUuid)
             case invalidAci(MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>)
         }
-        enum UnwrappedOptionalAci {
-            case unknown
-            case localUser
-            case otherUser(AciUuid)
-            case invalidAci(MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>)
-        }
-
-        func unwrapAci<Proto>(
+        func unwrapRequiredAci<Proto>(
             _ proto: Proto,
             _ aciKeyPath: KeyPath<Proto, Data>
-        ) -> UnwrappedAci {
+        ) -> UnwrappedRequiredAci {
             let aciData = proto[keyPath: aciKeyPath]
-            guard let aciUuid = UUID(data: aciData) else {
+
+            guard let aci = UUID(data: aciData).map({ Aci(fromUUID: $0) }) else {
                 return .invalidAci(.restoreFrameError(
                     .invalidProtoData(.invalidAci(protoClass: Proto.self)),
                     chatItemId
                 ))
             }
-            let aci = Aci(fromUUID: aciUuid)
+
             if aci == localUserAci {
                 return .localUser
             } else {
                 return .otherUser(aci.codableUuid)
             }
         }
-        func unwrapAci<Proto>(
+
+        enum UnwrappedOptionalAci {
+            case unknown
+            case localUser
+            case otherUser(AciUuid)
+            case invalidAci(MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>)
+        }
+        func unwrapOptionalAci<Proto>(
             _ proto: Proto,
-            _ aciKeyPath: KeyPath<Proto, Data?>
+            _ aciKeyPath: KeyPath<Proto, Data>
         ) -> UnwrappedOptionalAci {
-            guard let aciData = proto[keyPath: aciKeyPath] else {
+            let aciData = proto[keyPath: aciKeyPath]
+
+            guard !aciData.isEmpty else {
                 return .unknown
             }
-            guard let aciUuid = UUID(data: aciData) else {
+
+            guard let aci = UUID(data: aciData).map({ Aci(fromUUID: $0) }) else {
                 return .invalidAci(.restoreFrameError(
                     .invalidProtoData(.invalidAci(protoClass: Proto.self)),
                     chatItemId
                 ))
             }
-            let aci = Aci(fromUUID: aciUuid)
+
             if aci == localUserAci {
                 return .localUser
             } else {
@@ -93,10 +97,10 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
         }
 
         switch groupUpdate.update {
-        case .none:
+        case nil:
             return .messageFailure([.restoreFrameError(.invalidProtoData(.unrecognizedGroupUpdate), chatItemId)])
         case .genericGroupUpdate(let proto):
-            switch unwrapAci(proto, \.updaterAci) {
+            switch unwrapOptionalAci(proto, \.updaterAci) {
             case .unknown:
                 return .success([.genericUpdateByUnknownUser])
             case .localUser:
@@ -107,7 +111,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                 return .messageFailure([error])
             }
         case .groupCreationUpdate(let proto):
-            switch unwrapAci(proto, \.updaterAci) {
+            switch unwrapOptionalAci(proto, \.updaterAci) {
             case .unknown:
                 return .success([.genericUpdateByUnknownUser])
             case .localUser:
@@ -120,8 +124,9 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                 return .messageFailure([error])
             }
         case .groupNameUpdate(let proto):
-            if let newName = proto.newGroupName {
-                switch unwrapAci(proto, \.updaterAci) {
+            if proto.hasNewGroupName {
+                let newName = proto.newGroupName
+                switch unwrapOptionalAci(proto, \.updaterAci) {
                 case .unknown:
                     return .success([.nameChangedByUnknownUser(newGroupName: newName)])
                 case .localUser:
@@ -132,7 +137,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                     return .messageFailure([error])
                 }
             } else {
-                switch unwrapAci(proto, \.updaterAci) {
+                switch unwrapOptionalAci(proto, \.updaterAci) {
                 case .unknown:
                     return .success([.nameRemovedByUnknownUser])
                 case .localUser:
@@ -145,7 +150,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
             }
         case .groupAvatarUpdate(let proto):
             if proto.wasRemoved {
-                switch unwrapAci(proto, \.updaterAci) {
+                switch unwrapOptionalAci(proto, \.updaterAci) {
                 case .unknown:
                     return .success([.avatarRemovedByUnknownUser])
                 case .localUser:
@@ -156,7 +161,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                     return .messageFailure([error])
                 }
             } else {
-                switch unwrapAci(proto, \.updaterAci) {
+                switch unwrapOptionalAci(proto, \.updaterAci) {
                 case .unknown:
                     return .success([.avatarChangedByUnknownUser])
                 case .localUser:
@@ -168,8 +173,9 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                 }
             }
         case .groupDescriptionUpdate(let proto):
-            if let newDescription = proto.newDescription {
-                switch unwrapAci(proto, \.updaterAci) {
+            if proto.hasNewDescription {
+                let newDescription = proto.newDescription
+                switch unwrapOptionalAci(proto, \.updaterAci) {
                 case .unknown:
                     return .success([.descriptionChangedByUnknownUser(newDescription: newDescription)])
                 case .localUser:
@@ -180,7 +186,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                     return .messageFailure([error])
                 }
             } else {
-                switch unwrapAci(proto, \.updaterAci) {
+                switch unwrapOptionalAci(proto, \.updaterAci) {
                 case .unknown:
                     return .success([.descriptionRemovedByUnknownUser])
                 case .localUser:
@@ -193,7 +199,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
             }
         case .groupMembershipAccessLevelChangeUpdate(let proto):
             let newAccess = proto.accessLevel.swiftAccessLevel
-            switch unwrapAci(proto, \.updaterAci) {
+            switch unwrapOptionalAci(proto, \.updaterAci) {
             case .unknown:
                 return .success([.membersAccessChangedByUnknownUser(newAccess: newAccess)])
             case .localUser:
@@ -205,7 +211,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
             }
         case .groupAttributesAccessLevelChangeUpdate(let proto):
             let newAccess = proto.accessLevel.swiftAccessLevel
-            switch unwrapAci(proto, \.updaterAci) {
+            switch unwrapOptionalAci(proto, \.updaterAci) {
             case .unknown:
                 return .success([.attributesAccessChangedByUnknownUser(newAccess: newAccess)])
             case .localUser:
@@ -217,7 +223,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
             }
         case .groupAnnouncementOnlyChangeUpdate(let proto):
             if proto.isAnnouncementOnly {
-                switch unwrapAci(proto, \.updaterAci) {
+                switch unwrapOptionalAci(proto, \.updaterAci) {
                 case .unknown:
                     return .success([.announcementOnlyEnabledByUnknownUser])
                 case .localUser:
@@ -228,7 +234,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                     return .messageFailure([error])
                 }
             } else {
-                switch unwrapAci(proto, \.updaterAci) {
+                switch unwrapOptionalAci(proto, \.updaterAci) {
                 case .unknown:
                     return .success([.announcementOnlyDisabledByUnknownUser])
                 case .localUser:
@@ -240,8 +246,8 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                 }
             }
         case .groupAdminStatusUpdate(let proto):
-            let updaterAci = unwrapAci(proto, \.updaterAci)
-            let memberAci = unwrapAci(proto, \.memberAci)
+            let updaterAci = unwrapOptionalAci(proto, \.updaterAci)
+            let memberAci = unwrapRequiredAci(proto, \.memberAci)
             if proto.wasAdminStatusGranted {
                 switch (updaterAci, memberAci) {
                 case (.unknown, .localUser):
@@ -278,7 +284,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                 }
             }
         case .groupMemberLeftUpdate(let proto):
-            switch unwrapAci(proto, \.aci) {
+            switch unwrapRequiredAci(proto, \.aci) {
             case .localUser:
                 return .success([.localUserLeft])
             case .otherUser(let aci):
@@ -287,7 +293,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                 return .messageFailure([error])
             }
         case .groupMemberRemovedUpdate(let proto):
-            switch (unwrapAci(proto, \.removerAci), unwrapAci(proto, \.removedAci)) {
+            switch (unwrapOptionalAci(proto, \.removerAci), unwrapRequiredAci(proto, \.removedAci)) {
             case (.unknown, .localUser):
                 return .success([.localUserRemovedByUnknownUser])
             case (.localUser, .localUser):
@@ -304,7 +310,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                 return .messageFailure([error])
             }
         case .selfInvitedToGroupUpdate(let proto):
-            switch unwrapAci(proto, \.inviterAci) {
+            switch unwrapOptionalAci(proto, \.inviterAci) {
             case .unknown:
                 return .success([.localUserWasInvitedByUnknownUser])
             case .localUser:
@@ -315,18 +321,18 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                 return .messageFailure([error])
             }
         case .selfInvitedOtherUserToGroupUpdate(let proto):
-            switch (try? ServiceId.parseFrom(serviceIdBinary: proto.inviteeServiceId)) {
+            switch (try? ServiceId.parseFrom(serviceIdBinary: proto.inviteeServiceID)) {
             case .some(let serviceId):
                 return .success([.otherUserWasInvitedByLocalUser(inviteeServiceId: serviceId.codableUppercaseString)])
             case .none:
                 return .messageFailure([.restoreFrameError(
-                    .invalidProtoData(.invalidServiceId(protoClass: BackupProto.SelfInvitedOtherUserToGroupUpdate.self)),
+                    .invalidProtoData(.invalidServiceId(protoClass: BackupProto_SelfInvitedOtherUserToGroupUpdate.self)),
                     chatItemId
                 )])
             }
         case .groupUnknownInviteeUpdate(let proto):
             let count = UInt(proto.inviteeCount)
-            switch unwrapAci(proto, \.inviterAci) {
+            switch unwrapOptionalAci(proto, \.inviterAci) {
             case .unknown:
                 return .success([.unnamedUsersWereInvitedByUnknownUser(count: count)])
             case .localUser:
@@ -337,7 +343,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                 return .messageFailure([error])
             }
         case .groupInvitationAcceptedUpdate(let proto):
-            switch (unwrapAci(proto, \.inviterAci), unwrapAci(proto, \.newMemberAci)) {
+            switch (unwrapOptionalAci(proto, \.inviterAci), unwrapRequiredAci(proto, \.newMemberAci)) {
             case (.unknown, .localUser):
                 return .success([.localUserAcceptedInviteFromUnknownUser])
             case (.localUser, .localUser):
@@ -354,7 +360,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                 return .messageFailure([error])
             }
         case .groupInvitationDeclinedUpdate(let proto):
-            switch (unwrapAci(proto, \.inviterAci), unwrapAci(proto, \.inviteeAci)) {
+            switch (unwrapOptionalAci(proto, \.inviterAci), unwrapOptionalAci(proto, \.inviteeAci)) {
             case (.unknown, .localUser):
                 return .success([.localUserDeclinedInviteFromUnknownUser])
             case (.localUser, .localUser):
@@ -377,7 +383,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                 return .messageFailure([error])
             }
         case .groupMemberJoinedUpdate(let proto):
-            switch unwrapAci(proto, \.newMemberAci) {
+            switch unwrapRequiredAci(proto, \.newMemberAci) {
             case .localUser:
                 return .success([.localUserJoined])
             case .otherUser(let aci):
@@ -386,7 +392,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                 return .messageFailure([error])
             }
         case .groupMemberAddedUpdate(let proto):
-            switch (unwrapAci(proto, \.inviterAci), unwrapAci(proto, \.newMemberAci)) {
+            switch (unwrapOptionalAci(proto, \.inviterAci), unwrapRequiredAci(proto, \.newMemberAci)) {
             case (.unknown, .localUser):
                 return .success([.localUserAddedByUnknownUser])
             case (.localUser, .localUser):
@@ -403,7 +409,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                 return .messageFailure([error])
             }
         case .groupSelfInvitationRevokedUpdate(let proto):
-            switch unwrapAci(proto, \.revokerAci) {
+            switch unwrapOptionalAci(proto, \.revokerAci) {
             case .unknown:
                 return .success([.localUserInviteRevokedByUnknownUser])
             case .localUser:
@@ -414,20 +420,20 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                 return .messageFailure([error])
             }
         case .groupInvitationRevokedUpdate(let proto):
-            let updaterAci = unwrapAci(proto, \.updaterAci)
+            let updaterAci = unwrapOptionalAci(proto, \.updaterAci)
             if
                 case .localUser = updaterAci,
                 proto.invitees.count == 1,
                 let inviteeServiceId: ServiceId = {
                     let invitee = proto.invitees[0]
                     if
-                        let aciRaw = invitee.inviteeAci,
-                        let aciUuid = UUID(data: aciRaw)
+                        invitee.hasInviteeAci,
+                        let aciUuid = UUID(data: invitee.inviteeAci)
                     {
                         return Aci(fromUUID: aciUuid)
                     } else if
-                        let pniRaw = invitee.inviteePni,
-                        let pniUuid = UUID(data: pniRaw)
+                        invitee.hasInviteePni,
+                        let pniUuid = UUID(data: invitee.inviteePni)
                     {
                         return Pni(fromUUID: pniUuid)
                     } else {
@@ -452,7 +458,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                 }
             }
         case .groupJoinRequestUpdate(let proto):
-            switch unwrapAci(proto, \.requestorAci) {
+            switch unwrapRequiredAci(proto, \.requestorAci) {
             case .localUser:
                 return .success([.localUserRequestedToJoin])
             case .otherUser(let aci):
@@ -462,7 +468,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
             }
         case .groupJoinRequestApprovalUpdate(let proto):
             if proto.wasApproved {
-                switch (unwrapAci(proto, \.requestorAci), unwrapAci(proto, \.updaterAci)) {
+                switch (unwrapRequiredAci(proto, \.requestorAci), unwrapOptionalAci(proto, \.updaterAci)) {
                 case (.localUser, .unknown):
                     return .success([.localUserRequestApprovedByUnknownUser])
                 case (.localUser, .localUser):
@@ -479,7 +485,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                     return .messageFailure([error])
                 }
             } else {
-                switch (unwrapAci(proto, \.requestorAci), unwrapAci(proto, \.updaterAci)) {
+                switch (unwrapRequiredAci(proto, \.requestorAci), unwrapOptionalAci(proto, \.updaterAci)) {
                 case (.localUser, .unknown):
                     return .success([.localUserRequestRejectedByUnknownUser])
                 case (.localUser, .localUser):
@@ -498,7 +504,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                 }
             }
         case .groupJoinRequestCanceledUpdate(let proto):
-            switch unwrapAci(proto, \.requestorAci) {
+            switch unwrapRequiredAci(proto, \.requestorAci) {
             case .localUser:
                 return .success([.localUserRequestCanceledByLocalUser])
             case .otherUser(let aci):
@@ -507,7 +513,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                 return .messageFailure([error])
             }
         case .groupInviteLinkResetUpdate(let proto):
-            switch unwrapAci(proto, \.updaterAci) {
+            switch unwrapOptionalAci(proto, \.updaterAci) {
             case .unknown:
                 return .success([.inviteLinkResetByUnknownUser])
             case .localUser:
@@ -519,7 +525,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
             }
         case .groupInviteLinkEnabledUpdate(let proto):
             if proto.linkRequiresAdminApproval {
-                switch unwrapAci(proto, \.updaterAci) {
+                switch unwrapOptionalAci(proto, \.updaterAci) {
                 case .unknown:
                     return .success([.inviteLinkEnabledWithApprovalByUnknownUser])
                 case .localUser:
@@ -530,7 +536,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                     return .messageFailure([error])
                 }
             } else {
-                switch unwrapAci(proto, \.updaterAci) {
+                switch unwrapOptionalAci(proto, \.updaterAci) {
                 case .unknown:
                     return .success([.inviteLinkEnabledWithoutApprovalByUnknownUser])
                 case .localUser:
@@ -543,7 +549,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
             }
         case .groupInviteLinkAdminApprovalUpdate(let proto):
             if proto.linkRequiresAdminApproval {
-                switch unwrapAci(proto, \.updaterAci) {
+                switch unwrapOptionalAci(proto, \.updaterAci) {
                 case .unknown:
                     return .success([.inviteLinkApprovalEnabledByUnknownUser])
                 case .localUser:
@@ -554,7 +560,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                     return .messageFailure([error])
                 }
             } else {
-                switch unwrapAci(proto, \.updaterAci) {
+                switch unwrapOptionalAci(proto, \.updaterAci) {
                 case .unknown:
                     return .success([.inviteLinkApprovalDisabledByUnknownUser])
                 case .localUser:
@@ -566,7 +572,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                 }
             }
         case .groupInviteLinkDisabledUpdate(let proto):
-            switch unwrapAci(proto, \.updaterAci) {
+            switch unwrapOptionalAci(proto, \.updaterAci) {
             case .unknown:
                 return .success([.inviteLinkDisabledByUnknownUser])
             case .localUser:
@@ -577,7 +583,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                 return .messageFailure([error])
             }
         case .groupMemberJoinedByLinkUpdate(let proto):
-            switch unwrapAci(proto, \.newMemberAci) {
+            switch unwrapRequiredAci(proto, \.newMemberAci) {
             case .localUser:
                 return .success([.localUserJoinedViaInviteLink])
             case .otherUser(let aci):
@@ -594,7 +600,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
         case .groupV2MigrationDroppedMembersUpdate(let proto):
             return .success([.otherUsersDroppedAfterMigration(count: UInt(proto.droppedMembersCount))])
         case .groupSequenceOfRequestsAndCancelsUpdate(let proto):
-            switch unwrapAci(proto, \.requestorAci) {
+            switch unwrapRequiredAci(proto, \.requestorAci) {
             case .localUser:
                 return .messageFailure([.restoreFrameError(
                     .invalidProtoData(.sequenceOfRequestsAndCancelsWithLocalAci),
@@ -610,7 +616,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
         case .groupExpirationTimerUpdate(let proto):
             let durationMs = proto.expiresInMs
             if durationMs > 0 {
-                switch unwrapAci(proto, \.updaterAci) {
+                switch unwrapOptionalAci(proto, \.updaterAci) {
                 case .unknown:
                     return .success([.disappearingMessagesEnabledByUnknownUser(durationMs: durationMs)])
                 case .localUser:
@@ -621,7 +627,7 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
                     return .messageFailure([error])
                 }
             } else {
-                switch unwrapAci(proto, \.updaterAci) {
+                switch unwrapOptionalAci(proto, \.updaterAci) {
                 case .unknown:
                     return .success([.disappearingMessagesDisabledByUnknownUser])
                 case .localUser:
@@ -636,19 +642,19 @@ internal final class MessageBackupGroupUpdateProtoToSwiftConverter {
     }
 }
 
-extension BackupProto.GroupV2AccessLevel {
+extension BackupProto_GroupV2AccessLevel {
 
     fileprivate var swiftAccessLevel: GroupV2Access {
         switch self {
-        case .UNKNOWN:
+        case .unknown, .UNRECOGNIZED:
             return .unknown
-        case .ANY:
+        case .any:
             return .any
-        case .MEMBER:
+        case .member:
             return .member
-        case .ADMINISTRATOR:
+        case .administrator:
             return .administrator
-        case .UNSATISFIABLE:
+        case .unsatisfiable:
             return .unsatisfiable
         }
     }

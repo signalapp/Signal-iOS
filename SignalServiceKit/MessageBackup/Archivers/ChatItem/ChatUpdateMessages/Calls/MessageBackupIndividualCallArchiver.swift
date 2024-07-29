@@ -32,67 +32,68 @@ final class MessageBackupIndividualCallArchiver {
             tx: tx
         )
 
-        var individualCallUpdate = BackupProto.IndividualCall(
-            type: { () -> BackupProto.IndividualCall.Type_ in
-                switch individualCallInteraction.offerType {
-                case .audio: return .AUDIO_CALL
-                case .video: return .VIDEO_CALL
-                }
-            }(),
-            direction: { () -> BackupProto.IndividualCall.Direction in
-                switch individualCallInteraction.callType {
-                case
-                        .incoming,
-                        .incomingIncomplete,
-                        .incomingMissed,
-                        .incomingMissedBecauseOfChangedIdentity,
-                        .incomingMissedBecauseOfDoNotDisturb,
-                        .incomingMissedBecauseBlockedSystemContact,
-                        .incomingDeclined,
-                        .incomingDeclinedElsewhere,
-                        .incomingAnsweredElsewhere,
-                        .incomingBusyElsewhere:
-                    return .INCOMING
-                case .outgoing, .outgoingIncomplete, .outgoingMissed:
-                    return .OUTGOING
-                @unknown default:
-                    return .UNKNOWN_DIRECTION
-                }
-            }(),
-            state: { () -> BackupProto.IndividualCall.State in
-                switch individualCallInteraction.callType {
-                case .incoming, .outgoing:
-                    return .ACCEPTED
-                case
-                        .outgoingIncomplete,
-                        .incomingIncomplete,
-                        .incomingDeclined,
-                        .incomingDeclinedElsewhere,
-                        .incomingAnsweredElsewhere,
-                        .incomingBusyElsewhere:
-                    return .NOT_ACCEPTED
-                case
-                        .incomingMissed,
-                        .incomingMissedBecauseOfChangedIdentity,
-                        .incomingMissedBecauseBlockedSystemContact,
-                        .outgoingMissed:
-                    return .MISSED
-                case .incomingMissedBecauseOfDoNotDisturb:
-                    return .MISSED_NOTIFICATION_PROFILE
-                @unknown default:
-                    return .UNKNOWN_STATE
-                }
-            }(),
-            startedCallTimestamp: individualCallInteraction.timestamp
-        )
-        individualCallUpdate.callId = associatedCallRecord?.callId
+        var individualCallUpdate = BackupProto_IndividualCall()
+        individualCallUpdate.type = { () -> BackupProto_IndividualCall.TypeEnum in
+            switch individualCallInteraction.offerType {
+            case .audio: return .audioCall
+            case .video: return .videoCall
+            }
+        }()
+        individualCallUpdate.direction = { () -> BackupProto_IndividualCall.Direction in
+            switch individualCallInteraction.callType {
+            case
+                    .incoming,
+                    .incomingIncomplete,
+                    .incomingMissed,
+                    .incomingMissedBecauseOfChangedIdentity,
+                    .incomingMissedBecauseOfDoNotDisturb,
+                    .incomingMissedBecauseBlockedSystemContact,
+                    .incomingDeclined,
+                    .incomingDeclinedElsewhere,
+                    .incomingAnsweredElsewhere,
+                    .incomingBusyElsewhere:
+                return .incoming
+            case .outgoing, .outgoingIncomplete, .outgoingMissed:
+                return .outgoing
+            @unknown default:
+                return .unknownDirection
+            }
+        }()
+        individualCallUpdate.state = { () -> BackupProto_IndividualCall.State in
+            switch individualCallInteraction.callType {
+            case .incoming, .outgoing:
+                return .accepted
+            case
+                    .outgoingIncomplete,
+                    .incomingIncomplete,
+                    .incomingDeclined,
+                    .incomingDeclinedElsewhere,
+                    .incomingAnsweredElsewhere,
+                    .incomingBusyElsewhere:
+                return .notAccepted
+            case
+                    .incomingMissed,
+                    .incomingMissedBecauseOfChangedIdentity,
+                    .incomingMissedBecauseBlockedSystemContact,
+                    .outgoingMissed:
+                return .missed
+            case .incomingMissedBecauseOfDoNotDisturb:
+                return .missedNotificationProfile
+            @unknown default:
+                return .unknownState
+            }
+        }()
+        individualCallUpdate.startedCallTimestamp = individualCallInteraction.timestamp
+        if let associatedCallRecord {
+            individualCallUpdate.callID = associatedCallRecord.callId
+        }
 
-        var chatUpdateMessage = BackupProto.ChatUpdateMessage()
+        var chatUpdateMessage = BackupProto_ChatUpdateMessage()
         chatUpdateMessage.update = .individualCall(individualCallUpdate)
 
         let interactionArchiveDetails = Details(
             author: context.recipientContext.localRecipientId,
-            directionalDetails: .directionless(BackupProto.ChatItem.DirectionlessMessageDetails()),
+            directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,
@@ -103,8 +104,8 @@ final class MessageBackupIndividualCallArchiver {
     }
 
     func restoreIndividualCall(
-        _ individualCall: BackupProto.IndividualCall,
-        chatItem: BackupProto.ChatItem,
+        _ individualCall: BackupProto_IndividualCall,
+        chatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
@@ -124,35 +125,35 @@ final class MessageBackupIndividualCallArchiver {
         let callRecordDirection: CallRecord.CallDirection
         let callRecordStatus: CallRecord.CallStatus.IndividualCallStatus
         switch (individualCall.direction, individualCall.state) {
-        case (.UNKNOWN_DIRECTION, _):
+        case (.unknownDirection, _), (.UNRECOGNIZED, _):
             return .messageFailure([.restoreFrameError(.invalidProtoData(.individualCallUnrecognizedDirection), chatItem.id)])
-        case (_, .UNKNOWN_STATE):
+        case (_, .unknownState), (_, .UNRECOGNIZED):
             return .messageFailure([.restoreFrameError(.invalidProtoData(.individualCallUnrecognizedState), chatItem.id)])
-        case (.INCOMING, .ACCEPTED):
+        case (.incoming, .accepted):
             callInteractionType = .incoming
             callRecordDirection = .incoming
             callRecordStatus = .accepted
-        case (.INCOMING, .NOT_ACCEPTED):
+        case (.incoming, .notAccepted):
             callInteractionType = .incomingDeclined
             callRecordDirection = .incoming
             callRecordStatus = .notAccepted
-        case (.INCOMING, .MISSED):
+        case (.incoming, .missed):
             callInteractionType = .incomingMissed
             callRecordDirection = .incoming
             callRecordStatus = .incomingMissed
-        case (.INCOMING, .MISSED_NOTIFICATION_PROFILE):
+        case (.incoming, .missedNotificationProfile):
             callInteractionType = .incomingMissedBecauseOfDoNotDisturb
             callRecordDirection = .incoming
             callRecordStatus = .incomingMissed
-        case (.OUTGOING, .ACCEPTED):
+        case (.outgoing, .accepted):
             callInteractionType = .outgoing
             callRecordDirection = .outgoing
             callRecordStatus = .accepted
-        case (.OUTGOING, .NOT_ACCEPTED):
+        case (.outgoing, .notAccepted):
             callInteractionType = .outgoingIncomplete
             callRecordDirection = .outgoing
             callRecordStatus = .notAccepted
-        case (.OUTGOING, .MISSED), (.OUTGOING, .MISSED_NOTIFICATION_PROFILE):
+        case (.outgoing, .missed), (.outgoing, .missedNotificationProfile):
             callInteractionType = .outgoingMissed
             callRecordDirection = .outgoing
             callRecordStatus = .notAccepted
@@ -161,13 +162,13 @@ final class MessageBackupIndividualCallArchiver {
         let callInteractionOfferType: TSRecentCallOfferType
         let callRecordType: CallRecord.CallType
         switch individualCall.type {
-        case .AUDIO_CALL:
+        case .audioCall:
             callInteractionOfferType = .audio
             callRecordType = .audioCall
-        case .VIDEO_CALL:
+        case .videoCall:
             callInteractionOfferType = .video
             callRecordType = .videoCall
-        case .UNKNOWN_TYPE:
+        case .unknownType, .UNRECOGNIZED:
             return .messageFailure([.restoreFrameError(.invalidProtoData(.individualCallUnrecognizedType), chatItem.id)])
         }
 
@@ -179,13 +180,13 @@ final class MessageBackupIndividualCallArchiver {
         )
         interactionStore.insertInteraction(individualCallInteraction, tx: tx)
 
-        if let callId = individualCall.callId {
+        if individualCall.hasCallID {
             individualCallRecordManager.createRecordForInteraction(
                 individualCallInteraction: individualCallInteraction,
                 individualCallInteractionRowId: individualCallInteraction.sqliteRowId!,
                 contactThread: contactThread,
                 contactThreadRowId: chatThread.threadRowId,
-                callId: callId,
+                callId: individualCall.callID,
                 callType: callRecordType,
                 callDirection: callRecordDirection,
                 individualCallStatus: callRecordStatus,

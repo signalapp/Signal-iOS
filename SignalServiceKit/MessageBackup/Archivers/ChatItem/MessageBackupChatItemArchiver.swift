@@ -8,11 +8,11 @@ import LibSignalClient
 
 public extension MessageBackup {
 
-    /// An identifier for a ``BackupProto.ChatItem`` backup frame.
+    /// An identifier for a ``BackupProto_ChatItem`` backup frame.
     struct ChatItemId: MessageBackupLoggableId, Hashable {
         let value: UInt64
 
-        public init(backupProtoChatItem: BackupProto.ChatItem) {
+        public init(backupProtoChatItem: BackupProto_ChatItem) {
             self.value = backupProtoChatItem.dateSent
         }
 
@@ -22,7 +22,7 @@ public extension MessageBackup {
 
         // MARK: MessageBackupLoggableId
 
-        public var typeLogString: String { "BackupProto.ChatItem" }
+        public var typeLogString: String { "BackupProto_ChatItem" }
         public var idLogString: String { "timestamp: \(value)" }
     }
 }
@@ -33,7 +33,7 @@ public protocol MessageBackupChatItemArchiver: MessageBackupProtoArchiver {
     typealias ArchiveMultiFrameResult = MessageBackup.ArchiveMultiFrameResult<MessageBackup.InteractionUniqueId>
     typealias RestoreFrameResult = MessageBackup.RestoreFrameResult<ChatItemId>
 
-    /// Archive all ``TSInteraction``s (they map to ``BackupProto.ChatItem`` and ``BackupProto.Call``).
+    /// Archive all ``TSInteraction``s (they map to ``BackupProto_ChatItem`` and ``BackupProto_Call``).
     ///
     /// - Returns: ``ArchiveMultiFrameResult.success`` if all frames were written without error, or either
     /// partial or complete failure otherwise.
@@ -47,13 +47,13 @@ public protocol MessageBackupChatItemArchiver: MessageBackupProtoArchiver {
         tx: DBReadTransaction
     ) -> ArchiveMultiFrameResult
 
-    /// Restore a single ``BackupProto.ChatItem`` frame.
+    /// Restore a single ``BackupProto_ChatItem`` frame.
     ///
     /// - Returns: ``RestoreFrameResult.success`` if all frames were read without error.
     /// How to handle ``RestoreFrameResult.failure`` is up to the caller,
     /// but typically an error will be shown to the user, but the restore will be allowed to proceed.
     func restore(
-        _ chatItem: BackupProto.ChatItem,
+        _ chatItem: BackupProto_ChatItem,
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> RestoreFrameResult

@@ -188,8 +188,8 @@ extension IncomingContactSyncJobRecord: ValidatableModel {
             IncomingContactSyncJobRecord(
                 cdnNumber: 3,
                 cdnKey: "hello",
-                encryptionKey: Data(base64URLEncoded: "mMiOmZhbHNlLCJzdXBlciI6eyJ1b")!,
-                digest: Data(base64URLEncoded: "291bnQiOjYsInJlY29yZFR5cGUiO")!,
+                encryptionKey: Data(base64Encoded: "mMiOmZhbHNlLCJzdXBlciI6eyJ1b")!,
+                digest: Data(base64Encoded: "291bnQiOjYsInJlY29yZFR5cGUiO")!,
                 plaintextLength: 55,
                 isCompleteContactSync: true
             ),

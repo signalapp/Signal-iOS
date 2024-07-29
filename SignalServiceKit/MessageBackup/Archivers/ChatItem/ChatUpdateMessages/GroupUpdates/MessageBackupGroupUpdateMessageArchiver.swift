@@ -74,7 +74,7 @@ final class MessageBackupGroupUpdateMessageArchiver {
             localIdentifiers: context.recipientContext.localIdentifiers,
             partialErrors: &partialErrors
         )
-        let groupChange: BackupProto.GroupChangeChatUpdate
+        let groupChange: BackupProto_GroupChangeChatUpdate
         switch contentsResult.bubbleUp(Details.self, partialErrors: &partialErrors) {
         case .continue(let groupUpdate):
             groupChange = groupUpdate
@@ -82,10 +82,10 @@ final class MessageBackupGroupUpdateMessageArchiver {
             return errorResult
         }
 
-        var chatUpdate = BackupProto.ChatUpdateMessage()
+        var chatUpdate = BackupProto_ChatUpdateMessage()
         chatUpdate.update = .groupChange(groupChange)
 
-        let directionlessDetails = BackupProto.ChatItem.DirectionlessMessageDetails()
+        let directionlessDetails = BackupProto_ChatItem.DirectionlessMessageDetails()
 
         let details = Details(
             author: context.recipientContext.localRecipientId,
@@ -108,8 +108,8 @@ final class MessageBackupGroupUpdateMessageArchiver {
         interactionId: MessageBackup.InteractionUniqueId,
         localIdentifiers: LocalIdentifiers,
         partialErrors: inout [ArchiveFrameError]
-    ) -> MessageBackup.ArchiveInteractionResult<BackupProto.GroupChangeChatUpdate> {
-        var updates = [BackupProto.GroupChangeChatUpdate.Update]()
+    ) -> MessageBackup.ArchiveInteractionResult<BackupProto_GroupChangeChatUpdate> {
+        var updates = [BackupProto_GroupChangeChatUpdate.Update]()
 
         var skipCount = 0
         var latestSkipError: MessageBackup.SkippableChatUpdate.SkippableGroupUpdate?
@@ -121,7 +121,7 @@ final class MessageBackupGroupUpdateMessageArchiver {
                     interactionId: interactionId
                 )
             switch result.bubbleUp(
-                BackupProto.GroupChangeChatUpdate.self,
+                BackupProto_GroupChangeChatUpdate.self,
                 partialErrors: &partialErrors
             ) {
             case .continue(let update):
@@ -146,7 +146,7 @@ final class MessageBackupGroupUpdateMessageArchiver {
             return .messageFailure(partialErrors + [.archiveFrameError(.emptyGroupUpdate, interactionId)])
         }
 
-        var groupChangeChatUpdate = BackupProto.GroupChangeChatUpdate()
+        var groupChangeChatUpdate = BackupProto_GroupChangeChatUpdate()
         groupChangeChatUpdate.updates = updates
 
         if partialErrors.isEmpty {
@@ -157,8 +157,8 @@ final class MessageBackupGroupUpdateMessageArchiver {
     }
 
     func restoreGroupUpdate(
-        _ groupUpdate: BackupProto.GroupChangeChatUpdate,
-        chatItem: BackupProto.ChatItem,
+        _ groupUpdate: BackupProto_GroupChangeChatUpdate,
+        chatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction

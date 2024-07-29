@@ -34,8 +34,8 @@ public class MessageBackupReleaseNotesRecipientArchiver: MessageBackupProtoArchi
     // MARK: -
 
     func restoreReleaseNotesRecipientProto(
-        _ releaseNotesRecipientProto: BackupProto.ReleaseNotes,
-        recipient: BackupProto.Recipient,
+        _ releaseNotesRecipientProto: BackupProto_ReleaseNotes,
+        recipient: BackupProto_Recipient,
         context: MessageBackup.RecipientRestoringContext,
         tx: any DBWriteTransaction
     ) -> RestoreFrameResult {

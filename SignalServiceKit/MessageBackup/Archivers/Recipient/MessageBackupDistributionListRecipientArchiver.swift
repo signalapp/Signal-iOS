@@ -103,7 +103,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
         }
 
         // Ensure that explicit/blocklist have valid member recipient addresses
-        let privacyMode: BackupProto.DistributionList.PrivacyMode? = {
+        let privacyMode: BackupProto_DistributionList.PrivacyMode? = {
             switch storyThread.storyViewMode {
             case .disabled:
                 return nil
@@ -112,19 +112,19 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
                     errors.append(.archiveFrameError(.distributionListUnexpectedRecipients, distributionListAppId))
                     return nil
                 }
-                return .ALL
+                return .all
             case .explicit:
                 guard memberRecipientIds.count > 0 else {
                     errors.append(.archiveFrameError(.distributionListMissingRecipients, distributionListAppId))
                     return nil
                 }
-                return .ONLY_WITH
+                return .onlyWith
             case .blockList:
                 guard memberRecipientIds.count > 0 else {
                     errors.append(.archiveFrameError(.distributionListMissingRecipients, distributionListAppId))
                     return nil
                 }
-                return .ALL_EXCEPT
+                return .allExcept
             }
         }()
 
@@ -133,21 +133,22 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
             return
         }
 
-        var distributionList = BackupProto.DistributionList(
-            name: storyThread.name,
-            allowReplies: storyThread.allowsReplies,
-            privacyMode: privacyMode
-        )
+        var distributionList = BackupProto_DistributionList()
+        distributionList.name = storyThread.name
+        distributionList.allowReplies = storyThread.allowsReplies
+        distributionList.privacyMode = privacyMode
         distributionList.memberRecipientIds = memberRecipientIds
 
-        var distributionListItem = BackupProto.DistributionListItem(distributionId: distributionId)
+        var distributionListItem = BackupProto_DistributionListItem()
+        distributionListItem.distributionID = distributionId
         distributionListItem.item = .distributionList(distributionList)
 
         Self.writeFrameToStream(stream, objectId: distributionListAppId) {
-            var recipient = BackupProto.Recipient(id: recipientId.value)
+            var recipient = BackupProto_Recipient()
+            recipient.id = recipientId.value
             recipient.destination = .distributionList(distributionListItem)
 
-            var frame = BackupProto.Frame()
+            var frame = BackupProto_Frame()
             frame.item = .recipient(recipient)
             return frame
         }.map { errors.append($0) }
@@ -172,22 +173,24 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
 
         let recipientId = context.assignRecipientId(to: distributionListAppId)
 
-        var distributionList = BackupProto.DistributionListItem(distributionId: distributionId)
+        var distributionList = BackupProto_DistributionListItem()
+        distributionList.distributionID = distributionId
         distributionList.item = .deletionTimestamp(deletionTimestamp)
 
         Self.writeFrameToStream(stream, objectId: distributionListAppId) {
-            var recipient = BackupProto.Recipient(id: recipientId.value)
+            var recipient = BackupProto_Recipient()
+            recipient.id = recipientId.value
             recipient.destination = .distributionList(distributionList)
 
-            var frame = BackupProto.Frame()
+            var frame = BackupProto_Frame()
             frame.item = .recipient(recipient)
             return frame
         }.map { errors.append($0) }
     }
 
     func restoreDistributionListRecipientProto(
-        _ distributionListItemProto: BackupProto.DistributionListItem,
-        recipient: BackupProto.Recipient,
+        _ distributionListItemProto: BackupProto_DistributionListItem,
+        recipient: BackupProto_Recipient,
         context: MessageBackup.RecipientRestoringContext,
         tx: any DBWriteTransaction
     ) -> RestoreFrameResult {
@@ -198,7 +201,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
             return .failure([.restoreFrameError(error, recipient.recipientId, line: line)])
         }
 
-        guard let distributionId = UUID(data: distributionListItemProto.distributionId) else {
+        guard let distributionId = UUID(data: distributionListItemProto.distributionID) else {
             return restoreFrameError(.invalidProtoData(.invalidDistributionListId))
         }
 
@@ -234,12 +237,12 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
             result = restoreFrameError(.invalidProtoData(.distributionListItemMissingItem))
         }
 
-        context[recipient.recipientId] = .distributionList(distributionListItemProto.distributionId)
+        context[recipient.recipientId] = .distributionList(distributionListItemProto.distributionID)
         return result
     }
 
     private func buildDistributionList(
-        from distributionListProto: BackupProto.DistributionList,
+        from distributionListProto: BackupProto_DistributionList,
         distributionId: UUID,
         recipientId: MessageBackup.RecipientId,
         context: MessageBackup.RecipientRestoringContext,
@@ -255,7 +258,7 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
                     return contactAddress.asInteropAddress()
                 case .distributionList, .group, .localAddress, .releaseNotesChannel, .none:
                     error = .failure([.restoreFrameError(
-                        .invalidProtoData(.invalidDistributionListMember(protoClass: BackupProto.DistributionList.self)),
+                        .invalidProtoData(.invalidDistributionListMember(protoClass: BackupProto_DistributionList.self)),
                         recipientId
                     )])
                     return nil
@@ -268,13 +271,13 @@ public class MessageBackupDistributionListRecipientArchiver: MessageBackupProtoA
 
         let viewMode: TSThreadStoryViewMode? = {
             switch distributionListProto.privacyMode {
-            case .ALL:
+            case .all:
                 return .default
-            case .ALL_EXCEPT:
+            case .allExcept:
                 return .blockList
-            case .ONLY_WITH:
+            case .onlyWith:
                 return .explicit
-            case .UNKNOWN:
+            case .unknown, .UNRECOGNIZED:
                 return nil
             }
         }()

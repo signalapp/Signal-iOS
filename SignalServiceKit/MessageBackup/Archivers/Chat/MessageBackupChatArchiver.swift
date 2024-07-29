@@ -14,7 +14,7 @@ public protocol MessageBackupChatArchiver: MessageBackupProtoArchiver {
 
     typealias RestoreFrameResult = MessageBackup.RestoreFrameResult<ChatId>
 
-    /// Archive all ``TSThread``s (they map to ``BackupProto.Chat``).
+    /// Archive all ``TSThread``s (they map to ``BackupProto_Chat``).
     ///
     /// - Returns: ``ArchiveMultiFrameResult.success`` if all frames were written without error, or either
     /// partial or complete failure otherwise.
@@ -28,13 +28,13 @@ public protocol MessageBackupChatArchiver: MessageBackupProtoArchiver {
         tx: DBReadTransaction
     ) -> ArchiveMultiFrameResult
 
-    /// Restore a single ``BackupProto.Chat`` frame.
+    /// Restore a single ``BackupProto_Chat`` frame.
     ///
     /// - Returns: ``RestoreFrameResult.success`` if all frames were read without error.
     /// How to handle ``RestoreFrameResult.failure`` is up to the caller,
     /// but typically an error will be shown to the user, but the restore will be allowed to proceed.
     func restore(
-        _ chat: BackupProto.Chat,
+        _ chat: BackupProto_Chat,
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> RestoreFrameResult
@@ -237,22 +237,21 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
             dontNotifyForMentionsIfMuted = true
         }
 
-        let chat = BackupProto.Chat(
-            id: chatId.value,
-            recipientId: recipientId.value,
-            archived: threadAssociatedData.isArchived,
-            pinnedOrder: thisThreadPinnedOrder,
-            expirationTimerMs: UInt64(expirationTimerSeconds * 1000),
-            muteUntilMs: threadAssociatedData.mutedUntilTimestamp,
-            markedUnread: threadAssociatedData.isMarkedUnread,
-            dontNotifyForMentionsIfMuted: dontNotifyForMentionsIfMuted
-        )
+        var chat = BackupProto_Chat()
+        chat.id = chatId.value
+        chat.recipientID = recipientId.value
+        chat.archived = threadAssociatedData.isArchived
+        chat.pinnedOrder = thisThreadPinnedOrder
+        chat.expirationTimerMs = UInt64(expirationTimerSeconds * 1000)
+        chat.muteUntilMs = threadAssociatedData.mutedUntilTimestamp
+        chat.markedUnread = threadAssociatedData.isMarkedUnread
+        chat.dontNotifyForMentionsIfMuted = dontNotifyForMentionsIfMuted
 
         let error = Self.writeFrameToStream(
             stream,
             objectId: thread.uniqueThreadIdentifier
         ) {
-            var frame = BackupProto.Frame()
+            var frame = BackupProto_Frame()
             frame.item = .chat(chat)
             return frame
         }
@@ -266,7 +265,7 @@ public class MessageBackupChatArchiverImpl: MessageBackupChatArchiver {
     // MARK: - Restoring
 
     public func restore(
-        _ chat: BackupProto.Chat,
+        _ chat: BackupProto_Chat,
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> RestoreFrameResult {

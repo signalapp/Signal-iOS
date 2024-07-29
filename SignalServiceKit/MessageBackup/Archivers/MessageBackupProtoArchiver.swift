@@ -63,7 +63,7 @@ extension MessageBackupProtoArchiver {
     internal static func writeFrameToStream<AppIdType>(
         _ stream: MessageBackupProtoOutputStream,
         objectId: AppIdType,
-        frameBuilder: () -> BackupProto.Frame
+        frameBuilder: () -> BackupProto_Frame
     ) -> MessageBackup.ArchiveFrameError<AppIdType>? {
         let frame = frameBuilder()
         switch stream.writeFrame(frame) {

@@ -21,11 +21,11 @@ internal class MessageBackupReactionArchiver: MessageBackupProtoArchiver {
         _ message: TSMessage,
         context: MessageBackup.RecipientArchivingContext,
         tx: DBReadTransaction
-    ) -> MessageBackup.ArchiveInteractionResult<[BackupProto.Reaction]> {
+    ) -> MessageBackup.ArchiveInteractionResult<[BackupProto_Reaction]> {
         let reactions = reactionStore.allReactions(messageId: message.uniqueId, tx: tx)
 
         var errors = [ArchiveFrameError]()
-        var reactionProtos = [BackupProto.Reaction]()
+        var reactionProtos = [BackupProto_Reaction]()
 
         for reaction in reactions {
             guard
@@ -47,14 +47,13 @@ internal class MessageBackupReactionArchiver: MessageBackupProtoArchiver {
                 continue
             }
 
-            let reaction = BackupProto.Reaction(
-                emoji: reaction.emoji,
-                authorId: authorId.value,
-                sentTimestamp: reaction.sentAtTimestamp,
-                sortOrder: reaction.sortOrder
-            )
+            var reactionProto = BackupProto_Reaction()
+            reactionProto.emoji = reaction.emoji
+            reactionProto.authorID = authorId.value
+            reactionProto.sentTimestamp = reaction.sentAtTimestamp
+            reactionProto.sortOrder = reaction.sortOrder
 
-            reactionProtos.append(reaction)
+            reactionProtos.append(reactionProto)
         }
 
         if errors.isEmpty {
@@ -67,7 +66,7 @@ internal class MessageBackupReactionArchiver: MessageBackupProtoArchiver {
     // MARK: Restoring
 
     func restoreReactions(
-        _ reactions: [BackupProto.Reaction],
+        _ reactions: [BackupProto_Reaction],
         chatItemId: MessageBackup.ChatItemId,
         message: TSMessage,
         context: MessageBackup.RecipientRestoringContext,

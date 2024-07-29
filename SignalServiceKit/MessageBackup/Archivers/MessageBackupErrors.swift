@@ -332,22 +332,22 @@ extension MessageBackup {
                 /// A message must come from either an Aci or an E164.
                 /// One in the backup did not.
                 case incomingMessageNotFromAciOrE164
-                /// Outgoing message's BackupProto.SendStatus can only be for BackupProto.Contacts.
+                /// Outgoing message's `BackupProto_SendStatus` can only be for `BackupProto_Contacts`.
                 /// One in the backup was to a group, self recipient, or something else.
                 case outgoingNonContactMessageRecipient
-                /// A BackupProto.SendStatus had an unregonized BackupProto.SendStatusStatus.
+                /// A `BackupProto_SendStatus` had an unregonized `BackupProto_SendStatusStatus`.
                 case unrecognizedMessageSendStatus
 
-                /// BackupProto.Reaction must come from either an Aci or an E164.
+                /// `BackupProto_Reaction` must come from either an Aci or an E164.
                 /// One in the backup did not.
                 case reactionNotFromAciOrE164
 
-                /// A BackupProto.BodyRange with a missing or unrecognized style.
+                /// A `BackupProto_BodyRange` with a missing or unrecognized style.
                 case unrecognizedBodyRangeStyle
 
-                /// A BackupProto.Group's gv2 master key could not be parsed by libsignal.
+                /// A `BackupProto_Group's` gv2 master key could not be parsed by libsignal.
                 case invalidGV2MasterKey
-                /// A BackupProtoGroup was missing its group snapshot.
+                /// A `BackupProto_Group` was missing its group snapshot.
                 case missingGV2GroupSnapshot
                 /// A ``BackupProtoGroup/BackupProtoFullGroupMember/role`` was
                 /// unrecognized. Includes the class of the offending proto.
@@ -358,14 +358,14 @@ extension MessageBackup {
                 /// We failed to build a V2 group model while restoring a group.
                 case failedToBuildGV2GroupModel
 
-                /// A BackupProto.GroupChangeChatUpdate ChatItem with a non-group-chat chatId.
+                /// A `BackupProto_GroupChangeChatUpdate` ChatItem with a non-group-chat chatId.
                 case groupUpdateMessageInNonGroupChat
-                /// A BackupProto.GroupChangeChatUpdate ChatItem without any updates!
+                /// A `BackupProto_GroupChangeChatUpdate` ChatItem without any updates!
                 case emptyGroupUpdates
-                /// A BackupProto.GroupSequenceOfRequestsAndCancelsUpdate where
+                /// A `BackupProto_GroupSequenceOfRequestsAndCancelsUpdate` where
                 /// the requester is the local user, which isn't allowed.
                 case sequenceOfRequestsAndCancelsWithLocalAci
-                /// An unrecognized BackupProto.GroupChangeChatUpdate.
+                /// An unrecognized `BackupProto_GroupChangeChatUpdate`.
                 case unrecognizedGroupUpdate
 
                 /// A frame was entirely missing its enclosed item.
@@ -376,34 +376,34 @@ extension MessageBackup {
                 /// A profile key for the local user that could not be parsed into a valid aes256 key
                 case invalidLocalUsernameLink
 
-                /// A BackupProto.IndividualCall chat item update was associated
+                /// A `BackupProto_IndividualCall` chat item update was associated
                 /// with a thread that was not a contact thread.
                 case individualCallNotInContactThread
-                /// A BackupProto.IndividualCall had an unrecognized type.
+                /// A `BackupProto_IndividualCall` had an unrecognized type.
                 case individualCallUnrecognizedType
-                /// A BackupProto.IndividualCall had an unrecognized direction.
+                /// A `BackupProto_IndividualCall` had an unrecognized direction.
                 case individualCallUnrecognizedDirection
-                /// A BackupProto.IndividualCall had an unrecognized state.
+                /// A `BackupProto_IndividualCall` had an unrecognized state.
                 case individualCallUnrecognizedState
 
-                /// A BackupProto.GroupCall chat item update was associated with
+                /// A `BackupProto_GroupCall` chat item update was associated with
                 /// a thread that was not a group thread.
                 case groupCallNotInGroupThread
-                /// A BackupProto.GroupCall had an unrecognized state.
+                /// A `BackupProto_GroupCall` had an unrecognized state.
                 case groupCallUnrecognizedState
-                /// A BackupProto.GroupCall referenced a recipient that was not
+                /// A `BackupProto_GroupCall` referenced a recipient that was not
                 /// a contact or otherwise did not contain an ACI.
                 case groupCallRecipientIdNotAnAci(RecipientId)
 
-                /// BackupProto.DistributionListItem was missing its item
+                /// `BackupProto_DistributionListItem` was missing its item
                 case distributionListItemMissingItem
-                /// BackupProto.DistributionList.distributionId was not a valid UUID
+                /// `BackupProto_DistributionList.distributionId` was not a valid UUID
                 case invalidDistributionListId
-                /// BackupProto.DistributionList.privacyMode was missing, or contained an unknown privacy mode
+                /// `BackupProto_DistributionList.privacyMode` was missing, or contained an unknown privacy mode
                 case invalidDistributionListPrivacyMode
-                /// The specified BackupProto.DistributionList.privacyMode was missing a list of associated member IDs
+                /// The specified `BackupProto_DistributionList.privacyMode` was missing a list of associated member IDs
                 case invalidDistributionListPrivacyModeMissingRequiredMembers
-                /// BackupProto.DistributionListItem.deletionTimestamp was invalid
+                /// `BackupProto_DistributionListItem.deletionTimestamp` was invalid
                 case invalidDistributionListDeletionTimestamp
 
                 /// A ``BackupProto/ChatUpdateMessage/update`` was empty.

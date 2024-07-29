@@ -51,14 +51,15 @@ final class MessageBackupThreadMergeChatUpdateArchiver {
             return messageFailure(.referencedRecipientIdMissing(.contact(mergedContactAddress)))
         }
 
-        var chatUpdateMessage = BackupProto.ChatUpdateMessage()
-        chatUpdateMessage.update = .threadMerge(BackupProto.ThreadMergeChatUpdate(
-            previousE164: threadMergePhoneNumber.uint64Value
-        ))
+        var threadMergeChatUpdate = BackupProto_ThreadMergeChatUpdate()
+        threadMergeChatUpdate.previousE164 = threadMergePhoneNumber.uint64Value
+
+        var chatUpdateMessage = BackupProto_ChatUpdateMessage()
+        chatUpdateMessage.update = .threadMerge(threadMergeChatUpdate)
 
         let interactionArchiveDetails = Details(
             author: threadRecipientId,
-            directionalDetails: .directionless(BackupProto.ChatItem.DirectionlessMessageDetails()),
+            directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,
@@ -71,8 +72,8 @@ final class MessageBackupThreadMergeChatUpdateArchiver {
     // MARK: -
 
     func restoreThreadMergeChatUpdate(
-        _ threadMergeUpdateProto: BackupProto.ThreadMergeChatUpdate,
-        chatItem: BackupProto.ChatItem,
+        _ threadMergeUpdateProto: BackupProto_ThreadMergeChatUpdate,
+        chatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: any DBWriteTransaction
@@ -89,7 +90,7 @@ final class MessageBackupThreadMergeChatUpdateArchiver {
         }
 
         guard let previousE164 = E164(threadMergeUpdateProto.previousE164) else {
-            return invalidProtoData(.invalidE164(protoClass: BackupProto.ThreadMergeChatUpdate.self))
+            return invalidProtoData(.invalidE164(protoClass: BackupProto_ThreadMergeChatUpdate.self))
         }
 
         guard case .contact(let mergedThread) = chatThread.threadType else {

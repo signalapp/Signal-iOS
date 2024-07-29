@@ -13,7 +13,7 @@ extension MessageBackup {
     public typealias RestoreLocalRecipientResult = RestoreFrameResult<RecipientId>
 }
 
-/// Archiver for the ``BackupProto.SelfRecipient`` recipient, a.k.a. the local
+/// Archiver for the ``BackupProto_Self`` recipient, a.k.a. the local
 /// user author/recipient.  Used as the recipient for the Note To Self chat.
 public class MessageBackupLocalRecipientArchiver: MessageBackupProtoArchiver {
     private static let localRecipientId = MessageBackup.RecipientId(value: 1)
@@ -26,12 +26,13 @@ public class MessageBackupLocalRecipientArchiver: MessageBackupProtoArchiver {
             stream,
             objectId: MessageBackup.LocalRecipientId()
         ) {
-            let selfRecipient = BackupProto.SelfRecipient()
+            let selfRecipient = BackupProto_Self()
 
-            var recipient = BackupProto.Recipient(id: Self.localRecipientId.value)
-            recipient.destination = .selfRecipient(selfRecipient)
+            var recipient = BackupProto_Recipient()
+            recipient.id = Self.localRecipientId.value
+            recipient.destination = .self_p(selfRecipient)
 
-            var frame = BackupProto.Frame()
+            var frame = BackupProto_Frame()
             frame.item = .recipient(recipient)
             return frame
         }
@@ -45,8 +46,8 @@ public class MessageBackupLocalRecipientArchiver: MessageBackupProtoArchiver {
 
     /// Restore a single ``BackupProto/Recipient`` frame for the local recipient.
     public func restoreSelfRecipient(
-        _ selfRecipientProto: BackupProto.SelfRecipient,
-        recipient: BackupProto.Recipient,
+        _ selfRecipientProto: BackupProto_Self,
+        recipient: BackupProto_Recipient,
         context: MessageBackup.RecipientRestoringContext,
         tx: DBWriteTransaction
     ) -> MessageBackup.RestoreLocalRecipientResult {

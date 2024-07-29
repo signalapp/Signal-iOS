@@ -6,10 +6,10 @@
 import Foundation
 import LibSignalClient
 
-/// Archives ``TSGroupThread``s as ``BackupProto.Group`` recipients.
+/// Archives ``TSGroupThread``s as ``BackupProto_Group`` recipients.
 ///
 /// This is a bit confusing, because ``TSThread`` mostly corresponds to
-/// ``BackupProto.Chat``, and there will in fact _also_ be a chat for the group
+/// ``BackupProto_Chat``, and there will in fact _also_ be a chat for the group
 /// thread. Its just that our group thread contains all the metadata
 /// corresponding to both the Chat and Recipient parts of the Backup proto.
 public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
@@ -104,38 +104,40 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
             return
         }
 
-        var group = BackupProto.Group(
-            masterKey: groupMasterKey,
-            whitelisted: profileManager.isThread(
-                inProfileWhitelist: groupThread, tx: tx
-            ),
-            hideStory: storyStore.getOrCreateStoryContextAssociatedData(
-                forGroupThread: groupThread, tx: tx
-            ).isHidden,
-            storySendMode: { () -> BackupProto.Group.StorySendMode in
-                switch groupThread.storyViewMode {
-                case .disabled: return .DISABLED
-                case .explicit, .blockList: return .ENABLED
-                case .default: return .DEFAULT
-                }
-            }()
+        var group = BackupProto_Group()
+        group.masterKey = groupMasterKey
+        group.whitelisted = profileManager.isThread(
+            inProfileWhitelist: groupThread, tx: tx
         )
-        group.snapshot = { () -> BackupProto.Group.GroupSnapshot in
-            var groupSnapshot = BackupProto.Group.GroupSnapshot(
-                publicKey: groupPublicKey,
-                avatarUrl: groupModel.avatarUrlPath ?? "",
-                version: groupModel.revision,
-                inviteLinkPassword: groupModel.inviteLinkPassword ?? Data(),
-                announcementsOnly: groupModel.isAnnouncementsOnly
-            )
-            groupSnapshot.title = groupModel.groupName?.nilIfEmpty.map { .buildTitle($0) }
-            groupSnapshot.descriptionText = groupModel.descriptionText?.nilIfEmpty.map { .buildDescriptionText($0) }
-            groupSnapshot.disappearingMessagesTimer = { () -> BackupProto.Group.GroupAttributeBlob? in
+        group.hideStory = storyStore.getOrCreateStoryContextAssociatedData(
+            forGroupThread: groupThread, tx: tx
+        ).isHidden
+        group.storySendMode = { () -> BackupProto_Group.StorySendMode in
+            switch groupThread.storyViewMode {
+            case .disabled: return .disabled
+            case .explicit, .blockList: return .enabled
+            case .default: return .default
+            }
+        }()
+        group.snapshot = { () -> BackupProto_Group.GroupSnapshot in
+            var groupSnapshot = BackupProto_Group.GroupSnapshot()
+            groupSnapshot.publicKey = groupPublicKey
+            groupSnapshot.avatarURL = groupModel.avatarUrlPath ?? ""
+            groupSnapshot.version = groupModel.revision
+            groupSnapshot.inviteLinkPassword = groupModel.inviteLinkPassword ?? Data()
+            groupSnapshot.announcementsOnly = groupModel.isAnnouncementsOnly
+            if let groupName = groupModel.groupName?.nilIfEmpty {
+                groupSnapshot.title = .buildTitle(groupName)
+            }
+            if let groupDescription = groupModel.descriptionText?.nilIfEmpty {
+                groupSnapshot.description_p = .buildDescriptionText(groupDescription)
+            }
+            groupSnapshot.disappearingMessagesTimer = { () -> BackupProto_Group.GroupAttributeBlob in
                 let durationSeconds = disappearingMessageConfigStore.durationSeconds(for: groupThread, tx: tx)
-                return durationSeconds > 0 ? .buildDisappearingMessageTimer(durationSeconds) : nil
+                return .buildDisappearingMessageTimer(durationSeconds)
             }()
             groupSnapshot.accessControl = groupModel.access.asBackupProtoAccessControl
-            groupSnapshot.members = groupMembership.fullMembers.compactMap { address -> BackupProto.Group.Member? in
+            groupSnapshot.members = groupMembership.fullMembers.compactMap { address -> BackupProto_Group.Member? in
                 guard
                     let aci = address.aci,
                     let role = groupMembership.role(for: address),
@@ -147,7 +149,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
 
                 return .build(serviceId: aci, role: role, profileKeyData: profileKey)
             }
-            groupSnapshot.membersPendingProfileKey = groupMembership.invitedMembers.compactMap { address -> BackupProto.Group.MemberPendingProfileKey? in
+            groupSnapshot.membersPendingProfileKey = groupMembership.invitedMembers.compactMap { address -> BackupProto_Group.MemberPendingProfileKey? in
                 guard
                     let serviceId = address.serviceId,
                     let role = groupMembership.role(for: address),
@@ -159,10 +161,9 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
 
                 // iOS doesn't track the timestamp of the invite, so we'll
                 // default-populate it.
-                var invitedMemberProto = BackupProto.Group.MemberPendingProfileKey(
-                    addedByUserId: addedByAci.serviceIdBinary.asData,
-                    timestamp: 0
-                )
+                var invitedMemberProto = BackupProto_Group.MemberPendingProfileKey()
+                invitedMemberProto.addedByUserID = addedByAci.serviceIdBinary.asData
+                invitedMemberProto.timestamp = 0
                 invitedMemberProto.member = .build(
                     serviceId: serviceId,
                     role: role,
@@ -170,7 +171,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
                 )
                 return invitedMemberProto
             }
-            groupSnapshot.membersPendingAdminApproval = groupMembership.requestingMembers.compactMap { address -> BackupProto.Group.MemberPendingAdminApproval? in
+            groupSnapshot.membersPendingAdminApproval = groupMembership.requestingMembers.compactMap { address -> BackupProto_Group.MemberPendingAdminApproval? in
                 guard
                     let aci = address.aci,
                     let profileKey = profileManager.getProfileKeyData(for: address, tx: tx)
@@ -181,17 +182,19 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
 
                 // iOS doesn't track the timestamp of the request, so we'll
                 // default-populate it.
-                return BackupProto.Group.MemberPendingAdminApproval(
-                    userId: aci.serviceIdBinary.asData,
-                    profileKey: profileKey,
-                    timestamp: 0
-                )
+                var memberPendingAdminApproval = BackupProto_Group.MemberPendingAdminApproval()
+                memberPendingAdminApproval.userID = aci.serviceIdBinary.asData
+                memberPendingAdminApproval.profileKey = profileKey
+                memberPendingAdminApproval.timestamp = 0
+
+                return memberPendingAdminApproval
             }
-            groupSnapshot.membersBanned = groupMembership.bannedMembers.map { aci, bannedAtMillis -> BackupProto.Group.MemberBanned in
-                return BackupProto.Group.MemberBanned(
-                    userId: aci.serviceIdBinary.asData,
-                    timestamp: bannedAtMillis
-                )
+            groupSnapshot.membersBanned = groupMembership.bannedMembers.map { aci, bannedAtMillis -> BackupProto_Group.MemberBanned in
+                var memberBanned = BackupProto_Group.MemberBanned()
+                memberBanned.userID = aci.serviceIdBinary.asData
+                memberBanned.timestamp = bannedAtMillis
+
+                return memberBanned
             }
 
             return groupSnapshot
@@ -201,10 +204,11 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
             stream,
             objectId: groupAppId,
             frameBuilder: {
-                var recipient = BackupProto.Recipient(id: recipientId.value)
+                var recipient = BackupProto_Recipient()
+                recipient.id = recipientId.value
                 recipient.destination = .group(group)
 
-                var frame = BackupProto.Frame()
+                var frame = BackupProto_Frame()
                 frame.item = .recipient(recipient)
                 return frame
             }
@@ -212,8 +216,8 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
     }
 
     func restoreGroupRecipientProto(
-        _ groupProto: BackupProto.Group,
-        recipient: BackupProto.Recipient,
+        _ groupProto: BackupProto_Group,
+        recipient: BackupProto_Recipient,
         context: MessageBackup.RecipientRestoringContext,
         tx: DBWriteTransaction
     ) -> RestoreFrameResult {
@@ -233,17 +237,18 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
             return restoreFrameError(.invalidProtoData(.invalidGV2MasterKey))
         }
 
-        guard let groupSnapshot = groupProto.snapshot else {
+        guard groupProto.hasSnapshot else {
             return restoreFrameError(.invalidProtoData(.missingGV2GroupSnapshot))
         }
+        let groupSnapshot = groupProto.snapshot
 
         var groupMembershipBuilder = GroupMembership.Builder()
         for fullMember in groupSnapshot.members {
-            guard let aci = try? Aci.parseFrom(serviceIdBinary: fullMember.userId) else {
-                return restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto.Group.Member.self)))
+            guard let aci = try? Aci.parseFrom(serviceIdBinary: fullMember.userID) else {
+                return restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto_Group.Member.self)))
             }
             guard let role = TSGroupMemberRole(backupProtoRole: fullMember.role) else {
-                return restoreFrameError(.invalidProtoData(.unrecognizedGV2MemberRole(protoClass: BackupProto.Group.Member.self)))
+                return restoreFrameError(.invalidProtoData(.unrecognizedGV2MemberRole(protoClass: BackupProto_Group.Member.self)))
             }
 
             groupMembershipBuilder.addFullMember(aci, role: role)
@@ -261,17 +266,18 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
             }
         }
         for invitedMember in groupSnapshot.membersPendingProfileKey {
-            guard let memberDetails = invitedMember.member else {
+            guard invitedMember.hasMember else {
                 return restoreFrameError(.invalidProtoData(.invitedGV2MemberMissingMemberDetails))
             }
-            guard let serviceId = try? ServiceId.parseFrom(serviceIdBinary: memberDetails.userId) else {
-                return restoreFrameError(.invalidProtoData(.invalidServiceId(protoClass: BackupProto.Group.MemberPendingProfileKey.self)))
+            let memberDetails = invitedMember.member
+            guard let serviceId = try? ServiceId.parseFrom(serviceIdBinary: memberDetails.userID) else {
+                return restoreFrameError(.invalidProtoData(.invalidServiceId(protoClass: BackupProto_Group.MemberPendingProfileKey.self)))
             }
             guard let role = TSGroupMemberRole(backupProtoRole: memberDetails.role) else {
-                return restoreFrameError(.invalidProtoData(.unrecognizedGV2MemberRole(protoClass: BackupProto.Group.MemberPendingProfileKey.self)))
+                return restoreFrameError(.invalidProtoData(.unrecognizedGV2MemberRole(protoClass: BackupProto_Group.MemberPendingProfileKey.self)))
             }
-            guard let addedByAci = try? Aci.parseFrom(serviceIdBinary: invitedMember.addedByUserId) else {
-                return restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto.Group.MemberPendingProfileKey.self)))
+            guard let addedByAci = try? Aci.parseFrom(serviceIdBinary: invitedMember.addedByUserID) else {
+                return restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto_Group.MemberPendingProfileKey.self)))
             }
 
             groupMembershipBuilder.addInvitedMember(
@@ -281,8 +287,8 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
             )
         }
         for requestingMember in groupSnapshot.membersPendingAdminApproval {
-            guard let aci = try? Aci.parseFrom(serviceIdBinary: requestingMember.userId) else {
-                return restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto.Group.MemberPendingAdminApproval.self)))
+            guard let aci = try? Aci.parseFrom(serviceIdBinary: requestingMember.userID) else {
+                return restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto_Group.MemberPendingAdminApproval.self)))
             }
             groupMembershipBuilder.addRequestingMember(aci)
 
@@ -299,8 +305,8 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
             }
         }
         for bannedMember in groupSnapshot.membersBanned {
-            guard let aci = try? Aci.parseFrom(serviceIdBinary: bannedMember.userId) else {
-                return restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto.Group.MemberBanned.self)))
+            guard let aci = try? Aci.parseFrom(serviceIdBinary: bannedMember.userID) else {
+                return restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto_Group.MemberBanned.self)))
             }
             let bannedAtTimestampMillis = bannedMember.timestamp
 
@@ -318,9 +324,9 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
         groupModelBuilder.name = groupSnapshot.extractTitle
         groupModelBuilder.descriptionText = groupSnapshot.extractDescriptionText
         groupModelBuilder.avatarData = nil
-        groupModelBuilder.avatarUrlPath = groupSnapshot.avatarUrl.nilIfEmpty
+        groupModelBuilder.avatarUrlPath = groupSnapshot.avatarURL.nilIfEmpty
         groupModelBuilder.groupMembership = groupMembershipBuilder.build()
-        groupModelBuilder.groupAccess = groupSnapshot.accessControl.map(GroupAccess.init(backupProtoAccessControl:))
+        groupModelBuilder.groupAccess = GroupAccess(backupProtoAccessControl: groupSnapshot.accessControl)
         groupModelBuilder.inviteLinkPassword = groupSnapshot.inviteLinkPassword.nilIfEmpty
         groupModelBuilder.isAnnouncementsOnly = groupSnapshot.announcementsOnly
 
@@ -350,12 +356,12 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
 
         let isStorySendEnabled: Bool? = {
             switch groupProto.storySendMode {
-            case .DEFAULT:
+            case .default, .UNRECOGNIZED:
                 // No explicit setting.
                 return nil
-            case .DISABLED:
+            case .disabled:
                 return false
-            case .ENABLED:
+            case .enabled:
                 return true
             }
         }()
@@ -403,43 +409,43 @@ private extension OWSAES256Key {
 
 // MARK: -
 
-private extension BackupProto.Group.GroupAttributeBlob {
-    static func buildTitle(_ title: String) -> BackupProto.Group.GroupAttributeBlob {
-        var blob = BackupProto.Group.GroupAttributeBlob()
+private extension BackupProto_Group.GroupAttributeBlob {
+    static func buildTitle(_ title: String) -> BackupProto_Group.GroupAttributeBlob {
+        var blob = BackupProto_Group.GroupAttributeBlob()
         blob.content = .title(title)
         return blob
     }
 
-    static func buildDescriptionText(_ descriptionText: String) -> BackupProto.Group.GroupAttributeBlob {
-        var blob = BackupProto.Group.GroupAttributeBlob()
+    static func buildDescriptionText(_ descriptionText: String) -> BackupProto_Group.GroupAttributeBlob {
+        var blob = BackupProto_Group.GroupAttributeBlob()
         blob.content = .descriptionText(descriptionText)
         return blob
     }
 
-    static func buildDisappearingMessageTimer(_ disappearingMessageDuration: UInt32) -> BackupProto.Group.GroupAttributeBlob {
-        var blob = BackupProto.Group.GroupAttributeBlob()
+    static func buildDisappearingMessageTimer(_ disappearingMessageDuration: UInt32) -> BackupProto_Group.GroupAttributeBlob {
+        var blob = BackupProto_Group.GroupAttributeBlob()
         blob.content = .disappearingMessagesDuration(disappearingMessageDuration)
         return blob
     }
 }
 
-private extension BackupProto.Group.GroupSnapshot {
+private extension BackupProto_Group.GroupSnapshot {
     var extractTitle: String? {
-        switch title?.content {
+        switch title.content {
         case .title(let title): return title
         case nil, .avatar, .descriptionText, .disappearingMessagesDuration: return nil
         }
     }
 
     var extractDescriptionText: String? {
-        switch descriptionText?.content {
+        switch description_p.content {
         case .descriptionText(let descriptionText): return descriptionText
         case nil, .title, .avatar, .disappearingMessagesDuration: return nil
         }
     }
 
     var extractDisappearingMessageTimer: UInt32? {
-        switch disappearingMessagesTimer?.content {
+        switch disappearingMessagesTimer.content {
         case .disappearingMessagesDuration(let disappearingMessageDuration): return disappearingMessageDuration
         case nil, .title, .avatar, .descriptionText: return nil
         }
@@ -448,37 +454,37 @@ private extension BackupProto.Group.GroupSnapshot {
 
 // MARK: -
 
-private extension BackupProto.Group.Member {
+private extension BackupProto_Group.Member {
     static func build(
         serviceId: ServiceId,
         role: TSGroupMemberRole,
         profileKeyData: Data?
-    ) -> BackupProto.Group.Member {
+    ) -> BackupProto_Group.Member {
         // iOS doesn't track the joinedAtRevision, so we'll default-populate it.
-        return BackupProto.Group.Member(
-            userId: serviceId.serviceIdBinary.asData,
-            role: role.asBackupProtoRole,
-            profileKey: profileKeyData ?? Data(),
-            joinedAtVersion: 0
-        )
+        var member = BackupProto_Group.Member()
+        member.userID = serviceId.serviceIdBinary.asData
+        member.role = role.asBackupProtoRole
+        member.profileKey = profileKeyData ?? Data()
+        member.joinedAtVersion = 0
+        return member
     }
 }
 
 // MARK: -
 
 private extension TSGroupMemberRole {
-    init?(backupProtoRole: BackupProto.Group.Member.Role) {
+    init?(backupProtoRole: BackupProto_Group.Member.Role) {
         switch backupProtoRole {
-        case .UNKNOWN: return nil
-        case .DEFAULT: self = .normal
-        case .ADMINISTRATOR: self = .administrator
+        case .unknown, .UNRECOGNIZED: return nil
+        case .default: self = .normal
+        case .administrator: self = .administrator
         }
     }
 
-    var asBackupProtoRole: BackupProto.Group.Member.Role {
+    var asBackupProtoRole: BackupProto_Group.Member.Role {
         switch self {
-        case .normal: return .DEFAULT
-        case .administrator: return .ADMINISTRATOR
+        case .normal: return .default
+        case .administrator: return .administrator
         }
     }
 }
@@ -486,29 +492,29 @@ private extension TSGroupMemberRole {
 // MARK: -
 
 private extension GroupV2Access {
-    init(backupProtoAccessRequired: BackupProto.Group.AccessControl.AccessRequired) {
+    init(backupProtoAccessRequired: BackupProto_Group.AccessControl.AccessRequired) {
         switch backupProtoAccessRequired {
-        case .UNKNOWN: self = .unknown
-        case .ANY: self = .any
-        case .MEMBER: self = .member
-        case .ADMINISTRATOR: self = .administrator
-        case .UNSATISFIABLE: self = .unsatisfiable
+        case .unknown, .UNRECOGNIZED: self = .unknown
+        case .any: self = .any
+        case .member: self = .member
+        case .administrator: self = .administrator
+        case .unsatisfiable: self = .unsatisfiable
         }
     }
 
-    var asBackupProtoAccessRequired: BackupProto.Group.AccessControl.AccessRequired {
+    var asBackupProtoAccessRequired: BackupProto_Group.AccessControl.AccessRequired {
         switch self {
-        case .unknown: return .UNKNOWN
-        case .any: return .ANY
-        case .member: return .MEMBER
-        case .administrator: return .ADMINISTRATOR
-        case .unsatisfiable: return .UNSATISFIABLE
+        case .unknown: return .unknown
+        case .any: return .any
+        case .member: return .member
+        case .administrator: return .administrator
+        case .unsatisfiable: return .unsatisfiable
         }
     }
 }
 
 private extension GroupAccess {
-    convenience init(backupProtoAccessControl: BackupProto.Group.AccessControl) {
+    convenience init(backupProtoAccessControl: BackupProto_Group.AccessControl) {
         self.init(
             members: GroupV2Access(backupProtoAccessRequired: backupProtoAccessControl.members),
             attributes: GroupV2Access(backupProtoAccessRequired: backupProtoAccessControl.attributes),
@@ -516,11 +522,11 @@ private extension GroupAccess {
         )
     }
 
-    var asBackupProtoAccessControl: BackupProto.Group.AccessControl {
-        return BackupProto.Group.AccessControl(
-            attributes: attributes.asBackupProtoAccessRequired,
-            members: members.asBackupProtoAccessRequired,
-            addFromInviteLink: addFromInviteLink.asBackupProtoAccessRequired
-        )
+    var asBackupProtoAccessControl: BackupProto_Group.AccessControl {
+        var accessControl = BackupProto_Group.AccessControl()
+        accessControl.attributes = attributes.asBackupProtoAccessRequired
+        accessControl.members = members.asBackupProtoAccessRequired
+        accessControl.addFromInviteLink = members.asBackupProtoAccessRequired
+        return accessControl
     }
 }

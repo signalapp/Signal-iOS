@@ -15,17 +15,17 @@ extension MessageBackup {
             self.value = value
         }
 
-        fileprivate init(chat: BackupProto.Chat) {
+        fileprivate init(chat: BackupProto_Chat) {
             self.init(value: chat.id)
         }
 
-        fileprivate init(chatItem: BackupProto.ChatItem) {
-            self.init(value: chatItem.chatId)
+        fileprivate init(chatItem: BackupProto_ChatItem) {
+            self.init(value: chatItem.chatID)
         }
 
         // MARK: MessageBackupLoggableId
 
-        public var typeLogString: String { "BackupProto.Chat" }
+        public var typeLogString: String { "BackupProto_Chat" }
         public var idLogString: String { "\(value)" }
     }
 
@@ -81,7 +81,7 @@ extension MessageBackup {
      * to the ID addressing system of the backup protos.
      *
      * For example, we will assign a ``MessageBackup/ChatId`` to each ``TSThread`` as we
-     * insert them. Later, when we create the ``BackupProto.ChatItem`` corresponding to the ``TSThread``,
+     * insert them. Later, when we create the ``BackupProto_ChatItem`` corresponding to the ``TSThread``,
      * we will need to add the corresponding ``MessageBackup/ChatId``, which we look up using the thread id
      * this context keeps.
      */
@@ -157,14 +157,14 @@ extension MessageBackup {
     }
 }
 
-extension BackupProto.Chat {
+extension BackupProto_Chat {
 
     public var chatId: MessageBackup.ChatId {
         return MessageBackup.ChatId(chat: self)
     }
 }
 
-extension BackupProto.ChatItem {
+extension BackupProto_ChatItem {
 
     public var typedChatId: MessageBackup.ChatId {
         return MessageBackup.ChatId(chatItem: self)

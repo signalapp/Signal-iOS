@@ -4,7 +4,7 @@
 //
 
 public extension MessageBackup {
-    /// An identifier for a ``BackupProto.StickerPack`` backup frame.
+    /// An identifier for a ``BackupProto_StickerPack`` backup frame.
     struct StickerPackId: MessageBackupLoggableId {
         let value: Data
 
@@ -14,7 +14,7 @@ public extension MessageBackup {
 
         // MARK: MessageBackupLoggableId
 
-        public var typeLogString: String { "BackupProto.StickPack" }
+        public var typeLogString: String { "BackupProto_StickPack" }
         public var idLogString: String {
             /// Since sticker pack IDs are a cross-client identifier, we don't
             /// want to log them directly.

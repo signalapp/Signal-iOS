@@ -51,15 +51,16 @@ final class MessageBackupProfileChangeChatUpdateArchiver {
             return messageFailure(.profileChangeUpdateMissingNames)
         }
 
-        var chatUpdateMessage = BackupProto.ChatUpdateMessage()
-        chatUpdateMessage.update = .profileChange(BackupProto.ProfileChangeChatUpdate(
-            previousName: oldProfileName,
-            newName: newProfileName
-        ))
+        var profileChangeChatUpdate = BackupProto_ProfileChangeChatUpdate()
+        profileChangeChatUpdate.previousName = oldProfileName
+        profileChangeChatUpdate.newName = newProfileName
+
+        var chatUpdateMessage = BackupProto_ChatUpdateMessage()
+        chatUpdateMessage.update = .profileChange(profileChangeChatUpdate)
 
         let interactionArchiveDetails = Details(
             author: profileRecipientId,
-            directionalDetails: .directionless(BackupProto.ChatItem.DirectionlessMessageDetails()),
+            directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,
@@ -72,8 +73,8 @@ final class MessageBackupProfileChangeChatUpdateArchiver {
     // MARK: -
 
     func restoreProfileChangeChatUpdate(
-        _ profileChangeChatUpdateProto: BackupProto.ProfileChangeChatUpdate,
-        chatItem: BackupProto.ChatItem,
+        _ profileChangeChatUpdateProto: BackupProto_ProfileChangeChatUpdate,
+        chatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: any DBWriteTransaction

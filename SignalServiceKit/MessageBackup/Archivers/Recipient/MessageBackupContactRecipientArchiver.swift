@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-/// Archives ``SignalRecipient``s as ``BackupProto.Contact`` recipients.
+/// Archives ``SignalRecipient``s as ``BackupProto_Contact`` recipients.
 public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
     typealias RecipientId = MessageBackup.RecipientId
     typealias RecipientAppId = MessageBackup.RecipientArchivingContext.Address
@@ -90,63 +90,72 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
 
             let storyContext = recipient.aci.map { self.storyStore.getOrCreateStoryContextAssociatedData(for: $0, tx: tx) }
 
-            var contact = BackupProto.Contact(
-                blocked: blockedAddresses.contains(recipient.address),
-                visibility: { () -> BackupProto.Contact.Visibility in
-                    if self.recipientHidingManager.isHiddenRecipient(recipient, tx: tx) {
-                        if
-                            let contactThread = threadStore.fetchContactThread(recipient: recipient, tx: tx),
-                            threadStore.hasPendingMessageRequest(thread: contactThread, tx: tx)
-                        {
-                            return .HIDDEN_MESSAGE_REQUEST
-                        }
-
-                        return .HIDDEN
-                    } else {
-                        return .VISIBLE
+            var contact = BackupProto_Contact()
+            contact.blocked = blockedAddresses.contains(recipient.address)
+            contact.visibility = { () -> BackupProto_Contact.Visibility in
+                if self.recipientHidingManager.isHiddenRecipient(recipient, tx: tx) {
+                    if
+                        let contactThread = threadStore.fetchContactThread(recipient: recipient, tx: tx),
+                        threadStore.hasPendingMessageRequest(thread: contactThread, tx: tx)
+                    {
+                        return .hiddenMessageRequest
                     }
-                }(),
-                profileSharing: whitelistedAddresses.contains(recipient.address),
-                hideStory: storyContext?.isHidden ?? false
-            )
-            contact.registration = { () -> BackupProto.Contact.Registration in
-                if !recipient.isRegistered {
-                    let unregisteredAtTimestamp = recipient.unregisteredAtTimestamp ?? SignalRecipient.Constants.distantPastUnregisteredTimestamp
 
-                    return .notRegistered(BackupProto.Contact.NotRegistered(
-                        unregisteredTimestamp: unregisteredAtTimestamp
-                    ))
+                    return .hidden
+                } else {
+                    return .visible
+                }
+            }()
+            contact.profileSharing = whitelistedAddresses.contains(recipient.address)
+            contact.hideStory = storyContext?.isHidden ?? false
+            contact.registration = { () -> BackupProto_Contact.OneOf_Registration in
+                if !recipient.isRegistered {
+                    var notRegistered = BackupProto_Contact.NotRegistered()
+                    notRegistered.unregisteredTimestamp = recipient.unregisteredAtTimestamp ?? SignalRecipient.Constants.distantPastUnregisteredTimestamp
+
+                    return .notRegistered(notRegistered)
                 }
 
-                return .registered(BackupProto.Contact.Registered())
-            }()
-
-            contact.aci = recipient.aci.map(\.rawUUID.data)
-            contact.pni = recipient.pni.map(\.rawUUID.data)
-            contact.e164 = { () -> UInt64? in
-                guard let phoneNumberString = recipient.phoneNumber?.stringValue else { return nil }
-                return E164(phoneNumberString)?.uint64Value
+                return .registered(BackupProto_Contact.Registered())
             }()
 
             if let aci = recipient.aci {
-                contact.username = usernameLookupManager.fetchUsername(
-                    forAci: aci, transaction: tx
-                )
+                contact.aci = aci.rawUUID.data
+
+                if let username = usernameLookupManager.fetchUsername(forAci: aci, transaction: tx) {
+                    contact.username = username
+                }
+            }
+            if let pni = recipient.pni {
+                contact.pni = pni.rawUUID.data
+            }
+            if
+                let phoneNumberString = recipient.phoneNumber?.stringValue,
+                let phoneNumberUInt = E164(phoneNumberString)?.uint64Value
+            {
+                contact.e164 = phoneNumberUInt
             }
 
             let userProfile = self.profileManager.getUserProfile(for: recipient.address, tx: tx)
-            contact.profileKey = userProfile?.profileKey.map(\.keyData)
-            contact.profileGivenName = userProfile?.givenName
-            contact.profileFamilyName = userProfile?.familyName
+            if let profileKey = userProfile?.profileKey {
+                contact.profileKey = profileKey.keyData
+            }
+            if let givenName = userProfile?.givenName {
+                contact.profileGivenName = givenName
+            }
+            if let familyName = userProfile?.familyName {
+                contact.profileFamilyName = familyName
+            }
 
             Self.writeFrameToStream(
                 stream,
                 objectId: .contact(contactAddress),
                 frameBuilder: {
-                    var recipient = BackupProto.Recipient(id: recipientId.value)
+                    var recipient = BackupProto_Recipient()
+                    recipient.id = recipientId.value
                     recipient.destination = .contact(contact)
 
-                    var frame = BackupProto.Frame()
+                    var frame = BackupProto_Frame()
                     frame.item = .recipient(recipient)
                     return frame
                 }
@@ -161,8 +170,8 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
     }
 
     func restoreContactRecipientProto(
-        _ contactProto: BackupProto.Contact,
-        recipient: BackupProto.Recipient,
+        _ contactProto: BackupProto_Contact,
+        recipient: BackupProto_Recipient,
         context: MessageBackup.RecipientRestoringContext,
         tx: DBWriteTransaction
     ) -> RestoreFrameResult {
@@ -193,33 +202,33 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         let pni: Pni?
         let e164: E164?
         let profileKey: OWSAES256Key?
-        if let aciRaw = contactProto.aci {
-            guard let aciUuid = UUID(data: aciRaw) else {
-                return restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto.Contact.self)))
+        if contactProto.hasAci {
+            guard let aciUuid = UUID(data: contactProto.aci) else {
+                return restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto_Contact.self)))
             }
             aci = Aci.init(fromUUID: aciUuid)
         } else {
             aci = nil
         }
-        if let pniRaw = contactProto.pni {
-            guard let pniUuid = UUID(data: pniRaw) else {
-                return restoreFrameError(.invalidProtoData(.invalidPni(protoClass: BackupProto.Contact.self)))
+        if contactProto.hasPni {
+            guard let pniUuid = UUID(data: contactProto.pni) else {
+                return restoreFrameError(.invalidProtoData(.invalidPni(protoClass: BackupProto_Contact.self)))
             }
             pni = Pni.init(fromUUID: pniUuid)
         } else {
             pni = nil
         }
-        if let contactProtoE164 = contactProto.e164 {
-            guard let protoE164 = E164(contactProtoE164) else {
-                return restoreFrameError(.invalidProtoData(.invalidE164(protoClass: BackupProto.Contact.self)))
+        if contactProto.hasE164 {
+            guard let protoE164 = E164(contactProto.e164) else {
+                return restoreFrameError(.invalidProtoData(.invalidE164(protoClass: BackupProto_Contact.self)))
             }
             e164 = protoE164
         } else {
             e164 = nil
         }
-        if let contactProtoProfileKeyData = contactProto.profileKey {
-            guard let protoProfileKey = OWSAES256Key(data: contactProtoProfileKeyData) else {
-                return restoreFrameError(.invalidProtoData(.invalidProfileKey(protoClass: BackupProto.Contact.self)))
+        if contactProto.hasProfileKey {
+            guard let protoProfileKey = OWSAES256Key(data: contactProto.profileKey) else {
+                return restoreFrameError(.invalidProtoData(.invalidProfileKey(protoClass: BackupProto_Contact.self)))
             }
             profileKey = protoProfileKey
         } else {
@@ -272,9 +281,9 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
 
         if
             let aci = recipient.aci,
-            let username = contactProto.username
+            contactProto.hasUsername
         {
-            usernameLookupManager.saveUsername(username, forAci: aci, transaction: tx)
+            usernameLookupManager.saveUsername(contactProto.username, forAci: aci, transaction: tx)
         }
 
         if contactProto.profileSharing {
@@ -287,7 +296,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         }
 
         switch contactProto.visibility {
-        case .HIDDEN, .HIDDEN_MESSAGE_REQUEST:
+        case .hidden, .hiddenMessageRequest:
             /// Message-request state for hidden recipients isn't explicitly
             /// tracked on iOS, and instead is derived from their hidden state
             /// and the most-recent interactions in their 1:1 chat. So, for both
@@ -297,7 +306,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             } catch let error {
                 return restoreFrameError(.databaseInsertionFailed(error))
             }
-        case .VISIBLE:
+        case .visible, .UNRECOGNIZED:
             break
         }
 

@@ -51,14 +51,15 @@ final class MessageBackupSessionSwitchoverChatUpdateArchiver {
             return messageFailure(.referencedRecipientIdMissing(.contact(switchedOverContactAddress)))
         }
 
-        var chatUpdateMessage = BackupProto.ChatUpdateMessage()
-        chatUpdateMessage.update = .sessionSwitchover(BackupProto.SessionSwitchoverChatUpdate(
-            e164: sessionSwitchoverPhoneNumber.uint64Value
-        ))
+        var sessionSwitchoverChatUpdate = BackupProto_SessionSwitchoverChatUpdate()
+        sessionSwitchoverChatUpdate.e164 = sessionSwitchoverPhoneNumber.uint64Value
+
+        var chatUpdateMessage = BackupProto_ChatUpdateMessage()
+        chatUpdateMessage.update = .sessionSwitchover(sessionSwitchoverChatUpdate)
 
         let interactionArchiveDetails = Details(
             author: threadRecipientId,
-            directionalDetails: .directionless(BackupProto.ChatItem.DirectionlessMessageDetails()),
+            directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,
@@ -71,8 +72,8 @@ final class MessageBackupSessionSwitchoverChatUpdateArchiver {
     // MARK: -
 
     func restoreSessionSwitchoverChatUpdate(
-        _ sessionSwitchoverUpdateProto: BackupProto.SessionSwitchoverChatUpdate,
-        chatItem: BackupProto.ChatItem,
+        _ sessionSwitchoverUpdateProto: BackupProto_SessionSwitchoverChatUpdate,
+        chatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: any DBWriteTransaction
@@ -89,7 +90,7 @@ final class MessageBackupSessionSwitchoverChatUpdateArchiver {
         }
 
         guard let e164 = E164(sessionSwitchoverUpdateProto.e164) else {
-            return invalidProtoData(.invalidE164(protoClass: BackupProto.SessionSwitchoverChatUpdate.self))
+            return invalidProtoData(.invalidE164(protoClass: BackupProto_SessionSwitchoverChatUpdate.self))
         }
 
         guard case .contact(let switchedOverContactThread) = chatThread.threadType else {

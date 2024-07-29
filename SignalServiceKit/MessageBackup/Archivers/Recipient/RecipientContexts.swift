@@ -15,28 +15,28 @@ extension MessageBackup {
             self.value = value
         }
 
-        fileprivate init(recipient: BackupProto.Recipient) {
+        fileprivate init(recipient: BackupProto_Recipient) {
             self.init(value: recipient.id)
         }
 
-        fileprivate init(chat: BackupProto.Chat) {
-            self.init(value: chat.recipientId)
+        fileprivate init(chat: BackupProto_Chat) {
+            self.init(value: chat.recipientID)
         }
 
-        fileprivate init(chatItem: BackupProto.ChatItem) {
-            self.init(value: chatItem.authorId)
+        fileprivate init(chatItem: BackupProto_ChatItem) {
+            self.init(value: chatItem.authorID)
         }
 
-        fileprivate init(reaction: BackupProto.Reaction) {
-            self.init(value: reaction.authorId)
+        fileprivate init(reaction: BackupProto_Reaction) {
+            self.init(value: reaction.authorID)
         }
 
-        fileprivate init(quote: BackupProto.Quote) {
-            self.init(value: quote.authorId)
+        fileprivate init(quote: BackupProto_Quote) {
+            self.init(value: quote.authorID)
         }
 
-        fileprivate init(sendStatus: BackupProto.SendStatus) {
-            self.init(value: sendStatus.recipientId)
+        fileprivate init(sendStatus: BackupProto_SendStatus) {
+            self.init(value: sendStatus.recipientID)
         }
     }
 
@@ -48,7 +48,7 @@ extension MessageBackup {
      * to the ID addressing system of the backup protos.
      *
      * For example, we will assign a ``BackupRecipientId`` to each ``SignalRecipient`` as we
-     * insert them. Later, when we create the ``BackupProto.Chat`` corresponding to the ``TSContactThread``
+     * insert them. Later, when we create the ``BackupProto_Chat`` corresponding to the ``TSContactThread``
      * for that recipient, we will need to add the corresponding ``BackupRecipientId``, which we look up
      * using the contact's Aci/Pni/e164, from the map this context keeps.
      */
@@ -165,7 +165,7 @@ extension MessageBackup {
 }
 
 extension MessageBackup.RecipientId: MessageBackupLoggableId {
-    public var typeLogString: String { "BackupProto.Recipient" }
+    public var typeLogString: String { "BackupProto_Recipient" }
 
     public var idLogString: String { "\(self.value)" }
 }
@@ -195,42 +195,42 @@ extension MessageBackup.RecipientArchivingContext.Address: MessageBackupLoggable
     }
 }
 
-extension BackupProto.Recipient {
+extension BackupProto_Recipient {
 
     public var recipientId: MessageBackup.RecipientId {
         return MessageBackup.RecipientId(recipient: self)
     }
 }
 
-extension BackupProto.Chat {
+extension BackupProto_Chat {
 
     public var typedRecipientId: MessageBackup.RecipientId {
         return MessageBackup.RecipientId(chat: self)
     }
 }
 
-extension BackupProto.ChatItem {
+extension BackupProto_ChatItem {
 
     public var authorRecipientId: MessageBackup.RecipientId {
         return MessageBackup.RecipientId(chatItem: self)
     }
 }
 
-extension BackupProto.Reaction {
+extension BackupProto_Reaction {
 
     public var authorRecipientId: MessageBackup.RecipientId {
         return MessageBackup.RecipientId(reaction: self)
     }
 }
 
-extension BackupProto.Quote {
+extension BackupProto_Quote {
 
     public var authorRecipientId: MessageBackup.RecipientId {
         return MessageBackup.RecipientId(quote: self)
     }
 }
 
-extension BackupProto.SendStatus {
+extension BackupProto_SendStatus {
     public var destinationRecipientId: MessageBackup.RecipientId {
         return MessageBackup.RecipientId(sendStatus: self)
     }

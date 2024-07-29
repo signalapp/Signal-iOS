@@ -316,10 +316,10 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     }
 
     private func writeHeader(stream: MessageBackupProtoOutputStream, tx: DBWriteTransaction) throws {
-        let backupInfo = BackupProto.BackupInfo(
-            version: Constants.supportedBackupVersion,
-            backupTimeMs: dateProvider().ows_millisecondsSince1970
-        )
+        var backupInfo = BackupProto_BackupInfo()
+        backupInfo.version = Constants.supportedBackupVersion
+        backupInfo.backupTimeMs = dateProvider().ows_millisecondsSince1970
+
         switch stream.writeHeader(backupInfo) {
         case .success:
             break
@@ -416,7 +416,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         tx: DBWriteTransaction
     ) throws {
 
-        let backupInfo: BackupProto.BackupInfo
+        let backupInfo: BackupProto_BackupInfo
         var hasMoreFrames = false
         switch stream.readHeader() {
         case .success(let header, let moreBytesAvailable):
@@ -441,7 +441,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         )
 
         while hasMoreFrames {
-            let frame: BackupProto.Frame
+            let frame: BackupProto_Frame
             switch stream.readFrame() {
             case let .success(_frame, moreBytesAvailable):
                 frame = _frame
@@ -463,7 +463,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                         .invalidProtoData(.recipientMissingDestination),
                         recipient.recipientId
                     )])
-                case .selfRecipient(let selfRecipientProto):
+                case .self_p(let selfRecipientProto):
                     recipientResult = localRecipientArchiver.restoreSelfRecipient(
                         selfRecipientProto,
                         recipient: recipient,
@@ -553,15 +553,15 @@ public class MessageBackupManagerImpl: MessageBackupManager {
                 // TODO: [Backups] Restore sticker packs.
                 try processRestoreFrameErrors(errors: [.restoreFrameError(
                     .unimplemented,
-                    MessageBackup.StickerPackId(backupProtoStickerPack.packId)
+                    MessageBackup.StickerPackId(backupProtoStickerPack.packID)
                 )])
             case .adHocCall(let backupProtoAdHocCall):
                 // TODO: [Backups] Restore ad-hoc calls.
                 try processRestoreFrameErrors(errors: [.restoreFrameError(
                     .unimplemented,
                     MessageBackup.AdHocCallId(
-                        backupProtoAdHocCall.callId,
-                        recipientId: backupProtoAdHocCall.recipientId
+                        backupProtoAdHocCall.callID,
+                        recipientId: backupProtoAdHocCall.recipientID
                     )
                 )])
             case nil:

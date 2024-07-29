@@ -93,12 +93,11 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
     private func buildIncomingMessageDetails(
         _ message: TSIncomingMessage
     ) -> MessageBackup.ArchiveInteractionResult<Details.DirectionalDetails> {
-        let incomingMessage = BackupProto.ChatItem.IncomingMessageDetails(
-            dateReceived: message.receivedAtTimestamp,
-            dateServerSent: message.serverDeliveryTimestamp,
-            read: message.wasRead,
-            sealedSender: message.wasReceivedByUD
-        )
+        var incomingMessage = BackupProto_ChatItem.IncomingMessageDetails()
+        incomingMessage.dateReceived = message.receivedAtTimestamp
+        incomingMessage.dateServerSent = message.serverDeliveryTimestamp
+        incomingMessage.read = message.wasRead
+        incomingMessage.sealedSender = message.wasReceivedByUD
 
         return .success(.incoming(incomingMessage))
     }
@@ -106,12 +105,12 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
     // MARK: - Restoring
 
     func restoreChatItem(
-        _ chatItem: BackupProto.ChatItem,
+        _ chatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> MessageBackup.RestoreInteractionResult<Void> {
-        let incomingDetails: BackupProto.ChatItem.IncomingMessageDetails
+        let incomingDetails: BackupProto_ChatItem.IncomingMessageDetails
         switch chatItem.directionalDetails {
         case .incoming(let incomingMessageDetails):
             incomingDetails = incomingMessageDetails

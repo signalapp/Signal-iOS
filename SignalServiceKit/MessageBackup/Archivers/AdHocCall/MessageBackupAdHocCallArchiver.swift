@@ -18,7 +18,7 @@ extension MessageBackup {
 
         // MARK: MessageBackupLoggableId
 
-        public var typeLogString: String { "BackupProto.CallLink" }
+        public var typeLogString: String { "BackupProto_CallLink" }
         public var idLogString: String {
             /// Since call IDs are a cross-client identifier, we don't want to
             /// log them directly.

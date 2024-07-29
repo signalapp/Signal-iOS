@@ -28,13 +28,13 @@ extension MessageBackup {
             //     construct objects that are parsed from the backup proto but require
             //     the TSMessage to exist first before they can be created/inserted.
 
-            fileprivate let reactions: [BackupProto.Reaction]
+            fileprivate let reactions: [BackupProto_Reaction]
         }
 
         struct Payment {
             enum Status {
-                case success(BackupProto.PaymentNotification.TransactionDetails.Transaction.Status)
-                case failure(BackupProto.PaymentNotification.TransactionDetails.FailedTransaction.FailureReason)
+                case success(BackupProto_PaymentNotification.TransactionDetails.Transaction.Status)
+                case failure(BackupProto_PaymentNotification.TransactionDetails.FailedTransaction.FailureReason)
             }
 
             let amount: String?
@@ -42,7 +42,7 @@ extension MessageBackup {
             let note: String?
 
             fileprivate let status: Status
-            fileprivate let payment: BackupProto.PaymentNotification.TransactionDetails.Transaction?
+            fileprivate let payment: BackupProto_PaymentNotification.TransactionDetails.Transaction?
         }
 
         case text(Text)
@@ -135,12 +135,12 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
         context: MessageBackup.RecipientArchivingContext,
         tx: DBReadTransaction
     ) -> ArchiveInteractionResult<ChatItemType> {
-        var standardMessage = BackupProto.StandardMessage()
+        var standardMessage = BackupProto_StandardMessage()
         var partialErrors = [ArchiveFrameError]()
 
-        let text: BackupProto.Text
+        let text: BackupProto_Text
         let textResult = archiveText(
-            .init(text: messageBody, ranges: message.bodyRanges ?? .empty),
+            MessageBody(text: messageBody, ranges: message.bodyRanges ?? .empty),
             interactionUniqueId: message.uniqueInteractionId
         )
         switch textResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
@@ -151,25 +151,24 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
         }
         standardMessage.text = text
 
-        let quote: BackupProto.Quote?
         if let quotedMessage = message.quotedMessage {
+            let quote: BackupProto_Quote
             let quoteResult = archiveQuote(
                 quotedMessage,
                 interactionUniqueId: message.uniqueInteractionId,
                 context: context
             )
             switch quoteResult.bubbleUp(ChatItemType.self, partialErrors: &partialErrors) {
-            case .continue(let value):
-                quote = value
+            case .continue(let _quote):
+                quote = _quote
             case .bubbleUpError(let errorResult):
                 return errorResult
             }
-        } else {
-            quote = nil
-        }
-        standardMessage.quote = quote
 
-        let reactions: [BackupProto.Reaction]
+            standardMessage.quote = quote
+        }
+
+        let reactions: [BackupProto_Reaction]
         let reactionsResult = reactionArchiver.archiveReactions(
             message,
             context: context,
@@ -200,10 +199,16 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
             return .messageFailure([.archiveFrameError(.missingPaymentInformation, uniqueInteractionId)])
         }
 
-        var paymentNotificationProto = BackupProto.PaymentNotification()
-        paymentNotificationProto.amountMob = archivedPaymentMessage.archivedPaymentInfo.amount
-        paymentNotificationProto.feeMob = archivedPaymentMessage.archivedPaymentInfo.fee
-        paymentNotificationProto.note = archivedPaymentMessage.archivedPaymentInfo.note
+        var paymentNotificationProto = BackupProto_PaymentNotification()
+        if let amount = archivedPaymentMessage.archivedPaymentInfo.amount {
+            paymentNotificationProto.amountMob = amount
+        }
+        if let fee = archivedPaymentMessage.archivedPaymentInfo.fee {
+            paymentNotificationProto.feeMob = fee
+        }
+        if let note = archivedPaymentMessage.archivedPaymentInfo.note {
+            paymentNotificationProto.note = note
+        }
         paymentNotificationProto.transactionDetails = historyItem.toTransactionDetailsProto()
 
         return .success(.paymentNotification(paymentNotificationProto))
@@ -225,21 +230,29 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
             return .messageFailure([.archiveFrameError(.missingPaymentInformation, uniqueInteractionId)])
         }
 
-        var paymentNotificationProto = BackupProto.PaymentNotification()
+        var paymentNotificationProto = BackupProto_PaymentNotification()
 
-        if let amount = model.paymentAmount {
-            paymentNotificationProto.amountMob = PaymentsFormat.format(
+        if
+            let amount = model.paymentAmount,
+            let amountString = PaymentsFormat.format(
                 picoMob: amount.picoMob,
                 isShortForm: true
             )
+        {
+            paymentNotificationProto.amountMob = amountString
         }
-        if let fee = model.mobileCoin?.feeAmount {
-            paymentNotificationProto.feeMob = PaymentsFormat.format(
+        if
+            let fee = model.mobileCoin?.feeAmount,
+            let feeString = PaymentsFormat.format(
                 picoMob: fee.picoMob,
                 isShortForm: true
             )
+        {
+            paymentNotificationProto.feeMob = feeString
         }
-        paymentNotificationProto.note = paymentNotification.memoMessage
+        if let memoMessage = paymentNotification.memoMessage {
+            paymentNotificationProto.note = memoMessage
+        }
         paymentNotificationProto.transactionDetails = model.asArchivedPayment().toTransactionDetailsProto()
 
         return .success(.paymentNotification(paymentNotificationProto))
@@ -248,11 +261,12 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
     private func archiveText(
         _ messageBody: MessageBody,
         interactionUniqueId: MessageBackup.InteractionUniqueId
-    ) -> ArchiveInteractionResult<BackupProto.Text> {
-        var text = BackupProto.Text(body: messageBody.text)
+    ) -> ArchiveInteractionResult<BackupProto_Text> {
+        var text = BackupProto_Text()
+        text.body = messageBody.text
 
         for bodyRangeParam in messageBody.ranges.toProtoBodyRanges() {
-            var bodyRange = BackupProto.BodyRange()
+            var bodyRange = BackupProto_BodyRange()
             bodyRange.start = bodyRangeParam.start
             bodyRange.length = bodyRangeParam.length
 
@@ -261,14 +275,14 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
                     mentionAci.serviceIdBinary.asData
                 )
             } else if let style = bodyRangeParam.style {
-                let backupProtoStyle: BackupProto.BodyRange.Style = {
+                let backupProtoStyle: BackupProto_BodyRange.Style = {
                     switch style {
-                    case .none: return .NONE
-                    case .bold: return .BOLD
-                    case .italic: return .ITALIC
-                    case .spoiler: return .SPOILER
-                    case .strikethrough: return .STRIKETHROUGH
-                    case .monospace: return .MONOSPACE
+                    case .none: return .none
+                    case .bold: return .bold
+                    case .italic: return .italic
+                    case .spoiler: return .spoiler
+                    case .strikethrough: return .strikethrough
+                    case .monospace: return .monospace
                     }
                 }()
 
@@ -285,7 +299,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
         _ quotedMessage: TSQuotedMessage,
         interactionUniqueId: MessageBackup.InteractionUniqueId,
         context: MessageBackup.RecipientArchivingContext
-    ) -> ArchiveInteractionResult<BackupProto.Quote> {
+    ) -> ArchiveInteractionResult<BackupProto_Quote> {
         var partialErrors = [ArchiveFrameError]()
 
         guard let authorAddress = quotedMessage.authorAddress.asSingleServiceIdBackupAddress() else {
@@ -300,19 +314,20 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
             )])
         }
 
-        var quote = BackupProto.Quote(
-            authorId: authorId.value,
-            type: quotedMessage.isGiftBadge ? .GIFTBADGE : .NORMAL
-        )
-        quote.targetSentTimestamp = quotedMessage.timestampValue?.uint64Value
+        var quote = BackupProto_Quote()
+        quote.authorID = authorId.value
+        quote.type = quotedMessage.isGiftBadge ? .giftbadge : .normal
+        if let targetSentTimestamp = quotedMessage.timestampValue?.uint64Value {
+            quote.targetSentTimestamp = targetSentTimestamp
+        }
 
         if let body = quotedMessage.body {
             let textResult = archiveText(
-                .init(text: body, ranges: quotedMessage.bodyRanges ?? .empty),
+                MessageBody(text: body, ranges: quotedMessage.bodyRanges ?? .empty),
                 interactionUniqueId: interactionUniqueId
             )
-            let text: BackupProto.Text
-            switch textResult.bubbleUp(BackupProto.Quote.self, partialErrors: &partialErrors) {
+            let text: BackupProto_Text
+            switch textResult.bubbleUp(BackupProto_Quote.self, partialErrors: &partialErrors) {
             case .continue(let value):
                 text = value
             case .bubbleUpError(let errorResult):
@@ -457,28 +472,33 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
     }
 
     private func restorePaymentNotification(
-        _ paymentNotification: BackupProto.PaymentNotification,
+        _ paymentNotification: BackupProto_PaymentNotification,
         chatItemId: MessageBackup.ChatItemId,
         thread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
         tx: DBReadTransaction
     ) -> RestoreInteractionResult<MessageBackup.RestoredMessageContents> {
         let status: MessageBackup.RestoredMessageContents.Payment.Status
-        let paymentTransaction: BackupProto.PaymentNotification.TransactionDetails.Transaction?
-        switch paymentNotification.transactionDetails?.payment {
-        case .failedTransaction(let failedTransaction):
-            status = .failure(failedTransaction.reason)
-            paymentTransaction = nil
-        case .transaction(let payment):
-            status = .success(payment.status)
-            paymentTransaction = payment
-        case .none:
+        let paymentTransaction: BackupProto_PaymentNotification.TransactionDetails.Transaction?
+        if
+            paymentNotification.hasTransactionDetails,
+            let paymentDetails = paymentNotification.transactionDetails.payment
+        {
+            switch paymentDetails {
+            case .failedTransaction(let failedTransaction):
+                status = .failure(failedTransaction.reason)
+                paymentTransaction = nil
+            case .transaction(let payment):
+                status = .success(payment.status)
+                paymentTransaction = payment
+            }
+        } else {
             // Default to 'success' if there is no included information
-            status = .success(.SUCCESSFUL)
+            status = .success(.successful)
             paymentTransaction = nil
         }
 
-        return .success(.archivedPayment(.init(
+        return .success(.archivedPayment(MessageBackup.RestoredMessageContents.Payment(
             amount: paymentNotification.amountMob,
             fee: paymentNotification.feeMob,
             note: paymentNotification.note,
@@ -488,7 +508,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
     }
 
     private func restoreStandardMessage(
-        _ standardMessage: BackupProto.StandardMessage,
+        _ standardMessage: BackupProto_StandardMessage,
         chatItemId: MessageBackup.ChatItemId,
         chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
@@ -497,10 +517,10 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
         var partialErrors = [RestoreFrameError]()
 
         let quotedMessage: TSQuotedMessage?
-        if let quoteProto = standardMessage.quote {
+        if standardMessage.hasQuote {
             guard
                 let quoteResult = restoreQuote(
-                    quoteProto,
+                    standardMessage.quote,
                     chatItemId: chatItemId,
                     thread: chatThread,
                     context: context,
@@ -514,10 +534,11 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
             quotedMessage = nil
         }
 
-        guard let text = standardMessage.text else {
+        guard standardMessage.hasText else {
             // TODO: [Backups] Support messages with no text
             return .messageFailure([.restoreFrameError(.unimplemented, chatItemId)])
         }
+        let text = standardMessage.text
 
         let messageBodyResult = restoreMessageBody(text, chatItemId: chatItemId)
         switch messageBodyResult {
@@ -542,7 +563,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
     }
 
     func restoreMessageBody(
-        _ text: BackupProto.Text,
+        _ text: BackupProto_Text,
         chatItemId: MessageBackup.ChatItemId
     ) -> RestoreInteractionResult<MessageBody> {
         return restoreMessageBody(
@@ -554,23 +575,25 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
 
     private func restoreMessageBody(
         text: String,
-        bodyRangeProtos: [BackupProto.BodyRange],
+        bodyRangeProtos: [BackupProto_BodyRange],
         chatItemId: MessageBackup.ChatItemId
     ) -> RestoreInteractionResult<MessageBody> {
         var partialErrors = [RestoreFrameError]()
         var bodyMentions = [NSRange: Aci]()
         var bodyStyles = [NSRangedValue<MessageBodyRanges.SingleStyle>]()
         for bodyRange in bodyRangeProtos {
-            guard let bodyRangeStart = bodyRange.start, let bodyRangeLength = bodyRange.length else {
+            guard bodyRange.hasStart, bodyRange.hasLength else {
                 continue
             }
+            let bodyRangeStart = bodyRange.start
+            let bodyRangeLength = bodyRange.length
 
             let range = NSRange(location: Int(bodyRangeStart), length: Int(bodyRangeLength))
             switch bodyRange.associatedValue {
             case .mentionAci(let aciData):
                 guard let mentionAci = try? Aci.parseFrom(serviceIdBinary: aciData) else {
                     partialErrors.append(.restoreFrameError(
-                        .invalidProtoData(.invalidAci(protoClass: BackupProto.BodyRange.self)),
+                        .invalidProtoData(.invalidAci(protoClass: BackupProto_BodyRange.self)),
                         chatItemId
                     ))
                     continue
@@ -579,27 +602,27 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
             case .style(let protoBodyRangeStyle):
                 let swiftStyle: MessageBodyRanges.SingleStyle
                 switch protoBodyRangeStyle {
-                case .NONE:
+                case .none, .UNRECOGNIZED:
                     partialErrors.append(.restoreFrameError(
                         .invalidProtoData(.unrecognizedBodyRangeStyle),
                         chatItemId
                     ))
                     continue
-                case .BOLD:
+                case .bold:
                     swiftStyle = .bold
-                case .ITALIC:
+                case .italic:
                     swiftStyle = .italic
-                case .MONOSPACE:
+                case .monospace:
                     swiftStyle = .monospace
-                case .SPOILER:
+                case .spoiler:
                     swiftStyle = .spoiler
-                case .STRIKETHROUGH:
+                case .strikethrough:
                     swiftStyle = .strikethrough
                 }
                 bodyStyles.append(.init(swiftStyle, range: range))
             case nil:
                 partialErrors.append(.restoreFrameError(
-                    .invalidProtoData(.invalidAci(protoClass: BackupProto.BodyRange.self)),
+                    .invalidProtoData(.invalidAci(protoClass: BackupProto_BodyRange.self)),
                     chatItemId
                 ))
                 continue
@@ -618,7 +641,7 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
     }
 
     private func restoreQuote(
-        _ quote: BackupProto.Quote,
+        _ quote: BackupProto_Quote,
         chatItemId: MessageBackup.ChatItemId,
         thread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
@@ -653,10 +676,10 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
 
         let targetMessageTimestamp: NSNumber?
         if
-            let targetSentTimestamp = quote.targetSentTimestamp,
-            SDS.fitsInInt64(targetSentTimestamp)
+            quote.hasTargetSentTimestamp,
+            SDS.fitsInInt64(quote.targetSentTimestamp)
         {
-            targetMessageTimestamp = NSNumber(value: targetSentTimestamp)
+            targetMessageTimestamp = NSNumber(value: quote.targetSentTimestamp)
         } else {
             targetMessageTimestamp = nil
         }
@@ -679,9 +702,9 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
         } else {
             bodySource = .remote
 
-            if let text = quote.text {
+            if quote.hasText {
                 guard let bodyResult = restoreMessageBody(
-                    text: text,
+                    text: quote.text,
                     bodyRangeProtos: quote.bodyRanges,
                     chatItemId: chatItemId
                 )
@@ -697,9 +720,9 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
 
         let isGiftBadge: Bool
         switch quote.type {
-        case .UNKNOWN, .NORMAL:
+        case .UNRECOGNIZED, .unknown, .normal:
             isGiftBadge = false
-        case .GIFTBADGE:
+        case .giftbadge:
             isGiftBadge = true
         }
 
@@ -727,16 +750,18 @@ internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchive
     }
 
     private func findTargetMessageForQuote(
-        quote: BackupProto.Quote,
+        quote: BackupProto_Quote,
         thread: MessageBackup.ChatThread,
         tx: DBReadTransaction
     ) -> TSMessage? {
-        guard let targetSentTimestamp = quote.targetSentTimestamp else {
-            return nil
-        }
+        guard
+            quote.hasTargetSentTimestamp,
+            SDS.fitsInInt64(quote.targetSentTimestamp)
+        else { return nil }
+
         let messageCandidates: [TSInteraction] = (try? interactionStore
             .interactions(
-                withTimestamp: targetSentTimestamp,
+                withTimestamp: quote.targetSentTimestamp,
                 tx: tx
             )
         ) ?? []
@@ -784,7 +809,7 @@ fileprivate extension ArchivedPayment {
             )
         case .success(let status):
             let payment = backup.payment
-            let transactionIdentifier = payment?.mobileCoinIdentification?.nilIfEmpty.map {
+            let transactionIdentifier = payment?.mobileCoinIdentification.nilIfEmpty.map {
                 TransactionIdentifier(publicKey: $0.publicKey, keyImages: $0.keyImages)
             }
 
@@ -809,27 +834,27 @@ fileprivate extension ArchivedPayment {
     }
 }
 
-extension BackupProto.PaymentNotification.TransactionDetails.FailedTransaction.FailureReason {
+extension BackupProto_PaymentNotification.TransactionDetails.FailedTransaction.FailureReason {
     func asFailureType() -> ArchivedPayment.FailureReason {
         switch self {
-        case .GENERIC: return .genericFailure
-        case .NETWORK: return .networkFailure
-        case .INSUFFICIENT_FUNDS: return .insufficientFundsFailure
+        case .UNRECOGNIZED, .generic: return .genericFailure
+        case .network: return .networkFailure
+        case .insufficientFunds: return .insufficientFundsFailure
         }
     }
 }
 
-extension BackupProto.PaymentNotification.TransactionDetails.Transaction.Status {
+extension BackupProto_PaymentNotification.TransactionDetails.Transaction.Status {
     func asStatusType() -> ArchivedPayment.Status {
         switch self {
-        case .INITIAL: return .initial
-        case .SUBMITTED: return .submitted
-        case .SUCCESSFUL: return .successful
+        case .UNRECOGNIZED, .initial: return .initial
+        case .submitted: return .submitted
+        case .successful: return .successful
         }
     }
 }
 
-extension BackupProto.PaymentNotification.TransactionDetails.MobileCoinTxoIdentification {
+extension BackupProto_PaymentNotification.TransactionDetails.MobileCoinTxoIdentification {
     var nilIfEmpty: Self? {
         (publicKey.isEmpty && keyImages.isEmpty) ? nil : self
     }

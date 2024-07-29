@@ -11,7 +11,7 @@ import LibSignalClient
 ///
 /// So we represent restored messages as "transcripts" that we can plug into the same
 /// transcript processing pipes as synced message transcripts.
-internal class RestoredSentMessageTranscript: SentMessageTranscript {
+class RestoredSentMessageTranscript: SentMessageTranscript {
 
     let type: SentMessageTranscriptType
 
@@ -22,10 +22,10 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
 
     let recipientStates: [MessageBackup.InteropAddress: TSOutgoingMessageRecipientState]
 
-    internal static func from(
-        chatItem: BackupProto.ChatItem,
+    static func from(
+        chatItem: BackupProto_ChatItem,
         contents: MessageBackup.RestoredMessageContents,
-        outgoingDetails: BackupProto.ChatItem.OutgoingMessageDetails,
+        outgoingDetails: BackupProto_ChatItem.OutgoingMessageDetails,
         context: MessageBackup.ChatRestoringContext,
         chatThread: MessageBackup.ChatThread
     ) -> MessageBackup.RestoreInteractionResult<RestoredSentMessageTranscript> {
@@ -117,7 +117,7 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
     private static func restoreMessageTranscript(
         contents: MessageBackup.RestoredMessageContents.Text,
         target: SentMessageTranscriptTarget,
-        chatItem: BackupProto.ChatItem,
+        chatItem: BackupProto_ChatItem,
         expirationToken: DisappearingMessageToken
     ) -> SentMessageTranscriptType {
         let messageParams = SentMessageTranscriptType.Message(
@@ -155,7 +155,7 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
     private static func restorePaymentTranscript(
         payment: MessageBackup.RestoredMessageContents.Payment,
         target: SentMessageTranscriptTarget,
-        chatItem: BackupProto.ChatItem,
+        chatItem: BackupProto_ChatItem,
         expirationToken: DisappearingMessageToken
     ) -> SentMessageTranscriptType {
         return .archivedPayment(
@@ -171,7 +171,7 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
     }
 
     private static func recipientState(
-        for sendStatus: BackupProto.SendStatus,
+        for sendStatus: BackupProto_SendStatus,
         partialErrors: inout [MessageBackup.RestoreFrameError<MessageBackup.ChatItemId>],
         chatItemId: MessageBackup.ChatItemId
     ) -> TSOutgoingMessageRecipientState? {
@@ -186,37 +186,37 @@ internal class RestoredSentMessageTranscript: SentMessageTranscript {
         recipientState.wasSentByUD = sendStatus.sealedSender.negated
 
         switch sendStatus.deliveryStatus {
-        case .UNKNOWN:
+        case .unknown, .UNRECOGNIZED:
             partialErrors.append(.restoreFrameError(.invalidProtoData(.unrecognizedMessageSendStatus), chatItemId))
             return nil
-        case .PENDING:
+        case .pending:
             recipientState.state = .pending
             recipientState.errorCode = nil
             return recipientState
-        case .SENT:
+        case .sent:
             recipientState.state = .sent
             recipientState.errorCode = nil
             return recipientState
-        case .DELIVERED:
+        case .delivered:
             recipientState.state = .sent
             recipientState.deliveryTimestamp = NSNumber(value: sendStatus.lastStatusUpdateTimestamp)
             recipientState.errorCode = nil
             return recipientState
-        case .READ:
+        case .read:
             recipientState.state = .sent
             recipientState.readTimestamp = NSNumber(value: sendStatus.lastStatusUpdateTimestamp)
             recipientState.errorCode = nil
             return recipientState
-        case .VIEWED:
+        case .viewed:
             recipientState.state = .sent
             recipientState.viewedTimestamp = NSNumber(value: sendStatus.lastStatusUpdateTimestamp)
             recipientState.errorCode = nil
             return recipientState
-        case .SKIPPED:
+        case .skipped:
             recipientState.state = .skipped
             recipientState.errorCode = nil
             return recipientState
-        case .FAILED:
+        case .failed:
             recipientState.state = .failed
             if sendStatus.identityKeyMismatch {
                 // We want to explicitly represent identity key errors.
