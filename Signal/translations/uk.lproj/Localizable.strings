@@ -671,7 +671,7 @@
 "BUTTON_SUBMIT" = "Надіслати";
 
 /* Label for the 'unmute' button. */
-"BUTTON_UNMUTE" = "Сповіщати";
+"BUTTON_UNMUTE" = "Увімкнути сповіщення";
 
 /* Label for the 'view' button. */
 "BUTTON_VIEW" = "Переглянути";
@@ -785,7 +785,7 @@
 "CALL_VIEW_TURN_VIDEO_ON_LABEL" = "Увімкнути камеру";
 
 /* Accessibility label for unmuting the microphone */
-"CALL_VIEW_UNMUTE_LABEL" = "Сповіщати";
+"CALL_VIEW_UNMUTE_LABEL" = "Увімкнути";
 
 /* Shown in the header below the name of the call while waiting for the host to allow you to enter the call. */
 "CALL_WAITING_TO_BE_LET_IN" = "Чекайте на дозвіл…";
@@ -1331,7 +1331,7 @@
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 день";
 
 /* 1 hour */
-"CONVERSATION_MUTE_CONFIRMATION_OPTION_1H" = "1 год";
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1H" = "1 година";
 
 /* 1 week */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1W" = "1 тиждень";
@@ -1340,7 +1340,7 @@
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_8H" = "8 годин";
 
 /* Always */
-"CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "Завжди";
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "Назавжди";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Лише адміністратори можуть відправити повідомлення у цю групу.";
@@ -1376,7 +1376,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Додати до контактів телефона";
 
 /* Header title for the section showing all media in conversation settings */
-"CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "All Media";
+"CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "Усі медіафайли";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Оберіть, хто може змінювати назву, фото, опис групи і таймер тимчасових повідомлень.";
@@ -1412,19 +1412,19 @@
 "CONVERSATION_SETTINGS_CALL_DETAILS_OUTGOING_VOICE_CALL" = "Вихідний аудіовиклик";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Редагувати інформацію про групу";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Редагування інформації про групу";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Тільки адміністратори";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Всі учасники";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Усі учасники";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Додати учасників";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Додавання учасників";
 
 /* Description for the 'edit membership access'. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_FOOTER" = "Виберіть, хто може редагувати членство в групі.";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_FOOTER" = "Оберіть, хто може змінювати склад групи.";
 
 /* Label for 'group link' action in conversation settings view. */
 "CONVERSATION_SETTINGS_GROUP_LINK" = "Посилання на групу";
@@ -1433,7 +1433,7 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Зробити адміністратором";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%1$@ зможе змінювати цю групу і її учасників.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%1$@ зможе змінювати цю групу і її склад.";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Запити і запрошення";
@@ -1475,7 +1475,7 @@
 "CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "1 день";
 
 /* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "1 год";
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "1 година";
 
 /* Label for button to mute a thread for a minute. */
 "CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "1 хвилина";
@@ -1496,7 +1496,7 @@
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "до %1$@";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Сповіщення вимкнені до %1$@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Сповіщення вимкнено до %1$@";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Створити новий контакт";
@@ -1532,7 +1532,7 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER" = "Оберіть, хто зможе надсилати повідомлення та починати виклики в цій групі.";
 
 /* Label for 'send messages' action in conversation settings permissions view. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Відправити повідомлення";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Надсилання повідомлень";
 
 /* Label for button that sets 'send messages permission' for a group to 'administrators only'. */
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "Тільки адміністратори";
@@ -1544,7 +1544,7 @@
 "CONVERSATION_SETTINGS_UNBLOCK_USER" = "Розблокувати користувача";
 
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Сповіщати";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Увімкнути сповіщення";
 
 /* Button to start a video call */
 "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON" = "відео";
@@ -2228,7 +2228,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_VIEW" = "Переглянути";
 
 /* A friend has donated on your behalf and you received a badge. This text says that you received a badge, and from whom. Embeds {{contact's short name, such as a first name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "%1$@ підтримує Signal донатом від вашого імені! Розкажіть іншим про підтримку, відобразивши в профілі значок.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "Користувач %1$@ задонатив Signal від вашого імені! Покажіть у своєму профілі, що підтримуєте Signal.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
 "DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Конфіденційні повідомлення. Без реклами, відстежування й нагляду.";
@@ -2792,7 +2792,7 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Ви вибрали, хто може редагувати членство в групі, на \"%1$@\".";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@змінив (-ла), хто може редагувати членство в групі, на \"%2$@\".";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%2$@ тепер можуть змінювати склад групи, оскільки користувач %1$@ змінив налаштування.";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Членство в групі може бути змінено \"%1$@\".";
@@ -2927,10 +2927,10 @@
 "GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ і%2$@ отримають сповіщення";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal зателефонує користувачу %1$@";
+"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Буде здійснено виклик користувача %1$@ у Signal";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal зателефонує користувачам %1$@ і %2$@";
+"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Буде здійснено виклик користувачів %1$@ і %2$@ у Signal";
 
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "Ви берете участь у груповому виклику";
@@ -3233,10 +3233,10 @@
 "GROUP_NAME_VIEW_TITLE" = "Ім'я Групи";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%1$@ прийняв(-ла) запрошення в групу.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "Користувач %1$@ прийняв запрошення в групу.";
 
 /* Message indicating that a remote user has accepted an invite from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%1$@прийняв(-ла) ваше запрошення в групу.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "Користувач %1$@ прийняв ваше запрошення в групу.";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "Користувач %1$@ прийняв запрошення в групу від користувача %2$@.";
@@ -3257,16 +3257,16 @@
 "GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 людина запрошена %1$@ відхилила запрошення до групи.";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%1$@ відхилив(-ла) ваше запрошення в групу.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "Користувач %1$@ відхилив ваше запрошення в групу.";
 
 /* Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%1$@ тепер админістратор";
 
 /* Message indicating that a remote user was granted administrator role by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "Ви зробили %1$@ адміністратором.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "Ви зробили користувача %1$@ адміністратором.";
 
 /* Message indicating that a remote user was granted administrator role by another user. Embeds {{ %1$@ user who granted, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ зробив(-ла) %2$@ адміністратором.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ зробив користувача %2$@ адміністратором.";
 
 /* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Запрошення в групу для %1$@ було відкликано.";
@@ -3290,7 +3290,7 @@
 "GROUP_REMOTE_USER_REMOVED_BY_UNKNOWN_USER_FORMAT" = "%1$@ більше не у групі";
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
-"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ видалив(-ла) %2$@.";
+"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ видалив користувача %2$@.";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Ви схвалили запит на приєднання до групи від %1$@.";
@@ -3323,7 +3323,7 @@
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "Ви відкликали привілеї адміністратора у %1$@.";
 
 /* Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ відкликав(-ла) привілеї адміністратора у %2$@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ забрав права адміністратора в користувача %2$@.";
 
 /* Label for the 'member requests' mode of the 'group requests and invites' view. */
 "GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "Запити";
@@ -3374,7 +3374,7 @@
 "GROUP_UPDATED_BY_LOCAL_USER" = "Ви оновили групу.";
 
 /* Info message indicating that the group was updated by another user. Embeds {{remote user name}}. */
-"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ оновив(-ла) групу.";
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ оновив групу.";
 
 /* Message indicating that the group's description was removed. */
 "GROUP_UPDATED_DESCRIPTION_REMOVED" = "Опис групи видалено.";
@@ -3401,13 +3401,13 @@
 "GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "Ви видалили ім'я групи.";
 
 /* Message indicating that the group's name was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@видалив(-ла) ім'я групи.";
+"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ видалив назву групи.";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
 "GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "Ви змінили ім'я групи на \"%1$@\".";
 
 /* Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@змінив(-ла) ім'я групи на \"%2$@\".";
+"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "Користувач %1$@ змінив назву групи на «%2$@».";
 
 /* Message indicating that the group's name was changed. Embeds {{new group name}}. */
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Назва групи тепер \"%1$@\".";
@@ -4337,7 +4337,7 @@
 "MUTE_CONFIRMATION_TOAST_LABEL" = "Мікрофон вимкнено";
 
 /* Badge indicating that the user is muted. */
-"MUTED_BADGE" = "Не сповіщати";
+"MUTED_BADGE" = "Сповіщення вимкнено";
 
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "Тут будуть оновлення вашої історії.";
@@ -4703,13 +4703,13 @@
 "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Підтвердження коду…";
 
 /* First bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "Переконайтеся, що ваш телефон знаходиться в зоні дії мережі і зможе прийняти SMS або дзвінок";
+"ONBOARDING_VERIFICATION_HELP_BULLET_1" = "Переконайтеся, що телефон перебуває в зоні дії мобільної мережі й може прийняти SMS або виклик.";
 
 /* Second bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "Переконайтеся, що ви можете отримувати дзвінки на цей номер телефону";
+"ONBOARDING_VERIFICATION_HELP_BULLET_2" = "Запевніться, що ви можете приймати телефонні виклики на цей номер.";
 
 /* Third bullet point for the explainer sheet for registering via verification code. */
-"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "Переконайтеся, що ви правильно ввели номер телефону";
+"ONBOARDING_VERIFICATION_HELP_BULLET_3" = "Перевірте, чи правильно ви ввели свій номер.";
 
 /* Label for a button to get help entering a verification code when registering. */
 "ONBOARDING_VERIFICATION_HELP_LINK" = "Виникли проблеми з реєстрацією?";
@@ -5834,10 +5834,10 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "Перед тим, як надсилати повідомлення, слід зареєструватися.";
 
 /* Button when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Голосовий дзвінок";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_BUTTON" = "Аудіовиклик";
 
 /* Error message when sending a verification code via sms failed, but resending via voice call might succeed. */
-"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "Нам не вдалося надіслати код підтвердження за допомогою SMS. Спробуйте отримати код за допомогою голосового виклику.";
+"REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "Ми не змогли надіслати вам код підтвердження в SMS. Код можна також отримати, прийнявши аудіовиклик.";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
 "REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "Ви зробили забагато спроб ввести код. Запитайте код ще раз і спробуйте знову.";
@@ -5870,7 +5870,7 @@
 "REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_BUTTON" = "Надіслати SMS";
 
 /* Error message when sending a verification code via voice call failed, but resending via sms might succeed. */
-"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "Нам не вдалося надіслати код підтвердження за допомогою голосового виклику. Спробуйте отримати код через SMS.";
+"REGISTRATION_VOICE_CODE_FAILED_TRY_SMS_ERROR" = "Ми не змогли повідомити вам код підтвердження під час аудіовиклику. Код можна також отримати в SMS.";
 
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Номер телефону, який ви намагаєтеся зареєструвати, вже зареєстровано на іншому сервері, вилучіть реєстрацію звідти та спробуйте знову.";
@@ -6083,7 +6083,7 @@
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Виберіть ім'я";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Завершити зв'язування";
+"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Завершіть зв'язування";
 
 /* header text before the user can link this device */
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Запустіть Signal на телефоні, щоб зв'язати цей iPad зі своїм акаунтом";
@@ -8165,13 +8165,13 @@
 "WALLPAPER_SETTINGS_FAILED_TO_RESET" = "Не вдається скинути усі шпалери, будь ласка, спробуйте пізініше чи зв'яжіться зі службою підтримки, якщо помилка не зникає.";
 
 /* Label for 'reset all chat colors' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "Скинути усі кольори";
+"WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS" = "Скинути всі кольори";
 
 /* Label for 'reset all wallpapers' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS" = "Скинути усі шпалери";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Бажаєте замінити колір усіх чатів?";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Бажаєте скинути встановлені кольори всіх чатів?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Скинути колір чатів";
@@ -8183,19 +8183,19 @@
 "WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER" = "Скинути шпалери";
 
 /* Label for 'reset default chat color' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Скинути кольори за замовчуванням";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Скинути стандартні кольори";
 
 /* Reset global chat colors action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Скинути колір чатів";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Скинути шпалери за замовчуванням";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Скинути стандартні шпалери";
 
 /* Reset wallpapers action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER" = "Скинути шпалери";
 
 /* Message of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "Бажаєте замінити усі шпалери?";
+"WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE" = "Бажаєте скинути всі встановлені шпалери?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE" = "Скинути шпалери";

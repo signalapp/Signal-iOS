@@ -1636,15 +1636,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%2$@ +%1$ld raised a hand</string>
+			<string>D&apos;ardaigh %2$@ + %1$ld lámh</string>
 			<key>two</key>
-			<string>%2$@ +%1$ld raised a hand</string>
+			<string>D&apos;ardaigh %2$@ + %1$ld lámh</string>
 			<key>few</key>
-			<string>%2$@ +%1$ld raised a hand</string>
+			<string>D&apos;ardaigh %2$@ + %1$ld lámh</string>
 			<key>many</key>
-			<string>%2$@ +%1$ld raised a hand</string>
+			<string>D&apos;ardaigh %2$@ + %1$ld lámh</string>
 			<key>other</key>
-			<string>%2$@ +%1$ld raised a hand</string>
+			<string>D&apos;ardaigh %2$@ + %1$ld lámh</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>

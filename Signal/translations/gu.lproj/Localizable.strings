@@ -1376,7 +1376,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "ફોન સંપર્કોમાં ઉમેરો";
 
 /* Header title for the section showing all media in conversation settings */
-"CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "All Media";
+"CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "બધા મીડિયા";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "ગ્રુપનું નામ, ફોટો, ડિસ્ક્રિપ્શન, અને મેસેજ અદ્રશ્ય થવાના ટાઇમરને કોણ સંપાદિત કરી શકે તે પસંદ કરો.";

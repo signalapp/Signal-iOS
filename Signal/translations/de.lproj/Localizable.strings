@@ -461,7 +461,7 @@
 "AVATAR_SETTINGS_VIEW_PHOTO_BUTTON" = "Foto";
 
 /* Title for the previously used and preset avatar section. */
-"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Wähle einen Avatar";
+"AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR" = "Wähle ein Profilbild";
 
 /* Text indicating the user can create a new avatar with text */
 "AVATAR_SETTINGS_VIEW_TEXT_BUTTON" = "Text";
@@ -653,7 +653,7 @@
 "BUTTON_OKAY" = "OK";
 
 /* Label for the 'previous' button. */
-"BUTTON_PREVIOUS" = "Vorherige";
+"BUTTON_PREVIOUS" = "Vorheriger";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Auswählen";
@@ -1376,7 +1376,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Zu Telefonkontakten hinzufügen";
 
 /* Header title for the section showing all media in conversation settings */
-"CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "All Media";
+"CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "Medienübersicht";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Wähle aus, wer Name, Foto und Beschreibung der Gruppe sowie die Ablaufzeit für »Verschwindende Nachrichten« bearbeiten kann.";
@@ -3140,7 +3140,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Über Signal teilen";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Jeder mit diesem Link kann sowohl den Namen und die Mitglieder dieser Gruppe sehen als auch Beitrittsanfragen stellen. Teile ihn mit Personen, denen du vertraust.";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Jeder mit diesem Link kann sowohl den Namen und die Mitgliederanzahl dieser Gruppe sehen als auch Beitrittsanfragen stellen. Teile ihn mit Personen, denen du vertraust.";
 
 /* The title for the 'group link' view. */
 "GROUP_LINK_VIEW_TITLE" = "Gruppen-Link";
@@ -5978,10 +5978,10 @@
 "SAFETY_TIPS_MESSAGE_LINKS_TITLE" = "Nachrichten mit Links";
 
 /* Button that will show the next safety tip. */
-"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Weiter";
+"SAFETY_TIPS_NEXT_TIP_BUTTON" = "Nächster";
 
 /* Button that will show the previous safety tip. */
-"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Zurück";
+"SAFETY_TIPS_PREVIOUS_TIP_BUTTON" = "Vorheriger";
 
 /* Message contents for the vague message safety tip. */
 "SAFETY_TIPS_VAGUE_MESSAGE_BODY" = "Spammer beginnen oft mit einer einfachen Nachricht wie »Hallo«, um dich anzulocken. Wenn du antwortest, wirst du möglicherweise weiter kontaktiert.";
@@ -6281,7 +6281,7 @@
 "SETTINGS_APPEARANCE_AVATAR_FOOTER" = "Telefonkontakt-Fotos anzeigen, falls verfügbar.";
 
 /* Title for switch to toggle preference between contact and profile avatars */
-"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Telefonkontakt-Fotos verwenden";
+"SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL" = "Fotos aus Adressbuch verwenden";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Design";

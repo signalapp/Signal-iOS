@@ -4,7 +4,7 @@ Signal es una app de mensajería con la privacidad como esencia. Es gratis y fá
 
 • Disfruta de llamadas y videollamadas cifradas de alta calidad. Puedes hacer llamadas grupales de hasta 40 personas.
 
-• Mantente conectadx con chats grupales de hasta 1,000 personas. Controla quién puede publicar y administrar miembrxs del grupo con la configuración de permisos de administrador.
+• Disfruta de un nuevo nivel de comunicación con chats grupales de hasta 1000 personas. Controla quién puede publicar contenido y gestiona la lista de participantes del grupo en los ajustes de permisos de admin.
 
 • Comparte Historias de imagen, texto y vídeo que desparecerán automáticamente después de 24 horas. Los ajustes de privacidad te permiten controlar quién exactamente puede ver cada historia.
 

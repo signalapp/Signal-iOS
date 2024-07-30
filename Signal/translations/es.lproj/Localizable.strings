@@ -1376,7 +1376,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Añadir a contactos del teléfono";
 
 /* Header title for the section showing all media in conversation settings */
-"CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "All Media";
+"CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "Todos los archivos multimedia";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Elige quién puede modificar el nombre, descripción e imagen del grupo y la duración de los mensajes temporales.";
@@ -2441,7 +2441,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hola:\n\nÚltimamente uso Signal para chats privados desde mi iPhone. Me gustaría que también lo instalases y así estar segur@s que solo tú y yo podemos leer nuestros mensajes.\n\nSignal está disponible para iPhone y Android. Consíguela aquí: %1$@\n\nSignal funciona como tu aplicación de mensajes de toda la vida. Podemos enviarnos fotos y vídeos, hacer (vídeo)llamadas y crear grupos. Lo mejor es que nadie puede ver el contenido de nuestro chat ¡ni siquiera la gente de Signal!\n\nPuedes leer más sobre Open Whisper Systems (quien desarrolla Signal) aquí: %2$@";
+"EMAIL_INVITE_BODY" = "Hola:\n\nHace un tiempo que uso Signal porque quiero que mis chats sean privados. Me gustaría que instales la app para asegurarnos de que nadie más además de tú y yo pueda leer nuestros mensajes o escuchar nuestras llamadas.\n\nSignal está disponible para iPhone y Android. Puedes descargar la app aquí: %1$@\n\nSignal funciona como otras aplicaciones de chat. Podemos enviarnos fotos y vídeos, hacer llamadas y videollamadas, y crear grupos. Lo mejor es que nadie tiene acceso al contenido de nuestros chats ni de nuestras llamadas, ni siquiera quienes trabajan en Signal.\n\nPuedes leer más sobre Open Whisper Systems, los que desarrollan Signal, aquí: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Pasémonos a Signal";
@@ -2909,7 +2909,7 @@
 "GROUP_CALL_STARTED_BY_YOU" = "Has iniciado una llamada grupal";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
-"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%1$@ ha iniciado una llamada de grupo";
+"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%1$@ ha iniciado una llamada grupal";
 
 /* Text displayed when trying to turn on ringing when calling a large group. */
 "GROUP_CALL_TOO_LARGE_TO_RING" = "El grupo es demasiado grande para notificar a todos los participantes.";
@@ -3344,7 +3344,7 @@
 "GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "¿Seguro que quieres eliminar «%1$@»?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Las personas que estén en el chat del grupo «%1$@» podrán ver y responder a esta historia. Puedes actualizar quién está en este chat en el grupo.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Las personas que están en el grupo «%1$@» podrán ver y responder a esta historia. Puedes añadir o eliminar personas en los ajustes del grupo.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Quién puede ver esta historia";

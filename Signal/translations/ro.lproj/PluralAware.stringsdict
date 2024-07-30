@@ -1340,11 +1340,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%2$@ +%1$ld raised a hand</string>
+			<string>%2$@ + încă %1$ld au ridicat mâna</string>
 			<key>few</key>
-			<string>%2$@ +%1$ld raised a hand</string>
+			<string>%2$@ + încă %1$ld au ridicat mâna</string>
 			<key>other</key>
-			<string>%2$@ +%1$ld raised a hand</string>
+			<string>%2$@ + încă %1$ld au ridicat mâna</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>

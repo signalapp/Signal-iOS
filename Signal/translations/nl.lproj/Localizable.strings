@@ -1376,7 +1376,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Aan telefooncontacten toevoegen";
 
 /* Header title for the section showing all media in conversation settings */
-"CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "All Media";
+"CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "Alle media";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Kies wie de groepsnaam, -afbeelding, -omschrijving en de timer voor verdwijnende berichten kan bewerken.";
@@ -2099,7 +2099,7 @@
 "DONATE_SCREEN_MONTHLY_SUBSCRIPTION_EXPIRES_ON_DATE" = "Verloopt %1$@";
 
 /* On the donation screen, you can see a list of monthly subscription levels. If you already have one of these, this text is shown below it indicating when it will renew. Embeds {{formatted renewal date}}, such as \"June 9, 2010\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_RENEWS_ON_DATE" = "Hernieuwt %1$@";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_RENEWS_ON_DATE" = "Wordt %1$@ vernieuwd";
 
 /* On the donation screen, you can see a list of monthly subscription levels. This text will be shown in the subtitle of each level, telling you which badge you'll get. Embeds {{localized badge name}}, such as \"Planet\". */
 "DONATE_SCREEN_MONTHLY_SUBSCRIPTION_SUBTITLE" = "Ontvang een ‘%1$@’-badge";
@@ -2177,7 +2177,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_DESCRIPTION" = "Eenmalige donatie";
 
 /* Users can donate on a friend's behalf. If the payment fails and the user has not been charged, this error message is shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_BODY" = "Je betaling kon niet worden verwerkt en er is geen geld overgemaakt. Probeer het opnieuw.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_BODY" = "Je betaling kon niet worden verwerkt en er is geen geld afgeschreven. Probeer het opnieuw.";
 
 /* Users can donate on a friend's behalf. If the payment fails and the user has not been charged, an error dialog will be shown. This is the title of that dialog. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE" = "Betaling is mislukt";
@@ -3362,13 +3362,13 @@
 "GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de groepsafbeelding verwijderd.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "De groepsafbeelding is aangepast.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "De groepsafbeelding is gewijzigd.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Je hebt de groepsafbeelding aangepast.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Je hebt de groepsafbeelding gewijzigd.";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de groepsafbeelding aangepast.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de groepsafbeelding gewijzigd.";
 
 /* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "Je hebt de groep aangepast.";
@@ -3386,13 +3386,13 @@
 "GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de groepsomschrijving verwijderd.";
 
 /* Message indicating that the group's description was changed. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED" = "De groepsomschrijving is aangepast.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED" = "De groepsomschrijving is gewijzigd.";
 
 /* Message indicating that the group's description was changed by the local user.. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "Je hebt de groepsomschrijving aangepast.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "Je hebt de groepsomschrijving gewijzigd.";
 
 /* Message indicating that the group's description was changed by a remote user. Embeds {{ user who changed the name }}. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de groepsomschrijving aangepast.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de groepsomschrijving gewijzigd.";
 
 /* Message indicating that the group's name was removed. */
 "GROUP_UPDATED_NAME_REMOVED" = "De groepsnaam is verwijderd.";
@@ -7646,7 +7646,7 @@
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Aan het verwerken…";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
-"SUSTAINER_VIEW_RENEWAL" = "Hernieuwt %1$@";
+"SUSTAINER_VIEW_RENEWAL" = "Wordt %1$@ vernieuwd";
 
 /* Action sheet message for Still Processing Badge sheet */
 "SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Je donatie wordt nog verwerkt. Dit kan een paar minuten duren afhankelijk van je internetverbinding.";
