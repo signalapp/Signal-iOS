@@ -73,7 +73,8 @@ class CallLinkManagerImpl: CallLinkManager {
             createCredentialPresentation: createCredentialPresentation.serialize(),
             linkRootKey: rootKey,
             adminPasskey: adminPasskey,
-            callLinkPublicParams: publicParams.serialize()
+            callLinkPublicParams: publicParams.serialize(),
+            restrictions: CallLinkState.Restrictions.adminApproval
         ).unwrap())
     }
 }
