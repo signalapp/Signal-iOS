@@ -184,7 +184,6 @@ class GroupCallViewController: UIViewController {
     /// the pip animation.
     private var shouldRelayoutAfterPipAnimationCompletes = false
     private var postAnimationUpdateMemberViewFramesSize: CGSize?
-    private var postAnimationUpdateMemberViewFramesControlsAreHidden: Bool?
 
     private lazy var reactionsBurstView: ReactionsBurstView = {
         ReactionsBurstView(burstAligner: self.incomingReactionsView)
@@ -552,7 +551,7 @@ class GroupCallViewController: UIViewController {
 
     // MARK: Call members
 
-    private func updateScrollViewFrames(size: CGSize? = nil, controlsAreHidden: Bool) {
+    private func updateScrollViewFrames(size: CGSize? = nil) {
         view.layoutIfNeeded()
 
         let size = size ?? view.frame.size
@@ -577,13 +576,14 @@ class GroupCallViewController: UIViewController {
             scrollView.isScrollEnabled = true
             videoGrid.isHidden = false
             let height: CGFloat
-            if FeatureFlags.groupCallDrawerSupport {
-                let controlsHeight = controlsAreHidden || bottomSheet.isPresentingCallInfo() || bottomSheet.isCrossFading() ? 16 : bottomSheet.sheetHeight
-                height = size.height - view.safeAreaInsets.top - controlsHeight - overflowGridHeight
-            } else {
-                let controlsHeight = controlsAreHidden ? 16 : callControls.height
-                height = size.height - view.safeAreaInsets.top - controlsHeight - overflowGridHeight
+            let offset: CGFloat
+            switch bottomSheetState {
+            case .callControlsAndOverflow, .callControls, .callInfo, .transitioning:
+                offset = FeatureFlags.groupCallDrawerSupport ? self.bottomSheet.minimizedHeight : callControls.height
+            case .hidden:
+                offset = 16
             }
+            height = size.height - view.safeAreaInsets.top - offset - overflowGridHeight
             videoGrid.frame = CGRect(
                 x: 0,
                 y: view.safeAreaInsets.top,
@@ -647,8 +647,7 @@ class GroupCallViewController: UIViewController {
 
     private func updateMemberViewFrames(
         size: CGSize? = nil,
-        shouldRepositionBottomVStack: Bool = true,
-        controlsAreHidden: Bool
+        shouldRepositionBottomVStack: Bool = true
     ) {
         guard !isPipAnimationInProgress else {
             // Wait for the pip to reach its new size before re-laying out.
@@ -657,7 +656,6 @@ class GroupCallViewController: UIViewController {
             // complete, we'll call `updateMemberViewFrames`.
             self.shouldRelayoutAfterPipAnimationCompletes = true
             self.postAnimationUpdateMemberViewFramesSize = size
-            self.postAnimationUpdateMemberViewFramesControlsAreHidden = controlsAreHidden
             return
         }
 
@@ -667,12 +665,12 @@ class GroupCallViewController: UIViewController {
 
         let yMax: CGFloat
         if shouldRepositionBottomVStack {
-            if FeatureFlags.groupCallDrawerSupport {
-                yMax = (controlsAreHidden || bottomSheet.isPresentingCallInfo() || bottomSheet.isCrossFading() ? size.height - 16 : size.height - bottomSheet.sheetHeight) - 16
-            } else {
-                yMax = (controlsAreHidden ? size.height - 16 : callControls.frame.minY) - 16
+            switch bottomSheetState {
+            case .callControlsAndOverflow, .callControls, .callInfo, .transitioning:
+                yMax = FeatureFlags.groupCallDrawerSupport ? size.height - bottomSheet.sheetHeight - 16 : callControls.frame.minY - 16
+            case .hidden:
+                yMax = size.height - 32
             }
-
             bottomVStackTopConstraint.constant = yMax
         } else {
             yMax = bottomVStackTopConstraint.constant
@@ -837,8 +835,8 @@ class GroupCallViewController: UIViewController {
             }
             createIncomingCallControlsIfNeeded().isHidden = false
             // These views aren't visible at this point, but we need them to be configured anyway.
-            updateMemberViewFrames(size: size, controlsAreHidden: true)
-            updateScrollViewFrames(size: size, controlsAreHidden: true)
+            updateMemberViewFrames(size: size)
+            updateScrollViewFrames(size: size)
             return
         } else if !self.hasShownCallControls, FeatureFlags.groupCallDrawerSupport {
             self.presentBottomSheet()
@@ -958,10 +956,9 @@ class GroupCallViewController: UIViewController {
                 self.updateBottomVStackItems()
                 self.updateMemberViewFrames(
                     size: size,
-                    shouldRepositionBottomVStack: shouldRepositionBottomVStack,
-                    controlsAreHidden: controlsAreHidden
+                    shouldRepositionBottomVStack: shouldRepositionBottomVStack
                 )
-                self.updateScrollViewFrames(size: size, controlsAreHidden: controlsAreHidden)
+                self.updateScrollViewFrames(size: size)
             }
             let completion: () -> Void = {
                 if
@@ -1043,8 +1040,10 @@ class GroupCallViewController: UIViewController {
                 switch newState {
                 case .callControlsAndOverflow:
                     owsFailDebug("Impossible bottomSheetState transition")
-                case .callControls, .callInfo, .transitioning:
+                case .callControls:
                     updateFrames(controlsAreHidden: false, shouldRepositionBottomVStack: false)
+                case .callInfo, .transitioning:
+                    updateFrames(controlsAreHidden: true, shouldRepositionBottomVStack: false)
                 case .hidden:
                     owsFailDebug("Impossible bottomSheetState transition")
                 }
@@ -1074,8 +1073,8 @@ class GroupCallViewController: UIViewController {
             self.callHeader.alpha = hideCallControls ? 0 : 1
 
             self.updateBottomVStackItems()
-            self.updateMemberViewFrames(size: size, controlsAreHidden: hideCallControls)
-            self.updateScrollViewFrames(size: size, controlsAreHidden: hideCallControls)
+            self.updateMemberViewFrames(size: size)
+            self.updateScrollViewFrames(size: size)
             self.view.layoutIfNeeded()
         }) { _ in
             if !FeatureFlags.groupCallDrawerSupport {
@@ -1841,16 +1840,9 @@ extension GroupCallViewController: AnimatableLocalMemberViewDelegate {
 
     private func performRetroactiveUiUpdateIfNecessary() {
         if self.shouldRelayoutAfterPipAnimationCompletes {
-            if
-                let postAnimationUpdateMemberViewFramesSize,
-                let postAnimationUpdateMemberViewFramesControlsAreHidden
-            {
-                updateMemberViewFrames(
-                    size: postAnimationUpdateMemberViewFramesSize,
-                    controlsAreHidden: postAnimationUpdateMemberViewFramesControlsAreHidden
-                )
+            if let postAnimationUpdateMemberViewFramesSize {
+                updateMemberViewFrames(size: postAnimationUpdateMemberViewFramesSize)
                 self.postAnimationUpdateMemberViewFramesSize = nil
-                self.postAnimationUpdateMemberViewFramesControlsAreHidden = nil
             }
 
             self.shouldRelayoutAfterPipAnimationCompletes = false
