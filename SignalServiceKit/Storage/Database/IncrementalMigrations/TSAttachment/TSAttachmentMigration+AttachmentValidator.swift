@@ -482,7 +482,9 @@ extension TSAttachmentMigration {
                         try FileManager.default.copyItem(at: unencryptedFileUrl, to: newTmpURL)
                         let player = try AVAudioPlayer(contentsOf: newTmpURL)
                         player.prepareToPlay()
-                        return player.duration
+                        let duration = player.duration
+                        try FileManager.default.removeItem(at: newTmpURL)
+                        return duration
                     } catch {
                         throw originalError
                     }
