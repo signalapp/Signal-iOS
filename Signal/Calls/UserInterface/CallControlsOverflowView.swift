@@ -175,7 +175,7 @@ class CallControlsOverflowView: UIView {
 
     // MARK: - Animations
 
-    private var isAnimating = false
+    private(set) var isAnimating = false
 
     func animateIn() {
         self.buttonStack?.isHandRaised = self.isLocalHandRaised

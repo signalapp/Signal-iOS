@@ -145,22 +145,9 @@ class GroupCallViewController: UIViewController {
     private lazy var bottomVStackTopConstraint = self.bottomVStack.autoPinEdge(.bottom, to: .top, of: self.view)
     private lazy var videoOverflowTrailingConstraint = videoOverflow.autoPinEdge(toSuperviewEdge: .trailing)
 
-    private enum BottomSheetState {
-        /// "Overflow" refers to the "..." menu that shows reactions & "Raise Hand".
-        case callControlsAndOverflow
-        case callControls
-        case callInfo
-        case transitioning
-        case hidden
-    }
-
-    private var bottomSheetState: BottomSheetState = .callControls {
-        didSet {
-            guard bottomSheetState != oldValue else { return }
-            updateCallUI(bottomSheetChangedStateFrom: oldValue)
-            scheduleBottomSheetTimeoutIfNecessary()
-        }
-    }
+    private lazy var bottomSheetStateManager: GroupCallBottomSheetStateManager = {
+        return GroupCallBottomSheetStateManager(delegate: self)
+    }()
 
     private var hasUnresolvedSafetyNumberMismatch = false
     private var hasDismissed = false
@@ -577,7 +564,7 @@ class GroupCallViewController: UIViewController {
             videoGrid.isHidden = false
             let height: CGFloat
             let offset: CGFloat
-            switch bottomSheetState {
+            switch bottomSheetStateManager.bottomSheetState {
             case .callControlsAndOverflow, .callControls, .callInfo, .transitioning:
                 offset = FeatureFlags.groupCallDrawerSupport ? self.bottomSheet.minimizedHeight : callControls.height
             case .hidden:
@@ -665,7 +652,7 @@ class GroupCallViewController: UIViewController {
 
         let yMax: CGFloat
         if shouldRepositionBottomVStack {
-            switch bottomSheetState {
+            switch bottomSheetStateManager.bottomSheetState {
             case .callControlsAndOverflow, .callControls, .callInfo, .transitioning:
                 yMax = FeatureFlags.groupCallDrawerSupport ? size.height - bottomSheet.sheetHeight - 16 : callControls.frame.minY - 16
             case .hidden:
@@ -857,8 +844,8 @@ class GroupCallViewController: UIViewController {
 
         if FeatureFlags.groupCallDrawerSupport {
             self.callControlDisplayStateDidChange(
-                oldState: oldBottomSheetState ?? self.bottomSheetState,
-                newState: self.bottomSheetState,
+                oldState: oldBottomSheetState ?? self.bottomSheetStateManager.bottomSheetState,
+                newState: self.bottomSheetStateManager.bottomSheetState,
                 size: size,
                 shouldAnimateViewFrames: shouldAnimateViewFrames
             )
@@ -868,27 +855,27 @@ class GroupCallViewController: UIViewController {
             if !callControlsAreHidden && !callControlsOverflowContentIsHidden {
                 self.callControlDisplayStateDidChange(
                     oldState: .callControlsAndOverflow,
-                    newState: self.bottomSheetState,
+                    newState: self.bottomSheetStateManager.bottomSheetState,
                     size: size,
                     shouldAnimateViewFrames: shouldAnimateViewFrames
                 )
             } else if !callControlsAreHidden {
                 self.callControlDisplayStateDidChange(
                     oldState: .callControls,
-                    newState: self.bottomSheetState,
+                    newState: self.bottomSheetStateManager.bottomSheetState,
                     size: size,
                     shouldAnimateViewFrames: shouldAnimateViewFrames
                 )
             } else if !callControlsOverflowContentIsHidden {
-                owsFailDebug("Call Controls Overflow content should never be visible while Call Controls are hidden. Desired new state: \(self.bottomSheetState).")
+                owsFailDebug("Call Controls Overflow content should never be visible while Call Controls are hidden. Desired new state: \(self.bottomSheetStateManager.bottomSheetState).")
                 recoverFromOverflowOnlyCallControlsDisplayState(
-                    newState: self.bottomSheetState,
+                    newState: self.bottomSheetStateManager.bottomSheetState,
                     size: size
                 )
             } else {
                 self.callControlDisplayStateDidChange(
                     oldState: .hidden,
-                    newState: self.bottomSheetState,
+                    newState: self.bottomSheetStateManager.bottomSheetState,
                     size: size,
                     shouldAnimateViewFrames: shouldAnimateViewFrames
                 )
@@ -1020,7 +1007,7 @@ class GroupCallViewController: UIViewController {
         case .hidden:
             switch newState {
             case .callControlsAndOverflow:
-                owsFailDebug("Impossible bottomSheetState transition")
+                owsFailDebug("Impossible bottomSheetStateManager.bottomSheetState transition")
                 // But if you must...
                 animateCallControls(
                     hideCallControls: false,
@@ -1039,13 +1026,13 @@ class GroupCallViewController: UIViewController {
             if FeatureFlags.groupCallDrawerSupport {
                 switch newState {
                 case .callControlsAndOverflow:
-                    owsFailDebug("Impossible bottomSheetState transition")
+                    owsFailDebug("Impossible bottomSheetStateManager.bottomSheetState transition")
                 case .callControls:
                     updateFrames(controlsAreHidden: false, shouldRepositionBottomVStack: false)
                 case .callInfo, .transitioning:
                     updateFrames(controlsAreHidden: true, shouldRepositionBottomVStack: false)
                 case .hidden:
-                    owsFailDebug("Impossible bottomSheetState transition")
+                    owsFailDebug("Impossible bottomSheetStateManager.bottomSheetState transition")
                 }
             }
         }
@@ -1111,7 +1098,7 @@ class GroupCallViewController: UIViewController {
             return
         }
 
-        self.bottomSheetState = .callControls
+        bottomSheetStateManager.submitState(.callControls)
         self.raisedHandsToast.raisedHands.removeAll()
 
         guard
@@ -1173,17 +1160,17 @@ class GroupCallViewController: UIViewController {
 
     @objc
     private func didTouchRootView(sender: UIGestureRecognizer) {
-        switch self.bottomSheetState {
+        switch self.bottomSheetStateManager.bottomSheetState {
         case .callControlsAndOverflow, .hidden:
-            self.bottomSheetState = .callControls
+            bottomSheetStateManager.submitState(.callControls)
         case .callControls:
             if bottomSheetMustBeVisible {
                 return
             }
-            self.bottomSheetState = .hidden
+            bottomSheetStateManager.submitState(.hidden)
         case .callInfo:
             if FeatureFlags.groupCallDrawerSupport {
-                self.bottomSheetState = .callControls
+                bottomSheetStateManager.submitState(.callControls)
                 self.bottomSheet.minimizeHeight()
             }
         case .transitioning:
@@ -1198,7 +1185,7 @@ class GroupCallViewController: UIViewController {
     private var sheetTimeoutTimer: Timer?
     private func scheduleBottomSheetTimeoutIfNecessary() {
         let shouldAutomaticallyDismissDrawer: Bool = {
-            switch self.bottomSheetState {
+            switch self.bottomSheetStateManager.bottomSheetState {
             case .callControlsAndOverflow, .hidden:
                 return false
             case .callControls:
@@ -1233,7 +1220,7 @@ class GroupCallViewController: UIViewController {
 
     private func timeoutBottomSheet() {
         self.sheetTimeoutTimer = nil
-        self.bottomSheetState = .hidden
+        bottomSheetStateManager.submitState(.hidden)
     }
 
     private func cancelBottomSheetTimeout() {
@@ -1248,11 +1235,11 @@ class GroupCallViewController: UIViewController {
     }
 
     private func showCallControlsIfHidden() {
-        switch self.bottomSheetState {
+        switch self.bottomSheetStateManager.bottomSheetState {
         case .callControlsAndOverflow, .callControls:
             break
         case .hidden:
-            self.bottomSheetState = .callControls
+            bottomSheetStateManager.submitState(.callControls)
         case .callInfo, .transitioning:
             break
         }
@@ -1673,15 +1660,15 @@ extension GroupCallViewController: CallHeaderDelegate {
         switch groupCall.concreteType {
         case .groupThread(let groupThreadCall):
             if FeatureFlags.groupCallDrawerSupport {
-                switch self.bottomSheetState {
+                switch self.bottomSheetStateManager.bottomSheetState {
                 case .callControls, .callControlsAndOverflow, .transitioning:
-                    self.bottomSheetState = .callInfo
+                    bottomSheetStateManager.submitState(.callInfo)
                     self.bottomSheet.maximizeHeight(animated: true)
                 case .hidden:
-                    self.bottomSheetState = .callInfo
+                    bottomSheetStateManager.submitState(.callInfo)
                     self.bottomSheet.maximizeHeight(animated: false)
                 case .callInfo:
-                    self.bottomSheetState = .callControls
+                    bottomSheetStateManager.submitState(.callControls)
                     self.bottomSheet.minimizeHeight(animated: true)
                 }
             } else {
@@ -1798,9 +1785,9 @@ extension GroupCallViewController: CallControlsDelegate {
 
     func didPressMore() {
         if self.callControlsOverflowView.isHidden {
-            self.bottomSheetState = .callControlsAndOverflow
+            bottomSheetStateManager.submitState(.callControlsAndOverflow)
         } else {
-            self.bottomSheetState = .callControls
+            bottomSheetStateManager.submitState(.callControls)
         }
     }
 }
@@ -1867,11 +1854,11 @@ extension GroupCallViewController: CallControlsOverflowPresenter {
     }
 
     func willSendReaction() {
-        self.bottomSheetState = .callControls
+        bottomSheetStateManager.submitState(.callControls)
     }
 
     func didTapRaiseOrLowerHand() {
-        self.bottomSheetState = .callControls
+        bottomSheetStateManager.submitState(.callControls)
     }
 }
 
@@ -1879,7 +1866,7 @@ extension GroupCallViewController: CallControlsOverflowPresenter {
 
 extension GroupCallViewController: SheetPanDelegate {
     func sheetPanDidBegin() {
-        self.bottomSheetState = .transitioning
+        bottomSheetStateManager.submitState(.transitioning)
         self.callControlsConfirmationToastManager.forceDismissToast()
     }
 
@@ -1888,7 +1875,7 @@ extension GroupCallViewController: SheetPanDelegate {
     }
 
     func sheetPanDecelerationDidBegin() {
-        self.bottomSheetState = .transitioning
+        bottomSheetStateManager.submitState(.transitioning)
     }
 
     func sheetPanDecelerationDidEnd() {
@@ -1897,11 +1884,59 @@ extension GroupCallViewController: SheetPanDelegate {
 
     private func setBottomSheetStateAfterTransition() {
         if bottomSheet.isPresentingCallInfo() {
-            self.bottomSheetState = .callInfo
+            bottomSheetStateManager.submitState(.callInfo)
         } else if bottomSheet.isPresentingCallControls() {
-            self.bottomSheetState = .callControls
+            bottomSheetStateManager.submitState(.callControls)
         } else if bottomSheet.isCrossFading() {
-            self.bottomSheetState = .transitioning
+            bottomSheetStateManager.submitState(.transitioning)
         }
+    }
+}
+
+// MARK: - Bottom Sheet State Management
+
+enum BottomSheetState {
+    /// "Overflow" refers to the "..." menu that shows reactions & "Raise Hand".
+    case callControlsAndOverflow
+    case callControls
+    case callInfo
+    case transitioning
+    case hidden
+}
+
+/// TODO: It may make sense to pull sheet timeout logic into this class.
+class GroupCallBottomSheetStateManager {
+    private weak var delegate: GroupCallBottomSheetStateDelegate?
+    private(set) var bottomSheetState: BottomSheetState = .callControls {
+        didSet {
+            guard bottomSheetState != oldValue else { return }
+            delegate?.bottomSheetStateDidChange(oldState: oldValue)
+        }
+    }
+
+    fileprivate init(delegate: GroupCallBottomSheetStateDelegate) {
+        self.delegate = delegate
+    }
+
+    func submitState(_ state: BottomSheetState) {
+        if let delegate, !delegate.areStateChangesSuspended {
+            bottomSheetState = state
+        }
+    }
+}
+
+private protocol GroupCallBottomSheetStateDelegate: AnyObject {
+    var areStateChangesSuspended: Bool { get }
+    func bottomSheetStateDidChange(oldState: BottomSheetState)
+}
+
+extension GroupCallViewController: GroupCallBottomSheetStateDelegate {
+    var areStateChangesSuspended: Bool {
+        self.callControlsOverflowView.isAnimating
+    }
+
+    func bottomSheetStateDidChange(oldState: BottomSheetState) {
+        updateCallUI(bottomSheetChangedStateFrom: oldState)
+        scheduleBottomSheetTimeoutIfNecessary()
     }
 }
