@@ -461,9 +461,34 @@ extension TSAttachmentMigration {
         // TODO someday: this loads an AVAsset (sometimes), and so does the audio waveform
         // computation. We can combine them so we don't waste effort.
         private static func computeAudioDuration(_ unencryptedFileUrl: URL, mimeType: String) throws -> TimeInterval {
-            let player = try AVAudioPlayer(contentsOf: unencryptedFileUrl)
-            player.prepareToPlay()
-            return player.duration
+            do {
+                let player = try AVAudioPlayer(contentsOf: unencryptedFileUrl)
+                player.prepareToPlay()
+                return player.duration
+            } catch let originalError {
+                if
+                    unencryptedFileUrl.pathExtension == "aac"
+                    || mimeType == "audio/aac"
+                    || mimeType == "audio/x-aac"
+                {
+                    // AVAudioPlayer can't handle aac file extensions, but _should_ work
+                    // if we just change the extension.
+                    do {
+                        Logger.info("Failed aac file, retrying as m4a")
+                        let newTmpURL = OWSFileSystem.temporaryFileUrl(
+                            fileExtension: "m4a",
+                            isAvailableWhileDeviceLocked: true
+                        )
+                        try FileManager.default.copyItem(at: unencryptedFileUrl, to: newTmpURL)
+                        let player = try AVAudioPlayer(contentsOf: newTmpURL)
+                        player.prepareToPlay()
+                        return player.duration
+                    } catch {
+                        throw originalError
+                    }
+                }
+                throw originalError
+            }
         }
 
         private enum AudioWaveformFile {
