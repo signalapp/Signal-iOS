@@ -350,6 +350,8 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
 #pragma mark - Profile Whitelist
 
+#ifdef USE_DEBUG_UI
+
 - (void)clearProfileWhitelist
 {
     OWSLogWarn(@"Clearing the profile whitelist.");
@@ -401,6 +403,8 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     [AccountAttributesUpdaterObjcBridge updateAccountAttributes].catch(
         ^(NSError *error) { OWSLogError(@"Error: %@.", error); });
 }
+
+#endif
 
 - (void)setLocalProfileKey:(OWSAES256Key *)key
          userProfileWriter:(UserProfileWriter)userProfileWriter

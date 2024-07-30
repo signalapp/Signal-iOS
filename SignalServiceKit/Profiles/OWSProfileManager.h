@@ -93,10 +93,13 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 #pragma mark - Profile Whitelist
 
+#ifdef USE_DEBUG_UI
 // These methods are for debugging.
 - (void)clearProfileWhitelist;
 - (void)logProfileWhitelist;
 - (void)debug_regenerateLocalProfileWithSneakyTransaction;
+#endif
+
 - (void)setLocalProfileKey:(OWSAES256Key *)key
          userProfileWriter:(UserProfileWriter)userProfileWriter
                transaction:(SDSAnyWriteTransaction *)transaction;
