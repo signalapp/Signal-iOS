@@ -57,7 +57,6 @@ open class StackSheetViewController: InteractiveSheetViewController {
         contentScrollView.addSubview(stackView)
         stackView.autoPinEdgesToSuperviewEdges()
         stackView.autoPinWidth(toWidthOf: contentView)
-        stackView.preservesSuperviewLayoutMargins = true
 
         sizeChangeSubscription = stackView
             .publisher(for: \.bounds)
@@ -76,11 +75,17 @@ open class StackSheetViewController: InteractiveSheetViewController {
 
         let desiredInsets = self.stackViewInsets
 
+        // Dragging the sheet up changes the stack view's safe area,
+        // so add it in manually instead of inheriting it.
         let bottomMargin = max(
-            contentScrollView.safeAreaInsets.bottom + desiredInsets.bottom, minimumBottomInsetIncludingSafeArea
+            self.view.safeAreaInsets.bottom + desiredInsets.bottom,
+            minimumBottomInsetIncludingSafeArea
         )
 
-        contentScrollView.layoutMargins = .init(
+        contentScrollView.contentInsetAdjustmentBehavior = .never
+        stackView.preservesSuperviewLayoutMargins = false
+        stackView.insetsLayoutMarginsFromSafeArea = false
+        stackView.layoutMargins = .init(
             top: desiredInsets.top,
             leading: desiredInsets.leading,
             bottom: bottomMargin,
