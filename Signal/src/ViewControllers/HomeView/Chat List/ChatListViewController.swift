@@ -350,9 +350,9 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                 if FeatureFlags.chatListFilter {
                     switch viewState.inboxFilter {
                     case .unread:
-                        contextMenuActions.append(.disableChatListFilter)
+                        contextMenuActions.append(.disableChatListFilter(target: self))
                     case nil:
-                        contextMenuActions.append(.enableChatListFilter)
+                        contextMenuActions.append(.enableChatListFilter(target: self))
                     }
                 }
 

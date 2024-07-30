@@ -547,7 +547,7 @@ extension CLVTableDataSource: UITableViewDataSource {
             cell = buildArchivedConversationsButtonCell(tableView: tableView, indexPath: indexPath)
         case .inboxFilterFooter:
             let chatListButtonCell = tableView.dequeueReusableCell(ChatListButtonCell.self, for: indexPath)
-            chatListButtonCell.primaryAction = .disableChatListFilter
+            chatListButtonCell.primaryAction = .disableChatListFilter()
             cell = chatListButtonCell
         }
 
