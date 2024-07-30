@@ -961,7 +961,6 @@
 		668A00D22C2B5E32007B8808 /* Cryptography.h in Headers */ = {isa = PBXBuildFile; fileRef = 668A00CF2C2B5E32007B8808 /* Cryptography.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		668A00D62C2B5E5E007B8808 /* Randomness.m in Sources */ = {isa = PBXBuildFile; fileRef = 668A00D42C2B5E5D007B8808 /* Randomness.m */; };
 		668A00D72C2B5E5E007B8808 /* Randomness.h in Headers */ = {isa = PBXBuildFile; fileRef = 668A00D52C2B5E5E007B8808 /* Randomness.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		668A00DA2C2B5E72007B8808 /* CryptographyTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 668A00D82C2B5E72007B8808 /* CryptographyTests.m */; };
 		668A00DB2C2B5E72007B8808 /* CryptographyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A00D92C2B5E72007B8808 /* CryptographyTests.swift */; };
 		668A00DF2C2B5ECF007B8808 /* DebuggerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 668A00DD2C2B5ECF007B8808 /* DebuggerUtils.m */; };
 		668A00E02C2B5ECF007B8808 /* DebuggerUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 668A00DE2C2B5ECF007B8808 /* DebuggerUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -4014,7 +4013,6 @@
 		668A00CF2C2B5E32007B8808 /* Cryptography.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cryptography.h; sourceTree = "<group>"; };
 		668A00D42C2B5E5D007B8808 /* Randomness.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Randomness.m; sourceTree = "<group>"; };
 		668A00D52C2B5E5E007B8808 /* Randomness.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Randomness.h; sourceTree = "<group>"; };
-		668A00D82C2B5E72007B8808 /* CryptographyTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CryptographyTests.m; sourceTree = "<group>"; };
 		668A00D92C2B5E72007B8808 /* CryptographyTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CryptographyTests.swift; sourceTree = "<group>"; };
 		668A00DD2C2B5ECF007B8808 /* DebuggerUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebuggerUtils.m; sourceTree = "<group>"; };
 		668A00DE2C2B5ECF007B8808 /* DebuggerUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebuggerUtils.h; sourceTree = "<group>"; };
@@ -8062,7 +8060,6 @@
 				668A00CF2C2B5E32007B8808 /* Cryptography.h */,
 				668A00CE2C2B5E32007B8808 /* Cryptography.m */,
 				668A00CD2C2B5E31007B8808 /* Cryptography.swift */,
-				668A00D82C2B5E72007B8808 /* CryptographyTests.m */,
 				668A00D92C2B5E72007B8808 /* CryptographyTests.swift */,
 			);
 			path = Cryptography;
@@ -15316,7 +15313,6 @@
 				5077B5B82BBC7FE600EF399E /* ContactTest.swift in Sources */,
 				F962B38C293F9F9F00765BD8 /* CRC32Test.swift in Sources */,
 				668A28AF2BF703E100BB29B3 /* CreateV2AttachmentTablesMigrationTest.swift in Sources */,
-				668A00DA2C2B5E72007B8808 /* CryptographyTests.m in Sources */,
 				668A00DB2C2B5E72007B8808 /* CryptographyTests.swift in Sources */,
 				509BBF7A28CA556700F4D8A0 /* Data+SSKTest.swift in Sources */,
 				F97217FB28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift in Sources */,

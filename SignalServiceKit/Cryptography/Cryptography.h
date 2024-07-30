@@ -33,11 +33,6 @@ extern const NSUInteger kAES256_KeyByteLength;
 
 @interface Cryptography : NSObject
 
-typedef NS_ENUM(NSInteger, TSMACType) {
-    TSHMACSHA256Truncated10Bytes = 2,
-    TSHMACSHA256AttachementType = 3
-};
-
 + (NSData *)generateRandomBytes:(NSUInteger)numberBytes;
 
 + (uint64_t)randomUInt64;

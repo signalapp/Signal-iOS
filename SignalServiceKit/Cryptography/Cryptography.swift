@@ -80,7 +80,6 @@ public extension Cryptography {
     // SHA-256
 
     /// Generates the SHA256 digest for a file.
-    @objc
     static func computeSHA256DigestOfFile(at url: URL) throws -> Data {
         let file = try FileHandle(forReadingFrom: url)
         var digestContext = SHA256DigestContext()
@@ -88,7 +87,6 @@ public extension Cryptography {
         return try digestContext.finalize()
     }
 
-    @objc
     static func computeSHA256Digest(_ data: Data) -> Data? {
         var digestContext = SHA256DigestContext()
         do {
@@ -100,13 +98,11 @@ public extension Cryptography {
         }
     }
 
-    @objc
     static func computeSHA256Digest(_ data: Data, truncatedToBytes: UInt) -> Data? {
         guard let digest = computeSHA256Digest(data), digest.count >= truncatedToBytes else { return nil }
         return digest.subdata(in: digest.startIndex..<digest.startIndex.advanced(by: Int(truncatedToBytes)))
     }
 
-    @objc
     static func computeSHA256HMAC(_ data: Data, key: Data) -> Data? {
         do {
             var context = try HmacContext(key: key)
@@ -118,7 +114,6 @@ public extension Cryptography {
         }
     }
 
-    @objc
     static func computeSHA256HMAC(_ data: Data, key: Data, truncatedToBytes: UInt) -> Data? {
         guard let hmac = computeSHA256HMAC(data, key: key), hmac.count >= truncatedToBytes else { return nil }
         return hmac.subdata(in: hmac.startIndex..<hmac.startIndex.advanced(by: Int(truncatedToBytes)))
