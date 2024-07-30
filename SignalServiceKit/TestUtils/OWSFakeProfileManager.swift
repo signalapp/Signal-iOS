@@ -52,6 +52,10 @@ extension OWSFakeProfileManager: ProfileManager {
         return Promise(error: OWSGenericError("Not supported."))
     }
 
+    public func reuploadLocalProfile(authedAccount: AuthedAccount) {
+        owsFailDebug("Not supported.")
+    }
+
     public func reuploadLocalProfile(
         unsavedRotatedProfileKey: OWSAES256Key?,
         mustReuploadAvatar: Bool,

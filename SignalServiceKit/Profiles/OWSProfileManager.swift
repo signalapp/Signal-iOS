@@ -142,6 +142,27 @@ extension OWSProfileManager: ProfileManager, Dependencies {
         return promise
     }
 
+    public func reuploadLocalProfile(authedAccount: AuthedAccount) {
+        let uploadPromise = databaseStorage.write { tx in
+            return reuploadLocalProfile(
+                unsavedRotatedProfileKey: nil,
+                mustReuploadAvatar: false,
+                authedAccount: authedAccount,
+                tx: tx.asV2Write
+            )
+        }
+        Task {
+            do {
+                try await uploadPromise.awaitable()
+                Logger.info("Done.")
+            } catch where error.isNetworkFailureOrTimeout {
+                Logger.warn("\(error)")
+            } catch {
+                owsFailDebug("\(error)")
+            }
+        }
+    }
+
     // This will re-upload the existing local profile state.
     public func reuploadLocalProfile(
         unsavedRotatedProfileKey: OWSAES256Key?,
@@ -561,15 +582,6 @@ extension OWSProfileManager: ProfileManager, Dependencies {
                 remainingIdentifier.store.removeValue(forKey: remainingIdentifier.key, transaction: tx)
             }
         }
-    }
-
-    // This will re-upload the existing local profile state.
-    @objc
-    @available(swift, obsoleted: 1.0)
-    func reuploadLocalProfileWithSneakyTransaction(authedAccount: AuthedAccount) -> AnyPromise {
-        return AnyPromise(databaseStorage.write { tx in
-            reuploadLocalProfile(unsavedRotatedProfileKey: nil, mustReuploadAvatar: false, authedAccount: authedAccount, tx: tx.asV2Write)
-        })
     }
 
     @objc

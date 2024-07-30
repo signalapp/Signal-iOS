@@ -110,9 +110,6 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 // This is an internal implementation detail and should only be used by OWSUserProfile.
 - (void)localProfileWasUpdated:(OWSUserProfile *)localUserProfile;
 
-- (void)reuploadLocalProfileWithAuthedAccount:(AuthedAccount *)authedAccount
-    NS_SWIFT_NAME(reuploadLocalProfile(authedAccount:));
-
 - (nullable ModelReadCacheSizeLease *)leaseCacheSize:(NSInteger)size;
 
 /**

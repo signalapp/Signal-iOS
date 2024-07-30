@@ -323,19 +323,6 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     return data;
 }
 
-- (void)reuploadLocalProfileWithAuthedAccount:(AuthedAccount *)authedAccount
-{
-    [self reuploadLocalProfileWithSneakyTransactionWithAuthedAccount:authedAccount]
-        .done(^(id value) { OWSLogInfo(@"Done."); })
-        .catch(^(NSError *error) {
-            if (error.isNetworkFailureOrTimeout) {
-                OWSLogWarn(@"Error: %@", error);
-            } else {
-                OWSFailDebug(@"Error: %@", error);
-            }
-        });
-}
-
 #pragma mark - Profile Key Rotation
 
 - (NSString *)groupKeyForGroupId:(NSData *)groupId
