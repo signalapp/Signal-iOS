@@ -80,9 +80,9 @@ class CallDrawerSheet: InteractiveSheetViewController {
         self.backdropColor = .clear
     }
 
-    override func maximumAllowedHeight() -> CGFloat {
+    override func maximumPreferredHeight() -> CGFloat {
         guard let windowHeight = view.window?.frame.height else {
-            return super.maximumAllowedHeight()
+            return super.maximumPreferredHeight()
         }
         let halfHeight = windowHeight / 2
         let twoThirdsHeight = 2 * windowHeight / 3
@@ -393,10 +393,8 @@ class CallDrawerSheet: InteractiveSheetViewController {
                 // How far the table should have traveled.
                 let tableTravelDistance = stepSize * distanceTraveledBySheetSoFar
                 self.tableViewTopConstraint?.constant = HeightConstants.initialTableInset - tableTravelDistance
-            } else if height == maxHeight {
+            } else if height >= maxHeight {
                 changesForSnapToMax()
-            } else {
-                owsFailDebug("GroupCallSheet is somehow taller than its maxHeight!")
             }
         case .max:
             let currentHeight = switch lastKnownHeight {

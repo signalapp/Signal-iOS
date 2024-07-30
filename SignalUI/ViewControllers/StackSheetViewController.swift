@@ -15,6 +15,11 @@ import Combine
 open class StackSheetViewController: InteractiveSheetViewController {
     public override var interactiveScrollViews: [UIScrollView] { [contentScrollView] }
 
+    private lazy var preferredHeight: CGFloat = self.maximumAllowedHeight()
+    open override func maximumPreferredHeight() -> CGFloat {
+        min(self.preferredHeight, self.maximumAllowedHeight())
+    }
+
     private var sizeChangeSubscription: AnyCancellable?
 
     /// Margins for the content in the stack view. The safe area insets for the
@@ -65,6 +70,7 @@ open class StackSheetViewController: InteractiveSheetViewController {
                 guard let self else { return }
                 let totalHandleHeight = Constants.handleSize.height + Constants.handleInsideMargin * 2
                 let desiredHeight = bounds.height + totalHandleHeight
+                self.preferredHeight = desiredHeight
                 self.minimizedHeight = desiredHeight
                 self.contentScrollView.isScrollEnabled = self.maxHeight < desiredHeight
             }

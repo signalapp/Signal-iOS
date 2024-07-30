@@ -207,7 +207,7 @@ open class InteractiveSheetViewController: OWSViewController {
     public final var allowsExpansion: Bool = true {
         didSet {
             if allowsExpansion {
-                maxHeight = maximumAllowedHeight()
+                maxHeight = maximumPreferredHeight()
             } else {
                 maxHeight = minHeight
             }
@@ -252,11 +252,11 @@ open class InteractiveSheetViewController: OWSViewController {
         }
         set {
             externalMinHeight = newValue
-            self.minHeight = min(newValue, maximumAllowedHeight())
+            self.minHeight = min(newValue, maximumPreferredHeight())
         }
     }
 
-    public private(set) lazy final var maxHeight = maximumAllowedHeight()
+    public private(set) lazy final var maxHeight = maximumPreferredHeight()
 
     private lazy var sheetHeightMinConstraint = sheetContainerView.autoSetDimension(
         .height,
@@ -347,6 +347,15 @@ open class InteractiveSheetViewController: OWSViewController {
         interactiveScrollViews.forEach { $0.panGestureRecognizer.addTarget(self, action: #selector(handlePan)) }
     }
 
+    /// The maximum height the sheet wants to be. It can be "sprung" past this
+    /// point up until `maximumAllowedHeight`, if that is higher than this.
+    ///
+    /// By default, it returns `maximumAllowedHeight()`.
+    open func maximumPreferredHeight() -> CGFloat {
+        self.maximumAllowedHeight()
+    }
+
+    /// The maximum height the sheet can ever get.
     open func maximumAllowedHeight() -> CGFloat {
         return CurrentAppContext().frame.height - (view.safeAreaInsets.top + Constants.extraTopPadding)
     }
@@ -354,7 +363,7 @@ open class InteractiveSheetViewController: OWSViewController {
     open override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
         let oldMaxHeight = maxHeight
-        let newMaxHeight = maximumAllowedHeight()
+        let newMaxHeight = maximumPreferredHeight()
         if allowsExpansion {
             maxHeight = newMaxHeight
         }
@@ -409,9 +418,22 @@ open class InteractiveSheetViewController: OWSViewController {
             let translation = sender.translation(in: view).y - startingTranslation
 
             var newHeight = startingHeight - translation
-            self.maxHeight = maximumAllowedHeight()
+            self.maxHeight = maximumPreferredHeight()
+
+            // Add resistance above the max preferred height
             if newHeight > maxHeight {
-                newHeight = maxHeight
+                newHeight = maxHeight + (newHeight - maxHeight) / 3
+            }
+
+            // Don't go past the max allowed height
+            let maxAllowedHeight = self.maximumAllowedHeight()
+            if newHeight > maxAllowedHeight {
+                newHeight = maxAllowedHeight
+            }
+
+            // Add resistance below the min height
+            if !canBeDismissed, newHeight < minHeight {
+                newHeight = minHeight - (minHeight - newHeight) / 3
             }
 
             if newHeight != startingHeight {
@@ -465,7 +487,7 @@ open class InteractiveSheetViewController: OWSViewController {
                 }
             }
 
-            maxHeight = maximumAllowedHeight()
+            maxHeight = maximumPreferredHeight()
             let finalHeight: CGFloat
             switch completionState {
             case .dismissing:
@@ -479,13 +501,28 @@ open class InteractiveSheetViewController: OWSViewController {
 
             let remainingDistance = finalHeight - currentHeight
 
-            // Calculate the time to complete the animation if we want to preserve
-            // the user's velocity. If this time is too slow (e.g. the user was scrolling
-            // very slowly) we'll default to `maxAnimationDuration`
-            let remainingTime = TimeInterval(abs(remainingDistance / currentVelocity))
+            let duration = {
+                if
+                    (finalHeight == maxHeight && remainingDistance < 0) ||
+                    (finalHeight == minHeight && remainingDistance > 0)
+                {
+                    // Dragged past the top. Do a full-length animation
+                    return Constants.maxAnimationDuration
+                } else {
+
+                    // Calculate the time to complete the animation if we want to preserve
+                    // the user's velocity. If this time is too slow (e.g. the user was scrolling
+                    // very slowly) we'll default to `maxAnimationDuration`
+                    let remainingTime = TimeInterval(abs(remainingDistance / currentVelocity))
+                    return max(
+                        min(remainingTime, Constants.maxAnimationDuration),
+                        Constants.maxAnimationDuration / 2
+                    )
+                }
+            }()
 
             sheetPanDelegate?.sheetPanDecelerationDidBegin()
-            Self.springAnimation(duration: max(min(remainingTime, Constants.maxAnimationDuration), Constants.maxAnimationDuration / 2)) {
+            Self.springAnimation(duration: duration) {
                 if remainingDistance < 0 {
                     self.sheetContainerView.frame.origin.y -= remainingDistance
                 } else {
@@ -530,7 +567,7 @@ open class InteractiveSheetViewController: OWSViewController {
 
     public final func refreshMaxHeight() {
         let oldMaxHeight = self.maxHeight
-        self.maxHeight = maximumAllowedHeight()
+        self.maxHeight = maximumPreferredHeight()
         self.sheetHeightMaxConstraint.constant = self.maxHeight
         if self.sheetCurrentHeightConstraint.constant == oldMaxHeight {
             self.sheetCurrentHeightConstraint.constant = self.maxHeight
@@ -555,8 +592,22 @@ open class InteractiveSheetViewController: OWSViewController {
         // If we're at the top of the scrollView, the view is not
         // currently maximized, or we're panning outside of the scroll
         // view we want to do an interactive transition.
+
+        var isScrollingPastTop: Bool {
+            guard let panningScrollView else { return false }
+            return panningScrollView.contentOffset.y <= 0
+        }
+
+        var isScrollingPastBottom: Bool {
+            guard let panningScrollView else { return false }
+            let hasScrollableContent = panningScrollView.contentSize.height <= panningScrollView.height
+            let scrollingPastBottom = panningScrollView.contentOffset.y + panningScrollView.height > panningScrollView.contentSize.height
+            return hasScrollableContent && scrollingPastBottom
+        }
+
         guard
-            (panningScrollView != nil && panningScrollView!.contentOffset.y <= 0)
+            isScrollingPastTop
+            || isScrollingPastBottom
             || sheetContainerView.height < maxHeight
             || panningScrollView == nil
         else {
@@ -588,8 +639,7 @@ extension InteractiveSheetViewController: UIGestureRecognizerDelegate {
         switch gestureRecognizer {
         case is UITapGestureRecognizer:
             let point = gestureRecognizer.location(in: view)
-            guard !sheetContainerView.frame.contains(point) else { return false }
-            return true
+            return !sheetContainerView.frame.contains(point)
         default:
             return true
         }
