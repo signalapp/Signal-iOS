@@ -10,7 +10,7 @@ import XCTest
 
 class OWSRequestFactoryTest: SSKBaseTest {
     private func getUdAccessKey() throws -> SMKUDAccessKey {
-        let profileKey = Data(count: Int(kAES256_KeyByteLength))
+        let profileKey = Data(count: Int(OWSAES256Key.keyByteLength))
         let result = try? SMKUDAccessKey(profileKey: profileKey)
         return try XCTUnwrap(result)
     }

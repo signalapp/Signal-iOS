@@ -230,7 +230,7 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
 
 - (OWSAES256Key *)localProfileKey
 {
-    OWSAssertDebug(self.localUserProfile.profileKey.keyData.length == kAES256_KeyByteLength);
+    OWSAssertDebug(self.localUserProfile.profileKey.keyData.length == OWSAES256Key.keyByteLength);
 
     return self.localUserProfile.profileKey;
 }

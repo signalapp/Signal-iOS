@@ -8,7 +8,7 @@ import SignalServiceKit
 
 class SMKUDAccessKeyTest: XCTestCase {
     func testUDAccessKeyForProfileKey() {
-        let profileKey = Data(count: Int(kAES256_KeyByteLength))
+        let profileKey = Data(count: Int(OWSAES256Key.keyByteLength))
         let udAccessKey1 = try! SMKUDAccessKey(profileKey: profileKey)
         XCTAssertEqual(udAccessKey1.keyData.count, SMKUDAccessKey.kUDAccessKeyLength)
 
@@ -19,7 +19,7 @@ class SMKUDAccessKeyTest: XCTestCase {
     }
 
     func testUDAccessKeyForProfileKey_badProfileKey() {
-        let profileKey = Data(count: Int(kAES256_KeyByteLength - 1))
+        let profileKey = Data(count: Int(OWSAES256Key.keyByteLength - 1))
         XCTAssertThrowsError(try SMKUDAccessKey(profileKey: profileKey))
     }
 }

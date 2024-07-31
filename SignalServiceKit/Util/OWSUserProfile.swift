@@ -447,7 +447,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     }
 
     private static func decodeProfileKey(_ profileKeyData: Data) throws -> OWSAES256Key {
-        guard profileKeyData.count == kAES256_KeyByteLength, let profileKey = OWSAES256Key(data: profileKeyData) else {
+        guard profileKeyData.count == OWSAES256Key.keyByteLength, let profileKey = OWSAES256Key(data: profileKeyData) else {
             // Historically, we encoded this using an NSKeyedArchiver. We assume it's
             // encoded in this way if it's not exactly 32 bytes.
             return try LegacySDSSerializer().deserializeLegacySDSData(profileKeyData, propertyName: "profileKey")
