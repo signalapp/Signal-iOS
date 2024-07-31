@@ -1334,7 +1334,9 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
 
     func setVideoOrientation(_ videoOrientation: AVCaptureVideoOrientation) {
         guard let videoConnection = videoDataOutput.connection(with: .video) else {
+            #if !targetEnvironment(simulator)
             owsFailBeta("videoConnection was unexpectedly nil")
+            #endif
             return
         }
         Logger.info("set videoOrientation: \(videoOrientation)")
