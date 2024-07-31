@@ -709,6 +709,9 @@
 /* label for button shown when an incoming call rings */
 "CALL_CONTROLS_INCOMING_DECLINE" = "拒絕";
 
+/* Shown in a message bubble when you send a call link in a Signal chat */
+"CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Use this link to join a Signal call";
+
 /* Label on button for lowering hand in call. */
 "CALL_LOWER_HAND_BUTTON_LABEL" = "放低手";
 
@@ -1376,7 +1379,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "加入電話通訊錄";
 
 /* Header title for the section showing all media in conversation settings */
-"CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "All Media";
+"CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "所有媒體";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "揀選邊個可以改到個谷嘅名、相、描述同埋過眼雲煙訊息倒數限期。";
@@ -3649,6 +3652,9 @@
 /* Indicates that the recipient has been removed from the current user's contacts and that messaging them will re-add them. */
 "INFO_MESSAGE_CONTACT_REMOVED" = "你之前喺 Signal 聯絡人清單度移除咗呢個人，而家向對方傳送訊息會將佢重新加入清單。";
 
+/* When you start a chat with someone and then later learn their profile name, we insert an in-chat message with this string to record the identifier you originally used to contact them. Embeds {{ the identifier, either a phone number or a username }}. */
+"INFO_MESSAGE_LEARNED_PROFILE_KEY" = "You started this chat with %1$@.";
+
 /* Shown when a user activates payments from a chat */
 "INFO_MESSAGE_PAYMENTS_ACTIVATED" = "你已經啟動咗付款。";
 
@@ -3671,7 +3677,7 @@
 "INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "已舉報垃圾訊息";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "你可以喺手機或者 iPad 度收發同步訊息。為咗保障你嘅安全，系統冇將聊天紀錄轉移到新連結嘅裝置。";
+"INFO_MESSAGE_SYNCED_THREAD" = "For your security, chat history isn't transferred to new linked devices.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ 已轉咗新電話冧把。";

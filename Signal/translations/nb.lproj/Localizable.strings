@@ -709,6 +709,9 @@
 /* label for button shown when an incoming call rings */
 "CALL_CONTROLS_INCOMING_DECLINE" = "avvis";
 
+/* Shown in a message bubble when you send a call link in a Signal chat */
+"CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Use this link to join a Signal call";
+
 /* Label on button for lowering hand in call. */
 "CALL_LOWER_HAND_BUTTON_LABEL" = "Ta ned hånden";
 
@@ -1376,7 +1379,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Legg til i kontaktlisten";
 
 /* Header title for the section showing all media in conversation settings */
-"CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "All Media";
+"CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "Alle media";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Velg hvem som kan redigere gruppenavnet, gruppeavataren og når meldinger forsvinner.";
@@ -3649,6 +3652,9 @@
 /* Indicates that the recipient has been removed from the current user's contacts and that messaging them will re-add them. */
 "INFO_MESSAGE_CONTACT_REMOVED" = "Denne personen ble tidligere fjernet fra kontaktlisten din på Signal. Hvis du sender en melding, blir vedkommende lagt til igjen.";
 
+/* When you start a chat with someone and then later learn their profile name, we insert an in-chat message with this string to record the identifier you originally used to contact them. Embeds {{ the identifier, either a phone number or a username }}. */
+"INFO_MESSAGE_LEARNED_PROFILE_KEY" = "You started this chat with %1$@.";
+
 /* Shown when a user activates payments from a chat */
 "INFO_MESSAGE_PAYMENTS_ACTIVATED" = "Du har aktivert betalinger.";
 
@@ -3671,7 +3677,7 @@
 "INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Rapportert som søppelpost";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "Du kan sende eller motta synkroniserte meldinger fra telefonen eller iPad. ↵For sikkerhets skyld blir ikke samtaleloggen overført til nye koblede enheter.";
+"INFO_MESSAGE_SYNCED_THREAD" = "For your security, chat history isn't transferred to new linked devices.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ har byttet telefonnummer.";

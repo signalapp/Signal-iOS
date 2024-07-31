@@ -709,6 +709,9 @@
 /* label for button shown when an incoming call rings */
 "CALL_CONTROLS_INCOMING_DECLINE" = "नाकारा";
 
+/* Shown in a message bubble when you send a call link in a Signal chat */
+"CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Use this link to join a Signal call";
+
 /* Label on button for lowering hand in call. */
 "CALL_LOWER_HAND_BUTTON_LABEL" = "हात खाली घ्या";
 
@@ -1376,7 +1379,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "फोन संपर्कामध्ये जोडा";
 
 /* Header title for the section showing all media in conversation settings */
-"CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "All Media";
+"CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "सर्व मिडिया";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "गट नाव, फोटो, विवरण आणि हरवणारे संदेश टायमर जो संपादन करू शकतो त्याला निवडा.";
@@ -3649,6 +3652,9 @@
 /* Indicates that the recipient has been removed from the current user's contacts and that messaging them will re-add them. */
 "INFO_MESSAGE_CONTACT_REMOVED" = "आपण या व्यक्तीला आपल्या Signal संपर्क यादीमधून हटवले होते, त्यांना संदेशन करण्याने ते पुन्हा जोडले जातील.";
 
+/* When you start a chat with someone and then later learn their profile name, we insert an in-chat message with this string to record the identifier you originally used to contact them. Embeds {{ the identifier, either a phone number or a username }}. */
+"INFO_MESSAGE_LEARNED_PROFILE_KEY" = "You started this chat with %1$@.";
+
 /* Shown when a user activates payments from a chat */
 "INFO_MESSAGE_PAYMENTS_ACTIVATED" = "आपण पेमेंट्स सक्रिय केले आहे.";
 
@@ -3671,7 +3677,7 @@
 "INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "स्पॅम कळवा";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "आपण आपल्या फोन किंवा iPad वरून संकलित संदेश पाठवू आणि प्राप्त करू शकता. ↵आपल्या सुरक्षेसाठी, नवीन लिंक केलेल्या डिव्हाईस मध्ये चॅट इतिहास स्थानांतरित केला जात नाही.";
+"INFO_MESSAGE_SYNCED_THREAD" = "For your security, chat history isn't transferred to new linked devices.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ यांनी त्यांचा फोन क्रमांक बदलला";

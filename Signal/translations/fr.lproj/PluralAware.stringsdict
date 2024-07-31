@@ -424,9 +424,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ et %1$d autre personne font partie de cet appel</string>
+			<string>%2$@, %3$@ et %1$d autre personne participent à l’appel</string>
 			<key>other</key>
-			<string>%2$@, %3$@ et %1$d autres personnes font partie de cet appel</string>
+			<string>%2$@, %3$@ et %1$d autres personnes participent à l’appel</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>
@@ -472,9 +472,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%2$@ et %1$ld autre personne participent à cet appel</string>
+			<string>%2$@ et %1$ld autre personne participent à l’appel</string>
 			<key>other</key>
-			<string>%2$@ et %1$ld autres personnes participent à cet appel</string>
+			<string>%2$@ et %1$ld autres personnes participent à l’appel</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d</key>
@@ -1192,9 +1192,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%2$@ +%1$ld raised a hand</string>
+			<string>%2$@ + %1$ld personne ont levé la main</string>
 			<key>other</key>
-			<string>%2$@ +%1$ld raised a hand</string>
+			<string>%2$@ + %1$ld personnes ont levé la main</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>

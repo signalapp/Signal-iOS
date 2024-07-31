@@ -709,6 +709,9 @@
 /* label for button shown when an incoming call rings */
 "CALL_CONTROLS_INCOMING_DECLINE" = "refuser";
 
+/* Shown in a message bubble when you send a call link in a Signal chat */
+"CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Use this link to join a Signal call";
+
 /* Label on button for lowering hand in call. */
 "CALL_LOWER_HAND_BUTTON_LABEL" = "Baisser la main";
 
@@ -854,7 +857,7 @@
 "CALLS_TAB_NO_RECENT_CALLS_LABEL" = "Aucun appel récent";
 
 /* Label suggesting that the user start a call, shown when their Calls Tab is empty. */
-"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "Appelez un ami";
+"CALLS_TAB_NO_RECENT_CALLS_SUGGESTION_LABEL" = "Pour commencer, appelez un ami.";
 
 /* Title for a long-press context menu action to return to a call the user is actively participating in, triggered from a call in the Calls Tab. */
 "CALLS_TAB_RETURN_TO_CALL_ACTION_TITLE" = "Revenir à l’appel";
@@ -1376,7 +1379,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Ajouter aux contacts du téléphone";
 
 /* Header title for the section showing all media in conversation settings */
-"CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "All Media";
+"CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "Tous les médias";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choisissez qui peut modifier le nom, la photo et la description du groupe, ou encore le délai avant disparition des messages éphémères.";
@@ -2153,7 +2156,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "Récupéré";
 
 /* Users can donate on behalf of a friend, and the friend will receive a badge. This is a short paragraph on the screen where users choose the badge their friend will receive. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "Soutenez Signal en effectuant un don pour un ami ou un membre de votre famille qui utilise Signal. Ils auront la possibilité d'afficher leur soutien sur leur profil.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "Envie de soutenir Signal ? Faites un don pour un ami ou un proche qui utilise Signal. L’heureux élu aura la possibilité d’afficher son soutien sur son profil.";
 
 /* Users can donate on behalf of a friend, and the friend will receive a badge. This is the title on the screen where users choose the badge their friend will receive. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "Faire un don pour un ami";
@@ -2408,7 +2411,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Vous pouvez accorder l’accès dans l’appli Réglages d’iOS.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal a besoin d’accéder aux contacts pour modifier les informations des contacts";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Pour modifier les informations relatives aux contacts, Signal doit pouvoir accéder à l’appli Contacts.";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "Modifier le groupe";
@@ -2873,7 +2876,7 @@
 "GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%1$@ a quitté l’appel";
 
 /* Copy explaining that two users have joined the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%1$@ et %2$@ se sont joints à l’appel";
+"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%1$@ et %2$@ ont rejoint l’appel";
 
 /* Copy explaining that two users have left the group call. Embeds {first member name}, {second member name} */
 "GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%1$@ et %2$@ ont quitté l’appel";
@@ -3056,7 +3059,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "Groupe";
 
 /* Label for the 'join' button in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Me joindre";
+"GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Rejoindre";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Chargement…";
@@ -3275,10 +3278,10 @@
 "GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "Vous avez invité %1$@ au groupe.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%1$@ s’est joint au groupe.";
+"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%1$@ a rejoint le groupe.";
 
 /* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%1$@ s’est joint au groupe grâce au lien du groupe.";
+"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%1$@ a rejoint le groupe via le lien du groupe.";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%1$@ a quitté le groupe.";
@@ -3649,6 +3652,9 @@
 /* Indicates that the recipient has been removed from the current user's contacts and that messaging them will re-add them. */
 "INFO_MESSAGE_CONTACT_REMOVED" = "Vous avez retiré cette personne de votre liste de contacts Signal. Lui écrire l'ajoutera à nouveau à votre liste de contacts.";
 
+/* When you start a chat with someone and then later learn their profile name, we insert an in-chat message with this string to record the identifier you originally used to contact them. Embeds {{ the identifier, either a phone number or a username }}. */
+"INFO_MESSAGE_LEARNED_PROFILE_KEY" = "You started this chat with %1$@.";
+
 /* Shown when a user activates payments from a chat */
 "INFO_MESSAGE_PAYMENTS_ACTIVATED" = "Vous avez activé les paiements.";
 
@@ -3671,7 +3677,7 @@
 "INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Signalé comme spam";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "Les messages que vous envoyez et recevez depuis votre téléphone ou votre iPad sont synchronisés.\nPour votre sécurité, nous ne transférons pas l’historique des conversations vers les appareils nouvellement associés.";
+"INFO_MESSAGE_SYNCED_THREAD" = "For your security, chat history isn't transferred to new linked devices.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ a changé de numéro de téléphone";
@@ -5519,7 +5525,7 @@
 "PROFILE_SETTINGS_USERNAME_EDIT_USERNAME_ACTION" = "Modifier le nom d'utilisateur";
 
 /* Title for a table cell that lets the user manage their username link and QR code. */
-"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "Code QR ou lien";
+"PROFILE_SETTINGS_USERNAME_LINK_CELL_TITLE" = "Lien ou code QR";
 
 /* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Nom d’utilisateur";
@@ -7979,7 +7985,7 @@
 "USERNAME_LINK_SHEET_BUTTON" = "lien";
 
 /* Subtitle for a tooltip describing ways to share your username. */
-"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Proposez de converser avec d'autres personnes en leur partageant votre code QR ou un lien unique.";
+"USERNAME_LINK_TOOLTIP_SUBTITLE" = "Invitez vos amis à discuter avec vous via un lien ou un code QR uniques.";
 
 /* Title for a tooltip describing ways to share your username. */
 "USERNAME_LINK_TOOLTIP_TITLE" = "Partagez votre nom d’utilisateur";

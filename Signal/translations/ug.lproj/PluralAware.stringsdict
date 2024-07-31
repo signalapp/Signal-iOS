@@ -1044,7 +1044,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>other</key>
-			<string>%2$@ +%1$ld raised a hand</string>
+			<string>%2$@ + %1$ld قول كۆتۈردى</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>

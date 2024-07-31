@@ -1784,17 +1784,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>zero</key>
-			<string>%2$@ +%1$ld raised a hand</string>
+			<string>%2$@ +%1$ld رفعتم أيديكم</string>
 			<key>one</key>
-			<string>%2$@ +%1$ld raised a hand</string>
+			<string>%2$@ +%1$ld رفع يده</string>
 			<key>two</key>
-			<string>%2$@ +%1$ld raised a hand</string>
+			<string>%2$@ +%1$ld رفعتُما أيديكُما</string>
 			<key>few</key>
-			<string>%2$@ +%1$ld raised a hand</string>
+			<string>%2$@ +%1$ld رفعوا أيديهم</string>
 			<key>many</key>
-			<string>%2$@ +%1$ld raised a hand</string>
+			<string>%2$@ +%1$ld رفعوا أيديهم</string>
 			<key>other</key>
-			<string>%2$@ +%1$ld raised a hand</string>
+			<string>%2$@ +%1$ld رفعتم أيديكم</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>
