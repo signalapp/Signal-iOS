@@ -1,1 +1,1 @@
-• Vi har lagt till haptisk feedback och en vibrationsindikator när du växlar mellan olika vyer under ett gruppsamtal.
+• Your microphone will automatically switch to being muted whenever you join a large group call, so now nobody will hear you say "omg there are so many people in here" unless you unmute first.

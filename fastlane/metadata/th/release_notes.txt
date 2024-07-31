@@ -1,1 +1,1 @@
-• เราเพิ่มฟีเจอร์การตอบสนองแบบ Haptic Feedback ที่จะทำให้เครื่องสั่นเมื่อคุณสลับมุมมองในระหว่างการโทรกลุ่ม
+• Your microphone will automatically switch to being muted whenever you join a large group call, so now nobody will hear you say "omg there are so many people in here" unless you unmute first.

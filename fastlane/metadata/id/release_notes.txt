@@ -1,1 +1,1 @@
-• Kami menambahkan umpan balik dan indikator getaran saat Anda beralih antartampilan berbeda selama panggilan grup.
+• Your microphone will automatically switch to being muted whenever you join a large group call, so now nobody will hear you say "omg there are so many people in here" unless you unmute first.

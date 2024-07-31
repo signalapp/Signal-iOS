@@ -1,1 +1,1 @@
-• הוספנו משוב הפטי ואינדיקציית רטט בעת החלפה בין תצוגות שונות במהלך שיחה קבוצתית.
+• Your microphone will automatically switch to being muted whenever you join a large group call, so now nobody will hear you say "omg there are so many people in here" unless you unmute first.

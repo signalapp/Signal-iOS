@@ -1,1 +1,1 @@
-• 當你在群組通話期間切換不同瀏覽方式時，我們新增了觸覺回饋和輕微的震動，但是否改動並從網格瀏覽切換回同事正在展示的幻燈片，仍由你決定。
+• Your microphone will automatically switch to being muted whenever you join a large group call, so now nobody will hear you say "omg there are so many people in here" unless you unmute first.

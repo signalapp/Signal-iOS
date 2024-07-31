@@ -1,1 +1,1 @@
-• Le retour haptique vous fait vibrer ? Votre appareil émet désormais une petite vibration quand vous passez d’une vue à l’autre pendant un appel de groupe. Mais vous pouvez toujours décider que rien ne bouge quand vous passez de l’affichage Grille au diaporama présenté par votre collègue.
+• Your microphone will automatically switch to being muted whenever you join a large group call, so now nobody will hear you say "omg there are so many people in here" unless you unmute first.

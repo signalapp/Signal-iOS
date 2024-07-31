@@ -1,1 +1,1 @@
-• 그룹 통화 중 여러 보기 간에 전환하는 경우 햅틱 피드백과 진동 표시기를 추가했습니다.
+• Your microphone will automatically switch to being muted whenever you join a large group call, so now nobody will hear you say "omg there are so many people in here" unless you unmute first.

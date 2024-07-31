@@ -1,1 +1,1 @@
-• Vi har tilføjet haptisk feedback og en subtil vibration, når du skifter mellem forskellige visninger under et gruppeopkald, men det er stadig op til dig, om du vil skifte fra gittervisningen tilbage til det diasshow, som din kollega præsenterer.
+• Your microphone will automatically switch to being muted whenever you join a large group call, so now nobody will hear you say "omg there are so many people in here" unless you unmute first.

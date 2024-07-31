@@ -1,1 +1,1 @@
-• Bir grup görüşmesi sırasında farklı görünümler arasında geçiş yaptığında, dokunsal geri bildirim ve bir titreşim göstergesi ekledik.
+• Your microphone will automatically switch to being muted whenever you join a large group call, so now nobody will hear you say "omg there are so many people in here" unless you unmute first.

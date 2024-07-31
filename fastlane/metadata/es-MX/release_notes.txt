@@ -1,1 +1,1 @@
-• Hemos añadido respuestas táctiles y una vibración suave cuando cambias entre vistas diferentes durante una llamada grupal, pero sigue siendo tu elección si te mantienes en la vista de cuadrícula o regresas a la presentación de tu colega.
+• Your microphone will automatically switch to being muted whenever you join a large group call, so now nobody will hear you say "omg there are so many people in here" unless you unmute first.

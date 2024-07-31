@@ -1,1 +1,1 @@
-• Chúng tôi đã bổ sung hỗ trợ phản hồi xúc giác và thông báo rung khi bạn chuyển đổi giữa các chế độ hiển thị khác nhau trong một cuộc gọi nhóm.
+• Your microphone will automatically switch to being muted whenever you join a large group call, so now nobody will hear you say "omg there are so many people in here" unless you unmute first.

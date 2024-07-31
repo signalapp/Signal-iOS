@@ -1,1 +1,1 @@
-• Προσθέσαμε ανάδραση μέσω αφής και μια ελαφριά δόνηση όταν αλλάζεις μεταξύ διαφορετικών προβολών κατά τη διάρκεια μιας ομαδικής κλήσης.
+• Your microphone will automatically switch to being muted whenever you join a large group call, so now nobody will hear you say "omg there are so many people in here" unless you unmute first.
