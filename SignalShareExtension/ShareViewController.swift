@@ -91,7 +91,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             mobileCoinHelper: MobileCoinHelperMinimal(),
             callMessageHandler: NoopCallMessageHandler(),
             currentCallProvider: CurrentCallNoOpProvider(),
-            notificationPresenter: NoopNotificationPresenterImpl()
+            notificationPresenter: NoopNotificationPresenterImpl(),
+            incrementalTSAttachmentMigrator: NoOpIncrementalMessageTSAttachmentMigrator()
         )
 
         // Configure the rest of the globals before preparing the database.

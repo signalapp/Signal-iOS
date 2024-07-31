@@ -282,15 +282,15 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // Set up and register incremental migration for TSAttachment -> v2 Attachment.
         // TODO: remove this (and the incremental migrator itself) once we make this
         // migration a launch-blocking GRDB migration.
-        let incrementalMessageTSAttachmentMigrator = IncrementalMessageTSAttachmentMigrator(databaseStorage: databaseStorage)
+        let incrementalMessageTSAttachmentMigrator = IncrementalMessageTSAttachmentMigratorImpl(databaseStorage: databaseStorage)
 
         // We _must_ register BGProcessingTask handlers synchronously in didFinishLaunching.
         // https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler/register(fortaskwithidentifier:using:launchhandler:)
-        incrementalMessageTSAttachmentMigrator.registerBGProcessingTask()
+        incrementalMessageTSAttachmentMigrator.registerBGProcessingTask(databaseStorage: databaseStorage)
         self.incrementalMessageTSAttachmentMigrator = incrementalMessageTSAttachmentMigrator
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            incrementalMessageTSAttachmentMigrator.scheduleBGProcessingTaskIfNeeded()
-            incrementalMessageTSAttachmentMigrator.runInMainAppBackgroundIfNeeded()
+            incrementalMessageTSAttachmentMigrator.scheduleBGProcessingTaskIfNeeded(databaseStorage: databaseStorage)
+            incrementalMessageTSAttachmentMigrator.runInMainAppBackgroundIfNeeded(databaseStorage: databaseStorage)
         }
 
         // Show LoadingViewController until the database migrations are complete.
@@ -358,7 +358,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             mobileCoinHelper: MobileCoinHelperSDK(),
             callMessageHandler: WebRTCCallMessageHandler(),
             currentCallProvider: currentCall,
-            notificationPresenter: NotificationPresenterImpl()
+            notificationPresenter: NotificationPresenterImpl(),
+            incrementalTSAttachmentMigrator: incrementalMessageTSAttachmentMigrator
+                ?? NoOpIncrementalMessageTSAttachmentMigrator()
         )
         setupNSEInteroperation()
         SUIEnvironment.shared.setUp(authCredentialManager: databaseContinuation.authCredentialManager)

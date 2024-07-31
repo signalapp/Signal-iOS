@@ -144,7 +144,8 @@ class NSEEnvironment: Dependencies {
             mobileCoinHelper: MobileCoinHelperMinimal(),
             callMessageHandler: NSECallMessageHandler(),
             currentCallProvider: CurrentCallNoOpProvider(),
-            notificationPresenter: NotificationPresenterImpl()
+            notificationPresenter: NotificationPresenterImpl(),
+            incrementalTSAttachmentMigrator: NoOpIncrementalMessageTSAttachmentMigrator()
         )
 
         databaseContinuation.prepareDatabase().done(on: DispatchQueue.main) { finalSetupContinuation in

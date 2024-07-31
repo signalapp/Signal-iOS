@@ -101,6 +101,7 @@ public class AppSetup {
         callMessageHandler: CallMessageHandler,
         currentCallProvider: any CurrentCallProvider,
         notificationPresenter: any NotificationPresenter,
+        incrementalTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator,
         testDependencies: TestDependencies = TestDependencies()
     ) -> AppSetup.DatabaseContinuation {
         configureUnsatisfiableConstraintLogging()
@@ -941,6 +942,7 @@ public class AppSetup {
                 storyStore: storyStore,
                 threadStore: threadStore
             ),
+            incrementalTSAttachmentMigrator: incrementalTSAttachmentMigrator,
             kvStoreFactory: keyValueStoreFactory,
             localRecipientArchiver: MessageBackupLocalRecipientArchiver(),
             messageBackupKeyMaterial: messageBackupKeyMaterial,

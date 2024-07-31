@@ -35,6 +35,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let db: DB
     private let distributionListRecipientArchiver: MessageBackupDistributionListRecipientArchiver
     private let groupRecipientArchiver: MessageBackupGroupRecipientArchiver
+    private let incrementalTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator
     private let kvStore: KeyValueStore
     private let localRecipientArchiver: MessageBackupLocalRecipientArchiver
     private let messageBackupKeyMaterial: MessageBackupKeyMaterial
@@ -53,6 +54,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         db: DB,
         distributionListRecipientArchiver: MessageBackupDistributionListRecipientArchiver,
         groupRecipientArchiver: MessageBackupGroupRecipientArchiver,
+        incrementalTSAttachmentMigrator: IncrementalMessageTSAttachmentMigrator,
         kvStoreFactory: KeyValueStoreFactory,
         localRecipientArchiver: MessageBackupLocalRecipientArchiver,
         messageBackupKeyMaterial: MessageBackupKeyMaterial,
@@ -70,6 +72,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.db = db
         self.distributionListRecipientArchiver = distributionListRecipientArchiver
         self.groupRecipientArchiver = groupRecipientArchiver
+        self.incrementalTSAttachmentMigrator = incrementalTSAttachmentMigrator
         self.kvStore = kvStoreFactory.keyValueStore(collection: Constants.keyValueStoreCollectionName)
         self.localRecipientArchiver = localRecipientArchiver
         self.messageBackupKeyMaterial = messageBackupKeyMaterial
@@ -141,6 +144,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw NotImplementedError()
         }
 
+        await migrateAttachmentsBeforeBackup()
+
         return try await db.awaitableWrite { tx in
             let outputStream: MessageBackupProtoOutputStream
             let metadataProvider: MessageBackup.ProtoStream.EncryptionMetadataProvider
@@ -172,6 +177,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             owsFailDebug("Should not be able to use backups!")
             throw NotImplementedError()
         }
+
+        await migrateAttachmentsBeforeBackup()
 
         return try await db.awaitableWrite { tx in
             let outputStream: MessageBackupProtoOutputStream
@@ -353,6 +360,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             throw NotImplementedError()
         }
 
+        await migrateAttachmentsBeforeBackup()
+
         try await db.awaitableWrite { tx in
             let inputStream: MessageBackupProtoInputStream
             switch self.streamProvider.openEncryptedInputFileStream(
@@ -386,6 +395,8 @@ public class MessageBackupManagerImpl: MessageBackupManager {
             owsFailDebug("Should not be able to use backups!")
             throw NotImplementedError()
         }
+
+        await migrateAttachmentsBeforeBackup()
 
         try await db.awaitableWrite { tx in
             let inputStream: MessageBackupProtoInputStream
@@ -585,6 +596,16 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     }
 
     // MARK: -
+
+    /// TSAttachments must be migrated to v2 Attachments before we can create or restore backups.
+    /// Normally this migration happens in the background; force it to run and finish now.
+    private func migrateAttachmentsBeforeBackup() async {
+        // We have to enable the flags; tapping a backup option
+        // immediately opts you in.
+        AttachmentFeatureFlags.enableV2ForMessages()
+
+        await incrementalTSAttachmentMigrator.runUntilFinished()
+    }
 
     public func validateEncryptedBackup(
         fileUrl: URL,

@@ -108,6 +108,7 @@ class MessageBackupIntegrationTestCase: XCTestCase {
             callMessageHandler: CrashyMocks.MockCallMessageHandler(),
             currentCallProvider: CrashyMocks.MockCurrentCallThreadProvider(),
             notificationPresenter: CrashyMocks.MockNotificationPresenter(),
+            incrementalTSAttachmentMigrator: NoOpIncrementalMessageTSAttachmentMigrator(),
             testDependencies: AppSetup.TestDependencies(
                 dateProvider: dateProvider,
                 networkManager: CrashyMocks.MockNetworkManager(libsignalNet: nil),

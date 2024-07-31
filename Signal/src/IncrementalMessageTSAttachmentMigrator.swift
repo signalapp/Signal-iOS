@@ -7,66 +7,44 @@ import BackgroundTasks
 import Foundation
 import SignalServiceKit
 
-/// Incrementally migrates TSAttachments owned by TSMessages to v2 attachments.
+private enum IncrementalMessageTSAttachmentMigratorConstants {
+    // Must be kept in sync with the value in info.plist.
+    static let taskIdentifier = "MessageAttachmentMigrationTask"
+}
+
 /// Manages the BGProcessingTask for doing the migration as well as the runner for
 /// doing so while the main app is running.
-public class IncrementalMessageTSAttachmentMigrator {
+extension IncrementalMessageTSAttachmentMigrator {
 
-    private typealias Store = IncrementalTSAttachmentMigrationStore
+    typealias Store = IncrementalTSAttachmentMigrationStore
 
-    private let databaseStorage: SDSDatabaseStorage
-
-    public init(databaseStorage: SDSDatabaseStorage) {
-        self.databaseStorage = databaseStorage
-
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync { [weak self] in
-            guard AttachmentFeatureFlags.incrementalMigration else {
-                return
-            }
-
-            self?.databaseStorage.read { tx in
-                switch Store.getState(tx: tx) {
-                case .unstarted:
-                    Logger.info("Has not started message attachment migration")
-                case .started:
-                    Logger.info("Partial progress on message attachment migration")
-                case .finished:
-                    Logger.info("Finished message attachment migration")
-                }
-            }
-        }
-    }
-
-    // Must be kept in sync with the value in info.plist.
-    private static let taskIdentifier = "MessageAttachmentMigrationTask"
-
-    public func registerBGProcessingTask() {
+    public func registerBGProcessingTask(databaseStorage: SDSDatabaseStorage) {
         // We register the handler _regardless_ of whether we schedule the task.
         // Scheduling is what makes it actually run; apple docs say apps must register
         // handlers for every task identifier declared in info.plist.
         // https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler/register(fortaskwithidentifier:using:launchhandler:)
         // (Apple's WWDC sample app also unconditionally registers and then conditionally schedules.)
         BGTaskScheduler.shared.register(
-            forTaskWithIdentifier: Self.taskIdentifier,
+            forTaskWithIdentifier: IncrementalMessageTSAttachmentMigratorConstants.taskIdentifier,
             using: nil,
             launchHandler: { [self] task in
-                self.runInBGProcessingTask(task)
+                self.runInBGProcessingTask(task, databaseStorage: databaseStorage)
             }
         )
     }
 
-    public func scheduleBGProcessingTaskIfNeeded() {
+    public func scheduleBGProcessingTaskIfNeeded(databaseStorage: SDSDatabaseStorage) {
         // Note: this file only exists in the main app (Signal/src) so this is guaranteed.
         owsAssertDebug(CurrentAppContext().isMainApp)
 
-        guard shouldLaunchBGProcessingTask() else {
+        guard shouldLaunchBGProcessingTask(databaseStorage: databaseStorage) else {
             return
         }
 
         // Dispatching off the main thread is recommended by apple in their WWDC talk
         // as BGTaskScheduler.submit can take time and block the main thread.
         DispatchQueue.global().async {
-            let request = BGProcessingTaskRequest(identifier: Self.taskIdentifier)
+            let request = BGProcessingTaskRequest(identifier: IncrementalMessageTSAttachmentMigratorConstants.taskIdentifier)
 
             do {
                 try BGTaskScheduler.shared.submit(request)
@@ -88,14 +66,14 @@ public class IncrementalMessageTSAttachmentMigrator {
         }
     }
 
-    private func shouldLaunchBGProcessingTask() -> Bool {
+    private func shouldLaunchBGProcessingTask(databaseStorage: SDSDatabaseStorage) -> Bool {
         guard AttachmentFeatureFlags.incrementalMigration else { return false }
         let state = databaseStorage.read(block: Store.getState(tx:))
         return state != .finished
     }
 
-    private func runInBGProcessingTask(_ bgTask: BGTask) {
-        guard shouldLaunchBGProcessingTask() else {
+    private func runInBGProcessingTask(_ bgTask: BGTask, databaseStorage: SDSDatabaseStorage) {
+        guard shouldLaunchBGProcessingTask(databaseStorage: databaseStorage) else {
             Logger.info("Not running BGProcessingTask; not allowed or already finished")
             bgTask.setTaskCompleted(success: true)
             return
@@ -114,7 +92,7 @@ public class IncrementalMessageTSAttachmentMigrator {
                     // handler is called.
                     bgTask.setTaskCompleted(success: false)
                     // Re-schedule so we try to run it again.
-                    self.scheduleBGProcessingTaskIfNeeded()
+                    self.scheduleBGProcessingTaskIfNeeded(databaseStorage: databaseStorage)
                     return
                 }
 
@@ -124,7 +102,7 @@ public class IncrementalMessageTSAttachmentMigrator {
                     owsFailDebug("Failed migration batch in BGProcessingTask, stopping after \(batchCount) batches: \(error)")
                     bgTask.setTaskCompleted(success: false)
                     // Re-schedule so we try to run it again.
-                    self.scheduleBGProcessingTaskIfNeeded()
+                    self.scheduleBGProcessingTaskIfNeeded(databaseStorage: databaseStorage)
                     return
                 }
                 batchCount += 1
@@ -140,7 +118,7 @@ public class IncrementalMessageTSAttachmentMigrator {
         }
     }
 
-    public func runInMainAppBackgroundIfNeeded() {
+    public func runInMainAppBackgroundIfNeeded(databaseStorage: SDSDatabaseStorage) {
         guard AttachmentFeatureFlags.incrementalMigration else { return }
         let state = databaseStorage.read(block: Store.getState(tx:))
         switch state {
@@ -171,34 +149,5 @@ public class IncrementalMessageTSAttachmentMigrator {
             }
         }
         Logger.info("Finished in main app after \(batchCount) batches")
-    }
-
-    // Returns true if done.
-    private func runNextBatch() async throws -> Bool {
-        typealias Migrator = TSAttachmentMigration.TSMessageMigration
-
-        return try await databaseStorage.awaitableWrite { tx in
-            // First we try to migrate a batch of prepared messages.
-            let didMigrateBatch = try Migrator.completeNextIterativeTSMessageMigrationBatch(
-                tx: tx.unwrapGrdbWrite
-            )
-            if didMigrateBatch {
-                return false
-            }
-
-            // If no messages are prepared, we try to prepare a batch of messages.
-            let didPrepareBatch = try Migrator.prepareNextIterativeTSMessageMigrationBatch(
-                tx: tx.unwrapGrdbWrite
-            )
-            if didPrepareBatch {
-                try Store.setState(.started, tx: tx)
-                return false
-            }
-
-            // If there was nothing to migrate and nothing to prepare, wipe the files and finish.
-            try Migrator.cleanUpTSAttachmentFiles()
-            try Store.setState(.finished, tx: tx)
-            return true
-        }
     }
 }
