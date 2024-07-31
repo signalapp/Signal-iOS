@@ -832,13 +832,22 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     }
 
     // Message Attachments
-    NSError *bodyError;
-    NSArray<SSKProtoAttachmentPointer *> *attachments = [self buildProtosForBodyAttachmentsWithTx:transaction
-                                                                                            error:&bodyError];
-    if (bodyError) {
-        OWSFailDebug(@"Could not build body attachments");
-    } else {
-        [builder setAttachments:attachments];
+
+    // Only inserted messages should have attachments, and if they are saveable
+    // they should be inserted by now.
+    if ([self shouldBeSaved]) {
+        if (self.grdbId != nil) {
+            NSError *bodyError;
+            NSArray<SSKProtoAttachmentPointer *> *attachments = [self buildProtosForBodyAttachmentsWithTx:transaction
+                                                                                                    error:&bodyError];
+            if (bodyError) {
+                OWSFailDebug(@"Could not build body attachments");
+            } else {
+                [builder setAttachments:attachments];
+            }
+        } else {
+            OWSFailDebug(@"Saved message uninserted at proto build time!");
+        }
     }
 
     // Quoted Reply
