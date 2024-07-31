@@ -1075,7 +1075,7 @@ extension TSAttachmentMigration {
             sql.append(columns.map({ $0 + " = ?"}).joined(separator: ", "))
             sql.append(" WHERE id = ?;")
             _ = arguments.append(contentsOf: [rowId])
-            tx.execute(sql: sql, arguments: arguments)
+            try tx.database.execute(sql: sql, arguments: arguments)
         }
     }
 }
