@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 private struct IncomingGroupsV2MessageJobInfo {
     let job: IncomingGroupsV2MessageJob
@@ -436,7 +437,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
     }
 
     internal static func discardMode(
-        forMessageFrom sourceAddress: SignalServiceAddress,
+        forMessageFrom sourceAci: Aci,
         groupContext: SSKProtoGroupContextV2,
         tx: SDSAnyReadTransaction
     ) -> GroupsV2MessageProcessor.DiscardMode {
@@ -454,7 +455,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
         }
 
         return GroupsV2MessageProcessor.discardMode(
-            forMessageFrom: sourceAddress,
+            forMessageFrom: sourceAci,
             groupId: groupContextInfo.groupId,
             tx: tx
         )
@@ -473,12 +474,12 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
             owsFailDebug("Missing groupContextInfo.")
             return .discard
         }
-        guard let sourceAddress = envelope.sourceAddress, sourceAddress.isValid else {
+        guard let sourceAci = Aci.parseFrom(aciString: envelope.sourceServiceID) else {
             owsFailDebug("Invalid source address.")
             return .discard
         }
         return GroupsV2MessageProcessor.discardMode(
-            forMessageFrom: sourceAddress,
+            forMessageFrom: sourceAci,
             groupId: groupContextInfo.groupId,
             shouldCheckGroupModel: hasGroupBeenUpdated,
             tx: tx
@@ -1036,7 +1037,7 @@ public class GroupsV2MessageProcessor: NSObject {
     ///
     /// If `shouldCheckGroupModel` is false, only checks whether the sender or group is blocked.
     public static func discardMode(
-        forMessageFrom sourceAddress: SignalServiceAddress,
+        forMessageFrom sourceAci: Aci,
         groupId: Data,
         shouldCheckGroupModel: Bool = true,
         tx: SDSAnyReadTransaction
@@ -1044,9 +1045,12 @@ public class GroupsV2MessageProcessor: NSObject {
         // We want to discard asap to avoid problems with batching.
 
         let blockingManager = NSObject.blockingManager
-        guard !blockingManager.isAddressBlocked(sourceAddress, transaction: tx) &&
-            !blockingManager.isGroupIdBlocked(groupId, transaction: tx) else {
-                Logger.info("Discarding blocked envelope.")
+        let isBlocked: Bool = (
+            blockingManager.isAddressBlocked(SignalServiceAddress(sourceAci), transaction: tx)
+            || blockingManager.isGroupIdBlocked(groupId, transaction: tx)
+        )
+        if isBlocked {
+            Logger.info("Discarding blocked envelope.")
             return .discard
         }
 
@@ -1075,14 +1079,14 @@ public class GroupsV2MessageProcessor: NSObject {
                 Logger.warn("Discarding envelope; local user is not an active group member.")
                 return .discard
             }
-            guard groupThread.groupModel.groupMembership.isFullMember(sourceAddress) else {
+            guard groupThread.groupModel.groupMembership.isFullMember(SignalServiceAddress(sourceAci)) else {
                 // * The sender might have just left the group.
                 Logger.warn("Discarding envelope; sender is not an active group member.")
                 return .discard
             }
             if let groupModel = groupThread.groupModel as? TSGroupModelV2 {
                 if groupModel.isAnnouncementsOnly {
-                    guard groupThread.groupModel.groupMembership.isFullMemberAndAdministrator(sourceAddress) else {
+                    guard groupThread.groupModel.groupMembership.isFullMemberAndAdministrator(SignalServiceAddress(sourceAci)) else {
                         // * Only administrators can send "renderable" messages to a "announcement-only" group.
                         Logger.warn("Discarding renderable content in envelope; sender is not an active group member.")
                         return .discardVisibleMessages

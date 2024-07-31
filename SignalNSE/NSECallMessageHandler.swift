@@ -93,29 +93,27 @@ class NSECallMessageHandler: CallMessageHandler {
         case .opaque(let opaque):
             func validateGroupRing(groupId: Data, ringId: Int64) -> Bool {
                 databaseStorage.read { transaction in
-                    let sender = SignalServiceAddress(caller.aci)
-
-                    if sender.isLocalAddress {
+                    if SignalServiceAddress(caller.aci).isLocalAddress {
                         // Always trust our other devices (important for cancellations).
                         return true
                     }
 
                     guard let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-                        owsFailDebug("discarding group ring \(ringId) from \(sender) for unknown group")
+                        owsFailDebug("discarding group ring \(ringId) from \(caller.aci) for unknown group")
                         return false
                     }
 
                     guard GroupsV2MessageProcessor.discardMode(
-                        forMessageFrom: sender,
+                        forMessageFrom: caller.aci,
                         groupId: groupId,
                         tx: transaction
                     ) == .doNotDiscard else {
-                        NSELogger.uncorrelated.warn("discarding group ring \(ringId) from \(sender)")
+                        NSELogger.uncorrelated.warn("discarding group ring \(ringId) from \(caller.aci)")
                         return false
                     }
 
                     guard thread.groupMembership.fullMembers.count <= RemoteConfig.maxGroupCallRingSize else {
-                        NSELogger.uncorrelated.warn("discarding group ring \(ringId) from \(sender) for too-large group")
+                        NSELogger.uncorrelated.warn("discarding group ring \(ringId) from \(caller.aci) for too-large group")
                         return false
                     }
 

@@ -1509,8 +1509,6 @@ extension CallService: CallManagerDelegate {
             return
         }
 
-        let caller = SignalServiceAddress(senderAci)
-
         enum RingAction {
             case cancel
             case ring(TSGroupThread)
@@ -1523,7 +1521,7 @@ extension CallService: CallManagerDelegate {
             }
 
             guard GroupsV2MessageProcessor.discardMode(
-                forMessageFrom: caller,
+                forMessageFrom: senderAci,
                 groupId: groupId,
                 tx: transaction
             ) == .doNotDiscard else {
@@ -1579,7 +1577,7 @@ extension CallService: CallManagerDelegate {
                 return owsFailDebug("Failed to build group call")
             }
 
-            groupThreadCall.groupCallRingState = .incomingRing(caller: caller, ringId: ringId)
+            groupThreadCall.groupCallRingState = .incomingRing(caller: SignalServiceAddress(senderAci), ringId: ringId)
 
             self.callUIAdapter.reportIncomingCall(call)
         }

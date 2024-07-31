@@ -598,7 +598,7 @@ private struct ProcessingRequestBuilder {
             return .enqueueForGroupProcessing
         }
         let discardMode = GroupsMessageProcessor.discardMode(
-            forMessageFrom: SignalServiceAddress(decryptedEnvelope.sourceAci),
+            forMessageFrom: decryptedEnvelope.sourceAci,
             groupContext: groupContextV2,
             tx: tx
         )
