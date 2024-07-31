@@ -571,7 +571,7 @@ message FilePointer {
     optional uint32 cdnNumber = 2;
     bytes key = 3;
     bytes digest = 4;
-    uint64 size = 5;
+    uint32 size = 5;
     // Fallback in case backup tier upload failed.
     optional string transitCdnKey = 6;
     optional uint32 transitCdnNumber = 7;

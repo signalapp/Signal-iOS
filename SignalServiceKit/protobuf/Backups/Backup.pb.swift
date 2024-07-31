@@ -3211,7 +3211,7 @@ public struct BackupProto_FilePointer {
 
     public var digest: Data = Data()
 
-    public var size: UInt64 = 0
+    public var size: UInt32 = 0
 
     /// Fallback in case backup tier upload failed.
     public var transitCdnKey: String {
@@ -9918,7 +9918,7 @@ extension BackupProto_FilePointer.BackupLocator: SwiftProtobuf.Message, SwiftPro
       case 2: try { try decoder.decodeSingularUInt32Field(value: &self._cdnNumber) }()
       case 3: try { try decoder.decodeSingularBytesField(value: &self.key) }()
       case 4: try { try decoder.decodeSingularBytesField(value: &self.digest) }()
-      case 5: try { try decoder.decodeSingularUInt64Field(value: &self.size) }()
+      case 5: try { try decoder.decodeSingularUInt32Field(value: &self.size) }()
       case 6: try { try decoder.decodeSingularStringField(value: &self._transitCdnKey) }()
       case 7: try { try decoder.decodeSingularUInt32Field(value: &self._transitCdnNumber) }()
       default: break
@@ -9944,7 +9944,7 @@ extension BackupProto_FilePointer.BackupLocator: SwiftProtobuf.Message, SwiftPro
       try visitor.visitSingularBytesField(value: self.digest, fieldNumber: 4)
     }
     if self.size != 0 {
-      try visitor.visitSingularUInt64Field(value: self.size, fieldNumber: 5)
+      try visitor.visitSingularUInt32Field(value: self.size, fieldNumber: 5)
     }
     try { if let v = self._transitCdnKey {
       try visitor.visitSingularStringField(value: v, fieldNumber: 6)
