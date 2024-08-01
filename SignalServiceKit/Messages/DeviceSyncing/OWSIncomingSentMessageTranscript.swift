@@ -53,7 +53,7 @@ public class OWSIncomingSentMessageTranscript: Dependencies, SentMessageTranscri
         {
             let destinationAddress = SignalServiceAddress.legacyAddress(
                 serviceIdString: sentProto.destinationServiceID,
-                phoneNumber: sentProto.destinationE164
+                phoneNumber: sentProto.destinationE164?.nilIfEmpty
             )
             guard destinationAddress.isValid else {
                 owsFailDebug("Invalid destinationAddress.")

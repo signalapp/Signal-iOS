@@ -402,7 +402,7 @@ public final class MessageReceiver: Dependencies {
                         // we can infer that that user belongs in our profile whitelist.
                         let destinationAddress = SignalServiceAddress.legacyAddress(
                             serviceIdString: sent.destinationServiceID,
-                            phoneNumber: sent.destinationE164
+                            phoneNumber: sent.destinationE164?.nilIfEmpty
                         )
                         if destinationAddress.isValid {
                             profileManager.addUser(

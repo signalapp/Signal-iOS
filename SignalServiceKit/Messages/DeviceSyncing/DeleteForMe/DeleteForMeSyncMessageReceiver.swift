@@ -183,7 +183,7 @@ final class DeleteForMeSyncMessageReceiverImpl: DeleteForMeSyncMessageReceiver {
                 return .contact(contactThread)
             }
         } else if
-            let threadE164 = proto.threadE164,
+            let threadE164 = proto.threadE164?.nilIfEmpty,
             let threadRecipient = recipientDatabaseTable.fetchRecipient(phoneNumber: threadE164, transaction: tx),
             let contactThread = threadStore.fetchContactThread(recipient: threadRecipient, tx: tx)
         {
@@ -236,7 +236,7 @@ final class DeleteForMeSyncMessageReceiverImpl: DeleteForMeSyncMessageReceiver {
                     author = .otherUser(_author)
                 }
             } else if
-                let authorE164 = proto.authorE164,
+                let authorE164 = proto.authorE164?.nilIfEmpty,
                 let _author = recipientDatabaseTable.fetchRecipient(phoneNumber: authorE164, transaction: tx)
             {
                 author = .otherUser(_author)

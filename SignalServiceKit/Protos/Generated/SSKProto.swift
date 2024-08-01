@@ -9394,7 +9394,7 @@ public class SSKProtoSyncMessageSent: NSObject, Codable, NSSecureCoding {
     }
     @objc
     public var hasDestinationE164: Bool {
-        return proto.hasDestinationE164 && !proto.destinationE164.isEmpty
+        return proto.hasDestinationE164
     }
 
     @objc
@@ -9590,18 +9590,10 @@ public class SSKProtoSyncMessageSentBuilder: NSObject {
     @available(swift, obsoleted: 1.0)
     public func setDestinationE164(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(valueParam.isStructurallyValidE164)
-        }
-
         proto.destinationE164 = valueParam
     }
 
     public func setDestinationE164(_ valueParam: String) {
-        if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(valueParam.isStructurallyValidE164)
-        }
-
         proto.destinationE164 = valueParam
     }
 
@@ -12389,7 +12381,7 @@ public class SSKProtoSyncMessagePniChangeNumber: NSObject, Codable, NSSecureCodi
     }
     @objc
     public var hasNewE164: Bool {
-        return proto.hasNewE164 && !proto.newE164.isEmpty
+        return proto.hasNewE164
     }
 
     public var hasUnknownFields: Bool {
@@ -12537,18 +12529,10 @@ public class SSKProtoSyncMessagePniChangeNumberBuilder: NSObject {
     @available(swift, obsoleted: 1.0)
     public func setNewE164(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(valueParam.isStructurallyValidE164)
-        }
-
         proto.newE164 = valueParam
     }
 
     public func setNewE164(_ valueParam: String) {
-        if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(valueParam.isStructurallyValidE164)
-        }
-
         proto.newE164 = valueParam
     }
 
@@ -13219,7 +13203,7 @@ public class SSKProtoSyncMessageDeleteForMeConversationIdentifier: NSObject, Cod
     }
     @objc
     public var hasThreadE164: Bool {
-        return proto.hasThreadE164 && !proto.threadE164.isEmpty
+        return proto.hasThreadE164
     }
 
     public var hasUnknownFields: Bool {
@@ -13345,18 +13329,10 @@ public class SSKProtoSyncMessageDeleteForMeConversationIdentifierBuilder: NSObje
     @available(swift, obsoleted: 1.0)
     public func setThreadE164(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(valueParam.isStructurallyValidE164)
-        }
-
         proto.threadE164 = valueParam
     }
 
     public func setThreadE164(_ valueParam: String) {
-        if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(valueParam.isStructurallyValidE164)
-        }
-
         proto.threadE164 = valueParam
     }
 
@@ -13421,7 +13397,7 @@ public class SSKProtoSyncMessageDeleteForMeAddressableMessage: NSObject, Codable
     }
     @objc
     public var hasAuthorE164: Bool {
-        return proto.hasAuthorE164 && !proto.authorE164.isEmpty
+        return proto.hasAuthorE164
     }
 
     @objc
@@ -13545,18 +13521,10 @@ public class SSKProtoSyncMessageDeleteForMeAddressableMessageBuilder: NSObject {
     @available(swift, obsoleted: 1.0)
     public func setAuthorE164(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(valueParam.isStructurallyValidE164)
-        }
-
         proto.authorE164 = valueParam
     }
 
     public func setAuthorE164(_ valueParam: String) {
-        if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(valueParam.isStructurallyValidE164)
-        }
-
         proto.authorE164 = valueParam
     }
 
@@ -13793,7 +13761,7 @@ public class SSKProtoSyncMessageDeleteForMeAttachmentDelete: NSObject, Codable, 
     }
     @objc
     public var hasClientUuid: Bool {
-        return proto.hasClientUuid && !proto.clientUuid.isEmpty
+        return proto.hasClientUuid
     }
 
     @objc
@@ -15249,7 +15217,7 @@ public class SSKProtoAttachmentPointer: NSObject, Codable, NSSecureCoding {
     }
     @objc
     public var hasClientUuid: Bool {
-        return proto.hasClientUuid && !proto.clientUuid.isEmpty
+        return proto.hasClientUuid
     }
 
     @objc
@@ -16080,7 +16048,7 @@ public class SSKProtoContactDetails: NSObject, Codable, NSSecureCoding {
     }
     @objc
     public var hasContactE164: Bool {
-        return proto.hasContactE164 && !proto.contactE164.isEmpty
+        return proto.hasContactE164
     }
 
     @objc
@@ -16243,18 +16211,10 @@ public class SSKProtoContactDetailsBuilder: NSObject {
     @available(swift, obsoleted: 1.0)
     public func setContactE164(_ valueParam: String?) {
         guard let valueParam = valueParam else { return }
-        if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(valueParam.isStructurallyValidE164)
-        }
-
         proto.contactE164 = valueParam
     }
 
     public func setContactE164(_ valueParam: String) {
-        if let valueParam = valueParam.nilIfEmpty {
-            owsAssertDebug(valueParam.isStructurallyValidE164)
-        }
-
         proto.contactE164 = valueParam
     }
 
