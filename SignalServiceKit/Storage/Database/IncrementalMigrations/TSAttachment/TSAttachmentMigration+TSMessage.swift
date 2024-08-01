@@ -842,13 +842,22 @@ extension TSAttachmentMigration {
             threadRowId: Int64,
             messageReceivedAtTimestamp: UInt64,
             tx: GRDBWriteTransaction
-        ) throws -> TSAttachmentMigration.TSQuotedMessage? {
+        ) throws -> TSAttachmentMigration.TSQuotedMessage {
             let oldAttachment = try TSAttachmentMigration.V1Attachment
                 .filter(Column("uniqueId") == originalTSAttachmentUniqueId)
                 .fetchOne(tx.database)
             guard let oldAttachment else {
+                // We've got no original attachment at all.
+                // This can happen if the quote came in, then the original got deleted
+                // while the quote still pointed at the original's attachment.
+                // Just fall back to a stub.
+                var newQuotedMessage = quotedMessage
+                let newQuotedAttachment = newQuotedMessage.quotedAttachment
+                newQuotedAttachment?.attachmentType = .unset
+                newQuotedAttachment?.rawAttachmentId = ""
+                newQuotedMessage.quotedAttachment = newQuotedAttachment
                 try reservedFileIds.cleanUpFiles()
-                return nil
+                return newQuotedMessage
             }
 
             let rawContentType = TSAttachmentMigration.V2AttachmentContentValidator.rawContentType(
@@ -863,7 +872,7 @@ extension TSAttachmentMigration {
                 // We've got no original media stream, just a pointer or non-visual media.
                 // We can't easily handle this, so instead just fall back to a stub.
                 var newQuotedMessage = quotedMessage
-                var newQuotedAttachment = newQuotedMessage.quotedAttachment
+                let newQuotedAttachment = newQuotedMessage.quotedAttachment
                 newQuotedAttachment?.attachmentType = .unset
                 newQuotedAttachment?.rawAttachmentId = ""
                 newQuotedAttachment?.contentType = oldAttachment.contentType
