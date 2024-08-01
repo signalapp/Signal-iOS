@@ -1311,6 +1311,7 @@
 		7255A4D42B98E36900E95368 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 768F720C2A22CEAC002C4E7D /* Preferences.swift */; };
 		728BFE472C5BEC5C008F20F1 /* Randomness.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728BFE462C5BEC5C008F20F1 /* Randomness.swift */; };
 		728BFE4A2C5BFDA7008F20F1 /* RandomnessTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728BFE482C5BF9CE008F20F1 /* RandomnessTest.swift */; };
+		728BFE4C2C5C3427008F20F1 /* Aes256Key.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728BFE4B2C5C3427008F20F1 /* Aes256Key.swift */; };
 		72976BF22BDCF00C0054FAC2 /* NSTimer+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72976BF12BDCF00C0054FAC2 /* NSTimer+OWS.swift */; };
 		72B4819D2BD60FDF008B8BA1 /* OWSMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B4819C2BD60FDF008B8BA1 /* OWSMath.swift */; };
 		72B994DB2BE950DB000CBBFD /* TestAppContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B994DA2BE950DB000CBBFD /* TestAppContext.swift */; };
@@ -4292,6 +4293,7 @@
 		7254651C2BA00FD200EABFD2 /* LocalUserDisplayMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalUserDisplayMode.swift; sourceTree = "<group>"; };
 		728BFE462C5BEC5C008F20F1 /* Randomness.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Randomness.swift; sourceTree = "<group>"; };
 		728BFE482C5BF9CE008F20F1 /* RandomnessTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomnessTest.swift; sourceTree = "<group>"; };
+		728BFE4B2C5C3427008F20F1 /* Aes256Key.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Aes256Key.swift; sourceTree = "<group>"; };
 		72976BF12BDCF00C0054FAC2 /* NSTimer+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSTimer+OWS.swift"; sourceTree = "<group>"; };
 		72B4819C2BD60FDF008B8BA1 /* OWSMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSMath.swift; sourceTree = "<group>"; };
 		72B994DA2BE950DB000CBBFD /* TestAppContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAppContext.swift; sourceTree = "<group>"; };
@@ -8081,6 +8083,7 @@
 		668A00CC2C2B5E1A007B8808 /* Cryptography */ = {
 			isa = PBXGroup;
 			children = (
+				728BFE4B2C5C3427008F20F1 /* Aes256Key.swift */,
 				668A00CD2C2B5E31007B8808 /* Cryptography.swift */,
 				668A00D92C2B5E72007B8808 /* CryptographyTests.swift */,
 			);
@@ -14100,6 +14103,7 @@
 				F915A76C29CB669800EB6F68 /* AccountDataReport.swift in Sources */,
 				F915A76E29CB6B4E00EB6F68 /* AccountDataReportRequestFactory.swift in Sources */,
 				F9C5CCA9289453B300548EEE /* AccountServiceClient.swift in Sources */,
+				728BFE4C2C5C3427008F20F1 /* Aes256Key.swift in Sources */,
 				667DEE5F2BC7175300EFF32D /* AllMediaCategory.swift in Sources */,
 				668A01292C2B6088007B8808 /* AnyPromise.swift in Sources */,
 				720547F52B9C97EC00E2CF2F /* APNSRotationStore.swift in Sources */,
@@ -14175,7 +14179,6 @@
 				502C69722B06F07900012867 /* AwaitableAsyncBlockOperation.swift in Sources */,
 				D972E2FF2C542BCD001D7337 /* Backup.pb.swift in Sources */,
 				667BB2082C580C1400E79B57 /* BackupAttachmentDownloadStore.swift in Sources */,
-				D9C0AE6D2BDC520000FCB05E /* BackupProto.swift in Sources */,
 				F9C5CE3A289453B400548EEE /* BadgeAssets.swift in Sources */,
 				D979DA162B8D1FDD000EEAB8 /* BadgeCountFetcher.swift in Sources */,
 				F9C5CE37289453B400548EEE /* BadgeStore.swift in Sources */,
