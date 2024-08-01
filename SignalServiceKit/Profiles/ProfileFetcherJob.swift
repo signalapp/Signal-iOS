@@ -184,9 +184,9 @@ public class ProfileFetcherJob {
 
     private func fetchedProfile(
         for profile: SignalServiceProfile,
-        profileKeyFromVersionedRequest: OWSAES256Key?
+        profileKeyFromVersionedRequest: Aes256Key?
     ) -> FetchedProfile {
-        let profileKey: OWSAES256Key?
+        let profileKey: Aes256Key?
         if let profileKeyFromVersionedRequest {
             // We sent a versioned request, so use the corresponding profile key for
             // decryption. If we don't, we might try to decrypt an old profile with a
@@ -463,18 +463,18 @@ public struct DecryptedProfile {
 
 public struct FetchedProfile {
     let profile: SignalServiceProfile
-    let profileKey: OWSAES256Key?
+    let profileKey: Aes256Key?
     public let decryptedProfile: DecryptedProfile?
     public let identityKey: IdentityKey
 
-    init(profile: SignalServiceProfile, profileKey: OWSAES256Key?) {
+    init(profile: SignalServiceProfile, profileKey: Aes256Key?) {
         self.profile = profile
         self.profileKey = profileKey
         self.decryptedProfile = Self.decrypt(profile: profile, profileKey: profileKey)
         self.identityKey = profile.identityKey
     }
 
-    private static func decrypt(profile: SignalServiceProfile, profileKey: OWSAES256Key?) -> DecryptedProfile? {
+    private static func decrypt(profile: SignalServiceProfile, profileKey: Aes256Key?) -> DecryptedProfile? {
         guard let profileKey else {
             return nil
         }

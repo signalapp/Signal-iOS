@@ -279,7 +279,7 @@ public protocol _RegistrationCoordinator_ProfileManagerShim {
 
     // NOTE: non-optional because OWSProfileManager generates a random key
     // if one doesn't already exist.
-    var localProfileKey: OWSAES256Key { get }
+    var localProfileKey: Aes256Key { get }
 
     func updateLocalProfile(
         givenName: OWSUserProfile.NameComponent,
@@ -299,7 +299,7 @@ public class _RegistrationCoordinator_ProfileManagerWrapper: _RegistrationCoordi
 
     public var hasProfileName: Bool { manager.hasProfileName }
 
-    public var localProfileKey: OWSAES256Key { manager.localProfileKey() }
+    public var localProfileKey: Aes256Key { manager.localProfileKey() }
 
     public func updateLocalProfile(
         givenName: OWSUserProfile.NameComponent,

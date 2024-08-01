@@ -7,7 +7,7 @@ import Foundation
 
 /// Key appropriate for use with AES-256.
 @objc(OWSAES256Key)
-public final class OWSAES256Key: NSObject, NSSecureCoding {
+public final class Aes256Key: NSObject, NSSecureCoding {
 
     @objc
     public static let keyByteLength: UInt = 32
@@ -22,10 +22,10 @@ public final class OWSAES256Key: NSObject, NSSecureCoding {
 
     /// Generates a new secure random key.
     ///
-    /// Equivalent to calling ``OWSAES256Key/init()``.
+    /// Equivalent to calling ``Aes256Key/init()``.
     @objc(generateRandomKey)
-    public static func generateRandom() -> OWSAES256Key {
-        return OWSAES256Key()
+    public static func generateRandom() -> Aes256Key {
+        return Aes256Key()
     }
 
     /// Returns a new instance if `data` is of appropriate length for an AES-256 key.
@@ -64,7 +64,7 @@ public final class OWSAES256Key: NSObject, NSSecureCoding {
     // MARK: Equatable
 
     public override func isEqual(_ object: Any?) -> Bool {
-        guard let otherKey = object as? OWSAES256Key else {
+        guard let otherKey = object as? Aes256Key else {
             return false
         }
 

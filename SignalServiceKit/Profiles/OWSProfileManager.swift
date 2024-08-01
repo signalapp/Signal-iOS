@@ -110,7 +110,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
         profileBioEmoji: OptionalChange<String?>,
         profileAvatarData: OptionalAvatarChange<Data?>,
         visibleBadgeIds: OptionalChange<[String]>,
-        unsavedRotatedProfileKey: OWSAES256Key?,
+        unsavedRotatedProfileKey: Aes256Key?,
         userProfileWriter: UserProfileWriter,
         authedAccount: AuthedAccount,
         tx: SDSAnyWriteTransaction
@@ -165,7 +165,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
 
     // This will re-upload the existing local profile state.
     public func reuploadLocalProfile(
-        unsavedRotatedProfileKey: OWSAES256Key?,
+        unsavedRotatedProfileKey: Aes256Key?,
         mustReuploadAvatar: Bool,
         authedAccount: AuthedAccount,
         tx: DBWriteTransaction
@@ -359,7 +359,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
             // try to rotate your profile key again on the next app launch or blocklist
             // change and continue to use the old profile key.
 
-            let newProfileKey = OWSAES256Key.generateRandom()
+            let newProfileKey = Aes256Key.generateRandom()
             let uploadPromise = await self.databaseStorage.awaitableWrite { tx in
                 self.reuploadLocalProfile(
                     unsavedRotatedProfileKey: newProfileKey,
@@ -635,7 +635,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
     ) {
         let address = OWSUserProfile.insertableAddress(serviceId: serviceId, localIdentifiers: localIdentifiers)
 
-        guard let profileKey = OWSAES256Key(data: profileKeyData) else {
+        guard let profileKey = Aes256Key(data: profileKeyData) else {
             owsFailDebug("Invalid profile key data for \(serviceId).")
             return
         }
@@ -771,7 +771,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
         var authedAccount: AuthedAccount
 
         struct Parameters {
-            var profileKey: OWSAES256Key?
+            var profileKey: Aes256Key?
             var future: Future<Void>
         }
     }
@@ -957,7 +957,7 @@ extension OWSProfileManager: ProfileManager, Dependencies {
 
     private func updateProfileOnService(
         profileChanges: PendingProfileUpdate,
-        newProfileKey: OWSAES256Key?,
+        newProfileKey: Aes256Key?,
         authedAccount: AuthedAccount
     ) async throws {
         do {
@@ -1515,7 +1515,7 @@ extension OWSProfileManager {
         }
     }
 
-    public func downloadAndDecryptAvatar(avatarUrlPath: String, profileKey: OWSAES256Key) async throws -> URL {
+    public func downloadAndDecryptAvatar(avatarUrlPath: String, profileKey: Aes256Key) async throws -> URL {
         let backgroundTask = OWSBackgroundTask(label: "\(#function)")
         defer { backgroundTask.end() }
 
@@ -1528,7 +1528,7 @@ extension OWSProfileManager {
 
     private static func _downloadAndDecryptAvatar(
         avatarUrlPath: String,
-        profileKey: OWSAES256Key,
+        profileKey: Aes256Key,
         remainingRetries: Int
     ) async throws -> URL {
         assert(!avatarUrlPath.isEmpty)
@@ -1557,7 +1557,7 @@ extension OWSProfileManager {
     private static func decryptAvatar(
         at encryptedFileUrl: URL,
         to decryptedFileUrl: URL,
-        profileKey: OWSAES256Key
+        profileKey: Aes256Key
     ) throws {
         let readHandle = try FileHandle(forReadingFrom: encryptedFileUrl)
         defer {

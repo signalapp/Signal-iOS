@@ -54,10 +54,10 @@ public class _ProvisioningCoordinator_MessageFactoryWrapper: _ProvisioningCoordi
 
 public protocol _ProvisioningCoordinator_ProfileManagerShim {
 
-    func localProfileKey() -> OWSAES256Key
+    func localProfileKey() -> Aes256Key
 
     func setLocalProfileKey(
-        _ key: OWSAES256Key,
+        _ key: Aes256Key,
         userProfileWriter: UserProfileWriter,
         authedAccount: AuthedAccount,
         tx: DBWriteTransaction
@@ -72,12 +72,12 @@ public class _ProvisioningCoordinator_ProfileManagerWrapper: _ProvisioningCoordi
         self.profileManager = profileManager
     }
 
-    public func localProfileKey() -> OWSAES256Key {
+    public func localProfileKey() -> Aes256Key {
         return profileManager.localProfileKey()
     }
 
     public func setLocalProfileKey(
-        _ key: OWSAES256Key,
+        _ key: Aes256Key,
         userProfileWriter: UserProfileWriter,
         authedAccount: AuthedAccount,
         tx: DBWriteTransaction

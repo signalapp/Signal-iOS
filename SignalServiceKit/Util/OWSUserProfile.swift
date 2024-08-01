@@ -220,7 +220,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     private(set) public var avatarUrlPath: String?
 
     @objc
-    private(set) public var profileKey: OWSAES256Key?
+    private(set) public var profileKey: Aes256Key?
 
     @objc
     private(set) public var givenName: String?
@@ -259,7 +259,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         address: Address,
         givenName: String? = nil,
         familyName: String? = nil,
-        profileKey: OWSAES256Key? = nil,
+        profileKey: Aes256Key? = nil,
         avatarUrlPath: String? = nil
     ) {
         let serviceId: ServiceId?
@@ -299,7 +299,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         phoneNumber: String?,
         avatarFileName: String?,
         avatarUrlPath: String?,
-        profileKey: OWSAES256Key?,
+        profileKey: Aes256Key?,
         givenName: String?,
         familyName: String?,
         bio: String?,
@@ -446,8 +446,8 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         isPhoneNumberShared = try container.decodeIfPresent(Bool.self, forKey: .isPhoneNumberShared)
     }
 
-    private static func decodeProfileKey(_ profileKeyData: Data) throws -> OWSAES256Key {
-        guard profileKeyData.count == OWSAES256Key.keyByteLength, let profileKey = OWSAES256Key(data: profileKeyData) else {
+    private static func decodeProfileKey(_ profileKeyData: Data) throws -> Aes256Key {
+        guard profileKeyData.count == Aes256Key.keyByteLength, let profileKey = Aes256Key(data: profileKeyData) else {
             // Historically, we encoded this using an NSKeyedArchiver. We assume it's
             // encoded in this way if it's not exactly 32 bytes.
             return try LegacySDSSerializer().deserializeLegacySDSData(profileKeyData, propertyName: "profileKey")
@@ -704,11 +704,11 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
 
     // MARK: - Encryption
 
-    public class func encrypt(profileData: Data, profileKey: OWSAES256Key) throws -> Data {
+    public class func encrypt(profileData: Data, profileKey: Aes256Key) throws -> Data {
         return try Aes256GcmEncryptedData.encrypt(profileData, key: profileKey.keyData).concatenate()
     }
 
-    public class func decrypt(profileData: Data, profileKey: OWSAES256Key) throws -> Data {
+    public class func decrypt(profileData: Data, profileKey: Aes256Key) throws -> Data {
         return try Aes256GcmEncryptedData(concatenated: profileData).decrypt(key: profileKey.keyData)
     }
 
@@ -717,7 +717,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         case malformedValue
     }
 
-    class func decrypt(profileNameData: Data, profileKey: OWSAES256Key) throws -> (givenName: String, familyName: String?) {
+    class func decrypt(profileNameData: Data, profileKey: Aes256Key) throws -> (givenName: String, familyName: String?) {
         let decryptedData = try decrypt(profileData: profileNameData, profileKey: profileKey)
 
         func parseNameSegment(_ nameSegment: Data) throws -> String? {
@@ -738,7 +738,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         return (givenName, try familyName.flatMap(parseNameSegment(_:)))
     }
 
-    class func decrypt(profileStringData: Data, profileKey: OWSAES256Key) throws -> String? {
+    class func decrypt(profileStringData: Data, profileKey: Aes256Key) throws -> String? {
         let decryptedData = try decrypt(profileData: profileStringData, profileKey: profileKey)
 
         // Remove padding.
@@ -749,7 +749,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         return value.nilIfEmpty
     }
 
-    class func decrypt(profileBooleanData: Data, profileKey: OWSAES256Key) throws -> Bool {
+    class func decrypt(profileBooleanData: Data, profileKey: Aes256Key) throws -> Bool {
         switch try decrypt(profileData: profileBooleanData, profileKey: profileKey) {
         case Data([1]):
             return true
@@ -763,7 +763,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     public class func encrypt(
         givenName: OWSUserProfile.NameComponent,
         familyName: OWSUserProfile.NameComponent?,
-        profileKey: OWSAES256Key
+        profileKey: Aes256Key
     ) throws -> ProfileValue {
         let encodedValues: [Data] = [givenName.dataValue, familyName?.dataValue].compacted()
         let encodedValue = Data(encodedValues.joined(separator: Data([0])))
@@ -771,7 +771,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         return try encrypt(data: encodedValue, profileKey: profileKey, paddedLengths: [53, 257])
     }
 
-    public class func encrypt(data unpaddedData: Data, profileKey: OWSAES256Key, paddedLengths: [Int]) throws -> ProfileValue {
+    public class func encrypt(data unpaddedData: Data, profileKey: Aes256Key, paddedLengths: [Int]) throws -> ProfileValue {
         assert(paddedLengths == paddedLengths.sorted())
 
         guard let paddedLength = paddedLengths.first(where: { $0 >= unpaddedData.count }) else {
@@ -838,7 +838,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         let userProfile = OWSUserProfile(address: address)
         if case .localUser = address {
             userProfile.update(
-                profileKey: .setTo(OWSAES256Key.generateRandom()),
+                profileKey: .setTo(Aes256Key.generateRandom()),
                 userProfileWriter: userProfileWriter,
                 transaction: tx,
                 completion: nil
@@ -986,7 +986,7 @@ private struct UserProfileChanges {
     var avatarFileName: OptionalChange<String?>
     var lastFetchDate: OptionalChange<Date>
     var lastMessagingDate: OptionalChange<Date>
-    var profileKey: OptionalChange<OWSAES256Key>
+    var profileKey: OptionalChange<Aes256Key>
     var badges: OptionalChange<[OWSUserProfileBadgeInfo]>
     var isPhoneNumberShared: OptionalChange<Bool?>
 }
@@ -1086,7 +1086,7 @@ extension OWSUserProfile {
         visibleChangeCount += setIfChanged(changes.bio, keyPath: \.bio)
         visibleChangeCount += setIfChanged(changes.bioEmoji, keyPath: \.bioEmoji)
         visibleChangeCount += setIfChanged(changes.badges, keyPath: \.badges)
-        visibleChangeCount += setIfChanged(changes.profileKey.map { $0 as OWSAES256Key? }, keyPath: \.profileKey)
+        visibleChangeCount += setIfChanged(changes.profileKey.map { $0 as Aes256Key? }, keyPath: \.profileKey)
         visibleChangeCount += setIfChanged(changes.isPhoneNumberShared, keyPath: \.isPhoneNumberShared)
 
         // Some properties are invisible/"polled", so changes don't matter.
@@ -1371,7 +1371,7 @@ extension OWSUserProfile {
         avatarFileName: OptionalChange<String?> = .noChange,
         lastFetchDate: OptionalChange<Date> = .noChange,
         lastMessagingDate: OptionalChange<Date> = .noChange,
-        profileKey: OptionalChange<OWSAES256Key> = .noChange,
+        profileKey: OptionalChange<Aes256Key> = .noChange,
         badges: OptionalChange<[OWSUserProfileBadgeInfo]> = .noChange,
         isPhoneNumberShared: OptionalChange<Bool?> = .noChange,
         userProfileWriter: UserProfileWriter,
@@ -1401,7 +1401,7 @@ extension OWSUserProfile {
     @available(swift, obsoleted: 1.0)
     @objc
     public func clearProfile(
-        profileKey: OWSAES256Key,
+        profileKey: Aes256Key,
         userProfileWriter: UserProfileWriter,
         transaction: SDSAnyWriteTransaction,
         completion: (() -> Void)?
@@ -1425,7 +1425,7 @@ extension OWSUserProfile {
     @available(swift, obsoleted: 1.0)
     @objc
     public func update(
-        profileKey: OWSAES256Key,
+        profileKey: Aes256Key,
         userProfileWriter: UserProfileWriter,
         transaction: SDSAnyWriteTransaction,
         completion: (() -> Void)?
@@ -1453,7 +1453,7 @@ extension OWSUserProfile {
         givenName: String?,
         familyName: String?,
         avatarUrlPath: String?,
-        profileKey: OWSAES256Key?,
+        profileKey: Aes256Key?,
         tx: SDSAnyWriteTransaction
     ) {
         self.givenName = givenName
@@ -1471,7 +1471,7 @@ extension OWSUserProfile {
     /// - Important
     /// Only callers who are updating the profile in a vacuum should call this.
     public func upsertProfileKeyWithNoSideEffects(
-        _ profileKey: OWSAES256Key,
+        _ profileKey: Aes256Key,
         tx: SDSAnyWriteTransaction
     ) {
         self.profileKey = profileKey

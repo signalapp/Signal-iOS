@@ -13,7 +13,7 @@ public struct ProvisionMessage {
     public let pni: Pni?
     public let aciIdentityKeyPair: ECKeyPair
     public let pniIdentityKeyPair: ECKeyPair
-    public let profileKey: OWSAES256Key
+    public let profileKey: Aes256Key
     public let masterKey: Data
     public let areReadReceiptsEnabled: Bool?
     public let primaryUserAgent: String?
@@ -112,7 +112,7 @@ public class ProvisioningCipher {
         let pniIdentityKeyPair = try IdentityKeyPair(publicKey: PublicKey(proto.pniIdentityKeyPublic),
                                                      privateKey: PrivateKey(proto.pniIdentityKeyPrivate))
 
-        guard let profileKey = OWSAES256Key(data: proto.profileKey) else {
+        guard let profileKey = Aes256Key(data: proto.profileKey) else {
             throw ProvisioningError.invalidProvisionMessage("invalid profileKey - count: \(proto.profileKey.count)")
         }
         let areReadReceiptsEnabled = proto.hasReadReceipts ? proto.readReceipts : nil

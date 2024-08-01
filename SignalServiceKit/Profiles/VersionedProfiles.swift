@@ -20,7 +20,7 @@ public struct VersionedProfileUpdate {
 @objc
 public protocol VersionedProfileRequest: AnyObject {
     var request: TSRequest { get }
-    var profileKey: OWSAES256Key? { get }
+    var profileKey: Aes256Key? { get }
 }
 
 // MARK: -
@@ -47,7 +47,7 @@ public protocol VersionedProfilesSwift: VersionedProfiles {
         profileBioEmoji: String?,
         profileAvatarMutation: VersionedProfileAvatarMutation,
         visibleBadgeIds: [String],
-        profileKey: OWSAES256Key,
+        profileKey: Aes256Key,
         authedAccount: AuthedAccount
     ) async throws -> VersionedProfileUpdate
 
@@ -114,7 +114,7 @@ public class MockVersionedProfiles: NSObject, VersionedProfilesSwift, VersionedP
         profileBioEmoji: String?,
         profileAvatarMutation: VersionedProfileAvatarMutation,
         visibleBadgeIds: [String],
-        profileKey: OWSAES256Key,
+        profileKey: Aes256Key,
         authedAccount: AuthedAccount
     ) async throws -> VersionedProfileUpdate {
         owsFail("Not implemented.")

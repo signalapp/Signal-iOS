@@ -8,11 +8,11 @@ import LibSignalClient
 
 class UserProfileMerger: RecipientMergeObserver {
     private let userProfileStore: UserProfileStore
-    private let setProfileKeyShim: (OWSUserProfile, OWSAES256Key, DBWriteTransaction) -> Void
+    private let setProfileKeyShim: (OWSUserProfile, Aes256Key, DBWriteTransaction) -> Void
 
     init(
         userProfileStore: UserProfileStore,
-        setProfileKeyShim: @escaping (OWSUserProfile, OWSAES256Key, DBWriteTransaction) -> Void
+        setProfileKeyShim: @escaping (OWSUserProfile, Aes256Key, DBWriteTransaction) -> Void
     ) {
         self.userProfileStore = userProfileStore
         self.setProfileKeyShim = setProfileKeyShim

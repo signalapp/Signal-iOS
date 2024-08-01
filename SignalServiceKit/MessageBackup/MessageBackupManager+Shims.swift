@@ -89,7 +89,7 @@ public protocol _MessageBackup_ProfileManagerShim {
         givenName: String,
         familyName: String?,
         avatarUrlPath: String?,
-        profileKey: OWSAES256Key,
+        profileKey: Aes256Key,
         tx: DBWriteTransaction
     )
 
@@ -97,12 +97,12 @@ public protocol _MessageBackup_ProfileManagerShim {
         insertableAddress: OWSUserProfile.InsertableAddress,
         givenName: String?,
         familyName: String?,
-        profileKey: OWSAES256Key?,
+        profileKey: Aes256Key?,
         tx: DBWriteTransaction
     )
 
     func setProfileKeyIfMissing(
-        _ profileKey: OWSAES256Key,
+        _ profileKey: Aes256Key,
         forAci aci: Aci,
         localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction
@@ -152,7 +152,7 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
         givenName: String,
         familyName: String?,
         avatarUrlPath: String?,
-        profileKey: OWSAES256Key,
+        profileKey: Aes256Key,
         tx: DBWriteTransaction
     ) {
         let sdsTx = SDSDB.shimOnlyBridge(tx)
@@ -181,7 +181,7 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
         insertableAddress: OWSUserProfile.InsertableAddress,
         givenName: String?,
         familyName: String?,
-        profileKey: OWSAES256Key?,
+        profileKey: Aes256Key?,
         tx: DBWriteTransaction
     ) {
         if case .localUser = insertableAddress {
@@ -210,7 +210,7 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
     }
 
     public func setProfileKeyIfMissing(
-        _ profileKey: OWSAES256Key,
+        _ profileKey: Aes256Key,
         forAci aci: Aci,
         localIdentifiers: LocalIdentifiers,
         tx: DBWriteTransaction

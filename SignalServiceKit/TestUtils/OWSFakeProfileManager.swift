@@ -21,7 +21,7 @@ extension OWSFakeProfileManager: ProfileManager {
         throw OWSGenericError("Not supported.")
     }
 
-    public func downloadAndDecryptAvatar(avatarUrlPath: String, profileKey: OWSAES256Key) async throws -> URL {
+    public func downloadAndDecryptAvatar(avatarUrlPath: String, profileKey: Aes256Key) async throws -> URL {
         throw OWSGenericError("Not supported.")
     }
 
@@ -44,7 +44,7 @@ extension OWSFakeProfileManager: ProfileManager {
         profileBioEmoji: OptionalChange<String?>,
         profileAvatarData: OptionalAvatarChange<Data?>,
         visibleBadgeIds: OptionalChange<[String]>,
-        unsavedRotatedProfileKey: OWSAES256Key?,
+        unsavedRotatedProfileKey: Aes256Key?,
         userProfileWriter: UserProfileWriter,
         authedAccount: AuthedAccount,
         tx: SDSAnyWriteTransaction
@@ -57,7 +57,7 @@ extension OWSFakeProfileManager: ProfileManager {
     }
 
     public func reuploadLocalProfile(
-        unsavedRotatedProfileKey: OWSAES256Key?,
+        unsavedRotatedProfileKey: Aes256Key?,
         mustReuploadAvatar: Bool,
         authedAccount: AuthedAccount,
         tx: DBWriteTransaction
@@ -82,7 +82,7 @@ extension OWSFakeProfileManager: ProfileManager {
         authedAccount: AuthedAccount,
         tx: DBWriteTransaction
     ) {
-        self.profileKeys[SignalServiceAddress(serviceId)] = OWSAES256Key(data: profileKeyData)!
+        self.profileKeys[SignalServiceAddress(serviceId)] = Aes256Key(data: profileKeyData)!
     }
 
     public func fillInProfileKeys(

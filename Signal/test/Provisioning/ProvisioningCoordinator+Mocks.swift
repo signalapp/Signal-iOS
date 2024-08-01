@@ -41,14 +41,14 @@ public class _ProvisioningCoordinator_ProfileManagerMock: _ProvisioningCoordinat
 
     public init() {}
 
-    public var localProfileKeyMock: OWSAES256Key?
+    public var localProfileKeyMock: Aes256Key?
 
-    public func localProfileKey() -> OWSAES256Key {
+    public func localProfileKey() -> Aes256Key {
         return localProfileKeyMock!
     }
 
     public func setLocalProfileKey(
-        _ key: OWSAES256Key,
+        _ key: Aes256Key,
         userProfileWriter: UserProfileWriter,
         authedAccount: AuthedAccount,
         tx: DBWriteTransaction

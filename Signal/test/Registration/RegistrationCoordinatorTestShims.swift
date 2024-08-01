@@ -186,9 +186,9 @@ public class _RegistrationCoordinator_ProfileManagerMock: _RegistrationCoordinat
 
     public var hasProfileName: Bool { return hasProfileNameMock() }
 
-    public var localProfileKeyMock: () -> OWSAES256Key = { OWSAES256Key() }
+    public var localProfileKeyMock: () -> Aes256Key = { Aes256Key() }
 
-    public var localProfileKey: OWSAES256Key { return localProfileKeyMock() }
+    public var localProfileKey: Aes256Key { return localProfileKeyMock() }
 
     public var updateLocalProfileMock: ((
         _ givenName: OWSUserProfile.NameComponent,

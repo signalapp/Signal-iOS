@@ -254,7 +254,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
             groupMembershipBuilder.addFullMember(aci, role: role)
 
             if
-                let profileKey = OWSAES256Key(data: fullMember.profileKey),
+                let profileKey = Aes256Key(data: fullMember.profileKey),
                 !profileKey.isAllZeroes
             {
                 profileManager.setProfileKeyIfMissing(
@@ -293,7 +293,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
             groupMembershipBuilder.addRequestingMember(aci)
 
             if
-                let profileKey = OWSAES256Key(data: requestingMember.profileKey),
+                let profileKey = Aes256Key(data: requestingMember.profileKey),
                 !profileKey.isAllZeroes
             {
                 profileManager.setProfileKeyIfMissing(
@@ -394,7 +394,7 @@ public class MessageBackupGroupRecipientArchiver: MessageBackupProtoArchiver {
 
 // MARK: -
 
-private extension OWSAES256Key {
+private extension Aes256Key {
     /// Is this profile key comprised of all-zeroes?
     ///
     /// It's possible that other clients may not have a persisted profile key

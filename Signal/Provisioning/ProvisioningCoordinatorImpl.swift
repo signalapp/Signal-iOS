@@ -328,7 +328,7 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
 
     private func makeAccountAttributes(
         encryptedDeviceName encryptedDeviceNameRaw: Data,
-        profileKey: OWSAES256Key,
+        profileKey: Aes256Key,
         tx: DBWriteTransaction
     ) -> AccountAttributes {
         // Secondary devices only use account attributes during registration;

@@ -201,7 +201,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
         let aci: Aci?
         let pni: Pni?
         let e164: E164?
-        let profileKey: OWSAES256Key?
+        let profileKey: Aes256Key?
         if contactProto.hasAci {
             guard let aciUuid = UUID(data: contactProto.aci) else {
                 return restoreFrameError(.invalidProtoData(.invalidAci(protoClass: BackupProto_Contact.self)))
@@ -227,7 +227,7 @@ public class MessageBackupContactRecipientArchiver: MessageBackupProtoArchiver {
             e164 = nil
         }
         if contactProto.hasProfileKey {
-            guard let protoProfileKey = OWSAES256Key(data: contactProto.profileKey) else {
+            guard let protoProfileKey = Aes256Key(data: contactProto.profileKey) else {
                 return restoreFrameError(.invalidProtoData(.invalidProfileKey(protoClass: BackupProto_Contact.self)))
             }
             profileKey = protoProfileKey

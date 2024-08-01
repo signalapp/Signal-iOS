@@ -9,11 +9,11 @@ import LibSignalClient
 public class VersionedProfileRequestImpl: NSObject, VersionedProfileRequest {
     public let request: TSRequest
     public let requestContext: ProfileKeyCredentialRequestContext?
-    public let profileKey: OWSAES256Key?
+    public let profileKey: Aes256Key?
 
     public init(request: TSRequest,
                 requestContext: ProfileKeyCredentialRequestContext?,
-                profileKey: OWSAES256Key?) {
+                profileKey: Aes256Key?) {
         self.request = request
         self.requestContext = requestContext
         self.profileKey = profileKey
@@ -124,7 +124,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
         profileBioEmoji: String?,
         profileAvatarMutation: VersionedProfileAvatarMutation,
         visibleBadgeIds: [String],
-        profileKey: OWSAES256Key,
+        profileKey: Aes256Key,
         authedAccount: AuthedAccount
     ) async throws -> VersionedProfileUpdate {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
@@ -270,7 +270,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
         var requestContext: ProfileKeyCredentialRequestContext?
         var profileKeyVersionArg: String?
         var credentialRequestArg: Data?
-        var profileKeyForRequest: OWSAES256Key?
+        var profileKeyForRequest: Aes256Key?
         try databaseStorage.read { transaction in
             // We try to include the profile key if we have one.
             guard let profileKeyForAddress = self.profileManager.profileKey(
@@ -310,7 +310,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
 
     // MARK: -
 
-    public func parseProfileKey(profileKey: OWSAES256Key) throws -> ProfileKey {
+    public func parseProfileKey(profileKey: Aes256Key) throws -> ProfileKey {
         let profileKeyData: Data = profileKey.keyData
         let profileKeyDataBytes = [UInt8](profileKeyData)
         return try ProfileKey(contents: profileKeyDataBytes)

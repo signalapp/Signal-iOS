@@ -244,7 +244,7 @@ extension Contact: DeepCopyable {
 // MARK: -
 
 @objc
-extension OWSAES256Key: DeepCopyable {
+extension Aes256Key: DeepCopyable {
     public func deepCopy() throws -> AnyObject {
         // This class can use shallow copies.
         return try DeepCopies.shallowCopy(self)

@@ -644,7 +644,7 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         var phoneNumberDiscoverability: PhoneNumberDiscoverability?
 
         // OWSProfileManager state
-        var profileKey: OWSAES256Key!
+        var profileKey: Aes256Key!
         var udAccessKey: SMKUDAccessKey!
         var allowUnrestrictedUD = false
         var hasProfileName = false

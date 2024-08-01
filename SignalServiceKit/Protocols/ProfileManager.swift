@@ -87,7 +87,7 @@ public protocol ProfileManager: ProfileManagerProtocol {
     func reuploadLocalProfile(authedAccount: AuthedAccount)
 
     func reuploadLocalProfile(
-        unsavedRotatedProfileKey: OWSAES256Key?,
+        unsavedRotatedProfileKey: Aes256Key?,
         mustReuploadAvatar: Bool,
         authedAccount: AuthedAccount,
         tx: DBWriteTransaction
@@ -105,7 +105,7 @@ public protocol ProfileManager: ProfileManagerProtocol {
     /// this method will download it twice.
     func downloadAndDecryptAvatar(
         avatarUrlPath: String,
-        profileKey: OWSAES256Key
+        profileKey: Aes256Key
     ) async throws -> URL
 
     func updateProfile(
@@ -126,7 +126,7 @@ public protocol ProfileManager: ProfileManagerProtocol {
         profileBioEmoji: OptionalChange<String?>,
         profileAvatarData: OptionalAvatarChange<Data?>,
         visibleBadgeIds: OptionalChange<[String]>,
-        unsavedRotatedProfileKey: OWSAES256Key?,
+        unsavedRotatedProfileKey: Aes256Key?,
         userProfileWriter: UserProfileWriter,
         authedAccount: AuthedAccount,
         tx: SDSAnyWriteTransaction

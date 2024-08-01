@@ -87,7 +87,7 @@ class UserProfileMergerTest: XCTestCase {
             )
         }
 
-        finalProfile.setValue(OWSAES256Key(data: Data(repeating: 2, count: 32))!, forKey: "profileKey")
+        finalProfile.setValue(Aes256Key(data: Data(repeating: 2, count: 32))!, forKey: "profileKey")
         otherAciProfile.phoneNumber = nil
         otherPniProfile.serviceIdString = nil
         XCTAssertEqual(userProfileStore.userProfiles, [localProfile, finalProfile, otherAciProfile, otherPniProfile])
@@ -101,7 +101,7 @@ class UserProfileMergerTest: XCTestCase {
             phoneNumber: phoneNumber,
             avatarFileName: nil,
             avatarUrlPath: nil,
-            profileKey: profileKey.map { OWSAES256Key(data: $0)! },
+            profileKey: profileKey.map { Aes256Key(data: $0)! },
             givenName: nil,
             familyName: nil,
             bio: nil,

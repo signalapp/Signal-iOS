@@ -206,7 +206,7 @@ public class MessageBackupAccountDataArchiverImpl: MessageBackupAccountDataArchi
         _ accountData: BackupProto_AccountData,
         tx: DBWriteTransaction
     ) -> MessageBackup.RestoreAccountDataResult {
-        guard let profileKey = OWSAES256Key(data: accountData.profileKey) else {
+        guard let profileKey = Aes256Key(data: accountData.profileKey) else {
             return .failure([.restoreFrameError(
                 .invalidProtoData(.invalidLocalProfileKey),
                 .localUser

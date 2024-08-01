@@ -318,7 +318,7 @@ extension MessageBackup {
                 case invalidServiceId(protoClass: Any.Type)
                 /// Could not parse an E164. Includes the class of the offending proto.
                 case invalidE164(protoClass: Any.Type)
-                /// Could not parse an ``OWSAES256Key`` profile key. Includes the class
+                /// Could not parse an ``Aes256Key`` profile key. Includes the class
                 /// of the offending proto.
                 case invalidProfileKey(protoClass: Any.Type)
                 /// An invalid member (group, distribution list, etc) was specified as a distribution list member.  Includes the offending proto
