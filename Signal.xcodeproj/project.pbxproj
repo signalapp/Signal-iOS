@@ -935,6 +935,7 @@
 		667AF9E02B4C6377008AEE5D /* TSInfoMessage+LegacyPersistablegroupUpdateItemTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667AF9DF2B4C6377008AEE5D /* TSInfoMessage+LegacyPersistablegroupUpdateItemTest.swift */; };
 		667AF9E22B4DC5EE008AEE5D /* GroupUpdateSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667AF9E12B4DC5EE008AEE5D /* GroupUpdateSource.swift */; };
 		667BB2032C545C0400E79B57 /* IncrementalTSAttachmentMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667BB2022C545C0400E79B57 /* IncrementalTSAttachmentMigrator.swift */; };
+		667BB2062C58076400E79B57 /* QueuedBackupAttachmentDownload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667BB2052C58076400E79B57 /* QueuedBackupAttachmentDownload.swift */; };
 		667BBAD92BAA5F84006AB9DE /* OWSAttachmentInfoSerializationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667BBAD72BAA5F70006AB9DE /* OWSAttachmentInfoSerializationTest.swift */; };
 		667DEE592BC7152E00EFF32D /* MediaGalleryRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667DEE582BC7152E00EFF32D /* MediaGalleryRecord.swift */; };
 		667DEE5B2BC715B300EFF32D /* MediaGalleryRecordManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667DEE5A2BC715B300EFF32D /* MediaGalleryRecordManager.swift */; };
@@ -3992,6 +3993,7 @@
 		667AF9DF2B4C6377008AEE5D /* TSInfoMessage+LegacyPersistablegroupUpdateItemTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+LegacyPersistablegroupUpdateItemTest.swift"; sourceTree = "<group>"; };
 		667AF9E12B4DC5EE008AEE5D /* GroupUpdateSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupUpdateSource.swift; sourceTree = "<group>"; };
 		667BB2022C545C0400E79B57 /* IncrementalTSAttachmentMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncrementalTSAttachmentMigrator.swift; sourceTree = "<group>"; };
+		667BB2052C58076400E79B57 /* QueuedBackupAttachmentDownload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueuedBackupAttachmentDownload.swift; sourceTree = "<group>"; };
 		667BBAD72BAA5F70006AB9DE /* OWSAttachmentInfoSerializationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSAttachmentInfoSerializationTest.swift; sourceTree = "<group>"; };
 		667DEE582BC7152E00EFF32D /* MediaGalleryRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryRecord.swift; sourceTree = "<group>"; };
 		667DEE5A2BC715B300EFF32D /* MediaGalleryRecordManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryRecordManager.swift; sourceTree = "<group>"; };
@@ -7894,6 +7896,7 @@
 			isa = PBXGroup;
 			children = (
 				66CD25572B0685CF00139E17 /* Archivers */,
+				667BB2042C58073600E79B57 /* Attachments */,
 				66CD25732B08079C00139E17 /* FileStreams */,
 				66CD25902B0EC20800139E17 /* MessageBackupConstants.swift */,
 				D90D4D832BBB61680097C573 /* MessageBackupEmptyFrameId.swift */,
@@ -8017,6 +8020,14 @@
 				6673FF8A297B6FA800F96CFD /* SDSDB.swift */,
 			);
 			path = V2;
+			sourceTree = "<group>";
+		};
+		667BB2042C58073600E79B57 /* Attachments */ = {
+			isa = PBXGroup;
+			children = (
+				667BB2052C58076400E79B57 /* QueuedBackupAttachmentDownload.swift */,
+			);
+			path = Attachments;
 			sourceTree = "<group>";
 		};
 		667BBAD62BAA5F5F006AB9DE /* Quotes */ = {
@@ -14861,6 +14872,7 @@
 				503B47222AF0569B00978266 /* PublicKey.swift in Sources */,
 				F9C5CD91289453B300548EEE /* PushChallenge.swift in Sources */,
 				669573022C1B77C00092B755 /* QueuedAttachmentDownloadRecord.swift in Sources */,
+				667BB2062C58076400E79B57 /* QueuedBackupAttachmentDownload.swift in Sources */,
 				6676A40C2BD1F5F9006B9CC9 /* QuotedAttachmentInfo.swift in Sources */,
 				66D7B9132B979C3A0005C98B /* QuotedMessageAttachmentReference+TSResource.swift in Sources */,
 				66D7B90E2B9798950005C98B /* QuotedMessageAttachmentReference.swift in Sources */,

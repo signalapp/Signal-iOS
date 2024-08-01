@@ -279,6 +279,7 @@ public class GRDBSchemaMigrator: NSObject {
         case indexMessageAttachmentReferenceByReceivedAtTimestamp
         case migrateStoryMessageTSAttachments1
         case migrateStoryMessageTSAttachments2
+        case addBackupAttachmentDownloadQueue
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -340,7 +341,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 80
+    public static let grdbSchemaVersionLatest: UInt = 81
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -3262,6 +3263,19 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(.migrateStoryMessageTSAttachments2) { tx in
             try TSAttachmentMigration.StoryMessageMigration.completeStoryMessageMigration(tx: tx)
+            return .success(())
+        }
+
+        migrator.registerMigration(.addBackupAttachmentDownloadQueue) { tx in
+            try tx.database.create(table: "BackupAttachmentDownloadQueue") { table in
+                table.autoIncrementedPrimaryKey("id")
+                table.column("attachmentRowId", .integer)
+                    .references("Attachment", column: "id", onDelete: .cascade)
+                    .notNull()
+                    .unique()
+                table.column("timestamp", .integer)
+            }
+
             return .success(())
         }
 

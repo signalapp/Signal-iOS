@@ -2003,3 +2003,15 @@ CREATE
         ON "MessageAttachmentReference"("receivedAtTimestamp"
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "BackupAttachmentDownloadQueue" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT
+            ,"attachmentRowId" INTEGER NOT NULL UNIQUE REFERENCES "Attachment"("id"
+        )
+            ON DELETE
+                CASCADE
+                ,"timestamp" INTEGER
+)
+;
