@@ -12,7 +12,7 @@ final class RandomnessTest: XCTestCase {
         let data = Randomness.generateRandomBytes(32)
         XCTAssertEqual(data.count, 32)
 
-        // this is not technically impossible, but exceedingly unlikely to occur if the method is implemented correctly p=2^-32
+        // this is not technically impossible, but exceedingly unlikely to occur if the method is implemented correctly p=2^-256
         XCTAssertFalse(data.allSatisfy { $0 == 0 })
 
         // ensure we don't crash on this nonsense case
