@@ -6,7 +6,9 @@
 import Foundation
 import LibSignalClient
 
-internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionArchiver {
+class MessageBackupTSIncomingMessageArchiver: MessageBackupProtoArchiver {
+    typealias Details = MessageBackup.InteractionArchiveDetails
+
     private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>
 
     private let contentsArchiver: MessageBackupTSMessageContentsArchiver
@@ -22,19 +24,12 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
 
     // MARK: - Archiving
 
-    func archiveInteraction(
-        _ interaction: TSInteraction,
+    func archiveIncomingMessage(
+        _ message: TSIncomingMessage,
         thread _: TSThread,
         context: MessageBackup.ChatArchivingContext,
         tx: DBReadTransaction
     ) -> MessageBackup.ArchiveInteractionResult<Details> {
-        guard let message = interaction as? TSIncomingMessage else {
-            // Should be impossible.
-            return .completeFailure(.fatalArchiveError(.developerError(
-                OWSAssertionError("Invalid interaction type")
-            )))
-        }
-
         var partialErrors = [ArchiveFrameError]()
 
         let directionalDetails: Details.DirectionalDetails
@@ -104,7 +99,7 @@ internal class MessageBackupTSIncomingMessageArchiver: MessageBackupInteractionA
 
     // MARK: - Restoring
 
-    func restoreChatItem(
+    func restoreIncomingChatItem(
         _ chatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,

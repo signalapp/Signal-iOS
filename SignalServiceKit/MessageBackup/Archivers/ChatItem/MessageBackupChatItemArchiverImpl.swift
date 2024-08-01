@@ -158,31 +158,57 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
             return .success
         }
 
-        let archiver: MessageBackupInteractionArchiver
-        switch interaction {
-        case is TSIncomingMessage:
-            archiver = incomingMessageArchiver
-        case is TSOutgoingMessage:
-            archiver = outgoingMessageArchiver
-        case is TSInfoMessage: fallthrough
-        case is TSErrorMessage: fallthrough
-        case is TSCall: fallthrough
-        case is OWSGroupCallMessage:
-            archiver = chatUpdateMessageArchiver
-        default:
-            // TODO: [Backups] When we have a complete set of archivers, this should be a hard failure. For now, there's interactions we don't handle, so we'll ignore it.
+        let archiveInteractionResult: MessageBackup.ArchiveInteractionResult<MessageBackup.InteractionArchiveDetails>
+        if let incomingMessage = interaction as? TSIncomingMessage {
+            archiveInteractionResult = incomingMessageArchiver.archiveIncomingMessage(
+                incomingMessage,
+                thread: thread,
+                context: context,
+                tx: tx
+            )
+        } else if let outgoingMessage = interaction as? TSOutgoingMessage {
+            archiveInteractionResult = outgoingMessageArchiver.archiveOutgoingMessage(
+                outgoingMessage,
+                thread: thread,
+                context: context,
+                tx: tx
+            )
+        } else if let individualCallInteraction = interaction as? TSCall {
+            archiveInteractionResult = chatUpdateMessageArchiver.archiveIndividualCall(
+                individualCallInteraction,
+                context: context,
+                tx: tx
+            )
+        } else if let groupCallInteraction = interaction as? OWSGroupCallMessage {
+            archiveInteractionResult = chatUpdateMessageArchiver.archiveGroupCall(
+                groupCallInteraction,
+                thread: thread,
+                context: context,
+                tx: tx
+            )
+        } else if let errorMessage = interaction as? TSErrorMessage {
+            archiveInteractionResult = chatUpdateMessageArchiver.archiveErrorMessage(
+                errorMessage,
+                thread: thread,
+                context: context,
+                tx: tx
+            )
+        } else if let infoMessage = interaction as? TSInfoMessage {
+            archiveInteractionResult = chatUpdateMessageArchiver.archiveInfoMessage(
+                infoMessage,
+                thread: thread,
+                context: context,
+                tx: tx
+            )
+        } else {
+            /// Any interactions that landed us here will be legacy messages we
+            /// no longer support and which have no corresponding type in the
+            /// Backup, so we'll skip them and report it as a success.
             return .success
         }
 
-        let result = archiver.archiveInteraction(
-            interaction,
-            thread: thread,
-            context: context,
-            tx: tx
-        )
-
         let details: MessageBackup.InteractionArchiveDetails
-        switch result {
+        switch archiveInteractionResult {
         case .success(let deets):
             details = deets
 
@@ -299,14 +325,24 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
             )])
         }
 
-        let archiver: MessageBackupInteractionArchiver
+        let restoreInteractionResult: MessageBackup.RestoreInteractionResult<Void>
         switch chatItem.directionalDetails {
         case nil:
             return restoreFrameError(.invalidProtoData(.chatItemMissingDirectionalDetails))
         case .incoming:
-            archiver = incomingMessageArchiver
+            restoreInteractionResult = incomingMessageArchiver.restoreIncomingChatItem(
+                chatItem,
+                chatThread: thread,
+                context: context,
+                tx: tx
+            )
         case .outgoing:
-            archiver = outgoingMessageArchiver
+            restoreInteractionResult = outgoingMessageArchiver.restoreChatItem(
+                chatItem,
+                chatThread: thread,
+                context: context,
+                tx: tx
+            )
         case .directionless:
             switch chatItem.item {
             case nil:
@@ -314,18 +350,16 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
             case .standardMessage, .contactMessage, .giftBadge, .paymentNotification, .remoteDeletedMessage, .stickerMessage:
                 return restoreFrameError(.invalidProtoData(.directionlessChatItemNotUpdateMessage))
             case .updateMessage:
-                archiver = chatUpdateMessageArchiver
+                restoreInteractionResult = chatUpdateMessageArchiver.restoreChatItem(
+                    chatItem,
+                    chatThread: thread,
+                    context: context,
+                    tx: tx
+                )
             }
         }
 
-        let result = archiver.restoreChatItem(
-            chatItem,
-            chatThread: thread,
-            context: context,
-            tx: tx
-        )
-
-        switch result {
+        switch restoreInteractionResult {
         case .success:
             return .success
         case .partialRestore(_, let errors):

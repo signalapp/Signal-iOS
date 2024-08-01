@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArchiver {
+final class MessageBackupChatUpdateMessageArchiver: MessageBackupProtoArchiver {
+    typealias Details = MessageBackup.InteractionArchiveDetails
     typealias ArchiveChatUpdateMessageResult = MessageBackup.ArchiveInteractionResult<Details>
     typealias RestoreChatUpdateMessageResult = MessageBackup.RestoreInteractionResult<Void>
 
@@ -64,125 +65,139 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
 
     // MARK: -
 
-    func archiveInteraction(
-        _ interaction: TSInteraction,
+    func archiveIndividualCall(
+        _ individualCallInteraction: TSCall,
+        context: MessageBackup.ChatArchivingContext,
+        tx: any DBReadTransaction
+    ) -> ArchiveChatUpdateMessageResult {
+        return individualCallArchiver.archiveIndividualCall(
+            individualCallInteraction,
+            context: context,
+            tx: tx
+        )
+    }
+
+    func archiveGroupCall(
+        _ groupCallInteraction: OWSGroupCallMessage,
         thread: TSThread,
         context: MessageBackup.ChatArchivingContext,
         tx: any DBReadTransaction
     ) -> ArchiveChatUpdateMessageResult {
-        if let individualCallInteraction = interaction as? TSCall {
-            return individualCallArchiver.archiveIndividualCall(
-                individualCallInteraction,
-                context: context,
-                tx: tx
-            )
-        } else if let groupCallInteraction = interaction as? OWSGroupCallMessage {
-            return groupCallArchiver.archiveGroupCall(
-                groupCallInteraction,
-                context: context,
-                tx: tx
-            )
-        } else if let infoMessage = interaction as? TSInfoMessage {
-            switch infoMessage.groupUpdateMetadata(
-                localIdentifiers: context.recipientContext.localIdentifiers
-            ) {
-            case .legacyRawString:
-                // These will be dropped by the group update message archiver.
-                fallthrough
-            case .precomputed, .modelDiff, .newGroup:
-                return groupUpdateMessageArchiver.archiveGroupUpdate(
-                    infoMessage: infoMessage,
-                    context: context,
-                    tx: tx
-                )
-            case .nonGroupUpdate:
-                break
-            }
+        return groupCallArchiver.archiveGroupCall(
+            groupCallInteraction,
+            context: context,
+            tx: tx
+        )
+    }
 
-            switch infoMessage.messageType {
-            case .typeGroupUpdate:
-                return .skippableChatUpdate(.skippableGroupUpdate(.missingUpdateMetadata))
-            case .userNotRegistered:
-                return .skippableChatUpdate(.legacyInfoMessage(.userNotRegistered))
-            case .typeUnsupportedMessage:
-                return .skippableChatUpdate(.legacyInfoMessage(.typeUnsupportedMessage))
-            case .typeGroupQuit:
-                return .skippableChatUpdate(.legacyInfoMessage(.typeGroupQuit))
-            case .addToContactsOffer:
-                return .skippableChatUpdate(.legacyInfoMessage(.addToContactsOffer))
-            case .addUserToProfileWhitelistOffer:
-                return .skippableChatUpdate(.legacyInfoMessage(.addUserToProfileWhitelistOffer))
-            case .addGroupToProfileWhitelistOffer:
-                return .skippableChatUpdate(.legacyInfoMessage(.addGroupToProfileWhitelistOffer))
-            case .syncedThread:
-                return .skippableChatUpdate(.legacyInfoMessage(.syncedThread))
-            case .recipientHidden:
-                /// This info message type is handled specially.
-                return .skippableChatUpdate(.contactHiddenInfoMessage)
-            case
-                    .verificationStateChange,
-                    .typeSessionDidEnd,
-                    .unknownProtocolVersion,
-                    .userJoinedSignal,
-                    .phoneNumberChange,
-                    .paymentsActivationRequest,
-                    .paymentsActivated,
-                    .reportedSpam:
-                /// These info message types map to simple chat updates.
-                return simpleChatUpdateArchiver.archiveSimpleChatUpdate(
-                    infoMessage: infoMessage,
-                    thread: thread,
-                    context: context,
-                    tx: tx
-                )
-            case .profileUpdate:
-                return profileChangeChatUpdateArchiver.archive(
-                    infoMessage: infoMessage,
-                    thread: thread,
-                    context: context,
-                    tx: tx
-                )
-            case .typeDisappearingMessagesUpdate:
-                return expirationTimerChatUpdateArchiver.archiveExpirationTimerChatUpdate(
-                    infoMessage: infoMessage,
-                    thread: thread,
-                    context: context,
-                    tx: tx
-                )
-            case .threadMerge:
-                return threadMergeChatUpdateArchiver.archiveThreadMergeChatUpdate(
-                    infoMessage: infoMessage,
-                    thread: thread,
-                    context: context,
-                    tx: tx
-                )
-            case .sessionSwitchover:
-                return sessionSwitchoverChatUpdateArchiver.archiveSessionSwitchoverChatUpdate(
-                    infoMessage: infoMessage,
-                    thread: thread,
-                    context: context,
-                    tx: tx
-                )
-            case .learnedProfileName:
-                return learnedProfileChatUpdateArchiver.archiveLearnedProfileChatUpdate(
-                    infoMessage: infoMessage,
-                    thread: thread,
-                    context: context,
-                    tx: tx
-                )
-            }
-        } else if let errorMessage = interaction as? TSErrorMessage {
-            /// All `TSErrorMessage`s map to simple chat updates.
+    func archiveErrorMessage(
+        _ errorMessage: TSErrorMessage,
+        thread: TSThread,
+        context: MessageBackup.ChatArchivingContext,
+        tx: any DBReadTransaction
+    ) -> ArchiveChatUpdateMessageResult {
+        /// All `TSErrorMessage`s map to simple chat updates.
+        return simpleChatUpdateArchiver.archiveSimpleChatUpdate(
+            errorMessage: errorMessage,
+            thread: thread,
+            context: context,
+            tx: tx
+        )
+    }
+
+    func archiveInfoMessage(
+        _ infoMessage: TSInfoMessage,
+        thread: TSThread,
+        context: MessageBackup.ChatArchivingContext,
+        tx: any DBReadTransaction
+    ) -> ArchiveChatUpdateMessageResult {
+        switch infoMessage.groupUpdateMetadata(
+            localIdentifiers: context.recipientContext.localIdentifiers
+        ) {
+        case .legacyRawString:
+            // These will be dropped by the group update message archiver.
+            fallthrough
+        case .precomputed, .modelDiff, .newGroup:
+            return groupUpdateMessageArchiver.archiveGroupUpdate(
+                infoMessage: infoMessage,
+                context: context,
+                tx: tx
+            )
+        case .nonGroupUpdate:
+            break
+        }
+
+        switch infoMessage.messageType {
+        case .typeGroupUpdate:
+            return .skippableChatUpdate(.skippableGroupUpdate(.missingUpdateMetadata))
+        case .userNotRegistered:
+            return .skippableChatUpdate(.legacyInfoMessage(.userNotRegistered))
+        case .typeUnsupportedMessage:
+            return .skippableChatUpdate(.legacyInfoMessage(.typeUnsupportedMessage))
+        case .typeGroupQuit:
+            return .skippableChatUpdate(.legacyInfoMessage(.typeGroupQuit))
+        case .addToContactsOffer:
+            return .skippableChatUpdate(.legacyInfoMessage(.addToContactsOffer))
+        case .addUserToProfileWhitelistOffer:
+            return .skippableChatUpdate(.legacyInfoMessage(.addUserToProfileWhitelistOffer))
+        case .addGroupToProfileWhitelistOffer:
+            return .skippableChatUpdate(.legacyInfoMessage(.addGroupToProfileWhitelistOffer))
+        case .syncedThread:
+            return .skippableChatUpdate(.legacyInfoMessage(.syncedThread))
+        case .recipientHidden:
+            /// This info message type is handled specially.
+            return .skippableChatUpdate(.contactHiddenInfoMessage)
+        case
+                .verificationStateChange,
+                .typeSessionDidEnd,
+                .unknownProtocolVersion,
+                .userJoinedSignal,
+                .phoneNumberChange,
+                .paymentsActivationRequest,
+                .paymentsActivated,
+                .reportedSpam:
+            /// These info message types map to simple chat updates.
             return simpleChatUpdateArchiver.archiveSimpleChatUpdate(
-                errorMessage: errorMessage,
+                infoMessage: infoMessage,
                 thread: thread,
                 context: context,
                 tx: tx
             )
-        } else {
-            return .completeFailure(.fatalArchiveError(
-                .developerError(OWSAssertionError("Invalid interaction type!"))
-            ))
+        case .profileUpdate:
+            return profileChangeChatUpdateArchiver.archive(
+                infoMessage: infoMessage,
+                thread: thread,
+                context: context,
+                tx: tx
+            )
+        case .typeDisappearingMessagesUpdate:
+            return expirationTimerChatUpdateArchiver.archiveExpirationTimerChatUpdate(
+                infoMessage: infoMessage,
+                thread: thread,
+                context: context,
+                tx: tx
+            )
+        case .threadMerge:
+            return threadMergeChatUpdateArchiver.archiveThreadMergeChatUpdate(
+                infoMessage: infoMessage,
+                thread: thread,
+                context: context,
+                tx: tx
+            )
+        case .sessionSwitchover:
+            return sessionSwitchoverChatUpdateArchiver.archiveSessionSwitchoverChatUpdate(
+                infoMessage: infoMessage,
+                thread: thread,
+                context: context,
+                tx: tx
+            )
+        case .learnedProfileName:
+            return learnedProfileChatUpdateArchiver.archiveLearnedProfileChatUpdate(
+                infoMessage: infoMessage,
+                thread: thread,
+                context: context,
+                tx: tx
+            )
         }
     }
 

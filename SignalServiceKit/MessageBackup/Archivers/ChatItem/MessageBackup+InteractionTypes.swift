@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-
 extension MessageBackup {
     public struct InteractionUniqueId: MessageBackupLoggableId, Hashable {
         let value: String
@@ -18,6 +16,27 @@ extension MessageBackup {
         public var typeLogString: String { "TSInteraction" }
         public var idLogString: String { value }
     }
+}
+
+extension BackupProto_ChatItem {
+    var id: MessageBackup.ChatItemId {
+        return .init(backupProtoChatItem: self)
+    }
+}
+
+extension TSInteraction {
+    var uniqueInteractionId: MessageBackup.InteractionUniqueId {
+        return .init(interaction: self)
+    }
+
+    var chatItemId: MessageBackup.ChatItemId {
+        return .init(interaction: self)
+    }
+}
+
+// MARK: -
+
+extension MessageBackup {
 
     struct InteractionArchiveDetails {
         typealias DirectionalDetails = BackupProto_ChatItem.OneOf_DirectionalDetails
@@ -116,7 +135,7 @@ extension MessageBackup {
         case contactHiddenInfoMessage
     }
 
-    internal enum ArchiveInteractionResult<Component> {
+    enum ArchiveInteractionResult<Component> {
         case success(Component)
 
         // MARK: Skips
@@ -143,7 +162,7 @@ extension MessageBackup {
         case completeFailure(FatalArchivingError)
     }
 
-    internal enum RestoreInteractionResult<Component> {
+    enum RestoreInteractionResult<Component> {
         case success(Component)
         /// Some portion of the interaction failed to restore, but we can still restore the rest of it.
         /// e.g. a reaction failed to parse, so we just drop that reaction.
@@ -154,24 +173,7 @@ extension MessageBackup {
     }
 }
 
-internal protocol MessageBackupInteractionArchiver: MessageBackupProtoArchiver {
-
-    typealias Details = MessageBackup.InteractionArchiveDetails
-
-    func archiveInteraction(
-        _ interaction: TSInteraction,
-        thread: TSThread,
-        context: MessageBackup.ChatArchivingContext,
-        tx: DBReadTransaction
-    ) -> MessageBackup.ArchiveInteractionResult<Details>
-
-    func restoreChatItem(
-        _ chatItem: BackupProto_ChatItem,
-        chatThread: MessageBackup.ChatThread,
-        context: MessageBackup.ChatRestoringContext,
-        tx: DBWriteTransaction
-    ) -> MessageBackup.RestoreInteractionResult<Void>
-}
+// MARK: -
 
 extension MessageBackup.ArchiveInteractionResult {
 
@@ -298,23 +300,5 @@ extension MessageBackup.RestoreInteractionResult where Component == Void {
             partialErrors.append(contentsOf: errors)
             return false
         }
-    }
-}
-
-extension BackupProto_ChatItem {
-
-    var id: MessageBackup.ChatItemId {
-        return .init(backupProtoChatItem: self)
-    }
-}
-
-extension TSInteraction {
-
-    var uniqueInteractionId: MessageBackup.InteractionUniqueId {
-        return .init(interaction: self)
-    }
-
-    var chatItemId: MessageBackup.ChatItemId {
-        return .init(interaction: self)
     }
 }
