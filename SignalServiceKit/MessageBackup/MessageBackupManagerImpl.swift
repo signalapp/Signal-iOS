@@ -27,6 +27,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
     private let accountDataArchiver: MessageBackupAccountDataArchiver
     private let attachmentDownloadManager: AttachmentDownloadManager
     private let attachmentUploadManager: AttachmentUploadManager
+    private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     private let backupRequestManager: MessageBackupRequestManager
     private let chatArchiver: MessageBackupChatArchiver
     private let chatItemArchiver: MessageBackupChatItemArchiver
@@ -46,6 +47,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         accountDataArchiver: MessageBackupAccountDataArchiver,
         attachmentDownloadManager: AttachmentDownloadManager,
         attachmentUploadManager: AttachmentUploadManager,
+        backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         backupRequestManager: MessageBackupRequestManager,
         chatArchiver: MessageBackupChatArchiver,
         chatItemArchiver: MessageBackupChatItemArchiver,
@@ -64,6 +66,7 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         self.accountDataArchiver = accountDataArchiver
         self.attachmentDownloadManager = attachmentDownloadManager
         self.attachmentUploadManager = attachmentUploadManager
+        self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
         self.backupRequestManager = backupRequestManager
         self.chatArchiver = chatArchiver
         self.chatItemArchiver = chatItemArchiver

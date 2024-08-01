@@ -864,6 +864,10 @@ public class AppSetup {
             threadStore: threadStore
         )
 
+        let backupAttachmentDownloadStore = BackupAttachmentDownloadStoreImpl(
+            keyValueStoreFactory: keyValueStoreFactory
+        )
+
         let messageBackupManager = MessageBackupManagerImpl(
             accountDataArchiver: MessageBackupAccountDataArchiverImpl(
                 disappearingMessageConfigurationStore: disappearingMessagesConfigurationStore,
@@ -884,6 +888,7 @@ public class AppSetup {
             ),
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentUploadManager: attachmentUploadManager,
+            backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             backupRequestManager: MessageBackupRequestManagerImpl(
                 db: db,
                 messageBackupAuthCredentialManager: MessageBackupAuthCredentialManagerImpl(
@@ -1025,6 +1030,7 @@ public class AppSetup {
             attachmentViewOnceManager: attachmentViewOnceManager,
             audioWaveformManager: audioWaveformManager,
             authorMergeHelper: authorMergeHelper,
+            backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             badgeCountFetcher: badgeCountFetcher,
             callRecordDeleteManager: callRecordDeleteManager,
             callRecordMissedCallManager: callRecordMissedCallManager,
