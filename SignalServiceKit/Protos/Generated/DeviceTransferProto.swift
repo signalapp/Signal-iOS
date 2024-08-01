@@ -469,10 +469,6 @@ public struct DeviceTransferProtoManifest: Codable, CustomDebugStringConvertible
     public var estimatedTotalSize: UInt64 {
         return proto.estimatedTotalSize
     }
-    public var hasEstimatedTotalSize: Bool {
-        return true
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -558,9 +554,7 @@ extension DeviceTransferProtoManifest {
         builder.setAppDefaults(appDefaults)
         builder.setStandardDefaults(standardDefaults)
         builder.setFiles(files)
-        if hasEstimatedTotalSize {
-            builder.setEstimatedTotalSize(estimatedTotalSize)
-        }
+        builder.setEstimatedTotalSize(estimatedTotalSize)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }

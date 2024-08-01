@@ -344,22 +344,13 @@ class BaseContext(object):
         )
 
     def can_field_be_optional(self, field):
-        if self.is_field_primitive(field):
-            return not field.is_required
+        return not self.is_field_primitive(field) or not field.is_required
 
-        # if field.proto_type == 'uint64':
-        #     return False
-        # elif field.proto_type == 'uint32':
-        #     return False
-        # elif field.proto_type == 'fixed64':
-        #     return False
-        # elif field.proto_type == 'bool':
-        #     return False
-        # elif self.is_field_an_enum(field):
-        if self.is_field_an_enum(field):
-            return True
-        else:
-            return True
+    def is_field_proto3_primitive(self, field):
+        return (
+            proto_syntax == "proto3"
+            and (self.is_field_primitive(field) or self.is_field_an_enum(field))
+        )
 
     def is_field_an_enum(self, field):
         matching_context = self.context_for_proto_type(field)
@@ -645,55 +636,53 @@ class MessageContext(BaseContext):
                     writer.add("}")
                 writer.newline()
 
-        if len(implict_fields) > 0:
-            for field in implict_fields:
-                if field.rules == "optional":
-                    can_be_optional = not self.is_field_primitive(field)
-                    if can_be_optional:
-
-                        def write_field_getter(
-                            is_objc_accessible, is_required_optional
-                        ):
-
-                            if is_required_optional:
-                                writer.add(
-                                    '// This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.'
+        for field in implict_fields:
+            if field.rules == "optional":
+                can_be_optional = not self.is_field_primitive(field) and not self.is_field_proto3_primitive(field)
+                if can_be_optional:
+                    def write_field_getter(
+                        is_objc_accessible, is_required_optional
+                    ):
+                        if is_required_optional:
+                            writer.add(
+                                '// This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.'
+                            )
+                            if is_objc_accessible:
+                                writer.add_objc()
+                            writer.add(
+                                "public var unwrapped%s: %s {"
+                                % (
+                                    camel_case(field.name_swift),
+                                    field.type_swift_not_optional,
                                 )
-                                if is_objc_accessible:
-                                    writer.add_objc()
-                                writer.add(
-                                    "public var unwrapped%s: %s {"
-                                    % (
-                                        camel_case(field.name_swift),
-                                        field.type_swift_not_optional,
-                                    )
+                            )
+                            writer.push_indent()
+                            writer.add("if !%s {" % field.has_accessor_name())
+                            writer.push_indent()
+                            writer.add(
+                                "// TODO: We could make this a crashing assert."
+                            )
+                            writer.add(
+                                'owsFailDebug("Unsafe unwrap of missing optional: %s.%s.")'
+                                % (
+                                    self.proto_name,
+                                    field.name_swift,
                                 )
-                                writer.push_indent()
-                                writer.add("if !%s {" % field.has_accessor_name())
-                                writer.push_indent()
-                                writer.add(
-                                    "// TODO: We could make this a crashing assert."
+                            )
+                            writer.pop_indent()
+                            writer.add("}")
+                        else:
+                            if is_objc_accessible:
+                                writer.add_objc()
+                            writer.add(
+                                "public var %s: %s? {"
+                                % (
+                                    field.name_swift,
+                                    field.type_swift_not_optional,
                                 )
-                                writer.add(
-                                    'owsFailDebug("Unsafe unwrap of missing optional: %s.%s.")'
-                                    % (
-                                        self.proto_name,
-                                        field.name_swift,
-                                    )
-                                )
-                                writer.pop_indent()
-                                writer.add("}")
-                            else:
-                                if is_objc_accessible:
-                                    writer.add_objc()
-                                writer.add(
-                                    "public var %s: %s? {"
-                                    % (
-                                        field.name_swift,
-                                        field.type_swift_not_optional,
-                                    )
-                                )
-                                writer.push_indent()
+                            )
+                            writer.push_indent()
+                            if not self.is_field_oneof(field):
                                 writer.add(
                                     "guard %s else {" % field.has_accessor_name()
                                 )
@@ -701,32 +690,30 @@ class MessageContext(BaseContext):
                                 writer.add("return nil")
                                 writer.pop_indent()
                                 writer.add("}")
-                            if self.is_field_an_enum(field):
-                                enum_context = self.context_for_proto_type(field)
-                                writer.add(
-                                    "return %s(proto.%s)"
-                                    % (
-                                        enum_context.wrap_func_name(),
-                                        field.name_swift,
-                                    )
+                        if self.is_field_an_enum(field):
+                            enum_context = self.context_for_proto_type(field)
+                            writer.add(
+                                "return %s(proto.%s)"
+                                % (
+                                    enum_context.wrap_func_name(),
+                                    field.name_swift,
                                 )
-                            elif self.is_field_oneof(field):
-                                oneof_context = self.context_for_proto_type(field)
-                                writer.add(
-                                    "guard let %s = proto.%s else {"
-                                    % (
-                                        field.name_swift,
-                                        field.name_swift,
-                                    )
+                            )
+                        elif self.is_field_oneof(field):
+                            assert proto_syntax == "proto3"
+                            oneof_context = self.context_for_proto_type(field)
+                            writer.add(
+                                "guard let %s = proto.%s else {"
+                                % (
+                                    field.name_swift,
+                                    field.name_swift,
                                 )
-                                writer.push_indent()
-                                writer.add(
-                                    'owsFailDebug("%s was unexpectedly nil")'
-                                    % field.name_swift
-                                )
-                                writer.add("return nil")
-                                writer.pop_indent()
-                                writer.add("}")
+                            )
+                            writer.push_indent()
+                            writer.add("return nil")
+                            writer.pop_indent()
+                            writer.add("}")
+                            if oneof_context.wrap_throws():
                                 writer.add(
                                     "guard let unwrapped%s = try? %s(%s) else {"
                                     % (
@@ -747,84 +734,27 @@ class MessageContext(BaseContext):
                                     "return unwrapped%s" % camel_case(field.name_swift)
                                 )
                             else:
-                                writer.add("return proto.%s" % field.name_swift)
-                            writer.pop_indent()
-                            writer.add("}")
-
-                        if self.is_field_an_enum(field):
-                            write_field_getter(
-                                is_objc_accessible=False, is_required_optional=False
-                            )
-                            write_field_getter(
-                                is_objc_accessible=True, is_required_optional=True
-                            )
-                        elif self.is_field_oneof(field):
-                            write_field_getter(
-                                is_objc_accessible=False, is_required_optional=False
-                            )
-                        else:
-                            write_field_getter(
-                                is_objc_accessible=True, is_required_optional=False
-                            )
-                    else:
-                        writer.add_objc()
-                        writer.add(
-                            "public var %s: %s {"
-                            % (field.name_swift, field.type_swift_not_optional)
-                        )
-                        writer.push_indent()
-                        if self.is_field_an_enum(field):
-                            enum_context = self.context_for_proto_type(field)
-                            writer.add(
-                                "return %s(proto.%s)"
-                                % (
-                                    enum_context.wrap_func_name(),
-                                    field.name_swift,
-                                )
-                            )
+                                writer.add("return %s(%s)" % (oneof_context.wrap_func_name(), field.name_swift))
                         else:
                             writer.add("return proto.%s" % field.name_swift)
                         writer.pop_indent()
                         writer.add("}")
 
-                    writer.add_objc()
-                    writer.add("public var %s: Bool {" % field.has_accessor_name())
-                    writer.push_indent()
-                    if proto_syntax == "proto3":
-                        # TODO: We might want to return false for unknown/0 enum?
-                        if field.proto_type in ["bytes", "string"]:
-                            writer.add("return !proto.%s.isEmpty" % field.name_swift)
-                        else:
-                            writer.add("return true")
+                    if self.is_field_an_enum(field):
+                        write_field_getter(
+                            is_objc_accessible=False, is_required_optional=False
+                        )
+                        write_field_getter(
+                            is_objc_accessible=True, is_required_optional=True
+                        )
+                    elif self.is_field_oneof(field):
+                        write_field_getter(
+                            is_objc_accessible=False, is_required_optional=False
+                        )
                     else:
-                        is_uuid_or_e164 = field.name.endswith(
-                            "Uuid"
-                        ) or field.name.endswith("E164")
-                        if is_uuid_or_e164:
-                            print("BLAH!")
-                            writer.add(
-                                "return proto.%s && !proto.%s.isEmpty"
-                                % (
-                                    field.has_accessor_name(),
-                                    field.name_swift,
-                                )
-                            )
-                        else:
-                            writer.add("return proto.%s" % field.has_accessor_name())
-                    writer.pop_indent()
-                    writer.add("}")
-                    writer.newline()
-                elif field.rules == "repeated":
-                    writer.add_objc()
-                    writer.add(
-                        "public var %s: %s {"
-                        % (field.name_swift, field.type_swift_not_optional)
-                    )
-                    writer.push_indent()
-                    writer.add("return proto.%s" % field.name_swift)
-                    writer.pop_indent()
-                    writer.add("}")
-                    writer.newline()
+                        write_field_getter(
+                            is_objc_accessible=True, is_required_optional=False
+                        )
                 else:
                     writer.add_objc()
                     writer.add(
@@ -837,16 +767,7 @@ class MessageContext(BaseContext):
                         writer.add(
                             "return %s(proto.%s)"
                             % (
-                                enum_context.unwrap_func_name(),
-                                field.name_swift,
-                            )
-                        )
-                    elif self.is_field_oneof(field):
-                        oneof_context = self.context_for_proto_type(field)
-                        writer.add(
-                            "return %s(proto.%s)"
-                            % (
-                                oneof_context.unwrap_func_name(),
+                                enum_context.wrap_func_name(),
                                 field.name_swift,
                             )
                         )
@@ -854,7 +775,71 @@ class MessageContext(BaseContext):
                         writer.add("return proto.%s" % field.name_swift)
                     writer.pop_indent()
                     writer.add("}")
+
+                if not self.is_field_proto3_primitive(field) and not self.is_field_oneof(field):
+                    writer.add_objc()
+                    writer.add("public var %s: Bool {" % field.has_accessor_name())
+                    writer.push_indent()
+                    if proto_syntax == "proto3":
+                        writer.add("return !proto.%s.isEmpty" % field.name_swift)
+                    else:
+                        is_uuid_or_e164 = field.name.endswith(
+                            "Uuid"
+                        ) or field.name.endswith("E164")
+                        if is_uuid_or_e164:
+                            writer.add(
+                                "return proto.%s && !proto.%s.isEmpty"
+                                % (
+                                    field.has_accessor_name(),
+                                    field.name_swift,
+                                )
+                            )
+                        else:
+                            writer.add("return proto.%s" % field.has_accessor_name())
+                    writer.pop_indent()
+                    writer.add("}")
                     writer.newline()
+            elif field.rules == "repeated":
+                writer.add_objc()
+                writer.add(
+                    "public var %s: %s {"
+                    % (field.name_swift, field.type_swift_not_optional)
+                )
+                writer.push_indent()
+                writer.add("return proto.%s" % field.name_swift)
+                writer.pop_indent()
+                writer.add("}")
+                writer.newline()
+            else:
+                writer.add_objc()
+                writer.add(
+                    "public var %s: %s {"
+                    % (field.name_swift, field.type_swift_not_optional)
+                )
+                writer.push_indent()
+                if self.is_field_an_enum(field):
+                    enum_context = self.context_for_proto_type(field)
+                    writer.add(
+                        "return %s(proto.%s)"
+                        % (
+                            enum_context.unwrap_func_name(),
+                            field.name_swift,
+                        )
+                    )
+                elif self.is_field_oneof(field):
+                    oneof_context = self.context_for_proto_type(field)
+                    writer.add(
+                        "return %s(proto.%s)"
+                        % (
+                            oneof_context.unwrap_func_name(),
+                            field.name_swift,
+                        )
+                    )
+                else:
+                    writer.add("return proto.%s" % field.name_swift)
+                writer.pop_indent()
+                writer.add("}")
+                writer.newline()
 
         # Unknown fields
         writer.add("public var hasUnknownFields: Bool {")
@@ -1287,7 +1272,7 @@ public func serializedData() throws -> Data {
                     accessor_name = "set" + accessor_name[0].upper() + accessor_name[1:]
 
                     can_be_optional = not self.is_field_primitive(field)
-                    if field.rules == "repeated":
+                    if field.rules == "repeated" or self.is_field_proto3_primitive(field):
                         writer.add(
                             "builder.%s(%s)"
                             % (
@@ -1897,6 +1882,9 @@ class OneOfContext(BaseContext):
             result.append((case_name, case_type, case_throws))
         return result
 
+    def wrap_throws(self):
+        return any(case_throws for _, _, case_throws in self.case_tuples())
+
     def generate(self, writer):
 
         writer.add("// MARK: - %s" % self.swift_name)
@@ -1924,12 +1912,12 @@ class OneOfContext(BaseContext):
         writer.newline()
 
         wrapped_swift_name = self.derive_wrapped_swift_name()
-        # TODO: Only mark this throws if one of the cases throws.
         writer.add(
-            "private func %sWrap(_ value: %s) throws -> %s {"
+            "private func %sWrap(_ value: %s)%s -> %s {"
             % (
                 self.swift_name,
                 wrapped_swift_name,
+                " throws" if self.wrap_throws() else "",
                 self.swift_name,
             )
         )

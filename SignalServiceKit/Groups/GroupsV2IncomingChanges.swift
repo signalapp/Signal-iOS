@@ -79,9 +79,6 @@ public class GroupsV2IncomingChanges {
             throw OWSAssertionError("Missing changeAuthorUuid.")
         }
 
-        guard changeActionsProto.hasRevision else {
-            throw OWSAssertionError("Missing revision.")
-        }
         let newRevision = changeActionsProto.revision
         guard newRevision == oldGroupModel.revision + 1 else {
             throw OWSAssertionError("Unexpected revision: \(newRevision) != \(oldGroupModel.revision + 1).")
@@ -152,7 +149,7 @@ public class GroupsV2IncomingChanges {
         var newlyLearnedPniToAciAssociations = [Pni: Aci]()
 
         for action in changeActionsProto.addMembers {
-            let didJoinFromInviteLink = (action.hasJoinFromInviteLink && action.joinFromInviteLink)
+            let didJoinFromInviteLink = action.joinFromInviteLink
 
             if !canAddMembers && !didJoinFromInviteLink {
                 owsFailDebug("Cannot add members.")
@@ -164,11 +161,8 @@ public class GroupsV2IncomingChanges {
             guard let userId = member.userID else {
                 throw OWSAssertionError("Missing userID.")
             }
-            guard let protoRole = member.role else {
-                throw OWSAssertionError("Missing role.")
-            }
-            guard let role = TSGroupMemberRole.role(for: protoRole) else {
-                throw OWSAssertionError("Invalid role: \(protoRole.rawValue)")
+            guard let role = TSGroupMemberRole.role(for: member.role) else {
+                throw OWSAssertionError("Invalid role: \(member.role.rawValue)")
             }
             if role == .administrator && !isChangeAuthorAdmin {
                 owsFailDebug("Only admins can add admins.")
@@ -226,9 +220,7 @@ public class GroupsV2IncomingChanges {
             guard let userId = action.userID else {
                 throw OWSAssertionError("Missing userID.")
             }
-            guard let protoRole = action.role else {
-                throw OWSAssertionError("Missing role.")
-            }
+            let protoRole = action.role
             guard let role = TSGroupMemberRole.role(for: protoRole) else {
                 throw OWSAssertionError("Invalid role: \(protoRole.rawValue)")
             }
@@ -278,9 +270,7 @@ public class GroupsV2IncomingChanges {
             guard let userId = member.userID else {
                 throw OWSAssertionError("Missing userID.")
             }
-            guard let protoRole = member.role else {
-                throw OWSAssertionError("Missing role.")
-            }
+            let protoRole = member.role
             guard let role = TSGroupMemberRole.role(for: protoRole) else {
                 throw OWSAssertionError("Invalid role: \(protoRole.rawValue)")
             }
@@ -474,9 +464,7 @@ public class GroupsV2IncomingChanges {
                 owsFailDebug("Cannot add members.")
             }
 
-            guard let protoRole = action.role else {
-                throw OWSAssertionError("Missing role.")
-            }
+            let protoRole = action.role
             guard let role = TSGroupMemberRole.role(for: protoRole) else {
                 throw OWSAssertionError("Invalid role: \(protoRole.rawValue)")
             }
@@ -572,9 +560,7 @@ public class GroupsV2IncomingChanges {
                 owsFailDebug("Cannot edit attributes access.")
             }
 
-            guard let protoAccess = action.attributesAccess else {
-                throw OWSAssertionError("Missing access.")
-            }
+            let protoAccess = action.attributesAccess
             newAttributesAccess = GroupV2Access.access(forProtoAccess: protoAccess)
 
             if newAttributesAccess == .unknown {
@@ -587,9 +573,7 @@ public class GroupsV2IncomingChanges {
                 owsFailDebug("Cannot edit member access.")
             }
 
-            guard let protoAccess = action.membersAccess else {
-                throw OWSAssertionError("Missing access.")
-            }
+            let protoAccess = action.membersAccess
             newMembersAccess = GroupV2Access.access(forProtoAccess: protoAccess)
 
             if newMembersAccess == .unknown {
@@ -602,9 +586,7 @@ public class GroupsV2IncomingChanges {
                 owsFailDebug("Cannot edit addFromInviteLink access.")
             }
 
-            guard let protoAccess = action.addFromInviteLinkAccess else {
-                throw OWSAssertionError("Missing access.")
-            }
+            let protoAccess = action.addFromInviteLinkAccess
             newAddFromInviteLinkAccess = GroupV2Access.access(forProtoAccess: protoAccess)
 
             if newAddFromInviteLinkAccess == .unknown {

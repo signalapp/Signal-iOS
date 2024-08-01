@@ -546,14 +546,12 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 
         // If our local identity differs from the service, use the service's value.
         let localIdentityKey = try? identityManager.identityKey(for: serviceIds.aciOrElsePni, tx: tx)
-        if
-            let identityKey = record.identityKey.flatMap({ try? IdentityKey(bytes: $0) }),
-            let identityState = record.identityState?.verificationState
-        {
+        if let identityKey = record.identityKey.flatMap({ try? IdentityKey(bytes: $0) }) {
             if identityKey != localIdentityKey {
                 identityManager.saveIdentityKey(identityKey, for: serviceIds.aciOrElsePni, tx: tx)
             }
             // Make sure we fetch this after changing the identity key.
+            let identityState = record.identityState.verificationState
             let localIdentityState = identityManager.verificationState(for: anyAddress, tx: tx)
             if identityState != localIdentityState {
                 _ = identityManager.setVerificationState(
@@ -956,7 +954,7 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
             // We have a record pending restoration from storage service,
             // preserve any of the data that we weren't able to restore
             // yet because the thread record doesn't exist.
-            enqueuedRecord.storySendMode.map { builder.setStorySendMode($0) }
+            builder.setStorySendMode(enqueuedRecord.storySendMode)
         }
 
         if let unknownFields = unknownFields {
@@ -985,12 +983,8 @@ class StorageServiceGroupV2RecordUpdater: StorageServiceRecordUpdater {
 
         if let localThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
             let localStorySendMode = localThread.storyViewMode.storageServiceMode
-            if let storySendMode = record.storySendMode {
-                if localStorySendMode != storySendMode {
-                    localThread.updateWithStoryViewMode(.init(storageServiceMode: storySendMode), transaction: transaction)
-                }
-            } else {
-                needsUpdate = true
+            if localStorySendMode != record.storySendMode {
+                localThread.updateWithStoryViewMode(.init(storageServiceMode: record.storySendMode), transaction: transaction)
             }
 
             // If the group thread doesn't exist, we will create it and reapply this update so the
@@ -1391,12 +1385,10 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
                     tx: transaction.asV2Write
                 )
 
-                if let remoteUsernameLinkColor = remoteUsernameLinkProto.color {
-                    localUsernameManager.setUsernameLinkQRCodeColor(
-                        color: Usernames.QRCodeColor(proto: remoteUsernameLinkColor),
-                        tx: transaction.asV2Write
-                    )
-                }
+                localUsernameManager.setUsernameLinkQRCodeColor(
+                    color: Usernames.QRCodeColor(proto: remoteUsernameLinkProto.color),
+                    tx: transaction.asV2Write
+                )
             } else {
                 localUsernameManager.setLocalUsernameWithCorruptedLink(
                     username: remoteUsername,
@@ -1424,7 +1416,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         }
 
         let localViewReceiptsEnabled = StoryManager.areViewReceiptsEnabled(transaction: transaction)
-        if let storyViewReceiptsEnabled = record.storyViewReceiptsEnabled?.boolValue {
+        if let storyViewReceiptsEnabled = record.storyViewReceiptsEnabled.boolValue {
             if storyViewReceiptsEnabled != localViewReceiptsEnabled {
                 StoryManager.setAreViewReceiptsEnabled(storyViewReceiptsEnabled, shouldUpdateStorageService: false, transaction: transaction)
             }
@@ -1454,7 +1446,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
 
         let localPhoneNumberSharingMode = udManager.phoneNumberSharingMode(tx: transaction.asV2Read)
         if record.phoneNumberSharingMode != localPhoneNumberSharingMode.asProtoMode {
-            if let localMode = record.phoneNumberSharingMode?.asLocalMode {
+            if let localMode = record.phoneNumberSharingMode.asLocalMode {
                 udManager.setPhoneNumberSharingMode(localMode, updateStorageServiceAndProfile: false, tx: transaction)
             } else {
                 Logger.error("Unknown phone number sharing mode \(String(describing: record.phoneNumberSharingMode))")

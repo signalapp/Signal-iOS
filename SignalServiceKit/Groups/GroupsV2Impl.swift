@@ -811,10 +811,6 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
 
         let memberProto = try GroupsProtoMember(serializedData: memberData)
 
-        guard memberProto.hasJoinedAtRevision else {
-            throw OWSAssertionError("Member proto missing joinedAtRevision")
-        }
-
         return memberProto.joinedAtRevision
     }
 

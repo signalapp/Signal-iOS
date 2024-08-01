@@ -242,8 +242,7 @@ public class GroupsV2Protos {
     public class func parseAndVerifyChangeActionsProto(_ changeProtoData: Data,
                                                        ignoreSignature: Bool) throws -> GroupsProtoGroupChangeActions {
         let changeProto = try GroupsProtoGroupChange(serializedData: changeProtoData)
-        guard changeProto.hasChangeEpoch,
-            changeProto.changeEpoch <= GroupManager.changeProtoEpoch else {
+        guard changeProto.changeEpoch <= GroupManager.changeProtoEpoch else {
             throw OWSAssertionError("Invalid embedded change proto epoch: \(changeProto.changeEpoch).")
         }
         return try parseAndVerifyChangeActionsProto(changeProto,
@@ -303,10 +302,9 @@ public class GroupsV2Protos {
             guard let userID = memberProto.userID else {
                 throw OWSAssertionError("Group member missing userID.")
             }
-            guard memberProto.hasRole,
-                let protoRole = memberProto.role,
-                let role = TSGroupMemberRole.role(for: protoRole) else {
-                    throw OWSAssertionError("Group member missing role.")
+            let protoRole = memberProto.role
+            guard let role = TSGroupMemberRole.role(for: protoRole) else {
+                throw OWSAssertionError("Group member missing role.")
             }
 
             // Some userIds/uuidCiphertexts can be validated by
@@ -342,10 +340,9 @@ public class GroupsV2Protos {
             guard let addedByUserId = pendingMemberProto.addedByUserID else {
                 throw OWSAssertionError("Group pending member missing addedByUserID.")
             }
-            guard memberProto.hasRole,
-                let protoRole = memberProto.role,
-                let role = TSGroupMemberRole.role(for: protoRole) else {
-                    throw OWSAssertionError("Group member missing role.")
+            let protoRole = memberProto.role
+            guard let role = TSGroupMemberRole.role(for: protoRole) else {
+                throw OWSAssertionError("Group member missing role.")
             }
 
             // Some userIds/uuidCiphertexts can be validated by
@@ -412,20 +409,16 @@ public class GroupsV2Protos {
 
         let inviteLinkPassword = groupProto.inviteLinkPassword
 
-        let isAnnouncementsOnly = (groupProto.hasAnnouncementsOnly ? groupProto.announcementsOnly : false)
+        let isAnnouncementsOnly = groupProto.announcementsOnly
 
         guard let accessControl = groupProto.accessControl else {
             throw OWSAssertionError("Missing accessControl.")
         }
-        guard let accessControlForAttributes = accessControl.attributes else {
-            throw OWSAssertionError("Missing accessControl.members.")
-        }
-        guard let accessControlForMembers = accessControl.members else {
-            throw OWSAssertionError("Missing accessControl.members.")
-        }
+        let accessControlForAttributes = accessControl.attributes
+        let accessControlForMembers = accessControl.members
         // If group state does not have "invite link" access specified,
         // assume invite links are disabled.
-        let accessControlForAddFromInviteLink = accessControl.addFromInviteLink ?? .unsatisfiable
+        let accessControlForAddFromInviteLink = accessControl.addFromInviteLink
 
         // If the timer blob is not populated or has zero duration,
         // disappearing messages should be disabled.
@@ -472,25 +465,16 @@ public class GroupsV2Protos {
         let descriptionText: String? = groupV2Params.decryptGroupDescription(joinInfoProto.descriptionBytes)
 
         let avatarUrlPath: String? = joinInfoProto.avatar
-        guard joinInfoProto.hasMemberCount,
-            joinInfoProto.hasAddFromInviteLink else {
-            throw OWSAssertionError("Missing or invalid memberCount.")
-        }
         let memberCount = joinInfoProto.memberCount
 
-        guard let protoAccess = joinInfoProto.addFromInviteLink else {
-            throw OWSAssertionError("Missing or invalid addFromInviteLinkAccess.")
-        }
+        let protoAccess = joinInfoProto.addFromInviteLink
         let rawAccess = GroupV2Access.access(forProtoAccess: protoAccess)
         let addFromInviteLinkAccess = GroupAccess.filter(forAddFromInviteLink: rawAccess)
         guard addFromInviteLinkAccess != .unknown else {
             throw OWSAssertionError("Unknown addFromInviteLinkAccess.")
         }
-        guard joinInfoProto.hasRevision else {
-            throw OWSAssertionError("Missing or invalid revision.")
-        }
         let revision = joinInfoProto.revision
-        let isLocalUserRequestingMember = joinInfoProto.hasPendingAdminApproval && joinInfoProto.pendingAdminApproval
+        let isLocalUserRequestingMember = joinInfoProto.pendingAdminApproval
 
         return GroupInviteLinkPreview(title: title,
                                       descriptionText: descriptionText,

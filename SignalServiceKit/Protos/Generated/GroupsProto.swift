@@ -335,24 +335,9 @@ public struct GroupsProtoMember: Codable, CustomDebugStringConvertible {
         return !proto.userID.isEmpty
     }
 
-    public var role: GroupsProtoMemberRole? {
-        guard hasRole else {
-            return nil
-        }
+    public var role: GroupsProtoMemberRole {
         return GroupsProtoMemberRoleWrap(proto.role)
     }
-    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    public var unwrappedRole: GroupsProtoMemberRole {
-        if !hasRole {
-            // TODO: We could make this a crashing assert.
-            owsFailDebug("Unsafe unwrap of missing optional: Member.role.")
-        }
-        return GroupsProtoMemberRoleWrap(proto.role)
-    }
-    public var hasRole: Bool {
-        return true
-    }
-
     public var profileKey: Data? {
         guard hasProfileKey else {
             return nil
@@ -366,10 +351,6 @@ public struct GroupsProtoMember: Codable, CustomDebugStringConvertible {
     public var joinedAtRevision: UInt32 {
         return proto.joinedAtRevision
     }
-    public var hasJoinedAtRevision: Bool {
-        return true
-    }
-
     public var presentation: Data? {
         guard hasPresentation else {
             return nil
@@ -431,15 +412,11 @@ extension GroupsProtoMember {
         if let _value = userID {
             builder.setUserID(_value)
         }
-        if let _value = role {
-            builder.setRole(_value)
-        }
+        builder.setRole(role)
         if let _value = profileKey {
             builder.setProfileKey(_value)
         }
-        if hasJoinedAtRevision {
-            builder.setJoinedAtRevision(joinedAtRevision)
-        }
+        builder.setJoinedAtRevision(joinedAtRevision)
         if let _value = presentation {
             builder.setPresentation(_value)
         }
@@ -544,10 +521,6 @@ public struct GroupsProtoPendingMember: Codable, CustomDebugStringConvertible {
     public var timestamp: UInt64 {
         return proto.timestamp
     }
-    public var hasTimestamp: Bool {
-        return true
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -610,9 +583,7 @@ extension GroupsProtoPendingMember {
         if let _value = addedByUserID {
             builder.setAddedByUserID(_value)
         }
-        if hasTimestamp {
-            builder.setTimestamp(timestamp)
-        }
+        builder.setTimestamp(timestamp)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -708,10 +679,6 @@ public struct GroupsProtoRequestingMember: Codable, CustomDebugStringConvertible
     public var timestamp: UInt64 {
         return proto.timestamp
     }
-    public var hasTimestamp: Bool {
-        return true
-    }
-
     public var presentation: Data? {
         guard hasPresentation else {
             return nil
@@ -776,9 +743,7 @@ extension GroupsProtoRequestingMember {
         if let _value = profileKey {
             builder.setProfileKey(_value)
         }
-        if hasTimestamp {
-            builder.setTimestamp(timestamp)
-        }
+        builder.setTimestamp(timestamp)
         if let _value = presentation {
             builder.setPresentation(_value)
         }
@@ -877,10 +842,6 @@ public struct GroupsProtoBannedMember: Codable, CustomDebugStringConvertible {
     public var bannedAtTimestamp: UInt64 {
         return proto.bannedAtTimestamp
     }
-    public var hasBannedAtTimestamp: Bool {
-        return true
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -932,9 +893,7 @@ extension GroupsProtoBannedMember {
         if let _value = userID {
             builder.setUserID(_value)
         }
-        if hasBannedAtTimestamp {
-            builder.setBannedAtTimestamp(bannedAtTimestamp)
-        }
+        builder.setBannedAtTimestamp(bannedAtTimestamp)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -1057,60 +1016,15 @@ public struct GroupsProtoAccessControl: Codable, CustomDebugStringConvertible {
 
     fileprivate let proto: GroupsProtos_AccessControl
 
-    public var attributes: GroupsProtoAccessControlAccessRequired? {
-        guard hasAttributes else {
-            return nil
-        }
+    public var attributes: GroupsProtoAccessControlAccessRequired {
         return GroupsProtoAccessControlAccessRequiredWrap(proto.attributes)
     }
-    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    public var unwrappedAttributes: GroupsProtoAccessControlAccessRequired {
-        if !hasAttributes {
-            // TODO: We could make this a crashing assert.
-            owsFailDebug("Unsafe unwrap of missing optional: AccessControl.attributes.")
-        }
-        return GroupsProtoAccessControlAccessRequiredWrap(proto.attributes)
-    }
-    public var hasAttributes: Bool {
-        return true
-    }
-
-    public var members: GroupsProtoAccessControlAccessRequired? {
-        guard hasMembers else {
-            return nil
-        }
+    public var members: GroupsProtoAccessControlAccessRequired {
         return GroupsProtoAccessControlAccessRequiredWrap(proto.members)
     }
-    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    public var unwrappedMembers: GroupsProtoAccessControlAccessRequired {
-        if !hasMembers {
-            // TODO: We could make this a crashing assert.
-            owsFailDebug("Unsafe unwrap of missing optional: AccessControl.members.")
-        }
-        return GroupsProtoAccessControlAccessRequiredWrap(proto.members)
-    }
-    public var hasMembers: Bool {
-        return true
-    }
-
-    public var addFromInviteLink: GroupsProtoAccessControlAccessRequired? {
-        guard hasAddFromInviteLink else {
-            return nil
-        }
+    public var addFromInviteLink: GroupsProtoAccessControlAccessRequired {
         return GroupsProtoAccessControlAccessRequiredWrap(proto.addFromInviteLink)
     }
-    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    public var unwrappedAddFromInviteLink: GroupsProtoAccessControlAccessRequired {
-        if !hasAddFromInviteLink {
-            // TODO: We could make this a crashing assert.
-            owsFailDebug("Unsafe unwrap of missing optional: AccessControl.addFromInviteLink.")
-        }
-        return GroupsProtoAccessControlAccessRequiredWrap(proto.addFromInviteLink)
-    }
-    public var hasAddFromInviteLink: Bool {
-        return true
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -1159,15 +1073,9 @@ extension GroupsProtoAccessControl {
     // asBuilder() constructs a builder that reflects the proto's contents.
     public func asBuilder() -> GroupsProtoAccessControlBuilder {
         var builder = GroupsProtoAccessControlBuilder()
-        if let _value = attributes {
-            builder.setAttributes(_value)
-        }
-        if let _value = members {
-            builder.setMembers(_value)
-        }
-        if let _value = addFromInviteLink {
-            builder.setAddFromInviteLink(_value)
-        }
+        builder.setAttributes(attributes)
+        builder.setMembers(members)
+        builder.setAddFromInviteLink(addFromInviteLink)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -1291,10 +1199,6 @@ public struct GroupsProtoGroup: Codable, CustomDebugStringConvertible {
     public var revision: UInt32 {
         return proto.revision
     }
-    public var hasRevision: Bool {
-        return true
-    }
-
     public var inviteLinkPassword: Data? {
         guard hasInviteLinkPassword else {
             return nil
@@ -1308,10 +1212,6 @@ public struct GroupsProtoGroup: Codable, CustomDebugStringConvertible {
     public var announcementsOnly: Bool {
         return proto.announcementsOnly
     }
-    public var hasAnnouncementsOnly: Bool {
-        return true
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -1410,18 +1310,14 @@ extension GroupsProtoGroup {
         if let _value = accessControl {
             builder.setAccessControl(_value)
         }
-        if hasRevision {
-            builder.setRevision(revision)
-        }
+        builder.setRevision(revision)
         builder.setMembers(members)
         builder.setPendingMembers(pendingMembers)
         builder.setRequestingMembers(requestingMembers)
         if let _value = inviteLinkPassword {
             builder.setInviteLinkPassword(_value)
         }
-        if hasAnnouncementsOnly {
-            builder.setAnnouncementsOnly(announcementsOnly)
-        }
+        builder.setAnnouncementsOnly(announcementsOnly)
         builder.setBannedMembers(bannedMembers)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -1584,7 +1480,7 @@ public enum GroupsProtoGroupAttributeBlobOneOfContent {
     case descriptionText(String)
 }
 
-private func GroupsProtoGroupAttributeBlobOneOfContentWrap(_ value: GroupsProtos_GroupAttributeBlob.OneOf_Content) throws -> GroupsProtoGroupAttributeBlobOneOfContent {
+private func GroupsProtoGroupAttributeBlobOneOfContentWrap(_ value: GroupsProtos_GroupAttributeBlob.OneOf_Content) -> GroupsProtoGroupAttributeBlobOneOfContent {
     switch value {
     case .title(let value): return .title(value)
     case .avatar(let value): return .avatar(value)
@@ -1609,23 +1505,11 @@ public struct GroupsProtoGroupAttributeBlob: Codable, CustomDebugStringConvertib
     fileprivate let proto: GroupsProtos_GroupAttributeBlob
 
     public var content: GroupsProtoGroupAttributeBlobOneOfContent? {
-        guard hasContent else {
-            return nil
-        }
         guard let content = proto.content else {
-            owsFailDebug("content was unexpectedly nil")
             return nil
         }
-        guard let unwrappedContent = try? GroupsProtoGroupAttributeBlobOneOfContentWrap(content) else {
-            owsFailDebug("failed to unwrap content")
-            return nil
-        }
-        return unwrappedContent
+        return GroupsProtoGroupAttributeBlobOneOfContentWrap(content)
     }
-    public var hasContent: Bool {
-        return true
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -1877,7 +1761,7 @@ public enum GroupsProtoGroupInviteLinkOneOfContents {
     case contentsV1(GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1)
 }
 
-private func GroupsProtoGroupInviteLinkOneOfContentsWrap(_ value: GroupsProtos_GroupInviteLink.OneOf_Contents) throws -> GroupsProtoGroupInviteLinkOneOfContents {
+private func GroupsProtoGroupInviteLinkOneOfContentsWrap(_ value: GroupsProtos_GroupInviteLink.OneOf_Contents) -> GroupsProtoGroupInviteLinkOneOfContents {
     switch value {
     case .contentsV1(let value): return .contentsV1(GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1(value))
     }
@@ -1896,23 +1780,11 @@ public struct GroupsProtoGroupInviteLink: Codable, CustomDebugStringConvertible 
     fileprivate let proto: GroupsProtos_GroupInviteLink
 
     public var contents: GroupsProtoGroupInviteLinkOneOfContents? {
-        guard hasContents else {
-            return nil
-        }
         guard let contents = proto.contents else {
-            owsFailDebug("contents was unexpectedly nil")
             return nil
         }
-        guard let unwrappedContents = try? GroupsProtoGroupInviteLinkOneOfContentsWrap(contents) else {
-            owsFailDebug("failed to unwrap contents")
-            return nil
-        }
-        return unwrappedContents
+        return GroupsProtoGroupInviteLinkOneOfContentsWrap(contents)
     }
-    public var hasContents: Bool {
-        return true
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -2055,42 +1927,15 @@ public struct GroupsProtoGroupJoinInfo: Codable, CustomDebugStringConvertible {
     public var memberCount: UInt32 {
         return proto.memberCount
     }
-    public var hasMemberCount: Bool {
-        return true
-    }
-
-    public var addFromInviteLink: GroupsProtoAccessControlAccessRequired? {
-        guard hasAddFromInviteLink else {
-            return nil
-        }
+    public var addFromInviteLink: GroupsProtoAccessControlAccessRequired {
         return GroupsProtoAccessControlAccessRequiredWrap(proto.addFromInviteLink)
     }
-    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    public var unwrappedAddFromInviteLink: GroupsProtoAccessControlAccessRequired {
-        if !hasAddFromInviteLink {
-            // TODO: We could make this a crashing assert.
-            owsFailDebug("Unsafe unwrap of missing optional: GroupJoinInfo.addFromInviteLink.")
-        }
-        return GroupsProtoAccessControlAccessRequiredWrap(proto.addFromInviteLink)
-    }
-    public var hasAddFromInviteLink: Bool {
-        return true
-    }
-
     public var revision: UInt32 {
         return proto.revision
     }
-    public var hasRevision: Bool {
-        return true
-    }
-
     public var pendingAdminApproval: Bool {
         return proto.pendingAdminApproval
     }
-    public var hasPendingAdminApproval: Bool {
-        return true
-    }
-
     public var descriptionBytes: Data? {
         guard hasDescriptionBytes else {
             return nil
@@ -2158,18 +2003,10 @@ extension GroupsProtoGroupJoinInfo {
         if let _value = avatar {
             builder.setAvatar(_value)
         }
-        if hasMemberCount {
-            builder.setMemberCount(memberCount)
-        }
-        if let _value = addFromInviteLink {
-            builder.setAddFromInviteLink(_value)
-        }
-        if hasRevision {
-            builder.setRevision(revision)
-        }
-        if hasPendingAdminApproval {
-            builder.setPendingAdminApproval(pendingAdminApproval)
-        }
+        builder.setMemberCount(memberCount)
+        builder.setAddFromInviteLink(addFromInviteLink)
+        builder.setRevision(revision)
+        builder.setPendingAdminApproval(pendingAdminApproval)
         if let _value = descriptionBytes {
             builder.setDescriptionBytes(_value)
         }
@@ -2282,10 +2119,6 @@ public struct GroupsProtoGroupChangeActionsAddMemberAction: Codable, CustomDebug
     public var joinFromInviteLink: Bool {
         return proto.joinFromInviteLink
     }
-    public var hasJoinFromInviteLink: Bool {
-        return true
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -2345,9 +2178,7 @@ extension GroupsProtoGroupChangeActionsAddMemberAction {
         if let _value = added {
             builder.setAdded(_value)
         }
-        if hasJoinFromInviteLink {
-            builder.setJoinFromInviteLink(joinFromInviteLink)
-        }
+        builder.setJoinFromInviteLink(joinFromInviteLink)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -2539,24 +2370,9 @@ public struct GroupsProtoGroupChangeActionsModifyMemberRoleAction: Codable, Cust
         return !proto.userID.isEmpty
     }
 
-    public var role: GroupsProtoMemberRole? {
-        guard hasRole else {
-            return nil
-        }
+    public var role: GroupsProtoMemberRole {
         return GroupsProtoMemberRoleWrap(proto.role)
     }
-    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    public var unwrappedRole: GroupsProtoMemberRole {
-        if !hasRole {
-            // TODO: We could make this a crashing assert.
-            owsFailDebug("Unsafe unwrap of missing optional: ModifyMemberRoleAction.role.")
-        }
-        return GroupsProtoMemberRoleWrap(proto.role)
-    }
-    public var hasRole: Bool {
-        return true
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -2608,9 +2424,7 @@ extension GroupsProtoGroupChangeActionsModifyMemberRoleAction {
         if let _value = userID {
             builder.setUserID(_value)
         }
-        if let _value = role {
-            builder.setRole(_value)
-        }
+        builder.setRole(role)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -3677,24 +3491,9 @@ public struct GroupsProtoGroupChangeActionsPromoteRequestingMemberAction: Codabl
         return !proto.userID.isEmpty
     }
 
-    public var role: GroupsProtoMemberRole? {
-        guard hasRole else {
-            return nil
-        }
+    public var role: GroupsProtoMemberRole {
         return GroupsProtoMemberRoleWrap(proto.role)
     }
-    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    public var unwrappedRole: GroupsProtoMemberRole {
-        if !hasRole {
-            // TODO: We could make this a crashing assert.
-            owsFailDebug("Unsafe unwrap of missing optional: PromoteRequestingMemberAction.role.")
-        }
-        return GroupsProtoMemberRoleWrap(proto.role)
-    }
-    public var hasRole: Bool {
-        return true
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -3746,9 +3545,7 @@ extension GroupsProtoGroupChangeActionsPromoteRequestingMemberAction {
         if let _value = userID {
             builder.setUserID(_value)
         }
-        if let _value = role {
-            builder.setRole(_value)
-        }
+        builder.setRole(role)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -4406,24 +4203,9 @@ public struct GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction: 
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction
 
-    public var attributesAccess: GroupsProtoAccessControlAccessRequired? {
-        guard hasAttributesAccess else {
-            return nil
-        }
+    public var attributesAccess: GroupsProtoAccessControlAccessRequired {
         return GroupsProtoAccessControlAccessRequiredWrap(proto.attributesAccess)
     }
-    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    public var unwrappedAttributesAccess: GroupsProtoAccessControlAccessRequired {
-        if !hasAttributesAccess {
-            // TODO: We could make this a crashing assert.
-            owsFailDebug("Unsafe unwrap of missing optional: ModifyAttributesAccessControlAction.attributesAccess.")
-        }
-        return GroupsProtoAccessControlAccessRequiredWrap(proto.attributesAccess)
-    }
-    public var hasAttributesAccess: Bool {
-        return true
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -4472,9 +4254,7 @@ extension GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction {
     // asBuilder() constructs a builder that reflects the proto's contents.
     public func asBuilder() -> GroupsProtoGroupChangeActionsModifyAttributesAccessControlActionBuilder {
         var builder = GroupsProtoGroupChangeActionsModifyAttributesAccessControlActionBuilder()
-        if let _value = attributesAccess {
-            builder.setAttributesAccess(_value)
-        }
+        builder.setAttributesAccess(attributesAccess)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -4527,24 +4307,9 @@ public struct GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction: Coda
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyAvatarAccessControlAction
 
-    public var avatarAccess: GroupsProtoAccessControlAccessRequired? {
-        guard hasAvatarAccess else {
-            return nil
-        }
+    public var avatarAccess: GroupsProtoAccessControlAccessRequired {
         return GroupsProtoAccessControlAccessRequiredWrap(proto.avatarAccess)
     }
-    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    public var unwrappedAvatarAccess: GroupsProtoAccessControlAccessRequired {
-        if !hasAvatarAccess {
-            // TODO: We could make this a crashing assert.
-            owsFailDebug("Unsafe unwrap of missing optional: ModifyAvatarAccessControlAction.avatarAccess.")
-        }
-        return GroupsProtoAccessControlAccessRequiredWrap(proto.avatarAccess)
-    }
-    public var hasAvatarAccess: Bool {
-        return true
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -4593,9 +4358,7 @@ extension GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction {
     // asBuilder() constructs a builder that reflects the proto's contents.
     public func asBuilder() -> GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder {
         var builder = GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder()
-        if let _value = avatarAccess {
-            builder.setAvatarAccess(_value)
-        }
+        builder.setAvatarAccess(avatarAccess)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -4648,24 +4411,9 @@ public struct GroupsProtoGroupChangeActionsModifyMembersAccessControlAction: Cod
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction
 
-    public var membersAccess: GroupsProtoAccessControlAccessRequired? {
-        guard hasMembersAccess else {
-            return nil
-        }
+    public var membersAccess: GroupsProtoAccessControlAccessRequired {
         return GroupsProtoAccessControlAccessRequiredWrap(proto.membersAccess)
     }
-    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    public var unwrappedMembersAccess: GroupsProtoAccessControlAccessRequired {
-        if !hasMembersAccess {
-            // TODO: We could make this a crashing assert.
-            owsFailDebug("Unsafe unwrap of missing optional: ModifyMembersAccessControlAction.membersAccess.")
-        }
-        return GroupsProtoAccessControlAccessRequiredWrap(proto.membersAccess)
-    }
-    public var hasMembersAccess: Bool {
-        return true
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -4714,9 +4462,7 @@ extension GroupsProtoGroupChangeActionsModifyMembersAccessControlAction {
     // asBuilder() constructs a builder that reflects the proto's contents.
     public func asBuilder() -> GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder {
         var builder = GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder()
-        if let _value = membersAccess {
-            builder.setMembersAccess(_value)
-        }
+        builder.setMembersAccess(membersAccess)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -4769,24 +4515,9 @@ public struct GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlA
 
     fileprivate let proto: GroupsProtos_GroupChange.Actions.ModifyAddFromInviteLinkAccessControlAction
 
-    public var addFromInviteLinkAccess: GroupsProtoAccessControlAccessRequired? {
-        guard hasAddFromInviteLinkAccess else {
-            return nil
-        }
+    public var addFromInviteLinkAccess: GroupsProtoAccessControlAccessRequired {
         return GroupsProtoAccessControlAccessRequiredWrap(proto.addFromInviteLinkAccess)
     }
-    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    public var unwrappedAddFromInviteLinkAccess: GroupsProtoAccessControlAccessRequired {
-        if !hasAddFromInviteLinkAccess {
-            // TODO: We could make this a crashing assert.
-            owsFailDebug("Unsafe unwrap of missing optional: ModifyAddFromInviteLinkAccessControlAction.addFromInviteLinkAccess.")
-        }
-        return GroupsProtoAccessControlAccessRequiredWrap(proto.addFromInviteLinkAccess)
-    }
-    public var hasAddFromInviteLinkAccess: Bool {
-        return true
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -4835,9 +4566,7 @@ extension GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlActio
     // asBuilder() constructs a builder that reflects the proto's contents.
     public func asBuilder() -> GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlActionBuilder {
         var builder = GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlActionBuilder()
-        if let _value = addFromInviteLinkAccess {
-            builder.setAddFromInviteLinkAccess(_value)
-        }
+        builder.setAddFromInviteLinkAccess(addFromInviteLinkAccess)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -5131,10 +4860,6 @@ public struct GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction: Codabl
     public var announcementsOnly: Bool {
         return proto.announcementsOnly
     }
-    public var hasAnnouncementsOnly: Bool {
-        return true
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -5183,9 +4908,7 @@ extension GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction {
     // asBuilder() constructs a builder that reflects the proto's contents.
     public func asBuilder() -> GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyActionBuilder {
         var builder = GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyActionBuilder()
-        if hasAnnouncementsOnly {
-            builder.setAnnouncementsOnly(announcementsOnly)
-        }
+        builder.setAnnouncementsOnly(announcementsOnly)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -5295,10 +5018,6 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
     public var revision: UInt32 {
         return proto.revision
     }
-    public var hasRevision: Bool {
-        return true
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -5500,9 +5219,7 @@ extension GroupsProtoGroupChangeActions {
         if let _value = sourceUserID {
             builder.setSourceUserID(_value)
         }
-        if hasRevision {
-            builder.setRevision(revision)
-        }
+        builder.setRevision(revision)
         builder.setAddMembers(addMembers)
         builder.setDeleteMembers(deleteMembers)
         builder.setModifyMemberRoles(modifyMemberRoles)
@@ -5822,10 +5539,6 @@ public struct GroupsProtoGroupChange: Codable, CustomDebugStringConvertible {
     public var changeEpoch: UInt32 {
         return proto.changeEpoch
     }
-    public var hasChangeEpoch: Bool {
-        return true
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -5880,9 +5593,7 @@ extension GroupsProtoGroupChange {
         if let _value = serverSignature {
             builder.setServerSignature(_value)
         }
-        if hasChangeEpoch {
-            builder.setChangeEpoch(changeEpoch)
-        }
+        builder.setChangeEpoch(changeEpoch)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }

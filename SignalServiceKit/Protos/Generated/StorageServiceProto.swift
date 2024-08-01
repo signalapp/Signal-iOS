@@ -567,10 +567,6 @@ public struct StorageServiceProtoWriteOperation: Codable, CustomDebugStringConve
     public var deleteAll: Bool {
         return proto.deleteAll
     }
-    public var hasDeleteAll: Bool {
-        return true
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -638,9 +634,7 @@ extension StorageServiceProtoWriteOperation {
         }
         builder.setInsertItem(insertItem)
         builder.setDeleteKey(deleteKey)
-        if hasDeleteAll {
-            builder.setDeleteAll(deleteAll)
-        }
+        builder.setDeleteAll(deleteAll)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -921,10 +915,6 @@ public struct StorageServiceProtoManifestRecord: Codable, CustomDebugStringConve
     public var sourceDevice: UInt32 {
         return proto.sourceDevice
     }
-    public var hasSourceDevice: Bool {
-        return true
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -984,9 +974,7 @@ extension StorageServiceProtoManifestRecord {
     // asBuilder() constructs a builder that reflects the proto's contents.
     public func asBuilder() -> StorageServiceProtoManifestRecordBuilder {
         var builder = StorageServiceProtoManifestRecordBuilder(version: version)
-        if hasSourceDevice {
-            builder.setSourceDevice(sourceDevice)
-        }
+        builder.setSourceDevice(sourceDevice)
         builder.setKeys(keys)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -1061,7 +1049,7 @@ public enum StorageServiceProtoStorageRecordOneOfRecord {
     case storyDistributionList(StorageServiceProtoStoryDistributionListRecord)
 }
 
-private func StorageServiceProtoStorageRecordOneOfRecordWrap(_ value: StorageServiceProtos_StorageRecord.OneOf_Record) throws -> StorageServiceProtoStorageRecordOneOfRecord {
+private func StorageServiceProtoStorageRecordOneOfRecordWrap(_ value: StorageServiceProtos_StorageRecord.OneOf_Record) -> StorageServiceProtoStorageRecordOneOfRecord {
     switch value {
     case .contact(let value): return .contact(StorageServiceProtoContactRecord(value))
     case .groupV1(let value): return .groupV1(StorageServiceProtoGroupV1Record(value))
@@ -1088,23 +1076,11 @@ public struct StorageServiceProtoStorageRecord: Codable, CustomDebugStringConver
     fileprivate let proto: StorageServiceProtos_StorageRecord
 
     public var record: StorageServiceProtoStorageRecordOneOfRecord? {
-        guard hasRecord else {
-            return nil
-        }
         guard let record = proto.record else {
-            owsFailDebug("record was unexpectedly nil")
             return nil
         }
-        guard let unwrappedRecord = try? StorageServiceProtoStorageRecordOneOfRecordWrap(record) else {
-            owsFailDebug("failed to unwrap record")
-            return nil
-        }
-        return unwrappedRecord
+        return StorageServiceProtoStorageRecordOneOfRecordWrap(record)
     }
-    public var hasRecord: Bool {
-        return true
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -1458,24 +1434,9 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
         return !proto.identityKey.isEmpty
     }
 
-    public var identityState: StorageServiceProtoContactRecordIdentityState? {
-        guard hasIdentityState else {
-            return nil
-        }
+    public var identityState: StorageServiceProtoContactRecordIdentityState {
         return StorageServiceProtoContactRecordIdentityStateWrap(proto.identityState)
     }
-    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    public var unwrappedIdentityState: StorageServiceProtoContactRecordIdentityState {
-        if !hasIdentityState {
-            // TODO: We could make this a crashing assert.
-            owsFailDebug("Unsafe unwrap of missing optional: ContactRecord.identityState.")
-        }
-        return StorageServiceProtoContactRecordIdentityStateWrap(proto.identityState)
-    }
-    public var hasIdentityState: Bool {
-        return true
-    }
-
     public var givenName: String? {
         guard hasGivenName else {
             return nil
@@ -1509,52 +1470,24 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
     public var blocked: Bool {
         return proto.blocked
     }
-    public var hasBlocked: Bool {
-        return true
-    }
-
     public var whitelisted: Bool {
         return proto.whitelisted
     }
-    public var hasWhitelisted: Bool {
-        return true
-    }
-
     public var archived: Bool {
         return proto.archived
     }
-    public var hasArchived: Bool {
-        return true
-    }
-
     public var markedUnread: Bool {
         return proto.markedUnread
     }
-    public var hasMarkedUnread: Bool {
-        return true
-    }
-
     public var mutedUntilTimestamp: UInt64 {
         return proto.mutedUntilTimestamp
     }
-    public var hasMutedUntilTimestamp: Bool {
-        return true
-    }
-
     public var hideStory: Bool {
         return proto.hideStory
     }
-    public var hasHideStory: Bool {
-        return true
-    }
-
     public var unregisteredAtTimestamp: UInt64 {
         return proto.unregisteredAtTimestamp
     }
-    public var hasUnregisteredAtTimestamp: Bool {
-        return true
-    }
-
     public var systemGivenName: String? {
         guard hasSystemGivenName else {
             return nil
@@ -1588,10 +1521,6 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
     public var hidden: Bool {
         return proto.hidden
     }
-    public var hasHidden: Bool {
-        return true
-    }
-
     public var note: String? {
         guard hasNote else {
             return nil
@@ -1673,9 +1602,7 @@ extension StorageServiceProtoContactRecord {
         if let _value = identityKey {
             builder.setIdentityKey(_value)
         }
-        if let _value = identityState {
-            builder.setIdentityState(_value)
-        }
+        builder.setIdentityState(identityState)
         if let _value = givenName {
             builder.setGivenName(_value)
         }
@@ -1685,27 +1612,13 @@ extension StorageServiceProtoContactRecord {
         if let _value = username {
             builder.setUsername(_value)
         }
-        if hasBlocked {
-            builder.setBlocked(blocked)
-        }
-        if hasWhitelisted {
-            builder.setWhitelisted(whitelisted)
-        }
-        if hasArchived {
-            builder.setArchived(archived)
-        }
-        if hasMarkedUnread {
-            builder.setMarkedUnread(markedUnread)
-        }
-        if hasMutedUntilTimestamp {
-            builder.setMutedUntilTimestamp(mutedUntilTimestamp)
-        }
-        if hasHideStory {
-            builder.setHideStory(hideStory)
-        }
-        if hasUnregisteredAtTimestamp {
-            builder.setUnregisteredAtTimestamp(unregisteredAtTimestamp)
-        }
+        builder.setBlocked(blocked)
+        builder.setWhitelisted(whitelisted)
+        builder.setArchived(archived)
+        builder.setMarkedUnread(markedUnread)
+        builder.setMutedUntilTimestamp(mutedUntilTimestamp)
+        builder.setHideStory(hideStory)
+        builder.setUnregisteredAtTimestamp(unregisteredAtTimestamp)
         if let _value = systemGivenName {
             builder.setSystemGivenName(_value)
         }
@@ -1715,9 +1628,7 @@ extension StorageServiceProtoContactRecord {
         if let _value = systemNickname {
             builder.setSystemNickname(_value)
         }
-        if hasHidden {
-            builder.setHidden(hidden)
-        }
+        builder.setHidden(hidden)
         if let _value = nickname {
             builder.setNickname(_value)
         }
@@ -2111,70 +2022,27 @@ public struct StorageServiceProtoGroupV2Record: Codable, CustomDebugStringConver
     public var blocked: Bool {
         return proto.blocked
     }
-    public var hasBlocked: Bool {
-        return true
-    }
-
     public var whitelisted: Bool {
         return proto.whitelisted
     }
-    public var hasWhitelisted: Bool {
-        return true
-    }
-
     public var archived: Bool {
         return proto.archived
     }
-    public var hasArchived: Bool {
-        return true
-    }
-
     public var markedUnread: Bool {
         return proto.markedUnread
     }
-    public var hasMarkedUnread: Bool {
-        return true
-    }
-
     public var mutedUntilTimestamp: UInt64 {
         return proto.mutedUntilTimestamp
     }
-    public var hasMutedUntilTimestamp: Bool {
-        return true
-    }
-
     public var dontNotifyForMentionsIfMuted: Bool {
         return proto.dontNotifyForMentionsIfMuted
     }
-    public var hasDontNotifyForMentionsIfMuted: Bool {
-        return true
-    }
-
     public var hideStory: Bool {
         return proto.hideStory
     }
-    public var hasHideStory: Bool {
-        return true
-    }
-
-    public var storySendMode: StorageServiceProtoGroupV2RecordStorySendMode? {
-        guard hasStorySendMode else {
-            return nil
-        }
+    public var storySendMode: StorageServiceProtoGroupV2RecordStorySendMode {
         return StorageServiceProtoGroupV2RecordStorySendModeWrap(proto.storySendMode)
     }
-    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    public var unwrappedStorySendMode: StorageServiceProtoGroupV2RecordStorySendMode {
-        if !hasStorySendMode {
-            // TODO: We could make this a crashing assert.
-            owsFailDebug("Unsafe unwrap of missing optional: GroupV2Record.storySendMode.")
-        }
-        return StorageServiceProtoGroupV2RecordStorySendModeWrap(proto.storySendMode)
-    }
-    public var hasStorySendMode: Bool {
-        return true
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -2228,30 +2096,14 @@ extension StorageServiceProtoGroupV2Record {
     // asBuilder() constructs a builder that reflects the proto's contents.
     public func asBuilder() -> StorageServiceProtoGroupV2RecordBuilder {
         var builder = StorageServiceProtoGroupV2RecordBuilder(masterKey: masterKey)
-        if hasBlocked {
-            builder.setBlocked(blocked)
-        }
-        if hasWhitelisted {
-            builder.setWhitelisted(whitelisted)
-        }
-        if hasArchived {
-            builder.setArchived(archived)
-        }
-        if hasMarkedUnread {
-            builder.setMarkedUnread(markedUnread)
-        }
-        if hasMutedUntilTimestamp {
-            builder.setMutedUntilTimestamp(mutedUntilTimestamp)
-        }
-        if hasDontNotifyForMentionsIfMuted {
-            builder.setDontNotifyForMentionsIfMuted(dontNotifyForMentionsIfMuted)
-        }
-        if hasHideStory {
-            builder.setHideStory(hideStory)
-        }
-        if let _value = storySendMode {
-            builder.setStorySendMode(_value)
-        }
+        builder.setBlocked(blocked)
+        builder.setWhitelisted(whitelisted)
+        builder.setArchived(archived)
+        builder.setMarkedUnread(markedUnread)
+        builder.setMutedUntilTimestamp(mutedUntilTimestamp)
+        builder.setDontNotifyForMentionsIfMuted(dontNotifyForMentionsIfMuted)
+        builder.setHideStory(hideStory)
+        builder.setStorySendMode(storySendMode)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -2491,7 +2343,7 @@ public enum StorageServiceProtoAccountRecordPinnedConversationOneOfIdentifier {
     case groupMasterKey(Data)
 }
 
-private func StorageServiceProtoAccountRecordPinnedConversationOneOfIdentifierWrap(_ value: StorageServiceProtos_AccountRecord.PinnedConversation.OneOf_Identifier) throws -> StorageServiceProtoAccountRecordPinnedConversationOneOfIdentifier {
+private func StorageServiceProtoAccountRecordPinnedConversationOneOfIdentifierWrap(_ value: StorageServiceProtos_AccountRecord.PinnedConversation.OneOf_Identifier) -> StorageServiceProtoAccountRecordPinnedConversationOneOfIdentifier {
     switch value {
     case .contact(let value): return .contact(StorageServiceProtoAccountRecordPinnedConversationContact(value))
     case .legacyGroupID(let value): return .legacyGroupID(value)
@@ -2514,23 +2366,11 @@ public struct StorageServiceProtoAccountRecordPinnedConversation: Codable, Custo
     fileprivate let proto: StorageServiceProtos_AccountRecord.PinnedConversation
 
     public var identifier: StorageServiceProtoAccountRecordPinnedConversationOneOfIdentifier? {
-        guard hasIdentifier else {
-            return nil
-        }
         guard let identifier = proto.identifier else {
-            owsFailDebug("identifier was unexpectedly nil")
             return nil
         }
-        guard let unwrappedIdentifier = try? StorageServiceProtoAccountRecordPinnedConversationOneOfIdentifierWrap(identifier) else {
-            owsFailDebug("failed to unwrap identifier")
-            return nil
-        }
-        return unwrappedIdentifier
+        return StorageServiceProtoAccountRecordPinnedConversationOneOfIdentifierWrap(identifier)
     }
-    public var hasIdentifier: Bool {
-        return true
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -2643,10 +2483,6 @@ public struct StorageServiceProtoAccountRecordPayments: Codable, CustomDebugStri
     public var enabled: Bool {
         return proto.enabled
     }
-    public var hasEnabled: Bool {
-        return true
-    }
-
     public var paymentsEntropy: Data? {
         guard hasPaymentsEntropy else {
             return nil
@@ -2705,9 +2541,7 @@ extension StorageServiceProtoAccountRecordPayments {
     // asBuilder() constructs a builder that reflects the proto's contents.
     public func asBuilder() -> StorageServiceProtoAccountRecordPaymentsBuilder {
         var builder = StorageServiceProtoAccountRecordPaymentsBuilder()
-        if hasEnabled {
-            builder.setEnabled(enabled)
-        }
+        builder.setEnabled(enabled)
         if let _value = paymentsEntropy {
             builder.setPaymentsEntropy(_value)
         }
@@ -2873,24 +2707,9 @@ public struct StorageServiceProtoAccountRecordUsernameLink: Codable, CustomDebug
         return !proto.serverID.isEmpty
     }
 
-    public var color: StorageServiceProtoAccountRecordUsernameLinkColor? {
-        guard hasColor else {
-            return nil
-        }
+    public var color: StorageServiceProtoAccountRecordUsernameLinkColor {
         return StorageServiceProtoAccountRecordUsernameLinkColorWrap(proto.color)
     }
-    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    public var unwrappedColor: StorageServiceProtoAccountRecordUsernameLinkColor {
-        if !hasColor {
-            // TODO: We could make this a crashing assert.
-            owsFailDebug("Unsafe unwrap of missing optional: UsernameLink.color.")
-        }
-        return StorageServiceProtoAccountRecordUsernameLinkColorWrap(proto.color)
-    }
-    public var hasColor: Bool {
-        return true
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -2945,9 +2764,7 @@ extension StorageServiceProtoAccountRecordUsernameLink {
         if let _value = serverID {
             builder.setServerID(_value)
         }
-        if let _value = color {
-            builder.setColor(_value)
-        }
+        builder.setColor(color)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -3119,91 +2936,36 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
     public var noteToSelfArchived: Bool {
         return proto.noteToSelfArchived
     }
-    public var hasNoteToSelfArchived: Bool {
-        return true
-    }
-
     public var readReceipts: Bool {
         return proto.readReceipts
     }
-    public var hasReadReceipts: Bool {
-        return true
-    }
-
     public var sealedSenderIndicators: Bool {
         return proto.sealedSenderIndicators
     }
-    public var hasSealedSenderIndicators: Bool {
-        return true
-    }
-
     public var typingIndicators: Bool {
         return proto.typingIndicators
     }
-    public var hasTypingIndicators: Bool {
-        return true
-    }
-
     public var proxiedLinkPreviews: Bool {
         return proto.proxiedLinkPreviews
     }
-    public var hasProxiedLinkPreviews: Bool {
-        return true
-    }
-
     public var noteToSelfMarkedUnread: Bool {
         return proto.noteToSelfMarkedUnread
     }
-    public var hasNoteToSelfMarkedUnread: Bool {
-        return true
-    }
-
     public var linkPreviews: Bool {
         return proto.linkPreviews
     }
-    public var hasLinkPreviews: Bool {
-        return true
-    }
-
-    public var phoneNumberSharingMode: StorageServiceProtoAccountRecordPhoneNumberSharingMode? {
-        guard hasPhoneNumberSharingMode else {
-            return nil
-        }
+    public var phoneNumberSharingMode: StorageServiceProtoAccountRecordPhoneNumberSharingMode {
         return StorageServiceProtoAccountRecordPhoneNumberSharingModeWrap(proto.phoneNumberSharingMode)
     }
-    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    public var unwrappedPhoneNumberSharingMode: StorageServiceProtoAccountRecordPhoneNumberSharingMode {
-        if !hasPhoneNumberSharingMode {
-            // TODO: We could make this a crashing assert.
-            owsFailDebug("Unsafe unwrap of missing optional: AccountRecord.phoneNumberSharingMode.")
-        }
-        return StorageServiceProtoAccountRecordPhoneNumberSharingModeWrap(proto.phoneNumberSharingMode)
-    }
-    public var hasPhoneNumberSharingMode: Bool {
-        return true
-    }
-
     public var notDiscoverableByPhoneNumber: Bool {
         return proto.notDiscoverableByPhoneNumber
     }
-    public var hasNotDiscoverableByPhoneNumber: Bool {
-        return true
-    }
-
     public var preferContactAvatars: Bool {
         return proto.preferContactAvatars
     }
-    public var hasPreferContactAvatars: Bool {
-        return true
-    }
-
     public var universalExpireTimer: UInt32 {
         return proto.universalExpireTimer
     }
-    public var hasUniversalExpireTimer: Bool {
-        return true
-    }
-
     public var e164: String? {
         guard hasE164 else {
             return nil
@@ -3241,70 +3003,27 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
     public var displayBadgesOnProfile: Bool {
         return proto.displayBadgesOnProfile
     }
-    public var hasDisplayBadgesOnProfile: Bool {
-        return true
-    }
-
     public var subscriptionManuallyCancelled: Bool {
         return proto.subscriptionManuallyCancelled
     }
-    public var hasSubscriptionManuallyCancelled: Bool {
-        return true
-    }
-
     public var keepMutedChatsArchived: Bool {
         return proto.keepMutedChatsArchived
     }
-    public var hasKeepMutedChatsArchived: Bool {
-        return true
-    }
-
     public var myStoryPrivacyHasBeenSet: Bool {
         return proto.myStoryPrivacyHasBeenSet
     }
-    public var hasMyStoryPrivacyHasBeenSet: Bool {
-        return true
-    }
-
     public var viewedOnboardingStory: Bool {
         return proto.viewedOnboardingStory
     }
-    public var hasViewedOnboardingStory: Bool {
-        return true
-    }
-
     public var storiesDisabled: Bool {
         return proto.storiesDisabled
     }
-    public var hasStoriesDisabled: Bool {
-        return true
-    }
-
-    public var storyViewReceiptsEnabled: StorageServiceProtoOptionalBool? {
-        guard hasStoryViewReceiptsEnabled else {
-            return nil
-        }
+    public var storyViewReceiptsEnabled: StorageServiceProtoOptionalBool {
         return StorageServiceProtoOptionalBoolWrap(proto.storyViewReceiptsEnabled)
     }
-    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
-    public var unwrappedStoryViewReceiptsEnabled: StorageServiceProtoOptionalBool {
-        if !hasStoryViewReceiptsEnabled {
-            // TODO: We could make this a crashing assert.
-            owsFailDebug("Unsafe unwrap of missing optional: AccountRecord.storyViewReceiptsEnabled.")
-        }
-        return StorageServiceProtoOptionalBoolWrap(proto.storyViewReceiptsEnabled)
-    }
-    public var hasStoryViewReceiptsEnabled: Bool {
-        return true
-    }
-
     public var readOnboardingStory: Bool {
         return proto.readOnboardingStory
     }
-    public var hasReadOnboardingStory: Bool {
-        return true
-    }
-
     public var username: String? {
         guard hasUsername else {
             return nil
@@ -3318,10 +3037,6 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
     public var completedUsernameOnboarding: Bool {
         return proto.completedUsernameOnboarding
     }
-    public var hasCompletedUsernameOnboarding: Bool {
-        return true
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -3404,43 +3119,21 @@ extension StorageServiceProtoAccountRecord {
         if let _value = avatarURL {
             builder.setAvatarURL(_value)
         }
-        if hasNoteToSelfArchived {
-            builder.setNoteToSelfArchived(noteToSelfArchived)
-        }
-        if hasReadReceipts {
-            builder.setReadReceipts(readReceipts)
-        }
-        if hasSealedSenderIndicators {
-            builder.setSealedSenderIndicators(sealedSenderIndicators)
-        }
-        if hasTypingIndicators {
-            builder.setTypingIndicators(typingIndicators)
-        }
-        if hasProxiedLinkPreviews {
-            builder.setProxiedLinkPreviews(proxiedLinkPreviews)
-        }
-        if hasNoteToSelfMarkedUnread {
-            builder.setNoteToSelfMarkedUnread(noteToSelfMarkedUnread)
-        }
-        if hasLinkPreviews {
-            builder.setLinkPreviews(linkPreviews)
-        }
-        if let _value = phoneNumberSharingMode {
-            builder.setPhoneNumberSharingMode(_value)
-        }
-        if hasNotDiscoverableByPhoneNumber {
-            builder.setNotDiscoverableByPhoneNumber(notDiscoverableByPhoneNumber)
-        }
+        builder.setNoteToSelfArchived(noteToSelfArchived)
+        builder.setReadReceipts(readReceipts)
+        builder.setSealedSenderIndicators(sealedSenderIndicators)
+        builder.setTypingIndicators(typingIndicators)
+        builder.setProxiedLinkPreviews(proxiedLinkPreviews)
+        builder.setNoteToSelfMarkedUnread(noteToSelfMarkedUnread)
+        builder.setLinkPreviews(linkPreviews)
+        builder.setPhoneNumberSharingMode(phoneNumberSharingMode)
+        builder.setNotDiscoverableByPhoneNumber(notDiscoverableByPhoneNumber)
         builder.setPinnedConversations(pinnedConversations)
-        if hasPreferContactAvatars {
-            builder.setPreferContactAvatars(preferContactAvatars)
-        }
+        builder.setPreferContactAvatars(preferContactAvatars)
         if let _value = payments {
             builder.setPayments(_value)
         }
-        if hasUniversalExpireTimer {
-            builder.setUniversalExpireTimer(universalExpireTimer)
-        }
+        builder.setUniversalExpireTimer(universalExpireTimer)
         if let _value = e164 {
             builder.setE164(_value)
         }
@@ -3451,36 +3144,18 @@ extension StorageServiceProtoAccountRecord {
         if let _value = subscriberCurrencyCode {
             builder.setSubscriberCurrencyCode(_value)
         }
-        if hasDisplayBadgesOnProfile {
-            builder.setDisplayBadgesOnProfile(displayBadgesOnProfile)
-        }
-        if hasSubscriptionManuallyCancelled {
-            builder.setSubscriptionManuallyCancelled(subscriptionManuallyCancelled)
-        }
-        if hasKeepMutedChatsArchived {
-            builder.setKeepMutedChatsArchived(keepMutedChatsArchived)
-        }
-        if hasMyStoryPrivacyHasBeenSet {
-            builder.setMyStoryPrivacyHasBeenSet(myStoryPrivacyHasBeenSet)
-        }
-        if hasViewedOnboardingStory {
-            builder.setViewedOnboardingStory(viewedOnboardingStory)
-        }
-        if hasStoriesDisabled {
-            builder.setStoriesDisabled(storiesDisabled)
-        }
-        if let _value = storyViewReceiptsEnabled {
-            builder.setStoryViewReceiptsEnabled(_value)
-        }
-        if hasReadOnboardingStory {
-            builder.setReadOnboardingStory(readOnboardingStory)
-        }
+        builder.setDisplayBadgesOnProfile(displayBadgesOnProfile)
+        builder.setSubscriptionManuallyCancelled(subscriptionManuallyCancelled)
+        builder.setKeepMutedChatsArchived(keepMutedChatsArchived)
+        builder.setMyStoryPrivacyHasBeenSet(myStoryPrivacyHasBeenSet)
+        builder.setViewedOnboardingStory(viewedOnboardingStory)
+        builder.setStoriesDisabled(storiesDisabled)
+        builder.setStoryViewReceiptsEnabled(storyViewReceiptsEnabled)
+        builder.setReadOnboardingStory(readOnboardingStory)
         if let _value = username {
             builder.setUsername(_value)
         }
-        if hasCompletedUsernameOnboarding {
-            builder.setCompletedUsernameOnboarding(completedUsernameOnboarding)
-        }
+        builder.setCompletedUsernameOnboarding(completedUsernameOnboarding)
         if let _value = usernameLink {
             builder.setUsernameLink(_value)
         }
@@ -3755,24 +3430,12 @@ public struct StorageServiceProtoStoryDistributionListRecord: Codable, CustomDeb
     public var deletedAtTimestamp: UInt64 {
         return proto.deletedAtTimestamp
     }
-    public var hasDeletedAtTimestamp: Bool {
-        return true
-    }
-
     public var allowsReplies: Bool {
         return proto.allowsReplies
     }
-    public var hasAllowsReplies: Bool {
-        return true
-    }
-
     public var isBlockList: Bool {
         return proto.isBlockList
     }
-    public var hasIsBlockList: Bool {
-        return true
-    }
-
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -3828,15 +3491,9 @@ extension StorageServiceProtoStoryDistributionListRecord {
             builder.setName(_value)
         }
         builder.setRecipientServiceIds(recipientServiceIds)
-        if hasDeletedAtTimestamp {
-            builder.setDeletedAtTimestamp(deletedAtTimestamp)
-        }
-        if hasAllowsReplies {
-            builder.setAllowsReplies(allowsReplies)
-        }
-        if hasIsBlockList {
-            builder.setIsBlockList(isBlockList)
-        }
+        builder.setDeletedAtTimestamp(deletedAtTimestamp)
+        builder.setAllowsReplies(allowsReplies)
+        builder.setIsBlockList(isBlockList)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
