@@ -78,8 +78,36 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 @property (nonatomic, readonly) NSString *uniqueThreadId;
 
-@property (nonatomic, readonly) uint64_t timestamp;
 @property (nonatomic, readonly) uint64_t sortId;
+
+/// A generic "timestamp" for this interaction.
+///
+/// For incoming messages this is derived from the value of the incoming proto
+/// `Envelope.timestamp`, and represents a client-generated timestamp from the
+/// sender as to when they sent the message.
+///
+/// - Important
+/// This property may also be set with a locally-generated value of "now" in
+/// some codepaths, particularly for non-incoming messages and interactions like
+/// info messages. Take care when using it.
+///
+/// - SeeAlso ``TSInteraction/receivedAtTimestamp``
+/// - SeeAlso ``TSIncomingMessage/serverTimestamp``
+/// - SeeAlso ``TSIncomingMessage/serverDeliveryTimestamp``
+@property (nonatomic, readonly) uint64_t timestamp;
+
+/// An always locally-generated timestamp representing when we "received" this
+/// interaction.
+///
+/// - Important
+/// For many interactions this will be the same or very close to
+/// ``TSInteraction/timestamp``, in cases where that property is also
+/// locally-generated when initializing or preparing to initialize the
+/// interaction.
+///
+/// - SeeAlso ``TSInteraction/timestamp``
+/// - SeeAlso ``TSIncomingMessage/serverTimestamp``
+/// - SeeAlso ``TSIncomingMessage/serverDeliveryTimestamp``
 @property (nonatomic, readonly) uint64_t receivedAtTimestamp;
 
 @property (nonatomic, readonly) NSDate *receivedAtDate;

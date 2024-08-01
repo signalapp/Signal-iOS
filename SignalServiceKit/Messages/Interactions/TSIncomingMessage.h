@@ -16,8 +16,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSIncomingMessage : TSMessage <OWSReadTracking>
 
-@property (nonatomic, readonly, nullable) NSNumber *serverTimestamp;
+/// Derived from the value of the `X-Signal-Timestamp` header when receiving a
+/// message from the server, this represents the server-timestamp at which we
+/// popped the message off the queue.
 @property (nonatomic, readonly) uint64_t serverDeliveryTimestamp;
+
+/// Derived from the `serverTimestamp` field on an incoming message `Envelope`,
+/// this represents the server-timestamp at which the sender uploaded the
+/// message to the server.
+@property (nonatomic, readonly, nullable) NSNumber *serverTimestamp;
+
 @property (nonatomic, readonly, nullable) NSString *serverGuid;
 
 @property (nonatomic, readonly) BOOL wasReceivedByUD;
