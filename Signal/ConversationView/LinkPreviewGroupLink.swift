@@ -4,10 +4,11 @@
 //
 
 import SignalServiceKit
+import SignalUI
 
 // MARK: -
 
-public class LinkPreviewGroupLink: LinkPreviewState {
+class LinkPreviewGroupLink: LinkPreviewState {
 
     private let linkPreview: OWSLinkPreview
     public let linkType: LinkPreviewLinkType
@@ -18,23 +19,25 @@ public class LinkPreviewGroupLink: LinkPreviewState {
     }
 
     private let _conversationStyle: ConversationStyle
-    public var conversationStyle: ConversationStyle? {
+    var conversationStyle: ConversationStyle? {
         _conversationStyle
     }
 
-    public init(linkType: LinkPreviewLinkType,
-                linkPreview: OWSLinkPreview,
-                groupInviteLinkViewModel: GroupInviteLinkViewModel,
-                conversationStyle: ConversationStyle) {
+    init(
+        linkType: LinkPreviewLinkType,
+        linkPreview: OWSLinkPreview,
+        groupInviteLinkViewModel: GroupInviteLinkViewModel,
+        conversationStyle: ConversationStyle
+    ) {
         self.linkPreview = linkPreview
         self.linkType = linkType
         self.groupInviteLinkViewModel = groupInviteLinkViewModel
         _conversationStyle = conversationStyle
     }
 
-    public var isLoaded: Bool { groupInviteLinkPreview != nil }
+    var isLoaded: Bool { groupInviteLinkPreview != nil }
 
-    public var urlString: String? {
+    var urlString: String? {
         guard let urlString = linkPreview.urlString else {
             owsFailDebug("Missing url")
             return nil
@@ -42,7 +45,7 @@ public class LinkPreviewGroupLink: LinkPreviewState {
         return urlString
     }
 
-    public var displayDomain: String? {
+    var displayDomain: String? {
         guard let displayDomain = linkPreview.displayDomain else {
             Logger.error("Missing display domain")
             return nil
@@ -50,11 +53,11 @@ public class LinkPreviewGroupLink: LinkPreviewState {
         return displayDomain
     }
 
-    public var title: String? {
+    var title: String? {
         groupInviteLinkPreview?.title.filterForDisplay.nilIfEmpty
     }
 
-    public var imageState: LinkPreviewImageState {
+    var imageState: LinkPreviewImageState {
         if let avatar = groupInviteLinkViewModel.avatar {
             if avatar.isValid {
                 return .loaded
@@ -68,14 +71,12 @@ public class LinkPreviewGroupLink: LinkPreviewState {
         return .loading
     }
 
-    public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality,
-                           completion: @escaping (UIImage) -> Void) {
+    func imageAsync(thumbnailQuality: AttachmentThumbnailQuality, completion: @escaping (UIImage) -> Void) {
         owsAssertDebug(imageState == .loaded)
 
         let groupInviteLinkViewModel = self.groupInviteLinkViewModel
         DispatchQueue.global().async {
-            guard let avatar = groupInviteLinkViewModel.avatar,
-                  avatar.isValid else {
+            guard let avatar = groupInviteLinkViewModel.avatar, avatar.isValid else {
                 return
             }
             guard let image = UIImage(contentsOfFile: avatar.cacheFileUrl.path) else {
@@ -86,14 +87,14 @@ public class LinkPreviewGroupLink: LinkPreviewState {
         }
     }
 
-    public func imageCacheKey(thumbnailQuality: AttachmentThumbnailQuality) -> LinkPreviewImageCacheKey? {
+    func imageCacheKey(thumbnailQuality: AttachmentThumbnailQuality) -> LinkPreviewImageCacheKey? {
         let urlString = groupInviteLinkViewModel.url.absoluteString
         return .init(id: nil, urlString: urlString, thumbnailQuality: thumbnailQuality)
     }
 
     private let imagePixelSizeCache = AtomicOptional<CGSize>(nil, lock: .sharedGlobal)
 
-    public var imagePixelSize: CGSize {
+    var imagePixelSize: CGSize {
         if let cachedValue = imagePixelSizeCache.get() {
             return cachedValue
         }
@@ -105,22 +106,24 @@ public class LinkPreviewGroupLink: LinkPreviewState {
         return result
     }
 
-    public var previewDescription: String? {
+    var previewDescription: String? {
         guard let groupInviteLinkPreview = groupInviteLinkPreview else {
             Logger.warn("Missing groupInviteLinkPreview.")
             return nil
         }
-        let groupIndicator = OWSLocalizedString("GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR",
-                                               comment: "Indicator for group conversations in the 'group invite link' action sheet.")
+        let groupIndicator = OWSLocalizedString(
+            "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR",
+            comment: "Indicator for group conversations in the 'group invite link' action sheet."
+        )
         let memberCount = GroupViewUtils.formatGroupMembersLabel(memberCount: Int(groupInviteLinkPreview.memberCount))
         return groupIndicator + " | " + memberCount
     }
 
-    public var date: Date? { linkPreview.date }
+    var date: Date? { linkPreview.date }
 
-    public let isGroupInviteLink = true
+    let isGroupInviteLink = true
 
-    public var activityIndicatorStyle: UIActivityIndicatorView.Style {
+    var activityIndicatorStyle: UIActivityIndicatorView.Style {
         switch linkType {
         case .incomingMessageGroupInviteLink:
             return .medium
@@ -134,17 +137,17 @@ public class LinkPreviewGroupLink: LinkPreviewState {
 
 // MARK: -
 
-public class GroupInviteLinkViewModel: Equatable {
+class GroupInviteLinkViewModel: Equatable {
 
-    public let url: URL
-    public let groupInviteLinkPreview: GroupInviteLinkPreview?
-    public let avatar: GroupInviteLinkCachedAvatar?
-    public let isExpired: Bool
-    public var isLoaded: Bool {
+    let url: URL
+    let groupInviteLinkPreview: GroupInviteLinkPreview?
+    let avatar: GroupInviteLinkCachedAvatar?
+    let isExpired: Bool
+    var isLoaded: Bool {
         groupInviteLinkPreview != nil
     }
 
-    public init(
+    init(
         url: URL,
         groupInviteLinkPreview: GroupInviteLinkPreview?,
         avatar: GroupInviteLinkCachedAvatar?,
@@ -156,7 +159,7 @@ public class GroupInviteLinkViewModel: Equatable {
         self.isExpired = isExpired
     }
 
-    public static func == (lhs: GroupInviteLinkViewModel, rhs: GroupInviteLinkViewModel) -> Bool {
+    static func == (lhs: GroupInviteLinkViewModel, rhs: GroupInviteLinkViewModel) -> Bool {
         return lhs.url == rhs.url &&
         lhs.groupInviteLinkPreview == rhs.groupInviteLinkPreview &&
         lhs.avatar == rhs.avatar
@@ -165,13 +168,13 @@ public class GroupInviteLinkViewModel: Equatable {
 
 // MARK: -
 
-public class GroupInviteLinkCachedAvatar: Equatable {
+class GroupInviteLinkCachedAvatar: Equatable {
 
-    public let cacheFileUrl: URL
-    public let imageSizePixels: CGSize
-    public let isValid: Bool
+    let cacheFileUrl: URL
+    let imageSizePixels: CGSize
+    let isValid: Bool
 
-    public init(
+    init(
         cacheFileUrl: URL,
         imageSizePixels: CGSize,
         isValid: Bool
@@ -181,7 +184,7 @@ public class GroupInviteLinkCachedAvatar: Equatable {
         self.isValid = isValid
     }
 
-    public static func == (lhs: GroupInviteLinkCachedAvatar, rhs: GroupInviteLinkCachedAvatar) -> Bool {
+    static func == (lhs: GroupInviteLinkCachedAvatar, rhs: GroupInviteLinkCachedAvatar) -> Bool {
         return lhs.cacheFileUrl == rhs.cacheFileUrl &&
         lhs.imageSizePixels == rhs.imageSizePixels &&
         lhs.isValid == rhs.isValid

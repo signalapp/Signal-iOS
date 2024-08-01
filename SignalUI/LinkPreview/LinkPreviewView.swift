@@ -60,73 +60,79 @@ public class LinkPreviewView: ManualStackViewWithLayer {
     // of outgoing link previews.  In these cases, the view will
     // be embedded within views using iOS auto layout and will need
     // to reconfigure its contents whenever the view size changes.
-    public func configureForNonCVC(state: LinkPreviewState,
-                                   isDraft: Bool,
-                                   hasAsymmetricalRounding: Bool = false) {
+    public func configureForNonCVC(state: LinkPreviewState, isDraft: Bool, hasAsymmetricalRounding: Bool = false) {
 
         self.shouldDeactivateConstraints = false
         self.shouldReconfigureForBounds = true
 
-        applyConfigurationForNonCVC(state: state,
-                                    isDraft: isDraft,
-                                    hasAsymmetricalRounding: hasAsymmetricalRounding)
+        applyConfigurationForNonCVC(
+            state: state,
+            isDraft: isDraft,
+            hasAsymmetricalRounding: hasAsymmetricalRounding
+        )
 
         addLayoutBlock { view in
             guard let linkPreviewView = view as? LinkPreviewView else {
                 owsFailDebug("Invalid view.")
                 return
             }
-            if let state = linkPreviewView.state,
-               linkPreviewView.shouldReconfigureForBounds,
-               linkPreviewView.configurationSize != linkPreviewView.bounds.size {
-                linkPreviewView.applyConfigurationForNonCVC(state: state,
-                                                            isDraft: isDraft,
-                                                            hasAsymmetricalRounding: hasAsymmetricalRounding)
+            if
+                let state = linkPreviewView.state,
+                linkPreviewView.shouldReconfigureForBounds,
+                linkPreviewView.configurationSize != linkPreviewView.bounds.size
+            {
+                linkPreviewView.applyConfigurationForNonCVC(
+                    state: state,
+                    isDraft: isDraft,
+                    hasAsymmetricalRounding: hasAsymmetricalRounding
+                )
             }
         }
     }
 
-    private func applyConfigurationForNonCVC(state: LinkPreviewState,
-                                             isDraft: Bool,
-                                             hasAsymmetricalRounding: Bool) {
+    private func applyConfigurationForNonCVC(state: LinkPreviewState, isDraft: Bool, hasAsymmetricalRounding: Bool) {
         self.reset()
         self.configurationSize = bounds.size
-        let maxWidth = (self.bounds.width > 0
-                            ? self.bounds.width
-                            : CGFloat.greatestFiniteMagnitude)
+        let maxWidth = (self.bounds.width > 0 ? self.bounds.width : CGFloat.greatestFiniteMagnitude)
 
         let measurementBuilder = CVCellMeasurement.Builder()
-        let linkPreviewSize = Self.measure(maxWidth: maxWidth,
-                                           measurementBuilder: measurementBuilder,
-                                           state: state,
-                                           isDraft: isDraft)
+        let linkPreviewSize = Self.measure(
+            maxWidth: maxWidth,
+            measurementBuilder: measurementBuilder,
+            state: state,
+            isDraft: isDraft
+        )
         let cellMeasurement = measurementBuilder.build()
-        configureForRendering(state: state,
-                              isDraft: isDraft,
-                              hasAsymmetricalRounding: hasAsymmetricalRounding,
-                              cellMeasurement: cellMeasurement)
+        configureForRendering(
+            state: state,
+            isDraft: isDraft,
+            hasAsymmetricalRounding: hasAsymmetricalRounding,
+            cellMeasurement: cellMeasurement
+        )
 
         if let nonCvcLayoutConstraint = self.nonCvcLayoutConstraint {
             nonCvcLayoutConstraint.constant = linkPreviewSize.height
         } else {
-            self.nonCvcLayoutConstraint = self.autoSetDimension(.height,
-                                                                toSize: linkPreviewSize.height)
+            self.nonCvcLayoutConstraint = self.autoSetDimension(.height, toSize: linkPreviewSize.height)
         }
     }
 
-    public func configureForRendering(state: LinkPreviewState,
-                                      isDraft: Bool,
-                                      hasAsymmetricalRounding: Bool,
-                                      cellMeasurement: CVCellMeasurement) {
+    public func configureForRendering(
+        state: LinkPreviewState,
+        isDraft: Bool,
+        hasAsymmetricalRounding: Bool,
+        cellMeasurement: CVCellMeasurement
+    ) {
         self.state = state
         let adapter = Self.adapter(forState: state, isDraft: isDraft)
-        adapter.configureForRendering(linkPreviewView: self,
-                                      hasAsymmetricalRounding: hasAsymmetricalRounding,
-                                      cellMeasurement: cellMeasurement)
+        adapter.configureForRendering(
+            linkPreviewView: self,
+            hasAsymmetricalRounding: hasAsymmetricalRounding,
+            cellMeasurement: cellMeasurement
+        )
     }
 
-    private static func adapter(forState state: LinkPreviewState,
-                                isDraft: Bool) -> LinkPreviewViewAdapter {
+    private static func adapter(forState state: LinkPreviewState, isDraft: Bool) -> LinkPreviewViewAdapter {
         if !state.isLoaded {
             return LinkPreviewViewAdapterDraftLoading(state: state)
         } else if isDraft {
@@ -137,8 +143,7 @@ public class LinkPreviewView: ManualStackViewWithLayer {
             if state.hasLoadedImage {
                 if Self.sentIsHero(state: state) {
                     return LinkPreviewViewAdapterSentHero(state: state)
-                } else if state.previewDescription?.isEmpty == false,
-                          state.title?.isEmpty == false {
+                } else if state.previewDescription?.isEmpty == false, state.title?.isEmpty == false {
                     return LinkPreviewViewAdapterSentWithDescription(state: state)
                 } else {
                     return LinkPreviewViewAdapterSent(state: state)
@@ -157,10 +162,12 @@ public class LinkPreviewView: ManualStackViewWithLayer {
     fileprivate static let sentNonHeroHMargin: CGFloat = 12
     fileprivate static let sentNonHeroVMargin: CGFloat = 12
     fileprivate static var sentNonHeroLayoutMargins: UIEdgeInsets {
-        UIEdgeInsets(top: sentNonHeroVMargin,
-                     left: sentNonHeroHMargin,
-                     bottom: sentNonHeroVMargin,
-                     right: sentNonHeroHMargin)
+        UIEdgeInsets(
+            top: sentNonHeroVMargin,
+            left: sentNonHeroHMargin,
+            bottom: sentNonHeroVMargin,
+            right: sentNonHeroHMargin
+        )
     }
 
     fileprivate static let sentNonHeroImageSize: CGFloat = 64
@@ -169,10 +176,12 @@ public class LinkPreviewView: ManualStackViewWithLayer {
     fileprivate static let sentHeroHMargin: CGFloat = 12
     fileprivate static let sentHeroVMargin: CGFloat = 12
     fileprivate static var sentHeroLayoutMargins: UIEdgeInsets {
-        UIEdgeInsets(top: sentHeroVMargin,
-                     left: sentHeroHMargin,
-                     bottom: sentHeroVMargin,
-                     right: sentHeroHMargin)
+        UIEdgeInsets(
+            top: sentHeroVMargin,
+            left: sentHeroHMargin,
+            bottom: sentHeroVMargin,
+            right: sentHeroHMargin
+        )
     }
 
     fileprivate static let sentTitleLineCount: Int = 2
@@ -221,7 +230,7 @@ public class LinkPreviewView: ManualStackViewWithLayer {
         return StickerPackInfo.isStickerPackShare(url)
     }
 
-    static var defaultActivityIndicatorStyle: UIActivityIndicatorView.Style {
+    public static var defaultActivityIndicatorStyle: UIActivityIndicatorView.Style {
         .medium
     }
 
@@ -243,14 +252,18 @@ public class LinkPreviewView: ManualStackViewWithLayer {
 
     // MARK: Measurement
 
-    public static func measure(maxWidth: CGFloat,
-                               measurementBuilder: CVCellMeasurement.Builder,
-                               state: LinkPreviewState,
-                               isDraft: Bool) -> CGSize {
+    public static func measure(
+        maxWidth: CGFloat,
+        measurementBuilder: CVCellMeasurement.Builder,
+        state: LinkPreviewState,
+        isDraft: Bool
+    ) -> CGSize {
         let adapter = Self.adapter(forState: state, isDraft: isDraft)
-        let size = adapter.measure(maxWidth: maxWidth,
-                                   measurementBuilder: measurementBuilder,
-                                   state: state)
+        let size = adapter.measure(
+            maxWidth: maxWidth,
+            measurementBuilder: measurementBuilder,
+            state: state
+        )
         if size.width > maxWidth {
             owsFailDebug("size.width: \(size.width) > maxWidth: \(maxWidth)")
         }
@@ -295,13 +308,17 @@ public class LinkPreviewView: ManualStackViewWithLayer {
 // MARK: -
 
 private protocol LinkPreviewViewAdapter {
-    func configureForRendering(linkPreviewView: LinkPreviewView,
-                               hasAsymmetricalRounding: Bool,
-                               cellMeasurement: CVCellMeasurement)
+    func configureForRendering(
+        linkPreviewView: LinkPreviewView,
+        hasAsymmetricalRounding: Bool,
+        cellMeasurement: CVCellMeasurement
+    )
 
-    func measure(maxWidth: CGFloat,
-                 measurementBuilder: CVCellMeasurement.Builder,
-                 state: LinkPreviewState) -> CGSize
+    func measure(
+        maxWidth: CGFloat,
+        measurementBuilder: CVCellMeasurement.Builder,
+        state: LinkPreviewState
+    ) -> CGSize
 }
 
 // MARK: -
@@ -379,12 +396,13 @@ extension LinkPreviewViewAdapter {
         )
     }
 
-    func configureSentTextStack(linkPreviewView: LinkPreviewView,
-                                state: LinkPreviewState,
-                                textStack: ManualStackView,
-                                textStackConfig: ManualStackView.Config,
-                                cellMeasurement: CVCellMeasurement) {
-
+    func configureSentTextStack(
+        linkPreviewView: LinkPreviewView,
+        state: LinkPreviewState,
+        textStack: ManualStackView,
+        textStackConfig: ManualStackView.Config,
+        cellMeasurement: CVCellMeasurement
+    ) {
         var subviews = [UIView]()
 
         if let titleLabel = sentTitleLabel(state: state) {
@@ -396,16 +414,20 @@ extension LinkPreviewViewAdapter {
         let domainLabel = sentDomainLabel(state: state)
         subviews.append(domainLabel)
 
-        textStack.configure(config: textStackConfig,
-                            cellMeasurement: cellMeasurement,
-                            measurementKey: Self.measurementKey_textStack,
-                            subviews: subviews)
+        textStack.configure(
+            config: textStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_textStack,
+            subviews: subviews
+        )
     }
 
-    func measureSentTextStack(state: LinkPreviewState,
-                              textStackConfig: ManualStackView.Config,
-                              measurementBuilder: CVCellMeasurement.Builder,
-                              maxLabelWidth: CGFloat) -> CGSize {
+    func measureSentTextStack(
+        state: LinkPreviewState,
+        textStackConfig: ManualStackView.Config,
+        measurementBuilder: CVCellMeasurement.Builder,
+        maxLabelWidth: CGFloat
+    ) -> CGSize {
 
         var subviewInfos = [ManualStackSubviewInfo]()
 
@@ -421,10 +443,12 @@ extension LinkPreviewViewAdapter {
         let labelSize = CVText.measureLabel(config: labelConfig, maxWidth: maxLabelWidth)
         subviewInfos.append(labelSize.asManualSubviewInfo)
 
-        let measurement = ManualStackView.measure(config: textStackConfig,
-                                                  measurementBuilder: measurementBuilder,
-                                                  measurementKey: Self.measurementKey_textStack,
-                                                  subviewInfos: subviewInfos)
+        let measurement = ManualStackView.measure(
+            config: textStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_textStack,
+            subviewInfos: subviewInfos
+        )
         return measurement.measuredSize
     }
 }
@@ -447,28 +471,36 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
     var rootStackConfig: ManualStackView.Config {
         let hMarginLeading: CGFloat = state.hasLoadedImage ? 6 : 12
         let hMarginTrailing: CGFloat = 12
-        let layoutMargins = UIEdgeInsets(top: Self.draftMarginTop,
-                                         leading: hMarginLeading,
-                                         bottom: 0,
-                                         trailing: hMarginTrailing)
-        return ManualStackView.Config(axis: .horizontal,
-                                      alignment: .fill,
-                                      spacing: 8,
-                                      layoutMargins: layoutMargins)
+        let layoutMargins = UIEdgeInsets(
+            top: Self.draftMarginTop,
+            leading: hMarginLeading,
+            bottom: 0,
+            trailing: hMarginTrailing
+        )
+        return ManualStackView.Config(
+            axis: .horizontal,
+            alignment: .fill,
+            spacing: 8,
+            layoutMargins: layoutMargins
+        )
     }
 
     var rightStackConfig: ManualStackView.Config {
-        return ManualStackView.Config(axis: .horizontal,
-                                      alignment: .fill,
-                                      spacing: 8,
-                                      layoutMargins: .zero)
+        return ManualStackView.Config(
+            axis: .horizontal,
+            alignment: .fill,
+            spacing: 8,
+            layoutMargins: .zero
+        )
     }
 
     var textStackConfig: ManualStackView.Config {
-        return ManualStackView.Config(axis: .vertical,
-                                      alignment: .leading,
-                                      spacing: 2,
-                                      layoutMargins: .zero)
+        return ManualStackView.Config(
+            axis: .vertical,
+            alignment: .leading,
+            spacing: 2,
+            layoutMargins: .zero
+        )
     }
 
     var titleLabelConfig: CVLabelConfig? {
@@ -511,9 +543,11 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
         )
     }
 
-    func configureForRendering(linkPreviewView: LinkPreviewView,
-                               hasAsymmetricalRounding: Bool,
-                               cellMeasurement: CVCellMeasurement) {
+    func configureForRendering(
+        linkPreviewView: LinkPreviewView,
+        hasAsymmetricalRounding: Bool,
+        cellMeasurement: CVCellMeasurement
+    ) {
 
         var rootStackSubviews = [UIView]()
         var rightStackSubviews = [UIView]()
@@ -522,8 +556,7 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
 
         if state.hasLoadedImage {
             let linkPreviewImageView = linkPreviewView.linkPreviewImageView
-            if let imageView = linkPreviewImageView.configureForDraft(state: state,
-                                                                      hasAsymmetricalRounding: hasAsymmetricalRounding) {
+            if let imageView = linkPreviewImageView.configureForDraft(state: state, hasAsymmetricalRounding: hasAsymmetricalRounding) {
                 imageView.contentMode = .scaleAspectFill
                 imageView.clipsToBounds = true
                 rootStackSubviews.append(imageView)
@@ -557,10 +590,12 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
         }
 
         let textStack = linkPreviewView.textStack
-        textStack.configure(config: textStackConfig,
-                            cellMeasurement: cellMeasurement,
-                            measurementKey: Self.measurementKey_textStack,
-                            subviews: textStackSubviews)
+        textStack.configure(
+            config: textStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_textStack,
+            subviews: textStackSubviews
+        )
         guard let textMeasurement = cellMeasurement.measurement(key: Self.measurementKey_textStack) else {
             owsFailDebug("Missing measurement.")
             return
@@ -568,8 +603,7 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
         let textWrapper = ManualLayoutView(name: "textWrapper")
         textWrapper.addSubview(textStack) { view in
             var textStackFrame = view.bounds
-            textStackFrame.size.height = min(textStackFrame.height,
-                                             textMeasurement.measuredSize.height)
+            textStackFrame.size.height = min(textStackFrame.height, textMeasurement.measuredSize.height)
             textStackFrame.y = (view.bounds.height - textStackFrame.height) * 0.5
             textStack.frame = textStackFrame
         }
@@ -586,20 +620,24 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
         let cancelSize = self.cancelSize
         let cancelContainer = ManualLayoutView(name: "cancelContainer")
         cancelContainer.addSubview(cancelButton) { view in
-            cancelButton.frame = CGRect(x: 0,
-                                        y: view.bounds.width - cancelSize,
-                                        width: cancelSize,
-                                        height: cancelSize)
+            cancelButton.frame = CGRect(
+                x: 0,
+                y: view.bounds.width - cancelSize,
+                width: cancelSize,
+                height: cancelSize
+            )
         }
         rightStackSubviews.append(cancelContainer)
 
         // Right
 
         let rightStack = linkPreviewView.rightStack
-        rightStack.configure(config: rightStackConfig,
-                             cellMeasurement: cellMeasurement,
-                             measurementKey: Self.measurementKey_rightStack,
-                             subviews: rightStackSubviews)
+        rightStack.configure(
+            config: rightStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_rightStack,
+            subviews: rightStackSubviews
+        )
         rootStackSubviews.append(rightStack)
 
         // Stroke
@@ -608,19 +646,23 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
         strokeView.backgroundColor = Theme.secondaryTextAndIconColor
         rightStack.addSubviewAsBottomStroke(strokeView)
 
-        linkPreviewView.configure(config: rootStackConfig,
-                                  cellMeasurement: cellMeasurement,
-                                  measurementKey: Self.measurementKey_rootStack,
-                                  subviews: rootStackSubviews)
+        linkPreviewView.configure(
+            config: rootStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_rootStack,
+            subviews: rootStackSubviews
+        )
     }
 
-    func measure(maxWidth: CGFloat,
-                 measurementBuilder: CVCellMeasurement.Builder,
-                 state: LinkPreviewState) -> CGSize {
+    func measure(
+        maxWidth: CGFloat,
+        measurementBuilder: CVCellMeasurement.Builder,
+        state: LinkPreviewState
+    ) -> CGSize {
 
-        var maxLabelWidth = (maxWidth -
-                                (textStackConfig.layoutMargins.totalWidth +
-                                    rootStackConfig.layoutMargins.totalWidth))
+        var maxLabelWidth = (maxWidth - (
+            textStackConfig.layoutMargins.totalWidth + rootStackConfig.layoutMargins.totalWidth
+        ))
         maxLabelWidth -= cancelSize + rightStackConfig.spacing
 
         var rootStackSubviewInfos = [ManualStackSubviewInfo]()
@@ -650,30 +692,35 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
             textStackSubviewInfos.append(labelSize.asManualSubviewInfo)
         }
 
-        let textStackMeasurement = ManualStackView.measure(config: textStackConfig,
-                                                           measurementBuilder: measurementBuilder,
-                                                           measurementKey: Self.measurementKey_textStack,
-                                                           subviewInfos: textStackSubviewInfos)
+        let textStackMeasurement = ManualStackView.measure(
+            config: textStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_textStack,
+            subviewInfos: textStackSubviewInfos
+        )
         rightStackSubviewInfos.append(textStackMeasurement.measuredSize.asManualSubviewInfo)
 
         // Right
 
         rightStackSubviewInfos.append(CGSize.square(cancelSize).asManualSubviewInfo(hasFixedWidth: true))
 
-        let rightStackMeasurement = ManualStackView.measure(config: rightStackConfig,
-                                                            measurementBuilder: measurementBuilder,
-                                                            measurementKey: Self.measurementKey_rightStack,
-                                                            subviewInfos: rightStackSubviewInfos)
+        let rightStackMeasurement = ManualStackView.measure(
+            config: rightStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_rightStack,
+            subviewInfos: rightStackSubviewInfos
+        )
         rootStackSubviewInfos.append(rightStackMeasurement.measuredSize.asManualSubviewInfo)
 
-        let rootStackMeasurement = ManualStackView.measure(config: rootStackConfig,
-                                                           measurementBuilder: measurementBuilder,
-                                                           measurementKey: Self.measurementKey_rootStack,
-                                                           subviewInfos: rootStackSubviewInfos,
-                                                           maxWidth: maxWidth)
+        let rootStackMeasurement = ManualStackView.measure(
+            config: rootStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_rootStack,
+            subviewInfos: rootStackSubviewInfos,
+            maxWidth: maxWidth
+        )
         var rootStackSize = rootStackMeasurement.measuredSize
-        rootStackSize.height = (LinkPreviewViewAdapterDraft.draftHeight +
-                                    LinkPreviewViewAdapterDraft.draftMarginTop)
+        rootStackSize.height = LinkPreviewViewAdapterDraft.draftHeight + LinkPreviewViewAdapterDraft.draftMarginTop
         return rootStackSize
     }
 }
@@ -691,46 +738,52 @@ private class LinkPreviewViewAdapterDraftLoading: LinkPreviewViewAdapter {
     }
 
     var rootStackConfig: ManualStackView.Config {
-        ManualStackView.Config(axis: .vertical,
-                               alignment: .fill,
-                               spacing: 0,
-                               layoutMargins: .zero)
+        ManualStackView.Config(
+            axis: .vertical,
+            alignment: .fill,
+            spacing: 0,
+            layoutMargins: .zero
+        )
     }
 
-    func configureForRendering(linkPreviewView: LinkPreviewView,
-                               hasAsymmetricalRounding: Bool,
-                               cellMeasurement: CVCellMeasurement) {
+    func configureForRendering(
+        linkPreviewView: LinkPreviewView,
+        hasAsymmetricalRounding: Bool,
+        cellMeasurement: CVCellMeasurement
+    ) {
 
         let activityIndicatorStyle = state.activityIndicatorStyle
         let activityIndicator = UIActivityIndicatorView(style: activityIndicatorStyle)
         activityIndicator.startAnimating()
-        linkPreviewView.addSubviewToCenterOnSuperview(activityIndicator,
-                                                      size: activityIndicatorSize)
+        linkPreviewView.addSubviewToCenterOnSuperview(activityIndicator, size: activityIndicatorSize)
 
         let strokeView = UIView()
         strokeView.backgroundColor = Theme.secondaryTextAndIconColor
-        linkPreviewView.addSubviewAsBottomStroke(strokeView,
-                                                 layoutMargins: UIEdgeInsets(hMargin: 12,
-                                                                             vMargin: 0))
+        linkPreviewView.addSubviewAsBottomStroke(strokeView, layoutMargins: UIEdgeInsets(hMargin: 12, vMargin: 0))
 
-        linkPreviewView.configure(config: rootStackConfig,
-                                  cellMeasurement: cellMeasurement,
-                                  measurementKey: Self.measurementKey_rootStack,
-                                  subviews: [])
+        linkPreviewView.configure(
+            config: rootStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_rootStack,
+            subviews: []
+        )
     }
 
-    func measure(maxWidth: CGFloat,
-                 measurementBuilder: CVCellMeasurement.Builder,
-                 state: LinkPreviewState) -> CGSize {
+    func measure(
+        maxWidth: CGFloat,
+        measurementBuilder: CVCellMeasurement.Builder,
+        state: LinkPreviewState
+    ) -> CGSize {
 
-        let rootStackMeasurement = ManualStackView.measure(config: rootStackConfig,
-                                                           measurementBuilder: measurementBuilder,
-                                                           measurementKey: Self.measurementKey_rootStack,
-                                                           subviewInfos: [],
-                                                           maxWidth: maxWidth)
+        let rootStackMeasurement = ManualStackView.measure(
+            config: rootStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_rootStack,
+            subviewInfos: [],
+            maxWidth: maxWidth
+        )
         var rootStackSize = rootStackMeasurement.measuredSize
-        rootStackSize.height = (LinkPreviewViewAdapterDraft.draftHeight +
-                                    LinkPreviewViewAdapterDraft.draftMarginTop)
+        rootStackSize.height = LinkPreviewViewAdapterDraft.draftHeight + LinkPreviewViewAdapterDraft.draftMarginTop
         return rootStackSize
     }
 }
@@ -746,22 +799,28 @@ private class LinkPreviewViewAdapterGroupLink: LinkPreviewViewAdapter {
     }
 
     var rootStackConfig: ManualStackView.Config {
-        ManualStackView.Config(axis: .horizontal,
-                               alignment: .fill,
-                               spacing: LinkPreviewView.sentNonHeroHSpacing,
-                               layoutMargins: LinkPreviewView.sentNonHeroLayoutMargins)
+        ManualStackView.Config(
+            axis: .horizontal,
+            alignment: .fill,
+            spacing: LinkPreviewView.sentNonHeroHSpacing,
+            layoutMargins: LinkPreviewView.sentNonHeroLayoutMargins
+        )
     }
 
     var textStackConfig: ManualStackView.Config {
-        return ManualStackView.Config(axis: .vertical,
-                                      alignment: .leading,
-                                      spacing: LinkPreviewView.sentVSpacing,
-                                      layoutMargins: .zero)
+        return ManualStackView.Config(
+            axis: .vertical,
+            alignment: .leading,
+            spacing: LinkPreviewView.sentVSpacing,
+            layoutMargins: .zero
+        )
     }
 
-    func configureForRendering(linkPreviewView: LinkPreviewView,
-                               hasAsymmetricalRounding: Bool,
-                               cellMeasurement: CVCellMeasurement) {
+    func configureForRendering(
+        linkPreviewView: LinkPreviewView,
+        hasAsymmetricalRounding: Bool,
+        cellMeasurement: CVCellMeasurement
+    ) {
 
         linkPreviewView.backgroundColor = Theme.secondaryBackgroundColor
 
@@ -787,25 +846,31 @@ private class LinkPreviewViewAdapterGroupLink: LinkPreviewViewAdapter {
         if let descriptionLabel = sentDescriptionLabel(state: state) {
             textStackSubviews.append(descriptionLabel)
         }
-        textStack.configure(config: textStackConfig,
-                            cellMeasurement: cellMeasurement,
-                            measurementKey: Self.measurementKey_textStack,
-                            subviews: textStackSubviews)
+        textStack.configure(
+            config: textStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_textStack,
+            subviews: textStackSubviews
+        )
         rootStackSubviews.append(textStack)
 
-        linkPreviewView.configure(config: rootStackConfig,
-                                  cellMeasurement: cellMeasurement,
-                                  measurementKey: Self.measurementKey_rootStack,
-                                  subviews: rootStackSubviews)
+        linkPreviewView.configure(
+            config: rootStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_rootStack,
+            subviews: rootStackSubviews
+        )
     }
 
-    func measure(maxWidth: CGFloat,
-                 measurementBuilder: CVCellMeasurement.Builder,
-                 state: LinkPreviewState) -> CGSize {
+    func measure(
+        maxWidth: CGFloat,
+        measurementBuilder: CVCellMeasurement.Builder,
+        state: LinkPreviewState
+    ) -> CGSize {
 
-        var maxLabelWidth = (maxWidth -
-                                (textStackConfig.layoutMargins.totalWidth +
-                                    rootStackConfig.layoutMargins.totalWidth))
+        var maxLabelWidth = (maxWidth - (
+            textStackConfig.layoutMargins.totalWidth + rootStackConfig.layoutMargins.totalWidth
+        ))
 
         var rootStackSubviewInfos = [ManualStackSubviewInfo]()
         if state.hasLoadedImage {
@@ -826,17 +891,21 @@ private class LinkPreviewViewAdapterGroupLink: LinkPreviewViewAdapter {
             textStackSubviewInfos.append(labelSize.asManualSubviewInfo)
         }
 
-        let textStackMeasurement = ManualStackView.measure(config: textStackConfig,
-                                                           measurementBuilder: measurementBuilder,
-                                                           measurementKey: Self.measurementKey_textStack,
-                                                           subviewInfos: textStackSubviewInfos)
+        let textStackMeasurement = ManualStackView.measure(
+            config: textStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_textStack,
+            subviewInfos: textStackSubviewInfos
+        )
         rootStackSubviewInfos.append(textStackMeasurement.measuredSize.asManualSubviewInfo)
 
-        let rootStackMeasurement = ManualStackView.measure(config: rootStackConfig,
-                                                           measurementBuilder: measurementBuilder,
-                                                           measurementKey: Self.measurementKey_rootStack,
-                                                           subviewInfos: rootStackSubviewInfos,
-                                                           maxWidth: maxWidth)
+        let rootStackMeasurement = ManualStackView.measure(
+            config: rootStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_rootStack,
+            subviewInfos: rootStackSubviewInfos,
+            maxWidth: maxWidth
+        )
         return rootStackMeasurement.measuredSize
     }
 }
@@ -852,22 +921,28 @@ private class LinkPreviewViewAdapterSentHero: LinkPreviewViewAdapter {
     }
 
     var rootStackConfig: ManualStackView.Config {
-        ManualStackView.Config(axis: .vertical,
-                               alignment: .fill,
-                               spacing: 0,
-                               layoutMargins: .zero)
+        ManualStackView.Config(
+            axis: .vertical,
+            alignment: .fill,
+            spacing: 0,
+            layoutMargins: .zero
+        )
     }
 
     var textStackConfig: ManualStackView.Config {
-        return ManualStackView.Config(axis: .vertical,
-                                      alignment: .leading,
-                                      spacing: LinkPreviewView.sentVSpacing,
-                                      layoutMargins: LinkPreviewView.sentHeroLayoutMargins)
+        return ManualStackView.Config(
+            axis: .vertical,
+            alignment: .leading,
+            spacing: LinkPreviewView.sentVSpacing,
+            layoutMargins: LinkPreviewView.sentHeroLayoutMargins
+        )
     }
 
-    func configureForRendering(linkPreviewView: LinkPreviewView,
-                               hasAsymmetricalRounding: Bool,
-                               cellMeasurement: CVCellMeasurement) {
+    func configureForRendering(
+        linkPreviewView: LinkPreviewView,
+        hasAsymmetricalRounding: Bool,
+        cellMeasurement: CVCellMeasurement
+    ) {
 
         linkPreviewView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray75 : .ows_gray02
 
@@ -884,22 +959,28 @@ private class LinkPreviewViewAdapterSentHero: LinkPreviewViewAdapter {
         }
 
         let textStack = linkPreviewView.textStack
-        configureSentTextStack(linkPreviewView: linkPreviewView,
-                               state: state,
-                               textStack: textStack,
-                               textStackConfig: textStackConfig,
-                               cellMeasurement: cellMeasurement)
+        configureSentTextStack(
+            linkPreviewView: linkPreviewView,
+            state: state,
+            textStack: textStack,
+            textStackConfig: textStackConfig,
+            cellMeasurement: cellMeasurement
+        )
         rootStackSubviews.append(textStack)
 
-        linkPreviewView.configure(config: rootStackConfig,
-                                  cellMeasurement: cellMeasurement,
-                                  measurementKey: Self.measurementKey_rootStack,
-                                  subviews: rootStackSubviews)
+        linkPreviewView.configure(
+            config: rootStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_rootStack,
+            subviews: rootStackSubviews
+        )
     }
 
-    func measure(maxWidth: CGFloat,
-                 measurementBuilder: CVCellMeasurement.Builder,
-                 state: LinkPreviewState) -> CGSize {
+    func measure(
+        maxWidth: CGFloat,
+        measurementBuilder: CVCellMeasurement.Builder,
+        state: LinkPreviewState
+    ) -> CGSize {
 
         guard let conversationStyle = state.conversationStyle else {
             owsFailDebug("Missing conversationStyle.")
@@ -908,33 +989,41 @@ private class LinkPreviewViewAdapterSentHero: LinkPreviewViewAdapter {
 
         var rootStackSubviewInfos = [ManualStackSubviewInfo]()
 
-        let heroImageSize = sentHeroImageSize(state: state,
-                                              conversationStyle: conversationStyle,
-                                              maxWidth: maxWidth)
+        let heroImageSize = sentHeroImageSize(
+            state: state,
+            conversationStyle: conversationStyle,
+            maxWidth: maxWidth
+        )
         rootStackSubviewInfos.append(heroImageSize.asManualSubviewInfo)
 
-        var maxLabelWidth = (maxWidth -
-                                (textStackConfig.layoutMargins.totalWidth +
-                                    rootStackConfig.layoutMargins.totalWidth))
+        var maxLabelWidth = (maxWidth - (
+            textStackConfig.layoutMargins.totalWidth + rootStackConfig.layoutMargins.totalWidth
+        ))
         maxLabelWidth = max(0, maxLabelWidth)
 
-        let textStackSize = measureSentTextStack(state: state,
-                                                 textStackConfig: textStackConfig,
-                                                 measurementBuilder: measurementBuilder,
-                                                 maxLabelWidth: maxLabelWidth)
+        let textStackSize = measureSentTextStack(
+            state: state,
+            textStackConfig: textStackConfig,
+            measurementBuilder: measurementBuilder,
+            maxLabelWidth: maxLabelWidth
+        )
         rootStackSubviewInfos.append(textStackSize.asManualSubviewInfo)
 
-        let rootStackMeasurement = ManualStackView.measure(config: rootStackConfig,
-                                                           measurementBuilder: measurementBuilder,
-                                                           measurementKey: Self.measurementKey_rootStack,
-                                                           subviewInfos: rootStackSubviewInfos,
-                                                           maxWidth: maxWidth)
+        let rootStackMeasurement = ManualStackView.measure(
+            config: rootStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_rootStack,
+            subviewInfos: rootStackSubviewInfos,
+            maxWidth: maxWidth
+        )
         return rootStackMeasurement.measuredSize
     }
 
-    func sentHeroImageSize(state: LinkPreviewState,
-                           conversationStyle: ConversationStyle,
-                           maxWidth: CGFloat) -> CGSize {
+    func sentHeroImageSize(
+        state: LinkPreviewState,
+        conversationStyle: ConversationStyle,
+        maxWidth: CGFloat
+    ) -> CGSize {
 
         let imageHeightWidthRatio = (state.imagePixelSize.height / state.imagePixelSize.width)
         let maxMessageWidth = min(maxWidth, conversationStyle.maxMessageWidth)
@@ -959,22 +1048,28 @@ private class LinkPreviewViewAdapterSent: LinkPreviewViewAdapter {
     }
 
     var rootStackConfig: ManualStackView.Config {
-        ManualStackView.Config(axis: .horizontal,
-                               alignment: .center,
-                               spacing: LinkPreviewView.sentNonHeroHSpacing,
-                               layoutMargins: LinkPreviewView.sentNonHeroLayoutMargins)
+        ManualStackView.Config(
+            axis: .horizontal,
+            alignment: .center,
+            spacing: LinkPreviewView.sentNonHeroHSpacing,
+            layoutMargins: LinkPreviewView.sentNonHeroLayoutMargins
+        )
     }
 
     var textStackConfig: ManualStackView.Config {
-        return ManualStackView.Config(axis: .vertical,
-                                      alignment: .leading,
-                                      spacing: LinkPreviewView.sentVSpacing,
-                                      layoutMargins: .zero)
+        return ManualStackView.Config(
+            axis: .vertical,
+            alignment: .leading,
+            spacing: LinkPreviewView.sentVSpacing,
+            layoutMargins: .zero
+        )
     }
 
-    func configureForRendering(linkPreviewView: LinkPreviewView,
-                               hasAsymmetricalRounding: Bool,
-                               cellMeasurement: CVCellMeasurement) {
+    func configureForRendering(
+        linkPreviewView: LinkPreviewView,
+        hasAsymmetricalRounding: Bool,
+        cellMeasurement: CVCellMeasurement
+    ) {
 
         linkPreviewView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray75 : .ows_gray02
 
@@ -993,26 +1088,32 @@ private class LinkPreviewViewAdapterSent: LinkPreviewViewAdapter {
         }
 
         let textStack = linkPreviewView.textStack
-        configureSentTextStack(linkPreviewView: linkPreviewView,
-                               state: state,
-                               textStack: textStack,
-                               textStackConfig: textStackConfig,
-                               cellMeasurement: cellMeasurement)
+        configureSentTextStack(
+            linkPreviewView: linkPreviewView,
+            state: state,
+            textStack: textStack,
+            textStackConfig: textStackConfig,
+            cellMeasurement: cellMeasurement
+        )
         rootStackSubviews.append(textStack)
 
-        linkPreviewView.configure(config: rootStackConfig,
-                                  cellMeasurement: cellMeasurement,
-                                  measurementKey: Self.measurementKey_rootStack,
-                                  subviews: rootStackSubviews)
+        linkPreviewView.configure(
+            config: rootStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_rootStack,
+            subviews: rootStackSubviews
+        )
     }
 
-    func measure(maxWidth: CGFloat,
-                 measurementBuilder: CVCellMeasurement.Builder,
-                 state: LinkPreviewState) -> CGSize {
+    func measure(
+        maxWidth: CGFloat,
+        measurementBuilder: CVCellMeasurement.Builder,
+        state: LinkPreviewState
+    ) -> CGSize {
 
-        var maxLabelWidth = (maxWidth -
-                                (textStackConfig.layoutMargins.totalWidth +
-                                    rootStackConfig.layoutMargins.totalWidth))
+        var maxLabelWidth = (maxWidth - (
+            textStackConfig.layoutMargins.totalWidth + rootStackConfig.layoutMargins.totalWidth
+        ))
 
         var rootStackSubviewInfos = [ManualStackSubviewInfo]()
         if state.hasLoadedImage {
@@ -1023,17 +1124,21 @@ private class LinkPreviewViewAdapterSent: LinkPreviewViewAdapter {
 
         maxLabelWidth = max(0, maxLabelWidth)
 
-        let textStackSize = measureSentTextStack(state: state,
-                                                 textStackConfig: textStackConfig,
-                                                 measurementBuilder: measurementBuilder,
-                                                 maxLabelWidth: maxLabelWidth)
+        let textStackSize = measureSentTextStack(
+            state: state,
+            textStackConfig: textStackConfig,
+            measurementBuilder: measurementBuilder,
+            maxLabelWidth: maxLabelWidth
+        )
         rootStackSubviewInfos.append(textStackSize.asManualSubviewInfo)
 
-        let rootStackMeasurement = ManualStackView.measure(config: rootStackConfig,
-                                                           measurementBuilder: measurementBuilder,
-                                                           measurementKey: Self.measurementKey_rootStack,
-                                                           subviewInfos: rootStackSubviewInfos,
-                                                           maxWidth: maxWidth)
+        let rootStackMeasurement = ManualStackView.measure(
+            config: rootStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_rootStack,
+            subviewInfos: rootStackSubviewInfos,
+            maxWidth: maxWidth
+        )
         return rootStackMeasurement.measuredSize
     }
 }
@@ -1049,25 +1154,28 @@ private class LinkPreviewViewAdapterSentWithDescription: LinkPreviewViewAdapter 
     }
 
     var rootStackConfig: ManualStackView.Config {
-        ManualStackView.Config(axis: .vertical,
-                               alignment: .fill,
-                               spacing: LinkPreviewView.sentVSpacing,
-                               layoutMargins: LinkPreviewView.sentNonHeroLayoutMargins)
+        ManualStackView.Config(
+            axis: .vertical,
+            alignment: .fill,
+            spacing: LinkPreviewView.sentVSpacing,
+            layoutMargins: LinkPreviewView.sentNonHeroLayoutMargins
+        )
     }
 
     var titleStackConfig: ManualStackView.Config {
-        return ManualStackView.Config(axis: .horizontal,
-                                      alignment: .center,
-                                      spacing: LinkPreviewView.sentNonHeroHSpacing,
-                                      layoutMargins: UIEdgeInsets(top: 0,
-                                                                  left: 0,
-                                                                  bottom: LinkPreviewView.sentVSpacing,
-                                                                  right: 0))
+        return ManualStackView.Config(
+            axis: .horizontal,
+            alignment: .center,
+            spacing: LinkPreviewView.sentNonHeroHSpacing,
+            layoutMargins: UIEdgeInsets(top: 0, left: 0, bottom: LinkPreviewView.sentVSpacing, right: 0)
+        )
     }
 
-    func configureForRendering(linkPreviewView: LinkPreviewView,
-                               hasAsymmetricalRounding: Bool,
-                               cellMeasurement: CVCellMeasurement) {
+    func configureForRendering(
+        linkPreviewView: LinkPreviewView,
+        hasAsymmetricalRounding: Bool,
+        cellMeasurement: CVCellMeasurement
+    ) {
 
         linkPreviewView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray75 : .ows_gray02
 
@@ -1094,10 +1202,12 @@ private class LinkPreviewViewAdapterSentWithDescription: LinkPreviewViewAdapter 
         var rootStackSubviews = [UIView]()
 
         let titleStack = linkPreviewView.titleStack
-        titleStack.configure(config: titleStackConfig,
-                             cellMeasurement: cellMeasurement,
-                             measurementKey: Self.measurementKey_titleStack,
-                             subviews: titleStackSubviews)
+        titleStack.configure(
+            config: titleStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_titleStack,
+            subviews: titleStackSubviews
+        )
         rootStackSubviews.append(titleStack)
 
         if let descriptionLabel = sentDescriptionLabel(state: state) {
@@ -1109,19 +1219,23 @@ private class LinkPreviewViewAdapterSentWithDescription: LinkPreviewViewAdapter 
         let domainLabel = sentDomainLabel(state: state)
         rootStackSubviews.append(domainLabel)
 
-        linkPreviewView.configure(config: rootStackConfig,
-                                  cellMeasurement: cellMeasurement,
-                                  measurementKey: Self.measurementKey_rootStack,
-                                  subviews: rootStackSubviews)
+        linkPreviewView.configure(
+            config: rootStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_rootStack,
+            subviews: rootStackSubviews
+        )
     }
 
-    func measure(maxWidth: CGFloat,
-                 measurementBuilder: CVCellMeasurement.Builder,
-                 state: LinkPreviewState) -> CGSize {
+    func measure(
+        maxWidth: CGFloat,
+        measurementBuilder: CVCellMeasurement.Builder,
+        state: LinkPreviewState
+    ) -> CGSize {
 
-        var maxRootLabelWidth = (maxWidth -
-                                    (titleStackConfig.layoutMargins.totalWidth +
-                                        rootStackConfig.layoutMargins.totalWidth))
+        var maxRootLabelWidth = (maxWidth - (
+            titleStackConfig.layoutMargins.totalWidth + rootStackConfig.layoutMargins.totalWidth
+        ))
         maxRootLabelWidth = max(0, maxRootLabelWidth)
 
         var maxTitleLabelWidth = maxRootLabelWidth
@@ -1144,10 +1258,12 @@ private class LinkPreviewViewAdapterSentWithDescription: LinkPreviewViewAdapter 
 
         var rootStackSubviewInfos = [ManualStackSubviewInfo]()
 
-        let titleStackMeasurement = ManualStackView.measure(config: titleStackConfig,
-                                                            measurementBuilder: measurementBuilder,
-                                                            measurementKey: Self.measurementKey_titleStack,
-                                                            subviewInfos: titleStackSubviewInfos)
+        let titleStackMeasurement = ManualStackView.measure(
+            config: titleStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_titleStack,
+            subviewInfos: titleStackSubviewInfos
+        )
         rootStackSubviewInfos.append(titleStackMeasurement.measuredSize.asManualSubviewInfo)
 
         if let labelConfig = sentDescriptionLabelConfig(state: state) {
@@ -1163,11 +1279,13 @@ private class LinkPreviewViewAdapterSentWithDescription: LinkPreviewViewAdapter 
             rootStackSubviewInfos.append(labelSize.asManualSubviewInfo)
         }
 
-        let rootStackMeasurement = ManualStackView.measure(config: rootStackConfig,
-                                                           measurementBuilder: measurementBuilder,
-                                                           measurementKey: Self.measurementKey_rootStack,
-                                                           subviewInfos: rootStackSubviewInfos,
-                                                           maxWidth: maxWidth)
+        let rootStackMeasurement = ManualStackView.measure(
+            config: rootStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_rootStack,
+            subviewInfos: rootStackSubviewInfos,
+            maxWidth: maxWidth
+        )
         return rootStackMeasurement.measuredSize
     }
 }
@@ -1273,29 +1391,37 @@ private class LinkPreviewImageView: CVImageView {
             let path = UIBezierPath()
 
             // It's sufficient to "draw" the rounded corners and not the edges that connect them.
-            path.addArc(withCenter: upperLeft.offsetBy(dx: +upperLeftRounding).offsetBy(dy: +upperLeftRounding),
-                        radius: upperLeftRounding,
-                        startAngle: CGFloat.pi * 1.0,
-                        endAngle: CGFloat.pi * 1.5,
-                        clockwise: true)
+            path.addArc(
+                withCenter: upperLeft.offsetBy(dx: +upperLeftRounding).offsetBy(dy: +upperLeftRounding),
+                radius: upperLeftRounding,
+                startAngle: CGFloat.pi * 1.0,
+                endAngle: CGFloat.pi * 1.5,
+                clockwise: true
+            )
 
-            path.addArc(withCenter: upperRight.offsetBy(dx: -upperRightRounding).offsetBy(dy: +upperRightRounding),
-                        radius: upperRightRounding,
-                        startAngle: CGFloat.pi * 1.5,
-                        endAngle: CGFloat.pi * 0.0,
-                        clockwise: true)
+            path.addArc(
+                withCenter: upperRight.offsetBy(dx: -upperRightRounding).offsetBy(dy: +upperRightRounding),
+                radius: upperRightRounding,
+                startAngle: CGFloat.pi * 1.5,
+                endAngle: CGFloat.pi * 0.0,
+                clockwise: true
+            )
 
-            path.addArc(withCenter: lowerRight.offsetBy(dx: -lowerRightRounding).offsetBy(dy: -lowerRightRounding),
-                        radius: lowerRightRounding,
-                        startAngle: CGFloat.pi * 0.0,
-                        endAngle: CGFloat.pi * 0.5,
-                        clockwise: true)
+            path.addArc(
+                withCenter: lowerRight.offsetBy(dx: -lowerRightRounding).offsetBy(dy: -lowerRightRounding),
+                radius: lowerRightRounding,
+                startAngle: CGFloat.pi * 0.0,
+                endAngle: CGFloat.pi * 0.5,
+                clockwise: true
+            )
 
-            path.addArc(withCenter: lowerLeft.offsetBy(dx: +lowerLeftRounding).offsetBy(dy: -lowerLeftRounding),
-                        radius: lowerLeftRounding,
-                        startAngle: CGFloat.pi * 0.5,
-                        endAngle: CGFloat.pi * 1.0,
-                        clockwise: true)
+            path.addArc(
+                withCenter: lowerLeft.offsetBy(dx: +lowerLeftRounding).offsetBy(dy: -lowerLeftRounding),
+                radius: lowerLeftRounding,
+                startAngle: CGFloat.pi * 0.5,
+                endAngle: CGFloat.pi * 1.0,
+                clockwise: true
+            )
 
             asymmetricCornerMask.path = path.cgPath
         }
@@ -1303,8 +1429,7 @@ private class LinkPreviewImageView: CVImageView {
 
     // MARK: -
 
-    func configureForDraft(state: LinkPreviewState,
-                           hasAsymmetricalRounding: Bool) -> UIImageView? {
+    func configureForDraft(state: LinkPreviewState, hasAsymmetricalRounding: Bool) -> UIImageView? {
         guard state.isLoaded else {
             owsFailDebug("State not loaded.")
             return nil
@@ -1325,12 +1450,11 @@ private class LinkPreviewImageView: CVImageView {
         return self
     }
 
-    fileprivate static let mediaCache = LRUCache<LinkPreviewImageCacheKey, NSObject>(
+    fileprivate static let mediaCache = LRUCache<LinkPreviewImageCacheKey, UIImage>(
         maxSize: 2, shouldEvacuateInBackground: true
     )
 
-    func configure(state: LinkPreviewState,
-                   rounding roundingParam: LinkPreviewImageView.Rounding? = nil) -> UIImageView? {
+    func configure(state: LinkPreviewState, rounding: LinkPreviewImageView.Rounding? = nil) -> UIImageView? {
         guard state.isLoaded else {
             owsFailDebug("State not loaded.")
             return nil
@@ -1338,15 +1462,17 @@ private class LinkPreviewImageView: CVImageView {
         guard state.imageState == .loaded else {
             return nil
         }
-        self.rounding = roundingParam ?? .standard
+        self.rounding = rounding ?? .standard
         let isHero = LinkPreviewView.sentIsHero(state: state)
         self.isHero = isHero
         let configurationId = Self.configurationIdCounter.increment()
         self.configurationId = configurationId
         let thumbnailQuality: AttachmentThumbnailQuality = isHero ? .medium : .small
 
-        if let cacheKey = state.imageCacheKey(thumbnailQuality: thumbnailQuality),
-           let image = Self.mediaCache.get(key: cacheKey) as? UIImage {
+        if
+            let cacheKey = state.imageCacheKey(thumbnailQuality: thumbnailQuality),
+            let image = Self.mediaCache.get(key: cacheKey)
+        {
             self.image = image
         } else {
             state.imageAsync(thumbnailQuality: thumbnailQuality) { [weak self] image in
@@ -1379,13 +1505,11 @@ public extension CGPoint {
 // MARK: -
 
 public extension ManualLayoutView {
-    func addSubviewAsBottomStroke(_ subview: UIView,
-                                  layoutMargins: UIEdgeInsets = .zero) {
+    func addSubviewAsBottomStroke(_ subview: UIView, layoutMargins: UIEdgeInsets = .zero) {
         addSubview(subview) { view in
             var subviewFrame = view.bounds.inset(by: layoutMargins)
             subviewFrame.size.height = .hairlineWidth
-            subviewFrame.y = view.bounds.height - (subviewFrame.height +
-                                                    layoutMargins.bottom)
+            subviewFrame.y = view.bounds.height - (subviewFrame.height + layoutMargins.bottom)
             subview.frame = subviewFrame
         }
     }

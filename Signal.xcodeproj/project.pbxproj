@@ -123,7 +123,6 @@
 		3402AA90271D9E180084CBAE /* ImageEditorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9555A271B510400B05242 /* ImageEditorModel.swift */; };
 		3402AA91271D9E180084CBAE /* GalleryRailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95548271B510400B05242 /* GalleryRailView.swift */; };
 		3402AA92271D9E180084CBAE /* CVText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95525271B510400B05242 /* CVText.swift */; };
-		3402AA93271D9E180084CBAE /* GroupLinkPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95517271B510400B05242 /* GroupLinkPreview.swift */; };
 		3402AA94271D9E180084CBAE /* ImageEditorBlurRegionsItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9555B271B510400B05242 /* ImageEditorBlurRegionsItem.swift */; };
 		3402AA96271D9E180084CBAE /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95564271B510400B05242 /* Toast.swift */; };
 		3402AA97271D9E180084CBAE /* VideoEditorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9551B271B510400B05242 /* VideoEditorModel.swift */; };
@@ -649,6 +648,7 @@
 		5077B5B42BBC687C00EF399E /* CurrentCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5077B5B32BBC687C00EF399E /* CurrentCall.swift */; };
 		5077B5B82BBC7FE600EF399E /* ContactTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5077B5B72BBC7FE600EF399E /* ContactTest.swift */; };
 		507B69112C503FA800F1C6D7 /* CallLinkTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50552C302BAC079A00815474 /* CallLinkTest.swift */; };
+		507B69122C5044F800F1C6D7 /* LinkPreviewGroupLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95517271B510400B05242 /* LinkPreviewGroupLink.swift */; };
 		507CD5E529660D5100E47DAC /* ServiceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507CD5E429660D5100E47DAC /* ServiceId.swift */; };
 		507E1BDF2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507E1BDE2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift */; };
 		508C72242C2DFCB2000811F3 /* OWSOutgoingResendResponseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508C72232C2DFCB2000811F3 /* OWSOutgoingResendResponseTest.swift */; };
@@ -3259,7 +3259,7 @@
 		34A95511271B510400B05242 /* OWSFlatButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSFlatButton.swift; sourceTree = "<group>"; };
 		34A95515271B510400B05242 /* LinkPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewView.swift; sourceTree = "<group>"; };
 		34A95516271B510400B05242 /* LinkPreviewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewState.swift; sourceTree = "<group>"; };
-		34A95517271B510400B05242 /* GroupLinkPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupLinkPreview.swift; sourceTree = "<group>"; };
+		34A95517271B510400B05242 /* LinkPreviewGroupLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewGroupLink.swift; sourceTree = "<group>"; };
 		34A95519271B510400B05242 /* VideoPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerView.swift; sourceTree = "<group>"; };
 		34A9551B271B510400B05242 /* VideoEditorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoEditorModel.swift; sourceTree = "<group>"; };
 		34A9551C271B510400B05242 /* VideoEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoEditorView.swift; sourceTree = "<group>"; };
@@ -6334,6 +6334,7 @@
 				348815C5255346A500D4F4C4 /* CVNode.swift */,
 				D9170EE9290C57BF00CD813A /* CVViewState+Banners.swift */,
 				341D392825472F3B00996E7B /* CVViewState.swift */,
+				34A95517271B510400B05242 /* LinkPreviewGroupLink.swift */,
 				346EAA13250199A300E8AB6F /* MemberRequestView.swift */,
 				4CB5F26820F7D060004D1B42 /* MessageActions.swift */,
 				88D1D40122EBB5A100F472C5 /* MessageRequestView.swift */,
@@ -6620,7 +6621,6 @@
 		34A95514271B510400B05242 /* LinkPreview */ = {
 			isa = PBXGroup;
 			children = (
-				34A95517271B510400B05242 /* GroupLinkPreview.swift */,
 				F9C5CABC289453B200548EEE /* HTMLMetadata.swift */,
 				F94261D4289B1B5400460798 /* HTMLMetadataTests.swift */,
 				509085BB2C498D3500409B85 /* LinkPreviewFetcher.swift */,
@@ -13107,7 +13107,6 @@
 				34A955AE271B533000B05242 /* FullTextSearcher.swift in Sources */,
 				3402AA91271D9E180084CBAE /* GalleryRailView.swift in Sources */,
 				3402AAA9271D9E180084CBAE /* GradientView.swift in Sources */,
-				3402AA93271D9E180084CBAE /* GroupLinkPreview.swift in Sources */,
 				34A955B2271B53F600B05242 /* GroupManager+GroupInvites.swift in Sources */,
 				88B986F928807ED500F8C74D /* GroupTableViewCell.swift in Sources */,
 				3402AA02271D9DAF0084CBAE /* GroupViewUtils.swift in Sources */,
@@ -13714,6 +13713,7 @@
 				505C2ED42997015800C23FB2 /* LinkDeviceViewController.swift in Sources */,
 				3437F63A2512835300AC1767 /* LinkedDevicesTableViewController.swift in Sources */,
 				76C87FE128BE8E2400BD8709 /* LinkPreviewAttachmentViewController.swift in Sources */,
+				507B69122C5044F800F1C6D7 /* LinkPreviewGroupLink.swift in Sources */,
 				4542DF54208D40AC007B4E76 /* LoadingViewController.swift in Sources */,
 				4C25768A23AD510800E0398D /* LoadMoreMessagesView.swift in Sources */,
 				88238EA224E9DDB700F28079 /* LocalVideoView.swift in Sources */,

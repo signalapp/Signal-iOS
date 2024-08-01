@@ -6,7 +6,7 @@
 import SignalServiceKit
 import YYImage
 
-public enum LinkPreviewImageState: Int {
+public enum LinkPreviewImageState {
     case none
     case loading
     case loaded
@@ -19,6 +19,12 @@ public struct LinkPreviewImageCacheKey: Hashable, Equatable {
     public let id: TSResourceId?
     public let urlString: String?
     public let thumbnailQuality: AttachmentThumbnailQuality
+
+    public init(id: TSResourceId?, urlString: String?, thumbnailQuality: AttachmentThumbnailQuality) {
+        self.id = id
+        self.urlString = urlString
+        self.thumbnailQuality = thumbnailQuality
+    }
 }
 
 public protocol LinkPreviewState: AnyObject {
@@ -50,7 +56,7 @@ extension LinkPreviewState {
 
 // MARK: -
 
-public enum LinkPreviewLinkType: UInt {
+public enum LinkPreviewLinkType {
     case preview
     case incomingMessage
     case outgoingMessage
@@ -78,8 +84,7 @@ public class LinkPreviewLoading: LinkPreviewState {
 
     public var imageState: LinkPreviewImageState { .none }
 
-    public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality,
-                           completion: @escaping (UIImage) -> Void) {
+    public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality, completion: @escaping (UIImage) -> Void) {
         owsFailDebug("Should not be called.")
     }
 
@@ -96,8 +101,7 @@ public class LinkPreviewLoading: LinkPreviewState {
 
     public var isGroupInviteLink: Bool {
         switch linkType {
-        case .incomingMessageGroupInviteLink,
-             .outgoingMessageGroupInviteLink:
+        case .incomingMessageGroupInviteLink, .outgoingMessageGroupInviteLink:
             return true
         default:
             return false
@@ -144,8 +148,7 @@ public class LinkPreviewDraft: LinkPreviewState {
 
     public var imageState: LinkPreviewImageState { linkPreviewDraft.imageData != nil ? .loaded : .none }
 
-    public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality,
-                           completion: @escaping (UIImage) -> Void) {
+    public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality, completion: @escaping (UIImage) -> Void) {
         owsAssertDebug(imageState == .loaded)
         guard let imageData = linkPreviewDraft.imageData else {
             owsFailDebug("Missing imageData.")
@@ -263,8 +266,7 @@ public class LinkPreviewSent: LinkPreviewState {
         return .loaded
     }
 
-    public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality,
-                           completion: @escaping (UIImage) -> Void) {
+    public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality, completion: @escaping (UIImage) -> Void) {
         owsAssertDebug(imageState == .loaded)
         guard let attachmentStream = imageAttachment?.asResourceStream() else {
             owsFailDebug("Could not load image.")
