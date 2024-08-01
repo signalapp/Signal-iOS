@@ -142,6 +142,16 @@ extension MessageBackup {
             /// A "session switchover update" info message was missing info as
             /// to the switched-over-from session.
             case sessionSwitchoverUpdateMissingAuthor
+
+            /// A "learned profile update" info message was missing the display
+            /// name from before we learned the profile.
+            case learnedProfileUpdateMissingPreviousName
+            /// A "learned profile update" info message contained an invalid
+            /// E164 as its "previous name".
+            case learnedProfileUpdateInvalidE164
+            /// A "learned profile update" info message was missing info as to
+            /// the profile that was learned.
+            case learnedProfileUpdateMissingAuthor
         }
 
         private let type: ErrorType
@@ -223,7 +233,10 @@ extension MessageBackup {
                     .profileChangeUpdateMissingAuthor,
                     .profileChangeUpdateMissingNames,
                     .threadMergeUpdateMissingAuthor,
-                    .sessionSwitchoverUpdateMissingAuthor:
+                    .sessionSwitchoverUpdateMissingAuthor,
+                    .learnedProfileUpdateMissingPreviousName,
+                    .learnedProfileUpdateInvalidE164,
+                    .learnedProfileUpdateMissingAuthor:
                 // Log any others as we see them.
                 return nil
             }
@@ -456,6 +469,11 @@ extension MessageBackup {
 
                 /// A "session switchover update" was not authored by a contact.
                 case sessionSwitchoverUpdateNotFromContact
+
+                /// A "learned profile update" was missing its previous name.
+                case learnedProfileUpdateMissingPreviousName
+                /// A "learned profile update" was not authored by a contact.
+                case learnedProfileUpdateNotFromContact
             }
 
             /// The proto contained invalid or self-contradictory data, e.g an invalid ACI.
@@ -579,7 +597,9 @@ extension MessageBackup {
                         .profileChangeUpdateInvalidNames,
                         .profileChangeUpdateNotFromContact,
                         .threadMergeUpdateNotFromContact,
-                        .sessionSwitchoverUpdateNotFromContact:
+                        .sessionSwitchoverUpdateNotFromContact,
+                        .learnedProfileUpdateMissingPreviousName,
+                        .learnedProfileUpdateNotFromContact:
                     // Collapse all others by the id of the containing frame.
                     return idLogString
                 }

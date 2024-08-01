@@ -11,6 +11,7 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
     private let groupCallArchiver: MessageBackupGroupCallArchiver
     private let groupUpdateMessageArchiver: MessageBackupGroupUpdateMessageArchiver
     private let individualCallArchiver: MessageBackupIndividualCallArchiver
+    private let learnedProfileChatUpdateArchiver: MessageBackupLearnedProfileChatUpdateArchiver
     private let profileChangeChatUpdateArchiver: MessageBackupProfileChangeChatUpdateArchiver
     private let sessionSwitchoverChatUpdateArchiver: MessageBackupSessionSwitchoverChatUpdateArchiver
     private let simpleChatUpdateArchiver: MessageBackupSimpleChatUpdateArchiver
@@ -42,6 +43,9 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
         individualCallArchiver = MessageBackupIndividualCallArchiver(
             callRecordStore: callRecordStore,
             individualCallRecordManager: individualCallRecordManager,
+            interactionStore: interactionStore
+        )
+        learnedProfileChatUpdateArchiver = MessageBackupLearnedProfileChatUpdateArchiver(
             interactionStore: interactionStore
         )
         profileChangeChatUpdateArchiver = MessageBackupProfileChangeChatUpdateArchiver(
@@ -146,21 +150,26 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
                     tx: tx
                 )
             case .threadMerge:
-                return threadMergeChatUpdateArchiver.archive(
+                return threadMergeChatUpdateArchiver.archiveThreadMergeChatUpdate(
                     infoMessage: infoMessage,
                     thread: thread,
                     context: context,
                     tx: tx
                 )
             case .sessionSwitchover:
-                return sessionSwitchoverChatUpdateArchiver.archive(
+                return sessionSwitchoverChatUpdateArchiver.archiveSessionSwitchoverChatUpdate(
                     infoMessage: infoMessage,
                     thread: thread,
                     context: context,
                     tx: tx
                 )
             case .learnedProfileName:
-                return .notYetImplemented
+                return learnedProfileChatUpdateArchiver.archiveLearnedProfileChatUpdate(
+                    infoMessage: infoMessage,
+                    thread: thread,
+                    context: context,
+                    tx: tx
+                )
             }
         } else if let errorMessage = interaction as? TSErrorMessage {
             /// All `TSErrorMessage`s map to simple chat updates.
@@ -269,7 +278,13 @@ final class MessageBackupChatUpdateMessageArchiver: MessageBackupInteractionArch
                 tx: tx
             )
         case .learnedProfileChange(let learnedProfileChangeProto):
-            return .messageFailure([.restoreFrameError(.unimplemented, chatItem.id)])
+            return learnedProfileChatUpdateArchiver.restoreLearnedProfileChatUpdate(
+                learnedProfileChangeProto,
+                chatItem: chatItem,
+                chatThread: chatThread,
+                context: context,
+                tx: tx
+            )
         }
     }
 }

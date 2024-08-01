@@ -19,7 +19,7 @@ final class MessageBackupSessionSwitchoverChatUpdateArchiver {
 
     // MARK: -
 
-    func archive(
+    func archiveSessionSwitchoverChatUpdate(
         infoMessage: TSInfoMessage,
         thread: TSThread,
         context: MessageBackup.ChatArchivingContext,

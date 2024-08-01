@@ -368,7 +368,7 @@ public extension TSInfoMessage {
 
 extension TSInfoMessage {
     /// The display names we'll use before learning someone's profile key.
-    public enum DisplayNameBeforeLearningProfileName {
+    public enum DisplayNameBeforeLearningProfileName: Equatable {
         case phoneNumber(String)
         case username(String)
     }
@@ -393,7 +393,7 @@ extension TSInfoMessage {
         interactionStore.insertInteraction(infoMessage, tx: tx)
     }
 
-    private static func makeForLearnedProfileName(
+    static func makeForLearnedProfileName(
         contactThread: TSContactThread,
         displayNameBefore: DisplayNameBeforeLearningProfileName
     ) -> TSInfoMessage {

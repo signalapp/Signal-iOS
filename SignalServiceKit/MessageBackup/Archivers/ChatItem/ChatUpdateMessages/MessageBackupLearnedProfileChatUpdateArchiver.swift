@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-final class MessageBackupThreadMergeChatUpdateArchiver {
+final class MessageBackupLearnedProfileChatUpdateArchiver {
     typealias Details = MessageBackup.InteractionArchiveDetails
     typealias ArchiveChatUpdateMessageResult = MessageBackup.ArchiveInteractionResult<Details>
     typealias RestoreChatUpdateMessageResult = MessageBackup.RestoreInteractionResult<Void>
@@ -19,7 +19,7 @@ final class MessageBackupThreadMergeChatUpdateArchiver {
 
     // MARK: -
 
-    func archiveThreadMergeChatUpdate(
+    func archiveLearnedProfileChatUpdate(
         infoMessage: TSInfoMessage,
         thread: TSThread,
         context: MessageBackup.ChatArchivingContext,
@@ -36,26 +36,32 @@ final class MessageBackupThreadMergeChatUpdateArchiver {
             )])
         }
 
-        guard
-            let threadMergePhoneNumberString = infoMessage.threadMergePhoneNumber,
-            let threadMergePhoneNumber = E164(threadMergePhoneNumberString)
-        else {
-            return .skippableChatUpdate(.legacyInfoMessage(.threadMergeWithoutPhoneNumber))
+        guard let displayNameBeforeLearningProfileKey = infoMessage.displayNameBeforeLearningProfileName else {
+            return messageFailure(.learnedProfileUpdateMissingPreviousName)
         }
 
-        guard let mergedContactAddress = (thread as? TSContactThread)?.contactAddress.asSingleServiceIdBackupAddress() else {
-            return messageFailure(.threadMergeUpdateMissingAuthor)
+        guard let contactAddress = (thread as? TSContactThread)?.contactAddress.asSingleServiceIdBackupAddress() else {
+            return messageFailure(.learnedProfileUpdateMissingAuthor)
         }
 
-        guard let threadRecipientId = context.recipientContext[.contact(mergedContactAddress)] else {
-            return messageFailure(.referencedRecipientIdMissing(.contact(mergedContactAddress)))
+        guard let threadRecipientId = context.recipientContext[.contact(contactAddress)] else {
+            return messageFailure(.referencedRecipientIdMissing(.contact(contactAddress)))
         }
 
-        var threadMergeChatUpdate = BackupProto_ThreadMergeChatUpdate()
-        threadMergeChatUpdate.previousE164 = threadMergePhoneNumber.uint64Value
+        var learnedProfileChatUpdate = BackupProto_LearnedProfileChatUpdate()
+        switch displayNameBeforeLearningProfileKey {
+        case .phoneNumber(let phoneNumber):
+            guard let e164 = E164(phoneNumber) else {
+                return messageFailure(.learnedProfileUpdateInvalidE164)
+            }
+
+            learnedProfileChatUpdate.previousName = .e164(e164.uint64Value)
+        case .username(let username):
+            learnedProfileChatUpdate.previousName = .username(username)
+        }
 
         var chatUpdateMessage = BackupProto_ChatUpdateMessage()
-        chatUpdateMessage.update = .threadMerge(threadMergeChatUpdate)
+        chatUpdateMessage.update = .learnedProfileChange(learnedProfileChatUpdate)
 
         let interactionArchiveDetails = Details(
             author: threadRecipientId,
@@ -71,8 +77,8 @@ final class MessageBackupThreadMergeChatUpdateArchiver {
 
     // MARK: -
 
-    func restoreThreadMergeChatUpdate(
-        _ threadMergeUpdateProto: BackupProto_ThreadMergeChatUpdate,
+    func restoreLearnedProfileChatUpdate(
+        _ learnedProfileUpdateProto: BackupProto_LearnedProfileChatUpdate,
         chatItem: BackupProto_ChatItem,
         chatThread: MessageBackup.ChatThread,
         context: MessageBackup.ChatRestoringContext,
@@ -89,19 +95,31 @@ final class MessageBackupThreadMergeChatUpdateArchiver {
             )])
         }
 
-        guard let previousE164 = E164(threadMergeUpdateProto.previousE164) else {
-            return invalidProtoData(.invalidE164(protoClass: BackupProto_ThreadMergeChatUpdate.self))
+        guard let previousName = learnedProfileUpdateProto.previousName else {
+            return invalidProtoData(.learnedProfileUpdateMissingPreviousName)
         }
 
-        guard case .contact(let mergedThread) = chatThread.threadType else {
-            return invalidProtoData(.threadMergeUpdateNotFromContact)
+        guard case .contact(let contactThread) = chatThread.threadType else {
+            return invalidProtoData(.learnedProfileUpdateNotFromContact)
         }
 
-        let threadMergeInfoMessage: TSInfoMessage = .makeForThreadMerge(
-            mergedThread: mergedThread,
-            previousE164: previousE164.stringValue
+        let displayNameBefore: TSInfoMessage.DisplayNameBeforeLearningProfileName
+        switch previousName {
+        case .e164(let uintValue):
+            guard let e164 = E164(uintValue) else {
+                return invalidProtoData(.invalidE164(protoClass: BackupProto_LearnedProfileChatUpdate.self))
+            }
+
+            displayNameBefore = .phoneNumber(e164.stringValue)
+        case .username(let username):
+            displayNameBefore = .username(username)
+        }
+
+        let learnedProfileKeyInfoMessage: TSInfoMessage = .makeForLearnedProfileName(
+            contactThread: contactThread,
+            displayNameBefore: displayNameBefore
         )
-        interactionStore.insertInteraction(threadMergeInfoMessage, tx: tx)
+        interactionStore.insertInteraction(learnedProfileKeyInfoMessage, tx: tx)
 
         return .success(())
     }
