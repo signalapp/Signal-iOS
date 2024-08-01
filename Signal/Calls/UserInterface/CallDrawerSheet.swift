@@ -271,7 +271,10 @@ class CallDrawerSheet: InteractiveSheetViewController {
         self.updateSnapshotAndHeaders()
     }
 
+    private var previousSnapshotItems: [RowID] = []
+
     private func updateSnapshotAndHeaders() {
+        AssertIsOnMainThread()
         var snapshot = Snapshot()
 
         let raiseHandMemberIds = callSheetDataSource.raisedHandMemberIds()
@@ -295,7 +298,16 @@ class CallDrawerSheet: InteractiveSheetViewController {
 
         inCallHeader.memberCount = sortedMembers.count
 
+        Logger.info("animation duration: \(UIView.inheritedAnimationDuration)")
+        if self.previousSnapshotItems == snapshot.itemIdentifiers {
+            Logger.info("applying duplicate snapshot")
+        } else {
+            Logger.info("applying new snapshot")
+        }
+        self.previousSnapshotItems = snapshot.itemIdentifiers
+
         dataSource.apply(snapshot, animatingDifferences: true) { [weak self] in
+            Logger.debug("will refresh max height")
             self?.refreshMaxHeight()
         }
     }
