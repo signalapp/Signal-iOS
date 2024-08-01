@@ -208,6 +208,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     }
 
     public func beginDownloadingIfNecessary() {
+        guard CurrentAppContext().isMainApp else {
+            return
+        }
         Task { [weak self] in
             try await self?.queueLoader.loadFromQueueIfAble()
         }
