@@ -105,7 +105,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/PreKeyRecord.h>
 #import <SignalServiceKit/ProfileManagerProtocol.h>
 #import <SignalServiceKit/ProtoUtils.h>
-#import <SignalServiceKit/Randomness.h>
 #import <SignalServiceKit/SCKExceptionWrapper.h>
 #import <SignalServiceKit/SDSCrossProcess.h>
 #import <SignalServiceKit/SDSDatabaseStorage+Objc.h>

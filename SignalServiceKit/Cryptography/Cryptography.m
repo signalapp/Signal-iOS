@@ -5,7 +5,7 @@
 
 #import "Cryptography.h"
 #import "NSData+OWS.h"
-#import "Randomness.h"
+#import "SignalServiceKit/SignalServiceKit-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

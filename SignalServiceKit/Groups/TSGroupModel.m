@@ -7,7 +7,6 @@
 #import "FunctionalUtil.h"
 #import <SignalServiceKit/NSData+OWS.h>
 #import <SignalServiceKit/NSString+OWS.h>
-#import <SignalServiceKit/Randomness.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
