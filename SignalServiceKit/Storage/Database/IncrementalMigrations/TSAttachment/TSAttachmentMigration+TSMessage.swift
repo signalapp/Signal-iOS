@@ -685,18 +685,25 @@ extension TSAttachmentMigration {
 
             let pendingAttachment: TSAttachmentMigration.PendingV2AttachmentFile?
             if let oldFilePath = oldAttachment.localFilePath, OWSFileSystem.fileOrFolderExists(atPath: oldFilePath) {
-                pendingAttachment = try TSAttachmentMigration.V2AttachmentContentValidator.validateContents(
-                    unencryptedFileUrl: URL(fileURLWithPath: oldFilePath),
-                    reservedFileIds: .init(
-                        primaryFile: reservedFileIds.reservedV2AttachmentPrimaryFileId,
-                        audioWaveform: reservedFileIds.reservedV2AttachmentAudioWaveformFileId,
-                        videoStillFrame: reservedFileIds.reservedV2AttachmentVideoStillFrameFileId
-                    ),
-                    encryptionKey: oldAttachment.encryptionKey,
-                    mimeType: oldAttachment.contentType,
-                    renderingFlag: oldAttachment.attachmentType.asRenderingFlag,
-                    sourceFilename: oldAttachment.sourceFilename
-                )
+                do {
+                    pendingAttachment = try TSAttachmentMigration.V2AttachmentContentValidator.validateContents(
+                        unencryptedFileUrl: URL(fileURLWithPath: oldFilePath),
+                        reservedFileIds: .init(
+                            primaryFile: reservedFileIds.reservedV2AttachmentPrimaryFileId,
+                            audioWaveform: reservedFileIds.reservedV2AttachmentAudioWaveformFileId,
+                            videoStillFrame: reservedFileIds.reservedV2AttachmentVideoStillFrameFileId
+                        ),
+                        encryptionKey: oldAttachment.encryptionKey,
+                        mimeType: oldAttachment.contentType,
+                        renderingFlag: oldAttachment.attachmentType.asRenderingFlag,
+                        sourceFilename: oldAttachment.sourceFilename
+                    )
+                } catch let error as TSAttachmentMigration.V2AttachmentContentValidator.AttachmentTooLargeError {
+                    // If we somehow had a file that was too big, just treat it as if we had no file.
+                    pendingAttachment = nil
+                } catch {
+                    throw error
+                }
             } else {
                 // A pointer; no validation needed.
                 pendingAttachment = nil
@@ -760,7 +767,7 @@ extension TSAttachmentMigration {
                         transitUnencryptedByteCount: oldAttachment.byteCount,
                         transitDigestSHA256Ciphertext: oldAttachment.digest,
                         lastTransitDownloadAttemptTimestamp: nil,
-                        localRelativeFilePath: pendingAttachment?.localRelativeFilePath,
+                        localRelativeFilePath: nil,
                         cachedAudioDurationSeconds: nil,
                         cachedMediaHeightPixels: nil,
                         cachedMediaWidthPixels: nil,

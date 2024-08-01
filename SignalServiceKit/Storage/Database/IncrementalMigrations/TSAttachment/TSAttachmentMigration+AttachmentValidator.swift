@@ -352,6 +352,8 @@ extension TSAttachmentMigration {
 
         // MARK: Video
 
+        public class AttachmentTooLargeError: Error {}
+
         private static func validateVideoContentType(
             _ unencryptedFileUrl: URL,
             reservedFileIds: ReservedRelativeFileIds,
@@ -362,7 +364,7 @@ extension TSAttachmentMigration {
                 return OWSFileSystem.fileSize(of: unencryptedFileUrl)?.intValue ?? 0
             }()
             guard byteSize < SignalAttachment.kMaxFileSizeVideo else {
-                throw OWSAssertionError("Video too big!")
+                throw AttachmentTooLargeError()
             }
 
             let asset: AVAsset = {
