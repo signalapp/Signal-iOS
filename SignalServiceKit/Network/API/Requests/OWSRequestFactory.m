@@ -7,7 +7,6 @@
 #import "OWS2FAManager.h"
 #import "ProfileManagerProtocol.h"
 #import "SignedPrekeyRecord.h"
-#import <SignalServiceKit/Cryptography.h>
 #import <SignalServiceKit/NSData+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 

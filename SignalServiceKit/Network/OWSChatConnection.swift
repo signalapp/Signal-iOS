@@ -1052,7 +1052,7 @@ private class RequestInfo {
 
     let httpMethod: String
 
-    let requestId: UInt64 = Cryptography.randomUInt64()
+    let requestId: UInt64 = UInt64.random(in: .min ... .max)
 
     let connectionType: OWSChatConnectionType
 

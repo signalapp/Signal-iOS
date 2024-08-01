@@ -181,8 +181,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         BenchEventStart(title: "Presenting HomeView", eventId: "AppStart", logInProduction: true)
         AppReadiness.runNowOrWhenUIDidBecomeReadySync { BenchEventComplete(eventId: "AppStart") }
 
-        Cryptography.seedRandom()
-
         MessageFetchBGRefreshTask.register()
 
         let keychainStorage = KeychainStorageImpl(isUsingProductionService: TSConstants.isUsingProductionService)

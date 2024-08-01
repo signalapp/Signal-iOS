@@ -6,7 +6,6 @@
 #import "OWSOutgoingNullMessage.h"
 #import "OWSVerificationStateSyncMessage.h"
 #import "TSContactThread.h"
-#import <SignalServiceKit/Cryptography.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 

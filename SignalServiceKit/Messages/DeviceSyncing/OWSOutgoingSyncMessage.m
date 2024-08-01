@@ -5,7 +5,6 @@
 
 #import "OWSOutgoingSyncMessage.h"
 #import "ProtoUtils.h"
-#import <SignalServiceKit/Cryptography.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 

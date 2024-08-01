@@ -79,6 +79,15 @@ public final class OWSAES256Key: NSObject, NSSecureCoding {
     }
 }
 
+@objc
+public final class Cryptography: NSObject {
+
+    @objc
+    public static func generateRandomBytes(_ numberBytes: UInt) -> Data {
+        return Randomness.generateRandomBytes(numberBytes)
+    }
+}
+
 public extension Cryptography {
     // MARK: - HMAC-SIV
 

@@ -8,7 +8,6 @@
 #import "PreKeyRecord.h"
 #import "SDSKeyValueStore+ObjC.h"
 #import "TSStorageKeys.h"
-#import <SignalServiceKit/Cryptography.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 #define BATCH_SIZE 100

@@ -59,8 +59,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         Logger.info("")
 
-        Cryptography.seedRandom()
-
         // We don't need to use DeviceSleepManager in the SAE.
 
         // We don't need to use applySignalAppearence in the SAE.

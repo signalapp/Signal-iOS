@@ -961,8 +961,6 @@
 		6689B23A2C055F7C003D5B2F /* OrphanedAttachmentRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6689B2392C055F7C003D5B2F /* OrphanedAttachmentRecord.swift */; };
 		6689B23D2C064E82003D5B2F /* OrphanedAttachmentCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6689B23C2C064E82003D5B2F /* OrphanedAttachmentCleaner.swift */; };
 		668A00D02C2B5E32007B8808 /* Cryptography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A00CD2C2B5E31007B8808 /* Cryptography.swift */; };
-		668A00D12C2B5E32007B8808 /* Cryptography.m in Sources */ = {isa = PBXBuildFile; fileRef = 668A00CE2C2B5E32007B8808 /* Cryptography.m */; };
-		668A00D22C2B5E32007B8808 /* Cryptography.h in Headers */ = {isa = PBXBuildFile; fileRef = 668A00CF2C2B5E32007B8808 /* Cryptography.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		668A00DB2C2B5E72007B8808 /* CryptographyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668A00D92C2B5E72007B8808 /* CryptographyTests.swift */; };
 		668A00DF2C2B5ECF007B8808 /* DebuggerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 668A00DD2C2B5ECF007B8808 /* DebuggerUtils.m */; };
 		668A00E02C2B5ECF007B8808 /* DebuggerUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 668A00DE2C2B5ECF007B8808 /* DebuggerUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -4021,8 +4019,6 @@
 		6689B2392C055F7C003D5B2F /* OrphanedAttachmentRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrphanedAttachmentRecord.swift; sourceTree = "<group>"; };
 		6689B23C2C064E82003D5B2F /* OrphanedAttachmentCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrphanedAttachmentCleaner.swift; sourceTree = "<group>"; };
 		668A00CD2C2B5E31007B8808 /* Cryptography.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Cryptography.swift; sourceTree = "<group>"; };
-		668A00CE2C2B5E32007B8808 /* Cryptography.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Cryptography.m; sourceTree = "<group>"; };
-		668A00CF2C2B5E32007B8808 /* Cryptography.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cryptography.h; sourceTree = "<group>"; };
 		668A00D92C2B5E72007B8808 /* CryptographyTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CryptographyTests.swift; sourceTree = "<group>"; };
 		668A00DD2C2B5ECF007B8808 /* DebuggerUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebuggerUtils.m; sourceTree = "<group>"; };
 		668A00DE2C2B5ECF007B8808 /* DebuggerUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebuggerUtils.h; sourceTree = "<group>"; };
@@ -8085,8 +8081,6 @@
 		668A00CC2C2B5E1A007B8808 /* Cryptography */ = {
 			isa = PBXGroup;
 			children = (
-				668A00CF2C2B5E32007B8808 /* Cryptography.h */,
-				668A00CE2C2B5E32007B8808 /* Cryptography.m */,
 				668A00CD2C2B5E31007B8808 /* Cryptography.swift */,
 				668A00D92C2B5E72007B8808 /* CryptographyTests.swift */,
 			);
@@ -12056,7 +12050,6 @@
 				F9C5CD77289453B300548EEE /* BaseModel.h in Headers */,
 				F9C5CCC9289453B300548EEE /* Contact.h in Headers */,
 				F9C5CCEC289453B300548EEE /* ContactsManagerProtocol.h in Headers */,
-				668A00D22C2B5E32007B8808 /* Cryptography.h in Headers */,
 				F9C5CE27289453B400548EEE /* DarwinNotificationCenter.h in Headers */,
 				F9C5CE2E289453B400548EEE /* DataSource.h in Headers */,
 				668A00E02C2B5ECF007B8808 /* DebuggerUtils.h in Headers */,
@@ -14260,7 +14253,6 @@
 				F9C5CCE1289453B300548EEE /* ContactThreadFinder.swift in Sources */,
 				F9C5CDCA289453B400548EEE /* ContentProxy.swift in Sources */,
 				F962B38A293F9F1F00765BD8 /* CRC32.swift in Sources */,
-				668A00D12C2B5E32007B8808 /* Cryptography.m in Sources */,
 				668A00D02C2B5E32007B8808 /* Cryptography.swift in Sources */,
 				F9C5CDF4289453B400548EEE /* Currency.swift in Sources */,
 				F9C5CDE0289453B400548EEE /* DarwinNotificationCenter.m in Sources */,

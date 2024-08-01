@@ -5,7 +5,6 @@
 
 #import "OWSProfileManager.h"
 #import <SignalServiceKit/AppReadiness.h>
-#import <SignalServiceKit/Cryptography.h>
 #import <SignalServiceKit/NSData+OWS.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/NSString+OWS.h>
