@@ -8,7 +8,7 @@ import Foundation
 public class MetadataStreamTransform: StreamTransform, FinalizableStreamTransform {
     public var hasFinalized: Bool = false
 
-    private var digestContext: SHA256DigestContext?
+    private var digestContext: Sha256DigestContext?
     private var _digest: Data?
     public func digest() throws -> Data {
         guard calculateDigest else {
@@ -24,7 +24,7 @@ public class MetadataStreamTransform: StreamTransform, FinalizableStreamTransfor
     init(calculateDigest: Bool) {
         self.calculateDigest = calculateDigest
         if calculateDigest {
-            self.digestContext = SHA256DigestContext()
+            self.digestContext = Sha256DigestContext()
         }
     }
 

@@ -82,13 +82,13 @@ public enum Cryptography {
     /// Generates the SHA256 digest for a file.
     public static func computeSHA256DigestOfFile(at url: URL) throws -> Data {
         let file = try FileHandle(forReadingFrom: url)
-        var digestContext = SHA256DigestContext()
+        var digestContext = Sha256DigestContext()
         try file.enumerateInBlocks { try digestContext.update($0) }
         return try digestContext.finalize()
     }
 
     public static func computeSHA256Digest(_ data: Data) -> Data? {
-        var digestContext = SHA256DigestContext()
+        var digestContext = Sha256DigestContext()
         do {
             try digestContext.update(data)
             return try digestContext.finalize()
@@ -340,7 +340,7 @@ public extension Cryptography {
         let iv = Randomness.generateRandomBytes(UInt(aescbcIVLength))
 
         var hmacContext = try HmacContext(key: hmacKey)
-        var digestContext = SHA256DigestContext()
+        var digestContext = Sha256DigestContext()
         var cipherContext = try CipherContext(
             operation: .encrypt,
             algorithm: .aes,
@@ -616,14 +616,14 @@ public extension Cryptography {
         )
 
         var hmacContext: HmacContext?
-        var digestContext: SHA256DigestContext?
+        var digestContext: Sha256DigestContext?
         if validateHmacAndDigest {
             // The metadata "key" is actually a concatentation of the
             // encryption key and the hmac key.
             let hmacKey = metadata.key.suffix(hmac256KeyLength)
 
             hmacContext = try HmacContext(key: hmacKey)
-            digestContext = metadata.digest != nil ? SHA256DigestContext() : nil
+            digestContext = metadata.digest != nil ? Sha256DigestContext() : nil
 
             // Matching encryption, we must start our hmac
             // and digest with the IV, since the encrypted

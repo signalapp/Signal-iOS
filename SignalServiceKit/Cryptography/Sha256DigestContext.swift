@@ -6,7 +6,7 @@
 import CommonCrypto
 import Foundation
 
-public struct SHA256DigestContext {
+public struct Sha256DigestContext {
     private var context = CC_SHA256_CTX()
     private var isFinal = false
 

@@ -733,7 +733,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 plaintextLength: plaintextLength,
                 encryptionKey: encryptionKey
             )
-            var digestContext = SHA256DigestContext()
+            var digestContext = Sha256DigestContext()
             var bytesRemaining = plaintextLength
             while bytesRemaining > 0 {
                 // Read in 1mb chunks.
