@@ -57,7 +57,7 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithAddress(SignalServiceAddress *
         // We pad the NullMessage so as to obscure it's content. The sync message (like all sync messages) will be
         // *additionally* padded by the superclass while being sent. The end result is we send a NullMessage of a
         // non-distinct size, and a verification sync which is ~1-512 bytes larger then that.
-        verifiedBuilder.nullMessage = [Cryptography generateRandomBytes:paddingBytesLength];
+        verifiedBuilder.nullMessage = [Randomness generateRandomBytes:paddingBytesLength];
     }
 
     return [verifiedBuilder buildInfallibly];

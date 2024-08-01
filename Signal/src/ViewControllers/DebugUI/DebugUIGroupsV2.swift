@@ -160,7 +160,7 @@ class DebugUIGroupsV2: DebugUIPage, Dependencies {
         let missingLocalUserGroupContextInfo = groupContextInfoForGroupModel(missingLocalUserGroupModelV2)
 
         let buildValidGroupContextInfo = { () -> GroupV2ContextInfo in
-            return try! GroupV2ContextInfo.deriveFrom(masterKeyData: Cryptography.generateRandomBytes(32))
+            return try! GroupV2ContextInfo.deriveFrom(masterKeyData: Randomness.generateRandomBytes(32))
         }
 
         databaseStorage.read { transaction in

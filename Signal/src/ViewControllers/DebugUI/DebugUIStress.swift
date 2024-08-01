@@ -22,7 +22,7 @@ class DebugUIStress: DebugUIPage, Dependencies {
             }))
             items.append(OWSTableItem(title: "Send random noise message", actionBlock: {
                 DebugUIStress.sendStressMessage(toThread: thread, block: {
-                    return Cryptography.generateRandomBytes(.random(in: 0...31))
+                    return Randomness.generateRandomBytes(.random(in: 0...31))
                 })
             }))
             items.append(OWSTableItem(title: "Send no payload message", actionBlock: {

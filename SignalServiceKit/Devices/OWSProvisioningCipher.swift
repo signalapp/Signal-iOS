@@ -27,7 +27,7 @@ public class OWSProvisioningCipher: NSObject {
         self.init(
             theirPublicKey: theirPublicKey,
             ourKeyPair: IdentityKeyPair.generate(),
-            initializationVector: Cryptography.generateRandomBytes(UInt(kCCBlockSizeAES128))
+            initializationVector: Randomness.generateRandomBytes(UInt(kCCBlockSizeAES128))
         )
     }
 

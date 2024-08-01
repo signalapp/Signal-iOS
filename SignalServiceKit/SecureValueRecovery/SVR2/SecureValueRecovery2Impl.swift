@@ -190,7 +190,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     public func useDeviceLocalMasterKey(authedAccount: AuthedAccount, transaction: DBWriteTransaction) {
         Logger.info("")
         setLocalDataAndSyncStorageServiceIfNeeded(
-            masterKey: Cryptography.generateRandomBytes(SVR.masterKeyLengthBytes),
+            masterKey: Randomness.generateRandomBytes(SVR.masterKeyLengthBytes),
             isMasterKeyBackedUp: false,
             pinType: .alphanumeric,
             encodedPINVerificationString: nil,
@@ -1597,7 +1597,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     // MARK: - Master key generation
 
     func generateMasterKey() -> Data {
-        return Cryptography.generateRandomBytes(SVR.masterKeyLengthBytes)
+        return Randomness.generateRandomBytes(SVR.masterKeyLengthBytes)
     }
 
     // MARK: - Local key storage helpers

@@ -9,8 +9,8 @@ import XCTest
 final class TransformingInputStreamTests: XCTestCase {
     func testRoundTrip() throws {
 
-        let iv = Cryptography.generateRandomBytes(UInt(16))
-        let encryptionKey = Cryptography.generateRandomBytes(UInt(32))
+        let iv = Randomness.generateRandomBytes(UInt(16))
+        let encryptionKey = Randomness.generateRandomBytes(UInt(32))
 
         let outputStream = TextBackedOutputStream()
         let transformingOutputStream = TransformingOutputStream(

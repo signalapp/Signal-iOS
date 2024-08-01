@@ -259,7 +259,7 @@ public class PaymentsHelperImpl: Dependencies, PaymentsHelperSwift, PaymentsHelp
     }
 
     private static func generateRandomPaymentsEntropy() -> Data {
-        Cryptography.generateRandomBytes(PaymentsConstants.paymentsEntropyLength)
+        Randomness.generateRandomBytes(PaymentsConstants.paymentsEntropyLength)
     }
 
     public func clearState(transaction: SDSAnyWriteTransaction) {

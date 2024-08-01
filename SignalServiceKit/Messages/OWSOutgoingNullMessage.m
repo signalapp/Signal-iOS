@@ -65,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         OWSAssertDebug(contentLength > 0);
 
-        nullMessageBuilder.padding = [Cryptography generateRandomBytes:contentLength];
+        nullMessageBuilder.padding = [Randomness generateRandomBytes:contentLength];
     }
 
     SSKProtoNullMessage *nullMessage = [nullMessageBuilder buildInfallibly];

@@ -18,7 +18,7 @@ public final class OWSAES256Key: NSObject, NSSecureCoding {
 
     /// Generates a new secure random key.
     public override init() {
-        self.keyData = Cryptography.generateRandomBytes(Self.keyByteLength)
+        self.keyData = Randomness.generateRandomBytes(Self.keyByteLength)
     }
 
     /// Generates a new secure random key.
@@ -79,16 +79,7 @@ public final class OWSAES256Key: NSObject, NSSecureCoding {
     }
 }
 
-@objc
-public final class Cryptography: NSObject {
-
-    @objc
-    public static func generateRandomBytes(_ numberBytes: UInt) -> Data {
-        return Randomness.generateRandomBytes(numberBytes)
-    }
-}
-
-public extension Cryptography {
+public enum Cryptography {
     // MARK: - HMAC-SIV
 
     private static let hmacsivIVLength = 16
@@ -162,14 +153,14 @@ public extension Cryptography {
     // SHA-256
 
     /// Generates the SHA256 digest for a file.
-    static func computeSHA256DigestOfFile(at url: URL) throws -> Data {
+    public static func computeSHA256DigestOfFile(at url: URL) throws -> Data {
         let file = try FileHandle(forReadingFrom: url)
         var digestContext = SHA256DigestContext()
         try file.enumerateInBlocks { try digestContext.update($0) }
         return try digestContext.finalize()
     }
 
-    static func computeSHA256Digest(_ data: Data) -> Data? {
+    public static func computeSHA256Digest(_ data: Data) -> Data? {
         var digestContext = SHA256DigestContext()
         do {
             try digestContext.update(data)
@@ -267,7 +258,7 @@ public extension Cryptography {
     static func randomAttachmentEncryptionKey() -> Data {
         // The metadata "key" is actually a concatentation of the
         // encryption key and the hmac key.
-        return generateRandomBytes(UInt(concatenatedEncryptionKeyLength))
+        return Randomness.generateRandomBytes(UInt(concatenatedEncryptionKeyLength))
     }
 
     /// Encrypt an input file to a provided output file location.
@@ -419,7 +410,7 @@ public extension Cryptography {
             output(outputData)
         }
 
-        let iv = generateRandomBytes(UInt(aescbcIVLength))
+        let iv = Randomness.generateRandomBytes(UInt(aescbcIVLength))
 
         var hmacContext = try HmacContext(key: hmacKey)
         var digestContext = SHA256DigestContext()

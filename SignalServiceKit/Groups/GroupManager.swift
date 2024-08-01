@@ -647,7 +647,7 @@ public class GroupManager: NSObject {
     public static let inviteLinkPasswordLengthV2: UInt = 16
 
     public static func generateInviteLinkPasswordV2() -> Data {
-        Cryptography.generateRandomBytes(inviteLinkPasswordLengthV2)
+        Randomness.generateRandomBytes(inviteLinkPasswordLengthV2)
     }
 
     public static func isPossibleGroupInviteLink(_ url: URL) -> Bool {

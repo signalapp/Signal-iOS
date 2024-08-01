@@ -98,7 +98,7 @@ final class OWSProvisioningCipherTest: XCTestCase {
                 initializationVector: knownInitializationVector
             )
 
-            let encrypted = cipher.encrypt(Cryptography.generateRandomBytes(i))
+            let encrypted = cipher.encrypt(Randomness.generateRandomBytes(i))
 
             XCTAssertNotNil(encrypted, "failed for message length: \(i)")
         }

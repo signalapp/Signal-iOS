@@ -23,7 +23,7 @@ class DataMessagePaddingTests: XCTestCase {
 
     func testRandomPadding() {
         for _ in 0...1000 {
-            let randomMessage = Cryptography.generateRandomBytes(501)
+            let randomMessage = Randomness.generateRandomBytes(501)
             let paddedMessage = randomMessage.paddedMessageBody
             XCTAssertEqual(paddedMessage.withoutPadding(), randomMessage)
         }

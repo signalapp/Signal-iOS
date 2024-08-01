@@ -99,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     // Add a random 1-512 bytes to obscure sync message type
     size_t paddingBytesLength = arc4random_uniform(512) + 1;
-    syncMessageBuilder.padding = [Cryptography generateRandomBytes:paddingBytesLength];
+    syncMessageBuilder.padding = [Randomness generateRandomBytes:paddingBytesLength];
 
     return [syncMessageBuilder buildAndReturnError:errorHandle];
 }

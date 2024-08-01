@@ -43,8 +43,8 @@ class OWSDeviceProvisionerTest: XCTestCase {
         let myAci = Aci.randomForTesting()
         let myPhoneNumber = "+16505550100"
         let myPni = Pni.randomForTesting()
-        let profileKey = Cryptography.generateRandomBytes(UInt(ProfileKey.SIZE))
-        let masterKey = Cryptography.generateRandomBytes(SVR.masterKeyLengthBytes)
+        let profileKey = Randomness.generateRandomBytes(UInt(ProfileKey.SIZE))
+        let masterKey = Randomness.generateRandomBytes(SVR.masterKeyLengthBytes)
         let readReceiptsEnabled = true
 
         let provisioner = OWSDeviceProvisioner(

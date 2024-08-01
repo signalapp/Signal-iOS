@@ -89,7 +89,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             aciIdentityKeyPair: try keyPairForTesting(),
             pniIdentityKeyPair: try keyPairForTesting(),
             profileKey: .generateRandom(),
-            masterKey: Cryptography.generateRandomBytes(SVR.masterKeyLengthBytes),
+            masterKey: Randomness.generateRandomBytes(SVR.masterKeyLengthBytes),
             areReadReceiptsEnabled: true,
             primaryUserAgent: nil,
             provisioningCode: "1234",

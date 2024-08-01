@@ -192,7 +192,7 @@ class CryptographyTestsSwift: XCTestCase {
         let metadata = try Cryptography.encryptAttachment(at: plaintextFile, output: encryptedFile)
 
         try FileManager.default.removeItem(at: plaintextFile)
-        try Cryptography.generateRandomBytes(1024).write(to: plaintextFile)
+        try Randomness.generateRandomBytes(1024).write(to: plaintextFile)
         try Cryptography.decryptAttachment(
             at: encryptedFile,
             metadata: metadata,
@@ -242,7 +242,7 @@ class CryptographyTestsSwift: XCTestCase {
         let metadata = try Cryptography.encryptAttachment(at: plaintextFile, output: encryptedFile)
 
         let invalidMetadata = EncryptionMetadata(
-            key: Cryptography.generateRandomBytes(64),
+            key: Randomness.generateRandomBytes(64),
             digest: metadata.digest,
             length: metadata.length,
             plaintextLength: metadata.plaintextLength

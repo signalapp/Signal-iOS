@@ -458,7 +458,7 @@ public class SubscriptionManagerImpl: NSObject {
     private class func setupNewSubscriberID() -> Promise<Data> {
         Logger.info("[Donations] Setting up new subscriber ID")
 
-        let newSubscriberID = Cryptography.generateRandomBytes(UInt(32))
+        let newSubscriberID = Randomness.generateRandomBytes(UInt(32))
         return firstly {
             self.postSubscriberID(subscriberID: newSubscriberID)
         }.map(on: DispatchQueue.global()) { _ in
@@ -528,7 +528,7 @@ public class SubscriptionManagerImpl: NSObject {
         subscription: SubscriptionLevel,
         currencyCode: Currency.Code
     ) -> Promise<Subscription> {
-        let key = Cryptography.generateRandomBytes(UInt(32)).asBase64Url
+        let key = Randomness.generateRandomBytes(UInt(32)).asBase64Url
         let request = OWSRequestFactory.subscriptionSetSubscriptionLevelRequest(
             subscriberID: subscriberID,
             level: subscription.level,
@@ -832,7 +832,7 @@ public class SubscriptionManagerImpl: NSObject {
 
     private class func generateReceiptSerial() throws -> ReceiptSerial {
         let count = ReceiptSerial.SIZE
-        let bytes = Cryptography.generateRandomBytes(UInt(count))
+        let bytes = Randomness.generateRandomBytes(UInt(count))
         return try ReceiptSerial(contents: [UInt8](bytes))
     }
 

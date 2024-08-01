@@ -183,8 +183,8 @@ final class GzipStreamTransformTests: XCTestCase {
 
 final class EncryptionStreamTransformTests: XCTestCase {
     func testRoundtrip() throws {
-        let iv = Cryptography.generateRandomBytes(UInt(16))
-        let encryptionKey = Cryptography.generateRandomBytes(UInt(32))
+        let iv = Randomness.generateRandomBytes(UInt(16))
+        let encryptionKey = Randomness.generateRandomBytes(UInt(32))
 
         let outputStream = try EncryptingStreamTransform(iv: iv, encryptionKey: encryptionKey)
         let inputStream = try DecryptingStreamTransform(encryptionKey: encryptionKey)

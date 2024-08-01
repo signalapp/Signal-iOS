@@ -386,6 +386,6 @@ public class ProvisioningCoordinatorImpl: ProvisioningCoordinator {
     }
 
     private func generateServerAuthToken() -> String {
-        return Cryptography.generateRandomBytes(16).hexadecimalString
+        return Randomness.generateRandomBytes(16).hexadecimalString
     }
 }
