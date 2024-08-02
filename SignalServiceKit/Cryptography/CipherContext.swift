@@ -21,22 +21,10 @@ public struct CipherContext {
 
     public enum Algorithm {
         case aes
-        case des
-        case threeDes
-        case cast
-        case rc4
-        case rc2
-        case blowfish
 
         var ccValue: CCOperation {
             switch self {
             case .aes: return CCAlgorithm(kCCAlgorithmAES)
-            case .des: return CCAlgorithm(kCCAlgorithmDES)
-            case .threeDes: return CCAlgorithm(kCCAlgorithm3DES)
-            case .cast: return CCAlgorithm(kCCAlgorithmCAST)
-            case .rc4: return CCAlgorithm(kCCAlgorithmRC4)
-            case .rc2: return CCAlgorithm(kCCAlgorithmRC2)
-            case .blowfish: return CCAlgorithm(kCCAlgorithmBlowfish)
             }
         }
     }
