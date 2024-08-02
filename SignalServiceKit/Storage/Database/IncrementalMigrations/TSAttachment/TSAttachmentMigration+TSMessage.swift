@@ -464,26 +464,73 @@ extension TSAttachmentMigration {
                 reservedFileIdsDict[reservedFileIds.tsAttachmentUniqueId] = reservedFileIds
             }
 
-            let bodyTSAttachmentIds = try Self.bodyAttachmentIds(messageRow: messageRow)
-            let messageSticker = try Self.messageSticker(messageRow: messageRow)
-            let stickerTSAttachmentId = messageSticker?.attachmentId
-            let linkPreview = try Self.linkPreview(messageRow: messageRow)
-            let linkPreviewTSAttachmentId = linkPreview?.imageAttachmentId
-            let contactShare = try Self.contactShare(messageRow: messageRow)
-            let contactTSAttachmentId = contactShare?.avatarAttachmentId
-            let quotedMessage = try Self.quotedMessage(messageRow: messageRow)
-            let quotedMessageTSAttachmentId = quotedMessage?.quotedAttachment?.rawAttachmentId.nilIfEmpty
+            var bodyTSAttachmentIds = try Self.bodyAttachmentIds(messageRow: messageRow)
+            var messageSticker = try Self.messageSticker(messageRow: messageRow)
+            var stickerTSAttachmentId = messageSticker?.attachmentId
+            var linkPreview = try Self.linkPreview(messageRow: messageRow)
+            var linkPreviewTSAttachmentId = linkPreview?.imageAttachmentId
+            var contactShare = try Self.contactShare(messageRow: messageRow)
+            var contactTSAttachmentId = contactShare?.avatarAttachmentId
+            var quotedMessage = try Self.quotedMessage(messageRow: messageRow)
+            var quotedMessageTSAttachmentId = quotedMessage?.quotedAttachment?.rawAttachmentId.nilIfEmpty
 
-            // Check if the message has any attachments.
-            let allAttachmentIds: [String] = (
-                bodyTSAttachmentIds
-                + [
-                    stickerTSAttachmentId,
-                    linkPreviewTSAttachmentId,
-                    contactTSAttachmentId,
-                    quotedMessageTSAttachmentId
-                ]
-            ).compacted()
+            var newBodyAttachmentIds: [String]?
+            var newContact: TSAttachmentMigration.OWSContact?
+            var newMessageSticker: TSAttachmentMigration.MessageSticker?
+            var newLinkPreview: TSAttachmentMigration.OWSLinkPreview?
+            var newQuotedMessage: TSAttachmentMigration.TSQuotedMessage?
+
+            // Remove duplicates. Its unclear _how_ a message ever attained duplicate attachments,
+            // but it seems it did happen at some point with a bug, so its in people's databases.
+            var allAttachmentIds = Set<String>()
+
+            // Inserts into the set as well.
+            func isDuplicate(_ tsAttachmentId: String?) -> Bool {
+                guard let tsAttachmentId else {
+                    return false
+                }
+                // If we inserted, its not a duplicate.
+                let didInsert = allAttachmentIds.insert(tsAttachmentId).inserted
+                return !didInsert
+            }
+
+            // Note this cannot end up as an empty array. If it did, the rest of this method
+            // would end up broken because we could end up with a content-less message.
+            bodyTSAttachmentIds = bodyTSAttachmentIds.compactMap {
+                if isDuplicate($0) {
+                    Logger.warn("Found duplicate body attachment")
+                    return nil
+                }
+                return $0
+            }
+
+            // Preference order: body > sticker > contact > linkPreview > quote
+            // Insert each in that order; if its already inserted wipe the var so we pretend
+            // it never existed.
+            if isDuplicate(stickerTSAttachmentId) {
+                Logger.warn("Found duplicate sticker attachment")
+                newMessageSticker = messageSticker?.removingLegacyAttachment()
+                messageSticker = nil
+                stickerTSAttachmentId = nil
+            }
+            if isDuplicate(contactTSAttachmentId) {
+                Logger.warn("Found duplicate contact avatar attachment")
+                newContact = contactShare?.removingLegacyAttachment()
+                contactShare = nil
+                contactTSAttachmentId = nil
+            }
+            if isDuplicate(linkPreviewTSAttachmentId) {
+                Logger.warn("Found duplicate link preview attachment")
+                newLinkPreview = linkPreview?.removingLegacyAttachment()
+                linkPreview = nil
+                linkPreviewTSAttachmentId = nil
+            }
+            if isDuplicate(quotedMessageTSAttachmentId) {
+                Logger.warn("Found duplicate quote attachment")
+                newQuotedMessage = quotedMessage?.removingLegacyAttachment()
+                quotedMessage = nil
+                quotedMessageTSAttachmentId = nil
+            }
 
             if allAttachmentIds.isEmpty {
                 // Nothing to migrate! This can happen if an edit removed attachments.
@@ -560,12 +607,6 @@ extension TSAttachmentMigration {
                 }
             }
 
-            var newBodyAttachmentIds: [String]?
-            var newContact: TSAttachmentMigration.OWSContact?
-            var newMessageSticker: TSAttachmentMigration.MessageSticker?
-            var newLinkPreview: TSAttachmentMigration.OWSLinkPreview?
-            var newQuotedMessage: TSAttachmentMigration.TSQuotedMessage?
-
             for (index, bodyTSAttachmentId) in bodyTSAttachmentIds.enumerated() {
                 try migrateSingleMessageAttachment(
                     tsAttachmentUniqueId: bodyTSAttachmentId,
@@ -582,8 +623,7 @@ extension TSAttachmentMigration {
                     stickerPackId: messageSticker.info.packId,
                     stickerId: messageSticker.info.stickerId
                 )
-                newMessageSticker = messageSticker
-                newMessageSticker?.attachmentId = nil
+                newMessageSticker = messageSticker.removingLegacyAttachment()
             }
 
             if let linkPreviewTSAttachmentId {
@@ -591,9 +631,7 @@ extension TSAttachmentMigration {
                     tsAttachmentUniqueId: linkPreviewTSAttachmentId,
                     messageOwnerType: .linkPreview
                 )
-                newLinkPreview = linkPreview
-                newLinkPreview?.imageAttachmentId = nil
-                newLinkPreview?.usesV2AttachmentReferenceValue = NSNumber(value: true)
+                newLinkPreview = linkPreview?.removingLegacyAttachment()
             }
 
             if let contactTSAttachmentId {
@@ -601,8 +639,7 @@ extension TSAttachmentMigration {
                     tsAttachmentUniqueId: contactTSAttachmentId,
                     messageOwnerType: .contactAvatar
                 )
-                newContact = contactShare
-                newContact?.avatarAttachmentId = nil
+                newContact = contactShare?.removingLegacyAttachment()
             }
 
             if
@@ -618,13 +655,7 @@ extension TSAttachmentMigration {
                         tsAttachmentUniqueId: quotedMessageTSAttachmentId,
                         messageOwnerType: .quotedReplyAttachment
                     )
-                    newQuotedMessage = quotedMessage
-                    var newQuotedAttachment = newQuotedMessage?.quotedAttachment
-                    newQuotedAttachment?.rawAttachmentId = ""
-                    newQuotedAttachment?.attachmentType = .v2
-                    newQuotedAttachment?.contentType = nil
-                    newQuotedAttachment?.sourceFilename = nil
-                    newQuotedMessage?.quotedAttachment = newQuotedAttachment
+                    newQuotedMessage = quotedMessage.removingLegacyAttachment()
                 case .originalForSend, .original:
                     guard let reservedFileIds = reservedFileIdsDict.removeValue(forKey: quotedMessageTSAttachmentId) else {
                         throw OWSAssertionError("Missing reservation for attachment")
@@ -1093,5 +1124,43 @@ extension TSAttachmentMigration {
             _ = arguments.append(contentsOf: [rowId])
             try tx.database.execute(sql: sql, arguments: arguments)
         }
+    }
+}
+
+extension TSAttachmentMigration.MessageSticker {
+
+    fileprivate func removingLegacyAttachment() -> Self {
+        attachmentId = nil
+        return self
+    }
+}
+
+extension TSAttachmentMigration.OWSContact {
+
+    fileprivate func removingLegacyAttachment() -> Self {
+        avatarAttachmentId = nil
+        return self
+    }
+}
+
+extension TSAttachmentMigration.OWSLinkPreview {
+
+    fileprivate func removingLegacyAttachment() -> Self {
+        imageAttachmentId = nil
+        usesV2AttachmentReferenceValue = NSNumber(value: true)
+        return self
+    }
+}
+
+extension TSAttachmentMigration.TSQuotedMessage {
+
+    fileprivate func removingLegacyAttachment() -> Self {
+        var newQuotedAttachment = quotedAttachment
+        newQuotedAttachment?.rawAttachmentId = ""
+        newQuotedAttachment?.attachmentType = .v2
+        newQuotedAttachment?.contentType = nil
+        newQuotedAttachment?.sourceFilename = nil
+        self.quotedAttachment = newQuotedAttachment
+        return self
     }
 }
