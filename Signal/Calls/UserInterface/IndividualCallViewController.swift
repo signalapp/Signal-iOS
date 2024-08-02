@@ -543,9 +543,20 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         let topInset = shouldRemoteVideoControlsBeHidden
             ? view.layoutMargins.top
             : topGradientView.height - gradientMargin + 14
-        let bottomInset = shouldRemoteVideoControlsBeHidden
-            ? view.layoutMargins.bottom
-            : bottomGradientView.height - gradientMargin + 14
+        let bottomInset: CGFloat
+        if FeatureFlags.individualCallDrawerSupport {
+            if let bottomSheet {
+                bottomInset = shouldRemoteVideoControlsBeHidden
+                ? view.layoutMargins.bottom
+                : bottomSheet.minimizedHeight + 14
+            } else {
+                bottomInset = 0
+            }
+        } else {
+            bottomInset = shouldRemoteVideoControlsBeHidden
+                ? view.layoutMargins.bottom
+                : bottomGradientView.height - gradientMargin + 14
+        }
         rect.origin.y += topInset
         rect.size.height -= topInset + bottomInset
 
