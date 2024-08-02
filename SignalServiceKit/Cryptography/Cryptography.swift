@@ -18,14 +18,7 @@ public enum Cryptography {
     }
 
     static func computeSHA256HMAC(_ data: Data, key: Data) -> Data? {
-        do {
-            var context = HmacContext(key: key)
-            try context.update(data)
-            return try context.finalize()
-        } catch {
-            owsFailDebug("Failed to compute hmac \(error)")
-            return nil
-        }
+        return Data(HMAC<SHA256>.authenticationCode(for: data, using: .init(data: key)))
     }
 
     static func computeSHA256HMAC(_ data: Data, key: Data, truncatedToBytes: UInt) -> Data? {
@@ -246,7 +239,7 @@ public extension Cryptography {
 
         let iv = Randomness.generateRandomBytes(UInt(aescbcIVLength))
 
-        var hmacContext = HmacContext(key: hmacKey)
+        var hmac = HMAC<SHA256>(key: .init(data: hmacKey))
         var sha256 = SHA256()
         let cipherContext = try CipherContext(
             operation: .encrypt,
@@ -258,7 +251,7 @@ public extension Cryptography {
 
         // We include our IV at the start of the file *and*
         // in both the hmac and digest.
-        try hmacContext.update(iv)
+        hmac.update(data: iv)
         sha256.update(data: iv)
         output(iv)
 
@@ -270,7 +263,7 @@ public extension Cryptography {
             unpaddedPlaintextLength = try enumerateInputInBlocks { plaintextDataBlock in
                 let ciphertextBlock = try cipherContext.update(plaintextDataBlock)
 
-                try hmacContext.update(ciphertextBlock)
+                hmac.update(data: ciphertextBlock)
                 sha256.update(data: ciphertextBlock)
                 output(ciphertextBlock)
             }
@@ -282,7 +275,7 @@ public extension Cryptography {
                     Data(repeating: 0, count: Int(paddedPlaintextLength - unpaddedPlaintextLength))
                 )
 
-                try hmacContext.update(ciphertextBlock)
+                hmac.update(data: ciphertextBlock)
                 sha256.update(data: ciphertextBlock)
                 output(ciphertextBlock)
             }
@@ -293,7 +286,7 @@ public extension Cryptography {
             // always be one block remaining when we "finalize".
             let finalCiphertextBlock = try cipherContext.finalize()
 
-            try hmacContext.update(finalCiphertextBlock)
+            hmac.update(data: finalCiphertextBlock)
             sha256.update(data: finalCiphertextBlock)
             output(finalCiphertextBlock)
         }
@@ -301,13 +294,13 @@ public extension Cryptography {
         // Calculate our HMAC. This will be used to verify the
         // data after decryption.
         // hmac of: iv || encrypted data
-        let hmac = try hmacContext.finalize()
+        let hmacResult = Data(hmac.finalize())
 
         // We write the hmac at the end of the file for the
         // receiver to use for verification. We also include
         // it in the digest.
-        sha256.update(data: hmac)
-        output(hmac)
+        sha256.update(data: hmacResult)
+        output(hmacResult)
 
         // Calculate our digest. This will be used to verify
         // the data after decryption.
@@ -522,14 +515,14 @@ public extension Cryptography {
             encryptionKey: metadata.key
         )
 
-        var hmacContext: HmacContext?
+        var hmac: HMAC<SHA256>?
         var sha256: SHA256?
         if validateHmacAndDigest {
             // The metadata "key" is actually a concatentation of the
             // encryption key and the hmac key.
             let hmacKey = metadata.key.suffix(hmac256KeyLength)
 
-            hmacContext = HmacContext(key: hmacKey)
+            hmac = HMAC<SHA256>(key: .init(data: hmacKey))
             if metadata.digest != nil {
                 sha256 = SHA256()
             }
@@ -537,7 +530,7 @@ public extension Cryptography {
             // Matching encryption, we must start our hmac
             // and digest with the IV, since the encrypted
             // file starts with the IV
-            try hmacContext?.update(inputFile.iv)
+            hmac?.update(data: inputFile.iv)
             sha256?.update(data: inputFile.iv)
         }
 
@@ -550,8 +543,8 @@ public extension Cryptography {
             let plaintextDataBlock = try inputFile.readInternal(
                 upToCount: outputBlockSize ?? inputFile.plaintextLength
             ) { ciphertext, ciphertextLength in
-                try ciphertext.withUnsafeBytes { ciphertextPointer in
-                    try hmacContext?.update(bytes: ciphertextPointer, length: ciphertextLength)
+                ciphertext.withUnsafeBytes { ciphertextPointer in
+                    hmac?.update(data: ciphertextPointer.prefix(ciphertextLength))
                     sha256?.update(data: ciphertextPointer.prefix(ciphertextLength))
                 }
             }
@@ -574,27 +567,27 @@ public extension Cryptography {
             break
         }
 
-        if validateHmacAndDigest, var hmacContext {
+        if validateHmacAndDigest, var hmac {
             // Add the last padding bytes to the hmac/digest.
             var remainingPaddingLength = aescbcIVLength + inputFile.ciphertextLength - inputFile.file.offsetInFile
             while remainingPaddingLength > 0 {
                 let lengthToRead = min(remainingPaddingLength, 1024 * 16)
                 let paddingCiphertext = try inputFile.file.readData(ofLength: Int(lengthToRead))
-                try hmacContext.update(paddingCiphertext)
+                hmac.update(data: paddingCiphertext)
                 sha256?.update(data: paddingCiphertext)
                 remainingPaddingLength -= lengthToRead
             }
             // Verify their HMAC matches our locally calculated HMAC
             // hmac of: iv || encrypted data
-            let hmac = try hmacContext.finalize()
+            let hmacResult = Data(hmac.finalize())
 
             // The last N bytes of the encrypted file is the hmac for the encrypted data.
             // At this point we are done with the EncryptedFileHandle, so grab its internal
             // FileHandle for reading directly.
             // (This breaks EncryptedFileHandle's invariants and renders it unuseable).
             let inputFileHmac = try inputFile.file.readData(ofLength: hmac256OutputLength)
-            guard hmac.ows_constantTimeIsEqual(to: inputFileHmac) else {
-                Logger.debug("Bad hmac. Their hmac: \(inputFileHmac.hexadecimalString), our hmac: \(hmac.hexadecimalString)")
+            guard hmacResult.ows_constantTimeIsEqual(to: inputFileHmac) else {
+                Logger.debug("Bad hmac. Their hmac: \(inputFileHmac.hexadecimalString), our hmac: \(hmacResult.hexadecimalString)")
                 throw OWSAssertionError("Bad hmac")
             }
 
@@ -604,7 +597,7 @@ public extension Cryptography {
                 guard var sha256 else {
                     throw OWSAssertionError("Missing digest context")
                 }
-                sha256.update(data: hmac)
+                sha256.update(data: hmacResult)
                 let digest = Data(sha256.finalize())
                 guard digest.ows_constantTimeIsEqual(to: theirDigest) else {
                     Logger.debug("Bad digest. Their digest: \(theirDigest.hexadecimalString), our digest: \(digest.hexadecimalString)")
