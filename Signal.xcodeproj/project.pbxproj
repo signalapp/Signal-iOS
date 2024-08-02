@@ -1311,6 +1311,8 @@
 		7255A4D42B98E36900E95368 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 768F720C2A22CEAC002C4E7D /* Preferences.swift */; };
 		7267B1522C5D270600612C34 /* HmacContextTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7267B1512C5D270600612C34 /* HmacContextTest.swift */; };
 		7267B1542C5D2FED00612C34 /* Sha256DigestContextTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7267B1532C5D2FED00612C34 /* Sha256DigestContextTest.swift */; };
+		7267B1562C5D4D3100612C34 /* Sha256HmacSiv.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7267B1552C5D4D3100612C34 /* Sha256HmacSiv.swift */; };
+		7267B1582C5D4F2800612C34 /* Sha256HmacSivTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7267B1572C5D4F2800612C34 /* Sha256HmacSivTest.swift */; };
 		728BFE472C5BEC5C008F20F1 /* Randomness.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728BFE462C5BEC5C008F20F1 /* Randomness.swift */; };
 		728BFE4A2C5BFDA7008F20F1 /* RandomnessTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728BFE482C5BF9CE008F20F1 /* RandomnessTest.swift */; };
 		728BFE4C2C5C3427008F20F1 /* Aes256Key.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728BFE4B2C5C3427008F20F1 /* Aes256Key.swift */; };
@@ -4298,6 +4300,8 @@
 		7254651C2BA00FD200EABFD2 /* LocalUserDisplayMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalUserDisplayMode.swift; sourceTree = "<group>"; };
 		7267B1512C5D270600612C34 /* HmacContextTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HmacContextTest.swift; sourceTree = "<group>"; };
 		7267B1532C5D2FED00612C34 /* Sha256DigestContextTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sha256DigestContextTest.swift; sourceTree = "<group>"; };
+		7267B1552C5D4D3100612C34 /* Sha256HmacSiv.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sha256HmacSiv.swift; sourceTree = "<group>"; };
+		7267B1572C5D4F2800612C34 /* Sha256HmacSivTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sha256HmacSivTest.swift; sourceTree = "<group>"; };
 		728BFE462C5BEC5C008F20F1 /* Randomness.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Randomness.swift; sourceTree = "<group>"; };
 		728BFE482C5BF9CE008F20F1 /* RandomnessTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomnessTest.swift; sourceTree = "<group>"; };
 		728BFE4B2C5C3427008F20F1 /* Aes256Key.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Aes256Key.swift; sourceTree = "<group>"; };
@@ -8101,6 +8105,8 @@
 				7267B1512C5D270600612C34 /* HmacContextTest.swift */,
 				728BFE4D2C5C564D008F20F1 /* Sha256DigestContext.swift */,
 				7267B1532C5D2FED00612C34 /* Sha256DigestContextTest.swift */,
+				7267B1552C5D4D3100612C34 /* Sha256HmacSiv.swift */,
+				7267B1572C5D4F2800612C34 /* Sha256HmacSivTest.swift */,
 			);
 			path = Cryptography;
 			sourceTree = "<group>";
@@ -14995,6 +15001,7 @@
 				66C2B14B2A13E2AC008DDE72 /* SgxWebsocketConnection.swift in Sources */,
 				66C2B1492A13E2A0008DDE72 /* SgxWebsocketConnectionFactory.swift in Sources */,
 				728BFE4E2C5C564D008F20F1 /* Sha256DigestContext.swift in Sources */,
+				7267B1562C5D4D3100612C34 /* Sha256HmacSiv.swift in Sources */,
 				66CD25722B07EE3A00139E17 /* SharedMap.swift in Sources */,
 				F9C5CCC5289453B300548EEE /* SignalAccount.swift in Sources */,
 				F9C5CCDD289453B300548EEE /* SignalAccountFinder.swift in Sources */,
@@ -15495,6 +15502,7 @@
 				6605B98A2B211BD500E8A68A /* SerialTaskQueueTest.swift in Sources */,
 				503158F22B57B0010023A5DB /* ServiceIdTest.swift in Sources */,
 				7267B1542C5D2FED00612C34 /* Sha256DigestContextTest.swift in Sources */,
+				7267B1582C5D4F2800612C34 /* Sha256HmacSivTest.swift in Sources */,
 				F942626C289B1B5500460798 /* SignalAccountFinderTest.swift in Sources */,
 				E18C4A7729EF2ECC007534D4 /* SignalAccountTest.swift in Sources */,
 				F9B93CDC28E1FE3500B3F8A0 /* SignalProxyTest.swift in Sources */,

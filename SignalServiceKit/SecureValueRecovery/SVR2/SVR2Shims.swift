@@ -95,7 +95,7 @@ internal class SVR2ClientWrapperImpl: SVR2ClientWrapper {
         private var encryptionKey: Data { Data(pinHash.encryptionKey) }
 
         func encryptMasterKey(_ masterKey: Data) throws -> Data {
-            let (iv, cipherText) = try Cryptography.encryptSHA256HMACSIV(data: masterKey, key: encryptionKey)
+            let (iv, cipherText) = try Sha256HmacSiv.encrypt(data: masterKey, key: encryptionKey)
             if iv.count != 16 || cipherText.count != 32 {
                 throw SVR.SVRError.assertion
             }
@@ -109,7 +109,7 @@ internal class SVR2ClientWrapperImpl: SVR2ClientWrapper {
             let startIndex: Int = encryptedMasterKey.startIndex
             let ivRange = startIndex...(startIndex + 15)
             let cipherRange = (startIndex + 16)...(startIndex + 47)
-            let masterKey = try Cryptography.decryptSHA256HMACSIV(
+            let masterKey = try Sha256HmacSiv.decrypt(
                 iv: encryptedMasterKey[ivRange],
                 cipherText: encryptedMasterKey[cipherRange],
                 key: encryptionKey

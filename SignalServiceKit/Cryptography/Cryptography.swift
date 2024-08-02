@@ -6,76 +6,6 @@
 import Foundation
 
 public enum Cryptography {
-    // MARK: - HMAC-SIV
-
-    private static let hmacsivIVLength = 16
-    private static let hmacsivDataLength = 32
-
-    private static func invalidLengthError(_ parameter: String) -> Error {
-        return OWSAssertionError("\(parameter) length is invalid")
-    }
-
-    /// Encrypts a 32-byte `data` with the provided 32-byte `key` using SHA-256 HMAC-SIV.
-    /// Returns a tuple of (16-byte IV, 32-byte Ciphertext) or `nil` if an error occurs.
-    static func encryptSHA256HMACSIV(data: Data, key: Data) throws -> (iv: Data, ciphertext: Data) {
-        guard data.count == hmacsivDataLength else { throw invalidLengthError("data") }
-        guard key.count == hmacsivDataLength else { throw invalidLengthError("key") }
-
-        guard let authData = "auth".data(using: .utf8),
-            let Ka = computeSHA256HMAC(authData, key: key) else {
-                throw OWSAssertionError("failed to compute Ka")
-        }
-        guard let encData = "enc".data(using: .utf8),
-            let Ke = computeSHA256HMAC(encData, key: key) else {
-                throw OWSAssertionError("failed to compute Ke")
-        }
-
-        guard let iv = computeSHA256HMAC(data, key: Ka, truncatedToBytes: UInt(hmacsivIVLength)) else {
-            throw OWSAssertionError("failed to compute IV")
-        }
-
-        guard let Kx = computeSHA256HMAC(iv, key: Ke) else {
-            throw OWSAssertionError("failed to compute Kx")
-        }
-
-        let ciphertext = try Kx ^ data
-
-        return (iv, ciphertext)
-    }
-
-    /// Decrypts a 32-byte `cipherText` with the provided 32-byte `key` and 16-byte `iv` using SHA-256 HMAC-SIV.
-    /// Returns the decrypted 32-bytes of data or `nil` if an error occurs.
-    static func decryptSHA256HMACSIV(iv: Data, cipherText: Data, key: Data) throws -> Data {
-        guard iv.count == hmacsivIVLength else { throw invalidLengthError("iv") }
-        guard cipherText.count == hmacsivDataLength else { throw invalidLengthError("cipherText") }
-        guard key.count == hmacsivDataLength else { throw invalidLengthError("key") }
-
-        guard let authData = "auth".data(using: .utf8),
-            let Ka = computeSHA256HMAC(authData, key: key) else {
-                throw OWSAssertionError("failed to compute Ka")
-        }
-        guard let encData = "enc".data(using: .utf8),
-            let Ke = computeSHA256HMAC(encData, key: key) else {
-                throw OWSAssertionError("failed to compute Ke")
-        }
-
-        guard let Kx = computeSHA256HMAC(iv, key: Ke) else {
-            throw OWSAssertionError("failed to compute Kx")
-        }
-
-        let decryptedData = try Kx ^ cipherText
-
-        guard let ourIV = computeSHA256HMAC(decryptedData, key: Ka, truncatedToBytes: UInt(hmacsivIVLength)) else {
-            throw OWSAssertionError("failed to compute IV")
-        }
-
-        guard ourIV.ows_constantTimeIsEqual(to: iv) else {
-            throw OWSAssertionError("failed to validate IV")
-        }
-
-        return decryptedData
-    }
-
     // SHA-256
 
     /// Generates the SHA256 digest for a file.
@@ -116,13 +46,6 @@ public enum Cryptography {
     static func computeSHA256HMAC(_ data: Data, key: Data, truncatedToBytes: UInt) -> Data? {
         guard let hmac = computeSHA256HMAC(data, key: key), hmac.count >= truncatedToBytes else { return nil }
         return hmac.subdata(in: hmac.startIndex..<hmac.startIndex.advanced(by: Int(truncatedToBytes)))
-    }
-}
-
-extension Data {
-    fileprivate static func ^ (lhs: Data, rhs: Data) throws -> Data {
-        guard lhs.count == rhs.count else { throw OWSAssertionError("lhs length must equal rhs length") }
-        return Data(zip(lhs, rhs).map { $0 ^ $1 })
     }
 }
 
