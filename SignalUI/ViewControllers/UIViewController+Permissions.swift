@@ -72,7 +72,7 @@ extension UIViewController {
 
     public func askForCameraPermissions() async -> Bool {
         return await withCheckedContinuation { continuation in
-            self.ows_askForCameraPermissions(callback: continuation.resume(returning:))
+            self.ows_askForCameraPermissions { continuation.resume(returning: $0) }
         }
     }
 
@@ -167,7 +167,7 @@ extension UIViewController {
 
     public func askForMicrophonePermissions() async -> Bool {
         return await withCheckedContinuation { continuation in
-            self.ows_askForMicrophonePermissions(callback: continuation.resume(returning:))
+            self.ows_askForMicrophonePermissions { continuation.resume(returning: $0) }
         }
     }
 
