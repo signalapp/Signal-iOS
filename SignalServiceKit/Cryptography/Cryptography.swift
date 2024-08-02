@@ -341,7 +341,7 @@ public extension Cryptography {
 
         var hmacContext = try HmacContext(key: hmacKey)
         var digestContext = Sha256DigestContext()
-        var cipherContext = try CipherContext(
+        let cipherContext = try CipherContext(
             operation: .encrypt,
             algorithm: .aes,
             options: .pkcs7Padding,
@@ -806,7 +806,7 @@ public extension Cryptography {
                 // Decrypt, but use ecb instead of cbc mode; we _want_ the plaintext
                 // of the pkcs7 padding bytes; doing the block cipher XOR'ing ourselves
                 // lets us get that without the CipherContext truncating it for us.
-                var paddingCipherContext = try CipherContext(
+                let paddingCipherContext = try CipherContext(
                     operation: .decrypt,
                     algorithm: .aes,
                     options: .ecbMode,

@@ -7,7 +7,7 @@ import Foundation
 
 public class EncryptingStreamTransform: StreamTransform, FinalizableStreamTransform {
 
-    private var cipherContext: CipherContext
+    private let cipherContext: CipherContext
     private let iv: Data
 
     private var finalized = false
