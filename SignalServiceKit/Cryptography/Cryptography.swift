@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CryptoKit
 import Foundation
 
 public enum Cryptography {
@@ -11,9 +12,9 @@ public enum Cryptography {
     /// Generates the SHA256 digest for a file.
     public static func computeSHA256DigestOfFile(at url: URL) throws -> Data {
         let file = try FileHandle(forReadingFrom: url)
-        var digestContext = Sha256DigestContext()
-        try file.enumerateInBlocks { try digestContext.update($0) }
-        return try digestContext.finalize()
+        var sha256 = SHA256()
+        file.enumerateInBlocks { sha256.update(data: $0) }
+        return Data(sha256.finalize())
     }
 
     static func computeSHA256HMAC(_ data: Data, key: Data) -> Data? {
@@ -246,7 +247,7 @@ public extension Cryptography {
         let iv = Randomness.generateRandomBytes(UInt(aescbcIVLength))
 
         var hmacContext = HmacContext(key: hmacKey)
-        var digestContext = Sha256DigestContext()
+        var sha256 = SHA256()
         let cipherContext = try CipherContext(
             operation: .encrypt,
             algorithm: .aes,
@@ -258,7 +259,7 @@ public extension Cryptography {
         // We include our IV at the start of the file *and*
         // in both the hmac and digest.
         try hmacContext.update(iv)
-        try digestContext.update(iv)
+        sha256.update(data: iv)
         output(iv)
 
         let unpaddedPlaintextLength: UInt
@@ -270,7 +271,7 @@ public extension Cryptography {
                 let ciphertextBlock = try cipherContext.update(plaintextDataBlock)
 
                 try hmacContext.update(ciphertextBlock)
-                try digestContext.update(ciphertextBlock)
+                sha256.update(data: ciphertextBlock)
                 output(ciphertextBlock)
             }
 
@@ -282,7 +283,7 @@ public extension Cryptography {
                 )
 
                 try hmacContext.update(ciphertextBlock)
-                try digestContext.update(ciphertextBlock)
+                sha256.update(data: ciphertextBlock)
                 output(ciphertextBlock)
             }
 
@@ -293,7 +294,7 @@ public extension Cryptography {
             let finalCiphertextBlock = try cipherContext.finalize()
 
             try hmacContext.update(finalCiphertextBlock)
-            try digestContext.update(finalCiphertextBlock)
+            sha256.update(data: finalCiphertextBlock)
             output(finalCiphertextBlock)
         }
 
@@ -305,13 +306,13 @@ public extension Cryptography {
         // We write the hmac at the end of the file for the
         // receiver to use for verification. We also include
         // it in the digest.
-        try digestContext.update(hmac)
+        sha256.update(data: hmac)
         output(hmac)
 
         // Calculate our digest. This will be used to verify
         // the data after decryption.
         // digest of: iv || encrypted data || hmac
-        let digest = try digestContext.finalize()
+        let digest = Data(sha256.finalize())
 
         return EncryptionMetadata(
             key: encryptionKey + hmacKey,
@@ -522,20 +523,22 @@ public extension Cryptography {
         )
 
         var hmacContext: HmacContext?
-        var digestContext: Sha256DigestContext?
+        var sha256: SHA256?
         if validateHmacAndDigest {
             // The metadata "key" is actually a concatentation of the
             // encryption key and the hmac key.
             let hmacKey = metadata.key.suffix(hmac256KeyLength)
 
             hmacContext = HmacContext(key: hmacKey)
-            digestContext = metadata.digest != nil ? Sha256DigestContext() : nil
+            if metadata.digest != nil {
+                sha256 = SHA256()
+            }
 
             // Matching encryption, we must start our hmac
             // and digest with the IV, since the encrypted
             // file starts with the IV
             try hmacContext?.update(inputFile.iv)
-            try digestContext?.update(inputFile.iv)
+            sha256?.update(data: inputFile.iv)
         }
 
         var totalPlaintextLength = 0
@@ -549,7 +552,7 @@ public extension Cryptography {
             ) { ciphertext, ciphertextLength in
                 try ciphertext.withUnsafeBytes { ciphertextPointer in
                     try hmacContext?.update(bytes: ciphertextPointer, length: ciphertextLength)
-                    try digestContext?.update(bytes: ciphertextPointer, length: ciphertextLength)
+                    sha256?.update(data: ciphertextPointer.prefix(ciphertextLength))
                 }
             }
             if plaintextDataBlock.isEmpty {
@@ -578,7 +581,7 @@ public extension Cryptography {
                 let lengthToRead = min(remainingPaddingLength, 1024 * 16)
                 let paddingCiphertext = try inputFile.file.readData(ofLength: Int(lengthToRead))
                 try hmacContext.update(paddingCiphertext)
-                try digestContext?.update(paddingCiphertext)
+                sha256?.update(data: paddingCiphertext)
                 remainingPaddingLength -= lengthToRead
             }
             // Verify their HMAC matches our locally calculated HMAC
@@ -598,11 +601,11 @@ public extension Cryptography {
             // Verify their digest matches our locally calculated digest
             // digest of: iv || encrypted data || hmac
             if let theirDigest = metadata.digest {
-                guard var digestContext = digestContext else {
+                guard var sha256 else {
                     throw OWSAssertionError("Missing digest context")
                 }
-                try digestContext.update(hmac)
-                let digest = try digestContext.finalize()
+                sha256.update(data: hmac)
+                let digest = Data(sha256.finalize())
                 guard digest.ows_constantTimeIsEqual(to: theirDigest) else {
                     Logger.debug("Bad digest. Their digest: \(theirDigest.hexadecimalString), our digest: \(digest.hexadecimalString)")
                     throw OWSAssertionError("Bad digest")
