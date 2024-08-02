@@ -39,7 +39,7 @@ public class HmacStreamTransform: StreamTransform, FinalizableStreamTransform, B
 
     init(hmacKey: Data, operation: Operation) throws {
         self.hmacKey = hmacKey
-        self.hmacContext = try HmacContext(key: hmacKey)
+        self.hmacContext = HmacContext(key: hmacKey)
         self.operation = operation
         self.footerSize = {
             switch operation {

@@ -17,7 +17,7 @@ final class HmacContextTest: XCTestCase {
             0x88, 0x1d, 0xc2, 0x00, 0xc9, 0x83, 0x3d, 0xa7,
             0x26, 0xe9, 0x37, 0x6c, 0x2e, 0x32, 0xcf, 0xf7])
 
-        var context = try HmacContext(key: key)
+        var context = HmacContext(key: key)
         try context.update(data)
         let result = try context.finalize()
         XCTAssertEqual(result, expectedOutput)
@@ -32,7 +32,7 @@ final class HmacContextTest: XCTestCase {
             0x5a, 0x00, 0x3f, 0x08, 0x9d, 0x27, 0x39, 0x83,
             0x9d, 0xec, 0x58, 0xb9, 0x64, 0xec, 0x38, 0x43])
 
-        var context = try HmacContext(key: key)
+        var context = HmacContext(key: key)
         try context.update(data)
         let result = try context.finalize()
         XCTAssertEqual(result, expectedOutput)
@@ -47,7 +47,7 @@ final class HmacContextTest: XCTestCase {
             0x29, 0x59, 0x09, 0x8b, 0x3e, 0xf8, 0xc1, 0x22,
             0xd9, 0x63, 0x55, 0x14, 0xce, 0xd5, 0x65, 0xfe])
 
-        var context = try HmacContext(key: key)
+        var context = HmacContext(key: key)
         try context.update(data)
         let result = try context.finalize()
         XCTAssertEqual(result, expectedOutput)
@@ -66,7 +66,7 @@ final class HmacContextTest: XCTestCase {
             0x85, 0xf0, 0xfa, 0xa3, 0xe5, 0x78, 0xf8, 0x07,
             0x7a, 0x2e, 0x3f, 0xf4, 0x67, 0x29, 0x66, 0x5b])
 
-        var context = try HmacContext(key: key)
+        var context = HmacContext(key: key)
         try context.update(data)
         let result = try context.finalize()
         XCTAssertEqual(result, expectedOutput)
@@ -79,7 +79,7 @@ final class HmacContextTest: XCTestCase {
             0xa3, 0xb6, 0x16, 0x74, 0x73, 0x10, 0x0e, 0xe0,
             0x6e, 0x0c, 0x79, 0x6c, 0x29, 0x55, 0x55, 0x2b])
 
-        var context = try HmacContext(key: key)
+        var context = HmacContext(key: key)
         try context.update(data)
         let result = try context.finalize().prefix(16)
         XCTAssertEqual(result, expectedOutput)
@@ -94,7 +94,7 @@ final class HmacContextTest: XCTestCase {
             0x8e, 0x0b, 0xc6, 0x21, 0x37, 0x28, 0xc5, 0x14,
             0x05, 0x46, 0x04, 0x0f, 0x0e, 0xe3, 0x7f, 0x54])
 
-        var context = try HmacContext(key: key)
+        var context = HmacContext(key: key)
         try context.update(data)
         let result = try context.finalize()
         XCTAssertEqual(result, expectedOutput)
@@ -109,7 +109,7 @@ final class HmacContextTest: XCTestCase {
             0xbf, 0xdc, 0x63, 0x64, 0x4f, 0x07, 0x13, 0x93,
             0x8a, 0x7f, 0x51, 0x53, 0x5c, 0x3a, 0x35, 0xe2])
 
-        var context = try HmacContext(key: key)
+        var context = HmacContext(key: key)
         try context.update(data)
         let result = try context.finalize()
         XCTAssertEqual(result, expectedOutput)

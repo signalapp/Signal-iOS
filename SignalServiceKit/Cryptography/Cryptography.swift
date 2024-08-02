@@ -105,7 +105,7 @@ public enum Cryptography {
 
     static func computeSHA256HMAC(_ data: Data, key: Data) -> Data? {
         do {
-            var context = try HmacContext(key: key)
+            var context = HmacContext(key: key)
             try context.update(data)
             return try context.finalize()
         } catch {
@@ -339,7 +339,7 @@ public extension Cryptography {
 
         let iv = Randomness.generateRandomBytes(UInt(aescbcIVLength))
 
-        var hmacContext = try HmacContext(key: hmacKey)
+        var hmacContext = HmacContext(key: hmacKey)
         var digestContext = Sha256DigestContext()
         let cipherContext = try CipherContext(
             operation: .encrypt,
@@ -622,7 +622,7 @@ public extension Cryptography {
             // encryption key and the hmac key.
             let hmacKey = metadata.key.suffix(hmac256KeyLength)
 
-            hmacContext = try HmacContext(key: hmacKey)
+            hmacContext = HmacContext(key: hmacKey)
             digestContext = metadata.digest != nil ? Sha256DigestContext() : nil
 
             // Matching encryption, we must start our hmac
