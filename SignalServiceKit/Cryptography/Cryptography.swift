@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import CommonCrypto
 
 public enum Cryptography {
     // MARK: - HMAC-SIV
