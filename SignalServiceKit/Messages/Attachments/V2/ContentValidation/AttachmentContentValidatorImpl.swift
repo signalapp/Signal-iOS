@@ -731,18 +731,18 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 plaintextLength: plaintextLength,
                 encryptionKey: encryptionKey
             )
-            var digestContext = Sha256DigestContext()
+            var sha256 = SHA256()
             var bytesRemaining = plaintextLength
             while bytesRemaining > 0 {
                 // Read in 1mb chunks.
                 let data = try fileHandle.read(upToCount: 1024 * 1024)
-                try digestContext.update(data)
+                sha256.update(data: data)
                 guard let bytesRead = UInt32(exactly: data.count) else {
                     throw OWSAssertionError("\(data.count) would not fit in UInt32")
                 }
                 bytesRemaining -= bytesRead
             }
-            return try digestContext.finalize()
+            return Data(sha256.finalize())
         }
     }
 
