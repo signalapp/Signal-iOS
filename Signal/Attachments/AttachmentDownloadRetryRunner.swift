@@ -53,6 +53,10 @@ public class AttachmentDownloadRetryRunner {
     @objc
     private func didEnterForeground() {
         Task {
+            // Trigger any ready-to-go downloads; this method exits early and cheaply
+            // if there is nothing to download.
+            self.runner.attachmentDownloadManager.beginDownloadingIfNecessary()
+            // Check for downloads with retry timers and wait for those timers.
             await runner.runIfNotRunning()
         }
     }
