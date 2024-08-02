@@ -1309,6 +1309,7 @@
 		7255A4D12B98E2B700E95368 /* LogFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5027A6AB2AFC48D000D5AB95 /* LogFormatter.swift */; };
 		7255A4D22B98E2B700E95368 /* ScrubbingLogFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F962FF4829AD0C7C00AFA397 /* ScrubbingLogFormatter.swift */; };
 		7255A4D42B98E36900E95368 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 768F720C2A22CEAC002C4E7D /* Preferences.swift */; };
+		7267B1522C5D270600612C34 /* HmacContextTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7267B1512C5D270600612C34 /* HmacContextTest.swift */; };
 		728BFE472C5BEC5C008F20F1 /* Randomness.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728BFE462C5BEC5C008F20F1 /* Randomness.swift */; };
 		728BFE4A2C5BFDA7008F20F1 /* RandomnessTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728BFE482C5BF9CE008F20F1 /* RandomnessTest.swift */; };
 		728BFE4C2C5C3427008F20F1 /* Aes256Key.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728BFE4B2C5C3427008F20F1 /* Aes256Key.swift */; };
@@ -4294,6 +4295,7 @@
 		721BC7EB2BC8253600648981 /* MimeTypeUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MimeTypeUtil.swift; sourceTree = "<group>"; };
 		724329682BE3A0C60089206A /* AppContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppContext.swift; sourceTree = "<group>"; };
 		7254651C2BA00FD200EABFD2 /* LocalUserDisplayMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalUserDisplayMode.swift; sourceTree = "<group>"; };
+		7267B1512C5D270600612C34 /* HmacContextTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HmacContextTest.swift; sourceTree = "<group>"; };
 		728BFE462C5BEC5C008F20F1 /* Randomness.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Randomness.swift; sourceTree = "<group>"; };
 		728BFE482C5BF9CE008F20F1 /* RandomnessTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomnessTest.swift; sourceTree = "<group>"; };
 		728BFE4B2C5C3427008F20F1 /* Aes256Key.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Aes256Key.swift; sourceTree = "<group>"; };
@@ -8094,6 +8096,7 @@
 				668A00CD2C2B5E31007B8808 /* Cryptography.swift */,
 				668A00D92C2B5E72007B8808 /* CryptographyTests.swift */,
 				728BFE4F2C5C57DC008F20F1 /* HmacContext.swift */,
+				7267B1512C5D270600612C34 /* HmacContextTest.swift */,
 				728BFE4D2C5C564D008F20F1 /* Sha256DigestContext.swift */,
 			);
 			path = Cryptography;
@@ -15386,6 +15389,7 @@
 				D91F0B4F2B193A7A0086DB30 /* GroupCallRecordRingUpdateDelegateTest.swift in Sources */,
 				5075C21729CA1EE700A260D2 /* GroupMemberUpdaterTest.swift in Sources */,
 				F9426251289B1B5500460798 /* GroupModelsTest.swift in Sources */,
+				7267B1522C5D270600612C34 /* HmacContextTest.swift in Sources */,
 				D9C0AE672BD7162300FCB05E /* InactiveLinkedDeviceFinderTest.swift in Sources */,
 				D979CC4F2AD4DECB006AAC49 /* IncomingCallEventSyncMessageManagerTest.swift in Sources */,
 				D958C67D2BA0F3B2002F6888 /* IncomingCallLogEventSyncMessageManagerTest.swift in Sources */,
