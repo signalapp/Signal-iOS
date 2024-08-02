@@ -62,7 +62,7 @@ public struct CipherContext {
     }
 
     public func outputLength(forUpdateWithInputLength inputLength: Int) throws -> Int {
-        guard let cryptor = cryptor else {
+        guard let cryptor else {
             throw OWSAssertionError("Unexpectedly attempted to read a finalized cipher")
         }
 
@@ -70,7 +70,7 @@ public struct CipherContext {
     }
 
     public func outputLengthForFinalize() throws -> Int {
-        guard let cryptor = cryptor else {
+        guard let cryptor else {
             throw OWSAssertionError("Unexpectedly attempted to read a finalized cipher")
         }
 
@@ -105,7 +105,7 @@ public struct CipherContext {
         offsetInOutput: Int = 0,
         outputLength: Int? = nil
     ) throws -> Int {
-        guard let cryptor = cryptor else {
+        guard let cryptor else {
             throw OWSAssertionError("Unexpectedly attempted to update a finalized cipher")
         }
 
