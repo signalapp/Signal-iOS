@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CryptoKit
 import Foundation
 import LibSignalClient
 
@@ -74,7 +75,7 @@ public enum SVR {
                     .storageService,
                     .storageServiceManifest,
                     .storageServiceRecord:
-                return Cryptography.computeSHA256HMAC(infoData, key: dataToDeriveFrom)
+                return Data(HMAC<SHA256>.authenticationCode(for: infoData, using: .init(data: dataToDeriveFrom)))
             case .backupKey:
                 guard
                     let bytes = try? hkdf(

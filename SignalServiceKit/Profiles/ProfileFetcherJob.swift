@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CryptoKit
 import Foundation
 import LibSignalClient
 
@@ -385,11 +386,7 @@ public class ProfileFetcherJob {
             }
 
             let dataToVerify = Data(count: 32)
-            guard let expectedVerifier = Cryptography.computeSHA256HMAC(dataToVerify, key: udAccessKey.keyData) else {
-                owsFailDebug("could not compute verification")
-                return .disabled
-            }
-
+            let expectedVerifier = Data(HMAC<SHA256>.authenticationCode(for: dataToVerify, using: .init(data: udAccessKey.keyData)))
             guard expectedVerifier.ows_constantTimeIsEqual(to: verifier) else {
                 return .disabled
             }

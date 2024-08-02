@@ -48,7 +48,7 @@ enum Sha256HmacSiv {
         let decryptedData = try Kx ^ cipherText
 
         let ourIV = Data(HMAC<SHA256>.authenticationCode(for: decryptedData, using: .init(data: Ka)).prefix(hmacsivIVLength))
-        
+
         guard ourIV.ows_constantTimeIsEqual(to: iv) else {
             throw OWSAssertionError("failed to validate IV")
         }

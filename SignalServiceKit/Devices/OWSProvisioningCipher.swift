@@ -4,6 +4,7 @@
 //
 
 import CommonCrypto
+import CryptoKit
 import LibSignalClient
 
 public class OWSProvisioningCipher: NSObject {
@@ -72,7 +73,7 @@ public class OWSProvisioningCipher: NSObject {
             message.append(version)
             message.append(cipherText)
 
-            let mac = try self.mac(forMessage: message, key: macKey)
+            let mac = Data(HMAC<SHA256>.authenticationCode(for: message, using: .init(data: macKey)))
             message.append(mac)
             return message
 
@@ -122,12 +123,5 @@ public class OWSProvisioningCipher: NSObject {
 
         // message format is (iv || ciphertext)
         return initializationVector + ciphertextData.prefix(bytesEncrypted)
-    }
-
-    private func mac(forMessage message: Data, key: ArraySlice<UInt8>) throws -> Data {
-        guard let mac = Cryptography.computeSHA256HMAC(message, key: Data(key)) else {
-            throw Error.macComputationFailed
-        }
-        return mac
     }
 }

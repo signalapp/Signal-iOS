@@ -4,6 +4,7 @@
 //
 
 import CommonCrypto
+import CryptoKit
 import Foundation
 import LibSignalClient
 
@@ -78,10 +79,7 @@ public class ProvisioningCipher {
         let cipherKey = Array(keyBytes[0..<32])
         let macKey = keyBytes[32..<64]
 
-        guard let ourHMAC = Cryptography.computeSHA256HMAC(Data(messageToAuthenticate), key: Data(macKey)) else {
-            throw OWSAssertionError("ourHMAC was unexpectedly nil")
-        }
-
+        let ourHMAC = Data(HMAC<SHA256>.authenticationCode(for: messageToAuthenticate, using: .init(data: macKey)))
         guard ourHMAC.ows_constantTimeIsEqual(to: Data(theirMac)) else {
             throw ProvisioningError.invalidProvisionMessage("mac mismatch")
         }

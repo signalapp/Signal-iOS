@@ -16,10 +16,6 @@ public enum Cryptography {
         file.enumerateInBlocks { sha256.update(data: $0) }
         return Data(sha256.finalize())
     }
-
-    static func computeSHA256HMAC(_ data: Data, key: Data) -> Data? {
-        return Data(HMAC<SHA256>.authenticationCode(for: data, using: .init(data: key)))
-    }
 }
 
 // MARK: - Attachments
