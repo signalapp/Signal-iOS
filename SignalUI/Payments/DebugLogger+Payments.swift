@@ -21,12 +21,15 @@ public extension DebugLogger {
         public init() {}
 
         @inlinable
-        public func log(level: Logging.Logger.Level,
-                        message: Logging.Logger.Message,
-                        metadata: Logging.Logger.Metadata?,
-                        file: String,
-                        function: String,
-                        line: UInt) {
+        public func log(
+            level: Logging.Logger.Level,
+            message: Logging.Logger.Message,
+            metadata: Logging.Logger.Metadata?,
+            source: String,
+            file: String,
+            function: String,
+            line: UInt
+        ) {
             // TODO: Remove.
             let message = "MCSDK: " + message.description
             let line = Int(line)
