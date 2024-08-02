@@ -6,7 +6,7 @@
 import CommonCrypto
 import Foundation
 
-public struct CipherContext {
+public class CipherContext {
     public enum Operation {
         case encrypt
         case decrypt
@@ -41,6 +41,13 @@ public struct CipherContext {
     }
 
     private var cryptor: CCCryptorRef?
+
+    deinit {
+        if let cryptor {
+            CCCryptorRelease(cryptor)
+            self.cryptor = nil
+        }
+    }
 
     public init(operation: Operation, algorithm: Algorithm, options: Options, key: Data, iv: Data) throws {
         let result = key.withUnsafeBytes { keyBytes in
@@ -77,7 +84,7 @@ public struct CipherContext {
         return CCCryptorGetOutputLength(cryptor, 0, true)
     }
 
-    public mutating func update(_ data: Data) throws -> Data {
+    public func update(_ data: Data) throws -> Data {
         let outputLength = try outputLength(forUpdateWithInputLength: data.count)
         var outputBuffer = Data(repeating: 0, count: outputLength)
         let actualOutputLength = try self.update(input: data, output: &outputBuffer)
@@ -98,7 +105,7 @@ public struct CipherContext {
     ///     not be larger than the length of the buffer minus `offsetInOutput`.
     ///
     /// - returns The actual number of bytes written to `output`.
-    public mutating func update(
+    public func update(
         input: Data,
         inputLength: Int? = nil,
         output: inout Data,
@@ -129,7 +136,7 @@ public struct CipherContext {
         return actualOutputLength
     }
 
-    public mutating func finalize() throws -> Data {
+    public func finalize() throws -> Data {
         let outputLength = try self.outputLengthForFinalize()
         var outputBuffer = Data(repeating: 0, count: outputLength)
         let actualOutputLength = try finalize(output: &outputBuffer)
@@ -147,7 +154,7 @@ public struct CipherContext {
     ///     not be larger than the length of the buffer minus `offsetInOutput`.
     ///
     /// - returns The actual number of bytes written to `output`.
-    public mutating func finalize(
+    public func finalize(
         output: inout Data,
         offsetInOutput: Int = 0,
         outputLength: Int? = nil
