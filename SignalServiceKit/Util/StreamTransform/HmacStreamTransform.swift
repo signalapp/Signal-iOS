@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CryptoKit
 import Foundation
 
 public class HmacStreamTransform: StreamTransform, FinalizableStreamTransform, BufferedStreamTransform {
@@ -20,7 +21,7 @@ public class HmacStreamTransform: StreamTransform, FinalizableStreamTransform, B
         case validate
     }
 
-    private var hmacContext: HmacContext
+    private var hmacState: HMAC<SHA256>
     private let hmacKey: Data
     private let operation: Operation
 
@@ -39,7 +40,7 @@ public class HmacStreamTransform: StreamTransform, FinalizableStreamTransform, B
 
     init(hmacKey: Data, operation: Operation) throws {
         self.hmacKey = hmacKey
-        self.hmacContext = HmacContext(key: hmacKey)
+        self.hmacState = HMAC(key: .init(data: hmacKey))
         self.operation = operation
         self.footerSize = {
             switch operation {
@@ -65,7 +66,7 @@ public class HmacStreamTransform: StreamTransform, FinalizableStreamTransform, B
         let targetData = try readBufferedData()
         if targetData.count > 0 {
             // Update the hmac with the new block
-            try hmacContext.update(targetData)
+            hmacState.update(data: targetData)
         }
         return targetData
     }
@@ -81,7 +82,7 @@ public class HmacStreamTransform: StreamTransform, FinalizableStreamTransform, B
         // Fetch the remaining non-footer data
         var remainingData = try readBufferedData()
 
-        let hmac = try hmacContext.finalize()
+        let hmac = Data(hmacState.finalize())
         switch operation {
         case .generate:
             remainingData.append(hmac)
