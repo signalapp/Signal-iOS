@@ -735,10 +735,12 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             var bytesRemaining = plaintextLength
             while bytesRemaining > 0 {
                 // Read in 1mb chunks.
-                let chunkSize = min(bytesRemaining, 1024 * 1024)
-                let data = try fileHandle.read(upToCount: chunkSize)
+                let data = try fileHandle.read(upToCount: 1024 * 1024)
                 try digestContext.update(data)
-                bytesRemaining -= chunkSize
+                guard let bytesRead = UInt32(exactly: data.count) else {
+                    throw OWSAssertionError("\(data.count) would not fit in UInt32")
+                }
+                bytesRemaining -= bytesRead
             }
             return try digestContext.finalize()
         }
