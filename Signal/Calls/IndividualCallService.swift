@@ -688,6 +688,22 @@ final class IndividualCallService: CallServiceStateObserver {
             // An incoming call was dropped, ignoring because we have already
             // failed the call on the screen.
 
+        case .remoteAudioEnable:
+            guard call === callServiceState.currentCall else {
+                cleanUpStaleCall(call)
+                return
+            }
+
+            // TODO: Implement handling when the remote enables audio.
+
+        case .remoteAudioDisable:
+            guard call === callServiceState.currentCall else {
+                cleanUpStaleCall(call)
+                return
+            }
+
+            // TODO: Implement handling when the remote disables audio.
+
         case .remoteVideoEnable:
             guard call === callServiceState.currentCall else {
                 cleanUpStaleCall(call)
