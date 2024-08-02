@@ -3,42 +3,44 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CryptoKit
 import Foundation
 
 public class MetadataStreamTransform: StreamTransform, FinalizableStreamTransform {
     public var hasFinalized: Bool = false
 
-    private var digestContext: Sha256DigestContext?
-    private var _digest: Data?
+    private var sha256Result: SHA256.Digest?
+    private var sha256State: SHA256?
+
     public func digest() throws -> Data {
-        guard calculateDigest else {
-            throw OWSAssertionError("Not configured to calculate digest")
+        guard let sha256Result, hasFinalized else {
+            if sha256State != nil {
+                throw OWSAssertionError("Reading digest before finalized")
+            } else {
+                throw OWSAssertionError("Not configured to calculate digest")
+            }
         }
-        guard hasFinalized, let digest = _digest else {
-            throw OWSAssertionError("Reading digest before finalized")
-        }
-        return digest
+        return Data(sha256Result)
     }
 
-    private let calculateDigest: Bool
     init(calculateDigest: Bool) {
-        self.calculateDigest = calculateDigest
         if calculateDigest {
-            self.digestContext = Sha256DigestContext()
+            self.sha256State = SHA256()
         }
     }
 
     public private(set) var count: Int = 0
 
-    public func transform(data: Data) throws -> Data {
-        try digestContext?.update(data)
+    public func transform(data: Data) -> Data {
+        sha256State?.update(data: data)
         count += data.count
         return data
     }
 
-    public func finalize() throws -> Data {
-        self.hasFinalized = true
-        self._digest = try self.digestContext?.finalize()
+    public func finalize() -> Data {
+        hasFinalized = true
+        sha256Result = sha256State?.finalize()
+        sha256State = nil
         return Data()
     }
 }
