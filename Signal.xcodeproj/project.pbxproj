@@ -1314,6 +1314,7 @@
 		728BFE4C2C5C3427008F20F1 /* Aes256Key.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728BFE4B2C5C3427008F20F1 /* Aes256Key.swift */; };
 		728BFE4E2C5C564D008F20F1 /* Sha256DigestContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728BFE4D2C5C564D008F20F1 /* Sha256DigestContext.swift */; };
 		728BFE502C5C57DC008F20F1 /* HmacContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728BFE4F2C5C57DC008F20F1 /* HmacContext.swift */; };
+		728BFE522C5C59E5008F20F1 /* CipherContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728BFE512C5C59E5008F20F1 /* CipherContext.swift */; };
 		72976BF22BDCF00C0054FAC2 /* NSTimer+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72976BF12BDCF00C0054FAC2 /* NSTimer+OWS.swift */; };
 		72B4819D2BD60FDF008B8BA1 /* OWSMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B4819C2BD60FDF008B8BA1 /* OWSMath.swift */; };
 		72B994DB2BE950DB000CBBFD /* TestAppContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B994DA2BE950DB000CBBFD /* TestAppContext.swift */; };
@@ -4298,6 +4299,7 @@
 		728BFE4B2C5C3427008F20F1 /* Aes256Key.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Aes256Key.swift; sourceTree = "<group>"; };
 		728BFE4D2C5C564D008F20F1 /* Sha256DigestContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sha256DigestContext.swift; sourceTree = "<group>"; };
 		728BFE4F2C5C57DC008F20F1 /* HmacContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HmacContext.swift; sourceTree = "<group>"; };
+		728BFE512C5C59E5008F20F1 /* CipherContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CipherContext.swift; sourceTree = "<group>"; };
 		72976BF12BDCF00C0054FAC2 /* NSTimer+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSTimer+OWS.swift"; sourceTree = "<group>"; };
 		72B4819C2BD60FDF008B8BA1 /* OWSMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSMath.swift; sourceTree = "<group>"; };
 		72B994DA2BE950DB000CBBFD /* TestAppContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAppContext.swift; sourceTree = "<group>"; };
@@ -8088,6 +8090,7 @@
 			isa = PBXGroup;
 			children = (
 				728BFE4B2C5C3427008F20F1 /* Aes256Key.swift */,
+				728BFE512C5C59E5008F20F1 /* CipherContext.swift */,
 				668A00CD2C2B5E31007B8808 /* Cryptography.swift */,
 				668A00D92C2B5E72007B8808 /* CryptographyTests.swift */,
 				728BFE4F2C5C57DC008F20F1 /* HmacContext.swift */,
@@ -14240,6 +14243,7 @@
 				F9C5CCF2289453B300548EEE /* ChunkedInputStream.swift in Sources */,
 				C1EB623C2BADEE56006D99CB /* ChunkedInputStreamTransform.swift in Sources */,
 				C1CF83D02B96C85E00CDC9C4 /* ChunkedOutputStreamTransform.swift in Sources */,
+				728BFE522C5C59E5008F20F1 /* CipherContext.swift in Sources */,
 				F9C5CDFC289453B400548EEE /* Collection+OWS.swift in Sources */,
 				72345D1D2B9A1984000237B3 /* CommonStrings.swift in Sources */,
 				66E1AD552B8D033E00C56B7B /* ConcreteTSResource.swift in Sources */,
