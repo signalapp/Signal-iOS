@@ -1149,7 +1149,7 @@ public extension Cryptography {
 }
 
 extension FileHandle {
-    func enumerateInBlocks(
+    fileprivate func enumerateInBlocks(
         blockSize: Int = 1024 * 1024,
         maxOffset: UInt64? = nil,
         block: (Data) throws -> Void
