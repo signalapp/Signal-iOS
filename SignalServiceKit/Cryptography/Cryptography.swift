@@ -20,11 +20,6 @@ public enum Cryptography {
     static func computeSHA256HMAC(_ data: Data, key: Data) -> Data? {
         return Data(HMAC<SHA256>.authenticationCode(for: data, using: .init(data: key)))
     }
-
-    static func computeSHA256HMAC(_ data: Data, key: Data, truncatedToBytes: UInt) -> Data? {
-        guard let hmac = computeSHA256HMAC(data, key: key), hmac.count >= truncatedToBytes else { return nil }
-        return hmac.subdata(in: hmac.startIndex..<hmac.startIndex.advanced(by: Int(truncatedToBytes)))
-    }
 }
 
 // MARK: - Attachments

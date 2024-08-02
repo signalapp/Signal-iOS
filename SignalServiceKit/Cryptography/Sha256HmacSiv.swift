@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CryptoKit
 import Foundation
 
 enum Sha256HmacSiv {
@@ -19,22 +20,12 @@ enum Sha256HmacSiv {
         guard data.count == hmacsivDataLength else { throw invalidLengthError("data") }
         guard key.count == hmacsivDataLength else { throw invalidLengthError("key") }
 
-        guard let authData = "auth".data(using: .utf8),
-              let Ka = Cryptography.computeSHA256HMAC(authData, key: key) else {
-            throw OWSAssertionError("failed to compute Ka")
-        }
-        guard let encData = "enc".data(using: .utf8),
-              let Ke = Cryptography.computeSHA256HMAC(encData, key: key) else {
-            throw OWSAssertionError("failed to compute Ke")
-        }
-
-        guard let iv = Cryptography.computeSHA256HMAC(data, key: Ka, truncatedToBytes: UInt(hmacsivIVLength)) else {
-            throw OWSAssertionError("failed to compute IV")
-        }
-
-        guard let Kx = Cryptography.computeSHA256HMAC(iv, key: Ke) else {
-            throw OWSAssertionError("failed to compute Kx")
-        }
+        let authData = Data("auth".utf8)
+        let Ka = Data(HMAC<SHA256>.authenticationCode(for: authData, using: .init(data: key)))
+        let encData = Data("enc".utf8)
+        let Ke = Data(HMAC<SHA256>.authenticationCode(for: encData, using: .init(data: key)))
+        let iv = Data(HMAC<SHA256>.authenticationCode(for: data, using: .init(data: Ka)).prefix(hmacsivIVLength))
+        let Kx = Data(HMAC<SHA256>.authenticationCode(for: iv, using: .init(data: Ke)))
 
         let ciphertext = try Kx ^ data
 
@@ -48,25 +39,16 @@ enum Sha256HmacSiv {
         guard cipherText.count == hmacsivDataLength else { throw invalidLengthError("cipherText") }
         guard key.count == hmacsivDataLength else { throw invalidLengthError("key") }
 
-        guard let authData = "auth".data(using: .utf8),
-              let Ka = Cryptography.computeSHA256HMAC(authData, key: key) else {
-            throw OWSAssertionError("failed to compute Ka")
-        }
-        guard let encData = "enc".data(using: .utf8),
-              let Ke = Cryptography.computeSHA256HMAC(encData, key: key) else {
-            throw OWSAssertionError("failed to compute Ke")
-        }
-
-        guard let Kx = Cryptography.computeSHA256HMAC(iv, key: Ke) else {
-            throw OWSAssertionError("failed to compute Kx")
-        }
+        let authData = Data("auth".utf8)
+        let Ka = Data(HMAC<SHA256>.authenticationCode(for: authData, using: .init(data: key)))
+        let encData = Data("enc".utf8)
+        let Ke = Data(HMAC<SHA256>.authenticationCode(for: encData, using: .init(data: key)))
+        let Kx = Data(HMAC<SHA256>.authenticationCode(for: iv, using: .init(data: Ke)))
 
         let decryptedData = try Kx ^ cipherText
 
-        guard let ourIV = Cryptography.computeSHA256HMAC(decryptedData, key: Ka, truncatedToBytes: UInt(hmacsivIVLength)) else {
-            throw OWSAssertionError("failed to compute IV")
-        }
-
+        let ourIV = Data(HMAC<SHA256>.authenticationCode(for: decryptedData, using: .init(data: Ka)).prefix(hmacsivIVLength))
+        
         guard ourIV.ows_constantTimeIsEqual(to: iv) else {
             throw OWSAssertionError("failed to validate IV")
         }

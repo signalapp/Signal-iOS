@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CryptoKit
 import Foundation
 import LibSignalClient
 
@@ -17,7 +18,7 @@ public class DeviceNames: NSObject {
     // Never instantiate this class.
     private override init() {}
 
-    private static let syntheticIVLength: UInt = 16
+    private static let syntheticIVLength = 16
 
     public class func encryptDeviceName(plaintext: String, identityKeyPair: IdentityKeyPair) throws -> Data {
 
@@ -32,11 +33,10 @@ public class DeviceNames: NSObject {
         let masterSecret = Data(ephemeralKeyPair.privateKey.keyAgreement(with: identityKeyPair.publicKey))
 
         // synthetic_iv = HmacSHA256(key=HmacSHA256(key=master_secret, input=“auth”), input=plaintext)[0:16]
-        let syntheticIV = try computeSyntheticIV(masterSecret: masterSecret,
-                                                 plaintextData: plaintextData)
+        let syntheticIV = computeSyntheticIV(masterSecret: masterSecret, plaintextData: plaintextData)
 
         // cipher_key = HmacSHA256(key=HmacSHA256(key=master_secret, “cipher”), input=synthetic_iv)
-        let cipherKey = try computeCipherKey(masterSecret: masterSecret, syntheticIV: syntheticIV)
+        let cipherKey = computeCipherKey(masterSecret: masterSecret, syntheticIV: syntheticIV)
 
         // cipher_text = AES-CTR(key=cipher_key, input=plaintext, counter=0)
         var ciphertext = plaintextData
@@ -51,39 +51,19 @@ public class DeviceNames: NSObject {
         return try protoBuilder.buildSerializedData()
     }
 
-    private class func computeSyntheticIV(masterSecret: Data,
-                                          plaintextData: Data) throws -> Data {
+    private class func computeSyntheticIV(masterSecret: Data, plaintextData: Data) -> Data {
         // synthetic_iv = HmacSHA256(key=HmacSHA256(key=master_secret, input=“auth”), input=plaintext)[0:16]
-        guard let syntheticIVInput = "auth".data(using: .utf8) else {
-            owsFailDebug("Could not convert text to UTF-8.")
-            throw DeviceNameError.assertionFailure
-        }
-        guard let syntheticIVKey = Cryptography.computeSHA256HMAC(syntheticIVInput, key: masterSecret) else {
-            owsFailDebug("Could not compute synthetic IV key.")
-            throw DeviceNameError.assertionFailure
-        }
-        guard let syntheticIV = Cryptography.computeSHA256HMAC(plaintextData, key: syntheticIVKey, truncatedToBytes: syntheticIVLength) else {
-            owsFailDebug("Could not compute synthetic IV.")
-            throw DeviceNameError.assertionFailure
-        }
+        let syntheticIVInput = Data("auth".utf8)
+        let syntheticIVKey = Data(HMAC<SHA256>.authenticationCode(for: syntheticIVInput, using: .init(data: masterSecret)))
+        let syntheticIV = Data(HMAC<SHA256>.authenticationCode(for: plaintextData, using: .init(data: syntheticIVKey)).prefix(syntheticIVLength))
         return syntheticIV
     }
 
-    private class func computeCipherKey(masterSecret: Data,
-                                        syntheticIV: Data) throws -> Data {
+    private class func computeCipherKey(masterSecret: Data, syntheticIV: Data) -> Data {
         // cipher_key = HmacSHA256(key=HmacSHA256(key=master_secret, “cipher”), input=synthetic_iv)
-        guard let cipherKeyInput = "cipher".data(using: .utf8) else {
-            owsFailDebug("Could not convert text to UTF-8.")
-            throw DeviceNameError.assertionFailure
-        }
-        guard let cipherKeyKey = Cryptography.computeSHA256HMAC(cipherKeyInput, key: masterSecret) else {
-            owsFailDebug("Could not compute cipher key key.")
-            throw DeviceNameError.assertionFailure
-        }
-        guard let cipherKey = Cryptography.computeSHA256HMAC(syntheticIV, key: cipherKeyKey) else {
-            owsFailDebug("Could not compute cipher key.")
-            throw DeviceNameError.assertionFailure
-        }
+        let cipherKeyInput = Data("cipher".utf8)
+        let cipherKeyKey = Data(HMAC<SHA256>.authenticationCode(for: cipherKeyInput, using: .init(data: masterSecret)))
+        let cipherKey = Data(HMAC<SHA256>.authenticationCode(for: syntheticIV, using: .init(data: cipherKeyKey)))
         return cipherKey
     }
 
@@ -133,7 +113,7 @@ public class DeviceNames: NSObject {
         let masterSecret = Data(identityKeyPair.privateKey.keyAgreement(with: ephemeralPublic))
 
         // cipher_key = HmacSHA256(key=HmacSHA256(key=master_secret, input=“cipher”), input=synthetic_iv)
-        let cipherKey = try computeCipherKey(masterSecret: masterSecret, syntheticIV: receivedSyntheticIV)
+        let cipherKey = computeCipherKey(masterSecret: masterSecret, syntheticIV: receivedSyntheticIV)
 
         // plaintext = AES-CTR(key=cipher_key, input=ciphertext, counter=0)
         var plaintextData = ciphertext
@@ -142,8 +122,7 @@ public class DeviceNames: NSObject {
 
         // Verify the synthetic IV was correct.
         // constant_time_compare(HmacSHA256(key=HmacSHA256(key=master_secret, input=”auth”), input=plaintext)[0:16], synthetic_iv) == true
-        let computedSyntheticIV = try computeSyntheticIV(masterSecret: masterSecret,
-                                                         plaintextData: plaintextData)
+        let computedSyntheticIV = computeSyntheticIV(masterSecret: masterSecret, plaintextData: plaintextData)
         guard receivedSyntheticIV.ows_constantTimeIsEqual(to: computedSyntheticIV) else {
             throw DeviceNameError.cryptError("Synthetic IV did not match.")
         }
