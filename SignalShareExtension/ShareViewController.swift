@@ -750,14 +750,12 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         if attachment.isVideoThatNeedsCompression() {
             // TODO: Move waiting for this export to the end of the share flow rather than up front
             let compressedAttachment = try await SignalAttachment.compressVideoAsMp4(dataSource: attachment.dataSource, dataUTI: attachment.dataUTI, sessionCallback: { exportSession in
-                Task { @MainActor in
-                    let progressPoller = ProgressPoller(timeInterval: 0.1, ratioCompleteBlock: { return exportSession.progress })
+                let progressPoller = ProgressPoller(timeInterval: 0.1, ratioCompleteBlock: { return exportSession.progress })
 
-                    self.progressPoller = progressPoller
-                    progressPoller.startPolling()
+                self.progressPoller = progressPoller
+                progressPoller.startPolling()
 
-                    self.loadViewController.progress = progressPoller.progress
-                }
+                self.loadViewController.progress = progressPoller.progress
             })
             if let attachmentError = compressedAttachment.error {
                 throw attachmentError

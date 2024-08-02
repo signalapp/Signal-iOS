@@ -662,8 +662,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                                            attachmentApprovalItem: attachmentApprovalItem)
         }
         if let videoEditorModel = attachmentApprovalItem.videoEditorModel, videoEditorModel.needsRender {
-            return renderedAttachmentPromise(videoEditorModel: videoEditorModel,
-                                             attachmentApprovalItem: attachmentApprovalItem)
+            return .wrapAsync {
+                try await self.renderAttachment(videoEditorModel: videoEditorModel, attachmentApprovalItem: attachmentApprovalItem)
+            }
         }
         // No editor applies. Use original, un-edited attachment.
         return Promise.value(attachmentApprovalItem.attachment)
@@ -727,32 +728,30 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     // If any errors occurs in the export process, we fail over to
     // sending the original attachment.  This seems better than trying
     // to involve the user in resolving the issue.
-    func renderedAttachmentPromise(videoEditorModel: VideoEditorModel,
-                                   attachmentApprovalItem: AttachmentApprovalItem) -> Promise<SignalAttachment> {
+    func renderAttachment(videoEditorModel: VideoEditorModel, attachmentApprovalItem: AttachmentApprovalItem) async throws -> SignalAttachment {
         assert(videoEditorModel.needsRender)
-        return videoEditorModel.ensureCurrentRender().result.map(on: DispatchQueue.sharedUserInitiated) { result in
-            let filePath = try result.consumeResultPath()
-            guard let fileExtension = filePath.fileExtension else {
-                throw OWSAssertionError("Missing fileExtension.")
-            }
-            guard let dataUTI = MimeTypeUtil.utiTypeForFileExtension(fileExtension) else {
-                throw OWSAssertionError("Missing dataUTI.")
-            }
-            let dataSource = try DataSourcePath.dataSource(withFilePath: filePath, shouldDeleteOnDeallocation: true)
-            // Rewrite the filename's extension to reflect the output file format.
-            var filename: String? = attachmentApprovalItem.attachment.sourceFilename
-            if let sourceFilename = attachmentApprovalItem.attachment.sourceFilename {
-                filename = (sourceFilename as NSString).deletingPathExtension.appendingFileExtension(fileExtension)
-            }
-            dataSource.sourceFilename = filename
-
-            let dstAttachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI)
-            if let attachmentError = dstAttachment.error {
-                throw OWSAssertionError("Could not prepare attachment for output: \(attachmentError).")
-            }
-            dstAttachment.isViewOnceAttachment = attachmentApprovalItem.attachment.isViewOnceAttachment
-            return dstAttachment
+        let result = try await videoEditorModel.ensureCurrentRender().render()
+        let filePath = try result.consumeResultPath()
+        guard let fileExtension = filePath.fileExtension else {
+            throw OWSAssertionError("Missing fileExtension.")
         }
+        guard let dataUTI = MimeTypeUtil.utiTypeForFileExtension(fileExtension) else {
+            throw OWSAssertionError("Missing dataUTI.")
+        }
+        let dataSource = try DataSourcePath.dataSource(withFilePath: filePath, shouldDeleteOnDeallocation: true)
+        // Rewrite the filename's extension to reflect the output file format.
+        var filename: String? = attachmentApprovalItem.attachment.sourceFilename
+        if let sourceFilename = attachmentApprovalItem.attachment.sourceFilename {
+            filename = (sourceFilename as NSString).deletingPathExtension.appendingFileExtension(fileExtension)
+        }
+        dataSource.sourceFilename = filename
+
+        let dstAttachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI)
+        if let attachmentError = dstAttachment.error {
+            throw OWSAssertionError("Could not prepare attachment for output: \(attachmentError).")
+        }
+        dstAttachment.isViewOnceAttachment = attachmentApprovalItem.attachment.isViewOnceAttachment
+        return dstAttachment
     }
 
     func attachmentApprovalItem(before currentItem: AttachmentApprovalItem) -> AttachmentApprovalItem? {

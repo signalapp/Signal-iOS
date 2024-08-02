@@ -6,10 +6,6 @@
 import AVFoundation
 import SignalServiceKit
 
-private enum VideoEditorError: Error {
-    case cancelled
-}
-
 protocol VideoEditorModelObserver: AnyObject {
     func videoEditorModelDidChange(_ model: VideoEditorModel)
 }
@@ -166,8 +162,6 @@ class VideoEditorModel: NSObject {
     }
 
     // This method can be used to access the rendered output.
-    // It can also be used to eagerly initiate a render (if
-    // necessary) to reduce perceived render time.
     func ensureCurrentRender() -> Render {
         return lock.withLock {
             if let render = self.currentRender {
@@ -175,7 +169,6 @@ class VideoEditorModel: NSObject {
             } else {
                 let render = Render(model: self)
                 self.currentRender = render
-                render.beginRender()
                 return render
             }
         }
@@ -187,6 +180,23 @@ extension VideoEditorModel {
     // Contains a copy of the model state at the
     // time the render is enqueued.
     class Render {
+        private enum ExportState {
+            case ready
+            case exporting(Task<Result, any Error>)
+            case failed(any Error)
+            case finished(Result)
+
+            mutating func cancel() -> Task<Result, any Error>? {
+                switch self {
+                case .exporting(let task):
+                    self = .ready
+                    return task
+                case .ready, .failed, .finished:
+                    return nil
+                }
+            }
+        }
+
         fileprivate let srcVideoPath: String
         fileprivate let untrimmedDuration: CMTime
         fileprivate let trimmedStartSeconds: TimeInterval
@@ -196,7 +206,7 @@ extension VideoEditorModel {
         // Until the render is consumed, it is the responsibility of this
         // class to clean up its temp files.
         private var lock = UnfairLock()
-        private var exportSession: AVAssetExportSession?
+        private var exportState = ExportState.ready
 
         class Result {
             private let lock = UnfairLock()
@@ -257,58 +267,6 @@ extension VideoEditorModel {
             }
         }
 
-        lazy var result: Promise<Result> = {
-            guard isTrimmed else {
-                // Video editor has no changes.
-                owsFailDebug("calling no-op render. Instead copy the file.")
-
-                // Since we haven't trimmed, there's nothing to render. Callers shouldn't get here, but
-                // just in case we'll return an unowned Result. The implementation of Result ensures that
-                // a new copy of the srcVideoPath is made for any consume requests to maintain the ownership contract.
-                return .value(Result(path: srcVideoPath, owned: false))
-            }
-
-            return firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Result> in
-                let asset = AVURLAsset(url: URL(fileURLWithPath: self.srcVideoPath))
-                let dstFilePath = OWSFileSystem.temporaryFilePath(fileExtension: "mp4")
-
-                let session: AVAssetExportSession = try self.lock.withLock {
-                    guard self.exportSession == nil else { throw OWSAssertionError("Duplicate session") }
-
-                    // AVAssetExportPresetPassthrough maintains the source quality.
-                    guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) else {
-                        throw OWSAssertionError("Could not create export session.")
-                    }
-
-                    self.exportSession = exportSession
-                    return exportSession
-                }
-
-                session.outputURL = URL(fileURLWithPath: dstFilePath)
-                // This will ensure that the MP4 moov atom (movie atom)
-                // is located at the beginning of the file. That may help
-                // recipients validate incoming videos.
-                session.shouldOptimizeForNetworkUse = true
-                session.outputFileType = AVFileType.mp4
-                // Preserve the original timescale.
-                let cmStart: CMTime = CMTime(seconds: self.trimmedStartSeconds, preferredTimescale: self.untrimmedDuration.timescale)
-                let cmDuration: CMTime = CMTime(seconds: self.trimmedDurationSeconds, preferredTimescale: self.untrimmedDuration.timescale)
-                let cmRange: CMTimeRange = CMTimeRange(start: cmStart, duration: cmDuration)
-                session.timeRange = cmRange
-
-                return session.exportPromise().map { path in
-                    Result(path: path, owned: true)
-                }.recover { error -> Promise<Result> in
-                    if case VideoEditorError.cancelled = error {
-                        // No big deal. Cancellations happen.
-                    } else {
-                        owsFailDebug("Export failed: \(error)")
-                    }
-                    throw error
-                }
-            }
-        }()
-
         init(model: VideoEditorModel) {
             self.srcVideoPath = model.srcVideoPath
             self.untrimmedDuration = model.untrimmedDuration
@@ -317,37 +275,109 @@ extension VideoEditorModel {
             self.isTrimmed = model.isTrimmed
         }
 
-        func beginRender() {
-            _ = result
+        func render() async throws -> Result {
+            enum CurrentExport {
+                case exporting(Task<Result, any Error>)
+                case finished(Swift.Result<Result, any Error>)
+
+                var result: Result {
+                    get async throws {
+                        switch self {
+                        case .exporting(let task):
+                            return try await task.value
+                        case .finished(let result):
+                            return try result.get()
+                        }
+                    }
+                }
+            }
+
+            let export = lock.withLock { () -> CurrentExport in
+                switch exportState {
+                case .finished(let result):
+                    return .finished(.success(result))
+                case .exporting(let task):
+                    return .exporting(task)
+                case .failed(let error):
+                    return .finished(.failure(error))
+                case .ready:
+                    break
+                }
+
+                let task = Task {
+                    do {
+                        let result = try await _render()
+                        lock.withLock { exportState = .finished(result) }
+                        return result
+                    } catch let error as CancellationError {
+                        lock.withLock { exportState = .ready }
+                        throw error
+                    } catch {
+                        owsFailDebug("Export failed: \(error)")
+                        lock.withLock { exportState = .failed(error) }
+                        throw error
+                    }
+                }
+                self.exportState = .exporting(task)
+                return .exporting(task)
+            }
+
+            return try await export.result
+        }
+
+        nonisolated private func _render() async throws -> Result {
+            guard isTrimmed else {
+                // Video editor has no changes.
+                owsFailDebug("calling no-op render. Instead copy the file.")
+
+                // Since we haven't trimmed, there's nothing to render. Callers shouldn't get here, but
+                // just in case we'll return an unowned Result. The implementation of Result ensures that
+                // a new copy of the srcVideoPath is made for any consume requests to maintain the ownership contract.
+                return Result(path: srcVideoPath, owned: false)
+            }
+
+            let asset = AVURLAsset(url: URL(fileURLWithPath: self.srcVideoPath))
+            let dstFilePath = OWSFileSystem.temporaryFilePath(fileExtension: "mp4")
+
+            guard let session = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) else {
+                throw OWSAssertionError("Could not create export session.")
+            }
+
+            let exportURL = URL(fileURLWithPath: dstFilePath)
+#if compiler(<6.0)
+            session.outputURL = exportURL
+            session.outputFileType = .mp4
+#endif
+
+            // This will ensure that the MP4 moov atom (movie atom)
+            // is located at the beginning of the file. That may help
+            // recipients validate incoming videos.
+            session.shouldOptimizeForNetworkUse = true
+            // Preserve the original timescale.
+            let cmStart: CMTime = CMTime(seconds: self.trimmedStartSeconds, preferredTimescale: self.untrimmedDuration.timescale)
+            let cmDuration: CMTime = CMTime(seconds: self.trimmedDurationSeconds, preferredTimescale: self.untrimmedDuration.timescale)
+            let cmRange: CMTimeRange = CMTimeRange(start: cmStart, duration: cmDuration)
+            session.timeRange = cmRange
+
+#if compiler(>=6.0)
+            try await session.export(to: exportURL, as: .mp4)
+#else
+            await session.export()
+#endif
+
+            switch (session.status, session.outputURL?.path) {
+            case (.completed, let path?):
+                return Result(path: path, owned: true)
+            case (.cancelled, _):
+                throw CancellationError()
+            default:
+                throw session.error ?? OWSAssertionError("Status \(session.status)")
+            }
         }
 
         func cancel() {
-            lock.withLock {
-                exportSession?.cancelExport()
-                exportSession = nil
-            }
-        }
-    }
-}
-
-fileprivate extension AVAssetExportSession {
-    func exportPromise() -> Promise<String> {
-        Promise { future in
-            guard self.status != .cancelled else {
-                future.reject(VideoEditorError.cancelled)
-                return
-            }
-
-            exportAsynchronously {
-                switch (self.status, self.outputURL?.path) {
-                case (.completed, let path?):
-                    future.resolve(path)
-                case (.cancelled, _):
-                    future.reject(VideoEditorError.cancelled)
-                default:
-                    future.reject(self.error ?? OWSAssertionError("Status \(self.status)"))
-                }
-            }
+            let currentExport = lock.withLock { exportState.cancel() }
+            currentExport?.cancel()
         }
     }
 }

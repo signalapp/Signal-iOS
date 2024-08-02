@@ -221,20 +221,22 @@ class VideoEditorView: UIView {
             guard isGranted else { return }
 
             ModalActivityIndicatorViewController.present(fromViewController: viewController, canCancel: false) { modalVC in
-                firstly {
-                    self.saveVideoPromise()
-                }.done(on: DispatchQueue.main) {
-                    modalVC.dismiss()
-                }.catch { _ in
-                    modalVC.dismiss {
-                        OWSActionSheets.showErrorAlert(message: OWSLocalizedString("ERROR_COULD_NOT_SAVE_VIDEO", comment: "Error indicating that 'save video' failed."))
+                Task {
+                    do {
+                        try await self.saveVideo(self.model)
+                        modalVC.dismiss()
+                    } catch {
+                        Logger.error("Failed to save video: \(error)")
+                        modalVC.dismiss {
+                            OWSActionSheets.showErrorAlert(message: OWSLocalizedString("ERROR_COULD_NOT_SAVE_VIDEO", comment: "Error indicating that 'save video' failed."))
+                        }
                     }
                 }
             }
         }
     }
 
-    private func saveVideoPromise() -> Promise<Void> {
+    nonisolated private func saveVideo(_ model: VideoEditorModel) async throws {
         // Creates a copy of a file in a new temporary path
         // The file path returned in a Result is guaranteed valid for the Result's lifetime
         // Making a copy protects us from any modifications to a file we don't own
@@ -247,37 +249,19 @@ class VideoEditorView: UIView {
             return dstPath
         }
 
-        return firstly(on: DispatchQueue.global()) { () -> Promise<String> in
-            guard self.model.needsRender else {
-                // Nothing to render, just use the original file
-                let copy = try createCopyOfFile(self.model.srcVideoPath)
-                return Promise.value(copy)
-            }
+        let renderedVideoPath = if model.needsRender {
+            try await model.ensureCurrentRender().render().getResultPath()
+        } else {
+            // Nothing to render, just use the original file
+            model.srcVideoPath
+        }
 
-            return self.model.ensureCurrentRender().result.map(on: DispatchQueue.global()) { result in
-                try createCopyOfFile(result.getResultPath())
-            }
+        let copy = try createCopyOfFile(renderedVideoPath)
+        defer { OWSFileSystem.deleteFileIfExists(copy) }
 
-        }.then(on: DispatchQueue.global()) { (videoFilePath: String) -> Promise<Void> in
-            Promise { future in
-                let videoUrl = URL(fileURLWithPath: videoFilePath)
-
-                PHPhotoLibrary.shared().performChanges {
-                    PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: videoUrl)
-                } completionHandler: { (didSucceed, error) in
-                    OWSFileSystem.deleteFileIfExists(videoFilePath)
-
-                    if let error = error {
-                        future.reject(error)
-                        return
-                    }
-                    guard didSucceed else {
-                        future.reject(OWSAssertionError("Video export failed."))
-                        return
-                    }
-                    future.resolve()
-                }
-            }
+        try await PHPhotoLibrary.shared().performChanges {
+            let url = URL(fileURLWithPath: copy)
+            PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: url)
         }
     }
 }
