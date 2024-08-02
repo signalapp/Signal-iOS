@@ -4,6 +4,7 @@
 //
 
 import Contacts
+import CryptoKit
 import Foundation
 import LibSignalClient
 
@@ -579,11 +580,7 @@ extension OWSContactsManager: ContactManager {
             guard let contactAvatarData = avatarData(for: cnContactId) else {
                 return nil
             }
-            guard let contactAvatarHash = Cryptography.computeSHA256Digest(contactAvatarData) else {
-                owsFailDebug("Could not digest contactAvatarData.")
-                return nil
-            }
-            return contactAvatarHash
+            return Data(SHA256.hash(data: contactAvatarData))
         }
     }
 

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CryptoKit
 import GRDB
 import Intents
 import SignalServiceKit
@@ -47,7 +48,7 @@ private func uncaughtExceptionHandler(_ exception: NSException) {
     } else {
         let reason = exception.reason ?? ""
         let reasonData = reason.data(using: .utf8) ?? Data()
-        let reasonHash = Cryptography.computeSHA256Digest(reasonData)?.base64EncodedString() ?? ""
+        let reasonHash = Data(SHA256.hash(data: reasonData)).base64EncodedString()
 
         var truncatedReason = reason.prefix(20)
         if let spaceIndex = truncatedReason.lastIndex(of: " ") {

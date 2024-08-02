@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CryptoKit
 import LibSignalClient
 import SignalServiceKit
 
@@ -110,11 +111,6 @@ extension SecIdentity {
         }
 
         let certificateData = SecCertificateCopyData(certificate) as Data
-
-        guard let hash = Cryptography.computeSHA256Digest(certificateData) else {
-            throw OWSAssertionError("failed to compute certificate hash")
-        }
-
-        return hash
+        return Data(SHA256.hash(data: certificateData))
     }
 }

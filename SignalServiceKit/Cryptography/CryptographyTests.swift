@@ -17,54 +17,6 @@ class CryptographyTestsSwift: XCTestCase {
         XCTAssertNotEqual(paddedSize, Cryptography.paddedSize(unpaddedSize: unpaddedSize), file: file, line: line)
     }
 
-    func test_computeSha256Digest() throws {
-        let plaintext = "SGF3YWlpIGlzIEF3ZXNvbWUh"
-        let plaintextData = try XCTUnwrap(Data(base64Encoded: plaintext, options: .ignoreUnknownCharacters))
-        let digest = Cryptography.computeSHA256Digest(plaintextData)
-
-        let expectedBytes: [UInt8] = [
-            0xba,
-            0x5f,
-            0xf1,
-            0x26,
-            0x82,
-            0xbb,
-            0xb2,
-            0x51,
-            0x8b,
-            0xe6,
-            0x06,
-            0x48,
-            0xc5,
-            0x53,
-            0xd0,
-            0xa2,
-            0xbf,
-            0x71,
-            0xf1,
-            0xec,
-            0xb4,
-            0xdb,
-            0x02,
-            0x12,
-            0x5f,
-            0x80,
-            0xea,
-            0x34,
-            0xc9,
-            0x8d,
-            0xee,
-            0x1f,
-        ]
-        let expectedDigest = Data(bytes: expectedBytes, count: expectedBytes.count)
-        XCTAssertEqual(expectedDigest, digest)
-
-        let truncatedLength = 10
-        let expectedTruncatedDigest = Data(bytes: expectedBytes, count: truncatedLength)
-        let truncatedDigest = try XCTUnwrap(Cryptography.computeSHA256Digest(plaintextData, truncatedToBytes: UInt(truncatedLength)))
-        XCTAssertEqual(expectedTruncatedDigest, truncatedDigest)
-    }
-
     func test_paddedSizeSpotChecks() {
         Assert(unpaddedSize: 1, hasPaddedSize: 541)
         Assert(unpaddedSize: 12, hasPaddedSize: 541)

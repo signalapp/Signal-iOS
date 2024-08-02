@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CryptoKit
 import Foundation
 import MultipeerConnectivity
 import SignalServiceKit
@@ -77,7 +78,7 @@ class DeviceTransferService: NSObject {
     static let databaseWALIdentifier = "database-wal"
 
     static let missingFileData = "Missing File".data(using: .utf8)!
-    static let missingFileHash = Cryptography.computeSHA256Digest(missingFileData)!
+    static let missingFileHash = Data(SHA256.hash(data: missingFileData))
 
     // This must also be updated in the info.plist
     private static let newDeviceServiceIdentifier = "sgnl-new-device"

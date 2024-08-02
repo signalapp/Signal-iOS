@@ -4,6 +4,7 @@
 //
 
 import AudioToolbox
+import CryptoKit
 
 public enum Sound: Equatable {
     case standard(StandardSound)
@@ -219,16 +220,8 @@ public struct CustomSound {
     let id: UInt
     let filename: String
 
-    private init(id: UInt, filename: String) {
-        self.id = id
-        self.filename = filename
-    }
-
-    init?(filename: String) {
-        guard let id = CustomSound.idFromFilename(filename) else {
-            return nil
-        }
-        self.id = id
+    init(filename: String) {
+        self.id = CustomSound.idFromFilename(filename)
         self.filename = filename
     }
 
@@ -265,19 +258,10 @@ public struct CustomSound {
 
     private static let customSoundShift: UInt = 16
 
-    private static func idFromFilename(_ filename: String) -> UInt? {
-        guard let filenameData = filename.data(using: .utf8) else {
-            owsFailDebug("could not get data from filename.")
-            return nil
-        }
-        guard let hashData = Cryptography.computeSHA256Digest(filenameData, truncatedToBytes: UInt(MemoryLayout<UInt>.size)) else {
-            owsFailDebug("could not get hash from filename.")
-            return nil
-        }
-
-        var hashValue: UInt = 0
-        hashData.withUnsafeBytes { ptr in
-            hashValue = ptr.load(as: UInt.self)
+    private static func idFromFilename(_ filename: String) -> UInt {
+        let filenameData = Data(filename.utf8)
+        let hashValue = Data(SHA256.hash(data: filenameData)).prefix(MemoryLayout<UInt>.size).withUnsafeBytes {
+            $0.loadUnaligned(as: UInt.self)
         }
         return hashValue << customSoundShift
     }

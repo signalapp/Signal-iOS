@@ -4,6 +4,7 @@
 //
 
 import AVFoundation
+import CryptoKit
 import Foundation
 
 public class AttachmentContentValidatorImpl: AttachmentContentValidator {
@@ -721,10 +722,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
     private func computePlaintextHash(input: Input) throws -> Data {
         switch input {
         case .inMemory(let data):
-            guard let hash = Cryptography.computeSHA256Digest(data) else {
-                throw OWSAssertionError("Couldn't compute plaintext hash")
-            }
-            return hash
+            return Data(SHA256.hash(data: data))
         case .unencryptedFile(let fileUrl):
             return try Cryptography.computeSHA256DigestOfFile(at: fileUrl)
         case .encryptedFile(let fileUrl, let encryptionKey, let plaintextLength, _):

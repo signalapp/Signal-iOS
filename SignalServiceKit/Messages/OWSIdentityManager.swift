@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CryptoKit
 import LibSignalClient
 
 public enum IdentityManagerError: Error, IsRetryableProvider {
@@ -981,10 +982,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
                     guard let identityKey = try? self.identityKey(for: serviceId, tx: tx) else { return nil }
 
                     let externalIdentityKey = identityKey.serialize().asData
-                    guard let identityKeyDigest = Cryptography.computeSHA256Digest(externalIdentityKey) else {
-                        owsFailDebug("Failed to calculate SHA-256 digest for batch identity key update")
-                        return nil
-                    }
+                    let identityKeyDigest = Data(SHA256.hash(data: externalIdentityKey))
 
                     return ["uuid": serviceId.serviceIdString, "fingerprint": Data(identityKeyDigest.prefix(4)).base64EncodedString()]
                 }

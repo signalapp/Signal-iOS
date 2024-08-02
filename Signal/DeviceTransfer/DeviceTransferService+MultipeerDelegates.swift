@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CryptoKit
 import Foundation
 import MultipeerConnectivity
 import SignalServiceKit
@@ -359,9 +360,7 @@ extension DeviceTransferService: MCSessionDelegate {
         let certificateData = SecCertificateCopyData(certificate as! SecCertificate) as Data
 
         // Reject any connections where we can't compute the certificate hash
-        guard let certificateHash = Cryptography.computeSHA256Digest(certificateData) else {
-            return owsFailDebug("failed to calculate certificate hash")
-        }
+        let certificateHash = Data(SHA256.hash(data: certificateData))
 
         // Reject any connections where the certificate doesn't match the expected certificate
         guard expectedCertificateHash.ows_constantTimeIsEqual(to: certificateHash) else {

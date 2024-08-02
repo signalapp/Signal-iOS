@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CryptoKit
 import Foundation
 import LibSignalClient
 
@@ -324,11 +325,7 @@ public extension TSGroupModel {
     }
 
     class func hash(forAvatarData avatarData: Data) throws -> String {
-        guard let digest = Cryptography.computeSHA256Digest(avatarData) else {
-            throw OWSAssertionError("Unexpectedly failed to calculate avatar digest")
-        }
-
-        return digest.hexadecimalString
+        return Data(SHA256.hash(data: avatarData)).hexadecimalString
     }
 
     var avatarData: Data? {

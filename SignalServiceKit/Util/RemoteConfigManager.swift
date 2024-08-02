@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CryptoKit
 import Foundation
 import LibSignalClient
 
@@ -405,11 +406,7 @@ public class RemoteConfig: NSObject {
 
         data.append(Data(aci.serviceIdBinary))
 
-        guard let hash = Cryptography.computeSHA256Digest(data) else {
-            owsFailDebug("Failed to calculate hash")
-            return 0
-        }
-
+        let hash = Data(SHA256.hash(data: data))
         guard hash.count == 32 else {
             owsFailDebug("Hash has incorrect length \(hash.count)")
             return 0

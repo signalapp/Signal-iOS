@@ -16,22 +16,6 @@ public enum Cryptography {
         return try digestContext.finalize()
     }
 
-    public static func computeSHA256Digest(_ data: Data) -> Data? {
-        var digestContext = Sha256DigestContext()
-        do {
-            try digestContext.update(data)
-            return try digestContext.finalize()
-        } catch {
-            owsFailDebug("Failed to compute digest \(error)")
-            return nil
-        }
-    }
-
-    static func computeSHA256Digest(_ data: Data, truncatedToBytes: UInt) -> Data? {
-        guard let digest = computeSHA256Digest(data), digest.count >= truncatedToBytes else { return nil }
-        return digest.subdata(in: digest.startIndex..<digest.startIndex.advanced(by: Int(truncatedToBytes)))
-    }
-
     static func computeSHA256HMAC(_ data: Data, key: Data) -> Data? {
         do {
             var context = HmacContext(key: key)
