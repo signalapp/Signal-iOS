@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import CommonCrypto
+import CryptoKit
 import LibSignalClient
 
 public class OWSFingerprint {
@@ -228,26 +228,15 @@ public class OWSFingerprint {
         hash.append(publicKey)
         hash.append(stableAddressData)
 
-        var digestData = Data(count: Int(CC_SHA512_DIGEST_LENGTH))
-
         for _ in 0..<hashIterations {
             hash.append(publicKey)
             if hash.count >= UInt32.max {
                 owsFail("Oversize data")
             }
 
-            digestData.withUnsafeMutableBytes({ mutableBufferPointer in
-                let bufferPointer = mutableBufferPointer.bindMemory(to: UInt8.self)
-                if let bufferAddress = bufferPointer.baseAddress {
-                    hash.withUnsafeBytes { hashBytesPointer in
-                        let hashPointer = hashBytesPointer.bindMemory(to: UInt8.self)
-                        if let hashAddress = hashPointer.baseAddress {
-                            CC_SHA512(hashAddress, CC_LONG(hash.count), bufferAddress)
-                        }
-                    }
-                }
-            })
-            hash = digestData
+            let digestData = SHA512.hash(data: hash)
+            hash.removeAll(keepingCapacity: true)
+            hash.append(contentsOf: digestData)
         }
 
         return hash
