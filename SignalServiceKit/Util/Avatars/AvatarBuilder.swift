@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CryptoKit
 import Foundation
-import CommonCrypto
 
 // AvatarBuilder has responsibility for building and caching contact and group avatars.
 //
@@ -1257,12 +1257,7 @@ public class AvatarBuilder: NSObject {
 
 fileprivate extension Data {
     var sha1HexadecimalDigestString: String {
-        var digest = [UInt8](repeating: 0, count: Int(CC_SHA1_DIGEST_LENGTH))
-        self.withUnsafeBytes { dataBytes in
-            let buffer: UnsafePointer<UInt8> = dataBytes.baseAddress!.assumingMemoryBound(to: UInt8.self)
-            _ = CC_SHA1(buffer, CC_LONG(self.count), &digest)
-        }
-        return Data(digest).hexadecimalString
+        Data(Insecure.SHA1.hash(data: self)).hexadecimalString
     }
 }
 
