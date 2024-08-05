@@ -62,10 +62,9 @@ public class AttachmentDownloadRetryRunner {
     }
 
     private actor Runner {
-
-        let attachmentDownloadManager: AttachmentDownloadManager
-        let attachmentDownloadStore: AttachmentDownloadStore
-        let db: SDSDatabaseStorage
+        nonisolated let attachmentDownloadManager: AttachmentDownloadManager
+        nonisolated let attachmentDownloadStore: AttachmentDownloadStore
+        nonisolated let db: SDSDatabaseStorage
 
         init(
             attachmentDownloadManager: AttachmentDownloadManager,
