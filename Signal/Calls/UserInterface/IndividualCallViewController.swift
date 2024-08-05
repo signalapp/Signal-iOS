@@ -19,6 +19,12 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
     let individualCall: IndividualCall
     private var hasDismissed = false
 
+    private var isCallMinimized = false {
+        didSet {
+            scheduleBottomSheetTimeoutIfNecessary()
+        }
+    }
+
     // MARK: - Views
 
     private lazy var blurView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
@@ -63,7 +69,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
             confirmationToastManager: callControlsConfirmationToastManager,
             useCallDrawerStyling: FeatureFlags.individualCallDrawerSupport,
             callControlsDelegate: self,
-            sheetPanDelegate: nil
+            sheetPanDelegate: self
         )
     }()
 
@@ -172,8 +178,9 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
     private lazy var tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTouchRootView))
     private lazy var panGesture = UIPanGestureRecognizer(target: self, action: #selector(handleLocalVideoPan))
 
-    private var shouldRemoteVideoControlsBeHidden = false {
+    private var bottomSheetState: BottomSheetState = .hidden {
         didSet {
+            guard oldValue != bottomSheetState else { return }
             updateCallUI()
         }
     }
@@ -211,7 +218,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
     @objc
     private func didBecomeActive() {
         if self.isViewLoaded {
-            shouldRemoteVideoControlsBeHidden = false
+            bottomSheetState = .callControls
         }
     }
 
@@ -351,13 +358,6 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
     private func dismissBottomSheet(_ animated: Bool = true) {
         guard let bottomSheet, bottomSheet.presentingViewController != nil else { return }
         bottomSheet.dismiss(animated: animated)
-    }
-
-    @objc
-    private func didTouchRootView(sender: UIGestureRecognizer) {
-        if self.individualCall.isRemoteVideoEnabled {
-            shouldRemoteVideoControlsBeHidden = !shouldRemoteVideoControlsBeHidden
-        }
     }
 
     private func createVideoViews() {
@@ -540,20 +540,28 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         rect.origin.x += view.layoutMargins.left
         rect.size.width -= view.layoutMargins.left + view.layoutMargins.right
 
-        let topInset = shouldRemoteVideoControlsBeHidden
+        let useTighterBounding: Bool
+        switch bottomSheetState {
+        case .callControls, .transitioning, .callInfo:
+            useTighterBounding = true
+        case .hidden:
+            useTighterBounding = false
+        }
+
+        let topInset = !useTighterBounding
             ? view.layoutMargins.top
             : topGradientView.height - gradientMargin + 14
         let bottomInset: CGFloat
         if FeatureFlags.individualCallDrawerSupport {
             if let bottomSheet {
-                bottomInset = shouldRemoteVideoControlsBeHidden
+                bottomInset = !useTighterBounding
                 ? view.layoutMargins.bottom
                 : bottomSheet.minimizedHeight + 14
             } else {
                 bottomInset = 0
             }
         } else {
-            bottomInset = shouldRemoteVideoControlsBeHidden
+            bottomInset = !useTighterBounding
                 ? view.layoutMargins.bottom
                 : bottomGradientView.height - gradientMargin + 14
         }
@@ -800,16 +808,10 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
             incomingVideoCallControls.isHidden = !isVideoOffer
             incomingAudioCallControls.isHidden = isVideoOffer
             callControls?.isHidden = true
-            if FeatureFlags.individualCallDrawerSupport {
-                dismissBottomSheet(true)
-            }
         } else {
             incomingVideoCallControls.isHidden = true
             incomingAudioCallControls.isHidden = true
             callControls?.isHidden = false
-            if FeatureFlags.individualCallDrawerSupport {
-                presentBottomSheet(true)
-            }
         }
 
         // Rework control state if remote video is available.
@@ -821,28 +823,42 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
             controls?.layoutIfNeeded()
         }
 
-        // Also hide other controls if user has tapped to hide them.
-        let hideRemoteControls = shouldRemoteVideoControlsBeHidden && self.individualCall.isRemoteVideoEnabled
-        let remoteControlsAreHidden = bottomContainerView.isHidden && topGradientView.isHidden
-        if hideRemoteControls != remoteControlsAreHidden {
+        // Remove this variable when removing `FeatureFlags.individualCallDrawerSupport`.
+        let hideCallControls: Bool
+        switch bottomSheetState {
+        case .callControls:
             if FeatureFlags.individualCallDrawerSupport {
-                if hideRemoteControls {
-                    dismissBottomSheet(true)
-                } else {
-                    presentBottomSheet(true)
-                }
+                presentBottomSheet(true)
             }
-
-            self.bottomContainerView.isHidden = false
-            self.topGradientView.isHidden = false
-
-            UIView.animate(withDuration: 0.15, animations: {
-                self.bottomContainerView.alpha = hideRemoteControls ? 0 : 1
-                self.topGradientView.alpha = hideRemoteControls ? 0 : 1
-            }) { _ in
-                self.bottomContainerView.isHidden = hideRemoteControls
-                self.topGradientView.isHidden = hideRemoteControls
+            hideCallControls = false
+        case .hidden:
+            let isIncomingRing = [.localRinging_Anticipatory, .localRinging_ReadyToAnswer].contains(individualCall.state)
+            if isIncomingRing {
+                hideCallControls = false
+                break
+            } else if !self.individualCall.isRemoteVideoEnabled {
+                // When the remote video is enabled, call controls should
+                // be forced at all times.
+                bottomSheetState = .callControls
+                hideCallControls = false
+                break
             }
+            if FeatureFlags.individualCallDrawerSupport {
+                dismissBottomSheet(true)
+            }
+            hideCallControls = true
+        case .transitioning, .callInfo:
+            hideCallControls = false
+        }
+
+        self.bottomContainerView.isHidden = false
+        self.topGradientView.isHidden = false
+        UIView.animate(withDuration: 0.15) {
+            self.bottomContainerView.alpha = hideCallControls ? 0 : 1
+            self.topGradientView.alpha = hideCallControls ? 0 : 1
+        } completion: { _ in
+            self.bottomContainerView.isHidden = hideCallControls
+            self.topGradientView.isHidden = hideCallControls
         }
 
         // Update local video
@@ -888,7 +904,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
             callDurationTimer = nil
         }
 
-        scheduleControlTimeoutIfNecessary()
+        scheduleBottomSheetTimeoutIfNecessary()
     }
 
     private func displayNeedPermissionErrorAndDismiss() {
@@ -931,28 +947,98 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         updateCallStatusLabel()
     }
 
-    // MARK: - Video control timeout
+    // MARK: - Drawer timeout
 
-    private var controlTimeoutTimer: Timer?
-    private func scheduleControlTimeoutIfNecessary() {
-        if !self.individualCall.isRemoteVideoEnabled || shouldRemoteVideoControlsBeHidden {
-            controlTimeoutTimer?.invalidate()
-            controlTimeoutTimer = nil
-        }
+    private enum BottomSheetState {
+        case callControls
+        case transitioning
+        case callInfo
+        case hidden
+    }
 
-        guard controlTimeoutTimer == nil else { return }
-        controlTimeoutTimer = .scheduledTimer(withTimeInterval: 5, repeats: false) { [weak self] _ in
-            self?.timeoutControls()
+    @objc
+    private func didTouchRootView(sender: UIGestureRecognizer) {
+        switch bottomSheetState {
+        case .callControls:
+            if bottomSheetMustBeVisible {
+                return
+            }
+            bottomSheetState = .hidden
+        case .callInfo:
+            bottomSheetState = .callControls
+            bottomSheet?.minimizeHeight(animated: true)
+        case .hidden:
+            bottomSheetState = .callControls
+        case .transitioning:
+            break
         }
     }
 
-    private func timeoutControls() {
-        controlTimeoutTimer?.invalidate()
-        controlTimeoutTimer = nil
+    private var sheetTimeoutTimer: Timer?
+    private func scheduleBottomSheetTimeoutIfNecessary() {
+        let shouldAutomaticallyDismissDrawer: Bool = {
+            switch bottomSheetState {
+            case .hidden:
+                return false
+            case .callControls:
+                break
+            case .callInfo, .transitioning:
+                if FeatureFlags.individualCallDrawerSupport {
+                    return false
+                }
+            }
 
-        guard self.individualCall.isRemoteVideoEnabled else { return }
-        guard !shouldRemoteVideoControlsBeHidden else { return }
-        shouldRemoteVideoControlsBeHidden = true
+            if bottomSheetMustBeVisible {
+                return false
+            }
+
+            if isCallMinimized {
+                return false
+            }
+
+            return true
+        }()
+
+        guard shouldAutomaticallyDismissDrawer else {
+            cancelBottomSheetTimeout()
+            return
+        }
+
+        guard sheetTimeoutTimer == nil else { return }
+        sheetTimeoutTimer = .scheduledTimer(withTimeInterval: 5, repeats: false) { [weak self] _ in
+            self?.timeoutBottomSheet()
+        }
+    }
+
+    private var bottomSheetMustBeVisible: Bool {
+        return !self.individualCall.isRemoteVideoEnabled
+    }
+
+    private func cancelBottomSheetTimeout() {
+        sheetTimeoutTimer?.invalidate()
+        sheetTimeoutTimer = nil
+    }
+
+    private func timeoutBottomSheet() {
+        self.sheetTimeoutTimer = nil
+        bottomSheetState = .hidden
+    }
+
+    private func showCallControlsIfHidden() {
+        switch bottomSheetState {
+        case .callControls:
+            break
+        case .hidden:
+            bottomSheetState = .callControls
+        case .callInfo, .transitioning:
+            break
+        }
+    }
+
+    private func showCallControlsIfTheyMustBeVisible() {
+        if bottomSheetMustBeVisible {
+            showCallControlsIfHidden()
+        }
     }
 
     @objc
@@ -986,6 +1072,8 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
 
     @objc
     private func didTapLeaveCall(sender: UIButton) {
+        isCallMinimized = true
+        cancelBottomSheetTimeout()
         WindowManager.shared.leaveCallView()
     }
 
@@ -1016,6 +1104,8 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
     func individualCallRemoteVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool) {
         AssertIsOnMainThread()
         updateRemoteVideoTrack(remoteVideoTrack: isVideoMuted ? nil : call.remoteVideoTrack)
+        showCallControlsIfTheyMustBeVisible()
+        scheduleBottomSheetTimeoutIfNecessary()
     }
 
     func individualCallRemoteSharingScreenDidChange(_ call: IndividualCall, isRemoteSharingScreen: Bool) {
@@ -1045,7 +1135,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
             self.remoteVideoTrack?.add(remoteVideoView)
         }
 
-        shouldRemoteVideoControlsBeHidden = false
+        bottomSheetState = .callControls
 
         if remoteVideoTrack != nil {
             playRemoteEnabledVideoHapticFeedback()
@@ -1130,6 +1220,9 @@ extension IndividualCallViewController: CallViewControllerWindowReference {
             return owsFailDebug("failed to snapshot pip")
         }
 
+        isCallMinimized = false
+        showCallControlsIfHidden()
+
         remoteMemberView.applyChangesToCallMemberViewAndVideoView(startWithVideoView: false) { aView in
             view.insertSubview(aView, aboveSubview: blurView)
             aView.autoPinEdgesToSuperviewEdges()
@@ -1141,7 +1234,7 @@ extension IndividualCallViewController: CallViewControllerWindowReference {
 
         updateLocalVideoLayout()
 
-        shouldRemoteVideoControlsBeHidden = false
+        bottomSheetState = .callControls
 
         animateReturnFromPip(pipSnapshot: pipSnapshot, pipFrame: pipWindow.frame, splitViewSnapshot: splitViewSnapshot)
     }
@@ -1314,5 +1407,34 @@ private class PermissionErrorView: UIView {
 
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+extension IndividualCallViewController: SheetPanDelegate {
+    func sheetPanDidBegin() {
+        bottomSheetState = .transitioning
+    }
+
+    func sheetPanDidEnd() {
+        self.setBottomSheetStateAfterTransition()
+    }
+
+    func sheetPanDecelerationDidBegin() {
+        bottomSheetState = .transitioning
+    }
+
+    func sheetPanDecelerationDidEnd() {
+        self.setBottomSheetStateAfterTransition()
+    }
+
+    private func setBottomSheetStateAfterTransition() {
+        guard let bottomSheet else { return }
+        if bottomSheet.isPresentingCallInfo() {
+            bottomSheetState = .callInfo
+        } else if bottomSheet.isPresentingCallControls() {
+            bottomSheetState = .callControls
+        } else if bottomSheet.isCrossFading() {
+            bottomSheetState = .transitioning
+        }
     }
 }
