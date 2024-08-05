@@ -43,12 +43,12 @@ public class DecryptingStreamTransform: StreamTransform, FinalizableStreamTransf
             )
             hasInitialized = true
         }
-        guard var cipherContext else { throw Error.notInitialized }
+        guard let cipherContext else { throw Error.notInitialized }
         return try cipherContext.update(inputBuffer)
     }
 
     public func finalize() throws -> Data {
-        guard var cipherContext else { throw Error.notInitialized }
+        guard let cipherContext else { throw Error.notInitialized }
         guard !finalized else { return Data() }
         finalized = true
         return try cipherContext.finalize()
