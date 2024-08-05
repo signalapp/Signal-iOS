@@ -68,8 +68,7 @@ open class StackSheetViewController: InteractiveSheetViewController {
             .removeDuplicates()
             .sink { [weak self] bounds in
                 guard let self else { return }
-                let totalHandleHeight = Constants.handleSize.height + Constants.handleInsideMargin * 2
-                let desiredHeight = bounds.height + totalHandleHeight
+                let desiredHeight = bounds.height + Constants.handleHeight
                 self.preferredHeight = desiredHeight
                 self.minimizedHeight = desiredHeight
                 self.contentScrollView.isScrollEnabled = self.maxHeight < desiredHeight
