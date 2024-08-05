@@ -233,21 +233,29 @@ public class CLVLoader: Dependencies {
                                                                                  newValues: newUnpinnedValues,
                                                                                  changedValues: unpinnedChangedValues)
 
-        func rowChangeType(forBatchUpdateType batchUpdateType: BatchUpdateType, section: Int) -> CLVRowChangeType {
+        /// For a given batch update, build a `CLVRowChangeType` with an
+        /// `IndexPath` in the appropriate section.
+        ///
+        /// The section index is looked up dynamically based on change type, from
+        /// either the new or old render state (e.g., deletes use old index paths
+        /// while insertions use new index paths).
+        func rowChangeType(forBatchUpdateType batchUpdateType: BatchUpdateType, section: (CLVRenderState) -> Int) -> CLVRowChangeType {
             switch batchUpdateType {
             case .delete(let oldIndex):
-                return .delete(oldIndexPath: IndexPath(row: oldIndex, section: section))
+                .delete(oldIndexPath: IndexPath(row: oldIndex, section: section(lastRenderState)))
             case .insert(let newIndex):
-                return .insert(newIndexPath: IndexPath(row: newIndex, section: section))
+                .insert(newIndexPath: IndexPath(row: newIndex, section: section(newRenderState)))
             case .move(let oldIndex, let newIndex):
-                return .move(oldIndexPath: IndexPath(row: oldIndex, section: section),
-                             newIndexPath: IndexPath(row: newIndex, section: section))
+                .move(
+                    oldIndexPath: IndexPath(row: oldIndex, section: section(lastRenderState)),
+                    newIndexPath: IndexPath(row: newIndex, section: section(newRenderState))
+                )
             case .update(let oldIndex, _):
-                return .update(oldIndexPath: IndexPath(row: oldIndex, section: section))
+                .update(oldIndexPath: IndexPath(row: oldIndex, section: section(lastRenderState)))
             }
         }
 
-        func rowChanges(forBatchUpdateItems batchUpdateItems: [BatchUpdate<CLVBatchUpdateValue>.Item], section: Int) -> [CLVRowChange] {
+        func rowChanges(forBatchUpdateItems batchUpdateItems: [BatchUpdate<CLVBatchUpdateValue>.Item], section: (CLVRenderState) -> Int) -> [CLVRowChange] {
             batchUpdateItems.map { item in
                 CLVRowChange(
                     type: rowChangeType(forBatchUpdateType: item.updateType, section: section),
@@ -256,10 +264,8 @@ public class CLVLoader: Dependencies {
             }
         }
 
-        let pinnedSectionIndex = newRenderState.sectionIndex(for: .pinned)!
-        let pinnedRowChanges = rowChanges(forBatchUpdateItems: pinnedBatchUpdateItems, section: pinnedSectionIndex)
-        let unpinnedSectionIndex = newRenderState.sectionIndex(for: .unpinned)!
-        let unpinnedRowChanges = rowChanges(forBatchUpdateItems: unpinnedBatchUpdateItems, section: unpinnedSectionIndex)
+        let pinnedRowChanges = rowChanges(forBatchUpdateItems: pinnedBatchUpdateItems, section: { $0.sectionIndex(for: .pinned)! })
+        let unpinnedRowChanges = rowChanges(forBatchUpdateItems: unpinnedBatchUpdateItems, section: { $0.sectionIndex(for: .unpinned)! })
 
         var allRowChanges = pinnedRowChanges + unpinnedRowChanges
 
