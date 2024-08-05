@@ -1645,31 +1645,6 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             }
         }
     }
-
-    private static let encryptionOverheadByteLength: UInt32 = /* iv */ 16 + /* hmac */ 32
-
-    private static func estimatedAttachmentDownloadSize(
-        plaintextSize: UInt32?,
-        source: QueuedAttachmentDownloadRecord.SourceType
-    ) -> UInt32 {
-        let fallbackSize: UInt = {
-            // TODO: thumbnails will have a different expected size (the thumbnail size limit)
-            switch source {
-            case .transitTier:
-                return RemoteConfig.maxAttachmentDownloadSizeBytes
-            }
-        }()
-
-        // Every sender _will_ give us a plaintext size. Not including one will result
-        // in failing to remove padding. So this fallback will never be used in practice,
-        // but regardless, this is just an estimate size.
-        let plaintextSize: UInt = plaintextSize.map(UInt.init) ?? fallbackSize
-
-        let paddedSize = UInt32(Cryptography.paddedSize(unpaddedSize: plaintextSize))
-
-        let pkcs7PaddingLength = 16 - (paddedSize % 16)
-        return paddedSize + pkcs7PaddingLength + encryptionOverheadByteLength
-    }
 }
 
 extension AttachmentDownloadManagerImpl {
