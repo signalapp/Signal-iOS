@@ -43,6 +43,7 @@ protocol IndividualCallObserver: AnyObject {
     func individualCallLocalVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool)
     func individualCallLocalAudioMuteDidChange(_ call: IndividualCall, isAudioMuted: Bool)
     func individualCallHoldDidChange(_ call: IndividualCall, isOnHold: Bool)
+    func individualCallRemoteAudioMuteDidChange(_ call: IndividualCall, isAudioMuted: Bool)
     func individualCallRemoteVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool)
     func individualCallRemoteSharingScreenDidChange(_ call: IndividualCall, isRemoteSharingScreen: Bool)
 }
@@ -51,6 +52,7 @@ extension IndividualCallObserver {
     func individualCallLocalVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool) {}
     func individualCallLocalAudioMuteDidChange(_ call: IndividualCall, isAudioMuted: Bool) {}
     func individualCallHoldDidChange(_ call: IndividualCall, isOnHold: Bool) {}
+    func individualCallRemoteAudioMuteDidChange(_ call: IndividualCall, isAudioMuted: Bool) {}
     func individualCallRemoteVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool) {}
     func individualCallRemoteSharingScreenDidChange(_ call: IndividualCall, isRemoteSharingScreen: Bool) {}
 }
@@ -96,6 +98,17 @@ public class IndividualCall: CustomDebugStringConvertible {
 
             observers.elements.forEach {
                 $0.individualCallRemoteVideoMuteDidChange(self, isVideoMuted: !isRemoteVideoEnabled)
+            }
+        }
+    }
+
+    var isRemoteAudioMuted = false {
+        didSet {
+            AssertIsOnMainThread()
+
+            Logger.info("\(isRemoteAudioMuted)")
+            observers.elements.forEach {
+                $0.individualCallRemoteAudioMuteDidChange(self, isAudioMuted: isRemoteAudioMuted)
             }
         }
     }

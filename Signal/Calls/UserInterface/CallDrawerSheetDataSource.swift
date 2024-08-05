@@ -214,7 +214,7 @@ class IndividualCallSheetDataSource: CallDrawerSheetDataSource {
                 comparableName: remoteComparableName,
                 demuxID: nil,
                 isLocalUser: false,
-                isAudioMuted: false,
+                isAudioMuted: self.individualCall.isRemoteAudioMuted,
                 isVideoMuted: self.individualCall.isRemoteVideoEnabled.negated,
                 isPresenting: self.individualCall.isRemoteSharingScreen
             ))
@@ -276,6 +276,11 @@ extension IndividualCallSheetDataSource: IndividualCallObserver {
     }
 
     func individualCallHoldDidChange(_ call: IndividualCall, isOnHold: Bool) {
+        AssertIsOnMainThread()
+        observers.elements.forEach { $0.callSheetMembershipDidChange(self) }
+    }
+
+    func individualCallRemoteAudioMuteDidChange(_ call: IndividualCall, isAudioMuted: Bool) {
         AssertIsOnMainThread()
         observers.elements.forEach { $0.callSheetMembershipDidChange(self) }
     }

@@ -694,7 +694,7 @@ final class IndividualCallService: CallServiceStateObserver {
                 return
             }
 
-            // TODO: Implement handling when the remote enables audio.
+            call.individualCall.isRemoteAudioMuted = false
 
         case .remoteAudioDisable:
             guard call === callServiceState.currentCall else {
@@ -702,7 +702,7 @@ final class IndividualCallService: CallServiceStateObserver {
                 return
             }
 
-            // TODO: Implement handling when the remote disables audio.
+            call.individualCall.isRemoteAudioMuted = true
 
         case .remoteVideoEnable:
             guard call === callServiceState.currentCall else {
