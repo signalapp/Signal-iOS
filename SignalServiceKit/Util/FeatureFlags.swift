@@ -82,7 +82,7 @@ public class FeatureFlags: NSObject {
     public static let callRaiseHandSendSupport = build.includes(.production)
     public static let callRaiseHandToastSupport = build.includes(.production)
     public static let groupCallDrawerSupport = build.includes(.internal)
-    public static let individualCallDrawerSupport = false
+    public static let individualCallDrawerSupport = build.includes(.internal)
 
     public static let chatListFilter = build.includes(.dev)
 }
