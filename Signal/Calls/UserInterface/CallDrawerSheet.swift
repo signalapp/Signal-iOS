@@ -28,8 +28,6 @@ class CallDrawerSheet: InteractiveSheetViewController {
     private let call: SignalCall
     private let callSheetDataSource: CallDrawerSheetDataSource
 
-    private var tableViewTopConstraint: NSLayoutConstraint?
-
     override var sheetBackgroundColor: UIColor {
         if self.useCallDrawerStyling {
             return UIColor(rgbHex: 0x1C1C1E)
@@ -189,16 +187,17 @@ class CallDrawerSheet: InteractiveSheetViewController {
         minimizedHeight = callControls.currentHeight + HeightConstants.bottomPadding
     }
 
+    private func setTableViewTopTranslation(to translation: CGFloat) {
+        tableView.transform = .translate(.init(x: 0, y: translation))
+    }
+
     override public func viewDidLoad() {
         super.viewDidLoad()
 
         tableView.delegate = self
         tableView.tableHeaderView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 0, height: CGFloat.leastNormalMagnitude)))
         contentView.addSubview(tableView)
-        tableViewTopConstraint = tableView.autoPinEdge(toSuperviewEdge: .top, withInset: HeightConstants.initialTableInset)
-        tableView.autoPinEdge(toSuperviewEdge: .bottom)
-        tableView.autoPinEdge(toSuperviewEdge: .leading)
-        tableView.autoPinEdge(toSuperviewEdge: .trailing)
+        tableView.autoPinEdgesToSuperviewEdges()
 
         tableView.register(GroupCallMemberCell.self)
 
@@ -315,14 +314,14 @@ class CallDrawerSheet: InteractiveSheetViewController {
     private func changesForSnapToMax() {
         self.tableView.alpha = 1
         self.callControls.alpha = 0
-        self.tableViewTopConstraint?.constant = 0
+        self.setTableViewTopTranslation(to: 0)
         self.view.layoutIfNeeded()
     }
 
     private func changesForSnapToMin() {
         self.tableView.alpha = 0
         self.callControls.alpha = 1
-        self.tableViewTopConstraint?.constant = HeightConstants.initialTableInset
+        self.setTableViewTopTranslation(to: HeightConstants.initialTableInset)
         self.view.layoutIfNeeded()
     }
 
@@ -357,8 +356,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
             UIView.animateKeyframes(withDuration: 0, delay: 0) {
                 UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: tableFadeAnimationPortion) {
                     self.tableView.alpha = 0
-                    self.tableViewTopConstraint?.constant = HeightConstants.initialTableInset
-                    self.view.layoutIfNeeded()
+                    self.setTableViewTopTranslation(to: HeightConstants.initialTableInset)
                 }
                 UIView.addKeyframe(withRelativeStartTime: tableFadeAnimationPortion, relativeDuration: controlsFadeAnimationPortion) {
                     self.callControls.alpha = 1
@@ -404,7 +402,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
                 let stepSize = HeightConstants.initialTableInset / totalTravelableDistanceForSheet
                 // How far the table should have traveled.
                 let tableTravelDistance = stepSize * distanceTraveledBySheetSoFar
-                self.tableViewTopConstraint?.constant = HeightConstants.initialTableInset - tableTravelDistance
+                self.setTableViewTopTranslation(to: HeightConstants.initialTableInset - tableTravelDistance)
             } else if height >= maxHeight {
                 changesForSnapToMax()
             }
@@ -435,8 +433,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
                 }
                 UIView.addKeyframe(withRelativeStartTime: controlsFadeAnimationPortion, relativeDuration: tableFadeAnimationPortion) {
                     self.tableView.alpha = 1
-                    self.tableViewTopConstraint?.constant = 0
-                    self.view.layoutIfNeeded()
+                    self.setTableViewTopTranslation(to: 0)
                 }
             }
         }
