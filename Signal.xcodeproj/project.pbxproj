@@ -15,7 +15,7 @@
 		05412B422C29C0F0007AC9C7 /* SignalUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 05412B412C29C0F0007AC9C7 /* SignalUI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0550A5E02C3ECB230072CC02 /* ChatListFilterButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0550A5DF2C3ECB230072CC02 /* ChatListFilterButton.swift */; };
 		0550A5E22C4035170072CC02 /* CLVViewInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0550A5E12C4035170072CC02 /* CLVViewInfo.swift */; };
-		0550A5E42C4048CF0072CC02 /* ChatListButtonCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0550A5E32C4048CF0072CC02 /* ChatListButtonCell.swift */; };
+		0550A5E42C4048CF0072CC02 /* ChatListFilterFooterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0550A5E32C4048CF0072CC02 /* ChatListFilterFooterCell.swift */; };
 		05572BC42BFC0094006A72F1 /* DoubleTapToEditOnboardingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05572BC32BFC0094006A72F1 /* DoubleTapToEditOnboardingController.swift */; };
 		0CE014267EDFBD2538E940A0 /* Pods_Signal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FF88FB580BC19B240EEB86A /* Pods_Signal.framework */; };
 		1404D8B3276A353B0068E2F6 /* ChatListViewController+Multiselect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1404D8B2276A353A0068E2F6 /* ChatListViewController+Multiselect.swift */; };
@@ -2955,7 +2955,7 @@
 		05412B412C29C0F0007AC9C7 /* SignalUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SignalUI.h; sourceTree = "<group>"; };
 		0550A5DF2C3ECB230072CC02 /* ChatListFilterButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListFilterButton.swift; sourceTree = "<group>"; };
 		0550A5E12C4035170072CC02 /* CLVViewInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLVViewInfo.swift; sourceTree = "<group>"; };
-		0550A5E32C4048CF0072CC02 /* ChatListButtonCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListButtonCell.swift; sourceTree = "<group>"; };
+		0550A5E32C4048CF0072CC02 /* ChatListFilterFooterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListFilterFooterCell.swift; sourceTree = "<group>"; };
 		05572BC32BFC0094006A72F1 /* DoubleTapToEditOnboardingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoubleTapToEditOnboardingController.swift; sourceTree = "<group>"; };
 		05E3A4DD8B4442530268AFC1 /* Pods-SignalShareExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.app store release.xcconfig"; path = "Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.app store release.xcconfig"; sourceTree = "<group>"; };
 		0BADD293DAFC82BF3274F0F6 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -9107,10 +9107,10 @@
 			isa = PBXGroup;
 			children = (
 				1489ED0127A3D70200C7043A /* ArchivedConversationsCell.swift */,
-				0550A5E32C4048CF0072CC02 /* ChatListButtonCell.swift */,
 				346E09002662FBBE0042375E /* ChatListCell.swift */,
 				052A33372C52BF410083D812 /* ChatListFilterActions.swift */,
 				0550A5DF2C3ECB230072CC02 /* ChatListFilterButton.swift */,
+				0550A5E32C4048CF0072CC02 /* ChatListFilterFooterCell.swift */,
 				50101FB32B08447000C648E4 /* ChatListProxyButtonCreator.swift */,
 				50101FB12B083C8100C648E4 /* ChatListSettingsButtonState.swift */,
 				34E95C26269F6095004807EC /* ChatListViewController+Actions.swift */,
@@ -13434,10 +13434,10 @@
 				4C46361122EB98EC00185951 /* CameraFirstCaptureSendFlow.swift in Sources */,
 				D9EB22212A4B636C00C73E1D /* CGContext+LineDrawing.swift in Sources */,
 				34546F502649989D007C4958 /* ChatColorViewController.swift in Sources */,
-				0550A5E42C4048CF0072CC02 /* ChatListButtonCell.swift in Sources */,
 				346E09012662FBBE0042375E /* ChatListCell.swift in Sources */,
 				052A33382C52BF410083D812 /* ChatListFilterActions.swift in Sources */,
 				0550A5E02C3ECB230072CC02 /* ChatListFilterButton.swift in Sources */,
+				0550A5E42C4048CF0072CC02 /* ChatListFilterFooterCell.swift in Sources */,
 				50101FB42B08447000C648E4 /* ChatListProxyButtonCreator.swift in Sources */,
 				50101FB22B083C8100C648E4 /* ChatListSettingsButtonState.swift in Sources */,
 				34E95C27269F6096004807EC /* ChatListViewController+Actions.swift in Sources */,

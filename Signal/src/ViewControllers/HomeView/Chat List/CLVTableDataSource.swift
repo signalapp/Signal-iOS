@@ -68,7 +68,7 @@ class CLVTableDataSource: NSObject {
         tableView.separatorColor = Theme.cellSeparatorColor
         tableView.register(ChatListCell.self)
         tableView.register(ArchivedConversationsCell.self)
-        tableView.register(ChatListButtonCell.self)
+        tableView.register(ChatListFilterFooterCell.self)
         tableView.tableFooterView = UIView()
     }
 
@@ -546,9 +546,9 @@ extension CLVTableDataSource: UITableViewDataSource {
         case .archiveButton:
             cell = buildArchivedConversationsButtonCell(tableView: tableView, indexPath: indexPath)
         case .inboxFilterFooter:
-            let chatListButtonCell = tableView.dequeueReusableCell(ChatListButtonCell.self, for: indexPath)
-            chatListButtonCell.primaryAction = .disableChatListFilter()
-            cell = chatListButtonCell
+            let filterFooterCell = tableView.dequeueReusableCell(ChatListFilterFooterCell.self, for: indexPath)
+            filterFooterCell.primaryAction = .disableChatListFilter()
+            cell = filterFooterCell
         }
 
         cell.tintColor = .ows_accentBlue
