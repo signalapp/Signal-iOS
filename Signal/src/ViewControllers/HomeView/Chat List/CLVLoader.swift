@@ -50,7 +50,6 @@ struct CLVRowChange {
 enum CLVLoadResult {
     case renderStateForReset(renderState: CLVRenderState)
     case renderStateWithRowChanges(renderState: CLVRenderState, rowChanges: [CLVRowChange])
-    case renderStateWithoutRowChanges(renderState: CLVRenderState)
     case reloadTable
     case noChanges
 }
@@ -302,11 +301,7 @@ public class CLVLoader: Dependencies {
             }
         }
 
-        if allRowChanges.isEmpty {
-            return .renderStateWithoutRowChanges(renderState: newRenderState)
-        } else {
-            return .renderStateWithRowChanges(renderState: newRenderState, rowChanges: allRowChanges)
-        }
+        return .renderStateWithRowChanges(renderState: newRenderState, rowChanges: allRowChanges)
     }
 }
 

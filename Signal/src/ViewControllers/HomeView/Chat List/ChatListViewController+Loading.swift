@@ -83,12 +83,13 @@ extension ChatListViewController {
             conversationCellHeightCache = nil
 
             reloadTableData(withSelection: previousSelection)
+
         case .renderStateWithRowChanges(renderState: let renderState, let rowChanges):
             applyRowChanges(rowChanges, renderState: renderState, animated: animated)
-        case .renderStateWithoutRowChanges(let renderState):
-            tableDataSource.renderState = renderState
+
         case .reloadTable:
             reloadTableData()
+
         case .noChanges:
             break
         }
