@@ -14,12 +14,15 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSOutgoingCallMessage
 
 - (instancetype)initWithThread:(TSThread *)thread
-            overrideRecipients:(nullable NSArray<AciObjC *> *)overrideRecipients
+            overrideRecipients:(NSArray<AciObjC *> *)overrideRecipients
                    transaction:(SDSAnyReadTransaction *)transaction
 {
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
-    messageBuilder.explicitRecipients = overrideRecipients;
-    self = [super initOutgoingMessageWithBuilder:messageBuilder transaction:transaction];
+    self = [super initOutgoingMessageWithBuilder:messageBuilder
+                            additionalRecipients:@[]
+                              explicitRecipients:overrideRecipients
+                               skippedRecipients:@[]
+                                     transaction:transaction];
     if (!self) {
         return self;
     }
@@ -32,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
            destinationDeviceId:(nullable NSNumber *)destinationDeviceId
                    transaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [self initWithThread:thread overrideRecipients:nil transaction:transaction];
+    self = [self initWithThread:thread overrideRecipients:@[] transaction:transaction];
     if (!self) {
         return self;
     }
@@ -48,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
            destinationDeviceId:(nullable NSNumber *)destinationDeviceId
                    transaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [self initWithThread:thread overrideRecipients:nil transaction:transaction];
+    self = [self initWithThread:thread overrideRecipients:@[] transaction:transaction];
     if (!self) {
         return self;
     }
@@ -64,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
            destinationDeviceId:(nullable NSNumber *)destinationDeviceId
                    transaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [self initWithThread:thread overrideRecipients:nil transaction:transaction];
+    self = [self initWithThread:thread overrideRecipients:@[] transaction:transaction];
     if (!self) {
         return self;
     }
@@ -80,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
            destinationDeviceId:(nullable NSNumber *)destinationDeviceId
                    transaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [self initWithThread:thread overrideRecipients:nil transaction:transaction];
+    self = [self initWithThread:thread overrideRecipients:@[] transaction:transaction];
     if (!self) {
         return self;
     }
@@ -96,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
            destinationDeviceId:(nullable NSNumber *)destinationDeviceId
                    transaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [self initWithThread:thread overrideRecipients:nil transaction:transaction];
+    self = [self initWithThread:thread overrideRecipients:@[] transaction:transaction];
     if (!self) {
         return self;
     }

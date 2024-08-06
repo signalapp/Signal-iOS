@@ -12,7 +12,15 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSOutgoingSenderKeyDistributionMessage : TSOutgoingMessage
 
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
+                        recipientAddressStates:
+                            (NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *)
+                                recipientAddressStates NS_UNAVAILABLE;
+- (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
+                          additionalRecipients:(NSArray<SignalServiceAddress *> *)additionalRecipients
+                            explicitRecipients:(NSArray<AciObjC *> *)explicitRecipients
+                             skippedRecipients:(NSArray<SignalServiceAddress *> *)skippedRecipients
                                    transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
+
 - (instancetype)initWithThread:(TSContactThread *)destinationThread
     senderKeyDistributionMessageBytes:(NSData *)skdmBytes
                           transaction:(SDSAnyReadTransaction *)transaction;

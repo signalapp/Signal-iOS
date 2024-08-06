@@ -118,14 +118,13 @@ typedef NS_CLOSED_ENUM(NSInteger, TSEditState) {
 @property (nonatomic, readonly) BOOL isStoryReply;
 @property (nonatomic, readonly, nullable) NSString *storyReactionEmoji;
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-                       timestamp:(uint64_t)timestamp
-                          thread:(TSThread *)thread NS_UNAVAILABLE;
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-                       timestamp:(uint64_t)timestamp
-             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                          thread:(TSThread *)thread NS_UNAVAILABLE;
-- (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread NS_UNAVAILABLE;
+- (instancetype)initWithCustomUniqueId:(NSString *)uniqueId
+                             timestamp:(uint64_t)timestamp
+                   receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                                thread:(TSThread *)thread NS_UNAVAILABLE;
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                           thread:(TSThread *)thread NS_UNAVAILABLE;
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
            receivedAtTimestamp:(uint64_t)receivedAtTimestamp

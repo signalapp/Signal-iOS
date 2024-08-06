@@ -26,7 +26,11 @@ NS_ASSUME_NONNULL_BEGIN
     messageBuilder.messageBody = messageBody;
     messageBuilder.isViewOnceMessage = false;
     messageBuilder.expiresInSeconds = expiresInSeconds;
-    self = [super initOutgoingMessageWithBuilder:messageBuilder transaction:transaction];
+    self = [super initOutgoingMessageWithBuilder:messageBuilder
+                            additionalRecipients:@[]
+                              explicitRecipients:@[]
+                               skippedRecipients:@[]
+                                     transaction:transaction];
     if (!self) {
         return self;
     }

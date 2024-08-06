@@ -38,12 +38,21 @@ final class CallRecordDeleteManagerTest: XCTestCase {
         )
     }
 
-    private func insertInteraction<I: TSInteraction, T: TSThread>(
-        type: I.Type,
-        threadType: T.Type
-    ) -> (I, T) {
-        let thread = threadType.init(uniqueId: UUID().uuidString)
-        let interaction = type.init(uniqueId: UUID().uuidString, thread: thread)
+    private func insertIndividualCallInteraction() -> (TSCall, TSContactThread) {
+        let thread = TSContactThread(contactUUID: UUID().uuidString, contactPhoneNumber: nil)
+        let interaction = TSCall(callType: .outgoing, offerType: .audio, thread: thread, sentAtTimestamp: 0)
+
+        mockDB.write { tx in
+            mockThreadStore.insertThread(thread)
+            MockInteractionStore().insertInteraction(interaction, tx: tx)
+        }
+
+        return (interaction, thread)
+    }
+
+    private func insertGroupCallInteraction() -> (OWSGroupCallMessage, TSGroupThread) {
+        let thread = TSGroupThread(groupModel: try! TSGroupModelBuilder().buildAsV2())
+        let interaction = OWSGroupCallMessage(joinedMemberAcis: [], creatorAci: nil, thread: thread, sentAtTimestamp: 0)
 
         mockDB.write { tx in
             mockThreadStore.insertThread(thread)
@@ -76,10 +85,10 @@ final class CallRecordDeleteManagerTest: XCTestCase {
     }
 
     func testDeleteViaAssociatedInteractions() {
-        let (individualCallInteraction1, contactThread1) = insertInteraction(type: TSCall.self, threadType: TSContactThread.self)
-        let (individualCallInteraction2, contactThread2) = insertInteraction(type: TSCall.self, threadType: TSContactThread.self)
-        let (groupCallInteraction1, groupThread1) = insertInteraction(type: OWSGroupCallMessage.self, threadType: TSGroupThread.self)
-        let (groupCallInteraction2, groupThread2) = insertInteraction(type: OWSGroupCallMessage.self, threadType: TSGroupThread.self)
+        let (individualCallInteraction1, contactThread1) = insertIndividualCallInteraction()
+        let (individualCallInteraction2, contactThread2) = insertIndividualCallInteraction()
+        let (groupCallInteraction1, groupThread1) = insertGroupCallInteraction()
+        let (groupCallInteraction2, groupThread2) = insertGroupCallInteraction()
 
         let individualCallRecord1 = insertCallRecord(interaction: individualCallInteraction1, thread: contactThread1, isGroup: false)
         let individualCallRecord2 = insertCallRecord(interaction: individualCallInteraction2, thread: contactThread2, isGroup: false)

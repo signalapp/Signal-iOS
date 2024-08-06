@@ -61,7 +61,9 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
                           thread:(TSContactThread *)thread
                  sentAtTimestamp:(uint64_t)sentAtTimestamp
 {
-    self = [super initInteractionWithTimestamp:sentAtTimestamp thread:thread];
+    self = [super initWithTimestamp:sentAtTimestamp
+                receivedAtTimestamp:[NSDate ows_millisecondTimeStamp]
+                             thread:thread];
 
     if (!self) {
         return self;

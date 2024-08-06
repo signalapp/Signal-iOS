@@ -259,7 +259,10 @@ public class InteractionStoreImpl: InteractionStore {
         tx: DBReadTransaction
     ) -> TSOutgoingMessage {
         return TSOutgoingMessage(
-            outgoingMessageWithBuilder: builder,
+            outgoingMessageWith: builder,
+            additionalRecipients: [],
+            explicitRecipients: [],
+            skippedRecipients: [],
             transaction: SDSDB.shimOnlyBridge(tx)
         )
     }
@@ -431,10 +434,10 @@ open class MockInteractionStore: InteractionStore {
         builder: TSOutgoingMessageBuilder,
         tx: DBReadTransaction
     ) -> TSOutgoingMessage {
-        // Override in a subclass if you want more detailed instantiation.
+        // Override in a subclass if you want recipient states populated.
         return TSOutgoingMessage(
-            in: builder.thread,
-            messageBody: builder.messageBody
+            outgoingMessageWith: builder,
+            recipientAddressStates: [:]
         )
     }
 
@@ -442,7 +445,7 @@ open class MockInteractionStore: InteractionStore {
         builder: OWSOutgoingArchivedPaymentMessageBuilder,
         tx: DBReadTransaction
     ) -> OWSOutgoingArchivedPaymentMessage {
-        return OWSOutgoingArchivedPaymentMessage(in: builder.thread, messageBody: nil)
+        owsFail("Not implemented, because this message type really needs an SDSAnyReadTransaction to be initialized, and at the time of writing no caller cares.")
     }
 
     open func insertOrReplacePlaceholder(

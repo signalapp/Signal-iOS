@@ -517,8 +517,14 @@ class MessageSendLogTests: SSKBaseTest {
     // MARK: - Helpers
 
     class MSLTestMessage: TSOutgoingMessage {
-        override init(outgoingMessageWithBuilder outgoingMessageBuilder: TSOutgoingMessageBuilder, transaction: SDSAnyReadTransaction) {
-            super.init(outgoingMessageWithBuilder: outgoingMessageBuilder, transaction: transaction)
+        init(outgoingMessageWithBuilder outgoingMessageBuilder: TSOutgoingMessageBuilder, transaction: SDSAnyReadTransaction) {
+            super.init(
+                outgoingMessageWith: outgoingMessageBuilder,
+                additionalRecipients: [],
+                explicitRecipients: [],
+                skippedRecipients: [],
+                transaction: transaction
+            )
         }
 
         required init?(coder: NSCoder) {

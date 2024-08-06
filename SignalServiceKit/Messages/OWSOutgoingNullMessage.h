@@ -12,8 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSOutgoingNullMessage : TSOutgoingMessage
 
-- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
-
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                         uniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
@@ -53,7 +51,15 @@ NS_ASSUME_NONNULL_BEGIN
               storedMessageState:(TSOutgoingMessageState)storedMessageState
             wasNotCreatedLocally:(BOOL)wasNotCreatedLocally NS_UNAVAILABLE;
 
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
+                        recipientAddressStates:
+                            (NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *)
+                                recipientAddressStates NS_UNAVAILABLE;
+- (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
+                          additionalRecipients:(NSArray<SignalServiceAddress *> *)additionalRecipients
+                            explicitRecipients:(NSArray<AciObjC *> *)explicitRecipients
+                             skippedRecipients:(NSArray<SignalServiceAddress *> *)skippedRecipients
                                    transaction:(SDSAnyReadTransaction *)transaction NS_UNAVAILABLE;
 
 - (instancetype)initWithContactThread:(TSContactThread *)contactThread

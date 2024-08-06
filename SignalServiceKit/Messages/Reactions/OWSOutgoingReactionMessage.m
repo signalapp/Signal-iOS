@@ -23,7 +23,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
     messageBuilder.expiresInSeconds = expiresInSeconds;
-    self = [super initOutgoingMessageWithBuilder:messageBuilder transaction:transaction];
+    self = [super initOutgoingMessageWithBuilder:messageBuilder
+                            additionalRecipients:@[]
+                              explicitRecipients:@[]
+                               skippedRecipients:@[]
+                                     transaction:transaction];
     if (!self) {
         return self;
     }

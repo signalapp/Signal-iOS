@@ -46,7 +46,13 @@ public class OutgoingEditMessage: TSOutgoingMessage {
         self.editedMessage = editMessage
 
         let builder = TSOutgoingMessageBuilder(thread: thread, timestamp: editMessage.timestamp)
-        super.init(outgoingMessageWithBuilder: builder, transaction: transaction)
+        super.init(
+            outgoingMessageWith: builder,
+            additionalRecipients: [],
+            explicitRecipients: [],
+            skippedRecipients: [],
+            transaction: transaction
+        )
     }
 
     /// Note on `init?(coder:)` and `init(dictionary:)`: Both are implemented as seeming

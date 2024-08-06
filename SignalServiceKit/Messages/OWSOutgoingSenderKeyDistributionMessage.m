@@ -26,7 +26,11 @@
 
     TSOutgoingMessageBuilder *messageBuilder =
         [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:destinationThread];
-    self = [super initOutgoingMessageWithBuilder:messageBuilder transaction:transaction];
+    self = [super initOutgoingMessageWithBuilder:messageBuilder
+                            additionalRecipients:@[]
+                              explicitRecipients:@[]
+                               skippedRecipients:@[]
+                                     transaction:transaction];
     if (self) {
         _serializedSKDM = [skdmBytes copy];
     }

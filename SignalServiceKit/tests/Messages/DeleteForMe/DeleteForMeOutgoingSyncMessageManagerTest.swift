@@ -30,7 +30,7 @@ final class DeleteForMeOutgoingSyncMessageManagerTest: XCTestCase {
     func testBatchedInteractionDeletes() {
         let thread = TSContactThread(contactAddress: .isolatedRandomForTesting())
         let messagesToDelete = (0..<1501).map { _ -> TSOutgoingMessage in
-            return TSOutgoingMessage(uniqueId: .uniqueId(), thread: thread)
+            return TSOutgoingMessage(thread: thread)
         }
 
         var expectedInteractionBatches: [Int] = [500, 500, 500, 1]
@@ -77,8 +77,8 @@ final class DeleteForMeOutgoingSyncMessageManagerTest: XCTestCase {
             outgoingSyncMessageManager.send(
                 deletedAttachmentIdentifiers: Dictionary(
                     [
-                        (TSOutgoingMessage(uniqueId: .uniqueId(), thread: thread), Array(attachmentsToDelete.prefix(200))),
-                        (TSOutgoingMessage(uniqueId: .uniqueId(), thread: thread), Array(attachmentsToDelete.dropFirst(200))),
+                        (TSOutgoingMessage(thread: thread), Array(attachmentsToDelete.prefix(200))),
+                        (TSOutgoingMessage(thread: thread), Array(attachmentsToDelete.dropFirst(200))),
                     ],
                     uniquingKeysWith: { lhs, rhs in
                         XCTFail("Colliding keys!")
@@ -135,6 +135,15 @@ final class DeleteForMeOutgoingSyncMessageManagerTest: XCTestCase {
 private extension String {
     static func uniqueId() -> String {
         return UUID().uuidString
+    }
+}
+
+// MARK: -
+
+private extension TSOutgoingMessage {
+    convenience init(thread: TSThread) {
+        let builder = TSOutgoingMessageBuilder(thread: thread)
+        self.init(outgoingMessageWith: builder, recipientAddressStates: [:])
     }
 }
 

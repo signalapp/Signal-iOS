@@ -25,7 +25,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     TSOutgoingMessageBuilder *messageBuilder =
         [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:contactThread];
-    return [super initOutgoingMessageWithBuilder:messageBuilder transaction:transaction];
+    return [super initOutgoingMessageWithBuilder:messageBuilder
+                            additionalRecipients:@[]
+                              explicitRecipients:@[]
+                               skippedRecipients:@[]
+                                     transaction:transaction];
 }
 
 - (instancetype)initWithContactThread:(TSContactThread *)contactThread
@@ -34,7 +38,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     TSOutgoingMessageBuilder *messageBuilder =
         [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:contactThread];
-    self = [super initOutgoingMessageWithBuilder:messageBuilder transaction:transaction];
+    self = [super initOutgoingMessageWithBuilder:messageBuilder
+                            additionalRecipients:@[]
+                              explicitRecipients:@[]
+                               skippedRecipients:@[]
+                                     transaction:transaction];
     if (!self) {
         return self;
     }

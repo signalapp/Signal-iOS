@@ -28,7 +28,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug([thread.uniqueId isEqualToString:message.uniqueThreadId]);
 
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
-    self = [super initOutgoingMessageWithBuilder:messageBuilder transaction:transaction];
+    self = [super initOutgoingMessageWithBuilder:messageBuilder
+                            additionalRecipients:@[]
+                              explicitRecipients:@[]
+                               skippedRecipients:@[]
+                                     transaction:transaction];
     if (!self) {
         return self;
     }
@@ -42,12 +46,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithThread:(TSThread *)thread
                   storyMessage:(StoryMessage *)storyMessage
-             skippedRecipients:(nullable NSSet<SignalServiceAddress *> *)skippedRecipients
+             skippedRecipients:(NSArray<SignalServiceAddress *> *)skippedRecipients
                    transaction:(SDSAnyReadTransaction *)transaction
 {
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
-    messageBuilder.skippedRecipients = skippedRecipients;
-    self = [super initOutgoingMessageWithBuilder:messageBuilder transaction:transaction];
+    self = [super initOutgoingMessageWithBuilder:messageBuilder
+                            additionalRecipients:@[]
+                              explicitRecipients:@[]
+                               skippedRecipients:skippedRecipients
+                                     transaction:transaction];
     if (!self) {
         return self;
     }

@@ -855,7 +855,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             let deleteMessage = TSOutgoingDeleteMessage(
                 thread: thread,
                 storyMessage: self,
-                skippedRecipients: nil,
+                skippedRecipients: [],
                 transaction: transaction
             )
             let preparedMessage = PreparedOutgoingMessage.preprepared(
@@ -896,7 +896,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             let deleteMessage = TSOutgoingDeleteMessage(
                 thread: thread,
                 storyMessage: self,
-                skippedRecipients: skippedRecipients,
+                skippedRecipients: Array(skippedRecipients),
                 transaction: transaction
             )
             let preparedDeleteMessage = PreparedOutgoingMessage.preprepared(

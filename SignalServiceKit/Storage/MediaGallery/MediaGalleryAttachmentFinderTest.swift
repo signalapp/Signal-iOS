@@ -237,7 +237,7 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
 
     private func insertThreadAndInteraction() -> (thread: TSThread, interactionRowId: Int64) {
         let thread = TSThread(uniqueId: UUID().uuidString)
-        let interaction = TSInteraction(uniqueId: UUID().uuidString, thread: thread)
+        let interaction = TSInteraction(timestamp: 0, receivedAtTimestamp: 0, thread: thread)
 
         db.write { tx in
             try! thread.asRecord().insert(InMemoryDB.shimOnlyBridge(tx).db)

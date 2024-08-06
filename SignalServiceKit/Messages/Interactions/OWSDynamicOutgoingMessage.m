@@ -26,7 +26,11 @@ NS_ASSUME_NONNULL_BEGIN
             plainTextDataBlock:(DynamicOutgoingMessageBlock)block
 {
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
-    self = [super initOutgoingMessageWithBuilder:messageBuilder transaction:transaction];
+    self = [super initOutgoingMessageWithBuilder:messageBuilder
+                            additionalRecipients:@[]
+                              explicitRecipients:@[]
+                               skippedRecipients:@[]
+                                     transaction:transaction];
 
     if (self) {
         _block = block;

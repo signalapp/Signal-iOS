@@ -29,8 +29,9 @@ public class DefaultDisappearingMessageTimerInteraction: TSInteraction {
         // Include timestamp in uniqueId to ensure invariant that
         // interactions don't move in the chat history ordering.
         super.init(
-            uniqueId: "DefaultDisappearingMessageTimer_\(timestamp)",
+            customUniqueId: "DefaultDisappearingMessageTimer_\(timestamp)",
             timestamp: timestamp,
+            receivedAtTimestamp: 0,
             thread: thread
         )
     }

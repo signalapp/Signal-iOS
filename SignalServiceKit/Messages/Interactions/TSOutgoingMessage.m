@@ -212,22 +212,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return self;
 }
 
-+ (instancetype)outgoingMessageInThread:(TSThread *)thread messageBody:(nullable NSString *)body
-{
-    return [self outgoingMessageInThread:thread messageBody:body expiresInSeconds:0];
-}
-
-+ (instancetype)outgoingMessageInThread:(TSThread *)thread
-                            messageBody:(nullable NSString *)body
-                       expiresInSeconds:(uint32_t)expiresInSeconds
-{
-    TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
-    builder.messageBody = body;
-    builder.expiresInSeconds = expiresInSeconds;
-    return [builder buildWithSneakyTransaction];
-}
-
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
+                          additionalRecipients:(NSArray<SignalServiceAddress *> *)additionalRecipients
+                            explicitRecipients:(NSArray<AciObjC *> *)explicitRecipients
+                             skippedRecipients:(NSArray<SignalServiceAddress *> *)skippedRecipients
                                    transaction:(SDSAnyReadTransaction *)transaction
 {
     self = [super initMessageWithBuilder:outgoingMessageBuilder];
@@ -235,25 +223,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         return self;
     }
 
-    _hasSyncedTranscript = NO;
-
     TSThread *thread = outgoingMessageBuilder.thread;
-    TSGroupMetaMessage groupMetaMessage = outgoingMessageBuilder.groupMetaMessage;
-
-    if ([thread isKindOfClass:TSGroupThread.class]) {
-        // Unless specified, we assume group messages are "Delivery" i.e. normal messages.
-        if (groupMetaMessage == TSGroupMetaMessageUnspecified) {
-            _groupMetaMessage = TSGroupMetaMessageDeliver;
-        } else {
-            _groupMetaMessage = groupMetaMessage;
-        }
-    } else {
-        OWSAssertDebug(groupMetaMessage == TSGroupMetaMessageUnspecified);
-        // Specifying a group meta message only makes sense for Group threads
-        _groupMetaMessage = TSGroupMetaMessageUnspecified;
-    }
-
-    _isVoiceMessage = outgoingMessageBuilder.isVoiceMessage;
 
     // New outgoing messages should immediately determine their
     // recipient list from current thread state.
@@ -267,20 +237,21 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         // Most messages should only be sent to the current members of the group.
         [recipientAddresses addObjectsFromArray:[thread recipientAddressesWithTransaction:transaction]];
         // Some messages (eg certain call messages) go to a subset of the group.
-        if (outgoingMessageBuilder.explicitRecipients != nil) {
+        if (explicitRecipients.count > 0) {
             NSMutableSet<SignalServiceAddress *> *explicitRecipientAddresses = [[NSMutableSet alloc] init];
-            for (AciObjC *recipientAci in outgoingMessageBuilder.explicitRecipients) {
+            for (AciObjC *recipientAci in explicitRecipients) {
                 [explicitRecipientAddresses
                     addObject:[[SignalServiceAddress alloc] initWithServiceIdObjC:recipientAci]];
             }
             [recipientAddresses intersectSet:explicitRecipientAddresses];
         }
         // Group updates should also be sent to pending members of the group.
-        if (outgoingMessageBuilder.additionalRecipients) {
-            [recipientAddresses addObjectsFromArray:outgoingMessageBuilder.additionalRecipients];
+        if (additionalRecipients.count > 0) {
+            [recipientAddresses addObjectsFromArray:additionalRecipients];
         }
     }
 
+    NSSet<SignalServiceAddress *> *skippedRecipientsSet = [NSSet setWithArray:skippedRecipients];
     NSMutableDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *recipientAddressStates =
         [NSMutableDictionary new];
     for (SignalServiceAddress *recipientAddress in recipientAddresses) {
@@ -289,17 +260,74 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
             continue;
         }
         TSOutgoingMessageRecipientState *recipientState = [TSOutgoingMessageRecipientState new];
-        recipientState.state = [outgoingMessageBuilder.skippedRecipients containsObject:recipientAddress]
+        recipientState.state = [skippedRecipientsSet containsObject:recipientAddress]
             ? OWSOutgoingMessageRecipientStateSkipped
             : OWSOutgoingMessageRecipientStateSending;
         recipientAddressStates[recipientAddress] = recipientState;
     }
-    self.recipientAddressStates = [recipientAddressStates copy];
-    _outgoingMessageSchemaVersion = TSOutgoingMessageSchemaVersion;
 
+    _recipientAddressStates = [recipientAddressStates copy];
+    _groupMetaMessage = [[self class] groupMetaMessageForBuilder:outgoingMessageBuilder];
+    _hasSyncedTranscript = NO;
+    _outgoingMessageSchemaVersion = TSOutgoingMessageSchemaVersion;
     _changeActionsProtoData = outgoingMessageBuilder.changeActionsProtoData;
+    _isVoiceMessage = outgoingMessageBuilder.isVoiceMessage;
 
     return self;
+}
+
+- (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
+                        recipientAddressStates:
+                            (NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *)
+                                recipientAddressStates
+{
+    [recipientAddressStates enumerateKeysAndObjectsUsingBlock:^(SignalServiceAddress *_Nonnull recipientAddress,
+        TSOutgoingMessageRecipientState *_Nonnull recipientAddressState,
+        BOOL *_Nonnull stop) {
+        OWSAssertDebug(recipientAddressState.state == OWSOutgoingMessageRecipientStateSkipped
+            || recipientAddressState.state == OWSOutgoingMessageRecipientStateSending);
+    }];
+
+    self = [super initMessageWithBuilder:outgoingMessageBuilder];
+    if (!self) {
+        return self;
+    }
+
+    _recipientAddressStates = [recipientAddressStates copy];
+    _groupMetaMessage = [[self class] groupMetaMessageForBuilder:outgoingMessageBuilder];
+    _hasSyncedTranscript = NO;
+    _outgoingMessageSchemaVersion = TSOutgoingMessageSchemaVersion;
+    _changeActionsProtoData = outgoingMessageBuilder.changeActionsProtoData;
+    _isVoiceMessage = outgoingMessageBuilder.isVoiceMessage;
+
+    return self;
+}
+
+/// Compute the appropriate "group meta message" for a given message builder.
+///
+/// At the time of writing, the "meta message" property appears to be entirely
+/// unused except for determining if a given `TSOutgoingMessage` should be
+/// saved. It is, however, part of the `TSInteraction` database schema, so will
+/// be non-trivial to do away with entirely.
+///
+/// - SeeAlso ``shouldBeSaved``
++ (TSGroupMetaMessage)groupMetaMessageForBuilder:(TSOutgoingMessageBuilder *)builder
+{
+    TSThread *thread = builder.thread;
+    TSGroupMetaMessage groupMetaMessage = builder.groupMetaMessage;
+
+    if ([thread isKindOfClass:TSGroupThread.class]) {
+        // Unless specified, we assume group messages are "deliver", or "normal" messages.
+        if (groupMetaMessage == TSGroupMetaMessageUnspecified) {
+            return TSGroupMetaMessageDeliver;
+        } else {
+            return groupMetaMessage;
+        }
+    } else {
+        // Explicit group meta message only makes sense for group threads.
+        OWSAssertDebug(groupMetaMessage == TSGroupMetaMessageUnspecified);
+        return TSGroupMetaMessageUnspecified;
+    }
 }
 
 #pragma mark -

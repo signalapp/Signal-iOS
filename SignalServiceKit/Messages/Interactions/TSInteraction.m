@@ -59,38 +59,11 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     return @"TSInteraction";
 }
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId thread:(TSThread *)thread
+- (instancetype)initWithCustomUniqueId:(NSString *)uniqueId
+                             timestamp:(uint64_t)timestamp
+                   receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                                thread:(TSThread *)thread
 {
-    return [self initWithUniqueId:uniqueId
-                        timestamp:[MessageTimestampGenerator.sharedInstance generateTimestamp]
-                           thread:thread];
-}
-
-- (instancetype)initWithUniqueId:(NSString *)uniqueId timestamp:(uint64_t)timestamp thread:(TSThread *)thread
-{
-    OWSAssertDebug(timestamp > 0);
-    OWSAssertDebug(thread);
-
-    self = [super initWithUniqueId:uniqueId];
-
-    if (!self) {
-        return self;
-    }
-
-    _timestamp = timestamp;
-    _uniqueThreadId = thread.uniqueId;
-
-    return self;
-}
-
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-                       timestamp:(uint64_t)timestamp
-             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                          thread:(TSThread *)thread
-{
-    OWSAssertDebug(timestamp > 0);
-    OWSAssertDebug(thread);
-
     self = [super initWithUniqueId:uniqueId];
 
     if (!self) {
@@ -104,10 +77,10 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     return self;
 }
 
-- (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                           thread:(TSThread *)thread
 {
-    OWSAssertDebug(timestamp > 0);
-
     NSString *uniqueId = [[self class] generateUniqueId];
     self = [super initWithUniqueId:uniqueId];
 
@@ -116,8 +89,8 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     }
 
     _timestamp = timestamp;
+    _receivedAtTimestamp = receivedAtTimestamp;
     _uniqueThreadId = thread.uniqueId;
-    _receivedAtTimestamp = [NSDate ows_millisecondTimeStamp];
 
     return self;
 }

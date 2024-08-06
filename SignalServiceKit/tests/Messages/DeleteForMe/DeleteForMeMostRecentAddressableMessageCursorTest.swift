@@ -10,8 +10,8 @@ import XCTest
 final class DeleteForMeMostRecentAddressableMessageCursorTest: XCTestCase {
     func makeMessage(rowId: Int64) -> TSMessage {
         let message = TSOutgoingMessage(
-            uniqueId: .uniqueId(),
-            thread: TSThread(uniqueId: .uniqueId())
+            outgoingMessageWith: TSOutgoingMessageBuilder(thread: TSThread(uniqueId: .uniqueId())),
+            recipientAddressStates: [:]
         )
         message.updateRowId(rowId)
         return message

@@ -940,7 +940,7 @@ class AttachmentStoreTests: XCTestCase {
     }
 
     private func insertInteraction(thread: TSThread, tx: DBWriteTransaction) -> Int64 {
-        let interaction = TSInteraction(uniqueId: UUID().uuidString, thread: thread)
+        let interaction = TSInteraction(timestamp: 0, receivedAtTimestamp: 0, thread: thread)
         try! interaction.asRecord().insert(InMemoryDB.shimOnlyBridge(tx).db)
         return interaction.sqliteRowId!
     }

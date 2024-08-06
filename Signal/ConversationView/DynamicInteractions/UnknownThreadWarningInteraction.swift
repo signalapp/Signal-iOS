@@ -28,9 +28,12 @@ public class UnknownThreadWarningInteraction: TSInteraction {
     public init(thread: TSThread, timestamp: UInt64) {
         // Include timestamp in uniqueId to ensure invariant that
         // interactions don't move in the chat history ordering.
-        super.init(uniqueId: "UnknownThreadWarning_\(timestamp)",
-                   timestamp: timestamp,
-                   thread: thread)
+        super.init(
+            customUniqueId: "UnknownThreadWarning_\(timestamp)",
+            timestamp: timestamp,
+            receivedAtTimestamp: 0,
+            thread: thread
+        )
     }
 
     public override var shouldBeSaved: Bool {

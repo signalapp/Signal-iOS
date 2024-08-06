@@ -27,7 +27,11 @@ NS_ASSUME_NONNULL_BEGIN
     SignalServiceAddress *sender = [[SignalServiceAddress alloc] initWithServiceIdObjC:sourceAci];
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:sender transaction:transaction];
     TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
-    self = [super initOutgoingMessageWithBuilder:builder transaction:transaction];
+    self = [super initOutgoingMessageWithBuilder:builder
+                            additionalRecipients:@[]
+                              explicitRecipients:@[]
+                               skippedRecipients:@[]
+                                     transaction:transaction];
     if (self) {
         _decryptionErrorData = [errorMessageBytes copy];
         _failedEnvelopeGroupId = [failedEnvelopeGroupId copy];

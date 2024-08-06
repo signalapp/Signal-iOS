@@ -136,7 +136,10 @@ public class NotificationActionHandler: Dependencies {
                     }
 
                     let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(TSOutgoingMessage(
-                        outgoingMessageWithBuilder: builder,
+                        outgoingMessageWith: builder,
+                        additionalRecipients: [],
+                        explicitRecipients: [],
+                        skippedRecipients: [],
                         transaction: transaction
                     ))
                     do {

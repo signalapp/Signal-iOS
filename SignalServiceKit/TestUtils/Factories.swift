@@ -132,9 +132,6 @@ public class OutgoingMessageFactory: NSObject, Factory {
             groupMetaMessage: groupMetaMessageBuilder(),
             isViewOnceMessage: isViewOnceMessageBuilder(),
             changeActionsProtoData: changeActionsProtoDataBuilder(),
-            additionalRecipients: additionalRecipientsBuilder(),
-            explicitRecipients: explicitRecipientsBuilder(),
-            skippedRecipients: skippedRecipientsBuilder(),
             storyAuthorAci: storyAuthorAciBuilder(),
             storyTimestamp: storyTimestampBuilder(),
             storyReactionEmoji: storyReactionEmojiBuilder(),
@@ -199,18 +196,6 @@ public class OutgoingMessageFactory: NSObject, Factory {
     }
 
     public var changeActionsProtoDataBuilder: () -> Data? = {
-        return nil
-    }
-
-    public var additionalRecipientsBuilder: () -> [SignalServiceAddress]? = {
-        return nil
-    }
-
-    public var explicitRecipientsBuilder: () -> [AciObjC]? = {
-        return nil
-    }
-
-    public var skippedRecipientsBuilder: () -> Set<SignalServiceAddress>? = {
         return nil
     }
 

@@ -32,7 +32,7 @@ final class CallRecordQuerierTest: XCTestCase {
     }
 
     private func insertInteraction(thread: TSThread, db: Database) -> Int64 {
-        let interaction = TSInteraction(uniqueId: UUID().uuidString, thread: thread)
+        let interaction = TSInteraction(timestamp: 0, receivedAtTimestamp: 0, thread: thread)
         try! interaction.asRecord().insert(db)
         return interaction.sqliteRowId!
     }

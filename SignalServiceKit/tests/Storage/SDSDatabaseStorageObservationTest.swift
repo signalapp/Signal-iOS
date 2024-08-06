@@ -178,3 +178,12 @@ class SDSDatabaseStorageObservationTest: SSKBaseTest {
         waitForExpectations(timeout: 10)
     }
 }
+
+// MARK: -
+
+private extension TSOutgoingMessage {
+    convenience init(in thread: TSThread, messageBody: String) {
+        let builder = TSOutgoingMessageBuilder(thread: thread, messageBody: messageBody)
+        self.init(outgoingMessageWith: builder, recipientAddressStates: [:])
+    }
+}

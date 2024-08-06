@@ -31,7 +31,13 @@ final class OWSOutgoingResendResponse: TSOutgoingMessage {
         derivedContentHint: SealedSenderContentHint,
         tx: SDSAnyWriteTransaction
     ) {
-        super.init(outgoingMessageWithBuilder: outgoingMessageBuilder, transaction: tx)
+        super.init(
+            outgoingMessageWith: outgoingMessageBuilder,
+            additionalRecipients: [],
+            explicitRecipients: [],
+            skippedRecipients: [],
+            transaction: tx
+        )
         self.originalMessagePlaintext = originalMessagePlaintext
         self.originalThreadId = originalThreadId
         self.originalGroupId = originalGroupId

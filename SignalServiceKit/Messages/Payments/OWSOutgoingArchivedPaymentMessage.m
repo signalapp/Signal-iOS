@@ -17,7 +17,11 @@ NS_ASSUME_NONNULL_BEGIN
                    transaction:(SDSAnyReadTransaction *)transaction
 {
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
-    self = [super initOutgoingMessageWithBuilder:messageBuilder transaction:transaction];
+    self = [super initOutgoingMessageWithBuilder:messageBuilder
+                            additionalRecipients:@[]
+                              explicitRecipients:@[]
+                               skippedRecipients:@[]
+                                     transaction:transaction];
     if (!self) {
         return self;
     }
@@ -31,7 +35,11 @@ NS_ASSUME_NONNULL_BEGIN
                     (OWSOutgoingArchivedPaymentMessageBuilder *)outgoingArchivedPaymentMessageBuilder
                                                   transaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [super initOutgoingMessageWithBuilder:outgoingArchivedPaymentMessageBuilder transaction:transaction];
+    self = [super initOutgoingMessageWithBuilder:outgoingArchivedPaymentMessageBuilder
+                            additionalRecipients:@[]
+                              explicitRecipients:@[]
+                               skippedRecipients:@[]
+                                     transaction:transaction];
     if (!self) {
         return self;
     }

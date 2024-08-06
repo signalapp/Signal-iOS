@@ -31,8 +31,12 @@ public class TypingIndicatorInteraction: TSInteraction {
     public init(thread: TSThread, timestamp: UInt64, address: SignalServiceAddress) {
         self.address = address
 
-        super.init(uniqueId: TypingIndicatorInteraction.TypingIndicatorId,
-            timestamp: timestamp, thread: thread)
+        super.init(
+            customUniqueId: TypingIndicatorInteraction.TypingIndicatorId,
+            timestamp: timestamp,
+            receivedAtTimestamp: 0,
+            thread: thread
+        )
     }
 
     public override var shouldBeSaved: Bool {

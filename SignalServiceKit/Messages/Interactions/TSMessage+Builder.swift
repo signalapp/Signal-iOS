@@ -75,11 +75,6 @@ public class TSMessageBuilder: NSObject {
     }
 
     @objc
-    public class func messageBuilder(thread: TSThread) -> TSMessageBuilder {
-        return TSMessageBuilder(thread: thread)
-    }
-
-    @objc
     public class func messageBuilder(thread: TSThread,
                                      messageBody: String?) -> TSMessageBuilder {
         return TSMessageBuilder(thread: thread,

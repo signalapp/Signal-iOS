@@ -19,12 +19,6 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
     public var groupMetaMessage: TSGroupMetaMessage = .unspecified
     @objc
     public var changeActionsProtoData: Data?
-    @objc
-    public var additionalRecipients: [SignalServiceAddress]?
-    @objc
-    public var explicitRecipients: [AciObjC]?
-    @objc
-    public var skippedRecipients: Set<SignalServiceAddress>?
 
     public required init(
         thread: TSThread,
@@ -38,9 +32,6 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
         groupMetaMessage: TSGroupMetaMessage = .unspecified,
         isViewOnceMessage: Bool = false,
         changeActionsProtoData: Data? = nil,
-        additionalRecipients: [SignalServiceAddress]? = nil,
-        explicitRecipients: [AciObjC]? = nil,
-        skippedRecipients: Set<SignalServiceAddress>? = nil,
         storyAuthorAci: Aci? = nil,
         storyTimestamp: UInt64? = nil,
         storyReactionEmoji: String? = nil,
@@ -63,9 +54,6 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
         self.isVoiceMessage = isVoiceMessage
         self.groupMetaMessage = groupMetaMessage
         self.changeActionsProtoData = changeActionsProtoData
-        self.additionalRecipients = additionalRecipients
-        self.explicitRecipients = explicitRecipients
-        self.skippedRecipients = skippedRecipients
     }
 
     @objc
@@ -93,9 +81,6 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                               groupMetaMessage: TSGroupMetaMessage,
                               isViewOnceMessage: Bool,
                               changeActionsProtoData: Data?,
-                              additionalRecipients: [SignalServiceAddress]?,
-                              explicitRecipients: [AciObjC]?,
-                              skippedRecipients: Set<SignalServiceAddress>?,
                               storyAuthorAci: AciObjC?,
                               storyTimestamp: NSNumber?,
                               storyReactionEmoji: String?,
@@ -110,9 +95,6 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                                         groupMetaMessage: groupMetaMessage,
                                         isViewOnceMessage: isViewOnceMessage,
                                         changeActionsProtoData: changeActionsProtoData,
-                                        additionalRecipients: additionalRecipients,
-                                        explicitRecipients: explicitRecipients,
-                                        skippedRecipients: skippedRecipients,
                                         storyAuthorAci: storyAuthorAci?.wrappedAciValue,
                                         storyTimestamp: storyTimestamp?.uint64Value,
                                         storyReactionEmoji: storyReactionEmoji,
@@ -121,20 +103,22 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
 
     private var hasBuilt = false
 
-    @objc
     public func build(transaction: SDSAnyReadTransaction) -> TSOutgoingMessage {
         if hasBuilt {
             owsFailDebug("Don't build more than once.")
         }
         hasBuilt = true
-        return TSOutgoingMessage(outgoingMessageWithBuilder: self, transaction: transaction)
-    }
-
-    @objc
-    public func buildWithSneakyTransaction() -> TSOutgoingMessage {
-        databaseStorage.read { build(transaction: $0) }
+        return TSOutgoingMessage(
+            outgoingMessageWith: self,
+            additionalRecipients: [],
+            explicitRecipients: [],
+            skippedRecipients: [],
+            transaction: transaction
+        )
     }
 }
+
+// MARK: -
 
 public extension TSOutgoingMessage {
     @objc

@@ -43,7 +43,7 @@ final class CallRecordStoreTest: XCTestCase {
 
     private func insertThreadAndInteraction() -> (threadRowId: Int64, interactionRowId: Int64) {
         let thread = TSThread(uniqueId: UUID().uuidString)
-        let interaction = TSInteraction(uniqueId: UUID().uuidString, thread: thread)
+        let interaction = TSInteraction(timestamp: 0, receivedAtTimestamp: 0, thread: thread)
 
         inMemoryDB.write { tx in
             try! thread.asRecord().insert(InMemoryDB.shimOnlyBridge(tx).db)

@@ -19,24 +19,12 @@ public class OutgoingGroupUpdateMessage: TSOutgoingMessage {
         builder.groupMetaMessage = groupMetaMessage
         builder.expiresInSeconds = expiresInSeconds
         builder.changeActionsProtoData = changeActionsProtoData
-        builder.additionalRecipients = Array(additionalRecipients)
 
-        super.init(outgoingMessageWithBuilder: builder, transaction: transaction)
-    }
-
-    convenience init(
-        in thread: TSGroupThread,
-        groupMetaMessage: TSGroupMetaMessage,
-        expiresInSeconds: UInt32 = 0,
-        changeActionsProtoData: Data? = nil,
-        transaction: SDSAnyReadTransaction
-    ) {
-        self.init(
-            in: thread,
-            groupMetaMessage: groupMetaMessage,
-            expiresInSeconds: expiresInSeconds,
-            changeActionsProtoData: changeActionsProtoData,
-            additionalRecipients: [],
+        super.init(
+            outgoingMessageWith: builder,
+            additionalRecipients: Array(additionalRecipients),
+            explicitRecipients: [],
+            skippedRecipients: [],
             transaction: transaction
         )
     }

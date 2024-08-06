@@ -26,7 +26,13 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
         self.action = action
 
         let builder = TSOutgoingMessageBuilder(thread: thread)
-        super.init(outgoingMessageWithBuilder: builder, transaction: transaction)
+        super.init(
+            outgoingMessageWith: builder,
+            additionalRecipients: [],
+            explicitRecipients: [],
+            skippedRecipients: [],
+            transaction: transaction
+        )
     }
 
     @objc

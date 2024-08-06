@@ -20,7 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
                                   thread:(TSGroupThread *)thread
                          sentAtTimestamp:(uint64_t)sentAtTimestamp
 {
-    self = [super initInteractionWithTimestamp:sentAtTimestamp thread:thread];
+    self = [super initWithTimestamp:sentAtTimestamp
+                receivedAtTimestamp:[NSDate ows_millisecondTimeStamp]
+                             thread:thread];
 
     if (!self) {
         return self;

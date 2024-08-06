@@ -34,7 +34,13 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         self.skipSyncTranscript = NSNumber(value: skipSyncTranscript)
         let builder = TSOutgoingMessageBuilder(thread: thread)
         builder.timestamp = storyMessage.timestamp
-        super.init(outgoingMessageWithBuilder: builder, transaction: transaction)
+        super.init(
+            outgoingMessageWith: builder,
+            additionalRecipients: [],
+            explicitRecipients: [],
+            skippedRecipients: [],
+            transaction: transaction
+        )
     }
 
     @objc

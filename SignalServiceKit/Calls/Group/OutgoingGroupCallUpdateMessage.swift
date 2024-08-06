@@ -25,7 +25,10 @@ public final class OutgoingGroupCallUpdateMessage: TSOutgoingMessage {
         self.eraId = eraId
 
         super.init(
-            outgoingMessageWithBuilder: TSOutgoingMessageBuilder(thread: thread),
+            outgoingMessageWith: TSOutgoingMessageBuilder(thread: thread),
+            additionalRecipients: [],
+            explicitRecipients: [],
+            skippedRecipients: [],
             transaction: tx
         )
     }

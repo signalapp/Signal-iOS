@@ -15,7 +15,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
 {
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
-    return [self initOutgoingMessageWithBuilder:messageBuilder transaction:transaction];
+    return [self initOutgoingMessageWithBuilder:messageBuilder
+                           additionalRecipients:@[]
+                             explicitRecipients:@[]
+                              skippedRecipients:@[]
+                                    transaction:transaction];
 }
 
 

@@ -28,10 +28,12 @@ public class UnreadIndicatorInteraction: TSInteraction {
     public init(thread: TSThread, timestamp: UInt64, receivedAtTimestamp: UInt64) {
         // Include timestamp in uniqueId to ensure invariant that
         // interactions don't move in the chat history ordering.
-        super.init(uniqueId: "UnreadIndicator_\(timestamp)",
-                   timestamp: timestamp,
-                   receivedAtTimestamp: receivedAtTimestamp,
-                   thread: thread)
+        super.init(
+            customUniqueId: "UnreadIndicator_\(timestamp)",
+            timestamp: timestamp,
+            receivedAtTimestamp: receivedAtTimestamp,
+            thread: thread
+        )
     }
 
     public override var shouldBeSaved: Bool {

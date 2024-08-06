@@ -40,9 +40,6 @@ public class OWSOutgoingArchivedPaymentMessageBuilder: TSOutgoingMessageBuilder 
             groupMetaMessage: .unspecified,
             isViewOnceMessage: false,
             changeActionsProtoData: nil,
-            additionalRecipients: nil,
-            explicitRecipients: nil,
-            skippedRecipients: nil,
             storyAuthorAci: nil,
             storyTimestamp: nil,
             storyReactionEmoji: nil,
@@ -50,7 +47,7 @@ public class OWSOutgoingArchivedPaymentMessageBuilder: TSOutgoingMessageBuilder 
         )
     }
 
-    public required init(thread: TSThread, timestamp: UInt64? = nil, messageBody: String? = nil, bodyRanges: MessageBodyRanges? = nil, editState: TSEditState = .none, expiresInSeconds: UInt32? = nil, expireStartedAt: UInt64? = nil, isVoiceMessage: Bool = false, groupMetaMessage: TSGroupMetaMessage = .unspecified, isViewOnceMessage: Bool = false, changeActionsProtoData: Data? = nil, additionalRecipients: [SignalServiceAddress]? = nil, explicitRecipients: [AciObjC]? = nil, skippedRecipients: Set<SignalServiceAddress>? = nil, storyAuthorAci: Aci? = nil, storyTimestamp: UInt64? = nil, storyReactionEmoji: String? = nil, giftBadge: OWSGiftBadge? = nil) {
-        fatalError("init(thread:timestamp:messageBody:bodyRanges:editState:expiresInSeconds:expireStartedAt:isVoiceMessage:groupMetaMessage:isViewOnceMessage:changeActionsProtoData:additionalRecipients:explicitRecipients:skippedRecipients:storyAuthorAci:storyTimestamp:storyReactionEmoji:giftBadge:) has not been implemented")
+    public required init(thread: TSThread, timestamp: UInt64? = nil, messageBody: String? = nil, bodyRanges: MessageBodyRanges? = nil, editState: TSEditState = .none, expiresInSeconds: UInt32? = nil, expireStartedAt: UInt64? = nil, isVoiceMessage: Bool = false, groupMetaMessage: TSGroupMetaMessage = .unspecified, isViewOnceMessage: Bool = false, changeActionsProtoData: Data? = nil, storyAuthorAci: Aci? = nil, storyTimestamp: UInt64? = nil, storyReactionEmoji: String? = nil, giftBadge: OWSGiftBadge? = nil) {
+        fatalError("init(thread:timestamp:messageBody:bodyRanges:editState:expiresInSeconds:expireStartedAt:isVoiceMessage:groupMetaMessage:isViewOnceMessage:changeActionsProtoData:storyAuthorAci:storyTimestamp:storyReactionEmoji:giftBadge:) has not been implemented")
     }
 }

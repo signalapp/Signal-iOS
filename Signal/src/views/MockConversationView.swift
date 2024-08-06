@@ -228,7 +228,13 @@ private class MockIncomingMessage: TSIncomingMessage {
 private class MockOutgoingMessage: TSOutgoingMessage {
     init(messageBody: String, thread: TSThread, transaction: SDSAnyReadTransaction) {
         let builder = TSOutgoingMessageBuilder(thread: thread, messageBody: messageBody)
-        super.init(outgoingMessageWithBuilder: builder, transaction: transaction)
+        super.init(
+            outgoingMessageWith: builder,
+            additionalRecipients: [],
+            explicitRecipients: [],
+            skippedRecipients: [],
+            transaction: transaction
+        )
     }
 
     required init?(coder: NSCoder) {
