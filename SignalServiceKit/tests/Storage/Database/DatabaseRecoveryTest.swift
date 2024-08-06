@@ -148,7 +148,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
             }
 
             // Message
-            let messageBuilder: TSIncomingMessageBuilder = .withDefaults(
+            let messageBuilder: TSIncomingMessageBuilder = .withDefaultValues(
                 thread: contactThread,
                 timestamp: 1234,
                 authorAci: contactAci,
@@ -312,7 +312,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
                 transaction: transaction
             )
 
-            let messageBuilder: TSIncomingMessageBuilder = .withDefaults(
+            let messageBuilder: TSIncomingMessageBuilder = .withDefaultValues(
                 thread: contactThread,
                 timestamp: 1234,
                 authorAci: contactAci,

@@ -15,10 +15,12 @@ public class OutgoingGroupUpdateMessage: TSOutgoingMessage {
         additionalRecipients: T,
         transaction: SDSAnyReadTransaction
     ) where T.Element == SignalServiceAddress {
-        let builder = TSOutgoingMessageBuilder(thread: thread)
-        builder.groupMetaMessage = groupMetaMessage
-        builder.expiresInSeconds = expiresInSeconds
-        builder.changeActionsProtoData = changeActionsProtoData
+        let builder: TSOutgoingMessageBuilder = .withDefaultValues(
+            thread: thread,
+            expiresInSeconds: expiresInSeconds,
+            groupMetaMessage: groupMetaMessage,
+            changeActionsProtoData: changeActionsProtoData
+        )
 
         super.init(
             outgoingMessageWith: builder,

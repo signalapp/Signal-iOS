@@ -8,7 +8,6 @@ import LibSignalClient
 
 @objc
 public class OWSOutgoingArchivedPaymentMessageBuilder: TSOutgoingMessageBuilder {
-
     @objc
     public var amount: String?
     @objc
@@ -16,7 +15,7 @@ public class OWSOutgoingArchivedPaymentMessageBuilder: TSOutgoingMessageBuilder 
     @objc
     public var note: String?
 
-    public required init(
+    public init(
         thread: TSThread,
         timestamp: UInt64?,
         amount: String?,
@@ -45,9 +44,5 @@ public class OWSOutgoingArchivedPaymentMessageBuilder: TSOutgoingMessageBuilder 
             storyReactionEmoji: nil,
             giftBadge: nil
         )
-    }
-
-    public required init(thread: TSThread, timestamp: UInt64? = nil, messageBody: String? = nil, bodyRanges: MessageBodyRanges? = nil, editState: TSEditState = .none, expiresInSeconds: UInt32? = nil, expireStartedAt: UInt64? = nil, isVoiceMessage: Bool = false, groupMetaMessage: TSGroupMetaMessage = .unspecified, isViewOnceMessage: Bool = false, changeActionsProtoData: Data? = nil, storyAuthorAci: Aci? = nil, storyTimestamp: UInt64? = nil, storyReactionEmoji: String? = nil, giftBadge: OWSGiftBadge? = nil) {
-        fatalError("init(thread:timestamp:messageBody:bodyRanges:editState:expiresInSeconds:expireStartedAt:isVoiceMessage:groupMetaMessage:isViewOnceMessage:changeActionsProtoData:storyAuthorAci:storyTimestamp:storyReactionEmoji:giftBadge:) has not been implemented")
     }
 }

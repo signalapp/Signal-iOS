@@ -555,8 +555,10 @@ class MessageSendLogTests: SSKBaseTest {
             return newDate
         }()
 
-        let builder = TSOutgoingMessageBuilder(thread: ContactThreadFactory().create(transaction: writeTx),
-                                               timestamp: resolvedDate.ows_millisecondsSince1970)
+        let builder: TSOutgoingMessageBuilder = .withDefaultValues(
+            thread: ContactThreadFactory().create(transaction: writeTx),
+            timestamp: resolvedDate.ows_millisecondsSince1970
+        )
         let testMessage = MSLTestMessage(outgoingMessageWithBuilder: builder, transaction: writeTx)
         testMessage._contentHint = contentHint
         testMessage._relatedMessageIds = [testMessage.uniqueId] + relatedMessageIds

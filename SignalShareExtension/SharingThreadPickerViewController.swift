@@ -279,11 +279,13 @@ extension SharingThreadPickerViewController {
                 selectedConversations: selectedConversations,
                 messageBody: nil,
                 messageBlock: { destination, tx in
-                    let builder = TSOutgoingMessageBuilder(thread: destination.thread)
                     let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-                    builder.expiresInSeconds = dmConfigurationStore.durationSeconds(
-                        for: destination.thread,
-                        tx: tx.asV2Read
+                    let builder: TSOutgoingMessageBuilder = .withDefaultValues(
+                        thread: destination.thread,
+                        expiresInSeconds: dmConfigurationStore.durationSeconds(
+                            for: destination.thread,
+                            tx: tx.asV2Read
+                        )
                     )
                     let message = builder.build(transaction: tx)
                     let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(

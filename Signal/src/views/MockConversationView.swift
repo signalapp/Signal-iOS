@@ -198,7 +198,7 @@ private class MockThread: TSContactThread {
 
 private class MockIncomingMessage: TSIncomingMessage {
     init(messageBody: String, thread: MockThread) {
-        let builder: TSIncomingMessageBuilder = .withDefaults(
+        let builder: TSIncomingMessageBuilder = .withDefaultValues(
             thread: thread,
             authorAci: thread.contactAddress.aci!,
             messageBody: messageBody
@@ -227,7 +227,7 @@ private class MockIncomingMessage: TSIncomingMessage {
 
 private class MockOutgoingMessage: TSOutgoingMessage {
     init(messageBody: String, thread: TSThread, transaction: SDSAnyReadTransaction) {
-        let builder = TSOutgoingMessageBuilder(thread: thread, messageBody: messageBody)
+        let builder: TSOutgoingMessageBuilder = .withDefaultValues(thread: thread, messageBody: messageBody)
         super.init(
             outgoingMessageWith: builder,
             additionalRecipients: [],

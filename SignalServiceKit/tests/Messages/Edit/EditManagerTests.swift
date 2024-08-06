@@ -341,7 +341,7 @@ class EditManagerTests: SSKBaseTest {
         with thread: TSThread,
         customizeBlock: ((TSIncomingMessageBuilder) -> Void)
     ) -> TSIncomingMessage {
-        let messageBuilder: TSIncomingMessageBuilder = .withDefaults(
+        let messageBuilder: TSIncomingMessageBuilder = .withDefaultValues(
             thread: thread
         )
         messageBuilder.serverTimestamp = NSNumber(value: 0)

@@ -74,7 +74,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
         self.paymentNotification = paymentNotification
     }
 
-    public static func withDefaults(
+    public static func withDefaultValues(
         thread: TSThread,
         timestamp: UInt64? = nil,
         authorAci: Aci? = nil,
@@ -119,6 +119,8 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
             paymentNotification: paymentNotification
         )
     }
+
+    // MARK: -
 
     private var hasBuilt = false
 

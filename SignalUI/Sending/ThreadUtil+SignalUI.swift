@@ -224,7 +224,7 @@ extension UnpreparedOutgoingMessage {
             }
         }
 
-        let messageBuilder = TSOutgoingMessageBuilder(thread: thread, timestamp: timestamp)
+        let messageBuilder: TSOutgoingMessageBuilder = .withDefaultValues(thread: thread, timestamp: timestamp)
 
         messageBuilder.messageBody = truncatedBody?.text
         messageBuilder.bodyRanges = truncatedBody?.ranges

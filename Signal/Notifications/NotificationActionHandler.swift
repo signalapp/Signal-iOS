@@ -116,7 +116,7 @@ public class NotificationActionHandler: Dependencies {
 
             return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
                 self.databaseStorage.write { transaction in
-                    let builder = TSOutgoingMessageBuilder(thread: thread)
+                    let builder: TSOutgoingMessageBuilder = .withDefaultValues(thread: thread)
                     builder.messageBody = replyText
 
                     // If we're replying to a group story reply, keep the reply within that context.

@@ -95,10 +95,12 @@ extension StoryReplySheet {
             "Should be impossible to reply to system stories"
         )
 
-        let builder = TSOutgoingMessageBuilder(thread: thread)
-        builder.storyReactionEmoji = reaction
-        builder.storyTimestamp = NSNumber(value: storyMessage.timestamp)
-        builder.storyAuthorAci = AciObjC(storyMessage.authorAci)
+        let builder: TSOutgoingMessageBuilder = .withDefaultValues(
+            thread: thread,
+            storyAuthorAci: storyMessage.authorAci,
+            storyTimestamp: storyMessage.timestamp,
+            storyReactionEmoji: reaction
+        )
 
         tryToSendMessage(builder)
 
@@ -144,11 +146,13 @@ extension StoryReplySheet {
             "Should be impossible to reply to system stories"
         )
 
-        let builder = TSOutgoingMessageBuilder(thread: thread)
-        builder.messageBody = messageBody.text
-        builder.bodyRanges = messageBody.ranges
-        builder.storyTimestamp = NSNumber(value: storyMessage.timestamp)
-        builder.storyAuthorAci = AciObjC(storyMessage.authorAci)
+        let builder: TSOutgoingMessageBuilder = .withDefaultValues(
+            thread: thread,
+            messageBody: messageBody.text,
+            bodyRanges: messageBody.ranges,
+            storyAuthorAci: storyMessage.authorAci,
+            storyTimestamp: storyMessage.timestamp
+        )
 
         tryToSendMessage(builder)
     }

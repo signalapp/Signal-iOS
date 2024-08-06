@@ -60,7 +60,7 @@ public extension ThreadUtil {
         AssertIsOnMainThread()
         assert(contactShareDraft.ows_isValid)
 
-        let builder = TSOutgoingMessageBuilder(thread: thread)
+        let builder: TSOutgoingMessageBuilder = .withDefaultValues(thread: thread)
 
         let message: TSOutgoingMessage = databaseStorage.read { tx in
             applyDisappearingMessagesConfiguration(to: builder, tx: tx.asV2Read)

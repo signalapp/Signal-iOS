@@ -41,11 +41,15 @@ public class OutgoingEditMessage: TSOutgoingMessage {
         thread: TSThread,
         targetMessageTimestamp: UInt64,
         editMessage: TSOutgoingMessage,
-        transaction: SDSAnyReadTransaction) {
+        transaction: SDSAnyReadTransaction
+    ) {
         self.targetMessageTimestamp = targetMessageTimestamp
         self.editedMessage = editMessage
 
-        let builder = TSOutgoingMessageBuilder(thread: thread, timestamp: editMessage.timestamp)
+        let builder: TSOutgoingMessageBuilder = .withDefaultValues(
+            thread: thread,
+            timestamp: editMessage.timestamp
+        )
         super.init(
             outgoingMessageWith: builder,
             additionalRecipients: [],

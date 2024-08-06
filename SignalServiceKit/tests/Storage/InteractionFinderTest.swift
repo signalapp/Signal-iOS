@@ -17,11 +17,16 @@ class InteractionFinderTest: SSKBaseTest {
         let outgoingMessage1 = TSOutgoingMessage(in: contactThread1, messageBody: "good heavens")
         let outgoingMessage2 = TSOutgoingMessage(in: contactThread2, messageBody: "land's sakes")
         let outgoingMessage3 = TSOutgoingMessage(in: contactThread2, messageBody: "oh my word")
-        let errorMessage1 = TSErrorMessage.nonblockingIdentityChange(in: contactThread1,
-                                                                     address: address1,
-                                                                     wasIdentityVerified: false)
-        let errorMessage2 = TSErrorMessageBuilder(thread: contactThread1,
-                                                  errorType: .decryptionFailure).build()
+        let errorMessage1 = TSErrorMessage.nonblockingIdentityChange(
+            in: contactThread1,
+            address: address1,
+            wasIdentityVerified: false
+        )
+        let errorMessage2: TSErrorMessage = .failedDecryption(
+            forSender: nil,
+            thread: contactThread1,
+            timestamp: 0
+        )
         // Non-message interactions
         let missedCall = TSCall(callType: .incomingMissed,
                                 offerType: .audio,
@@ -93,7 +98,7 @@ class InteractionFinderTest: SSKBaseTest {
 
 private extension TSOutgoingMessage {
     convenience init(in thread: TSThread, messageBody: String) {
-        let builder = TSOutgoingMessageBuilder(thread: thread, messageBody: messageBody)
+        let builder: TSOutgoingMessageBuilder = .withDefaultValues(thread: thread, messageBody: messageBody)
         self.init(outgoingMessageWith: builder, recipientAddressStates: [:])
     }
 }

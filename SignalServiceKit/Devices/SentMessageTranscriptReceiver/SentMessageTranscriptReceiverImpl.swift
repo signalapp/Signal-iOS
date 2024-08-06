@@ -177,21 +177,20 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
 
         updateDisappearingMessageTokenIfNecessary(target: messageParams.target, localIdentifiers: localIdentifiers, tx: tx)
 
-        // The builder() factory method requires us to specify every
-        // property so that this will break if we add any new properties.
-        let outgoingMessageBuilder = TSOutgoingMessageBuilder.builder(
+        let outgoingMessageBuilder = TSOutgoingMessageBuilder(
             thread: messageParams.target.thread,
             timestamp: transcript.timestamp,
             messageBody: messageParams.body,
             bodyRanges: messageParams.bodyRanges,
+            editState: .none, // Sent transcripts with edit state are handled by a different codepath
             expiresInSeconds: messageParams.expirationDurationSeconds,
             expireStartedAt: messageParams.expirationStartedAt,
             isVoiceMessage: false,
             groupMetaMessage: .unspecified,
             isViewOnceMessage: messageParams.isViewOnceMessage,
             changeActionsProtoData: nil,
-            storyAuthorAci: messageParams.storyAuthorAci.map(AciObjC.init),
-            storyTimestamp: messageParams.storyTimestamp.map { NSNumber(value: $0) },
+            storyAuthorAci: messageParams.storyAuthorAci,
+            storyTimestamp: messageParams.storyTimestamp,
             storyReactionEmoji: nil,
             giftBadge: messageParams.giftBadge
         )

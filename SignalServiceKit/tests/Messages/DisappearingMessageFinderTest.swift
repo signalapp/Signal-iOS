@@ -42,7 +42,7 @@ final class DisappearingMessageFinderTest: SSKBaseTest {
 
             let thread = self.thread(with: transaction)
 
-            let incomingMessageBuilder: TSIncomingMessageBuilder = .withDefaults(
+            let incomingMessageBuilder: TSIncomingMessageBuilder = .withDefaultValues(
                 thread: thread,
                 timestamp: 1,
                 authorAci: otherAddress.aci,
@@ -83,9 +83,12 @@ final class DisappearingMessageFinderTest: SSKBaseTest {
         write { transaction in
             let thread = self.thread(with: transaction)
 
-            let messageBuilder = TSOutgoingMessageBuilder(thread: thread, messageBody: body)
-            messageBuilder.expiresInSeconds = expiresInSeconds
-            messageBuilder.expireStartedAt = expireStartedAt
+            let messageBuilder: TSOutgoingMessageBuilder = .withDefaultValues(
+                thread: thread,
+                messageBody: body,
+                expiresInSeconds: expiresInSeconds,
+                expireStartedAt: expireStartedAt
+            )
 
             let message = messageBuilder.build(transaction: transaction)
             message.anyInsert(transaction: transaction)

@@ -15,7 +15,7 @@ final class OWSDisappearingMessagesJobTest: SSKBaseTest {
     ) -> TSMessage {
         let localAddress = SignalServiceAddress.randomForTesting()
         let thread = TSContactThread.getOrCreateThread(contactAddress: localAddress)
-        let messageBuilder: TSIncomingMessageBuilder = .withDefaults(
+        let messageBuilder: TSIncomingMessageBuilder = .withDefaultValues(
             thread: thread,
             messageBody: body
         )

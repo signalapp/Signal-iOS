@@ -142,7 +142,7 @@ private extension String {
 
 private extension TSOutgoingMessage {
     convenience init(thread: TSThread) {
-        let builder = TSOutgoingMessageBuilder(thread: thread)
+        let builder: TSOutgoingMessageBuilder = .withDefaultValues(thread: thread)
         self.init(outgoingMessageWith: builder, recipientAddressStates: [:])
     }
 }

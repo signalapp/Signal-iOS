@@ -25,7 +25,7 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
                 transaction: SDSAnyReadTransaction) {
         self.action = action
 
-        let builder = TSOutgoingMessageBuilder(thread: thread)
+        let builder: TSOutgoingMessageBuilder = .withDefaultValues(thread: thread)
         super.init(
             outgoingMessageWith: builder,
             additionalRecipients: [],

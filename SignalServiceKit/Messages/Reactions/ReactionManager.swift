@@ -216,11 +216,11 @@ public class ReactionManager: NSObject {
 
             let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction.asV2Read)?.aci
             if reactor == localAci {
-                let builder = TSOutgoingMessageBuilder(thread: thread)
+                let builder: TSOutgoingMessageBuilder = .withDefaultValues(thread: thread)
                 populateStoryContext(on: builder)
                 message = builder.build(transaction: transaction)
             } else {
-                let builder: TSIncomingMessageBuilder = .withDefaults(
+                let builder: TSIncomingMessageBuilder = .withDefaultValues(
                     thread: thread,
                     authorAci: reactor,
                     serverTimestamp: NSNumber(value: serverTimestamp)

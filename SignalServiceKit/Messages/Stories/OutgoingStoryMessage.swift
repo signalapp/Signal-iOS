@@ -32,8 +32,10 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         self.storyAllowsReplies = NSNumber(value: storyAllowsReplies)
         self.isPrivateStorySend = NSNumber(value: isPrivateStorySend)
         self.skipSyncTranscript = NSNumber(value: skipSyncTranscript)
-        let builder = TSOutgoingMessageBuilder(thread: thread)
-        builder.timestamp = storyMessage.timestamp
+        let builder: TSOutgoingMessageBuilder = .withDefaultValues(
+            thread: thread,
+            timestamp: storyMessage.timestamp
+        )
         super.init(
             outgoingMessageWith: builder,
             additionalRecipients: [],

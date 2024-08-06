@@ -119,13 +119,12 @@ public class OutgoingMessageFactory: NSObject, Factory {
     // MARK: Factory
 
     public func build(transaction: SDSAnyWriteTransaction) -> TSOutgoingMessage {
-        // The builder() factory method requires us to specify every
-        // property so that this will break if we add any new properties.
-        let message = TSOutgoingMessageBuilder.builder(
+        let message: TSOutgoingMessage = TSOutgoingMessageBuilder(
             thread: threadCreator(transaction),
             timestamp: timestampBuilder(),
             messageBody: messageBodyBuilder(),
             bodyRanges: bodyRangesBuilder(),
+            editState: editStateBuilder(),
             expiresInSeconds: expiresInSecondsBuilder(),
             expireStartedAt: expireStartedAtBuilder(),
             isVoiceMessage: isVoiceMessageBuilder(),
@@ -171,6 +170,10 @@ public class OutgoingMessageFactory: NSObject, Factory {
         return MessageBodyRanges.empty
     }
 
+    public var editStateBuilder: () -> TSEditState = {
+        return .none
+    }
+
     public var attachmentIdsBuilder: (SDSAnyWriteTransaction) -> [String] = { _ in
         return []
     }
@@ -199,11 +202,11 @@ public class OutgoingMessageFactory: NSObject, Factory {
         return nil
     }
 
-    public var storyAuthorAciBuilder: () -> AciObjC? = {
+    public var storyAuthorAciBuilder: () -> Aci? = {
         return nil
     }
 
-    public var storyTimestampBuilder: () -> NSNumber? = {
+    public var storyTimestampBuilder: () -> UInt64? = {
         return nil
     }
 

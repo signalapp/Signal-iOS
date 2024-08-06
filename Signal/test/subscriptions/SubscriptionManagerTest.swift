@@ -136,7 +136,7 @@ class SubscriptionManagerDonationConfigurationTest: XCTestCase {
 
         static let supportedPaymentMethods: [String] = ["CARD", "PAYPAL"]
 
-        static func withDefaults(
+        static func withDefaultValues(
             minimumAmount: Int = minimumAmount,
             giftLevel: UInt? = LevelFixtures.giftLevel,
             giftPresetAmount: Int = giftPresetAmount,
@@ -201,7 +201,7 @@ class SubscriptionManagerDonationConfigurationTest: XCTestCase {
         static let levelOne: UInt = 500
         static let levelTwo: UInt = 1000
 
-        static func withDefaults(
+        static func withDefaultValues(
             levels: [UInt] = [
                 giftLevel,
                 boostLevel,
@@ -219,9 +219,9 @@ class SubscriptionManagerDonationConfigurationTest: XCTestCase {
     }
 
     private enum DonationConfigurationFixtures {
-        static func withDefaults(
-            currenciesJson: JSON = CurrencyFixtures.withDefaults(),
-            levelsJson: JSON = LevelFixtures.withDefaults()
+        static func withDefaultValues(
+            currenciesJson: JSON = CurrencyFixtures.withDefaultValues(),
+            levelsJson: JSON = LevelFixtures.withDefaultValues()
         ) -> JSON {
             [
                 "sepaMaximumEuros": 10000,
@@ -239,7 +239,7 @@ class SubscriptionManagerDonationConfigurationTest: XCTestCase {
 
     func testParseValidDonationConfig() throws {
         let config = try DonationConfiguration.from(
-            configurationServiceResponse: DonationConfigurationFixtures.withDefaults()
+            configurationServiceResponse: DonationConfigurationFixtures.withDefaultValues()
         )
 
         XCTAssertEqual(config.boost.level, LevelFixtures.boostLevel)
@@ -267,32 +267,32 @@ class SubscriptionManagerDonationConfigurationTest: XCTestCase {
     }
 
     func testParseConfigMissingThings() {
-        let missingBoost = DonationConfigurationFixtures.withDefaults(
-            levelsJson: LevelFixtures.withDefaults(
+        let missingBoost = DonationConfigurationFixtures.withDefaultValues(
+            levelsJson: LevelFixtures.withDefaultValues(
                 levels: [LevelFixtures.giftLevel, LevelFixtures.levelOne, LevelFixtures.levelTwo]
             )
         )
 
-        let missingGift = DonationConfigurationFixtures.withDefaults(
-            levelsJson: LevelFixtures.withDefaults(
+        let missingGift = DonationConfigurationFixtures.withDefaultValues(
+            levelsJson: LevelFixtures.withDefaultValues(
                 levels: [LevelFixtures.boostLevel, LevelFixtures.levelOne, LevelFixtures.levelTwo]
             )
         )
 
-        let missingBoostLevel = DonationConfigurationFixtures.withDefaults(
-            currenciesJson: CurrencyFixtures.withDefaults(
+        let missingBoostLevel = DonationConfigurationFixtures.withDefaultValues(
+            currenciesJson: CurrencyFixtures.withDefaultValues(
                 boostLevel: nil
             )
         )
 
-        let missingGiftLevel = DonationConfigurationFixtures.withDefaults(
-            currenciesJson: CurrencyFixtures.withDefaults(
+        let missingGiftLevel = DonationConfigurationFixtures.withDefaultValues(
+            currenciesJson: CurrencyFixtures.withDefaultValues(
                 giftLevel: nil
             )
         )
 
-        let missingSubscriptionLevel = DonationConfigurationFixtures.withDefaults(
-            currenciesJson: CurrencyFixtures.withDefaults(
+        let missingSubscriptionLevel = DonationConfigurationFixtures.withDefaultValues(
+            currenciesJson: CurrencyFixtures.withDefaultValues(
                 levelOne: nil
             )
         )
@@ -320,8 +320,8 @@ class SubscriptionManagerDonationConfigurationTest: XCTestCase {
     }
 
     func testParseConfigWithUnrecognizedPaymentMethod() throws {
-        let unexpectedPaymentMethod = DonationConfigurationFixtures.withDefaults(
-            currenciesJson: CurrencyFixtures.withDefaults(
+        let unexpectedPaymentMethod = DonationConfigurationFixtures.withDefaultValues(
+            currenciesJson: CurrencyFixtures.withDefaultValues(
                 supportedPaymentMethods: CurrencyFixtures.supportedPaymentMethods + ["cash money"]
             )
         )

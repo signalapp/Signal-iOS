@@ -48,7 +48,7 @@ final class TSMessageStorageTest: SSKBaseTest {
             let body = "So long, and thanks for all the fish!"
 
             let newMessage: TSIncomingMessage = TSIncomingMessageBuilder
-                .withDefaults(
+                .withDefaultValues(
                     thread: thread,
                     timestamp: timestamp,
                     authorAci: otherAci,
@@ -77,7 +77,7 @@ final class TSMessageStorageTest: SSKBaseTest {
 
             let messages = (0..<10).map { idx -> TSIncomingMessage in
                 let newMessage: TSIncomingMessage = TSIncomingMessageBuilder
-                    .withDefaults(
+                    .withDefaultValues(
                         thread: thread,
                         timestamp: UInt64(idx) + 1,
                         authorAci: otherAci,
@@ -130,7 +130,7 @@ final class TSMessageStorageTest: SSKBaseTest {
                 let authorIdx = idx % groupThread.groupModel.groupMembers.count
                 let authorAddress = groupThread.groupModel.groupMembers[authorIdx]
                 let newMessage: TSIncomingMessage = TSIncomingMessageBuilder
-                    .withDefaults(
+                    .withDefaultValues(
                         thread: groupThread,
                         timestamp: UInt64(idx + 1),
                         authorAci: authorAddress.aci!,

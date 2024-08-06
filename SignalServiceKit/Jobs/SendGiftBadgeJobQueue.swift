@@ -349,7 +349,7 @@ extension UnpreparedOutgoingMessage {
         tx: SDSAnyReadTransaction
     ) -> UnpreparedOutgoingMessage {
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-        let builder = TSOutgoingMessageBuilder(
+        let builder: TSOutgoingMessageBuilder = .withDefaultValues(
             thread: thread,
             expiresInSeconds: dmConfigurationStore.durationSeconds(for: thread, tx: tx.asV2Read),
             giftBadge: OWSGiftBadge(redemptionCredential: Data(giftBadgeReceiptCredentialPresentation.serialize()))
@@ -363,7 +363,7 @@ extension UnpreparedOutgoingMessage {
         tx: SDSAnyReadTransaction
     ) -> UnpreparedOutgoingMessage {
         let dmConfigurationStore = DependenciesBridge.shared.disappearingMessagesConfigurationStore
-        let builder = TSOutgoingMessageBuilder(
+        let builder: TSOutgoingMessageBuilder = .withDefaultValues(
             thread: thread,
             messageBody: messageBody,
             expiresInSeconds: dmConfigurationStore.durationSeconds(for: thread, tx: tx.asV2Read)

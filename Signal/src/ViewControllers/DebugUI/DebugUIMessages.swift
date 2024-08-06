@@ -1241,7 +1241,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 let randomText = randomText()
 
                 // Legit usage of SenderTimestamp to backdate incoming sent messages for Debug
-                let incomingMessageBuilder: TSIncomingMessageBuilder = .withDefaults(
+                let incomingMessageBuilder: TSIncomingMessageBuilder = .withDefaultValues(
                     thread: thread,
                     timestamp: timestamp,
                     authorAci: incomingSenderAci,
@@ -1437,7 +1437,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         for content in contents {
             switch content {
             case .incomingTextOnly(let text):
-                let incomingMessageBuilder: TSIncomingMessageBuilder = .withDefaults(
+                let incomingMessageBuilder: TSIncomingMessageBuilder = .withDefaultValues(
                     thread: thread,
                     authorAci: incomingSenderAci,
                     messageBody: text
@@ -1455,7 +1455,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
                 )
 
             case .incomingAttachments(let dataSources):
-                let incomingMessageBuilder: TSIncomingMessageBuilder = .withDefaults(
+                let incomingMessageBuilder: TSIncomingMessageBuilder = .withDefaultValues(
                     thread: thread,
                     authorAci: incomingSenderAci
                 )
@@ -1540,7 +1540,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
         let now = Date.ows_millisecondTimestamp()
         let messageBody = "Should disappear 60s after \(now)"
-        let incomingMessageBuilder: TSIncomingMessageBuilder = .withDefaults(
+        let incomingMessageBuilder: TSIncomingMessageBuilder = .withDefaultValues(
             thread: thread,
             authorAci: aci,
             messageBody: messageBody,
@@ -1880,7 +1880,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
         let authorAci = DebugUIMessages.anyIncomingSenderAddress(forThread: thread)!.aci!
 
-        let incomingMessageBuilder: TSIncomingMessageBuilder = .withDefaults(
+        let incomingMessageBuilder: TSIncomingMessageBuilder = .withDefaultValues(
             thread: thread,
             authorAci: authorAci,
             messageBody: messageBody
@@ -1905,7 +1905,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
 
         let authorAci = DebugUIMessages.anyIncomingSenderAddress(forThread: thread)!.aci!
 
-        let incomingMessageBuilder: TSIncomingMessageBuilder = .withDefaults(
+        let incomingMessageBuilder: TSIncomingMessageBuilder = .withDefaultValues(
             thread: thread,
             authorAci: authorAci,
             messageBody: messageBody

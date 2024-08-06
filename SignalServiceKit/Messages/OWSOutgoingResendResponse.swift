@@ -52,7 +52,7 @@ final class OWSOutgoingResendResponse: TSOutgoingMessage {
         tx: SDSAnyWriteTransaction
     ) {
         let targetThread = TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(aci), transaction: tx)
-        let builder = TSOutgoingMessageBuilder(thread: targetThread)
+        let builder: TSOutgoingMessageBuilder = .withDefaultValues(thread: targetThread)
 
         let messageSendLog = SSKEnvironment.shared.messageSendLogRef
         if let payloadRecord = messageSendLog.fetchPayload(
