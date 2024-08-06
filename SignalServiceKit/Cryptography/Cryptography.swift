@@ -534,10 +534,8 @@ public extension Cryptography {
             let plaintextDataBlock = try inputFile.readInternal(
                 upToCount: outputBlockSize ?? inputFile.plaintextLength
             ) { ciphertext, ciphertextLength in
-                ciphertext.withUnsafeBytes { ciphertextPointer in
-                    hmac?.update(data: ciphertextPointer.prefix(ciphertextLength))
-                    sha256?.update(data: ciphertextPointer.prefix(ciphertextLength))
-                }
+                hmac?.update(data: ciphertext.prefix(ciphertextLength))
+                sha256?.update(data: ciphertext.prefix(ciphertextLength))
             }
             if plaintextDataBlock.isEmpty {
                 gotEmptyBlock = true

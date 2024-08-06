@@ -13,12 +13,11 @@ public class MetadataStreamTransform: StreamTransform, FinalizableStreamTransfor
     private var sha256State: SHA256?
 
     public func digest() throws -> Data {
-        guard let sha256Result, hasFinalized else {
-            if sha256State != nil {
-                throw OWSAssertionError("Reading digest before finalized")
-            } else {
-                throw OWSAssertionError("Not configured to calculate digest")
-            }
+        guard hasFinalized else {
+            throw OWSAssertionError("Reading digest before finalized")
+        }
+        guard let sha256Result else {
+            throw OWSAssertionError("Not configured to calculate digest")
         }
         return Data(sha256Result)
     }

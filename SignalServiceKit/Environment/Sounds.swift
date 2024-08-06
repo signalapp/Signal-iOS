@@ -260,7 +260,7 @@ public struct CustomSound {
 
     private static func idFromFilename(_ filename: String) -> UInt {
         let filenameData = Data(filename.utf8)
-        let hashValue = Data(SHA256.hash(data: filenameData)).prefix(MemoryLayout<UInt>.size).withUnsafeBytes {
+        let hashValue = SHA256.hash(data: filenameData).withUnsafeBytes {
             $0.loadUnaligned(as: UInt.self)
         }
         return hashValue << customSoundShift
