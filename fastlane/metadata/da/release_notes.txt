@@ -1,1 +1,1 @@
-• Your microphone will automatically switch to being muted whenever you join a large group call, so now nobody will hear you say "omg there are so many people in here" unless you unmute first.
+• Din mikrofon skifter automatisk til at være slået fra, når du deltager i et stort gruppeopkald, så nu vil ingen høre dig sige "omg, der er så mange mennesker herinde", medmindre du slår lyden fra først.

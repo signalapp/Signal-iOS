@@ -1,1 +1,1 @@
-• Your microphone will automatically switch to being muted whenever you join a large group call, so now nobody will hear you say "omg there are so many people in here" unless you unmute first.
+• Microphone của bạn sẽ tự động chuyển qua trạng thái tắt tiếng bất cứ khi nào bạn tham gia một cuộc gọi nhóm đông người.

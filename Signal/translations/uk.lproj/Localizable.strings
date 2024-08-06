@@ -32,10 +32,10 @@
 "ACCESSIBILITY_LABEL_VOICE_MEMO" = "Голосове повідомлення";
 
 /* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the button on that warning, and tapping it lets users continue. */
-"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_CONFIRM_BUTTON" = "Експортувати звіт";
+"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_CONFIRM_BUTTON" = "Експортувати";
 
 /* Users can request a report of their account data. Before they get their account export, they are warned to only share account data with trustworthy sources. This is the message on that warning. */
-"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_MESSAGE" = "Діліться даними свого акаунту Signal лише з людьми і застосунками, яким ви довіряєте.";
+"ACCOUNT_DATA_REPORT_CONFIRM_EXPORT_MESSAGE" = "Надсилайте свої облікові дані користувача Signal лише тим людям і через ті застосунки, яким довіряєте.";
 
 /* Users can request a report of their account data. If this request fails (probably because of a network connection problem), they will see an error sheet. This is the message on that error. */
 "ACCOUNT_DATA_REPORT_ERROR_MESSAGE" = "Перевірте підключення до мережі і спробуйте знову.";
@@ -44,7 +44,7 @@
 "ACCOUNT_DATA_REPORT_ERROR_TITLE" = "Не вдалося створити звіт";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the subtitle on the button that switches to JSON mode. */
-"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_SUBTITLE" = "Машиночитаний файл";
+"ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_SUBTITLE" = "Машиночитний файл";
 
 /* Users can request a report of their account data. They can choose to export it as plain text (TXT) or as JSON. This is the title on the button that switches to JSON mode. */
 "ACCOUNT_DATA_REPORT_EXPORT_AS_JSON_TITLE" = "Експорт у форматі JSON";
@@ -56,13 +56,13 @@
 "ACCOUNT_DATA_REPORT_EXPORT_AS_TXT_TITLE" = "Експорт у форматі TXT";
 
 /* Users can request a report of their account data. Users tap this button to export their data. */
-"ACCOUNT_DATA_REPORT_EXPORT_REPORT_BUTTON" = "Експортувати звіт";
+"ACCOUNT_DATA_REPORT_EXPORT_REPORT_BUTTON" = "Експортувати файл";
 
 /* Users can request a report of their account data. This text appears at the bottom of this screen, offering more information. */
-"ACCOUNT_DATA_REPORT_FOOTER" = "Звіт генерується лише під час експортування. Signal не зберігає звіт на вашому пристрої.";
+"ACCOUNT_DATA_REPORT_FOOTER" = "Файл з обліковими даними створюється лише під час експортування. Signal не зберігає файл на вашому пристрої.";
 
 /* Users can request a report of their account data. This is the subtitle on the screen where they do this, giving them more information. */
-"ACCOUNT_DATA_REPORT_SUBTITLE" = "Завантажте й експортуйте звіт даних свого акаунту Signal. Звіт не містить повідомлень і медіафайлів.";
+"ACCOUNT_DATA_REPORT_SUBTITLE" = "Завантажте та експортуйте файл зі своїми обліковими даними користувача Signal. Облікові дані не включають повідомлень і медіафайлів.";
 
 /* Users can request a report of their account data. This is the title on the screen where they do this. */
 "ACCOUNT_DATA_REPORT_TITLE" = "Облікові дані";
@@ -218,10 +218,10 @@
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Не вдається відкрити Signal";
 
 /* Error description indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Не вдалося відкрити Signal, бо на пристрої не вистачає пам'яті. Звільніть місце у налаштуваннях сховища.";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Не вдалося відкрити Signal, бо на пристрої не вистачає пам'яті. Відкрийте параметри та звільніть місце в пам'яті.";
 
 /* Error title indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Немає місця в сховищі";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Пам'яті майже не лишилося";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Не вдалося відновити дані, перенесені з вашого старого пристрою. Будь ласка, надішліть журнал налагодження на support@signal.org, щоб ми могли виправити цю проблему. Якщо ви заново встановите Signal, історію повідомлень може бути втрачено.";
@@ -311,7 +311,7 @@
 "ASPECT_RATIO_X_BY_Y" = "%1$@:%2$@";
 
 /* Error that outgoing attachments could not be exported. */
-"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Не вдалося експортувати додаток.";
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Не вдалось експортувати вкладення.";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
 "ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Помилка збереження";
@@ -710,7 +710,7 @@
 "CALL_CONTROLS_INCOMING_DECLINE" = "відхилити";
 
 /* Shown in a message bubble when you send a call link in a Signal chat */
-"CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Use this link to join a Signal call";
+"CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Ось посилання, за яким можна приєднатися до виклику в Signal";
 
 /* Label on button for lowering hand in call. */
 "CALL_LOWER_HAND_BUTTON_LABEL" = "Опустити руку";
@@ -1658,10 +1658,10 @@
 "DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Усе одно продовжити";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "Щоб завершити відновлення даних, рекомендується мати принаймні %1$@ вільного простору зберігання на пристрої.";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "Щоб завершити відновлення даних, рекомендуємо мати принаймні %1$@ вільної пам'яті на пристрої.";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "Потрібно більше простору зберігання";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "Потрібно більше пам'яті";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Не вдалося відновити історію повідомлень. Ви можете повторно встановити Signal і користуватися застосунком надалі. Надішліть нам журнал налагодження, щоб ми могли розібратися в цій проблемі.";
@@ -1730,7 +1730,7 @@
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "Написати електронного листа до підтримки";
 
 /* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
-"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Експортувати журнали";
+"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Експортувати журнал";
 
 /* Label for the 'Share' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "Поділитися";
@@ -2444,7 +2444,7 @@
 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR" = "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Привіт,\n\nОстаннім часом я користуюся Signal, щоб усі мої чати на iPhone були конфіденційні. Було б добре, якби він був установлений і в тебе. Тоді ми точно знатимемо, що лише ми з тобою читаємо наші повідомлення й чуємо наші дзвінки.\n\nSignal можна завантажити й на iPhone, і на Android за цим посиланням: %1$@\n\nSignal працює так само, як і твій поточний месенджер. У ньому можна обмінюватися фото й відео, дзвонити й створювати групові чати. А найкраще те, що ніхто крім нас не бачить і не чує того, що ми робимо в цьому месенджері, навіть самі творці Signal!\n\nТут можна почитати про Open Whisper Systems — людей, які створюють Signal: %2$@";
+"EMAIL_INVITE_BODY" = "Привіт,\n\nОстаннім часом я користуюся Signal, щоб усі мої чати на iPhone були конфіденційні. Було б добре, якби він був установлений і в тебе. Тоді ми точно знатимемо, що лише ми з тобою читаємо наші повідомлення й чуємо наші розмови.\n\nSignal можна завантажити й на iPhone, і на Android за цим посиланням: %1$@\n\nSignal працює так само, як і твій поточний месенджер. У ньому можна обмінюватися фото й відео, дзвонити й створювати групові чати. А найкраще те, що ніхто крім нас не бачить і не чує того, що ми робимо в цьому месенджері, навіть самі творці Signal!\n\nТут можна почитати про Open Whisper Systems — людей, які створюють Signal: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Пора переходити в Signal";
@@ -3653,7 +3653,7 @@
 "INFO_MESSAGE_CONTACT_REMOVED" = "Ви видалили цю людину зі свого списку контактів Signal. Якщо написати їй повідомлення, її буде додано знову.";
 
 /* When you start a chat with someone and then later learn their profile name, we insert an in-chat message with this string to record the identifier you originally used to contact them. Embeds {{ the identifier, either a phone number or a username }}. */
-"INFO_MESSAGE_LEARNED_PROFILE_KEY" = "You started this chat with %1$@.";
+"INFO_MESSAGE_LEARNED_PROFILE_KEY" = "Ви почали цей чат з користувачем %1$@.";
 
 /* Shown when a user activates payments from a chat */
 "INFO_MESSAGE_PAYMENTS_ACTIVATED" = "Ви ввімкнули платежі.";
@@ -3677,7 +3677,7 @@
 "INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Про спам повідомлено";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "For your security, chat history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "З міркувань безпеки історія чатів не переноситься на нові зв'язані пристрої.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ змінює номер телефону.";
@@ -6314,7 +6314,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Завжди ретранслювати виклики";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Ретранслювати усі виклики через сервери Signal, щоб не розкривати власну IP-адресу вашим контактам. Ввімкнення погіршить якість дзвінка.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Ретранслювати всі виклики через сервер Signal, щоб не розкривати контактам своєї IP-адреси. Увімкнення цієї функції знизить якість викликів.";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Редагувати номер";
@@ -6347,7 +6347,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Номер телефону";
 
 /* Description text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Тут можна змінити поточний номер телефону на новий. Така зміна буде незворотна.\n\nПеревірте, чи можете ви отримувати SMS або дзвінки на новий номер, і продовжуйте.";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Тут можна змінити поточний номер телефону на новий. Така зміна буде незворотна.\n\nЗапевніться, що можете отримувати SMS-повідомлення або дзвінки на новий номер, і продовжуйте.";
 
 /* Title text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Зміна номера телефону";
@@ -6365,7 +6365,7 @@
 "SETTINGS_COPYRIGHT" = "Авторські права належать Signal Messenger\nЛіцензія: AGPLv3";
 
 /* Label for the 'data' section of the app settings. */
-"SETTINGS_DATA" = "Споживання даних";
+"SETTINGS_DATA" = "Використання даних";
 
 /* Item title for the low bandwidth call setting */
 "SETTINGS_DATA_CALL_LOW_BANDWIDTH_ITEM_TITLE" = "Економити трафік";
@@ -6395,7 +6395,7 @@
 "SETTINGS_DATA_SENT_MEDIA_SECTION_HEADER" = "Медіафайли";
 
 /* The title for the data settings. */
-"SETTINGS_DATA_TITLE" = "Споживання даних";
+"SETTINGS_DATA_TITLE" = "Використання даних";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Видалити акаунт";

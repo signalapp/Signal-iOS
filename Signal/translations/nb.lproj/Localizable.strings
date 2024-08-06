@@ -710,7 +710,7 @@
 "CALL_CONTROLS_INCOMING_DECLINE" = "avvis";
 
 /* Shown in a message bubble when you send a call link in a Signal chat */
-"CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Use this link to join a Signal call";
+"CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Bruk denne lenken for å bli med i en Signal-samtale";
 
 /* Label on button for lowering hand in call. */
 "CALL_LOWER_HAND_BUTTON_LABEL" = "Ta ned hånden";
@@ -767,7 +767,7 @@
 "CALL_VIEW_HANGUP_LABEL" = "Avslutt samtale";
 
 /* Accessibility label for leaving a call */
-"CALL_VIEW_LEAVE_CALL_LABEL" = "Forlat samtale";
+"CALL_VIEW_LEAVE_CALL_LABEL" = "Legg på";
 
 /* Accessibility label for the More button in the Call Controls row. */
 "CALL_VIEW_MORE_LABEL" = "Mer";
@@ -2846,7 +2846,7 @@
 "GROUP_CALL_JOIN_BUTTON" = "Bli med i samtale";
 
 /* Button to leave a group call */
-"GROUP_CALL_LEAVE_BUTTON" = "Forlat samtale";
+"GROUP_CALL_LEAVE_BUTTON" = "Legg på";
 
 /* Title for the section of the group call member list which displays the list of all members in the call. */
 "GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER" = "I samtalen";
@@ -3653,7 +3653,7 @@
 "INFO_MESSAGE_CONTACT_REMOVED" = "Denne personen ble tidligere fjernet fra kontaktlisten din på Signal. Hvis du sender en melding, blir vedkommende lagt til igjen.";
 
 /* When you start a chat with someone and then later learn their profile name, we insert an in-chat message with this string to record the identifier you originally used to contact them. Embeds {{ the identifier, either a phone number or a username }}. */
-"INFO_MESSAGE_LEARNED_PROFILE_KEY" = "You started this chat with %1$@.";
+"INFO_MESSAGE_LEARNED_PROFILE_KEY" = "Du startet denne samtalen med %1$@.";
 
 /* Shown when a user activates payments from a chat */
 "INFO_MESSAGE_PAYMENTS_ACTIVATED" = "Du har aktivert betalinger.";
@@ -3677,7 +3677,7 @@
 "INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Rapportert som søppelpost";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "For your security, chat history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "Av sikkerhetshensyn blir ikke samtaleloggene dine overført til nye tilkoblede enheter.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ har byttet telefonnummer.";

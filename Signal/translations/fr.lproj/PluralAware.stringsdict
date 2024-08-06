@@ -760,9 +760,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Un membre n’a pas pu être ajouté au Nouveau groupe et a été invité à s’y joindre.</string>
+			<string>%1$d membre n’a pas pu être ajouté au nouveau groupe et a été invité à le rejoindre.</string>
 			<key>other</key>
-			<string>%1$d membres n’ont pas pu être ajoutés au Nouveau groupe et ont été invités à s’y joindre.</string>
+			<string>%1$d membres n’ont pas pu être ajoutés au nouveau groupe et ont été invités à le rejoindre.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>

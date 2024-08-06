@@ -792,9 +792,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Para mantener «%2$@» vinculado, abre Signal en ese dispositivo en el plazo de %1$d día.</string>
+			<string>Para mantener &quot;%2$@&quot; vinculado, abre Signal en ese dispositivo en el plazo de 1 día.</string>
 			<key>other</key>
-			<string>Para mantener «%2$@» vinculado, abre Signal en ese dispositivo en el plazo de %1$d días.</string>
+			<string>Para mantener &quot;%2$@&quot; vinculado, abre Signal en ese dispositivo en el plazo de %1$d días.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -1192,9 +1192,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%2$@ y %1$ld más han levantado la mano</string>
+			<string>%2$@ y %1$ld más levantaron la mano</string>
 			<key>other</key>
-			<string>%2$@ y %1$ld más han levantado la mano</string>
+			<string>%2$@ y %1$ld más levantaron la mano</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>
