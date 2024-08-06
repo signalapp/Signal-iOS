@@ -11,7 +11,7 @@ import SignalUI
 
 extension String {
     var e164FormattedAsPhoneNumberWithoutBreaks: String {
-        let formatted = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: self)
+        let formatted = PhoneNumber.bestEffortLocalizedPhoneNumber(e164: self)
         return formatted.replacingOccurrences(of: " ", with: "\u{00a0}")
     }
 }

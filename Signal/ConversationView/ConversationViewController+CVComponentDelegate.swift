@@ -1010,7 +1010,7 @@ extension ConversationViewController: CVComponentDelegate {
                 "THREAD_MERGE_LEARN_MORE",
                 comment: "Shown after tapping a 'Learn More' button when multiple conversations for the same person have been merged into one. The first parameter is a phone number (eg +1 650-555-0100) and the second parameter is a name (eg John)."
             )
-            let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber)
+            let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(e164: phoneNumber)
             let shortDisplayName = databaseStorage.read { tx in
                 return contactsManager.displayName(for: contactAddress, tx: tx).resolvedValue(useShortNameIfAvailable: true)
             }

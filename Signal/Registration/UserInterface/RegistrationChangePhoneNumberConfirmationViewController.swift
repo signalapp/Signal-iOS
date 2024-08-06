@@ -102,8 +102,8 @@ class RegistrationChangePhoneNumberConfirmationViewController: OWSViewController
 
         let descriptionFormat = OWSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT",
                                                   comment: "Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}.")
-        let oldPhoneNumberFormatted = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: state.oldE164.stringValue)
-        let newPhoneNumberFormatted = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: state.newE164.stringValue)
+        let oldPhoneNumberFormatted = PhoneNumber.bestEffortLocalizedPhoneNumber(e164: state.oldE164.stringValue)
+        let newPhoneNumberFormatted = PhoneNumber.bestEffortLocalizedPhoneNumber(e164: state.newE164.stringValue)
         let descriptionText = String(
             format: descriptionFormat,
             oldPhoneNumberFormatted,

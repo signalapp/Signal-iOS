@@ -271,7 +271,7 @@ public extension ProfileDetailLabel {
                 comment: "Indicator that a value has been copied to the clipboard."
             ))
         }
-        let formattedPhoneNumber = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: phoneNumber)
+        let formattedPhoneNumber = PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(phoneNumber)
 
         return .init(
             title: formattedPhoneNumber,

@@ -70,7 +70,7 @@ class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
         for phoneNumber in phoneNumbers {
             actionSheet.addAction(ActionSheetAction(
-                title: PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber),
+                title: PhoneNumber.bestEffortLocalizedPhoneNumber(e164: phoneNumber),
                 style: .default
             ) { _ in
                 completion(phoneNumber)

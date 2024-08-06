@@ -429,7 +429,7 @@ class AppSettingsViewController: OWSTableViewController2 {
 
         if let phoneNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber {
             addSubtitleLabel(
-                text: PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: phoneNumber),
+                text: PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(phoneNumber),
                 textColor: Theme.primaryTextColor
             )
         } else {

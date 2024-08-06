@@ -309,7 +309,7 @@ public extension TSInfoMessage {
                 "THREAD_MERGE_PHONE_NUMBER",
                 comment: "A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameters are replaced with the contact's name (eg John Doe) and their phone number (eg +1 650 555 0100)."
             )
-            let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber)
+            let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(e164: phoneNumber)
             return String(format: formatString, displayName, formattedPhoneNumber)
         } else {
             let formatString = OWSLocalizedString(
@@ -351,7 +351,7 @@ public extension TSInfoMessage {
     func sessionSwitchoverDescription(tx: SDSAnyReadTransaction) -> String {
         if let phoneNumber = sessionSwitchoverPhoneNumber {
             let displayName = contactThreadDisplayName(tx: tx)
-            let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber)
+            let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(e164: phoneNumber)
             let formatString = OWSLocalizedString(
                 "SESSION_SWITCHOVER_EVENT",
                 comment: "If you send a message to a phone number, we might not know the owner of the account. When you later learn the owner of the account, we may show this message. The first parameter is a phone number; the second parameter is the contact's name. Put differently, this message indicates that a phone number belongs to a particular named recipient."

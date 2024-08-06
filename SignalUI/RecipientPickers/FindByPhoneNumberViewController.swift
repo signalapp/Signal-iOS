@@ -304,7 +304,7 @@ extension FindByPhoneNumberViewController: CountryCodeViewControllerDelegate {
 
         var callingCode: String?
         if let callingCodeInt = callingCodeInt {
-            callingCode = COUNTRY_CODE_PREFIX + "\(callingCodeInt)"
+            callingCode = PhoneNumber.countryCodePrefix + "\(callingCodeInt)"
             countryCode = phoneNumberUtil.probableCountryCode(forCallingCode: callingCode!)
         }
 

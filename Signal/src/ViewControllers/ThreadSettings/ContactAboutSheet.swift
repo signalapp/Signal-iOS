@@ -241,9 +241,7 @@ class ContactAboutSheet: StackSheetViewController {
         self.shortDisplayName = displayName.resolvedValue(useShortNameIfAvailable: true)
 
         if case .phoneNumber(let phoneNumber) = displayName {
-            self.displayName = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(
-                toLookLikeAPhoneNumber: phoneNumber.stringValue
-            )
+            self.displayName = PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(phoneNumber.stringValue)
         }
 
         switch displayName {

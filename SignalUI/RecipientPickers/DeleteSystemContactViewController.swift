@@ -193,7 +193,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         }
 
         // Phone Number
-        let formattedPhoneNum = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: e164.stringValue)
+        let formattedPhoneNum = PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(e164.stringValue)
         let phoneNumberSection = OWSTableSection()
         phoneNumberSection.add(
             OWSTableItem.label(

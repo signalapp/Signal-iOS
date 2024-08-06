@@ -664,7 +664,7 @@ private class SafetyNumberCell: ContactTableViewCell {
                 ))
             case .`default`, .defaultAcknowledged:
                 if let phoneNumber = item.address.phoneNumber {
-                    let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber)
+                    let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(e164: phoneNumber)
 
                     if item.displayName != formattedPhoneNumber {
                         configuration.attributedSubtitle = NSAttributedString(string: formattedPhoneNumber)

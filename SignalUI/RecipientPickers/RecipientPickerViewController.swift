@@ -1384,7 +1384,7 @@ extension RecipientPickerViewController {
                     "RECIPIENT_PICKER_INVITE_MESSAGE",
                     comment: "Alert text. Shown after selecting a phone number that isn't a Signal user."
                 ),
-                PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: phoneNumber)
+                PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(phoneNumber)
             )
         )
         actionSheet.addAction(OWSActionSheets.cancelAction)
@@ -1422,7 +1422,7 @@ extension RecipientPickerViewController {
                     "RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE",
                     comment: "Alert text. Shown after selecting a phone number that isn't valid."
                 ),
-                PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: phoneNumber)
+                PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(phoneNumber)
             )
         )
         actionSheet.addAction(OWSActionSheets.okayAction)

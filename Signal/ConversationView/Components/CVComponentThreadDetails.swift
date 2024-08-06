@@ -884,7 +884,7 @@ extension CVComponentThreadDetails {
                 return NSAttributedString()
             }
             let phoneNumber = contactThread.contactAddress.phoneNumber
-            let formattedPhoneNumber = phoneNumber.map(PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber:))
+            let formattedPhoneNumber = phoneNumber.map(PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(_:))
             guard let formattedPhoneNumber else {
                 return NSAttributedString()
             }

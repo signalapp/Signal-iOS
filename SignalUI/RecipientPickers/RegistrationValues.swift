@@ -25,7 +25,7 @@ public struct RegistrationCountryState: Equatable, Dependencies {
 
         let countryCode: String = PhoneNumberUtil.defaultCountryCode()
         let callingCodeNumber: NSNumber = phoneNumberUtil.getCallingCode(forRegion: countryCode)
-        let callingCode = "\(COUNTRY_CODE_PREFIX)\(callingCodeNumber)"
+        let callingCode = "\(PhoneNumber.countryCodePrefix)\(callingCodeNumber)"
         let countryName = PhoneNumberUtil.countryName(fromCountryCode: countryCode)
 
         return RegistrationCountryState(countryName: countryName, callingCode: callingCode, countryCode: countryCode)

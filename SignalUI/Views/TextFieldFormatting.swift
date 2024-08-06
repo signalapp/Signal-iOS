@@ -44,10 +44,7 @@ public class TextFieldFormatting: Dependencies {
 
         let originalText = textField.text ?? ""
         let trimmedText = originalText.digitsOnly.phoneNumberTrimmedToMaxLength
-        let updatedText = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(
-            toLookLikeAPhoneNumber: trimmedText,
-            withSpecifiedCountryCodeString: callingCode
-        )
+        let updatedText = PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(trimmedText, countryCodeString: callingCode)
 
         let updatedCursorOffset = PhoneNumberUtil.translateCursorPosition(
             UInt(originalCursorOffset),
@@ -120,10 +117,7 @@ public class TextFieldFormatting: Dependencies {
         // reformat the phone number, trying to keep the cursor beside the inserted or deleted digit
         let cursorPositionAfterChange = min(left.utf16.count + center.utf16.count, textAfterChange.utf16.count)
 
-        let formattedText = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(
-            toLookLikeAPhoneNumber: textAfterChange,
-            withSpecifiedCountryCodeString: callingCode
-        )
+        let formattedText = PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(textAfterChange, countryCodeString: callingCode)
         let cursorPositionAfterReformat = PhoneNumberUtil.translateCursorPosition(
             UInt(cursorPositionAfterChange),
             from: textAfterChange,
@@ -195,10 +189,7 @@ public class TextFieldFormatting: Dependencies {
             return nil
         }
 
-        let formattedPhoneNumber = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(
-            toLookLikeAPhoneNumber: examplePhoneNumber,
-            withSpecifiedCountryCodeString: countryCode
-        )
+        let formattedPhoneNumber = PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(examplePhoneNumber, countryCodeString: countryCode)
         if !formattedPhoneNumber.isEmpty {
             examplePhoneNumber = formattedPhoneNumber
         }

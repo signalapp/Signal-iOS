@@ -163,7 +163,7 @@ extension PhoneNumberUtil {
         }
 
         let callingCode = getCallingCode(forRegion: countryCode)
-        return COUNTRY_CODE_PREFIX + "\(callingCode.intValue)"
+        return PhoneNumber.countryCodePrefix + "\(callingCode.intValue)"
     }
 
     @objc

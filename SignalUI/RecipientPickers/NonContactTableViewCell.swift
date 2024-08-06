@@ -56,7 +56,7 @@ public final class NonContactTableViewCell: UITableViewCell, ReusableTableViewCe
     }
 
     public func configureWithPhoneNumber(_ phoneNumber: String) {
-        let formattedPhoneNumber = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: phoneNumber)
+        let formattedPhoneNumber = PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(phoneNumber)
         configureWithTitle(formattedPhoneNumber, imageName: "person-20")
     }
 }

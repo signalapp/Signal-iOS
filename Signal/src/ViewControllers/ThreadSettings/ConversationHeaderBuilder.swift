@@ -519,7 +519,7 @@ extension ConversationHeaderDelegate {
         if let contactThread = thread as? TSContactThread {
             if let phoneNumber = contactThread.contactAddress.phoneNumber,
                phoneNumber == threadName {
-                threadName = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: phoneNumber)
+                threadName = PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(phoneNumber)
             }
         }
 

@@ -36,7 +36,7 @@ public class ContactFieldViewHelper {
     }
 
     public class func contactFieldView(forPhoneNumber phoneNumber: OWSContactPhoneNumber) -> UIView {
-        let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber.phoneNumber)
+        let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(e164: phoneNumber.phoneNumber)
         return simpleFieldView(name: phoneNumber.localizedLabel, value: formattedPhoneNumber)
     }
 

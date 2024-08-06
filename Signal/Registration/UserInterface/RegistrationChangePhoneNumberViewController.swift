@@ -159,8 +159,8 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
         // The purpose of the example phone number is to indicate to the user that they should enter
         // their phone number _without_ a country calling code (e.g. +1 or +44) but _with_ area code, etc.
         func tryToFormatPhoneNumber(_ phoneNumber: String) -> String? {
-            guard let formatted = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: phoneNumber,
-                                                                                       withSpecifiedCountryCodeString: valueViews.countryCode).nilIfEmpty else {
+            guard let formatted = PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(
+                phoneNumber, countryCodeString: valueViews.countryCode).nilIfEmpty else {
                 owsFailDebug("Invalid phone number. phoneNumber: \(phoneNumber), callingCode: \(valueViews.callingCode).")
                 return nil
             }
