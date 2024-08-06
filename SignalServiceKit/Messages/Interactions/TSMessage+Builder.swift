@@ -8,14 +8,14 @@ import Foundation
 @objcMembers
 public class TSMessageBuilder: NSObject {
     public let thread: TSThread
-    public var timestamp: UInt64 = NSDate.ows_millisecondTimeStamp()
+    public var timestamp: UInt64
     public var messageBody: String?
     public var bodyRanges: MessageBodyRanges?
-    public var editState: TSEditState = .none
-    public var expiresInSeconds: UInt32 = 0
-    public var expireStartedAt: UInt64 = 0
-    public var isViewOnceMessage = false
-    public var read = false
+    public var editState: TSEditState
+    public var expiresInSeconds: UInt32
+    public var expireStartedAt: UInt64
+    public var isViewOnceMessage: Bool
+    public var read: Bool
     public var storyAuthorAci: AciObjC?
     public var storyTimestamp: NSNumber?
     public var storyReactionEmoji: String?
@@ -42,7 +42,7 @@ public class TSMessageBuilder: NSObject {
         giftBadge: OWSGiftBadge?
     ) {
         self.thread = thread
-        self.timestamp = timestamp ?? self.timestamp
+        self.timestamp = timestamp ?? NSDate.ows_millisecondTimeStamp()
         self.messageBody = messageBody
         self.bodyRanges = bodyRanges
         self.editState = editState

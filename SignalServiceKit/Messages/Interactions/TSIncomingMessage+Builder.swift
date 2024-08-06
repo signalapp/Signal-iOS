@@ -17,9 +17,9 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
     public var authorE164ObjC: E164ObjC? { authorE164.map { E164ObjC($0) } }
 
     public var serverTimestamp: NSNumber?
-    public var serverDeliveryTimestamp: UInt64 = 0
+    public var serverDeliveryTimestamp: UInt64
     public var serverGuid: String?
-    public var wasReceivedByUD = false
+    public var wasReceivedByUD: Bool
     public var paymentNotification: TSPaymentNotification?
 
     @nonobjc
@@ -45,6 +45,14 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
         giftBadge: OWSGiftBadge?,
         paymentNotification: TSPaymentNotification?
     ) {
+        self.authorAci = authorAci
+        self.authorE164 = authorE164
+        self.serverTimestamp = serverTimestamp
+        self.serverDeliveryTimestamp = serverDeliveryTimestamp
+        self.serverGuid = serverGuid
+        self.wasReceivedByUD = wasReceivedByUD
+        self.paymentNotification = paymentNotification
+
         super.init(
             thread: thread,
             timestamp: timestamp,
@@ -60,14 +68,6 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
             storyReactionEmoji: storyReactionEmoji,
             giftBadge: giftBadge
         )
-
-        self.authorAci = authorAci
-        self.authorE164 = authorE164
-        self.serverTimestamp = serverTimestamp
-        self.serverDeliveryTimestamp = serverDeliveryTimestamp
-        self.serverGuid = serverGuid
-        self.wasReceivedByUD = wasReceivedByUD
-        self.paymentNotification = paymentNotification
     }
 
     @nonobjc

@@ -7,8 +7,8 @@ import LibSignalClient
 
 @objcMembers
 public class TSOutgoingMessageBuilder: TSMessageBuilder {
-    public var isVoiceMessage = false
-    public var groupMetaMessage: TSGroupMetaMessage = .unspecified
+    public var isVoiceMessage: Bool
+    public var groupMetaMessage: TSGroupMetaMessage
     public var changeActionsProtoData: Data?
 
     @nonobjc
@@ -29,6 +29,10 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
         storyReactionEmoji: String?,
         giftBadge: OWSGiftBadge?
     ) {
+        self.isVoiceMessage = isVoiceMessage
+        self.groupMetaMessage = groupMetaMessage
+        self.changeActionsProtoData = changeActionsProtoData
+
         super.init(
             thread: thread,
             timestamp: timestamp,
@@ -44,10 +48,6 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
             storyReactionEmoji: storyReactionEmoji,
             giftBadge: giftBadge
         )
-
-        self.isVoiceMessage = isVoiceMessage
-        self.groupMetaMessage = groupMetaMessage
-        self.changeActionsProtoData = changeActionsProtoData
     }
 
     @nonobjc
