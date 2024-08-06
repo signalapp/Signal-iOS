@@ -1078,7 +1078,7 @@ extension TSAttachmentMigration {
             return try quotedMessage(messageRow: messageRow)?.quotedAttachment?.rawAttachmentId.nilIfEmpty
         }
 
-        private static func archive(_ value: Any) throws -> Data {
+        private static func archive(_ value: Any) -> Data {
             let archiver = NSKeyedArchiver(requiringSecureCoding: false)
             TSAttachmentMigration.prepareNSCodingMappings(archiver: archiver)
             archiver.encode(value, forKey: NSKeyedArchiveRootObjectKey)
@@ -1100,23 +1100,23 @@ extension TSAttachmentMigration {
             var columns = [String]()
             if let bodyAttachmentIds {
                 columns.append("attachmentIds")
-                _ = arguments.append(contentsOf: [try archive(bodyAttachmentIds)])
+                _ = arguments.append(contentsOf: [archive(bodyAttachmentIds)])
             }
             if let contact {
                 columns.append("contactShare")
-                _ = arguments.append(contentsOf: [try archive(contact)])
+                _ = arguments.append(contentsOf: [archive(contact)])
             }
             if let messageSticker {
                 columns.append("messageSticker")
-                _ = arguments.append(contentsOf: [try archive(messageSticker)])
+                _ = arguments.append(contentsOf: [archive(messageSticker)])
             }
             if let linkPreview {
                 columns.append("linkPreview")
-                _ = arguments.append(contentsOf: [try archive(linkPreview)])
+                _ = arguments.append(contentsOf: [archive(linkPreview)])
             }
             if let quotedMessage {
                 columns.append("quotedMessage")
-                _ = arguments.append(contentsOf: [try archive(quotedMessage)])
+                _ = arguments.append(contentsOf: [archive(quotedMessage)])
             }
 
             sql.append(columns.map({ $0 + " = ?"}).joined(separator: ", "))
