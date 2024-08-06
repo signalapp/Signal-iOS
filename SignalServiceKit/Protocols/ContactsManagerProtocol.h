@@ -5,16 +5,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class CNContact;
-@class Contact;
-@class ModelReadCacheSizeLease;
-@class NSPersonNameComponents;
-@class PhoneNumber;
 @class SDSAnyReadTransaction;
-@class SignalAccount;
 @class SignalServiceAddress;
-@class TSThread;
-@class UIImage;
 
 @protocol ContactsManagerProtocol <NSObject>
 
