@@ -3,15 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-@objc
+@objcMembers
 public class TSErrorMessageBuilder: TSMessageBuilder {
-    @objc
     public let errorType: TSErrorMessageType
-    @objc
     public var recipientAddress: SignalServiceAddress?
-    @objc
     public var senderAddress: SignalServiceAddress?
-    @objc
     public var wasIdentityVerified: Bool = false
 
     private init(
@@ -39,7 +35,6 @@ public class TSErrorMessageBuilder: TSMessageBuilder {
 
     // MARK: -
 
-    @objc
     public class func errorMessageBuilder(
         thread: TSThread,
         errorType: TSErrorMessageType
@@ -51,7 +46,6 @@ public class TSErrorMessageBuilder: TSMessageBuilder {
 
     private var hasBuilt = false
 
-    @objc
     public func build() -> TSErrorMessage {
         if hasBuilt {
             owsFailDebug("Don't build more than once.")

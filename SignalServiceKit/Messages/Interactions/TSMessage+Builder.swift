@@ -5,44 +5,27 @@
 
 import Foundation
 
-// Every time we add a new property to TSMessage, we should:
-//
-// * Add that property here.
-// * Handle that property for received sync transcripts.
-// * Handle that property in the test factories.
-@objc
+@objcMembers
 public class TSMessageBuilder: NSObject {
-    @objc
     public let thread: TSThread
-    @objc
     public var timestamp: UInt64 = NSDate.ows_millisecondTimeStamp()
-    @objc
     public var messageBody: String?
-    @objc
     public var bodyRanges: MessageBodyRanges?
-    @objc
     public var editState: TSEditState = .none
-    @objc
     public var expiresInSeconds: UInt32 = 0
-    @objc
     public var expireStartedAt: UInt64 = 0
-    @objc
     public var isViewOnceMessage = false
-    @objc
     public var read = false
-    @objc
     public var storyAuthorAci: AciObjC?
-    @objc
     public var storyTimestamp: NSNumber?
-    @objc
     public var storyReactionEmoji: String?
-    @objc
+    public var giftBadge: OWSGiftBadge?
+
     public var isGroupStoryReply: Bool {
         storyAuthorAci != nil && storyTimestamp != nil && thread.isGroupThread
     }
-    @objc
-    public var giftBadge: OWSGiftBadge?
 
+    @nonobjc
     init(
         thread: TSThread,
         timestamp: UInt64?,
@@ -73,6 +56,7 @@ public class TSMessageBuilder: NSObject {
         self.giftBadge = giftBadge
     }
 
+    @nonobjc
     static func withDefaultValues(
         thread: TSThread,
         timestamp: UInt64? = nil,
@@ -105,7 +89,6 @@ public class TSMessageBuilder: NSObject {
         )
     }
 
-    @objc
     public class func messageBuilder(
         thread: TSThread,
         messageBody: String?
@@ -113,7 +96,6 @@ public class TSMessageBuilder: NSObject {
         return .withDefaultValues(thread: thread, messageBody: messageBody)
     }
 
-    @objc
     public class func messageBuilder(
         thread: TSThread,
         timestamp: UInt64,

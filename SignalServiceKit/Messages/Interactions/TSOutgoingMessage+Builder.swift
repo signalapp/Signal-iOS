@@ -5,15 +5,13 @@
 
 import LibSignalClient
 
-@objc
+@objcMembers
 public class TSOutgoingMessageBuilder: TSMessageBuilder {
-    @objc
     public var isVoiceMessage = false
-    @objc
     public var groupMetaMessage: TSGroupMetaMessage = .unspecified
-    @objc
     public var changeActionsProtoData: Data?
 
+    @nonobjc
     public init(
         thread: TSThread,
         timestamp: UInt64?,
@@ -52,6 +50,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
         self.changeActionsProtoData = changeActionsProtoData
     }
 
+    @nonobjc
     public static func withDefaultValues(
         thread: TSThread,
         timestamp: UInt64? = nil,
@@ -90,14 +89,12 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
 
     // MARK: -
 
-    @objc
     public static func outgoingMessageBuilder(
         thread: TSThread
     ) -> TSOutgoingMessageBuilder {
         return .withDefaultValues(thread: thread)
     }
 
-    @objc
     public static func outgoingMessageBuilder(
         thread: TSThread,
         messageBody: String?

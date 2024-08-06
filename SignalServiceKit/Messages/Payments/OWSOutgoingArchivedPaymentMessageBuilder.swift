@@ -6,13 +6,10 @@
 import Foundation
 import LibSignalClient
 
-@objc
+@objcMembers
 public class OWSOutgoingArchivedPaymentMessageBuilder: TSOutgoingMessageBuilder {
-    @objc
     public var amount: String?
-    @objc
     public var fee: String?
-    @objc
     public var note: String?
 
     public init(

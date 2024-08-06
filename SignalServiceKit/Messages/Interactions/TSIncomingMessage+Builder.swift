@@ -6,27 +6,23 @@
 import Foundation
 import LibSignalClient
 
-@objc
+@objcMembers
 public class TSIncomingMessageBuilder: TSMessageBuilder {
+    @nonobjc
     public var authorAci: Aci?
-    @objc
     public var authorAciObjC: AciObjC? { authorAci.map { AciObjC($0) } }
 
+    @nonobjc
     public var authorE164: E164?
-    @objc
     public var authorE164ObjC: E164ObjC? { authorE164.map { E164ObjC($0) } }
 
-    @objc
     public var serverTimestamp: NSNumber?
-    @objc
     public var serverDeliveryTimestamp: UInt64 = 0
-    @objc
     public var serverGuid: String?
-    @objc
     public var wasReceivedByUD = false
-    @objc
     public var paymentNotification: TSPaymentNotification?
 
+    @nonobjc
     public init(
         thread: TSThread,
         timestamp: UInt64?,
@@ -74,6 +70,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
         self.paymentNotification = paymentNotification
     }
 
+    @nonobjc
     public static func withDefaultValues(
         thread: TSThread,
         timestamp: UInt64? = nil,
@@ -124,7 +121,6 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
 
     private var hasBuilt = false
 
-    @objc
     public func build() -> TSIncomingMessage {
         if hasBuilt {
             owsFailDebug("Don't build more than once.")
