@@ -335,7 +335,7 @@ class GroupCallViewController: UIViewController {
         // ↳ raisedHandsToastContainer
         //     - Always full-width
         //   ↳ raisedHandsToastInnerContainer
-        //       - Centered horizontally. Limited to 540px width
+        //       - Centered horizontally. Limited to 540px width on iPad
         //     ↳ raisedHandsToast
         //         - Pinned to right edge when collapsed.
         //         - Pinned to both edges when expanded.
@@ -354,11 +354,11 @@ class GroupCallViewController: UIViewController {
         raisedHandsToastContainer.addSubview(raisedHandsToastInnerContainer)
 
         raisedHandsToastInnerContainer.autoPinVerticalEdges(toEdgesOf: raisedHandsToastContainer)
-        raisedHandsToastInnerContainer.autoHCenterInSuperview()
         if UIDevice.current.isIPad {
+            raisedHandsToastInnerContainer.autoHCenterInSuperview()
             raisedHandsToastInnerContainer.widthAnchor.constraint(lessThanOrEqualToConstant: bottomSheet.maxWidth).isActive = true
         } else {
-            raisedHandsToastInnerContainer.widthAnchor.constraint(lessThanOrEqualToConstant: 540).isActive = true
+            raisedHandsToastInnerContainer.autoPinWidthToSuperview()
         }
         raisedHandsToastInnerContainer.autoPinHorizontalEdges(toEdgesOf: raisedHandsToastContainer)
             // Prioritize the 540px limit
