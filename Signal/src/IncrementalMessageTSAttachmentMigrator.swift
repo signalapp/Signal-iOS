@@ -101,8 +101,7 @@ extension IncrementalMessageTSAttachmentMigrator {
                 } catch let error {
                     owsFailDebug("Failed migration batch in BGProcessingTask, stopping after \(batchCount) batches: \(error)")
                     bgTask.setTaskCompleted(success: false)
-                    // Re-schedule so we try to run it again.
-                    self.scheduleBGProcessingTaskIfNeeded(databaseStorage: databaseStorage)
+                    // Next app launch will attempt to re-schedule it; don't reschedule here.
                     return
                 }
                 batchCount += 1
