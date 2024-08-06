@@ -711,6 +711,24 @@ extension TSAttachmentMigration {
                 tx: tx
             )
 
+            // There are two scenarios where the attachment is the _only_ content
+            // on the message, and if we didn't migrate the message has no content
+            // and is therefore invalid:
+            // 1) sticker messages
+            // 2) body attachment(s) with no body text caption
+            // All other cases (e.g. link preview) are valid even if the attachment
+            // gets dropped (e.g. a link preview with no image).
+            if messageSticker != nil && migratedAttachments.isEmpty {
+                Logger.error("Failed to migrate sticker; left with invalid content-less message.")
+            }
+            if
+                !bodyTSAttachmentIds.isEmpty,
+                migratedAttachments.isEmpty,
+                (messageRow["body"] as? String)?.nilIfEmpty == nil
+            {
+                Logger.error("Failed to body attachments without text; left with invalid content-less message.")
+            }
+
             return migratedAttachments
         }
 
@@ -730,9 +748,16 @@ extension TSAttachmentMigration {
             stickerId: UInt32?,
             tx: GRDBWriteTransaction
         ) throws -> TSAttachmentMigration.V1Attachment? {
-            let oldAttachment = try TSAttachmentMigration.V1Attachment
-                .filter(Column("uniqueId") == tsAttachmentUniqueId)
-                .fetchOne(tx.database)
+            let oldAttachment: TSAttachmentMigration.V1Attachment?
+            do {
+                oldAttachment = try TSAttachmentMigration.V1Attachment
+                    .filter(Column("uniqueId") == tsAttachmentUniqueId)
+                    .fetchOne(tx.database)
+            } catch {
+                Logger.error("Failed to parse TSAttachment row")
+                try reservedFileIds.cleanUpFiles()
+                return nil
+            }
             guard let oldAttachment else {
                 try reservedFileIds.cleanUpFiles()
                 return nil
