@@ -48,10 +48,14 @@ extension TSAttachmentMigration {
                         fileExtension: extensionOverride,
                         isAvailableWhileDeviceLocked: true
                     )
-                    try FileManager.default.createSymbolicLink(
-                        atPath: symlinkPath,
-                        withDestinationPath: audioPath
-                    )
+                    do {
+                        try FileManager.default.createSymbolicLink(
+                            atPath: symlinkPath,
+                            withDestinationPath: audioPath
+                        )
+                    } catch {
+                        throw OWSAssertionError("Failed to create symlink")
+                    }
                     asset = AVURLAsset(url: URL(fileURLWithPath: symlinkPath))
                 }
             }

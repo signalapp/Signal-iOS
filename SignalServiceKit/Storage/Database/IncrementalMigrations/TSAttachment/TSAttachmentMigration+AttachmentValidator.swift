@@ -317,7 +317,11 @@ extension TSAttachmentMigration {
             mimeType: inout String
         ) throws -> ContentTypeResult? {
             let imageSource: TSAttachmentMigration.OWSImageSource = try {
-                return try TSAttachmentMigration.OWSImageSource(fileUrl: unencryptedFileUrl)
+                do {
+                    return try TSAttachmentMigration.OWSImageSource(fileUrl: unencryptedFileUrl)
+                } catch {
+                    throw OWSAssertionError("Failed to open file handle image source")
+                }
             }()
 
             guard let imageMetadata = imageSource.imageMetadata(
@@ -475,7 +479,11 @@ extension TSAttachmentMigration {
                         fileExtension: "m4a",
                         isAvailableWhileDeviceLocked: true
                     )
-                    try FileManager.default.copyItem(at: unencryptedFileUrl, to: newTmpURL)
+                    do {
+                        try FileManager.default.copyItem(at: unencryptedFileUrl, to: newTmpURL)
+                    } catch {
+                        throw OWSAssertionError("Failed to copy attachment file")
+                    }
                     let player: AVAudioPlayer
                     do {
                         player = try AVAudioPlayer(contentsOf: newTmpURL)

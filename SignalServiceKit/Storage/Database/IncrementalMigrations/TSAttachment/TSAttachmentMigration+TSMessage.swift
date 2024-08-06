@@ -293,14 +293,26 @@ extension TSAttachmentMigration {
             } else {
                 sql += " ORDER BY id DESC"
             }
-            let cursor = try Row.fetchCursor(
-                tx.database,
-                sql: sql,
-                arguments: arguments
-            )
+            let cursor: GRDB.RowCursor
+            do {
+                cursor = try Row.fetchCursor(
+                    tx.database,
+                    sql: sql,
+                    arguments: arguments
+                )
+            } catch {
+                throw OWSAssertionError("Failed to create interaction cursor")
+            }
+            func next() throws -> Row? {
+                do {
+                    return try cursor.next()
+                } catch {
+                    throw OWSAssertionError("Failed to iterate interaction cursor")
+                }
+            }
             var batchCount = 0
             var lastMessageRowId: Int64?
-            while batchCount < batchSize ?? Int.max, let messageRow = try cursor.next() {
+            while batchCount < batchSize ?? Int.max, let messageRow = try next() {
                 guard let messageRowId = messageRow["id"] as? Int64 else {
                     throw OWSAssertionError("TSInteraction row without id")
                 }
@@ -378,11 +390,16 @@ extension TSAttachmentMigration {
                     continue
                 }
 
-                let messageRow = try Row.fetchOne(
-                    tx.database,
-                    sql: "SELECT * FROM model_TSInteraction WHERE id = ?;",
-                    arguments: [messageRowId]
-                )
+                let messageRow: GRDB.Row?
+                do {
+                    messageRow = try Row.fetchOne(
+                        tx.database,
+                        sql: "SELECT * FROM model_TSInteraction WHERE id = ?;",
+                        arguments: [messageRowId]
+                    )
+                } catch {
+                    throw OWSAssertionError("Failed to fetch interaction row")
+                }
                 guard let messageRow else {
                     // The message got deleted. Still, count this in the batch
                     // size so we don't iterate over deleted rows unbounded.
@@ -423,11 +440,17 @@ extension TSAttachmentMigration {
                 if
                     isRunningIteratively,
                     !didMigrate,
-                    let messageRow = try Row.fetchOne(
-                        tx.database,
-                        sql: "SELECT * FROM model_TSInteraction WHERE id = ?;",
-                        arguments: [messageRowId]
-                    )
+                    let messageRow: GRDB.Row = try {
+                        do {
+                            return try Row.fetchOne(
+                                tx.database,
+                                sql: "SELECT * FROM model_TSInteraction WHERE id = ?;",
+                                arguments: [messageRowId]
+                            )
+                        } catch {
+                            throw OWSAssertionError("Failed to fetch interaction row")
+                        }
+                    }()
                 {
                     // Re-reserve new rows; we will migrate in the next batch.
                     _ = try Self.prepareTSMessageForMigration(
@@ -763,6 +786,19 @@ extension TSAttachmentMigration {
                 return nil
             }
 
+            let encryptionKey: Data
+            if
+                let oldEncryptionKey = oldAttachment.encryptionKey,
+                oldEncryptionKey.count == 64
+            {
+                encryptionKey = oldEncryptionKey
+            } else {
+                if oldAttachment.encryptionKey != nil {
+                    Logger.error("TSAttachment has invalid encryption key")
+                }
+                encryptionKey = Cryptography.randomAttachmentEncryptionKey()
+            }
+
             let pendingAttachment: TSAttachmentMigration.PendingV2AttachmentFile?
             if let oldFilePath = oldAttachment.localFilePath, OWSFileSystem.fileOrFolderExists(atPath: oldFilePath) {
                 do {
@@ -773,12 +809,12 @@ extension TSAttachmentMigration {
                             audioWaveform: reservedFileIds.reservedV2AttachmentAudioWaveformFileId,
                             videoStillFrame: reservedFileIds.reservedV2AttachmentVideoStillFrameFileId
                         ),
-                        encryptionKey: oldAttachment.encryptionKey,
+                        encryptionKey: encryptionKey,
                         mimeType: oldAttachment.contentType,
                         renderingFlag: oldAttachment.attachmentType.asRenderingFlag,
                         sourceFilename: oldAttachment.sourceFilename
                     )
-                } catch let error as TSAttachmentMigration.V2AttachmentContentValidator.AttachmentTooLargeError {
+                } catch _ as TSAttachmentMigration.V2AttachmentContentValidator.AttachmentTooLargeError {
                     // If we somehow had a file that was too big, just treat it as if we had no file.
                     pendingAttachment = nil
                 } catch {
@@ -794,9 +830,15 @@ extension TSAttachmentMigration {
             let v2AttachmentId: Int64
             if
                 let pendingAttachment,
-                let existingV2Attachment = try TSAttachmentMigration.V2Attachment
-                    .filter(Column("sha256ContentHash") == pendingAttachment.sha256ContentHash)
-                    .fetchOne(tx.database)
+                let existingV2Attachment = try {
+                    do {
+                        return try TSAttachmentMigration.V2Attachment
+                            .filter(Column("sha256ContentHash") == pendingAttachment.sha256ContentHash)
+                            .fetchOne(tx.database)
+                    } catch {
+                        throw OWSAssertionError("Failed to fetch v2 attachment")
+                    }
+                }()
             {
                 // If we already have a v2 attachment with the same plaintext hash,
                 // create new references to it and drop the pending attachment.
@@ -818,7 +860,7 @@ extension TSAttachmentMigration {
                         transitCdnNumber: oldAttachment.cdnNumber,
                         transitCdnKey: oldAttachment.cdnKey,
                         transitUploadTimestamp: oldAttachment.uploadTimestamp,
-                        transitEncryptionKey: oldAttachment.encryptionKey,
+                        transitEncryptionKey: encryptionKey,
                         transitUnencryptedByteCount: pendingAttachment.unencryptedByteCount,
                         transitDigestSHA256Ciphertext: oldAttachment.digest,
                         lastTransitDownloadAttemptTimestamp: nil,
@@ -837,13 +879,13 @@ extension TSAttachmentMigration {
                         encryptedByteCount: nil,
                         unencryptedByteCount: nil,
                         mimeType: oldAttachment.contentType,
-                        encryptionKey: oldAttachment.encryptionKey ?? Cryptography.randomAttachmentEncryptionKey(),
+                        encryptionKey: encryptionKey,
                         digestSHA256Ciphertext: nil,
                         contentType: nil,
                         transitCdnNumber: oldAttachment.cdnNumber,
                         transitCdnKey: oldAttachment.cdnKey,
                         transitUploadTimestamp: oldAttachment.uploadTimestamp,
-                        transitEncryptionKey: oldAttachment.encryptionKey,
+                        transitEncryptionKey: encryptionKey,
                         transitUnencryptedByteCount: oldAttachment.byteCount,
                         transitDigestSHA256Ciphertext: oldAttachment.digest,
                         lastTransitDownloadAttemptTimestamp: nil,
@@ -857,7 +899,11 @@ extension TSAttachmentMigration {
                     )
                 }
 
-                try v2Attachment.insert(tx.database)
+                do {
+                    try v2Attachment.insert(tx.database)
+                } catch {
+                    throw OWSAssertionError("Failed to insert v2 attachment")
+                }
                 v2AttachmentId = v2Attachment.id!
             }
 
@@ -899,7 +945,11 @@ extension TSAttachmentMigration {
                 stickerPackId: stickerPackId,
                 stickerId: stickerId
             )
-            try reference.insert(tx.database)
+            do {
+                try reference.insert(tx.database)
+            } catch {
+                throw OWSAssertionError("Failed to insert attachment reference")
+            }
 
             // Edits might be reusing the original's TSAttachment.
             // DON'T delete the TSAttachment so its still available for the original.
@@ -911,7 +961,11 @@ extension TSAttachmentMigration {
                 return nil
             }
 
-            try oldAttachment.delete(tx.database)
+            do {
+                try oldAttachment.delete(tx.database)
+            } catch {
+                throw OWSAssertionError("Failed to insert v2 attachment")
+            }
 
             return oldAttachment
         }
@@ -984,9 +1038,14 @@ extension TSAttachmentMigration {
 
             let v2AttachmentId: Int64
 
-            let existingV2Attachment = try TSAttachmentMigration.V2Attachment
-                .filter(Column("sha256ContentHash") == pendingAttachment.sha256ContentHash)
-                .fetchOne(tx.database)
+            let existingV2Attachment: TSAttachmentMigration.V2Attachment?
+            do {
+                existingV2Attachment = try TSAttachmentMigration.V2Attachment
+                    .filter(Column("sha256ContentHash") == pendingAttachment.sha256ContentHash)
+                    .fetchOne(tx.database)
+            } catch {
+                throw OWSAssertionError("Failed to fetch v2 attachment")
+            }
             if let existingV2Attachment {
                 // If we already have a v2 attachment with the same plaintext hash,
                 // create new references to it and drop the pending attachment.
@@ -1019,7 +1078,11 @@ extension TSAttachmentMigration {
                     videoStillFrameRelativeFilePath: pendingAttachment.videoStillFrameRelativeFilePath
                 )
 
-                try v2Attachment.insert(tx.database)
+                do {
+                    try v2Attachment.insert(tx.database)
+                } catch {
+                    throw OWSAssertionError("Failed to insert v2 attachment")
+                }
                 v2AttachmentId = v2Attachment.id!
             }
 
@@ -1041,7 +1104,11 @@ extension TSAttachmentMigration {
                 stickerPackId: nil,
                 stickerId: nil
             )
-            try reference.insert(tx.database)
+            do {
+                try reference.insert(tx.database)
+            } catch {
+                throw OWSAssertionError("Failed to insert attachment reference")
+            }
 
             // NOTE: we DO NOT delete the old attachment. It belongs to the original message.
 
@@ -1197,7 +1264,11 @@ extension TSAttachmentMigration {
             sql.append(columns.map({ $0 + " = ?"}).joined(separator: ", "))
             sql.append(" WHERE id = ?;")
             _ = arguments.append(contentsOf: [rowId])
-            try tx.database.execute(sql: sql, arguments: arguments)
+            do {
+                try tx.database.execute(sql: sql, arguments: arguments)
+            } catch {
+                throw OWSAssertionError("Failed to update message columns: \(columns)")
+            }
         }
     }
 }
