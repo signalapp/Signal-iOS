@@ -5075,7 +5075,6 @@
 		D9CAFAE92A53CB1F00B32BDE /* UsernameLinkTooltipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkTooltipView.swift; sourceTree = "<group>"; };
 		D9CD40612A155C4800545803 /* TSInfoMessage+PersistableGroupUpdateItemTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+PersistableGroupUpdateItemTest.swift"; sourceTree = "<group>"; };
 		D9D321692A8AC9B0004FC110 /* OutgoingGroupCallUpdateMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingGroupCallUpdateMessageTest.swift; sourceTree = "<group>"; };
-		D9D3217A2A8FEA9B004FC110 /* KeyBackup.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = KeyBackup.proto; path = SignalServiceKit/protobuf/KeyBackup.proto; sourceTree = SOURCE_ROOT; };
 		D9D3217B2A8FEA9B004FC110 /* Groups.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = Groups.proto; path = SignalServiceKit/protobuf/Groups.proto; sourceTree = SOURCE_ROOT; };
 		D9D3217C2A8FEA9B004FC110 /* DeviceTransfer.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = DeviceTransfer.proto; path = SignalServiceKit/protobuf/DeviceTransfer.proto; sourceTree = SOURCE_ROOT; };
 		D9D3217D2A8FEA9C004FC110 /* Fingerprint.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; name = Fingerprint.proto; path = SignalServiceKit/protobuf/Fingerprint.proto; sourceTree = SOURCE_ROOT; };
@@ -10348,7 +10347,6 @@
 				D9D3217C2A8FEA9B004FC110 /* DeviceTransfer.proto */,
 				D9D3217D2A8FEA9C004FC110 /* Fingerprint.proto */,
 				D9D3217B2A8FEA9B004FC110 /* Groups.proto */,
-				D9D3217A2A8FEA9B004FC110 /* KeyBackup.proto */,
 				D9D321822A8FEA9C004FC110 /* Provisioning.proto */,
 				D9D3217E2A8FEA9C004FC110 /* SessionRecord.proto */,
 				D9D3217F2A8FEA9C004FC110 /* SignalIOS.proto */,
