@@ -4,7 +4,6 @@
 //
 
 #import "TSInfoMessage.h"
-#import "ContactsManagerProtocol.h"
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 

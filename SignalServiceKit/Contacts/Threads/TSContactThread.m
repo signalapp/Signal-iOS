@@ -4,7 +4,6 @@
 //
 
 #import "TSContactThread.h"
-#import "ContactsManagerProtocol.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

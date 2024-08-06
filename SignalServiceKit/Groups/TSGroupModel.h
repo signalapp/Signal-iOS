@@ -4,7 +4,6 @@
 //
 
 #import <Mantle/MTLModel+NSCoding.h>
-#import <SignalServiceKit/ContactsManagerProtocol.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

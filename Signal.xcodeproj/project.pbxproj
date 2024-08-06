@@ -1311,6 +1311,7 @@
 		7255A4D42B98E36900E95368 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 768F720C2A22CEAC002C4E7D /* Preferences.swift */; };
 		7267B1562C5D4D3100612C34 /* Sha256HmacSiv.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7267B1552C5D4D3100612C34 /* Sha256HmacSiv.swift */; };
 		7267B1582C5D4F2800612C34 /* Sha256HmacSivTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7267B1572C5D4F2800612C34 /* Sha256HmacSivTest.swift */; };
+		726E0F0A2C6263B0000BC973 /* ContactsManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 726E0F092C6263B0000BC973 /* ContactsManagerProtocol.swift */; };
 		728BFE472C5BEC5C008F20F1 /* Randomness.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728BFE462C5BEC5C008F20F1 /* Randomness.swift */; };
 		728BFE4A2C5BFDA7008F20F1 /* RandomnessTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728BFE482C5BF9CE008F20F1 /* RandomnessTest.swift */; };
 		728BFE4C2C5C3427008F20F1 /* Aes256Key.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728BFE4B2C5C3427008F20F1 /* Aes256Key.swift */; };
@@ -2519,7 +2520,6 @@
 		F9C5CCE7289453B300548EEE /* ProfileManagerProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA02289453B100548EEE /* ProfileManagerProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCE8289453B300548EEE /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA03289453B100548EEE /* SubscriptionManager.swift */; };
 		F9C5CCEA289453B300548EEE /* ProtoUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA05289453B100548EEE /* ProtoUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CCEC289453B300548EEE /* ContactsManagerProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA07289453B100548EEE /* ContactsManagerProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCEF289453B300548EEE /* OWSDeviceProvisioner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA0B289453B100548EEE /* OWSDeviceProvisioner.swift */; };
 		F9C5CCF0289453B300548EEE /* OWSStickerPackSyncMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA0C289453B100548EEE /* OWSStickerPackSyncMessage.m */; };
 		F9C5CCF1289453B300548EEE /* OWSProvisioningCipher.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA0D289453B100548EEE /* OWSProvisioningCipher.swift */; };
@@ -4296,6 +4296,7 @@
 		7254651C2BA00FD200EABFD2 /* LocalUserDisplayMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalUserDisplayMode.swift; sourceTree = "<group>"; };
 		7267B1552C5D4D3100612C34 /* Sha256HmacSiv.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sha256HmacSiv.swift; sourceTree = "<group>"; };
 		7267B1572C5D4F2800612C34 /* Sha256HmacSivTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sha256HmacSivTest.swift; sourceTree = "<group>"; };
+		726E0F092C6263B0000BC973 /* ContactsManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsManagerProtocol.swift; sourceTree = "<group>"; };
 		728BFE462C5BEC5C008F20F1 /* Randomness.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Randomness.swift; sourceTree = "<group>"; };
 		728BFE482C5BF9CE008F20F1 /* RandomnessTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomnessTest.swift; sourceTree = "<group>"; };
 		728BFE4B2C5C3427008F20F1 /* Aes256Key.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Aes256Key.swift; sourceTree = "<group>"; };
@@ -5620,7 +5621,6 @@
 		F9C5CA02289453B100548EEE /* ProfileManagerProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileManagerProtocol.h; sourceTree = "<group>"; };
 		F9C5CA03289453B100548EEE /* SubscriptionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
 		F9C5CA05289453B100548EEE /* ProtoUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProtoUtils.h; sourceTree = "<group>"; };
-		F9C5CA07289453B100548EEE /* ContactsManagerProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsManagerProtocol.h; sourceTree = "<group>"; };
 		F9C5CA0B289453B100548EEE /* OWSDeviceProvisioner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSDeviceProvisioner.swift; sourceTree = "<group>"; };
 		F9C5CA0C289453B100548EEE /* OWSStickerPackSyncMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSStickerPackSyncMessage.m; sourceTree = "<group>"; };
 		F9C5CA0D289453B100548EEE /* OWSProvisioningCipher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSProvisioningCipher.swift; sourceTree = "<group>"; };
@@ -11461,7 +11461,7 @@
 			isa = PBXGroup;
 			children = (
 				506A99D32B86B39F00E3C753 /* ContactManager.swift */,
-				F9C5CA07289453B100548EEE /* ContactsManagerProtocol.h */,
+				726E0F092C6263B0000BC973 /* ContactsManagerProtocol.swift */,
 				503BD2882B44D666009624FC /* ProfileManager.swift */,
 				F9C5CA02289453B100548EEE /* ProfileManagerProtocol.h */,
 				F9C5CA05289453B100548EEE /* ProtoUtils.h */,
@@ -12061,7 +12061,6 @@
 				F9C5CD39289453B300548EEE /* AxolotlExceptions.h in Headers */,
 				F9C5CD77289453B300548EEE /* BaseModel.h in Headers */,
 				F9C5CCC9289453B300548EEE /* Contact.h in Headers */,
-				F9C5CCEC289453B300548EEE /* ContactsManagerProtocol.h in Headers */,
 				F9C5CE27289453B400548EEE /* DarwinNotificationCenter.h in Headers */,
 				F9C5CE2E289453B400548EEE /* DataSource.h in Headers */,
 				668A00E02C2B5ECF007B8808 /* DebuggerUtils.h in Headers */,
@@ -14262,6 +14261,7 @@
 				664BA84A2BB5DFE1005638E0 /* ContactShareDraft.swift in Sources */,
 				66D31DA72BC47F2C00EAF735 /* ContactShareManager.swift in Sources */,
 				F9C5CCF8289453B300548EEE /* ContactsInputStream.swift in Sources */,
+				726E0F0A2C6263B0000BC973 /* ContactsManagerProtocol.swift in Sources */,
 				7254655C2BA0293900EABFD2 /* ContactSyncAttachmentBuilder.swift in Sources */,
 				F9C5CCE1289453B300548EEE /* ContactThreadFinder.swift in Sources */,
 				F9C5CDCA289453B400548EEE /* ContentProxy.swift in Sources */,
