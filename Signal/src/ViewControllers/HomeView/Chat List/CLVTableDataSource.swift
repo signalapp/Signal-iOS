@@ -549,6 +549,12 @@ extension CLVTableDataSource: UITableViewDataSource {
             let filterFooterCell = tableView.dequeueReusableCell(ChatListFilterFooterCell.self, for: indexPath)
             filterFooterCell.primaryAction = .disableChatListFilter()
             cell = filterFooterCell
+            guard let inboxFilterSection = renderState.inboxFilterSection else {
+                owsFailDebug("Missing view model in inbox filter section")
+                break
+            }
+            filterFooterCell.isExpanded = inboxFilterSection.isEmptyState
+            filterFooterCell.message = inboxFilterSection.message
         }
 
         cell.tintColor = .ows_accentBlue

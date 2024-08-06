@@ -7,9 +7,25 @@ import SignalServiceKit
 
 /// A snapshot combining both view database state used to render chat list table view rows.
 struct CLVRenderState {
-    struct Section {
+    struct Section: Hashable, Identifiable {
         var type: ChatListSectionType
+        var id: ChatListSectionType { type }
         var threads: KeyPath<CLVRenderState, [TSThread]>?
+        var value: AnyHashable?
+    }
+
+    /// A type-erased representation of a row in a dynamic section of the chat
+    /// list, to support automatic diffing of rows.
+    struct RowItem: Hashable, Identifiable {
+        var section: ChatListSectionType
+        var id: AnyHashable
+        var value: AnyHashable
+
+        init(section: ChatListSectionType, value: some Hashable & Identifiable) {
+            self.section = section
+            self.id = value.id
+            self.value = value
+        }
     }
 
     static var empty: CLVRenderState {
@@ -19,12 +35,15 @@ struct CLVRenderState {
     let viewInfo: CLVViewInfo
     let pinnedThreads: [TSThread]
     let unpinnedThreads: [TSThread]
+
     private(set) var sections: [Section] = []
+    private(set) var inboxFilterSection: ChatListInboxFilterSection?
 
     init(viewInfo: CLVViewInfo, pinnedThreads: [TSThread], unpinnedThreads: [TSThread]) {
         self.viewInfo = viewInfo
         self.pinnedThreads = pinnedThreads
         self.unpinnedThreads = unpinnedThreads
+        self.inboxFilterSection = ChatListInboxFilterSection(renderState: self)
         self.sections = ChatListSectionType.allCases.compactMap(makeSection(for:))
     }
 
@@ -35,10 +54,12 @@ struct CLVRenderState {
         case .unpinned:
             return Section(type: sectionType, threads: \.unpinnedThreads)
         case .reminders where hasVisibleReminders,
-             .archiveButton where hasArchivedThreadsRow,
-             .inboxFilterFooter where viewInfo.inboxFilter != nil:
+             .archiveButton where hasArchivedThreadsRow:
             return Section(type: sectionType)
-        case .reminders, .archiveButton, .inboxFilterFooter:
+        case .inboxFilterFooter:
+            guard let inboxFilterSection else { return nil }
+            return Section(type: sectionType, value: inboxFilterSection)
+        case .reminders, .archiveButton:
             return nil
         }
     }
@@ -77,6 +98,35 @@ struct CLVRenderState {
             return pinnedThreads.count
         case .unpinned:
             return unpinnedThreads.count
+        }
+    }
+
+    /// For chat list sections that support dynamic content, compute a
+    /// collection difference of the rows in that section.
+    func sectionDifference(for section: Section, from renderState: CLVRenderState) -> CollectionDifference<RowItem>? {
+        switch section.type {
+        case .inboxFilterFooter:
+            let items = items(in: section) ?? []
+            let oldValue = renderState.items(in: section) ?? []
+            return items.difference(from: oldValue)
+
+        case .pinned, .unpinned, .reminders, .archiveButton:
+            return nil
+        }
+    }
+
+    private func items(in section: Section) -> [RowItem]? {
+        switch section.type {
+        case .inboxFilterFooter:
+            if let inboxFilterSection {
+                return [RowItem(section: section.type, value: inboxFilterSection)]
+            } else {
+                return nil
+            }
+
+        case .pinned, .unpinned, .reminders, .archiveButton:
+            owsFailDebug("Section diffing not yet supported in section '\(section.type)'")
+            return nil
         }
     }
 

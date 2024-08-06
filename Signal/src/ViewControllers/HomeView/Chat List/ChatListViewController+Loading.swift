@@ -106,9 +106,13 @@ extension ChatListViewController {
     fileprivate func applyRowChanges(_ rowChanges: [CLVRowChange], renderState: CLVRenderState, animated: Bool) {
         AssertIsOnMainThread()
 
-        let sectionDifference = renderState.sections.difference(from: tableDataSource.renderState.sections, by: { $0.type == $1.type })
-        let isChangingFilter = tableDataSource.renderState.viewInfo.inboxFilter != renderState.viewInfo.inboxFilter
+        let previousRenderState = tableDataSource.renderState
         tableDataSource.renderState = renderState
+
+        let sectionChanges = renderState.sections
+            .difference(from: previousRenderState.sections)
+            .batchedChanges()
+        let isChangingFilter = previousRenderState.viewInfo.inboxFilter != renderState.viewInfo.inboxFilter
 
         let tableView = self.tableView
         let threadViewModelCache = self.threadViewModelCache
@@ -131,25 +135,20 @@ extension ChatListViewController {
             }
         }
 
-        // Ss soon as structural changes are applied to the table we can not use our optimized update implementation
+        // As soon as structural changes are applied to the table we can not use our optimized update implementation
         // anymore. All indexPaths are based on the old model (before any change was applied) and if we
         // animate move, insert and delete changes the indexPaths of the to be updated rows will differ.
         var useFallBackUpdateMechanism = false
-        var removedSections = IndexSet()
-        var insertedSections = IndexSet()
 
-        for change in sectionDifference {
-            switch change {
-            case let .insert(offset, element: _, associatedWith: _):
-                insertedSections.insert(offset)
-            case let .remove(offset, element: _, associatedWith: _):
-                removedSections.insert(offset)
-            }
+        if !sectionChanges.removals.isEmpty {
+            checkAndSetTableUpdates()
+            tableView.deleteSections(sectionChanges.removals.offsets, with: .middle)
+            useFallBackUpdateMechanism = true
         }
 
-        if !removedSections.isEmpty {
+        if !sectionChanges.insertions.isEmpty {
             checkAndSetTableUpdates()
-            tableView.deleteSections(removedSections, with: .middle)
+            tableView.insertSections(sectionChanges.insertions.offsets, with: .fade)
             useFallBackUpdateMechanism = true
         }
 
@@ -197,9 +196,41 @@ extension ChatListViewController {
             }
         }
 
-        if !insertedSections.isEmpty {
+        if !sectionChanges.updates.isEmpty {
             checkAndSetTableUpdates()
-            tableView.insertSections(insertedSections, with: .top)
+
+            for (_, sectionUpdate) in sectionChanges.updates {
+                guard let rowChanges = renderState
+                    .sectionDifference(for: sectionUpdate.element, from: previousRenderState)?
+                    .batchedChanges()
+                else { continue }
+
+                let sectionIndex = sectionUpdate.offset
+
+                if !rowChanges.removals.isEmpty {
+                    tableView.deleteRows(at: rowChanges.removals.indexPaths(in: sectionIndex), with: defaultRowAnimation)
+                }
+
+                if !rowChanges.insertions.isEmpty {
+                    tableView.insertRows(at: rowChanges.insertions.indexPaths(in: sectionIndex), with: defaultRowAnimation)
+                }
+
+                if !rowChanges.updates.isEmpty {
+                    if let previousSectionIndex = sectionUpdate.previousOffset, sectionIndex != previousSectionIndex {
+                        // If the section index has changed, there's a good
+                        // chance that the type of the cell has also changed
+                        // (i.e., the `reuseIdentifier` last associated with that
+                        // `indexPath`). This causes `reconfigureRows(at:)` to
+                        // raise an assertion.
+                        //
+                        // Whenever the type of cell may have changed, we have
+                        // to be conservative and reload instead of reconfiguring.
+                        tableView.reloadRows(at: rowChanges.updates.indexPaths(in: previousSectionIndex), with: defaultRowAnimation)
+                    } else {
+                        tableView.reconfigureRows(at: rowChanges.updates.indexPaths(in: sectionIndex))
+                    }
+                }
+            }
         }
 
         if tableUpdatesPerformed {

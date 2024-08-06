@@ -1048,6 +1048,9 @@
 /* Title for context menu action to enable Filter by Unread */
 "CHAT_LIST_UNREAD_FILTER_MENU_ACTION" = "Filter by Unread";
 
+/* Message displayed on chat list when Filter by Unread is enabled but no unread chats are available */
+"CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "No unread chats";
+
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Chat Color & Wallpaper";
 

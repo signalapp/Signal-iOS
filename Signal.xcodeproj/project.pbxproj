@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0512145B2C5BCECF0021EEC9 /* CollectionDifference+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0512145A2C5BCECF0021EEC9 /* CollectionDifference+SSK.swift */; };
 		0517B9782BFCFF12002CDE7D /* TSThreadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0517B9772BFCFF12002CDE7D /* TSThreadTests.swift */; };
 		052A33382C52BF410083D812 /* ChatListFilterActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052A33372C52BF410083D812 /* ChatListFilterActions.swift */; };
 		05412B3C2C22219E007AC9C7 /* InboxFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05412B3B2C22219E007AC9C7 /* InboxFilter.swift */; };
@@ -17,6 +18,7 @@
 		0550A5E22C4035170072CC02 /* CLVViewInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0550A5E12C4035170072CC02 /* CLVViewInfo.swift */; };
 		0550A5E42C4048CF0072CC02 /* ChatListFilterFooterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0550A5E32C4048CF0072CC02 /* ChatListFilterFooterCell.swift */; };
 		05572BC42BFC0094006A72F1 /* DoubleTapToEditOnboardingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05572BC32BFC0094006A72F1 /* DoubleTapToEditOnboardingController.swift */; };
+		05B411252C62845000A1EDBC /* ChatListInboxFilterSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B411242C62845000A1EDBC /* ChatListInboxFilterSection.swift */; };
 		0CE014267EDFBD2538E940A0 /* Pods_Signal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FF88FB580BC19B240EEB86A /* Pods_Signal.framework */; };
 		1404D8B3276A353B0068E2F6 /* ChatListViewController+Multiselect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1404D8B2276A353A0068E2F6 /* ChatListViewController+Multiselect.swift */; };
 		1466AB282817F7E7003B3D9F /* PluralAware.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = 1466AB262817F7E7003B3D9F /* PluralAware.stringsdict */; };
@@ -2949,6 +2951,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0512145A2C5BCECF0021EEC9 /* CollectionDifference+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CollectionDifference+SSK.swift"; sourceTree = "<group>"; };
 		0517B9772BFCFF12002CDE7D /* TSThreadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSThreadTests.swift; sourceTree = "<group>"; };
 		052A33372C52BF410083D812 /* ChatListFilterActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListFilterActions.swift; sourceTree = "<group>"; };
 		05412B3B2C22219E007AC9C7 /* InboxFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxFilter.swift; sourceTree = "<group>"; };
@@ -2959,6 +2962,7 @@
 		0550A5E12C4035170072CC02 /* CLVViewInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLVViewInfo.swift; sourceTree = "<group>"; };
 		0550A5E32C4048CF0072CC02 /* ChatListFilterFooterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListFilterFooterCell.swift; sourceTree = "<group>"; };
 		05572BC32BFC0094006A72F1 /* DoubleTapToEditOnboardingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoubleTapToEditOnboardingController.swift; sourceTree = "<group>"; };
+		05B411242C62845000A1EDBC /* ChatListInboxFilterSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListInboxFilterSection.swift; sourceTree = "<group>"; };
 		05E3A4DD8B4442530268AFC1 /* Pods-SignalShareExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.app store release.xcconfig"; path = "Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.app store release.xcconfig"; sourceTree = "<group>"; };
 		0BADD293DAFC82BF3274F0F6 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1404D8B2276A353A0068E2F6 /* ChatListViewController+Multiselect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatListViewController+Multiselect.swift"; sourceTree = "<group>"; };
@@ -9114,6 +9118,7 @@
 				052A33372C52BF410083D812 /* ChatListFilterActions.swift */,
 				0550A5DF2C3ECB230072CC02 /* ChatListFilterButton.swift */,
 				0550A5E32C4048CF0072CC02 /* ChatListFilterFooterCell.swift */,
+				05B411242C62845000A1EDBC /* ChatListInboxFilterSection.swift */,
 				50101FB32B08447000C648E4 /* ChatListProxyButtonCreator.swift */,
 				50101FB12B083C8100C648E4 /* ChatListSettingsButtonState.swift */,
 				34E95C26269F6095004807EC /* ChatListViewController+Actions.swift */,
@@ -11830,6 +11835,7 @@
 				76387BEF28F4ED73002C7BA5 /* CaseIterable.swift */,
 				661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */,
 				F9C5CB2A289453B200548EEE /* Collection+OWS.swift */,
+				0512145A2C5BCECF0021EEC9 /* CollectionDifference+SSK.swift */,
 				34A955AB271B521500B05242 /* CommonStrings.swift */,
 				F962B389293F9F1F00765BD8 /* CRC32.swift */,
 				F9C5CB22289453B200548EEE /* Currency.swift */,
@@ -13442,6 +13448,7 @@
 				052A33382C52BF410083D812 /* ChatListFilterActions.swift in Sources */,
 				0550A5E02C3ECB230072CC02 /* ChatListFilterButton.swift in Sources */,
 				0550A5E42C4048CF0072CC02 /* ChatListFilterFooterCell.swift in Sources */,
+				05B411252C62845000A1EDBC /* ChatListInboxFilterSection.swift in Sources */,
 				50101FB42B08447000C648E4 /* ChatListProxyButtonCreator.swift in Sources */,
 				50101FB22B083C8100C648E4 /* ChatListSettingsButtonState.swift in Sources */,
 				34E95C27269F6096004807EC /* ChatListViewController+Actions.swift in Sources */,
@@ -14248,6 +14255,7 @@
 				C1CF83D02B96C85E00CDC9C4 /* ChunkedOutputStreamTransform.swift in Sources */,
 				728BFE522C5C59E5008F20F1 /* CipherContext.swift in Sources */,
 				F9C5CDFC289453B400548EEE /* Collection+OWS.swift in Sources */,
+				0512145B2C5BCECF0021EEC9 /* CollectionDifference+SSK.swift in Sources */,
 				72345D1D2B9A1984000237B3 /* CommonStrings.swift in Sources */,
 				66E1AD552B8D033E00C56B7B /* ConcreteTSResource.swift in Sources */,
 				66D7B92F2B98ECB00005C98B /* ConcreteTSResourceReference.swift in Sources */,
