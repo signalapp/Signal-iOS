@@ -59,7 +59,7 @@ public class OWSContactPhoneNumber: MTLModel, OWSContactField {
         if parsedPhoneNumber == nil {
             parsedPhoneNumber = phoneNumberUtil.parsePhoneNumber(userSpecifiedText: phoneNumber)
         }
-        return parsedPhoneNumber?.toE164()
+        return parsedPhoneNumber?.e164
     }
 
     // MARK: OWSContactField
@@ -101,10 +101,10 @@ extension OWSContactPhoneNumber {
         let unparsedPhoneNumber = cnLabeledValue.value.stringValue
         let parsedPhoneNumber: String = {
             if let phoneNumber = Self.phoneNumberUtil.parseE164(unparsedPhoneNumber) {
-                return phoneNumber.toE164()
+                return phoneNumber.e164
             }
             if let phoneNumber = Self.phoneNumberUtil.parsePhoneNumber(userSpecifiedText: unparsedPhoneNumber) {
-                return phoneNumber.toE164()
+                return phoneNumber.e164
             }
             return unparsedPhoneNumber
         }()

@@ -229,8 +229,7 @@ extension RegistrationPhoneNumberInputView: UITextFieldDelegate {
     }
 
     private func formatNationalNumber(input: String) -> String {
-        return PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(
-            input, countryCodeString: countryState.callingCode)
+        return PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(input, countryCodeString: countryState.callingCode)
     }
 }
 
@@ -243,8 +242,7 @@ extension RegistrationPhoneNumberInputView: CountryCodeViewControllerDelegate {
     ) {
         countryState = newCountryState
 
-        nationalNumberView.text = PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(
-            nationalNumber, countryCodeString: countryState.callingCode)
+        nationalNumberView.text = PhoneNumber.bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(nationalNumber, countryCodeString: countryState.callingCode)
 
         delegate?.didChange()
     }

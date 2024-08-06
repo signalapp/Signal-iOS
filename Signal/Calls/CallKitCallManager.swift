@@ -117,7 +117,7 @@ final class CallKitCallManager {
             let phoneNumbers = phoneNumberUtil.parsePhoneNumbers(
                 userSpecifiedText: handle, localPhoneNumber: localNumber
             )
-            return phoneNumbers.first?.toE164()
+            return phoneNumbers.first?.e164
         }()
         if let phoneNumber {
             let address = SignalServiceAddress(phoneNumber: phoneNumber)

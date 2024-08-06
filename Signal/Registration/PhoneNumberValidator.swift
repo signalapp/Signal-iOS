@@ -31,15 +31,13 @@ public class PhoneNumberValidator: NSObject {
         }
     }
 
-    let validBrazilPhoneNumberRegex = try! NSRegularExpression(pattern: "^\\+55\\d{2}9?\\d{8}$", options: [])
+    private let validBrazilPhoneNumberRegex = try! NSRegularExpression(pattern: "^\\+55\\d{2}9?\\d{8}$", options: [])
     private func isValidForBrazilRegistration(phoneNumber: PhoneNumber) -> Bool {
-        let e164 = phoneNumber.toE164()
-        return validBrazilPhoneNumberRegex.hasMatch(input: e164)
+        validBrazilPhoneNumberRegex.hasMatch(input: phoneNumber.e164)
     }
 
-    let validUnitedStatesPhoneNumberRegex = try! NSRegularExpression(pattern: "^\\+1\\d{10}$", options: [])
+    private let validUnitedStatesPhoneNumberRegex = try! NSRegularExpression(pattern: "^\\+1\\d{10}$", options: [])
     private func isValidForUnitedStatesRegistration(phoneNumber: PhoneNumber) -> Bool {
-        let e164 = phoneNumber.toE164()
-        return validUnitedStatesPhoneNumberRegex.hasMatch(input: e164)
+        validUnitedStatesPhoneNumberRegex.hasMatch(input: phoneNumber.e164)
     }
 }

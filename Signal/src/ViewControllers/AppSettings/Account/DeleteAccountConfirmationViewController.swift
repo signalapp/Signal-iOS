@@ -357,7 +357,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
         let possibleNumbers = phoneNumberUtil.parsePhoneNumbers(
             userSpecifiedText: possiblePhoneNumber,
             localPhoneNumber: localNumber
-        ).map { $0.toE164() }
+        ).map(\.e164)
 
         return possibleNumbers.contains(localNumber)
     }

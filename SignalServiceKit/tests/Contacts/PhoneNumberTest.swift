@@ -23,7 +23,7 @@ class PhoneNumberTest: XCTestCase {
 
         let shouldNotBeNil: [String] = ["+19025550123", "+33170393800"]
         for input in shouldNotBeNil {
-            XCTAssertEqual(phoneNumberUtilRef.parseE164(input)?.toE164(), input, input)
+            XCTAssertEqual(phoneNumberUtilRef.parseE164(input)?.e164, input, input)
         }
     }
 
@@ -52,22 +52,22 @@ class PhoneNumberTest: XCTestCase {
             ("", nil),
         ]
         for (inputValue, expectedValue) in testCases {
-            let actualValue = phoneNumberUtilRef.parsePhoneNumber(userSpecifiedText: inputValue)?.toE164()
+            let actualValue = phoneNumberUtilRef.parsePhoneNumber(userSpecifiedText: inputValue)?.e164
             XCTAssertEqual(actualValue, expectedValue, inputValue)
         }
     }
 
     func testTryParsePhoneNumberWithCallingCode() {
         XCTAssertEqual(
-            phoneNumberUtilRef.parsePhoneNumber(userSpecifiedText: "18085550101", callingCode: "1")?.toE164(),
+            phoneNumberUtilRef.parsePhoneNumber(userSpecifiedText: "18085550101", callingCode: "1")?.e164,
             "+18085550101"
         )
         XCTAssertEqual(
-            phoneNumberUtilRef.parsePhoneNumber(userSpecifiedText: "61255504321", callingCode: "61")?.toE164(),
+            phoneNumberUtilRef.parsePhoneNumber(userSpecifiedText: "61255504321", callingCode: "61")?.e164,
             "+61255504321"
         )
         XCTAssertEqual(
-            phoneNumberUtilRef.parsePhoneNumber(userSpecifiedText: "493083050", callingCode: "49")?.toE164(),
+            phoneNumberUtilRef.parsePhoneNumber(userSpecifiedText: "493083050", callingCode: "49")?.e164,
             "+493083050"
         )
     }
@@ -97,7 +97,7 @@ class PhoneNumberTest: XCTestCase {
         ]
         for inputValue in inputValues {
             let phoneNumbers = phoneNumberUtilRef.parsePhoneNumbers(userSpecifiedText: inputValue, localPhoneNumber: "+13213214321")
-            XCTAssertEqual(phoneNumbers.first?.toE164(), expectedValue, inputValue)
+            XCTAssertEqual(phoneNumbers.first?.e164, expectedValue, inputValue)
         }
     }
 
@@ -121,7 +121,7 @@ class PhoneNumberTest: XCTestCase {
                 localPhoneNumber: localNumber
             )
             XCTAssertEqual(
-                phoneNumbers.contains(where: { $0.toE164() == testCase.expectedValue }),
+                phoneNumbers.contains(where: { $0.e164 == testCase.expectedValue }),
                 testCase.isExpected,
                 testCase.inputValue
             )
@@ -152,7 +152,7 @@ class PhoneNumberTest: XCTestCase {
                 localPhoneNumber: localNumber
             )
             XCTAssertEqual(
-                phoneNumbers.contains(where: { $0.toE164() == testCase.expectedValue }),
+                phoneNumbers.contains(where: { $0.e164 == testCase.expectedValue }),
                 testCase.isExpected,
                 testCase.inputValue
             )

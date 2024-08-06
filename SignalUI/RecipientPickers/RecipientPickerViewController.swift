@@ -1235,7 +1235,7 @@ struct PhoneNumberFinder {
     }
 
     private func validE164(from phoneNumber: PhoneNumber) -> String? {
-        return E164(phoneNumber.toE164())?.stringValue
+        return E164(phoneNumber.e164)?.stringValue
     }
 
     enum LookupResult {

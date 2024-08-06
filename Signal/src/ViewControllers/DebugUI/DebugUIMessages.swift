@@ -1340,7 +1340,7 @@ class DebugUIMessages: DebugUIPage, Dependencies {
         await DebugContactsUtils.createRandomContacts(threadQuantity) { contact, index, stop in
             guard
                 let phoneNumberText = contact.phoneNumbers.first?.value.stringValue,
-                let e164 = phoneNumberUtil.parsePhoneNumber(userSpecifiedText: phoneNumberText)?.toE164()
+                let e164 = phoneNumberUtil.parsePhoneNumber(userSpecifiedText: phoneNumberText)?.e164
             else {
                 owsFailDebug("Invalid phone number")
                 return

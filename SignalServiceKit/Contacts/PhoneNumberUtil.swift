@@ -437,7 +437,7 @@ extension PhoneNumberUtil {
             guard let phoneNumber = parsePhoneNumber(text, regionCode: countryCode) else {
                 return
             }
-            guard phoneNumbers.insert(phoneNumber.toE164()).inserted else {
+            guard phoneNumbers.insert(phoneNumber.e164).inserted else {
                 return
             }
             results.append(phoneNumber)

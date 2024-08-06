@@ -208,7 +208,7 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
             userSpecifiedText: callingCode + userSpecifiedText,
             localPhoneNumber: localNumber
         )
-        let possibleValidPhoneNumbers = possiblePhoneNumbers.map { $0.toE164() }.filter { !$0.isEmpty }
+        let possibleValidPhoneNumbers = possiblePhoneNumbers.map { $0.e164 }.filter { !$0.isEmpty }
 
         // There should only be one phone number, since we're explicitly specifying
         // a country code and therefore parsing a number in e164 format.

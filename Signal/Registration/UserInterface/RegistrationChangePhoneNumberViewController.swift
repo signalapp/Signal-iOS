@@ -440,7 +440,7 @@ private class ChangePhoneNumberValueViews: NSObject {
                 userSpecifiedText: phoneNumberWithoutCallingCode,
                 callingCode: callingCode
             ),
-            let e164String = phoneNumber.toE164().strippedOrNil,
+            let e164String = phoneNumber.e164.strippedOrNil,
             let e164 = E164(e164String),
             PhoneNumberValidator().isValidForRegistration(phoneNumber: phoneNumber)
         else {

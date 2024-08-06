@@ -42,11 +42,6 @@ public class PhoneNumber: NSObject, NSCoding, Comparable {
         coder.encode(e164, forKey: rpDefaultsKeyPhoneNumberCanonical)
     }
 
-    // TODO: Remove this and use the property directly
-    public func toE164() -> String {
-        e164
-    }
-
     public func getCallingCode() -> NSNumber? {
         nbPhoneNumber.countryCode
     }
@@ -65,6 +60,8 @@ public class PhoneNumber: NSObject, NSCoding, Comparable {
         }
         return e164 == otherPhoneNumber.e164
     }
+
+    public override var hash: Int { e164.hash }
 
     public static func < (_ lhs: PhoneNumber, _ rhs: PhoneNumber) -> Bool {
         lhs.compare(rhs) == .orderedAscending
@@ -108,10 +105,9 @@ public class PhoneNumber: NSObject, NSCoding, Comparable {
     }
 
     private static func regionCode(from countryCodeString: String) -> String {
-        let index = countryCodeString.index(after: countryCodeString.startIndex)
         // Int(String) could be used here except it doesn't skip whitespace and so would be a change
         // from the objc NSString.integerValue behavior...
-        let countryCallingCode = (countryCodeString[index...] as NSString).integerValue
+        let countryCallingCode = (countryCodeString.dropFirst() as NSString).integerValue
         return phoneNumberUtil.getRegionCodeForCountryCode(NSNumber(value: countryCallingCode))
     }
 }

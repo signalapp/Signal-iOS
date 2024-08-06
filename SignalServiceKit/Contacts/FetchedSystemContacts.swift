@@ -114,7 +114,7 @@ public struct FetchedSystemContacts {
         )
         var results = [CanonicalPhoneNumber]()
         for phoneNumberObj in phoneNumbers {
-            guard let phoneNumber = E164(phoneNumberObj.toE164()) else {
+            guard let phoneNumber = E164(phoneNumberObj.e164) else {
                 owsFailDebug("Couldn't convert parsed phone number to E164")
                 continue
             }

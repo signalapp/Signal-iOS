@@ -189,10 +189,10 @@ public class OWSContact: MTLModel {
 
         let e164PhoneNumbers: [String] = phoneNumbers.compactMap { phoneNumber in
             if let parsedPhoneNumber = phoneNumberUtil.parseE164(phoneNumber.phoneNumber) {
-                return parsedPhoneNumber.toE164()
+                return parsedPhoneNumber.e164
             }
             if let parsedPhoneNumber = phoneNumberUtil.parsePhoneNumber(userSpecifiedText: phoneNumber.phoneNumber) {
-                return parsedPhoneNumber.toE164()
+                return parsedPhoneNumber.e164
             }
             return nil
         }

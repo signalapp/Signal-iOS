@@ -250,7 +250,7 @@ extension ConversationViewController {
         guard
             let snippet = dataItem.snippet.strippedOrNil,
             let phoneNumberObj = phoneNumberUtil.parsePhoneNumber(userSpecifiedText: snippet),
-            let phoneNumber = phoneNumberObj.toE164().strippedOrNil
+            let phoneNumber = phoneNumberObj.e164.strippedOrNil
         else {
             owsFailDebug("Invalid phone number.")
             UIApplication.shared.open(dataItem.url, options: [:], completionHandler: nil)
