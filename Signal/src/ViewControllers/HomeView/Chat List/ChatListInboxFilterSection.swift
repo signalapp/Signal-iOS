@@ -16,7 +16,7 @@ struct ChatListInboxFilterSection: Hashable, Identifiable {
     }
 
     init?(renderState: CLVRenderState) {
-        guard renderState.viewInfo.inboxFilter != nil else { return nil }
+        guard renderState.viewInfo.inboxFilter != .none else { return nil }
         isEmptyState = renderState.visibleThreadCount == 0
     }
 }

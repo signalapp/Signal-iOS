@@ -10,14 +10,14 @@ struct CLVViewInfo: Equatable {
     let chatListMode: ChatListMode
     let archiveCount: UInt
     let inboxCount: UInt
-    let inboxFilter: InboxFilter?
+    let inboxFilter: InboxFilter
     let isMultiselectActive: Bool
     let hasVisibleReminders: Bool
     let lastSelectedThreadId: String?
     let requiredVisibleThreadIds: Set<String>
 
     var hasArchivedThreadsRow: Bool {
-        chatListMode == .inbox && !isMultiselectActive && inboxFilter == nil && archiveCount > 0
+        chatListMode == .inbox && !isMultiselectActive && inboxFilter == .none && archiveCount > 0
     }
 
     static var empty: CLVViewInfo {
@@ -25,7 +25,7 @@ struct CLVViewInfo: Equatable {
             chatListMode: .inbox,
             archiveCount: 0,
             inboxCount: 0,
-            inboxFilter: nil,
+            inboxFilter: .none,
             isMultiselectActive: false,
             hasVisibleReminders: false,
             lastSelectedThreadId: nil,
@@ -35,14 +35,14 @@ struct CLVViewInfo: Equatable {
 
     static func build(
         chatListMode: ChatListMode,
-        inboxFilter: InboxFilter?,
+        inboxFilter: InboxFilter,
         isMultiselectActive: Bool,
         lastSelectedThreadId: String?,
         hasVisibleReminders: Bool,
         transaction: SDSAnyReadTransaction
     ) -> CLVViewInfo {
         do {
-            let requiredThreadIds: Set<String> = if inboxFilter != nil, let lastSelectedThreadId {
+            let requiredThreadIds: Set<String> = if inboxFilter != .none, let lastSelectedThreadId {
                 [lastSelectedThreadId]
             } else {
                 []

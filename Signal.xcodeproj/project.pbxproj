@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0512145B2C5BCECF0021EEC9 /* CollectionDifference+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0512145A2C5BCECF0021EEC9 /* CollectionDifference+SSK.swift */; };
 		0517B9782BFCFF12002CDE7D /* TSThreadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0517B9772BFCFF12002CDE7D /* TSThreadTests.swift */; };
+		052647C12C6404DD0076E99D /* ChatListFilterStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052647C02C6404D70076E99D /* ChatListFilterStore.swift */; };
 		052A33382C52BF410083D812 /* ChatListFilterActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052A33372C52BF410083D812 /* ChatListFilterActions.swift */; };
 		05412B3C2C22219E007AC9C7 /* InboxFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05412B3B2C22219E007AC9C7 /* InboxFilter.swift */; };
 		05412B3F2C29C0A0007AC9C7 /* UIButton+DeprecationWorkaround.m in Sources */ = {isa = PBXBuildFile; fileRef = 05412B3E2C29C0A0007AC9C7 /* UIButton+DeprecationWorkaround.m */; };
@@ -2952,6 +2953,7 @@
 /* Begin PBXFileReference section */
 		0512145A2C5BCECF0021EEC9 /* CollectionDifference+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CollectionDifference+SSK.swift"; sourceTree = "<group>"; };
 		0517B9772BFCFF12002CDE7D /* TSThreadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSThreadTests.swift; sourceTree = "<group>"; };
+		052647C02C6404D70076E99D /* ChatListFilterStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListFilterStore.swift; sourceTree = "<group>"; };
 		052A33372C52BF410083D812 /* ChatListFilterActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListFilterActions.swift; sourceTree = "<group>"; };
 		05412B3B2C22219E007AC9C7 /* InboxFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxFilter.swift; sourceTree = "<group>"; };
 		05412B3D2C29C0A0007AC9C7 /* UIButton+DeprecationWorkaround.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIButton+DeprecationWorkaround.h"; sourceTree = "<group>"; };
@@ -9116,6 +9118,7 @@
 				052A33372C52BF410083D812 /* ChatListFilterActions.swift */,
 				0550A5DF2C3ECB230072CC02 /* ChatListFilterButton.swift */,
 				0550A5E32C4048CF0072CC02 /* ChatListFilterFooterCell.swift */,
+				052647C02C6404D70076E99D /* ChatListFilterStore.swift */,
 				05B411242C62845000A1EDBC /* ChatListInboxFilterSection.swift */,
 				50101FB32B08447000C648E4 /* ChatListProxyButtonCreator.swift */,
 				50101FB12B083C8100C648E4 /* ChatListSettingsButtonState.swift */,
@@ -13444,6 +13447,7 @@
 				052A33382C52BF410083D812 /* ChatListFilterActions.swift in Sources */,
 				0550A5E02C3ECB230072CC02 /* ChatListFilterButton.swift in Sources */,
 				0550A5E42C4048CF0072CC02 /* ChatListFilterFooterCell.swift in Sources */,
+				052647C12C6404DD0076E99D /* ChatListFilterStore.swift in Sources */,
 				05B411252C62845000A1EDBC /* ChatListInboxFilterSection.swift in Sources */,
 				50101FB42B08447000C648E4 /* ChatListProxyButtonCreator.swift in Sources */,
 				50101FB22B083C8100C648E4 /* ChatListSettingsButtonState.swift in Sources */,

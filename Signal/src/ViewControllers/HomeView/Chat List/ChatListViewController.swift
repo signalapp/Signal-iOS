@@ -348,10 +348,10 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                 var contextMenuActions: [UIAction] = []
 
                 if FeatureFlags.chatListFilter {
-                    switch viewState.inboxFilter {
+                    switch renderState.viewInfo.inboxFilter {
                     case .unread:
                         contextMenuActions.append(.disableChatListFilter(target: self))
-                    case nil:
+                    case .none:
                         contextMenuActions.append(.enableChatListFilter(target: self))
                     }
                 }
@@ -1312,16 +1312,20 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
 extension ChatListViewController {
     func enableChatListFilter(_ sender: Any?) {
-        viewState.inboxFilter = .unread
+        updateChatListFilter(.unread)
         updateBarButtonItems()
         loadCoordinator.loadIfNecessary()
     }
 
     func disableChatListFilter(_ sender: Any?) {
-        guard viewState.inboxFilter != nil else { return }
-        viewState.inboxFilter = nil
+        updateChatListFilter(.none)
         updateBarButtonItems()
         loadCoordinator.loadIfNecessary()
+    }
+
+    private func updateChatListFilter(_ inboxFilter: InboxFilter) {
+        viewState.inboxFilter = inboxFilter
+        loadCoordinator.saveInboxFilter(inboxFilter)
     }
 }
 

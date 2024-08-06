@@ -251,8 +251,16 @@ private enum CLVLoadType {
 // MARK: -
 
 public class CLVLoadCoordinator: Dependencies {
+    private let filterStore: ChatListFilterStore
+    private var loadInfoBuilder: CLVLoadInfoBuilder
+
     public weak var viewController: ChatListViewController?
-    private var loadInfoBuilder = CLVLoadInfoBuilder()
+
+    public init() {
+        self.filterStore = ChatListFilterStore()
+        self.loadInfoBuilder = CLVLoadInfoBuilder()
+        self.loadInfoBuilder.shouldResetAll = true
+    }
 
     private struct CLVLoadInfo {
         let viewInfo: CLVViewInfo
@@ -264,6 +272,7 @@ public class CLVLoadCoordinator: Dependencies {
         var updatedThreadIds = Set<String>()
 
         func build(
+            loadCoordinator: CLVLoadCoordinator,
             chatListMode: ChatListMode,
             inboxFilter: InboxFilter?,
             isMultiselectActive: Bool,
@@ -272,6 +281,8 @@ public class CLVLoadCoordinator: Dependencies {
             lastViewInfo: CLVViewInfo,
             transaction: SDSAnyReadTransaction
         ) -> CLVLoadInfo {
+            let inboxFilter = inboxFilter ?? loadCoordinator.filterStore.inboxFilter(transaction: transaction.asV2Read) ?? .none
+
             let viewInfo = CLVViewInfo.build(
                 chatListMode: chatListMode,
                 inboxFilter: inboxFilter,
@@ -293,8 +304,10 @@ public class CLVLoadCoordinator: Dependencies {
         }
     }
 
-    public init() {
-        loadInfoBuilder.shouldResetAll = true
+    public func saveInboxFilter(_ inboxFilter: InboxFilter) {
+        databaseStorage.asyncWrite { [filterStore] transaction in
+            filterStore.setInboxFilter(inboxFilter, transaction: transaction.asV2Write)
+        }
     }
 
     public func scheduleHardReset() {
@@ -370,6 +383,7 @@ public class CLVLoadCoordinator: Dependencies {
         let loadResult: CLVLoadResult = databaseStorage.read { transaction in
             // Decide what kind of load we prefer.
             let loadInfo = loadInfoBuilder.build(
+                loadCoordinator: self,
                 chatListMode: viewController.viewState.chatListMode,
                 inboxFilter: viewController.viewState.inboxFilter,
                 isMultiselectActive: viewController.viewState.multiSelectState.isActive,
