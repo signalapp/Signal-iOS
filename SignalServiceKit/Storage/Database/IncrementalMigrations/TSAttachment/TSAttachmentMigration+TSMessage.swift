@@ -326,12 +326,12 @@ extension TSAttachmentMigration {
         ) throws -> Bool {
             // Check if the message has any attachments.
             let attachmentIds: [String] = (
-                try bodyAttachmentIds(messageRow: messageRow)
+                bodyAttachmentIds(messageRow: messageRow)
                 + [
-                    try contactAttachmentId(messageRow: messageRow),
-                    try stickerAttachmentId(messageRow: messageRow),
-                    try linkPreviewAttachmentId(messageRow: messageRow),
-                    try quoteAttachmentId(messageRow: messageRow)
+                    contactAttachmentId(messageRow: messageRow),
+                    stickerAttachmentId(messageRow: messageRow),
+                    linkPreviewAttachmentId(messageRow: messageRow),
+                    quoteAttachmentId(messageRow: messageRow)
                 ]
             ).compacted()
 
@@ -464,15 +464,30 @@ extension TSAttachmentMigration {
                 reservedFileIdsDict[reservedFileIds.tsAttachmentUniqueId] = reservedFileIds
             }
 
-            var bodyTSAttachmentIds = try Self.bodyAttachmentIds(messageRow: messageRow)
-            var messageSticker = try Self.messageSticker(messageRow: messageRow)
+            var bodyTSAttachmentIds = Self.bodyAttachmentIds(messageRow: messageRow)
+            var messageSticker = Self.messageSticker(messageRow: messageRow)
             var stickerTSAttachmentId = messageSticker?.attachmentId
-            var linkPreview = try Self.linkPreview(messageRow: messageRow)
+            var linkPreview = Self.linkPreview(messageRow: messageRow)
             var linkPreviewTSAttachmentId = linkPreview?.imageAttachmentId
-            var contactShare = try Self.contactShare(messageRow: messageRow)
+            var contactShare = Self.contactShare(messageRow: messageRow)
             var contactTSAttachmentId = contactShare?.avatarAttachmentId
-            var quotedMessage = try Self.quotedMessage(messageRow: messageRow)
+            var quotedMessage = Self.quotedMessage(messageRow: messageRow)
             var quotedMessageTSAttachmentId = quotedMessage?.quotedAttachment?.rawAttachmentId.nilIfEmpty
+
+            if
+                bodyTSAttachmentIds.isEmpty,
+                messageSticker == nil,
+                linkPreview == nil,
+                contactShare == nil,
+                quotedMessage == nil
+            {
+                // This can only happen with state that is malformed somehow, such that
+                // we couldn't deserialize any of the blob columns.
+                Logger.error("Attempted to migrate message without attachments.")
+                // Give up; the message will be marked as migrated and we'll leave
+                // state as-is. (So whatever invalid state got us here stays invalid).
+                return []
+            }
 
             var newBodyAttachmentIds: [String]?
             var newContact: TSAttachmentMigration.OWSContact?
@@ -1013,69 +1028,94 @@ extension TSAttachmentMigration {
             TSAttachmentMigration.prepareNSCodingMappings(unarchiver: unarchiver)
             let decoded = try unarchiver.decodeTopLevelObject(of: [T.self], forKey: NSKeyedArchiveRootObjectKey)
             guard let decoded = decoded as? T else {
-                throw OWSAssertionError("Unexpected type when decoding")
+                throw OWSAssertionError("Expected \(T.self) but decoded \(type(of: decoded))")
             }
             return decoded
         }
 
-        private static func bodyAttachmentIds(messageRow: Row) throws -> [String] {
+        private static func bodyAttachmentIds(messageRow: Row) -> [String] {
             guard let encoded = messageRow["attachmentIds"] as? Data else {
                 return []
             }
-            let decoded: NSArray = try unarchive(encoded)
+            do {
+                let decoded: NSArray = try unarchive(encoded)
 
-            var array = [String]()
-            try decoded.forEach { element in
-                guard let attachmentId = element as? String else {
-                    throw OWSAssertionError("Invalid attachment id")
+                var array = [String]()
+                try decoded.forEach { element in
+                    guard let attachmentId = element as? String else {
+                        throw OWSAssertionError("Invalid attachment id")
+                    }
+                    array.append(attachmentId)
                 }
-                array.append(attachmentId)
+                return array
+            } catch {
+                Logger.error("Failed to unarchive body attachments")
+                return []
             }
-            return array
         }
 
-        private static func contactShare(messageRow: Row) throws -> TSAttachmentMigration.OWSContact? {
+        private static func contactShare(messageRow: Row) -> TSAttachmentMigration.OWSContact? {
             guard let encoded = messageRow["contactShare"] as? Data else {
                 return nil
             }
-            return try unarchive(encoded)
+            do {
+                return try unarchive(encoded)
+            } catch {
+                Logger.error("Failed to unarchive contact share")
+                return nil
+            }
         }
 
-        private static func contactAttachmentId(messageRow: Row) throws -> String? {
-            return try contactShare(messageRow: messageRow)?.avatarAttachmentId
+        private static func contactAttachmentId(messageRow: Row) -> String? {
+            return contactShare(messageRow: messageRow)?.avatarAttachmentId
         }
 
-        private static func messageSticker(messageRow: Row) throws -> TSAttachmentMigration.MessageSticker? {
+        private static func messageSticker(messageRow: Row) -> TSAttachmentMigration.MessageSticker? {
             guard let encoded = messageRow["messageSticker"] as? Data else {
                 return nil
             }
-            return try unarchive(encoded)
+            do {
+                return try unarchive(encoded)
+            } catch {
+                Logger.error("Failed to unarchive sticker")
+                return nil
+            }
         }
 
-        private static func stickerAttachmentId(messageRow: Row) throws -> String? {
-            return try messageSticker(messageRow: messageRow)?.attachmentId
+        private static func stickerAttachmentId(messageRow: Row) -> String? {
+            return messageSticker(messageRow: messageRow)?.attachmentId
         }
 
-        private static func linkPreview(messageRow: Row) throws -> TSAttachmentMigration.OWSLinkPreview? {
+        private static func linkPreview(messageRow: Row) -> TSAttachmentMigration.OWSLinkPreview? {
             guard let encoded = messageRow["linkPreview"] as? Data else {
                 return nil
             }
-            return try unarchive(encoded)
+            do {
+                return try unarchive(encoded)
+            } catch {
+                Logger.error("Failed to unarchive link preview")
+                return nil
+            }
         }
 
-        private static func linkPreviewAttachmentId(messageRow: Row) throws -> String? {
-            return try linkPreview(messageRow: messageRow)?.imageAttachmentId
+        private static func linkPreviewAttachmentId(messageRow: Row) -> String? {
+            return linkPreview(messageRow: messageRow)?.imageAttachmentId
         }
 
-        private static func quotedMessage(messageRow: Row) throws -> TSAttachmentMigration.TSQuotedMessage? {
+        private static func quotedMessage(messageRow: Row) -> TSAttachmentMigration.TSQuotedMessage? {
             guard let encoded = messageRow["quotedMessage"] as? Data else {
                 return nil
             }
-            return try unarchive(encoded)
+            do {
+                return try unarchive(encoded)
+            } catch {
+                Logger.error("Failed to unarchive quoted message")
+                return nil
+            }
         }
 
-        private static func quoteAttachmentId(messageRow: Row) throws -> String? {
-            return try quotedMessage(messageRow: messageRow)?.quotedAttachment?.rawAttachmentId.nilIfEmpty
+        private static func quoteAttachmentId(messageRow: Row) -> String? {
+            return quotedMessage(messageRow: messageRow)?.quotedAttachment?.rawAttachmentId.nilIfEmpty
         }
 
         private static func archive(_ value: Any) -> Data {
