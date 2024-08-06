@@ -568,7 +568,10 @@ extension TSAttachmentMigration {
             }
 
             guard let threadUniqueId = messageRow["uniqueThreadId"] as? String else {
-                throw OWSAssertionError("Missing thread for message")
+                Logger.error("Missing thread for message")
+                // Give up; the message will be marked as migrated and we'll leave
+                // the broken data in the database untouched.
+                return []
             }
 
             let threadRowId = try Int64.fetchOne(
@@ -577,14 +580,20 @@ extension TSAttachmentMigration {
                 arguments: [threadUniqueId]
             )
             guard let threadRowId else {
-                throw OWSAssertionError("Thread doesn't exist for message")
+                Logger.error("Thread doesn't exist for message")
+                // Give up; the message will be marked as migrated and we'll leave
+                // the broken data in the database untouched.
+                return []
             }
 
             guard
                 // Row only gives Int64, never UInt64
                 let messageReceivedAtTimestampRaw = messageRow["receivedAtTimestamp"] as? Int64
             else {
-                throw OWSAssertionError("Missing timestamp for message")
+                Logger.error("Missing timestamp for message")
+                // Give up; the message will be marked as migrated and we'll leave
+                // the broken data in the database untouched.
+                return []
             }
             let messageReceivedAtTimestamp = UInt64(bitPattern: messageReceivedAtTimestampRaw)
 
