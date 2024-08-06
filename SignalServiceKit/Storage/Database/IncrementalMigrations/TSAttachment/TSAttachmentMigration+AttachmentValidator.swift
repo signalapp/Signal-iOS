@@ -95,7 +95,7 @@ extension TSAttachmentMigration {
             reservedFileIds: ReservedRelativeFileIds,
             renderingFlag: TSAttachmentMigration.V2RenderingFlag,
             sourceFilename: String?
-        ) throws -> TSAttachmentMigration.PendingV2AttachmentFile {
+        ) throws -> TSAttachmentMigration.PendingV2AttachmentFile? {
             guard let localFilePath = stream.localFilePath else {
                 throw OWSAssertionError("Non stream")
             }
@@ -119,10 +119,15 @@ extension TSAttachmentMigration {
                     throw OWSAssertionError("Unable to read video")
                 }
 
-                originalImage = try TSAttachmentMigration.OWSMediaUtils.thumbnail(
-                    forVideo: asset,
-                    maxSizePixels: .square(AttachmentThumbnailQuality.large.thumbnailDimensionPoints())
-                )
+                do {
+                    originalImage = try TSAttachmentMigration.OWSMediaUtils.thumbnail(
+                        forVideo: asset,
+                        maxSizePixels: .square(AttachmentThumbnailQuality.large.thumbnailDimensionPoints())
+                    )
+                } catch {
+                    Logger.error("Failed to generate video still frame")
+                    return nil
+                }
             }
 
             guard
@@ -132,7 +137,8 @@ extension TSAttachmentMigration {
                 ),
                 let imageData = resizedImage.jpegData(compressionQuality: 0.8)
             else {
-                throw OWSAssertionError("Unable to create thumbnail")
+                Logger.error("Unable to create thumbnail")
+                return nil
             }
 
             let tmpFile = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)

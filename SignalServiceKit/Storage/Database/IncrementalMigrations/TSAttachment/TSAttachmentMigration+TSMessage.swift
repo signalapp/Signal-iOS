@@ -905,21 +905,25 @@ extension TSAttachmentMigration {
             messageReceivedAtTimestamp: UInt64,
             tx: GRDBWriteTransaction
         ) throws -> TSAttachmentMigration.TSQuotedMessage {
-            let oldAttachment = try TSAttachmentMigration.V1Attachment
-                .filter(Column("uniqueId") == originalTSAttachmentUniqueId)
-                .fetchOne(tx.database)
+            let oldAttachment: TSAttachmentMigration.V1Attachment?
+            do {
+                oldAttachment = try TSAttachmentMigration.V1Attachment
+                    .filter(Column("uniqueId") == originalTSAttachmentUniqueId)
+                    .fetchOne(tx.database)
+            } catch {
+                Logger.error("Failed to parse quote TSAttachment")
+                // We can easily fall back to stub, just drop the attachment.
+                try reservedFileIds.cleanUpFiles()
+                return quotedMessage.fallbackToStub()
+            }
+
             guard let oldAttachment else {
                 // We've got no original attachment at all.
                 // This can happen if the quote came in, then the original got deleted
                 // while the quote still pointed at the original's attachment.
                 // Just fall back to a stub.
-                var newQuotedMessage = quotedMessage
-                let newQuotedAttachment = newQuotedMessage.quotedAttachment
-                newQuotedAttachment?.attachmentType = .unset
-                newQuotedAttachment?.rawAttachmentId = ""
-                newQuotedMessage.quotedAttachment = newQuotedAttachment
                 try reservedFileIds.cleanUpFiles()
-                return newQuotedMessage
+                return quotedMessage.fallbackToStub()
             }
 
             let rawContentType = TSAttachmentMigration.V2AttachmentContentValidator.rawContentType(
@@ -933,16 +937,8 @@ extension TSAttachmentMigration {
             else {
                 // We've got no original media stream, just a pointer or non-visual media.
                 // We can't easily handle this, so instead just fall back to a stub.
-                var newQuotedMessage = quotedMessage
-                let newQuotedAttachment = newQuotedMessage.quotedAttachment
-                newQuotedAttachment?.attachmentType = .unset
-                newQuotedAttachment?.rawAttachmentId = ""
-                newQuotedAttachment?.contentType = oldAttachment.contentType
-                newQuotedAttachment?.sourceFilename = oldAttachment.sourceFilename
-                newQuotedMessage.quotedAttachment = newQuotedAttachment
-
                 try reservedFileIds.cleanUpFiles()
-                return newQuotedMessage
+                return quotedMessage.fallbackToStub(oldAttachment)
             }
 
             let pendingAttachment = try TSAttachmentMigration.V2AttachmentContentValidator.prepareQuotedReplyThumbnail(
@@ -955,6 +951,11 @@ extension TSAttachmentMigration {
                 renderingFlag: oldAttachment.attachmentType.asRenderingFlag,
                 sourceFilename: oldAttachment.sourceFilename
             )
+            guard let pendingAttachment else {
+                Logger.error("Failed to validate quote attachment")
+                try reservedFileIds.cleanUpFiles()
+                return quotedMessage.fallbackToStub(oldAttachment)
+            }
 
             let v2AttachmentId: Int64
 
@@ -1209,6 +1210,20 @@ extension TSAttachmentMigration.TSQuotedMessage {
         newQuotedAttachment?.attachmentType = .v2
         newQuotedAttachment?.contentType = nil
         newQuotedAttachment?.sourceFilename = nil
+        self.quotedAttachment = newQuotedAttachment
+        return self
+    }
+
+    fileprivate func fallbackToStub(
+        _ oldAttachment: TSAttachmentMigration.V1Attachment? = nil
+    ) -> Self {
+        let newQuotedAttachment = self.quotedAttachment
+        newQuotedAttachment?.attachmentType = .unset
+        newQuotedAttachment?.rawAttachmentId = ""
+        if let oldAttachment {
+            newQuotedAttachment?.contentType = oldAttachment.contentType
+            newQuotedAttachment?.sourceFilename = oldAttachment.sourceFilename
+        }
         self.quotedAttachment = newQuotedAttachment
         return self
     }
