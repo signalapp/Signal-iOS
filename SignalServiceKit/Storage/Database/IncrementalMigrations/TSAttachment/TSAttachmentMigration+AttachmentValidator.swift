@@ -431,20 +431,10 @@ extension TSAttachmentMigration {
             mimeType: String,
             encryptionKey: Data
         ) throws -> ContentTypeResult? {
-            let duration: TimeInterval
-            do {
-                duration = try computeAudioDuration(unencryptedFileUrl, mimeType: mimeType)
-            } catch let error as NSError {
-                if
-                    error.domain == NSOSStatusErrorDomain,
-                    (error.code == kAudioFileInvalidFileError || error.code == kAudioFileStreamError_InvalidFile)
-                {
-                    // These say the audio file is invalid.
-                    // Eat them and return invalid instead of throwing
-                    return nil
-                } else {
-                    throw error
-                }
+            let duration = try computeAudioDuration(unencryptedFileUrl, mimeType: mimeType)
+            guard let duration else {
+                Logger.error("Unable to compute duration, treating audio as invalid file")
+                return nil
             }
 
             // Don't require the waveform file.
@@ -466,38 +456,40 @@ extension TSAttachmentMigration {
             )
         }
 
-        // TODO someday: this loads an AVAsset (sometimes), and so does the audio waveform
-        // computation. We can combine them so we don't waste effort.
-        private static func computeAudioDuration(_ unencryptedFileUrl: URL, mimeType: String) throws -> TimeInterval {
+        private static func computeAudioDuration(_ unencryptedFileUrl: URL, mimeType: String) throws -> TimeInterval? {
             do {
                 let player = try AVAudioPlayer(contentsOf: unencryptedFileUrl)
                 player.prepareToPlay()
                 return player.duration
             } catch let originalError {
+                let pathExtension = unencryptedFileUrl.pathExtension
                 if
-                    unencryptedFileUrl.pathExtension == "aac"
+                    pathExtension == "aac"
                     || mimeType == "audio/aac"
                     || mimeType == "audio/x-aac"
                 {
                     // AVAudioPlayer can't handle aac file extensions, but _should_ work
                     // if we just change the extension.
+                    Logger.info("Failed aac file, retrying as m4a")
+                    let newTmpURL = OWSFileSystem.temporaryFileUrl(
+                        fileExtension: "m4a",
+                        isAvailableWhileDeviceLocked: true
+                    )
+                    try FileManager.default.copyItem(at: unencryptedFileUrl, to: newTmpURL)
+                    let player: AVAudioPlayer
                     do {
-                        Logger.info("Failed aac file, retrying as m4a")
-                        let newTmpURL = OWSFileSystem.temporaryFileUrl(
-                            fileExtension: "m4a",
-                            isAvailableWhileDeviceLocked: true
-                        )
-                        try FileManager.default.copyItem(at: unencryptedFileUrl, to: newTmpURL)
-                        let player = try AVAudioPlayer(contentsOf: newTmpURL)
-                        player.prepareToPlay()
-                        let duration = player.duration
-                        try FileManager.default.removeItem(at: newTmpURL)
-                        return duration
+                        player = try AVAudioPlayer(contentsOf: newTmpURL)
                     } catch {
-                        throw originalError
+                        Logger.error("Failed to read aac file after reapplying extension")
+                        return nil
                     }
+                    player.prepareToPlay()
+                    let duration = player.duration
+                    try FileManager.default.removeItem(at: newTmpURL)
+                    return duration
                 }
-                throw originalError
+                Logger.error("Failed reading audio file, mimeType: \(mimeType) ext: \(pathExtension)")
+                return nil
             }
         }
 
