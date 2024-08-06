@@ -16,7 +16,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
     public var authorE164: E164?
     public var authorE164ObjC: E164ObjC? { authorE164.map { E164ObjC($0) } }
 
-    public var serverTimestamp: NSNumber?
+    public var serverTimestamp: UInt64
     public var serverDeliveryTimestamp: UInt64
     public var serverGuid: String?
     public var wasReceivedByUD: Bool
@@ -34,7 +34,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
         expiresInSeconds: UInt32,
         expireStartedAt: UInt64,
         read: Bool,
-        serverTimestamp: NSNumber?,
+        serverTimestamp: UInt64,
         serverDeliveryTimestamp: UInt64,
         serverGuid: String?,
         wasReceivedByUD: Bool,
@@ -82,7 +82,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
         expiresInSeconds: UInt32 = 0,
         expireStartedAt: UInt64 = 0,
         read: Bool = false,
-        serverTimestamp: NSNumber? = nil,
+        serverTimestamp: UInt64 = 0,
         serverDeliveryTimestamp: UInt64 = 0,
         serverGuid: String? = nil,
         wasReceivedByUD: Bool = false,

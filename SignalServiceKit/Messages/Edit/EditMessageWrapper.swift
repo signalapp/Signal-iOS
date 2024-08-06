@@ -116,7 +116,7 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
             expiresInSeconds: isLatestRevision ? message.expiresInSeconds : 0,
             expireStartedAt: message.expireStartedAt,
             read: isLatestRevision ? false : true,
-            serverTimestamp: message.serverTimestamp,
+            serverTimestamp: message.serverTimestamp?.uint64Value ?? 0,
             serverDeliveryTimestamp: message.serverDeliveryTimestamp,
             serverGuid: message.serverGuid,
             wasReceivedByUD: message.wasReceivedByUD,

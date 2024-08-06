@@ -260,7 +260,7 @@ public class IncomingMessageFactory: NSObject, Factory {
             expiresInSeconds: expiresInSecondsBuilder(),
             expireStartedAt: 0,
             read: false,
-            serverTimestamp: serverTimestampBuilder().map { NSNumber(value: $0) },
+            serverTimestamp: serverTimestampBuilder(),
             serverDeliveryTimestamp: serverDeliveryTimestampBuilder(),
             serverGuid: serverGuidBuilder(),
             wasReceivedByUD: wasReceivedByUDBuilder(),
@@ -327,8 +327,8 @@ public class IncomingMessageFactory: NSObject, Factory {
         return 0
     }
 
-    public var serverTimestampBuilder: () -> UInt64? = {
-        return nil
+    public var serverTimestampBuilder: () -> UInt64 = {
+        return 0
     }
 
     public var serverDeliveryTimestampBuilder: () -> UInt64 = {

@@ -1030,7 +1030,7 @@ public final class MessageReceiver: Dependencies {
             expiresInSeconds: dataMessage.expireTimer,
             expireStartedAt: 0,
             read: false,
-            serverTimestamp: NSNumber(value: envelope.serverTimestamp),
+            serverTimestamp: envelope.serverTimestamp,
             serverDeliveryTimestamp: request.serverDeliveryTimestamp,
             serverGuid: serverGuid?.uuidString.lowercased(),
             wasReceivedByUD: request.wasReceivedByUD,

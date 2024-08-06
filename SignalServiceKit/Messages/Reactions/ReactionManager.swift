@@ -223,7 +223,7 @@ public class ReactionManager: NSObject {
                 let builder: TSIncomingMessageBuilder = .withDefaultValues(
                     thread: thread,
                     authorAci: reactor,
-                    serverTimestamp: NSNumber(value: serverTimestamp)
+                    serverTimestamp: serverTimestamp
                 )
                 populateStoryContext(on: builder)
                 message = builder.build()

@@ -66,7 +66,11 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     _authorPhoneNumber = incomingMessageBuilder.authorE164ObjC.stringValue;
     _deprecated_sourceDeviceId = 1;
     _read = incomingMessageBuilder.read;
-    _serverTimestamp = incomingMessageBuilder.serverTimestamp;
+    if (incomingMessageBuilder.serverTimestamp > 0) {
+        _serverTimestamp = [NSNumber numberWithUnsignedLongLong:incomingMessageBuilder.serverTimestamp];
+    } else {
+        _serverTimestamp = nil;
+    }
     _serverDeliveryTimestamp = incomingMessageBuilder.serverDeliveryTimestamp;
     _serverGuid = incomingMessageBuilder.serverGuid;
     _wasReceivedByUD = incomingMessageBuilder.wasReceivedByUD;

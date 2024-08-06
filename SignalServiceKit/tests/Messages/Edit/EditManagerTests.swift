@@ -220,7 +220,7 @@ class EditManagerTests: SSKBaseTest {
         let bigInt: UInt64 = .max - 100
         let targetMessage = createIncomingMessage(with: thread) { builder in
             builder.authorAci = authorAci
-            builder.serverTimestamp = NSNumber(value: bigInt)
+            builder.serverTimestamp = bigInt
         }
         let editMessage = createEditDataMessage { _ in }
         let dataStoreMock = EditManagerDataStoreMock(targetMessage: targetMessage)
@@ -332,7 +332,7 @@ class EditManagerTests: SSKBaseTest {
         customizationBlock: ((SSKProtoDataMessageBuilder) -> Void)
     ) -> SSKProtoDataMessage {
         let dataBuilder = SSKProtoDataMessage.builder()
-        dataBuilder.setTimestamp(1) // set a default timestamp
+        dataBuilder.setTimestamp(2) // set a default timestamp
         customizationBlock(dataBuilder)
         return try! dataBuilder.build()
     }
@@ -344,7 +344,7 @@ class EditManagerTests: SSKBaseTest {
         let messageBuilder: TSIncomingMessageBuilder = .withDefaultValues(
             thread: thread
         )
-        messageBuilder.serverTimestamp = NSNumber(value: 0)
+        messageBuilder.serverTimestamp = 1
         customizeBlock(messageBuilder)
         let targetMessage = messageBuilder.build()
         targetMessage.replaceRowId(1, uniqueId: "1")
