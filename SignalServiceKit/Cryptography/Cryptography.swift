@@ -985,7 +985,7 @@ private class LocalFileHandle {
     /// Determined at open time and assumed to be fixed.
     let fileLength: Int
     /// The internally-managed offset into the file in bytes, indexed from the start of the file.
-    private(set) var offsetInFile: Int = 0
+    var offsetInFile: Int { Int((try? fileDescriptor.seek(offset: 0, from: .current)) ?? 0) }
 
     init(url: URL) throws {
         guard let filePath = FilePath(url) else {
@@ -1015,7 +1015,6 @@ private class LocalFileHandle {
         let numBytesRead = try buffer.withUnsafeMutableBytes {
             try fileDescriptor.read(into: UnsafeMutableRawBufferPointer(rebasing: $0.prefix(maxLength ?? $0.count)))
         }
-        offsetInFile += numBytesRead
         return numBytesRead
     }
 
@@ -1036,7 +1035,6 @@ private class LocalFileHandle {
     /// Seek to a desired offset in the file, defined relative to the beginning of the file.
     func seek(toFileOffset desiredOffset: Int) throws {
         try fileDescriptor.seek(offset: Int64(desiredOffset), from: .start)
-        offsetInFile = desiredOffset
     }
 
     deinit {
