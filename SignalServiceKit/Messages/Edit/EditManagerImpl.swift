@@ -69,6 +69,9 @@ public class EditManagerImpl: EditManager {
         serverTimestamp: UInt64,
         tx: DBWriteTransaction
     ) throws -> TSMessage {
+        guard let threadRowId = thread.sqliteRowId else {
+            throw OWSAssertionError("Can't apply edit in uninserted thread")
+        }
 
         try checkForValidEdit(
             thread: thread,
@@ -102,28 +105,15 @@ public class EditManagerImpl: EditManager {
 
         let linkPreview = newDataMessage.preview.first.map { MessageEdits.LinkPreviewSource.proto($0, newDataMessage) }
 
-        let targetMessageWrapper = editTarget.wrapper
-
         let edits = MessageEdits(
             timestamp: newDataMessage.timestamp,
             body: .change(newDataMessage.body),
             bodyRanges: .change(bodyRanges)
         )
 
-        // Create a copy of the existing message and update with the edit
-        let editedMessage = createEditedMessage(
-            editTarget: targetMessageWrapper,
-            edits: edits,
-            tx: tx
-        )
-
-        guard let threadRowId = thread.sqliteRowId else {
-            throw OWSAssertionError("Can't apply edit in uninserted thread")
-        }
-
-        try insertEditCopies(
-            editedMessage: editedMessage,
-            editTarget: targetMessageWrapper,
+        let editedMessage = try applyAndInsertEdits(
+            editTargetWrapper: editTarget.wrapper,
+            editsToApply: edits,
             threadRowId: threadRowId,
             newOversizeText: oversizeText,
             quotedReplyEdit: quotedReplyEdit,
@@ -206,15 +196,22 @@ public class EditManagerImpl: EditManager {
         linkPreview: LinkPreviewTSResourceDataSource?,
         tx: DBWriteTransaction
     ) throws -> OutgoingEditMessage {
+        guard let threadRowId = thread.sqliteRowId else {
+            throw OWSAssertionError("Can't apply edit in uninserted thread")
+        }
 
-        let editTarget = OutgoingEditMessageWrapper(
+        let editTargetWrapper = OutgoingEditMessageWrapper(
             message: targetMessage,
             thread: thread
         )
 
-        let editedMessage = createEditedMessage(
-            editTarget: editTarget,
-            edits: edits,
+        let editedMessage = try applyAndInsertEdits(
+            editTargetWrapper: editTargetWrapper,
+            editsToApply: edits,
+            threadRowId: threadRowId,
+            newOversizeText: oversizeText.map { .dataSource($0) },
+            quotedReplyEdit: quotedReplyEdit,
+            newLinkPreview: linkPreview.map { .draft($0) },
             tx: tx
         )
 
@@ -225,75 +222,67 @@ public class EditManagerImpl: EditManager {
             tx: tx
         )
 
-        guard let editTarget = context.editMessageStore.editTarget(
-            timestamp: outgoingEditMessage.targetMessageTimestamp,
-            authorAci: nil,
-            tx: tx
-        ) else {
-            throw OWSAssertionError("Failed to find target message")
-        }
-
-        guard let threadRowId = thread.sqliteRowId else {
-            throw OWSAssertionError("Can't apply edit in uninserted thread")
-        }
-
-        try insertEditCopies(
-            editedMessage: outgoingEditMessage.editedMessage,
-            editTarget: editTarget.wrapper,
-            threadRowId: threadRowId,
-            newOversizeText: oversizeText.map { .dataSource($0) },
-            quotedReplyEdit: quotedReplyEdit,
-            newLinkPreview: linkPreview.map { .draft($0) },
-            tx: tx
-        )
-
         return outgoingEditMessage
     }
 
     // MARK: - Edit Utilities
 
-    // The method used for updating the database with both incoming
-    // and outgoing edits.
-    private func insertEditCopies<EditTarget: EditMessageWrapper> (
-        editedMessage: TSMessage,
-        editTarget: EditTarget,
+    /// Apply edits to a target message and insert the edited message as the
+    /// latest revision, along with records for the now-previous revision.
+    ///
+    /// - Parameter editTargetWrapper
+    /// A wrapper around the target message to which edits will be applied.
+    /// - Parameter editsToApply
+    /// Describes what edits should be performed on the target message.
+    /// - Returns
+    /// The target message with edits applied; i.e., the "latest revision" of
+    /// the message. The updates to this message will have been persisted.
+    private func applyAndInsertEdits<EditTarget: EditMessageWrapper>(
+        editTargetWrapper: EditTarget,
+        editsToApply: MessageEdits,
         threadRowId: Int64,
         newOversizeText: MessageEdits.OversizeTextSource?,
         quotedReplyEdit: MessageEdits.Edit<Void>,
         newLinkPreview: MessageEdits.LinkPreviewSource?,
         tx: DBWriteTransaction
-    ) throws {
-        // Update the exiting message with edited fields
-        context.dataStore.overwritingUpdate(editedMessage, tx: tx)
-
-        let pastRevisionCopyEdits = MessageEdits(
-            // Keep the timestamp & contents from the target
-            timestamp: editTarget.message.timestamp,
-            body: .keep,
-            bodyRanges: .keep
+    ) throws -> EditTarget.MessageType {
+        /// Create and insert a clone of the existing message, with edits
+        /// applied.
+        let latestRevisionMessage: EditTarget.MessageType = createEditedMessage(
+            editTargetWrapper: editTargetWrapper,
+            edits: editsToApply,
+            tx: tx
         )
+        context.dataStore.overwritingUpdate(latestRevisionMessage, tx: tx)
+        let latestRevisionRowId = latestRevisionMessage.sqliteRowId!
 
-        // Create a new copy of the original message
-        let newMessageBuilder = editTarget.cloneAsBuilderWithoutAttachments(
-            applying: pastRevisionCopyEdits,
+        /// Create and insert a clone of the original message, preserving all
+        /// fields, as a record of the now-prior revision of the now-edited
+        /// message.
+        ///
+        /// Keep the original message's timestamp, as well as its content.
+        let priorRevisionMessageBuilder = editTargetWrapper.cloneAsBuilderWithoutAttachments(
+            applying: MessageEdits(
+                timestamp: editTargetWrapper.message.timestamp,
+                body: .keep,
+                bodyRanges: .keep
+            ),
             isLatestRevision: false
         )
-
-        let newMessage = EditTarget.build(
-            newMessageBuilder,
+        let priorRevisionMessage = EditTarget.build(
+            priorRevisionMessageBuilder,
             dataStore: context.dataStore,
             tx: tx
         )
-
-        // Insert a new copy of the original message to preserve edit history.
-        context.dataStore.insert(newMessage, tx: tx)
+        context.dataStore.insert(priorRevisionMessage, tx: tx)
+        let priorRevisionRowId = priorRevisionMessage.sqliteRowId!
 
         try context.editManagerAttachments.reconcileAttachments(
-            editTarget: editTarget,
-            latestRevision: editedMessage,
-            latestRevisionRowId: editedMessage.sqliteRowId!,
-            priorRevision: newMessage,
-            priorRevisionRowId: newMessage.sqliteRowId!,
+            editTarget: editTargetWrapper,
+            latestRevision: latestRevisionMessage,
+            latestRevisionRowId: latestRevisionRowId,
+            priorRevision: priorRevisionMessage,
+            priorRevisionRowId: priorRevisionRowId,
             threadRowId: threadRowId,
             newOversizeText: newOversizeText,
             newLinkPreview: newLinkPreview,
@@ -303,25 +292,20 @@ public class EditManagerImpl: EditManager {
 
         // Update the newly inserted message with any data that needs to be
         // copied from the original message
-        editTarget.updateMessageCopy(
+        editTargetWrapper.updateMessageCopy(
             dataStore: context.dataStore,
-            newMessageCopy: newMessage,
+            newMessageCopy: priorRevisionMessage,
             tx: tx
         )
 
-        if
-            let originalId = editedMessage.sqliteRowId,
-            let editId = newMessage.sqliteRowId
-        {
-            let editRecord = EditRecord(
-                latestRevisionId: originalId,
-                pastRevisionId: editId,
-                read: editTarget.wasRead
-            )
-            context.editMessageStore.insert(editRecord, tx: tx)
-        } else {
-            throw OWSAssertionError("Missing EditRecord IDs")
-        }
+        let editRecord = EditRecord(
+            latestRevisionId: latestRevisionRowId,
+            pastRevisionId: priorRevisionRowId,
+            read: editTargetWrapper.wasRead
+        )
+        context.editMessageStore.insert(editRecord, tx: tx)
+
+        return latestRevisionMessage
     }
 
     /// Creates a new message with the following steps:
@@ -333,7 +317,7 @@ public class EditManagerImpl: EditManager {
     /// Using a MesageBuilder in this way allows creating an updated version of an existing
     /// message, while preserving the readonly behavior of the TSMessage
     private func createEditedMessage<EditTarget: EditMessageWrapper>(
-        editTarget: EditTarget,
+        editTargetWrapper editTarget: EditTarget,
         edits: MessageEdits,
         tx: DBReadTransaction
     ) -> EditTarget.MessageType {
