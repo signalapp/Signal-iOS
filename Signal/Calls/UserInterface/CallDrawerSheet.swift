@@ -376,7 +376,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
                     owsFailBeta("You've changed the conditions of this if-branch such that the denominator could be zero!")
                     callControls.alpha = 1
                 } else {
-                    callControls.alpha = 1 - ((height - self.minimizedHeight) / denominator)
+                    callControls.alpha = max(0.1, 1 - ((height - self.minimizedHeight) / denominator))
                 }
             } else if height >= pivotPoint && height < maxHeight {
                 callControls.alpha = 0
@@ -387,7 +387,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
                     owsFailBeta("You've changed the conditions of this if-branch such that the denominator could be zero!")
                     tableView.alpha = 0
                 } else {
-                    tableView.alpha = (height - pivotPoint) / denominator
+                    tableView.alpha = max(0.1, (height - pivotPoint) / denominator)
                 }
 
                 // Table view slides up via a y-shift to its final position as the sheet opens.
