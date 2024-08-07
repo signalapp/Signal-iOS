@@ -710,7 +710,7 @@
 "CALL_CONTROLS_INCOMING_DECLINE" = "rebutja";
 
 /* Shown in a message bubble when you send a call link in a Signal chat */
-"CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Use this link to join a Signal call";
+"CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Utilitzar aquest enllaç per a unir-te a la trucada de Signal";
 
 /* Label on button for lowering hand in call. */
 "CALL_LOWER_HAND_BUTTON_LABEL" = "Baixar la mà";
@@ -1047,6 +1047,9 @@
 
 /* Title for context menu action to enable Filter by Unread */
 "CHAT_LIST_UNREAD_FILTER_MENU_ACTION" = "Filtrar per No llegit(s)";
+
+/* Message displayed on chat list when Filter by Unread is enabled but no unread chats are available */
+"CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "No unread chats";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Color i fons del xat";
@@ -3653,7 +3656,7 @@
 "INFO_MESSAGE_CONTACT_REMOVED" = "Has eliminat aquesta persona de la teva llista de contactes de Signal; enviar-li missatges la tornarà a afegir.";
 
 /* When you start a chat with someone and then later learn their profile name, we insert an in-chat message with this string to record the identifier you originally used to contact them. Embeds {{ the identifier, either a phone number or a username }}. */
-"INFO_MESSAGE_LEARNED_PROFILE_KEY" = "You started this chat with %1$@.";
+"INFO_MESSAGE_LEARNED_PROFILE_KEY" = "Has iniciat un xat amb %1$@.";
 
 /* Shown when a user activates payments from a chat */
 "INFO_MESSAGE_PAYMENTS_ACTIVATED" = "Has activat Pagaments.";
@@ -3677,7 +3680,7 @@
 "INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Se n'ha informat com a spam";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "For your security, chat history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "Per seguretat, l'historial del xat no es transfereix als dispositius enllaçats nous.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ ha canviat el número de telèfon.";

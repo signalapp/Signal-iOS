@@ -440,9 +440,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@, et %1$d autre ont rejoint cet appel</string>
+			<string>%2$@, %3$@ et %1$d autre ont rejoint cet appel</string>
 			<key>other</key>
-			<string>%2$@, %3$@, et %1$d autres ont rejoint cet appel</string>
+			<string>%2$@, %3$@ et %1$d autres ont rejoint cet appel</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_LEFT_%d</key>
@@ -712,9 +712,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ a demandé et annulé sa demande d&apos;adhésion via le lien du groupe.</string>
+			<string>%2$@ a envoyé et annulé %1$d demande d&apos;adhésion via le lien du groupe.</string>
 			<key>other</key>
-			<string>%2$@ ont demandé et annulé %1$d demandes d&apos;adhésion via le lien du groupe.</string>
+			<string>%2$@ ont envoyé et annulé %1$d demandes d&apos;adhésion via le lien du groupe.</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -760,9 +760,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Un membre n’a pas pu être ajouté au Nouveau groupe et a été invité à s’y joindre.</string>
+			<string>%1$d membre n’a pas pu être ajouté au nouveau groupe et a été invité à le rejoindre.</string>
 			<key>other</key>
-			<string>%1$d membres n’ont pas pu être ajoutés au Nouveau groupe et ont été invités à s’y joindre.</string>
+			<string>%1$d membres n’ont pas pu être ajoutés au nouveau groupe et ont été invités à le rejoindre.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>

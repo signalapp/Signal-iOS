@@ -710,7 +710,7 @@
 "CALL_CONTROLS_INCOMING_DECLINE" = "rifiuta";
 
 /* Shown in a message bubble when you send a call link in a Signal chat */
-"CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Use this link to join a Signal call";
+"CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Usa questo link per unirti a una chiamata Signal";
 
 /* Label on button for lowering hand in call. */
 "CALL_LOWER_HAND_BUTTON_LABEL" = "Abbassa la mano";
@@ -1047,6 +1047,9 @@
 
 /* Title for context menu action to enable Filter by Unread */
 "CHAT_LIST_UNREAD_FILTER_MENU_ACTION" = "Filtra per non lette";
+
+/* Message displayed on chat list when Filter by Unread is enabled but no unread chats are available */
+"CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "No unread chats";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Colore chat e sfondo";
@@ -3653,7 +3656,7 @@
 "INFO_MESSAGE_CONTACT_REMOVED" = "Hai rimosso questa persona dal tuo elenco contatti di Signal: se mandi un messaggio, verrà riaggiunta ai contatti.";
 
 /* When you start a chat with someone and then later learn their profile name, we insert an in-chat message with this string to record the identifier you originally used to contact them. Embeds {{ the identifier, either a phone number or a username }}. */
-"INFO_MESSAGE_LEARNED_PROFILE_KEY" = "You started this chat with %1$@.";
+"INFO_MESSAGE_LEARNED_PROFILE_KEY" = "Hai iniziato questa chat con %1$@.";
 
 /* Shown when a user activates payments from a chat */
 "INFO_MESSAGE_PAYMENTS_ACTIVATED" = "Hai attivato la funzione per i pagamenti.";
@@ -3677,7 +3680,7 @@
 "INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Segnalato come spam";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "For your security, chat history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "Per la tua sicurezza, la cronologia delle chat non viene trasferita sui nuovi dispositivi collegati.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ ha cambiato il suo numero di telefono.";

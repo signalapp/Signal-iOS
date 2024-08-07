@@ -710,7 +710,7 @@
 "CALL_CONTROLS_INCOMING_DECLINE" = "refuser";
 
 /* Shown in a message bubble when you send a call link in a Signal chat */
-"CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Use this link to join a Signal call";
+"CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Utiliser ce lien pour rejoindre un appel Signal";
 
 /* Label on button for lowering hand in call. */
 "CALL_LOWER_HAND_BUTTON_LABEL" = "Baisser la main";
@@ -842,10 +842,10 @@
 "CALLS_TAB_GO_TO_CHAT_ACTION_TITLE" = "Afficher la conversation";
 
 /* Title for a button offering to let the user join an ongoing call, associated with a call in the Calls Tab. */
-"CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "Participer";
+"CALLS_TAB_JOIN_CALL_BUTTON_TITLE" = "Rejoindre";
 
 /* Title for a long-press context menu action to join a video call, triggered from a call in the Calls Tab. */
-"CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "Participer à l’appel vidéo";
+"CALLS_TAB_JOIN_VIDEO_CALL_ACTION_TITLE" = "Rejoindre l’appel vidéo";
 
 /* Title for a long-press context menu action to join a voice call, triggered from a call in the Calls Tab. */
 "CALLS_TAB_JOIN_VOICE_CALL_ACTION_TITLE" = "Rejoindre l’appel vocal";
@@ -1047,6 +1047,9 @@
 
 /* Title for context menu action to enable Filter by Unread */
 "CHAT_LIST_UNREAD_FILTER_MENU_ACTION" = "Filtrer les conversations non lues";
+
+/* Message displayed on chat list when Filter by Unread is enabled but no unread chats are available */
+"CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "No unread chats";
 
 /* Title for the color & wallpaper settings view. */
 "COLOR_AND_WALLPAPER_SETTINGS_TITLE" = "Couleur et fond d’écran des conversations";
@@ -2885,7 +2888,7 @@
 "GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%1$@ est dans cet appel";
 
 /* Text explaining that a member is presenting. Embeds {member name} */
-"GROUP_CALL_PRESENTING_FORMAT" = "%1$@ présente actuellement";
+"GROUP_CALL_PRESENTING_FORMAT" = "%1$@ partage son écran";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "Reconnexion";
@@ -3047,10 +3050,10 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%1$@ a changé les paramètres du groupe afin de n’autoriser que les administrateurs à envoyer des messages.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "Vous ne pouvez pas vous joindre au groupe avec le lien du groupe car un administrateur vous a retiré(e).";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "Vous ne pouvez pas rejoindre le groupe via le lien, car un administrateur vous a retiré.";
 
 /* Title indicating that you cannot join a group in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "Impossible de se joindre au groupe";
+"GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "Impossible de rejoindre le groupe";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Ce lien de groupe n’est plus valide.";
@@ -3065,7 +3068,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Chargement…";
 
 /* Message text for the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Voulez-vous vous joindre à ce groupe et partager vos nom et photo avec ses membres ?";
+"GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Voulez-vous vraiment rejoindre ce groupe et partager vos nom et photo avec ses membres ?";
 
 /* Error message the attempt to request to join the group failed due to network connectivity. */
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE" = "Veuillez vous assurer d’être en ligne et réessayer.";
@@ -3074,7 +3077,7 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Veuillez réessayer.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Ce lien du groupe n’est pas valide. Assurez-vous que l’intégralité du lien soit intacte et correcte avant de tenter de vous joindre.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Ce lien de groupe n’est pas valide. Vérifiez qu’il n’est pas tronqué et qu’il s’agit du bon lien.";
 
 /* Title for the 'invalid group invite link' alert. */
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Lien invalide";
@@ -3083,7 +3086,7 @@
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Pour rejoindre ce groupe, installez la dernière version de Signal.";
 
 /* Explanation of the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Exiger qu’un administrateur approuve les nouveaux membres qui se joignent grâce au lien du groupe.";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Un administrateur doit approuver les nouveaux membres qui rejoignent le groupe via le lien.";
 
 /* Label for the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Approuver les nouveaux membres";
@@ -3095,7 +3098,7 @@
 "GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Partager le lien";
 
 /* Subtitle for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Partager ce lien avec des amis pour leur permettre de se joindre rapidement à ce groupe.";
+"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Partager ce lien avec des amis pour les inviter à rejoindre ce groupe en un clin d’œil.";
 
 /* Title for the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_TITLE" = "Inviter des amis";
@@ -3104,7 +3107,7 @@
 "GROUP_LINK_PROMOTION_UPDATE" = "Invitez des amis à ce groupe avec ce lien de groupe";
 
 /* Description text in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Les personnes qui balaieront ce code pourront se joindre à votre groupe. Les administrateurs devront quand même approuver les nouveaux membres si vous avez activé ce paramètre.";
+"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Ce code permettra à des utilisateurs de rejoindre votre groupe. Les administrateurs devront tout de même approuver les nouveaux membres si vous avez activé ce paramètre.";
 
 /* Label for the 'share code' button in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "Partager le code";
@@ -3122,13 +3125,13 @@
 "GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Lien de groupe";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Exiger qu’un administrateur approuve les nouveaux membres qui se joignent grâce au lien de groupe.";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Un administrateur doit approuver les nouveaux membres qui rejoignent le groupe via le lien.";
 
 /* Label for the 'reset link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_RESET_LINK" = "Réinitialiser le lien";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Voulez-vous vraiment réinitialiser le lien du groupe ? Personne ne pourra plus se joindre au groupe grâce au lien actuel.";
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Voulez-vous vraiment réinitialiser le lien du groupe ? Personne ne pourra plus rejoindre le groupe via le lien actuel.";
 
 /* Label for the 'share link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK" = "Partager";
@@ -3143,7 +3146,7 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Partager avec Signal";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Toute personne disposant de ce lien peut visualiser le nom du groupe et ses membres, et demander à s’y joindre. Partagez-le avec les personnes en qui vous avez confiance.";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Toute personne disposant de ce lien peut afficher le nom du groupe, savoir combien il compte de membres et demander à le rejoindre. Ne le partagez qu’avec des personnes de confiance.";
 
 /* The title for the 'group link' view. */
 "GROUP_LINK_VIEW_TITLE" = "Lien de groupe";
@@ -3182,10 +3185,10 @@
 "GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "Vous avez été invité au groupe.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Vous vous êtes joint au groupe.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Vous avez rejoint le groupe.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "Vous vous êtes joint au groupe grâce au lien du groupe.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "Vous avez rejoint le groupe via le lien du groupe.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ vous a retiré(e).";
@@ -3194,19 +3197,19 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Vous avez été retiré du groupe.";
 
 /* Message indicating that the local user's request to join the group was approved. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Votre demande d’adhésion au groupe a été validée.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED" = "Votre demande d’adhésion au groupe a été approuvée.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ a approuvé votre demande de vous joindre au groupe.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ a approuvé votre demande d’adhésion au groupe.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
-"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "Vous avez annulé votre demande de vous joindre au groupe.";
+"GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "Vous avez annulé votre demande d’adhésion au groupe.";
 
 /* Message indicating that the local user's request to join the group was rejected. */
-"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Votre demande de vous joindre au groupe a été refusée.";
+"GROUP_LOCAL_USER_REQUEST_REJECTED" = "Votre demande d’adhésion au groupe a été refusée.";
 
 /* Message indicating that the local user requested to join the group. */
-"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "Vous avez demandé à vous joindre au groupe.";
+"GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "Vous avez demandé à rejoindre le groupe.";
 
 /* Message indicating that the local user had their administrator role revoked. */
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Vos privilèges d’administrateur ont été révoqués.";
@@ -3296,28 +3299,28 @@
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ a retiré %2$@ du groupe.";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Vous avez approuvé une demande de %1$@ de se joindre au groupe.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Vous avez approuvé la demande d’adhésion de %1$@.";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ a approuvé une demande de %1$@ de se joindre au groupe.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ a approuvé la demande d’adhésion de %1$@.";
 
 /* Message indicating that a remote user's request to join the group was approved by an unknown user. Embeds {{ %1$@ requesting user name }}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "Une demande de %1$@ de se joindre au groupe a été approuvée.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_UNKNOWN_USER_FORMAT" = "La demande d’adhésion de %1$@ a été approuvée.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
-"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%1$@ a annulé sa demande de se joindre au groupe.";
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%1$@ a annulé sa demande d’adhésion au groupe.";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Vous avez refusé une demande de %1$@ de se joindre au groupe.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Vous avez refusé la demande d’adhésion de %1$@.";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ rejecting user name }}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ a refusé une demande de %1$@ de se joindre au groupe.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ a refusé la demande d’adhésion de %1$@.";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "Une demande de %1$@ de se joindre au groupe a été refusée.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "La demande d’adhésion de %1$@ a été refusée.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%1$@ a demandé à se joindre au groupe grâce au lien du groupe.";
+"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%1$@ a demandé à rejoindre le groupe via le lien du groupe.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "Les privilèges d’administrateur de %1$@ ont été révoqués.";
@@ -3419,7 +3422,7 @@
 "GROUP_WAS_MIGRATED" = "Ce groupe a été converti en Nouveau groupe.";
 
 /* Message indicating that the local user was invited after the group was migrated. */
-"GROUP_WAS_MIGRATED_LOCAL_USER_INVITED" = "Vous n’avez pas pu être ajouté au Nouveau groupe et avez été invité à vous y joindre.";
+"GROUP_WAS_MIGRATED_LOCAL_USER_INVITED" = "Impossible de vous ajouter au nouveau groupe. Vous avez donc reçu une invitation à le rejoindre.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "Vous avez quitté le groupe.";
@@ -3440,7 +3443,7 @@
 "GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "Bloquer la demande";
 
 /* Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}. */
-"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%1$@ ne pourront rejoindre le groupe ni en faire la demande via le lien du groupe. Un administrateur peut les ajouter.";
+"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%1$@ ne pourra plus utiliser le lien, ni pour rejoindre le groupe, ni pour envoyer une demande d’adhésion. Un administrateur pourra néanmoins l’ajouter manuellement.";
 
 /* Title for sheet asking if the user wants to block a request to join the group. */
 "GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "Bloquer la demande ?";
@@ -3653,7 +3656,7 @@
 "INFO_MESSAGE_CONTACT_REMOVED" = "Vous avez retiré cette personne de votre liste de contacts Signal. Lui écrire l'ajoutera à nouveau à votre liste de contacts.";
 
 /* When you start a chat with someone and then later learn their profile name, we insert an in-chat message with this string to record the identifier you originally used to contact them. Embeds {{ the identifier, either a phone number or a username }}. */
-"INFO_MESSAGE_LEARNED_PROFILE_KEY" = "You started this chat with %1$@.";
+"INFO_MESSAGE_LEARNED_PROFILE_KEY" = "Vous avez démarré cette conversation avec %1$@.";
 
 /* Shown when a user activates payments from a chat */
 "INFO_MESSAGE_PAYMENTS_ACTIVATED" = "Vous avez activé les paiements.";
@@ -3677,7 +3680,7 @@
 "INFO_MESSAGE_REPORTED_SPAM_LEARN_MORE_TITLE" = "Signalé comme spam";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "For your security, chat history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "Pour votre sécurité, l’historique des conversations n’est pas transféré vers les nouveaux appareils associés.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ a changé de numéro de téléphone";
@@ -3731,7 +3734,7 @@
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "L’invitation simultanée de plusieurs utilisateurs enverra un message de groupe dont les destinataires se verront les uns les autres.";
 
 /* Button to join an active group call */
-"JOIN_CALL_PILL_BUTTON" = "Me joindre";
+"JOIN_CALL_PILL_BUTTON" = "Rejoindre";
 
 /* Two strings, joined by a dot. Embeds {first} and {second}, which are on opposite sides of the dot */
 "JOINED_WITH_DOT" = "%1$@ · %2$@";
@@ -4214,10 +4217,10 @@
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Autoriser %1$@ à échanger des messages et partager vos nom et photo avec ce contact ? Ce contact ne saura pas que vous avez vu ses messages tant que vous n’aurez pas accepté.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Vous joindre à ce groupe et partager vos nom et photo avec ses membres ? Ils ne sauront pas que vous avez vu leurs messages tant que vous n’aurez pas accepté.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Rejoindre ce groupe et partager vos nom et photo avec ses membres ? Ce contact ne saura que vous avez vu son invitation que si vous l’acceptez.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Vous joindre à ce groupe ? Ses membres ne sauront pas que vous avez lu leurs messages tant que vous n’aurez pas accepté.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_V2" = "Rejoindre ce groupe ? Ce contact ne saura que vous avez vu son invitation que si vous l’acceptez.";
 
 /* A prompt asking if the user wants to accept a conversation invite from a person whom they previously removed. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_REMOVED_CONTACT_PROMPT_FORMAT" = "Autoriser %1$@ à vous envoyer des messages et partager vos nom et photo avec ce contact ? Vous avez précédemment supprimé ce contact.";
@@ -4232,10 +4235,10 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Annuler la demande";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Annuler votre demande de vous joindre à ce groupe ?";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Annuler votre demande d’adhésion au groupe ?";
 
 /* Indicator that you have requested to join this group. */
-"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Votre demande de vous joindre au groupe a été envoyée à son administrateur. Vous serez averti de sa décision.";
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Votre demande a bien été envoyée à l’admin. Un message vous signalera si vous êtes autorisé à rejoindre le groupe.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Remis";
@@ -5090,7 +5093,7 @@
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Refuser la demande";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Refuser la demande de « %1$@ » ? Ils ne pourront plus demander de rejoindre le groupe via le lien du groupe.";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Refuser la demande de %1$@ ? Cette personne ne pourra plus demander à rejoindre le groupe via le lien.";
 
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "Aucune demande de membre n’est en attente.";
@@ -5114,10 +5117,10 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Révoquer l’invitation au groupe pour « %1$@ » ?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Les détails des personnes invitées par d’autres membres du groupe ne sont pas affichés. Si les invités choisissent de se joindre au groupe, leurs informations seront alors communiquées au groupe. Ils ne verront aucun message dans le groupe avant de s’y être joints.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Lorsque des membres du groupe invitent des utilisateurs, nous n’affichons aucune info sur ces derniers. Ces informations ne sont communiquées au groupe que si les invités choisissent de le rejoindre. De même, les invités n’ont pas accès aux messages du groupe tant qu’ils ne l’ont pas rejoint.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Les personnes de cette liste tentent de se joindre à « %1$@ » grâce au lien du groupe.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Les personnes suivantes tentent de rejoindre %1$@ via le lien du groupe.";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Invitations invalides";

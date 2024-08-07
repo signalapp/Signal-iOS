@@ -45,9 +45,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>¿Añadir participante a «%2$@»?</string>
+			<string>¿Añadir participante a &quot;%2$@&quot;?</string>
 			<key>other</key>
-			<string>¿Añadir %1$d participantes a «%2$@»?</string>
+			<string>¿Añadir %1$d participantes a &quot;%2$@&quot;?</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -792,9 +792,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Para mantener «%2$@» vinculado, abre Signal en ese dispositivo en el plazo de %1$d día.</string>
+			<string>Para mantener &quot;%2$@&quot; vinculado, abre Signal en ese dispositivo en el plazo de 1 día.</string>
 			<key>other</key>
-			<string>Para mantener «%2$@» vinculado, abre Signal en ese dispositivo en el plazo de %1$d días.</string>
+			<string>Para mantener &quot;%2$@&quot; vinculado, abre Signal en ese dispositivo en el plazo de %1$d días.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -1160,9 +1160,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>¿Retirar la invitación de grupo enviada por «%2$@»?</string>
+			<string>¿Retirar la invitación de grupo enviada por &quot;%2$@&quot;?</string>
 			<key>other</key>
-			<string>¿Retirar %1$d invitaciones de grupo enviadas por «%2$@»?</string>
+			<string>¿Retirar %1$d invitaciones de grupo enviadas por &quot;%2$@&quot;?</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>
@@ -1192,9 +1192,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>ld</string>
 			<key>one</key>
-			<string>%2$@ y %1$ld más han levantado la mano</string>
+			<string>%2$@ y %1$ld más levantaron la mano</string>
 			<key>other</key>
-			<string>%2$@ y %1$ld más han levantado la mano</string>
+			<string>%2$@ y %1$ld más levantaron la mano</string>
 		</dict>
 	</dict>
 	<key>REREGISTER_INVALID_PIN_ATTEMPT_COUNT_%d</key>
