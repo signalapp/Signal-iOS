@@ -838,7 +838,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 digest = digestParam
             } else {
                 // Compute the digest over the entire encrypted file.
-                digest = try Cryptography.calulcateDigestForFile(at: fileUrl)
+                digest = try Cryptography.computeSHA256DigestOfFile(at: fileUrl)
             }
             return (
                 PendingFile(

@@ -323,17 +323,6 @@ public extension Cryptography {
         )
     }
 
-    static func calulcateDigestForFile(
-        at url: URL
-    ) throws -> Data {
-        let inputFile = try FileHandle(forReadingFrom: url)
-        var digestContext = SHA256()
-        inputFile.enumerateInBlocks(blockSize: diskPageSize) { data in
-            digestContext.update(data: data)
-        }
-        return Data(digestContext.finalize())
-    }
-
     static func decryptAttachment(
         at encryptedUrl: URL,
         metadata: EncryptionMetadata,
