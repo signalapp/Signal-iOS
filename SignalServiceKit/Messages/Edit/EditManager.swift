@@ -46,14 +46,17 @@ public protocol EditManager {
 
     // MARK: - Incoming Edit Processing
 
-    // Process incoming data message
-    // 1) Check the external edit for valid field values
-    // 2) Call shared code to create new copies/records
+    /// Process an incoming data message.
+    ///
+    /// Checks the external edit for valid field values, then calls shared code
+    /// to create new copies and records as appropriate.
     func processIncomingEditMessage(
         _ newDataMessage: SSKProtoDataMessage,
+        serverTimestamp: UInt64,
+        serverGuid: String?,
+        serverDeliveryTimestamp: UInt64,
         thread: TSThread,
         editTarget: EditMessageTarget,
-        serverTimestamp: UInt64,
         tx: DBWriteTransaction
     ) throws -> TSMessage
 

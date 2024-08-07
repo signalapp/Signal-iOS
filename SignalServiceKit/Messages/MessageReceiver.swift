@@ -499,7 +499,11 @@ public final class MessageReceiver: Dependencies {
                 }
             } else if let editMessage = sent.editMessage {
                 let result = handleIncomingEnvelope(
-                    decryptedEnvelope, sentMessage: sent, editMessage: editMessage, transaction: tx
+                    decryptedEnvelope,
+                    sentMessage: sent,
+                    editMessage: editMessage,
+                    serverDeliveryTimestamp: request.serverDeliveryTimestamp,
+                    transaction: tx
                 )
                 switch result {
                 case .success, .invalidEdit:
@@ -1526,6 +1530,7 @@ public final class MessageReceiver: Dependencies {
         _ decryptedEnvelope: DecryptedIncomingEnvelope,
         sentMessage: SSKProtoSyncMessageSent,
         editMessage: SSKProtoEditMessage,
+        serverDeliveryTimestamp: UInt64,
         transaction tx: SDSAnyWriteTransaction
     ) -> EditProcessingResult {
 
@@ -1563,6 +1568,7 @@ public final class MessageReceiver: Dependencies {
 
         guard let message = try? handleMessageEdit(
             envelope: decryptedEnvelope,
+            serverDeliveryTimestamp: serverDeliveryTimestamp,
             thread: thread,
             editTarget: targetMessage,
             editMessage: editMessage,
@@ -1618,6 +1624,7 @@ public final class MessageReceiver: Dependencies {
 
         guard let message = try? handleMessageEdit(
             envelope: decryptedEnvelope,
+            serverDeliveryTimestamp: request.serverDeliveryTimestamp,
             thread: thread,
             editTarget: targetMessage,
             editMessage: editMessage,
@@ -1653,6 +1660,7 @@ public final class MessageReceiver: Dependencies {
 
     private func handleMessageEdit(
         envelope: DecryptedIncomingEnvelope,
+        serverDeliveryTimestamp: UInt64,
         thread: TSThread,
         editTarget: EditMessageTarget,
         editMessage: SSKProtoEditMessage,
@@ -1665,9 +1673,11 @@ public final class MessageReceiver: Dependencies {
 
         let message = try DependenciesBridge.shared.editManager.processIncomingEditMessage(
             dataMessage,
+            serverTimestamp: envelope.serverTimestamp,
+            serverGuid: envelope.envelope.serverGuid,
+            serverDeliveryTimestamp: serverDeliveryTimestamp,
             thread: thread,
             editTarget: editTarget,
-            serverTimestamp: envelope.serverTimestamp,
             tx: tx.asV2Write
         )
 

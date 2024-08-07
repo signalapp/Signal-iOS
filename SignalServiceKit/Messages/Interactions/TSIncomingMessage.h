@@ -26,6 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// message to the server.
 @property (nonatomic, readonly, nullable) NSNumber *serverTimestamp;
 
+/// Derived from the server-populated `serverGuid` field on an incoming message
+/// `Envelope`, this represents a server-generated UUID for this message.
 @property (nonatomic, readonly, nullable) NSString *serverGuid;
 
 @property (nonatomic, readonly) BOOL wasReceivedByUD;

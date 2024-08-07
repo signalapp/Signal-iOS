@@ -94,7 +94,9 @@ public class UnpreparedOutgoingMessage {
         case .persistable(let message):
             return message.message.timestamp
         case .editMessage(let message):
-            return message.edits.timestamp
+            return message.edits.timestamp.unwrapChange(
+                orKeepValue: message.targetMessage.timestamp
+            )
         case .contactSync(let message):
             return message.timestamp
         case .story(let story):

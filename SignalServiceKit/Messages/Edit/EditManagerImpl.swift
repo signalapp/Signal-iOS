@@ -64,9 +64,11 @@ public class EditManagerImpl: EditManager {
     // 2) Call shared code to create new copies/records
     public func processIncomingEditMessage(
         _ newDataMessage: SSKProtoDataMessage,
+        serverTimestamp: UInt64,
+        serverGuid: String?,
+        serverDeliveryTimestamp: UInt64,
         thread: TSThread,
         editTarget: EditMessageTarget,
-        serverTimestamp: UInt64,
         tx: DBWriteTransaction
     ) throws -> TSMessage {
         guard let threadRowId = thread.sqliteRowId else {
@@ -105,8 +107,13 @@ public class EditManagerImpl: EditManager {
 
         let linkPreview = newDataMessage.preview.first.map { MessageEdits.LinkPreviewSource.proto($0, newDataMessage) }
 
-        let edits = MessageEdits(
-            timestamp: newDataMessage.timestamp,
+        let edits: MessageEdits = .forIncomingEdit(
+            timestamp: .change(newDataMessage.timestamp),
+            // Received now!
+            receivedAtTimestamp: .change(Date.ows_millisecondTimestamp()),
+            serverTimestamp: .change(serverTimestamp),
+            serverDeliveryTimestamp: .change(serverDeliveryTimestamp),
+            serverGuid: .change(serverGuid),
             body: .change(newDataMessage.body),
             bodyRanges: .change(bodyRanges)
         )
@@ -262,11 +269,7 @@ public class EditManagerImpl: EditManager {
         ///
         /// Keep the original message's timestamp, as well as its content.
         let priorRevisionMessageBuilder = editTargetWrapper.cloneAsBuilderWithoutAttachments(
-            applying: MessageEdits(
-                timestamp: editTargetWrapper.message.timestamp,
-                body: .keep,
-                bodyRanges: .keep
-            ),
+            applying: .noChanges(),
             isLatestRevision: false
         )
         let priorRevisionMessage = EditTarget.build(

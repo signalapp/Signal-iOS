@@ -62,13 +62,15 @@ class EditManagerTests: SSKBaseTest {
         try db.write { tx in
             _ = try editManager.processIncomingEditMessage(
                 editMessage,
+                serverTimestamp: 1,
+                serverGuid: UUID().uuidString,
+                serverDeliveryTimestamp: 1234,
                 thread: thread,
                 editTarget: .incomingMessage(IncomingEditMessageWrapper(
                     message: targetMessage,
                     thread: thread,
                     authorAci: authorAci
                 )),
-                serverTimestamp: 1,
                 tx: tx
             )
 
@@ -112,13 +114,15 @@ class EditManagerTests: SSKBaseTest {
                 }
                 _ = try editManager.processIncomingEditMessage(
                     editMessage,
+                    serverTimestamp: 1,
+                    serverGuid: UUID().uuidString,
+                    serverDeliveryTimestamp: 1234,
                     thread: thread,
                     editTarget: .incomingMessage(IncomingEditMessageWrapper(
                         message: targetMessage,
                         thread: thread,
                         authorAci: authorAci
                     )),
-                    serverTimestamp: 1,
                     tx: tx
                 )
                 XCTFail("Expected error")
@@ -156,13 +160,15 @@ class EditManagerTests: SSKBaseTest {
                 }
                 _ = try editManager.processIncomingEditMessage(
                     editMessage,
+                    serverTimestamp: 1,
+                    serverGuid: UUID().uuidString,
+                    serverDeliveryTimestamp: 1234,
                     thread: thread,
                     editTarget: .incomingMessage(IncomingEditMessageWrapper(
                         message: targetMessage,
                         thread: thread,
                         authorAci: authorAci
                     )),
-                    serverTimestamp: 1,
                     tx: tx
                 )
                 XCTFail("Expected error")
@@ -200,13 +206,15 @@ class EditManagerTests: SSKBaseTest {
                 }
                 _ = try editManager.processIncomingEditMessage(
                     editMessage,
+                    serverTimestamp: expiredTS,
+                    serverGuid: UUID().uuidString,
+                    serverDeliveryTimestamp: 1234,
                     thread: thread,
                     editTarget: .incomingMessage(IncomingEditMessageWrapper(
                         message: targetMessage,
                         thread: thread,
                         authorAci: authorAci
                     )),
-                    serverTimestamp: expiredTS,
                     tx: tx
                 )
                 XCTFail("Expected error")
@@ -244,13 +252,15 @@ class EditManagerTests: SSKBaseTest {
                 }
                 _ = try editManager.processIncomingEditMessage(
                     editMessage,
+                    serverTimestamp: bigInt + 1,
+                    serverGuid: UUID().uuidString,
+                    serverDeliveryTimestamp: 1234,
                     thread: thread,
                     editTarget: .incomingMessage(IncomingEditMessageWrapper(
                         message: targetMessage,
                         thread: thread,
                         authorAci: authorAci
                     )),
-                    serverTimestamp: bigInt + 1,
                     tx: tx
                 )
                 XCTFail("Expected error")

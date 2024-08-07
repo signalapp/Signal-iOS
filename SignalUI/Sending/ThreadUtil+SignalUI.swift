@@ -270,8 +270,10 @@ extension UnpreparedOutgoingMessage {
             oversizeTextDataSource = nil
         }
 
-        let edits = MessageEdits(
-            timestamp: timestamp,
+        let edits: MessageEdits = .forOutgoingEdit(
+            timestamp: .change(timestamp),
+            // "Received" now!
+            receivedAtTimestamp: .change(Date.ows_millisecondTimestamp()),
             body: .change(truncatedBody?.text),
             bodyRanges: .change(truncatedBody?.ranges)
         )

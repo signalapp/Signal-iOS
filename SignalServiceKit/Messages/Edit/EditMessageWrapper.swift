@@ -99,14 +99,18 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
             }
         }()
 
-        let timestamp = edits.timestamp
-        let body = edits.body.unwrap(keepValue: message.body)
-        let bodyRanges = edits.bodyRanges.unwrap(keepValue: message.bodyRanges)
+        let body = edits.body.unwrapChange(orKeepValue: message.body)
+        let bodyRanges = edits.bodyRanges.unwrapChange(orKeepValue: message.bodyRanges)
+        let timestamp = edits.timestamp.unwrapChange(orKeepValue: message.timestamp)
+        let receivedAtTimestamp = edits.receivedAtTimestamp.unwrapChange(orKeepValue: message.receivedAtTimestamp)
+        let serverTimestamp = edits.serverTimestamp.unwrapChange(orKeepValue: message.serverTimestamp?.uint64Value ?? 0)
+        let serverDeliveryTimestamp = edits.serverDeliveryTimestamp.unwrapChange(orKeepValue: message.serverDeliveryTimestamp)
+        let serverGuid = edits.serverGuid.unwrapChange(orKeepValue: message.serverGuid)
 
         return TSIncomingMessageBuilder(
             thread: thread,
             timestamp: timestamp,
-            receivedAtTimestamp: nil,
+            receivedAtTimestamp: receivedAtTimestamp,
             authorAci: authorAci,
             authorE164: nil,
             messageBody: body,
@@ -117,9 +121,9 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
             expiresInSeconds: isLatestRevision ? message.expiresInSeconds : 0,
             expireStartedAt: message.expireStartedAt,
             read: isLatestRevision ? false : true,
-            serverTimestamp: message.serverTimestamp?.uint64Value ?? 0,
-            serverDeliveryTimestamp: message.serverDeliveryTimestamp,
-            serverGuid: message.serverGuid,
+            serverTimestamp: serverTimestamp,
+            serverDeliveryTimestamp: serverDeliveryTimestamp,
+            serverGuid: serverGuid,
             wasReceivedByUD: message.wasReceivedByUD,
             isViewOnceMessage: message.isViewOnceMessage,
             storyAuthorAci: message.storyAuthorAci?.wrappedAciValue,
@@ -165,14 +169,15 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
         applying edits: MessageEdits,
         isLatestRevision: Bool
     ) -> TSOutgoingMessageBuilder {
-        let timestamp = edits.timestamp
-        let body = edits.body.unwrap(keepValue: message.body)
-        let bodyRanges = edits.bodyRanges.unwrap(keepValue: message.bodyRanges)
+        let body = edits.body.unwrapChange(orKeepValue: message.body)
+        let bodyRanges = edits.bodyRanges.unwrapChange(orKeepValue: message.bodyRanges)
+        let timestamp = edits.timestamp.unwrapChange(orKeepValue: message.timestamp)
+        let receivedAtTimestamp = edits.receivedAtTimestamp.unwrapChange(orKeepValue: message.receivedAtTimestamp)
 
         return TSOutgoingMessageBuilder(
             thread: thread,
             timestamp: timestamp,
-            receivedAtTimestamp: nil,
+            receivedAtTimestamp: receivedAtTimestamp,
             messageBody: body,
             bodyRanges: bodyRanges,
             editState: isLatestRevision ? .latestRevisionRead : .pastRevision,
