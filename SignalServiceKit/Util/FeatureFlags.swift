@@ -84,7 +84,7 @@ public class FeatureFlags: NSObject {
     public static let groupCallDrawerSupport = build.includes(.production)
     public static let individualCallDrawerSupport = build.includes(.production)
 
-    public static let chatListFilter = build.includes(.dev)
+    public static let chatListFilter = build.includes(.internal)
 }
 
 // MARK: -
