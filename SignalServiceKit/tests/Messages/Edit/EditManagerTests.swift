@@ -433,17 +433,17 @@ class EditManagerTests: SSKBaseTest {
             return 1
         }
 
-        func findEditHistory(
-            for message: TSMessage,
+        func findEditHistory<MessageType: TSMessage>(
+            for message: MessageType,
             tx: DBReadTransaction
-        ) throws -> [(EditRecord, TSMessage?)] {
+        ) throws -> [(record: EditRecord, message: MessageType?)] {
             return []
         }
 
-        func findEditDeleteRecords(
-            for message: TSMessage,
+        func findEditDeleteRecords<MessageType: TSMessage>(
+            for message: MessageType,
             tx: DBReadTransaction
-        ) throws -> [(EditRecord, TSMessage?)] {
+        ) throws -> [(record: EditRecord, message: MessageType?)] {
             return []
         }
 

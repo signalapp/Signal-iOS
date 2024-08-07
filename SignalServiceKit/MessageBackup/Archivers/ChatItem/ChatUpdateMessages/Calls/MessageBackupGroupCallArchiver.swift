@@ -99,6 +99,7 @@ final class MessageBackupGroupCallArchiver {
         let interactionArchiveDetails = Details(
             author: context.recipientContext.localRecipientId,
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
+            dateCreated: groupCallInteraction.timestamp,
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,

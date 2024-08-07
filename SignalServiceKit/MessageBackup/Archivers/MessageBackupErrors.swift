@@ -152,6 +152,9 @@ extension MessageBackup {
             /// A "learned profile update" info message was missing info as to
             /// the profile that was learned.
             case learnedProfileUpdateMissingAuthor
+
+            /// We failed to fetch the edit history for a message.
+            case editHistoryFailedToFetch
         }
 
         private let type: ErrorType
@@ -236,7 +239,8 @@ extension MessageBackup {
                     .sessionSwitchoverUpdateMissingAuthor,
                     .learnedProfileUpdateMissingPreviousName,
                     .learnedProfileUpdateInvalidE164,
-                    .learnedProfileUpdateMissingAuthor:
+                    .learnedProfileUpdateMissingAuthor,
+                    .editHistoryFailedToFetch:
                 // Log any others as we see them.
                 return nil
             }
@@ -474,6 +478,11 @@ extension MessageBackup {
                 case learnedProfileUpdateMissingPreviousName
                 /// A "learned profile update" was not authored by a contact.
                 case learnedProfileUpdateNotFromContact
+
+                /// A revision for an incoming message was missing incoming
+                /// message details. (Revisions must have the same
+                /// directionality as their parent.)
+                case revisionOfIncomingMessageMissingIncomingDetails
             }
 
             /// The proto contained invalid or self-contradictory data, e.g an invalid ACI.
@@ -599,7 +608,8 @@ extension MessageBackup {
                         .threadMergeUpdateNotFromContact,
                         .sessionSwitchoverUpdateNotFromContact,
                         .learnedProfileUpdateMissingPreviousName,
-                        .learnedProfileUpdateNotFromContact:
+                        .learnedProfileUpdateNotFromContact,
+                        .revisionOfIncomingMessageMissingIncomingDetails:
                     // Collapse all others by the id of the containing frame.
                     return idLogString
                 }

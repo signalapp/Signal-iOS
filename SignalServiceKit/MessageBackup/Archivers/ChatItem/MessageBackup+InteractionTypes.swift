@@ -44,14 +44,21 @@ extension MessageBackup {
 
         let author: RecipientId
         let directionalDetails: DirectionalDetails
+        let dateCreated: UInt64
         let expireStartDate: UInt64?
         let expiresInMs: UInt64?
-        // TODO: [Backups] Include edit revisions.
-        let revisions: [BackupProto_ChatItem] = []
         // TODO: [Backups] Properly set isSms. This will only be relevant for messages we previously restored from an Android.
         let isSms: Bool = false
         let isSealedSender: Bool
         let chatItemType: ChatItemType
+
+        /// Represents past revisions, if this instance represents the final
+        /// form of a message that was edited.
+        private(set) var pastRevisions: [InteractionArchiveDetails] = []
+
+        mutating func addPastRevision(_ pastRevision: InteractionArchiveDetails) {
+            pastRevisions.append(pastRevision)
+        }
     }
 
     enum SkippableChatUpdate {
@@ -133,16 +140,17 @@ extension MessageBackup {
         /// which doesn't go into the backup. Instead, we track and handle info
         /// messages for recipient hidden state separately.
         case contactHiddenInfoMessage
+
+        /// This is a past revision for a message that was later edited. We skip
+        /// these, instead handling all past revisions when handling the latest
+        /// revision of a message.
+        case pastRevisionOfEditedMessage
     }
 
     enum ArchiveInteractionResult<Component> {
         case success(Component)
 
         // MARK: Skips
-
-        /// This is a past revision that was since edited; can be safely skipped, as its
-        /// contents will be represented in the latest revision.
-        case isPastRevision
 
         /// We intentionally skip archiving some chat-update interactions.
         case skippableChatUpdate(SkippableChatUpdate)
@@ -177,9 +185,9 @@ extension MessageBackup {
 
 extension MessageBackup.ArchiveInteractionResult {
 
-    enum BubbleUp<T, E> {
-        case `continue`(T)
-        case bubbleUpError(MessageBackup.ArchiveInteractionResult<E>)
+    enum BubbleUp<ComponentType, ErrorComponentType> {
+        case `continue`(ComponentType)
+        case bubbleUpError(MessageBackup.ArchiveInteractionResult<ErrorComponentType>)
     }
 
     /// Make it easier to "bubble up" an error case of ``ArchiveInteractionResult`` thrown deeper in the call stack.
@@ -211,10 +219,10 @@ extension MessageBackup.ArchiveInteractionResult {
     /// case .bubbleUpError(let error):
     ///   return error
     /// }
-    func bubbleUp<ErrorResultType>(
-        _ resultType: ErrorResultType.Type = ErrorResultType.self,
+    func bubbleUp<ErrorComponentType>(
+        _ errorComponentType: ErrorComponentType.Type = Component.self,
         partialErrors: inout [MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>]
-    ) -> BubbleUp<Component, ErrorResultType> {
+    ) -> BubbleUp<Component, ErrorComponentType> {
         switch self {
         case .success(let value):
             return .continue(value)
@@ -225,8 +233,6 @@ extension MessageBackup.ArchiveInteractionResult {
             return .continue(value)
 
         // These types are just bubbled up as-is
-        case .isPastRevision:
-            return .bubbleUpError(.isPastRevision)
         case .skippableChatUpdate(let skippableChatUpdate):
             return .bubbleUpError(.skippableChatUpdate(skippableChatUpdate))
         case .notYetImplemented:

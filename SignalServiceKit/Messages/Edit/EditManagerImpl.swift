@@ -456,9 +456,7 @@ public class EditManagerImpl: EditManager {
         try context.editMessageStore
             .findEditHistory(for: edit, tx: tx)
             .lazy
-            .filter { item in
-                !item.0.read
-            }
+            .filter { !$0.record.read }
             .forEach { item in
                 guard let message = item.1 as? TSIncomingMessage else { return }
                 var record: EditRecord = item.0

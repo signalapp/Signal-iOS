@@ -50,28 +50,7 @@ extension MessageBackup {
     }
 }
 
-extension MessageBackup.RestoredMessageContents {
-
-    var body: MessageBody? {
-        switch self {
-        case .text(let text):
-            return text.body
-        case .archivedPayment:
-            return nil
-        }
-    }
-
-    var quotedMessage: TSQuotedMessage? {
-        switch self {
-        case .text(let text):
-            return text.quotedMessage
-        case .archivedPayment:
-            return nil
-        }
-    }
-}
-
-internal class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
+class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
 
     typealias ChatItemType = MessageBackup.InteractionArchiveDetails.ChatItemType
 

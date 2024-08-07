@@ -64,6 +64,7 @@ internal class MessageBackupTSOutgoingMessageArchiver: MessageBackupProtoArchive
         let details = Details(
             author: context.recipientContext.localRecipientId,
             directionalDetails: directionalDetails,
+            dateCreated: message.timestamp,
             expireStartDate: message.expireStartedAt,
             expiresInMs: UInt64(message.expiresInSeconds) * 1000,
             isSealedSender: wasAnySendSealedSender,

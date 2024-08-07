@@ -90,6 +90,7 @@ final class MessageBackupGroupUpdateMessageArchiver {
         let details = Details(
             author: context.recipientContext.localRecipientId,
             directionalDetails: .directionless(directionlessDetails),
+            dateCreated: infoMessage.timestamp,
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,

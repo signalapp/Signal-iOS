@@ -60,6 +60,7 @@ final class MessageBackupThreadMergeChatUpdateArchiver {
         let interactionArchiveDetails = Details(
             author: threadRecipientId,
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
+            dateCreated: infoMessage.timestamp,
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,

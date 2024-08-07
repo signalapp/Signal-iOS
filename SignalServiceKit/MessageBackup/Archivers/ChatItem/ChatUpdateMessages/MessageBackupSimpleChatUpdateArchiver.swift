@@ -213,6 +213,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
         let interactionArchiveDetails = Details(
             author: updateAuthorRecipientId,
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
+            dateCreated: infoMessage.timestamp,
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,
@@ -307,6 +308,7 @@ final class MessageBackupSimpleChatUpdateArchiver {
         let interactionArchiveDetails = Details(
             author: updateAuthorRecipientId,
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
+            dateCreated: errorMessage.timestamp,
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,

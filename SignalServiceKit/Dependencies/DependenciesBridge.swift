@@ -109,6 +109,7 @@ public class DependenciesBridge {
     public let preKeyManager: PreKeyManager
     public let privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager
     public let quotedReplyManager: QuotedReplyManager
+    public let reactionStore: any ReactionStore
     public let receiptCredentialResultStore: ReceiptCredentialResultStore
     public let recipientDatabaseTable: RecipientDatabaseTable
     public let recipientFetcher: RecipientFetcher
@@ -219,6 +220,7 @@ public class DependenciesBridge {
         preKeyManager: PreKeyManager,
         privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager,
         quotedReplyManager: QuotedReplyManager,
+        reactionStore: any ReactionStore,
         receiptCredentialResultStore: ReceiptCredentialResultStore,
         recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
@@ -326,6 +328,7 @@ public class DependenciesBridge {
         self.preKeyManager = preKeyManager
         self.privateStoryThreadDeletionManager = privateStoryThreadDeletionManager
         self.quotedReplyManager = quotedReplyManager
+        self.reactionStore = reactionStore
         self.receiptCredentialResultStore = receiptCredentialResultStore
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientFetcher = recipientFetcher

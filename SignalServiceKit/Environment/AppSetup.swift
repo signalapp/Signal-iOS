@@ -868,6 +868,8 @@ public class AppSetup {
             keyValueStoreFactory: keyValueStoreFactory
         )
 
+        let reactionStore: any ReactionStore = ReactionStoreImpl()
+
         let messageBackupManager = MessageBackupManagerImpl(
             accountDataArchiver: MessageBackupAccountDataArchiverImpl(
                 disappearingMessageConfigurationStore: disappearingMessagesConfigurationStore,
@@ -911,13 +913,14 @@ public class AppSetup {
                 callRecordStore: callRecordStore,
                 contactManager: MessageBackup.Wrappers.ContactManager(contactManager),
                 dateProvider: dateProvider,
+                editMessageStore: editMessageStore,
                 groupCallRecordManager: groupCallRecordManager,
                 groupUpdateHelper: GroupUpdateInfoMessageInserterBackupHelperImpl(),
                 groupUpdateItemBuilder: groupUpdateItemBuilder,
                 individualCallRecordManager: individualCallRecordManager,
                 interactionStore: interactionStore,
                 archivedPaymentStore: archivedPaymentStore,
-                reactionStore: ReactionStoreImpl(),
+                reactionStore: reactionStore,
                 sentMessageTranscriptReceiver: sentMessageTranscriptReceiver,
                 threadStore: threadStore
             ),
@@ -1089,6 +1092,7 @@ public class AppSetup {
             preKeyManager: preKeyManager,
             privateStoryThreadDeletionManager: privateStoryThreadDeletionManager,
             quotedReplyManager: quotedReplyManager,
+            reactionStore: reactionStore,
             receiptCredentialResultStore: receiptCredentialResultStore,
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,

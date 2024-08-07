@@ -61,6 +61,7 @@ final class MessageBackupProfileChangeChatUpdateArchiver {
         let interactionArchiveDetails = Details(
             author: profileRecipientId,
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
+            dateCreated: infoMessage.timestamp,
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,

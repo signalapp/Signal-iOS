@@ -41,18 +41,23 @@ public protocol EditMessageStore {
         tx: DBReadTransaction
     ) -> Int
 
-    func findEditHistory(
-        for message: TSMessage,
+    /// Fetches all past revisions for the given most-recent-revision message.
+    ///
+    /// - Returns
+    /// An edit record and message instance (if one is found) for each past
+    /// revision, from newest to oldest.
+    func findEditHistory<MessageType: TSMessage>(
+        for message: MessageType,
         tx: DBReadTransaction
-    ) throws -> [(EditRecord, TSMessage?)]
+    ) throws -> [(record: EditRecord, message: MessageType?)]
 
     /// This method is similar to findEditHistory, but will find records and interactions where the
     /// passed in message is _either_ the latest edit, or a past revision.  This is useful when
     /// deleting a message, since the record needs to be removed regardles of the type of edit
-    func findEditDeleteRecords(
-        for message: TSMessage,
+    func findEditDeleteRecords<MessageType: TSMessage>(
+        for message: MessageType,
         tx: DBReadTransaction
-    ) throws -> [(EditRecord, TSMessage?)]
+    ) throws -> [(record: EditRecord, message: MessageType?)]
 
     // MARK: - Writes
 
@@ -174,12 +179,15 @@ public class EditMessageStoreImpl: EditMessageStore {
         }
     }
 
-    public func findEditHistory(
-        for message: TSMessage,
+    public func findEditHistory<MessageType: TSMessage>(
+        for message: MessageType,
         tx: DBReadTransaction
-    ) throws -> [(EditRecord, TSMessage?)] {
+    ) throws -> [(record: EditRecord, message: MessageType?)] {
         let transaction = SDSDB.shimOnlyBridge(tx)
 
+        /// By ordering DESC on `pastRevisionId`, we end up ordering edits
+        /// newest-to-oldest. That's because the highest `pastRevisionId` refers
+        /// to the most-recently-inserted revision, or newest edit.
         let recordSQL = """
             SELECT * FROM \(EditRecord.databaseTableName)
             WHERE latestRevisionId = ?
@@ -194,26 +202,26 @@ public class EditMessageStoreImpl: EditMessageStore {
             arguments: arguments
         )
 
-        return records.map { record -> (EditRecord, TSMessage?) in
+        return records.map { record -> (EditRecord, MessageType?) in
             let interaction = InteractionFinder.fetch(
                 rowId: record.pastRevisionId,
                 transaction: transaction
             )
-            guard let message = interaction as? TSMessage else {
+            guard let message = interaction as? MessageType else {
                 owsFailDebug("Interaction has unexpected type: \(type(of: interaction))")
                 return (record, nil)
             }
-            return (record, message)
+            return (record: record, edit: message)
         }
     }
 
     /// This method is similar to findEditHistory, but will find records and interactions where the
     /// passed in message is _either_ the latest edit, or a past revision.  This is useful when
     /// deleting a message, since the record needs to be removed regardles of the type of edit
-    public func findEditDeleteRecords(
-        for message: TSMessage,
+    public func findEditDeleteRecords<MessageType: TSMessage>(
+        for message: MessageType,
         tx: DBReadTransaction
-    ) throws -> [(EditRecord, TSMessage?)] {
+    ) throws -> [(record: EditRecord, message: MessageType?)] {
         let transaction = SDSDB.shimOnlyBridge(tx)
 
         let recordSQL = """
@@ -231,16 +239,16 @@ public class EditMessageStoreImpl: EditMessageStore {
             arguments: arguments
         )
 
-        return records.map { record -> (EditRecord, TSMessage?) in
+        return records.map { record -> (EditRecord, MessageType?) in
             let interaction = InteractionFinder.fetch(
                 rowId: record.pastRevisionId,
                 transaction: transaction
             )
-            guard let message = interaction as? TSMessage else {
+            guard let message = interaction as? MessageType else {
                 owsFailDebug("Interaction has unexpected type: \(type(of: interaction))")
                 return (record, nil)
             }
-            return (record, message)
+            return (record: record, edit: message)
         }
     }
 

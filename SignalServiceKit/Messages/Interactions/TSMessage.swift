@@ -280,7 +280,7 @@ public extension TSMessage {
             tx: transaction.asV2Read
         )
         for edit in editsToProcess {
-            try block(edit.0, edit.1)
+            try block(edit.record, edit.message)
         }
     }
 

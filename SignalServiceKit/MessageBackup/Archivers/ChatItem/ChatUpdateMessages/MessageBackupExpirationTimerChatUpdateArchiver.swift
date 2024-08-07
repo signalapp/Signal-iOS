@@ -86,6 +86,7 @@ final class MessageBackupExpirationTimerChatUpdateArchiver {
         let interactionArchiveDetails = Details(
             author: chatUpdateAuthorRecipientId,
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
+            dateCreated: infoMessage.timestamp,
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,

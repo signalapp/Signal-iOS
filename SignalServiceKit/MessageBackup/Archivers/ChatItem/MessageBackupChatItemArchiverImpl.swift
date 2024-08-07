@@ -12,6 +12,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
     private let callRecordStore: CallRecordStore
     private let contactManager: MessageBackup.Shims.ContactManager
     private let dateProvider: DateProvider
+    private let editMessageStore: EditMessageStore
     private let groupCallRecordManager: GroupCallRecordManager
     private let groupUpdateHelper: GroupUpdateInfoMessageInserterBackupHelper
     private let groupUpdateItemBuilder: GroupUpdateItemBuilder
@@ -26,6 +27,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         callRecordStore: CallRecordStore,
         contactManager: MessageBackup.Shims.ContactManager,
         dateProvider: @escaping DateProvider,
+        editMessageStore: EditMessageStore,
         groupCallRecordManager: GroupCallRecordManager,
         groupUpdateHelper: GroupUpdateInfoMessageInserterBackupHelper,
         groupUpdateItemBuilder: GroupUpdateItemBuilder,
@@ -39,6 +41,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         self.callRecordStore = callRecordStore
         self.contactManager = contactManager
         self.dateProvider = dateProvider
+        self.editMessageStore = editMessageStore
         self.groupCallRecordManager = groupCallRecordManager
         self.groupUpdateHelper = groupUpdateHelper
         self.groupUpdateItemBuilder = groupUpdateItemBuilder
@@ -61,6 +64,7 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
     private lazy var incomingMessageArchiver =
         MessageBackupTSIncomingMessageArchiver(
             contentsArchiver: contentsArchiver,
+            editMessageStore: editMessageStore,
             interactionStore: interactionStore
         )
     private lazy var outgoingMessageArchiver =
@@ -79,6 +83,8 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
             individualCallRecordManager: individualCallRecordManager,
             interactionStore: interactionStore
         )
+
+    // MARK: -
 
     public func archiveInteractions(
         stream: MessageBackupProtoOutputStream,
@@ -211,20 +217,17 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         switch archiveInteractionResult {
         case .success(let deets):
             details = deets
-
+        case .partialFailure(let deets, let errors):
+            details = deets
+            partialErrors.append(contentsOf: errors)
         case
-                .isPastRevision,
                 .skippableChatUpdate,
                 .notYetImplemented:
             // Skip! Say it succeeded so we ignore it.
             return .success
-
         case .messageFailure(let errors):
             partialErrors.append(contentsOf: errors)
             return .partialSuccess(partialErrors)
-        case .partialFailure(let deets, let errors):
-            partialErrors.append(contentsOf: errors)
-            details = deets
         case .completeFailure(let error):
             return .completeFailure(error)
         }
@@ -241,16 +244,10 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
             return .success
         }
 
-        var chatItem = BackupProto_ChatItem()
-        chatItem.chatID = chatId.value
-        chatItem.authorID = details.author.value
-        chatItem.dateSent = interaction.timestamp
-        chatItem.expireStartDate = details.expireStartDate ?? 0
-        chatItem.expiresInMs = details.expiresInMs ?? 0
-        chatItem.sms = details.isSms
-        chatItem.item = details.chatItemType
-        chatItem.directionalDetails = details.directionalDetails
-        chatItem.revisions = details.revisions
+        let chatItem = buildChatItem(
+            fromDetails: details,
+            chatId: chatId
+        )
 
         let error = Self.writeFrameToStream(
             stream,
@@ -270,6 +267,33 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
             return .partialSuccess(partialErrors)
         }
     }
+
+    private func buildChatItem(
+        fromDetails details: MessageBackup.InteractionArchiveDetails,
+        chatId: MessageBackup.ChatId
+    ) -> BackupProto_ChatItem {
+        var chatItem = BackupProto_ChatItem()
+        chatItem.chatID = chatId.value
+        chatItem.authorID = details.author.value
+        chatItem.dateSent = details.dateCreated
+        chatItem.expireStartDate = details.expireStartDate ?? 0
+        chatItem.expiresInMs = details.expiresInMs ?? 0
+        chatItem.sms = details.isSms
+        chatItem.item = details.chatItemType
+        chatItem.directionalDetails = details.directionalDetails
+        chatItem.revisions = details.pastRevisions.map { pastRevisionDetails in
+            /// Recursively map our past revision details to `ChatItem`s of
+            /// their own. (Their `pastRevisions` will all be empty.)
+            return buildChatItem(
+                fromDetails: pastRevisionDetails,
+                chatId: chatId
+            )
+        }
+
+        return chatItem
+    }
+
+    // MARK: -
 
     public func restore(
         _ chatItem: BackupProto_ChatItem,
@@ -329,9 +353,10 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         switch chatItem.directionalDetails {
         case nil:
             return restoreFrameError(.invalidProtoData(.chatItemMissingDirectionalDetails))
-        case .incoming:
+        case .incoming(let incomingDetails):
             restoreInteractionResult = incomingMessageArchiver.restoreIncomingChatItem(
                 chatItem,
+                incomingDetails: incomingDetails,
                 chatThread: thread,
                 context: context,
                 tx: tx

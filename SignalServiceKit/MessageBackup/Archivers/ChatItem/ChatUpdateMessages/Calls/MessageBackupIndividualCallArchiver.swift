@@ -94,6 +94,7 @@ final class MessageBackupIndividualCallArchiver {
         let interactionArchiveDetails = Details(
             author: context.recipientContext.localRecipientId,
             directionalDetails: .directionless(BackupProto_ChatItem.DirectionlessMessageDetails()),
+            dateCreated: individualCallInteraction.timestamp,
             expireStartDate: nil,
             expiresInMs: nil,
             isSealedSender: false,
