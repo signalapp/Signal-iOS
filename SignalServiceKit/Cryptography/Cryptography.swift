@@ -5,6 +5,7 @@
 
 import CryptoKit
 import Foundation
+import System
 
 public enum Cryptography {
     // SHA-256
@@ -908,7 +909,7 @@ public extension Cryptography {
                     }
                 } else {
                     // Otherwise we aren't at the end of the file, read and update.
-                    let ciphertextLength = file.read(
+                    let ciphertextLength = try file.read(
                         into: &ciphertextBuffer,
                         maxLength: numCiphertextBytesToRead
                     )
@@ -962,22 +963,22 @@ public extension Cryptography {
 
         /// A convenience wrapper around a read-only FILE (C API for file I/O accessed via fopen).
         fileprivate class FileHandle {
-            private let file: UnsafeMutablePointer<FILE>
+            private let fileDescriptor: FileDescriptor
             /// Determined at open time and assumed to be fixed.
             let fileLength: Int
             /// The internally-managed offset into the file in bytes, indexed from the start of the file.
             private(set) var offsetInFile: Int = 0
 
             init(url: URL) throws {
+                guard let filePath = FilePath(url) else {
+                    throw OWSAssertionError("Provided url \(url) is not a file path")
+                }
                 guard
                     let fileLength = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize
                 else {
                     throw OWSAssertionError("Unable to read file length")
                 }
-                guard let file = fopen(url.path, "r") else {
-                    throw OWSAssertionError("Could not open file")
-                }
-                self.file = file
+                self.fileDescriptor = try FileDescriptor.open(filePath, .readOnly)
                 self.fileLength = fileLength
             }
 
@@ -986,20 +987,15 @@ public extension Cryptography {
             /// - parameter buffer: Output is written into here.
             /// - parameter maxLength: Maximum number of bytes to read into `buffer`.
             ///     If nil, the length of the buffer is used.
-            ///     WARNING: results in buffer overflow if a length longer than `buffer`'s length is provided.
+            ///     Warning: Using a value greater than buffer length will get capped by buffer length.
             ///
             /// - returns: The actual number of bytes read. Fewer bytes than requested indicates
             ///     either that the end of the file was reached, or some error occured. Callers should
             ///     be careful about reaching the end of file (by inspecting fileLength) if they wish to
             ///     distinguish reaching the end of the file from errors.
-            func read(into buffer: inout Data, maxLength: Int? = nil) -> Int {
-                let numBytesRead = buffer.withUnsafeMutableBytes { buffer in
-                    return fread(
-                        buffer.baseAddress,
-                        1, /* bytes per buffer element */
-                        maxLength ?? buffer.count, /* number of buffer elements */
-                        file
-                    )
+            func read(into buffer: inout Data, maxLength: Int? = nil) throws -> Int {
+                let numBytesRead = try buffer.withUnsafeMutableBytes {
+                    try fileDescriptor.read(into: UnsafeMutableRawBufferPointer(rebasing: $0.prefix(maxLength ?? $0.count)))
                 }
                 offsetInFile += numBytesRead
                 return numBytesRead
@@ -1011,29 +1007,22 @@ public extension Cryptography {
             /// Notably, calling this method with a length that would go past the end of the file
             /// will throw an error.
             func readData(ofLength length: Int) throws -> Data {
-                var buffer = Data(repeating: 0, count: length)
-                let numBytesRead = read(into: &buffer)
+                var buffer = Data(count: length)
+                let numBytesRead = try read(into: &buffer)
                 guard numBytesRead == length else {
                     throw OWSAssertionError("Unable to read data")
                 }
-                return Data(buffer)
+                return buffer
             }
 
             /// Seek to a desired offset in the file, defined relative to the beginning of the file.
             func seek(toFileOffset desiredOffset: Int) throws {
-                let result = fseek(
-                    file,
-                    desiredOffset, /* relative to origin (next param) */
-                    SEEK_SET /* beggining of the file */
-                )
-                guard result == 0 else {
-                    throw OWSAssertionError("Failed to seek, error code: \(result)")
-                }
+                try fileDescriptor.seek(offset: Int64(desiredOffset), from: .start)
                 offsetInFile = desiredOffset
             }
 
             deinit {
-                fclose(file)
+                try! fileDescriptor.close()
             }
         }
     }
