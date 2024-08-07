@@ -302,12 +302,10 @@ class CallDrawerSheet: InteractiveSheetViewController {
             Logger.info("applying duplicate snapshot")
         } else {
             Logger.info("applying new snapshot")
-        }
-        self.previousSnapshotItems = snapshot.itemIdentifiers
-
-        dataSource.apply(snapshot, animatingDifferences: true) { [weak self] in
-            Logger.debug("will refresh max height")
-            self?.refreshMaxHeight()
+            self.previousSnapshotItems = snapshot.itemIdentifiers
+            dataSource.apply(snapshot, animatingDifferences: true) { [weak self] in
+                self?.refreshMaxHeight()
+            }
         }
     }
 

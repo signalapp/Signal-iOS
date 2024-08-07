@@ -137,8 +137,21 @@ class GroupCall: SignalRingRTC.GroupCallDelegate {
         observers.elements.forEach { $0.groupCallLocalDeviceStateChanged(self) }
     }
 
+    private var remoteStateChangeDebounceId: UUID?
     func groupCall(onRemoteDeviceStatesChanged groupCall: SignalRingRTC.GroupCall) {
-        observers.elements.forEach { $0.groupCallRemoteDeviceStatesChanged(self) }
+        // Debounce this event 0.5s to avoid spamming the calls UI with group changes.
+        let debounceId = UUID()
+        self.remoteStateChangeDebounceId = debounceId
+        firstly(on: DispatchQueue.main){ () -> Guarantee<Void> in
+            return Guarantee.after(wallInterval: 0.25)
+        }.done(on: DispatchQueue.main) {
+            if
+                let id = self.remoteStateChangeDebounceId,
+                debounceId == id
+            {
+                self.observers.elements.forEach { $0.groupCallRemoteDeviceStatesChanged(self) }
+            }
+        }
     }
 
     func groupCall(onAudioLevels groupCall: SignalRingRTC.GroupCall) {
