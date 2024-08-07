@@ -14,7 +14,7 @@ public enum Cryptography {
     public static func computeSHA256DigestOfFile(at url: URL) throws -> Data {
         let file = try LocalFileHandle(url: url)
         var sha256 = SHA256()
-        var buffer = Data(count: 8192)
+        var buffer = Data(count: diskPageSize)
         var bytesRead: Int
         repeat {
             bytesRead = try file.read(into: &buffer)
@@ -160,7 +160,7 @@ public extension Cryptography {
 
         return try _encryptAttachment(
             enumerateInputInBlocks: { closure in
-                var buffer = Data(count: 8192)
+                var buffer = Data(count: diskPageSize)
                 var totalBytesRead: UInt = 0
                 var bytesRead: Int
                 repeat {
