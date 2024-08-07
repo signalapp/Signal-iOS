@@ -18,25 +18,52 @@ public enum AttachmentDownloads {
     public struct DownloadMetadata: Equatable {
         public let mimeType: String
         public let cdnNumber: UInt32
-        public let cdnKey: String
         public let encryptionKey: Data
-        public let digest: Data
-        public let plaintextLength: UInt32?
+        public let source: Source
+
+        public enum Source: Equatable {
+            case transitTier(cdnKey: String, digest: Data, plaintextLength: UInt32?)
+            case mediaTierFullsize(mediaName: String, digest: Data, plaintextLength: UInt32?)
+            case mediaTierThumbnail(mediaName: String)
+        }
+
+        public var digest: Data? {
+            switch source {
+            case .transitTier(_, let digest, _):
+                return digest
+            case .mediaTierFullsize(_, let digest, _):
+                return digest
+            case .mediaTierThumbnail:
+                // No digest for media tier thumbnails; they come from the local user.
+                return nil
+            }
+        }
+
+        public var plaintextLength: UInt32? {
+            switch source {
+            case .transitTier(_, _, let plaintextLength):
+                return plaintextLength
+            case .mediaTierFullsize(_, _, let plaintextLength):
+                return plaintextLength
+            case .mediaTierThumbnail:
+                // Thumbnails don't include a length out of band.
+                // They may be padded with 0s to hit bucket sizes, but
+                // we take advantage of the fact that jpegs support
+                // no-op trailing 0s (and all thumbnails are jpegs).
+                return nil
+            }
+        }
 
         public init(
             mimeType: String,
             cdnNumber: UInt32,
-            cdnKey: String,
             encryptionKey: Data,
-            digest: Data,
-            plaintextLength: UInt32?
+            source: Source
         ) {
             self.mimeType = mimeType
             self.cdnNumber = cdnNumber
-            self.cdnKey = cdnKey
             self.encryptionKey = encryptionKey
-            self.digest = digest
-            self.plaintextLength = plaintextLength
+            self.source = source
         }
     }
 }

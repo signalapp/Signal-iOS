@@ -367,6 +367,30 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case .transitTier:
                 // We don't do persistent retries fromt the transit tier.
                 return nil
+            case .mediaTierFullsize, .mediaTierThumbnail:
+                switch record.priority {
+                case .default:
+                    guard record.retryAttempts < 32 else {
+                        owsFailDebug("risk of integer overflow")
+                        return nil
+                    }
+                    // Exponential backoff, starting at 1 day.
+                    let initialDelay = kDayInMs
+                    let delay = UInt64(pow(2.0, Double(record.retryAttempts))) * initialDelay
+                    if delay > kDayInMs * 30 {
+                        // Don't go more than 30 days; stop retrying.
+                        Logger.info("Giving up retrying attachment download")
+                        return nil
+                    }
+                    return delay
+                case .userInitiated:
+                    // Don't _persist_ a retry for this; let the error
+                    // bubble up to the user, they can tap to retry.
+                    return nil
+                case .localClone:
+                    owsFailDebug("Trying to retry a local clone? Shouldn't happen")
+                    return nil
+                }
             }
         }
 
@@ -426,29 +450,70 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return
             }
 
-            let downloadMetadata: DownloadMetadata
+            let downloadMetadata: DownloadMetadata?
             switch record.sourceType {
             case .transitTier:
                 guard let transitTierInfo = attachment.transitTierInfo else {
-                    owsFailDebug("Attempting to download an attachment without cdn info")
-                    // Remove the download.
-                    await db.awaitableWrite { tx in
-                        try? self.attachmentDownloadStore.removeAttachmentFromQueue(
-                            withId: attachment.id,
-                            source: .transitTier,
-                            tx: tx
-                        )
-                    }
-                    return
+                    downloadMetadata = nil
+                    break
                 }
                 downloadMetadata = .init(
                     mimeType: attachment.mimeType,
                     cdnNumber: transitTierInfo.cdnNumber,
-                    cdnKey: transitTierInfo.cdnKey,
                     encryptionKey: transitTierInfo.encryptionKey,
-                    digest: transitTierInfo.digestSHA256Ciphertext,
-                    plaintextLength: transitTierInfo.unencryptedByteCount
+                    source: .transitTier(
+                        cdnKey: transitTierInfo.cdnKey,
+                        digest: transitTierInfo.digestSHA256Ciphertext,
+                        plaintextLength: transitTierInfo.unencryptedByteCount
+                    )
                 )
+            case .mediaTierFullsize:
+                guard
+                    let mediaTierInfo = attachment.mediaTierInfo,
+                    let mediaName = attachment.mediaName
+                else {
+                    downloadMetadata = nil
+                    break
+                }
+                downloadMetadata = .init(
+                    mimeType: attachment.mimeType,
+                    cdnNumber: mediaTierInfo.cdnNumber,
+                    encryptionKey: attachment.encryptionKey,
+                    source: .mediaTierFullsize(
+                        mediaName: mediaName,
+                        digest: mediaTierInfo.digestSHA256Ciphertext,
+                        plaintextLength: mediaTierInfo.unencryptedByteCount
+                    )
+                )
+            case .mediaTierThumbnail:
+                guard
+                    let thumbnailInfo = attachment.thumbnailMediaTierInfo,
+                    let mediaName = attachment.mediaName
+                else {
+                    downloadMetadata = nil
+                    break
+                }
+                downloadMetadata = .init(
+                    mimeType: attachment.mimeType,
+                    cdnNumber: thumbnailInfo.cdnNumber,
+                    encryptionKey: attachment.encryptionKey,
+                    source: .mediaTierThumbnail(
+                        mediaName: mediaName
+                    )
+                )
+            }
+
+            guard let downloadMetadata else {
+                owsFailDebug("Attempting to download an attachment without cdn info")
+                // Remove the download.
+                await db.awaitableWrite { tx in
+                    try? self.attachmentDownloadStore.removeAttachmentFromQueue(
+                        withId: attachment.id,
+                        source: record.sourceType,
+                        tx: tx
+                    )
+                }
+                return
             }
 
             let downloadedFileUrl: URL
@@ -842,10 +907,17 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case .backup(let info, _):
                 return "backups/\(info.backupDir)/\(info.backupName)"
             case .attachment(let metadata, _), .transientAttachment(let metadata):
-                guard let encodedKey = metadata.cdnKey.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
-                    throw OWSAssertionError("Invalid cdnKey.")
+                switch metadata.source {
+                case .transitTier(let cdnKey, _, _):
+                    guard let encodedKey = cdnKey.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
+                        throw OWSAssertionError("Invalid cdnKey.")
+                    }
+                    return "attachments/\(encodedKey)"
+                case .mediaTierFullsize:
+                    throw OWSAssertionError("Unimplemented")
+                case .mediaTierThumbnail:
+                    throw OWSAssertionError("Unimplemented")
                 }
-                return "attachments/\(encodedKey)"
             }
         }
 
@@ -862,8 +934,17 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             switch self {
             case .backup(_, let authHeaders):
                 return authHeaders
-            case .attachment, .transientAttachment:
-                return [:]
+            case .attachment(let metadata, _), .transientAttachment(let metadata):
+                switch metadata.source {
+                case .transitTier:
+                    return [:]
+                case .mediaTierFullsize:
+                    // TODO: apply headers
+                    return [:]
+                case .mediaTierThumbnail:
+                    // TODO: apply headers
+                    return [:]
+                }
             }
         }
     }
@@ -1183,15 +1264,39 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return try await withCheckedThrowingContinuation { continuation in
                     DispatchQueue.global().async {
                         do {
-                            let pendingAttachment = try attachmentValidator.validateContents(
-                                ofEncryptedFileAt: encryptedFileUrl,
-                                encryptionKey: metadata.encryptionKey,
-                                plaintextLength: metadata.plaintextLength,
-                                digestSHA256Ciphertext: metadata.digest,
-                                mimeType: metadata.mimeType,
-                                renderingFlag: .default,
-                                sourceFilename: nil
-                            )
+                            let pendingAttachment: PendingAttachment
+                            switch metadata.source {
+                            case .transitTier(_, let digest, let plaintextLength):
+                                pendingAttachment = try attachmentValidator.validateContents(
+                                    ofEncryptedFileAt: encryptedFileUrl,
+                                    encryptionKey: metadata.encryptionKey,
+                                    plaintextLength: plaintextLength,
+                                    digestSHA256Ciphertext: digest,
+                                    mimeType: metadata.mimeType,
+                                    renderingFlag: .default,
+                                    sourceFilename: nil
+                                )
+                            case .mediaTierFullsize(_, let digest, let plaintextLength):
+                                pendingAttachment = try attachmentValidator.validateContents(
+                                    ofBackupMediaFileAt: encryptedFileUrl,
+                                    encryptionKey: metadata.encryptionKey,
+                                    plaintextLength: plaintextLength,
+                                    digestSHA256Ciphertext: digest,
+                                    mimeType: metadata.mimeType,
+                                    renderingFlag: .default,
+                                    sourceFilename: nil
+                                )
+                            case .mediaTierThumbnail(_):
+                                pendingAttachment = try attachmentValidator.validateContents(
+                                    ofBackupMediaFileAt: encryptedFileUrl,
+                                    encryptionKey: metadata.encryptionKey,
+                                    plaintextLength: nil,
+                                    digestSHA256Ciphertext: nil,
+                                    mimeType: metadata.mimeType,
+                                    renderingFlag: .default,
+                                    sourceFilename: nil
+                                )
+                            }
                             continuation.resume(with: .success(pendingAttachment))
                         } catch let error {
                             continuation.resume(throwing: error)

@@ -244,6 +244,9 @@ public class RemoteConfig: NSObject {
         return getUIntValue(forFlag: .maxAttachmentDownloadSizeBytes, defaultValue: 100 * 1024 * 1024)
     }
 
+    // Hardcoded value (but lives alongside `maxAttachmentDownloadSizeBytes`).
+    public static var maxMediaTierThumbnailDownloadSizeBytes: UInt = 1024 * 8
+
     public static var enableGifSearch: Bool {
         return isEnabled(.enableGifSearch, defaultValue: true)
     }

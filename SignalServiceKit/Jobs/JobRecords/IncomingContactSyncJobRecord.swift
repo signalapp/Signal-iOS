@@ -34,10 +34,12 @@ public final class IncomingContactSyncJobRecord: JobRecord, FactoryInitializable
             return .transient(.init(
                 mimeType: MimeType.applicationOctetStream.rawValue,
                 cdnNumber: cdnNumber,
-                cdnKey: cdnKey,
                 encryptionKey: encryptionKey,
-                digest: digest,
-                plaintextLength: plaintextLength
+                source: .transitTier(
+                    cdnKey: cdnKey,
+                    digest: digest,
+                    plaintextLength: plaintextLength
+                )
             ))
         }
         owsAssertDebug(

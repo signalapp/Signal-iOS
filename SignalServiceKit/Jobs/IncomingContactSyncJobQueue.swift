@@ -33,16 +33,20 @@ public class IncomingContactSyncJobQueue: NSObject {
     }
 
     public func add(
-        downloadMetadata: AttachmentDownloads.DownloadMetadata,
+        cdnNumber: UInt32,
+        cdnKey: String,
+        encryptionKey: Data,
+        digest: Data,
+        plaintextLength: UInt32?,
         isComplete: Bool,
         tx: SDSAnyWriteTransaction
     ) {
         let jobRecord = IncomingContactSyncJobRecord(
-            cdnNumber: downloadMetadata.cdnNumber,
-            cdnKey: downloadMetadata.cdnKey,
-            encryptionKey: downloadMetadata.encryptionKey,
-            digest: downloadMetadata.digest,
-            plaintextLength: downloadMetadata.plaintextLength,
+            cdnNumber: cdnNumber,
+            cdnKey: cdnKey,
+            encryptionKey: encryptionKey,
+            digest: digest,
+            plaintextLength: plaintextLength,
             isCompleteContactSync: isComplete
         )
         jobRecord.anyInsert(transaction: tx)

@@ -24,8 +24,8 @@ public struct QueuedAttachmentDownloadRecord: Codable, FetchableRecord, MutableP
     /// many possible sources; this differentiates which should be used.
     public enum SourceType: Int, Codable, CaseIterable {
         case transitTier = 0
-
-        /// TODO[Backups]: add backup source(s).
+        case mediaTierFullsize = 1
+        case mediaTierThumbnail = 2
     }
 
     /// Where we will be downloading the attachment from.

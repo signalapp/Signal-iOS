@@ -195,5 +195,115 @@ extension Attachment {
                 originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
             )
         }
+
+        public static func forUpdatingAsDownlodedFromMediaTier(
+            attachment: Attachment,
+            validatedMimeType: String,
+            streamInfo: Attachment.StreamInfo,
+            mediaName: String
+        ) -> ConstructionParams {
+            let mediaTierInfo = attachment.mediaTierInfo.map {
+                return Attachment.MediaTierInfo(
+                    cdnNumber: $0.cdnNumber,
+                    unencryptedByteCount: $0.unencryptedByteCount,
+                    digestSHA256Ciphertext: $0.digestSHA256Ciphertext,
+                    uploadEra: $0.uploadEra,
+                    // Wipe the last download attempt time; its now succeeded.
+                    lastDownloadAttemptTimestamp: nil
+                )
+            }
+            return .init(
+                blurHash: attachment.blurHash,
+                mimeType: validatedMimeType,
+                encryptionKey: attachment.encryptionKey,
+                streamInfo: streamInfo,
+                transitTierInfo: attachment.transitTierInfo,
+                mediaName: mediaName,
+                mediaTierInfo: mediaTierInfo,
+                thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo,
+                localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
+            )
+        }
+
+        public static func forUpdatingAsFailedDownlodFromMediaTier(
+            attachment: Attachment,
+            timestamp: UInt64
+        ) -> ConstructionParams {
+            let mediaTierInfo = attachment.mediaTierInfo.map {
+                return Attachment.MediaTierInfo(
+                    cdnNumber: $0.cdnNumber,
+                    unencryptedByteCount: $0.unencryptedByteCount,
+                    digestSHA256Ciphertext: $0.digestSHA256Ciphertext,
+                    uploadEra: $0.uploadEra,
+                    lastDownloadAttemptTimestamp: timestamp
+                )
+            }
+            return .init(
+                blurHash: attachment.blurHash,
+                mimeType: attachment.mimeType,
+                encryptionKey: attachment.encryptionKey,
+                streamInfo: attachment.streamInfo,
+                transitTierInfo: attachment.transitTierInfo,
+                mediaName: attachment.mediaName,
+                mediaTierInfo: mediaTierInfo,
+                thumbnailMediaTierInfo: attachment.thumbnailMediaTierInfo,
+                localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
+            )
+        }
+
+        public static func forUpdatingAsDownlodedThumbnailFromMediaTier(
+            attachment: Attachment,
+            validatedMimeType: String,
+            streamInfo: Attachment.StreamInfo,
+            mediaName: String
+        ) -> ConstructionParams {
+            let thumbnailMediaTierInfo = attachment.thumbnailMediaTierInfo.map {
+                return Attachment.ThumbnailMediaTierInfo(
+                    cdnNumber: $0.cdnNumber,
+                    uploadEra: $0.uploadEra,
+                    // Wipe the last download attempt time; its now succeeded.
+                    lastDownloadAttemptTimestamp: nil
+                )
+            }
+            return .init(
+                blurHash: attachment.blurHash,
+                mimeType: validatedMimeType,
+                encryptionKey: attachment.encryptionKey,
+                streamInfo: streamInfo,
+                transitTierInfo: attachment.transitTierInfo,
+                mediaName: mediaName,
+                mediaTierInfo: attachment.mediaTierInfo,
+                thumbnailMediaTierInfo: thumbnailMediaTierInfo,
+                localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
+            )
+        }
+
+        public static func forUpdatingAsFailedThumbnailDownlodFromMediaTier(
+            attachment: Attachment,
+            timestamp: UInt64
+        ) -> ConstructionParams {
+            let thumbnailMediaTierInfo = attachment.thumbnailMediaTierInfo.map {
+                return Attachment.ThumbnailMediaTierInfo(
+                    cdnNumber: $0.cdnNumber,
+                    uploadEra: $0.uploadEra,
+                    lastDownloadAttemptTimestamp: timestamp
+                )
+            }
+            return .init(
+                blurHash: attachment.blurHash,
+                mimeType: attachment.mimeType,
+                encryptionKey: attachment.encryptionKey,
+                streamInfo: attachment.streamInfo,
+                transitTierInfo: attachment.transitTierInfo,
+                mediaName: attachment.mediaName,
+                mediaTierInfo: attachment.mediaTierInfo,
+                thumbnailMediaTierInfo: thumbnailMediaTierInfo,
+                localRelativeFilePathThumbnail: attachment.localRelativeFilePathThumbnail,
+                originalAttachmentIdForQuotedReply: attachment.originalAttachmentIdForQuotedReply
+            )
+        }
     }
 }

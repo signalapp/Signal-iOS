@@ -447,6 +447,24 @@ public class AttachmentStoreImpl: AttachmentStore {
                     mediaName: Attachment.mediaName(digestSHA256Ciphertext: streamInfo.digestSHA256Ciphertext)
                 )
             )
+        case .mediaTierFullsize:
+            newRecord = Attachment.Record(
+                params: .forUpdatingAsDownlodedFromMediaTier(
+                    attachment: existingAttachment,
+                    validatedMimeType: validatedMimeType,
+                    streamInfo: streamInfo,
+                    mediaName: Attachment.mediaName(digestSHA256Ciphertext: streamInfo.digestSHA256Ciphertext)
+                )
+            )
+        case .mediaTierThumbnail:
+            newRecord = Attachment.Record(
+                params: .forUpdatingAsDownlodedThumbnailFromMediaTier(
+                    attachment: existingAttachment,
+                    validatedMimeType: validatedMimeType,
+                    streamInfo: streamInfo,
+                    mediaName: Attachment.mediaName(digestSHA256Ciphertext: streamInfo.digestSHA256Ciphertext)
+                )
+            )
         }
         newRecord.sqliteId = id
         try newRecord.checkAllUInt64FieldsFitInInt64()
@@ -473,6 +491,20 @@ public class AttachmentStoreImpl: AttachmentStore {
         case .transitTier:
             newRecord = Attachment.Record(
                 params: .forUpdatingAsFailedDownlodFromTransitTier(
+                    attachment: existingAttachment,
+                    timestamp: timestamp
+                )
+            )
+        case .mediaTierFullsize:
+            newRecord = Attachment.Record(
+                params: .forUpdatingAsFailedDownlodFromMediaTier(
+                    attachment: existingAttachment,
+                    timestamp: timestamp
+                )
+            )
+        case .mediaTierThumbnail:
+            newRecord = Attachment.Record(
+                params: .forUpdatingAsFailedThumbnailDownlodFromMediaTier(
                     attachment: existingAttachment,
                     timestamp: timestamp
                 )
