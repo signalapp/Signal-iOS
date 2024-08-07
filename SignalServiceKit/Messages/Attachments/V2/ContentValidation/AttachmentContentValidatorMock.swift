@@ -42,6 +42,18 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
         throw OWSAssertionError("Unimplemented")
     }
 
+    open func validateContents(
+        ofBackupMediaFileAt fileUrl: URL,
+        encryptionKey: Data,
+        plaintextLength: UInt32?,
+        digestSHA256Ciphertext: Data?,
+        mimeType: String,
+        renderingFlag: AttachmentReference.RenderingFlag,
+        sourceFilename: String?
+    ) throws -> any PendingAttachment {
+        throw OWSAssertionError("Unimplemented")
+    }
+
     open func prepareOversizeTextIfNeeded(
         from messageBody: MessageBody
     ) throws -> ValidatedMessageBody? {

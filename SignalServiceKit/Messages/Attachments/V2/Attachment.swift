@@ -112,7 +112,15 @@ public class Attachment {
 
         /// Expected byte count after decrypting the resource off the media tier (and removing padding).
         /// Provided by the sender of incoming attachments.
-        public let unencryptedByteCount: UInt32?
+        public let unencryptedByteCount: UInt32
+
+        /// SHA256Hash(iv + cyphertext + hmac),
+        /// (iv + cyphertext + hmac) is the thing we actually upload to the CDN server, which uses
+        /// the ``TransitTierInfo.encryptionKey`` field.
+        ///
+        /// Equivalent to `StreamInfo.digestSHA256Ciphertext`, but may be available
+        /// if the rest of `StreamInfo` is unavailable (e.g. after a restore).
+        public let digestSHA256Ciphertext: Data
 
         /// If the value in this column doesn’t match the current Backup Subscription Era,
         /// it should also be considered un-uploaded.
@@ -190,7 +198,8 @@ public class Attachment {
         self.mediaName = record.mediaName
         self.mediaTierInfo = MediaTierInfo(
             cdnNumber: record.mediaTierCdnNumber,
-            unencryptedByteCount: record.mediaTierUnencryptedByteCount,
+            unencryptedByteCount: record.mediaTierUnencryptedByteCount ?? record.unencryptedByteCount,
+            digestSHA256Ciphertext: record.digestSHA256Ciphertext,
             uploadEra: record.mediaTierUploadEra,
             lastDownloadAttemptTimestamp: record.lastMediaTierDownloadAttemptTimestamp
         )
@@ -285,7 +294,6 @@ extension Attachment.StreamInfo {
                 && encryptedByteCount == nil
                 && unencryptedByteCount == nil
                 && contentType == nil
-                && digestSHA256Ciphertext == nil
                 && localRelativeFilePath == nil,
                 "Have partial stream info!"
             )
@@ -343,12 +351,15 @@ extension Attachment.MediaTierInfo {
     fileprivate init?(
         cdnNumber: UInt32?,
         unencryptedByteCount: UInt32?,
+        digestSHA256Ciphertext: Data?,
         uploadEra: String?,
         lastDownloadAttemptTimestamp: UInt64?
     ) {
         guard
             let cdnNumber,
-            let uploadEra
+            let uploadEra,
+            let unencryptedByteCount,
+            let digestSHA256Ciphertext
         else {
             owsAssertDebug(
                 cdnNumber == nil
@@ -359,6 +370,7 @@ extension Attachment.MediaTierInfo {
         }
         self.cdnNumber = cdnNumber
         self.unencryptedByteCount = unencryptedByteCount
+        self.digestSHA256Ciphertext = digestSHA256Ciphertext
         self.uploadEra = uploadEra
         self.lastDownloadAttemptTimestamp = lastDownloadAttemptTimestamp
     }

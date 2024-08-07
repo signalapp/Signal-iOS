@@ -73,6 +73,26 @@ public protocol AttachmentContentValidator {
         sourceFilename: String?
     ) throws -> PendingAttachment
 
+    /// Validate and prepare a backup media file's contents, based on the provided mimetype.
+    /// Returns a PendingAttachment with validated contents, ready to be inserted.
+    /// Note the content type may be `invalid`; we can still create an Attachment from these.
+    /// Errors are thrown if data reading/parsing/decryption fails.
+    ///
+    /// Unlike attachments from the live service, digest is not required; we can guarantee
+    /// correctness for backup media files since they come from the local user.
+    ///
+    /// Strictly speaking we don't usually need content type validation either, but the set of valid
+    /// contents can change over time so it is best to re-validate.
+    func validateContents(
+        ofBackupMediaFileAt fileUrl: URL,
+        encryptionKey: Data,
+        plaintextLength: UInt32?,
+        digestSHA256Ciphertext: Data?,
+        mimeType: String,
+        renderingFlag: AttachmentReference.RenderingFlag,
+        sourceFilename: String?
+    ) throws -> PendingAttachment
+
     /// If the provided message body is large enough to require an oversize text
     /// attachment, creates a pending one, alongside the truncated message body.
     /// If not, just returns the message body as is.

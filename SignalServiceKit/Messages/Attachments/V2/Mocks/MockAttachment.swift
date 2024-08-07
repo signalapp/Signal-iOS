@@ -55,12 +55,14 @@ extension Attachment.MediaTierInfo {
     public static func mock(
         cdnNumber: UInt32? = nil,
         unencryptedByteCount: UInt32? = nil,
+        digestSHA256Ciphertext: Data? = nil,
         uploadEra: String? = nil,
         lastDownloadAttemptTimestamp: UInt64? = nil
     ) -> Attachment.MediaTierInfo {
         return Attachment.MediaTierInfo(
             cdnNumber: cdnNumber ?? 3,
             unencryptedByteCount: unencryptedByteCount ?? 16,
+            digestSHA256Ciphertext: digestSHA256Ciphertext ?? UInt64.random(in: 0..<(.max)).bigEndianData,
             uploadEra: uploadEra ?? "1",
             lastDownloadAttemptTimestamp: lastDownloadAttemptTimestamp
         )

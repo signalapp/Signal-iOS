@@ -111,6 +111,50 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         )
     }
 
+    public func validateContents(
+        ofBackupMediaFileAt fileUrl: URL,
+        encryptionKey: Data,
+        plaintextLength plaintextLengthParam: UInt32?,
+        digestSHA256Ciphertext: Data?,
+        mimeType: String,
+        renderingFlag: AttachmentReference.RenderingFlag,
+        sourceFilename: String?
+    ) throws -> any PendingAttachment {
+        // Get plaintext length if not given, and validate digest if given.
+        let plaintextLength: UInt32
+        if let plaintextLengthParam, digestSHA256Ciphertext == nil {
+            plaintextLength = plaintextLengthParam
+        } else {
+            var decryptedLength = 0
+            try Cryptography.decryptFile(
+                at: fileUrl,
+                metadata: .init(
+                    key: encryptionKey,
+                    digest: digestSHA256Ciphertext,
+                    plaintextLength: plaintextLengthParam.map(Int.init)
+                ),
+                output: { data in
+                    decryptedLength += data.count
+                }
+            )
+            plaintextLength = plaintextLengthParam ?? UInt32(decryptedLength)
+        }
+
+        let input = Input.encryptedFile(
+            fileUrl,
+            encryptionKey: encryptionKey,
+            plaintextLength: plaintextLength,
+            digestSHA256Ciphertext: nil
+        )
+        return try validateContents(
+            input: input,
+            encryptionKey: encryptionKey,
+            mimeType: mimeType,
+            renderingFlag: renderingFlag,
+            sourceFilename: sourceFilename
+        )
+    }
+
     public func prepareOversizeTextIfNeeded(
         from messageBody: MessageBody
     ) throws -> ValidatedMessageBody? {
@@ -200,7 +244,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             URL,
             encryptionKey: Data,
             plaintextLength: UInt32,
-            digestSHA256Ciphertext: Data
+            digestSHA256Ciphertext: Data?
         )
     }
 
@@ -785,8 +829,17 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 ),
                 encryptionMetadata
             )
-        case .encryptedFile(let fileUrl, _, let plaintextLength, let digest):
-            // Already encrypted
+        case .encryptedFile(let fileUrl, _, let plaintextLength, let digestParam):
+            // Already encrypted, so nothing to encrypt.
+            // Just compute the digest if we don't already have it.
+
+            let digest: Data
+            if let digestParam {
+                digest = digestParam
+            } else {
+                // Compute the digest over the entire encrypted file.
+                digest = try Cryptography.calulcateDigestForFile(at: fileUrl)
+            }
             return (
                 PendingFile(
                     tmpFileUrl: fileUrl,
