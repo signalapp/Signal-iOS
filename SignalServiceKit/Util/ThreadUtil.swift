@@ -274,7 +274,13 @@ extension ThreadUtil {
             databaseStorage.write { tx in setUniversalTimer(contactThread: threadAsContactThread, tx: tx) }
         }
         if shouldAddToProfileWhitelist {
-            databaseStorage.write { tx in profileManager.addThread(toProfileWhitelist: thread, transaction: tx) }
+            databaseStorage.write { tx in
+                profileManager.addThread(
+                    toProfileWhitelist: thread,
+                    userProfileWriter: .localUser,
+                    transaction: tx
+                )
+            }
         }
         return shouldAddToProfileWhitelist
     }
@@ -294,7 +300,11 @@ extension ThreadUtil {
         }
         let shouldAddToProfileWhitelist = shouldAddThreadToProfileWhitelist(thread, tx: tx)
         if shouldAddToProfileWhitelist {
-            profileManager.addThread(toProfileWhitelist: thread, transaction: tx)
+            profileManager.addThread(
+                toProfileWhitelist: thread,
+                userProfileWriter: .localUser,
+                transaction: tx
+            )
         }
         return shouldAddToProfileWhitelist
     }

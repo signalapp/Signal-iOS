@@ -526,7 +526,7 @@ private extension GroupAccess {
         var accessControl = BackupProto_Group.AccessControl()
         accessControl.attributes = attributes.asBackupProtoAccessRequired
         accessControl.members = members.asBackupProtoAccessRequired
-        accessControl.addFromInviteLink = members.asBackupProtoAccessRequired
+        accessControl.addFromInviteLink = addFromInviteLink.asBackupProtoAccessRequired
         return accessControl
     }
 }

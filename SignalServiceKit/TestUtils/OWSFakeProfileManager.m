@@ -140,17 +140,19 @@ NS_ASSUME_NONNULL_BEGIN
     [self.threadWhitelist removeObject:groupId.hexadecimalString];
 }
 
-- (void)addThreadToProfileWhitelist:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
+- (void)addThreadToProfileWhitelist:(TSThread *)thread
+                  userProfileWriter:(UserProfileWriter)userProfileWriter
+                        transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (thread.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         [self addGroupIdToProfileWhitelist:groupThread.groupModel.groupId
-                         userProfileWriter:UserProfileWriter_LocalUser
+                         userProfileWriter:userProfileWriter
                                transaction:transaction];
     } else {
         TSContactThread *contactThread = (TSContactThread *)thread;
         [self addUserToProfileWhitelist:contactThread.contactAddress
-                      userProfileWriter:UserProfileWriter_LocalUser
+                      userProfileWriter:userProfileWriter
                             transaction:transaction];
     }
 }

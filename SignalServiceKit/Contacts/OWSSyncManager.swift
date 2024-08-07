@@ -303,7 +303,11 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
                     tx: transaction.asV2Write
                 )
             }
-            profileManager.addThread(toProfileWhitelist: thread, transaction: transaction)
+            profileManager.addThread(
+                toProfileWhitelist: thread,
+                userProfileWriter: .localUser,
+                transaction: transaction
+            )
         case .delete:
             DependenciesBridge.shared.threadSoftDeleteManager.softDelete(
                 threads: [thread],

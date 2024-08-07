@@ -80,7 +80,9 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 
 - (BOOL)isThreadInProfileWhitelist:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
 
-- (void)addThreadToProfileWhitelist:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)addThreadToProfileWhitelist:(TSThread *)thread
+                  userProfileWriter:(UserProfileWriter)userProfileWriter
+                        transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)addUserToProfileWhitelist:(SignalServiceAddress *)address
                 userProfileWriter:(UserProfileWriter)userProfileWriter

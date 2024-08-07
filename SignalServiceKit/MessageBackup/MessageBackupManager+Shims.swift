@@ -145,7 +145,11 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
     }
 
     public func addToWhitelist(_ thread: TSGroupThread, tx: DBWriteTransaction) {
-        profileManager.addThread(toProfileWhitelist: thread, transaction: SDSDB.shimOnlyBridge(tx))
+        profileManager.addThread(
+            toProfileWhitelist: thread,
+            userProfileWriter: .messageBackupRestore,
+            transaction: SDSDB.shimOnlyBridge(tx)
+        )
     }
 
     public func insertLocalUserProfile(

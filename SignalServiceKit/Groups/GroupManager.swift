@@ -255,7 +255,11 @@ public class GroupManager: NSObject {
                 spamReportingMetadata: .createdByLocalAction,
                 transaction: tx
             )
-            self.profileManager.addThread(toProfileWhitelist: thread, transaction: tx)
+            self.profileManager.addThread(
+                toProfileWhitelist: thread,
+                userProfileWriter: .localUser,
+                transaction: tx
+            )
             return thread
         }
 

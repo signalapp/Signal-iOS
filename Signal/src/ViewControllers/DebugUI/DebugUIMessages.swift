@@ -1354,7 +1354,11 @@ class DebugUIMessages: DebugUIPage, Dependencies {
             await databaseStorage.awaitableWrite { transaction in
                 let address = SignalServiceAddress(phoneNumber: e164)
                 let contactThread = TSContactThread.getOrCreateThread(withContactAddress: address, transaction: transaction)
-                profileManager.addThread(toProfileWhitelist: contactThread, transaction: transaction)
+                profileManager.addThread(
+                    toProfileWhitelist: contactThread,
+                    userProfileWriter: .localUser,
+                    transaction: transaction
+                )
                 createFakeMessages(messageContents, inThread: contactThread, transaction: transaction)
                 Logger.info("Created a fake thread for \(e164) with \(messageQuantity) messages")
             }

@@ -753,21 +753,20 @@ NSString *const kNSNotificationKey_UserProfileWriter = @"kNSNotificationKey_User
     }];
 }
 
-// TODO: We could add a userProfileWriter parameter.
-- (void)addThreadToProfileWhitelist:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
+- (void)addThreadToProfileWhitelist:(TSThread *)thread
+                  userProfileWriter:(UserProfileWriter)userProfileWriter
+                        transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(thread);
 
     if (thread.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         NSData *groupId = groupThread.groupModel.groupId;
-        [self addGroupIdToProfileWhitelist:groupId
-                         userProfileWriter:UserProfileWriter_LocalUser
-                               transaction:transaction];
+        [self addGroupIdToProfileWhitelist:groupId userProfileWriter:userProfileWriter transaction:transaction];
     } else if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
         [self addUserToProfileWhitelist:contactThread.contactAddress
-                      userProfileWriter:UserProfileWriter_LocalUser
+                      userProfileWriter:userProfileWriter
                             transaction:transaction];
     }
 }

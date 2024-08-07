@@ -255,7 +255,11 @@ extension ConversationViewController: MessageRequestDelegate {
                 }
 
                 // Whitelist the thread
-                self.profileManager.addThread(toProfileWhitelist: thread, transaction: transaction)
+                self.profileManager.addThread(
+                    toProfileWhitelist: thread,
+                    userProfileWriter: .localUser,
+                    transaction: transaction
+                )
 
                 if !thread.isGroupThread {
                     // If this is a contact thread, we should give the
