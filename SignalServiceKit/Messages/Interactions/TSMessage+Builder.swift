@@ -9,6 +9,7 @@ import Foundation
 public class TSMessageBuilder: NSObject {
     public let thread: TSThread
     public var timestamp: UInt64
+    public var receivedAtTimestamp: UInt64
     public var messageBody: String?
     public var bodyRanges: MessageBodyRanges?
     public var editState: TSEditState
@@ -29,6 +30,7 @@ public class TSMessageBuilder: NSObject {
     init(
         thread: TSThread,
         timestamp: UInt64?,
+        receivedAtTimestamp: UInt64?,
         messageBody: String?,
         bodyRanges: MessageBodyRanges?,
         editState: TSEditState,
@@ -41,8 +43,11 @@ public class TSMessageBuilder: NSObject {
         storyReactionEmoji: String?,
         giftBadge: OWSGiftBadge?
     ) {
+        let nowMs = NSDate.ows_millisecondTimeStamp()
+
         self.thread = thread
-        self.timestamp = timestamp ?? NSDate.ows_millisecondTimeStamp()
+        self.timestamp = timestamp ?? nowMs
+        self.receivedAtTimestamp = receivedAtTimestamp ?? nowMs
         self.messageBody = messageBody
         self.bodyRanges = bodyRanges
         self.editState = editState
@@ -60,6 +65,7 @@ public class TSMessageBuilder: NSObject {
     static func withDefaultValues(
         thread: TSThread,
         timestamp: UInt64? = nil,
+        receivedAtTimestamp: UInt64? = nil,
         messageBody: String? = nil,
         bodyRanges: MessageBodyRanges? = nil,
         editState: TSEditState = .none,
@@ -75,6 +81,7 @@ public class TSMessageBuilder: NSObject {
         return TSMessageBuilder(
             thread: thread,
             timestamp: timestamp,
+            receivedAtTimestamp: receivedAtTimestamp,
             messageBody: messageBody,
             bodyRanges: bodyRanges,
             editState: editState,

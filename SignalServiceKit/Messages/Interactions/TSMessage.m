@@ -72,7 +72,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 - (instancetype)initMessageWithBuilder:(TSMessageBuilder *)messageBuilder
 {
     self = [super initWithTimestamp:messageBuilder.timestamp
-                receivedAtTimestamp:[NSDate ows_millisecondTimeStamp]
+                receivedAtTimestamp:messageBuilder.receivedAtTimestamp
                              thread:messageBuilder.thread];
     if (!self) {
         return self;

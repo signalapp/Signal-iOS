@@ -27,6 +27,7 @@ public class OWSOutgoingArchivedPaymentMessageBuilder: TSOutgoingMessageBuilder 
         super.init(
             thread: thread,
             timestamp: timestamp,
+            receivedAtTimestamp: nil,
             messageBody: nil,
             bodyRanges: nil,
             editState: .none,

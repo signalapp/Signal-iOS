@@ -106,6 +106,7 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
         return TSIncomingMessageBuilder(
             thread: thread,
             timestamp: timestamp,
+            receivedAtTimestamp: nil,
             authorAci: authorAci,
             authorE164: nil,
             messageBody: body,
@@ -171,6 +172,7 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
         return TSOutgoingMessageBuilder(
             thread: thread,
             timestamp: timestamp,
+            receivedAtTimestamp: nil,
             messageBody: body,
             bodyRanges: bodyRanges,
             editState: isLatestRevision ? .latestRevisionRead : .pastRevision,

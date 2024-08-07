@@ -122,6 +122,7 @@ public class OutgoingMessageFactory: NSObject, Factory {
         let message: TSOutgoingMessage = TSOutgoingMessageBuilder(
             thread: threadCreator(transaction),
             timestamp: timestampBuilder(),
+            receivedAtTimestamp: receivedAtTimestampBuilder(),
             messageBody: messageBodyBuilder(),
             bodyRanges: bodyRangesBuilder(),
             editState: editStateBuilder(),
@@ -159,6 +160,10 @@ public class OutgoingMessageFactory: NSObject, Factory {
     // MARK: Generators
 
     public var timestampBuilder: () -> UInt64 = {
+        return NSDate.ows_millisecondTimeStamp()
+    }
+
+    public var receivedAtTimestampBuilder: () -> UInt64 = {
         return NSDate.ows_millisecondTimeStamp()
     }
 
@@ -252,6 +257,7 @@ public class IncomingMessageFactory: NSObject, Factory {
         let builder = TSIncomingMessageBuilder(
             thread: thread,
             timestamp: timestampBuilder(),
+            receivedAtTimestamp: receivedAtTimestampBuilder(),
             authorAci: authorAciBuilder(thread),
             authorE164: nil,
             messageBody: messageBodyBuilder(),
@@ -289,6 +295,10 @@ public class IncomingMessageFactory: NSObject, Factory {
     // MARK: Generators
 
     public var timestampBuilder: () -> UInt64 = {
+        return NSDate.ows_millisecondTimeStamp()
+    }
+
+    public var receivedAtTimestampBuilder: () -> UInt64 = {
         return NSDate.ows_millisecondTimeStamp()
     }
 

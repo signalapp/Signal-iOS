@@ -180,6 +180,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         let outgoingMessageBuilder = TSOutgoingMessageBuilder(
             thread: messageParams.target.thread,
             timestamp: transcript.timestamp,
+            receivedAtTimestamp: nil,
             messageBody: messageParams.body,
             bodyRanges: messageParams.bodyRanges,
             editState: .none, // Sent transcripts with edit state are handled by a different codepath

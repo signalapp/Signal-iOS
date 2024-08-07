@@ -15,6 +15,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
     public init(
         thread: TSThread,
         timestamp: UInt64?,
+        receivedAtTimestamp: UInt64?,
         messageBody: String?,
         bodyRanges: MessageBodyRanges?,
         editState: TSEditState,
@@ -36,6 +37,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
         super.init(
             thread: thread,
             timestamp: timestamp,
+            receivedAtTimestamp: receivedAtTimestamp,
             messageBody: messageBody,
             bodyRanges: bodyRanges,
             editState: editState,
@@ -54,6 +56,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
     public static func withDefaultValues(
         thread: TSThread,
         timestamp: UInt64? = nil,
+        receivedAtTimestamp: UInt64? = nil,
         messageBody: String? = nil,
         bodyRanges: MessageBodyRanges? = nil,
         editState: TSEditState = .none,
@@ -71,6 +74,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
         return TSOutgoingMessageBuilder(
             thread: thread,
             timestamp: timestamp,
+            receivedAtTimestamp: receivedAtTimestamp,
             messageBody: messageBody,
             bodyRanges: bodyRanges,
             editState: editState,

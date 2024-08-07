@@ -26,6 +26,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
     public init(
         thread: TSThread,
         timestamp: UInt64?,
+        receivedAtTimestamp: UInt64?,
         authorAci: Aci?,
         authorE164: E164?,
         messageBody: String?,
@@ -56,6 +57,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
         super.init(
             thread: thread,
             timestamp: timestamp,
+            receivedAtTimestamp: receivedAtTimestamp,
             messageBody: messageBody,
             bodyRanges: bodyRanges,
             editState: editState,
@@ -74,6 +76,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
     public static func withDefaultValues(
         thread: TSThread,
         timestamp: UInt64? = nil,
+        receivedAtTimestamp: UInt64? = nil,
         authorAci: Aci? = nil,
         authorE164: E164? = nil,
         messageBody: String? = nil,
@@ -96,6 +99,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
         return TSIncomingMessageBuilder(
             thread: thread,
             timestamp: timestamp,
+            receivedAtTimestamp: receivedAtTimestamp,
             authorAci: authorAci,
             authorE164: authorE164,
             messageBody: messageBody,

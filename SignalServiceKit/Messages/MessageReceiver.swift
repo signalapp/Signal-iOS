@@ -1022,6 +1022,7 @@ public final class MessageReceiver: Dependencies {
         let messageBuilder = TSIncomingMessageBuilder(
             thread: thread,
             timestamp: envelope.timestamp,
+            receivedAtTimestamp: nil,
             authorAci: envelope.sourceAci,
             authorE164: nil,
             messageBody: body,

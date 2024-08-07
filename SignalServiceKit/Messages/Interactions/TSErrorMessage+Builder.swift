@@ -19,6 +19,7 @@ public class TSErrorMessageBuilder: TSMessageBuilder {
         super.init(
             thread: thread,
             timestamp: nil,
+            receivedAtTimestamp: nil,
             messageBody: nil,
             bodyRanges: nil,
             editState: .none,

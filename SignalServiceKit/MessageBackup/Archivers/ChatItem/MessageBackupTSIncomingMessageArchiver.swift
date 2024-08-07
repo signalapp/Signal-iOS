@@ -163,7 +163,8 @@ class MessageBackupTSIncomingMessageArchiver: MessageBackupProtoArchiver {
             case .archivedPayment(let archivedPayment):
                 let messageBuilder = TSIncomingMessageBuilder(
                     thread: chatThread.tsThread,
-                    timestamp: incomingDetails.dateReceived,
+                    timestamp: chatItem.dateSent,
+                    receivedAtTimestamp: incomingDetails.dateReceived,
                     authorAci: authorAci,
                     authorE164: authorE164,
                     messageBody: nil,
@@ -172,8 +173,8 @@ class MessageBackupTSIncomingMessageArchiver: MessageBackupProtoArchiver {
                     expiresInSeconds: UInt32(chatItem.expiresInMs / 1000),
                     expireStartedAt: chatItem.expireStartDate,
                     read: incomingDetails.read,
-                    serverTimestamp: 0,
-                    serverDeliveryTimestamp: chatItem.dateSent,
+                    serverTimestamp: incomingDetails.dateServerSent,
+                    serverDeliveryTimestamp: 0,
                     serverGuid: nil,
                     wasReceivedByUD: incomingDetails.sealedSender,
                     isViewOnceMessage: false,
@@ -193,7 +194,8 @@ class MessageBackupTSIncomingMessageArchiver: MessageBackupProtoArchiver {
                 let messageBody = text.body
                 let messageBuilder = TSIncomingMessageBuilder(
                     thread: chatThread.tsThread,
-                    timestamp: incomingDetails.dateReceived,
+                    timestamp: chatItem.dateSent,
+                    receivedAtTimestamp: incomingDetails.dateReceived,
                     authorAci: authorAci,
                     authorE164: authorE164,
                     messageBody: messageBody.text,
@@ -203,8 +205,8 @@ class MessageBackupTSIncomingMessageArchiver: MessageBackupProtoArchiver {
                     expiresInSeconds: UInt32(chatItem.expiresInMs / 1000),
                     expireStartedAt: chatItem.expireStartDate,
                     read: incomingDetails.read,
-                    serverTimestamp: 0,
-                    serverDeliveryTimestamp: chatItem.dateSent,
+                    serverTimestamp: incomingDetails.dateServerSent,
+                    serverDeliveryTimestamp: 0,
                     serverGuid: nil,
                     wasReceivedByUD: incomingDetails.sealedSender,
                     isViewOnceMessage: false,
