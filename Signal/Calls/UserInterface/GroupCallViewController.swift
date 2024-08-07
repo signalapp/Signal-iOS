@@ -1049,33 +1049,33 @@ class GroupCallViewController: UIViewController {
                 bottomSheet.setBottomSheetMinimizedHeight()
                 presentBottomSheet()
             }
+            bottomSheet.transitionCoordinator?.animateAlongsideTransition(in: view, animation: { _ in
+                if !FeatureFlags.groupCallDrawerSupport {
+                    self.callControls.alpha = hideCallControls ? 0 : 1
+                }
+                self.callHeader.alpha = hideCallControls ? 0 : 1
+
+                self.updateBottomVStackItems()
+                self.updateMemberViewFrames(size: size)
+                self.updateScrollViewFrames(size: size)
+                self.view.layoutIfNeeded()
+            }, completion: { _ in
+                if !FeatureFlags.groupCallDrawerSupport {
+                    self.callControls.isHidden = hideCallControls
+                }
+                self.callHeader.isHidden = hideCallControls
+                // If a hand is raised during this animation, the toast will be
+                // positioned wrong unless this is called again in the completion.
+                self.updateBottomVStackItems()
+
+                if self.raisedHandsToast.raisedHands.isEmpty {
+                    self.raisedHandsToast.wasHidden()
+                }
+            })
         } else {
             callControls.isHidden = false
         }
         callHeader.isHidden = false
-        UIView.animate(withDuration: 0.15, animations: {
-            if !FeatureFlags.groupCallDrawerSupport {
-                self.callControls.alpha = hideCallControls ? 0 : 1
-            }
-            self.callHeader.alpha = hideCallControls ? 0 : 1
-
-            self.updateBottomVStackItems()
-            self.updateMemberViewFrames(size: size)
-            self.updateScrollViewFrames(size: size)
-            self.view.layoutIfNeeded()
-        }) { _ in
-            if !FeatureFlags.groupCallDrawerSupport {
-                self.callControls.isHidden = hideCallControls
-            }
-            self.callHeader.isHidden = hideCallControls
-            // If a hand is raised during this animation, the toast will be
-            // positioned wrong unless this is called again in the completion.
-            self.updateBottomVStackItems()
-
-            if self.raisedHandsToast.raisedHands.isEmpty {
-                self.raisedHandsToast.wasHidden()
-            }
-        }
     }
 
     private func dismissCall(shouldHangUp: Bool = true) {
