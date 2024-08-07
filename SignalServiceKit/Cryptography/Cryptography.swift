@@ -12,9 +12,16 @@ public enum Cryptography {
 
     /// Generates the SHA256 digest for a file.
     public static func computeSHA256DigestOfFile(at url: URL) throws -> Data {
-        let file = try FileHandle(forReadingFrom: url)
+        let file = try LocalFileHandle(url: url)
         var sha256 = SHA256()
-        file.enumerateInBlocks { sha256.update(data: $0) }
+        var buffer = Data(count: 8192)
+        var bytesRead: Int
+        repeat {
+            bytesRead = try file.read(into: &buffer)
+            if bytesRead > 0 {
+                sha256.update(data: buffer.prefix(bytesRead))
+            }
+        } while bytesRead > 0
         return Data(sha256.finalize())
     }
 }
@@ -136,7 +143,7 @@ public extension Cryptography {
             throw OWSAssertionError("Missing attachment file.")
         }
 
-        let inputFile = try FileHandle(forReadingFrom: unencryptedUrl)
+        let inputFile = try LocalFileHandle(url: unencryptedUrl)
 
         guard FileManager.default.createFile(
             atPath: encryptedUrl.path,
@@ -153,8 +160,17 @@ public extension Cryptography {
 
         return try _encryptAttachment(
             enumerateInputInBlocks: { closure in
-                try inputFile.enumerateInBlocks(block: closure)
-                return UInt(inputFile.offsetInFile)
+                var buffer = Data(count: 8192)
+                var totalBytesRead: UInt = 0
+                var bytesRead: Int
+                repeat {
+                    bytesRead = try inputFile.read(into: &buffer)
+                    if bytesRead > 0 {
+                        totalBytesRead += UInt(bytesRead)
+                        try closure(buffer.prefix(bytesRead))
+                    }
+                } while bytesRead > 0
+                return totalBytesRead
             },
             output: { outputBlock in
                 outputFile.write(outputBlock)
@@ -615,7 +631,7 @@ public extension Cryptography {
     /// Internal implementation of EncryptedFileHandle exposing some internals
     /// for cryptographic verification as we read things out.
     private class EncryptedFileHandleImpl: EncryptedFileHandle {
-        fileprivate let file: FileHandle
+        fileprivate let file: LocalFileHandle
         private let encryptionKey: Data
         fileprivate let iv: Data
 
@@ -656,7 +672,7 @@ public extension Cryptography {
                 throw OWSAssertionError("Encryption key shorter than combined key length")
             }
 
-            self.file = try FileHandle(url: encryptedUrl)
+            self.file = try LocalFileHandle(url: encryptedUrl)
 
             let cryptoOverheadLength = aescbcIVLength + hmac256OutputLength
             self.ciphertextLength = file.fileLength - cryptoOverheadLength
@@ -958,98 +974,72 @@ public extension Cryptography {
             }
             return outputBuffer
         }
-
-        // MARK: - Direct file access
-
-        /// A convenience wrapper around a read-only FILE (C API for file I/O accessed via fopen).
-        fileprivate class FileHandle {
-            private let fileDescriptor: FileDescriptor
-            /// Determined at open time and assumed to be fixed.
-            let fileLength: Int
-            /// The internally-managed offset into the file in bytes, indexed from the start of the file.
-            private(set) var offsetInFile: Int = 0
-
-            init(url: URL) throws {
-                guard let filePath = FilePath(url) else {
-                    throw OWSAssertionError("Provided url \(url) is not a file path")
-                }
-                guard
-                    let fileLength = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize
-                else {
-                    throw OWSAssertionError("Unable to read file length")
-                }
-                self.fileDescriptor = try FileDescriptor.open(filePath, .readOnly)
-                self.fileLength = fileLength
-            }
-
-            /// Read up to a number bytes into the provided buffer.
-            ///
-            /// - parameter buffer: Output is written into here.
-            /// - parameter maxLength: Maximum number of bytes to read into `buffer`.
-            ///     If nil, the length of the buffer is used.
-            ///     Warning: Using a value greater than buffer length will get capped by buffer length.
-            ///
-            /// - returns: The actual number of bytes read. Fewer bytes than requested indicates
-            ///     either that the end of the file was reached, or some error occured. Callers should
-            ///     be careful about reaching the end of file (by inspecting fileLength) if they wish to
-            ///     distinguish reaching the end of the file from errors.
-            func read(into buffer: inout Data, maxLength: Int? = nil) throws -> Int {
-                let numBytesRead = try buffer.withUnsafeMutableBytes {
-                    try fileDescriptor.read(into: UnsafeMutableRawBufferPointer(rebasing: $0.prefix(maxLength ?? $0.count)))
-                }
-                offsetInFile += numBytesRead
-                return numBytesRead
-            }
-
-            /// Convenience wrapper around ``read(into:maxLength:)`` that returns the output
-            /// as bytes and assumes any failure to read the requested number of bytes is an error.
-            ///
-            /// Notably, calling this method with a length that would go past the end of the file
-            /// will throw an error.
-            func readData(ofLength length: Int) throws -> Data {
-                var buffer = Data(count: length)
-                let numBytesRead = try read(into: &buffer)
-                guard numBytesRead == length else {
-                    throw OWSAssertionError("Unable to read data")
-                }
-                return buffer
-            }
-
-            /// Seek to a desired offset in the file, defined relative to the beginning of the file.
-            func seek(toFileOffset desiredOffset: Int) throws {
-                try fileDescriptor.seek(offset: Int64(desiredOffset), from: .start)
-                offsetInFile = desiredOffset
-            }
-
-            deinit {
-                try! fileDescriptor.close()
-            }
-        }
     }
 }
 
-extension FileHandle {
-    fileprivate func enumerateInBlocks(
-        blockSize: Int = 1024 * 1024,
-        maxOffset: UInt64? = nil,
-        block: (Data) throws -> Void
-    ) rethrows {
-        // Read up to `bufferSize` bytes, until EOF is reached
-        while try autoreleasepool(invoking: {
-            var blockSize = blockSize
-            var hasReachedMaxOffset = false
-            if let maxOffset = maxOffset, (maxOffset - offsetInFile) < blockSize {
-                blockSize = Int(maxOffset - offsetInFile)
-                hasReachedMaxOffset = true
-            }
+// MARK: - Direct file access
 
-            let data = self.readData(ofLength: blockSize)
-            if data.count > 0 {
-                try block(data)
-                return !hasReachedMaxOffset // Continue only if we haven't reached the max offset
-            } else {
-                return false // End of file
-            }
-        }) { }
+/// A convenience wrapper around a read-only file.
+private class LocalFileHandle {
+    private let fileDescriptor: FileDescriptor
+    /// Determined at open time and assumed to be fixed.
+    let fileLength: Int
+    /// The internally-managed offset into the file in bytes, indexed from the start of the file.
+    private(set) var offsetInFile: Int = 0
+
+    init(url: URL) throws {
+        guard let filePath = FilePath(url) else {
+            throw OWSAssertionError("Provided url \(url) is not a file path")
+        }
+        guard
+            let fileLength = try url.resourceValues(forKeys: [.fileSizeKey]).fileSize
+        else {
+            throw OWSAssertionError("Unable to read file length")
+        }
+        self.fileDescriptor = try FileDescriptor.open(filePath, .readOnly)
+        self.fileLength = fileLength
+    }
+
+    /// Read up to a number bytes into the provided buffer.
+    ///
+    /// - parameter buffer: Output is written into here.
+    /// - parameter maxLength: Maximum number of bytes to read into `buffer`.
+    ///     If nil, the length of the buffer is used.
+    ///     Warning: Using a value greater than buffer length will get capped by buffer length.
+    ///
+    /// - returns: The actual number of bytes read. Fewer bytes than requested indicates
+    ///     either that the end of the file was reached, or some error occured. Callers should
+    ///     be careful about reaching the end of file (by inspecting fileLength) if they wish to
+    ///     distinguish reaching the end of the file from errors.
+    func read(into buffer: inout Data, maxLength: Int? = nil) throws -> Int {
+        let numBytesRead = try buffer.withUnsafeMutableBytes {
+            try fileDescriptor.read(into: UnsafeMutableRawBufferPointer(rebasing: $0.prefix(maxLength ?? $0.count)))
+        }
+        offsetInFile += numBytesRead
+        return numBytesRead
+    }
+
+    /// Convenience wrapper around ``read(into:maxLength:)`` that returns the output
+    /// as bytes and assumes any failure to read the requested number of bytes is an error.
+    ///
+    /// Notably, calling this method with a length that would go past the end of the file
+    /// will throw an error.
+    func readData(ofLength length: Int) throws -> Data {
+        var buffer = Data(count: length)
+        let numBytesRead = try read(into: &buffer)
+        guard numBytesRead == length else {
+            throw OWSAssertionError("Unable to read data")
+        }
+        return buffer
+    }
+
+    /// Seek to a desired offset in the file, defined relative to the beginning of the file.
+    func seek(toFileOffset desiredOffset: Int) throws {
+        try fileDescriptor.seek(offset: Int64(desiredOffset), from: .start)
+        offsetInFile = desiredOffset
+    }
+
+    deinit {
+        try! fileDescriptor.close()
     }
 }
