@@ -984,7 +984,7 @@ private class LocalFileHandle {
     private let fileDescriptor: FileDescriptor
     /// Determined at open time and assumed to be fixed.
     let fileLength: Int
-    /// The internally-managed offset into the file in bytes, indexed from the start of the file.
+    /// The current offset from the start of the file measured in bytes. Measured with `lseek`.
     var offsetInFile: Int { Int((try? fileDescriptor.seek(offset: 0, from: .current)) ?? 0) }
 
     init(url: URL) throws {
@@ -1007,15 +1007,13 @@ private class LocalFileHandle {
     ///     If nil, the length of the buffer is used.
     ///     Warning: Using a value greater than buffer length will get capped by buffer length.
     ///
-    /// - returns: The actual number of bytes read. Fewer bytes than requested indicates
-    ///     either that the end of the file was reached, or some error occured. Callers should
-    ///     be careful about reaching the end of file (by inspecting fileLength) if they wish to
-    ///     distinguish reaching the end of the file from errors.
+    /// - returns: The actual number of bytes read. Zero indicates the end of the file has been reached.
+    ///
+    /// - throws: if an error occurs
     func read(into buffer: inout Data, maxLength: Int? = nil) throws -> Int {
-        let numBytesRead = try buffer.withUnsafeMutableBytes {
+        try buffer.withUnsafeMutableBytes {
             try fileDescriptor.read(into: UnsafeMutableRawBufferPointer(rebasing: $0.prefix(maxLength ?? $0.count)))
         }
-        return numBytesRead
     }
 
     /// Convenience wrapper around ``read(into:maxLength:)`` that returns the output
