@@ -13,6 +13,8 @@ public class DonationReadMoreSheetViewController: InteractiveSheetViewController
     public override var sheetBackgroundColor: UIColor { Theme.tableView2PresentedBackgroundColor }
 
     override public func viewDidLoad() {
+        self.animationsShouldBeInterruptible = true
+
         super.viewDidLoad()
 
         minimizedHeight = 600

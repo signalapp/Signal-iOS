@@ -30,6 +30,7 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
         self.messageId = message.uniqueId
         self.reactionFinder = ReactionFinder(uniqueMessageId: message.uniqueId)
         super.init()
+        self.animationsShouldBeInterruptible = true
     }
 
     // MARK: -

@@ -56,6 +56,7 @@ open class StackSheetViewController: InteractiveSheetViewController {
         super.viewDidLoad()
 
         allowsExpansion = false
+        animationsShouldBeInterruptible = true
         contentView.addSubview(contentScrollView)
         contentScrollView.autoPinEdgesToSuperviewEdges()
 

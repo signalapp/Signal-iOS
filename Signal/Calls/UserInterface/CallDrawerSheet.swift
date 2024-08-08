@@ -68,6 +68,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
 
         super.init(blurEffect: nil)
 
+        self.animationsShouldBeInterruptible = true
         self.sheetPanDelegate = sheetPanDelegate
 
         self.overrideUserInterfaceStyle = .dark
@@ -84,7 +85,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
         }
         let halfHeight = windowHeight / 2
         let twoThirdsHeight = 2 * windowHeight / 3
-        let tableHeight = tableView.contentSize.height
+        let tableHeight = tableView.contentSize.height + tableView.safeAreaInsets.totalHeight + Constants.handleHeight
         if tableHeight >= twoThirdsHeight {
             return twoThirdsHeight
         } else if tableHeight > halfHeight {
@@ -650,7 +651,8 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
 
 extension CallDrawerSheet: CallControlsHeightObserver {
     func callControlsHeightDidChange(newHeight: CGFloat) {
-        Self.springAnimation {
+        self.cancelAnimationAndUpdateConstraints()
+        self.animate {
             self.setBottomSheetMinimizedHeight()
             self.view.layoutIfNeeded()
         }
