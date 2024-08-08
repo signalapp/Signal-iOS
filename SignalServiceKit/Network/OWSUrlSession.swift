@@ -81,13 +81,16 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
     }
 
     public static var defaultConfigurationWithCaching: URLSessionConfiguration {
-        .ephemeral
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.multipathServiceType = .handover
+        return configuration
     }
 
     public static var defaultConfigurationWithoutCaching: URLSessionConfiguration {
         let configuration = URLSessionConfiguration.ephemeral
         configuration.urlCache = nil
         configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
+        configuration.multipathServiceType = .handover
         return configuration
     }
 
