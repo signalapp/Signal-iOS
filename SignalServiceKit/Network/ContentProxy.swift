@@ -25,6 +25,7 @@ public class ContentProxy: NSObject {
             "HTTPSProxy": proxyHost,
             "HTTPSPort": proxyPort
         ]
+        configuration.multipathServiceType = .handover
         return configuration
     }
 
