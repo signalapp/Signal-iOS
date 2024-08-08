@@ -66,6 +66,7 @@ class EmojiPickerSheet: InteractiveSheetViewController {
             self.backdropColor = .clear
         }
 
+        self.animationsShouldBeInterruptible = true
         super.allowsExpansion = true
     }
 
