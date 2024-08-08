@@ -9,10 +9,13 @@ extension ChatListViewController {
     public var isViewVisible: Bool {
         get { viewState.isViewVisible }
         set {
-            viewState.isViewVisible = newValue
-
-            updateShouldBeUpdatingView()
-            updateCellVisibility()
+            if newValue != viewState.isViewVisible {
+                viewState.isViewVisible = newValue
+                updateCellVisibility()
+                if newValue {
+                    shouldBeUpdatingView = true
+                }
+            }
         }
     }
 
@@ -24,10 +27,6 @@ extension ChatListViewController {
                 return
             }
             viewState.shouldBeUpdatingView = newValue
-
-            if newValue {
-                loadCoordinator.loadIfNecessary(suppressAnimations: true)
-            }
         }
     }
 
@@ -318,13 +317,13 @@ public class CLVLoadCoordinator: Dependencies {
         loadIfNecessary()
     }
 
-    public func scheduleLoad(updatedThreadIds: some Collection<String>) {
+    public func scheduleLoad(updatedThreadIds: some Collection<String>, animated: Bool = true) {
         AssertIsOnMainThread()
         owsAssertDebug(!updatedThreadIds.isEmpty)
 
         loadInfoBuilder.updatedThreadIds.formUnion(updatedThreadIds)
 
-        loadIfNecessary()
+        loadIfNecessary(suppressAnimations: !animated)
     }
 
     public func ensureFirstLoad() {

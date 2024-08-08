@@ -83,6 +83,10 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        defer {
+            loadCoordinator.loadIfNecessary(suppressAnimations: true)
+        }
+
         isViewVisible = true
 
         // Ensure the tabBar is always hidden if we're in the archive.
@@ -129,9 +133,40 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
             ensureCellAnimations()
         }
 
-        if let selectedIndexPath = tableView.indexPathForSelectedRow {
-            // Deselect row when swiping back/returning to chat list.
-            tableView.deselectRow(at: selectedIndexPath, animated: false)
+        if let selectedIndexPath = tableView.indexPathForSelectedRow, let selectedThread = renderState.thread(forIndexPath: selectedIndexPath) {
+            if viewState.lastSelectedThreadId != selectedThread.uniqueId {
+                owsFailDebug("viewState.lastSelectedThreadId out of sync with table view")
+                viewState.lastSelectedThreadId = selectedThread.uniqueId
+                updateShouldBeUpdatingView()
+            }
+
+            let isCollapsed = splitViewController?.isCollapsed ?? true
+            if isCollapsed {
+                // If possible, wait until the pop transition is finished and
+                // animate the deselection nicely. Also allows the cell to
+                // remain selected while the transition is active.
+                if animated, let transitionCoordinator {
+                    transitionCoordinator.animate(alongsideTransition: nil) { [self] context in
+                        if !context.isCancelled {
+                            tableView.performBatchUpdates {
+                                tableView.deselectRow(at: selectedIndexPath, animated: true)
+                            } completion: { [self] finished in
+                                // Avoid stomping on view state if the user has already
+                                // interacted with the table view.
+                                if finished && viewState.lastSelectedThreadId == selectedThread.uniqueId {
+                                    viewState.lastSelectedThreadId = nil
+                                    loadCoordinator.scheduleLoad(updatedThreadIds: [selectedThread.uniqueId], animated: true)
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    // No animated transition, so just update the state immediately.
+                    viewState.lastSelectedThreadId = nil
+                    tableView.deselectRow(at: selectedIndexPath, animated: false)
+                    loadCoordinator.scheduleLoad(updatedThreadIds: [selectedThread.uniqueId], animated: false)
+                }
+            }
         }
     }
 

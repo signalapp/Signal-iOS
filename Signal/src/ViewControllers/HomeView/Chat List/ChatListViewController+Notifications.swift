@@ -116,6 +116,7 @@ extension ChatListViewController {
         AssertIsOnMainThread()
 
         updateReminderViews()
+        loadIfNecessary()
     }
 
     @objc
@@ -123,6 +124,7 @@ extension ChatListViewController {
         AssertIsOnMainThread()
 
         updateReminderViews()
+        loadIfNecessary()
     }
 
     @objc
@@ -137,6 +139,7 @@ extension ChatListViewController {
         AssertIsOnMainThread()
 
         updateReminderViews()
+        loadIfNecessary()
     }
 
     @objc
@@ -228,6 +231,7 @@ extension ChatListViewController {
     @objc
     private func localUsernameStateDidChange() {
         updateReminderViews()
+        loadIfNecessary()
     }
 }
 

@@ -247,17 +247,29 @@ extension ChatListViewController {
             updateUsernameStateViews(tx: tx)
         }
 
-        loadCoordinator.loadIfNecessary()
+        updateShouldBeUpdatingView()
     }
 
     public func updateUnreadPaymentNotificationsCountWithSneakyTransaction() {
         AssertIsOnMainThread()
 
         guard paymentsHelper.arePaymentsEnabled else {
-            self.unreadPaymentNotificationsCount = 0
-            self.firstUnreadPaymentModel = nil
+            var needsUpdate = false
 
-            updateReminderViews()
+            if unreadPaymentNotificationsCount > 0 {
+                unreadPaymentNotificationsCount = 0
+                needsUpdate = true
+            }
+
+            if firstUnreadPaymentModel != nil {
+                firstUnreadPaymentModel = nil
+                needsUpdate = true
+            }
+
+            if needsUpdate {
+                updateReminderViews()
+            }
+
             return
         }
 

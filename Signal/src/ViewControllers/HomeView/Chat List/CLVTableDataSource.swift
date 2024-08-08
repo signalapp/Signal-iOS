@@ -547,7 +547,7 @@ extension CLVTableDataSource: UITableViewDataSource {
             cell = buildArchivedConversationsButtonCell(tableView: tableView, indexPath: indexPath)
         case .inboxFilterFooter:
             let filterFooterCell = tableView.dequeueReusableCell(ChatListFilterFooterCell.self, for: indexPath)
-            filterFooterCell.primaryAction = .disableChatListFilter()
+            filterFooterCell.primaryAction = .disableChatListFilter(target: viewController)
             cell = filterFooterCell
             guard let inboxFilterSection = renderState.inboxFilterSection else {
                 owsFailDebug("Missing view model in inbox filter section")
