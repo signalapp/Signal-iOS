@@ -348,10 +348,11 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                 var contextMenuActions: [UIAction] = []
 
                 if FeatureFlags.chatListFilter {
-                    switch renderState.viewInfo.inboxFilter {
+                    // FIXME: combine viewState.inboxFilter and renderState.viewInfo.inboxFilter to avoid bugs with them getting out of sync
+                    switch viewState.inboxFilter {
                     case .unread:
                         contextMenuActions.append(.disableChatListFilter(target: self))
-                    case .none:
+                    case .none?, nil:
                         contextMenuActions.append(.enableChatListFilter(target: self))
                     }
                 }
