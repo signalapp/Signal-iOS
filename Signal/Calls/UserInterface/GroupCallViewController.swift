@@ -632,6 +632,10 @@ class GroupCallViewController: UIViewController {
         }
     }
 
+    private enum Constants {
+        static let spacingTopRaiseHandToastToBottomLocalPip: CGFloat = 12
+    }
+
     private func updateMemberViewFrames(
         size: CGSize? = nil,
         shouldRepositionBottomVStack: Bool = true
@@ -694,10 +698,16 @@ class GroupCallViewController: UIViewController {
 
             let y: CGFloat
             if nil != expandedPipFrame {
-                // Necessary because when the pip is expanded, the
-                // pip height will not follow along with that of
-                // the video overflow, which is tiny.
-                y = yMax - pipSize.height
+                // Special case necessary because when the pip is
+                // expanded, the pip height does not follow along
+                // with that of the video overflow, which is tiny.
+                if self.raisedHandsToastContainer.isHiddenInStackView || (!self.videoOverflow.overflowedRemoteDeviceStates.isEmpty && self.page == .grid) {
+                    // Bottom of pip should align with bottom of overflow (whether the overflow is hidden or not).
+                    y = yMax - pipSize.height
+                } else {
+                    // Bottom of pip should align with top of raised hand toast, plus padding.
+                    y = yMax - pipSize.height - raisedHandsToastContainer.height - Constants.spacingTopRaiseHandToastToBottomLocalPip
+                }
             } else {
                 let overflowY = videoOverflow.convert(videoOverflow.bounds.origin, to: self.view).y
                 let overflowPipHeightDifference = pipSize.height - videoOverflow.height
