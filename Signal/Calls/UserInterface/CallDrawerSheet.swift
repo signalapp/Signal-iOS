@@ -270,7 +270,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
         self.updateSnapshotAndHeaders()
     }
 
-    private var previousSnapshotItems: [RowID] = []
+    private var previousSnapshotItems: [RowID]?
 
     private func updateSnapshotAndHeaders() {
         AssertIsOnMainThread()
