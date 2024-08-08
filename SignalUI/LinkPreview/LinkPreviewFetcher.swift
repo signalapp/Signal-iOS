@@ -102,6 +102,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
         let sessionConfig = URLSessionConfiguration.ephemeral
         sessionConfig.urlCache = nil
         sessionConfig.requestCachePolicy = .reloadIgnoringLocalCacheData
+        sessionConfig.multipathServiceType = .handover
 
         // Twitter doesn't return OpenGraph tags to Signal
         // `curl -A Signal "https://twitter.com/signalapp/status/1280166087577997312?s=20"`

@@ -270,11 +270,17 @@ fileprivate extension Stripe {
         : "pk_test_sngOd8FnXNkpce9nPXawKrJD00kIDngZkD"
 
     static let authorizationHeader = "Basic \(Data("\(publishableKey):".utf8).base64EncodedString())"
+    
+    static let configuration: URLSessionConfiguration{
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.multipathServiceType = .handover
+        return configuration
+    }
 
     static let urlSession = OWSURLSession(
         baseUrl: URL(string: "https://api.stripe.com/v1/")!,
         securityPolicy: OWSURLSession.defaultSecurityPolicy,
-        configuration: URLSessionConfiguration.ephemeral
+        configuration: configuration
     )
 
     struct API {
