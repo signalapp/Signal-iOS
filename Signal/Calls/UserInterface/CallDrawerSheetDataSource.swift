@@ -29,15 +29,14 @@ protocol CallDrawerSheetDataSource: GroupCallMemberCellDelegate {
 
 // MARK: - Group Call data source
 
-class GroupCallSheetDataSource: CallDrawerSheetDataSource {
-
+final class GroupCallSheetDataSource<Call: GroupCall>: CallDrawerSheetDataSource {
     private let ringRtcCall: SignalRingRTC.GroupCall
-    private let groupThreadCall: GroupThreadCall
-    init(groupThreadCall: GroupThreadCall) {
-        self.ringRtcCall = groupThreadCall.ringRtcCall
-        self.groupThreadCall = groupThreadCall
+    private let groupCall: Call
+    init(groupCall: Call) {
+        self.ringRtcCall = groupCall.ringRtcCall
+        self.groupCall = groupCall
 
-        groupThreadCall.addObserver(self)
+        groupCall.addObserver(self)
     }
 
     private var observers: WeakArray<any CallDrawerSheetDataSourceObserver> = []
@@ -56,7 +55,7 @@ class GroupCallSheetDataSource: CallDrawerSheetDataSource {
     }
 
     func raisedHandMemberIds() -> [JoinedMember.ID] {
-        return groupThreadCall.raisedHands.map { .demuxID($0) }
+        return groupCall.raisedHands.map { .demuxID($0) }
     }
 
     func unsortedMembers(tx: DBReadTransaction) -> [JoinedMember] {

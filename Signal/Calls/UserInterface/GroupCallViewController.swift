@@ -32,20 +32,21 @@ class GroupCallViewController: UIViewController {
         delegate: self
     )
     private lazy var bottomSheet: CallDrawerSheet = {
-        switch groupCall.concreteType {
+        let dataSource: any CallDrawerSheetDataSource = switch groupCall.concreteType {
         case .groupThread(let groupThreadCall):
-            CallDrawerSheet(
-                call: call,
-                callSheetDataSource: GroupCallSheetDataSource(groupThreadCall: groupThreadCall),
-                callService: callService,
-                confirmationToastManager: callControlsConfirmationToastManager,
-                useCallDrawerStyling: FeatureFlags.groupCallDrawerSupport,
-                callControlsDelegate: self,
-                sheetPanDelegate: self
-            )
-        case .callLink:
-            owsFail("[CallLink] TODO: Make bottom sheet for Call Link calls")
+            GroupCallSheetDataSource(groupCall: groupThreadCall)
+        case .callLink(let callLinkCall):
+            GroupCallSheetDataSource(groupCall: callLinkCall)
         }
+        return CallDrawerSheet(
+            call: call,
+            callSheetDataSource: dataSource,
+            callService: callService,
+            confirmationToastManager: callControlsConfirmationToastManager,
+            useCallDrawerStyling: FeatureFlags.groupCallDrawerSupport,
+            callControlsDelegate: self,
+            sheetPanDelegate: self
+        )
     }()
     private lazy var callControlsConfirmationToastContainerView = UIView()
     private var callService: CallService { AppEnvironment.shared.callService }
