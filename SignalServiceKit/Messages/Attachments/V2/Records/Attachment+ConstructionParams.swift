@@ -114,6 +114,26 @@ extension Attachment {
             )
         }
 
+        public static func forInvalidBackupAttachment(
+            blurHash: String?,
+            mimeType: String
+        ) -> ConstructionParams {
+            return .init(
+                blurHash: blurHash,
+                mimeType: mimeType,
+                // We don't have any cdn info from which to download, so what
+                // encryption key we use is irrelevant. Just generate a new one.
+                encryptionKey: Cryptography.randomAttachmentEncryptionKey(),
+                streamInfo: nil,
+                transitTierInfo: nil,
+                mediaName: nil,
+                mediaTierInfo: nil,
+                thumbnailMediaTierInfo: nil,
+                localRelativeFilePathThumbnail: nil,
+                originalAttachmentIdForQuotedReply: nil
+            )
+        }
+
         public static func forQuotedReplyThumbnailPointer(
             originalAttachment: Attachment,
             thumbnailBlurHash: String?,
