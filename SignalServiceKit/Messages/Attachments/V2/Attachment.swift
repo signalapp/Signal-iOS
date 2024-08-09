@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CryptoKit
 import Foundation
 
 /// Represents an attachment; a file on local disk and/or a pointer to a file on a CDN.
@@ -225,6 +226,16 @@ public class Attachment {
         // This ensures media name collisions occur only between the
         // same attachment contents encrypted with the same key.
         return digestSHA256Ciphertext.hexadecimalString
+    }
+
+    public static func uploadEra(backupSubscriptionId: Data) throws -> String {
+        // We just hash and base64 encode the subscription id as the "upload era".
+        // All the "era" means is if it changes, all existing uploads to the backup
+        // tier should be considered invalid and needing reupload.
+        // Hash so as to avoid putting the unsafe-to-log subscription id in more places.
+        var hasher = SHA256()
+        hasher.update(data: backupSubscriptionId)
+        return Data(hasher.finalize()).base64EncodedString()
     }
 
     public enum TransitUploadStrategy {

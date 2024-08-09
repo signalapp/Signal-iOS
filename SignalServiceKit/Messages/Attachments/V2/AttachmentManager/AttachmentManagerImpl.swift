@@ -43,6 +43,29 @@ public class AttachmentManagerImpl: AttachmentManager {
         )
     }
 
+    public func createAttachmentPointers(
+        from backupProtos: [OwnedAttachmentBackupPointerProto],
+        uploadEra: String,
+        tx: DBWriteTransaction
+    ) throws {
+        try createAttachments(
+            backupProtos,
+            mimeType: { $0.proto.contentType },
+            owner: \.owner,
+            output: { $0 },
+            createFn: {
+                try self._createAttachmentPointer(
+                    from: $0,
+                    owner: $1,
+                    sourceOrder: $2,
+                    uploadEra: uploadEra,
+                    tx: $3
+                )
+            },
+            tx: tx
+        )
+    }
+
     public func createAttachmentStreams(
         consuming dataSources: [OwnedAttachmentDataSource],
         tx: DBWriteTransaction
@@ -189,25 +212,11 @@ public class AttachmentManagerImpl: AttachmentManager {
             }
         }()
 
-        let mimeType: String
-        if let protoMimeType = proto.contentType?.nilIfEmpty {
-            mimeType = protoMimeType
-        } else {
-            // Content type might not set if the sending client can't
-            // infer a MIME type from the file extension.
-            Logger.warn("Invalid attachment content type.")
-            if
-                let sourceFilename = proto.fileName,
-                let fileExtension = sourceFilename.fileExtension?.lowercased().nilIfEmpty,
-                let inferredMimeType = MimeTypeUtil.mimeTypeForFileExtension(fileExtension)?.nilIfEmpty
-            {
-                mimeType = inferredMimeType
-            } else {
-                mimeType = MimeType.applicationOctetStream.rawValue
-            }
-        }
-
         let sourceFilename = proto.fileName
+        let mimeType = self.mimeType(
+            fromProtoContentType: proto.contentType,
+            sourceFilename: sourceFilename
+        )
 
         let attachmentParams = Attachment.ConstructionParams.fromPointer(
             blurHash: proto.blurHash,
@@ -297,6 +306,195 @@ public class AttachmentManagerImpl: AttachmentManager {
             digestSHA256Ciphertext: digestSHA256Ciphertext,
             lastDownloadAttemptTimestamp: nil
         )
+    }
+
+    private func _createAttachmentPointer(
+        from ownedProto: OwnedAttachmentBackupPointerProto,
+        owner: OwnerBuilder,
+        // Nil if no order is to be applied.
+        sourceOrder: UInt32?,
+        uploadEra: String,
+        tx: DBWriteTransaction
+    ) throws {
+        let proto = ownedProto.proto
+
+        let knownIdFromProto = ownedProto.clientUUID.map {
+            return OwnerBuilder.KnownIdInOwner.known($0)
+        } ?? .knownNil
+
+        let sourceFilename = proto.fileName.nilIfEmpty
+        let mimeType = self.mimeType(
+            fromProtoContentType: proto.contentType,
+            sourceFilename: sourceFilename
+        )
+
+        let sourceMediaSizePixels: CGSize?
+        if
+            proto.width > 0,
+            let width = CGFloat(exactly: proto.width),
+            proto.height > 0,
+            let height = CGFloat(exactly: proto.height)
+        {
+            sourceMediaSizePixels = CGSize(width: width, height: height)
+        } else {
+            sourceMediaSizePixels = nil
+        }
+
+        let attachmentParams: Attachment.ConstructionParams
+        let sourceUnencryptedByteCount: UInt32?
+        switch proto.locator {
+        case .backupLocator(let backupLocator):
+            let cdnNumber = backupLocator.cdnNumber
+            guard cdnNumber > 0 else {
+                throw OWSAssertionError("Invalid cdn info")
+            }
+            guard let mediaName = backupLocator.mediaName.nilIfEmpty else {
+                throw OWSAssertionError("Invalid media name")
+            }
+            guard let encryptionKey = backupLocator.key.nilIfEmpty else {
+                throw OWSAssertionError("Invalid encryption key")
+            }
+            guard let digestSHA256Ciphertext = backupLocator.digest.nilIfEmpty else {
+                throw OWSAssertionError("Missing digest")
+            }
+            guard backupLocator.size != 0 else {
+                throw OWSAssertionError("Invalid size")
+            }
+
+            attachmentParams = .fromBackup(
+                blurHash: proto.blurHash.nilIfEmpty,
+                mimeType: mimeType,
+                encryptionKey: encryptionKey,
+                transitTierInfo: try transitTierInfo(from: proto),
+                mediaName: mediaName,
+                mediaTierInfo: .init(
+                    cdnNumber: cdnNumber,
+                    unencryptedByteCount: backupLocator.size,
+                    digestSHA256Ciphertext: digestSHA256Ciphertext,
+                    uploadEra: uploadEra,
+                    lastDownloadAttemptTimestamp: nil
+                ),
+                thumbnailMediaTierInfo: .init(
+                    cdnNumber: cdnNumber,
+                    uploadEra: uploadEra,
+                    lastDownloadAttemptTimestamp: nil
+                )
+            )
+            sourceUnencryptedByteCount = backupLocator.size
+        case .attachmentLocator(let attachmentLocator):
+            guard let transitTierInfo = try transitTierInfo(from: proto) else {
+                throw OWSAssertionError("Missing transit tier info")
+            }
+            guard attachmentLocator.size != 0 else {
+                throw OWSAssertionError("Invalid size")
+            }
+            attachmentParams = .fromPointer(
+                blurHash: proto.blurHash.nilIfEmpty,
+                mimeType: mimeType,
+                encryptionKey: transitTierInfo.encryptionKey,
+                transitTierInfo: transitTierInfo
+            )
+            sourceUnencryptedByteCount = attachmentLocator.size
+        case .invalidAttachmentLocator, .none:
+            attachmentParams = .forInvalidBackupAttachment(
+                blurHash: proto.blurHash.nilIfEmpty,
+                mimeType: mimeType
+            )
+            sourceUnencryptedByteCount = nil
+        }
+
+        let referenceParams = AttachmentReference.ConstructionParams(
+            owner: try owner.build(
+                orderInOwner: sourceOrder,
+                knownIdInOwner: knownIdFromProto,
+                renderingFlag: ownedProto.renderingFlag,
+                // Not downloaded so we don't know the content type.
+                contentType: nil
+            ),
+            sourceFilename: sourceFilename,
+            sourceUnencryptedByteCount: sourceUnencryptedByteCount,
+            sourceMediaSizePixels: sourceMediaSizePixels
+        )
+
+        try attachmentStore.insert(
+            attachmentParams,
+            reference: referenceParams,
+            tx: tx
+        )
+    }
+
+    private func transitTierInfo(
+        from proto: BackupProto_FilePointer
+    ) throws -> Attachment.TransitTierInfo? {
+        let cdnNumber: UInt32
+        let cdnKey: String
+        let encryptionKey: Data
+        let unencryptedByteCount: UInt32
+        let digest: Data
+        let uploadTimestamp: UInt64
+        switch proto.locator {
+        case .backupLocator(let backupLocator):
+            cdnNumber = backupLocator.transitCdnNumber
+            cdnKey = backupLocator.transitCdnKey
+            encryptionKey = backupLocator.key
+            guard let size = UInt32(exactly: backupLocator.size) else {
+                throw OWSAssertionError("Backup attachment too big!")
+            }
+            unencryptedByteCount = size
+            digest = backupLocator.digest
+            // Treat it as uploaded now.
+            uploadTimestamp = Date().ows_millisecondsSince1970
+        case .attachmentLocator(let attachmentLocator):
+            cdnNumber = attachmentLocator.cdnNumber
+            cdnKey = attachmentLocator.cdnKey
+            encryptionKey = attachmentLocator.key
+            unencryptedByteCount = attachmentLocator.size
+            digest = attachmentLocator.digest
+            uploadTimestamp = attachmentLocator.uploadTimestamp
+        case .invalidAttachmentLocator, .none:
+            return nil
+        }
+        guard let cdnKey = cdnKey.nilIfEmpty, cdnNumber > 0 else {
+            throw OWSAssertionError("Invalid cdn info")
+        }
+        guard let encryptionKey = encryptionKey.nilIfEmpty else {
+            throw OWSAssertionError("Invalid encryption key")
+        }
+        guard let digestSHA256Ciphertext = digest.nilIfEmpty else {
+            throw OWSAssertionError("Missing digest")
+        }
+
+        return .init(
+            cdnNumber: cdnNumber,
+            cdnKey: cdnKey,
+            uploadTimestamp: uploadTimestamp,
+            encryptionKey: encryptionKey,
+            unencryptedByteCount: unencryptedByteCount,
+            digestSHA256Ciphertext: digestSHA256Ciphertext,
+            lastDownloadAttemptTimestamp: nil
+        )
+    }
+
+    private func mimeType(
+        fromProtoContentType contentType: String?,
+        sourceFilename: String?
+    ) -> String {
+        if let protoMimeType = contentType?.nilIfEmpty {
+            return protoMimeType
+        } else {
+            // Content type might not set if the sending client can't
+            // infer a MIME type from the file extension.
+            Logger.warn("Invalid attachment content type.")
+            if
+                let sourceFilename,
+                let fileExtension = sourceFilename.fileExtension?.lowercased().nilIfEmpty,
+                let inferredMimeType = MimeTypeUtil.mimeTypeForFileExtension(fileExtension)?.nilIfEmpty
+            {
+                return inferredMimeType
+            } else {
+                return MimeType.applicationOctetStream.rawValue
+            }
+        }
     }
 
     private func _createAttachmentStream(

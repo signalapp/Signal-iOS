@@ -14,3 +14,22 @@ public struct OwnedAttachmentPointerProto {
         self.owner = owner
     }
 }
+
+public struct OwnedAttachmentBackupPointerProto {
+    public let proto: BackupProto_FilePointer
+    public let renderingFlag: AttachmentReference.RenderingFlag
+    public let clientUUID: UUID?
+    public let owner: AttachmentReference.OwnerBuilder
+
+    public init(
+        proto: BackupProto_FilePointer,
+        renderingFlag: AttachmentReference.RenderingFlag,
+        clientUUID: UUID?,
+        owner: AttachmentReference.OwnerBuilder
+    ) {
+        self.proto = proto
+        self.renderingFlag = renderingFlag
+        self.clientUUID = clientUUID
+        self.owner = owner
+    }
+}

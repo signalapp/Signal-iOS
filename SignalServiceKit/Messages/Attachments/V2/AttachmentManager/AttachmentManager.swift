@@ -20,6 +20,21 @@ public protocol AttachmentManager {
         tx: DBWriteTransaction
     ) throws
 
+    /// Create attachment pointers from backup protos.
+    /// Does no deduplication; once we download the contents of the attachment
+    /// we may deduplicate and update the owner reference accordingly.
+    /// Creates a reference from the owner to the attachment.
+    ///
+    /// Throws an error if any of the provided protos are invalid.
+    ///
+    /// - parameter uploadEra: see ``Attachment/uploadEra(backupSubscriptionId:)``.
+    ///     Defines the valid lifetime of the backup upload. Derived from the subscription id.
+    func createAttachmentPointers(
+        from backupProtos: [OwnedAttachmentBackupPointerProto],
+        uploadEra: String,
+        tx: DBWriteTransaction
+    ) throws
+
     /// Create attachment streams from the data sources, consuming those data sources.
     /// May reuse an existing attachment stream if matched by content, and discard
     /// the data source.

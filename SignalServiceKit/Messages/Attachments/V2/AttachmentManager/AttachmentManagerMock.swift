@@ -16,6 +16,14 @@ open class AttachmentManagerMock: AttachmentManager {
         // Do nothing
     }
 
+    open func createAttachmentPointers(
+        from backupProtos: [OwnedAttachmentBackupPointerProto],
+        uploadEra: String,
+        tx: DBWriteTransaction
+    ) throws {
+        // Do nothing
+    }
+
     open func createAttachmentStreams(
         consuming dataSources: [OwnedAttachmentDataSource],
         tx: DBWriteTransaction
