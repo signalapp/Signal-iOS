@@ -358,10 +358,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         let sourceUnencryptedByteCount: UInt32?
         switch proto.locator {
         case .backupLocator(let backupLocator):
-            let cdnNumber = backupLocator.cdnNumber
-            guard cdnNumber > 0 else {
-                return .failure(.missingBackupCdnNumber)
-            }
+            let mediaTierCdnNumber = backupLocator.cdnNumber == 0 ? nil : backupLocator.cdnNumber
             guard let mediaName = backupLocator.mediaName.nilIfEmpty else {
                 return .failure(.missingMediaName)
             }
@@ -390,14 +387,17 @@ public class AttachmentManagerImpl: AttachmentManager {
                 transitTierInfo: transitTierInfo,
                 mediaName: mediaName,
                 mediaTierInfo: .init(
-                    cdnNumber: cdnNumber,
+                    cdnNumber: mediaTierCdnNumber,
                     unencryptedByteCount: backupLocator.size,
                     digestSHA256Ciphertext: digestSHA256Ciphertext,
                     uploadEra: uploadEra,
                     lastDownloadAttemptTimestamp: nil
                 ),
                 thumbnailMediaTierInfo: .init(
-                    cdnNumber: cdnNumber,
+                    // Assume the thumbnail uses the same cdn as fullsize;
+                    // this _can_ go wrong if the server changes cdns between
+                    // the two uploads but worst case we lose the thumbnail.
+                    cdnNumber: mediaTierCdnNumber,
                     uploadEra: uploadEra,
                     lastDownloadAttemptTimestamp: nil
                 )

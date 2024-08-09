@@ -470,14 +470,15 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case .mediaTierFullsize:
                 guard
                     let mediaTierInfo = attachment.mediaTierInfo,
-                    let mediaName = attachment.mediaName
+                    let mediaName = attachment.mediaName,
+                    let cdnNumber = mediaTierInfo.cdnNumber
                 else {
                     downloadMetadata = nil
                     break
                 }
                 downloadMetadata = .init(
                     mimeType: attachment.mimeType,
-                    cdnNumber: mediaTierInfo.cdnNumber,
+                    cdnNumber: cdnNumber,
                     encryptionKey: attachment.encryptionKey,
                     source: .mediaTierFullsize(
                         mediaName: mediaName,
@@ -488,14 +489,15 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case .mediaTierThumbnail:
                 guard
                     let thumbnailInfo = attachment.thumbnailMediaTierInfo,
-                    let mediaName = attachment.mediaName
+                    let mediaName = attachment.mediaName,
+                    let cdnNumber = thumbnailInfo.cdnNumber
                 else {
                     downloadMetadata = nil
                     break
                 }
                 downloadMetadata = .init(
                     mimeType: attachment.mimeType,
-                    cdnNumber: thumbnailInfo.cdnNumber,
+                    cdnNumber: cdnNumber,
                     encryptionKey: attachment.encryptionKey,
                     source: .mediaTierThumbnail(
                         mediaName: mediaName

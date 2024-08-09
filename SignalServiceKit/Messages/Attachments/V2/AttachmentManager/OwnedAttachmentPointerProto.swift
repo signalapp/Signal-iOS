@@ -35,7 +35,6 @@ public struct OwnedAttachmentBackupPointerProto {
 
     public enum CreationError: Error {
         case missingLocator
-        case missingBackupCdnNumber
         case missingTransitCdnNumber
         case missingTransitCdnKey
         case missingMediaName

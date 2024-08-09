@@ -109,7 +109,10 @@ public class Attachment {
 
     public struct MediaTierInfo {
         /// CDN number for the fullsize upload in the media tier.
-        public let cdnNumber: UInt32
+        /// If nil, that means there _might_ be an upload from a prior device that happened after
+        /// that device generated the backup this was restored from. The cdn number (and presence
+        /// of the upload) can be discovered via the list endpoint.
+        public let cdnNumber: UInt32?
 
         /// Expected byte count after decrypting the resource off the media tier (and removing padding).
         /// Provided by the sender of incoming attachments.
@@ -138,7 +141,10 @@ public class Attachment {
 
     public struct ThumbnailMediaTierInfo {
         /// CDN number for the thumbnail upload in the media tier.
-        public let cdnNumber: UInt32
+        /// If nil, that means there _might_ be an upload from a prior device that happened after
+        /// that device generated the backup this was restored from. The cdn number (and presence
+        /// of the upload) can be discovered via the list endpoint.
+        public let cdnNumber: UInt32?
 
         /// If the value in this column doesn’t match the current Backup Subscription Era,
         /// it should also be considered un-uploaded.
@@ -367,14 +373,12 @@ extension Attachment.MediaTierInfo {
         lastDownloadAttemptTimestamp: UInt64?
     ) {
         guard
-            let cdnNumber,
             let uploadEra,
             let unencryptedByteCount,
             let digestSHA256Ciphertext
         else {
             owsAssertDebug(
-                cdnNumber == nil
-                && uploadEra == nil,
+                uploadEra == nil,
                 "Have partial media cdn info!"
             )
             return nil
@@ -394,12 +398,10 @@ extension Attachment.ThumbnailMediaTierInfo {
         lastDownloadAttemptTimestamp: UInt64?
     ) {
         guard
-            let cdnNumber,
             let uploadEra
         else {
             owsAssertDebug(
-                cdnNumber == nil
-                && uploadEra == nil,
+                uploadEra == nil,
                 "Have partial thumbnail media cdn info!"
             )
             return nil
