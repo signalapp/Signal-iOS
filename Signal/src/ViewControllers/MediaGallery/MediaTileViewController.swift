@@ -285,12 +285,16 @@ class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate,
             }
             return false
         }
-        let lastSectionItemCount = mediaGallery.numberOfItemsInSection(mediaGallery.galleryDates.count - 1)
-        collectionView.scrollToItem(
-            at: IndexPath(item: lastSectionItemCount - 1, section: mediaGallery.galleryDates.count),
-            at: .bottom,
-            animated: false
-        )
+        // Unclear why but without a slight delay the scroll doesn't apply on appear.
+        // TODO: remove dispatch and figure out why the scroll is interrupted.
+        DispatchQueue.main.async {
+            let lastSectionItemCount = self.mediaGallery.numberOfItemsInSection(self.mediaGallery.galleryDates.count - 1)
+            self.collectionView.scrollToItem(
+                at: IndexPath(item: lastSectionItemCount - 1, section: self.mediaGallery.galleryDates.count),
+                at: .bottom,
+                animated: false
+            )
+        }
     }
 
     override func viewDidDisappear(_ animated: Bool) {
