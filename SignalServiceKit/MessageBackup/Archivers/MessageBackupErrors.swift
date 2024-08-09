@@ -483,6 +483,26 @@ extension MessageBackup {
                 /// message details. (Revisions must have the same
                 /// directionality as their parent.)
                 case revisionOfIncomingMessageMissingIncomingDetails
+
+                /// A ``BackupProto_FilePointer`` had no known ``BackupProto_FilePointer/OneOf_Locator``.
+                case filePointerMissingLocator
+                /// A ``BackupProto_FilePointer/AttachmentLocator`` was missing its cdn number.
+                case filePointerMissingTransitCdnNumber
+                /// A ``BackupProto_FilePointer/AttachmentLocator`` was missing its cdn key.
+                case filePointerMissingTransitCdnKey
+                /// A ``BackupProto_FilePointer/BackupLocator`` was missing its media name.
+                case filePointerMissingMediaName
+                /// A ``BackupProto_FilePointer/AttachmentLocator`` or a
+                /// ``BackupProto_FilePointer/BackupLocator`` was missing the encryption key.
+                case filePointerMissingEncryptionKey
+                /// A ``BackupProto_FilePointer/AttachmentLocator`` or a
+                /// ``BackupProto_FilePointer/BackupLocator`` was missing the digest.
+                case filePointerMissingDigest
+                /// A ``BackupProto_FilePointer/AttachmentLocator`` or a
+                /// ``BackupProto_FilePointer/BackupLocator`` was missing the file size.
+                case filePointerMissingSize
+                /// A ``BackupProto_MessageAttachment/clientUuid`` contained an invalid UUID.
+                case invalidAttachmentClientUUID
             }
 
             /// The proto contained invalid or self-contradictory data, e.g an invalid ACI.
@@ -498,6 +518,10 @@ extension MessageBackup {
             case databaseModelMissingRowId(modelClass: AnyClass)
 
             case databaseInsertionFailed(RawError)
+
+            /// We failed to derive the "upload era" identifier for attachments from the
+            /// backup subscription id. See ``Attachment/uploadEra(backupSubscriptionId:)``.
+            case uploadEraDerivationFailed(RawError)
 
             /// These should never happen; it means some invariant we could not
             /// enforce with the type system was broken. Nothing was wrong with
@@ -609,7 +633,15 @@ extension MessageBackup {
                         .sessionSwitchoverUpdateNotFromContact,
                         .learnedProfileUpdateMissingPreviousName,
                         .learnedProfileUpdateNotFromContact,
-                        .revisionOfIncomingMessageMissingIncomingDetails:
+                        .revisionOfIncomingMessageMissingIncomingDetails,
+                        .filePointerMissingLocator,
+                        .filePointerMissingTransitCdnNumber,
+                        .filePointerMissingTransitCdnKey,
+                        .filePointerMissingMediaName,
+                        .filePointerMissingEncryptionKey,
+                        .filePointerMissingDigest,
+                        .filePointerMissingSize,
+                        .invalidAttachmentClientUUID:
                     // Collapse all others by the id of the containing frame.
                     return idLogString
                 }
@@ -619,7 +651,7 @@ extension MessageBackup {
             case .databaseModelMissingRowId(let modelClass):
                 // Collapse these by the relevant class.
                 return "\(modelClass)"
-            case .databaseInsertionFailed(let rawError):
+            case .databaseInsertionFailed(let rawError), .uploadEraDerivationFailed(let rawError):
                 // We don't want to re-log every instance of this we see if they repeat.
                 // Collapse them by the raw error itself.
                 return "\(rawError)"

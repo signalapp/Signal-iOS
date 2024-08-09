@@ -290,6 +290,36 @@ extension MessageBackup.RestoreInteractionResult {
 
 extension MessageBackup.RestoreInteractionResult where Component == Void {
 
+    /// Given two results with Void success types, returns the combination of their errors or,
+    /// if both succeeded, a Void success.
+    /// `messageFailure`s override `partialRestore`s; if one or the other
+    /// is `messageFailure`, the result will be `messageFailure`.
+    func combine(_ other: Self) -> Self {
+        switch (self, other) {
+        case (.success, .success):
+            return .success(())
+        case let (.messageFailure(lhs), .messageFailure(rhs)):
+            return .messageFailure(lhs + rhs)
+        case let (.partialRestore(_, lhs), .partialRestore(_, rhs)):
+            return .partialRestore((), lhs + rhs)
+        case
+            let (.messageFailure(lhs), .partialRestore(_, rhs)),
+            let (.partialRestore(_, lhs), .messageFailure(rhs)):
+            return .messageFailure(lhs + rhs)
+        case
+            let (.messageFailure(errors), .success),
+            let (.success, .messageFailure(errors)):
+            return .messageFailure(errors)
+        case
+            let (.partialRestore(_, errors), .success),
+            let (.success, .partialRestore(_, errors)):
+            return .partialRestore((), errors)
+        }
+    }
+}
+
+extension MessageBackup.RestoreInteractionResult where Component == Void {
+
     /// Returns false for ``RestoreInteractionResult.messageFailure``, otherwise
     /// returns true. Regardless, accumulates any errors so that the caller
     /// can return the passed in ``partialErrors`` array in the final result.

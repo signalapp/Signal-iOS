@@ -9,6 +9,9 @@ import LibSignalClient
 public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
     private typealias ArchiveFrameError = MessageBackup.ArchiveFrameError<MessageBackup.InteractionUniqueId>
 
+    private let attachmentManager: AttachmentManager
+    private let attachmentStore: AttachmentStore
+    private let backupAttachmentDownloadStore: BackupAttachmentDownloadStore
     private let callRecordStore: CallRecordStore
     private let contactManager: MessageBackup.Shims.ContactManager
     private let dateProvider: DateProvider
@@ -24,6 +27,9 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
     private let threadStore: ThreadStore
 
     public init(
+        attachmentManager: AttachmentManager,
+        attachmentStore: AttachmentStore,
+        backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         callRecordStore: CallRecordStore,
         contactManager: MessageBackup.Shims.ContactManager,
         dateProvider: @escaping DateProvider,
@@ -38,6 +44,9 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         sentMessageTranscriptReceiver: SentMessageTranscriptReceiver,
         threadStore: ThreadStore
     ) {
+        self.attachmentManager = attachmentManager
+        self.attachmentStore = attachmentStore
+        self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
         self.callRecordStore = callRecordStore
         self.contactManager = contactManager
         self.dateProvider = dateProvider
@@ -53,12 +62,18 @@ public class MessageBackupChatItemArchiverImpl: MessageBackupChatItemArchiver {
         self.threadStore = threadStore
     }
 
+    private lazy var attachmentsArchiver = MessageBackupMessageAttachmentArchiver(
+        attachmentManager: attachmentManager,
+        attachmentStore: attachmentStore,
+        backupAttachmentDownloadStore: backupAttachmentDownloadStore
+    )
     private lazy var reactionArchiver = MessageBackupReactionArchiver(
         reactionStore: reactionStore
     )
     private lazy var contentsArchiver = MessageBackupTSMessageContentsArchiver(
         interactionStore: interactionStore,
         archivedPaymentStore: archivedPaymentStore,
+        attachmentsArchiver: attachmentsArchiver,
         reactionArchiver: reactionArchiver
     )
     private lazy var incomingMessageArchiver =

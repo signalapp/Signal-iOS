@@ -29,6 +29,7 @@ extension MessageBackup {
             //     the TSMessage to exist first before they can be created/inserted.
 
             fileprivate let reactions: [BackupProto_Reaction]
+            fileprivate let bodyAttachments: [BackupProto_MessageAttachment]
         }
 
         struct Payment {
@@ -62,15 +63,18 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
 
     private let interactionStore: InteractionStore
     private let archivedPaymentStore: ArchivedPaymentStore
+    private let attachmentsArchiver: MessageBackupMessageAttachmentArchiver
     private let reactionArchiver: MessageBackupReactionArchiver
 
     init(
         interactionStore: InteractionStore,
         archivedPaymentStore: ArchivedPaymentStore,
+        attachmentsArchiver: MessageBackupMessageAttachmentArchiver,
         reactionArchiver: MessageBackupReactionArchiver
     ) {
         self.interactionStore = interactionStore
         self.archivedPaymentStore = archivedPaymentStore
+        self.attachmentsArchiver = attachmentsArchiver
         self.reactionArchiver = reactionArchiver
     }
 
@@ -379,7 +383,15 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
         context: MessageBackup.ChatRestoringContext,
         tx: DBWriteTransaction
     ) -> RestoreInteractionResult<Void> {
+        guard let messageRowId = message.sqliteRowId else {
+            return .messageFailure([.restoreFrameError(
+                .databaseModelMissingRowId(modelClass: type(of: message)),
+                chatItemId
+            )])
+        }
+
         let restoreInteractionResult: RestoreInteractionResult<Void>
+        let restoreBodyAttachmentsResult: RestoreInteractionResult<Void>
         switch restoredContents {
         case .text(let text):
             restoreInteractionResult = reactionArchiver.restoreReactions(
@@ -387,6 +399,14 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 chatItemId: chatItemId,
                 message: message,
                 context: context.recipientContext,
+                tx: tx
+            )
+            restoreBodyAttachmentsResult = attachmentsArchiver.restoreBodyAttachments(
+                text.bodyAttachments,
+                chatItemId: chatItemId,
+                messageRowId: messageRowId,
+                message: message,
+                thread: thread,
                 tx: tx
             )
         case .archivedPayment(let archivedPayment):
@@ -397,9 +417,12 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
                 message: message,
                 tx: tx
             )
+            // No body attachments to restore
+            restoreBodyAttachmentsResult = .success(())
         }
 
         return restoreInteractionResult
+            .combine(restoreBodyAttachmentsResult)
     }
 
     // MARK: Helpers
@@ -525,14 +548,16 @@ class MessageBackupTSMessageContentsArchiver: MessageBackupProtoArchiver {
             return .success(.text(.init(
                 body: body,
                 quotedMessage: quotedMessage,
-                reactions: standardMessage.reactions
+                reactions: standardMessage.reactions,
+                bodyAttachments: standardMessage.attachments
             )))
         case .partialRestore(let body, let partialErrors):
             return .partialRestore(
                 .text(.init(
                     body: body,
                     quotedMessage: quotedMessage,
-                    reactions: standardMessage.reactions
+                    reactions: standardMessage.reactions,
+                    bodyAttachments: standardMessage.attachments
                 )),
                 partialErrors
             )

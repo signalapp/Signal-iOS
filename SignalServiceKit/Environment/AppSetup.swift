@@ -910,6 +910,9 @@ public class AppSetup {
                 threadStore: threadStore
             ),
             chatItemArchiver: MessageBackupChatItemArchiverImpl(
+                attachmentManager: attachmentManager,
+                attachmentStore: attachmentStore,
+                backupAttachmentDownloadStore: backupAttachmentDownloadStore,
                 callRecordStore: callRecordStore,
                 contactManager: MessageBackup.Wrappers.ContactManager(contactManager),
                 dateProvider: dateProvider,
