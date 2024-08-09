@@ -360,7 +360,7 @@ extension VideoEditorModel {
             session.timeRange = cmRange
 
 #if compiler(>=6.0)
-            try await session.export(to: exportURL, as: .mp4)
+            try await session.exportAsync(to: exportURL, as: .mp4)
 #else
             await session.export()
 #endif

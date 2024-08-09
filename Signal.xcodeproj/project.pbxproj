@@ -19,6 +19,7 @@
 		0550A5E22C4035170072CC02 /* CLVViewInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0550A5E12C4035170072CC02 /* CLVViewInfo.swift */; };
 		0550A5E42C4048CF0072CC02 /* ChatListFilterFooterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0550A5E32C4048CF0072CC02 /* ChatListFilterFooterCell.swift */; };
 		05572BC42BFC0094006A72F1 /* DoubleTapToEditOnboardingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05572BC32BFC0094006A72F1 /* DoubleTapToEditOnboardingController.swift */; };
+		058B49932C66805500307D38 /* AVAssetExportSession+Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 058B49922C66804B00307D38 /* AVAssetExportSession+Async.swift */; };
 		05B411252C62845000A1EDBC /* ChatListInboxFilterSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B411242C62845000A1EDBC /* ChatListInboxFilterSection.swift */; };
 		0CE014267EDFBD2538E940A0 /* Pods_Signal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FF88FB580BC19B240EEB86A /* Pods_Signal.framework */; };
 		1404D8B3276A353B0068E2F6 /* ChatListViewController+Multiselect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1404D8B2276A353A0068E2F6 /* ChatListViewController+Multiselect.swift */; };
@@ -2971,6 +2972,7 @@
 		0550A5E12C4035170072CC02 /* CLVViewInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLVViewInfo.swift; sourceTree = "<group>"; };
 		0550A5E32C4048CF0072CC02 /* ChatListFilterFooterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListFilterFooterCell.swift; sourceTree = "<group>"; };
 		05572BC32BFC0094006A72F1 /* DoubleTapToEditOnboardingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoubleTapToEditOnboardingController.swift; sourceTree = "<group>"; };
+		058B49922C66804B00307D38 /* AVAssetExportSession+Async.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVAssetExportSession+Async.swift"; sourceTree = "<group>"; };
 		05B411242C62845000A1EDBC /* ChatListInboxFilterSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListInboxFilterSection.swift; sourceTree = "<group>"; };
 		05E3A4DD8B4442530268AFC1 /* Pods-SignalShareExtension.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.app store release.xcconfig"; path = "Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.app store release.xcconfig"; sourceTree = "<group>"; };
 		0BADD293DAFC82BF3274F0F6 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -11857,6 +11859,7 @@
 				F972180528DE37A200113D9F /* AppVersion.swift */,
 				F9C5CB38289453B200548EEE /* Array+SSK.swift */,
 				F9C5CB25289453B200548EEE /* Atomics.swift */,
+				058B49922C66804B00307D38 /* AVAssetExportSession+Async.swift */,
 				502C69712B06F07900012867 /* AwaitableAsyncBlockOperation.swift */,
 				F9C5CB64289453B200548EEE /* Batching.swift */,
 				F9C5CB40289453B200548EEE /* Bench.swift */,
@@ -14227,6 +14230,7 @@
 				500AEE092A4E09AD00371F05 /* AuthorMergeObserver.swift in Sources */,
 				6649651C2BDC6EAD00E2DE98 /* AVAsset+Attachment.swift in Sources */,
 				665CC7C52BF2BF8100E3A00B /* AVAsset+TSAttachment.swift in Sources */,
+				058B49932C66805500307D38 /* AVAssetExportSession+Async.swift in Sources */,
 				7254651E2BA012BD00EABFD2 /* AvatarBuilder.swift in Sources */,
 				720547F22B9C8F9900E2CF2F /* AvatarModel.swift in Sources */,
 				502C69722B06F07900012867 /* AwaitableAsyncBlockOperation.swift in Sources */,

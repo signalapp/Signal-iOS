@@ -1206,7 +1206,7 @@ public class SignalAttachment: NSObject {
             group.addTask { @MainActor in
                 Logger.debug("Starting video export")
 #if compiler(>=6.0)
-                try await exportSession.export(to: exportURL, as: .mp4)
+                try await exportSession.exportAsync(to: exportURL, as: .mp4)
 #else
                 await exportSession.export()
 #endif
