@@ -20,8 +20,9 @@ open class AttachmentManagerMock: AttachmentManager {
         from backupProtos: [OwnedAttachmentBackupPointerProto],
         uploadEra: String,
         tx: DBWriteTransaction
-    ) throws {
+    ) -> [OwnedAttachmentBackupPointerProto.CreationError] {
         // Do nothing
+        return []
     }
 
     open func createAttachmentStreams(

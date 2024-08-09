@@ -33,6 +33,9 @@ public class AttachmentManagerImpl: AttachmentManager {
         from protos: [OwnedAttachmentPointerProto],
         tx: DBWriteTransaction
     ) throws {
+        guard protos.count < UInt32.max else {
+            throw OWSAssertionError("Input array too large")
+        }
         try createAttachments(
             protos,
             mimeType: \.proto.contentType,
@@ -47,14 +50,14 @@ public class AttachmentManagerImpl: AttachmentManager {
         from backupProtos: [OwnedAttachmentBackupPointerProto],
         uploadEra: String,
         tx: DBWriteTransaction
-    ) throws {
-        try createAttachments(
+    ) -> [OwnedAttachmentBackupPointerProto.CreationError] {
+        let results = createAttachments(
             backupProtos,
             mimeType: { $0.proto.contentType },
             owner: \.owner,
             output: { $0 },
             createFn: {
-                try self._createAttachmentPointer(
+                 return self._createAttachmentPointer(
                     from: $0,
                     owner: $1,
                     sourceOrder: $2,
@@ -64,12 +67,23 @@ public class AttachmentManagerImpl: AttachmentManager {
             },
             tx: tx
         )
+        return results.compactMap { result in
+            switch result {
+            case .success:
+                return nil
+            case .failure(let error):
+                return error
+            }
+        }
     }
 
     public func createAttachmentStreams(
         consuming dataSources: [OwnedAttachmentDataSource],
         tx: DBWriteTransaction
     ) throws {
+        guard dataSources.count < UInt32.max else {
+            throw OWSAssertionError("Input array too large")
+        }
         try createAttachments(
             dataSources,
             mimeType: { $0.mimeType },
@@ -154,18 +168,16 @@ public class AttachmentManagerImpl: AttachmentManager {
 
     // MARK: Creating Attachments from source
 
-    private func createAttachments<Input, Output>(
+    @discardableResult
+    private func createAttachments<Input, Output, Result>(
         _ inputArray: [Input],
         mimeType: (Input) -> String?,
         owner: (Input) -> OwnerBuilder,
         output: (Input) -> Output,
-        createFn: (Output, OwnerBuilder, UInt32?, DBWriteTransaction) throws -> Void,
+        createFn: (Output, OwnerBuilder, UInt32?, DBWriteTransaction) throws -> Result,
         tx: DBWriteTransaction
-    ) throws {
-        guard inputArray.count < UInt32.max else {
-            throw OWSAssertionError("Input array too large")
-        }
-
+    ) rethrows -> [Result] {
+        var results = [Result]()
         var indexOffset: Int = 0
         for (i, input) in inputArray.enumerated() {
             let sourceOrder: UInt32?
@@ -188,8 +200,10 @@ public class AttachmentManagerImpl: AttachmentManager {
                 }
             }
 
-            try createFn(output(input), ownerForInput, sourceOrder, tx)
+            let result = try createFn(output(input), ownerForInput, sourceOrder, tx)
+            results.append(result)
         }
+        return results
     }
 
     private func _createAttachmentPointer(
@@ -315,7 +329,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         sourceOrder: UInt32?,
         uploadEra: String,
         tx: DBWriteTransaction
-    ) throws {
+    ) -> Result<Void, OwnedAttachmentBackupPointerProto.CreationError> {
         let proto = ownedProto.proto
 
         let knownIdFromProto = ownedProto.clientUUID.map {
@@ -346,26 +360,34 @@ public class AttachmentManagerImpl: AttachmentManager {
         case .backupLocator(let backupLocator):
             let cdnNumber = backupLocator.cdnNumber
             guard cdnNumber > 0 else {
-                throw OWSAssertionError("Invalid cdn info")
+                return .failure(.missingBackupCdnNumber)
             }
             guard let mediaName = backupLocator.mediaName.nilIfEmpty else {
-                throw OWSAssertionError("Invalid media name")
+                return .failure(.missingMediaName)
             }
             guard let encryptionKey = backupLocator.key.nilIfEmpty else {
-                throw OWSAssertionError("Invalid encryption key")
+                return .failure(.missingEncryptionKey)
             }
             guard let digestSHA256Ciphertext = backupLocator.digest.nilIfEmpty else {
-                throw OWSAssertionError("Missing digest")
+                return .failure(.missingDigest)
             }
             guard backupLocator.size != 0 else {
-                throw OWSAssertionError("Invalid size")
+                return .failure(.missingSize)
+            }
+
+            let transitTierInfo: Attachment.TransitTierInfo?
+            switch self.transitTierInfo(from: proto) {
+            case .success(let value):
+                transitTierInfo = value
+            case .failure(let error):
+                return .failure(error)
             }
 
             attachmentParams = .fromBackup(
                 blurHash: proto.blurHash.nilIfEmpty,
                 mimeType: mimeType,
                 encryptionKey: encryptionKey,
-                transitTierInfo: try transitTierInfo(from: proto),
+                transitTierInfo: transitTierInfo,
                 mediaName: mediaName,
                 mediaTierInfo: .init(
                     cdnNumber: cdnNumber,
@@ -382,11 +404,18 @@ public class AttachmentManagerImpl: AttachmentManager {
             )
             sourceUnencryptedByteCount = backupLocator.size
         case .attachmentLocator(let attachmentLocator):
-            guard let transitTierInfo = try transitTierInfo(from: proto) else {
-                throw OWSAssertionError("Missing transit tier info")
+            let transitTierInfo: Attachment.TransitTierInfo
+            switch self.transitTierInfo(from: proto) {
+            case .success(let value):
+                guard let value else {
+                    return .failure(.missingLocator)
+                }
+                transitTierInfo = value
+            case .failure(let error):
+                return .failure(error)
             }
             guard attachmentLocator.size != 0 else {
-                throw OWSAssertionError("Invalid size")
+                return .failure(.missingSize)
             }
             attachmentParams = .fromPointer(
                 blurHash: proto.blurHash.nilIfEmpty,
@@ -403,29 +432,35 @@ public class AttachmentManagerImpl: AttachmentManager {
             sourceUnencryptedByteCount = nil
         }
 
-        let referenceParams = AttachmentReference.ConstructionParams(
-            owner: try owner.build(
-                orderInOwner: sourceOrder,
-                knownIdInOwner: knownIdFromProto,
-                renderingFlag: ownedProto.renderingFlag,
-                // Not downloaded so we don't know the content type.
-                contentType: nil
-            ),
-            sourceFilename: sourceFilename,
-            sourceUnencryptedByteCount: sourceUnencryptedByteCount,
-            sourceMediaSizePixels: sourceMediaSizePixels
-        )
+        do {
+            let referenceParams = AttachmentReference.ConstructionParams(
+                owner: try owner.build(
+                    orderInOwner: sourceOrder,
+                    knownIdInOwner: knownIdFromProto,
+                    renderingFlag: ownedProto.renderingFlag,
+                    // Not downloaded so we don't know the content type.
+                    contentType: nil
+                ),
+                sourceFilename: sourceFilename,
+                sourceUnencryptedByteCount: sourceUnencryptedByteCount,
+                sourceMediaSizePixels: sourceMediaSizePixels
+            )
 
-        try attachmentStore.insert(
-            attachmentParams,
-            reference: referenceParams,
-            tx: tx
-        )
+            try attachmentStore.insert(
+                attachmentParams,
+                reference: referenceParams,
+                tx: tx
+            )
+
+            return .success(())
+        } catch {
+            return .failure(.dbInsertionError(error))
+        }
     }
 
     private func transitTierInfo(
         from proto: BackupProto_FilePointer
-    ) throws -> Attachment.TransitTierInfo? {
+    ) -> Result<Attachment.TransitTierInfo?, OwnedAttachmentBackupPointerProto.CreationError> {
         let cdnNumber: UInt32
         let cdnKey: String
         let encryptionKey: Data
@@ -437,10 +472,10 @@ public class AttachmentManagerImpl: AttachmentManager {
             cdnNumber = backupLocator.transitCdnNumber
             cdnKey = backupLocator.transitCdnKey
             encryptionKey = backupLocator.key
-            guard let size = UInt32(exactly: backupLocator.size) else {
-                throw OWSAssertionError("Backup attachment too big!")
+            guard backupLocator.size > 0 else {
+                return .failure(.missingSize)
             }
-            unencryptedByteCount = size
+            unencryptedByteCount = backupLocator.size
             digest = backupLocator.digest
             // Treat it as uploaded now.
             uploadTimestamp = Date().ows_millisecondsSince1970
@@ -451,20 +486,25 @@ public class AttachmentManagerImpl: AttachmentManager {
             unencryptedByteCount = attachmentLocator.size
             digest = attachmentLocator.digest
             uploadTimestamp = attachmentLocator.uploadTimestamp
-        case .invalidAttachmentLocator, .none:
-            return nil
+        case .invalidAttachmentLocator:
+            return .success(nil)
+        case .none:
+            return .failure(.missingLocator)
         }
-        guard let cdnKey = cdnKey.nilIfEmpty, cdnNumber > 0 else {
-            throw OWSAssertionError("Invalid cdn info")
+        guard cdnNumber > 0 else {
+            return .failure(.missingTransitCdnNumber)
+        }
+        guard let cdnKey = cdnKey.nilIfEmpty else {
+            return .failure(.missingTransitCdnKey)
         }
         guard let encryptionKey = encryptionKey.nilIfEmpty else {
-            throw OWSAssertionError("Invalid encryption key")
+            return .failure(.missingEncryptionKey)
         }
         guard let digestSHA256Ciphertext = digest.nilIfEmpty else {
-            throw OWSAssertionError("Missing digest")
+            return .failure(.missingDigest)
         }
 
-        return .init(
+        return .success(.init(
             cdnNumber: cdnNumber,
             cdnKey: cdnKey,
             uploadTimestamp: uploadTimestamp,
@@ -472,7 +512,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             unencryptedByteCount: unencryptedByteCount,
             digestSHA256Ciphertext: digestSHA256Ciphertext,
             lastDownloadAttemptTimestamp: nil
-        )
+        ))
     }
 
     private func mimeType(

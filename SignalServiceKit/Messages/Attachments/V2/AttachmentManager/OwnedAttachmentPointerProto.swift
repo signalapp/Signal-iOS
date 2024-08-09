@@ -32,4 +32,16 @@ public struct OwnedAttachmentBackupPointerProto {
         self.clientUUID = clientUUID
         self.owner = owner
     }
+
+    public enum CreationError: Error {
+        case missingLocator
+        case missingBackupCdnNumber
+        case missingTransitCdnNumber
+        case missingTransitCdnKey
+        case missingMediaName
+        case missingEncryptionKey
+        case missingDigest
+        case missingSize
+        case dbInsertionError(Error)
+    }
 }
