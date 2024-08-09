@@ -125,7 +125,7 @@ public class AttachmentDownloadStoreImpl: AttachmentDownloadStore {
                     .forEach { try $0.delete(db) }
             }
 
-        case .userInitiated, .localClone:
+        case .userInitiated, .localClone, .backupRestoreHigh, .backupRestoreLow:
             break
         }
 

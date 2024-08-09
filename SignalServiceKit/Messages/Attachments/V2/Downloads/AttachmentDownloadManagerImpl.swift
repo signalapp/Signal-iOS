@@ -369,7 +369,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return nil
             case .mediaTierFullsize, .mediaTierThumbnail:
                 switch record.priority {
-                case .default:
+                case .default, .backupRestoreLow, .backupRestoreHigh:
                     guard record.retryAttempts < 32 else {
                         owsFailDebug("risk of integer overflow")
                         return nil
@@ -698,7 +698,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case .userInitiated, .localClone:
                 // Always download at these priorities.
                 return .downloadable
-            case .default:
+            case .default, .backupRestoreHigh, .backupRestoreLow:
                 break
             }
             return db.read { tx in
@@ -776,7 +776,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case .userInitiated, .localClone:
                 // Always download at these priorities.
                 return false
-            case .default:
+            case .default, .backupRestoreLow, .backupRestoreHigh:
                 break
             }
 
@@ -803,7 +803,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case .userInitiated, .localClone:
                 // Always download at these priorities.
                 return false
-            case .default:
+            case .default, .backupRestoreLow, .backupRestoreHigh:
                 break
             }
 
@@ -854,6 +854,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 return false
             case .default:
                 break
+            case .backupRestoreLow, .backupRestoreHigh:
+                // Despite being lower priority than default,
+                // these actually should download despite the setting.
+                return false
             }
 
             let autoDownloadableMediaTypes = mediaBandwidthPreferenceStore.autoDownloadableMediaTypes(tx: tx)

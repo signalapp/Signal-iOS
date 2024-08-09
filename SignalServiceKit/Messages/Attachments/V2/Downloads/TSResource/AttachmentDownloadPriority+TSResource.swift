@@ -10,6 +10,8 @@ extension AttachmentDownloadPriority {
     /// V2 priority corresponds to old "behavior" in terms of which checks it bypasses.
     var tsDownloadBehavior: TSAttachmentDownloadBehavior {
         switch self {
+        case .backupRestoreHigh, .backupRestoreLow:
+            return .default
         case .default:
             return .default
         case .userInitiated:

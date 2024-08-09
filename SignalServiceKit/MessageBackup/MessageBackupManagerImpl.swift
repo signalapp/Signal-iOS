@@ -588,6 +588,37 @@ public class MessageBackupManagerImpl: MessageBackupManager {
         }
 
         stream.closeFileStream()
+
+        // Enqueue downloads for all the attachments.
+        // TODO[Backups][Product question]: should we enqueue downloads for free tier attachments?
+        let nowMs = dateProvider().ows_millisecondsSince1970
+        let shouldDownloadAllFullsize = backupAttachmentDownloadStore.getShouldStoreAllMediaLocally(tx: tx)
+        try backupAttachmentDownloadStore.dequeueAndClearTable(tx: tx) { backupDownload in
+            // Every backup attachment gets enqueued for thumbnail download at lower priority.
+            attachmentDownloadManager.enqueueDownloadOfAttachment(
+                id: backupDownload.attachmentRowId,
+                priority: .backupRestoreLow,
+                source: .mediaTierThumbnail,
+                tx: tx
+            )
+            // If its recent media, also download fullsize at higher priority.
+            // Or if "optimize media" is off, download fullsize everything
+            // regardless of date.
+            let isRecentAttachment =
+                backupDownload.timestamp == nil
+                || nowMs - backupDownload.timestamp! <= (kDayInMs * 30)
+            if
+                shouldDownloadAllFullsize
+                || isRecentAttachment
+            {
+                attachmentDownloadManager.enqueueDownloadOfAttachment(
+                    id: backupDownload.attachmentRowId,
+                    priority: isRecentAttachment ? .backupRestoreHigh : .backupRestoreLow,
+                    source: .mediaTierFullsize,
+                    tx: tx
+                )
+            }
+        }
     }
 
     private func processRestoreFrameErrors<IdType>(errors: [MessageBackup.RestoreFrameError<IdType>]) throws {

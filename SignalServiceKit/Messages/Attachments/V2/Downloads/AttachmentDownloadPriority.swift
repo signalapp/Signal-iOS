@@ -14,6 +14,13 @@ import Foundation
 /// * Whether we bypass auto-download settings (must be user initiated)
 ///
 public enum AttachmentDownloadPriority: Int, Codable {
+
+    /// Backups enqueue downloads at two priority levels; this is the lower.
+    case backupRestoreLow = 20
+    /// Backups enqueue downloads at two priority levels; this is the lower.
+    /// It is still lower priority than `default` (below new incoming attachments).
+    case backupRestoreHigh = 25
+
     case `default` = 50
 
     case userInitiated = 100
