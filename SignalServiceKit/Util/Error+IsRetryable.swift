@@ -142,7 +142,6 @@ public enum SSKUnretryableError: Error, IsRetryableProvider {
     case downloadCouldNotMoveFile
     case downloadCouldNotDeleteFile
     case messageProcessingFailed
-    case restoreGroupFailed
 
     // MARK: - IsRetryableProvider
 

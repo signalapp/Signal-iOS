@@ -26,13 +26,6 @@ public extension GroupsV2Impl {
     // Values are irrelevant (bools).
     private static let failedStorageServiceGroupIds = SDSKeyValueStore(collection: "GroupsV2Impl.groupsFromStorageService_Failed")
 
-    private static let restoreGroupsOperationQueue: OperationQueue = {
-        let queue = OperationQueue()
-        queue.maxConcurrentOperationCount = 1
-        queue.name = "GroupsV2-Restore"
-        return queue
-    }()
-
     static func isGroupKnownToStorageService(groupModel: TSGroupModelV2, transaction: SDSAnyReadTransaction) -> Bool {
         do {
             let masterKeyData = try groupModel.masterKey().serialize().asData
@@ -60,7 +53,6 @@ public extension GroupsV2Impl {
         account: AuthedAccount,
         transaction: SDSAnyWriteTransaction
     ) {
-
         guard GroupMasterKey.isValid(groupRecord.masterKey) else {
             owsFailDebug("Invalid master key.")
             return
@@ -89,7 +81,7 @@ public extension GroupsV2Impl {
         storageServiceGroupsToRestore.setData(serializedData, key: key, transaction: transaction)
 
         transaction.addAsyncCompletionOffMain {
-            self.enqueueRestoreGroupPass(account: account)
+            self.enqueueRestoreGroupPass(authedAccount: account)
         }
     }
 
@@ -97,59 +89,67 @@ public extension GroupsV2Impl {
         return masterKeyData.hexadecimalString
     }
 
-    private static func canProcessGroupRestore(account: AuthedAccount) -> Bool {
-        // CurrentAppContext().isMainAppAndActive should
-        // only be called on the main thread.
-        guard
-            CurrentAppContext().isMainApp,
-            CurrentAppContext().isAppForegroundAndActive()
-        else {
-            return false
-        }
-        guard reachabilityManager.isReachable else {
-            return false
-        }
-        switch account.info {
+    private static func canProcessGroupRestore(authedAccount: AuthedAccount) async -> Bool {
+        return await (
+            self.isMainAppAndActive()
+            && reachabilityManager.isReachable
+            && isRegisteredWithSneakyTransaction(authedAccount: authedAccount)
+        )
+    }
+
+    @MainActor
+    private static func isMainAppAndActive() -> Bool {
+        return CurrentAppContext().isMainAppAndActive
+    }
+
+    private static func isRegisteredWithSneakyTransaction(authedAccount: AuthedAccount) -> Bool {
+        switch authedAccount.info {
         case .explicit:
-            break
+            return true
         case .implicit:
-            guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
-                return false
-            }
+            return DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered
         }
-        return true
     }
 
-    static func enqueueRestoreGroupPass(account: AuthedAccount) {
-        guard canProcessGroupRestore(account: account) else {
-            return
+    private struct State {
+        var inProgress = false
+        var pendingAuthedAccount: AuthedAccount?
+
+        mutating func startIfNeeded(authedAccount: AuthedAccount) -> AuthedAccount? {
+            if self.inProgress {
+                // Already started, so queue up the next one for whenever it finishes.
+                self.pendingAuthedAccount = self.pendingAuthedAccount?.orIfImplicitUse(authedAccount) ?? authedAccount
+                return nil
+            } else {
+                self.inProgress = true
+                return authedAccount
+            }
         }
-        let operation = RestoreGroupOperation(account: account)
-        GroupsV2Impl.restoreGroupsOperationQueue.addOperation(operation)
+
+        mutating func continueIfNeeded(hasMore: Bool, authedAccount: AuthedAccount) -> AuthedAccount? {
+            assert(self.inProgress)
+            if hasMore {
+                self.pendingAuthedAccount = self.pendingAuthedAccount?.orIfImplicitUse(authedAccount) ?? authedAccount
+            }
+            let result = self.pendingAuthedAccount
+            self.pendingAuthedAccount = nil
+            self.inProgress = (result != nil)
+            return result
+        }
     }
 
-    fileprivate enum RestoreGroupOutcome: CustomStringConvertible {
-        case success
-        case unretryableFailure
-        case retryableFailure
-        case emptyQueue
-        case cantProcess
+    private static let state = AtomicValue<State>(State(), lock: .init())
 
-        // MARK: - CustomStringConvertible
+    static func enqueueRestoreGroupPass(authedAccount: AuthedAccount) {
+        let authedAccountToStart = self.state.update { $0.startIfNeeded(authedAccount: authedAccount) }
+        Task { await startRestoreGroupPass(authedAccount: authedAccountToStart) }
+    }
 
-        public var description: String {
-            switch self {
-            case .success:
-                return "success"
-            case .unretryableFailure:
-                return "unretryableFailure"
-            case .retryableFailure:
-                return "retryableFailure"
-            case .emptyQueue:
-                return "emptyQueue"
-            case .cantProcess:
-                return "cantProcess"
-            }
+    private static func startRestoreGroupPass(authedAccount initialAuthedAccount: AuthedAccount?) async {
+        var nextAuthedAccount = initialAuthedAccount
+        while let currentAuthedAccount = nextAuthedAccount {
+            let hasMore = await tryToRestoreNextGroup(authedAccount: currentAuthedAccount)
+            nextAuthedAccount = self.state.update { $0.continueIfNeeded(hasMore: hasMore, authedAccount: currentAuthedAccount) }
         }
     }
 
@@ -160,152 +160,109 @@ public extension GroupsV2Impl {
         return try? .init(serializedData: serializedData)
     }
 
-    // Every invocation of this method should remove (up to) one group from the queue.
-    //
-    // This method should only be called on restoreGroupsOperationQueue.
-    private static func tryToRestoreNextGroup(account: AuthedAccount) -> Promise<RestoreGroupOutcome> {
-        guard canProcessGroupRestore(account: account) else {
-            return Promise.value(.cantProcess)
+    /// Processes & removes (up to) one group from the queue.
+    ///
+    /// - Returns: True if there is another group to process immediately. False
+    /// if there are no more groups to process or the app can't process updates
+    /// (eg because the device is in Airplane Mode).
+    private static func tryToRestoreNextGroup(authedAccount: AuthedAccount) async -> Bool {
+        guard await canProcessGroupRestore(authedAccount: authedAccount) else {
+            return false
         }
-        return Promise<RestoreGroupOutcome> { future in
-            DispatchQueue.global().async {
-                let (masterKeyData, groupRecord) = self.databaseStorage.read { transaction -> (Data?, StorageServiceProtoGroupV2Record?) in
-                    if let groupRecord = self.anyEnqueuedGroupRecord(transaction: transaction) {
-                        return (groupRecord.masterKey, groupRecord)
-                    } else {
-                        // Make sure we don't have any legacy master key only enqueued groups
-                        return (legacyStorageServiceGroupsToRestore.anyDataValue(transaction: transaction), nil)
+
+        let (masterKeyData, groupRecord) = self.databaseStorage.read { transaction -> (Data?, StorageServiceProtoGroupV2Record?) in
+            if let groupRecord = self.anyEnqueuedGroupRecord(transaction: transaction) {
+                return (groupRecord.masterKey, groupRecord)
+            } else {
+                // Make sure we don't have any legacy master key only enqueued groups
+                return (legacyStorageServiceGroupsToRestore.anyDataValue(transaction: transaction), nil)
+            }
+        }
+
+        guard let masterKeyData else {
+            return false
+        }
+
+        let key = self.restoreGroupKey(forMasterKeyData: masterKeyData)
+
+        // If we have an unrecoverable failure, remove the key from the store so
+        // that we stop retrying until storage service asks us to try again.
+        let markAsFailed = {
+            await databaseStorage.awaitableWrite { transaction in
+                self.storageServiceGroupsToRestore.removeValue(forKey: key, transaction: transaction)
+                self.legacyStorageServiceGroupsToRestore.removeValue(forKey: key, transaction: transaction)
+                self.failedStorageServiceGroupIds.setBool(true, key: key, transaction: transaction)
+            }
+        }
+
+        let markAsComplete = {
+            await databaseStorage.awaitableWrite { transaction in
+                // Now that the thread exists, re-apply the pending group record from
+                // storage service.
+                if var groupRecord {
+                    // First apply any migrations
+                    if StorageServiceUnknownFieldMigrator.shouldInterceptRemoteManifestBeforeMerging(tx: transaction) {
+                        groupRecord = StorageServiceUnknownFieldMigrator.interceptRemoteManifestBeforeMerging(
+                            record: groupRecord,
+                            tx: transaction
+                        )
                     }
-                }
 
-                guard let masterKeyData = masterKeyData else {
-                    return future.resolve(.emptyQueue)
-                }
-                let key = self.restoreGroupKey(forMasterKeyData: masterKeyData)
-
-                // If we have an unrecoverable failure, remove the key
-                // from the store so that we stop retrying until the
-                // next time that storage service prods us to try.
-                let markAsFailed = {
-                    databaseStorage.write { transaction in
-                        self.storageServiceGroupsToRestore.removeValue(forKey: key, transaction: transaction)
-                        self.legacyStorageServiceGroupsToRestore.removeValue(forKey: key, transaction: transaction)
-                        self.failedStorageServiceGroupIds.setBool(true, key: key, transaction: transaction)
-                    }
-                }
-                let markAsComplete = {
-                    databaseStorage.write { transaction in
-                        // Now that the thread exists, re-apply the pending group record from storage service.
-                        if var groupRecord {
-                            // First apply any migrations
-                            if StorageServiceUnknownFieldMigrator.shouldInterceptRemoteManifestBeforeMerging(tx: transaction) {
-                                groupRecord = StorageServiceUnknownFieldMigrator.interceptRemoteManifestBeforeMerging(
-                                    record: groupRecord,
-                                    tx: transaction
-                                )
-                            }
-
-                            let recordUpdater = StorageServiceGroupV2RecordUpdater(
-                                authedAccount: account,
-                                blockingManager: blockingManager,
-                                groupsV2: groupsV2,
-                                profileManager: profileManager
-                            )
-                            _ = recordUpdater.mergeRecord(groupRecord, transaction: transaction)
-                        }
-
-                        self.storageServiceGroupsToRestore.removeValue(forKey: key, transaction: transaction)
-                        self.legacyStorageServiceGroupsToRestore.removeValue(forKey: key, transaction: transaction)
-                    }
-                }
-
-                let groupContextInfo: GroupV2ContextInfo
-                do {
-                    groupContextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: masterKeyData)
-                } catch {
-                    owsFailDebug("Error: \(error)")
-                    markAsFailed()
-                    return future.resolve(.unretryableFailure)
-                }
-
-                let isGroupInDatabase = self.databaseStorage.read { transaction in
-                    TSGroupThread.fetch(groupId: groupContextInfo.groupId, transaction: transaction) != nil
-                }
-                guard !isGroupInDatabase else {
-                    // No work to be done, group already in database.
-                    markAsComplete()
-                    return future.resolve(.success)
-                }
-
-                // This will try to update the group using incremental "changes" but
-                // failover to using a "snapshot".
-                let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionAfterMessageProcessWithThrottling
-                Promise.wrapAsync {
-                    try await self.groupV2Updates.tryToRefreshV2GroupThread(
-                        groupId: groupContextInfo.groupId,
-                        spamReportingMetadata: .learnedByLocallyInitatedRefresh,
-                        groupSecretParams: groupContextInfo.groupSecretParams,
-                        groupUpdateMode: groupUpdateMode
+                    let recordUpdater = StorageServiceGroupV2RecordUpdater(
+                        authedAccount: authedAccount,
+                        blockingManager: blockingManager,
+                        groupsV2: groupsV2,
+                        profileManager: profileManager
                     )
-                }.done { _ in
-                    markAsComplete()
-                    future.resolve(.success)
-                }.catch { error in
-                    if error.isNetworkFailureOrTimeout {
-                        Logger.warn("Error: \(error)")
-                        return future.resolve(.retryableFailure)
-                    } else {
-                        switch error {
-                        case GroupsV2Error.localUserNotInGroup:
-                            Logger.warn("Error: \(error)")
-                        default:
-                            owsFailDebug("Error: \(error)")
-                        }
-                        markAsFailed()
-                        return future.resolve(.unretryableFailure)
-                    }
+                    _ = recordUpdater.mergeRecord(groupRecord, transaction: transaction)
                 }
-            }
-        }
-    }
 
-    // MARK: -
-
-    private class RestoreGroupOperation: OWSOperation {
-
-        private let account: AuthedAccount
-
-        init(account: AuthedAccount) {
-            self.account = account
-            super.init()
-        }
-
-        public override func run() {
-            firstly { [account] in
-                GroupsV2Impl.tryToRestoreNextGroup(account: account)
-            }.done(on: DispatchQueue.global()) { [account] outcome in
-                switch outcome {
-                case .success, .unretryableFailure:
-                    // Continue draining queue.
-                    GroupsV2Impl.enqueueRestoreGroupPass(account: account)
-                case .retryableFailure:
-                    // Pause processing for now.
-                    // Presumably network failures are preventing restores.
-                    break
-                case .emptyQueue, .cantProcess:
-                    // Stop processing.
-                    break
-                }
-                self.reportSuccess()
-            }.catch(on: DispatchQueue.global()) { (error) in
-                // tryToRestoreNextGroup() should never fail.
-                owsFailDebug("Group restore failed: \(error)")
-                self.reportError(SSKUnretryableError.restoreGroupFailed)
+                self.storageServiceGroupsToRestore.removeValue(forKey: key, transaction: transaction)
+                self.legacyStorageServiceGroupsToRestore.removeValue(forKey: key, transaction: transaction)
             }
         }
 
-        public override func didFail(error: Error) {
-            Logger.error("failed with error: \(error)")
+        let groupContextInfo: GroupV2ContextInfo
+        do {
+            groupContextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: masterKeyData)
+        } catch {
+            owsFailDebug("Error: \(error)")
+            await markAsFailed()
+            return true
+        }
+
+        let isGroupInDatabase = self.databaseStorage.read { transaction in
+            TSGroupThread.fetch(groupId: groupContextInfo.groupId, transaction: transaction) != nil
+        }
+        if isGroupInDatabase {
+            // No work to be done, group already in database.
+            await markAsComplete()
+            return true
+        }
+
+        // This will try to update the group using incremental "changes" but
+        // failover to using a "snapshot".
+        let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionAfterMessageProcessWithThrottling
+        do {
+            _ = try await self.groupV2Updates.tryToRefreshV2GroupThread(
+                groupId: groupContextInfo.groupId,
+                spamReportingMetadata: .learnedByLocallyInitatedRefresh,
+                groupSecretParams: groupContextInfo.groupSecretParams,
+                groupUpdateMode: groupUpdateMode
+            )
+            await markAsComplete()
+            return true
+        } catch where error.isNetworkFailureOrTimeout {
+            Logger.warn("Error: \(error)")
+            return false
+        } catch GroupsV2Error.localUserNotInGroup {
+            Logger.warn("Failing because we're not a group member")
+            await markAsFailed()
+            return true
+        } catch {
+            owsFailDebug("Error: \(error)")
+            await markAsFailed()
+            return true
         }
     }
 }

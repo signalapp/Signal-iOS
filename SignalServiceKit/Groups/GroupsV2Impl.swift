@@ -38,7 +38,7 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
         }
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            Self.enqueueRestoreGroupPass(account: .implicit())
+            Self.enqueueRestoreGroupPass(authedAccount: .implicit())
         }
 
         observeNotifications()
@@ -65,14 +65,14 @@ public class GroupsV2Impl: GroupsV2, Dependencies {
     private func didBecomeActive() {
         AssertIsOnMainThread()
 
-        GroupsV2Impl.enqueueRestoreGroupPass(account: .implicit())
+        Self.enqueueRestoreGroupPass(authedAccount: .implicit())
     }
 
     @objc
     private func reachabilityChanged() {
         AssertIsOnMainThread()
 
-        GroupsV2Impl.enqueueRestoreGroupPass(account: .implicit())
+        Self.enqueueRestoreGroupPass(authedAccount: .implicit())
     }
 
     // MARK: - Create Group
