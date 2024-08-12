@@ -126,7 +126,7 @@ public protocol OWSUDManager {
 
     // MARK: Sender Certificate
 
-    func ensureSenderCertificates(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) -> Promise<SenderCertificates>
+    func fetchSenderCertificates(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) async throws -> SenderCertificates
 
     func removeSenderCertificates(transaction: SDSAnyWriteTransaction)
     func removeSenderCertificates(tx: DBWriteTransaction)
@@ -193,31 +193,29 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
                                                name: .OWSApplicationDidBecomeActive,
                                                object: nil)
 
-        // We can fill in any missing sender certificate async;
-        // message sending will fill in the sender certificate sooner
-        // if it needs it.
-        DispatchQueue.global().async {
-            // Any error is silently ignored.
-            _ = self.ensureSenderCertificates(certificateExpirationPolicy: .strict)
+        // We can fill in any missing sender certificate async; message sending
+        // will fill in the sender certificate sooner if it needs it.
+        Task {
+            _ = try? await self.fetchSenderCertificates(certificateExpirationPolicy: .strict)
         }
     }
 
     @objc
     private func registrationStateDidChange() {
-        AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
 
-        // Any error is silently ignored.
-        _ = ensureSenderCertificates(certificateExpirationPolicy: .strict)
+        Task {
+            _ = try? await fetchSenderCertificates(certificateExpirationPolicy: .strict)
+        }
     }
 
     @objc
     private func didBecomeActive() {
-        AssertIsOnMainThread()
         owsAssertDebug(AppReadiness.isAppReady)
 
-        // Any error is silently ignored.
-        _ = ensureSenderCertificates(certificateExpirationPolicy: .strict)
+        Task {
+            _ = try? await fetchSenderCertificates(certificateExpirationPolicy: .strict)
+        }
     }
 
     // MARK: - Recipient state
@@ -315,128 +313,105 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     // MARK: - Sender Certificate
 
-    #if TESTABLE_BUILD
-    public func hasSenderCertificates() -> Bool {
-        return senderCertificate(uuidOnly: true, certificateExpirationPolicy: .permissive) != nil
-            && senderCertificate(uuidOnly: false, certificateExpirationPolicy: .permissive) != nil
-    }
-    #endif
-
-    private func senderCertificate(uuidOnly: Bool, certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) -> SenderCertificate? {
-        var certificateDateValue: Date?
-        var certificateDataValue: Data?
-        databaseStorage.read { transaction in
-            certificateDateValue = self.keyValueStore.getDate(self.senderCertificateDateKey(uuidOnly: uuidOnly), transaction: transaction)
-            certificateDataValue = self.keyValueStore.getData(self.senderCertificateKey(uuidOnly: uuidOnly), transaction: transaction)
+    private func senderCertificate(aciOnly: Bool, certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) -> SenderCertificate? {
+        let (dateValue, dataValue) = databaseStorage.read { tx in
+            return (
+                self.keyValueStore.getDate(self.senderCertificateDateKey(aciOnly: aciOnly), transaction: tx),
+                self.keyValueStore.getData(self.senderCertificateKey(aciOnly: aciOnly), transaction: tx)
+            )
         }
 
-        if certificateExpirationPolicy == .strict {
-            guard let certificateDate = certificateDateValue else {
-                return nil
-            }
-            guard -certificateDate.timeIntervalSinceNow < kDayInterval else {
-                // Discard certificates that we obtained more than 24 hours ago.
-                return nil
-            }
-        }
-
-        guard let certificateData = certificateDataValue else {
+        guard let dateValue, let dataValue else {
             return nil
         }
 
+        // Discard certificates that we obtained more than 24 hours ago.
+        if certificateExpirationPolicy == .strict, -dateValue.timeIntervalSinceNow >= kDayInterval {
+            return nil
+        }
+
+        let senderCertificate: SenderCertificate
         do {
-            let certificate = try SenderCertificate(certificateData)
-
-            guard isValidCertificate(certificate) else {
-                Logger.info("Existing sender certificate isn't valid. Ignoring it and fetching a new one...")
-                return nil
-            }
-
-            return certificate
+            senderCertificate = try SenderCertificate(dataValue)
         } catch {
             owsFailDebug("Certificate could not be parsed: \(error)")
             return nil
         }
+        guard isValidCertificate(senderCertificate) else {
+            Logger.warn("Existing sender certificate isn't valid. Ignoring it and fetching a new one...")
+            return nil
+        }
+        return senderCertificate
     }
 
-    func setSenderCertificate(uuidOnly: Bool, certificateData: Data) {
-        databaseStorage.write { transaction in
-            self.keyValueStore.setDate(Date(), key: self.senderCertificateDateKey(uuidOnly: uuidOnly), transaction: transaction)
-            self.keyValueStore.setData(certificateData, key: self.senderCertificateKey(uuidOnly: uuidOnly), transaction: transaction)
+    func setSenderCertificate(aciOnly: Bool, certificateData: Data) async {
+        await databaseStorage.awaitableWrite { tx in
+            self.keyValueStore.setDate(Date(), key: self.senderCertificateDateKey(aciOnly: aciOnly), transaction: tx)
+            self.keyValueStore.setData(certificateData, key: self.senderCertificateKey(aciOnly: aciOnly), transaction: tx)
         }
     }
 
     public func removeSenderCertificates(transaction: SDSAnyWriteTransaction) {
-        keyValueStore.removeValue(forKey: senderCertificateDateKey(uuidOnly: true), transaction: transaction)
-        keyValueStore.removeValue(forKey: senderCertificateKey(uuidOnly: true), transaction: transaction)
-        keyValueStore.removeValue(forKey: senderCertificateDateKey(uuidOnly: false), transaction: transaction)
-        keyValueStore.removeValue(forKey: senderCertificateKey(uuidOnly: false), transaction: transaction)
+        keyValueStore.removeValue(forKey: senderCertificateDateKey(aciOnly: true), transaction: transaction)
+        keyValueStore.removeValue(forKey: senderCertificateKey(aciOnly: true), transaction: transaction)
+        keyValueStore.removeValue(forKey: senderCertificateDateKey(aciOnly: false), transaction: transaction)
+        keyValueStore.removeValue(forKey: senderCertificateKey(aciOnly: false), transaction: transaction)
     }
 
     public func removeSenderCertificates(tx: DBWriteTransaction) {
         removeSenderCertificates(transaction: SDSDB.shimOnlyBridge(tx))
     }
 
-    private func senderCertificateKey(uuidOnly: Bool) -> String {
+    private func senderCertificateKey(aciOnly: Bool) -> String {
         let baseKey = kUDCurrentSenderCertificateKey
-        if uuidOnly {
+        if aciOnly {
             return "\(baseKey)-withoutPhoneNumber"
         } else {
             return baseKey
         }
     }
 
-    private func senderCertificateDateKey(uuidOnly: Bool) -> String {
+    private func senderCertificateDateKey(aciOnly: Bool) -> String {
         let baseKey = kUDCurrentSenderCertificateDateKey
-        if uuidOnly {
+        if aciOnly {
             return "\(baseKey)-withoutPhoneNumber"
         } else {
             return baseKey
         }
     }
 
-    public func ensureSenderCertificates(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) -> Promise<SenderCertificates> {
-        guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
+    public func fetchSenderCertificates(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) async throws -> SenderCertificates {
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
             // We don't want to assert but we should log and fail.
-            return Promise(error: OWSGenericError("Not registered and ready."))
+            throw OWSGenericError("Not registered and ready.")
         }
-        let defaultPromise = ensureSenderCertificate(uuidOnly: false, certificateExpirationPolicy: certificateExpirationPolicy)
-        let uuidOnlyPromise = ensureSenderCertificate(uuidOnly: true, certificateExpirationPolicy: certificateExpirationPolicy)
-        return firstly(on: DispatchQueue.global()) {
-            Promise.when(fulfilled: defaultPromise, uuidOnlyPromise)
-        }.map(on: DispatchQueue.global()) { defaultCert, uuidOnlyCert in
-            return SenderCertificates(defaultCert: defaultCert, uuidOnlyCert: uuidOnlyCert)
-        }
+        async let defaultCert = fetchSenderCertificate(aciOnly: false, certificateExpirationPolicy: certificateExpirationPolicy)
+        async let aciOnlyCert = fetchSenderCertificate(aciOnly: true, certificateExpirationPolicy: certificateExpirationPolicy)
+        return SenderCertificates(
+            defaultCert: try await defaultCert,
+            uuidOnlyCert: try await aciOnlyCert
+        )
     }
 
-    public func ensureSenderCertificate(uuidOnly: Bool, certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) -> Promise<SenderCertificate> {
+    public func fetchSenderCertificate(aciOnly: Bool, certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) async throws -> SenderCertificate {
         // If there is a valid cached sender certificate, use that.
-        if let certificate = senderCertificate(uuidOnly: uuidOnly, certificateExpirationPolicy: certificateExpirationPolicy) {
-            return Promise.value(certificate)
-        }
-
-        return firstly(on: DispatchQueue.global()) {
-            self.requestSenderCertificate(uuidOnly: uuidOnly)
-        }.map(on: DispatchQueue.global()) { (certificate: SenderCertificate) in
-            self.setSenderCertificate(uuidOnly: uuidOnly, certificateData: Data(certificate.serialize()))
+        if let certificate = senderCertificate(aciOnly: aciOnly, certificateExpirationPolicy: certificateExpirationPolicy) {
             return certificate
         }
+
+        let senderCertificate = try await self.requestSenderCertificate(aciOnly: aciOnly)
+        await self.setSenderCertificate(aciOnly: aciOnly, certificateData: Data(senderCertificate.serialize()))
+        return senderCertificate
     }
 
-    private func requestSenderCertificate(uuidOnly: Bool) -> Promise<SenderCertificate> {
-        return firstly(on: DispatchQueue.global()) {
-            SignalServiceRestClient().requestUDSenderCertificate(uuidOnly: uuidOnly)
-        }.map(on: DispatchQueue.global()) { (certificateData: Data) -> SenderCertificate in
-            let certificate = try SenderCertificate(certificateData)
-
-            guard self.isValidCertificate(certificate) else {
-                throw OWSUDError.invalidData(description: "Invalid sender certificate returned by server")
-            }
-
-            return certificate
-        }.recover(on: DispatchQueue.global()) { error -> Promise<SenderCertificate> in
-            throw error
+    private func requestSenderCertificate(aciOnly: Bool) async throws -> SenderCertificate {
+        let certificateData = try await SignalServiceRestClient().requestUDSenderCertificate(uuidOnly: aciOnly).awaitable()
+        let senderCertificate = try SenderCertificate(certificateData)
+        guard self.isValidCertificate(senderCertificate) else {
+            throw OWSUDError.invalidData(description: "Invalid sender certificate returned by server")
         }
+        return senderCertificate
     }
 
     private func isValidCertificate(_ certificate: SenderCertificate) -> Bool {

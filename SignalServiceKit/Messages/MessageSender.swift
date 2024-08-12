@@ -734,7 +734,7 @@ public class MessageSender: Dependencies {
         }
         do {
             try await waitForPreKeyRotationIfNeeded()
-            let senderCertificates = try await udManager.ensureSenderCertificates(certificateExpirationPolicy: .permissive).awaitable()
+            let senderCertificates = try await udManager.fetchSenderCertificates(certificateExpirationPolicy: .permissive)
             try await sendPreparedMessage(message, canLookUpPhoneNumbers: true, senderCertificates: senderCertificates)
         } catch {
             if message.wasSentToAnyRecipient {
