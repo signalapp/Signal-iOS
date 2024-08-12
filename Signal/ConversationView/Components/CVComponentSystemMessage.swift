@@ -1023,23 +1023,24 @@ extension CVComponentSystemMessage {
 
     // MARK: - Actions
 
-    static func action(forInteraction interaction: TSInteraction,
-                       threadViewModel: ThreadViewModel,
-                       currentGroupCallThreadUniqueId: String?,
-                       transaction: SDSAnyReadTransaction) -> Action? {
-
-        let thread = threadViewModel.threadRecord
-
+    static func action(
+        forInteraction interaction: TSInteraction,
+        threadViewModel: ThreadViewModel,
+        currentGroupCallThreadUniqueId: String?,
+        transaction: SDSAnyReadTransaction
+    ) -> Action? {
         if let errorMessage = interaction as? TSErrorMessage {
             return action(forErrorMessage: errorMessage)
         } else if let infoMessage = interaction as? TSInfoMessage {
             return action(forInfoMessage: infoMessage, transaction: transaction)
         } else if let call = interaction as? TSCall {
-            return action(forCall: call, thread: thread, transaction: transaction)
+            return action(forCall: call, threadViewModel: threadViewModel)
         } else if let groupCall = interaction as? OWSGroupCallMessage {
-            return action(forGroupCall: groupCall,
-                          threadViewModel: threadViewModel,
-                          currentGroupCallThreadUniqueId: currentGroupCallThreadUniqueId)
+            return action(
+                forGroupCall: groupCall,
+                threadViewModel: threadViewModel,
+                currentGroupCallThreadUniqueId: currentGroupCallThreadUniqueId
+            )
         } else {
             owsFailDebug("Invalid interaction.")
             return nil
@@ -1288,15 +1289,8 @@ extension CVComponentSystemMessage {
         }
     }
 
-    private static func action(forCall call: TSCall,
-                               thread: TSThread,
-                               transaction: SDSAnyReadTransaction) -> Action? {
-
-        // TODO: Respect -canCall from ConversationViewController
-
-        let hasPendingMessageRequest = {
-            thread.hasPendingMessageRequest(transaction: transaction)
-        }
+    private static func action(forCall call: TSCall, threadViewModel: ThreadViewModel) -> Action? {
+        owsAssertDebug(threadViewModel.threadRecord is TSContactThread)
 
         switch call.callType {
         case .incoming,
@@ -1307,25 +1301,28 @@ extension CVComponentSystemMessage {
              .incomingAnsweredElsewhere,
              .incomingDeclinedElsewhere,
              .incomingBusyElsewhere:
-            guard !hasPendingMessageRequest() else {
+            guard ConversationViewController.canCall(threadViewModel: threadViewModel) else {
                 return nil
             }
             // TODO: cvc_didTapGroupCall?
-            return Action(title: OWSLocalizedString("CALLBACK_BUTTON_TITLE", comment: "notification action"),
-                          accessibilityIdentifier: "call_back",
-                          action: .didTapIndividualCall(call: call))
+            return Action(
+                title: OWSLocalizedString("CALLBACK_BUTTON_TITLE", comment: "notification action"),
+                accessibilityIdentifier: "call_back",
+                action: .didTapIndividualCall(call: call)
+            )
         case .outgoing,
              .outgoingMissed:
-            guard !hasPendingMessageRequest() else {
+            guard ConversationViewController.canCall(threadViewModel: threadViewModel) else {
                 return nil
             }
             // TODO: cvc_didTapGroupCall?
-            return Action(title: OWSLocalizedString("CALL_AGAIN_BUTTON_TITLE",
-                                                   comment: "Label for button that lets users call a contact again."),
-                          accessibilityIdentifier: "call_again",
-                          action: .didTapIndividualCall(call: call))
+            return Action(
+                title: OWSLocalizedString("CALL_AGAIN_BUTTON_TITLE", comment: "Label for button that lets users call a contact again."),
+                accessibilityIdentifier: "call_again",
+                action: .didTapIndividualCall(call: call)
+            )
         case .incomingMissedBecauseBlockedSystemContact:
-            guard !blockingManager.isThreadBlocked(thread, transaction: transaction) else {
+            if threadViewModel.isBlocked {
                 return nil
             }
             return Action(
@@ -1342,10 +1339,11 @@ extension CVComponentSystemMessage {
         }
     }
 
-    private static func action(forGroupCall groupCallMessage: OWSGroupCallMessage,
-                               threadViewModel: ThreadViewModel,
-                               currentGroupCallThreadUniqueId: String?) -> Action? {
-
+    private static func action(
+        forGroupCall groupCallMessage: OWSGroupCallMessage,
+        threadViewModel: ThreadViewModel,
+        currentGroupCallThreadUniqueId: String?
+    ) -> Action? {
         let thread = threadViewModel.threadRecord
         // Assume the current thread supports calling if we have no delegate. This ensures we always
         // overestimate cell measurement in cases where the current thread doesn't support calling.
@@ -1362,8 +1360,6 @@ extension CVComponentSystemMessage {
         let returnTitle = OWSLocalizedString("CALL_RETURN_BUTTON", comment: "Button to return to the current call")
         let title = isCurrentCallForThread ? returnTitle : CallStrings.joinGroupCall
 
-        return Action(title: title,
-                      accessibilityIdentifier: "group_call_button",
-                      action: .didTapGroupCall)
+        return Action(title: title, accessibilityIdentifier: "group_call_button", action: .didTapGroupCall)
     }
 }
