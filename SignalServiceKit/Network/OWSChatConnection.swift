@@ -573,11 +573,39 @@ public class OWSChatConnection: NSObject {
         }
         failure(.invalidAppState(requestUrl: requestUrl))
     }
+
+    // MARK: - Reconnect
+
+    private static let socketReconnectDelaySeconds: TimeInterval = 5
+
+    private var reconnectTimer: OffMainThreadTimer?
+
+    fileprivate func ensureReconnectTimer() {
+        assertOnQueue(serialQueue)
+        if let reconnectTimer = self.reconnectTimer {
+            owsAssertDebug(reconnectTimer.isValid)
+        } else {
+            // TODO: It'd be nice to do exponential backoff.
+            self.reconnectTimer = OffMainThreadTimer(timeInterval: Self.socketReconnectDelaySeconds,
+                                                     repeats: true) { [weak self] timer in
+                guard let self = self else {
+                    timer.invalidate()
+                    return
+                }
+                self.applyDesiredSocketState()
+            }
+        }
+    }
+
+    fileprivate func clearReconnect() {
+        assertOnQueue(serialQueue)
+
+        reconnectTimer?.invalidate()
+        reconnectTimer = nil
+    }
 }
 
 public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
-    private static let socketReconnectDelaySeconds: TimeInterval = 5
-
     private var _currentWebSocket = AtomicOptional<WebSocketConnection>(nil, lock: .sharedGlobal)
     fileprivate var currentWebSocket: WebSocketConnection? {
         get {
@@ -994,34 +1022,6 @@ public class OWSChatConnectionUsingSSKWebSocket: OWSChatConnection {
         self.clearReconnect()
         self.currentWebSocket = nil
     }
-
-    // MARK: - Reconnect
-
-    private var reconnectTimer: OffMainThreadTimer?
-
-    fileprivate func ensureReconnectTimer() {
-        assertOnQueue(serialQueue)
-        if let reconnectTimer = self.reconnectTimer {
-            owsAssertDebug(reconnectTimer.isValid)
-        } else {
-            // TODO: It'd be nice to do exponential backoff.
-            self.reconnectTimer = OffMainThreadTimer(timeInterval: Self.socketReconnectDelaySeconds,
-                                                     repeats: true) { [weak self] timer in
-                guard let self = self else {
-                    timer.invalidate()
-                    return
-                }
-                self.applyDesiredSocketState()
-            }
-        }
-    }
-
-    private func clearReconnect() {
-        assertOnQueue(serialQueue)
-
-        reconnectTimer?.invalidate()
-        reconnectTimer = nil
-    }
 }
 
 // MARK: -
@@ -1385,7 +1385,7 @@ private class WebSocketConnection {
     }
 }
 
-internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSSKWebSocket {
+internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSSKWebSocket, ConnectionEventsListener {
     private var libsignalNet: Net
     @Atomic private var chatService: UnauthenticatedChatService
 
@@ -1401,14 +1401,11 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
         }
     }
 
-    private var previousUnexpectedReconnectsForThisInstance = AtomicUInt(lock: .init())
-
     private let statsStore: SDSKeyValueStore = SDSKeyValueStore(collection: "OWSChatConnectionWithLibSignalShadowing")
 
     private struct Stats: Codable {
         var requestsCompared: UInt64 = 0
         var healthcheckBadStatusCount: UInt64 = 0
-        var unexpectedReconnects: UInt64 = 0
         var healthcheckFailures: UInt64 = 0
         var requestsDuringInactive: UInt64 = 0
         var lastNotifyTimestamp: Date = Date(timeIntervalSince1970: 0)
@@ -1428,7 +1425,7 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
             if abs(self.lastNotifyTimestamp.timeIntervalSinceNow) < 24 * 60 * 60 {
                 return false
             }
-            return healthcheckBadStatusCount + healthcheckFailures > 20 || requestsDuringInactive > 50 || unexpectedReconnects > 50
+            return healthcheckBadStatusCount + healthcheckFailures > 20 || requestsDuringInactive > 100
         }
     }
 
@@ -1566,22 +1563,11 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
                 Logger.verbose("\(logPrefix): [\(originalRequestId)] keepalive via libsignal responded with status [\(healthCheckResult.status)] (\(debugInfo.connectionInfo))")
             }
 
-            updateStatsAsync { [previousUnexpectedReconnectsForThisInstance] stats in
+            updateStatsAsync { stats in
                 stats.requestsCompared += 1
 
                 if !succeeded {
                     stats.healthcheckBadStatusCount += 1
-                }
-
-                if debugInfo.reconnectCount > 0 {
-                    let previousUnexpectedReconnects = previousUnexpectedReconnectsForThisInstance.swap(UInt(debugInfo.reconnectCount))
-                    if debugInfo.reconnectCount > previousUnexpectedReconnects {
-                        stats.unexpectedReconnects += UInt64(debugInfo.reconnectCount) - UInt64(previousUnexpectedReconnects)
-                    } else {
-                        // Maybe we're processing results out of order. Just put the previous number back.
-                        // This isn't atomic, but we're in a DB write transaction anyway, so we effectively have a lock.
-                        previousUnexpectedReconnectsForThisInstance.set(previousUnexpectedReconnects)
-                    }
                 }
             }
         } catch {
@@ -1596,9 +1582,16 @@ internal class OWSChatConnectionWithLibSignalShadowing: OWSChatConnectionUsingSS
             }
         }
     }
+
+    func connectionWasInterrupted(_ service: UnauthenticatedChatService) {
+        // Don't do anything if the shadowing connection gets interrupted.
+        // Either the main connection will also be interrupted, and they'll reconnect together,
+        // or requests to the shadowing connection will come back as "chatServiceInactive".
+        // If we tried to eagerly reconnect here but libsignal had a bug, we could end up in a reconnect loop.
+    }
 }
 
-internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatConnection {
+internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatConnection, ConnectionEventsListener {
     fileprivate let libsignalNet: Net
     private var _chatService: Service
     fileprivate var chatService: Service {
@@ -1634,6 +1627,18 @@ internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatCon
         }
     }
 
+    private var _expectingInterruption: Int = 0
+    private var expectedInterruptions: Int {
+        get {
+            assertOnQueue(serialQueue)
+            return _expectingInterruption
+        }
+        set {
+            assertOnQueue(serialQueue)
+            _expectingInterruption = newValue
+        }
+    }
+
     internal init(libsignalNet: Net, chatService: Service, type: OWSChatConnectionType, appExpiry: AppExpiry, db: DB) {
         self.libsignalNet = libsignalNet
         self._chatService = chatService
@@ -1648,6 +1653,7 @@ internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatCon
         assertOnQueue(serialQueue)
         chatService = makeChatService()
         mostRecentTransition = nil
+        expectedInterruptions = 0
         notifyStatusChange(newState: .closed)
     }
 
@@ -1671,16 +1677,27 @@ internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatCon
         let disconnectingTask: Task<Void, Never>?
         if case .disconnecting(let task) = mostRecentTransition {
             disconnectingTask = task
-        } else if currentState == .closed {
-            disconnectingTask = nil
         } else {
-            owsAssertDebug(mostRecentTransition != nil, "once out of the closed state, we should always have a transition")
-            // The most recent transition was attempting to connect, and we have not yet observed a failure.
-            // That's as good as we're going to get.
-            return
+            switch currentState {
+            case .closed:
+                disconnectingTask = nil
+            case .open:
+                clearReconnect()
+                return
+            case .connecting:
+                owsAssertDebug(mostRecentTransition != nil, "once out of the closed state, we should always have a transition")
+                // The most recent transition was attempting to connect, and we have not yet observed a failure.
+                // That's as good as we're going to get.
+                return
+            }
         }
 
         notifyStatusChange(newState: .connecting)
+        // If we want the socket to be open and it's not open,
+        // start up the reconnect timer immediately (don't wait for an error).
+        // There's little harm in it and this will make us more robust to edge
+        // cases.
+        ensureReconnectTimer()
 
         mostRecentTransition = .connecting(Task { [chatService] in
             // Finish disconnecting before we try to reopen.
@@ -1733,13 +1750,15 @@ internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatCon
     fileprivate override func disconnectIfNeeded() {
         assertOnQueue(serialQueue)
 
-        guard case .connecting(let connectingTask) = mostRecentTransition else {
+        guard case .connecting(let connectingTask) = mostRecentTransition, currentState != .closed else {
             // Either we are already disconnecting,
             // or we finished disconnecting,
             // or we were never connected to begin with.
             return
         }
 
+        clearReconnect()
+        expectedInterruptions += 1
         mostRecentTransition = .disconnecting(
             Task { [chatService] in
                 do {
@@ -1757,8 +1776,8 @@ internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatCon
     }
 
     public override var currentState: OWSChatConnectionState {
-        // We can't really be more precise than this because of (1) libsignal handling reconnects,
-        // and (2) async means it'll immediately be out of date. This describes intent, anyway.
+        // libsignal doesn't expose its current state directly, but we update cachedCurrentState
+        // based on lifecycle events, so this should be accurate (with the usual caveats about races).
         return cachedCurrentState
     }
 
@@ -1848,8 +1867,9 @@ internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatCon
         }.catch(on: self.serialQueue) { error in
             switch error as? SignalError {
             case .connectionTimeoutError(_):
-                _ = requestInfo.timeoutIfNecessary()
-                // libsignal handles reconnecting after timeouts
+                if requestInfo.timeoutIfNecessary() {
+                    self.cycleSocket()
+                }
             case .webSocketError(_), .connectionFailed(_):
                 requestInfo.didFailDueToNetwork()
             default:
@@ -1858,16 +1878,60 @@ internal class OWSChatConnectionUsingLibSignal<Service: ChatService>: OWSChatCon
             }
         }
     }
+
+    fileprivate func didDisconnectIdentified() {
+        // Overridden by subclass.
+    }
+
+    func connectionWasInterrupted(_ service: Service) {
+        self.serialQueue.async { [self] in
+            guard service === chatService else {
+                // Already done with this service.
+                return
+            }
+
+            if type == .identified {
+                self.didDisconnectIdentified()
+            }
+
+            if expectedInterruptions > 0 {
+                // There was an explicit disconnect.
+                // We still want to mark the interruption with didDisconnectIdentified(),
+                // but we don't need to do anything else.
+                expectedInterruptions -= 1
+                return
+            }
+
+            // This interruption was unexpected.
+            notifyStatusChange(newState: .closed)
+
+            if shouldSocketBeOpen {
+                // If we should retry, use `ensureReconnectTimer` to reconnect after a delay.
+                ensureReconnectTimer()
+            } else {
+                // Otherwise clean up and align state.
+                applyDesiredSocketState()
+            }
+
+            outageDetection.reportConnectionFailure()
+        }
+    }
 }
 
 internal class OWSUnauthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<UnauthenticatedChatService> {
     init(libsignalNet: Net, appExpiry: AppExpiry, db: DB) {
         let chatService = libsignalNet.createUnauthenticatedChatService()
         super.init(libsignalNet: libsignalNet, chatService: chatService, type: .unidentified, appExpiry: appExpiry, db: db)
+        chatService.setListener(self)
     }
 
     override func makeChatService() -> UnauthenticatedChatService {
         return libsignalNet.createUnauthenticatedChatService()
+    }
+
+    fileprivate override func resetChatService() {
+        super.resetChatService()
+        chatService.setListener(self)
     }
 }
 
@@ -1983,20 +2047,17 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
 
                 // We may have been holding the websocket open, waiting to drain the
                 // queue. Check if we should close the websocket.
-                // TODO: Is this actually relevant?
                 self.applyDesiredSocketState()
             }
         }
     }
 
-    func chatServiceConnectionWasInterrupted(_ chat: AuthenticatedChatService) {
-        self.serialQueue.async { [self] in
-            guard self.chatService === chat else {
-                // We have since disconnected from the chat service instance that got interrupted.
-                return
-            }
-            _hasEmptiedInitialQueue.set(false)
-            Logger.debug("Reset _hasEmptiedInitialQueue")
-        }
+    fileprivate override func didDisconnectIdentified() {
+        // While _hasEmptiedInitialQueue is atomic, that's not sufficient to guarantee the *order*
+        // of writes. We do that by making sure we only set it on the serial queue, and then make
+        // sure libsignal's serialized callbacks result in scheduling on the serial queue.
+        assertOnQueue(serialQueue)
+        _hasEmptiedInitialQueue.set(false)
+        Logger.debug("Reset _hasEmptiedInitialQueue")
     }
 }

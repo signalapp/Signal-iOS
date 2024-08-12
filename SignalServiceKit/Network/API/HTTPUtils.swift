@@ -5,6 +5,7 @@
 
 import Foundation
 import CFNetwork
+import LibSignalClient
 
 /// This extension sacrifices Dictionary performance in order to ignore http
 /// header case and should not be generally used. Since the number of http
@@ -330,6 +331,8 @@ fileprivate extension HTTPUtils {
         case let httpError as OWSHTTPError: return httpError.isNetworkConnectivityError
         case GroupsV2Error.timeout: return true
         case PaymentsError.timeout: return true
+        case SignalError.connectionTimeoutError: return true
+        case SignalError.connectionFailed: return true
         default: return false
         }
     }
