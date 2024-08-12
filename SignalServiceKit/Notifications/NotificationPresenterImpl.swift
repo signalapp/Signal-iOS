@@ -437,9 +437,27 @@ public class NotificationPresenterImpl: NotificationPresenter {
         thread: TSThread,
         transaction: SDSAnyReadTransaction
     ) -> Bool {
-        guard isThreadMuted(thread, transaction: transaction) else {
-            guard incomingMessage.isGroupStoryReply else { return true }
+        if isThreadMuted(thread, transaction: transaction) {
+            guard thread.isGroupThread else { return false }
 
+            guard let localAddress = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
+                owsFailDebug("Missing local address")
+                return false
+            }
+
+            let mentionedAddresses = MentionFinder.mentionedAddresses(for: incomingMessage, transaction: transaction.unwrapGrdbRead)
+            let localUserIsQuoted = incomingMessage.quotedMessage?.authorAddress.isEqualToAddress(localAddress) ?? false
+            guard mentionedAddresses.contains(localAddress) || localUserIsQuoted else {
+                return false
+            }
+
+            switch thread.mentionNotificationMode {
+            case .default, .always:
+                return true
+            case .never:
+                return false
+            }
+        } else if incomingMessage.isGroupStoryReply {
             guard
                 let storyTimestamp = incomingMessage.storyTimestamp?.uint64Value,
                 let storyAuthorAci = incomingMessage.storyAuthorAci?.wrappedAciValue
@@ -465,26 +483,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 storyAuthorAci: storyAuthorAci,
                 transaction: transaction
             )
-        }
-
-        guard thread.isGroupThread else { return false }
-
-        guard let localAddress = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
-            owsFailDebug("Missing local address")
-            return false
-        }
-
-        let mentionedAddresses = MentionFinder.mentionedAddresses(for: incomingMessage, transaction: transaction.unwrapGrdbRead)
-        let localUserIsQuoted = incomingMessage.quotedMessage?.authorAddress.isEqualToAddress(localAddress) ?? false
-        guard mentionedAddresses.contains(localAddress) || localUserIsQuoted else {
-            return false
-        }
-
-        switch thread.mentionNotificationMode {
-        case .default, .always:
+        } else {
             return true
-        case .never:
-            return false
         }
     }
 
