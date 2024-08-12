@@ -345,19 +345,13 @@ class CallDrawerSheet: InteractiveSheetViewController {
             let tableFadePortion = max((currentHeightProportional - self.pivot) / currentHeightProportional, 0)
             let controlsFadePortion = 1 - tableFadePortion
 
-            // The deceleration at the end of the animation is most
-            // of the duration, so it looks a lot smoother playing
-            // these animations over half the total duration.
-            let tableFadeAnimationPortion = tableFadePortion / 2
-            let controlsFadeAnimationPortion = controlsFadePortion / 2
-
             // Inherit the animation
             UIView.animateKeyframes(withDuration: 0, delay: 0) {
-                UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: tableFadeAnimationPortion) {
+                UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: tableFadePortion) {
                     self.tableView.alpha = 0
                     self.setTableViewTopTranslation(to: HeightConstants.initialTableInset)
                 }
-                UIView.addKeyframe(withRelativeStartTime: tableFadeAnimationPortion, relativeDuration: controlsFadeAnimationPortion) {
+                UIView.addKeyframe(withRelativeStartTime: tableFadePortion, relativeDuration: controlsFadePortion) {
                     self.callControls.alpha = 1
                 }
             }
@@ -423,14 +417,11 @@ class CallDrawerSheet: InteractiveSheetViewController {
             let controlsFadePortion = max((currentHeightProportional - (1 - self.pivot)) / currentHeightProportional, 0)
             let tableFadePortion = 1 - controlsFadePortion
 
-            let tableFadeAnimationPortion = tableFadePortion / 2
-            let controlsFadeAnimationPortion = controlsFadePortion / 2
-
             UIView.animateKeyframes(withDuration: 0, delay: 0) {
-                UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: controlsFadeAnimationPortion) {
+                UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: controlsFadePortion) {
                     self.callControls.alpha = 0
                 }
-                UIView.addKeyframe(withRelativeStartTime: controlsFadeAnimationPortion, relativeDuration: tableFadeAnimationPortion) {
+                UIView.addKeyframe(withRelativeStartTime: controlsFadePortion, relativeDuration: tableFadePortion) {
                     self.tableView.alpha = 1
                     self.setTableViewTopTranslation(to: 0)
                 }
