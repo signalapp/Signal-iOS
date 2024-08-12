@@ -14,8 +14,6 @@ static NSString *const kSenderKeySendRequestBodyContentType = @"application/vnd.
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const OWSRequestKey_AuthKey = @"AuthKey";
-
 @implementation OWSRequestFactory
 
 + (TSRequest *)disable2FARequest
@@ -109,18 +107,6 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     if (queryParam != nil) {
         path = [path stringByAppendingFormat:@"?%@", queryParam];
     }
-    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
-}
-
-+ (TSRequest *)currentSignedPreKeyRequest
-{
-    NSString *path = self.textSecureSignedKeysAPI;
-    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
-}
-
-+ (TSRequest *)profileAvatarUploadFormRequest
-{
-    NSString *path = self.textSecureProfileAvatarFormAPI;
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 
@@ -290,35 +276,6 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     [request setValue:[udAccessKey.keyData base64EncodedString] forHTTPHeaderField:@"Unidentified-Access-Key"];
 
     request.isUDRequest = YES;
-}
-
-#pragma mark - Profiles
-
-+ (TSRequest *)profileNameSetRequestWithEncryptedPaddedName:(NSData *)encryptedPaddedName
-{
-    const NSUInteger kEncodedNameLength = 108;
-
-    NSString *base64EncodedName = [encryptedPaddedName base64EncodedString];
-    NSString *urlEncodedName;
-    // name length must match exactly
-    if (base64EncodedName.length == kEncodedNameLength) {
-        urlEncodedName = base64EncodedName.encodeURIComponent;
-    } else {
-        // if name length doesn't match exactly, use a blank name.
-        // Since names are required, the server will reject this with HTTP405,
-        // which is desirable - we want this request to fail rather than upload
-        // a broken name.
-        OWSFailDebug(@"Couldn't encode name.");
-        OWSAssertDebug(encryptedPaddedName == nil);
-        urlEncodedName = @"";
-    }
-    NSString *urlString = [NSString stringWithFormat:@"v1/profile/name/%@", urlEncodedName];
-
-    NSURL *url = [NSURL URLWithString:urlString];
-    TSRequest *request = [[TSRequest alloc] initWithURL:url];
-    request.HTTPMethod = @"PUT";
-
-    return request;
 }
 
 #pragma mark - Remote Config

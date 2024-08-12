@@ -17,7 +17,6 @@ public extension OWSRequestFactory {
     static let textSecureSignedKeysAPI  = "v2/keys/signed"
     static let textSecureDirectoryAPI  = "v1/directory"
     static let textSecureDevicesAPIFormat  = "v1/devices/%@"
-    static let textSecureProfileAvatarFormAPI  = "v1/profile/form/avatar"
     static let textSecure2FAAPI  = "v1/accounts/pin"
     static let textSecureRegistrationLockV2API  = "v1/accounts/registration_lock"
     static let textSecureGiftBadgePricesAPI = "v1/subscription/boost/amounts/gift"

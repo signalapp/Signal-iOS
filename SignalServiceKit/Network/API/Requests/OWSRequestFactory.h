@@ -48,8 +48,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSRequest *)allocAttachmentRequestV4;
 
-+ (TSRequest *)profileAvatarUploadFormRequest;
-
 + (TSRequest *)registerForPushRequestWithPushIdentifier:(NSString *)identifier
                                          voipIdentifier:(nullable NSString *)voipId;
 
@@ -77,8 +75,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSRequest *)availablePreKeysCountRequestForIdentity:(OWSIdentity)identity;
 
-+ (TSRequest *)currentSignedPreKeyRequest;
-
 + (TSRequest *)recipientPreKeyRequestWithServiceId:(ServiceIdObjC *)serviceId
                                           deviceId:(uint32_t)deviceId
                                        udAccessKey:(nullable SMKUDAccessKey *)udAccessKey;
@@ -101,10 +97,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSRequest *)udSenderCertificateRequestWithUuidOnly:(BOOL)uuidOnly
     NS_SWIFT_NAME(udSenderCertificateRequest(uuidOnly:));
-
-#pragma mark - Profiles
-
-+ (TSRequest *)profileNameSetRequestWithEncryptedPaddedName:(NSData *)encryptedPaddedName;
 
 #pragma mark - Remote Config
 
