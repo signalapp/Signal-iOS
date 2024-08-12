@@ -517,6 +517,7 @@ class GroupCallViewController: UIViewController {
             return
         }
         bottomSheet.setBottomSheetMinimizedHeight()
+        bottomSheet.view.isUserInteractionEnabled = true
         present(self.bottomSheet, animated: true)
     }
 
@@ -1491,7 +1492,11 @@ extension GroupCallViewController: GroupCallObserver {
             if membersAtJoin == nil {
                 membersAtJoin = Set(ringRtcCall.remoteDeviceStates.lazy.map { $0.value.address })
             }
-        case .pending, .joining, .notJoined:
+            self.bottomSheet.view.isUserInteractionEnabled = true
+        case .joining:
+            self.bottomSheet.view.isUserInteractionEnabled = false
+            fallthrough
+        case .pending, .notJoined:
             membersAtJoin = nil
         }
     }
