@@ -229,63 +229,75 @@ extension ConversationViewController: MessageRequestDelegate {
 
     func messageRequestViewDidTapAccept(mode: MessageRequestMode, unblockThread: Bool, unhideRecipient: Bool) {
         AssertIsOnMainThread()
-
         let thread = self.thread
-        let completion = {
-            SDSDatabaseStorage.shared.asyncWrite { [weak self] transaction in
-                guard let self else { return }
-                if unblockThread {
-                    self.blockingManager.removeBlockedThread(thread, wasLocallyInitiated: true, transaction: transaction)
-                }
-                if unhideRecipient, let thread = thread as? TSContactThread {
-                    DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
-                        thread.contactAddress,
-                        wasLocallyInitiated: true,
-                        tx: transaction.asV2Write
-                    )
-                }
-                if !unblockThread {
-                    // If this is an accept (which also unhides a hidden recipient), not an unblock, we should send a
-                    // sync messages telling our other devices that we accepted.
-                    self.syncManager.sendMessageRequestResponseSyncMessage(
-                        thread: thread,
-                        responseType: .accept,
-                        transaction: transaction
-                    )
-                }
-
-                // Whitelist the thread
-                self.profileManager.addThread(
-                    toProfileWhitelist: thread,
-                    userProfileWriter: .localUser,
-                    transaction: transaction
-                )
-
-                if !thread.isGroupThread {
-                    // If this is a contact thread, we should give the
-                    // now-unblocked contact our profile key.
-                    let profileKeyMessage = OWSProfileKeyMessage(thread: thread, transaction: transaction)
-                    let preparedMessage = PreparedOutgoingMessage.preprepared(
-                        transientMessageWithoutAttachments: profileKeyMessage
-                    )
-                    SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
-                }
-
-                NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
-            }
+        Task {
+            await self.acceptMessageRequest(in: thread, mode: mode, unblockThread: unblockThread, unhideRecipient: unhideRecipient)
         }
+    }
 
+    private func acceptMessageRequest(
+        in thread: TSThread,
+        mode: MessageRequestMode,
+        unblockThread: Bool,
+        unhideRecipient: Bool
+    ) async {
         switch mode {
         case .none:
             owsFailDebug("Invalid mode.")
+            return
         case .contactOrGroupRequest:
-            completion()
+            break
         case .groupInviteRequest:
             guard let groupThread = thread as? TSGroupThread else {
                 owsFailDebug("Invalid thread.")
                 return
             }
-            GroupManager.acceptGroupInviteAsync(groupThread, fromViewController: self, success: completion)
+            do {
+                try await GroupManager.acceptGroupInviteWithModal(groupThread, fromViewController: self)
+            } catch {
+                owsFailDebug("Couldn't accept group invite: \(error)")
+                return
+            }
+        }
+        await databaseStorage.awaitableWrite { transaction in
+            if unblockThread {
+                self.blockingManager.removeBlockedThread(thread, wasLocallyInitiated: true, transaction: transaction)
+            }
+            if unhideRecipient, let thread = thread as? TSContactThread {
+                DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
+                    thread.contactAddress,
+                    wasLocallyInitiated: true,
+                    tx: transaction.asV2Write
+                )
+            }
+            if !unblockThread {
+                // If this is an accept (which also unhides a hidden recipient), not an unblock, we should send a
+                // sync messages telling our other devices that we accepted.
+                self.syncManager.sendMessageRequestResponseSyncMessage(
+                    thread: thread,
+                    responseType: .accept,
+                    transaction: transaction
+                )
+            }
+
+            // Whitelist the thread
+            self.profileManager.addThread(
+                toProfileWhitelist: thread,
+                userProfileWriter: .localUser,
+                transaction: transaction
+            )
+
+            if !thread.isGroupThread {
+                // If this is a contact thread, we should give the
+                // now-unblocked contact our profile key.
+                let profileKeyMessage = OWSProfileKeyMessage(thread: thread, transaction: transaction)
+                let preparedMessage = PreparedOutgoingMessage.preprepared(
+                    transientMessageWithoutAttachments: profileKeyMessage
+                )
+                SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
+            }
+
+            NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
         }
     }
 

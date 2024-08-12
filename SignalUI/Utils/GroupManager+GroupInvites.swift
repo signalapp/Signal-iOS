@@ -51,41 +51,43 @@ public extension GroupManager {
         }
     }
 
-    static func acceptGroupInviteAsync(
+    @MainActor
+    static func acceptGroupInviteWithModal(
         _ groupThread: TSGroupThread,
-        fromViewController: UIViewController,
-        success: @escaping () -> Void
-    ) {
-        ModalActivityIndicatorViewController.present(
-            fromViewController: fromViewController,
-            canCancel: false,
-            asyncBlock: { modalActivityIndicator in
-                do {
-                    guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
-                        throw OWSAssertionError("Invalid group model")
-                    }
+        fromViewController: UIViewController
+    ) async throws {
+        return try await withCheckedThrowingContinuation { continuation in
+            ModalActivityIndicatorViewController.present(
+                fromViewController: fromViewController,
+                canCancel: false,
+                asyncBlock: { modalActivityIndicator in
+                    do {
+                        guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
+                            throw OWSAssertionError("Invalid group model")
+                        }
 
-                    _ = try await self.localAcceptInviteToGroupV2(
-                        groupModel: groupModelV2,
-                        waitForMessageProcessing: true
-                    )
-
-                    modalActivityIndicator.dismiss {
-                        success()
-                    }
-                } catch {
-                    owsFailDebug("Error: \(error)")
-
-                    modalActivityIndicator.dismiss {
-                        let title = OWSLocalizedString(
-                            "GROUPS_INVITE_ACCEPT_INVITE_FAILED",
-                            comment: "Error indicating that an error occurred while accepting an invite."
+                        _ = try await self.localAcceptInviteToGroupV2(
+                            groupModel: groupModelV2,
+                            waitForMessageProcessing: true
                         )
 
-                        OWSActionSheets.showActionSheet(title: title)
+                        modalActivityIndicator.dismiss {
+                            continuation.resume()
+                        }
+                    } catch {
+                        modalActivityIndicator.dismiss {
+                            let title = OWSLocalizedString(
+                                "GROUPS_INVITE_ACCEPT_INVITE_FAILED",
+                                comment: "Error indicating that an error occurred while accepting an invite."
+                            )
+
+                            OWSActionSheets.showActionSheet(title: title)
+
+                            continuation.resume(throwing: error)
+                        }
                     }
                 }
-            }
-        )
+            )
+        }
     }
 }
